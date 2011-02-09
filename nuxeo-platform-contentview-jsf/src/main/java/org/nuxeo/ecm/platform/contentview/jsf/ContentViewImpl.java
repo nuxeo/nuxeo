@@ -75,6 +75,8 @@ public class ContentViewImpl implements ContentView {
 
     protected ContentViewLayout currentResultLayout;
 
+    protected List<String> currentResultLayoutColumns;
+
     protected String cacheKey;
 
     protected Integer cacheSize;
@@ -407,8 +409,17 @@ public class ContentViewImpl implements ContentView {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public List<String> getResultLayoutColumns() {
+        return getCurrentResultLayoutColumns();
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<String> getCurrentResultLayoutColumns() {
+        if (currentResultLayoutColumns != null) {
+            return currentResultLayoutColumns;
+        }
+        // else resolve bindings
         FacesContext context = FacesContext.getCurrentInstance();
         Object value = ComponentTagUtils.resolveElExpression(context,
                 resultColumnsBinding);
@@ -417,6 +428,11 @@ public class ContentViewImpl implements ContentView {
                     + "result is not a List: %s", resultColumnsBinding, value));
         }
         return (List) value;
+    }
+
+    @Override
+    public void setCurrentResultLayoutColumns(List<String> resultColumns) {
+        currentResultLayoutColumns = resultColumns;
     }
 
     @SuppressWarnings("unchecked")

@@ -118,7 +118,8 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
 
     @SuppressWarnings("unchecked")
     public void testCoreQuery() throws Exception {
-        ContentView contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN");
+        ContentView contentView = service.getContentView(
+                "CURRENT_DOCUMENT_CHILDREN", session);
         assertNotNull(contentView);
 
         String parentIdParam = session.getRootDocument().getId();
@@ -130,7 +131,8 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
 
     @SuppressWarnings("unchecked")
     public void testCoreQueryReference() throws Exception {
-        ContentView contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN_REF");
+        ContentView contentView = service.getContentView(
+                "CURRENT_DOCUMENT_CHILDREN_REF", session);
         assertNotNull(contentView);
 
         String parentIdParam = session.getRootDocument().getId();
@@ -218,7 +220,8 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
     // calls
     @SuppressWarnings("unchecked")
     public void testCoreQueryWithXMLParameters() throws Exception {
-        ContentView contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN");
+        ContentView contentView = service.getContentView(
+                "CURRENT_DOCUMENT_CHILDREN", session);
         assertNotNull(contentView);
 
         String parentIdParam = session.getRootDocument().getId();
@@ -228,7 +231,8 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
 
     @SuppressWarnings("unchecked")
     public void testCoreQueryWithXMLParametersReference() throws Exception {
-        ContentView contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN_REF");
+        ContentView contentView = service.getContentView(
+                "CURRENT_DOCUMENT_CHILDREN_REF", session);
         assertNotNull(contentView);
 
         String parentIdParam = session.getRootDocument().getId();
@@ -311,7 +315,8 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
 
     @SuppressWarnings("unchecked")
     public void testCoreQueryAndFetch() throws Exception {
-        ContentView contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN_FETCH");
+        ContentView contentView = service.getContentView(
+                "CURRENT_DOCUMENT_CHILDREN_FETCH", session);
         assertNotNull(contentView);
 
         String parentIdParam = session.getRootDocument().getId();
@@ -321,7 +326,8 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
 
     @SuppressWarnings("unchecked")
     public void testCoreQueryAndFetchReference() throws Exception {
-        ContentView contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN_FETCH_REF");
+        ContentView contentView = service.getContentView(
+                "CURRENT_DOCUMENT_CHILDREN_FETCH_REF", session);
         assertNotNull(contentView);
 
         String parentIdParam = session.getRootDocument().getId();
@@ -389,7 +395,8 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
     @SuppressWarnings("unchecked")
     public void testCoreQueryAndFetchWithError() throws Exception {
 
-        ContentView contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN_FETCH");
+        ContentView contentView = service.getContentView(
+                "CURRENT_DOCUMENT_CHILDREN_FETCH", session);
         assertNotNull(contentView);
 
         // do not pass params => query will not be built correctly
@@ -400,7 +407,8 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
     @SuppressWarnings("unchecked")
     public void testCoreQueryAndFetchWithErrorReference() throws Exception {
 
-        ContentView contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN_FETCH_REF");
+        ContentView contentView = service.getContentView(
+                "CURRENT_DOCUMENT_CHILDREN_FETCH_REF", session);
         assertNotNull(contentView);
 
         // do not pass params => query will not be built correctly
@@ -434,7 +442,8 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
 
     @SuppressWarnings("unchecked")
     public void testCoreQueryWithSearchDocument() throws Exception {
-        ContentView contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT");
+        ContentView contentView = service.getContentView(
+                "CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT", session);
         assertNotNull(contentView);
 
         // leave default values on doc for now: will filter on all docs with
@@ -446,7 +455,8 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
 
     @SuppressWarnings("unchecked")
     public void testCoreQueryWithSearchDocumentReference() throws Exception {
-        ContentView contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT_REF");
+        ContentView contentView = service.getContentView(
+                "CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT_REF", session);
         assertNotNull(contentView);
 
         // leave default values on doc for now: will filter on all docs with

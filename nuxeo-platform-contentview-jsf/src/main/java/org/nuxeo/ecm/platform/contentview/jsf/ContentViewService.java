@@ -23,6 +23,7 @@ import java.util.Set;
 import javax.faces.context.FacesContext;
 
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 
@@ -38,8 +39,24 @@ public interface ContentViewService extends Serializable {
      * Returns the content view with given name, or null if not found.
      *
      * @throws ClientException
+     * @deprecated: use {@link #getContentView(String, CoreSession)} instead
      */
+    @Deprecated
     ContentView getContentView(String name) throws ClientException;
+
+    /**
+     * Returns the content view with given name, or null if not found.
+     * <p>
+     * If the content view is using a provider that needs a search document
+     * model, a new one is created and attached to it thanks to the document
+     * type held in the definition and to the core session.
+     *
+     * @param coreSession: a core session, used to initialize the search
+     *            document model
+     * @throws ClientException
+     */
+    ContentView getContentView(String name, CoreSession coreSession)
+            throws ClientException;
 
     /**
      * Returns all the registered content view names, or an empty set if no
@@ -67,5 +84,30 @@ public interface ContentViewService extends Serializable {
     PageProvider<?> getPageProvider(String contentViewName,
             List<SortInfo> sortInfos, Long pageSize, Long currentPage,
             Object... parameters) throws ClientException;
+
+    /**
+     * Returns the state of this content view.
+     * <p>
+     * This state can be used to restore the content view in another context.
+     *
+     * @see #restoreContentView(ContentViewState, CoreSession)
+     * @since 5.4.1
+     * @param contentView
+     */
+    ContentViewState saveContentView(ContentView contentView);
+
+    /**
+     * Restores a content view given a state.
+     * <p>
+     * The core session is only useful when restoring a content view defining a
+     * page provider mapped to a document. It is used to initialize this
+     * document.
+     *
+     * @see #saveContentView(ContentView)
+     * @since 5.4.1
+     * @throws ClientException
+     */
+    ContentView restoreContentView(ContentViewState contentViewState,
+            CoreSession coreSession) throws ClientException;
 
 }

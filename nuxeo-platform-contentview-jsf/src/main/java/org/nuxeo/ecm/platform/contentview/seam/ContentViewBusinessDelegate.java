@@ -14,7 +14,7 @@
  * Contributors:
  *     Anahide Tchertchian
  */
-package org.nuxeo.ecm.platform.contentview.jsf;
+package org.nuxeo.ecm.platform.contentview.seam;
 
 import static org.jboss.seam.ScopeType.SESSION;
 
@@ -27,6 +27,7 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Unwrap;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.platform.contentview.jsf.ContentViewService;
 import org.nuxeo.runtime.api.Framework;
 
 /**

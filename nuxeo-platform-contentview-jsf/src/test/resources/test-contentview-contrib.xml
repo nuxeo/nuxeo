@@ -30,7 +30,8 @@
       <actions category="CURRENT_SELECTION_LIST" />
       <resultLayouts>
         <layout name="document_listing" title="label.document_listing.layout"
-          translateTitle="true" iconPath="/icons/myicon.png" />
+          translateTitle="true" iconPath="/icons/myicon.png"
+          showCSVExport="true" />
       </resultLayouts>
       <searchLayout name="search_layout" />
       <refresh>

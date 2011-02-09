@@ -14,7 +14,7 @@
  * Contributors:
  *     Anahide Tchertchian
  */
-package org.nuxeo.ecm.webapp.contentbrowser;
+package org.nuxeo.ecm.platform.contentview.seam;
 
 import static org.jboss.seam.ScopeType.CONVERSATION;
 
@@ -25,7 +25,6 @@ import javax.faces.context.FacesContext;
 
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
-import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -34,13 +33,13 @@ import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentView;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewCache;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewService;
-import org.nuxeo.ecm.webapp.helpers.EventNames;
 
 /**
  * Handles cache and refresh for named content views.
  *
  * @author Anahide Tchertchian
  * @since 5.4
+ * @since 5.4.1: moved to content-view-jsf module
  */
 @Name("contentViewActions")
 @Scope(CONVERSATION)
@@ -138,7 +137,7 @@ public class ContentViewActions implements Serializable {
             DocumentModel searchDocumentModel) throws ClientException {
         ContentView cView = cache.get(name);
         if (cView == null) {
-            cView = contentViewService.getContentView(name);
+            cView = contentViewService.getContentView(name, documentManager);
             if (cView != null) {
                 cache.add(cView);
             }
@@ -146,16 +145,6 @@ public class ContentViewActions implements Serializable {
         if (cView != null) {
             if (searchDocumentModel != null) {
                 cView.setSearchDocumentModel(searchDocumentModel);
-            } else {
-                DocumentModel doc = cView.getSearchDocumentModel();
-                if (doc == null) {
-                    String docType = cView.getSearchDocumentModelType();
-                    if (docType != null) {
-                        // initialize doc
-                        DocumentModel blankDoc = documentManager.createDocumentModel(docType);
-                        cView.setSearchDocumentModel(blankDoc);
-                    }
-                }
             }
             setCurrentContentView(cView);
         }
@@ -210,30 +199,6 @@ public class ContentViewActions implements Serializable {
      */
     public void resetPageProviderOnSeamEvent(String seamEventName) {
         cache.resetPageProviderOnEvent(seamEventName);
-    }
-
-    /**
-     * Refreshes content views that have declared event
-     * {@link EventNames#DOCUMENT_CHILDREN_CHANGED} or
-     * {@link EventNames#DOCUMENT_CHANGED} as a refresh event.
-     */
-    @Observer(value = { EventNames.DOCUMENT_CHILDREN_CHANGED,
-            EventNames.DOCUMENT_CHANGED })
-    public void refreshOnDocumentChildrenChanged() {
-        refreshOnSeamEvent(EventNames.DOCUMENT_CHILDREN_CHANGED);
-        refreshOnSeamEvent(EventNames.DOCUMENT_CHANGED);
-    }
-
-    /**
-     * Resets page providers for content views that have declared event
-     * {@link EventNames#DOCUMENT_CHILDREN_CHANGED} or
-     * {@link EventNames#DOCUMENT_CHANGED} as a reset event.
-     */
-    @Observer(value = { EventNames.DOCUMENT_CHILDREN_CHANGED,
-            EventNames.DOCUMENT_CHANGED })
-    public void resetPageProviderOnDocumentChildrenChanged() {
-        resetPageProviderOnSeamEvent(EventNames.DOCUMENT_CHILDREN_CHANGED);
-        resetPageProviderOnSeamEvent(EventNames.DOCUMENT_CHANGED);
     }
 
     public void refresh(String contentViewName) {

@@ -32,6 +32,8 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
  */
 public class TestContentViewService extends NXRuntimeTestCase {
 
+    protected ContentViewService service;
+
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -42,15 +44,16 @@ public class TestContentViewService extends NXRuntimeTestCase {
                 "OSGI-INF/contentview-framework.xml");
         deployContrib("org.nuxeo.ecm.platform.contentview.jsf.test",
                 "test-contentview-contrib.xml");
+
+        service = Framework.getService(ContentViewService.class);
+        assertNotNull(service);
     }
 
     public void testRegistration() throws Exception {
-        ContentViewService service = Framework.getService(ContentViewService.class);
-        assertNotNull(service);
+        assertNull(service.getContentView("foo", null));
 
-        assertNull(service.getContentView("foo"));
-
-        ContentView contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN");
+        ContentView contentView = service.getContentView(
+                "CURRENT_DOCUMENT_CHILDREN", null);
         assertNotNull(contentView);
         // check content view attributes
         assertEquals("CURRENT_DOCUMENT_CHILDREN", contentView.getName());
@@ -70,11 +73,13 @@ public class TestContentViewService extends NXRuntimeTestCase {
                 resultLayouts.get(0).getTitle());
         assertTrue(resultLayouts.get(0).getTranslateTitle());
         assertEquals("/icons/myicon.png", resultLayouts.get(0).getIconPath());
+        assertTrue(resultLayouts.get(0).getShowCSVExport());
 
         assertEquals("search_layout", contentView.getSearchLayout().getName());
         assertNull(contentView.getSearchLayout().getTitle());
         assertFalse(contentView.getSearchLayout().getTranslateTitle());
         assertNull(contentView.getSearchLayout().getIconPath());
+        assertFalse(contentView.getSearchLayout().getShowCSVExport());
 
         assertEquals("CURRENT_SELECTION", contentView.getSelectionListName());
         List<String> eventNames = contentView.getRefreshEventNames();
@@ -92,22 +97,21 @@ public class TestContentViewService extends NXRuntimeTestCase {
     }
 
     public void testOverride() throws Exception {
-        ContentViewService service = Framework.getService(ContentViewService.class);
-        assertNotNull(service);
-
-        ContentView contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN_FETCH");
+        ContentView contentView = service.getContentView(
+                "CURRENT_DOCUMENT_CHILDREN_FETCH", null);
         assertNotNull(contentView);
 
         deployContrib("org.nuxeo.ecm.platform.contentview.jsf.test",
                 "test-contentview-override-contrib.xml");
 
         // check content view has been disabled correctly
-        contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN_FETCH");
+        contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN_FETCH",
+                null);
         assertNull(contentView);
 
-        assertNull(service.getContentView("foo"));
+        assertNull(service.getContentView("foo", null));
 
-        contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN");
+        contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN", null);
         assertNotNull(contentView);
         // check content view attributes
         assertEquals("CURRENT_DOCUMENT_CHILDREN", contentView.getName());
@@ -128,16 +132,19 @@ public class TestContentViewService extends NXRuntimeTestCase {
                 resultLayouts.get(0).getTitle());
         assertTrue(resultLayouts.get(0).getTranslateTitle());
         assertEquals("/icons/myicon.png", resultLayouts.get(0).getIconPath());
+        assertTrue(resultLayouts.get(0).getShowCSVExport());
         assertEquals("document_listing_2", resultLayouts.get(1).getName());
         assertEquals("label.document_listing.layout_2",
                 resultLayouts.get(1).getTitle());
         assertTrue(resultLayouts.get(1).getTranslateTitle());
         assertNull(resultLayouts.get(1).getIconPath());
+        assertFalse(resultLayouts.get(1).getShowCSVExport());
 
         assertEquals("search_layout_2", contentView.getSearchLayout().getName());
         assertNull(contentView.getSearchLayout().getTitle());
         assertFalse(contentView.getSearchLayout().getTranslateTitle());
         assertNull(contentView.getSearchLayout().getIconPath());
+        assertFalse(contentView.getSearchLayout().getShowCSVExport());
 
         assertEquals("CURRENT_SELECTION_2", contentView.getSelectionListName());
         List<String> eventNames = contentView.getRefreshEventNames();
@@ -154,9 +161,6 @@ public class TestContentViewService extends NXRuntimeTestCase {
     }
 
     public void testGetContentViewNames() throws Exception {
-        ContentViewService service = Framework.getService(ContentViewService.class);
-        assertNotNull(service);
-
         Set<String> names = service.getContentViewNames();
         assertNotNull(names);
         assertEquals(6, names.size());
@@ -193,9 +197,6 @@ public class TestContentViewService extends NXRuntimeTestCase {
     }
 
     public void testGetContentViewByFlag() throws Exception {
-        ContentViewService service = Framework.getService(ContentViewService.class);
-        assertNotNull(service);
-
         Set<String> names = service.getContentViewNames("foo");
         assertNotNull(names);
         assertEquals(2, names.size());

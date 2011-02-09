@@ -116,10 +116,26 @@ public interface ContentView extends Serializable {
     void setCurrentPageSize(Long pageSize);
 
     /**
-     * Returns the list of selected result layout columns, resolving the bound
-     * EL expression set in the content view definition.
+     * @deprecated use {@link #getCurrentResultLayoutColumns()} instead
      */
+    @Deprecated
     List<String> getResultLayoutColumns();
+
+    /**
+     * Returns the list of selected result layout columns, resolving the bound
+     * EL expression set in the content view definition if columns where not
+     * explicitely set with {@link #setCurrentResultLayoutColumns(List)}.
+     *
+     * @since 5.4.1
+     */
+    List<String> getCurrentResultLayoutColumns();
+
+    /**
+     * Sets the list of result layout columns.
+     *
+     * @since 5.4.1
+     */
+    void setCurrentResultLayoutColumns(List<String> resultColumns);
 
     /**
      * Returns the cache key for this content view provider, resolving from the

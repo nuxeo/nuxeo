@@ -24,7 +24,7 @@
     value="#{contentViewActions.getContentViewWithProvider(contentViewName, contentViewDocument, nxu:test(empty contentViewSortInfos, null, contentViewSortInfos), -1, -1)}"
     cache="true">
   <nxu:set var="selectedResultLayoutColumns"
-    value="#{nxu:test(selectedResultLayoutColumns == null, contentView.resultLayoutColumns, selectedResultLayoutColumns)}"
+    value="#{nxu:test(selectedResultLayoutColumns == null, contentView.currentResultLayoutColumns, selectedResultLayoutColumns)}"
     cache="true">
 
     <c:if test="#{contentView != null}">

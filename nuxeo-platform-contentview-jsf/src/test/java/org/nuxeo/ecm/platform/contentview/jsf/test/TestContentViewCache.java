@@ -124,7 +124,8 @@ public class TestContentViewCache extends SQLRepositoryTestCase {
         ContentViewCache cache = new ContentViewCache();
 
         this.currentDocument = container1;
-        ContentView contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN");
+        ContentView contentView = service.getContentView(
+                "CURRENT_DOCUMENT_CHILDREN", session);
         assertNotNull(contentView);
 
         PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) contentView.getPageProvider();
@@ -148,7 +149,7 @@ public class TestContentViewCache extends SQLRepositoryTestCase {
         assertEquals("document_listing",
                 contentView.getCurrentResultLayout().getName());
         ContentViewLayout layout = new ContentViewLayoutImpl(
-                "document_listing_2", null, false, null);
+                "document_listing_2", null, false, null, false);
         contentView.setCurrentResultLayout(layout);
 
         cache.add(contentView);

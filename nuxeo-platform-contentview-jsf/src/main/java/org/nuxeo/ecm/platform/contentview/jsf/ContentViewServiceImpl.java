@@ -31,6 +31,8 @@ import javax.faces.context.FacesContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
@@ -61,7 +63,9 @@ public class ContentViewServiceImpl extends DefaultComponent implements
 
     protected final Map<String, Set<String>> contentViewsByFlag = new HashMap<String, Set<String>>();
 
-    public ContentView getContentView(String name) throws ClientException {
+    @Override
+    public ContentView getContentView(String name, CoreSession coreSession)
+            throws ClientException {
         ContentViewDescriptor desc = contentViews.get(name);
         if (desc == null) {
             return null;
@@ -124,6 +128,7 @@ public class ContentViewServiceImpl extends DefaultComponent implements
         if (refQueryParams != null) {
             allQueryParams.addAll(Arrays.asList(refQueryParams));
         }
+        String searchDocBinding = desc.getSearchDocumentBinding();
         ContentViewImpl contentView = new ContentViewImpl(name,
                 desc.getTitle(), translateTitle.booleanValue(),
                 desc.getIconPath(), desc.getSelectionListName(),
@@ -132,11 +137,30 @@ public class ContentViewServiceImpl extends DefaultComponent implements
                 desc.getFlags(), desc.getCacheKey(), desc.getCacheSize(),
                 desc.getRefreshEventNames(), desc.getRefreshEventNames(),
                 useGlobalPageSize.booleanValue(),
-                allQueryParams.toArray(new String[] {}),
-                desc.getSearchDocumentBinding(), searchDocumentType,
-                desc.getResultColumnsBinding(), sortInfosBinding,
-                pageSizeBinding);
+                allQueryParams.toArray(new String[] {}), searchDocBinding,
+                searchDocumentType, desc.getResultColumnsBinding(),
+                sortInfosBinding, pageSizeBinding);
+
+        if (searchDocBinding == null) {
+            // initialize search doc
+            String docType = contentView.getSearchDocumentModelType();
+            if (docType != null) {
+                if (coreSession == null) {
+                    throw new ClientException(String.format(
+                            "Cannot initialize search document on content view "
+                                    + "with name '%s': core session is null",
+                            name));
+                }
+                DocumentModel blankDoc = coreSession.createDocumentModel(docType);
+                contentView.setSearchDocumentModel(blankDoc);
+            }
+        }
+
         return contentView;
+    }
+
+    public ContentView getContentView(String name) throws ClientException {
+        return getContentView(name, null);
     }
 
     public Set<String> getContentViewNames() {
@@ -409,6 +433,70 @@ public class ContentViewServiceImpl extends DefaultComponent implements
                 }
             }
         }
+    }
+
+    @Override
+    public ContentView restoreContentView(ContentViewState contentViewState,
+            CoreSession coreSession) throws ClientException {
+        if (contentViewState == null) {
+            return null;
+        }
+        String name = contentViewState.getContentViewName();
+        ContentView cv = getContentView(name, coreSession);
+        if (cv != null) {
+            // save some info directly on content view, they will be needed
+            // when re-building the provider
+            Long pageSize = contentViewState.getPageSize();
+            cv.setCurrentPageSize(pageSize);
+            DocumentModel searchDocument = contentViewState.getSearchDocumentModel();
+            cv.setSearchDocumentModel(searchDocument);
+            if (searchDocument != null) {
+                // check that restored doc type is still in sync with doc type
+                // set on content view
+                String searchType = cv.getSearchDocumentModelType();
+                if (!searchDocument.getType().equals(searchType)) {
+                    log.warn(String.format(
+                            "Restored document type '%s' is different from "
+                                    + "the one declared on content view "
+                                    + "with name '%s': should be '%s'",
+                            searchDocument.getType(), name, searchType));
+                }
+            }
+            Long currentPage = contentViewState.getCurrentPage();
+            Object[] params = contentViewState.getQueryParameters();
+            // init page provider
+            cv.getPageProvider(searchDocument, contentViewState.getSortInfos(),
+                    pageSize, currentPage, params);
+            // restore rendering info
+            cv.setCurrentResultLayout(contentViewState.getResultLayout());
+            cv.setCurrentResultLayoutColumns(contentViewState.getResultColumns());
+        } else {
+            throw new ClientException(String.format(
+                    "Unknown content view with name '%s'", name));
+        }
+        return cv;
+    }
+
+    @Override
+    public ContentViewState saveContentView(ContentView contentView) {
+        if (contentView == null) {
+            return null;
+        }
+        ContentViewState state = new ContentViewStateImpl();
+        state.setContentViewName(contentView.getName());
+        state.setPageSize(contentView.getCurrentPageSize());
+        // provider info
+        PageProvider<?> pp = contentView.getCurrentPageProvider();
+        if (pp != null) {
+            state.setSearchDocumentModel(pp.getSearchDocumentModel());
+            state.setCurrentPage(new Long(pp.getCurrentPageIndex()));
+            state.setQueryParameters(pp.getParameters());
+            state.setSortInfos(pp.getSortInfos());
+        }
+        // rendering info
+        state.setResultLayout(contentView.getCurrentResultLayout());
+        state.setResultColumns(contentView.getCurrentResultLayoutColumns());
+        return state;
     }
 
 }

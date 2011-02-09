@@ -40,15 +40,19 @@ public class ContentViewLayoutImpl implements ContentViewLayout {
     @XNode("@iconPath")
     protected String iconPath;
 
+    @XNode("@showCSVExport")
+    protected boolean showCSVExport = false;
+
     public ContentViewLayoutImpl() {
     }
 
     public ContentViewLayoutImpl(String name, String title,
-            boolean translateTitle, String iconPath) {
+            boolean translateTitle, String iconPath, boolean showCSVExport) {
         this.name = name;
         this.title = title;
         this.translateTitle = translateTitle;
         this.iconPath = iconPath;
+        this.showCSVExport = showCSVExport;
     }
 
     public String getIconPath() {
@@ -68,10 +72,16 @@ public class ContentViewLayoutImpl implements ContentViewLayout {
     }
 
     @Override
+    public boolean getShowCSVExport() {
+        return showCSVExport;
+    }
+
+    @Override
     public String toString() {
         return String.format("ContentViewLayoutImpl [name=%s, title=%s, "
-                + "translateTitle=%s, iconPath=%s]", name, title,
-                Boolean.valueOf(translateTitle), iconPath);
+                + "translateTitle=%s, iconPath=%s, showCSVExport=%s]", name,
+                title, Boolean.valueOf(translateTitle), iconPath, new Boolean(
+                        showCSVExport));
     }
 
 }

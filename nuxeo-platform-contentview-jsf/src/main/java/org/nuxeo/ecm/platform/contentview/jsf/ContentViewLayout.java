@@ -46,4 +46,11 @@ public interface ContentViewLayout extends Serializable {
      */
     String getIconPath();
 
+    /**
+     * Returns true if CSV export is enabled for this layout.
+     *
+     * @since 5.4.1
+     */
+    boolean getShowCSVExport();
+
 }
