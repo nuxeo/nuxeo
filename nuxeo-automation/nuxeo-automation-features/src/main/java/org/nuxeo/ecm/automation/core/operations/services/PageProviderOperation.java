@@ -14,7 +14,7 @@
  * Contributors:
  *     Thierry Delprat
  */
-package org.nuxeo.ecm.automation.core.operations.document;
+package org.nuxeo.ecm.automation.core.operations.services;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -27,7 +27,6 @@ import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
-import org.nuxeo.ecm.automation.core.impl.adapters.PageProviderAsDocumentModelList;
 import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -78,6 +77,7 @@ public class PageProviderOperation {
     @Param(name = "queryParams", required = false)
     protected StringList strParameters;
 
+    @SuppressWarnings("unchecked")
     @OperationMethod
     public DocumentModelList run() throws Exception {
 
@@ -125,9 +125,9 @@ public class PageProviderOperation {
         if (query!=null) {
             CoreQueryPageProviderDescriptor desc = new CoreQueryPageProviderDescriptor();
             desc.setPattern(query);
-            return new PageProviderAsDocumentModelList((PageProvider<DocumentModel>) pps.getPageProvider(providerName, desc, sortInfos, targetPageSize, new Long(page), props, parameters));
+            return new PaginableDocumentModelListImpl((PageProvider<DocumentModel>) pps.getPageProvider(providerName, desc, sortInfos, targetPageSize, new Long(page), props, parameters));
         } else {
-            return new PageProviderAsDocumentModelList((PageProvider<DocumentModel>) pps.getPageProvider(providerName, sortInfos, targetPageSize, new Long(page), props, parameters));
+            return new PaginableDocumentModelListImpl((PageProvider<DocumentModel>) pps.getPageProvider(providerName, sortInfos, targetPageSize, new Long(page), props, parameters));
         }
 
     }

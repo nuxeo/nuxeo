@@ -44,7 +44,7 @@ import com.google.inject.Inject;
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.relations.api",
+@Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.features", "org.nuxeo.ecm.relations.api",
         "org.nuxeo.ecm.relations", "org.nuxeo.ecm.relations.jena" })
 @LocalDeploy("org.nuxeo.ecm.automation.core:test-relation-jena-contrib.xml")
 public class RelationOperationsTest {

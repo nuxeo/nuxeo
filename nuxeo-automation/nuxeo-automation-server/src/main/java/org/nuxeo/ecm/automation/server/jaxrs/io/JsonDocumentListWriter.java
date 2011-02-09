@@ -36,7 +36,7 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 import org.nuxeo.common.utils.StringUtils;
-import org.nuxeo.ecm.automation.core.impl.adapters.PageProviderAsDocumentModelList;
+import org.nuxeo.ecm.automation.core.util.PaginableDocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.webengine.WebException;
@@ -82,8 +82,8 @@ public class JsonDocumentListWriter implements
 
             json.element("entity-type", "documents");
 
-            if (docs instanceof PageProviderAsDocumentModelList) {
-                PageProviderAsDocumentModelList provider = (PageProviderAsDocumentModelList) docs;
+            if (docs instanceof PaginableDocumentModelList) {
+                PaginableDocumentModelList provider = (PaginableDocumentModelList) docs;
                 json.element("pageIndex", provider.getCurrentPageIndex());
                 json.element("pageSize", provider.getPageSize());
                 json.element("pageCount", provider.getNumberOfPages());

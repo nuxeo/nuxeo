@@ -39,6 +39,8 @@ public class Functions {
 
     public static final Functions INSTANCE = new Functions();
 
+    //protected Map<String, Function> functions;
+
     protected volatile DirectoryService dirService;
 
     protected volatile UserManager userMgr;
@@ -59,13 +61,17 @@ public class Functions {
 
     public String getVocabularyLabel(String voc, String key) throws Exception {
         org.nuxeo.ecm.directory.Session session = getDirService().open(voc);
-        DocumentModel doc = session.getEntry(key);
-        // TODO: which is the best method to get "label" property when not
-        // knowing vocabulary schema?
-        // AT: the best is to accept it as a parameter of the method, and
-        // fallback on "label" when not given
-        DataModel dm = doc.getDataModels().values().iterator().next();
-        return (String) dm.getData("label");
+        try {
+            DocumentModel doc = session.getEntry(key);
+            // TODO: which is the best method to get "label" property when not
+            // knowing vocabulary schema?
+            // AT: the best is to accept it as a parameter of the method, and
+            // fallback on "label" when not given
+            DataModel dm = doc.getDataModels().values().iterator().next();
+            return (String) dm.getData("label");
+        } finally {
+            session.close();
+        }
     }
 
     public NuxeoPrincipal getPrincipal(String username) throws Exception {
