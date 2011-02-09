@@ -54,7 +54,7 @@ public class SiteQueriesCollection {
      * Queries sites unrestricted by URL and document type. It should be exactly
      * one returned.
      */
-    public static boolean checkUnrestrictedSiteExsistanceByUrlAndDocType(
+    public static boolean checkUnrestrictedSiteExistenceByUrlAndDocType(
             CoreSession session, String url, String documentType)
             throws ClientException {
         String queryString = String.format("SELECT * FROM %s WHERE "

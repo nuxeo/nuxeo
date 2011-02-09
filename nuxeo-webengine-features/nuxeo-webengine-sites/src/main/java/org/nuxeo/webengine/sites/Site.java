@@ -92,7 +92,7 @@ public class Site extends AbstractSiteDocumentObject {
                 return list.get(0);
             }
             if (((NuxeoPrincipal) session.getPrincipal()).isAnonymous()) {
-                Boolean siteExists = SiteQueriesCollection.checkUnrestrictedSiteExsistanceByUrlAndDocType(
+                Boolean siteExists = SiteQueriesCollection.checkUnrestrictedSiteExistenceByUrlAndDocType(
                         session, url, getWebSiteDocumentType());
                 if (siteExists) {
                     setForceRedirectToLogout(true);
