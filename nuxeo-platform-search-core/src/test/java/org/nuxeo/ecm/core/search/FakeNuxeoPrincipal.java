@@ -62,6 +62,11 @@ public class FakeNuxeoPrincipal implements NuxeoPrincipal {
         return null;
     }
 
+    @Override
+    public String getEmail() {
+        return null;
+    }
+
     public String getPassword() {
         return null;
     }
@@ -76,6 +81,10 @@ public class FakeNuxeoPrincipal implements NuxeoPrincipal {
 
     public boolean isMemberOf(String groupName) {
         return false;
+    }
+
+    @Override
+    public void setEmail(String email) {
     }
 
     public void setCompany(String company) {
