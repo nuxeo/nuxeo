@@ -14,7 +14,7 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.automation.core.util;
+package org.nuxeo.ecm.automation.features;
 
 import java.util.HashSet;
 import java.util.Set;

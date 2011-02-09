@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -16,33 +16,31 @@
  */
 package org.nuxeo.ecm.automation.core.scripting;
 
+import java.util.Calendar;
+import java.util.Date;
+
+import org.apache.commons.lang.StringEscapeUtils;
 
 /**
+ * The functions exposed by the core library.
+ * You may want to extend this class to expose more functions under
+ * the "Fn" context variable for scripting expressions.
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ *
  */
-public class Functions {
+public class CoreFunctions {
 
-    private static volatile Object fn = new CoreFunctions();
-
-
-    public static void setInstance(Object fn) {
-        if (fn == null) {
-            fn = new CoreFunctions();
-        }
-        synchronized (Functions.class) {
-            Functions.fn = fn;
-        }
+    public DateWrapper date(Date date) {
+        return new DateWrapper(date);
     }
 
-    public static Object getInstance() {
-        Object o = fn;
-        if (o == null) {
-            synchronized (Functions.class) {
-                o = new CoreFunctions();
-                fn = o;
-            }
-        }
-        return o;
+    public DateWrapper calendar(Calendar date) {
+        return new DateWrapper(date);
+    }
+
+    public String escapeHtml(Object obj) {
+        return StringEscapeUtils.escapeHtml(obj.toString());
     }
 
 }

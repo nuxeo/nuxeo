@@ -14,18 +14,28 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.automation.core.scripting;
+package org.nuxeo.ecm.automation.features;
+
+import org.nuxeo.ecm.automation.core.scripting.Functions;
+import org.osgi.framework.BundleActivator;
+import org.osgi.framework.BundleContext;
 
 /**
- * A function is a function first class object that can be plugged into
- * {@link Functions} library under a key to be used in scripting expressions.
- * This enable the functions library to be extended from outside automation-core.
- *
- * For backward compatibility
- *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class Function {
+public class Activator implements BundleActivator {
+
+    @Override
+    public void start(BundleContext context) throws Exception {
+        // install platform functions lib.
+        Functions.setInstance(new PlatformFunctions());
+    }
+
+    @Override
+    public void stop(BundleContext context) throws Exception {
+        // reset to default functions lib.
+        Functions.setInstance(null);
+    }
 
 }
