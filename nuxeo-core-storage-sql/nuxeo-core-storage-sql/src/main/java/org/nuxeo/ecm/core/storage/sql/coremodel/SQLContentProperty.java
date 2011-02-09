@@ -93,7 +93,15 @@ public class SQLContentProperty extends SQLComplexProperty {
                 } catch (IOException e) {
                     throw new DocumentException(e);
                 }
-                binary = session.getBinary(stream);
+                try {
+                    binary = session.getBinary(stream);
+                } finally {
+                    try {
+                        stream.close();
+                    } catch (IOException e) {
+                        throw new DocumentException(e);
+                    }
+                }
             }
             String filename = blob.getFilename();
             String mimeType = blob.getMimeType();
