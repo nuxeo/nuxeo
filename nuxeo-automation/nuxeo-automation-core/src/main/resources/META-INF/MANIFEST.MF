@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-BUndle-Version: 5.4.1.qualifier
+Bundle-Version: 5.4.1.qualifier
 Bundle-Name: Nuxeo Automation Core
 Bundle-SymbolicName: org.nuxeo.ecm.automation.core;singleton:=true
 Bundle-Vendor: Nuxeo
