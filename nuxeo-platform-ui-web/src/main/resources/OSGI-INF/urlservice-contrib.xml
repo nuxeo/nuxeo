@@ -47,20 +47,6 @@
       </bindings>
     </urlPattern>
 
-    <urlPattern name="csv_export" enabled="true">
-      <defaultURLPolicy>false</defaultURLPolicy>
-      <needBaseURL>true</needBaseURL>
-      <needRedirectFilter>true</needRedirectFilter>
-      <needFilterPreprocessing>true</needFilterPreprocessing>
-      <codecName>docpath</codecName>
-      <actionBinding>#{restHelper.initContextFromRestRequest}</actionBinding>
-      <documentViewBinding>#{restHelper.documentView}</documentViewBinding>
-      <newDocumentViewBinding>#{restHelper.newDocumentView}</newDocumentViewBinding>
-      <bindings>
-        <binding name="contentViewName"></binding>
-      </bindings>
-    </urlPattern>
-
   </extension>
 
 </component>

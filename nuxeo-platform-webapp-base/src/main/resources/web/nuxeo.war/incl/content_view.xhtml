@@ -70,13 +70,13 @@
           <ui:param name="documents" value="#{provider.currentSelectPage}" />
           <ui:param name="listName" value="#{contentView.selectionListName}" />
           <ui:param name="layoutName" value="#{contentView.currentResultLayout.name}" />
-          
-          <ui:insert name="empty_folder_label">
-            <ui:define name="empty_folder_label">
+
+          <ui:define name="empty_folder_label">
+            <ui:insert name="empty_content_view_label">
               <h:outputText value="#{messages['label.content.emptyFolder']}"
                 rendered="#{documents.rowCount == 0 and not provider.hasError()}" />
-            </ui:define>
-          </ui:insert>
+            </ui:insert>
+          </ui:define>
         
           <ui:define name="error_message">
             <c:if test="#{provider.hasError()}">
@@ -124,6 +124,37 @@
               </a4j:outputPanel>
             </c:if>
           </ui:define>
+
+          <ui:define name="syndication_buttons">
+            <ui:insert name="content_view_syndication_buttons">
+              <div class="syndicationButton">
+                <div class="syndicationLinks">
+                  <nxu:set var="contentViewState" value="#{contentViewRestActions.getContentViewState(contentView)}">
+                    <nxd:restDocumentLink document="#{currentDocument}"
+                      view="rss" addTabInfo="false"
+                      newConversation="true" target="_blank">
+                      <f:param name="contentViewName" value="#{contentView.name}" />
+                      <f:param name="currentPage" value="0" />
+                      <f:param name="contentViewState"
+                        value="#{contentViewRestActions.getContentViewState(contentView)}" />
+                      <h:outputText value="#{messages['label.syndication.rss']}"/>
+                    </nxd:restDocumentLink>
+                    <h:outputText value=" | " />
+                    <nxd:restDocumentLink document="#{currentDocument}"
+                      view="atom" addTabInfo="false"
+                      newConversation="true" target="_blank">
+                      <f:param name="contentViewName" value="#{contentView.name}" />
+                      <f:param name="currentPage" value="0" />
+                      <f:param name="contentViewState"
+                        value="#{contentViewRestActions.getContentViewState(contentView)}" />
+                      <h:outputText value="#{messages['label.syndication.atom']}" />
+                    </nxd:restDocumentLink>
+                  </nxu:set>
+                </div>
+              </div>
+            </ui:insert>
+          </ui:define>
+
         </ui:decorate>
 
       </nxu:set>

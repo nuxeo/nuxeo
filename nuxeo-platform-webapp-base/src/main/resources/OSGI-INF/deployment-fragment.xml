@@ -81,11 +81,33 @@
       <redirect />
     </navigation-case>
 
+    <!-- content views export -->
+
     <navigation-case>
-      <from-outcome>content_view_csv</from-outcome>
-      <to-view-id>/incl/content_view_csv.xhtml</to-view-id>
+      <from-outcome>csv</from-outcome>
+      <to-view-id>/incl/export/content_view_csv.xhtml</to-view-id>
       <redirect />
     </navigation-case>
+
+    <navigation-case>
+      <from-outcome>xl</from-outcome>
+      <to-view-id>/incl/export/content_view_xl.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>atom</from-outcome>
+      <to-view-id>/incl/export/content_view_atom.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>rss</from-outcome>
+      <to-view-id>/incl/export/content_view_rss.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+    <!-- end of content views export -->
 
   </extension>
 
