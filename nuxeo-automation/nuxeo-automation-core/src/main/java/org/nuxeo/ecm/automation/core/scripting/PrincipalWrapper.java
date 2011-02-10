@@ -26,8 +26,6 @@ import java.util.Set;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.model.Property;
-import org.nuxeo.ecm.platform.usermanager.UserManager;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -37,15 +35,9 @@ public class PrincipalWrapper extends HashMap<String, Serializable> {
 
     protected NuxeoPrincipal principal;
 
-    protected UserManager mgr;
 
     public PrincipalWrapper(NuxeoPrincipal principal) {
-        try {
-            mgr = Framework.getService(UserManager.class);
-            this.principal = principal;
-        } catch (Exception e) {
-            throw new RuntimeException("User manager not found: ", e);
-        }
+        this.principal = principal;
     }
 
     public String getName() {
@@ -77,8 +69,7 @@ public class PrincipalWrapper extends HashMap<String, Serializable> {
     }
 
     public String getEmail() throws Exception {
-        return (String) principal.getModel().getProperty(
-                mgr.getUserSchemaName(), mgr.getUserEmailField());
+        return principal.getEmail();
     }
 
     public NuxeoPrincipal getPrincipal() {

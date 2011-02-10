@@ -20,6 +20,7 @@ package org.nuxeo.webengine.sites.utils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants;
 
 /**
@@ -47,6 +48,24 @@ public class SiteQueriesCollection {
                 + "AND webc:isWebContainer = 1", documentType, url);
 
         return session.query(queryString);
+    }
+
+    /**
+     * Queries sites unrestricted by URL and document type. It should be exactly
+     * one returned.
+     */
+    public static boolean checkUnrestrictedSiteExistenceByUrlAndDocType(
+            CoreSession session, String url, String documentType)
+            throws ClientException {
+        String queryString = String.format("SELECT * FROM %s WHERE "
+                + "ecm:mixinType = 'WebView' AND webc:url = \"%s\" AND "
+                + "ecm:isCheckedInVersion = 0 AND ecm:isProxy = 0 "
+                + "AND ecm:currentLifeCycleState != 'deleted' "
+                + "AND webc:isWebContainer = 1", documentType, url);
+        UnrestrictedQueryRunner runner = new UnrestrictedQueryRunner(session,
+                queryString);
+        runner.runUnrestricted();
+        return runner.getResultsSize() >= 1;
     }
 
     /**
@@ -125,6 +144,27 @@ public class SiteQueriesCollection {
                     dateAfter, dateBefore));
         }
         return session.query(queryString.toString());
+    }
+
+    static class UnrestrictedQueryRunner extends UnrestrictedSessionRunner {
+
+        DocumentModelList results;
+
+        String queryString;
+
+        public UnrestrictedQueryRunner(CoreSession session, String queryString) {
+            super(session);
+            this.queryString = queryString;
+        }
+
+        @Override
+        public void run() throws ClientException {
+            results = session.query(queryString);
+        }
+
+        public int getResultsSize() {
+            return results.size();
+        }
     }
 
 }

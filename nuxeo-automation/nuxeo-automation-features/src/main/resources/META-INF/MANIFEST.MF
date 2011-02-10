@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo Automation Features
+Bundle-SymbolicName: org.nuxeo.ecm.automation.features;singleton:=true
+Bundle-Vendor: Nuxeo
+Bundle-Localization: bundle
+Require-Bundle: org.nuxeo.ecm.automation.core
+Export-Package: org.nuxeo.ecm.automation.core
+Eclipse-LazyStart: true
+Nuxeo-Component: OSGI-INF/operations-contrib.xml
+Bundle-Activator: org.nuxeo.ecm.automation.features.Activator

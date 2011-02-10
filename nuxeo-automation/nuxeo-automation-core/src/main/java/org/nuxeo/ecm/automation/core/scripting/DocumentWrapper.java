@@ -28,8 +28,6 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.schema.DocumentType;
-import org.nuxeo.ecm.platform.versioning.api.VersioningManager;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * Wrap a {@link DocumentModel} to expose in a pretty way more information to
@@ -180,8 +178,7 @@ public class DocumentWrapper extends HashMap<String, Serializable> {
     }
 
     public String getVersionLabel() throws Exception {
-        return Framework.getLocalService(VersioningManager.class).getVersionLabel(
-                doc);
+        return doc.getVersionLabel();
     }
 
     /** property map implementation */

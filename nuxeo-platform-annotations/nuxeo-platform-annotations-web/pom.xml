@@ -25,6 +25,7 @@
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-dev</artifactId>
       <scope>provided</scope>
+      <classifier>${platform}</classifier>
     </dependency>
     <dependency>
       <groupId>com.allen_sauer.gwt.log</groupId>

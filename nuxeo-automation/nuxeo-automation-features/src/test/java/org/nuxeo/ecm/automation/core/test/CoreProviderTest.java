@@ -29,8 +29,8 @@ import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationParameters;
-import org.nuxeo.ecm.automation.core.impl.adapters.PageProviderAsDocumentModelList;
-import org.nuxeo.ecm.automation.core.operations.document.PageProviderOperation;
+import org.nuxeo.ecm.automation.core.operations.services.PaginableDocumentModelListImpl;
+import org.nuxeo.ecm.automation.core.operations.services.PageProviderOperation;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -43,7 +43,7 @@ import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.platform.versioning", "org.nuxeo.ecm.platform.query.api" })
+@Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.features", "org.nuxeo.ecm.platform.versioning", "org.nuxeo.ecm.platform.query.api" })
 @LocalDeploy("org.nuxeo.ecm.automation.core:test-providers.xml")
 public class CoreProviderTest {
 
@@ -92,7 +92,7 @@ public class CoreProviderTest {
         OperationParameters oparams = new OperationParameters(PageProviderOperation.ID, params);
         chain.add(oparams);
 
-        PageProviderAsDocumentModelList result = (PageProviderAsDocumentModelList) service.run(ctx, chain);
+        PaginableDocumentModelListImpl result = (PaginableDocumentModelListImpl) service.run(ctx, chain);
 
         // test page size
         assertEquals(2,result.getPageSize());
@@ -104,7 +104,7 @@ public class CoreProviderTest {
         oparams = new OperationParameters(PageProviderOperation.ID, params);
         chain.add(oparams);
 
-        result = (PageProviderAsDocumentModelList) service.run(ctx, chain);
+        result = (PaginableDocumentModelListImpl) service.run(ctx, chain);
         assertEquals(4,result.getPageSize());
         assertEquals(1,result.getNumberOfPages());
 
@@ -126,7 +126,7 @@ public class CoreProviderTest {
         OperationParameters oparams = new OperationParameters(PageProviderOperation.ID, params);
         chain.add(oparams);
 
-        PageProviderAsDocumentModelList result = (PageProviderAsDocumentModelList) service.run(ctx, chain);
+        PaginableDocumentModelListImpl result = (PaginableDocumentModelListImpl) service.run(ctx, chain);
 
         // test page size
         assertEquals(2,result.getPageSize());
@@ -142,7 +142,7 @@ public class CoreProviderTest {
         oparams = new OperationParameters(PageProviderOperation.ID, params);
         chain.add(oparams);
 
-        result = (PageProviderAsDocumentModelList) service.run(ctx, chain);
+        result = (PaginableDocumentModelListImpl) service.run(ctx, chain);
 
         // test page size
         assertEquals(2,result.getPageSize());
@@ -168,7 +168,7 @@ public class CoreProviderTest {
         OperationParameters oparams = new OperationParameters(PageProviderOperation.ID, params);
         chain.add(oparams);
 
-        PageProviderAsDocumentModelList result = (PageProviderAsDocumentModelList) service.run(ctx, chain);
+        PaginableDocumentModelListImpl result = (PaginableDocumentModelListImpl) service.run(ctx, chain);
 
         // test page size
         assertEquals(2,result.getPageSize());
@@ -194,7 +194,7 @@ public class CoreProviderTest {
         OperationParameters oparams = new OperationParameters(PageProviderOperation.ID, params);
         chain.add(oparams);
 
-        PageProviderAsDocumentModelList result = (PageProviderAsDocumentModelList) service.run(ctx, chain);
+        PaginableDocumentModelListImpl result = (PaginableDocumentModelListImpl) service.run(ctx, chain);
 
         assertEquals(1,result.size());
         assertEquals(2,result.getPageSize());

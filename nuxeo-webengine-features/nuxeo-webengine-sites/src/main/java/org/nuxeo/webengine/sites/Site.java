@@ -39,6 +39,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.WebContext;
@@ -66,8 +67,8 @@ public class Site extends AbstractSiteDocumentObject {
     }
 
     /**
-     * Must use the same method name as super.traverse() otherwise we introduce ambiguous sub-resources locators
-     * which will fail in jersey.
+     * Must use the same method name as super.traverse() otherwise we introduce
+     * ambiguous sub-resources locators which will fail in jersey.
      */
     @Path("{page}")
     public Resource traverse(@PathParam("page") String page) {
@@ -89,6 +90,13 @@ public class Site extends AbstractSiteDocumentObject {
                     session, url, getWebSiteDocumentType());
             if (!list.isEmpty()) {
                 return list.get(0);
+            }
+            if (((NuxeoPrincipal) session.getPrincipal()).isAnonymous()) {
+                Boolean siteExists = SiteQueriesCollection.checkUnrestrictedSiteExistenceByUrlAndDocType(
+                        session, url, getWebSiteDocumentType());
+                if (siteExists) {
+                    setForceRedirectToLogout(true);
+                }
             }
         } catch (ClientException e) {
             log.error("Unable to retrieve the webcontainer ", e);
@@ -129,7 +137,7 @@ public class Site extends AbstractSiteDocumentObject {
     }
 
     @Override
-    protected String getDocumentDeletedErrorTemplateName(){
+    protected String getDocumentDeletedErrorTemplateName() {
         return "no_site.ftl";
     }
 
@@ -137,5 +145,4 @@ public class Site extends AbstractSiteDocumentObject {
     protected String getSearchThemePage() {
         return SEARCH_THEME_PAGE;
     }
-
 }
