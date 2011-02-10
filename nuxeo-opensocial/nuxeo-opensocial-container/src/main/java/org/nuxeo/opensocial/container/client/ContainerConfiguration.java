@@ -48,8 +48,8 @@ public class ContainerConfiguration {
         return $wnd.nuxeo.container.parameters.showPreferencesAfterAddingGadget;
     }-*/;
 
-    public static native String getConfiguredLocale() /*-{
-        return $wnd.nuxeo.container.parameters.locale;
+    public static native String getUserLanguage() /*-{
+        return $wnd.nuxeo.container.parameters.userLanguage;
     }-*/;
 
 }

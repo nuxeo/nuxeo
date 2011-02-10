@@ -331,10 +331,9 @@ public class AppModel implements HasPermissionsMapper {
                 ContainerConfiguration.getSpaceId(),
                 ContainerConfiguration.getRepositoryName(),
                 ContainerConfiguration.getDocumentContextId(),
-                ContainerConfiguration.getConfiguredLocale());
+                ContainerConfiguration.getUserLanguage());
         dispatcher.execute(new InitApplication(tempContainerContext,
                 ContainerConfiguration.getSpaceProviderName(),
-                ContainerConfiguration.getDocumentContextId(),
                 ContainerConfiguration.getSpaceName()),
                 new AbstractContainerAsyncCallback<InitApplicationResult>(
                         eventBus, errors.cannotLoadLayout()) {
@@ -344,7 +343,7 @@ public class AppModel implements HasPermissionsMapper {
                                 result.getSpaceId(),
                                 ContainerConfiguration.getRepositoryName(),
                                 ContainerConfiguration.getDocumentContextId(),
-                                ContainerConfiguration.getConfiguredLocale());
+                                ContainerConfiguration.getUserLanguage());
                         setPermissions(result.getPermissions());
                         setLayout(result.getLayout());
                         eventBus.fireEvent(new LayoutLoadedEvent());

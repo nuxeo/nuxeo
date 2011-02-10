@@ -3,13 +3,12 @@
   version="1.0">
 
   <extension target="org.nuxeo.ecm.spaces.core.spacemanager.service"
-    point="spaceContrib">
-    <spaceContrib name="workspaceSpaceProvider">
-      <order>0</order>
+    point="spaceProviders">
+    <spaceProvider name="workspaceSpaceProvider">
       <class>
         org.nuxeo.opensocial.dashboard.WorkspaceSpaceProvider
       </class>
-    </spaceContrib>
+    </spaceProvider>
   </extension>
 
 </component>

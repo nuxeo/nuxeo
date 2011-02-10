@@ -42,14 +42,4 @@ public interface SpaceProvider {
 
     void clear(CoreSession session) throws SpaceException;
 
-    /**
-     * TODO
-     *
-     * @param parentSpace
-     * @param session
-     * @return list of children {@link Space} of <code>parentSpace</code> OR an
-     *         empty list if no spaces are supplied by space provider (never
-     *         returns null)
-     */
-    List<Space> getSpaces(Space parentSpace, CoreSession session);
 }

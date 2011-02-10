@@ -32,7 +32,7 @@ import org.nuxeo.opensocial.container.shared.layout.api.LayoutHelper;
  */
 public class WorkspaceSpaceProvider extends AbstractSpaceProvider {
 
-    public static final String WORKSPACES_PATH = "/default-domain/workspaces";
+    public static final String DEFAULT_SPACE_NAME = "defaultSpace";
 
     @Override
     public boolean isReadOnly(CoreSession session) {
@@ -40,25 +40,31 @@ public class WorkspaceSpaceProvider extends AbstractSpaceProvider {
     }
 
     @Override
-    protected Space doGetSpace(CoreSession session, DocumentModel contextDocument, String spaceName) throws SpaceException {
-        // TODO pass a context document (here the workspace) where to create the spaces
-        try {
-        PathRef spaceRef = new PathRef(contextDocument.getPathAsString(), spaceName);
-        if (session.exists(spaceRef)) {
-            DocumentModel space = session.getDocument(spaceRef);
-            return space.getAdapter(Space.class);
-        } else {
-            DocumentModel model = session.createDocumentModel(
-                    contextDocument.getPathAsString(), spaceName, DocSpaceImpl.TYPE);
-            model.setPropertyValue("dc:title", spaceName);
-            model = session.createDocument(model);
-            session.save();
-
-            Space space = model.getAdapter(Space.class);
-            space.initLayout(LayoutHelper.buildLayout(LayoutHelper.Preset.X_2_66_33));
-            return space;
+    protected Space doGetSpace(CoreSession session,
+            DocumentModel contextDocument, String spaceName)
+            throws SpaceException {
+        if (spaceName == null || spaceName.isEmpty()) {
+            spaceName = DEFAULT_SPACE_NAME;
         }
-        } catch(ClientException e) {
+        try {
+            PathRef spaceRef = new PathRef(contextDocument.getPathAsString(),
+                    spaceName);
+            if (session.exists(spaceRef)) {
+                DocumentModel space = session.getDocument(spaceRef);
+                return space.getAdapter(Space.class);
+            } else {
+                DocumentModel model = session.createDocumentModel(
+                        contextDocument.getPathAsString(), spaceName,
+                        DocSpaceImpl.TYPE);
+                model.setPropertyValue("dc:title", spaceName);
+                model = session.createDocument(model);
+                session.save();
+
+                Space space = model.getAdapter(Space.class);
+                space.initLayout(LayoutHelper.buildLayout(LayoutHelper.Preset.X_2_66_33));
+                return space;
+            }
+        } catch (ClientException e) {
             throw new SpaceException(e);
         }
     }

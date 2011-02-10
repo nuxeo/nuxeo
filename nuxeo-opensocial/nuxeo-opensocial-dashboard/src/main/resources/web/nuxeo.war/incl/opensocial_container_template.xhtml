@@ -45,7 +45,7 @@
 
         parameters: {
           showPreferencesAfterAddingGadget: false,
-          locale: "#{localeSelector.localeString}"
+          locale: "#{localeSelector.language}"
         }
       }
 
@@ -60,10 +60,12 @@
   </ui:insert>
 
   <ui:insert name="opensocial_container_actions">
-    <ul>
-      <li><button onclick="nuxeo.container.openContainerBuilder();" id="openContainerBuilder" title="#{messages['label.opensocial.container.change.layout']}">#{messages['label.opensocial.container.change.layout']}</button></li>
-      <li><button onclick="showPopup('#{baseURL}site/gadgets/?mode=popup');" title="#{messages['label.opensocial.container.add.gadget']}">#{messages['label.opensocial.container.add.gadget']}</button></li>
-    </ul>
+    <c:if test="#{not currentUser.anonymous}">
+      <ul>
+        <li><button onclick="nuxeo.container.openContainerBuilder();" id="openContainerBuilder" title="#{messages['label.opensocial.container.change.layout']}">#{messages['label.opensocial.container.change.layout']}</button></li>
+        <li><button onclick="showPopup('#{baseURL}site/gadgets/?mode=popup');" title="#{messages['label.opensocial.container.add.gadget']}">#{messages['label.opensocial.container.add.gadget']}</button></li>
+      </ul>
+    </c:if>
   </ui:insert>
 
   <script type="text/javascript" language="javascript" src="/nuxeo/opensocial/gadgets/js/rpc.js?c=1"></script>

@@ -11,19 +11,16 @@ public class InitApplication extends AbstractAction<InitApplicationResult> {
 
     private String spaceName;
 
-    private String documentContextId;
-
     @SuppressWarnings("unused")
     private InitApplication() {
         super();
     }
 
     public InitApplication(ContainerContext containerContext, String spaceProviderName,
-            String spaceName, String documentContextId) {
+            String spaceName) {
         super(containerContext);
         this.spaceProviderName = spaceProviderName;
         this.spaceName = spaceName;
-        this.documentContextId = documentContextId;
     }
 
     public String getSpaceProviderName() {
@@ -32,10 +29,6 @@ public class InitApplication extends AbstractAction<InitApplicationResult> {
 
     public String getSpaceName() {
         return spaceName;
-    }
-
-    public String getDocumentContextId() {
-        return documentContextId;
     }
 
 }

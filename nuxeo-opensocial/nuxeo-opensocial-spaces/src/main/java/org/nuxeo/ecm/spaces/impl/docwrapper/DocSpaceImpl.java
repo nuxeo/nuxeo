@@ -18,6 +18,7 @@
 package org.nuxeo.ecm.spaces.impl.docwrapper;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -283,6 +284,15 @@ public class DocSpaceImpl implements Space {
         } catch (Exception e) {
             throw new ClientException("Unable to retrieve web content", e);
         }
+    }
+
+    public Calendar getPublicationDate() throws ClientException {
+        return (Calendar) doc.getPropertyValue("dc:valid");
+    }
+
+    public void setPublicationDate(Calendar datePublication)
+            throws ClientException {
+        doc.setPropertyValue("dc:valid", datePublication);
     }
 
 //    public DocPermissions getPermissionsAdapter() {
