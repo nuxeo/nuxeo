@@ -2203,7 +2203,7 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
             String checkinComment) throws ClientException {
         try {
             Document doc = resolveReference(docRef);
-            checkPermission(doc, WRITE_VERSION);
+            checkPermission(doc, WRITE_PROPERTIES);
             DocumentModel docModel = readModel(doc);
 
             Map<String, Serializable> options = new HashMap<String, Serializable>();
