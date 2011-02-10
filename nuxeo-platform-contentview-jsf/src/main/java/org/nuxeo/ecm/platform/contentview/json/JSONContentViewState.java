@@ -35,6 +35,8 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Base64;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -52,6 +54,8 @@ import org.nuxeo.ecm.platform.contentview.jsf.ContentViewStateImpl;
  */
 public class JSONContentViewState {
 
+    private static final Log log = LogFactory.getLog(JSONContentViewState.class);
+
     public static final String ENCODED_VALUES_ENCODING = "UTF-8";
 
     /**
@@ -68,6 +72,10 @@ public class JSONContentViewState {
         if (state == null) {
             return null;
         }
+        if (log.isDebugEnabled()) {
+            log.debug("Encoding content view state: " + state);
+        }
+
         // build json
         JSONObject jsonObject = new JSONObject();
         jsonObject.element("contentViewName", state.getContentViewName());
@@ -102,6 +110,11 @@ public class JSONContentViewState {
         }
 
         String jsonString = jsonObject.toString();
+
+        if (log.isDebugEnabled()) {
+            log.debug("Encoded content view state: " + jsonString);
+        }
+
         // encoding
         if (encode) {
             String encodedValues = Base64.encodeBytes(jsonString.getBytes(),
@@ -126,7 +139,7 @@ public class JSONContentViewState {
     public static ContentViewState fromJSON(String json, boolean decode,
             CoreSession coreSession) throws UnsupportedEncodingException,
             ClientException {
-        if (json == null) {
+        if (json == null || json.trim().length() == 0) {
             return null;
         }
         // decoding
@@ -135,6 +148,11 @@ public class JSONContentViewState {
                     ENCODED_VALUES_ENCODING);
             json = new String(Base64.decode(decodedValues));
         }
+
+        if (log.isDebugEnabled()) {
+            log.debug("Decoding content view state: " + json);
+        }
+
         // parse json
         JSONObject jsonObject = JSONObject.fromObject(json);
         ContentViewState state = new ContentViewStateImpl();
@@ -174,6 +192,9 @@ public class JSONContentViewState {
             state.setResultColumns(resultColumns);
         }
 
+        if (log.isDebugEnabled()) {
+            log.debug("Decoded content view state: " + state);
+        }
         return state;
     }
 

@@ -492,6 +492,10 @@ public class ContentViewServiceImpl extends DefaultComponent implements
             state.setCurrentPage(new Long(pp.getCurrentPageIndex()));
             state.setQueryParameters(pp.getParameters());
             state.setSortInfos(pp.getSortInfos());
+        } else {
+            // take at least info available on content view
+            state.setSearchDocumentModel(contentView.getSearchDocumentModel());
+            state.setQueryParameters(contentView.getQueryParameters());
         }
         // rendering info
         state.setResultLayout(contentView.getCurrentResultLayout());

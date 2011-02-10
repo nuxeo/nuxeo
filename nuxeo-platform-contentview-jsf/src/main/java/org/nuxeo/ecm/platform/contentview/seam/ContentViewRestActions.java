@@ -66,7 +66,8 @@ public class ContentViewRestActions implements Serializable {
             String jsonContentViewState) throws UnsupportedEncodingException,
             ClientException {
         ContentViewState state = null;
-        if (jsonContentViewState != null) {
+        if (jsonContentViewState != null
+                && jsonContentViewState.trim().length() != 0) {
             state = JSONContentViewState.fromJSON(jsonContentViewState, true,
                     documentManager);
         } else if (contentViewName != null) {
@@ -76,10 +77,10 @@ public class ContentViewRestActions implements Serializable {
         }
         if (state != null) {
             // apply current page and page size when set
-            if (currentPage != null) {
+            if (currentPage != null && currentPage.longValue() != -1) {
                 state.setCurrentPage(currentPage);
             }
-            if (pageSize != null) {
+            if (pageSize != null && pageSize.longValue() != -1) {
                 state.setPageSize(pageSize);
             }
             if (sortInfos != null) {

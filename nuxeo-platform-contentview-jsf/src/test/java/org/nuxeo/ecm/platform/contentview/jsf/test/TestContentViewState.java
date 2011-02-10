@@ -51,6 +51,8 @@ public class TestContentViewState extends SQLRepositoryTestCase {
 
     MockFacesContext facesContext;
 
+    DocumentModel currentDocument;
+
     DocumentModel searchDocument;
 
     @Override
@@ -72,7 +74,7 @@ public class TestContentViewState extends SQLRepositoryTestCase {
         searchDocument = session.createDocumentModel("File");
         searchDocument.setPropertyValue("dc:title", "search keywords");
 
-        final DocumentModel rootDoc = session.getRootDocument();
+        currentDocument = session.getRootDocument();
 
         // set mock faces context for needed properties resolution
         facesContext = new MockFacesContext() {
@@ -86,7 +88,7 @@ public class TestContentViewState extends SQLRepositoryTestCase {
                     return searchDocument;
                 }
                 if ("#{currentDocument.id}".equals(expression)) {
-                    return rootDoc.getId();
+                    return currentDocument.getId();
                 } else {
                     log.error("Cannot evaluate expression: " + expression);
                 }
@@ -116,7 +118,10 @@ public class TestContentViewState extends SQLRepositoryTestCase {
         assertEquals("CURRENT_DOCUMENT_CHILDREN", state.getContentViewName());
         assertNull(state.getCurrentPage());
         assertNull(state.getPageSize());
-        assertNull(state.getQueryParameters());
+        Object[] queryParams = state.getQueryParameters();
+        assertNotNull(queryParams);
+        assertEquals(1, queryParams.length);
+        assertEquals(currentDocument.getId(), queryParams[0]);
         assertNull(state.getResultColumns());
         ContentViewLayout resultLayout = state.getResultLayout();
         assertNotNull(resultLayout);
@@ -289,10 +294,15 @@ public class TestContentViewState extends SQLRepositoryTestCase {
                 state.getContentViewName());
         assertNull(state.getCurrentPage());
         assertNull(state.getPageSize());
-        assertNull(state.getQueryParameters());
+        Object[] queryParams = state.getQueryParameters();
+        assertNotNull(queryParams);
+        assertEquals(0, queryParams.length);
         assertNull(state.getResultColumns());
         assertNull(state.getResultLayout());
-        assertNull(state.getSearchDocumentModel());
+        DocumentModel searchDoc = state.getSearchDocumentModel();
+        assertNotNull(searchDoc);
+        assertEquals("search keywords", searchDoc.getPropertyValue("dc:title"));
+        assertNull(searchDoc.getPropertyValue("dc:description"));
         assertNull(state.getSortInfos());
 
         // init provider with search doc, result columns and test save again
