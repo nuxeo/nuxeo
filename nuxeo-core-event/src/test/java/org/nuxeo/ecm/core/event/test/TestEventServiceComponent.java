@@ -85,7 +85,7 @@ public class TestEventServiceComponent extends NXRuntimeTestCase {
         assertTrue(Thread.activeCount() > initialCount);
         // now stop service
         // this is called by EventServiceComponent.deactivate() in real life
-        ((EventServiceImpl) service).shutdown(1 * 1000);
+        ((EventServiceImpl) service).shutdown(2 * 1000);
         assertEquals(initialCount, Thread.activeCount());
     }
 
