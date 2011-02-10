@@ -11,7 +11,9 @@
     <a4j:outputPanel id="taggingPanel" ajaxRendered="false">
 
       <f:subview id="tag_message_banner">
-        <ui:include src="/incl/message_banner.xhtml"/>
+         <ui:include src="/incl/message_banner.xhtml">
+      	  <ui:param name="messagesFacesId" value="tagging_messages"/>
+       </ui:include>
       </f:subview>
 
       <nxu:dataTable id="tagsTable"
