@@ -544,11 +544,10 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
      * 
      * @since 5.4
      */
-    public boolean isLiveEditable(DocumentModel document, String blobXpath) throws ClientException {
+    public boolean isLiveEditable(DocumentModel document, Blob blob) throws ClientException {
         if (document.isImmutable()) {
             return false;
         }
-        Blob blob = (Blob) document.getPropertyValue(blobXpath);
         if (blob == null) {
             return false;
         }
