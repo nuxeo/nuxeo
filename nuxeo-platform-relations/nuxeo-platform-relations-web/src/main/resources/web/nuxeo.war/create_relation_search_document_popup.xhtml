@@ -43,7 +43,7 @@
 
       <a4j:outputPanel id="content">
         <ui:decorate template="/incl/content_view.xhtml">
-          <ui:define name="empty_folder_label">
+          <ui:define name="empty_content_view_label">
             <h:outputText value="#{messages['label.content.empty.search']}"
               rendered="#{documents.rowCount == 0 and not provider.hasError()}" />
           </ui:define>
