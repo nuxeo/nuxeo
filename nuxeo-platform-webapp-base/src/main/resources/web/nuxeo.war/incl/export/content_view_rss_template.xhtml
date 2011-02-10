@@ -31,11 +31,18 @@
   <nxu:set var="provider" value="#{contentView.currentPageProvider}"
     cache="true">
 
+    <c:if test="#{! empty currentDocument}">
+      <c:set var="feedTitle"
+        value="RSS feed for document #{currentDocument.dc.title} and content view #{contentViewName}" />
+    </c:if>
+    <c:if test="#{empty currentDocument}">
+      <c:set var="feedTitle"
+        value="RSS feed for content view #{contentViewName}" />
+    </c:if>
+
     <nxr:feed
-      title="#{request.requestURI} RSS feed for content view #{request.getParameter('contentViewName')}"
-      feedFormat="#{feedFormat}"
-      uid="#{request.getParameter('contentViewState')}"
-      link="#{request.requestURL}">
+      title="#{feedTitle}"
+      feedFormat="#{feedFormat}">
       <ui:repeat var="doc" value="#{provider.currentPage}">
         <r:entry
           uid="#{doc.id}"
