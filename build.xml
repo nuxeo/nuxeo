@@ -122,16 +122,14 @@
   </target>
 
   <target name="web-jboss"
-    description="Deploy Web components to the live JBoss server"
-    depends="setproperties">
+    description="Deploy Web components to the live JBoss server">
     <copy todir="${jboss.nuxeo.war.dir}">
       <fileset dir="${basedir}/src/main/resources/web/nuxeo.war" />
     </copy>
   </target>
 
   <target name="web-tomcat"
-    description="Deploy Web components to the live Tomcat server"
-    depends="setproperties">
+    description="Deploy Web components to the live Tomcat server">
     <copy todir="${tomcat.nuxeo.war.dir}">
       <fileset dir="${basedir}/src/main/resources/web/nuxeo.war" />
     </copy>
