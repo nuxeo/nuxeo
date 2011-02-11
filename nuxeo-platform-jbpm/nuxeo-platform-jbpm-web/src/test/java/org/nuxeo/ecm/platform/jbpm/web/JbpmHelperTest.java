@@ -34,15 +34,18 @@ public class JbpmHelperTest extends TestCase {
 
     public void testIsAssignedToUser() {
         TaskInstance ti = new TaskInstance();
-        UserPrincipal principal = new UserPrincipal("linnet", Arrays.asList("g1", "g2"));
+        UserPrincipal principal = new UserPrincipal("linnet", Arrays.asList(
+                "g1", "g2"), false, false);
         ti.setActorId(NuxeoPrincipal.PREFIX + "linnet");
         assertTrue(helper.isTaskAssignedToUser(ti, principal));
         ti.setActorId(NuxeoPrincipal.PREFIX + "joe");
         assertFalse(helper.isTaskAssignedToUser(ti, principal));
         ti.setActorId(null);
-        ti.setPooledActors(new String[]{NuxeoPrincipal.PREFIX + "bob", NuxeoGroup.PREFIX + "trudy"});
+        ti.setPooledActors(new String[] { NuxeoPrincipal.PREFIX + "bob",
+                NuxeoGroup.PREFIX + "trudy" });
         assertFalse(helper.isTaskAssignedToUser(ti, principal));
-        ti.setPooledActors(new String[]{NuxeoPrincipal.PREFIX + "bob", NuxeoGroup.PREFIX + "g1"});
+        ti.setPooledActors(new String[] { NuxeoPrincipal.PREFIX + "bob",
+                NuxeoGroup.PREFIX + "g1" });
         assertTrue(helper.isTaskAssignedToUser(ti, principal));
     }
 

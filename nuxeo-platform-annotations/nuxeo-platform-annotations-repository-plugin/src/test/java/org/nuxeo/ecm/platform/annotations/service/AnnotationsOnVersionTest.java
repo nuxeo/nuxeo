@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.platform.annotations.service;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -26,6 +27,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.annotations.api.Annotation;
 import org.nuxeo.ecm.platform.annotations.repository.AbstractRepositoryTestCase;
 import org.nuxeo.ecm.platform.annotations.repository.URNDocumentViewTranslator;
@@ -33,7 +35,6 @@ import org.nuxeo.ecm.platform.url.DocumentViewImpl;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- *
  */
 public class AnnotationsOnVersionTest extends AbstractRepositoryTestCase {
 
@@ -41,7 +42,9 @@ public class AnnotationsOnVersionTest extends AbstractRepositoryTestCase {
 
     private static final String SERVER = "http://server.com/nuxeo/";
 
-    private final NuxeoPrincipal user = new UserPrincipal("Administrator");
+    private final NuxeoPrincipal user = new UserPrincipal(
+            SecurityConstants.ADMINISTRATOR, new ArrayList<String>(), false,
+            false);
 
     private final URNDocumentViewTranslator translator = new URNDocumentViewTranslator();
 

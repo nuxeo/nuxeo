@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.platform.annotations.service;
 
+import java.util.ArrayList;
+
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.platform.annotations.api.Annotation;
@@ -44,7 +46,8 @@ public class AnnotatedEventListenerTest extends AbstractRepositoryTestCase {
 
         DummyDocumentEventListener.resetTest();
         assertNotNull(annotation);
-        NuxeoPrincipal user = new UserPrincipal("bob");
+        NuxeoPrincipal user = new UserPrincipal("bob", new ArrayList<String>(),
+                false, false);
         Annotation createdAnnotation = service.addAnnotation(annotation, user,
                 HTTP_LOCALHOST_8080_NUXEO);
         assertNotNull(createdAnnotation);
