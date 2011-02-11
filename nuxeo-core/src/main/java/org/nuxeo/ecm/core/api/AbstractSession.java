@@ -131,12 +131,7 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
         Serializable {
 
     public static final NuxeoPrincipal ANONYMOUS = new UserPrincipal(
-            "anonymous");
-
-    // Never used.
-    @Deprecated
-    public static final NuxeoPrincipal ADMINISTRATOR = new UserPrincipal(
-            SecurityConstants.ADMINISTRATOR);
+            "anonymous", new ArrayList<String>(), true, false);
 
     private static final Log log = LogFactory.getLog(CoreSession.class);
 

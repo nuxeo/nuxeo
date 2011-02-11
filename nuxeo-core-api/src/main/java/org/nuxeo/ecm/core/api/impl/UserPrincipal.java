@@ -30,10 +30,9 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 
 /**
  * NuxeoPrincipal stub implementation.
- *
- * TODO this should replace the DetachedNuxeoPrincipal from user manager to minimize
- * principal implementations.
- *
+ * <p>
+ * TODO this should replace the DetachedNuxeoPrincipal from user manager to
+ * minimize principal implementations.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -66,17 +65,21 @@ public class UserPrincipal implements NuxeoPrincipal, Serializable {
     protected String originatingUser;
 
     /**
-     * Useful for test cases.
-     * @deprecated Only for tests - should not be used in the platform
+     * @deprecated use {@link #UserPrincipal(String, List, boolean, boolean)}
+     *             instead: this constructor assumes that members of the
+     *             "administrators" group is an administrator.
      */
+    @Deprecated
     public UserPrincipal(String username) {
         this(username, new ArrayList<String>(), false, false);
     }
 
     /**
-     * Useful for test cases.
-     * @deprecated Only for tests - should not be used in the platform
+     * @deprecated use {@link #UserPrincipal(String, List, boolean, boolean)}
+     *             instead: this constructor assumes that members of the
+     *             "administrators" group is an administrator.
      */
+    @Deprecated
     public UserPrincipal(String username, List<String> groups) {
         // BBB: members of group 'administrators' are considered administrators
         this(username, groups, false, groups != null
@@ -180,13 +183,11 @@ public class UserPrincipal implements NuxeoPrincipal, Serializable {
 
     @Override
     public String getPrincipalId() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public void setPrincipalId(String principalId) {
-        // TODO Auto-generated method stub
     }
 
     @Override
@@ -201,7 +202,6 @@ public class UserPrincipal implements NuxeoPrincipal, Serializable {
 
     @Override
     public boolean isMemberOf(String group) {
-        // TODO Auto-generated method stub
         return false;
     }
 

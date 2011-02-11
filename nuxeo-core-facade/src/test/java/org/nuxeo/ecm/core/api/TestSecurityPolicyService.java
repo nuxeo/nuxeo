@@ -28,6 +28,7 @@ import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_PROPERTIES;
 
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -74,7 +75,8 @@ public class TestSecurityPolicyService extends SQLRepositoryTestCase {
         session.save();
 
         // test permission for 'foo' user using hasPermission
-        Principal fooUser = new UserPrincipal("foo");
+        Principal fooUser = new UserPrincipal("foo", new ArrayList<String>(),
+                false, false);
         assertFalse(session.hasPermission(fooUser, folder.getRef(), READ));
 
         closeSession(session);

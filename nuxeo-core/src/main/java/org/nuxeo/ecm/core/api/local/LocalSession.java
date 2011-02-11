@@ -20,6 +20,7 @@ package org.nuxeo.ecm.core.api.local;
 
 import java.io.Serializable;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.naming.InitialContext;
@@ -63,7 +64,8 @@ public class LocalSession extends AbstractSession {
                 if (principal == null) {
                     String username = (String) sessionContext.get("username");
                     if (username != null) {
-                        principal = new UserPrincipal(username);
+                        principal = new UserPrincipal(username,
+                                new ArrayList<String>(), false, false);
                     }
                 }
             } else {
@@ -148,10 +150,10 @@ public class LocalSession extends AbstractSession {
     }
 
     /**
-     * This method is for compatibility with < 1.5 core In older core this class
-     * were used only for testing - but now it is used by webengine and a
-     * security fix that break tests was done. This method is checking if we are
-     * in a testing context
+     * This method is for compatibility with < 1.5 core In older core this
+     * class were used only for testing - but now it is used by webengine and a
+     * security fix that break tests was done. This method is checking if we
+     * are in a testing context
      */
     public boolean isTestingContext() { // neither in jboss nor in nuxeo
         // launcher

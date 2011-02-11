@@ -103,19 +103,22 @@ public class TestSecurityService extends NXRuntimeTestCase {
         assertNotNull(orderedVisiblePermissions);
 
         assertEquals(Arrays.asList("Read", "ReadWrite", "ReadRemove",
-                "Version", "Everything"), permStrings(orderedVisiblePermissions));
+                "Version", "Everything"),
+                permStrings(orderedVisiblePermissions));
 
         orderedVisiblePermissions = pp.getUserVisiblePermissionDescriptors("Section");
         assertNotNull(orderedVisiblePermissions);
 
         assertEquals(Arrays.asList("Read", "ReadWrite", "ReadRemove",
-                "Version", "Everything"), permStrings(orderedVisiblePermissions));
+                "Version", "Everything"),
+                permStrings(orderedVisiblePermissions));
 
         orderedVisiblePermissions = pp.getUserVisiblePermissionDescriptors("Workspace");
         assertNotNull(orderedVisiblePermissions);
 
         assertEquals(Arrays.asList("Read", "ReadWrite", "ReadRemove",
-                "Version", "Everything"), permStrings(orderedVisiblePermissions));
+                "Version", "Everything"),
+                permStrings(orderedVisiblePermissions));
     }
 
     public void testOverridedPermissions1() throws Exception {
@@ -172,7 +175,8 @@ public class TestSecurityService extends NXRuntimeTestCase {
         orderedVisiblePermissions = pp.getUserVisiblePermissionDescriptors("Section");
         assertNotNull(orderedVisiblePermissions);
 
-        assertEquals(Arrays.asList("Read", "CustomCompoundPerm", "ReadWrite", "ReadRemove", "Version", "Everything"),
+        assertEquals(Arrays.asList("Read", "CustomCompoundPerm", "ReadWrite",
+                "ReadRemove", "Version", "Everything"),
                 permStrings(orderedVisiblePermissions));
 
         // Workspace falls back to default thus is overridden too
@@ -211,24 +215,22 @@ public class TestSecurityService extends NXRuntimeTestCase {
         List<UserVisiblePermission> orderedVisiblePermissions = pp.getUserVisiblePermissionDescriptors();
         assertNotNull(orderedVisiblePermissions);
 
-        assertEquals(
-                Arrays.asList("Write", "Read", "ReadRemove", "Version", "Everything"),
-                permStrings(orderedVisiblePermissions));
+        assertEquals(Arrays.asList("Write", "Read", "ReadRemove", "Version",
+                "Everything"), permStrings(orderedVisiblePermissions));
 
         // custom settings for the Section type
         orderedVisiblePermissions = pp.getUserVisiblePermissionDescriptors("Section");
         assertNotNull(orderedVisiblePermissions);
 
-        assertEquals(Arrays.asList("Write", "Read", "ReadRemove", "Version", "Everything"),
-                permStrings(orderedVisiblePermissions));
+        assertEquals(Arrays.asList("Write", "Read", "ReadRemove", "Version",
+                "Everything"), permStrings(orderedVisiblePermissions));
 
         // Workspace falls back to default thus is overridden too
         orderedVisiblePermissions = pp.getUserVisiblePermissionDescriptors("Workspace");
         assertNotNull(orderedVisiblePermissions);
 
-        assertEquals(
-                Arrays.asList("Write", "Read", "ReadRemove", "Version", "Everything"),
-                permStrings(orderedVisiblePermissions));
+        assertEquals(Arrays.asList("Write", "Read", "ReadRemove", "Version",
+                "Everything"), permStrings(orderedVisiblePermissions));
     }
 
     public void testPermissionsVsDeny() throws Exception {
@@ -249,14 +251,15 @@ public class TestSecurityService extends NXRuntimeTestCase {
     }
 
     public void testGetPrincipalsToCheck() {
-        NuxeoPrincipal principal = new UserPrincipal("bob",
-                Arrays.asList("vps", "males"));
+        NuxeoPrincipal principal = new UserPrincipal("bob", Arrays.asList(
+                "vps", "males"), false, false);
         String[] principals = SecurityService.getPrincipalsToCheck(principal);
         assertEquals(4, principals.length);
         assertTrue(Arrays.asList(principals).contains("bob"));
         assertTrue(Arrays.asList(principals).contains("vps"));
         assertTrue(Arrays.asList(principals).contains("males"));
-        assertTrue(Arrays.asList(principals).contains(SecurityConstants.EVERYONE));
+        assertTrue(Arrays.asList(principals).contains(
+                SecurityConstants.EVERYONE));
     }
 
 }

@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.core.api;
 
+import java.util.ArrayList;
+
 import junit.framework.TestCase;
 
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
@@ -26,7 +28,8 @@ import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 public class TestNuxeoPrincipal extends TestCase {
 
     public void test() {
-        NuxeoPrincipal principal = new UserPrincipal("john");
+        NuxeoPrincipal principal = new UserPrincipal("john",
+                new ArrayList<String>(), false, false);
 
         assertEquals("john", principal.getName());
 
@@ -41,9 +44,12 @@ public class TestNuxeoPrincipal extends TestCase {
     }
 
     public void testEquals() {
-        NuxeoPrincipal john1 = new UserPrincipal("john");
-        NuxeoPrincipal john2 = new UserPrincipal("john");
-        NuxeoPrincipal jim = new UserPrincipal("jim");
+        NuxeoPrincipal john1 = new UserPrincipal("john",
+                new ArrayList<String>(), false, false);
+        NuxeoPrincipal john2 = new UserPrincipal("john",
+                new ArrayList<String>(), false, false);
+        NuxeoPrincipal jim = new UserPrincipal("jim", new ArrayList<String>(),
+                false, false);
 
         assertEquals(john1, john2);
         assertEquals(john1.hashCode(), john2.hashCode());
@@ -53,5 +59,4 @@ public class TestNuxeoPrincipal extends TestCase {
         jim.setName("john");
         assertEquals(john1, jim);
     }
-
 }

@@ -21,6 +21,7 @@ package org.nuxeo.ecm.core.api.repository;
 
 import java.io.Serializable;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,7 +33,6 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class LocalRepositoryInstanceHandler extends RepositoryInstanceHandler {
 
@@ -40,13 +40,15 @@ public class LocalRepositoryInstanceHandler extends RepositoryInstanceHandler {
 
     protected final Principal principal;
 
-    public LocalRepositoryInstanceHandler(Repository repository, NuxeoPrincipal principal) {
+    public LocalRepositoryInstanceHandler(Repository repository,
+            NuxeoPrincipal principal) {
         super(repository);
         this.principal = principal;
     }
 
     public LocalRepositoryInstanceHandler(Repository repository, String username) {
-        this(repository, new UserPrincipal(username));
+        this(repository, new UserPrincipal(username, new ArrayList<String>(),
+                false, false));
     }
 
     @Override

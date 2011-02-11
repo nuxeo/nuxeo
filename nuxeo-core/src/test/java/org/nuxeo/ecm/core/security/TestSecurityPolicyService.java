@@ -27,7 +27,7 @@ import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_PROPERTIES;
 
 import java.security.Principal;
-import java.util.Calendar;
+import java.util.ArrayList;
 import java.util.GregorianCalendar;
 
 import org.nuxeo.ecm.core.api.Lock;
@@ -43,12 +43,13 @@ public class TestSecurityPolicyService extends NXRuntimeTestCase {
 
     static final String user = "Bubbles";
 
-    static final Principal creatorPrincipal = new UserPrincipal("Bodie");
+    static final Principal creatorPrincipal = new UserPrincipal("Bodie",
+            new ArrayList<String>(), false, false);
 
-    static final Principal userPrincipal = new UserPrincipal("Bubbles");
+    static final Principal userPrincipal = new UserPrincipal("Bubbles",
+            new ArrayList<String>(), false, false);
 
     private SecurityPolicyService service;
-
 
     @Override
     public void setUp() throws Exception {
@@ -75,23 +76,22 @@ public class TestSecurityPolicyService extends NXRuntimeTestCase {
         // without lock
         assertSame(UNKNOWN, service.checkPermission(doc, null,
                 creatorPrincipal, permission, permissions, null));
-        assertSame(UNKNOWN, service.checkPermission(doc, null,
-                userPrincipal, permission, permissions, null));
+        assertSame(UNKNOWN, service.checkPermission(doc, null, userPrincipal,
+                permission, permissions, null));
 
         // with lock
         doc.setLock(new Lock(user, new GregorianCalendar()));
-        assertSame(DENY, service.checkPermission(doc, null,
-                creatorPrincipal, permission, permissions, null));
-        assertSame(UNKNOWN, service.checkPermission(doc, null,
-                userPrincipal, permission, permissions, null));
+        assertSame(DENY, service.checkPermission(doc, null, creatorPrincipal,
+                permission, permissions, null));
+        assertSame(UNKNOWN, service.checkPermission(doc, null, userPrincipal,
+                permission, permissions, null));
 
         // test creator policy with lower order takes over lock
-        deployContrib(CORE_TESTS_BUNDLE,
-                "test-security-policy-contrib.xml");
-        assertSame(GRANT, service.checkPermission(doc, null,
-                creatorPrincipal, permission, permissions, null));
-        assertSame(UNKNOWN, service.checkPermission(doc, null,
-                userPrincipal, permission, permissions, null));
+        deployContrib(CORE_TESTS_BUNDLE, "test-security-policy-contrib.xml");
+        assertSame(GRANT, service.checkPermission(doc, null, creatorPrincipal,
+                permission, permissions, null));
+        assertSame(UNKNOWN, service.checkPermission(doc, null, userPrincipal,
+                permission, permissions, null));
     }
 
     public void testCheckOutPolicy() throws Exception {
@@ -107,11 +107,10 @@ public class TestSecurityPolicyService extends NXRuntimeTestCase {
         assertSame(UNKNOWN, service.checkPermission(doc, null,
                 creatorPrincipal, permission, permissions, null));
 
-        deployContrib(CORE_TESTS_BUNDLE,
-                "test-security-policy2-contrib.xml");
+        deployContrib(CORE_TESTS_BUNDLE, "test-security-policy2-contrib.xml");
 
-        assertSame(DENY, service.checkPermission(doc, null,
-                creatorPrincipal, permission, permissions, null));
+        assertSame(DENY, service.checkPermission(doc, null, creatorPrincipal,
+                permission, permissions, null));
     }
 
 }
