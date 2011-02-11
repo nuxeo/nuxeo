@@ -10,6 +10,7 @@
     <property name="outdir" value="${maven.project.build.directory}" />
     <property name="stagedir" value="${outdir}/stage" />
     <property name="init.done" value="true" />
+    <artifact:nuxeo-expand />
   </target>
 
   <target name="build" depends="init" unless="no.build">
@@ -35,10 +36,10 @@
     <antcall target="build-resources">
       <param name="distribution" value="templates-common-dm" />
     </antcall>
-    <antcall target="build-resources">
+    <antcall target="copy-resources-with-jdbc-lib">
       <param name="distribution" value="templates-jboss" />
     </antcall>
-    <antcall target="build-resources">
+    <antcall target="copy-resources-with-jdbc-lib">
       <param name="distribution" value="templates-tomcat" />
     </antcall>
     <antcall target="build-resources">
@@ -73,6 +74,32 @@
                      classifier="${distribution}"
                      type="zip"
                      target="${maven.project.groupId}:${maven.project.artifactId}" />
+  </target>
+  <target name="copy-resources-with-jdbc-lib" depends="init"
+          unless="no.alternate.build">
+    <antcall target="copy-resources">
+      <param name="distribution" value="${distribution}" />
+    </antcall>
+    <mkdir dir="${outdir}/${distribution}/mssql/lib" />
+    <copy todir="${outdir}/${distribution}/mssql/lib">
+      <artifact:file artifactId="jtds" />
+    </copy>
+    <mkdir dir="${outdir}/${distribution}/mysql/lib" />
+    <copy todir="${outdir}/${distribution}/mysql/lib">
+      <artifact:file artifactId="mysql-connector-java" />
+    </copy>
+    <mkdir dir="${outdir}/${distribution}/postgresql/lib" />
+    <copy todir="${outdir}/${distribution}/postgresql/lib">
+      <artifact:file artifactId="postgresql" />
+    </copy>
+    <mkdir dir="${outdir}/${distribution}/default/lib" />
+    <copy todir="${outdir}/${distribution}/default/lib">
+      <artifact:file artifactId="h2" />
+      <artifact:file artifactId="derby" />
+    </copy>
+    <antcall target="zip-resources">
+      <param name="distribution" value="${distribution}" />
+    </antcall>
   </target>
 
 </project>

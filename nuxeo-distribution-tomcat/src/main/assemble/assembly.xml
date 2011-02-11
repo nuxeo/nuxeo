@@ -370,15 +370,12 @@
     <!-- Move some libraries from nxserver to Tomcat default lib directory -->
     <move todir="${distribution.dir}/lib">
       <fileset dir="${distribution.dir}/nxserver/lib">
-        <include name="h2-*" />
         <include name="log4j-*" />
         <include name="lucene-*" />
         <include name="commons-logging-*" />
         <include name="commons-lang-*" />
         <include name="freemarker-*" />
         <include name="mail-*" />
-        <include name="postgresql-*" />
-        <include name="derby-*" />
       </fileset>
       <fileset dir="${distribution.dir}/nxserver/bundles">
         <include name="nuxeo-core-storage-sql-extensions-*" />

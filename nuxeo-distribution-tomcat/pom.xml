@@ -32,10 +32,6 @@
       <artifactId>nuxeo-platform-audit-ws</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.derby</groupId>
-      <artifactId>derby</artifactId>
-    </dependency>
-    <dependency>
       <groupId>commons-el</groupId>
       <artifactId>commons-el</artifactId>
     </dependency>

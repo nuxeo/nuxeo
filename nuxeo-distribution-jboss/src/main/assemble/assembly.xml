@@ -102,9 +102,6 @@
       <artifact:resolveFile key="org.nuxeo.runtime:nuxeo-jboss-deployer:${nuxeo.runtime.version}" />
     </copy>
     <copy todir="${jboss}/server/default/lib">
-      <artifact:resolveFile key="postgresql:postgresql:9.0-801.jdbc4" />
-      <artifact:resolveFile key="mysql:mysql-connector-java:5.1.6" />
-      <artifact:file groupId="org.apache.derby" artifactId="derby" />
       <artifact:resolveFile key="org.jboss.services:logging-monitor:5.1.0.GA" />
     </copy>
     <copy tofile="${jboss}/common/lib/hibernate-core.jar">

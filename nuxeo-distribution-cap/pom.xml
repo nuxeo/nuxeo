@@ -594,11 +594,6 @@
       <version>${nuxeo.addons.version}</version>
     </dependency>
 
-    <dependency>
-      <groupId>postgresql</groupId>
-      <artifactId>postgresql</artifactId>
-    </dependency>
-
     <!-- Visible Storage Content -->
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
