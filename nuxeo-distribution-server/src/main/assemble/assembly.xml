@@ -142,7 +142,6 @@
       <artifact group="net.sf.ezmorph" name="ezmorph" />
       <artifact group="net.sf.opencsv" name="opencsv" version="1.7" />
       <artifact group="org.codehaus.plexus" name="plexus-utils" />
-      <artifact group="org.apache.derby" name="derby" />
       <!--
         <artifact group="hibernate" name="hibernate3"
         version="3.2.1.ga-NXP-3881"/> <artifact group="org.hibernate"
@@ -169,7 +168,6 @@
       <artifact group="org.wikimodel" name="wem" />
       <artifact group="com.hp.hpl.jena" name="jena" />
       <artifact group="javassist" name="javassist" version="3.6"/>
-      <artifact group="com.h2database" name="h2" />
 
       <artifact group="javax.ejb" name="ejb-api" />
       <artifact group="javax.servlet" name="servlet-api" />
