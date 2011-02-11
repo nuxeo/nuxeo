@@ -161,19 +161,16 @@ public class UrlBuilder {
         for (Entry<String, UserPref> pref : prefs.entrySet()) {
             String value;
 
-            if (pref.getValue()
-                    .getActualValue() == null) {
-                value = pref.getValue()
-                        .getDefaultValue();
+            if (pref.getValue().getActualValue() == null) {
+                value = pref.getValue().getDefaultValue();
             } else {
-                value = pref.getValue()
-                        .getActualValue();
+                value = pref.getValue().getActualValue();
             }
 
             // TODO has to be tested
             try {
-                prefsParams += "&" + PREF_PREFIX + pref.getValue()
-                        .getName() + "=" + URLEncoder.encode(value, "UTF-8");
+                prefsParams += "&" + PREF_PREFIX + pref.getValue().getName()
+                        + "=" + URLEncoder.encode(value, "UTF-8");
             } catch (UnsupportedEncodingException e) {
                 log.error(e);
             }
@@ -184,6 +181,7 @@ public class UrlBuilder {
     private static String getDefaultParams(String locale) {
         return CONTAINER_KEY + "=" + CONTAINER_VALUE + "&" + NOCACHE_KEY + "="
                 + NOCACHE_VALUE + "&" + COUNTRY_KEY + "=" + COUNTRY_VALUE + "&"
-                + LANG_KEY + "=" + locale + "&" + VIEW_KEY + "=" + VIEW_VALUE;
+                + LANG_KEY + "=" + locale;
     }
+
 }

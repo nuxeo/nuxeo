@@ -100,6 +100,11 @@
     "jsonProxyUrl" : "%protocol%//%host%/nuxeo/opensocial/gadgets/makeRequest"
   },
   "views" : {
+    "default" : {
+      "isOnlyVisible" : false,
+      "urlTemplate" : "http://localhost/gadgets/default?{var}",
+      "aliases": ["home"]
+    },
     "profile" : {
       "isOnlyVisible" : false,
       "urlTemplate" : "http://localhost/gadgets/profile?{var}",
@@ -151,7 +156,7 @@
     // Specifying a binding to "container.listMethods" instructs osapi to dynamicaly introspect the services
     // provided by the container and delay the gadget onLoad handler until that introspection is
     // complete.
-    // Alternatively a container can directly configure services here rather than having them 
+    // Alternatively a container can directly configure services here rather than having them
     // introspected. Simply list out the available servies and omit "container.listMethods" to
     // avoid the initialization delay caused by gadgets.rpc
     // E.g. "gadgets.rpc" : ["activities.requestCreate", "messages.requestSend", "requestShareApp", "requestPermission"]
@@ -159,7 +164,7 @@
   },
   "osapi" : {
     // The endpoints to query for available JSONRPC/REST services
-    "endPoints" : [ "http://%host%/nuxeo/opensocial/social/rpc", "http://%host%/nuxeo/opensocial/gadgets/api/rpc" ]                   
+    "endPoints" : [ "http://%host%/nuxeo/opensocial/social/rpc", "http://%host%/nuxeo/opensocial/gadgets/api/rpc" ]
   },
   "osml": {
     // OSML library resource.  Can be set to null or the empty string to disable OSML
