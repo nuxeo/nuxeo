@@ -74,7 +74,6 @@ public class StandardVersioningService implements ExtendableVersioningService {
     public String getVersionLabel(DocumentModel docModel) {
         String label;
         try {
-            boolean txIsActive = org.nuxeo.runtime.transaction.TransactionHelper.isTransactionActive();
             label = getMajor(docModel) + "." + getMinor(docModel);
             if (docModel.isCheckedOut() && !"0.0".equals(label)) {
                 label += "+";
@@ -84,7 +83,6 @@ public class StandardVersioningService implements ExtendableVersioningService {
         } catch (ClientException e) {
             log.debug("No version label", e);
             label = "";
-            boolean txIsActive = org.nuxeo.runtime.transaction.TransactionHelper.isTransactionActive();
         }
         return label;
     }
