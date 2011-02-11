@@ -1752,7 +1752,8 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
         if (docModel != null) {
             options.put("docTitle", docModel.getTitle());
         }
-
+        String versionLabel = "";
+        Document sourceDoc = null;
         // notify different events depending on wether the document is a
         // version or not
         if (!doc.isVersion()) {
@@ -1762,17 +1763,32 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
             coreService.getVersionRemovalPolicy().removeVersions(getSession(),
                     doc, this);
         } else {
+            versionLabel = docModel.getVersionLabel();
+            try {
+                sourceDoc = doc.getSourceDocument();
+            } catch (DocumentException e) {
+                sourceDoc = null;
+            }
             notifyEvent(DocumentEventTypes.ABOUT_TO_REMOVE_VERSION, docModel,
                     options, null, null, true, true);
+
         }
         doc.remove();
-        if (!doc.isVersion()) {
-            notifyEvent(DocumentEventTypes.DOCUMENT_REMOVED, docModel, options,
-                    null, null, false, false);
-        } else {
-            notifyEvent(DocumentEventTypes.VERSION_REMOVED, docModel, options,
-                    null, null, false, false);
+        if (doc.isVersion()) {
+            if (sourceDoc != null) {
+                DocumentModel sourceDocModel = readModel(sourceDoc);
+                if (sourceDocModel != null) {
+                    options.put("comment", versionLabel); // to be used by audit
+                    // service
+                    notifyEvent(DocumentEventTypes.VERSION_REMOVED,
+                            sourceDocModel, options, null, null, false, false);
+                    options.remove("comment");
+                }
+                options.put("docSource", sourceDoc.getUUID());
+            }
         }
+        notifyEvent(DocumentEventTypes.DOCUMENT_REMOVED, docModel, options,
+                null, null, false, false);
     }
 
     /**
