@@ -1,9 +1,10 @@
 <f:subview
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:h="http://java.sun.com/jsf/html">
-<c:if test="#{widget.mode == 'plain'}">#{field.versionLabel}</c:if>
-<c:if test="#{widget.mode != 'plain'}">
+<c:if test="#{nxl:isLikePlainMode(widget.mode)}">#{field.versionLabel}</c:if>
+<c:if test="#{not nxl:isLikePlainMode(widget.mode)}">
   <h:outputText value="#{field.versionLabel}"
     id="#{widget.id}" />
 </c:if>

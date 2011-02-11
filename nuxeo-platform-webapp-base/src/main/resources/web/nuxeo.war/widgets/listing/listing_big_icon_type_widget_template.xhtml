@@ -2,9 +2,10 @@
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:h="http://java.sun.com/jsf/html">
-<c:if test="#{widget.mode == 'plain'}">#{field_2}</c:if>
-<c:if test="#{widget.mode != 'plain'}">
+<c:if test="#{nxl:isLikePlainMode(widget.mode)}">#{field_2}</c:if>
+<c:if test="#{not nxl:isLikePlainMode(widget.mode)}">
 
   <div id="docRefTarget:#{field_1}">
     <div id="docRef:#{field_1}" class="cell popupTarget" docRef="#{field_1}">

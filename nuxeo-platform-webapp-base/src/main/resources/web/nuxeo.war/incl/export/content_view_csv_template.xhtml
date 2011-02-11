@@ -29,11 +29,11 @@
   <nxu:set var="provider" value="#{contentView.currentPageProvider}"
     cache="true">
 
-    <e:workbook type="#{exportFormat}">
+    <e:workbook type="#{exportFormat}" filename="#{contentViewName}.csv">
       <e:worksheet value="#{provider.currentSelectPage.rows}" var="row"
         defaultColumnWidth="20">
         <nxl:layout name="#{contentView.currentResultLayout.name}"
-          value="#{row}" mode="plain_csv"
+          value="#{row}" mode="csv"
           selectedColumns="#{selectedResultLayoutColumns}" />
       </e:worksheet>
     </e:workbook>

@@ -4,44 +4,48 @@
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxdir="http://nuxeo.org/nxdirectory"
   xmlns:c="http://java.sun.com/jstl/core"
-  xmlns:nxl="http://nuxeo.org/nxforms/layout" id="#{widget.id}">
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  id="#{widget.id}">
+<c:if test="#{nxl:isLikePlainMode(widget.mode)}">
+  <nxl:subWidget>
+    <nxl:widget widget="#{widget}" value="#{field}" />
+  </nxl:subWidget>
+</c:if>
+<c:if test="#{widget.mode != 'edit' and not nxl:isLikePlainMode(widget.mode)}">
 
-  <c:if test="#{widget.mode != 'create' and widget.mode != 'edit'}">
+  <table>
+    <tbody>
+      <nxl:subWidget>
+        <tr>
+          <td class="labelColumn">
+            <h:outputText value="#{messages[widget.label]}" styleClass="labelColumn" />
+          </td>
+          <td class="fieldColumn">
+            <nxl:widget widget="#{widget}" value="#{field}" />
+          </td>
+        </tr>
+      </nxl:subWidget>
+    </tbody>
+  </table>
 
-    <table>
-      <tbody>
-        <nxl:subWidget>
-          <tr>
-            <td class="labelColumn">
-              <h:outputText value="#{messages[widget.label]}" styleClass="labelColumn" />
-            </td>
-            <td class="fieldColumn">
-              <nxl:widget widget="#{widget}" value="#{field}" />
-            </td>
-          </tr>
-        </nxl:subWidget>
-      </tbody>
-    </table>
-  </c:if>
+</c:if>
+<c:if test="#{widget.mode == 'edit'}">
 
-  <c:if test="#{widget.mode == 'create' or widget.mode == 'edit'}">
+  <table>
+    <tbody>
+      <nxl:subWidget>
+        <tr>
+          <td class="labelColumn">
+            <h:outputText value="#{messages[widget.label]}"
+              styleClass="labelColumn #{nxu:test(widget.required, 'required', '')}" />
+          </td>
+          <td class="fieldColumn">
+            <nxl:widget widget="#{widget}" value="#{field}" />
+          </td>
+        </tr>
+      </nxl:subWidget>
+    </tbody>
+  </table>
 
-    <table>
-      <tbody>
-        <nxl:subWidget>
-          <tr>
-            <td class="labelColumn">
-              <h:outputText value="#{messages[widget.label]}"
-                styleClass="labelColumn #{nxu:test(widget.required, 'required', '')}" />
-            </td>
-            <td class="fieldColumn">
-              <nxl:widget widget="#{widget}" value="#{field}" />
-            </td>
-          </tr>
-        </nxl:subWidget>
-      </tbody>
-    </table>
-
-  </c:if>
-
+</c:if>
 </f:subview>

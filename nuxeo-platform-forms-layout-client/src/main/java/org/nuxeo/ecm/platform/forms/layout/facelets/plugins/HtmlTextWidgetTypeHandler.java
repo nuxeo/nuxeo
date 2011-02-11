@@ -54,7 +54,7 @@ public class HtmlTextWidgetTypeHandler extends AbstractWidgetTypeHandler {
         String widgetId = widget.getId();
         String widgetName = widget.getName();
         TagAttributes attributes;
-        if (BuiltinWidgetModes.PLAIN.equals(mode)) {
+        if (BuiltinWidgetModes.isLikePlainMode(mode)) {
             // use attributes without id
             attributes = helper.getTagAttributes(widget);
         } else {

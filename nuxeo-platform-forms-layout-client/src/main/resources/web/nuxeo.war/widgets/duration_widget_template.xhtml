@@ -4,10 +4,9 @@
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxdir="http://nuxeo.org/nxdirectory"
   xmlns:c="http://java.sun.com/jstl/core"
-  xmlns:nxl="http://nuxeo.org/nxforms/layout" id="#{widget.id}">
-
-  <c:if test="#{widget.mode == 'view'}">
-    <h:outputText value="#{nxu:printFormattedDuration(field_0, messages)}" />
-  </c:if>
-
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  id="#{widget.id}">
+<c:if test="#{widget.mode != 'edit'}">
+  <h:outputText value="#{nxu:printFormattedDuration(field_0, messages)}" />
+</c:if>
 </f:subview>

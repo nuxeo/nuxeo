@@ -71,7 +71,7 @@ public class DirectorySelectManyWidgetTypeHandler extends
         String widgetId = widget.getId();
         String widgetName = widget.getName();
         TagAttributes attributes;
-        if (BuiltinWidgetModes.PLAIN.equals(mode)) {
+        if (BuiltinWidgetModes.isLikePlainMode(mode)) {
             // use attributes without id
             attributes = helper.getTagAttributes(widget);
         } else {
@@ -86,7 +86,6 @@ public class DirectorySelectManyWidgetTypeHandler extends
             FaceletHandler[] handlers = { input, message };
             return new CompositeFaceletHandler(handlers);
         } else {
-            // TODO: need to handle PLAIN mode
             Map<String, Serializable> properties = widget.getProperties();
             // get value attribute
             TagAttribute valueAttr = null;

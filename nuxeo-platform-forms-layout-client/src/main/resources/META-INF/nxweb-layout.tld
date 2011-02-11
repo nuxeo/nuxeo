@@ -35,29 +35,43 @@
       Library functions:
       <ul>
         <li>
+          widgetTypeDefinition(String): returns the widget type definition for
+          given widget type id. Available since 5.4.0.
+        </li>
+        <li>
           fieldDefinitionsAsString(FieldDefinition[]): returns the list of
           property names for each of the field definitions, separated by a
           space.
         </li>
         <li>
-          selectedRows(Layout, List<String>, boolean) and alias
-          selectedColumns(Layout, List<String>, boolean): returns the list
+          selectedRows(Layout, List &lt;String&gt;, boolean) and alias
+          selectedColumns(Layout, List &lt;tring&gt;, boolean): returns the list
           of LayoutRow instances that are selected given the Layout instance,
           the list of row names selected, and a boolean that, if set to true,
-          will include rows that are marked as always selected.  
+          will include rows that are marked as always selected.
         </li>
         <li>
-          notSelectedRows(Layout, List<String>) and alias
-          notSelectedColumns(Layout, List<String>): returns the list of
+          notSelectedRows(Layout, List&lt; String&gt;) and alias
+          notSelectedColumns(Layout, List &lt;String&gt;): returns the list of
           LayoutRow instances that are not selected given the Layout instance
-          and the list of row names selected.  
+          and the list of row names selected.
         </li>
         <li>
           defaultSelectedRowNames(Layout, boolean) and alias
-          defaultSelectedColumnNames(Layout, boolean): returns the list of
-          row names that are marked as selected by default given the Layout
-          instance and a boolean that, if set to true, will include rows that
-          are marked as always selected.
+          defaultSelectedColumnNames(Layout, boolean): returns the list of row
+          names that are marked as selected by default given the Layout instance
+          and a boolean that, if set to true, will include rows that are marked
+          as always selected.
+        </li>
+        <li>
+          isBoundToEditMode(String): returns true if given layout mode should be
+          mapped to the 'edit' mode for widgets in the layout. Available since
+          5.4.0.
+        </li>
+        <li>
+          isLikePlainMode(String): returns true if given widget or layout mode
+          should be mapped by default to the 'plain' mode for widgets. Available
+          since 5.4.1.
         </li>
       </ul>
     </p>

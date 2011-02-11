@@ -4,9 +4,10 @@
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:h="http://java.sun.com/jsf/html">
-<c:if test="#{widget.mode == 'plain'}">#{nxd:titleOrId(field_0)}</c:if>
-<c:if test="#{widget.mode != 'plain'}">
+<c:if test="#{nxl:isLikePlainMode(widget.mode)}">#{nxd:titleOrId(field_0)}</c:if>
+<c:if test="#{not nxl:isLikePlainMode(widget.mode)}">
 
   <div class="popupTarget" docRef="#{field_1}">
 

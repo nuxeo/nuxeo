@@ -28,6 +28,7 @@ import javax.faces.FacesException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
+import org.nuxeo.ecm.platform.forms.layout.api.BuiltinWidgetModes;
 import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.Layout;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutRow;
@@ -121,6 +122,14 @@ public class LayoutTagLibrary extends AbstractTagLibrary {
             Method isBoundToEditMode = BuiltinModes.class.getMethod(
                     "isBoundToEditMode", new Class[] { String.class });
             addFunction("isBoundToEditMode", isBoundToEditMode);
+        } catch (NoSuchMethodException e) {
+            log.error(e, e);
+        }
+
+        try {
+            Method isLikePlainMode = BuiltinWidgetModes.class.getMethod(
+                    "isLikePlainMode", new Class[] { String.class });
+            addFunction("isLikePlainMode", isLikePlainMode);
         } catch (NoSuchMethodException e) {
             log.error(e, e);
         }

@@ -25,7 +25,6 @@ import java.util.Map;
 
 import javax.el.ELException;
 import javax.el.ValueExpression;
-import javax.el.VariableMapper;
 import javax.faces.FacesException;
 import javax.faces.component.UIComponent;
 
@@ -97,7 +96,6 @@ public class SubWidgetTagHandler extends TagHandler {
         for (Widget subWidget : subWidgets) {
             // expose widget variables
             Map<String, ValueExpression> variables = new HashMap<String, ValueExpression>();
-            VariableMapper vm = ctx.getVariableMapper();
             ValueExpression subWidgetVe = ctx.getExpressionFactory().createValueExpression(
                     subWidget, Widget.class);
             variables.put(RenderVariables.widgetVariables.widget.name(),
