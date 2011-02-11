@@ -35,6 +35,7 @@ public class OpenSocialModel implements HasPermissions {
     protected void computeFrameUrl() {
         String url = data.getFrameUrl();
         url = url.replace("lang=ALL", "lang=" + ContainerConfiguration.getUserLanguage());
+        data.setFrameUrl(url);
     }
 
 }

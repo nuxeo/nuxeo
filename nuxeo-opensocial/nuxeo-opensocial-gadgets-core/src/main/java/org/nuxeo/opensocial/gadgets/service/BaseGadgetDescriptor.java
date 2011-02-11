@@ -25,7 +25,7 @@ public abstract class BaseGadgetDescriptor implements Serializable, GadgetDeclar
         try {
             return Framework.getLocalService(GadgetService.class).getGadgetSpec(this);
         } catch (Exception e) {
-            log.error("Error while getting gagget spec for gadget " + getName(), e);
+            log.error("Error while getting gadget spec for gadget " + getName(), e);
             return null;
         }
     }
