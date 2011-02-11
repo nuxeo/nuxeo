@@ -26,8 +26,8 @@
   </modules>
 
   <profiles>
-    <!-- NXP-5660 - temporary rollback because of Hudson issue <profile> <id>no-osgi</id> 
-      <activation> <file> <exists>pom.xml</exists> </file> </activation> <modules> <module>nuxeo-webengine-gwt</module> 
+    <!-- NXP-5660 - temporary rollback because of Hudson issue <profile> <id>no-osgi</id>
+      <activation> <file> <exists>pom.xml</exists> </file> </activation> <modules> <module>nuxeo-webengine-gwt</module>
       <module>nuxeo-theme-webengine</module> </modules> </profile> -->
   </profiles>
 
@@ -65,6 +65,11 @@
       <dependency>
         <groupId>org.nuxeo.ecm.webengine</groupId>
         <artifactId>nuxeo-webengine-core</artifactId>
+        <version>${nuxeo.webengine.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.webengine</groupId>
+        <artifactId>nuxeo-webengine-jaxrs</artifactId>
         <version>${nuxeo.webengine.version}</version>
       </dependency>
       <dependency>
