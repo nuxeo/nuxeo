@@ -17,9 +17,15 @@
 package org.nuxeo.ecm.webengine.jaxrs;
 
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.StringUtils;
+import org.nuxeo.ecm.webengine.jaxrs.servlet.JerseyServlet;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -32,6 +38,8 @@ import org.osgi.util.tracker.BundleTrackerCustomizer;
  *
  */
 public class Activator implements BundleActivator, BundleTrackerCustomizer {
+
+    private Log log = LogFactory.getLog(Activator.class);
 
     private static Activator instance;
 
@@ -87,9 +95,11 @@ public class Activator implements BundleActivator, BundleTrackerCustomizer {
      * {@link #addReloadListener(Reloadable)}
      */
     public void reload() {
+        app.reload();
         for (Reloadable reloadable : toReload.toArray(new Reloadable[toReload.size()])) {
             reloadable.reload();
         }
+        JerseyServlet.invalidate();
     }
 
 
@@ -98,19 +108,25 @@ public class Activator implements BundleActivator, BundleTrackerCustomizer {
         String v = (String)bundle.getHeaders().get("Nuxeo-WebModule");
         if (v != null) {
             String className = null;
+            Map<String, String> vars = new HashMap<String, String>();
+            String varsStr = null;
             int i = v.indexOf(';');
             if (i > -1) {
-                className = v.substring(0, i);
+                className = v.substring(0, i).trim();
+                varsStr = v.substring(i+1).trim();
             } else {
-                className = v;
+                className = v.trim();
+            }
+            if (varsStr != null) {
+                vars = parseAttrs(varsStr);
             }
             try {
-                BundledApplication ba = new BundledApplication(bundle, className);
+                ApplicationProxy ba = new ApplicationProxy(bundle, className, vars);
                 app.add(ba);
                 reload();
                 return ba;
             } catch (Exception e) {
-                e.printStackTrace(); //TODO log
+                log.error(e);
             }
         }
         return null;
@@ -124,8 +140,26 @@ public class Activator implements BundleActivator, BundleTrackerCustomizer {
 
     @Override
     public void removedBundle(Bundle bundle, BundleEvent event, Object object) {
-        app.remove((BundledApplication)object);
+        app.remove((ApplicationProxy)object);
         reload();
     }
 
+    protected Map<String,String> parseAttrs(String expr) {
+        HashMap<String, String> map = new HashMap<String, String>();
+        String[] ar = StringUtils.split(expr, ';', true);
+        for (String a : ar) {
+            int i = a.indexOf('=');
+            if (i == -1) {
+                map.put(a, null);
+            } else {
+                String key = a.substring(0, i).trim();
+                String val = a.substring(i+1).trim();
+                if (key.endsWith(":")) {
+                    key = key.substring(0, key.length()-1).trim();
+                }
+                map.put(key, val);
+            }
+        }
+        return map;
+    }
 }

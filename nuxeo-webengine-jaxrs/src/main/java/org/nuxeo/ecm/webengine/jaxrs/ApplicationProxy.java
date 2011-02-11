@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.webengine.jaxrs;
 
+import java.util.Map;
 import java.util.Set;
 
 import javax.ws.rs.core.Application;
@@ -23,23 +24,28 @@ import javax.ws.rs.core.Application;
 import org.osgi.framework.Bundle;
 
 /**
- * A wrapper for the JAX-RS application declared in manifest
+ * A wrapper for the JAX-RS application declared in manifest.
+ * This is a proxy to the real application implementation which will be created in a lazy fashion,
+ * at the first call.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class BundledApplication extends Application {
+public class ApplicationProxy extends Application {
 
     protected Bundle bundle;
 
     protected String className;
 
+    protected Map<String,String> attrs;
+
     protected volatile Application delegate;
 
 
-    public BundledApplication(Bundle bundle, String className) {
+    public ApplicationProxy(Bundle bundle, String className, Map<String,String> attrs) {
         this.bundle = bundle;
         this.className = className;
+        this.attrs = attrs;
     }
 
     public String getClassName() {
@@ -54,10 +60,17 @@ public class BundledApplication extends Application {
         delegate = null;
     }
 
-    public Application getDelegate() {
+    public Application get() {
         if (delegate == null) {
             try {
-                delegate = (Application)bundle.loadClass(className).newInstance();
+                Object obj = bundle.loadClass(className).newInstance();
+                if (obj instanceof ApplicationFactory) {
+                    delegate = ((ApplicationFactory)obj).getApplication(bundle, attrs);
+                } else if (obj instanceof Application) {
+                    delegate = (Application)obj;
+                } else {
+                    throw new IllegalArgumentException("Expecting an Application or ApplicationFactory class: "+className);
+                }
             } catch (ClassCastException e) {
                 throw new RuntimeException("JAX-RS application classes must extends "+Application.class.getName()+". Faulty class: "+className+" in bundle "+bundle.getSymbolicName());
             } catch (Exception e) {
@@ -70,12 +83,12 @@ public class BundledApplication extends Application {
 
     @Override
     public Set<Class<?>> getClasses() {
-        return getDelegate().getClasses();
+        return get().getClasses();
     }
 
     @Override
     public Set<Object> getSingletons() {
-        return getDelegate().getSingletons();
+        return get().getSingletons();
     }
 
 }

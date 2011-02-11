@@ -16,10 +16,10 @@
  */
 package org.nuxeo.ecm.webengine.jaxrs;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.Vector;
 
 import javax.ws.rs.core.Application;
 
@@ -29,24 +29,34 @@ import javax.ws.rs.core.Application;
  */
 public class CompositeApplication extends Application {
 
-    protected List<Application> apps;
+    protected List<ApplicationProxy> apps;
 
     public CompositeApplication() {
-        apps = new Vector<Application>();
+        apps = new ArrayList<ApplicationProxy>();
     }
 
-    public void add(Application app) {
+    public synchronized void add(ApplicationProxy app) {
         apps.add(app);
     }
 
-    public void remove(Application app) {
+    public synchronized void remove(ApplicationProxy app) {
         apps.remove(app);
+    }
+
+    public synchronized ApplicationProxy[] getApplications() {
+        return apps.toArray(new ApplicationProxy[apps.size()]);
+    }
+
+    public synchronized void reload() {
+        for (ApplicationProxy proxy : getApplications()) {
+            proxy.reset();
+        }
     }
 
     @Override
     public Set<Class<?>> getClasses() {
         HashSet<Class<?>> result = new HashSet<Class<?>>();
-        for (Application app : apps) {
+        for (Application app : getApplications()) {
             result.addAll(app.getClasses());
         }
         return result;
@@ -55,7 +65,7 @@ public class CompositeApplication extends Application {
     @Override
     public Set<Object> getSingletons() {
         HashSet<Object> result = new HashSet<Object>();
-        for (Application app : apps) {
+        for (Application app : getApplications()) {
             result.addAll(app.getSingletons());
         }
         return result;

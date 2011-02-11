@@ -138,47 +138,4 @@ public class PathMatcher {
     }
 
 
-    public static void main(String[] args) {
-
-
-
-
-        PathMatcher m = PathMatcher.compile("**/a");
-        System.out.println(m.matches("b/a"));
-        System.out.println(m.matches("b/c/a"));
-        System.out.println(m.matches("b/c/a/d"));
-        System.out.println("-----");
-        m = PathMatcher.compile("**/a/**/d");
-        System.out.println(m.matches("b/a"));
-        System.out.println(m.matches("b/c/a"));
-        System.out.println(m.matches("b/c/a/d"));
-        System.out.println(m.matches("b/c/a/b/d"));
-        System.out.println(m.matches("b/c/a/b/d/e/d"));
-        System.out.println(m.matches("b/c/a/b/d/e/d/w"));
-        System.out.println("-----");
-        m = PathMatcher.compile("/nuxeo/site/**");
-        System.out.println(m.matches("/nuxeo/site"));
-        System.out.println(m.matches("/nuxeo/site/automation"));
-        System.out.println("-----");
-        m = PathMatcher.compile("/nuxeo/site/**/skin/**");
-        System.out.println(m.matches("/nuxeo/site/skin"));
-        System.out.println(m.matches("/nuxeo/site/skin/test"));
-        System.out.println(m.matches("/nuxeo/site/test/skin"));
-        System.out.println(m.matches("/nuxeo/site/test/skin/images"));
-
-
-        PathMatcher m1 = PathMatcher.compile("/nuxeo/site/**");
-        PathMatcher m2 = PathMatcher.compile("/nuxeo/site/**/skin/**");
-
-        double s = System.currentTimeMillis();
-        for (int k=0; k<1000; k++) {
-        Path p = Path.parse("/nuxeo/site/test/skin/images");
-        for (int i=0; i<1000; i++) {
-            m1.matches(p);
-            m2.matches(p);
-        }
-        }
-        System.out.println(">> "+(System.currentTimeMillis()-s)/1000);
-
-    }
 }

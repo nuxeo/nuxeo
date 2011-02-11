@@ -17,13 +17,15 @@
 package org.nuxeo.ecm.webengine.jaxrs.servlet;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.nuxeo.ecm.webengine.jaxrs.Activator;
-import org.nuxeo.ecm.webengine.jaxrs.Reloadable;
 
 import com.sun.jersey.spi.container.servlet.ServletContainer;
 
@@ -35,35 +37,59 @@ import com.sun.jersey.spi.container.servlet.ServletContainer;
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class ReloadingJerseyServlet extends ServletContainer implements Reloadable {
+public class JerseyServlet extends ServletContainer {
 
     private static final long serialVersionUID = 1L;
 
-    //protected WebEngine engine;
+    /**
+     * A list of initialized servlets to be able to set the
+     * dirty flag on them when reload is requested by the user.
+     */
+    protected static Set<JerseyServlet> servlets = Collections.synchronizedSet(new HashSet<JerseyServlet>());
+
+    /**
+     * Should be called by the application to set the dirty flag on all loaded servlets.
+     */
+    public static void invalidate() {
+        JerseyServlet[] ar = servlets.toArray(new JerseyServlet[servlets.size()]);
+        for (JerseyServlet servlet : ar) {
+            servlet.isDirty = true;
+        }
+    }
+
+    protected volatile boolean isDirty = false;
+
+    public JerseyServlet() {
+        super (Activator.getInstance().getApplication());
+    }
+
+    public boolean isDirty() {
+        return isDirty;
+    }
+
+    public void setDirty(boolean isDirty) {
+        this.isDirty = isDirty;
+    }
+
 
     @Override
     public void init() throws ServletException {
         super.init();
-        Activator.getInstance().addReloadListener(this);
-        //engine = Framework.getLocalService(WebEngine.class);
+        servlets.add(this);
     }
 
     @Override
     public void destroy() {
-        Activator.getInstance().removeReloadListener(this);
-        //engine = null;
+        servlets.remove(this);
         super.destroy();
     }
 
     @Override
     public void service(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-//        if (engine == null) {
-//            engine = Framework.getLocalService(WebEngine.class);
-//        }
-//        if (engine.isDevMode()) {
-//            reloadIfNeeded();
-//        }
+        if (isDirty) {
+            reload();
+        }
         String method = request.getMethod().toUpperCase();
         if (!"GET".equals(method)) {
             // force reading properties because jersey is consuming one
@@ -74,10 +100,4 @@ public class ReloadingJerseyServlet extends ServletContainer implements Reloadab
         super.service(request, response);
     }
 
-
-    public synchronized void reloadIfNeeded() {
-//        if (engine.tryReload()) {
-            reload();
-//        }
-    }
 }
