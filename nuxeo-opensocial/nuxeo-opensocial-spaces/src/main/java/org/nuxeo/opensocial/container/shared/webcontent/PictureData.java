@@ -11,6 +11,7 @@ public class PictureData extends AbstractWebContentData {
     private static final long serialVersionUID = 1L;
 
     public static final String TITLE_PREFERENCE = "WC_PICTURE_TITLE";
+
     public static final String URL_PREFERENCE = "WC_PICTURE_URL";
 
     private static final String ICONE_NAME = "photo-icon";
@@ -18,6 +19,7 @@ public class PictureData extends AbstractWebContentData {
     public static String TYPE = new String("wcpicture");
 
     private String url;
+
     private String pictureTitle;
 
     public PictureData() {

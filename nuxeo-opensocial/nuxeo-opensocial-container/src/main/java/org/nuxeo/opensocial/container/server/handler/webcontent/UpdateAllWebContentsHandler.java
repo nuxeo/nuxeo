@@ -20,11 +20,11 @@ public class UpdateAllWebContentsHandler extends
         AbstractActionHandler<UpdateAllWebContents, UpdateAllWebContentsResult> {
 
     protected UpdateAllWebContentsResult doExecute(UpdateAllWebContents action,
-            ExecutionContext context, CoreSession session) throws ClientException {
+            ExecutionContext context, CoreSession session)
+            throws ClientException {
         Space space = getSpaceFromId(action.getSpaceId(), session);
 
-        for (Entry<String, List<WebContentData>> unitEntry : action.getWebContents()
-                .entrySet()) {
+        for (Entry<String, List<WebContentData>> unitEntry : action.getWebContents().entrySet()) {
             int position = 0;
             for (WebContentData webContent : unitEntry.getValue()) {
                 webContent.setPosition(position);

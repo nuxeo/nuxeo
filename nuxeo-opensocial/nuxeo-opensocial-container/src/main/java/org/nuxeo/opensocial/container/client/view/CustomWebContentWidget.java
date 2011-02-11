@@ -29,19 +29,15 @@ public class CustomWebContentWidget extends Composite implements
     }
 
     public String getId() {
-        return this.getElement()
-                .getAttribute("id");
+        return this.getElement().getAttribute("id");
     }
 
     public String getParentId() {
-        return this.getElement()
-                .getParentElement()
-                .getAttribute("id");
+        return this.getElement().getParentElement().getAttribute("id");
     }
 
     public void setId(String id) {
-        this.getElement()
-                .setAttribute("id", id);
+        this.getElement().setAttribute("id", id);
     }
 
     public void addContent(Widget widget) {

@@ -8,8 +8,8 @@ import org.nuxeo.opensocial.container.shared.webcontent.WebContentData;
  * @author Stéphane Fourrier
  */
 public interface WebContentSaverService {
-    WebContentData create(WebContentData data, String parentId, CoreSession session)
-            throws Exception;
+    WebContentData create(WebContentData data, String parentId,
+            CoreSession session) throws Exception;
 
     WebContentData read(DocumentModel doc, CoreSession session)
             throws Exception;

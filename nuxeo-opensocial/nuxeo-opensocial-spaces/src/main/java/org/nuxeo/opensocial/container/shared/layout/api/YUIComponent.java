@@ -13,10 +13,11 @@ public interface YUIComponent {
     public List<YUIComponent> getComponents();
 
     /**
-	 * Returns the unique name of the unit in the layout
-	 * @return
-	 */
-	public String getId();
+     * Returns the unique name of the unit in the layout
+     *
+     * @return
+     */
+    public String getId();
 
     public YUIComponent getACopyFor();
 

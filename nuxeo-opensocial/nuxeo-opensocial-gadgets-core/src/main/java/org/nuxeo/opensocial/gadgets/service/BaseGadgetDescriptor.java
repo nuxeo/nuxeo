@@ -10,42 +10,46 @@ import org.nuxeo.opensocial.gadgets.service.api.GadgetDeclaration;
 import org.nuxeo.opensocial.gadgets.service.api.GadgetService;
 import org.nuxeo.runtime.api.Framework;
 
-public abstract class BaseGadgetDescriptor implements Serializable, GadgetDeclaration  {
+public abstract class BaseGadgetDescriptor implements Serializable,
+        GadgetDeclaration {
 
     private static final long serialVersionUID = 1L;
 
     protected static final Log log = LogFactory.getLog(BaseGadgetDescriptor.class);
 
-    protected GadgetSpec cachedSpec=null;
+    protected GadgetSpec cachedSpec = null;
 
     public GadgetSpec getGadgetSpec() {
-        if (cachedSpec!=null) {
+        if (cachedSpec != null) {
             return cachedSpec;
         }
         try {
-            return Framework.getLocalService(GadgetService.class).getGadgetSpec(this);
+            return Framework.getLocalService(GadgetService.class).getGadgetSpec(
+                    this);
         } catch (Exception e) {
-            log.error("Error while getting gadget spec for gadget " + getName(), e);
+            log.error(
+                    "Error while getting gadget spec for gadget " + getName(),
+                    e);
             return null;
         }
     }
 
     protected String getDescriptionFromSpec() {
-        if (getGadgetSpec()==null) {
+        if (getGadgetSpec() == null) {
             return null;
         }
         return getGadgetSpec().getModulePrefs().getDescription();
     }
 
     public String getTitle() {
-        if (getGadgetSpec()==null) {
+        if (getGadgetSpec() == null) {
             return getName();
         }
         return getGadgetSpec().getModulePrefs().getTitle();
     }
 
     public String getAuthor() {
-        if (getGadgetSpec()==null) {
+        if (getGadgetSpec() == null) {
             if (!isExternal()) {
                 return "Nuxeo";
             }
@@ -55,11 +59,11 @@ public abstract class BaseGadgetDescriptor implements Serializable, GadgetDeclar
     }
 
     public String getScreenshot() {
-        if (getGadgetSpec()==null) {
+        if (getGadgetSpec() == null) {
             return null;
         }
         Uri uri = getGadgetSpec().getModulePrefs().getScreenshot();
-        if (uri==null) {
+        if (uri == null) {
             return getThumbnail();
         } else {
             return uri.toString();
@@ -67,17 +71,15 @@ public abstract class BaseGadgetDescriptor implements Serializable, GadgetDeclar
     }
 
     public String getThumbnail() {
-        if (getGadgetSpec()==null) {
+        if (getGadgetSpec() == null) {
             return null;
         }
-        Uri uri =  getGadgetSpec().getModulePrefs().getThumbnail();
-        if (uri==null) {
+        Uri uri = getGadgetSpec().getModulePrefs().getThumbnail();
+        if (uri == null) {
             return null;
         } else {
             return uri.toString();
         }
     }
-
-
 
 }

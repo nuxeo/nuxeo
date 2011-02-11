@@ -12,13 +12,13 @@ import com.google.gwt.user.client.ui.Composite;
  * @author Stéphane Fourrier
  */
 public abstract class AbstractGadget extends Composite implements HasFacets {
-	private List<Facet> facetsList = new ArrayList<Facet>();
+    private List<Facet> facetsList = new ArrayList<Facet>();
 
-	public List<Facet> getFacets() {
-		return facetsList;
-	}
+    public List<Facet> getFacets() {
+        return facetsList;
+    }
 
-	public void addFacet(Facet facet) {
-		facetsList.add(facet);
-	}
+    public void addFacet(Facet facet) {
+        facetsList.add(facet);
+    }
 }

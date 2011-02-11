@@ -20,23 +20,21 @@ package org.nuxeo.opensocial.services;
 
 import java.io.File;
 
-import net.oauth.OAuthConsumer;
-import net.oauth.OAuthProblemException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.shindig.auth.SecurityToken;
 import org.apache.shindig.auth.SecurityTokenDecoder;
-import org.apache.shindig.gadgets.oauth.OAuthStore;
 import org.apache.shindig.social.opensocial.oauth.OAuthDataStore;
 import org.apache.shindig.social.opensocial.oauth.OAuthEntry;
 import org.nuxeo.opensocial.service.api.OpenSocialService;
 import org.nuxeo.opensocial.shindig.crypto.NXBlobCrypterSecurityTokenDecoder;
-import org.nuxeo.opensocial.shindig.oauth.NXOAuthStore;
 import org.nuxeo.runtime.api.Framework;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.name.Names;
+
+import net.oauth.OAuthConsumer;
+import net.oauth.OAuthProblemException;
 
 public class NuxeoCryptoModule extends AbstractModule {
 
@@ -49,7 +47,6 @@ public class NuxeoCryptoModule extends AbstractModule {
                     NXBlobCrypterSecurityTokenDecoder.class);
             bind(OAuthDataStore.class).to(FakeNuxeoDataStore.class);
 
-
             OpenSocialService oss = Framework.getService(OpenSocialService.class);
 
             // These are here because they are no longer supplied in the
@@ -57,27 +54,28 @@ public class NuxeoCryptoModule extends AbstractModule {
             // a contribution to an extension point.
 
             File signingKeyFile = oss.getSigningStateKeyFile();
-            //File privateKeyFile = oss.getOAuthPrivateKeyFile();
+            // File privateKeyFile = oss.getOAuthPrivateKeyFile();
 
-            if (signingKeyFile==null) {
+            if (signingKeyFile == null) {
                 LOG.warn("OAuth keys not properly configured, existing NuxeoCryptoModule");
                 return;
             }
 
-            //String privateKeyName = oss.getOAuthPrivateKeyName();
+            // String privateKeyName = oss.getOAuthPrivateKeyName();
             String callbackUrl = oss.getOAuthCallbackUrl();
             String signingKeyPath = signingKeyFile.getPath();
-            //String privateKeyPath = privateKeyFile.getPath();
+            // String privateKeyPath = privateKeyFile.getPath();
 
             bind(String.class).annotatedWith(
                     Names.named("shindig.signing.state-key")).toInstance(
                     signingKeyPath);
-            /*bind(String.class).annotatedWith(
-                    Names.named("shindig.signing.key-file")).toInstance(
-                    privateKeyPath);
-            bind(String.class).annotatedWith(
-                    Names.named("shindig.signing.key-name")).toInstance(
-                    privateKeyName);*/
+            /*
+             * bind(String.class).annotatedWith(
+             * Names.named("shindig.signing.key-file")).toInstance(
+             * privateKeyPath); bind(String.class).annotatedWith(
+             * Names.named("shindig.signing.key-name")).toInstance(
+             * privateKeyName);
+             */
             bind(String.class).annotatedWith(
                     Names.named("shindig.signing.global-callback-url")).toInstance(
                     callbackUrl);

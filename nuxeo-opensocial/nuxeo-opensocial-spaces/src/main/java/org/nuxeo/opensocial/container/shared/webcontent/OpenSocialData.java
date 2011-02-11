@@ -12,17 +12,23 @@ public class OpenSocialData extends AbstractWebContentData {
     private static final long serialVersionUID = 1L;
 
     public static final String URL_PREFERENCE = "WC_GADGET_DEF_URL";
+
     public static final String NAME_PREFERENCE = "WC_GADGET_NAME";
 
     private static final String ICONE_SUFIX = "-icon";
+
     private static final String DEFAULT_ICON_NAME = "default-icon";
 
     public static String TYPE = new String("wcopensocial");
 
     private String frameUrl;
+
     private String gadgetDefUrl;
+
     private String securityToken;
+
     private String gadgetName;
+
     private Map<String, UserPref> userPrefs;
 
     public OpenSocialData() {

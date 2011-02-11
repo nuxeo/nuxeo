@@ -17,14 +17,16 @@ public abstract class AbstractWebContentDAO<T extends WebContentData>
         implements WebContentDAO<T> {
 
     @SuppressWarnings("unchecked")
-    public T create(T data, String parentId, CoreSession session) throws Exception {
+    public T create(T data, String parentId, CoreSession session)
+            throws Exception {
         WebContentSaverService service;
-        //TODO Remove call to the service !
+        // TODO Remove call to the service !
         service = Framework.getService(WebContentSaverService.class);
 
         String unitPath = session.getDocument(new IdRef(parentId)).getPathAsString();
-        //TODO data.getName() + date
-        DocumentModel doc = session.createDocumentModel(unitPath, data.getName(), service.getDocTypeFor(data));
+        // TODO data.getName() + date
+        DocumentModel doc = session.createDocumentModel(unitPath,
+                data.getName(), service.getDocTypeFor(data));
 
         doc = session.createDocument(doc);
 

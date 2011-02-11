@@ -6,5 +6,5 @@ import com.google.gwt.event.shared.EventHandler;
  * @author Stéphane Fourrier
  */
 public interface SetPreferencesPortletEventHandler extends EventHandler {
-	void onSetPreferences(SetPreferencesPortletEvent event);
+    void onSetPreferences(SetPreferencesPortletEvent event);
 }

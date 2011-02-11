@@ -11,37 +11,37 @@ import com.google.gwt.json.client.JSONObject;
  * @author Stéphane Fourrier
  */
 public class JSParams<E extends JavaScriptObject> extends JavaScriptObject {
-	protected JSParams() {
-	}
+    protected JSParams() {
+    }
 
-	final public native int size() /*-{
-		return this.length;
-	}-*/;
+    final public native int size() /*-{
+                                   return this.length;
+                                   }-*/;
 
-	public final Map<String, String> toMap() {
-		Map<String, String> preferencesToReturn = new HashMap<String, String>();
+    public final Map<String, String> toMap() {
+        Map<String, String> preferencesToReturn = new HashMap<String, String>();
 
-		JSONArray json = new JSONArray(this);
+        JSONArray json = new JSONArray(this);
 
-		if (size() != 0) {
-			for (int i = 0; i < json.size(); i++) {
-				JSONObject pref = (JSONObject) json.isArray().get(i);
+        if (size() != 0) {
+            for (int i = 0; i < json.size(); i++) {
+                JSONObject pref = (JSONObject) json.isArray().get(i);
 
-				if (pref != null && pref.isObject() != null && pref.size() == 1) {
-					for (String key : pref.keySet()) {
-						if (pref.get(key).isString() != null) {
-							preferencesToReturn.put(key, pref.get(key)
-									.isString().stringValue());
-						} else {
-							return null;
-						}
-					}
-				} else {
-					return null;
-				}
-			}
-		}
+                if (pref != null && pref.isObject() != null && pref.size() == 1) {
+                    for (String key : pref.keySet()) {
+                        if (pref.get(key).isString() != null) {
+                            preferencesToReturn.put(key,
+                                    pref.get(key).isString().stringValue());
+                        } else {
+                            return null;
+                        }
+                    }
+                } else {
+                    return null;
+                }
+            }
+        }
 
-		return preferencesToReturn;
-	}
+        return preferencesToReturn;
+    }
 }

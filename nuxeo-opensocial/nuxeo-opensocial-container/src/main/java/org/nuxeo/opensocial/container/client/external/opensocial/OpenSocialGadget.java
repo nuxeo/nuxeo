@@ -22,12 +22,8 @@ public class OpenSocialGadget extends AbstractGadget implements
     public OpenSocialGadget() {
         frame = new Frame();
         frame.setWidth("100%");
-        frame.getElement()
-                .getStyle()
-                .setBorderStyle(BorderStyle.NONE);
-        frame.getElement()
-                .getStyle()
-                .setOverflow(Overflow.HIDDEN);
+        frame.getElement().getStyle().setBorderStyle(BorderStyle.NONE);
+        frame.getElement().getStyle().setOverflow(Overflow.HIDDEN);
 
         initWidget(frame);
     }
@@ -58,17 +54,14 @@ public class OpenSocialGadget extends AbstractGadget implements
     }
 
     public String getId() {
-        return frame.getElement()
-                .getAttribute("id");
+        return frame.getElement().getAttribute("id");
     }
 
     public void setId(String id) {
-        frame.getElement()
-                .setAttribute("id", id);
+        frame.getElement().setAttribute("id", id);
     }
 
     public void setName(String name) {
-        frame.getElement()
-                .setAttribute("name", name);
+        frame.getElement().setAttribute("name", name);
     }
 }

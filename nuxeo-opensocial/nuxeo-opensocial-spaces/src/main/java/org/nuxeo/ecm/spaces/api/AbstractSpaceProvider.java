@@ -15,7 +15,8 @@ abstract public class AbstractSpaceProvider implements SpaceProvider {
     protected String name;
 
     @Override
-    public void initialize(String name, Map<String, String> params) throws SpaceException {
+    public void initialize(String name, Map<String, String> params)
+            throws SpaceException {
         this.name = name;
     }
 
@@ -30,7 +31,8 @@ abstract public class AbstractSpaceProvider implements SpaceProvider {
 
     @Override
     final public Space getSpace(CoreSession session,
-            DocumentModel contextDocument, String spaceName) throws SpaceException {
+            DocumentModel contextDocument, String spaceName)
+            throws SpaceException {
         Space result = doGetSpace(session, contextDocument, spaceName);
         if (result == null) {
             throw new SpaceNotFoundException();
@@ -39,24 +41,27 @@ abstract public class AbstractSpaceProvider implements SpaceProvider {
         }
     }
 
-    abstract protected Space doGetSpace(CoreSession session, DocumentModel contextDocument, String spaceName)
+    abstract protected Space doGetSpace(CoreSession session,
+            DocumentModel contextDocument, String spaceName)
             throws SpaceException;
 
-    public List<Space> getAll(CoreSession session,
-            DocumentModel contextDocument) throws SpaceException {
+    public List<Space> getAll(CoreSession session, DocumentModel contextDocument)
+            throws SpaceException {
         List<Space> result = new ArrayList<Space>();
         result.add(getSpace(session, contextDocument, null));
         return result;
     }
 
     @Override
-    public boolean isEmpty(CoreSession session, DocumentModel contextDocument) throws SpaceException {
+    public boolean isEmpty(CoreSession session, DocumentModel contextDocument)
+            throws SpaceException {
         return getAll(session, contextDocument).isEmpty();
     }
 
     @Override
-    public long size(CoreSession session, DocumentModel contextDocument) throws SpaceException {
-        return getAll(session,contextDocument).size();
+    public long size(CoreSession session, DocumentModel contextDocument)
+            throws SpaceException {
+        return getAll(session, contextDocument).size();
     }
 
     public void add(Space o, CoreSession session, Map<String, String> params)
@@ -78,7 +83,7 @@ abstract public class AbstractSpaceProvider implements SpaceProvider {
         return false;
     }
 
-     public void clear(CoreSession session) throws SpaceException {
+    public void clear(CoreSession session) throws SpaceException {
         if (isReadOnly(session))
             throw new SpaceException("This SpaceProvider is read only");
 
@@ -93,9 +98,9 @@ abstract public class AbstractSpaceProvider implements SpaceProvider {
      */
     public List<Space> getSpaces(Space space, CoreSession session) {
         // TODO Auto-generated method stub
-//        if (space == null) {
-//            return getAllSpaces(session);
-//        }
+        // if (space == null) {
+        // return getAllSpaces(session);
+        // }
         return new ArrayList<Space>();
     }
 

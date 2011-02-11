@@ -10,6 +10,7 @@ import org.nuxeo.opensocial.container.shared.webcontent.HTMLData;
  */
 public class HTMLModel implements HasPermissions {
     private HTMLData data;
+
     private Map<String, Boolean> permissions;
 
     public HTMLModel(HTMLData data, Map<String, Boolean> permissions) {

@@ -20,8 +20,11 @@ public class FolderPickerWidget extends DialogBox implements
     private ContainerConstants constants = AppPresenter.containerConstants;
 
     private FlowPanel foldersPanel;
+
     private Button closeButton;
+
     private Button chooseButton;
+
     private FlowPanel previewPanel;
 
     public FolderPickerWidget() {

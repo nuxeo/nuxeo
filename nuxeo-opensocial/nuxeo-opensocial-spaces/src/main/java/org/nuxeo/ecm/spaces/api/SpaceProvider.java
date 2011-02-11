@@ -13,22 +13,24 @@ public interface SpaceProvider {
     public void initialize(String name, Map<String, String> params)
             throws SpaceException;
 
-     /**
+    /**
      * Gets {@link org.nuxeo.ecm.spaces.api.SpaceProvider}'s name.
      *
      * @return provider name
      */
     String getName();
 
-    Space getSpace(CoreSession session,
-            DocumentModel contextDocument, String spaceName) throws SpaceException;
+    Space getSpace(CoreSession session, DocumentModel contextDocument,
+            String spaceName) throws SpaceException;
 
-    List<Space> getAll(CoreSession session,
-            DocumentModel contextDocument) throws SpaceException;
+    List<Space> getAll(CoreSession session, DocumentModel contextDocument)
+            throws SpaceException;
 
-    long size(CoreSession session, DocumentModel contextDocument) throws SpaceException;
+    long size(CoreSession session, DocumentModel contextDocument)
+            throws SpaceException;
 
-    boolean isEmpty(CoreSession session, DocumentModel contextDocument) throws SpaceException;
+    boolean isEmpty(CoreSession session, DocumentModel contextDocument)
+            throws SpaceException;
 
     boolean isReadOnly(CoreSession session);
 

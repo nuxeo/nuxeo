@@ -17,7 +17,8 @@ public class UpdateWebContentHandler extends
         AbstractActionHandler<UpdateWebContent, UpdateWebContentResult> {
 
     protected UpdateWebContentResult doExecute(UpdateWebContent action,
-            ExecutionContext context, CoreSession session) throws ClientException {
+            ExecutionContext context, CoreSession session)
+            throws ClientException {
         Space space = getSpaceFromId(action.getSpaceId(), session);
         WebContentData webContent = action.getWebContent();
         WebContentData data = updateWebContent(webContent, space);
@@ -25,8 +26,8 @@ public class UpdateWebContentHandler extends
         return new UpdateWebContentResult(data);
     }
 
-    public static WebContentData updateWebContent(WebContentData webContent, Space space)
-            throws ClientException {
+    public static WebContentData updateWebContent(WebContentData webContent,
+            Space space) throws ClientException {
         WebContentData old = space.getWebContent(webContent.getId());
 
         /*
@@ -37,8 +38,7 @@ public class UpdateWebContentHandler extends
         WebContentData data = space.updateWebContent(webContent);
 
         String dstUnitId = webContent.getUnitId();
-        if (!old.getUnitId()
-                .equals(dstUnitId)) {
+        if (!old.getUnitId().equals(dstUnitId)) {
             space.moveWebContent(old, dstUnitId);
         }
 

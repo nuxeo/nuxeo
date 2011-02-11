@@ -29,13 +29,19 @@ public class PreferencesWidget extends DialogBox implements
         PreferencesPresenter.Display {
 
     private ColorsPanelWidget borderColors;
+
     private ColorsPanelWidget headerColors;
+
     private ColorsPanelWidget titleColors;
 
     private Button saveButton;
+
     private Button cancelButton;
+
     private TextBox titleTextBox;
+
     private FlowPanel layout;
+
     private FlexTable preferencePanel;
 
     private ContainerConstants constants = AppPresenter.containerConstants;

@@ -6,5 +6,5 @@ import com.google.gwt.event.shared.EventHandler;
  * @author Stéphane Fourrier
  */
 public interface ZoneRowDeletedEventHandler extends EventHandler {
-	void onRowDeleted(ZoneDeletedEvent event);
+    void onRowDeleted(ZoneDeletedEvent event);
 }

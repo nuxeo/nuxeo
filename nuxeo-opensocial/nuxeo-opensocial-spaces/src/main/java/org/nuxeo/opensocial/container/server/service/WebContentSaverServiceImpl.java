@@ -25,13 +25,12 @@ public class WebContentSaverServiceImpl extends DefaultComponent implements
 
     protected Map<String, WebContentSaverDescriptor> savers;
 
-    @SuppressWarnings( { "unchecked" })
-    public WebContentData create(WebContentData data, String parentId, CoreSession session)
-            throws Exception {
+    @SuppressWarnings({ "unchecked" })
+    public WebContentData create(WebContentData data, String parentId,
+            CoreSession session) throws Exception {
 
         WebContentSaverDescriptor descriptor = savers.get(data.getAssociatedType());
-        WebContentDAO dao = (WebContentDAO) descriptor.getDaoClass()
-                .newInstance();
+        WebContentDAO dao = (WebContentDAO) descriptor.getDaoClass().newInstance();
         return dao.create(data, parentId, session);
     }
 
@@ -47,8 +46,7 @@ public class WebContentSaverServiceImpl extends DefaultComponent implements
     public WebContentData update(WebContentData data, CoreSession session)
             throws Exception {
         WebContentSaverDescriptor descriptor = savers.get(data.getAssociatedType());
-        WebContentDAO dao = (WebContentDAO) descriptor.getDaoClass()
-                .newInstance();
+        WebContentDAO dao = (WebContentDAO) descriptor.getDaoClass().newInstance();
         return dao.update(data, session);
     }
 
@@ -57,18 +55,14 @@ public class WebContentSaverServiceImpl extends DefaultComponent implements
             throws Exception {
         WebContentSaverDescriptor descriptor = savers.get(data.getAssociatedType());
         WebContentDAO dao;
-        dao = (WebContentDAO) descriptor.getDaoClass()
-                .newInstance();
+        dao = (WebContentDAO) descriptor.getDaoClass().newInstance();
         dao.delete(data, session);
     }
 
     public Class<?> getWebContentAdapterFor(DocumentModel doc) {
         for (Entry<String, WebContentSaverDescriptor> saver : savers.entrySet()) {
-            if (doc.getType()
-                    .equals(saver.getValue()
-                            .getDocType())) {
-                return saver.getValue()
-                        .getCoreAdapter();
+            if (doc.getType().equals(saver.getValue().getDocType())) {
+                return saver.getValue().getCoreAdapter();
             }
         }
         return null;
@@ -76,19 +70,15 @@ public class WebContentSaverServiceImpl extends DefaultComponent implements
 
     public Class<?> getWebContentDAOFor(DocumentModel doc) {
         for (Entry<String, WebContentSaverDescriptor> saver : savers.entrySet()) {
-            if (doc.getType()
-                    .equals(saver.getValue()
-                            .getDocType())) {
-                return saver.getValue()
-                        .getDaoClass();
+            if (doc.getType().equals(saver.getValue().getDocType())) {
+                return saver.getValue().getDaoClass();
             }
         }
         return null;
     }
 
     public String getDocTypeFor(WebContentData data) {
-        return savers.get(data.getAssociatedType())
-                .getDocType();
+        return savers.get(data.getAssociatedType()).getDocType();
     }
 
     @Override

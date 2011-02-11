@@ -19,8 +19,8 @@ public class UpdateYUILayoutSideBarHandler
     protected UpdateYUILayoutSideBarResult doExecute(
             UpdateYUILayoutSideBar action, ExecutionContext context,
             CoreSession session) throws ClientException {
-        YUIUnit sideBar = getSpaceFromId(action.getSpaceId(), session).getLayout()
-                .setSideBar(action.getSidebar());
+        YUIUnit sideBar = getSpaceFromId(action.getSpaceId(), session).getLayout().setSideBar(
+                action.getSidebar());
         return new UpdateYUILayoutSideBarResult(sideBar);
     }
 

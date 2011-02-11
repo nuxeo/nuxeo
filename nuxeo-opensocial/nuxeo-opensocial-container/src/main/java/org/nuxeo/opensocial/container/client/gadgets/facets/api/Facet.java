@@ -22,9 +22,11 @@ public class Facet extends Composite implements HasClickHandlers {
     private FocusPanel facet;
 
     private String cssClassForState1 = null;
+
     private String cssClassForState2 = null;
 
     private GwtEvent<?> eventToFireOnState1 = null;
+
     private GwtEvent<?> eventToFireOnState2 = null;
 
     private boolean isInState1 = true;

@@ -5,32 +5,35 @@ import com.google.gwt.event.shared.GwtEvent;
 /**
  * @author Stéphane Fourrier
  */
-public class WebContentIdChangedEvent extends GwtEvent<WebContentIdChangedEventHandler> {
-	public static Type<WebContentIdChangedEventHandler> TYPE = new Type<WebContentIdChangedEventHandler>();
+public class WebContentIdChangedEvent extends
+        GwtEvent<WebContentIdChangedEventHandler> {
+    public static Type<WebContentIdChangedEventHandler> TYPE = new Type<WebContentIdChangedEventHandler>();
 
-	private String oldWebContentId;
-	private String newWebContentId;
+    private String oldWebContentId;
 
-	public WebContentIdChangedEvent(String oldWebContentId, String newWebContentId) {
-		this.oldWebContentId = oldWebContentId;
-		this.newWebContentId = newWebContentId;
-	}
+    private String newWebContentId;
 
-	public String getOldWebContentId() {
-		return oldWebContentId;
-	}
+    public WebContentIdChangedEvent(String oldWebContentId,
+            String newWebContentId) {
+        this.oldWebContentId = oldWebContentId;
+        this.newWebContentId = newWebContentId;
+    }
 
-	public String getNewWebContentId() {
-		return newWebContentId;
-	}
+    public String getOldWebContentId() {
+        return oldWebContentId;
+    }
 
-	@Override
-	public com.google.gwt.event.shared.GwtEvent.Type<WebContentIdChangedEventHandler> getAssociatedType() {
-		return TYPE;
-	}
+    public String getNewWebContentId() {
+        return newWebContentId;
+    }
 
-	@Override
-	protected void dispatch(WebContentIdChangedEventHandler handler) {
-		handler.onWebContentIdChange(this);
-	}
+    @Override
+    public com.google.gwt.event.shared.GwtEvent.Type<WebContentIdChangedEventHandler> getAssociatedType() {
+        return TYPE;
+    }
+
+    @Override
+    protected void dispatch(WebContentIdChangedEventHandler handler) {
+        handler.onWebContentIdChange(this);
+    }
 }

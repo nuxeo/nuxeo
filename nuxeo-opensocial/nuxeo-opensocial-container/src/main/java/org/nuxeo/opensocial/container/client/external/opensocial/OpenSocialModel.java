@@ -11,10 +11,10 @@ import org.nuxeo.opensocial.container.shared.webcontent.OpenSocialData;
  */
 public class OpenSocialModel implements HasPermissions {
     private OpenSocialData data;
+
     private Map<String, Boolean> permissions;
 
-    public OpenSocialModel(OpenSocialData data,
-            Map<String, Boolean> permissions) {
+    public OpenSocialModel(OpenSocialData data, Map<String, Boolean> permissions) {
         this.data = data;
         this.permissions = permissions;
         computeFrameUrl();
@@ -34,7 +34,8 @@ public class OpenSocialModel implements HasPermissions {
 
     protected void computeFrameUrl() {
         String url = data.getFrameUrl();
-        url = url.replace("lang=ALL", "lang=" + ContainerConfiguration.getUserLanguage());
+        url = url.replace("lang=ALL",
+                "lang=" + ContainerConfiguration.getUserLanguage());
         data.setFrameUrl(url);
     }
 

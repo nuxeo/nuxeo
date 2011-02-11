@@ -6,15 +6,15 @@ import com.google.gwt.event.shared.GwtEvent;
  * @author Stéphane Fourrier
  */
 public class SideBarChangedEvent extends GwtEvent<SideBarChangedEventHandler> {
-	public static Type<SideBarChangedEventHandler> TYPE = new Type<SideBarChangedEventHandler>();
+    public static Type<SideBarChangedEventHandler> TYPE = new Type<SideBarChangedEventHandler>();
 
-	@Override
-	public com.google.gwt.event.shared.GwtEvent.Type<SideBarChangedEventHandler> getAssociatedType() {
-		return TYPE;
-	}
+    @Override
+    public com.google.gwt.event.shared.GwtEvent.Type<SideBarChangedEventHandler> getAssociatedType() {
+        return TYPE;
+    }
 
-	@Override
-	protected void dispatch(SideBarChangedEventHandler handler) {
-		handler.onChangeSideBarPosition(this);
-	}
+    @Override
+    protected void dispatch(SideBarChangedEventHandler handler) {
+        handler.onChangeSideBarPosition(this);
+    }
 }

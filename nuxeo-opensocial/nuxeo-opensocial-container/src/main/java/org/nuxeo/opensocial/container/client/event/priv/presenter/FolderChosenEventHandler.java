@@ -6,5 +6,5 @@ import com.google.gwt.event.shared.EventHandler;
  * @author Stéphane Fourrier
  */
 public interface FolderChosenEventHandler extends EventHandler {
-	void onFolderChosen(FolderChosenEvent event);
+    void onFolderChosen(FolderChosenEvent event);
 }

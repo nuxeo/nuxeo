@@ -58,49 +58,49 @@ public class DocSpaceTest extends SQLRepositoryTestCase {
         assertEquals("Home", space.getTitle());
     }
 
-//    @SuppressWarnings("deprecation")
-//    @Test
-//    public void iCanCreateAUrlGadget() throws Exception {
-//
-//        List<Space> spaces = spaceManager.getSpacesForUnivers(univers, session);
-//        assertEquals(1, spaces.size());
-//
-//        Space space = spaces.get(0);
-//        assertEquals(0, space.getGadgets().size());
-//        Gadget gadget = space.createGadget(new URL(
-//                "http://localhost:8080/gadgetDef.xml"));
-//        assertNotNull("gadget");
-//
-//        List<Gadget> gadgets = space.getGadgets();
-//        assertEquals(1, gadgets.size());
-//        gadget = gadgets.get(0);
-//        assertEquals(null, gadget.getName());
-//        assertEquals("http://localhost:8080/gadgetDef.xml",
-//                gadget.getDefinitionUrl().toString());
-//    }
+    // @SuppressWarnings("deprecation")
+    // @Test
+    // public void iCanCreateAUrlGadget() throws Exception {
+    //
+    // List<Space> spaces = spaceManager.getSpacesForUnivers(univers, session);
+    // assertEquals(1, spaces.size());
+    //
+    // Space space = spaces.get(0);
+    // assertEquals(0, space.getGadgets().size());
+    // Gadget gadget = space.createGadget(new URL(
+    // "http://localhost:8080/gadgetDef.xml"));
+    // assertNotNull("gadget");
+    //
+    // List<Gadget> gadgets = space.getGadgets();
+    // assertEquals(1, gadgets.size());
+    // gadget = gadgets.get(0);
+    // assertEquals(null, gadget.getName());
+    // assertEquals("http://localhost:8080/gadgetDef.xml",
+    // gadget.getDefinitionUrl().toString());
+    // }
 
-//    @SuppressWarnings("deprecation")
-//    @Test
-//    public void iCanChangePrefs() throws Exception {
-//
-//        Space space = spaceManager.getSpacesForUnivers(univers, session).get(0);
-//        Gadget gadget = space.createGadget(new URL(
-//                "http://localhost:8080/gadgetDef.xml"));
-//        assertNotNull("gadget");
-//
-//        Map<String, String> prefs = new HashMap<String, String>();
-//        prefs.put("pref", "test");
-//        gadget.setPreferences(prefs);
-//        space.save(gadget);
-//
-//        String gadgetId = gadget.getId();
-//
-//        DocumentModel doc = session.getDocument(new IdRef(gadgetId));
-//        gadget = doc.getAdapter(Gadget.class);
-//
-//        assertEquals("test", gadget.getPref("pref"));
-//
-//    }
+    // @SuppressWarnings("deprecation")
+    // @Test
+    // public void iCanChangePrefs() throws Exception {
+    //
+    // Space space = spaceManager.getSpacesForUnivers(univers, session).get(0);
+    // Gadget gadget = space.createGadget(new URL(
+    // "http://localhost:8080/gadgetDef.xml"));
+    // assertNotNull("gadget");
+    //
+    // Map<String, String> prefs = new HashMap<String, String>();
+    // prefs.put("pref", "test");
+    // gadget.setPreferences(prefs);
+    // space.save(gadget);
+    //
+    // String gadgetId = gadget.getId();
+    //
+    // DocumentModel doc = session.getDocument(new IdRef(gadgetId));
+    // gadget = doc.getAdapter(Gadget.class);
+    //
+    // assertEquals("test", gadget.getPref("pref"));
+    //
+    // }
 
     @Test
     public void layoutIsInitialized() throws Exception {

@@ -24,7 +24,8 @@ import java.net.URL;
 
 import org.nuxeo.opensocial.gadgets.service.api.GadgetDeclaration;
 
-public class ExternalGadgetDescriptor extends BaseGadgetDescriptor implements GadgetDeclaration {
+public class ExternalGadgetDescriptor extends BaseGadgetDescriptor implements
+        GadgetDeclaration {
 
     private static final long serialVersionUID = 1L;
 

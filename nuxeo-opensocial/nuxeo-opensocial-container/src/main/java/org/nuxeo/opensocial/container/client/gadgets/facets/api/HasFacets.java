@@ -6,7 +6,7 @@ import java.util.List;
  * @author Stéphane Fourrier
  */
 public interface HasFacets {
-	List<Facet> getFacets();
+    List<Facet> getFacets();
 
-	void addFacet(Facet facet);
+    void addFacet(Facet facet);
 }

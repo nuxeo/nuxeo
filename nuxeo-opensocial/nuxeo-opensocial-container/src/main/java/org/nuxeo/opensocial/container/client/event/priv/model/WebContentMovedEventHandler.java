@@ -6,5 +6,5 @@ import com.google.gwt.event.shared.EventHandler;
  * @author Stéphane Fourrier
  */
 public interface WebContentMovedEventHandler extends EventHandler {
-	void onWebContentHasMoved(WebContentMovedEvent event);
+    void onWebContentHasMoved(WebContentMovedEvent event);
 }

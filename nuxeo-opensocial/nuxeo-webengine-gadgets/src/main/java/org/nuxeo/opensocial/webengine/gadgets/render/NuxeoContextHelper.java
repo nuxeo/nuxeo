@@ -20,18 +20,18 @@ public class NuxeoContextHelper {
     protected String defaultRepoName;
 
     public static NuxeoContextHelper getInstance() {
-        if (instance==null) {
+        if (instance == null) {
             instance = new NuxeoContextHelper();
         }
         return instance;
     }
 
     public boolean isMultiRepository() {
-        return getRepos().size()>1;
+        return getRepos().size() > 1;
     }
 
     public Map<String, String> getRepos() {
-        if (repoNames==null) {
+        if (repoNames == null) {
             fetchContextInfo();
         }
         return repoNames;
@@ -46,7 +46,7 @@ public class NuxeoContextHelper {
     }
 
     public String getDefaultRepoName() {
-        if (defaultRepoName==null) {
+        if (defaultRepoName == null) {
             fetchContextInfo();
         }
         return defaultRepoName;
@@ -66,15 +66,13 @@ public class NuxeoContextHelper {
                     defaultRepoName = repo.getName();
                 }
             }
-        }
-        catch (Exception e) {
-        }
-        finally {
-            if (loginContext!=null) {
+        } catch (Exception e) {
+        } finally {
+            if (loginContext != null) {
                 try {
                     loginContext.logout();
                 } catch (LoginException e) {
-                   // NOP
+                    // NOP
                 }
             }
         }

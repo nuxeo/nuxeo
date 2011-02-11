@@ -8,7 +8,8 @@ public interface SimplePermissionMapper {
     public Map<String, Map<String, Boolean>> getPermissions()
             throws ClientException;
 
-    public Map<String, Boolean> getPermissions(String id) throws ClientException;
+    public Map<String, Boolean> getPermissions(String id)
+            throws ClientException;
 
     public Boolean hasPermission(String id, String permission)
             throws ClientException;

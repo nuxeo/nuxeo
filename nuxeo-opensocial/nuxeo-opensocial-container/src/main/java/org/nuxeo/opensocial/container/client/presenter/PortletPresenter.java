@@ -1,12 +1,5 @@
 package org.nuxeo.opensocial.container.client.presenter;
 
-import net.customware.gwt.presenter.client.EventBus;
-import net.customware.gwt.presenter.client.Presenter;
-import net.customware.gwt.presenter.client.place.Place;
-import net.customware.gwt.presenter.client.place.PlaceRequest;
-import net.customware.gwt.presenter.client.widget.WidgetDisplay;
-import net.customware.gwt.presenter.client.widget.WidgetPresenter;
-
 import org.nuxeo.opensocial.container.client.gadgets.facets.IsCollapsable;
 import org.nuxeo.opensocial.container.client.gadgets.facets.IsMaximizable;
 import org.nuxeo.opensocial.container.client.gadgets.facets.api.Facet;
@@ -24,6 +17,13 @@ import com.google.gwt.event.dom.client.HasMouseUpHandlers;
 import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
+
+import net.customware.gwt.presenter.client.EventBus;
+import net.customware.gwt.presenter.client.Presenter;
+import net.customware.gwt.presenter.client.place.Place;
+import net.customware.gwt.presenter.client.place.PlaceRequest;
+import net.customware.gwt.presenter.client.widget.WidgetDisplay;
+import net.customware.gwt.presenter.client.widget.WidgetPresenter;
 
 /**
  * @author Stéphane Fourrier
@@ -60,6 +60,7 @@ public class PortletPresenter extends WidgetPresenter<PortletPresenter.Display> 
     }
 
     private WebContentData data;
+
     private Presenter contentPresenter;
 
     @Inject
@@ -76,14 +77,14 @@ public class PortletPresenter extends WidgetPresenter<PortletPresenter.Display> 
     private void fetchLayoutContent() {
         display.addContent(((WidgetDisplay) contentPresenter.getDisplay()).asWidget());
 
-        display.setBorderColor(data.getPreferences()
-                .get(DefaultPortletPreference.WC_BORDER_COLOR.toString()));
+        display.setBorderColor(data.getPreferences().get(
+                DefaultPortletPreference.WC_BORDER_COLOR.toString()));
 
-        display.setHeaderColor(data.getPreferences()
-                .get(DefaultPortletPreference.WC_HEADER_COLOR.toString()));
+        display.setHeaderColor(data.getPreferences().get(
+                DefaultPortletPreference.WC_HEADER_COLOR.toString()));
 
-        display.setTitleColor(data.getPreferences()
-                .get(DefaultPortletPreference.WC_TITLE_COLOR.toString()));
+        display.setTitleColor(data.getPreferences().get(
+                DefaultPortletPreference.WC_TITLE_COLOR.toString()));
 
         display.setId(data.getId());
 
@@ -158,18 +159,18 @@ public class PortletPresenter extends WidgetPresenter<PortletPresenter.Display> 
     }
 
     public String getTitleColor() {
-        return data.getPreferences()
-                .get(DefaultPortletPreference.WC_TITLE_COLOR.toString());
+        return data.getPreferences().get(
+                DefaultPortletPreference.WC_TITLE_COLOR.toString());
     }
 
     public String getBorderColor() {
-        return data.getPreferences()
-                .get(DefaultPortletPreference.WC_BORDER_COLOR.toString());
+        return data.getPreferences().get(
+                DefaultPortletPreference.WC_BORDER_COLOR.toString());
     }
 
     public String getHeaderColor() {
-        return data.getPreferences()
-                .get(DefaultPortletPreference.WC_HEADER_COLOR.toString());
+        return data.getPreferences().get(
+                DefaultPortletPreference.WC_HEADER_COLOR.toString());
     }
 
     public void setTitle(String title) {

@@ -16,6 +16,7 @@ import net.customware.gwt.dispatch.shared.Result;
 public class ContainerDispatchAsync implements DispatchAsync {
 
     private static final DispatchServiceAsync realService = GWT.create(DispatchService.class);
+
     private static final String dispatchUrl = "/nuxeo/gwtContainer/dispatch";
 
     public ContainerDispatchAsync() {

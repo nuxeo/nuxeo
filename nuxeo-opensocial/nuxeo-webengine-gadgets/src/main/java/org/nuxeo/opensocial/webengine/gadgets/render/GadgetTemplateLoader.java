@@ -27,7 +27,8 @@ import org.nuxeo.common.utils.FileUtils;
 import freemarker.cache.StringTemplateLoader;
 
 /**
- * Specific template loader that fallsback to lookup in skin/resources/ftl for common template files
+ * Specific template loader that fallsback to lookup in skin/resources/ftl for
+ * common template files
  *
  * @author Tiry (tdelprat@nuxeo.com)
  *
@@ -40,10 +41,11 @@ public class GadgetTemplateLoader extends StringTemplateLoader {
     public Object findTemplateSource(String name) {
         Object template = super.findTemplateSource(name);
 
-        if (template==null) {
+        if (template == null) {
             // fallback to lookup in common resources
-            InputStream stream = GadgetTemplateLoader.class.getClassLoader().getResourceAsStream("skin/resources/ftl/" + name);
-            if (stream!=null) {
+            InputStream stream = GadgetTemplateLoader.class.getClassLoader().getResourceAsStream(
+                    "skin/resources/ftl/" + name);
+            if (stream != null) {
                 try {
                     String templateSource = FileUtils.read(stream);
                     super.putTemplate(name, templateSource);

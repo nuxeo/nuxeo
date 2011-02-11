@@ -101,8 +101,7 @@ public class YUILayoutImpl implements YUILayout, Serializable {
 
         setContent(new YUIContentImpl());
         YUIContentImpl content = getContent();
-        for (YUIComponent component : layout.getContent()
-                .getComponents()) {
+        for (YUIComponent component : layout.getContent().getComponents()) {
             content.addComponent((YUIComponent) component.getACopyFor());
         }
     }

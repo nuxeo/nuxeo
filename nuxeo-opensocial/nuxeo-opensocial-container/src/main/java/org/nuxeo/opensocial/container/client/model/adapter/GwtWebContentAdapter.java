@@ -1,9 +1,5 @@
 package org.nuxeo.opensocial.container.client.model.adapter;
 
-import net.customware.gwt.presenter.client.EventBus;
-import net.customware.gwt.presenter.client.Presenter;
-import net.customware.gwt.presenter.client.widget.WidgetDisplay;
-
 import org.nuxeo.opensocial.container.client.Container;
 import org.nuxeo.opensocial.container.client.gin.ClientInjector;
 import org.nuxeo.opensocial.container.client.presenter.CustomWebContentPresenter;
@@ -11,6 +7,10 @@ import org.nuxeo.opensocial.container.client.presenter.PortletPresenter;
 import org.nuxeo.opensocial.container.client.view.CustomWebContentWidget;
 import org.nuxeo.opensocial.container.client.view.PortletWidget;
 import org.nuxeo.opensocial.container.shared.webcontent.WebContentData;
+
+import net.customware.gwt.presenter.client.EventBus;
+import net.customware.gwt.presenter.client.Presenter;
+import net.customware.gwt.presenter.client.widget.WidgetDisplay;
 
 /**
  * @author Stéphane Fourrier
@@ -21,14 +21,15 @@ public class GwtWebContentAdapter {
     private Presenter containerPresenter;
 
     private EventBus eventBus;
+
     private WebContentData data;
 
     public GwtWebContentAdapter(WebContentData webContentData, EventBus eventBus) {
         this.data = webContentData;
         this.eventBus = eventBus;
 
-        Presenter webContentPresenter = injector.getGadgetFactory()
-                .getPresenterFor(webContentData);
+        Presenter webContentPresenter = injector.getGadgetFactory().getPresenterFor(
+                webContentData);
 
         webContentPresenter.bind();
 

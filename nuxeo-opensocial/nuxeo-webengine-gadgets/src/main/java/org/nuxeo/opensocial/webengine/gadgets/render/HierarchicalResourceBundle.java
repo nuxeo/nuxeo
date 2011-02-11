@@ -13,9 +13,12 @@ public class HierarchicalResourceBundle extends PropertyResourceBundle {
         this.parent = getCommonBundle();
     }
 
-    protected static PropertyResourceBundle getCommonBundle() throws IOException {
-        if (commonBundle==null) {
-            commonBundle = new PropertyResourceBundle(HierarchicalResourceBundle.class.getClassLoader().getResourceAsStream("skin/resources/i18n/common_messages.properties"));
+    protected static PropertyResourceBundle getCommonBundle()
+            throws IOException {
+        if (commonBundle == null) {
+            commonBundle = new PropertyResourceBundle(
+                    HierarchicalResourceBundle.class.getClassLoader().getResourceAsStream(
+                            "skin/resources/i18n/common_messages.properties"));
         }
         return commonBundle;
     }

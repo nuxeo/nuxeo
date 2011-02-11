@@ -19,21 +19,21 @@ import com.google.gwt.user.client.ui.FlowPanel;
  * @author Stéphane Fourrier
  */
 public class CustomFlowPanel extends FlowPanel implements HasMouseDownHandlers,
-HasMouseUpHandlers, HasMouseMoveHandlers, HasMouseOutHandlers {
+        HasMouseUpHandlers, HasMouseMoveHandlers, HasMouseOutHandlers {
 
-	public HandlerRegistration addMouseDownHandler(MouseDownHandler handler) {
-		return addDomHandler(handler, MouseDownEvent.getType());
-	}
+    public HandlerRegistration addMouseDownHandler(MouseDownHandler handler) {
+        return addDomHandler(handler, MouseDownEvent.getType());
+    }
 
-	public HandlerRegistration addMouseUpHandler(MouseUpHandler handler) {
-		return addDomHandler(handler, MouseUpEvent.getType());
-	}
+    public HandlerRegistration addMouseUpHandler(MouseUpHandler handler) {
+        return addDomHandler(handler, MouseUpEvent.getType());
+    }
 
-	public HandlerRegistration addMouseMoveHandler(MouseMoveHandler handler) {
-		return addDomHandler(handler, MouseMoveEvent.getType());
-	}
+    public HandlerRegistration addMouseMoveHandler(MouseMoveHandler handler) {
+        return addDomHandler(handler, MouseMoveEvent.getType());
+    }
 
-	public HandlerRegistration addMouseOutHandler(MouseOutHandler handler) {
-		return addDomHandler(handler, MouseOutEvent.getType());
-	}
+    public HandlerRegistration addMouseOutHandler(MouseOutHandler handler) {
+        return addDomHandler(handler, MouseOutEvent.getType());
+    }
 }

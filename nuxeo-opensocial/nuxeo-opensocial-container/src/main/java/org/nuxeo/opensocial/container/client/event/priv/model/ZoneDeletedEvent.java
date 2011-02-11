@@ -6,25 +6,25 @@ import com.google.gwt.event.shared.GwtEvent;
  * @author Stéphane Fourrier
  */
 public class ZoneDeletedEvent extends GwtEvent<ZoneRowDeletedEventHandler> {
-	public static Type<ZoneRowDeletedEventHandler> TYPE = new Type<ZoneRowDeletedEventHandler>();
-	
-	private final int id;
+    public static Type<ZoneRowDeletedEventHandler> TYPE = new Type<ZoneRowDeletedEventHandler>();
 
-	public ZoneDeletedEvent(int id) {
-		this.id = id;
-	}
+    private final int id;
 
-	public int getId() {
-		return id;
-	}
-	
-	@Override
-	public com.google.gwt.event.shared.GwtEvent.Type<ZoneRowDeletedEventHandler> getAssociatedType() {
-		return TYPE;
-	}
+    public ZoneDeletedEvent(int id) {
+        this.id = id;
+    }
 
-	@Override
-	protected void dispatch(ZoneRowDeletedEventHandler handler) {
-		handler.onRowDeleted(this);
-	}
+    public int getId() {
+        return id;
+    }
+
+    @Override
+    public com.google.gwt.event.shared.GwtEvent.Type<ZoneRowDeletedEventHandler> getAssociatedType() {
+        return TYPE;
+    }
+
+    @Override
+    protected void dispatch(ZoneRowDeletedEventHandler handler) {
+        handler.onRowDeleted(this);
+    }
 }

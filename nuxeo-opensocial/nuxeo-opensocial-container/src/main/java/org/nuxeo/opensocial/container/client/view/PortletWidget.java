@@ -29,8 +29,11 @@ public class PortletWidget extends Composite implements
     private FlowPanel portletPanel;
 
     private SimplePanel headerPanel;
+
     private HorizontalPanel headerContent;
+
     private FlowPanel contentPanel;
+
     private HTML title;
 
     public PortletWidget() {
@@ -91,19 +94,15 @@ public class PortletWidget extends Composite implements
     }
 
     public String getId() {
-        return this.getElement()
-                .getAttribute("id");
+        return this.getElement().getAttribute("id");
     }
 
     public String getParentId() {
-        return this.getElement()
-                .getParentElement()
-                .getAttribute("id");
+        return this.getElement().getParentElement().getAttribute("id");
     }
 
     public void setId(String id) {
-        this.getElement()
-                .setAttribute("id", id);
+        this.getElement().setAttribute("id", id);
     }
 
     public void addContent(Widget widget) {
@@ -116,49 +115,32 @@ public class PortletWidget extends Composite implements
 
     public void setBorderColor(String color) {
         if (color != null) {
-            this.getElement()
-                    .getStyle()
-                    .setBorderColor(color);
-            this.getElement()
-                    .getStyle()
-                    .setBorderWidth(1, Unit.PX);
+            this.getElement().getStyle().setBorderColor(color);
+            this.getElement().getStyle().setBorderWidth(1, Unit.PX);
         } else {
-            this.getElement()
-                    .getStyle()
-                    .clearBorderColor();
-            this.getElement()
-                    .getStyle()
-                    .clearBorderWidth();
+            this.getElement().getStyle().clearBorderColor();
+            this.getElement().getStyle().clearBorderWidth();
         }
     }
 
     public void setHeaderColor(String color) {
         if (color != null) {
-            headerPanel.getElement()
-                    .getStyle()
-                    .setProperty(
-                            "background",
-                            "-moz-linear-gradient(center top , " + color
-                                    + " 0%, " + color
-                                    + " 100%) repeat scroll 0 0 transparent");
+            headerPanel.getElement().getStyle().setProperty(
+                    "background",
+                    "-moz-linear-gradient(center top , " + color + " 0%, "
+                            + color + " 100%) repeat scroll 0 0 transparent");
         } else {
-            headerPanel.getElement()
-                    .getStyle()
-                    .setProperty(
-                            "background",
-                            "-moz-linear-gradient(center top , transparent 0%, transparent 100%) repeat scroll 0 0 transparent");
+            headerPanel.getElement().getStyle().setProperty(
+                    "background",
+                    "-moz-linear-gradient(center top , transparent 0%, transparent 100%) repeat scroll 0 0 transparent");
         }
     }
 
     public void setTitleColor(String color) {
         if (color != null) {
-            title.getElement()
-                    .getStyle()
-                    .setColor(color);
+            title.getElement().getStyle().setColor(color);
         } else {
-            title.getElement()
-                    .getStyle()
-                    .clearColor();
+            title.getElement().getStyle().clearColor();
         }
     }
 

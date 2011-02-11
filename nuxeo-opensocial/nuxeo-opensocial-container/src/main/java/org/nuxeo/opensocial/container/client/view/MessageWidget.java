@@ -14,55 +14,56 @@ import com.google.gwt.user.client.ui.Widget;
 /**
  * @author Stéphane Fourrier
  */
-public class MessageWidget extends Composite
-		implements
-			MessagePresenter.Display {
+public class MessageWidget extends Composite implements
+        MessagePresenter.Display {
 
-	private final AbsolutePanel panel;
-	private Label message;
+    private final AbsolutePanel panel;
 
-	private AbsolutePanel innerPanel;
+    private Label message;
 
-	public MessageWidget() {
-		panel = new AbsolutePanel();
-		panel.getElement().getStyle().setPosition(Position.FIXED);
-		panel.setWidth(Window.getClientWidth() + "px");
+    private AbsolutePanel innerPanel;
 
-		innerPanel = new AbsolutePanel();
-		innerPanel.setStyleName("messenger");
-		innerPanel.setWidth("400px");
-		innerPanel.getElement().getStyle().setOpacity(0.80);
-		panel.add(innerPanel);
+    public MessageWidget() {
+        panel = new AbsolutePanel();
+        panel.getElement().getStyle().setPosition(Position.FIXED);
+        panel.setWidth(Window.getClientWidth() + "px");
 
-		message = new Label("");
-		innerPanel.add(message);
+        innerPanel = new AbsolutePanel();
+        innerPanel.setStyleName("messenger");
+        innerPanel.setWidth("400px");
+        innerPanel.getElement().getStyle().setOpacity(0.80);
+        panel.add(innerPanel);
 
-		initWidget(panel);
-	}
+        message = new Label("");
+        innerPanel.add(message);
 
-	public HasText getMessageBox() {
-		return (HasText) message;
-	}
+        initWidget(panel);
+    }
 
-	public void showMessage() {
-		panel.getElement().getStyle().setTop(0, Unit.PX);
-		panel.setVisible(true);
-	}
-	public void hideMessage() {
-		panel.setVisible(false);
-	}
+    public HasText getMessageBox() {
+        return (HasText) message;
+    }
 
-	public void setPriorityColor(String color) {
-		innerPanel.getElement().getStyle().setBackgroundColor(color);
-	}
+    public void showMessage() {
+        panel.getElement().getStyle().setTop(0, Unit.PX);
+        panel.setVisible(true);
+    }
 
-	public Widget asWidget() {
-		return this;
-	}
+    public void hideMessage() {
+        panel.setVisible(false);
+    }
 
-	public void startProcessing() {
-	}
+    public void setPriorityColor(String color) {
+        innerPanel.getElement().getStyle().setBackgroundColor(color);
+    }
 
-	public void stopProcessing() {
-	}
+    public Widget asWidget() {
+        return this;
+    }
+
+    public void startProcessing() {
+    }
+
+    public void stopProcessing() {
+    }
 }

@@ -61,8 +61,7 @@ public class OpenSocialNuxeoLauncher extends NuxeoLauncher {
             user.put("password", "Administrator");
 
             RepositoryManager m = Framework.getService(RepositoryManager.class);
-            CoreSession session = m.getRepository("default")
-                    .open(user);
+            CoreSession session = m.getRepository("default").open(user);
             DocumentModel doc = session.getDocument(new PathRef("/"));
             ACPImpl acp = new ACPImpl();
             ACLImpl acl = new ACLImpl(ACL.LOCAL_ACL);

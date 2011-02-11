@@ -8,7 +8,8 @@ import org.nuxeo.opensocial.container.shared.webcontent.WebContentData;
  * @author Stéphane Fourrier
  */
 public interface WebContentDAO<T extends WebContentData> {
-    T create(T webContent, String parentId, CoreSession session) throws Exception;
+    T create(T webContent, String parentId, CoreSession session)
+            throws Exception;
 
     T read(DocumentModel doc, CoreSession session) throws Exception;
 

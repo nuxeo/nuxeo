@@ -41,15 +41,14 @@ import org.nuxeo.opensocial.gadgets.service.InternalGadgetDescriptor;
  *
  * 2 modes are supported :
  *
- *  Static mode :
+ * Static mode :
  *
- *  gadget has to statically include the Local headers and associated files
+ * gadget has to statically include the Local headers and associated files
  *
- *  Dynamic mode :
- *  gadget only includes a dynamic_messages.properties
- *  This file is used to know what labels are used by the gadget (and provide default valude)
- *  The Headers in Gadgets specs and associated XML files will be dynamically generated using
- *  the message bundles used by Nuxeo app.
+ * Dynamic mode : gadget only includes a dynamic_messages.properties This file
+ * is used to know what labels are used by the gadget (and provide default
+ * valude) The Headers in Gadgets specs and associated XML files will be
+ * dynamically generated using the message bundles used by Nuxeo app.
  *
  * @author Tiry (tdelprat@nuxeo.com)
  *
@@ -62,11 +61,13 @@ public class Gadgeti18n {
 
     protected Map<String, Boolean> isDynamicTranslation = new HashMap<String, Boolean>();
 
-    protected String[] langs = {"en","fr","de","it","es","pt","pl","eu","ru","ar","cn","ja","vn"};
+    protected String[] langs = { "en", "fr", "de", "it", "es", "pt", "pl",
+            "eu", "ru", "ar", "cn", "ja", "vn" };
 
     protected List<Locale> supportedLang;
 
-    public InputStream getTranslationFile(InternalGadgetDescriptor gadget, String fileName) throws IOException {
+    public InputStream getTranslationFile(InternalGadgetDescriptor gadget,
+            String fileName) throws IOException {
         if (usesDynamicTranslation(gadget)) {
             return loadDynamicFile(gadget, fileName);
         } else {
@@ -75,7 +76,7 @@ public class Gadgeti18n {
     }
 
     public List<Locale> getSupportedLangs() {
-        if (supportedLang==null) {
+        if (supportedLang == null) {
             supportedLang = new ArrayList<Locale>();
             for (String lang : langs) {
                 supportedLang.add(new Locale(lang));
@@ -86,11 +87,11 @@ public class Gadgeti18n {
 
     protected boolean usesDynamicTranslation(InternalGadgetDescriptor gadget) {
         Boolean isDynamic = isDynamicTranslation.get(gadget.getName());
-        if (isDynamic==null) {
+        if (isDynamic == null) {
             try {
                 InputStream dynDescriptor = gadget.getResourceAsStream(DYN_TRANSLATION_FILE);
                 generateDynamicTranslations(gadget, dynDescriptor);
-                isDynamic=true;
+                isDynamic = true;
             } catch (IOException e) {
                 isDynamic = false;
             }
@@ -99,37 +100,43 @@ public class Gadgeti18n {
         return isDynamic;
     }
 
-    protected File getDynamicFile(InternalGadgetDescriptor gadget, String fileName) throws IOException {
+    protected File getDynamicFile(InternalGadgetDescriptor gadget,
+            String fileName) throws IOException {
 
-        File targetDirectory = new File (System.getProperty("java.io.tmpdir", "/tmp") + "/gadget-cache-" + gadget.getName());
+        File targetDirectory = new File(System.getProperty("java.io.tmpdir",
+                "/tmp") + "/gadget-cache-" + gadget.getName());
         if (!targetDirectory.exists()) {
             targetDirectory.mkdir();
         }
         return new File(targetDirectory.getAbsolutePath() + "/" + fileName);
     }
 
-    protected InputStream loadDynamicFile(InternalGadgetDescriptor gadget, String fileName) throws IOException {
+    protected InputStream loadDynamicFile(InternalGadgetDescriptor gadget,
+            String fileName) throws IOException {
 
         File resource = getDynamicFile(gadget, fileName);
 
-        if (resource==null || ! resource.exists()) {
+        if (resource == null || !resource.exists()) {
             return new ByteArrayInputStream(EMPTY_I18N_FILE.getBytes("UTF-8"));
         }
         return new FileInputStream(resource);
     }
 
+    protected void generateDynamicTranslations(InternalGadgetDescriptor gadget,
+            InputStream dynDescriptor) throws IOException {
 
-    protected void generateDynamicTranslations(InternalGadgetDescriptor gadget, InputStream dynDescriptor) throws IOException {
-
-        PropertyResourceBundle descriptor = new HierarchicalResourceBundle(dynDescriptor);
+        PropertyResourceBundle descriptor = new HierarchicalResourceBundle(
+                dynDescriptor);
 
         for (Locale locale : getSupportedLangs()) {
             ResourceBundle bundle = ResourceBundle.getBundle("messages", locale);
 
-            File messageFile = getDynamicFile(gadget, "messages_" + locale.toString() + ".xml");
+            File messageFile = getDynamicFile(gadget,
+                    "messages_" + locale.toString() + ".xml");
             Enumeration<String> keys = descriptor.getKeys();
 
-            PrintWriter printer = new PrintWriter(new FileOutputStream(messageFile));
+            PrintWriter printer = new PrintWriter(new FileOutputStream(
+                    messageFile));
 
             try {
                 printer.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
@@ -140,12 +147,11 @@ public class Gadgeti18n {
                     String key = keys.nextElement();
                     String value = null;
                     try {
-                       value = bundle.getString(key);
-                    }
-                    catch (MissingResourceException e) {
+                        value = bundle.getString(key);
+                    } catch (MissingResourceException e) {
                         value = descriptor.getString(key);
                     }
-                    if (value!=null) {
+                    if (value != null) {
                         printer.print("<msg name=\"");
                         printer.print(key);
                         printer.print("\">");
@@ -154,8 +160,7 @@ public class Gadgeti18n {
                     }
                 }
                 printer.println("</messagebundle>");
-            }
-            finally {
+            } finally {
                 printer.close();
             }
 

@@ -6,5 +6,5 @@ import com.google.gwt.event.shared.EventHandler;
  * @author Stéphane Fourrier
  */
 public interface WebContentsLoadedEventHandler extends EventHandler {
-	void onWebContentsLoaded(WebContentsLoadedEvent event);
+    void onWebContentsLoaded(WebContentsLoadedEvent event);
 }

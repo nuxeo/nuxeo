@@ -83,8 +83,7 @@ public class DocSpaceImpl implements Space {
     }
 
     public String getViewer() {
-        return session().getPrincipal()
-                .getName();
+        return session().getPrincipal().getName();
     }
 
     public String getTitle() throws ClientException {
@@ -107,7 +106,8 @@ public class DocSpaceImpl implements Space {
     }
 
     public boolean isReadOnly() throws ClientException {
-        //return !doc.getAdapter(DocPermissions.class).hasPermission(SecurityConstants.WRITE);
+        // return
+        // !doc.getAdapter(DocPermissions.class).hasPermission(SecurityConstants.WRITE);
         return false;
     }
 
@@ -152,7 +152,7 @@ public class DocSpaceImpl implements Space {
             throw new ClientException("Unable to get Space Manager", e);
         }
         IdRef idRef = new IdRef(data.getUnitId());
-        //TODO test of the existence idRef should be done in the service !
+        // TODO test of the existence idRef should be done in the service !
         if (session().exists(idRef)) {
             DocumentModel unitDoc = session().getDocument(idRef);
             try {
@@ -295,9 +295,9 @@ public class DocSpaceImpl implements Space {
         doc.setPropertyValue("dc:valid", datePublication);
     }
 
-//    public DocPermissions getPermissionsAdapter() {
-//    	return doc.getAdapter(DocPermissions.class);
-//    }
+    // public DocPermissions getPermissionsAdapter() {
+    // return doc.getAdapter(DocPermissions.class);
+    // }
 
     // TODO ******************************************************************
 

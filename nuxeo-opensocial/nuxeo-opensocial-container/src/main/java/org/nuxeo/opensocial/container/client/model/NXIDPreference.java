@@ -7,10 +7,10 @@ public class NXIDPreference extends JavaScriptObject {
     }
 
     final public native String getNXId() /*-{
-        return this.NXID;
-    }-*/;
+                                         return this.NXID;
+                                         }-*/;
 
     final public native String getNXName() /*-{
-        return this.NXNAME;
-    }-*/;
+                                           return this.NXNAME;
+                                           }-*/;
 }

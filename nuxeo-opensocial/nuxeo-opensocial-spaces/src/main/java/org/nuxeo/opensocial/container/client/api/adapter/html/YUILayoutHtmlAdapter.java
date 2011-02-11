@@ -31,6 +31,7 @@ public class YUILayoutHtmlAdapter implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private static final String HEADER_ID = "hd";
+
     private static final String FOOTER_ID = "ft";
 
     private YUILayout layout;
@@ -41,9 +42,8 @@ public class YUILayoutHtmlAdapter implements Serializable {
 
     public String toHtml() {
         StringBuilder sb = new StringBuilder("<div id=\""
-                + layout.getBodySize()
-                        .getCSS() + "\" class=\"" + layout.getSidebarStyle()
-                        .getCSS() + "\">\n");
+                + layout.getBodySize().getCSS() + "\" class=\""
+                + layout.getSidebarStyle().getCSS() + "\">\n");
 
         if (layout.getHeader() != null) {
             sb.append("\t<div id=\"" + HEADER_ID + "\">\n");
@@ -51,22 +51,18 @@ public class YUILayoutHtmlAdapter implements Serializable {
             sb.append("\t</div>\n");
         }
 
-        sb.append("\t<div id=\"" + layout.getContent()
-                .getId() + "\">\n");
+        sb.append("\t<div id=\"" + layout.getContent().getId() + "\">\n");
         sb.append("\t\t<div id=\"yui-main\">\n");
         sb.append("\t\t\t<div class=\"yui-b\">\n");
 
-        for (YUIComponent component : layout.getContent()
-                .getComponents()) {
+        for (YUIComponent component : layout.getContent().getComponents()) {
             sb.append(getComponentAsHtml(component));
         }
 
         sb.append("\t\t\t</div>\n");
         sb.append("\t\t</div>\n");
 
-        if (!layout.getSidebarStyle()
-                .toString()
-                .equals("YUI_SB_NO_COLUMN")) {
+        if (!layout.getSidebarStyle().toString().equals("YUI_SB_NO_COLUMN")) {
             sb.append("\t\t<div class=\"yui-b\">\n");
             sb.append("\t\t\t<!-- Sidebar here -->\n");
             sb.append("\t\t</div>\n");

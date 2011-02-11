@@ -6,5 +6,5 @@ import com.google.gwt.event.shared.EventHandler;
  * @author Stéphane Fourrier
  */
 public interface WebContentAddedEventHandler extends EventHandler {
-	void onAddWebContent(WebContentAddedEvent event);
+    void onAddWebContent(WebContentAddedEvent event);
 }

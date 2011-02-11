@@ -4,12 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.customware.gwt.presenter.client.EventBus;
-import net.customware.gwt.presenter.client.place.Place;
-import net.customware.gwt.presenter.client.place.PlaceRequest;
-import net.customware.gwt.presenter.client.widget.WidgetDisplay;
-import net.customware.gwt.presenter.client.widget.WidgetPresenter;
-
 import org.nuxeo.opensocial.container.client.ContainerConstants;
 import org.nuxeo.opensocial.container.client.api.adapter.html.YUILayoutHtmlAdapter;
 import org.nuxeo.opensocial.container.client.event.priv.app.SendMessageEvent;
@@ -38,6 +32,12 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.inject.Inject;
+
+import net.customware.gwt.presenter.client.EventBus;
+import net.customware.gwt.presenter.client.place.Place;
+import net.customware.gwt.presenter.client.place.PlaceRequest;
+import net.customware.gwt.presenter.client.widget.WidgetDisplay;
+import net.customware.gwt.presenter.client.widget.WidgetPresenter;
 
 /**
  * @author Stéphane Fourrier
@@ -115,8 +115,7 @@ public class ContainerBuilderPresenter extends
     }
 
     private void setHeader() {
-        if (model.getLayout()
-                .getHeader() != null) {
+        if (model.getLayout().getHeader() != null) {
             display.setHeader(true);
         } else {
             display.setHeader(false);
@@ -125,8 +124,7 @@ public class ContainerBuilderPresenter extends
     }
 
     private void setFooter() {
-        if (model.getLayout()
-                .getFooter() != null) {
+        if (model.getLayout().getFooter() != null) {
             display.setFooter(true);
         } else {
             display.setHeader(false);
@@ -138,36 +136,33 @@ public class ContainerBuilderPresenter extends
         int position = 0;
 
         for (YUISize size : sizeValues) {
-            display.getContainerSizeListBox()
-                    .addValue(size.getDescription(), size.name());
+            display.getContainerSizeListBox().addValue(size.getDescription(),
+                    size.name());
         }
 
-        display.getContainerSizeListBox()
-                .addValue(constants.customSize(), constants.customSize());
+        display.getContainerSizeListBox().addValue(constants.customSize(),
+                constants.customSize());
 
-        YUIBodySize bodySize = model.getLayout()
-                .getBodySize();
+        YUIBodySize bodySize = model.getLayout().getBodySize();
 
         if (bodySize instanceof YUIFixedBodySize) {
             for (YUISize size : sizeValues) {
                 if (bodySize.getSize() == size.getSize()) {
                     display.setSizePanelVisible(false);
-                    display.getContainerSizeListBox()
-                            .setItemSelected(position);
+                    display.getContainerSizeListBox().setItemSelected(position);
                 }
                 position++;
             }
         } else if (bodySize instanceof YUICustomBodySize) {
-            display.getContainerSizeListBox()
-                    .setItemSelected(display.getContainerSizeListBox()
-                            .getItemCount() - 1);
+            display.getContainerSizeListBox().setItemSelected(
+                    display.getContainerSizeListBox().getItemCount() - 1);
             display.setSizePanelVisible(true);
             if (bodySize.getSize() == -1) {
-                display.getCustomSizeTextBox()
-                        .setValue(String.valueOf(constants.unknown()));
+                display.getCustomSizeTextBox().setValue(
+                        String.valueOf(constants.unknown()));
             } else {
-                display.getCustomSizeTextBox()
-                        .setValue(String.valueOf(bodySize.getSize()));
+                display.getCustomSizeTextBox().setValue(
+                        String.valueOf(bodySize.getSize()));
             }
         }
     }
@@ -177,13 +172,10 @@ public class ContainerBuilderPresenter extends
         int position = 0;
 
         for (YUISideBarStyle sideBar : sideBarValues) {
-            display.getSideBarPositionListBox()
-                    .addValue(sideBar.getDescription(), sideBar.name());
-            if (model.getLayout()
-                    .getSidebarStyle()
-                    .equals(sideBar)) {
-                display.getSideBarPositionListBox()
-                        .setItemSelected(position);
+            display.getSideBarPositionListBox().addValue(
+                    sideBar.getDescription(), sideBar.name());
+            if (model.getLayout().getSidebarStyle().equals(sideBar)) {
+                display.getSideBarPositionListBox().setItemSelected(position);
             }
             position++;
         }
@@ -193,19 +185,16 @@ public class ContainerBuilderPresenter extends
         int zoneIndex = 0;
         YUITemplate[] templateValues = YUITemplate.values();
 
-        for (YUIComponent zone : model.getLayout()
-                .getContent()
-                .getComponents()) {
+        for (YUIComponent zone : model.getLayout().getContent().getComponents()) {
             display.addZone();
 
             int templateIndex = 0;
 
             for (YUITemplate template : templateValues) {
-                display.getZone(zoneIndex)
-                        .addValue(template.getDescription(), template.name());
+                display.getZone(zoneIndex).addValue(template.getDescription(),
+                        template.name());
                 if (((YUIComponentZoneImpl) zone).getTemplate() == template) {
-                    display.getZone(zoneIndex)
-                            .setItemSelected(templateIndex);
+                    display.getZone(zoneIndex).setItemSelected(templateIndex);
                 }
                 templateIndex++;
             }
@@ -253,8 +242,8 @@ public class ContainerBuilderPresenter extends
     }
 
     private void registerDisplayEventContainerSizeChangement() {
-        registerHandler(display.getContainerSizeListBox()
-                .addValueChangeHandler(new ValueChangeHandler<String>() {
+        registerHandler(display.getContainerSizeListBox().addValueChangeHandler(
+                new ValueChangeHandler<String>() {
                     public void onValueChange(ValueChangeEvent<String> event) {
                         String selectedValue = event.getValue();
 
@@ -264,9 +253,7 @@ public class ContainerBuilderPresenter extends
                             model.setBodySize(new YUIFixedBodySize(
                                     YUISize.valueOf(selectedValue)));
                         } catch (IllegalArgumentException iae) {
-                            long width = model.getLayout()
-                                    .getBodySize()
-                                    .getSize();
+                            long width = model.getLayout().getBodySize().getSize();
                             YUICustomBodySize bodySize = new YUICustomBodySize(
                                     width);
 
@@ -274,12 +261,11 @@ public class ContainerBuilderPresenter extends
 
                             display.setSizePanelVisible(true);
                             if (bodySize.getSize() == -1) {
-                                display.getCustomSizeTextBox()
-                                        .setValue(String.valueOf("unknown"));
+                                display.getCustomSizeTextBox().setValue(
+                                        String.valueOf("unknown"));
                             } else {
-                                display.getCustomSizeTextBox()
-                                        .setValue(
-                                                String.valueOf(bodySize.getSize()));
+                                display.getCustomSizeTextBox().setValue(
+                                        String.valueOf(bodySize.getSize()));
                             }
                         }
                     }
@@ -287,13 +273,12 @@ public class ContainerBuilderPresenter extends
     }
 
     private void registerDisplayEventCustomSizeValidation() {
-        registerHandler(display.getValidCustomSizeButton()
-                .addClickHandler(new ClickHandler() {
+        registerHandler(display.getValidCustomSizeButton().addClickHandler(
+                new ClickHandler() {
                     public void onClick(ClickEvent event) {
                         try {
                             model.setBodySize(new YUICustomBodySize(
-                                    Integer.parseInt(display.getCustomSizeTextBox()
-                                            .getValue())));
+                                    Integer.parseInt(display.getCustomSizeTextBox().getValue())));
 
                         } catch (NumberFormatException e) {
                             eventBus.fireEvent(new SendMessageEvent(
@@ -304,19 +289,18 @@ public class ContainerBuilderPresenter extends
     }
 
     private void registerDisplayEventSideBarChangement() {
-        registerHandler(display.getSideBarPositionListBox()
-                .addValueChangeHandler(new ValueChangeHandler<String>() {
+        registerHandler(display.getSideBarPositionListBox().addValueChangeHandler(
+                new ValueChangeHandler<String>() {
                     public void onValueChange(ValueChangeEvent<String> event) {
                         if (!model.setSideBar(YUISideBarStyle.valueOf(event.getValue()))) {
                             YUISideBarStyle[] sidebarValues = YUISideBarStyle.values();
                             int templateIndex = 0;
 
                             for (YUISideBarStyle temp : sidebarValues) {
-                                if (model.getLayout()
-                                        .getSidebarStyle()
-                                        .equals(temp)) {
-                                    display.getSideBarPositionListBox()
-                                            .setItemSelected(templateIndex);
+                                if (model.getLayout().getSidebarStyle().equals(
+                                        temp)) {
+                                    display.getSideBarPositionListBox().setItemSelected(
+                                            templateIndex);
                                 }
                                 templateIndex++;
                             }
@@ -326,8 +310,8 @@ public class ContainerBuilderPresenter extends
     }
 
     private void registerDisplayEventRowAddition() {
-        registerHandler(display.getAddRowButton()
-                .addClickHandler(new ClickHandler() {
+        registerHandler(display.getAddRowButton().addClickHandler(
+                new ClickHandler() {
                     public void onClick(ClickEvent event) {
                         model.createZone();
                     }
@@ -335,8 +319,8 @@ public class ContainerBuilderPresenter extends
     }
 
     private void registerDisplayEventListOfZoneClick() {
-        registerHandler(display.getListOfZonePanel()
-                .addClickHandler(new ClickHandler() {
+        registerHandler(display.getListOfZonePanel().addClickHandler(
+                new ClickHandler() {
                     @SuppressWarnings("unchecked")
                     public void onClick(ClickEvent event) {
                         Map properties = (HashMap) display.getEventFromCustomContentPanel(event);
@@ -355,13 +339,10 @@ public class ContainerBuilderPresenter extends
                                     int templateIndex = 0;
 
                                     for (YUITemplate temp : templateValues) {
-                                        if (((YUIComponentZoneImpl) model.getLayout()
-                                                .getContent()
-                                                .getComponents()
-                                                .get(zoneIndex)).getTemplate() == temp) {
-                                            display.getZone(zoneIndex)
-                                                    .setItemSelected(
-                                                            templateIndex);
+                                        if (((YUIComponentZoneImpl) model.getLayout().getContent().getComponents().get(
+                                                zoneIndex)).getTemplate() == temp) {
+                                            display.getZone(zoneIndex).setItemSelected(
+                                                    templateIndex);
                                         }
                                         templateIndex++;
                                     }
@@ -373,32 +354,32 @@ public class ContainerBuilderPresenter extends
     }
 
     private void registerDisplayEventHeaderSelection() {
-        registerHandler(display.getHeaderSelectionCheckBox()
-                .addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+        registerHandler(display.getHeaderSelectionCheckBox().addValueChangeHandler(
+                new ValueChangeHandler<Boolean>() {
                     public void onValueChange(ValueChangeEvent<Boolean> event) {
                         if (!model.setHasHeader(event.getValue())) {
-                            display.getHeaderSelectionCheckBox()
-                                    .setValue(!event.getValue());
+                            display.getHeaderSelectionCheckBox().setValue(
+                                    !event.getValue());
                         }
                     }
                 }));
     }
 
     private void registerDisplayEventFooterSelection() {
-        registerHandler(display.getFooterSelectionCheckBox()
-                .addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+        registerHandler(display.getFooterSelectionCheckBox().addValueChangeHandler(
+                new ValueChangeHandler<Boolean>() {
                     public void onValueChange(ValueChangeEvent<Boolean> event) {
                         if (!model.setHasFooter(event.getValue())) {
-                            display.getFooterSelectionCheckBox()
-                                    .setValue(!event.getValue());
+                            display.getFooterSelectionCheckBox().setValue(
+                                    !event.getValue());
                         }
                     }
                 }));
     }
 
     private void registerDisplayEventCodeViewer() {
-        registerHandler(display.getShowCodeButton()
-                .addClickHandler(new ClickHandler() {
+        registerHandler(display.getShowCodeButton().addClickHandler(
+                new ClickHandler() {
                     public void onClick(ClickEvent event) {
                         display.showHTMLCode(new YUILayoutHtmlAdapter(
                                 model.getLayout()).toHtml());
@@ -407,8 +388,8 @@ public class ContainerBuilderPresenter extends
     }
 
     private void registerDisplayEventBuilderClose() {
-        registerHandler(display.getCloseBuilderButton()
-                .addClickHandler(new ClickHandler() {
+        registerHandler(display.getCloseBuilderButton().addClickHandler(
+                new ClickHandler() {
                     public void onClick(ClickEvent arg0) {
                         display.hidePopup();
                     }
@@ -429,22 +410,18 @@ public class ContainerBuilderPresenter extends
                 new ContainerSizeChangedEventHandler() {
                     public void onChangeContainerSize(
                             ContainerSizeChangedEvent event) {
-                        if (model.getLayout()
-                                .getBodySize() instanceof YUIFixedBodySize) {
+                        if (model.getLayout().getBodySize() instanceof YUIFixedBodySize) {
                             display.setSizePanelVisible(false);
-                        } else if (model.getLayout()
-                                .getBodySize() instanceof YUICustomBodySize) {
-                            YUICustomBodySize bodySize = (YUICustomBodySize) model.getLayout()
-                                    .getBodySize();
+                        } else if (model.getLayout().getBodySize() instanceof YUICustomBodySize) {
+                            YUICustomBodySize bodySize = (YUICustomBodySize) model.getLayout().getBodySize();
 
                             display.setSizePanelVisible(true);
                             if (bodySize.getSize() == -1) {
-                                display.getCustomSizeTextBox()
-                                        .setValue(String.valueOf("unknown"));
+                                display.getCustomSizeTextBox().setValue(
+                                        String.valueOf("unknown"));
                             } else {
-                                display.getCustomSizeTextBox()
-                                        .setValue(
-                                                String.valueOf(bodySize.getSize()));
+                                display.getCustomSizeTextBox().setValue(
+                                        String.valueOf(bodySize.getSize()));
                             }
                         }
                     }
@@ -455,9 +432,7 @@ public class ContainerBuilderPresenter extends
         registerHandler(eventBus.addHandler(ZoneAddedEvent.TYPE,
                 new ZoneAddedEventHandler() {
                     public void onAddRow(ZoneAddedEvent event) {
-                        List<YUIComponent> zones = model.getLayout()
-                                .getContent()
-                                .getComponents();
+                        List<YUIComponent> zones = model.getLayout().getContent().getComponents();
 
                         YUITemplate zoneTemplate = ((YUIComponentZoneImpl) zones.get(zones.size() - 1)).getTemplate();
 
@@ -467,12 +442,11 @@ public class ContainerBuilderPresenter extends
                         YUITemplate[] templateValues = YUITemplate.values();
 
                         for (YUITemplate template : templateValues) {
-                            display.getZone(zoneIndex)
-                                    .addValue(template.getDescription(),
-                                            template.name());
+                            display.getZone(zoneIndex).addValue(
+                                    template.getDescription(), template.name());
                             if (zoneTemplate == template) {
-                                display.getZone(zoneIndex)
-                                        .setItemSelected(templateIndex);
+                                display.getZone(zoneIndex).setItemSelected(
+                                        templateIndex);
                             }
                             templateIndex++;
                         }

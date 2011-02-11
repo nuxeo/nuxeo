@@ -32,12 +32,10 @@ public abstract class AbstractWebContentAdapter {
 
         List<Map<String, Serializable>> preferences = new ArrayList<Map<String, Serializable>>();
 
-        for (Entry<String, String> entry : data.getPreferences()
-                .entrySet()) {
+        for (Entry<String, String> entry : data.getPreferences().entrySet()) {
             Map<String, Serializable> preference = new HashMap<String, Serializable>();
 
-            preference.put("name", entry.getKey()
-                    .toString());
+            preference.put("name", entry.getKey().toString());
             preference.put("value", entry.getValue());
 
             preferences.add(preference);
@@ -52,26 +50,22 @@ public abstract class AbstractWebContentAdapter {
         data.setId(doc.getId());
         data.setName(doc.getName());
         data.setTitle((String) doc.getPropertyValue("webcontent:title"));
-        data.setUnitId(doc.getCoreSession()
-                .getDocument(doc.getParentRef())
-                .getId());
+        data.setUnitId(doc.getCoreSession().getDocument(doc.getParentRef()).getId());
         data.setHeight((Long) doc.getPropertyValue("webcontent:height"));
         data.setPosition((Long) doc.getPropertyValue("webcontent:position"));
         data.setIsInAPortlet((Boolean) doc.getPropertyValue("webcontent:isinaportlet"));
         data.setIsCollapsed((Boolean) doc.getPropertyValue("webcontent:iscollapsed"));
 
         data.setOwner((String) doc.getPropertyValue("dc:creator"));
-        data.setViewer(doc.getCoreSession()
-                .getPrincipal()
-                .getName());
+        data.setViewer(doc.getCoreSession().getPrincipal().getName());
 
         List<Map<String, Serializable>> preferences = (List<Map<String, Serializable>>) doc.getPropertyValue("webcontent:preferences");
 
         for (Map<String, Serializable> preference : preferences) {
             String name = (String) preference.get("name");
             String value = (String) preference.get("value");
-            data.addPreference(DefaultPortletPreference.valueOf(name)
-                    .toString(), value);
+            data.addPreference(
+                    DefaultPortletPreference.valueOf(name).toString(), value);
         }
     }
 }

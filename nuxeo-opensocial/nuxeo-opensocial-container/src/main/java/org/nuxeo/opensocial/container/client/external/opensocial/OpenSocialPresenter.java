@@ -1,13 +1,13 @@
 package org.nuxeo.opensocial.container.client.external.opensocial;
 
+import org.nuxeo.opensocial.container.client.ui.api.HasId;
+import org.nuxeo.opensocial.container.shared.PermissionsConstants;
+
 import net.customware.gwt.presenter.client.EventBus;
 import net.customware.gwt.presenter.client.place.Place;
 import net.customware.gwt.presenter.client.place.PlaceRequest;
 import net.customware.gwt.presenter.client.widget.WidgetDisplay;
 import net.customware.gwt.presenter.client.widget.WidgetPresenter;
-
-import org.nuxeo.opensocial.container.client.ui.api.HasId;
-import org.nuxeo.opensocial.container.shared.PermissionsConstants;
 
 /**
  * @author Stéphane Fourrier
@@ -38,12 +38,9 @@ public class OpenSocialPresenter extends
     }
 
     private void fetchContent() {
-        display.setId("open-social-" + model.getData()
-                .getId());
-        display.setName("open-social-" + model.getData()
-                .getId());
-        display.setUrl(model.getData()
-                .getFrameUrl());
+        display.setId("open-social-" + model.getData().getId());
+        display.setName("open-social-" + model.getData().getId());
+        display.setUrl(model.getData().getFrameUrl());
 
         if (model.hasPermission(PermissionsConstants.EVERYTHING)) {
             display.enableFacets();
@@ -68,8 +65,7 @@ public class OpenSocialPresenter extends
     }
 
     public void refreshDisplay() {
-        display.setUrl(model.getData()
-                .getFrameUrl());
+        display.setUrl(model.getData().getFrameUrl());
     }
 
     public void revealDisplay() {

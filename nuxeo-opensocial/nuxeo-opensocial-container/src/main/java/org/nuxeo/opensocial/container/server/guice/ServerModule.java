@@ -1,7 +1,5 @@
 package org.nuxeo.opensocial.container.server.guice;
 
-import net.customware.gwt.dispatch.server.guice.ActionHandlerModule;
-
 import org.nuxeo.opensocial.container.server.handler.InitApplicationHandler;
 import org.nuxeo.opensocial.container.server.handler.layout.CreateYUIZoneHandler;
 import org.nuxeo.opensocial.container.server.handler.layout.DeleteYUIZoneHandler;
@@ -14,6 +12,8 @@ import org.nuxeo.opensocial.container.server.handler.webcontent.CreateWebContent
 import org.nuxeo.opensocial.container.server.handler.webcontent.DeleteWebContentHandler;
 import org.nuxeo.opensocial.container.server.handler.webcontent.UpdateAllWebContentsHandler;
 import org.nuxeo.opensocial.container.server.handler.webcontent.UpdateWebContentHandler;
+
+import net.customware.gwt.dispatch.server.guice.ActionHandlerModule;
 
 /**
  * @author Stéphane Fourrier

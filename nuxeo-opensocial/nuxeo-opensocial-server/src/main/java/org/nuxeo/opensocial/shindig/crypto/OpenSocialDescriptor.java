@@ -62,11 +62,11 @@ public class OpenSocialDescriptor {
     protected String callbackUrl;
 
     /**
-     * This is a compatibility flag to allow JSESSIONID propagation between Shindig and Nuxeo.
-     * The default value is 'false' and Signed Fetch is used.
+     * This is a compatibility flag to allow JSESSIONID propagation between
+     * Shindig and Nuxeo. The default value is 'false' and Signed Fetch is used.
      */
     @XNode("propagateJSESSIONIDToTrustedHosts")
-    protected boolean propagateJSESSIONIDToTrustedHosts=false;
+    protected boolean propagateJSESSIONIDToTrustedHosts = false;
 
     /**
      * You can have any number of portal configurations, but most people should

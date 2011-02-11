@@ -17,10 +17,10 @@ public class UpdateYUILayoutFooterHandler
         AbstractActionHandler<UpdateYUILayoutFooter, UpdateYUILayoutFooterResult> {
 
     protected UpdateYUILayoutFooterResult doExecute(
-            UpdateYUILayoutFooter action, ExecutionContext context, CoreSession session)
-            throws ClientException {
-        YUIUnit footer = getSpaceFromId(action.getSpaceId(), session).getLayout()
-                .setFooter(action.getFooter());
+            UpdateYUILayoutFooter action, ExecutionContext context,
+            CoreSession session) throws ClientException {
+        YUIUnit footer = getSpaceFromId(action.getSpaceId(), session).getLayout().setFooter(
+                action.getFooter());
         return new UpdateYUILayoutFooterResult(footer);
     }
 

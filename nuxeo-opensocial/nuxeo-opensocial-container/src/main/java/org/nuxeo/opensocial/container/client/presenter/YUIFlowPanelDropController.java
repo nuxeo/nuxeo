@@ -12,15 +12,14 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class YUIFlowPanelDropController extends FlowPanelDropController {
 
-	public YUIFlowPanelDropController(FlowPanel dropTarget) {
-		super(dropTarget);
-	}
+    public YUIFlowPanelDropController(FlowPanel dropTarget) {
+        super(dropTarget);
+    }
 
-	@Override
-	protected Widget newPositioner(DragContext context) {
-		HTML positioner = new HTML("");
-		positioner.addStyleName(DragClientBundle.INSTANCE.css()
-				.flowPanelPositioner());
-		return positioner;
-	}
+    @Override
+    protected Widget newPositioner(DragContext context) {
+        HTML positioner = new HTML("");
+        positioner.addStyleName(DragClientBundle.INSTANCE.css().flowPanelPositioner());
+        return positioner;
+    }
 }

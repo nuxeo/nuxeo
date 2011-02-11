@@ -36,20 +36,15 @@ import org.apache.shindig.common.cache.NullCache;
 import org.apache.shindig.common.uri.Uri;
 import org.apache.shindig.gadgets.DefaultGadgetSpecFactory;
 import org.apache.shindig.gadgets.GadgetContext;
-import org.apache.shindig.gadgets.GadgetException;
 import org.apache.shindig.gadgets.GadgetSpecFactory;
 import org.apache.shindig.gadgets.http.BasicHttpFetcher;
 import org.apache.shindig.gadgets.http.DefaultHttpCache;
 import org.apache.shindig.gadgets.http.DefaultRequestPipeline;
 import org.apache.shindig.gadgets.http.HttpCache;
-import org.apache.shindig.gadgets.http.HttpFetcher;
-import org.apache.shindig.gadgets.http.HttpRequest;
-import org.apache.shindig.gadgets.http.HttpResponse;
 import org.apache.shindig.gadgets.http.NoOpInvalidationService;
 import org.apache.shindig.gadgets.http.RequestPipeline;
 import org.apache.shindig.gadgets.spec.GadgetSpec;
 import org.nuxeo.common.utils.FileUtils;
-import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
@@ -140,46 +135,52 @@ public class GadgetServiceImpl extends DefaultComponent implements
 
     }
 
-    public GadgetSpec getGadgetSpec(String name) throws Exception  {
+    public GadgetSpec getGadgetSpec(String name) throws Exception {
         GadgetDeclaration dec = getGadget(name);
         return getGadgetSpec(dec);
     }
 
-    public GadgetSpec getGadgetSpec(GadgetDeclaration declaration) throws Exception  {
-        if (declaration==null) {
+    public GadgetSpec getGadgetSpec(GadgetDeclaration declaration)
+            throws Exception {
+        if (declaration == null) {
             return null;
         }
-        GadgetSpecFactory gadgetSpecFactory=null;
+        GadgetSpecFactory gadgetSpecFactory = null;
         if (Framework.isTestModeSet()) {
             HttpCache dummyCache = new DefaultHttpCache(new LruCacheProvider(0));
-            RequestPipeline pipe = new DefaultRequestPipeline(new BasicHttpFetcher(), dummyCache, null, null, new NoOpInvalidationService());
+            RequestPipeline pipe = new DefaultRequestPipeline(
+                    new BasicHttpFetcher(), dummyCache, null, null,
+                    new NoOpInvalidationService());
             CacheProvider cacheProvider = new CacheProvider() {
                 @Override
                 public <K, V> Cache<K, V> createCache(String name) {
                     return new NullCache<K, V>();
                 }
             };
-            gadgetSpecFactory = new DefaultGadgetSpecFactory(null, pipe, cacheProvider, 0);
-        }
-        else {
+            gadgetSpecFactory = new DefaultGadgetSpecFactory(null, pipe,
+                    cacheProvider, 0);
+        } else {
             OpenSocialService service = Framework.getService(OpenSocialService.class);
             gadgetSpecFactory = service.getGadgetSpecFactory();
         }
 
-        NXGadgetContext context=null;
+        NXGadgetContext context = null;
         if (declaration instanceof InternalGadgetDescriptor) {
             InternalGadgetDescriptor internal = (InternalGadgetDescriptor) declaration;
             InputStream is = internal.getResourceAsStream(internal.entryPoint);
-            if (is==null) {
-                String resourcePath = internal.getMountPoint() + "/" + internal.getEntryPoint();
-                resourcePath  = resourcePath.replaceFirst("/", "");
-                is = GadgetServiceImpl.class.getClassLoader().getResourceAsStream(resourcePath);
+            if (is == null) {
+                String resourcePath = internal.getMountPoint() + "/"
+                        + internal.getEntryPoint();
+                resourcePath = resourcePath.replaceFirst("/", "");
+                is = GadgetServiceImpl.class.getClassLoader().getResourceAsStream(
+                        resourcePath);
             }
             String xmlDef = FileUtils.read(is);
             if (xmlDef.contains("<#")) {
                 context = new NXGadgetContext(declaration.getGadgetDefinition());
             } else {
-                context = new NXGadgetContext(declaration.getGadgetDefinition(), xmlDef);
+                context = new NXGadgetContext(
+                        declaration.getGadgetDefinition(), xmlDef);
             }
         } else {
             context = new NXGadgetContext(declaration.getGadgetDefinition());
@@ -200,7 +201,7 @@ public class GadgetServiceImpl extends DefaultComponent implements
 
     public List<GadgetDeclaration> getGadgetList(String category) {
         List<GadgetDeclaration> all = getGadgetList();
-        if (category==null) {
+        if (category == null) {
             return all;
         }
         List<GadgetDeclaration> result = new ArrayList<GadgetDeclaration>();
@@ -234,7 +235,7 @@ public class GadgetServiceImpl extends DefaultComponent implements
         // TODO: FIX since it won't work on JBoss
 
         GadgetDeclaration gadget = getGadget(gadgetName);
-        if (gadget==null) {
+        if (gadget == null) {
             log.warn("Unable to find gadget" + gadgetName);
             return null;
         }
@@ -295,7 +296,7 @@ public class GadgetServiceImpl extends DefaultComponent implements
                     }
                 }
             } finally {
-                if (session!=null) {
+                if (session != null) {
                     session.close();
                 }
             }
@@ -307,7 +308,6 @@ public class GadgetServiceImpl extends DefaultComponent implements
         return result;
     }
 }
-
 
 class NXGadgetContext extends GadgetContext {
 
@@ -342,7 +342,7 @@ class NXGadgetContext extends GadgetContext {
             return Uri.fromJavaUri(url.toURI());
         } catch (URISyntaxException e) {
             log.error("Unale to parse URL", e);
-           return null;
+            return null;
         }
     }
 

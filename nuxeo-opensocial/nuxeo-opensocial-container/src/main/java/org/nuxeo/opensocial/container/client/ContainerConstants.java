@@ -1,39 +1,40 @@
 package org.nuxeo.opensocial.container.client;
 
 import com.google.gwt.i18n.client.Constants;
+
 /**
  * @author Stéphane Fourrier
  */
 public interface ContainerConstants extends Constants {
-	String windowTitle();
+    String windowTitle();
 
-	String containerSizeTitle();
+    String containerSizeTitle();
 
-	String sizeInPixel();
+    String sizeInPixel();
 
-	String sideBarTitle();
+    String sideBarTitle();
 
-	String customContentTitle();
+    String customContentTitle();
 
-	String unknown();
+    String unknown();
 
-	String addRow();
+    String addRow();
 
-	String headerNFooterTitle();
+    String headerNFooterTitle();
 
-	String enableHeader();
+    String enableHeader();
 
-	String enableFooter();
+    String enableFooter();
 
-	String showCodeTitle();
+    String showCodeTitle();
 
-	String showCode();
+    String showCode();
 
-	String closeTitle();
+    String closeTitle();
 
-	String close();
+    String close();
 
-	String customSize();
+    String customSize();
 
     String preferences();
 

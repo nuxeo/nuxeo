@@ -3,45 +3,45 @@ package org.nuxeo.opensocial.wysiwyg.client;
 import com.google.gwt.i18n.client.Constants;
 
 public interface RichTextEditorConstants extends Constants {
-	String white();
+    String white();
 
-	String black();
+    String black();
 
-	String red();
+    String red();
 
-	String green();
+    String green();
 
-	String yellow();
+    String yellow();
 
-	String blue();
+    String blue();
 
-	String insertLinkUrl();
+    String insertLinkUrl();
 
-	String insertImageUrl();
+    String insertImageUrl();
 
-	String bold();
+    String bold();
 
-	String italic();
+    String italic();
 
-	String underline();
+    String underline();
 
-	String alignLeft();
+    String alignLeft();
 
-	String alignCenter();
+    String alignCenter();
 
-	String alignRight();
+    String alignRight();
 
-	String orderList();
+    String orderList();
 
-	String unorderList();
+    String unorderList();
 
-	String link();
+    String link();
 
-	String breakLine();
+    String breakLine();
 
-	String image();
+    String image();
 
-	String fontsListName();
+    String fontsListName();
 
-	String colorsListName();
+    String colorsListName();
 }

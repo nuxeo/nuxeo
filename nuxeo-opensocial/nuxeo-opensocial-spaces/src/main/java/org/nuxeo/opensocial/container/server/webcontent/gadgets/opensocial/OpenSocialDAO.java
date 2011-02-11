@@ -7,7 +7,7 @@ import org.nuxeo.opensocial.container.shared.webcontent.OpenSocialData;
  * @author Stéphane Fourrier
  */
 public class OpenSocialDAO extends AbstractWebContentDAO<OpenSocialData> {
-	public OpenSocialDAO() {
+    public OpenSocialDAO() {
 
-	}
+    }
 }

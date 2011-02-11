@@ -136,8 +136,8 @@ public class YUILayoutAdapterImpl implements YUILayoutAdapter {
 
         Map<String, Serializable> property = new HashMap<String, Serializable>();
 
-        property.put("template", ((YUIComponentZone) zone).getTemplate()
-                .toString());
+        property.put("template",
+                ((YUIComponentZone) zone).getTemplate().toString());
 
         properties.add(zoneIndex, property);
 
@@ -167,21 +167,19 @@ public class YUILayoutAdapterImpl implements YUILayoutAdapter {
     @SuppressWarnings("unchecked")
     public YUIComponentZone updateZone(YUIComponentZone zone, int zoneIndex,
             YUITemplate template) throws ClientException {
-        int actualNumberOfUnits = zone.getTemplate()
-                .getNumberOfComponents();
+        int actualNumberOfUnits = zone.getTemplate().getNumberOfComponents();
         int wantedNumberOfUnits = template.getNumberOfComponents();
 
         zone.setTemplate(template);
 
         if (actualNumberOfUnits > wantedNumberOfUnits) {
             for (int i = actualNumberOfUnits - 1; i > wantedNumberOfUnits - 1; i--) {
-                YUIUnitImpl unit = (YUIUnitImpl) ((YUIAbstractComponent) zone).getComponents()
-                        .get(i);
+                YUIUnitImpl unit = (YUIUnitImpl) ((YUIAbstractComponent) zone).getComponents().get(
+                        i);
 
                 session.removeDocument(new IdRef(unit.getId()));
 
-                ((YUIAbstractComponent) zone).getComponents()
-                        .remove(i);
+                ((YUIAbstractComponent) zone).getComponents().remove(i);
             }
         } else if (actualNumberOfUnits < wantedNumberOfUnits) {
             for (int i = actualNumberOfUnits; i < wantedNumberOfUnits; i++) {
@@ -211,7 +209,7 @@ public class YUILayoutAdapterImpl implements YUILayoutAdapter {
         return zone;
     }
 
-    @SuppressWarnings( { "serial", "unchecked" })
+    @SuppressWarnings({ "serial", "unchecked" })
     public void deleteZone(final int zoneIndex) throws ClientException {
         for (DocumentModel unitDoc : session.getChildren(doc.getRef(), "Unit",
                 new Filter() {
@@ -248,8 +246,7 @@ public class YUILayoutAdapterImpl implements YUILayoutAdapter {
         setSideBar(layout.getSidebarStyle());
 
         int zoneIndex = 0;
-        for (YUIComponent zone : layout.getContent()
-                .getComponents()) {
+        for (YUIComponent zone : layout.getContent().getComponents()) {
             createZone((YUIComponentZone) zone, zoneIndex);
             zoneIndex++;
         }
@@ -264,7 +261,7 @@ public class YUILayoutAdapterImpl implements YUILayoutAdapter {
         session.removeChildren(doc.getRef());
     }
 
-    @SuppressWarnings( { "unchecked", "serial" })
+    @SuppressWarnings({ "unchecked", "serial" })
     private void mapDataValuesWithLayout() throws ClientException {
         // TODO
         try {
@@ -315,16 +312,14 @@ public class YUILayoutAdapterImpl implements YUILayoutAdapter {
         for (Map<String, Serializable> property : properties) {
             YUITemplate template = YUITemplate.valueOf((String) property.get("template"));
             final YUIComponentZoneImpl zone = new YUIComponentZoneImpl(template);
-            layout.getContent()
-                    .addComponent(zone);
+            layout.getContent().addComponent(zone);
 
             for (DocumentModel unitDoc : session.getChildren(doc.getRef(),
                     "Unit", new Filter() {
                         public boolean accept(DocumentModel arg0) {
                             try {
-                                if (layout.getContent()
-                                        .getComponents()
-                                        .indexOf(zone) == ((Long) arg0.getPropertyValue("yuiunit:zoneIndex"))
+                                if (layout.getContent().getComponents().indexOf(
+                                        zone) == ((Long) arg0.getPropertyValue("yuiunit:zoneIndex"))
                                         && !"header".equals(arg0.getName())
                                         && !"footer".equals(arg0.getName())
                                         && !"sidebar".equals(arg0.getName()))

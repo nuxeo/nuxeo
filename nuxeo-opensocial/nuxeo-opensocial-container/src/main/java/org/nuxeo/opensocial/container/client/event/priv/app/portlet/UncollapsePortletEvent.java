@@ -7,35 +7,34 @@ import com.google.gwt.event.shared.GwtEvent;
 /**
  * @author Stéphane Fourrier
  */
-public class UncollapsePortletEvent
-		extends
-			GwtEvent<UncollapsePortletEventHandler> implements HasId {
-	public static Type<UncollapsePortletEventHandler> TYPE = new Type<UncollapsePortletEventHandler>();
+public class UncollapsePortletEvent extends
+        GwtEvent<UncollapsePortletEventHandler> implements HasId {
+    public static Type<UncollapsePortletEventHandler> TYPE = new Type<UncollapsePortletEventHandler>();
 
-	private String webContentId;
+    private String webContentId;
 
-	public UncollapsePortletEvent() {
-	}
+    public UncollapsePortletEvent() {
+    }
 
-	public UncollapsePortletEvent(String webContentId) {
-		this.webContentId = webContentId;
-	}
+    public UncollapsePortletEvent(String webContentId) {
+        this.webContentId = webContentId;
+    }
 
-	public String getId() {
-		return webContentId;
-	}
+    public String getId() {
+        return webContentId;
+    }
 
-	public void setId(String id) {
-		this.webContentId = id;
-	}
+    public void setId(String id) {
+        this.webContentId = id;
+    }
 
-	@Override
-	public Type<UncollapsePortletEventHandler> getAssociatedType() {
-		return TYPE;
-	}
+    @Override
+    public Type<UncollapsePortletEventHandler> getAssociatedType() {
+        return TYPE;
+    }
 
-	@Override
-	protected void dispatch(UncollapsePortletEventHandler handler) {
-		handler.onUncollapsePortlet(this);
-	}
+    @Override
+    protected void dispatch(UncollapsePortletEventHandler handler) {
+        handler.onUncollapsePortlet(this);
+    }
 }

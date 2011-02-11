@@ -5,16 +5,17 @@ import com.google.gwt.event.shared.GwtEvent;
 /**
  * @author Stéphane Fourrier
  */
-public class ContainerSizeChangedEvent extends GwtEvent<ContainerSizeChangedEventHandler> {
-	public static Type<ContainerSizeChangedEventHandler> TYPE = new Type<ContainerSizeChangedEventHandler>();
+public class ContainerSizeChangedEvent extends
+        GwtEvent<ContainerSizeChangedEventHandler> {
+    public static Type<ContainerSizeChangedEventHandler> TYPE = new Type<ContainerSizeChangedEventHandler>();
 
-	@Override
-	public com.google.gwt.event.shared.GwtEvent.Type<ContainerSizeChangedEventHandler> getAssociatedType() {
-		return TYPE;
-	}
+    @Override
+    public com.google.gwt.event.shared.GwtEvent.Type<ContainerSizeChangedEventHandler> getAssociatedType() {
+        return TYPE;
+    }
 
-	@Override
-	protected void dispatch(ContainerSizeChangedEventHandler handler) {
-		handler.onChangeContainerSize(this);
-	}
+    @Override
+    protected void dispatch(ContainerSizeChangedEventHandler handler) {
+        handler.onChangeContainerSize(this);
+    }
 }

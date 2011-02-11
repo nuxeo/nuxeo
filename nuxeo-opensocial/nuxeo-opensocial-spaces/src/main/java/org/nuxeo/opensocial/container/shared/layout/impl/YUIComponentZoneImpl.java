@@ -18,6 +18,7 @@ public class YUIComponentZoneImpl extends YUIAbstractComponent implements
     private static final long serialVersionUID = 1L;
 
     private List<YUIComponent> listComponents;
+
     private YUITemplate template;
 
     @SuppressWarnings("unused")

@@ -139,7 +139,7 @@ public class OpenSocialServiceImpl extends DefaultComponent implements
     }
 
     public void setupOpenSocial() throws Exception {
-        if (os==null) {
+        if (os == null) {
             log.warn("OpenSocial does not have any configuration contribution ... setup canceled");
             return;
         }

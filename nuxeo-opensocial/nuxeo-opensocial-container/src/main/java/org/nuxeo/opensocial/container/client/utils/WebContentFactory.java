@@ -2,9 +2,6 @@ package org.nuxeo.opensocial.container.client.utils;
 
 import java.util.Map;
 
-import net.customware.gwt.presenter.client.EventBus;
-import net.customware.gwt.presenter.client.Presenter;
-
 import org.nuxeo.opensocial.container.client.external.html.HTMLGadget;
 import org.nuxeo.opensocial.container.client.external.html.HTMLModel;
 import org.nuxeo.opensocial.container.client.external.html.HTMLPresenter;
@@ -22,11 +19,15 @@ import org.nuxeo.opensocial.container.shared.webcontent.WebContentData;
 
 import com.google.inject.Inject;
 
+import net.customware.gwt.presenter.client.EventBus;
+import net.customware.gwt.presenter.client.Presenter;
+
 /**
  * @author Stéphane Fourrier
  */
 public class WebContentFactory {
     private EventBus eventBus;
+
     private AppModel model;
 
     @Inject
@@ -46,8 +47,8 @@ public class WebContentFactory {
     }
 
     public Presenter getPresenterFor(WebContentData webContentData) {
-        Map<String, Boolean> permissions = model.getPermissions()
-                .get(webContentData.getId());
+        Map<String, Boolean> permissions = model.getPermissions().get(
+                webContentData.getId());
 
         if ("wcpicture".equals(webContentData.getAssociatedType())) {
             return new PicturePresenter(new PictureGadget(), eventBus,

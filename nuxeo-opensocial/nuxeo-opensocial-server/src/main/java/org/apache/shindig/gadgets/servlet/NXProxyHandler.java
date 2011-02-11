@@ -23,7 +23,6 @@ import org.apache.shindig.gadgets.http.HttpResponse;
 import org.apache.shindig.gadgets.http.RequestPipeline;
 import org.apache.shindig.gadgets.rewrite.RequestRewriterRegistry;
 import org.apache.shindig.gadgets.rewrite.RewritingException;
-import org.apache.shindig.gadgets.servlet.ProxyHandler;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -41,7 +40,9 @@ public class NXProxyHandler extends ProxyBase {
     static final String FALLBACK_URL_PARAM = "fallback_url";
 
     private final RequestPipeline requestPipeline;
+
     private final LockedDomainService lockedDomainService;
+
     private final RequestRewriterRegistry contentRewriterRegistry;
 
     @Inject
@@ -73,8 +74,8 @@ public class NXProxyHandler extends ProxyBase {
             req.setGadget(Uri.parse(request.getParameter(GADGET_PARAM)));
         }
 
-
-        // Forwared Accept-Language header in proxy request since in some case (Google jsapi for
+        // Forwared Accept-Language header in proxy request since in some case
+        // (Google jsapi for
         // instance), some l10n stuffs are put in js files.
         String acceptLanguage = request.getHeader(ACCEPT_LANGUAGE);
         if (acceptLanguage != null) {
@@ -162,8 +163,7 @@ public class NXProxyHandler extends ProxyBase {
             }
         }
 
-        for (Map.Entry<String, String> entry : results.getHeaders()
-                .entries()) {
+        for (Map.Entry<String, String> entry : results.getHeaders().entries()) {
             String name = entry.getKey();
             if (!DISALLOWED_RESPONSE_HEADERS.contains(name.toLowerCase())) {
                 response.addHeader(name, entry.getValue());
@@ -178,8 +178,8 @@ public class NXProxyHandler extends ProxyBase {
                     && !StringUtils.isEmpty(responseType)) {
                 requiredType = requiredType.substring(0,
                         requiredType.length() - 2);
-                if (!responseType.toLowerCase()
-                        .startsWith(requiredType.toLowerCase())) {
+                if (!responseType.toLowerCase().startsWith(
+                        requiredType.toLowerCase())) {
                     response.setContentType(requiredType);
                     responseType = requiredType;
                 }

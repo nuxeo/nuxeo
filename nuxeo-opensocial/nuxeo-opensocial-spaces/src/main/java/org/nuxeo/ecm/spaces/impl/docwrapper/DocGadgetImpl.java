@@ -19,7 +19,6 @@ import org.nuxeo.runtime.api.Framework;
 
 public class DocGadgetImpl extends AbstractGadget {
 
-
     private static final String GADGET_POSITION = "webcontent:position";
 
     private static final String GADGET_COLLAPSED = "webcontent:iscollapsed";
@@ -133,8 +132,7 @@ public class DocGadgetImpl extends AbstractGadget {
     }
 
     public boolean isEqualTo(Gadget gadget) {
-        return gadget.getId()
-                .equals(getId());
+        return gadget.getId().equals(getId());
     }
 
     public void setCategory(String category) throws ClientException {
@@ -206,14 +204,11 @@ public class DocGadgetImpl extends AbstractGadget {
     }
 
     public String getViewer() throws ClientException {
-        return doc.getCoreSession()
-                .getPrincipal()
-                .getName();
+        return doc.getCoreSession().getPrincipal().getName();
     }
 
     public boolean hasPermission(String permissioName) throws ClientException {
-        return doc.getCoreSession()
-                .hasPermission(doc.getRef(), permissioName);
+        return doc.getCoreSession().hasPermission(doc.getRef(), permissioName);
     }
 
     public void save() throws ClientException {

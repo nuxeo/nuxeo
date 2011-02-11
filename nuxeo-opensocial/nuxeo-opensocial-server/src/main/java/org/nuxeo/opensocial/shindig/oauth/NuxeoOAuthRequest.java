@@ -21,16 +21,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.regex.Pattern;
-
-import net.oauth.OAuth;
-import net.oauth.OAuthAccessor;
-import net.oauth.OAuthException;
-import net.oauth.OAuthMessage;
-import net.oauth.OAuthProblemException;
-import net.oauth.OAuth.Parameter;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -47,14 +40,14 @@ import org.apache.shindig.gadgets.http.HttpRequest;
 import org.apache.shindig.gadgets.http.HttpResponse;
 import org.apache.shindig.gadgets.http.HttpResponseBuilder;
 import org.apache.shindig.gadgets.oauth.AccessorInfo;
+import org.apache.shindig.gadgets.oauth.AccessorInfo.HttpMethod;
+import org.apache.shindig.gadgets.oauth.AccessorInfo.OAuthParamLocation;
 import org.apache.shindig.gadgets.oauth.OAuthArguments;
 import org.apache.shindig.gadgets.oauth.OAuthClientState;
 import org.apache.shindig.gadgets.oauth.OAuthError;
 import org.apache.shindig.gadgets.oauth.OAuthFetcherConfig;
 import org.apache.shindig.gadgets.oauth.OAuthRequest;
 import org.apache.shindig.gadgets.oauth.OAuthResponseParams;
-import org.apache.shindig.gadgets.oauth.AccessorInfo.HttpMethod;
-import org.apache.shindig.gadgets.oauth.AccessorInfo.OAuthParamLocation;
 import org.apache.shindig.gadgets.oauth.OAuthResponseParams.OAuthRequestException;
 import org.apache.shindig.gadgets.oauth.OAuthStore.TokenInfo;
 import org.json.JSONObject;
@@ -64,6 +57,13 @@ import org.nuxeo.runtime.api.Framework;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+
+import net.oauth.OAuth;
+import net.oauth.OAuth.Parameter;
+import net.oauth.OAuthAccessor;
+import net.oauth.OAuthException;
+import net.oauth.OAuthMessage;
+import net.oauth.OAuthProblemException;
 
 /***
  * This is complete crap. I end up copying the class because the idiots made all
@@ -197,7 +197,6 @@ public class NuxeoOAuthRequest extends OAuthRequest {
         }
     }
 
-
     protected boolean isInternalRequest() {
         String requestedURI = realRequest.getUri().toString();
 
@@ -220,14 +219,13 @@ public class NuxeoOAuthRequest extends OAuthRequest {
         HttpResponseBuilder response = null;
         try {
 
-            OAuthArguments  oauthArgs = realRequest.getOAuthArguments();
+            OAuthArguments oauthArgs = realRequest.getOAuthArguments();
             if (isInternalRequest()) {
                 oauthArgs.setRequestOption(NUXEO_INTERNAL_REQUEST, "true");
             }
 
             accessorInfo = fetcherConfig.getTokenStore().getOAuthAccessor(
-                    realRequest.getSecurityToken(),
-                    oauthArgs, clientState,
+                    realRequest.getSecurityToken(), oauthArgs, clientState,
                     responseParams, fetcherConfig);
             response = fetchWithRetry();
         } catch (OAuthRequestException e) {
@@ -291,8 +289,7 @@ public class NuxeoOAuthRequest extends OAuthRequest {
         return response;
     }
 
-    private boolean handleProtocolException(
-            NXOAuthProtocolException pe,
+    private boolean handleProtocolException(NXOAuthProtocolException pe,
             int attempts) throws OAuthRequestException {
         if (pe.canExtend()) {
             accessorInfo.setTokenExpireMillis(ACCESS_TOKEN_FORCE_EXPIRE);
@@ -315,8 +312,7 @@ public class NuxeoOAuthRequest extends OAuthRequest {
      * swap a request token for an access token, and then asks for data from the
      * service provider. 3) Asks for data from the service provider.
      */
-    private HttpResponseBuilder attemptFetch()
-            throws NXOAuthProtocolException,
+    private HttpResponseBuilder attemptFetch() throws NXOAuthProtocolException,
             OAuthResponseParams.OAuthRequestException {
         if (needApproval()) {
             // This is section 6.1 of the OAuth spec.
@@ -880,9 +876,8 @@ public class NuxeoOAuthRequest extends OAuthRequest {
     /**
      * Get honest-to-goodness user data.
      *
-     * @throws NXOAuthProtocolException if the
-     *             service provider returns an OAuth related error instead of
-     *             user data.
+     * @throws NXOAuthProtocolException if the service provider returns an OAuth
+     *             related error instead of user data.
      */
     private HttpResponseBuilder fetchData()
             throws OAuthResponseParams.OAuthRequestException,
@@ -958,8 +953,7 @@ public class NuxeoOAuthRequest extends OAuthRequest {
             }
             // No extended information, guess based on HTTP response code.
             if (response.getHttpStatusCode() == HttpResponse.SC_UNAUTHORIZED) {
-                throw new NXOAuthProtocolException(
-                        response.getHttpStatusCode());
+                throw new NXOAuthProtocolException(response.getHttpStatusCode());
             }
         }
     }
@@ -1059,8 +1053,7 @@ class NXOAuthProtocolException extends Exception {
 
     private final String problemCode;
 
-    public NXOAuthProtocolException(int status,
-            OAuthMessage reply) {
+    public NXOAuthProtocolException(int status, OAuthMessage reply) {
         String problem = OAuthUtil.getParameter(reply,
                 OAuthProblemException.OAUTH_PROBLEM);
         if (problem == null) {

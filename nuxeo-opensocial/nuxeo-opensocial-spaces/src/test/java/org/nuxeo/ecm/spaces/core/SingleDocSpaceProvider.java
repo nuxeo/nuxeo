@@ -24,7 +24,8 @@ public class SingleDocSpaceProvider extends AbstractSpaceProvider {
     private String title;
 
     @Override
-    public void initialize(String name, Map<String, String> params) throws SpaceException {
+    public void initialize(String name, Map<String, String> params)
+            throws SpaceException {
         if (!params.containsKey(PARAM_PATH)) {
             throw new SpaceException(
                     "No path argument found for SingleDocSpaceProvider");
@@ -37,12 +38,15 @@ public class SingleDocSpaceProvider extends AbstractSpaceProvider {
     }
 
     @Override
-    protected Space doGetSpace(CoreSession session, DocumentModel contextDocument, String spaceName) throws SpaceException {
+    protected Space doGetSpace(CoreSession session,
+            DocumentModel contextDocument, String spaceName)
+            throws SpaceException {
         return getOrCreateSingleSpace(session).getAdapter(Space.class);
     }
 
     @Override
-    public List<Space> getAll(CoreSession session, DocumentModel contextDocument) throws SpaceException {
+    public List<Space> getAll(CoreSession session, DocumentModel contextDocument)
+            throws SpaceException {
         List<Space> result = new ArrayList<Space>();
         result.add(getSpace(session, contextDocument, ""));
         return result;

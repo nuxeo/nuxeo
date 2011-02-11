@@ -23,19 +23,19 @@ import com.google.gwt.user.client.ui.Widget;
 public class Color extends Composite implements HasClickHandlers, HasColor {
 
     private Widget widget;
+
     private String color;
+
     private boolean isSelected;
 
     public Color(ColorsEnum color, boolean isSelected) {
         this.isSelected = isSelected;
         if (color.equals(ColorsEnum.TRANSPARENT)) {
-            widget = new Image(ImageBundle.INSTANCE.colorNone()
-                    .getURL());
+            widget = new Image(ImageBundle.INSTANCE.colorNone().getURL());
         } else {
             widget = new SimplePanel();
-            widget.getElement()
-                    .getStyle()
-                    .setBackgroundColor(color.getCssColor());
+            widget.getElement().getStyle().setBackgroundColor(
+                    color.getCssColor());
         }
         this.color = color.getCssColor();
         init();

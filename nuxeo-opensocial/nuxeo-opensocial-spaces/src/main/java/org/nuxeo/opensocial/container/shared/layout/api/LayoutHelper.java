@@ -34,8 +34,7 @@ public class LayoutHelper {
 
     public static YUILayout buildLayout(String layoutName) throws Exception {
         for (Preset preset : Preset.values()) {
-            if (preset.getName()
-                    .equals(layoutName)) {
+            if (preset.getName().equals(layoutName)) {
                 return buildLayout(preset);
             }
         }
@@ -77,8 +76,7 @@ public class LayoutHelper {
         YUILayout layout = getBaseLayout();
         for (YUITemplate template : templates) {
             YUIComponentZoneImpl zone = new YUIComponentZoneImpl(template);
-            layout.getContent()
-                    .addComponent(zone);
+            layout.getContent().addComponent(zone);
             for (int i = 0; i < template.getNumberOfComponents(); i++) {
                 zone.addComponent(new YUIUnitImpl());
             }

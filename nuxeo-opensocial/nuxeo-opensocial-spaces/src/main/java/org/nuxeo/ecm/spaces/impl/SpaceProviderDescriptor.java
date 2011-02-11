@@ -60,7 +60,7 @@ public class SpaceProviderDescriptor {
             SpaceProvider provider = klass.newInstance();
             provider.initialize(name, params);
             return provider;
-        } catch(Exception e) {
+        } catch (Exception e) {
             throw new ClientException(e);
         }
     }

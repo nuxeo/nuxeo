@@ -43,8 +43,8 @@ public class FolderWebObject extends DocumentObject {
 
     private DocumentModel getParentWorkspace(DocumentModel doc)
             throws ClientException {
-        DocumentModel parentDocument = ctx.getCoreSession()
-                .getParentDocument(doc.getRef());
+        DocumentModel parentDocument = ctx.getCoreSession().getParentDocument(
+                doc.getRef());
         if ("Workspace".equals(parentDocument.getType())) {
             return parentDocument;
         } else {

@@ -7,11 +7,10 @@ import org.nuxeo.opensocial.container.shared.layout.enume.YUITemplate;
 /**
  * @author Stéphane Fourrier
  */
-public interface YUIComponentZone extends Serializable
-{
-  void addComponent(YUIComponent component);
+public interface YUIComponentZone extends Serializable {
+    void addComponent(YUIComponent component);
 
-  void setTemplate(YUITemplate template);
+    void setTemplate(YUITemplate template);
 
-  YUITemplate getTemplate();
+    YUITemplate getTemplate();
 }

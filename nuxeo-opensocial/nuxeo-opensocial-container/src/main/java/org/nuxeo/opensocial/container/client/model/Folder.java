@@ -10,26 +10,26 @@ public class Folder extends JavaScriptObject {
     }
 
     public final native String getId() /*-{
-        return this.id;
-    }-*/;
+                                       return this.id;
+                                       }-*/;
 
     public final native String getTitle() /*-{
-        return this.title;
-    }-*/;
+                                          return this.title;
+                                          }-*/;
 
     public final native String getName() /*-{
-        return this.name;
-    }-*/;
+                                         return this.name;
+                                         }-*/;
 
     public final native String getFolderIconUrl() /*-{
-        return this.folderIconUrl;
-    }-*/;
+                                                  return this.folderIconUrl;
+                                                  }-*/;
 
     public final native String getCreator() /*-{
-        return this.creator;
-    }-*/;
+                                            return this.creator;
+                                            }-*/;
 
     public final native String getPreviewDocId() /*-{
-        return this.previewDocId;
-    }-*/;
+                                                 return this.previewDocId;
+                                                 }-*/;
 }

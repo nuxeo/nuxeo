@@ -39,16 +39,14 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * Helper to render the GadgetSpec via FreeMarker
  *
- * Using FreeMarker for that allow to have some dynamic computations :
- *  - OAUth urls (that may be different depending on the IP the client uses)
- *  - resources urls
- *  - requests urls
- *  - ...
+ * Using FreeMarker for that allow to have some dynamic computations : - OAUth
+ * urls (that may be different depending on the IP the client uses) - resources
+ * urls - requests urls - ...
  *
  * @author tiry
  *
  */
-public class GadgetSpecView{
+public class GadgetSpecView {
 
     protected static GadgetTemplateLoader specLoader = new GadgetTemplateLoader();
 
@@ -59,7 +57,7 @@ public class GadgetSpecView{
     public static Gadgeti18n i18n = new Gadgeti18n();
 
     protected static List<String> getTrustedHosts() {
-        if (trustedHosts==null) {
+        if (trustedHosts == null) {
             trustedHosts = new ArrayList<String>();
             OpenSocialService os = Framework.getLocalService(OpenSocialService.class);
             for (String host : os.getTrustedHosts()) {
@@ -71,7 +69,7 @@ public class GadgetSpecView{
 
     protected static boolean isTrustedHostAccess(String url) {
         for (String host : getTrustedHosts()) {
-            if (url.startsWith("http://"+ host)) {
+            if (url.startsWith("http://" + host)) {
                 return true;
             }
         }
@@ -79,7 +77,7 @@ public class GadgetSpecView{
     }
 
     protected static GadgetSpecRenderingEngine getEngine() {
-        if (engine==null) {
+        if (engine == null) {
             engine = new GadgetSpecRenderingEngine(specLoader);
         }
 
@@ -141,12 +139,14 @@ public class GadgetSpecView{
         return sb.toString();
     }
 
-    public static InputStream render(InternalGadgetDescriptor gadget, Map<String, Object> params) throws Exception {
+    public static InputStream render(InternalGadgetDescriptor gadget,
+            Map<String, Object> params) throws Exception {
 
-        String key = "fs://" + gadget.getMountPoint() + "/" + gadget.getEntryPoint();
+        String key = "fs://" + gadget.getMountPoint() + "/"
+                + gadget.getEntryPoint();
         synchronized (specLoader) {
             // dynamically load the gadget spec templates as needed
-            if (specLoader.findTemplateSource(key)==null) {
+            if (specLoader.findTemplateSource(key) == null) {
                 String specData = FileUtils.read(gadget.getResourceAsStream(gadget.getEntryPoint()));
                 specLoader.putTemplate(key, specData);
             }
@@ -163,21 +163,25 @@ public class GadgetSpecView{
         if (isInsideNuxeo(httpRequest)) {
             // we are called by local Nuxeo-Shindig
             // so we don't know the client URL, but a relative URL is ok
-            input.put("clientSideBaseUrl", VirtualHostHelper.getContextPathProperty() + "/");
-            input.put("specDirectoryUrl", VirtualHostHelper.getContextPathProperty() + "/site/gadgets/" + gadget.getDirectory() + "/");
+            input.put("clientSideBaseUrl",
+                    VirtualHostHelper.getContextPathProperty() + "/");
+            input.put("specDirectoryUrl",
+                    VirtualHostHelper.getContextPathProperty()
+                            + "/site/gadgets/" + gadget.getDirectory() + "/");
             input.put("insideNuxeo", true);
         } else {
             // we are called by an external gadget container
             // => we use the same url as the one used to fetch the gadget spec
             input.put("clientSideBaseUrl", specAccessUrl);
-            input.put("specDirectoryUrl", specAccessUrl + "site/gadgets/" + gadget.getDirectory() + "/");
+            input.put("specDirectoryUrl", specAccessUrl + "site/gadgets/"
+                    + gadget.getDirectory() + "/");
             input.put("insideNuxeo", false);
         }
 
         input.put("jsContext", getJSContext(input));
         input.put("i18n", i18n);
 
-        if (params!=null) {
+        if (params != null) {
             input.putAll(params);
         }
 
@@ -187,16 +191,15 @@ public class GadgetSpecView{
         Enumeration<String> pNames = httpRequest.getParameterNames();
         while (pNames.hasMoreElements()) {
             String name = pNames.nextElement();
-            input.put(name,httpRequest.getParameter(name));
+            input.put(name, httpRequest.getParameter(name));
         }
 
         StringWriter writer = new StringWriter();
         getEngine().render(key, input, writer);
 
-        return new ByteArrayInputStream(writer.getBuffer().toString().getBytes());
+        return new ByteArrayInputStream(
+                writer.getBuffer().toString().getBytes());
 
     }
-
-
 
 }

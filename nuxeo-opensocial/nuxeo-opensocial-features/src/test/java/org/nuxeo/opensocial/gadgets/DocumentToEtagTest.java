@@ -17,7 +17,8 @@
 
 package org.nuxeo.opensocial.gadgets;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 import java.net.URL;
 
@@ -46,12 +47,13 @@ public class DocumentToEtagTest {
     CoreSession session;
 
     private DocumentModel doc2;
+
     private DocumentModel doc1;
 
     @Inject
     public DocumentToEtagTest(CoreSession session) throws ClientException {
-        doc1 = createDocForFile("blob1", "testBlob1.txt",session);
-        doc2 = createDocForFile("blob2", "testBlob2.txt",session);
+        doc1 = createDocForFile("blob1", "testBlob1.txt", session);
+        doc2 = createDocForFile("blob2", "testBlob2.txt", session);
     }
 
     @Test
@@ -69,8 +71,7 @@ public class DocumentToEtagTest {
 
         EntityTag tag1 = GadgetDocument.getEntityTagForDocument(doc1);
         EntityTag tag2 = GadgetDocument.getEntityTagForDocument(doc2);
-        assertFalse(tag2.getValue()
-                .equals(tag1.getValue()));
+        assertFalse(tag2.getValue().equals(tag1.getValue()));
 
     }
 
@@ -83,15 +84,13 @@ public class DocumentToEtagTest {
         session.save();
         doc1 = session.getDocument(new PathRef("/blob1"));
 
-
         EntityTag tag2 = GadgetDocument.getEntityTagForDocument(doc1);
-        assertFalse(tag2.getValue()
-                .equals(tag1.getValue()));
+        assertFalse(tag2.getValue().equals(tag1.getValue()));
 
     }
 
-    private DocumentModel createDocForFile(String name, String path, CoreSession session)
-            throws ClientException {
+    private DocumentModel createDocForFile(String name, String path,
+            CoreSession session) throws ClientException {
         URL resource = getResource(path);
 
         DocumentModel doc = session.createDocumentModel("/", name, "File");
@@ -110,9 +109,8 @@ public class DocumentToEtagTest {
     }
 
     private static URL getResource(String resource) {
-        return Thread.currentThread()
-                .getContextClassLoader()
-                .getResource(resource);
+        return Thread.currentThread().getContextClassLoader().getResource(
+                resource);
     }
 
 }

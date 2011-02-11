@@ -8,7 +8,9 @@ import java.io.Serializable;
 public class YUICustomBodySize extends YUIAbstractBodySize implements
         Serializable {
     private static final long serialVersionUID = 1L;
+
     private static final String CSS = "custom-doc";
+
     private long size;
 
     public YUICustomBodySize() {

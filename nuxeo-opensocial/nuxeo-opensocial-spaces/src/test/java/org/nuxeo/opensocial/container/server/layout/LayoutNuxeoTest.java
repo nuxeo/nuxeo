@@ -66,25 +66,21 @@ public class LayoutNuxeoTest {
         YUILayoutAdapter layout = doc.getAdapter(YUILayoutAdapter.class);
         doc = session.saveDocument(doc);
 
-        assertEquals(YUITemplate.YUI_ZT_33_33_33,
-                ((YUIComponentZone) layout.getLayout()
-                        .getContent()
-                        .getComponents()
-                        .get(0)).getTemplate());
+        assertEquals(
+                YUITemplate.YUI_ZT_33_33_33,
+                ((YUIComponentZone) layout.getLayout().getContent().getComponents().get(
+                        0)).getTemplate());
 
         DocumentModelList children = session.getChildren(createdDoc.getRef());
 
         assertEquals(3, children.size());
 
-        assertEquals(children.get(0)
-                .getId(), ((YUIUnitImpl) zone.getComponents()
-                .get(0)).getId());
-        assertEquals(children.get(1)
-                .getId(), ((YUIUnitImpl) zone.getComponents()
-                .get(1)).getId());
-        assertEquals(children.get(2)
-                .getId(), ((YUIUnitImpl) zone.getComponents()
-                .get(2)).getId());
+        assertEquals(children.get(0).getId(),
+                ((YUIUnitImpl) zone.getComponents().get(0)).getId());
+        assertEquals(children.get(1).getId(),
+                ((YUIUnitImpl) zone.getComponents().get(1)).getId());
+        assertEquals(children.get(2).getId(),
+                ((YUIUnitImpl) zone.getComponents().get(2)).getId());
     }
 
     @Test
@@ -100,28 +96,22 @@ public class LayoutNuxeoTest {
         DocumentModel doc = session.getDocument(createdDoc.getRef());
         YUILayoutAdapter layout = doc.getAdapter(YUILayoutAdapter.class);
 
-        YUIComponent firstZone = layout.getLayout()
-                .getContent()
-                .getComponents()
-                .get(0);
+        YUIComponent firstZone = layout.getLayout().getContent().getComponents().get(
+                0);
         assertEquals(YUITemplate.YUI_ZT_33_33_33,
                 ((YUIComponentZone) firstZone).getTemplate());
 
         DocumentModelList children = session.getChildren(createdDoc.getRef());
 
         assertEquals(3, children.size());
-        assertEquals(3, zone.getComponents()
-                .size());
+        assertEquals(3, zone.getComponents().size());
 
-        assertEquals(children.get(0)
-                .getId(), ((YUIUnitImpl) firstZone.getComponents()
-                .get(0)).getId());
-        assertEquals(children.get(1)
-                .getId(), ((YUIUnitImpl) firstZone.getComponents()
-                .get(1)).getId());
-        assertEquals(children.get(2)
-                .getId(), ((YUIUnitImpl) firstZone.getComponents()
-                .get(2)).getId());
+        assertEquals(children.get(0).getId(),
+                ((YUIUnitImpl) firstZone.getComponents().get(0)).getId());
+        assertEquals(children.get(1).getId(),
+                ((YUIUnitImpl) firstZone.getComponents().get(1)).getId());
+        assertEquals(children.get(2).getId(),
+                ((YUIUnitImpl) firstZone.getComponents().get(2)).getId());
     }
 
     @Test
@@ -136,22 +126,18 @@ public class LayoutNuxeoTest {
         DocumentModel doc = session.getDocument(createdDoc.getRef());
         YUILayoutAdapter layout = doc.getAdapter(YUILayoutAdapter.class);
 
-        YUIComponent firstZone = layout.getLayout()
-                .getContent()
-                .getComponents()
-                .get(0);
+        YUIComponent firstZone = layout.getLayout().getContent().getComponents().get(
+                0);
         assertEquals(YUITemplate.YUI_ZT_100,
                 ((YUIComponentZone) firstZone).getTemplate());
 
         DocumentModelList children = session.getChildren(createdDoc.getRef());
         assertEquals(1, children.size());
 
-        assertEquals(1, zone.getComponents()
-                .size());
+        assertEquals(1, zone.getComponents().size());
 
-        assertEquals(children.get(0)
-                .getId(), ((YUIUnitImpl) firstZone.getComponents()
-                .get(0)).getId());
+        assertEquals(children.get(0).getId(),
+                ((YUIUnitImpl) firstZone.getComponents().get(0)).getId());
     }
 
     @Test
@@ -169,10 +155,7 @@ public class LayoutNuxeoTest {
         DocumentModel doc = session.getDocument(createdDoc.getRef());
         YUILayoutAdapter layout = doc.getAdapter(YUILayoutAdapter.class);
 
-        assertEquals(0, layout.getLayout()
-                .getContent()
-                .getComponents()
-                .size());
+        assertEquals(0, layout.getLayout().getContent().getComponents().size());
     }
 
     @Test
@@ -186,9 +169,8 @@ public class LayoutNuxeoTest {
         DocumentModel doc = session.getDocument(createdDoc.getRef());
         YUILayoutAdapter layout = doc.getAdapter(YUILayoutAdapter.class);
 
-        assertEquals(YUISize.YUI_BS_974_PX.getSize(), layout.getLayout()
-                .getBodySize()
-                .getSize());
+        assertEquals(YUISize.YUI_BS_974_PX.getSize(),
+                layout.getLayout().getBodySize().getSize());
     }
 
     @Test
@@ -204,9 +186,7 @@ public class LayoutNuxeoTest {
         YUILayoutAdapter layout = doc.getAdapter(YUILayoutAdapter.class);
 
         assertEquals(YUISideBarStyle.YUI_SB_LEFT_180PX.toString(),
-                layout.getLayout()
-                        .getSidebarStyle()
-                        .toString());
+                layout.getLayout().getSidebarStyle().toString());
     }
 
     @Test
@@ -220,9 +200,7 @@ public class LayoutNuxeoTest {
         DocumentModel doc = session.getDocument(createdDoc.getRef());
         YUILayoutAdapter layout = doc.getAdapter(YUILayoutAdapter.class);
 
-        assertNotNull(layout.getLayout()
-                .getHeader());
-        assertNull(layout.getLayout()
-                .getFooter());
+        assertNotNull(layout.getLayout().getHeader());
+        assertNull(layout.getLayout().getFooter());
     }
 }

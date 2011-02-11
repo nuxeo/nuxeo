@@ -21,7 +21,9 @@ import com.google.gwt.user.client.ui.Label;
  */
 class FolderWidgetImpl extends Composite implements FolderWidget {
     private FlowPanel layout;
+
     private boolean isSelected = false;
+
     private String id;
 
     public FolderWidgetImpl(String name, String id) {

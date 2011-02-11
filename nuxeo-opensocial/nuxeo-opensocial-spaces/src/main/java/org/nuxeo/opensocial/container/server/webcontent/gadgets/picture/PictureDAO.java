@@ -7,7 +7,7 @@ import org.nuxeo.opensocial.container.shared.webcontent.PictureData;
  * @author Stéphane Fourrier
  */
 public class PictureDAO extends AbstractWebContentDAO<PictureData> {
-	public PictureDAO() {
+    public PictureDAO() {
 
-	}
+    }
 }

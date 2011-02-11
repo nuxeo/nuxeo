@@ -3,12 +3,6 @@ package org.nuxeo.opensocial.container.client.presenter;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.customware.gwt.presenter.client.EventBus;
-import net.customware.gwt.presenter.client.place.Place;
-import net.customware.gwt.presenter.client.place.PlaceRequest;
-import net.customware.gwt.presenter.client.widget.WidgetDisplay;
-import net.customware.gwt.presenter.client.widget.WidgetPresenter;
-
 import org.nuxeo.opensocial.container.client.AppErrorMessages;
 import org.nuxeo.opensocial.container.client.AppInfoMessages;
 import org.nuxeo.opensocial.container.client.Container;
@@ -37,6 +31,12 @@ import com.google.gwt.user.client.ui.Frame;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
+import net.customware.gwt.presenter.client.EventBus;
+import net.customware.gwt.presenter.client.place.Place;
+import net.customware.gwt.presenter.client.place.PlaceRequest;
+import net.customware.gwt.presenter.client.widget.WidgetDisplay;
+import net.customware.gwt.presenter.client.widget.WidgetPresenter;
+
 /**
  * @author Stéphane Fourrier
  */
@@ -44,7 +44,9 @@ public class AppPresenter extends WidgetPresenter<AppPresenter.Display> {
     private final ClientInjector injector = Container.injector;
 
     public static AppErrorMessages errors = GWT.create(AppErrorMessages.class);
+
     public static AppInfoMessages infos = GWT.create(AppInfoMessages.class);
+
     public static ContainerConstants containerConstants = GWT.create(ContainerConstants.class);
 
     public static ImageRessource AppImages = GWT.create(ImageRessource.class);
@@ -56,8 +58,11 @@ public class AppPresenter extends WidgetPresenter<AppPresenter.Display> {
     public static final Place PLACE = new Place("App");
 
     private ContainerPresenter containerPresenter;
+
     private Provider<ContainerBuilderPresenter> containerBuilderPresenter;
+
     private boolean containerBuilderBinded = false;
+
     private AppModel model;
 
     @Inject
@@ -104,8 +109,7 @@ public class AppPresenter extends WidgetPresenter<AppPresenter.Display> {
             containerPresenter.unbind();
         }
         if (containerBuilderPresenter != null) {
-            containerBuilderPresenter.get()
-                    .unbind();
+            containerBuilderPresenter.get().unbind();
         }
     }
 
@@ -131,64 +135,64 @@ public class AppPresenter extends WidgetPresenter<AppPresenter.Display> {
     }
 
     private native void registerExternalCall(AppPresenter me) /*-{
-        var container = $wnd.nuxeo.container;
+                                                              var container = $wnd.nuxeo.container;
 
-        container.addGadget = function(type, params) {
-        me.@org.nuxeo.opensocial.container.client.presenter.AppPresenter::addGadget(Ljava/lang/String;Lorg/nuxeo/opensocial/container/client/utils/JSParams;)(type, params);
-        }
+                                                              container.addGadget = function(type, params) {
+                                                              me.@org.nuxeo.opensocial.container.client.presenter.AppPresenter::addGadget(Ljava/lang/String;Lorg/nuxeo/opensocial/container/client/utils/JSParams;)(type, params);
+                                                              }
 
-        container.openContainerBuilder = function() {
-        me.@org.nuxeo.opensocial.container.client.presenter.AppPresenter::openContainerBuilder()();
-        }
+                                                              container.openContainerBuilder = function() {
+                                                              me.@org.nuxeo.opensocial.container.client.presenter.AppPresenter::openContainerBuilder()();
+                                                              }
 
-        // this.f represents the "name" attribute of the frame, not the "id"
-        var rpc = $wnd.gadgets.rpc;
+                                                              // this.f represents the "name" attribute of the frame, not the "id"
+                                                              var rpc = $wnd.gadgets.rpc;
 
-        rpc.register('resize_iframe', function(height) {
-        me.@org.nuxeo.opensocial.container.client.presenter.AppPresenter::resizeOpenSocialWebContent(Ljava/lang/String;I)(this.f, height);
-        });
+                                                              rpc.register('resize_iframe', function(height) {
+                                                              me.@org.nuxeo.opensocial.container.client.presenter.AppPresenter::resizeOpenSocialWebContent(Ljava/lang/String;I)(this.f, height);
+                                                              });
 
-        rpc.register('refresh', function() {
-        me.@org.nuxeo.opensocial.container.client.presenter.AppPresenter::refreshOpenSocialWebContent(Ljava/lang/String;)(this.f);
-        });
+                                                              rpc.register('refresh', function() {
+                                                              me.@org.nuxeo.opensocial.container.client.presenter.AppPresenter::refreshOpenSocialWebContent(Ljava/lang/String;)(this.f);
+                                                              });
 
-        rpc.register('set_pref', function(editToken, name, value) {
-        for ( var i = 1, j = arguments.length; i < j; i += 2) {
-        if(arguments[i]!="refresh") {
-        me.@org.nuxeo.opensocial.container.client.presenter.AppPresenter::setOpenSocialUserPref(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)(this.f,arguments[i],arguments[i+1]);
-        }
-        }
-        me.@org.nuxeo.opensocial.container.client.presenter.AppPresenter::saveOpenSocialUserPref(Ljava/lang/String;)(this.f);
-        });
+                                                              rpc.register('set_pref', function(editToken, name, value) {
+                                                              for ( var i = 1, j = arguments.length; i < j; i += 2) {
+                                                              if(arguments[i]!="refresh") {
+                                                              me.@org.nuxeo.opensocial.container.client.presenter.AppPresenter::setOpenSocialUserPref(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)(this.f,arguments[i],arguments[i+1]);
+                                                              }
+                                                              }
+                                                              me.@org.nuxeo.opensocial.container.client.presenter.AppPresenter::saveOpenSocialUserPref(Ljava/lang/String;)(this.f);
+                                                              });
 
-        rpc.register('set_title', function(title) {
-        me.@org.nuxeo.opensocial.container.client.presenter.AppPresenter::setOpenSocialWebContentTitle(Ljava/lang/String;Ljava/lang/String;)(this.f, title);
-        });
+                                                              rpc.register('set_title', function(title) {
+                                                              me.@org.nuxeo.opensocial.container.client.presenter.AppPresenter::setOpenSocialWebContentTitle(Ljava/lang/String;Ljava/lang/String;)(this.f, title);
+                                                              });
 
-        rpc.register('show_fancybox', function(childs, current) {
-        if($wnd.jQuery.fancybox) {
-        var items = [];
+                                                              rpc.register('show_fancybox', function(childs, current) {
+                                                              if($wnd.jQuery.fancybox) {
+                                                              var items = [];
 
-        $wnd.jQuery.each(childs, function(index, child) {
-        items.push({href:[child.path.value,"@view/Original.jpg"].join("")});
-        });
+                                                              $wnd.jQuery.each(childs, function(index, child) {
+                                                              items.push({href:[child.path.value,"@view/Original.jpg"].join("")});
+                                                              });
 
-        $wnd.jQuery.fancybox(items, {
-        'zoomSpeedIn': 500,
-        'zoomSpeedOut': 500,
-        'overlayShow': false,
-        'forceImage': true,
-        'hideOnContentClick': false
-        }, current);
-        } else if($wnd.console) {
-        $wnd.console.error("Add FancyBox plugin v1.3.0");
-        }
-        });
+                                                              $wnd.jQuery.fancybox(items, {
+                                                              'zoomSpeedIn': 500,
+                                                              'zoomSpeedOut': 500,
+                                                              'overlayShow': false,
+                                                              'forceImage': true,
+                                                              'hideOnContentClick': false
+                                                              }, current);
+                                                              } else if($wnd.console) {
+                                                              $wnd.console.error("Add FancyBox plugin v1.3.0");
+                                                              }
+                                                              });
 
-        rpc.register('get_nuxeo_space_id', function() {
-        me.@org.nuxeo.opensocial.container.client.presenter.AppPresenter::getNuxeoSpaceId()();
-        });
-    }-*/;
+                                                              rpc.register('get_nuxeo_space_id', function() {
+                                                              me.@org.nuxeo.opensocial.container.client.presenter.AppPresenter::getNuxeoSpaceId()();
+                                                              });
+                                                              }-*/;
 
     @SuppressWarnings("unused")
     private String getNuxeoSpaceId() {
@@ -200,10 +204,9 @@ public class AppPresenter extends WidgetPresenter<AppPresenter.Display> {
         String webContentId = getWebContentId(frameId);
 
         try {
-            model.getWebContent(webContentId)
-                    .setTitle(title);
-            ((PortletWidget) containerPresenter.getDisplay()
-                    .getWebContent(webContentId)).setTitle(title);
+            model.getWebContent(webContentId).setTitle(title);
+            ((PortletWidget) containerPresenter.getDisplay().getWebContent(
+                    webContentId)).setTitle(title);
         } catch (ClassCastException e) {
             // TODO The widget is not a PortletWidget
         }
@@ -214,8 +217,8 @@ public class AppPresenter extends WidgetPresenter<AppPresenter.Display> {
     @SuppressWarnings("unused")
     private void setOpenSocialUserPref(String frameId, String name, String value) {
         try {
-            UserPref userPref = ((OpenSocialData) model.getWebContent(getWebContentId(frameId))).getUserPrefs()
-                    .get(name);
+            UserPref userPref = ((OpenSocialData) model.getWebContent(getWebContentId(frameId))).getUserPrefs().get(
+                    name);
             if (userPref != null) {
                 userPref.setActualValue(value);
             } else {
@@ -265,8 +268,7 @@ public class AppPresenter extends WidgetPresenter<AppPresenter.Display> {
     @SuppressWarnings("unused")
     private void addGadget(String type, JSParams<?> params) {
         Map<String, String> prefs;
-        WebContentData webContent = injector.getGadgetFactory()
-                .getDataFor(type);
+        WebContentData webContent = injector.getGadgetFactory().getDataFor(type);
         if (params != null) {
             prefs = params.toMap();
         } else {
@@ -288,10 +290,8 @@ public class AppPresenter extends WidgetPresenter<AppPresenter.Display> {
         if (containerBuilderBinded == false) {
             GWT.runAsync(new RunAsyncCallback() {
                 public void onSuccess() {
-                    containerBuilderPresenter.get()
-                            .bind();
-                    containerBuilderPresenter.get()
-                            .revealDisplay();
+                    containerBuilderPresenter.get().bind();
+                    containerBuilderPresenter.get().revealDisplay();
                     containerBuilderBinded = true;
                     eventBus.fireEvent(new HideMessageEvent());
                 }
@@ -302,8 +302,7 @@ public class AppPresenter extends WidgetPresenter<AppPresenter.Display> {
                 }
             });
         } else {
-            containerBuilderPresenter.get()
-                    .revealDisplay();
+            containerBuilderPresenter.get().revealDisplay();
             eventBus.fireEvent(new HideMessageEvent());
         }
     }

@@ -45,7 +45,7 @@ public interface YUILayoutAdapter {
     void deleteZone(int zoneIndex) throws ClientException;
 
     YUIComponentZone updateZone(YUIComponentZone zone, int zoneIndex,
-                                YUITemplate template) throws ClientException;
+            YUITemplate template) throws ClientException;
 
     void initLayout(YUILayout layout) throws ClientException;
 

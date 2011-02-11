@@ -6,5 +6,5 @@ import com.google.gwt.event.shared.EventHandler;
  * @author Stéphane Fourrier
  */
 public interface ZoneUpdatedEventHandler extends EventHandler {
-	void onUpdateRow(ZoneUpdatedEvent event);
+    void onUpdateRow(ZoneUpdatedEvent event);
 }

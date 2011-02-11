@@ -92,6 +92,7 @@ public interface GadgetService {
 
     /**
      * Return the parsed Gadget Spec (may require an http fetch)
+     *
      * @param declaration
      * @return
      * @throws Exception

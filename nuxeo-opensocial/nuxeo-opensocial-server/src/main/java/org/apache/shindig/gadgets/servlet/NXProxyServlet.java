@@ -14,12 +14,12 @@ public class NXProxyServlet extends InjectedServlet {
 
     @Inject
     public void setProxyHandler(NXProxyHandler proxyHandler) {
-      this.proxyHandler = proxyHandler;
+        this.proxyHandler = proxyHandler;
     }
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-        throws IOException {
-      proxyHandler.fetch(new ProxyServletRequest(request), response);
+    protected void doGet(HttpServletRequest request,
+            HttpServletResponse response) throws IOException {
+        proxyHandler.fetch(new ProxyServletRequest(request), response);
     }
-  }
+}

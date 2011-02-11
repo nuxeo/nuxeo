@@ -6,5 +6,5 @@ import com.google.gwt.event.shared.EventHandler;
  * @author Stéphane Fourrier
  */
 public interface WebContentRemovedEventHandler extends EventHandler {
-	void onWebContentRemoved(WebContentRemovedEvent event);
+    void onWebContentRemoved(WebContentRemovedEvent event);
 }

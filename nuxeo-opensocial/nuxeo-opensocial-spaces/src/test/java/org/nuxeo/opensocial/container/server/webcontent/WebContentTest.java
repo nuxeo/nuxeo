@@ -43,8 +43,7 @@ public class WebContentTest {
         return unit;
     }
 
-    private WebContentData initTest(WebContentData data)
-            throws ClientException {
+    private WebContentData initTest(WebContentData data) throws ClientException {
         DocumentModel unit = createNxUnit();
 
         Map<String, String> preferences = new HashMap<String, String>();
@@ -83,12 +82,12 @@ public class WebContentTest {
         assertEquals(200, dataToTest.getHeight());
         assertEquals(true, dataToTest.isInAPorlet());
         assertEquals(true, dataToTest.isCollapsed());
-        assertEquals(1, dataToTest.getPreferences()
-                .size());
-        assertEquals("blue", dataToTest.getPreferences()
-                .get(DefaultPortletPreference.WC_BORDER_COLOR.toString()));
-        assertEquals(session.getPrincipal()
-                .getName(), data.getViewer());
+        assertEquals(1, dataToTest.getPreferences().size());
+        assertEquals(
+                "blue",
+                dataToTest.getPreferences().get(
+                        DefaultPortletPreference.WC_BORDER_COLOR.toString()));
+        assertEquals(session.getPrincipal().getName(), data.getViewer());
     }
 
     @Test
@@ -100,7 +99,7 @@ public class WebContentTest {
         data.setHtml("<div></div>");
         data.setHtmlTitle("test");
 
-        data = (HTMLData) service.create(data, unit.getId(),session);
+        data = (HTMLData) service.create(data, unit.getId(), session);
 
         HTMLData dataToTest = (HTMLData) service.read(
                 session.getDocument(new IdRef(data.getId())), session);

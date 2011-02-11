@@ -58,26 +58,32 @@ import com.google.inject.name.Named;
 
 /**
  * We have to copy BasicHttpFetcher because we must override the way proxy is
- * used (it's not handling authentication), and since the makeRespons method
- * is private, we cant' use it. Therefore, as there is only two methods in
- * the base class : the one we want to override and the one that is private,
- * it makes non sense to find a way to override it.
+ * used (it's not handling authentication), and since the makeRespons method is
+ * private, we cant' use it. Therefore, as there is only two methods in the base
+ * class : the one we want to override and the one that is private, it makes non
+ * sense to find a way to override it.
  *
  * @author dmetzler
  *
  */
 public class NXHttpFetcher implements HttpFetcher {
     private static final int DEFAULT_CONNECT_TIMEOUT_MS = 5000;
+
     private static final int DEFAULT_MAX_OBJECT_SIZE = 0; // no limit
+
     private static final int DEFAULT_BUFFER_SIZE = 1024 * 4;
 
     private static final String SHINDIG_PROXY_PORT = "shindig.proxy.proxyPort";
+
     private static final String SHINDIG_PROXY_PROXY_HOST = "shindig.proxy.proxyHost";
+
     private static final String SHINDIG_PROXY_PASSWORD = "shindig.proxy.password";
+
     private static final String SHINDIG_PROXY_USER = "shindig.proxy.user";
 
     // mutable fields must be volatile
     private volatile int maxObjSize;
+
     private volatile int connectionTimeoutMs;
 
     /**
@@ -85,11 +91,9 @@ public class NXHttpFetcher implements HttpFetcher {
      * production use. Use of an HTTP proxy for security is also necessary for
      * production deployment.
      *
-     * @param maxObjSize
-     *            Maximum size, in bytes, of the object we will fetch, 0 if no
-     *            limit..
-     * @param connectionTimeoutMs
-     *            timeout, in milliseconds, for requests.
+     * @param maxObjSize Maximum size, in bytes, of the object we will fetch, 0
+     *            if no limit..
+     * @param connectionTimeoutMs timeout, in milliseconds, for requests.
      */
     public NXHttpFetcher(int maxObjSize, int connectionTimeoutMs) {
         setMaxObjectSizeBytes(maxObjSize);
@@ -107,8 +111,8 @@ public class NXHttpFetcher implements HttpFetcher {
     /**
      * Change the global maximum fetch size (in bytes) for all fetches.
      *
-     * @param maxObjectSizeBytes
-     *            value for maximum number of bytes, or 0 for no limit
+     * @param maxObjectSizeBytes value for maximum number of bytes, or 0 for no
+     *            limit
      */
     @Inject(optional = true)
     public void setMaxObjectSizeBytes(
@@ -119,8 +123,7 @@ public class NXHttpFetcher implements HttpFetcher {
     /**
      * Change the global connection timeout for all fetchs.
      *
-     * @param connectionTimeoutMs
-     *            new connection timeout in milliseconds
+     * @param connectionTimeoutMs new connection timeout in milliseconds
      */
     @Inject(optional = true)
     public void setConnectionTimeoutMs(
@@ -196,10 +199,8 @@ public class NXHttpFetcher implements HttpFetcher {
             }
         }
 
-        return new HttpResponseBuilder().setHttpStatusCode(responseCode)
-                .setResponse(output.toByteArray())
-                .addHeaders(headers)
-                .create();
+        return new HttpResponseBuilder().setHttpStatusCode(responseCode).setResponse(
+                output.toByteArray()).addHeaders(headers).create();
     }
 
     /** {@inheritDoc} */
@@ -207,14 +208,11 @@ public class NXHttpFetcher implements HttpFetcher {
         HttpClient httpClient = new HttpClient();
         HttpMethod httpMethod;
         String methodType = request.getMethod();
-        String requestUri = request.getUri()
-                .toString();
+        String requestUri = request.getUri().toString();
 
         // Select a proxy based on the URI. May be Proxy.NO_PROXY
-        Proxy proxy = ProxySelector.getDefault()
-                .select(request.getUri()
-                        .toJavaUri())
-                .get(0);
+        Proxy proxy = ProxySelector.getDefault().select(
+                request.getUri().toJavaUri()).get(0);
 
         /**
          * Nuxeo Specific code to correctly handle proxy authentication
@@ -226,13 +224,10 @@ public class NXHttpFetcher implements HttpFetcher {
             String proxyUser = Framework.getProperty(SHINDIG_PROXY_USER);
             String proxyPass = Framework.getProperty(SHINDIG_PROXY_PASSWORD);
 
-            httpClient.getHostConfiguration()
-                    .setProxy(proxyHost, proxyPort);
-            httpClient.getState()
-                    .setProxyCredentials(
-                            new AuthScope(proxyHost, proxyPort, null),
-                            new UsernamePasswordCredentials(proxyUser,
-                                    proxyPass));
+            httpClient.getHostConfiguration().setProxy(proxyHost, proxyPort);
+            httpClient.getState().setProxyCredentials(
+                    new AuthScope(proxyHost, proxyPort, null),
+                    new UsernamePasswordCredentials(proxyUser, proxyPass));
         } else {
             httpClient.getHostConfiguration().setProxyHost(null);
         }
@@ -242,8 +237,7 @@ public class NXHttpFetcher implements HttpFetcher {
 
         if ("POST".equals(methodType) || "PUT".equals(methodType)) {
             EntityEnclosingMethod enclosingMethod = ("POST".equals(methodType)) ? new PostMethod(
-                    requestUri)
-                    : new PutMethod(requestUri);
+                    requestUri) : new PutMethod(requestUri);
 
             if (request.getPostBodyLength() > 0) {
                 enclosingMethod.setRequestEntity(new InputStreamRequestEntity(
@@ -261,16 +255,14 @@ public class NXHttpFetcher implements HttpFetcher {
         }
 
         httpMethod.setFollowRedirects(false);
-        httpMethod.getParams()
-                .setSoTimeout(connectionTimeoutMs);
+        httpMethod.getParams().setSoTimeout(connectionTimeoutMs);
 
         if (requestCompressedContent)
             httpMethod.setRequestHeader("Accept-Encoding", "gzip, deflate");
 
-        for (Map.Entry<String, List<String>> entry : request.getHeaders()
-                .entrySet()) {
-            httpMethod.setRequestHeader(entry.getKey(), StringUtils.join(
-                    entry.getValue(), ','));
+        for (Map.Entry<String, List<String>> entry : request.getHeaders().entrySet()) {
+            httpMethod.setRequestHeader(entry.getKey(),
+                    StringUtils.join(entry.getValue(), ','));
         }
 
         try {

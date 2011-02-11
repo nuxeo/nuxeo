@@ -9,6 +9,7 @@ public class FolderChosenEvent extends GwtEvent<FolderChosenEventHandler> {
     public static Type<FolderChosenEventHandler> TYPE = new Type<FolderChosenEventHandler>();
 
     private String folderId;
+
     private String folderName;
 
     public FolderChosenEvent(String folderId, String folderName) {

@@ -6,25 +6,25 @@ import com.google.gwt.event.shared.GwtEvent;
  * @author Stéphane Fourrier
  */
 public class ZoneUpdatedEvent extends GwtEvent<ZoneUpdatedEventHandler> {
-	public static Type<ZoneUpdatedEventHandler> TYPE = new Type<ZoneUpdatedEventHandler>();
-	
-	private final int id;
+    public static Type<ZoneUpdatedEventHandler> TYPE = new Type<ZoneUpdatedEventHandler>();
 
-	public ZoneUpdatedEvent(int id) {
-		this.id = id;
-	}
+    private final int id;
 
-	public int getId() {
-		return id;
-	}
-	
-	@Override
-	public com.google.gwt.event.shared.GwtEvent.Type<ZoneUpdatedEventHandler> getAssociatedType() {
-		return TYPE;
-	}
+    public ZoneUpdatedEvent(int id) {
+        this.id = id;
+    }
 
-	@Override
-	protected void dispatch(ZoneUpdatedEventHandler handler) {
-		handler.onUpdateRow(this);
-	}
+    public int getId() {
+        return id;
+    }
+
+    @Override
+    public com.google.gwt.event.shared.GwtEvent.Type<ZoneUpdatedEventHandler> getAssociatedType() {
+        return TYPE;
+    }
+
+    @Override
+    protected void dispatch(ZoneUpdatedEventHandler handler) {
+        handler.onUpdateRow(this);
+    }
 }

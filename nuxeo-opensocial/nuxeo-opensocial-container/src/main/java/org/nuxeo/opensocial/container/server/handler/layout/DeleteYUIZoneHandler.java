@@ -15,9 +15,10 @@ public class DeleteYUIZoneHandler extends
         AbstractActionHandler<DeleteYUIZone, DeleteYUIZoneResult> {
 
     protected DeleteYUIZoneResult doExecute(DeleteYUIZone action,
-            ExecutionContext context, CoreSession session) throws ClientException {
-        getSpaceFromId(action.getSpaceId(), session).getLayout()
-                .deleteZone(action.getZoneIndex());
+            ExecutionContext context, CoreSession session)
+            throws ClientException {
+        getSpaceFromId(action.getSpaceId(), session).getLayout().deleteZone(
+                action.getZoneIndex());
         return new DeleteYUIZoneResult();
     }
 

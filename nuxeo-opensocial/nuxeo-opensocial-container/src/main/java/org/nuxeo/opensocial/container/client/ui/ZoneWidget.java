@@ -12,53 +12,53 @@ import com.google.gwt.user.client.ui.FlowPanel;
  */
 public class ZoneWidget extends FlowPanel implements HasUnits {
 
-	public ZoneWidget(String cssStyle) {
-		setCssTemplate(cssStyle);
-	}
+    public ZoneWidget(String cssStyle) {
+        setCssTemplate(cssStyle);
+    }
 
-	public boolean hasWebContents() {
-		for(int i = 0; i < getWidgetCount(); i++) {
-			if (((UnitWidget) getWidget(i)).hasWebContents()) {
-				return true;
-			}
-		}
-		return false;
-	}
+    public boolean hasWebContents() {
+        for (int i = 0; i < getWidgetCount(); i++) {
+            if (((UnitWidget) getWidget(i)).hasWebContents()) {
+                return true;
+            }
+        }
+        return false;
+    }
 
-	public void addUnit(UnitWidget unitWidget) {
-		this.add(unitWidget);
-	}
+    public void addUnit(UnitWidget unitWidget) {
+        this.add(unitWidget);
+    }
 
-	public void setCssTemplate(String cssTemplate) {
-		this.setStyleName(cssTemplate);
-	}
+    public void setCssTemplate(String cssTemplate) {
+        this.setStyleName(cssTemplate);
+    }
 
-	public void removeUnit(int index) {
-		this.remove(index);
-	}
+    public void removeUnit(int index) {
+        this.remove(index);
+    }
 
-	public UnitWidget getUnit(String id) {
-		for(int i = 0; i < getWidgetCount(); i++) {
-			if (getWidget(i).getElement().getAttribute("id").equals(id))
-				return (UnitWidget) getWidget(i);
-		}
-		return null;
-	}
+    public UnitWidget getUnit(String id) {
+        for (int i = 0; i < getWidgetCount(); i++) {
+            if (getWidget(i).getElement().getAttribute("id").equals(id))
+                return (UnitWidget) getWidget(i);
+        }
+        return null;
+    }
 
-	public UnitWidget getUnit(int unitIndex) {
-		return (UnitWidget) getWidget(unitIndex);
-	}
+    public UnitWidget getUnit(int unitIndex) {
+        return (UnitWidget) getWidget(unitIndex);
+    }
 
-	public List<UnitWidget> getUnits() {
-		List<UnitWidget> list = new ArrayList<UnitWidget>();
-		
-		for(int i = 0; i < getWidgetCount(); i++) {
-			list.add((UnitWidget) getWidget(i));
-		}
-		return list;
-	}
+    public List<UnitWidget> getUnits() {
+        List<UnitWidget> list = new ArrayList<UnitWidget>();
 
-	public int getNumberOfUnits() {
-		return getWidgetCount();
-	}
+        for (int i = 0; i < getWidgetCount(); i++) {
+            list.add((UnitWidget) getWidget(i));
+        }
+        return list;
+    }
+
+    public int getNumberOfUnits() {
+        return getWidgetCount();
+    }
 }

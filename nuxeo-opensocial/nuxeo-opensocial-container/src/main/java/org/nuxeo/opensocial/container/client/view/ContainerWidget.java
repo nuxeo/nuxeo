@@ -1,7 +1,5 @@
 package org.nuxeo.opensocial.container.client.view;
 
-import net.customware.gwt.presenter.client.widget.WidgetDisplay;
-
 import org.nuxeo.opensocial.container.client.presenter.ContainerPresenter;
 import org.nuxeo.opensocial.container.client.ui.UnitWidget;
 import org.nuxeo.opensocial.container.client.ui.ZoneWidget;
@@ -15,6 +13,8 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 
+import net.customware.gwt.presenter.client.widget.WidgetDisplay;
+
 /**
  * @author Stéphane Fourrier
  */
@@ -23,13 +23,21 @@ public class ContainerWidget extends Composite implements
     private static final long serialVersionUID = 1L;
 
     private FlowPanel GWTLayout;
+
     private UnitWidget headerPanel;
+
     private FlowPanel contentPanel;
+
     private FlowPanel mainPanel;
+
     private SimplePanel maximizedContainer;
+
     private SimplePanel maximizedContainerContent;
+
     private FlowPanel subMainPanel;
+
     private UnitWidget sideBarPanel;
+
     private UnitWidget footerPanel;
 
     public ContainerWidget() {
@@ -42,13 +50,11 @@ public class ContainerWidget extends Composite implements
         GWTLayout.add(headerPanel);
 
         contentPanel = new FlowPanel();
-        contentPanel.getElement()
-                .setAttribute("id", "bd");
+        contentPanel.getElement().setAttribute("id", "bd");
         GWTLayout.add(contentPanel);
 
         mainPanel = new FlowPanel();
-        mainPanel.getElement()
-                .setAttribute("id", "yui-main");
+        mainPanel.getElement().setAttribute("id", "yui-main");
         contentPanel.add(mainPanel);
 
         subMainPanel = new FlowPanel();
@@ -86,19 +92,13 @@ public class ContainerWidget extends Composite implements
     }
 
     public void setContainerCustomSize(String cssStyle, long size) {
-        GWTLayout.getElement()
-                .setAttribute("id", cssStyle);
-        GWTLayout.getElement()
-                .getStyle()
-                .setWidth(size, Unit.PX);
+        GWTLayout.getElement().setAttribute("id", cssStyle);
+        GWTLayout.getElement().getStyle().setWidth(size, Unit.PX);
     }
 
     public void setContainerFixedSize(String cssStyle) {
-        GWTLayout.getElement()
-                .setAttribute("id", cssStyle);
-        GWTLayout.getElement()
-                .getStyle()
-                .clearWidth();
+        GWTLayout.getElement().setAttribute("id", cssStyle);
+        GWTLayout.getElement().getStyle().clearWidth();
     }
 
     public void setContainerSideBar(boolean hasSidebar, String cssStyle,
@@ -234,8 +234,7 @@ public class ContainerWidget extends Composite implements
 
     public boolean hasWebContentInUnit(int zoneIndex, int unitIndex) {
         return ((ZoneWidget) subMainPanel.getWidget(zoneIndex)).getUnit(
-                unitIndex)
-                .hasWebContents();
+                unitIndex).hasWebContents();
     }
 
     public boolean hasWebContentInUnit(String unitName) {

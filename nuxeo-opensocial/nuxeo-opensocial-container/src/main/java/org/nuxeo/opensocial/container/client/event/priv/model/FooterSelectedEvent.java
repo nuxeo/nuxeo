@@ -6,15 +6,15 @@ import com.google.gwt.event.shared.GwtEvent;
  * @author Stéphane Fourrier
  */
 public class FooterSelectedEvent extends GwtEvent<FooterSelectedEventHandler> {
-	public static Type<FooterSelectedEventHandler> TYPE = new Type<FooterSelectedEventHandler>();
+    public static Type<FooterSelectedEventHandler> TYPE = new Type<FooterSelectedEventHandler>();
 
-	@Override
-	public com.google.gwt.event.shared.GwtEvent.Type<FooterSelectedEventHandler> getAssociatedType() {
-		return TYPE;
-	}
+    @Override
+    public com.google.gwt.event.shared.GwtEvent.Type<FooterSelectedEventHandler> getAssociatedType() {
+        return TYPE;
+    }
 
-	@Override
-	protected void dispatch(FooterSelectedEventHandler handler) {
-		handler.onSelectFooter(this);
-	}
+    @Override
+    protected void dispatch(FooterSelectedEventHandler handler) {
+        handler.onSelectFooter(this);
+    }
 }

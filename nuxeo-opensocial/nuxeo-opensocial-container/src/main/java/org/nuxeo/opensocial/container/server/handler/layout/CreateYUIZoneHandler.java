@@ -15,9 +15,10 @@ import net.customware.gwt.dispatch.server.ExecutionContext;
 public class CreateYUIZoneHandler extends
         AbstractActionHandler<CreateYUIZone, CreateYUIZoneResult> {
     protected CreateYUIZoneResult doExecute(CreateYUIZone action,
-            ExecutionContext context, CoreSession session) throws ClientException {
-        YUIComponentZone zone = getSpaceFromId(action.getSpaceId(), session).getLayout()
-                .createZone(action.getZone(), action.getZoneIndex());
+            ExecutionContext context, CoreSession session)
+            throws ClientException {
+        YUIComponentZone zone = getSpaceFromId(action.getSpaceId(), session).getLayout().createZone(
+                action.getZone(), action.getZoneIndex());
         return new CreateYUIZoneResult(zone);
     }
 

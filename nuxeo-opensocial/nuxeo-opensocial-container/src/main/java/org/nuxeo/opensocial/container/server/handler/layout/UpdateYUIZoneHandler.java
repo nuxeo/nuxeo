@@ -16,10 +16,10 @@ public class UpdateYUIZoneHandler extends
         AbstractActionHandler<UpdateYUIZone, UpdateYUIZoneResult> {
 
     protected UpdateYUIZoneResult doExecute(UpdateYUIZone action,
-            ExecutionContext context, CoreSession session) throws ClientException {
-        YUIComponentZone zone = getSpaceFromId(action.getSpaceId(), session).getLayout()
-                .updateZone(action.getZone(), action.getZoneIndex(),
-                        action.getTemplate());
+            ExecutionContext context, CoreSession session)
+            throws ClientException {
+        YUIComponentZone zone = getSpaceFromId(action.getSpaceId(), session).getLayout().updateZone(
+                action.getZone(), action.getZoneIndex(), action.getTemplate());
         return new UpdateYUIZoneResult(zone);
     }
 

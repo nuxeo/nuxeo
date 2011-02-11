@@ -67,8 +67,7 @@ public class SpacesAdapterComponent extends DefaultComponent implements
     public Object getAdapter(DocumentModel doc, Class itf) {
         if (Space.class.isAssignableFrom(itf)) {
             return getSpaceFactory(doc, itf);
-        } else if (doc.getType()
-                .equals(DocGadgetImpl.TYPE)
+        } else if (doc.getType().equals(DocGadgetImpl.TYPE)
                 && Gadget.class.isAssignableFrom(itf)) {
             return new DocGadgetImpl(doc);
         }
@@ -84,8 +83,9 @@ public class SpacesAdapterComponent extends DefaultComponent implements
             try {
                 factory = factoryKlass.newInstance();
             } catch (Exception e) {
-                log.error("Unable to instanciate factory : "
-                        + factoryKlass.getCanonicalName(), e);
+                log.error(
+                        "Unable to instanciate factory : "
+                                + factoryKlass.getCanonicalName(), e);
                 return null;
             }
             return factory.getAdapter(doc, itf);

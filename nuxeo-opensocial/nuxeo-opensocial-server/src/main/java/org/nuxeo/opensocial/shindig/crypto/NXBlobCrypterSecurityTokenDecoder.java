@@ -20,7 +20,6 @@ package org.nuxeo.opensocial.shindig.crypto;
 import java.io.FileReader;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.shindig.auth.BlobCrypterSecurityTokenDecoder;
@@ -28,10 +27,7 @@ import org.apache.shindig.common.crypto.BasicBlobCrypter;
 import org.apache.shindig.common.crypto.BlobCrypter;
 import org.apache.shindig.config.ContainerConfig;
 import org.apache.shindig.gadgets.oauth.BasicOAuthStore;
-import org.apache.shindig.gadgets.oauth.BasicOAuthStoreConsumerIndex;
-import org.apache.shindig.gadgets.oauth.BasicOAuthStoreConsumerKeyAndSecret;
 import org.apache.shindig.gadgets.oauth.OAuthStore;
-import org.apache.shindig.gadgets.oauth.BasicOAuthStoreConsumerKeyAndSecret.KeyType;
 import org.nuxeo.ecm.platform.oauth.providers.OAuthServiceProviderRegistry;
 import org.nuxeo.opensocial.service.api.OpenSocialService;
 import org.nuxeo.runtime.api.Framework;
@@ -67,29 +63,33 @@ public class NXBlobCrypterSecurityTokenDecoder extends
                     log.warn("We expected to be able to use a BasicOAuthStore "
                             + "to configure OAuth services!");
                 } else {
-                    OAuthServiceProviderRegistry  spr =  Framework.getLocalService(OAuthServiceProviderRegistry.class);
+                    OAuthServiceProviderRegistry spr = Framework.getLocalService(OAuthServiceProviderRegistry.class);
 
                     for (OAuthServiceDescriptor descriptor : os.getOAuthServices()) {
 
-                        spr.addReadOnlyProvider(descriptor.gadgetUrl, descriptor.serviceName, descriptor.consumerKey, descriptor.consumerSecret, null);
+                        spr.addReadOnlyProvider(descriptor.gadgetUrl,
+                                descriptor.serviceName, descriptor.consumerKey,
+                                descriptor.consumerSecret, null);
 
                         /**
-                        BasicOAuthStore oauthStore = (BasicOAuthStore) store;
-                        BasicOAuthStoreConsumerIndex index = new BasicOAuthStoreConsumerIndex();
-                        index.setGadgetUri(descriptor.getGadgetUrl());
-                        index.setServiceName(descriptor.getServiceName());
-                        String oauthKey = IOUtils.toString(new FileReader(
-                                os.getOAuthPrivateKeyFile()));
-                        if (!StringUtils.isEmpty(descriptor.getConsumerSecret())) {
-                            oauthKey = descriptor.getConsumerSecret();
-                        }
-                        BasicOAuthStoreConsumerKeyAndSecret keyAndSecret = new BasicOAuthStoreConsumerKeyAndSecret(
-                                descriptor.getConsumerKey(), oauthKey,
-                                KeyType.RSA_PRIVATE,
-                                os.getOAuthPrivateKeyName(),
-                                os.getOAuthCallbackUrl());
-                        oauthStore.setConsumerKeyAndSecret(index, keyAndSecret);
-                        **/
+                         * BasicOAuthStore oauthStore = (BasicOAuthStore) store;
+                         * BasicOAuthStoreConsumerIndex index = new
+                         * BasicOAuthStoreConsumerIndex();
+                         * index.setGadgetUri(descriptor.getGadgetUrl());
+                         * index.setServiceName(descriptor.getServiceName());
+                         * String oauthKey = IOUtils.toString(new FileReader(
+                         * os.getOAuthPrivateKeyFile())); if
+                         * (!StringUtils.isEmpty
+                         * (descriptor.getConsumerSecret())) { oauthKey =
+                         * descriptor.getConsumerSecret(); }
+                         * BasicOAuthStoreConsumerKeyAndSecret keyAndSecret =
+                         * new BasicOAuthStoreConsumerKeyAndSecret(
+                         * descriptor.getConsumerKey(), oauthKey,
+                         * KeyType.RSA_PRIVATE, os.getOAuthPrivateKeyName(),
+                         * os.getOAuthCallbackUrl());
+                         * oauthStore.setConsumerKeyAndSecret(index,
+                         * keyAndSecret);
+                         **/
                     }
                 }
             }

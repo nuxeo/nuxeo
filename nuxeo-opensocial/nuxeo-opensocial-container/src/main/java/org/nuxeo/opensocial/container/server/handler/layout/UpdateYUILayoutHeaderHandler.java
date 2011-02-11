@@ -17,10 +17,10 @@ public class UpdateYUILayoutHeaderHandler
         AbstractActionHandler<UpdateYUILayoutHeader, UpdateYUILayoutHeaderResult> {
 
     protected UpdateYUILayoutHeaderResult doExecute(
-            UpdateYUILayoutHeader action, ExecutionContext context, CoreSession session)
-            throws ClientException {
-        YUIUnit header = getSpaceFromId(action.getSpaceId(), session).getLayout()
-                .setHeader(action.getHeader());
+            UpdateYUILayoutHeader action, ExecutionContext context,
+            CoreSession session) throws ClientException {
+        YUIUnit header = getSpaceFromId(action.getSpaceId(), session).getLayout().setHeader(
+                action.getHeader());
         return new UpdateYUILayoutHeaderResult(header);
     }
 

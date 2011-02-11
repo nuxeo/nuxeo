@@ -72,8 +72,7 @@ public class WebContentSaverServiceTest {
         HTMLData dataFromNuxeo = adapter.getData();
 
         assertEquals(html.getId(), doc.getId());
-        assertEquals(1, session.getChildren(unit.getRef())
-                .size());
+        assertEquals(1, session.getChildren(unit.getRef()).size());
         assertTrue(session.exists(htmlIdRef));
         assertEquals("test", dataFromNuxeo.getName());
 
@@ -91,7 +90,8 @@ public class WebContentSaverServiceTest {
         DocumentModel unit = createNxUnit();
         HTMLData html = createHTMLData(unit.getId());
 
-        HTMLData dataSaved = (HTMLData) service.create(html, unit.getId(), session);
+        HTMLData dataSaved = (HTMLData) service.create(html, unit.getId(),
+                session);
         session.save();
 
         HTMLData dataFromNuxeo = (HTMLData) service.read(
@@ -121,7 +121,8 @@ public class WebContentSaverServiceTest {
         service.update(html, session);
         session.save();
 
-        HTMLData dataFromNuxeo = (HTMLData) service.read(session.getDocument(new IdRef(html.getId())), session);
+        HTMLData dataFromNuxeo = (HTMLData) service.read(
+                session.getDocument(new IdRef(html.getId())), session);
 
         assertEquals("", dataFromNuxeo.getHtml());
     }

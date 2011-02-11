@@ -1,8 +1,8 @@
 package org.nuxeo.opensocial.container.client.rpc.webcontent.action;
 
+import org.nuxeo.opensocial.container.client.rpc.AbstractAction;
 import org.nuxeo.opensocial.container.client.rpc.ContainerContext;
 import org.nuxeo.opensocial.container.client.rpc.webcontent.result.UpdateWebContentResult;
-import org.nuxeo.opensocial.container.client.rpc.AbstractAction;
 import org.nuxeo.opensocial.container.shared.webcontent.WebContentData;
 
 /**

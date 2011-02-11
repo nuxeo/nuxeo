@@ -1,8 +1,8 @@
 package org.nuxeo.opensocial.container.client.rpc.layout.action;
 
+import org.nuxeo.opensocial.container.client.rpc.AbstractAction;
 import org.nuxeo.opensocial.container.client.rpc.ContainerContext;
 import org.nuxeo.opensocial.container.client.rpc.layout.result.CreateYUIZoneResult;
-import org.nuxeo.opensocial.container.client.rpc.AbstractAction;
 import org.nuxeo.opensocial.container.shared.layout.api.YUIComponentZone;
 
 /**

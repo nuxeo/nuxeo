@@ -15,18 +15,29 @@ public abstract class AbstractWebContentData implements Serializable,
     private static final long serialVersionUID = 1L;
 
     public static final String WC_HEIGHT_PREFERENCE = "WC_HEIGHT";
+
     public static final String WC_TITLE_PREFERENCE = "WC_TITLE";
 
     private String id;
+
     private String name;
+
     private String title;
+
     private String unitId;
+
     private long position;
+
     private long height;
+
     private String owner;
+
     private String viewer;
+
     private boolean isInAPortlet = true;
+
     private boolean isCollapsed = false;
+
     private Map<String, String> preferences;
 
     private String locale;

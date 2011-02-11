@@ -8,10 +8,15 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  */
 public class FolderGson {
     public String id;
+
     public String name;
+
     public String title;
+
     public String folderIconUrl = "";
+
     public String creator;
+
     public String previewDocId;
 
     public FolderGson() {

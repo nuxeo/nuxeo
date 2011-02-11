@@ -14,11 +14,15 @@ import org.restlet.gwt.data.Request;
  */
 public class FolderPickerModel {
     private List<Folder> folders;
+
     private Client client;
+
     private String gadgetId;
 
     private final String NXPICS_PATH = "nxpicsfile/default/";
+
     private final String MEDIUM_VIEW = "/Medium:content/";
+
     private String initSelectedFolder;
 
     public FolderPickerModel(String gadgetId, String initSelectedFolder) {
@@ -60,8 +64,8 @@ public class FolderPickerModel {
     }
 
     private native String getBaseUrl() /*-{
-        return $wnd.nuxeo.baseURL;
-    }-*/;
+                                       return $wnd.nuxeo.baseURL;
+                                       }-*/;
 
     public String getInitialSelectedFolder() {
         return initSelectedFolder;

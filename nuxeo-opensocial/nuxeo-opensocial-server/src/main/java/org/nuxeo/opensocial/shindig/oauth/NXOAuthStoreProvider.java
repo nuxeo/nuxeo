@@ -18,8 +18,8 @@
 package org.nuxeo.opensocial.shindig.oauth;
 
 import org.apache.shindig.gadgets.oauth.BasicOAuthStoreConsumerKeyAndSecret;
-import org.apache.shindig.gadgets.oauth.OAuthStore;
 import org.apache.shindig.gadgets.oauth.BasicOAuthStoreConsumerKeyAndSecret.KeyType;
+import org.apache.shindig.gadgets.oauth.OAuthStore;
 import org.nuxeo.ecm.platform.oauth.keys.OAuthServerKeyManager;
 import org.nuxeo.opensocial.service.api.OpenSocialService;
 import org.nuxeo.runtime.api.Framework;
@@ -34,7 +34,7 @@ import com.google.inject.Singleton;
  *
  */
 @Singleton
-public class NXOAuthStoreProvider implements Provider<OAuthStore>{
+public class NXOAuthStoreProvider implements Provider<OAuthStore> {
 
     protected NXOAuthStore store;
 
@@ -46,7 +46,8 @@ public class NXOAuthStoreProvider implements Provider<OAuthStore>{
         store.setDefaultCallbackUrl(os.getOAuthCallbackUrl());
         String privateKey = skm.getBarePrivateKey();
         String signingKeyName = skm.getKeyName();
-        BasicOAuthStoreConsumerKeyAndSecret key = new BasicOAuthStoreConsumerKeyAndSecret(null, privateKey, KeyType.RSA_PRIVATE,signingKeyName, null);
+        BasicOAuthStoreConsumerKeyAndSecret key = new BasicOAuthStoreConsumerKeyAndSecret(
+                null, privateKey, KeyType.RSA_PRIVATE, signingKeyName, null);
         store.setDefaultKey(key);
 
         // XXX load entries from OpenSocial Service config

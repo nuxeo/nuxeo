@@ -11,6 +11,7 @@ public class HTMLData extends AbstractWebContentData {
     private static final long serialVersionUID = 1L;
 
     public static final String HTML_PREFERENCE = "WC_HTML_HTML";
+
     public static final String TITLE_PREFERENCE = "WC_HTML_TITLE";
 
     public static final String ICONE_NAME = "richtext-icon";
@@ -18,6 +19,7 @@ public class HTMLData extends AbstractWebContentData {
     public static String TYPE = new String("wchtml");
 
     private String html;
+
     private String htmlTitle;
 
     public HTMLData() {

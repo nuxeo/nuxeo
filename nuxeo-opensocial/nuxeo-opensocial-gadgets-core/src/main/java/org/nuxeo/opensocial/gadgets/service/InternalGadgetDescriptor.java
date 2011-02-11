@@ -32,7 +32,8 @@ import org.nuxeo.runtime.model.ComponentName;
 import org.osgi.framework.Bundle;
 
 @XObject("internalGadget")
-public class InternalGadgetDescriptor extends BaseGadgetDescriptor implements GadgetDeclaration {
+public class InternalGadgetDescriptor extends BaseGadgetDescriptor implements
+        GadgetDeclaration {
 
     private static final long serialVersionUID = 1L;
 
@@ -156,18 +157,20 @@ public class InternalGadgetDescriptor extends BaseGadgetDescriptor implements Ga
         sb.append(HTTP);
         sb.append(Framework.getProperty(GADGETS_HOST, "127.0.0.1"));
         sb.append(HTTP_SEPARATOR);
-        sb.append(Framework.getProperty(GADGETS_PORT,"8080"));
-        sb.append(Framework.getProperty(GADGETS_PATH,"/nuxeo/site/gadgets"));
+        sb.append(Framework.getProperty(GADGETS_PORT, "8080"));
+        sb.append(Framework.getProperty(GADGETS_PATH, "/nuxeo/site/gadgets"));
         return sb;
     }
 
     public InputStream getResourceAsStream(String resourcePath)
             throws IOException {
 
-        ComponentInstance component = Framework.getRuntime().getComponentInstance(componentName);
+        ComponentInstance component = Framework.getRuntime().getComponentInstance(
+                componentName);
         Bundle bundle = component.getRuntimeContext().getBundle();
-        URL gadgetURL = bundle.getEntry("gadget/" + getDirectory() + "/" + resourcePath);
-        if (gadgetURL==null) {
+        URL gadgetURL = bundle.getEntry("gadget/" + getDirectory() + "/"
+                + resourcePath);
+        if (gadgetURL == null) {
             gadgetURL = bundle.getEntry("gadget/resources/" + resourcePath);
         }
         if (gadgetURL != null) {
@@ -187,7 +190,7 @@ public class InternalGadgetDescriptor extends BaseGadgetDescriptor implements Ga
 
     @Override
     public String getDescription() {
-        if (description!=null) {
+        if (description != null) {
             return description;
         }
         return getDescriptionFromSpec();
@@ -201,7 +204,7 @@ public class InternalGadgetDescriptor extends BaseGadgetDescriptor implements Ga
     @Override
     public String getThumbnail() {
         String thumb = super.getThumbnail();
-        if (thumb==null || "".equals(thumb.trim())) {
+        if (thumb == null || "".equals(thumb.trim())) {
             return getIconUrl();
         }
         return null;

@@ -1,8 +1,8 @@
 package org.nuxeo.opensocial.container.client.rpc.layout.action;
 
+import org.nuxeo.opensocial.container.client.rpc.AbstractAction;
 import org.nuxeo.opensocial.container.client.rpc.ContainerContext;
 import org.nuxeo.opensocial.container.client.rpc.layout.result.UpdateYUILayoutHeaderResult;
-import org.nuxeo.opensocial.container.client.rpc.AbstractAction;
 import org.nuxeo.opensocial.container.shared.layout.api.YUIUnit;
 
 /**
@@ -20,7 +20,8 @@ public class UpdateYUILayoutHeader extends
         super();
     }
 
-    public UpdateYUILayoutHeader(ContainerContext containerContext, final YUIUnit header) {
+    public UpdateYUILayoutHeader(ContainerContext containerContext,
+            final YUIUnit header) {
         super(containerContext);
         this.header = header;
     }

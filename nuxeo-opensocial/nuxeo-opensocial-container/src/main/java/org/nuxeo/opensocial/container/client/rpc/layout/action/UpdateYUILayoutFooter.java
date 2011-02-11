@@ -20,7 +20,8 @@ public class UpdateYUILayoutFooter extends
         super();
     }
 
-    public UpdateYUILayoutFooter(ContainerContext containerContext, final YUIUnit footer) {
+    public UpdateYUILayoutFooter(ContainerContext containerContext,
+            final YUIUnit footer) {
         super(containerContext);
         this.footer = footer;
     }

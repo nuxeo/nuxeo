@@ -6,5 +6,5 @@ import com.google.gwt.event.shared.EventHandler;
  * @author Stéphane Fourrier
  */
 public interface ContainerSizeChangedEventHandler extends EventHandler {
-	void onChangeContainerSize(ContainerSizeChangedEvent event);
+    void onChangeContainerSize(ContainerSizeChangedEvent event);
 }

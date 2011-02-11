@@ -60,9 +60,13 @@ public class GadgetDocument extends DocumentObject {
     private static final String GADGET_HTML_CONTENT = "gadget:htmlContent";
 
     private static final String GADGET_CONTENT_FILES = "gadgetContent";
+
     private static final String FILES_FILES = "files:files";
+
     private static final String FILENAME = "filename";
+
     private static final String FILE = "file";
+
     private static final String HTML_CONTENT = "htmlContent";
 
     private static final int DEFAULT_SIZE_WIDTH = 600;
@@ -131,8 +135,9 @@ public class GadgetDocument extends DocumentObject {
                         String crop = form.getString("crop");
                         if (crop != null) {
                             String[] dim = crop.split("x");
-                            blob = getCroppedBlob(blob, Integer
-                                    .parseInt(dim[0]), Integer.parseInt(dim[1]));
+                            blob = getCroppedBlob(blob,
+                                    Integer.parseInt(dim[0]),
+                                    Integer.parseInt(dim[1]));
                         }
                         String resize = form.getString("resize_width");
                         if (resize != null) {
@@ -140,8 +145,7 @@ public class GadgetDocument extends DocumentObject {
                             try {
                                 resizeWidth = Integer.parseInt(resize);
                             } catch (NumberFormatException e) {
-                                log
-                                        .info("No width for resize picture, use default size");
+                                log.info("No width for resize picture, use default size");
                             }
                             blob = getResizedBlobl(blob, resizeWidth);
                         }
@@ -157,7 +161,8 @@ public class GadgetDocument extends DocumentObject {
                         } else {
                             String xpath = "file:content";
                             Property p = doc.getProperty(xpath);
-                            p.getParent().get(FILENAME).setValue(blob.getFilename());
+                            p.getParent().get(FILENAME).setValue(
+                                    blob.getFilename());
                             p.setValue(blob);
                         }
 
@@ -168,7 +173,7 @@ public class GadgetDocument extends DocumentObject {
             }
         }
 
-        if(schema == null) {
+        if (schema == null) {
             try {
                 CoreSession session = getContext().getCoreSession();
                 session.saveDocument(doc);
@@ -192,19 +197,19 @@ public class GadgetDocument extends DocumentObject {
         int oldHeight = imageInfo.getHeight();
 
         /* if the picture's dimensions are smaller than the new dimensions */
-        if (oldWidth < newWidth && oldHeight < newHeight){
+        if (oldWidth < newWidth && oldHeight < newHeight) {
             newWidth = oldWidth;
             newHeight = oldHeight;
         }
         /* if only the picture width is smaller than the new width */
-        else if (oldWidth < newWidth && oldHeight > newHeight){
-            double ratio = newWidth/newHeight;
+        else if (oldWidth < newWidth && oldHeight > newHeight) {
+            double ratio = newWidth / newHeight;
             newHeight = (int) Math.round(oldWidth / ratio);
             newWidth = oldWidth;
         }
         /* if only the picture height is smaller than the new height */
-        else if (oldHeight < newHeight && oldWidth > newWidth){
-            double ratio = newWidth/newHeight;
+        else if (oldHeight < newHeight && oldWidth > newWidth) {
+            double ratio = newWidth / newHeight;
             newWidth = (int) Math.round(oldHeight / ratio);
             newHeight = oldHeight;
         }
@@ -234,8 +239,7 @@ public class GadgetDocument extends DocumentObject {
 
         Map<String, Serializable> options = new HashMap<String, Serializable>();
         try {
-            ImageInfo imageInfo = getImagingService()
-                    .getImageInfo(bh.getBlob());
+            ImageInfo imageInfo = getImagingService().getImageInfo(bh.getBlob());
 
             int width, height, depth;
             width = imageInfo.getWidth();
@@ -268,8 +272,7 @@ public class GadgetDocument extends DocumentObject {
     protected ConversionService getConversionService() throws ClientException {
         if (conversionService == null) {
             try {
-                conversionService = Framework
-                        .getService(ConversionService.class);
+                conversionService = Framework.getService(ConversionService.class);
             } catch (Exception e) {
                 throw new ClientException(e);
             }
@@ -375,8 +378,8 @@ public class GadgetDocument extends DocumentObject {
                 contentDisposition).type(blob.getMimeType());
 
         if (isCacheHeaderEnabled())
-            rb = rb.lastModified(modified.getTime())
-                    .expires(modified.getTime()).tag(tag);
+            rb = rb.lastModified(modified.getTime()).expires(modified.getTime()).tag(
+                    tag);
 
         return rb.build();
     }
@@ -448,8 +451,7 @@ public class GadgetDocument extends DocumentObject {
         /* If htmlContent is stored in files schema */
         Blob htmlContentBlob = getFileWithSpecificName(HTML_CONTENT);
         if (htmlContentBlob != null)
-            return Response.ok(htmlContentBlob.toString(), MediaType.TEXT_HTML)
-                    .build();
+            return Response.ok(htmlContentBlob.toString(), MediaType.TEXT_HTML).build();
 
         String htmlContent = (String) doc.getPropertyValue(GADGET_HTML_CONTENT);
         return Response.ok(htmlContent, MediaType.TEXT_HTML).build();
@@ -485,8 +487,7 @@ public class GadgetDocument extends DocumentObject {
     @SuppressWarnings("unchecked")
     protected ArrayList<Map<String, Serializable>> getFilesStoredInGadget()
             throws PropertyException, ClientException {
-        return (ArrayList<Map<String, Serializable>>) doc
-                .getPropertyValue(FILES_FILES);
+        return (ArrayList<Map<String, Serializable>>) doc.getPropertyValue(FILES_FILES);
     }
 
     /**
@@ -524,4 +525,3 @@ public class GadgetDocument extends DocumentObject {
         addFile(null, filename);
     }
 }
-

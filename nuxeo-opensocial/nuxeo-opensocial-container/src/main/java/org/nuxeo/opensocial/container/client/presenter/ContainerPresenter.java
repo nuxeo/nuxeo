@@ -144,7 +144,9 @@ public class ContainerPresenter extends
     public static AppInfoMessages infos = AppPresenter.infos;
 
     private AppModel model;
+
     private Map<String, YUIFlowPanelDropController> dropControllerList;
+
     private Map<String, Presenter> webContentPresenters;
 
     private PickupDragController dragController;
@@ -176,16 +178,12 @@ public class ContainerPresenter extends
             setContainerFooter();
             setContainerSideBar();
 
-            if (!model.getLayout()
-                    .getSidebarStyle()
-                    .equals(YUISideBarStyle.YUI_SB_NO_COLUMN)) {
-                addDropControllerFor(model.getLayout()
-                        .getSideBar());
+            if (!model.getLayout().getSidebarStyle().equals(
+                    YUISideBarStyle.YUI_SB_NO_COLUMN)) {
+                addDropControllerFor(model.getLayout().getSideBar());
             }
 
-            for (YUIComponent zone : model.getLayout()
-                    .getContent()
-                    .getComponents()) {
+            for (YUIComponent zone : model.getLayout().getContent().getComponents()) {
                 for (YUIComponent unit : zone.getComponents()) {
                     addDropControllerFor((YUIUnit) unit);
                 }
@@ -196,12 +194,10 @@ public class ContainerPresenter extends
     }
 
     private void setContainerHeader() {
-        YUIUnit header = model.getLayout()
-                .getHeader();
+        YUIUnit header = model.getLayout().getHeader();
 
         if (header == null) {
-            String oldId = display.getContainerHeader()
-                    .getId();
+            String oldId = display.getContainerHeader().getId();
             display.setContainerHeader(false, "");
             removeDropControllerFor(oldId);
         } else {
@@ -211,26 +207,21 @@ public class ContainerPresenter extends
     }
 
     private void setContainerFooter() {
-        YUIUnit footer = model.getLayout()
-                .getFooter();
+        YUIUnit footer = model.getLayout().getFooter();
         if (footer == null) {
-            String oldId = display.getContainerFooter()
-                    .getId();
+            String oldId = display.getContainerFooter().getId();
             display.setContainerFooter(false, "");
             removeDropControllerFor(oldId);
         } else {
             display.setContainerFooter(true, ((YUIComponent) footer).getId());
-            addDropControllerFor(model.getLayout()
-                    .getFooter());
+            addDropControllerFor(model.getLayout().getFooter());
         }
     }
 
     private void setLayoutZonesAndUnits() {
         int zoneIndex = 0;
 
-        for (YUIComponent zoneComponent : model.getLayout()
-                .getContent()
-                .getComponents()) {
+        for (YUIComponent zoneComponent : model.getLayout().getContent().getComponents()) {
             display.addZone(zoneComponent.getCSS());
             for (YUIComponent unitComponent : zoneComponent.getComponents()) {
                 display.addUnit(zoneIndex, unitComponent.getCSS(),
@@ -242,8 +233,7 @@ public class ContainerPresenter extends
     }
 
     private void setContainerSize() {
-        YUIBodySize bodySize = model.getLayout()
-                .getBodySize();
+        YUIBodySize bodySize = model.getLayout().getBodySize();
 
         if (bodySize instanceof YUICustomBodySize) {
             display.setContainerCustomSize(bodySize.getCSS(),
@@ -254,21 +244,17 @@ public class ContainerPresenter extends
     }
 
     private void setContainerSideBar() {
-        YUISideBarStyle sideBar = model.getLayout()
-                .getSidebarStyle();
+        YUISideBarStyle sideBar = model.getLayout().getSidebarStyle();
 
-        if (YUISideBarStyle.YUI_SB_NO_COLUMN.toString()
-                .equals(sideBar.toString())) {
-            String oldId = display.getContainerSideBar()
-                    .getId();
+        if (YUISideBarStyle.YUI_SB_NO_COLUMN.toString().equals(
+                sideBar.toString())) {
+            String oldId = display.getContainerSideBar().getId();
             display.setContainerSideBar(false, sideBar.getCSS(), "");
             removeDropControllerFor(oldId);
         } else {
-            String sidebarId = ((YUIComponent) model.getLayout()
-                    .getSideBar()).getId();
+            String sidebarId = ((YUIComponent) model.getLayout().getSideBar()).getId();
             display.setContainerSideBar(true, sideBar.getCSS(), sidebarId);
-            addDropControllerFor(model.getLayout()
-                    .getSideBar());
+            addDropControllerFor(model.getLayout().getSideBar());
         }
     }
 
@@ -358,14 +344,9 @@ public class ContainerPresenter extends
         registerHandler(eventBus.addHandler(ZoneAddedEvent.TYPE,
                 new ZoneAddedEventHandler() {
                     public void onAddRow(ZoneAddedEvent event) {
-                        int zoneIndex = model.getLayout()
-                                .getContent()
-                                .getComponents()
-                                .size() - 1;
-                        YUIComponentZoneImpl zoneComponent = (YUIComponentZoneImpl) model.getLayout()
-                                .getContent()
-                                .getComponents()
-                                .get(zoneIndex);
+                        int zoneIndex = model.getLayout().getContent().getComponents().size() - 1;
+                        YUIComponentZoneImpl zoneComponent = (YUIComponentZoneImpl) model.getLayout().getContent().getComponents().get(
+                                zoneIndex);
                         display.addZone(zoneComponent.getCSS());
 
                         for (YUIComponent unitComponent : zoneComponent.getComponents()) {
@@ -387,8 +368,7 @@ public class ContainerPresenter extends
         registerHandler(eventBus.addHandler(ZoneDeletedEvent.TYPE,
                 new ZoneRowDeletedEventHandler() {
                     public void onRowDeleted(ZoneDeletedEvent event) {
-                        for (int i = 0; i < display.getZone(event.getId())
-                                .getNumberOfUnits(); i++) {
+                        for (int i = 0; i < display.getZone(event.getId()).getNumberOfUnits(); i++) {
                             removeDropControllerFor(((HasId) display.getUnit(
                                     event.getId(), i)).getId());
                         }
@@ -401,21 +381,18 @@ public class ContainerPresenter extends
         registerHandler(eventBus.addHandler(ZoneUpdatedEvent.TYPE,
                 new ZoneUpdatedEventHandler() {
                     public void onUpdateRow(ZoneUpdatedEvent event) {
-                        YUIComponentZoneImpl zoneComponent = ((YUIComponentZoneImpl) model.getLayout()
-                                .getContent()
-                                .getComponents()
-                                .get(event.getId()));
+                        YUIComponentZoneImpl zoneComponent = ((YUIComponentZoneImpl) model.getLayout().getContent().getComponents().get(
+                                event.getId()));
 
                         HasUnits zone = display.getZone(event.getId());
 
                         int actualNumberOfUnits = zone.getNumberOfUnits();
-                        int wantedNumberOfUnits = zoneComponent.getTemplate()
-                                .getNumberOfComponents();
+                        int wantedNumberOfUnits = zoneComponent.getTemplate().getNumberOfComponents();
 
                         if (actualNumberOfUnits < wantedNumberOfUnits) {
                             for (int i = actualNumberOfUnits; i < wantedNumberOfUnits; i++) {
-                                YUIUnitImpl unit = (YUIUnitImpl) zoneComponent.getComponents()
-                                        .get(i);
+                                YUIUnitImpl unit = (YUIUnitImpl) zoneComponent.getComponents().get(
+                                        i);
 
                                 display.addUnit(event.getId(), unit.getCSS(),
                                         unit.getId());
@@ -473,8 +450,7 @@ public class ContainerPresenter extends
             WidgetDisplay display) {
         String spaceId = model.getContainerContext().getSpaceId();
         if (webContentData.isInAPorlet()
-                && model.hasPermission(spaceId,
-                        PermissionsConstants.EVERYTHING)) {
+                && model.hasPermission(spaceId, PermissionsConstants.EVERYTHING)) {
             dragController.makeDraggable(display.asWidget(),
                     ((PortletPresenter.Display) display).getHeader());
         }
@@ -484,8 +460,7 @@ public class ContainerPresenter extends
             WidgetDisplay display) {
         String spaceId = model.getContainerContext().getSpaceId();
         if (webContentData.isInAPorlet()
-                && model.hasPermission(spaceId,
-                        PermissionsConstants.EVERYTHING)) {
+                && model.hasPermission(spaceId, PermissionsConstants.EVERYTHING)) {
             dragController.makeNotDraggable(display.asWidget());
         }
     }
@@ -494,8 +469,7 @@ public class ContainerPresenter extends
         registerHandler(eventBus.addHandler(WebContentRemovedEvent.TYPE,
                 new WebContentRemovedEventHandler() {
                     public void onWebContentRemoved(WebContentRemovedEvent event) {
-                        webContentPresenters.get(event.getWebContentId())
-                                .unbind();
+                        webContentPresenters.get(event.getWebContentId()).unbind();
                     }
                 }));
     }
@@ -504,8 +478,7 @@ public class ContainerPresenter extends
         registerHandler(eventBus.addHandler(WebContentsLoadedEvent.TYPE,
                 new WebContentsLoadedEventHandler() {
                     public void onWebContentsLoaded(WebContentsLoadedEvent event) {
-                        for (Entry<String, List<WebContentData>> webContents : model.getWebContents()
-                                .entrySet()) {
+                        for (Entry<String, List<WebContentData>> webContents : model.getWebContents().entrySet()) {
                             for (WebContentData webContent : webContents.getValue()) {
                                 GwtWebContentAdapter webContentAdapter = new GwtWebContentAdapter(
                                         webContent, eventBus);
@@ -584,8 +557,7 @@ public class ContainerPresenter extends
                     public void onCollapsePortlet(CollapsePortletEvent event) {
                         PortletPresenter gadget = (PortletPresenter) webContentPresenters.get(event.getId());
                         gadget.collapse();
-                        model.getWebContent(event.getId())
-                                .setIsCollapsed(true);
+                        model.getWebContent(event.getId()).setIsCollapsed(true);
                         model.updateWebContent(event.getId());
                     }
                 });
@@ -597,8 +569,7 @@ public class ContainerPresenter extends
                     public void onUncollapsePortlet(UncollapsePortletEvent event) {
                         PortletPresenter gadget = (PortletPresenter) webContentPresenters.get(event.getId());
                         gadget.uncollapse();
-                        model.getWebContent(event.getId())
-                                .setIsCollapsed(false);
+                        model.getWebContent(event.getId()).setIsCollapsed(false);
                         model.updateWebContent(event.getId());
                     }
                 });
@@ -610,8 +581,7 @@ public class ContainerPresenter extends
                     public void onMaximizeWebContent(MaximizePortletEvent event) {
                         if (!isMaximized) {
                             WidgetDisplay gadgetView = ((WidgetDisplay) webContentPresenters.get(
-                                    event.getId())
-                                    .getDisplay());
+                                    event.getId()).getDisplay());
 
                             WebContentData webContent = model.getWebContent(event.getId());
                             makeNotDraggable(webContent, gadgetView);
@@ -619,19 +589,17 @@ public class ContainerPresenter extends
                             display.setContainerSideBar(false,
 
                             YUISideBarStyle.YUI_SB_NO_COLUMN.getCSS(), "");
-                            YUIUnit header = model.getLayout()
-                                    .getHeader();
-                            YUIUnit footer = model.getLayout()
-                                    .getFooter();
+                            YUIUnit header = model.getLayout().getHeader();
+                            YUIUnit footer = model.getLayout().getFooter();
                             if (header != null) {
-                                display.setContainerHeader(false,
-                                        ((YUIComponent) model.getLayout()
-                                                .getHeader()).getId());
+                                display.setContainerHeader(
+                                        false,
+                                        ((YUIComponent) model.getLayout().getHeader()).getId());
                             }
                             if (footer != null) {
-                                display.setContainerFooter(false,
-                                        ((YUIComponent) model.getLayout()
-                                                .getFooter()).getId());
+                                display.setContainerFooter(
+                                        false,
+                                        ((YUIComponent) model.getLayout().getFooter()).getId());
                             }
 
                             display.maximizeWebContent(gadgetView.asWidget());
@@ -647,17 +615,14 @@ public class ContainerPresenter extends
                     public void onMinimizeWebContent(MinimizePortletEvent event) {
                         if (isMaximized) {
                             WidgetDisplay gadgetView = ((WidgetDisplay) webContentPresenters.get(
-                                    event.getId())
-                                    .getDisplay());
+                                    event.getId()).getDisplay());
 
                             WebContentData webContent = model.getWebContent(event.getId());
                             makeDraggable(webContent, gadgetView);
 
                             setContainerSideBar();
-                            YUIUnit header = model.getLayout()
-                                    .getHeader();
-                            YUIUnit footer = model.getLayout()
-                                    .getFooter();
+                            YUIUnit header = model.getLayout().getHeader();
+                            YUIUnit footer = model.getLayout().getFooter();
                             if (header != null) {
                                 display.setContainerHeader(true,
                                         ((YUIComponent) header).getId());
@@ -700,8 +665,7 @@ public class ContainerPresenter extends
     private void addDropControllerFor(YUIUnit unit) {
         String spaceId = model.getContainerContext().getSpaceId();
         if (unit != null
-                && model.hasPermission(spaceId,
-                        PermissionsConstants.EVERYTHING)) {
+                && model.hasPermission(spaceId, PermissionsConstants.EVERYTHING)) {
             String idRef = ((YUIAbstractComponent) unit).getId();
             FlowPanel unitWidget = (FlowPanel) display.getUnit(idRef);
             YUIFlowPanelDropController dropController = new YUIFlowPanelDropController(
@@ -716,8 +680,7 @@ public class ContainerPresenter extends
         YUIFlowPanelDropController dropController = dropControllerList.get(idRef);
         String spaceId = model.getContainerContext().getSpaceId();
         if (dropController != null
-                && model.hasPermission(spaceId,
-                        PermissionsConstants.EVERYTHING)) {
+                && model.hasPermission(spaceId, PermissionsConstants.EVERYTHING)) {
             dragController.unregisterDropController(dropController);
             dropControllerList.remove(idRef);
         }
@@ -726,6 +689,7 @@ public class ContainerPresenter extends
     private void registerDragAndDropEvent() {
         dragController.addDragHandler(new DragHandler() {
             private int webContentPositionBeforeDragging;
+
             private String webContentUnitIdBeforeDragging;
 
             public void onPreviewDragStart(DragStartEvent event)
@@ -740,11 +704,10 @@ public class ContainerPresenter extends
                 PortletPresenter.Display webContentView = (PortletPresenter.Display) event.getSource();
                 webContentUnitIdBeforeDragging = webContentView.getParentId();
                 int i = 0;
-                for (WebContentData webContent : model.getWebContents()
-                        .get(webContentUnitIdBeforeDragging)) {
+                for (WebContentData webContent : model.getWebContents().get(
+                        webContentUnitIdBeforeDragging)) {
                     String webContentId = webContentView.getId();
-                    if (webContent.getId()
-                            .equals(webContentId)) {
+                    if (webContent.getId().equals(webContentId)) {
                         webContentPositionBeforeDragging = i;
                     }
 
@@ -759,8 +722,8 @@ public class ContainerPresenter extends
                 PortletPresenter.Display webContentView = (PortletPresenter.Display) event.getSource();
                 String webContentUnitIdAfterDragging = webContentView.getParentId();
                 int webContentPositionAfterDragging = display.getUnit(
-                        webContentUnitIdAfterDragging)
-                        .getWebContentPosition(webContentView.asWidget());
+                        webContentUnitIdAfterDragging).getWebContentPosition(
+                        webContentView.asWidget());
 
                 model.webContentMoved(webContentUnitIdBeforeDragging,
                         webContentPositionBeforeDragging,
@@ -769,17 +732,16 @@ public class ContainerPresenter extends
 
                 unHighLightUnits();
 
-                 ((PortletPresenter)
-                 webContentPresenters.get(webContentView.getId())).showContent();
+                ((PortletPresenter) webContentPresenters.get(webContentView.getId())).showContent();
             }
 
             private native void highLightUnits() /*-{
-                $wnd.jQuery('.yui-unit').addClass('highLight');
-            }-*/;
+                                                 $wnd.jQuery('.yui-unit').addClass('highLight');
+                                                 }-*/;
 
             private native void unHighLightUnits() /*-{
-                $wnd.jQuery('.yui-unit').removeClass('highLight');
-            }-*/;
+                                                   $wnd.jQuery('.yui-unit').removeClass('highLight');
+                                                   }-*/;
         });
     }
 }

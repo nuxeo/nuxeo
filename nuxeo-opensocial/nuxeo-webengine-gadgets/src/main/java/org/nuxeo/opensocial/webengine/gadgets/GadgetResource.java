@@ -58,16 +58,15 @@ public class GadgetResource extends InputStreamResource {
         }
 
         InternalGadgetDescriptor iGadget = (InternalGadgetDescriptor) gadget;
-        InputStream in=null;
+        InputStream in = null;
         if (iGadget.getEntryPoint().equals(fileName)) {
             in = GadgetSpecView.render(iGadget, null);
         } else if (fileName.startsWith("messages_")) {
             in = GadgetSpecView.i18n.getTranslationFile(iGadget, fileName);
-        }
-        else {
+        } else {
             in = getResourceAsStream(fileName);
         }
-        if (in==null) {
+        if (in == null) {
             return Response.status(404).build();
         }
         return getObject(in, fileName);
@@ -76,20 +75,20 @@ public class GadgetResource extends InputStreamResource {
     protected InputStream getResourceAsStream(String fileName) throws Exception {
         // lookup in gadget directory (gadget specific resource)
         InputStream is = gadget.getResourceAsStream(fileName);
-        if (is==null) {
-            String suffix="img/";
+        if (is == null) {
+            String suffix = "img/";
             if (fileName.endsWith(".css")) {
-                suffix="css/";
-            }
-            else if (fileName.endsWith(".js")) {
-                suffix="scripts/";
+                suffix = "css/";
+            } else if (fileName.endsWith(".js")) {
+                suffix = "scripts/";
             }
             // lookup in gadget bundle resources (bundle level shared resource)
-            is = gadget.getResourceAsStream( suffix + fileName);
+            is = gadget.getResourceAsStream(suffix + fileName);
 
-            if (is==null) {
+            if (is == null) {
                 // lookup in root bundle (global shared resource)
-                is = this.getClass().getClassLoader().getResourceAsStream("skin/resources/" + suffix + fileName);
+                is = this.getClass().getClassLoader().getResourceAsStream(
+                        "skin/resources/" + suffix + fileName);
             }
         }
         return is;

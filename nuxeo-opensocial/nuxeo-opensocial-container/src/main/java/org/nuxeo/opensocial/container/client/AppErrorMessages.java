@@ -1,49 +1,50 @@
 package org.nuxeo.opensocial.container.client;
 
 import com.google.gwt.i18n.client.Messages;
+
 /**
  * @author Stéphane Fourrier
  */
 public interface AppErrorMessages extends Messages {
-	String unitIsNotEmpty();
+    String unitIsNotEmpty();
 
-	String zoneIsNotEmpty();
+    String zoneIsNotEmpty();
 
-	String noZoneCreated();
+    String noZoneCreated();
 
-	String cannotLoadLayout();
+    String cannotLoadLayout();
 
-	String cannotReachServer();
+    String cannotReachServer();
 
-	String applicationNotCorrectlySet();
+    String applicationNotCorrectlySet();
 
-	String cannotUpdateLayout();
+    String cannotUpdateLayout();
 
-	String cannotUpdateFooter();
+    String cannotUpdateFooter();
 
-	String cannotCreateZone();
+    String cannotCreateZone();
 
-	String cannotUpdateZone();
+    String cannotUpdateZone();
 
-	String cannotUpdateSideBar();
+    String cannotUpdateSideBar();
 
-	String cannotUpdateHeader();
+    String cannotUpdateHeader();
 
-	String cannotDeleteZone();
+    String cannotDeleteZone();
 
-	String cannotCreateWebContent();
+    String cannotCreateWebContent();
 
-	String cannotLoadWebContents();
+    String cannotLoadWebContents();
 
-	String cannotUpdateAllWebContents();
+    String cannotUpdateAllWebContents();
 
-	String cannotUpdateWebContent();
+    String cannotUpdateWebContent();
 
-	String cannotDeleteWebContent();
+    String cannotDeleteWebContent();
 
-	String cannotLoadContainerBuilder();
+    String cannotLoadContainerBuilder();
 
-	String cannotAddExternalWebContent(String type);
+    String cannotAddExternalWebContent(String type);
 
     String cannotFindWebContent();
 

@@ -1,11 +1,5 @@
 package org.nuxeo.opensocial.container.client.presenter;
 
-import net.customware.gwt.presenter.client.EventBus;
-import net.customware.gwt.presenter.client.place.Place;
-import net.customware.gwt.presenter.client.place.PlaceRequest;
-import net.customware.gwt.presenter.client.widget.WidgetDisplay;
-import net.customware.gwt.presenter.client.widget.WidgetPresenter;
-
 import org.nuxeo.opensocial.container.client.event.priv.presenter.FolderChosenEvent;
 import org.nuxeo.opensocial.container.client.model.Folder;
 import org.nuxeo.opensocial.container.client.model.FolderPickerModel;
@@ -22,6 +16,12 @@ import com.google.gwt.event.dom.client.DoubleClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.user.client.Window;
+
+import net.customware.gwt.presenter.client.EventBus;
+import net.customware.gwt.presenter.client.place.Place;
+import net.customware.gwt.presenter.client.place.PlaceRequest;
+import net.customware.gwt.presenter.client.widget.WidgetDisplay;
+import net.customware.gwt.presenter.client.widget.WidgetPresenter;
 
 /**
  * @author Stéphane Fourrier
@@ -65,16 +65,12 @@ public class FolderPickerPresenter extends
         model.getFolderListRequest(new Callback() {
             @Override
             public void onEvent(Request request, Response response) {
-                JSONArray json = response.getEntityAsJson()
-                        .getValue()
-                        .isObject()
-                        .get("foldersList")
-                        .isArray();
+                JSONArray json = response.getEntityAsJson().getValue().isObject().get(
+                        "foldersList").isArray();
                 if (json != null) {
                     JsArray<Folder> foldersList = asArrayOfFolders(json.toString());
                     for (int i = 0; i < foldersList.length(); i++) {
-                        model.getFolders()
-                                .add(foldersList.get(i));
+                        model.getFolders().add(foldersList.get(i));
                     }
                 }
 
@@ -82,8 +78,8 @@ public class FolderPickerPresenter extends
             }
 
             private native JsArray<Folder> asArrayOfFolders(String json) /*-{
-        return eval(json);
-    }-*/;
+                                                                         return eval(json);
+                                                                         }-*/;
         });
 
         registerCloseEvent();
@@ -95,8 +91,7 @@ public class FolderPickerPresenter extends
             final FolderWidget f = display.addFolder(folder.getTitle(),
                     folder.getId());
 
-            if (folder.getId()
-                    .equals(model.getInitialSelectedFolder())) {
+            if (folder.getId().equals(model.getInitialSelectedFolder())) {
                 f.select();
                 previewFolder(folder.getId());
             }
@@ -133,26 +128,24 @@ public class FolderPickerPresenter extends
 
     private void chooseFolder(String id) {
         display.hidePicker();
-        eventBus.fireEvent(new FolderChosenEvent(id, model.getFolder(id)
-                .getName()));
+        eventBus.fireEvent(new FolderChosenEvent(id,
+                model.getFolder(id).getName()));
     }
 
     private void registerChooseEvent() {
-        display.getChooseButton()
-                .addClickHandler(new ClickHandler() {
-                    public void onClick(ClickEvent arg0) {
-                        chooseFolder(display.getSelectedFolder());
-                    }
-                });
+        display.getChooseButton().addClickHandler(new ClickHandler() {
+            public void onClick(ClickEvent arg0) {
+                chooseFolder(display.getSelectedFolder());
+            }
+        });
     }
 
     private void registerCloseEvent() {
-        display.getCloseButton()
-                .addClickHandler(new ClickHandler() {
-                    public void onClick(ClickEvent arg0) {
-                        display.hidePicker();
-                    }
-                });
+        display.getCloseButton().addClickHandler(new ClickHandler() {
+            public void onClick(ClickEvent arg0) {
+                display.hidePicker();
+            }
+        });
     }
 
     @Override

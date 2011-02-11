@@ -90,8 +90,8 @@ public class GuiceContextListener implements ServletContextListener {
         Injector injector = null;
         try {
             log.info("GuiceContextListener createInjector");
-            //modules.add(Modules.override(new OAuthModule()).with(
-            //        new NuxeoRequestOverrides()));
+            // modules.add(Modules.override(new OAuthModule()).with(
+            // new NuxeoRequestOverrides()));
             modules.add(Modules.override(new OAuthModule()).with(
                     new NuxeoOAuthOverrides()));
 
@@ -193,9 +193,9 @@ class NuxeoOAuthOverrides implements Module {
     public void configure(Binder binder) {
         binder.bind(OAuthRequest.class).toProvider(
                 NuxeoOverridesRequestProvider.class);
-        binder.bind(OAuthStore.class).toProvider(
-                NXOAuthStoreProvider.class);
-        binder.bind(GadgetOAuthTokenStore.class).to(NXGadgetOAuthTokenStore.class);
+        binder.bind(OAuthStore.class).toProvider(NXOAuthStoreProvider.class);
+        binder.bind(GadgetOAuthTokenStore.class).to(
+                NXGadgetOAuthTokenStore.class);
     }
 
 }

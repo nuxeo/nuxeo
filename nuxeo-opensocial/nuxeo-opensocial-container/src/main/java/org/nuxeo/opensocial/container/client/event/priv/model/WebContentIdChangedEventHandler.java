@@ -6,5 +6,5 @@ import com.google.gwt.event.shared.EventHandler;
  * @author Stéphane Fourrier
  */
 public interface WebContentIdChangedEventHandler extends EventHandler {
-	void onWebContentIdChange(WebContentIdChangedEvent event);
+    void onWebContentIdChange(WebContentIdChangedEvent event);
 }

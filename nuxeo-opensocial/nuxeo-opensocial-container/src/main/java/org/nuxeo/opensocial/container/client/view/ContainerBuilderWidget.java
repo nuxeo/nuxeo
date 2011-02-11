@@ -34,23 +34,33 @@ import com.google.gwt.user.client.ui.Widget;
 /**
  * @author Stéphane Fourrier
  */
-public class ContainerBuilderWidget extends DialogBox
-        implements
-            ContainerBuilderPresenter.Display {
+public class ContainerBuilderWidget extends DialogBox implements
+        ContainerBuilderPresenter.Display {
 
     private ContainerConstants constants = AppPresenter.containerConstants;
 
     private VerticalPanel builderContent;
+
     private FlexTable listOfZoneDesigner;
+
     private DisclosurePanel setSizeDisclosurePanel;
+
     private Button addRowButton;
+
     private CustomListBox containerSizeListBox;
+
     private CustomListBox sideBarPositionListBox;
+
     private CheckBox headerCheckBox;
+
     private CheckBox footerCheckBox;
+
     private Button showCodeButton;
+
     private Button validCustomSizeButton;
+
     private TextBox customSizeTextBox;
+
     private Button closeButton;
 
     public ContainerBuilderWidget() {
@@ -119,8 +129,8 @@ public class ContainerBuilderWidget extends DialogBox
     }
 
     private Widget customContentPanel() {
-        CaptionPanel splitContent = new CaptionPanel(constants
-                .customContentTitle());
+        CaptionPanel splitContent = new CaptionPanel(
+                constants.customContentTitle());
         splitContent.setWidth("185px");
 
         listOfZoneDesigner = new FlexTable();
@@ -136,8 +146,8 @@ public class ContainerBuilderWidget extends DialogBox
     }
 
     private Widget headerFooterPanel() {
-        DisclosurePanel headerFooter = new DisclosurePanel(constants
-                .headerNFooterTitle());
+        DisclosurePanel headerFooter = new DisclosurePanel(
+                constants.headerNFooterTitle());
         headerFooter.setOpen(false);
         headerFooter.setAnimationEnabled(true);
 
@@ -222,8 +232,10 @@ public class ContainerBuilderWidget extends DialogBox
         if (cell != null && cell.getRowIndex() != 0) {
             properties.put("cellIndex", cell.getRowIndex());
             properties.put("rowIndex", cell.getCellIndex());
-            properties.put("template", (((CustomListBox) listOfZoneDesigner
-                    .getWidget(cell.getRowIndex(), 1)).getValue()));
+            properties.put(
+                    "template",
+                    (((CustomListBox) listOfZoneDesigner.getWidget(
+                            cell.getRowIndex(), 1)).getValue()));
         }
 
         return properties;
@@ -315,8 +327,7 @@ public class ContainerBuilderWidget extends DialogBox
 
             if (commentBegin != -1) {
                 int commentEnd = maLigne.indexOf("-->");
-                String comment = maLigne
-                        .substring(commentBegin, commentEnd + 3);
+                String comment = maLigne.substring(commentBegin, commentEnd + 3);
                 maLigne = maLigne.replace(comment,
                         "<span style='color: #008000;'>" + comment + "</span>");
             }

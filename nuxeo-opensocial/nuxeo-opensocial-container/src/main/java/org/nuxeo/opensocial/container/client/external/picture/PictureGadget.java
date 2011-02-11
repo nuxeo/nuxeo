@@ -27,14 +27,19 @@ public class PictureGadget extends AbstractGadget implements
     private GadgetsConstants constants = GWT.create(GadgetsConstants.class);
 
     private Image image;
+
     private FlowPanel layout;
+
     private FlexTable modifPanel;
 
     private Button modifButton;
+
     private Button saveButton;
+
     private Button cancelButton;
 
     private TextBox sourceTextBox;
+
     private TextBox titleTextBox;
 
     private Label pictureTitle;
@@ -79,16 +84,14 @@ public class PictureGadget extends AbstractGadget implements
 
         modifPanel.setWidget(0, 0, title);
         modifPanel.setWidget(0, 1, titleTextBox);
-        modifPanel.getRowFormatter()
-                .setStyleName(0, "gadget-form-line");
+        modifPanel.getRowFormatter().setStyleName(0, "gadget-form-line");
 
         Label source = new Label(constants.source());
         sourceTextBox = new TextBox();
 
         modifPanel.setWidget(1, 0, source);
         modifPanel.setWidget(1, 1, sourceTextBox);
-        modifPanel.getRowFormatter()
-                .setStyleName(1, "gadget-form-line");
+        modifPanel.getRowFormatter().setStyleName(1, "gadget-form-line");
 
         cancelButton = new Button(constants.cancel());
         cancelButton.setStyleName("red");
@@ -97,8 +100,7 @@ public class PictureGadget extends AbstractGadget implements
 
         modifPanel.setWidget(2, 0, cancelButton);
         modifPanel.setWidget(2, 1, saveButton);
-        modifPanel.getRowFormatter()
-                .setStyleName(2, "gadget-form-line");
+        modifPanel.getRowFormatter().setStyleName(2, "gadget-form-line");
 
         layout.add(modifPanel);
 

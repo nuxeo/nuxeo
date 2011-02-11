@@ -14,11 +14,12 @@ public class YUIUnitImpl extends YUIAbstractComponent implements YUIUnit,
     private static String UNIT_CSS_CLASS = "yui-u";
 
     private static final long serialVersionUID = 1L;
+
     private String CSS;
 
     /**
-     * Constructeur de YUIUnit : permet de creer une unité qui sert de container
-     * aux contenu web
+     * Constructeur de YUIUnit : permet de creer une unité qui sert de
+     * container aux contenu web
      */
     public YUIUnitImpl(String id) {
         this();
@@ -26,8 +27,8 @@ public class YUIUnitImpl extends YUIAbstractComponent implements YUIUnit,
     }
 
     /**
-     * Constructeur de YUIUnit : permet de creer une unité qui sert de container
-     * aux contenu web
+     * Constructeur de YUIUnit : permet de creer une unité qui sert de
+     * container aux contenu web
      */
     public YUIUnitImpl() {
         setCSS(UNIT_CSS_CLASS);

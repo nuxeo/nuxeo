@@ -152,14 +152,17 @@ public class Dashboard implements Serializable {
     public String initializeSpace(String spaceName, String spaceProviderName)
             throws Exception {
         SpaceManager spaceManager = Framework.getService(SpaceManager.class);
-        Space space = spaceManager.getSpace(spaceProviderName, navigationContext.getCurrentDocument(), spaceName);
+        Space space = spaceManager.getSpace(spaceProviderName,
+                navigationContext.getCurrentDocument(), spaceName);
         return space.getId();
     }
 
-    public String getSpaceId(String spaceName, String spaceProviderName, DocumentModel contextDocument) throws Exception {
+    public String getSpaceId(String spaceName, String spaceProviderName,
+            DocumentModel contextDocument) throws Exception {
         SpaceManager spaceManager = Framework.getService(SpaceManager.class);
 
-        Space space = spaceManager.getSpace(spaceProviderName, contextDocument, spaceName);
+        Space space = spaceManager.getSpace(spaceProviderName, contextDocument,
+                spaceName);
 
         return space.getId();
     }

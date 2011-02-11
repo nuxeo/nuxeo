@@ -6,5 +6,5 @@ import com.google.gwt.event.shared.EventHandler;
  * @author Stéphane Fourrier
  */
 public interface HideMessageEventHandler extends EventHandler {
-	void onMessageHidden(HideMessageEvent event);
+    void onMessageHidden(HideMessageEvent event);
 }

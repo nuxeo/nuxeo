@@ -40,7 +40,9 @@ public class DashboardSpaceProvider extends AbstractSpaceProvider {
     private static final Log log = LogFactory.getLog(DashboardSpaceProvider.class);
 
     @Override
-    protected Space doGetSpace(CoreSession session, DocumentModel contextDocument, String spaceName) throws SpaceException {
+    protected Space doGetSpace(CoreSession session,
+            DocumentModel contextDocument, String spaceName)
+            throws SpaceException {
         try {
             return getOrCreateSpace(session);
         } catch (ClientException e) {

@@ -29,11 +29,17 @@ public class HTMLGadget extends AbstractGadget implements HTMLPresenter.Display 
     private GadgetsConstants constants = GWT.create(GadgetsConstants.class);
 
     private RichTextArea richtext;
+
     private RichTextToolbar toolbar;
+
     private Button saveButton;
+
     private FlowPanel layout;
+
     private HTML htmlContent;
+
     private Button modifyButton;
+
     private Grid richTextEditorPanel;
 
     private Label htmlTitle;
@@ -80,21 +86,18 @@ public class HTMLGadget extends AbstractGadget implements HTMLPresenter.Display 
 
         modifPanel.setWidget(0, 0, title);
         modifPanel.setWidget(0, 1, titleTextBox);
-        modifPanel.getRowFormatter()
-                .setStyleName(0, "gadget-form-line");
+        modifPanel.getRowFormatter().setStyleName(0, "gadget-form-line");
 
         initRichTextEditor();
 
         modifPanel.setWidget(1, 0, richTextEditorPanel);
-        modifPanel.getFlexCellFormatter()
-                .setColSpan(1, 0, 0);
+        modifPanel.getFlexCellFormatter().setColSpan(1, 0, 0);
 
         saveButton = new Button(constants.save());
         saveButton.setStyleName("green");
 
         modifPanel.setWidget(2, 1, saveButton);
-        modifPanel.getRowFormatter()
-                .setStyleName(2, "gadget-form-line");
+        modifPanel.getRowFormatter().setStyleName(2, "gadget-form-line");
 
         layout.add(modifPanel);
 
@@ -114,12 +117,10 @@ public class HTMLGadget extends AbstractGadget implements HTMLPresenter.Display 
         toolbar = new RichTextToolbar(richtext);
 
         richTextEditorPanel.setWidget(0, 0, toolbar);
-        richTextEditorPanel.getRowFormatter()
-                .setStyleName(0, "html-row");
+        richTextEditorPanel.getRowFormatter().setStyleName(0, "html-row");
 
         richTextEditorPanel.setWidget(1, 0, richtext);
-        richTextEditorPanel.getRowFormatter()
-                .setStyleName(1, "html-row");
+        richTextEditorPanel.getRowFormatter().setStyleName(1, "html-row");
 
     }
 

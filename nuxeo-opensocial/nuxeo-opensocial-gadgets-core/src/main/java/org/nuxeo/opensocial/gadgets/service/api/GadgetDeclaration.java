@@ -22,7 +22,6 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import org.apache.shindig.common.uri.Uri;
 import org.apache.shindig.gadgets.spec.GadgetSpec;
 
 /**

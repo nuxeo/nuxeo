@@ -6,5 +6,5 @@ import com.google.gwt.event.shared.EventHandler;
  * @author Stéphane Fourrier
  */
 public interface CollapsePortletEventHandler extends EventHandler {
-	void onCollapsePortlet(CollapsePortletEvent event);
+    void onCollapsePortlet(CollapsePortletEvent event);
 }

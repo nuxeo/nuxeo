@@ -43,24 +43,25 @@ public class Gadgets extends ModuleRoot {
     }
 
     @GET
-    public Object getGallery(@QueryParam("cat") String category, @QueryParam("mode") String mode) {
+    public Object getGallery(@QueryParam("cat") String category,
+            @QueryParam("mode") String mode) {
 
         List<GadgetDeclaration> gadgetList;
         String ftlName = null;
-        if (mode==null) {
+        if (mode == null) {
             mode = "gallery";
         }
         if (mode.equalsIgnoreCase("gallery")) {
             ftlName = "gallery";
-        }else if (mode.equalsIgnoreCase("popup")) {
+        } else if (mode.equalsIgnoreCase("popup")) {
             ftlName = "chooser-body";
-        }else {
+        } else {
             return Response.serverError().build();
         }
 
-        if (category==null) {
+        if (category == null) {
             gadgetList = gm.getGadgetList();
-            category="all";
+            category = "all";
         } else {
             gadgetList = gm.getGadgetList(category);
         }
@@ -68,8 +69,8 @@ public class Gadgets extends ModuleRoot {
         List<String> categories = gm.getGadgetCategory();
         categories.add(0, "all");
 
-        return getView(ftlName).arg("gadgets",
-                gadgetList).arg("categories", categories).arg("category", category).arg("mode", mode);
+        return getView(ftlName).arg("gadgets", gadgetList).arg("categories",
+                categories).arg("category", category).arg("mode", mode);
     }
 
     @GET
@@ -78,16 +79,14 @@ public class Gadgets extends ModuleRoot {
 
         List<GadgetDeclaration> gadgetList;
 
-        if (category==null) {
+        if (category == null) {
             gadgetList = gm.getGadgetList();
-            category="all";
+            category = "all";
         } else {
             gadgetList = gm.getGadgetList(category);
         }
-        return getView("list").arg("gadgets",
-                gadgetList);
+        return getView("list").arg("gadgets", gadgetList);
     }
-
 
     @GET
     @Path("sample")
@@ -105,7 +104,7 @@ public class Gadgets extends ModuleRoot {
         GadgetDeclaration gadget = gm.getGadget(gadgetName);
         if (gadget != null) {
             return ctx.newObject("gadget", gadget);
-            //return new GadgetResource(gadget);
+            // return new GadgetResource(gadget);
         } else {
             return Response.ok(404).build();
         }
@@ -113,7 +112,7 @@ public class Gadgets extends ModuleRoot {
 
     public String getCategoryLabel(String categoryKey) {
 
-        if (categoryKey==null) {
+        if (categoryKey == null) {
             return "";
         }
         if (!categoryKey.startsWith("gadget.category")) {

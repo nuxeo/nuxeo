@@ -13,49 +13,49 @@ import com.google.gwt.user.client.ui.ListBox;
  * @author Stéphane Fourrier
  */
 public class CustomListBox extends ListBox implements HasMultipleValue<String> {
-	private boolean valueChangeHandlerInitialized;
+    private boolean valueChangeHandlerInitialized;
 
-	public CustomListBox() {
-		super();
-	}
+    public CustomListBox() {
+        super();
+    }
 
-	public String getValue() {
-		return getValue(getSelectedIndex());
-	}
+    public String getValue() {
+        return getValue(getSelectedIndex());
+    }
 
-	public void setValue(String value) {
-		for (int i = 0; i < getItemCount(); i++) {
-			if (getItemText(i).equals(value)) {
-				setSelectedIndex(i);
-				break;
-			}
-		}
-	}
+    public void setValue(String value) {
+        for (int i = 0; i < getItemCount(); i++) {
+            if (getItemText(i).equals(value)) {
+                setSelectedIndex(i);
+                break;
+            }
+        }
+    }
 
-	public void setValue(String value, boolean fireEvents) {
-		setValue(value);
-		if (fireEvents)
-			ValueChangeEvent.fire(this, value);
-	}
+    public void setValue(String value, boolean fireEvents) {
+        setValue(value);
+        if (fireEvents)
+            ValueChangeEvent.fire(this, value);
+    }
 
-	public HandlerRegistration addValueChangeHandler(
-			ValueChangeHandler<String> handler) {
-		if (!valueChangeHandlerInitialized) {
-			valueChangeHandlerInitialized = true;
-			addChangeHandler(new ChangeHandler() {
-				public void onChange(ChangeEvent event) {
-					ValueChangeEvent.fire(CustomListBox.this, getValue());
-				}
-			});
-		}
-		return addHandler(handler, ValueChangeEvent.getType());
-	}
+    public HandlerRegistration addValueChangeHandler(
+            ValueChangeHandler<String> handler) {
+        if (!valueChangeHandlerInitialized) {
+            valueChangeHandlerInitialized = true;
+            addChangeHandler(new ChangeHandler() {
+                public void onChange(ChangeEvent event) {
+                    ValueChangeEvent.fire(CustomListBox.this, getValue());
+                }
+            });
+        }
+        return addHandler(handler, ValueChangeEvent.getType());
+    }
 
-	public void addValue(String item, String value) {
-		this.addItem(item, value);
-	}
+    public void addValue(String item, String value) {
+        this.addItem(item, value);
+    }
 
-	public void setItemSelected(int index) {
-		this.setSelectedIndex(index);
-	}
+    public void setItemSelected(int index) {
+        this.setSelectedIndex(index);
+    }
 }

@@ -20,7 +20,9 @@ public class ColorsPanelWidget extends Composite implements HasClickHandlers,
         HasValue<String>, HasName {
 
     private HorizontalPanel panel;
+
     private Color selectedColor;
+
     private String name;
 
     public ColorsPanelWidget() {
@@ -69,8 +71,7 @@ public class ColorsPanelWidget extends Composite implements HasClickHandlers,
 
     private Color getColor(String color) {
         for (int i = 0; i < panel.getWidgetCount(); i++) {
-            if (((Color) panel.getWidget(i)).getColorAsString()
-                    .equals(color))
+            if (((Color) panel.getWidget(i)).getColorAsString().equals(color))
                 return (Color) panel.getWidget(i);
         }
         return null;

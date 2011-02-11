@@ -6,5 +6,5 @@ import com.google.gwt.event.shared.EventHandler;
  * @author Stéphane Fourrier
  */
 public interface MaximizePortletEventHandler extends EventHandler {
-	void onMaximizeWebContent(MaximizePortletEvent event);
+    void onMaximizeWebContent(MaximizePortletEvent event);
 }

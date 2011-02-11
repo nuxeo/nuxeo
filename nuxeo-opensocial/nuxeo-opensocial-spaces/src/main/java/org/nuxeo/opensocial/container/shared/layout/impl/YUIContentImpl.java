@@ -11,11 +11,12 @@ import org.nuxeo.opensocial.container.shared.layout.api.YUIContent;
  * @author Stéphane Fourrier
  */
 public class YUIContentImpl implements YUIContent, Serializable {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
     private static String CONTENT_ID = "bd";
 
     private List<YUIComponent> listComponents;
+
     private String id;
 
     public YUIContentImpl() {

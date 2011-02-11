@@ -6,15 +6,15 @@ import com.google.gwt.event.shared.GwtEvent;
  * @author Stéphane Fourrier
  */
 public class LayoutLoadedEvent extends GwtEvent<LayoutLoadedEventHandler> {
-	public static Type<LayoutLoadedEventHandler> TYPE = new Type<LayoutLoadedEventHandler>();
+    public static Type<LayoutLoadedEventHandler> TYPE = new Type<LayoutLoadedEventHandler>();
 
-	@Override
-	public com.google.gwt.event.shared.GwtEvent.Type<LayoutLoadedEventHandler> getAssociatedType() {
-		return TYPE;
-	}
+    @Override
+    public com.google.gwt.event.shared.GwtEvent.Type<LayoutLoadedEventHandler> getAssociatedType() {
+        return TYPE;
+    }
 
-	@Override
-	protected void dispatch(LayoutLoadedEventHandler handler) {
-		handler.onLayoutLoaded(this);
-	}
+    @Override
+    protected void dispatch(LayoutLoadedEventHandler handler) {
+        handler.onLayoutLoaded(this);
+    }
 }

@@ -10,6 +10,7 @@ import org.nuxeo.opensocial.container.shared.webcontent.PictureData;
  */
 public class PictureModel implements HasPermissions {
     private PictureData data;
+
     private Map<String, Boolean> permissions;
 
     public PictureModel(PictureData data, Map<String, Boolean> permissions) {

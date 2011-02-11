@@ -25,15 +25,13 @@ public class YUILayoutFactory implements Serializable {
 
         YUIAbstractComponent zone1 = new YUIComponentZoneImpl(
                 YUITemplate.YUI_ZT_100);
-        layout.getContent()
-                .addComponent(zone1);
+        layout.getContent().addComponent(zone1);
 
         ((YUIComponentZoneImpl) zone1).addComponent(new YUIUnitImpl());
 
         YUIAbstractComponent zone2 = new YUIComponentZoneImpl(
                 YUITemplate.YUI_ZT_25_75);
-        layout.getContent()
-                .addComponent(zone2);
+        layout.getContent().addComponent(zone2);
 
         ((YUIComponentZoneImpl) zone2).addComponent(new YUIUnitImpl());
         ((YUIComponentZoneImpl) zone2).addComponent(new YUIUnitImpl());

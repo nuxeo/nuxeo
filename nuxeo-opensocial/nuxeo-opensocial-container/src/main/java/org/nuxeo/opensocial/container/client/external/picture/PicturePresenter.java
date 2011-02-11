@@ -1,11 +1,5 @@
 package org.nuxeo.opensocial.container.client.external.picture;
 
-import net.customware.gwt.presenter.client.EventBus;
-import net.customware.gwt.presenter.client.place.Place;
-import net.customware.gwt.presenter.client.place.PlaceRequest;
-import net.customware.gwt.presenter.client.widget.WidgetDisplay;
-import net.customware.gwt.presenter.client.widget.WidgetPresenter;
-
 import org.nuxeo.opensocial.container.client.event.publ.UpdateWebContentEvent;
 import org.nuxeo.opensocial.container.shared.PermissionsConstants;
 
@@ -14,6 +8,12 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.Image;
+
+import net.customware.gwt.presenter.client.EventBus;
+import net.customware.gwt.presenter.client.place.Place;
+import net.customware.gwt.presenter.client.place.PlaceRequest;
+import net.customware.gwt.presenter.client.widget.WidgetDisplay;
+import net.customware.gwt.presenter.client.widget.WidgetPresenter;
 
 /**
  * @author Stéphane Fourrier
@@ -58,12 +58,8 @@ public class PicturePresenter extends WidgetPresenter<PicturePresenter.Display> 
     }
 
     private void fetchContent() {
-        display.getPicture()
-                .setUrl(model.getData()
-                        .getUrl());
-        display.getPictureTitle()
-                .setText(model.getData()
-                        .getPictureTitle());
+        display.getPicture().setUrl(model.getData().getUrl());
+        display.getPictureTitle().setText(model.getData().getPictureTitle());
 
         if (model.hasPermission(PermissionsConstants.EVERYTHING)) {
             display.enableFacets();
@@ -100,15 +96,13 @@ public class PicturePresenter extends WidgetPresenter<PicturePresenter.Display> 
     }
 
     private void registerModifyEvent() {
-        registerHandler(display.getModifyButton()
-                .addClickHandler(new ClickHandler() {
+        registerHandler(display.getModifyButton().addClickHandler(
+                new ClickHandler() {
                     public void onClick(ClickEvent event) {
-                        display.getTitleTextBox()
-                                .setText(model.getData()
-                                        .getPictureTitle());
-                        display.getUrlTextBox()
-                                .setText(model.getData()
-                                        .getUrl());
+                        display.getTitleTextBox().setText(
+                                model.getData().getPictureTitle());
+                        display.getUrlTextBox().setText(
+                                model.getData().getUrl());
 
                         display.switchToModifyPanel();
                     }
@@ -116,26 +110,21 @@ public class PicturePresenter extends WidgetPresenter<PicturePresenter.Display> 
     }
 
     private void registerSaveButtonEvent() {
-        registerHandler(display.getSaveButton()
-                .addClickHandler(new ClickHandler() {
+        registerHandler(display.getSaveButton().addClickHandler(
+                new ClickHandler() {
                     public void onClick(ClickEvent event) {
-                        model.getData()
-                                .setUrl(display.getUrlTextBox()
-                                        .getText());
-                        model.getData()
-                                .setPictureTitle(display.getTitleTextBox()
-                                        .getText());
+                        model.getData().setUrl(
+                                display.getUrlTextBox().getText());
+                        model.getData().setPictureTitle(
+                                display.getTitleTextBox().getText());
 
                         eventBus.fireEvent(new UpdateWebContentEvent(
-                                model.getData()
-                                        .getId()));
+                                model.getData().getId()));
 
-                        display.getPicture()
-                                .setUrl(display.getUrlTextBox()
-                                        .getText());
-                        display.getPictureTitle()
-                                .setText(model.getData()
-                                        .getPictureTitle());
+                        display.getPicture().setUrl(
+                                display.getUrlTextBox().getText());
+                        display.getPictureTitle().setText(
+                                model.getData().getPictureTitle());
 
                         display.switchToMainPanel();
                     }
@@ -143,8 +132,8 @@ public class PicturePresenter extends WidgetPresenter<PicturePresenter.Display> 
     }
 
     private void registerCancelButtonEvent() {
-        registerHandler(display.getCancelButton()
-                .addClickHandler(new ClickHandler() {
+        registerHandler(display.getCancelButton().addClickHandler(
+                new ClickHandler() {
                     public void onClick(ClickEvent event) {
                         display.switchToMainPanel();
                     }

@@ -10,10 +10,15 @@ public class UserPref implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private String name;
+
     private String displayName;
+
     private String defaultValue;
+
     private String actualValue;
+
     private DataType dataType;
+
     private Map<String, String> enumValues;
 
     @SuppressWarnings("unused")

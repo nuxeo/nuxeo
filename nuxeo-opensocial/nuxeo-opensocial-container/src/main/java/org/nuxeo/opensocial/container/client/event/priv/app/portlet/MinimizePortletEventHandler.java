@@ -6,5 +6,5 @@ import com.google.gwt.event.shared.EventHandler;
  * @author Stéphane Fourrier
  */
 public interface MinimizePortletEventHandler extends EventHandler {
-	void onMinimizeWebContent(MinimizePortletEvent event);
+    void onMinimizeWebContent(MinimizePortletEvent event);
 }

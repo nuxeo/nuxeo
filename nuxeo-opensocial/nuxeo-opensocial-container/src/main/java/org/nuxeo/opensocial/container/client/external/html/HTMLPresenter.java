@@ -1,11 +1,5 @@
 package org.nuxeo.opensocial.container.client.external.html;
 
-import net.customware.gwt.presenter.client.EventBus;
-import net.customware.gwt.presenter.client.place.Place;
-import net.customware.gwt.presenter.client.place.PlaceRequest;
-import net.customware.gwt.presenter.client.widget.WidgetDisplay;
-import net.customware.gwt.presenter.client.widget.WidgetPresenter;
-
 import org.nuxeo.opensocial.container.client.event.publ.UpdateWebContentEvent;
 import org.nuxeo.opensocial.container.shared.PermissionsConstants;
 
@@ -13,6 +7,12 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.user.client.ui.HasText;
+
+import net.customware.gwt.presenter.client.EventBus;
+import net.customware.gwt.presenter.client.place.Place;
+import net.customware.gwt.presenter.client.place.PlaceRequest;
+import net.customware.gwt.presenter.client.widget.WidgetDisplay;
+import net.customware.gwt.presenter.client.widget.WidgetPresenter;
 
 /**
  * @author Stéphane Fourrier
@@ -56,11 +56,8 @@ public class HTMLPresenter extends WidgetPresenter<HTMLPresenter.Display> {
     }
 
     private void fetchContent() {
-        display.setHtmlView(model.getData()
-                .getHtml());
-        display.getHtmlTitle()
-                .setText(model.getData()
-                        .getHtmlTitle());
+        display.setHtmlView(model.getData().getHtml());
+        display.getHtmlTitle().setText(model.getData().getHtmlTitle());
 
         if (model.hasPermission(PermissionsConstants.EVERYTHING)) {
             display.enableFacets();
@@ -82,40 +79,33 @@ public class HTMLPresenter extends WidgetPresenter<HTMLPresenter.Display> {
     }
 
     private void registerModifyEvent() {
-        registerHandler(display.getModifyButton()
-                .addClickHandler(new ClickHandler() {
+        registerHandler(display.getModifyButton().addClickHandler(
+                new ClickHandler() {
                     public void onClick(ClickEvent event) {
-                        display.getTitleTextBox()
-                                .setText(model.getData()
-                                        .getHtmlTitle());
-                        display.setHtmlEditor(model.getData()
-                                .getHtml());
+                        display.getTitleTextBox().setText(
+                                model.getData().getHtmlTitle());
+                        display.setHtmlEditor(model.getData().getHtml());
                         display.switchToModifyPanel();
                     }
                 }));
     }
 
     private void registerSaveEvent() {
-        registerHandler(display.getSaveButton()
-                .addClickHandler(new ClickHandler() {
+        registerHandler(display.getSaveButton().addClickHandler(
+                new ClickHandler() {
                     public void onClick(ClickEvent event) {
-                        model.getData()
-                                .setHtmlTitle(display.getTitleTextBox()
-                                        .getText());
+                        model.getData().setHtmlTitle(
+                                display.getTitleTextBox().getText());
 
-                        model.getData()
-                                .setHtml(display.getHtmlFromEditor());
+                        model.getData().setHtml(display.getHtmlFromEditor());
 
                         eventBus.fireEvent(new UpdateWebContentEvent(
-                                model.getData()
-                                        .getId()));
+                                model.getData().getId()));
 
-                        display.getHtmlTitle()
-                                .setText(display.getTitleTextBox()
-                                        .getText());
+                        display.getHtmlTitle().setText(
+                                display.getTitleTextBox().getText());
 
-                        display.setHtmlView(model.getData()
-                                .getHtml());
+                        display.setHtmlView(model.getData().getHtml());
 
                         display.switchToMainPanel();
                     }

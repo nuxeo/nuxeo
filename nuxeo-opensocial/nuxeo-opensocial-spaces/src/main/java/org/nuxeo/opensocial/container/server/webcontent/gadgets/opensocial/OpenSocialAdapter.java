@@ -30,12 +30,17 @@ public class OpenSocialAdapter extends AbstractWebContentAdapter implements
         WebContentAdapter<OpenSocialData> {
 
     public static final String GADGETS_PORT = "gadgets.port";
+
     public static final String GADGETS_HOST = "gadgets.host";
+
     public static final String GADGETS_PATH = "gadgets.path";
+
     public static final String NUXEO = "nuxeo";
 
     public static final String HTTP = "http://";
+
     public static final String HTTP_SEPARATOR = ":";
+
     public static final String SEPARATOR = "/";
 
     public OpenSocialAdapter(DocumentModel doc) {
@@ -51,8 +56,7 @@ public class OpenSocialAdapter extends AbstractWebContentAdapter implements
 
         List<Map<String, Serializable>> savedUserPrefs = (List<Map<String, Serializable>>) doc.getPropertyValue("wcopensocial:userPrefs");
 
-        for (Entry<String, org.nuxeo.opensocial.container.shared.webcontent.UserPref> dataPrefs : data.getUserPrefs()
-                .entrySet()) {
+        for (Entry<String, org.nuxeo.opensocial.container.shared.webcontent.UserPref> dataPrefs : data.getUserPrefs().entrySet()) {
             org.nuxeo.opensocial.container.shared.webcontent.UserPref dataPref = dataPrefs.getValue();
 
             if (dataPref.getActualValue() != null) {
@@ -119,8 +123,7 @@ public class OpenSocialAdapter extends AbstractWebContentAdapter implements
             for (UserPref openSocialUserPref : gadgetSpec.getUserPrefs()) {
                 org.nuxeo.opensocial.container.shared.webcontent.UserPref dataPref = new org.nuxeo.opensocial.container.shared.webcontent.UserPref(
                         openSocialUserPref.getName(),
-                        DataType.valueOf(openSocialUserPref.getDataType()
-                                .toString()));
+                        DataType.valueOf(openSocialUserPref.getDataType().toString()));
 
                 Map<String, String> enumValues = new LinkedHashMap<String, String>();
 

@@ -31,7 +31,6 @@ public class ContainerRoot extends ModuleRoot {
             return newObject("folderWebObject", session.getDocument(ref));
         }
 
-        return Response.status(Status.NOT_FOUND)
-                .build();
+        return Response.status(Status.NOT_FOUND).build();
     }
 }

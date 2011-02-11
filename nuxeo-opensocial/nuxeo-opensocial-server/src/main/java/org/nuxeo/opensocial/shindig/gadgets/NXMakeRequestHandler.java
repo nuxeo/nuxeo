@@ -135,8 +135,10 @@ public class NXMakeRequestHandler extends MakeRequestHandler {
                 if (host.trim().equalsIgnoreCase(auth.trim())) {
                     if (request.isRequestedSessionIdValid()) {
                         if (request.isRequestedSessionIdFromCookie()) {
-                            req.addHeader(COOKIE, JSESSIONCOOKIE
-                                    + request.getRequestedSessionId());
+                            req.addHeader(
+                                    COOKIE,
+                                    JSESSIONCOOKIE
+                                            + request.getRequestedSessionId());
                             done = true;
                         }
                     }
@@ -147,8 +149,8 @@ public class NXMakeRequestHandler extends MakeRequestHandler {
                 String path = req.getUri().getPath();
                 if ((path.startsWith(NUXEO_REST))
                         || (path.startsWith(NUXEO_WEBENG))) {
-                    req.addHeader(COOKIE, JSESSIONCOOKIE
-                            + request.getRequestedSessionId());
+                    req.addHeader(COOKIE,
+                            JSESSIONCOOKIE + request.getRequestedSessionId());
                 }
             }
         }

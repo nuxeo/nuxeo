@@ -22,9 +22,7 @@ public class FoldersListGson {
             if (child.hasFacet(FacetNames.FOLDERISH)) {
                 String previewDocId = new String("");
                 if (session.hasChildren(child.getRef())) {
-                    previewDocId = session.getChildren(child.getRef())
-                            .get(0)
-                            .getId();
+                    previewDocId = session.getChildren(child.getRef()).get(0).getId();
                 }
                 foldersList.add(new FolderGson(child, previewDocId));
             }

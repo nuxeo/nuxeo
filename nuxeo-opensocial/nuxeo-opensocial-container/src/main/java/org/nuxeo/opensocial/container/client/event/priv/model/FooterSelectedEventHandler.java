@@ -6,5 +6,5 @@ import com.google.gwt.event.shared.EventHandler;
  * @author Stéphane Fourrier
  */
 public interface FooterSelectedEventHandler extends EventHandler {
-	void onSelectFooter(FooterSelectedEvent event);
+    void onSelectFooter(FooterSelectedEvent event);
 }

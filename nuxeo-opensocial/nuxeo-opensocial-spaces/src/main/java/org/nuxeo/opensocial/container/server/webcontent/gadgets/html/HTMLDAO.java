@@ -8,7 +8,7 @@ import org.nuxeo.opensocial.container.shared.webcontent.HTMLData;
  */
 public class HTMLDAO extends AbstractWebContentDAO<HTMLData> {
 
-	public HTMLDAO() {
+    public HTMLDAO() {
 
-	}
+    }
 }

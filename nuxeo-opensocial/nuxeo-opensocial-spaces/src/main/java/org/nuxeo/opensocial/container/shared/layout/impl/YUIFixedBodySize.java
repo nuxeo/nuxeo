@@ -10,6 +10,7 @@ import org.nuxeo.opensocial.container.shared.layout.enume.YUISize;
 public class YUIFixedBodySize extends YUIAbstractBodySize implements
         Serializable {
     private static final long serialVersionUID = 1L;
+
     private YUISize size;
 
     public YUIFixedBodySize() {

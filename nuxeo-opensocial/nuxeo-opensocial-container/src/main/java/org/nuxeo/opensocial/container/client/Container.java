@@ -14,21 +14,22 @@ import com.google.gwt.user.client.ui.RootPanel;
  */
 public class Container implements EntryPoint {
 
-	private static final String GWT_CONTAINER_ID = "gwtContainerDiv";
+    private static final String GWT_CONTAINER_ID = "gwtContainerDiv";
 
     public static ClientInjector injector = GWT.create(ClientInjector.class);
-	public static AbsolutePanel rootPanel = RootPanel.get(GWT_CONTAINER_ID);
 
-	public void onModuleLoad() {
-		MessagePresenter messagePresenter = injector.getMessagePresenter();
-		messagePresenter.bind();
-		messagePresenter.revealDisplay();
+    public static AbsolutePanel rootPanel = RootPanel.get(GWT_CONTAINER_ID);
 
-		AppPresenter appPresenter = injector.getAppPresenter();
-		appPresenter.bind();
-		appPresenter.revealDisplay();
+    public void onModuleLoad() {
+        MessagePresenter messagePresenter = injector.getMessagePresenter();
+        messagePresenter.bind();
+        messagePresenter.revealDisplay();
 
-		rootPanel.add(appPresenter.getDisplay().asWidget());
-		RootPanel.get().add(messagePresenter.getDisplay().asWidget());
-	}
+        AppPresenter appPresenter = injector.getAppPresenter();
+        appPresenter.bind();
+        appPresenter.revealDisplay();
+
+        rootPanel.add(appPresenter.getDisplay().asWidget());
+        RootPanel.get().add(messagePresenter.getDisplay().asWidget());
+    }
 }
