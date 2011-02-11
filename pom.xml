@@ -1204,6 +1204,12 @@
         <scope>provided</scope>
       </dependency>
       <dependency>
+        <groupId>net.sourceforge.jtds</groupId>
+        <artifactId>jtds</artifactId>
+        <version>1.2.4</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
         <groupId>jmock</groupId>
         <artifactId>jmock</artifactId>
         <version>1.2.0</version>
