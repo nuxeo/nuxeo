@@ -1,5 +1,12 @@
 package org.nuxeo.opensocial.container.server.webcontent.abs;
 
+import static org.nuxeo.ecm.spaces.api.Constants.WEB_CONTENT_HEIGHT_PROPERTY;
+import static org.nuxeo.ecm.spaces.api.Constants.WEB_CONTENT_IS_COLLAPSED_PROPERTY;
+import static org.nuxeo.ecm.spaces.api.Constants.WEB_CONTENT_IS_IN_A_PORTLET_PROPERTY;
+import static org.nuxeo.ecm.spaces.api.Constants.WEB_CONTENT_POSITION_PROPERTY;
+import static org.nuxeo.ecm.spaces.api.Constants.WEB_CONTENT_PREFERENCES_PROPERTY;
+import static org.nuxeo.ecm.spaces.api.Constants.WEB_CONTENT_TITLE_PROPERTY;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,11 +31,13 @@ public abstract class AbstractWebContentAdapter {
     }
 
     protected void setMetadataFrom(WebContentData data) throws ClientException {
-        doc.setPropertyValue("webcontent:title", data.getTitle());
-        doc.setPropertyValue("webcontent:height", data.getHeight());
-        doc.setPropertyValue("webcontent:position", data.getPosition());
-        doc.setPropertyValue("webcontent:isinaportlet", data.isInAPorlet());
-        doc.setPropertyValue("webcontent:iscollapsed", data.isCollapsed());
+        doc.setPropertyValue(WEB_CONTENT_TITLE_PROPERTY, data.getTitle());
+        doc.setPropertyValue(WEB_CONTENT_HEIGHT_PROPERTY, data.getHeight());
+        doc.setPropertyValue(WEB_CONTENT_POSITION_PROPERTY, data.getPosition());
+        doc.setPropertyValue(WEB_CONTENT_IS_IN_A_PORTLET_PROPERTY,
+                data.isInAPorlet());
+        doc.setPropertyValue(WEB_CONTENT_IS_COLLAPSED_PROPERTY,
+                data.isCollapsed());
 
         List<Map<String, Serializable>> preferences = new ArrayList<Map<String, Serializable>>();
 
@@ -41,7 +50,7 @@ public abstract class AbstractWebContentAdapter {
             preferences.add(preference);
         }
 
-        doc.setPropertyValue("webcontent:preferences",
+        doc.setPropertyValue(WEB_CONTENT_PREFERENCES_PROPERTY,
                 (Serializable) preferences);
     }
 
@@ -49,17 +58,17 @@ public abstract class AbstractWebContentAdapter {
     protected void getMetadataFor(WebContentData data) throws ClientException {
         data.setId(doc.getId());
         data.setName(doc.getName());
-        data.setTitle((String) doc.getPropertyValue("webcontent:title"));
+        data.setTitle((String) doc.getPropertyValue(WEB_CONTENT_TITLE_PROPERTY));
         data.setUnitId(doc.getCoreSession().getDocument(doc.getParentRef()).getId());
-        data.setHeight((Long) doc.getPropertyValue("webcontent:height"));
-        data.setPosition((Long) doc.getPropertyValue("webcontent:position"));
-        data.setIsInAPortlet((Boolean) doc.getPropertyValue("webcontent:isinaportlet"));
-        data.setIsCollapsed((Boolean) doc.getPropertyValue("webcontent:iscollapsed"));
+        data.setHeight((Long) doc.getPropertyValue(WEB_CONTENT_HEIGHT_PROPERTY));
+        data.setPosition((Long) doc.getPropertyValue(WEB_CONTENT_POSITION_PROPERTY));
+        data.setIsInAPortlet((Boolean) doc.getPropertyValue(WEB_CONTENT_IS_IN_A_PORTLET_PROPERTY));
+        data.setIsCollapsed((Boolean) doc.getPropertyValue(WEB_CONTENT_IS_COLLAPSED_PROPERTY));
 
         data.setOwner((String) doc.getPropertyValue("dc:creator"));
         data.setViewer(doc.getCoreSession().getPrincipal().getName());
 
-        List<Map<String, Serializable>> preferences = (List<Map<String, Serializable>>) doc.getPropertyValue("webcontent:preferences");
+        List<Map<String, Serializable>> preferences = (List<Map<String, Serializable>>) doc.getPropertyValue(WEB_CONTENT_PREFERENCES_PROPERTY);
 
         for (Map<String, Serializable> preference : preferences) {
             String name = (String) preference.get("name");

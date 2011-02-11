@@ -1,5 +1,9 @@
 package org.nuxeo.opensocial.container.server.webcontent.gadgets.opensocial;
 
+import static org.nuxeo.ecm.spaces.api.Constants.WC_OPEN_SOCIAL_GADGET_DEF_URL_PROPERTY;
+import static org.nuxeo.ecm.spaces.api.Constants.WC_OPEN_SOCIAL_GADGET_NAME;
+import static org.nuxeo.ecm.spaces.api.Constants.WC_OPEN_SOCIAL_USER_PREFS_PROPERTY;
+
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -33,8 +37,6 @@ public class OpenSocialAdapter extends AbstractWebContentAdapter implements
 
     public static final String GADGETS_HOST = "gadgets.host";
 
-    public static final String GADGETS_PATH = "gadgets.path";
-
     public static final String NUXEO = "nuxeo";
 
     public static final String HTTP = "http://";
@@ -51,10 +53,10 @@ public class OpenSocialAdapter extends AbstractWebContentAdapter implements
     public void feedFrom(OpenSocialData data) throws ClientException {
         super.setMetadataFrom(data);
 
-        doc.setPropertyValue("wcopensocial:gadgetDefUrl", data.getGadgetDef());
-        doc.setPropertyValue("wcopensocial:gadgetname", data.getGadgetName());
+        doc.setPropertyValue(WC_OPEN_SOCIAL_GADGET_DEF_URL_PROPERTY, data.getGadgetDef());
+        doc.setPropertyValue(WC_OPEN_SOCIAL_GADGET_NAME, data.getGadgetName());
 
-        List<Map<String, Serializable>> savedUserPrefs = (List<Map<String, Serializable>>) doc.getPropertyValue("wcopensocial:userPrefs");
+        List<Map<String, Serializable>> savedUserPrefs = (List<Map<String, Serializable>>) doc.getPropertyValue(WC_OPEN_SOCIAL_USER_PREFS_PROPERTY);
 
         for (Entry<String, org.nuxeo.opensocial.container.shared.webcontent.UserPref> dataPrefs : data.getUserPrefs().entrySet()) {
             org.nuxeo.opensocial.container.shared.webcontent.UserPref dataPref = dataPrefs.getValue();
@@ -68,7 +70,7 @@ public class OpenSocialAdapter extends AbstractWebContentAdapter implements
             }
         }
 
-        doc.setPropertyValue("wcopensocial:userPrefs",
+        doc.setPropertyValue(WC_OPEN_SOCIAL_USER_PREFS_PROPERTY,
                 (Serializable) savedUserPrefs);
 
         setFrameUrlFor(data);
@@ -96,12 +98,12 @@ public class OpenSocialAdapter extends AbstractWebContentAdapter implements
 
         super.getMetadataFor(data);
 
-        data.setGadgetDef((String) doc.getPropertyValue("wcopensocial:gadgetDefUrl"));
-        data.setGadgetName((String) doc.getPropertyValue("wcopensocial:gadgetname"));
+        data.setGadgetDef((String) doc.getPropertyValue(WC_OPEN_SOCIAL_GADGET_DEF_URL_PROPERTY));
+        data.setGadgetName((String) doc.getPropertyValue(WC_OPEN_SOCIAL_GADGET_NAME));
 
         try {
             // We get the values from nuxeo for each saved preference
-            List<Map<String, Serializable>> tempSavedUserPrefs = (List<Map<String, Serializable>>) doc.getPropertyValue("wcopensocial:userPrefs");
+            List<Map<String, Serializable>> tempSavedUserPrefs = (List<Map<String, Serializable>>) doc.getPropertyValue(WC_OPEN_SOCIAL_USER_PREFS_PROPERTY);
             Map<String, String> savedUserPrefs = new HashMap<String, String>();
 
             for (Map<String, Serializable> preference : tempSavedUserPrefs) {
@@ -139,7 +141,7 @@ public class OpenSocialAdapter extends AbstractWebContentAdapter implements
                 String name = dataPref.getName();
 
                 if (savedUserPrefs.containsKey(name)) {
-                    dataPref.setActualValue((String) savedUserPrefs.get(name));
+                    dataPref.setActualValue(savedUserPrefs.get(name));
                 }
 
                 dataUserPrefs.put(name, dataPref);

@@ -17,6 +17,10 @@
 
 package org.nuxeo.ecm.spaces.impl.docwrapper;
 
+import static org.nuxeo.ecm.spaces.api.Constants.UNIT_DOCUMENT_TYPE;
+import static org.nuxeo.ecm.spaces.api.Constants.WEB_CONTENT_POSITION_PROPERTY;
+import static org.nuxeo.ecm.spaces.api.Constants.WEB_CONTENT_SCHEMA;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -43,8 +47,6 @@ import org.nuxeo.runtime.api.Framework;
 public class DocSpaceImpl implements Space {
 
     protected final DocumentModel doc;
-
-    public static final String TYPE = "Space";
 
     protected static final String SPACE_CATEGORY = "space:categoryId";
 
@@ -172,7 +174,7 @@ public class DocSpaceImpl implements Space {
     public List<WebContentData> readWebContents() throws ClientException {
         Filter webContentFilter = new Filter() {
             public boolean accept(DocumentModel doc) {
-                return doc.hasSchema("webcontent");
+                return doc.hasSchema(WEB_CONTENT_SCHEMA);
             }
         };
 
@@ -181,11 +183,11 @@ public class DocSpaceImpl implements Space {
                 Long pos1;
                 Long pos2;
                 try {
-                    pos1 = (Long) doc1.getPropertyValue("webcontent:position");
-                    pos2 = (Long) doc2.getPropertyValue("webcontent:position");
-                    return (int) (pos1.compareTo(pos2));
+                    pos1 = (Long) doc1.getPropertyValue(WEB_CONTENT_POSITION_PROPERTY);
+                    pos2 = (Long) doc2.getPropertyValue(WEB_CONTENT_POSITION_PROPERTY);
+                    return pos1.compareTo(pos2);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    LOGGER.error(e, e);
                     return 0;
                 }
             }
@@ -201,7 +203,7 @@ public class DocSpaceImpl implements Space {
         List<WebContentData> webContentsList = new ArrayList<WebContentData>();
 
         for (DocumentModel unitDoc : session().getChildren(
-                getDocument().getRef(), "Unit")) {
+                getDocument().getRef(), UNIT_DOCUMENT_TYPE)) {
             for (DocumentModel webContentDoc : session().getChildren(
                     unitDoc.getRef(), null, webContentFilter, webContentSorter)) {
                 try {

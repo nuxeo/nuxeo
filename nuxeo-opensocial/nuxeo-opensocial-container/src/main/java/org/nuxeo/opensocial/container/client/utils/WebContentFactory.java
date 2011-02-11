@@ -37,11 +37,11 @@ public class WebContentFactory {
     }
 
     public WebContentData getDataFor(String gadgetType) {
-        if ("wcpicture".equals(gadgetType))
+        if (PictureData.TYPE.equals(gadgetType))
             return new PictureData();
-        if ("wchtml".equals(gadgetType))
+        if (HTMLData.TYPE.equals(gadgetType))
             return new HTMLData();
-        if ("wcopensocial".equals(gadgetType))
+        if (OpenSocialData.TYPE.equals(gadgetType))
             return new OpenSocialData();
         return null;
     }
@@ -50,19 +50,20 @@ public class WebContentFactory {
         Map<String, Boolean> permissions = model.getPermissions().get(
                 webContentData.getId());
 
-        if ("wcpicture".equals(webContentData.getAssociatedType())) {
+        if (PictureData.TYPE.equals(webContentData.getAssociatedType())) {
             return new PicturePresenter(new PictureGadget(), eventBus,
                     new PictureModel((PictureData) webContentData, permissions));
         }
-        if ("wchtml".equals(webContentData.getAssociatedType())) {
+        if (HTMLData.TYPE.equals(webContentData.getAssociatedType())) {
             return new HTMLPresenter(new HTMLGadget(), eventBus, new HTMLModel(
                     (HTMLData) webContentData, permissions));
         }
-        if ("wcopensocial".equals(webContentData.getAssociatedType())) {
+        if (OpenSocialData.TYPE.equals(webContentData.getAssociatedType())) {
             return new OpenSocialPresenter(new OpenSocialGadget(), eventBus,
                     new OpenSocialModel((OpenSocialData) webContentData,
                             permissions));
         }
         return null;
     }
+
 }

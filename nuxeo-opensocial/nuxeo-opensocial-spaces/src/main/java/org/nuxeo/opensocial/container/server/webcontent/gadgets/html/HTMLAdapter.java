@@ -1,5 +1,8 @@
 package org.nuxeo.opensocial.container.server.webcontent.gadgets.html;
 
+import static org.nuxeo.ecm.spaces.api.Constants.WC_HTML_HTML_PROPERTY;
+import static org.nuxeo.ecm.spaces.api.Constants.WC_HTML_HTML_TITLE_PROPERTY;
+
 import org.apache.commons.lang.StringEscapeUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -19,16 +22,17 @@ public class HTMLAdapter extends AbstractWebContentAdapter implements
 
     public void feedFrom(HTMLData data) throws ClientException {
         super.setMetadataFrom(data);
-        doc.setPropertyValue("wchtml:html",
+        doc.setPropertyValue(WC_HTML_HTML_PROPERTY,
                 StringEscapeUtils.escapeHtml(data.getHtml()));
-        doc.setPropertyValue("wchtml:htmltitle", data.getHtmlTitle());
+        doc.setPropertyValue(WC_HTML_HTML_TITLE_PROPERTY, data.getHtmlTitle());
     }
 
     public HTMLData getData() throws ClientException {
         HTMLData data = new HTMLData();
         super.getMetadataFor(data);
-        data.setHtml(StringEscapeUtils.unescapeHtml((String) doc.getPropertyValue("wchtml:html")));
-        data.setHtmlTitle((String) doc.getPropertyValue("wchtml:htmltitle"));
+        data.setHtml(StringEscapeUtils.unescapeHtml((String) doc.getPropertyValue(WC_HTML_HTML_PROPERTY)));
+        data.setHtmlTitle((String) doc.getPropertyValue(WC_HTML_HTML_TITLE_PROPERTY));
         return data;
     }
+
 }

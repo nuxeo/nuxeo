@@ -17,6 +17,8 @@
 
 package org.nuxeo.ecm.spaces.impl.docwrapper;
 
+import static org.nuxeo.ecm.spaces.api.Constants.SPACE_DOCUMENT_TYPE;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -95,7 +97,7 @@ public class SpacesAdapterComponent extends DefaultComponent implements
             try {
                 SchemaManager sm = Framework.getService(SchemaManager.class);
 
-                Set<String> types = sm.getDocumentTypeNamesExtending(DocSpaceImpl.TYPE);
+                Set<String> types = sm.getDocumentTypeNamesExtending(SPACE_DOCUMENT_TYPE);
 
                 if (types.contains(doc.getType())) {
                     return new DocSpaceImpl(doc);

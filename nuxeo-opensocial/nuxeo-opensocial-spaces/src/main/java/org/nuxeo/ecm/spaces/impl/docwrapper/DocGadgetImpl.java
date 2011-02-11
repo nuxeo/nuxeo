@@ -1,5 +1,12 @@
 package org.nuxeo.ecm.spaces.impl.docwrapper;
 
+import static org.nuxeo.ecm.spaces.api.Constants.WC_OPEN_SOCIAL_GADGET_DEF_URL_PROPERTY;
+import static org.nuxeo.ecm.spaces.api.Constants.WC_OPEN_SOCIAL_GADGET_NAME;
+import static org.nuxeo.ecm.spaces.api.Constants.WEB_CONTENT_HEIGHT_PROPERTY;
+import static org.nuxeo.ecm.spaces.api.Constants.WEB_CONTENT_IS_COLLAPSED_PROPERTY;
+import static org.nuxeo.ecm.spaces.api.Constants.WEB_CONTENT_POSITION_PROPERTY;
+import static org.nuxeo.ecm.spaces.api.Constants.WEB_CONTENT_PREFERENCES_PROPERTY;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -19,18 +26,6 @@ import org.nuxeo.runtime.api.Framework;
 
 public class DocGadgetImpl extends AbstractGadget {
 
-    private static final String GADGET_POSITION = "webcontent:position";
-
-    private static final String GADGET_COLLAPSED = "webcontent:iscollapsed";
-
-    private static final String GADGET_HEIGHT = "webcontent:height";
-
-    private static final String GADGET_PREFERENCES = "webcontent:preferences";
-
-    private static final String GADGET_NAME = "wcopensocial:gadgetname";
-
-    private static final String GADGET_URL = "wcopensocial:gadgetDefUrl";
-
     public static final String TYPE = "WCOpenSocial";
 
     private final DocumentModel doc;
@@ -45,10 +40,6 @@ public class DocGadgetImpl extends AbstractGadget {
         return doc;
     }
 
-    public String getCategory() throws ClientException {
-        throw new ClientException("Deprecated");
-    }
-
     public URL getDefinitionUrl() throws ClientException {
         GadgetService service;
         URL url = null;
@@ -61,7 +52,7 @@ public class DocGadgetImpl extends AbstractGadget {
 
         if (url == null) {
             try {
-                url = new URL((String) doc.getPropertyValue(GADGET_URL));
+                url = new URL((String) doc.getPropertyValue(WC_OPEN_SOCIAL_GADGET_DEF_URL_PROPERTY));
             } catch (MalformedURLException e) {
                 LOGGER.error("Malformed URL for gadget " + getId(), e);
                 return null;
@@ -79,7 +70,7 @@ public class DocGadgetImpl extends AbstractGadget {
     }
 
     public String getName() throws ClientException {
-        return (String) doc.getPropertyValue(GADGET_NAME);
+        return (String) doc.getPropertyValue(WC_OPEN_SOCIAL_GADGET_NAME);
     }
 
     public String getOwner() throws ClientException {
@@ -100,18 +91,14 @@ public class DocGadgetImpl extends AbstractGadget {
         return parent.getAdapter(Space.class);
     }
 
-    public String getPlaceId() throws ClientException {
-        throw new ClientException("Deprecated");
-    }
-
     public int getPosition() throws ClientException {
-        Long result = (Long) doc.getPropertyValue(GADGET_POSITION);
+        Long result = (Long) doc.getPropertyValue(WEB_CONTENT_POSITION_PROPERTY);
         return (result == null) ? 0 : result.intValue();
     }
 
     @SuppressWarnings("unchecked")
     public Map<String, String> getPreferences() throws ClientException {
-        ArrayList<Map<String, String>> list = (ArrayList<Map<String, String>>) doc.getPropertyValue(GADGET_PREFERENCES);
+        ArrayList<Map<String, String>> list = (ArrayList<Map<String, String>>) doc.getPropertyValue(WEB_CONTENT_PREFERENCES_PROPERTY);
         if (list == null)
             return null;
         HashMap ret = new HashMap<String, String>();
@@ -127,25 +114,20 @@ public class DocGadgetImpl extends AbstractGadget {
     }
 
     public boolean isCollapsed() throws ClientException {
-        Boolean result = (Boolean) doc.getPropertyValue(GADGET_COLLAPSED);
-        return (result == null) ? false : result.booleanValue();
+        Boolean result = (Boolean) doc.getPropertyValue(WEB_CONTENT_IS_COLLAPSED_PROPERTY);
+        return (result == null) ? false : result;
     }
 
     public boolean isEqualTo(Gadget gadget) {
         return gadget.getId().equals(getId());
     }
 
-    public void setCategory(String category) throws ClientException {
-        throw new ClientException("Deprecated");
-
-    }
-
     public void setCollapsed(boolean collapsed) throws ClientException {
-        doc.setPropertyValue(GADGET_COLLAPSED, collapsed);
+        doc.setPropertyValue(WEB_CONTENT_IS_COLLAPSED_PROPERTY, collapsed);
     }
 
     public void setDefinitionUrl(URL url) throws ClientException {
-        doc.setPropertyValue(GADGET_URL, url.toString());
+        doc.setPropertyValue(WC_OPEN_SOCIAL_GADGET_DEF_URL_PROPERTY, url.toString());
 
     }
 
@@ -155,17 +137,12 @@ public class DocGadgetImpl extends AbstractGadget {
     }
 
     public void setName(String name) throws ClientException {
-        doc.setPropertyValue(GADGET_NAME, name);
-
-    }
-
-    public void setPlaceId(String placeId) throws ClientException {
-        throw new ClientException("Deprecated");
+        doc.setPropertyValue(WC_OPEN_SOCIAL_GADGET_NAME, name);
 
     }
 
     public void setPosition(int position) throws ClientException {
-        doc.setPropertyValue(GADGET_POSITION, position);
+        doc.setPropertyValue(WEB_CONTENT_POSITION_PROPERTY, position);
 
     }
 
@@ -178,7 +155,7 @@ public class DocGadgetImpl extends AbstractGadget {
             keyValue.put("value", prefs.get(key));
             listPrefs.add(keyValue);
         }
-        doc.setPropertyValue(GADGET_PREFERENCES, listPrefs);
+        doc.setPropertyValue(WEB_CONTENT_PREFERENCES_PROPERTY, listPrefs);
     }
 
     public void setTitle(String title) throws ClientException {
@@ -187,12 +164,12 @@ public class DocGadgetImpl extends AbstractGadget {
     }
 
     public int getHeight() throws ClientException {
-        Long result = (Long) doc.getPropertyValue(GADGET_HEIGHT);
+        Long result = (Long) doc.getPropertyValue(WEB_CONTENT_HEIGHT_PROPERTY);
         return (result == null) ? 0 : result.intValue();
     }
 
     public void setHeight(int height) throws ClientException {
-        doc.setPropertyValue(GADGET_HEIGHT, height);
+        doc.setPropertyValue(WEB_CONTENT_HEIGHT_PROPERTY, height);
     }
 
     public void copyFrom(Gadget gadget) throws ClientException {

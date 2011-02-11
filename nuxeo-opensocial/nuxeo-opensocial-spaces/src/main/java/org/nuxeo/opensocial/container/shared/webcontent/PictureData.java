@@ -16,7 +16,7 @@ public class PictureData extends AbstractWebContentData {
 
     private static final String ICONE_NAME = "photo-icon";
 
-    public static String TYPE = new String("wcpicture");
+    public static String TYPE = "wcpicture";
 
     private String url;
 

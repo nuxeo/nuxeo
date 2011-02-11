@@ -1,5 +1,7 @@
 package org.nuxeo.ecm.spaces.core;
 
+import static org.nuxeo.ecm.spaces.api.Constants.SPACE_DOCUMENT_TYPE;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -83,7 +85,7 @@ public class SingleDocSpaceProvider extends AbstractSpaceProvider {
                     @Override
                     public void run() throws ClientException {
                         DocumentModel doc = session.createDocumentModel(
-                                getParentPath(path), getDocName(path), "Space");
+                                getParentPath(path), getDocName(path), SPACE_DOCUMENT_TYPE);
                         doc.setPropertyValue("dc:title", title);
                         doc = session.createDocument(doc);
                         Space space = doc.getAdapter(Space.class);

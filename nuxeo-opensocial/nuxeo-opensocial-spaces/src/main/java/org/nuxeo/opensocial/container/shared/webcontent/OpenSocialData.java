@@ -19,7 +19,7 @@ public class OpenSocialData extends AbstractWebContentData {
 
     private static final String DEFAULT_ICON_NAME = "default-icon";
 
-    public static String TYPE = new String("wcopensocial");
+    public static String TYPE = "wcopensocial";
 
     private String frameUrl;
 

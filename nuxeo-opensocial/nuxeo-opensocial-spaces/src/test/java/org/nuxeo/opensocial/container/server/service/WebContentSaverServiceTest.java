@@ -3,6 +3,7 @@ package org.nuxeo.opensocial.container.server.service;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ecm.spaces.api.Constants.UNIT_DOCUMENT_TYPE;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,7 +38,7 @@ public class WebContentSaverServiceTest {
     }
 
     public DocumentModel createNxUnit() throws ClientException {
-        DocumentModel unit = session.createDocumentModel("/", "unit", "Unit");
+        DocumentModel unit = session.createDocumentModel("/", "unit", UNIT_DOCUMENT_TYPE);
         unit = session.createDocument(unit);
         session.save();
 

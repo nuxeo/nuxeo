@@ -16,7 +16,7 @@ public class HTMLData extends AbstractWebContentData {
 
     public static final String ICONE_NAME = "richtext-icon";
 
-    public static String TYPE = new String("wchtml");
+    public static String TYPE = "wchtml";
 
     private String html;
 

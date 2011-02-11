@@ -18,6 +18,8 @@
 
 package org.nuxeo.opensocial.dashboard;
 
+import static org.nuxeo.ecm.spaces.api.Constants.SPACE_DOCUMENT_TYPE;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -27,9 +29,9 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
 import org.nuxeo.ecm.spaces.api.AbstractSpaceProvider;
+import org.nuxeo.ecm.spaces.api.Constants;
 import org.nuxeo.ecm.spaces.api.Space;
 import org.nuxeo.ecm.spaces.api.exceptions.SpaceException;
-import org.nuxeo.ecm.spaces.impl.docwrapper.DocSpaceImpl;
 import org.nuxeo.opensocial.container.shared.layout.api.LayoutHelper;
 import org.nuxeo.runtime.api.Framework;
 
@@ -72,7 +74,7 @@ public class DashboardSpaceProvider extends AbstractSpaceProvider {
             return existingSpace.getAdapter(Space.class);
         } else {
             DocumentModel model = session.createDocumentModel(
-                    userWorkspacePath, DASHBOARD_SPACE_NAME, DocSpaceImpl.TYPE);
+                    userWorkspacePath, DASHBOARD_SPACE_NAME, SPACE_DOCUMENT_TYPE);
             model.setPropertyValue("dc:title", "nuxeo dashboard space");
             model.setPropertyValue("dc:description", "dashboard space");
             model = session.createDocument(model);

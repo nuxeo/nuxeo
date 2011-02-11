@@ -3,6 +3,7 @@ package org.nuxeo.opensocial.container.server.layout;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.nuxeo.ecm.spaces.api.Constants.SPACE_DOCUMENT_TYPE;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -42,7 +43,7 @@ public class LayoutNuxeoTest {
 
     private DocumentModel createNxLayout() throws Exception {
         DocumentModel createdDoc = session.createDocumentModel("/", "layout",
-                "Space");
+                SPACE_DOCUMENT_TYPE);
         return session.createDocument(createdDoc);
     }
 

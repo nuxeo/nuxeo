@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -10,12 +10,13 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
- *
  * Contributors:
- * Nuxeo - initial API and implementation
+ * Thomas Roger
  */
 
 package org.nuxeo.opensocial.dashboard;
+
+import static org.nuxeo.ecm.spaces.api.Constants.SPACE_DOCUMENT_TYPE;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -24,7 +25,6 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.spaces.api.AbstractSpaceProvider;
 import org.nuxeo.ecm.spaces.api.Space;
 import org.nuxeo.ecm.spaces.api.exceptions.SpaceException;
-import org.nuxeo.ecm.spaces.impl.docwrapper.DocSpaceImpl;
 import org.nuxeo.opensocial.container.shared.layout.api.LayoutHelper;
 
 /**
@@ -55,7 +55,7 @@ public class WorkspaceSpaceProvider extends AbstractSpaceProvider {
             } else {
                 DocumentModel model = session.createDocumentModel(
                         contextDocument.getPathAsString(), spaceName,
-                        DocSpaceImpl.TYPE);
+                        SPACE_DOCUMENT_TYPE);
                 model.setPropertyValue("dc:title", spaceName);
                 model = session.createDocument(model);
                 session.save();

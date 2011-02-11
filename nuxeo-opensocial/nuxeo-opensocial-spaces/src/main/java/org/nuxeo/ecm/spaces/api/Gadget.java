@@ -72,15 +72,6 @@ public interface Gadget {
     String getViewer() throws ClientException;
 
     /**
-     * category of a gadget
-     *
-     * @return
-     */
-    String getCategory() throws ClientException;
-
-    void setCategory(String category) throws ClientException;
-
-    /**
      * preferences values
      *
      * @return
@@ -90,16 +81,6 @@ public interface Gadget {
     void setPreferences(Map<String, String> prefs) throws ClientException;
 
     String getPref(String prefKey) throws ClientException;
-
-    /**
-     * Key corresponding to the place where the gadget will be positionned in
-     * the view
-     *
-     * @return
-     */
-    String getPlaceId() throws ClientException;
-
-    void setPlaceId(String placeId) throws ClientException;
 
     /**
      * Relative position in the parent container at the place id "getPlaceID()"
