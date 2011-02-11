@@ -287,7 +287,7 @@ public class SecurityActionsBean extends InputController implements
 
             acp.setRules(modifiableEntries.toArray(new UserEntry[0]));
 
-            documentManager.setACP(currentDocument.getRef(), acp, true);
+            currentDocument.setACP(acp, true);
             documentManager.save();
             Events.instance().raiseEvent(EventNames.DOCUMENT_SECURITY_CHANGED);
 
