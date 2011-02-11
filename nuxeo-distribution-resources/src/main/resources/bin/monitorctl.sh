@@ -292,6 +292,7 @@ SELECT COUNT(*) AS hierarchy_count FROM hierarchy;
 SELECT COUNT(*) AS aces_count FROM acls;
 SELECT COUNT(DISTINCT(id)) AS acls_count FROM acls;
 SELECT COUNT(*) AS read_acls_count FROM read_acls;
+SELECT (SELECT COUNT(*) FROM users) AS users, (SELECT COUNT(*) FROM user2group) AS user2groups, (SELECT COUNT(*) FROM groups) AS group,  (SELECT COUNT(*) FROM group2group) AS group2group;
 SELECT  stat.relname AS "Table",
     pg_size_pretty(pg_total_relation_size(stat.relid)) AS "Total size",
     pg_size_pretty(pg_relation_size(stat.relid)) AS "Table size",
