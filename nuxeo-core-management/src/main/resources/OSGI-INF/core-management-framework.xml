@@ -7,7 +7,6 @@
   <!-- TODO: Cannot use this ince content template is not in the core .. find another solution. 
   <require>org.nuxeo.ecm.platform.content.template.service.ContentTemplateService</require>
   -->
-  <require>org.nuxeo.ecm.platform.content.template.service.ContentTemplateService</require>
 
   <service>
     <provide interface="org.nuxeo.ecm.core.management.api.ProbeManager" />
