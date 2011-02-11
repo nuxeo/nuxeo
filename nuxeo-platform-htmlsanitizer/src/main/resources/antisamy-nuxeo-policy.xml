@@ -752,6 +752,11 @@ http://www.w3.org/TR/html401/struct/global.html
 				</literal-list>
 			</attribute>
 			<attribute name="name"/>
+			<attribute name="target">
+				<literal-list>
+					<literal value="_blank" />
+				</literal-list>
+			</attribute> 
 
 		</tag>
 
