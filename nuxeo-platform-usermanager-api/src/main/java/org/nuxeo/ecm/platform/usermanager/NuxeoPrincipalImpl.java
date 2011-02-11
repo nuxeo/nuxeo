@@ -43,10 +43,8 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
- *
  */
 public class NuxeoPrincipalImpl implements NuxeoPrincipal {
-
 
     private static final long serialVersionUID = 1791676740406045594L;
 
@@ -83,8 +81,8 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
     }
 
     /**
-     * Constructor that sets principal to not administrator, and updates all the
-     * principal groups.
+     * Constructor that sets principal to not administrator, and updates all
+     * the principal groups.
      */
     public NuxeoPrincipalImpl(String name, boolean isAnonymous)
             throws ClientException {
@@ -102,7 +100,8 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
     public NuxeoPrincipalImpl(String name, boolean isAnonymous,
             boolean isAdministrator, boolean updateAllGroups)
             throws ClientException {
-        DocumentModelImpl documentModelImpl = new DocumentModelImpl(config.schemaName);
+        DocumentModelImpl documentModelImpl = new DocumentModelImpl(
+                config.schemaName);
         // schema name hardcoded default when setModel is never called
         // which happens when a principal is created just to encapsulate
         // a username

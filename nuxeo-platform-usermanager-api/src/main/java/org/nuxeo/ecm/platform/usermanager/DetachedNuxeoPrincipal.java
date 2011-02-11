@@ -33,7 +33,8 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 public class DetachedNuxeoPrincipal implements NuxeoPrincipal {
 
     public static DetachedNuxeoPrincipal detach(NuxeoPrincipal principal) {
-        DetachedNuxeoPrincipal detachedPrincipal = new DetachedNuxeoPrincipal(principal.getPrincipalId());
+        DetachedNuxeoPrincipal detachedPrincipal = new DetachedNuxeoPrincipal(
+                principal.getPrincipalId());
         detachedPrincipal.name = principal.getName();
         detachedPrincipal.firstName = principal.getFirstName();
         detachedPrincipal.lastName = principal.getLastName();
@@ -53,9 +54,9 @@ public class DetachedNuxeoPrincipal implements NuxeoPrincipal {
     }
 
     public DetachedNuxeoPrincipal(String principalId, String name,
-            String firstName, String lastName, String password, String email, String company,
-            List<String> groups, List<String> allGroups, List<String> roles,
-            boolean isAdministrator, boolean isAnonymous) {
+            String firstName, String lastName, String password, String email,
+            String company, List<String> groups, List<String> allGroups,
+            List<String> roles, boolean isAdministrator, boolean isAnonymous) {
         this.password = principalId;
         this.name = name;
         this.firstName = firstName;

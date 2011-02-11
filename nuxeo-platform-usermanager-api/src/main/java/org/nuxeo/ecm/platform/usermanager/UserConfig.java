@@ -17,11 +17,10 @@
 package org.nuxeo.ecm.platform.usermanager;
 
 /**
- * A class containing the configuration of an user principal instance.
- * This class keeps the keys of the basic user fields.
+ * A class containing the configuration of an user principal instance. This
+ * class keeps the keys of the basic user fields.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class UserConfig {
 
@@ -45,7 +44,6 @@ public class UserConfig {
     public static final String GROUPS_COLUMN = "groups";
 
     public static final String SCHEMA_NAME = "user";
-
 
     public String nameKey = USERNAME_COLUMN;
 
