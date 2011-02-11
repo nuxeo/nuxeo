@@ -42,6 +42,16 @@ public class BuiltinModes {
 
     public static final String SUMMARY = "summary";
 
+    public static final String CSV = "csv";
+
+    /**
+     * @since 5.4.1
+     */
+    public static final String PDF = "pdf";
+
+    /**
+     * @since 5.4.1
+     */
     public static final String PLAIN = "plain";
 
     private BuiltinModes() {
@@ -52,22 +62,41 @@ public class BuiltinModes {
      * widget mode.
      */
     public static final boolean isBoundToEditMode(String layoutMode) {
-        if (layoutMode != null
-                && (layoutMode.startsWith(CREATE)
-                        || layoutMode.startsWith(EDIT)
-                        || layoutMode.startsWith(SEARCH) || layoutMode.startsWith(BULK_EDIT))) {
-            return true;
+        if (layoutMode != null) {
+            if (layoutMode.startsWith(CREATE) || layoutMode.startsWith(EDIT)
+                    || layoutMode.startsWith(SEARCH)
+                    || layoutMode.startsWith(BULK_EDIT)) {
+                return true;
+            }
         }
         return false;
     }
 
+    /**
+     * Returns the default mode to use for a widget, given the layout mode.
+     * <p>
+     * Returns {@link BuiltinWidgetModes#EDIT} for all modes bound to edit,
+     * {@link BuiltinWidgetModes#VIEW} for modes {@link #VIEW} and
+     * {@link #SUMMARY}. {@link #PDF} and {@link #CSV} are respectively bound
+     * to {@link BuiltinWidgetModes#PDF} and {@link BuiltinWidgetModes#CSV}.
+     * In other cases, returns {@link BuiltinWidgetModes#PLAIN}.
+     * <p>
+     * This method is not called when mode is explicitely set on the widget.
+     */
     public static final String getWidgetModeFromLayoutMode(String layoutMode) {
-        if (BuiltinModes.isBoundToEditMode(layoutMode)) {
-            return EDIT;
-        } else if (layoutMode != null && layoutMode.startsWith(PLAIN)) {
-            return PLAIN;
+        if (layoutMode != null) {
+            if (BuiltinModes.isBoundToEditMode(layoutMode)) {
+                return BuiltinWidgetModes.EDIT;
+            } else if (layoutMode.startsWith(VIEW)
+                    || layoutMode.startsWith(SUMMARY)) {
+                return BuiltinWidgetModes.VIEW;
+            } else if (layoutMode.startsWith(CSV)) {
+                return BuiltinWidgetModes.CSV;
+            } else if (layoutMode.startsWith(PDF)) {
+                return BuiltinWidgetModes.PDF;
+            }
         }
-        return VIEW;
+        return BuiltinWidgetModes.PLAIN;
     }
 
 }
