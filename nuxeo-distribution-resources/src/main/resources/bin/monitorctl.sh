@@ -298,23 +298,25 @@ SELECT  stat.relname AS "Table",
     CASE WHEN cl.reltoastrelid = 0 THEN 'None' ELSE
         pg_size_pretty(pg_relation_size(cl.reltoastrelid)+
         COALESCE((SELECT SUM(pg_relation_size(indexrelid)) FROM pg_index WHERE indrelid=cl.reltoastrelid)::int8, 0)) END AS "TOAST table size",
-    pg_size_pretty(COALESCE((SELECT SUM(pg_relation_size(indexrelid)) FROM pg_index WHERE indrelid=stat.relid)::int8, 0)) AS "Index size"
+    pg_size_pretty(COALESCE((SELECT SUM(pg_relation_size(indexrelid)) FROM pg_index WHERE indrelid=stat.relid)::int8, 0)) AS "Index size",
+    CASE WHEN pg_relation_size(stat.relid) = 0 THEN 0.0 ELSE
+    round(100 * COALESCE((SELECT SUM(pg_relation_size(indexrelid)) FROM pg_index WHERE indrelid=stat.relid)::int8, 0) /  pg_relation_size(stat.relid)) / 100 END AS "Index ratio"
 FROM pg_stat_all_tables stat
   JOIN pg_statio_all_tables statio ON stat.relid = statio.relid
   JOIN pg_class cl ON cl.oid=stat.relid AND stat.schemaname='public'
 ORDER BY pg_total_relation_size(stat.relid) DESC
 LIMIT 20;
-SELECT nspname,relname, round(100 * pg_relation_size(indexrelid) / pg_relation_size(indrelid)) / 100 AS index_ratio, pg_size_pretty(pg_relation_size(indexrelid)) AS index_size,
-pg_size_pretty(pg_relation_size(indrelid)) AS table_size 
+SELECT nspname,relname, round(100 * pg_relation_size(indexrelid) / pg_relation_size(indrelid)) / 100 AS index_ratio, pg_size_pretty(pg_relation_size(indexrelid)) AS index_size, pg_size_pretty(pg_relation_size(indrelid)) AS table_size 
 FROM pg_index I
 LEFT JOIN pg_class C ON (C.oid = I.indexrelid)
 LEFT JOIN pg_namespace N ON (N.oid = C.relnamespace)
 WHERE nspname NOT IN ('pg_catalog', 'information_schema', 'pg_toast') AND
-C.relkind='i' AND
-pg_relation_size(indrelid) > 0  ORDER BY pg_relation_size(indexrelid) DESC LIMIT 15;
+C.relkind='i' AND pg_relation_size(indrelid) > 0  
+ORDER BY pg_relation_size(indexrelid) DESC LIMIT 15;
 SELECT relname, idx_tup_fetch + seq_tup_read AS total_reads 
 FROM pg_stat_all_tables WHERE idx_tup_fetch + seq_tup_read != 0 
 ORDER BY total_reads desc LIMIT 15;
+SELECT sum(generate_series) AS "speedTest" FROM generate_series(1,1000000);
 EXPLAIN ANALYZE SELECT sum(generate_series) AS "speedTest" FROM generate_series(1,1000000);
 SELECT name, unit, current_setting(name), source FROM pg_settings WHERE source!='default';
 SHOW ALL;
