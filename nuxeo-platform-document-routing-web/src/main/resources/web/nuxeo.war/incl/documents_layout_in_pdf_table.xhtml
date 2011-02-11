@@ -13,7 +13,7 @@
 
 <c:if test="#{documents != null}">
 
-  <ui:insert name="empty_folder_label">
+  <ui:insert name="empty_content_view_label">
     <p:text value="#{messages['label.content.emptyFolder']}"
       rendered="#{documents.rowCount == 0}" />
   </ui:insert>
