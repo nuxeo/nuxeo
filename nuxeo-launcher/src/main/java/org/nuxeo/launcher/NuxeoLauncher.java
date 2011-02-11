@@ -168,8 +168,7 @@ public abstract class NuxeoLauncher {
             InterruptedException {
         List<String> startCommand = new ArrayList<String>();
         startCommand.add(getJavaExecutable().getPath());
-        startCommand.addAll(Arrays.asList(System.getProperty(
-                JAVA_OPTS_PROPERTY, JAVA_OPTS_DEFAULT).split(" ")));
+        startCommand.addAll(Arrays.asList(getJavaOptsProperty().split(" ")));
         startCommand.add("-cp");
         startCommand.add(getClassPath());
         startCommand.addAll(getNuxeoProperties());
@@ -190,6 +189,29 @@ public abstract class NuxeoLauncher {
         } else {
             log.info("Sent server start command but could not get process ID.");
         }
+    }
+
+    /**
+     * Gets the java options with Nuxeo properties substituted.
+     *
+     * It enables usage of property like ${nuxeo.log.dir} inside JAVA_OPTS.
+     *
+     * @return the java options string.
+     */
+    protected String getJavaOptsProperty() {
+        String ret = System.getProperty(JAVA_OPTS_PROPERTY, JAVA_OPTS_DEFAULT);
+        String properties[] = { Environment.NUXEO_HOME_DIR,
+                Environment.NUXEO_LOG_DIR, Environment.NUXEO_DATA_DIR,
+                Environment.NUXEO_TMP_DIR };
+
+        for (String property : properties) {
+            String value = configurationGenerator.getUserConfig().getProperty(
+                    property);
+            if (value != null && ! value.isEmpty()) {
+                ret = ret.replace("${" + property + "}", value);
+            }
+        }
+        return ret;
     }
 
     /**
@@ -620,6 +642,7 @@ public abstract class NuxeoLauncher {
 
     /**
      * Stops the server.
+     *
      * Will try to call specific class for a clean stop, retry
      * {@link #STOP_NB_TRY}, waiting {@link #STOP_SECONDS_BEFORE_NEXT_TRY}
      * between each try, then kill the process if still running.
