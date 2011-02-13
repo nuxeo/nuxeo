@@ -16,9 +16,8 @@
  */
 package org.nuxeo.ecm.core.auth;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.common.xmap.annotation.XNode;
@@ -53,7 +52,7 @@ public class SimpleNuxeoPrincipal implements NuxeoPrincipal {
     @XNode("isAnonymous")
     protected boolean isAnonymous;
 
-    protected Set<String> groups = new HashSet<String>();
+    protected List<String> groups = new ArrayList<String>();
 
     @XNode("groups")
     protected void setGroups(String expr) {
@@ -111,7 +110,7 @@ public class SimpleNuxeoPrincipal implements NuxeoPrincipal {
 
     @Override
     public List<String> getGroups() {
-        return null;
+        return groups;
     }
 
     @Override
@@ -146,7 +145,7 @@ public class SimpleNuxeoPrincipal implements NuxeoPrincipal {
 
     @Override
     public void setGroups(List<String> groups) {
-        this.groups = new HashSet<String>(groups);
+        this.groups = groups;
     }
 
     @Override

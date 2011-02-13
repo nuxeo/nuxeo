@@ -81,7 +81,7 @@ public class SimpleLoginModule implements LoginModule {
     @Override
     public boolean login() throws LoginException {
         String[] login = retrieveLogin();
-        Principal principal = authenticate(login);
+        principal = authenticate(login);
         if (principal == null) {
             throw new LoginException("Authentication failed for "+login[0]);
         }
