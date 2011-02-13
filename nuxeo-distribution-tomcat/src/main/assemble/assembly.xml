@@ -323,6 +323,9 @@
         <includes>
           <artifact groupId="!org.nuxeo*" />
         </includes>
+        <excludes>
+          <artifact artifactId="h2" />
+        </excludes>
       </artifact:set>
     </copy>
 

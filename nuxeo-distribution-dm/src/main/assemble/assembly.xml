@@ -63,6 +63,7 @@
           <artifact artifactId="gwt-dev" />
           <artifact artifactId="gwt-user" />
           <artifact artifactId="json-jena" />
+          <artifact artifactId="h2" />
         </excludes>
         <includes>
           <artifact groupId="!org.nuxeo*" />
