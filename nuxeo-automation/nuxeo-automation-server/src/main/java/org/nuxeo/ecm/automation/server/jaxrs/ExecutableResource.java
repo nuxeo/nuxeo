@@ -26,7 +26,7 @@ import org.nuxeo.ecm.automation.server.AutomationServer;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.webengine.session.UserSession;
+import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -44,7 +44,7 @@ public abstract class ExecutableResource {
     }
 
     public CoreSession getCoreSession() {
-        return UserSession.getCurrentSession(request).getCoreSession();
+        return SessionFactory.getSession(request);
     }
 
     @POST

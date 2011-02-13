@@ -15,7 +15,7 @@ import javax.ws.rs.ext.Provider;
 
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.server.jaxrs.ExecutionRequest;
-import org.nuxeo.ecm.webengine.WebEngine;
+import org.nuxeo.ecm.webengine.jaxrs.context.RequestContext;
 
 /**
  * Reads {@link ExecutionRequest} from a urlencoded POST
@@ -46,7 +46,7 @@ public class UrlEncodedFormRequestReader implements
         if (content==null || content.isEmpty()) {
             // body was consumed by OAuth Filter and but Request parameters must have been cached
             // => need to get access to the request params
-            jsonString = WebEngine.getActiveContext().getRequest().getParameter("jsondata");
+            jsonString = RequestContext.getActiveContext().getRequest().getParameter("jsondata");
         } else {
             if (content.startsWith("jsondata=")) {
                 jsonString = content.substring(9);

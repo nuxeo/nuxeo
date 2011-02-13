@@ -23,6 +23,7 @@ import java.net.URL;
 
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
+import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 import org.nuxeo.runtime.test.WorkingDirectoryConfigurator;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -38,6 +39,7 @@ import org.nuxeo.runtime.test.runner.web.WebDriverFeature;
         "org.nuxeo.ecm.platform.web.common",
         "org.nuxeo.ecm.platform.login.default",
         "org.nuxeo.ecm.webengine.admin",
+        "org.nuxeo.ecm.webengine.jaxrs",
         "org.nuxeo.ecm.webengine.base",
         "org.nuxeo.ecm.webengine.core",
         "org.nuxeo.ecm.webengine.ui",
@@ -58,6 +60,7 @@ public class WebEngineFeature extends SimpleFeature implements
 
     public void configure(RuntimeHarness harness, File workingDir)
             throws IOException {
+        SessionFactory.setDefaultRepository("test");
         File dest = new File(workingDir, "web/root.war/WEB-INF/");
         dest.mkdirs();
 

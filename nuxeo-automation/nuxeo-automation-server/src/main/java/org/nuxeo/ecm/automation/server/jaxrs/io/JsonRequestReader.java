@@ -61,7 +61,6 @@ public class JsonRequestReader implements MessageBodyReader<ExecutionRequest> {
         return readRequest(in,headers);
     }
 
-    @SuppressWarnings("unchecked")
     public static ExecutionRequest readRequest(InputStream in, MultivaluedMap<String, String> headers)
             throws IOException {
         String content = FileUtils.read(in);

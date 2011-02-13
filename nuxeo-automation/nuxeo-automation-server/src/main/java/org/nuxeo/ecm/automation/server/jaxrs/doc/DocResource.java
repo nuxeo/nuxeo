@@ -25,21 +25,27 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationDocumentation;
-import org.nuxeo.ecm.webengine.WebException;
-import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
-import org.nuxeo.ecm.webengine.model.view.TemplateView;
+import org.nuxeo.ecm.webengine.jaxrs.views.TemplateView;
+import org.nuxeo.ecm.webengine.jaxrs.views.View;
 import org.nuxeo.runtime.api.Framework;
+
+import com.sun.jersey.api.Responses;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class DocResource {
+
+    private final Log log = LogFactory.getLog(DocResource.class);
 
     @Context
     protected UriInfo uri;
@@ -53,15 +59,16 @@ public class DocResource {
             service = Framework.getService(AutomationService.class);
             ops = service.getDocumentation();
         } catch (Exception e) {
-            throw WebException.wrap("Failed to get automation service", e);
+            log.error("Failed to get automation service", e);
+            throw new WebApplicationException(500);
         }
     }
 
-    protected TemplateView getTemplate() {
+    protected View getTemplate() {
         return getTemplate("index.ftl");
     }
 
-    protected TemplateView getTemplate(String name) {
+    protected View getTemplate(String name) {
         Map<String, List<OperationDocumentation>> cats = new LinkedHashMap<String, List<OperationDocumentation>>();
         for (OperationDocumentation op : ops) {
             List<OperationDocumentation> list = cats.get(op.getCategory());
@@ -90,10 +97,9 @@ public class DocResource {
                 }
             }
             if (opDoc == null) {
-                throw new WebResourceNotFoundException(
-                        "No operation found with name: " + id);
+                throw new WebApplicationException(Responses.notFound().build());
             }
-            TemplateView tpl = getTemplate();
+            View tpl = getTemplate();
             tpl.arg("operation", opDoc);
             return tpl;
         }
