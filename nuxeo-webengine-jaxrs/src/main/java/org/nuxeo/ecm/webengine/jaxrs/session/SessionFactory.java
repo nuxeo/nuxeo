@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.webengine.jaxrs.context.RequestContext;
 import org.nuxeo.ecm.webengine.jaxrs.session.impl.PerRequestCoreProvider;
 
 /**
@@ -65,6 +66,22 @@ public class SessionFactory {
             request.removeAttribute(SESSION_FACTORY_KEY);
             provider.onRequestDone(request);
         }
+    }
+
+    public static CoreSession getSession() {
+        RequestContext ctx = RequestContext.getActiveContext();
+        if (ctx == null) {
+            throw new IllegalStateException("You are trying to acces RequestContext data but you are not in web request a context. Make sure you have the RequestContextFilter installed and you call this method from the HTTP request thread");
+        }
+        return getSession(ctx.getRequest());
+    }
+
+    public static CoreSession getSession(String repositoryName) {
+        RequestContext ctx = RequestContext.getActiveContext();
+        if (ctx == null) {
+            throw new IllegalStateException("You are trying to acces RequestContext data but you are not in web request a context. Make sure you have the RequestContextFilter installed and you call this method from the HTTP request thread");
+        }
+        return getSession(ctx.getRequest(), repositoryName);
     }
 
     public static CoreSession getSession(HttpServletRequest request) {

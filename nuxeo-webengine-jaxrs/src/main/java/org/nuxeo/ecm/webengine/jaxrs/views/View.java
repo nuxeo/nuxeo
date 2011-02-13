@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.webengine.jaxrs.views;
 
 import java.io.File;
+import java.io.OutputStream;
 import java.io.Writer;
 import java.net.URL;
 import java.util.HashMap;
@@ -99,5 +100,7 @@ public abstract class View {
     }
 
     public abstract void render(Writer writer) throws Exception;
+
+    public abstract void render(OutputStream out) throws Exception;
 
 }

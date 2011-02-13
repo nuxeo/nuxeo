@@ -45,6 +45,7 @@ import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.forms.FormData;
+import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 import org.nuxeo.ecm.webengine.login.WebEngineFormAuthenticator;
 import org.nuxeo.ecm.webengine.model.AdapterResource;
 import org.nuxeo.ecm.webengine.model.AdapterType;
@@ -152,13 +153,11 @@ public abstract class AbstractWebContext implements WebContext {
     }
 
     public CoreSession getCoreSession() {
-        UserSession us = getUserSession();
-        return us != null ? us.getCoreSession() : null;
+        return SessionFactory.getSession(request);
     }
 
     public Principal getPrincipal() {
-        UserSession us = getUserSession();
-        return us != null ? us.getPrincipal() : null;
+        return request.getUserPrincipal();
     }
 
     public HttpServletRequest getRequest() {
@@ -568,7 +567,7 @@ public abstract class AbstractWebContext implements WebContext {
         }
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public void render(ScriptFile script, Object ctx, Writer writer) {
         Map map = null;
         if (ctx instanceof Map) {

@@ -39,6 +39,7 @@ import org.nuxeo.ecm.platform.rendering.api.ResourceLocator;
 import org.nuxeo.ecm.platform.rendering.fm.FreemarkerEngine;
 import org.nuxeo.ecm.webengine.app.WebEngineModule;
 import org.nuxeo.ecm.webengine.debug.ReloadManager;
+import org.nuxeo.ecm.webengine.jaxrs.context.RequestContext;
 import org.nuxeo.ecm.webengine.loader.WebLoader;
 import org.nuxeo.ecm.webengine.model.Module;
 import org.nuxeo.ecm.webengine.model.Resource;
@@ -67,8 +68,6 @@ public class WebEngine implements ResourceLocator {
 
     private static final Log log = LogFactory.getLog(WebEngine.class);
 
-    private static final ThreadLocal<WebContext> CTX = new ThreadLocal<WebContext>();
-
     static Map<Object, Object> loadMimeTypes() {
         Map<Object, Object> mimeTypes = new HashMap<Object, Object>();
         Properties p = new Properties();
@@ -93,12 +92,13 @@ public class WebEngine implements ResourceLocator {
     }
 
     public static WebContext getActiveContext() {
-        return CTX.get();
+        RequestContext ctx = RequestContext.getActiveContext();
+        if (ctx != null) {
+            return (WebContext)ctx.getRequest().getAttribute(WebContext.class.getName());
+        }
+        return null;
     }
 
-    public static void setActiveContext(WebContext ctx) {
-        CTX.set(ctx);
-    }
 
     protected final File root;
 

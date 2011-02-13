@@ -17,6 +17,8 @@
 package org.nuxeo.ecm.webengine.jaxrs.views;
 
 import java.io.File;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.URL;
 import java.util.HashMap;
@@ -51,6 +53,11 @@ public class TemplateView extends View {
         } finally {
             removeLocator(id);
         }
+    }
+
+    @Override
+    public void render(OutputStream out) throws Exception {
+        render(new OutputStreamWriter(out, "UTF-8"));
     }
 
     private static synchronized String addLocator(TemplateView view) {

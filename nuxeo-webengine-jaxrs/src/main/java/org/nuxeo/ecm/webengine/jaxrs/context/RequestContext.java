@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -40,6 +41,10 @@ public class RequestContext extends HashMap<String, Object> {
         return CTX.get();
     }
 
+    public static RequestContext getActiveContext(ServletRequest request) {
+        return (RequestContext)request.getAttribute(RequestContext.class.getName());
+    }
+
     protected HttpServletRequest request;
 
     protected HttpServletResponse response;
@@ -52,6 +57,7 @@ public class RequestContext extends HashMap<String, Object> {
         this.response = response;
         this.cleanupHandlers = new ArrayList<RequestCleanupHandler>();
         CTX.set(this);
+        request.setAttribute(RequestContext.class.getName(), this);
     }
 
     public HttpServletRequest getRequest() {
@@ -81,6 +87,7 @@ public class RequestContext extends HashMap<String, Object> {
     }
 
     public void dispose() {
+        request.removeAttribute(RequestContext.class.getName());
         CTX.remove();
         for (RequestCleanupHandler handler : cleanupHandlers) {
             try {

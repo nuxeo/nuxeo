@@ -29,12 +29,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.platform.web.common.requestcontroller.filter.NuxeoRequestControllerFilter;
 import org.nuxeo.ecm.webengine.PathDescriptor;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.impl.AbstractWebContext;
-import org.nuxeo.ecm.webengine.session.UserSession;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -171,18 +169,11 @@ public class WebEngineFilter implements Filter {
 
     public AbstractWebContext initRequest(Config config,
             HttpServletRequest request, HttpServletResponse response) {
-        if (!config.isStatic && config.stateful) {
-            // log.warn("try request lock for " + request.getPathInfo());
-            config.locked = NuxeoRequestControllerFilter.simpleSyncOnSession(request);
-            // log.warn("request locked for " + request.getPathInfo());
-        }
         initTx(config, request);
         // user session is registered even for static resources - because some
         // static resources are served by JAX-RS resources that needs a user
         // session
-        UserSession.register(request, config.stateful);
         DefaultContext ctx = new DefaultContext((HttpServletRequest) request);
-        WebEngine.setActiveContext(ctx);
         request.setAttribute(WebContext.class.getName(), ctx);
         return ctx;
     }
@@ -190,32 +181,9 @@ public class WebEngineFilter implements Filter {
     public void cleanup(Config config, AbstractWebContext ctx,
             HttpServletRequest request, HttpServletResponse response) {
         try {
-            try {
-                if (ctx != null) {
-                    UserSession us = UserSession.tryGetCurrentSession(request);
-                    if (us != null) {
-                        us.terminateRequest(request);
-                    }
-                }
-            } finally {
-                closeTx(config, request);
-            }
+            closeTx(config, request);
         } finally {
-            try {
-                if (config.locked) {
-                    boolean unlocked = NuxeoRequestControllerFilter.simpleReleaseSyncOnSession(request);
-                    if (!unlocked) {
-                        log.error("Error unlocking request for config : "
-                                + config.toString());
-                    }
-                    config.locked = false;
-                    // log.warn("request unlocked for " +
-                    // request.getPathInfo());
-                }
-            } finally {
-                WebEngine.setActiveContext(null);
-                request.removeAttribute(WebContext.class.getName());
-            }
+            request.removeAttribute(WebContext.class.getName());
         }
     }
 

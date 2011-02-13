@@ -55,8 +55,10 @@ public class PerRequestCoreProvider extends CoreSessionProvider<Ref> {
     @Override
     protected void onRequestDone(HttpServletRequest request) {
         // destroy all sessions created during this request
-        for (SessionRef ref : getSessions()) {
-            ref.destroy();
+        if (!sessions.isEmpty()) {
+            for (SessionRef ref : getSessions()) {
+                ref.destroy();
+            }
         }
         sessions = null;
     }

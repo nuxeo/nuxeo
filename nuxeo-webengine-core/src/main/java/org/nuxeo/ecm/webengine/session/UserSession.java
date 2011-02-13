@@ -20,129 +20,51 @@
 package org.nuxeo.ecm.webengine.session;
 
 import java.security.Principal;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-import javax.security.auth.Subject;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.repository.Repository;
-import org.nuxeo.ecm.core.api.repository.RepositoryManager;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.ecm.webengine.jaxrs.context.RequestCleanupHandler;
+import org.nuxeo.ecm.webengine.jaxrs.context.RequestContext;
+import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 
 /**
  * Used to store user session. This object is cached in a the HTTP session
  * Principal, subject and credentials are immutable per user session
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ *
  */
 // TODO: should be synchronized? concurrent access may happen for the same
 // session
-public abstract class UserSession extends HashMap<String, Object> {
-
-    public static final String CLEANUP_HANDLERS = "webengine.request.cleanup.handlers";
+public final class UserSession extends HashMap<String, Object> {
 
     private static final long serialVersionUID = 260562970988817064L;
-
-    protected static final String WE_SESSION_KEY = "nuxeo.webengine.user_session";
 
     protected static final Log log = LogFactory.getLog(UserSession.class);
 
     protected Map<Class<?>, ComponentMap<?>> comps = new HashMap<Class<?>, ComponentMap<?>>();
 
-    protected final Subject subject;
+    protected HttpServletRequest request;
 
-    protected final Principal principal;
-
-    @Deprecated
-    protected final Object credentials;
-
-    protected String defaultRepository;
-
-    protected SessionProvider sessionProvider = new SessionProvider();
-
-    public static UserSession tryGetCurrentSession(HttpServletRequest request) {
-        HttpSession session = request.getSession(false);
-        UserSession us = null;
-        us = (UserSession) request.getAttribute(WE_SESSION_KEY);
-        if (us == null && session != null) {
-            us = (UserSession) session.getAttribute(WE_SESSION_KEY);
-        }
-        return us;
+    protected UserSession(HttpServletRequest request) {
+        this.request = request;
     }
 
     public static UserSession getCurrentSession(HttpServletRequest request) {
-        UserSession us = tryGetCurrentSession(request);
+        String key = UserSession.class.getName();
+        UserSession us = (UserSession)request.getAttribute(key);
         if (us == null) {
-            log.warn("Unable to find UserSession");
+            us = new UserSession(request);
+            request.setAttribute(key, us);
         }
         return us;
     }
 
-    public static UserSession register(HttpServletRequest request,
-            boolean stateful) {
-        UserSession us;
-        if (stateful) {
-            log.debug("Creating Stateful UserSession");
-            HttpSession session = request.getSession(true);
-            us = (UserSession) session.getAttribute(WE_SESSION_KEY);
-            if (us == null) {
-                us = new StatefulUserSession(request.getUserPrincipal());
-                session.setAttribute(WE_SESSION_KEY, us);
-            }
-        } else {
-            log.debug("Creating Stateless UserSession");
-            us = new StatelessUserSession(request.getUserPrincipal());
-            request.setAttribute(WE_SESSION_KEY, us);
-        }
-        us.defaultRepository = request.getHeader("X-NXRepository");
-        if (us.defaultRepository == null) {
-            us.defaultRepository = request.getParameter("nxrepository");
-        }
-        // the default value of default repository name is null - this way the
-        // default regsitered repository will be used
-        return us;
-    }
-
-    protected UserSession(Principal principal) {
-        this(principal, null);
-    }
-
-    protected UserSession(Principal principal, String password) {
-        this(principal, password == null ? new char[0] : password.toCharArray());
-    }
-
-    protected UserSession(Principal principal, Object credentials) {
-        this.principal = principal;
-        this.credentials = credentials;
-        Set<Principal> principals = new HashSet<Principal>();
-        Set<Object> publicCredentials = new HashSet<Object>();
-        Set<Object> privateCredentials = new HashSet<Object>();
-        principals.add(principal);
-        publicCredentials.add(credentials);
-        subject = new Subject(true, principals, publicCredentials,
-                privateCredentials);
-    }
-
-    public abstract boolean isStateful();
-
-    /**
-     * Return the name of the default repository in the context of this request.
-     * Return null if the default registered repository should be used
-     *
-     * @return
-     */
-    public String getDefaultRepository() {
-        return defaultRepository;
-    }
 
     /**
      * Gets a core session.
@@ -152,10 +74,12 @@ public abstract class UserSession extends HashMap<String, Object> {
      *
      * @param repoName
      * @return the core session
+     *
+     * @deprecated use {@link SessionFactory#getSession(HttpServletRequest, String)}
      */
     public CoreSession getCoreSession(String repoName) {
         try {
-            return sessionProvider.getSession(repoName);
+            return SessionFactory.getSession(request, repoName);
         } catch (Exception e) {
             log.error(
                     "Failed to open core session for repository: " + repoName,
@@ -169,68 +93,34 @@ public abstract class UserSession extends HashMap<String, Object> {
      * <p>
      * If not already opened, opens a new core session against the default
      * repository.
+     *
+     * @deprecated use {@link SessionFactory#getSession(HttpServletRequest)}
      */
     public CoreSession getCoreSession() {
-        return getCoreSession(defaultRepository);
+        try {
+            return SessionFactory.getSession(request);
+        } catch (Exception e) {
+            log.error(
+                    "Failed to open core session for default repository",
+                    e);
+            return null;
+        }
     }
 
     public Principal getPrincipal() {
-        return principal;
+        return request.getUserPrincipal();
     }
 
-    public Object getCredentials() {
-        return credentials;
+
+    /**
+     * Register a cleanup handler that will be invoked when HTTP request
+     * terminate. This method is not thread safe.
+     */
+    public static void addRequestCleanupHandler(HttpServletRequest request,
+            RequestCleanupHandler handler) {
+        RequestContext.getActiveContext(request).addRequestCleanupHandler(handler);
     }
 
-    public Subject getSubject() {
-        return subject;
-    }
-
-    public static CoreSession openSession(String repoName) throws Exception {
-        RepositoryManager rm = Framework.getService(RepositoryManager.class);
-        Repository repo = null;
-        if (repoName == null) {
-            repo = rm.getDefaultRepository();
-        } else {
-            repo = rm.getRepository(repoName);
-        }
-        if (repo == null) {
-            throw new SessionException("Unable to get " + repoName
-                    + " repository");
-        }
-        return repo.open();
-    }
-
-    protected void install() {
-        if (log.isDebugEnabled()) {
-            log.debug("Installing user session");
-        }
-    }
-
-    protected synchronized void uninstall() {
-        if (log.isDebugEnabled()) {
-            log.debug("Uninstalling user session");
-        }
-        // destroy all components
-        for (Map.Entry<Class<?>, ComponentMap<?>> entry : comps.entrySet()) {
-            try {
-                entry.getValue().destroy(this);
-            } catch (SessionException e) {
-                log.error("Failed to destroy component: " + entry.getKey(), e);
-            }
-        }
-        comps = new HashMap<Class<?>, ComponentMap<?>>();
-        // destroy core session
-        SessionProvider oldSessionProvider = sessionProvider;
-        sessionProvider = null;
-        try {
-            oldSessionProvider.destroy(principal);
-        } catch (Throwable e) {
-            // log.error("Failed to destroy registered core sessions", e);
-            throw new RuntimeException(e);
-        }
-        oldSessionProvider = null;
-    }
 
     /**
      * Finds an existing component.
@@ -328,35 +218,6 @@ public abstract class UserSession extends HashMap<String, Object> {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    public void terminateRequest(HttpServletRequest request) {
-        try {
-            List<RequestCleanupHandler> handlers = (List<RequestCleanupHandler>) request.getAttribute(CLEANUP_HANDLERS);
-            if (handlers != null) {
-                for (RequestCleanupHandler handler : handlers) {
-                    handler.cleanup(request);
-                }
-                request.setAttribute(CLEANUP_HANDLERS, null);
-            }
-        } finally {
-            request.removeAttribute(WE_SESSION_KEY);
-            request.removeAttribute(CLEANUP_HANDLERS);
-        }
-    }
 
-    /**
-     * Register a cleanup handler that will be invoked when HTTP request
-     * terminate. This method is not thread safe.
-     */
-    @SuppressWarnings("unchecked")
-    public static void addRequestCleanupHandler(HttpServletRequest request,
-            RequestCleanupHandler handler) {
-        List<RequestCleanupHandler> handlers = (List<RequestCleanupHandler>) request.getAttribute(CLEANUP_HANDLERS);
-        if (handlers == null) {
-            handlers = new ArrayList<RequestCleanupHandler>();
-            request.setAttribute(CLEANUP_HANDLERS, handlers);
-        }
-        handlers.add(handler);
-    }
 
 }

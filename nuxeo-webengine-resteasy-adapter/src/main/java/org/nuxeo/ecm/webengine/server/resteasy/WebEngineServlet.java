@@ -187,7 +187,7 @@ public class WebEngineServlet extends HttpServlet {
 
             // bs: initialize webengine context
             ctx = new WebEngineContext(in, request);
-            WebEngine.setActiveContext(ctx);
+            request.setAttribute(WebContext.class.getName(), ctx);
 
             try {
                 ResteasyProviderFactory.pushContext(HttpServletRequest.class,
@@ -220,16 +220,7 @@ public class WebEngineServlet extends HttpServlet {
             if (defaultInstance instanceof ThreadLocalResteasyProviderFactory) {
                 ThreadLocalResteasyProviderFactory.pop();
             }
-            // bs: cleanup webengine
-            if (ctx != null) {
-                UserSession us = ctx.getUserSession();
-                if (us != null) {
-                    us.terminateRequest(request);
-                }
-            }
             ResteasyProviderFactory.clearContextData();
-            // bs: cleanup webengine context
-            WebEngine.setActiveContext(null);
         }
     }
 
