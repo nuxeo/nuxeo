@@ -1,4 +1,12 @@
-Export-Package: org.nuxeo.ecm.webengine.jaxrs
+Export-Package: org.nuxeo.ecm.webengine.jaxrs,
+ org.nuxeo.ecm.webengine.jaxrs.annotations,
+ org.nuxeo.ecm.webengine.jaxrs.context,
+ org.nuxeo.ecm.webengine.jaxrs.context.mapping,
+ org.nuxeo.ecm.webengine.jaxrs.login,
+ org.nuxeo.ecm.webengine.jaxrs.servlet,
+ org.nuxeo.ecm.webengine.jaxrs.session,
+ org.nuxeo.ecm.webengine.jaxrs.tx,
+ org.nuxeo.ecm.webengine.jaxrs.views
 Private-Package: .
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
@@ -9,16 +17,15 @@ Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Version: 5.4.1.qualifier
 Bundle-ManifestVersion: 2
-Require-Bundle: org.nuxeo.ecm.core
-Import-Package: com.sun.jersey.core.spi.component,
- com.sun.jersey.spi.container.servlet,
- com.sun.jersey.spi.inject,
- freemarker.core;resolution:=optional,
+Require-Bundle: org.nuxeo.ecm.core,
+ org.nuxeo.com.sun.jersey.core;bundle-version="1.1.5",
+ org.nuxeo.com.sun.jersey.server;bundle-version="1.1.5"
+Import-Package: freemarker.core;resolution:=optional,
  freemarker.template;resolution:=optional,
  javax.naming,
+ javax.security.auth.login,
  javax.servlet,
  javax.servlet.http,
- javax.security.auth.login,
  javax.ws.rs;version="1.1",
  javax.ws.rs.core;version="1.1",
  javax.ws.rs.ext;version="1.1",

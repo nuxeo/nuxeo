@@ -29,6 +29,7 @@ import org.nuxeo.ecm.webengine.jaxrs.Activator;
 
 import com.sun.jersey.spi.container.servlet.ServletContainer;
 
+
 /**
  * JAX-RS servlet based on jersey servlet to provide hot reloading.
  * <p>
@@ -45,7 +46,7 @@ public class JerseyServlet extends ServletContainer {
      * A list of initialized servlets to be able to set the
      * dirty flag on them when reload is requested by the user.
      */
-    protected static final Set<JerseyServlet> servlets = Collections.synchronizedSet(new HashSet<JerseyServlet>());
+    protected static Set<JerseyServlet> servlets = Collections.synchronizedSet(new HashSet<JerseyServlet>());
 
     /**
      * Should be called by the application to set the dirty flag on all loaded servlets.
@@ -73,22 +74,19 @@ public class JerseyServlet extends ServletContainer {
 
     @Override
     public void init() throws ServletException {
-        super.init();
+        superInit();
         servlets.add(this);
     }
 
     @Override
     public void destroy() {
         servlets.remove(this);
-        super.destroy();
+        superDestroy();
     }
 
     @Override
     public void service(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        if (isDirty) {
-            reload();
-        }
         String method = request.getMethod().toUpperCase();
         if (!"GET".equals(method)) {
             // force reading properties because jersey is consuming one
@@ -96,7 +94,44 @@ public class JerseyServlet extends ServletContainer {
             // from the input stream - see WebComponent.isEntityPresent.
             request.getParameterMap();
         }
-        super.service(request, response);
+        superService(request, response);
+    }
+
+
+    protected void superInit() throws ServletException {
+        Thread thread = Thread.currentThread();
+        ClassLoader cl = thread.getContextClassLoader();
+        thread.setContextClassLoader(JerseyServlet.class.getClassLoader());
+        try {
+            super.init();
+        } finally {
+            thread.setContextClassLoader(cl);
+        }
+    }
+
+    protected void superDestroy() {
+        Thread thread = Thread.currentThread();
+        ClassLoader cl = thread.getContextClassLoader();
+        thread.setContextClassLoader(JerseyServlet.class.getClassLoader());
+        try {
+            super.destroy();
+        } finally {
+            thread.setContextClassLoader(cl);
+        }
+    }
+
+    protected void superService(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        Thread thread = Thread.currentThread();
+        ClassLoader cl = thread.getContextClassLoader();
+        thread.setContextClassLoader(JerseyServlet.class.getClassLoader());
+        try {
+            if (isDirty) {
+                reload();
+            }
+            super.service(request, response);
+        } finally {
+            thread.setContextClassLoader(cl);
+        }
     }
 
 }

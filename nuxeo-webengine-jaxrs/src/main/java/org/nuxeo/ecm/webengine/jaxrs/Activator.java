@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import javax.ws.rs.ext.RuntimeDelegate;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.StringUtils;
@@ -32,6 +34,8 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
 import org.osgi.util.tracker.BundleTracker;
 import org.osgi.util.tracker.BundleTrackerCustomizer;
+
+import com.sun.jersey.server.impl.provider.RuntimeDelegateImpl;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -56,6 +60,10 @@ public class Activator implements BundleActivator, BundleTrackerCustomizer {
 
     @Override
     public void start(BundleContext context) throws Exception {
+        // we need to set by hand the runtime delegate to avoid letting ServiceFinder discover the implementation
+        // which is not working in an OSGi environment
+        RuntimeDelegate.setInstance(new RuntimeDelegateImpl());
+
         instance = this;
         this.context = context;
         toReload = new Vector<Reloadable>();

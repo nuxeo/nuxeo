@@ -17,6 +17,8 @@
 package org.nuxeo.ecm.webengine.jaxrs.login;
 
 import java.io.IOException;
+import java.security.Principal;
+import java.util.Set;
 
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
@@ -24,6 +26,7 @@ import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
 import org.nuxeo.common.utils.Base64;
@@ -68,6 +71,7 @@ public class AuthenticationFilter extends AbstractFilter {
         if (request.getUserPrincipal() == null) {
             try {
                 lc = doLogin(request, response);
+                request = wrapRequest(request, lc);
             } catch (LoginException e) {
                 // login failed
                 handleLoginFailure(request, response, e);
@@ -123,4 +127,17 @@ public class AuthenticationFilter extends AbstractFilter {
         response.setStatus(401);
     }
 
+    protected HttpServletRequest wrapRequest(HttpServletRequest request, LoginContext lc) {
+        Set<Principal> set = lc.getSubject().getPrincipals();
+        if (!set.isEmpty()) {
+            final Principal principal = set.iterator().next();
+        return new HttpServletRequestWrapper(request) {
+            @Override
+            public Principal getUserPrincipal() {
+                return principal;
+            }
+        };
+        }
+        return request;
+    }
 }
