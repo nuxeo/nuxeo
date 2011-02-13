@@ -508,6 +508,10 @@
       <artifactId>nuxeo-webengine-core</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.nuxeo.ecm.webengine</groupId>
+      <artifactId>nuxeo-webengine-jaxrs</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-rendering</artifactId>
     </dependency>
