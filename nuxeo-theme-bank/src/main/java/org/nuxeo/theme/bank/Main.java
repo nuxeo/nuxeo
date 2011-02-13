@@ -49,6 +49,7 @@ import org.nuxeo.theme.resources.BankUtils;
 
 import com.sun.jersey.api.NotFoundException;
 
+@Path("/theme-banks")
 @WebObject(type = "theme-banks")
 @Produces(MediaType.TEXT_HTML)
 public class Main extends ModuleRoot {

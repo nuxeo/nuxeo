@@ -16,27 +16,12 @@
  */
 package org.nuxeo.ecm.webengine.admin;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import org.nuxeo.ecm.webengine.app.WebApplication;
+import org.nuxeo.ecm.webengine.app.WebEngineModule;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class AdminApp extends WebApplication {
-
-    public AdminApp() {
-        super("Admin", "base");
-    }
-
-    @Override
-    public Set<Class<?>> getClasses() {
-        Set<Class<?>> classes = new HashSet<Class<?>>();
-        classes.add(Main.class);
-        classes.add(Shell.class);
-        return classes;
-    }
+public class AdminApp extends WebEngineModule {
 
     @Override
     public Class<?>[] getWebTypes() {

@@ -47,6 +47,7 @@ import org.nuxeo.runtime.api.Framework;
  * @author 10044893.
  *
  */
+@Path("/spaces")
 @WebObject(type = "spaces", facets = "Folderish")
 @Produces("text/html; charset=UTF-8")
 public class SpacesModuleRoot extends ModuleRoot {

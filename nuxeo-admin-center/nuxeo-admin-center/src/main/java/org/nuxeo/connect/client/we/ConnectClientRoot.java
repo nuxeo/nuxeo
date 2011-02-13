@@ -30,6 +30,7 @@ import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
  *
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
  */
+@Path("/connectClient")
 @WebObject(type = "connectClientRoot")
 public class ConnectClientRoot extends ModuleRoot {
 

@@ -13,3 +13,4 @@ Nuxeo-Component: OSGI-INF/core-types-contrib.xml,
  OSGI-INF/listener-contrib.xml,
  OSGI-INF/relation-contrib.xml,
  OSGI-INF/wiki-transformer-contrib.xml
+Nuxeo-WebModule: org.nuxeo.ecm.webengine.app.WebEngineModule

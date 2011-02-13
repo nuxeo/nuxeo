@@ -8,3 +8,4 @@ Require-Bundle: org.nuxeo.opensocial.gadgets.core,
   org.nuxeo.ecm.platform.picture.api
 Nuxeo-Component: OSGI-INF/gadget-contrib.xml
 Bundle-Category: stateless
+Nuxeo-WebModule: org.nuxeo.ecm.webengine.app.WebEngineModule

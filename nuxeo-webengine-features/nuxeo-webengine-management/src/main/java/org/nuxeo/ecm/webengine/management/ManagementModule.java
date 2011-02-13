@@ -35,6 +35,7 @@ import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
  *
  * @author mcedica
  */
+@Path("/mgmt")
 @WebObject(type = "Management")
 @Produces("text/html; charset=UTF-8")
 public class ManagementModule extends ModuleRoot {

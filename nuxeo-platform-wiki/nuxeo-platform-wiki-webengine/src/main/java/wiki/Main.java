@@ -37,6 +37,7 @@ import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.model.exceptions.WebSecurityException;
 import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
 
+@Path("/wikis")
 @WebObject(type = "wikis", facets = { "mainWiki" })
 @Produces("text/html; charset=UTF-8")
 public class Main extends ModuleRoot {

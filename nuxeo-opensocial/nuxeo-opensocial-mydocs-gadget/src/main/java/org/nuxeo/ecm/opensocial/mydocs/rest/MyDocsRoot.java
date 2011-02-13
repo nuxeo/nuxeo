@@ -16,6 +16,7 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
 
+@Path("/myDocsRestAPI")
 @WebObject(type = "MyDocsRoot")
 @Produces( { "text/html; charset=UTF-8" })
 public class MyDocsRoot extends ModuleRoot {

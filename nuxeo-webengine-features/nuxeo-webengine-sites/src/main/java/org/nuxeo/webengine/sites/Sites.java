@@ -45,16 +45,17 @@ import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.WebObject;
-import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
+import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
 import org.nuxeo.webengine.sites.utils.SiteQueriesCollection;
 import org.nuxeo.webengine.sites.utils.SiteUtils;
 
 /**
  * Web object implementation corresponding to module root.
  */
+@Path("/sites")
 @WebObject(type = "sites", facets = { "Sites" })
 @Produces("text/html;charset=UTF-8")
-public class Sites extends DefaultObject {
+public class Sites extends ModuleRoot {
 
     private static final Log log = LogFactory.getLog(Sites.class);
 

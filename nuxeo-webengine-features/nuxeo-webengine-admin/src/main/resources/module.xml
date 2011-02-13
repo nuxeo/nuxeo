@@ -4,6 +4,9 @@
     <shortcut href="/admin">
       <title>Administration</title>
     </shortcut>
+    <shortcut href="/shell">
+      <title>Shell</title>
+    </shortcut>    
   </shortcuts>
   
   <links>

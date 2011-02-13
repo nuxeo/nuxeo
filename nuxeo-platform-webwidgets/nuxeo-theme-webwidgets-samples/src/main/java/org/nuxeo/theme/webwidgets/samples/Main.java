@@ -19,14 +19,13 @@
 
 package org.nuxeo.theme.webwidgets.samples;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
 
+@Path("/nxthemes-webwidgets-samples")
 @WebObject(type = "nxthemes-webwidgets-samples")
 @Produces("text/html")
 public class Main extends ModuleRoot {

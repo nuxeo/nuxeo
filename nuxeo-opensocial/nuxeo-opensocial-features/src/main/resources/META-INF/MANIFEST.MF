@@ -5,3 +5,4 @@ Bundle-SymbolicName: org.nuxeo.opensocial.features
 Bundle-Version: 1.0.0
 Bundle-Vendor: Leroy Merlin
 Bundle-Category: stateless
+Nuxeo-WebModule: org.nuxeo.ecm.webengine.app.WebEngineModule

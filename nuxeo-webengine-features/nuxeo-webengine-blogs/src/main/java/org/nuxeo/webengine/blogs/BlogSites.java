@@ -19,6 +19,7 @@ import static org.nuxeo.webengine.blogs.utils.BlogConstants.BLOGS_THEME_PAGE;
 import static org.nuxeo.webengine.blogs.utils.BlogConstants.BLOG_DOC_TYPE;
 import static org.nuxeo.webengine.blogs.utils.BlogConstants.BLOG_POST_DOC_TYPE;
 
+import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
 import org.nuxeo.ecm.webengine.model.WebObject;
@@ -29,6 +30,7 @@ import org.nuxeo.webengine.sites.Sites;
  *
  * @author rux
  */
+@Path("/blogs")
 @WebObject(type = "blogs", facets = { "Blogs" })
 @Produces("text/html;charset=UTF-8")
 public class BlogSites extends Sites {
