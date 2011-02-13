@@ -70,6 +70,11 @@ public class ModuleConfiguration implements Cloneable {
     @XNode("@root-type")
     public String rootType;
 
+    /**
+     * Paths of root resources in the module. This is replacing the deprecated root-type.
+     */
+    public Class<?>[] roots;
+
     @XNode("@extends")
     public String base;
 

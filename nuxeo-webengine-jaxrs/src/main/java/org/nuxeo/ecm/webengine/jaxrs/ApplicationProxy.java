@@ -71,10 +71,8 @@ public class ApplicationProxy extends Application {
                 } else {
                     throw new IllegalArgumentException("Expecting an Application or ApplicationFactory class: "+className);
                 }
-            } catch (ClassCastException e) {
-                throw new RuntimeException("JAX-RS application classes must extends "+Application.class.getName()+". Faulty class: "+className+" in bundle "+bundle.getSymbolicName());
             } catch (Exception e) {
-                throw new RuntimeException("Cannot instantiate JAX-RS application "+className+" from bundle "+bundle.getSymbolicName());
+                throw new RuntimeException("Cannot instantiate JAX-RS application "+className+" from bundle "+bundle.getSymbolicName(), e);
             }
         }
         return delegate;

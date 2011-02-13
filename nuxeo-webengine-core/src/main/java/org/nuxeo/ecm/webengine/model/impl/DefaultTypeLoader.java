@@ -16,7 +16,13 @@
  */
 package org.nuxeo.ecm.webengine.model.impl;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -117,7 +123,7 @@ public class DefaultTypeLoader {
         for (String line : lines) {
             line = line.trim();
             if (line.length() == 0 || line.startsWith("#")) {
-                return;
+                continue;
             }
             int p = line.indexOf('|');
             if (p > -1) {

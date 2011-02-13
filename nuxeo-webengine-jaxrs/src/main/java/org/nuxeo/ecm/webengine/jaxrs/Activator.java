@@ -95,10 +95,10 @@ public class Activator implements BundleActivator, BundleTrackerCustomizer {
      * {@link #addReloadListener(Reloadable)}
      */
     public void reload() {
-        app.reload();
         for (Reloadable reloadable : toReload.toArray(new Reloadable[toReload.size()])) {
             reloadable.reload();
         }
+        app.reload();
         JerseyServlet.invalidate();
     }
 

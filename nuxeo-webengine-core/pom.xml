@@ -38,8 +38,8 @@
     <dependency>
       <groupId>javax.ws.rs</groupId>
       <artifactId>jsr311-api</artifactId>
-    </dependency>    
-  
+    </dependency>
+
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>servlet-api</artifactId>
@@ -61,6 +61,11 @@
     <dependency>
       <groupId>org.osgi</groupId>
       <artifactId>osgi-core</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.nuxeo.ecm.webengine</groupId>
+      <artifactId>nuxeo-webengine-jaxrs</artifactId>
     </dependency>
 
     <!-- this dependency is needed to integrate with nuxeo webapp: UserIdentificationInfo -->

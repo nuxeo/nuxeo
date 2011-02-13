@@ -23,9 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -39,9 +37,7 @@ import org.nuxeo.ecm.core.url.URLFactory;
 import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
 import org.nuxeo.ecm.platform.rendering.api.ResourceLocator;
 import org.nuxeo.ecm.platform.rendering.fm.FreemarkerEngine;
-import org.nuxeo.ecm.webengine.app.BundledApplication;
-import org.nuxeo.ecm.webengine.app.WebApplication;
-import org.nuxeo.ecm.webengine.app.impl.DefaultApplicationManager;
+import org.nuxeo.ecm.webengine.app.WebEngineModule;
 import org.nuxeo.ecm.webengine.debug.ReloadManager;
 import org.nuxeo.ecm.webengine.loader.WebLoader;
 import org.nuxeo.ecm.webengine.model.Module;
@@ -106,7 +102,7 @@ public class WebEngine implements ResourceLocator {
 
     protected final File root;
 
-    protected ApplicationManager apps;
+    protected HashMap<String, WebEngineModule> apps;
 
     /**
      * moduleMgr use double-check idiom and needs to be volatile. See
@@ -130,8 +126,6 @@ public class WebEngine implements ResourceLocator {
 
     protected String skinPathPrefix;
 
-    protected final List<File> registeredModules = new ArrayList<File>();
-
     protected final WebLoader webLoader;
 
     protected ReloadManager reloadMgr;
@@ -147,12 +141,12 @@ public class WebEngine implements ResourceLocator {
     public WebEngine(ResourceRegistry registry, File root) {
         this.registry = registry;
         this.root = root;
-        devMode = Framework.getProperty("org.nuxeo.dev");
+        devMode = Framework.getProperty("org.nuxeo.dev", System.getProperty("org.nuxeo.dev"));
         if (devMode != null) {
             reloadMgr = new ReloadManager(this);
         }
         webLoader = new WebLoader(this);
-        apps = new DefaultApplicationManager(this);
+        apps = new HashMap<String, WebEngineModule>();
         scripting = new Scripting(webLoader);
         annoMgr = new AnnotationManager();
 
@@ -184,12 +178,6 @@ public class WebEngine implements ResourceLocator {
         return requestConfig;
     }
 
-    /**
-     * TODO: This is deprecating ModuleManager
-     */
-    public ApplicationManager getApplicationManager() {
-        return apps;
-    }
 
     /**
      * JSP taglib support
@@ -305,34 +293,13 @@ public class WebEngine implements ResourceLocator {
         return scripting;
     }
 
-    /**
-     * Registers a module reference given its configuration file. The module
-     * configuration is not yet loaded. It will be loaded the first time an HTTP
-     * request will be made.
-     */
-    public void registerModule(File config) {
-        registerModule(config, true);
+    public synchronized WebEngineModule[] getApplications() {
+        return apps.values().toArray(new WebEngineModule[apps.size()]);
     }
 
-    public void registerModule(File config, boolean addToClassPath) {
-        if (addToClassPath) {
-            getWebLoader().addClassPathElement(config.getParentFile());
-        }
-        registeredModules.add(config);
-        if (moduleMgr != null) { // avoid synchronizing if not needed
-            synchronized (this) {
-                if (moduleMgr != null) {
-                    moduleMgr.loadModule(config);
-                }
-            }
-        }
-    }
-
-    /**
-     * Makes a copy to avoid concurrent modification exceptions.
-     */
-    public File[] getRegisteredModules() {
-        return registeredModules.toArray(new File[registeredModules.size()]);
+    public synchronized void addApplication(WebEngineModule app) {
+        flushCache();
+        apps.put(app.getId(), app);
     }
 
     public ModuleManager getModuleManager() {
@@ -358,20 +325,13 @@ public class WebEngine implements ResourceLocator {
                             }
                         }
                     }
-                    // make a copy to avoid concurrent modifications with
-                    // registerModule
-                    for (File mod : registeredModules.toArray(new File[registeredModules.size()])) {
-                        moduleMgr.loadModule(mod);
-                    }
-                    for (BundledApplication app : apps.getApplications()) {
-                        if (app.getApplication() instanceof WebApplication) {
-                            try {
-                                ModuleConfiguration mc = ((WebApplication) (app.getApplication())).resolve();
-                                moduleMgr.loadModule(mc);
-                            } catch (Exception e) {
-                                log.error("Failed to load WebEngine module: "
-                                        + app.getId(), e);
-                            }
+                    for (WebEngineModule app : getApplications()) {
+                        try {
+                            ModuleConfiguration mc = app.getConfiguration();
+                            moduleMgr.loadModule(mc);
+                        } catch (Exception e) {
+                            log.error("Failed to load WebEngine module: "
+                                    + app.getId(), e);
                         }
                     }
                     // set member at the end to be sure moduleMgr is completely
@@ -462,6 +422,14 @@ public class WebEngine implements ResourceLocator {
         return isDirty;
     }
 
+    public synchronized void flushCache() {
+        isDirty = false;
+        if (moduleMgr != null) {
+            webLoader.flushCache();
+            moduleMgr = null;
+        }
+    }
+
     /**
      * Reloads configuration.
      */
@@ -469,7 +437,7 @@ public class WebEngine implements ResourceLocator {
         log.info("Reloading WebEngine");
         isDirty = false;
         webLoader.flushCache();
-        apps.reload();
+        apps = new HashMap<String, WebEngineModule>();
         if (moduleMgr != null) { // avoid synchronizing if not needed
             for (ModuleConfiguration mc : moduleMgr.getModules()) {
                 if (mc.isLoaded()) {

@@ -24,16 +24,25 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Date;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
+import javax.ws.rs.core.UriInfo;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.webengine.app.DefaultContext;
+import org.nuxeo.ecm.webengine.model.Module;
 import org.nuxeo.ecm.webengine.model.ModuleResource;
+import org.nuxeo.ecm.webengine.model.ResourceType;
+import org.nuxeo.ecm.webengine.model.WebContext;
+import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 
 /**
@@ -41,6 +50,59 @@ import org.nuxeo.ecm.webengine.scripting.ScriptFile;
  *
  */
 public class ModuleRoot extends DefaultObject implements ModuleResource {
+
+    protected HttpServletRequest request;
+    protected UriInfo uriInfo;
+    protected HttpHeaders httpHeaders;
+
+    @Context public void setUriInfo(UriInfo info) {
+        this.uriInfo = info;
+        if (request != null && httpHeaders != null) {
+            init();
+        }
+    }
+
+    @Context public void setHttpHeaders(HttpHeaders headers) {
+        this.httpHeaders = headers;
+        if (request != null && uriInfo != null) {
+            init();
+        }
+    }
+
+    @Context public void setHttpRequest(HttpServletRequest request) {
+        this.request = request;
+        if (uriInfo != null && httpHeaders != null) {
+            init();
+        }
+    }
+
+    private void init() {
+        DefaultContext ctx = (DefaultContext)request.getAttribute(WebContext.class.getName());
+        if (ctx == null) {
+            throw new java.lang.IllegalStateException("No WebContext found in http request! You should install the WebEngineFilter");
+        }
+        ctx.setHttpHeaders(httpHeaders);
+        ctx.setUriInfo(uriInfo);
+        Module module = findModule(ctx);
+        ResourceType type = module.getType(getClass().getAnnotation(WebObject.class).type());
+        ctx.setModule(module);
+        initialize(ctx, type);
+        setRoot(true);
+        ctx.push(this);
+    }
+
+    private Module findModule(DefaultContext ctx) {
+        Path path = getClass().getAnnotation(Path.class);
+        if (path == null) {
+            throw new java.lang.IllegalStateException("ModuleRoot not annotated with @Path: "+getClass());
+        }
+         ModuleConfiguration mc = ctx.getEngine().getModuleManager().getModuleByRootClass(getClass());
+         if (mc == null) {
+             throw new java.lang.IllegalStateException("No module found for root resource: "+getClass());
+         }
+         return mc.get();
+    }
+
 
     @GET
     @Path("skin/{path:.*}")

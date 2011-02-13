@@ -18,6 +18,7 @@
   </description>
 
   <modules>
+    <module>nuxeo-webengine-jaxrs</module>
     <module>nuxeo-webengine-core</module>
     <module>nuxeo-webengine-ui</module>
     <!-- NXP-5660 - temporary rollback because of Hudson issue -->
@@ -67,11 +68,11 @@
         <artifactId>nuxeo-webengine-core</artifactId>
         <version>${nuxeo.webengine.version}</version>
       </dependency>
-      <!--dependency>
+      <dependency>
         <groupId>org.nuxeo.ecm.webengine</groupId>
         <artifactId>nuxeo-webengine-jaxrs</artifactId>
         <version>${nuxeo.webengine.version}</version>
-      </dependency-->
+      </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.webengine</groupId>
         <artifactId>nuxeo-webengine-ui</artifactId>

@@ -34,12 +34,12 @@
 
   <servlet>
     <servlet-name>Nuxeo WebEngine Servlet</servlet-name>
-    <!--servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class-->
-	<servlet-class>org.nuxeo.ecm.webengine.app.jersey.ReloadingJerseyServlet</servlet-class>
+    <servlet-class>org.nuxeo.ecm.webengine.jaxrs.servlet.JerseyServlet</servlet-class>    
+	<!-- servlet-class>org.nuxeo.ecm.webengine.app.jersey.ReloadingJerseyServlet</servlet-class>
     <init-param>
       <param-name>javax.ws.rs.Application</param-name>
       <param-value>org.nuxeo.ecm.webengine.app.WebEngineApplication</param-value>
-    </init-param>
+    </init-param-->
   </servlet>
   <servlet-mapping>
     <servlet-name>Nuxeo WebEngine Servlet</servlet-name>

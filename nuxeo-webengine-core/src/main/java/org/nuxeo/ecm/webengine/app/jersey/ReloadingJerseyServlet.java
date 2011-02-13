@@ -23,7 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.nuxeo.ecm.webengine.WebEngine;
-import org.nuxeo.ecm.webengine.app.Reloadable;
+import org.nuxeo.ecm.webengine.jaxrs.Reloadable;
 import org.nuxeo.runtime.api.Framework;
 
 import com.sun.jersey.spi.container.servlet.ServletContainer;

@@ -14,7 +14,7 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.webengine.jaxrs.context;
+package org.nuxeo.ecm.webengine.jaxrs.servlet;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -27,6 +27,7 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 
 import org.nuxeo.ecm.webengine.jaxrs.Activator;
@@ -85,6 +86,10 @@ public class CompositeFilter implements Filter {
         return filters.toArray(new Filter[filters.size()]);
     }
 
+    public Filter[] getFilters() {
+        return filters;
+    }
+
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
         String v = (String)filterConfig.getInitParameter("filters");
@@ -113,7 +118,7 @@ public class CompositeFilter implements Filter {
         configureRequest(req);
 
         if (filters.length > 0) {
-            SubFilterChain subChain = new SubFilterChain(chain, this);
+            SubFilterChain subChain = new SubFilterChain(chain, filters);
             subChain.doFilter(request, response);
         } else {
             chain.doFilter(request, response);
@@ -148,20 +153,17 @@ public class CompositeFilter implements Filter {
 
 
 
-    static class SubFilterChain implements FilterChain {
+    public static class SubFilterChain implements FilterChain {
 
         protected FilterChain chain;
-
-        protected CompositeFilter parent;
 
         protected Filter[] filters;
 
         protected int filterIndex;
 
-        public SubFilterChain(FilterChain chain, CompositeFilter parent) {
+        public SubFilterChain(FilterChain chain, Filter[] filters) {
             this.chain = chain;
-            this.parent = parent;
-            this.filters = parent.filters;
+            this.filters = filters;
             filterIndex = 0;
         }
 
@@ -177,4 +179,32 @@ public class CompositeFilter implements Filter {
             }
         }
     }
+
+    public static class ServletFilterChain implements FilterChain {
+
+        protected HttpServlet servlet;
+
+        protected Filter[] filters;
+
+        protected int filterIndex;
+
+        public ServletFilterChain(HttpServlet servlet, Filter[] filters) {
+            this.servlet = servlet;
+            this.filters = filters;
+            filterIndex = 0;
+
+        }
+        @Override
+        public void doFilter(ServletRequest request, ServletResponse response)
+                throws IOException, ServletException {
+            if (filterIndex < filters.length) {
+                Filter filter = filters[filterIndex];
+                filter.doFilter(request, response, this);
+                filterIndex++;
+            } else {
+                servlet.service(request, response);
+            }
+        }
+    }
+
 }

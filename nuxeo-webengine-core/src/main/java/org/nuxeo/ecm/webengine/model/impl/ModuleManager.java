@@ -45,12 +45,15 @@ public class ModuleManager {
 
     protected final Map<String, ModuleConfiguration> paths;
 
+    protected final Map<Class<?>, ModuleConfiguration> roots;
+
     protected WebEngine engine;
 
     public ModuleManager(WebEngine engine) {
         this.engine = engine;
         modules = new ConcurrentHashMap<String, ModuleConfiguration>();
         paths = new ConcurrentHashMap<String, ModuleConfiguration>();
+        roots = new ConcurrentHashMap<Class<?>, ModuleConfiguration>();
     }
 
     /**
@@ -92,12 +95,18 @@ public class ModuleManager {
         modules.put(descriptor.name, descriptor);
         String path = descriptor.path;
         if (path != null) {
+            //TODO remove this
             // compat. method now modules should be declared through
             // WebApplication class
             if (!path.startsWith("/")) {
                 path = "/" + path;
             }
             paths.put(path, descriptor);
+        }
+        if (descriptor.roots != null) {
+            for (Class<?> cl : descriptor.roots) {
+                roots.put(cl, descriptor);
+            }
         }
     }
 
@@ -114,7 +123,16 @@ public class ModuleManager {
                 it.remove();
             }
         }
+        if (md.roots != null) {
+            for (Class<?> cl : md.roots) {
+                roots.remove(cl);
+            }
+        }
         return md.file;
+    }
+
+    public ModuleConfiguration getModuleByRootClass(Class<?> clazz) {
+        return roots.get(clazz);
     }
 
     public synchronized void bind(String name, String path) {
