@@ -45,7 +45,7 @@ public class JerseyServlet extends ServletContainer {
      * A list of initialized servlets to be able to set the
      * dirty flag on them when reload is requested by the user.
      */
-    protected static Set<JerseyServlet> servlets = Collections.synchronizedSet(new HashSet<JerseyServlet>());
+    protected static final Set<JerseyServlet> servlets = Collections.synchronizedSet(new HashSet<JerseyServlet>());
 
     /**
      * Should be called by the application to set the dirty flag on all loaded servlets.
@@ -70,7 +70,6 @@ public class JerseyServlet extends ServletContainer {
     public void setDirty(boolean isDirty) {
         this.isDirty = isDirty;
     }
-
 
     @Override
     public void init() throws ServletException {
@@ -98,7 +97,6 @@ public class JerseyServlet extends ServletContainer {
             request.getParameterMap();
         }
         super.service(request, response);
-
     }
 
 }

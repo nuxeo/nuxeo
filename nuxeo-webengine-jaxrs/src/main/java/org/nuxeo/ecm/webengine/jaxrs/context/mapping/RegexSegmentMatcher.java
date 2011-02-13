@@ -24,7 +24,7 @@ import java.util.regex.Pattern;
  */
 public class RegexSegmentMatcher extends SegmentMatcher {
 
-    protected Pattern pattern;
+    protected final Pattern pattern;
 
     public RegexSegmentMatcher(String regex) {
         this (Pattern.compile(regex));

@@ -25,13 +25,13 @@ import java.util.Arrays;
  */
 public final class Path {
 
-    public final static int HAS_LEADING_SLASH = 1;
-    public final static int HAS_TRAILING_SLASH = 2;
+    public static final int HAS_LEADING_SLASH = 1;
+    public static final int HAS_TRAILING_SLASH = 2;
 
-    public final static String[] EMPTY_SEGMENTS = new String[0];
+    public static final String[] EMPTY_SEGMENTS = new String[0];
 
-    public final static Path ROOT = new Path(EMPTY_SEGMENTS, HAS_LEADING_SLASH|HAS_TRAILING_SLASH);
-    public final static Path EMPTY = new Path(EMPTY_SEGMENTS);
+    public static final Path ROOT = new Path(EMPTY_SEGMENTS, HAS_LEADING_SLASH|HAS_TRAILING_SLASH);
+    public static final Path EMPTY = new Path(EMPTY_SEGMENTS);
 
 
     public static Path parse(String path) {
@@ -41,7 +41,7 @@ public final class Path {
 
     protected int bits;
 
-    protected String[] segments;
+    protected final String[] segments;
 
 
     public Path(String[] segments) {

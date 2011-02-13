@@ -33,11 +33,11 @@ import org.osgi.framework.Bundle;
  */
 public class ApplicationProxy extends Application {
 
-    protected Bundle bundle;
+    protected final Bundle bundle;
 
-    protected String className;
+    protected final String className;
 
-    protected Map<String,String> attrs;
+    protected final Map<String,String> attrs;
 
     protected volatile Application delegate;
 

@@ -27,20 +27,18 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Simple abstract filter that provides filter activation logic
+ * Simple abstract filter that provides filter activation logic.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 public abstract class AbstractFilter implements Filter {
 
-    protected String disabledKey;
-
+    protected final String disabledKey;
 
     public AbstractFilter() {
-        disabledKey = getClass().getName().concat(".disabled");
+        disabledKey = getClass().getName() + ".disabled";
     }
-
 
     public static final boolean getBoolean(ServletRequest request, String key) {
         return Boolean.parseBoolean((String)request.getAttribute(key));
@@ -53,13 +51,12 @@ public abstract class AbstractFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response,
             FilterChain chain) throws IOException, ServletException {
-        if (!isEnabled(request) || request instanceof HttpServletRequest == false) {
+        if (!isEnabled(request) || !(request instanceof HttpServletRequest)) {
             chain.doFilter(request, response);
             return;
         }
         run((HttpServletRequest)request, (HttpServletResponse)response, chain);
     }
-
 
     public abstract void run(HttpServletRequest request, HttpServletResponse response,
             FilterChain chain) throws IOException, ServletException;

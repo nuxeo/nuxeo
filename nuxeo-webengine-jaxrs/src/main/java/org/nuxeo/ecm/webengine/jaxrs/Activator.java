@@ -39,7 +39,7 @@ import org.osgi.util.tracker.BundleTrackerCustomizer;
  */
 public class Activator implements BundleActivator, BundleTrackerCustomizer {
 
-    private Log log = LogFactory.getLog(Activator.class);
+    private static final Log log = LogFactory.getLog(Activator.class);
 
     private static Activator instance;
 
@@ -145,7 +145,7 @@ public class Activator implements BundleActivator, BundleTrackerCustomizer {
     }
 
     protected Map<String,String> parseAttrs(String expr) {
-        HashMap<String, String> map = new HashMap<String, String>();
+        Map<String, String> map = new HashMap<String, String>();
         String[] ar = StringUtils.split(expr, ';', true);
         for (String a : ar) {
             int i = a.indexOf('=');
@@ -162,4 +162,5 @@ public class Activator implements BundleActivator, BundleTrackerCustomizer {
         }
         return map;
     }
+
 }

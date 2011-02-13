@@ -50,26 +50,25 @@ public abstract class View {
 
     protected Object owner;
 
-    protected URL url;
+    protected final URL url;
 
-    protected Map<String, Object> vars;
-
+    protected final Map<String, Object> vars;
 
 
     protected View(Object owner, String name) {
-        this (owner, resolveResource(owner, name));
+        this(owner, resolveResource(owner, name));
     }
 
     protected View(File file) {
-        this (null, file);
+        this(null, file);
     }
 
     protected View(Object owner, File file) {
-        this (owner, resolveFile(file));
+        this(owner, resolveFile(file));
     }
 
     protected View(URL url) {
-        this (null, url);
+        this(null, url);
     }
 
     protected View(Object owner, URL url) {

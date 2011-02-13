@@ -25,7 +25,7 @@ import java.util.List;
  */
 public class PathMatcher {
 
-    protected SegmentMatcher[] matchers;
+    protected final SegmentMatcher[] matchers;
 
     public PathMatcher(SegmentMatcher... matchers) {
         this.matchers = matchers;
@@ -45,13 +45,6 @@ public class PathMatcher {
         return matches(path.segments, 0, 0);
     }
 
-    /**
-     * @param segments
-     * @param soff
-     * @param matchers
-     * @param moff
-     * @return
-     */
     public boolean matches(String[] segments, int soff, int moff) {
         if (soff == segments.length) {
             // segments consumed

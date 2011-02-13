@@ -23,7 +23,7 @@ package org.nuxeo.ecm.webengine.jaxrs.context.mapping;
  */
 public class WildcardSegmentMatcher extends SegmentMatcher {
 
-    protected char[] pattern;
+    protected final char[] pattern;
 
 
     public WildcardSegmentMatcher(String pattern) {

@@ -35,7 +35,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public abstract class CoreSessionProvider<REF extends SessionRef> {
 
-    private static Log log = LogFactory.getLog(CoreSessionProvider.class);
+    private static final Log log = LogFactory.getLog(CoreSessionProvider.class);
 
     protected Map<String, REF> sessions;
 
@@ -46,7 +46,6 @@ public abstract class CoreSessionProvider<REF extends SessionRef> {
 
     /**
      * The HTTP request was consumed. Do any request level cleanup now.
-     * @param request
      */
     protected abstract void onRequestDone(HttpServletRequest request);
 

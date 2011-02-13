@@ -22,6 +22,6 @@ package org.nuxeo.ecm.webengine.jaxrs;
  */
 public interface Reloadable {
 
-    public void reload();
+    void reload();
 
 }

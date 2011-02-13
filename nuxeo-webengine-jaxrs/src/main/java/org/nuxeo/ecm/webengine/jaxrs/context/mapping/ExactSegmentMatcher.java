@@ -23,7 +23,7 @@ package org.nuxeo.ecm.webengine.jaxrs.context.mapping;
  */
 public class ExactSegmentMatcher extends SegmentMatcher {
 
-    protected String pattern;
+    protected final String pattern;
 
 
     public ExactSegmentMatcher(String pattern) {

@@ -37,9 +37,6 @@ public final class PathMapping implements Comparable<PathMapping> {
     protected Map<String, String> params;
 
 
-    public PathMapping() {
-    }
-
     @XNode("path")
     protected void setPath(String path) {
         this.path = path;

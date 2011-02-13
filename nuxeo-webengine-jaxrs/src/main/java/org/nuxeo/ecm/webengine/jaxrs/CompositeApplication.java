@@ -31,7 +31,7 @@ import org.nuxeo.ecm.webengine.jaxrs.views.ViewMessageBodyWriter;
  */
 public class CompositeApplication extends Application {
 
-    protected List<ApplicationProxy> apps;
+    protected final List<ApplicationProxy> apps;
 
     public CompositeApplication() {
         apps = new ArrayList<ApplicationProxy>();

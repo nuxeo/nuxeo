@@ -29,12 +29,13 @@ import org.osgi.framework.Bundle;
 public interface ApplicationFactory {
 
     /**
-     * Create a new application instance given the bundle declaring the application and the attributes specified in the manifest.
+     * Create a new application instance given the bundle declaring the application
+     * and the attributes specified in the manifest.
      *
      * @param bundle the bundle defining the application
      * @param args the arguments parsed from manifest WebModule entry.
      */
-    public Application getApplication(Bundle bundle, Map<String, String> args) throws Exception;
+    Application getApplication(Bundle bundle, Map<String, String> args) throws Exception;
 
 
 }

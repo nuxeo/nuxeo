@@ -92,7 +92,7 @@ public class CompositeFilter implements Filter {
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        String v = (String)filterConfig.getInitParameter("filters");
+        String v = filterConfig.getInitParameter("filters");
         try {
             mappingReg = Framework.getLocalService(PathMappingRegistry.class);
             filters = v != null ? loadFilters(v.trim()) : new Filter[0];
@@ -109,7 +109,7 @@ public class CompositeFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response,
             FilterChain chain) throws IOException, ServletException {
-        if (request instanceof HttpServletRequest == false) {
+        if (!(request instanceof HttpServletRequest)) {
             chain.doFilter(request, response);
             return;
         }
@@ -155,9 +155,9 @@ public class CompositeFilter implements Filter {
 
     public static class SubFilterChain implements FilterChain {
 
-        protected FilterChain chain;
+        protected final FilterChain chain;
 
-        protected Filter[] filters;
+        protected final Filter[] filters;
 
         protected int filterIndex;
 
@@ -182,9 +182,9 @@ public class CompositeFilter implements Filter {
 
     public static class ServletFilterChain implements FilterChain {
 
-        protected HttpServlet servlet;
+        protected final HttpServlet servlet;
 
-        protected Filter[] filters;
+        protected final Filter[] filters;
 
         protected int filterIndex;
 

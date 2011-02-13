@@ -43,7 +43,7 @@ public class FilteringServlet extends HttpServlet {
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
-        String v = (String)config.getInitParameter("servlet");
+        String v = config.getInitParameter("servlet");
         if (v == null) {
             throw new ServletException("servlet init-parameter is required and must point to a servlet class to delegate request handling.");
         }
@@ -76,7 +76,7 @@ public class FilteringServlet extends HttpServlet {
 
 
     static class FilterConfigAdapter implements FilterConfig {
-        protected ServletConfig config;
+        protected final ServletConfig config;
 
         public FilterConfigAdapter(ServletConfig config) {
             this.config = config;

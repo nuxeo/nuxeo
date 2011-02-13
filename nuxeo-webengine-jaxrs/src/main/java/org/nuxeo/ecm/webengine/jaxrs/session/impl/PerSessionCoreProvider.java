@@ -40,11 +40,12 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class PerSessionCoreProvider extends CoreSessionProvider<Ref> implements HttpSessionBindingListener {
 
-    private static Log log = LogFactory.getLog(PerSessionCoreProvider.class);
+    private static final Log log = LogFactory.getLog(PerSessionCoreProvider.class);
 
     public static class Ref implements SessionRef {
         protected CoreSession session;
         protected ReentrantLock lock;
+
         public Ref(CoreSession session) {
             this.session = session;
             this.lock = new ReentrantLock();

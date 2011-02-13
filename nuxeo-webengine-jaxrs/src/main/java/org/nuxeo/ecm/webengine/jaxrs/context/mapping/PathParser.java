@@ -46,7 +46,6 @@ public class PathParser {
 
     public Path parse(String path, int userBits) {
         char[] chars = path.toCharArray();
-        int bits = 0;
         if (chars.length == 0) {
             return Path.EMPTY;
         }
@@ -54,7 +53,9 @@ public class PathParser {
             return Path.ROOT;
         }
 
-        int i = 0, len = chars.length;
+        int i = 0;
+        int len = chars.length;
+        int bits = 0;
         if (chars[chars.length-1] == '/') {
             bits |= Path.HAS_TRAILING_SLASH;
             len--;

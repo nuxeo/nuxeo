@@ -26,7 +26,7 @@ import javax.ws.rs.WebApplicationException;
 public class ViewNotFoundException extends WebApplicationException {
 
     public ViewNotFoundException(Throwable cause, Object owner, String name) {
-        super (cause, 404);
+        super(cause, 404);
     }
 
 }

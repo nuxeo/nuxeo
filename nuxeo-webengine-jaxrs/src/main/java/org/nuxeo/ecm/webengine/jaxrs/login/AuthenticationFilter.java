@@ -40,7 +40,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class AuthenticationFilter extends AbstractFilter {
 
-    public final static String DEFAULT_SECURITY_DOMAIN = "nuxeo-client-login";
+    public static final String DEFAULT_SECURITY_DOMAIN = "nuxeo-client-login";
 
     protected String domain = DEFAULT_SECURITY_DOMAIN;
 
@@ -86,12 +86,9 @@ public class AuthenticationFilter extends AbstractFilter {
         }
     }
 
-
     @Override
     public void destroy() {
     }
-
-
 
     protected String[] retrieveBasicLogin(HttpServletRequest httpRequest) {
         String auth = httpRequest.getHeader("authorization");
@@ -125,6 +122,5 @@ public class AuthenticationFilter extends AbstractFilter {
         response.setHeader("WWW-Authenticate", s);
         response.setStatus(401);
     }
-
 
 }

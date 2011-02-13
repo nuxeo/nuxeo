@@ -30,13 +30,11 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class PathMappingRegistry extends DefaultComponent {
 
-    public final static String XP_MAPPING = "mappings";
+    public static final String XP_MAPPING = "mappings";
 
     protected List<PathMapping> mappings;
     protected volatile PathMapping[] cache;
 
-    public PathMappingRegistry() {
-    }
 
     @Override
     public void activate(ComponentContext context) throws Exception {

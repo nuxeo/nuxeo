@@ -61,7 +61,7 @@ public class TemplateView extends View {
     }
 
     private static synchronized String addLocator(TemplateView view) {
-        String locatorId = "view:/".concat(view.getUrl().toExternalForm());
+        String locatorId = "view:/" + view.getUrl().toExternalForm();
         locators.put(locatorId, view);
         return locatorId;
     }
