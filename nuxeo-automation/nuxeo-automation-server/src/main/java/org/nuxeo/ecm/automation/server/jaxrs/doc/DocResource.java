@@ -27,6 +27,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import org.apache.commons.logging.Log;
@@ -38,7 +39,6 @@ import org.nuxeo.ecm.webengine.jaxrs.views.TemplateView;
 import org.nuxeo.ecm.webengine.jaxrs.views.View;
 import org.nuxeo.runtime.api.Framework;
 
-import com.sun.jersey.api.Responses;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -97,7 +97,7 @@ public class DocResource {
                 }
             }
             if (opDoc == null) {
-                throw new WebApplicationException(Responses.notFound().build());
+                throw new WebApplicationException(Response.status(404).build());
             }
             View tpl = getTemplate();
             tpl.arg("operation", opDoc);
