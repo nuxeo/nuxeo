@@ -170,7 +170,8 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
         return null;
     }
 
-    @Observer(value = { EventNames.DOCUMENT_SELECTION_CHANGED }, create = false)
+    @Observer(value = { EventNames.DOCUMENT_SELECTION_CHANGED,
+            EventNames.DOCUMENT_CHANGED }, create = false)
     @BypassInterceptors
     public void resetVersioningOption() {
         availableVersioningOptionsMap = null;
