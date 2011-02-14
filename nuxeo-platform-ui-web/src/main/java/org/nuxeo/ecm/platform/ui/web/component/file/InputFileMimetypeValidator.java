@@ -53,6 +53,8 @@ public class InputFileMimetypeValidator implements Validator, StateHolder {
     private String[] extensions;
 
     private boolean authorized = true;
+    
+    private boolean hidden = false;
 
     private boolean transientValue = false;
 
@@ -125,6 +127,14 @@ public class InputFileMimetypeValidator implements Validator, StateHolder {
         return authorized;
     }
 
+    public boolean isHidden() {
+        return hidden;
+    }
+
+    public void setHidden(boolean hidden) {
+        this.hidden = hidden;
+    }
+    
     public void setAuthorized(boolean authorized) {
         this.authorized = authorized;
     }
@@ -138,9 +148,10 @@ public class InputFileMimetypeValidator implements Validator, StateHolder {
     }
 
     public Object saveState(FacesContext context) {
-        Object[] values = new Object[2];
+        Object[] values = new Object[3];
         values[0] = extensions;
         values[1] = authorized;
+        values[2] = hidden; 
         return values;
     }
 
@@ -148,6 +159,8 @@ public class InputFileMimetypeValidator implements Validator, StateHolder {
         Object[] values = (Object[]) state;
         extensions = (String[]) values[0];
         authorized = ((Boolean) values[1]).booleanValue();
+        hidden = ((Boolean) values[2]).booleanValue();
+
     }
 
 }

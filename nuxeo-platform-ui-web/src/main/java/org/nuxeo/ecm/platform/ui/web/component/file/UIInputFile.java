@@ -693,6 +693,7 @@ public class UIInputFile extends UIInput implements NamingContainer {
                 String sizeConstraint = null;
                 List<String> authorizedExtensions = new ArrayList<String>();
                 List<String> unauthorizedExtensions = new ArrayList<String>();
+                boolean hidden = false;
                 for (Validator val : getValidators()) {
                     if (val instanceof InputFileSizeValidator) {
                         InputFileSizeValidator sizeVal = (InputFileSizeValidator) val;
@@ -703,6 +704,7 @@ public class UIInputFile extends UIInput implements NamingContainer {
                         }
                     } else if (val instanceof InputFileMimetypeValidator) {
                         InputFileMimetypeValidator extVal = (InputFileMimetypeValidator) val;
+                        hidden = extVal.isHidden();
                         if (extVal.isAuthorized()) {
                             authorizedExtensions.addAll(Arrays.asList(extVal.getExtensions()));
                         } else {
@@ -710,8 +712,8 @@ public class UIInputFile extends UIInput implements NamingContainer {
                         }
                     }
                 }
-                if (sizeConstraint != null || !authorizedExtensions.isEmpty()
-                        || !unauthorizedExtensions.isEmpty()) {
+                if (sizeConstraint != null
+                        || (!hidden && (!authorizedExtensions.isEmpty() || !unauthorizedExtensions.isEmpty()))) { 
                     List<String> constraints = new ArrayList<String>();
                     if (sizeConstraint != null) {
                         constraints.add(ComponentUtils.translate(context,
