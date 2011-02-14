@@ -4,123 +4,99 @@
 
 <#if !Root.isEmbeddedMode()>
 
-<A href="${Root.path}"> See all available distributions </A>
+<p class="explore"><a href="${Root.path}"> See all available distributions </A></p>
 
-<h3> ${Root.currentDistribution.name} ${Root.currentDistribution.version}
+<p class="explored"> ${Root.currentDistribution.name} ${Root.currentDistribution.version}
 <#if Root.currentDistribution.isLive()>
  (Live)
 </#if>
-</h3>
+</p>
 
-<h3>Nuxeo Runtime </h3>
+<div class="nav-box">
+  <h4>Browse by category</h4>
 
 
-<b> Browse by category </b>
-<table border=0 style="padding:0px;margin:0px">
-<tr>
-    <td class="spacerTab"></td>
-    <td colspan="4" <#if navPoint=="listOperations"> class="currentNavPoint" </#if> >
-      <a href="${Root.path}/${distId}/listOperations">
-       Operations
-      </a>
-      <#if navPoint=="viewOperation">
-        <div class="currentNavPoint"> &nbsp;&nbsp; > view Operation </div>
+<ul>
+  <li <#if navPoint=="listOperations">class="selected"</#if> >
+    <a href="${Root.path}/${distId}/listOperations">
+      Operations
+    </a>
+    <#if navPoint=="viewOperation">
+        <ul><li class="selected">view Operation</li></ul>
       </#if>
-    </td>
-</tr>
-<tr>
-    <td class="spacerTab"></td>
-    <td colspan="4" <#if navPoint=="listSeamComponents"> class="currentNavPoint" </#if> >
-      <a href="${Root.path}/${distId}/listSeamComponents">
+  </li>
+  <li <#if navPoint=="listSeamComponents">class="selected"</#if> >
+    <a href="${Root.path}/${distId}/listSeamComponents">
        Seam components
       </a>
-      <#if navPoint=="viewSeamComponent">
-        <div class="currentNavPoint"> &nbsp;&nbsp; > view Seam component </div>
+    <#if navPoint=="viewSeamComponent">
+        <ul><li class="selected">view Seam Component</li></ul>
       </#if>
-    </td>
-</tr>
-<tr>
-    <td class="spacerTab"></td>
-    <td colspan="4" <#if navPoint=="listBundleGroups"> class="currentNavPoint" </#if> >
-      <a href="${Root.path}/${distId}/listBundleGroups">
+  </li>
+  <li <#if navPoint=="listBundleGroups">class="selected"</#if> >
+    <a href="${Root.path}/${distId}/listBundleGroups">
        Bundle groups
       </a>
-      <#if navPoint=="viewBundleGroup">
-        <div class="currentNavPoint"> &nbsp;&nbsp; > view Bundle group </div>
+    <#if navPoint=="viewBundleGroup">
+        <ul><li class="selected">view Bundle group</li></ul>
       </#if>
-    </td>
-</tr>
-<tr>
-    <td class="spacerTab"></td>
-    <td class="spacerTab"></td>
-    <td colspan="3" <#if navPoint=="listBundles"> class="currentNavPoint" </#if> >
-      <a href="${Root.path}/${distId}/listBundles">
+      <ul>
+        <li <#if navPoint=="listBundles">class="selected"</#if> >
+          <a href="${Root.path}/${distId}/listBundles">
        Bundles
       </a>
-      <#if navPoint=="viewBundle">
-       <div class="currentNavPoint"> &nbsp;&nbsp; > view Bundle </div>
-      </#if>
-    </td>
-</tr>
-<tr>
-    <td class="spacerTab"></td>
-    <td class="spacerTab"></td>
-    <td class="spacerTab"></td>
-    <td colspan="2" <#if navPoint=="listComponents"> class="currentNavPoint" </#if> >
-      <a href="${Root.path}/${distId}/listComponents">
+          <#if navPoint=="viewBundle">
+          <ul><li class="selected">view Bundle</li></ul>
+          </#if>
+           
+            <li <#if navPoint=="listComponents">class="selected"</#if> >
+            <a href="${Root.path}/${distId}/listComponents">
        Components
       </a>
-      <#if navPoint=="viewComponent">
-        <div class="currentNavPoint"> &nbsp;&nbsp; > view Component </div>
-      </#if>
-    </td>
-</tr>
-<tr>
-    <td class="spacerTab"></td>
-    <td class="spacerTab"></td>
-    <td class="spacerTab"></td>
-    <td class="spacerTab"></td>
-    <td <#if navPoint=="listServices"> class="currentNavPoint" </#if> >
-      <a href="${Root.path}/${distId}/listServices">
+            <#if navPoint=="viewComponent">
+            <ul><li class="selected">view Component</li></ul>
+            </#if>
+            
+            <ul>
+            <li <#if navPoint=="listServices">class="selected"</#if> >
+            <a href="${Root.path}/${distId}/listServices">
        Services
       </a>
-      <#if navPoint=="viewService">
-        <div class="currentNavPoint"> &nbsp;&nbsp; > view Service </div>
-      </#if>
-    </td>
-</tr>
-<tr>
-    <td class="spacerTab"></td>
-    <td class="spacerTab"></td>
-    <td class="spacerTab"></td>
-    <td class="spacerTab"></td>
-    <td <#if navPoint=="listExtensionPoints"> class="currentNavPoint" </#if> >
-      <a href="${Root.path}/${distId}/listExtensionPoints">
+            <#if navPoint=="viewService">
+            <ul><li class="selected">view Service</li></ul>
+            </#if>          
+          </li>
+           <li <#if navPoint=="listExtensionPoints">class="selected"</#if> >
+            <a href="${Root.path}/${distId}/listExtensionPoints">
        Extension points
       </a>
-      <#if navPoint=="viewExtensionPoint">
-        <div class="currentNavPoint"> &nbsp;&nbsp; > view Extension point </div>
-      </#if>
-    </td>
-</tr>
-<tr>
-    <td class="spacerTab"></td>
-    <td class="spacerTab"></td>
-    <td class="spacerTab"></td>
-    <td class="spacerTab"></td>
-    <td <#if navPoint=="listContributions"> class="currentNavPoint" </#if> >
-      <a href="${Root.path}/${distId}/listContributions">
+            <#if navPoint=="viewExtensionPoint">
+            <ul><li class="selected">view Extension Point</li></ul>
+            </#if>          
+          </li>
+           <li <#if navPoint=="listContributions">class="selected"</#if> >
+            <a href="${Root.path}/${distId}/listContributions">
        Contributions
       </a>
-      <#if navPoint=="viewContribution">
-        <div class="currentNavPoint"> &nbsp;&nbsp; > view Contribution </div>
-      </#if>
-    </td>
-</tr>
-</table>
+            <#if navPoint=="viewContribution">
+            <ul><li class="selected">view Contribution</li></ul>
+            </#if>          
+          </li>
+            </ul>
+            
+          </li>
+          
+          
+         </li>
+          
+         </li>
+      </ul>
+  </li>
+</ul>
+</div>
 
-<br/>
-<b> Browse by hierarchy </b>
+<div class="nav-box">
+<h4> Browse by hierarchy </h4>
 </#if> <#-- if embedded -->
 
 <div id="treeControler"></div>
@@ -149,20 +125,14 @@
 <@tree id="myTree" root="/"/>
 
 <#if !Root.isEmbeddedMode()>
-<br/>
-<h3>Browse documentation</h3>
-<table border=0>
-<tr>
-      <td colspan="4" style="font-weight:bold"
-    <#if navPoint=="documentation">
-     class="currentNavPoint"
-    </#if>
+</div>
 
-      >
-      <A href="${Root.path}/${distId}/doc"> FAQ and How to </A>
-      </td>
-</tr>
-</table>
+<div class="nav-box">
+<h4>Browse documentation</h4>
+<ul><li <#if navPoint=="documentation"> class="selected"</#if> >
+<A href="${Root.path}/${distId}/doc"> FAQ and How to </A>
+</li></ul>     
+</div>
 </#if>
 
 </#if>

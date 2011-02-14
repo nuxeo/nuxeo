@@ -37,7 +37,7 @@
     <td class="pageheader">
       <@block name="header">
         <div class="logo">
-          <a href="${Root.path}"><img src="${skinPath}/images/nuxeo_white_logo.png" width="89" height="25px" border="0"/></a><span>Showcase - Layout Service (form and views)</span>
+          <a href="${Root.path}"><img src="${skinPath}/images/nuxeo_white_logo.png" width="89" height="25px" border="0"/></a><span>Nuxeo Platform Explorer</span>
         </div>
         <div class="login">
            <#include "nxlogin.ftl">
@@ -98,7 +98,7 @@
   <tr valign="middle" align="center">
     <td class="footer">
       <@block name="footer">
-        <div class="copyrights">Copyright &#169; 2009 Nuxeo and its respective authors. </div>
+        <div class="copyrights">Copyright &#169; 2009-2011 Nuxeo and its respective authors. </div>
         <div class="links">
           <span>visit <a href="http://www.nuxeo.com/en">nuxeo.com</a></span>
           <span>get <a href="http://www.nuxeo.com/en/services/support">support</a>!</span>

@@ -10,79 +10,35 @@
 <@block name="right">
 <h1> Browsing ${Root.currentDistribution.key} distribution </h1>
 
-<br/>
-<br/>
+<ul class="apibrowser">
+ <ul>
+   <li class="bundles">
+     <a href="${Root.path}/${distId}/listBundleGroups">Bundle groups</a>
+     <ul>
+       <li class="bundle">
+         <a href="${Root.path}/${distId}/listBundles">Bundles</a>
+         <ul>
+           <li class="component">
+             <a href="${Root.path}/${distId}/listComponents">Components</a>
+             <ul>
+               <li class="service">
+                 <a href="${Root.path}/${distId}/listServices">Services</a>
+               </li>
+               <li class="extension">
+                 <a href="${Root.path}/${distId}/listExtensionPoints">Extension points</a>
+               </li>
+               <li class="contribution">
+                 <a href="${Root.path}/${distId}/listContributions">Contributions</a>
+               </li>
+             </ul>
+           </li>
+         </ul>    
+       </li>
+     </ul>
+   </li>
+ </ul>
+</ul>
 
-<table border="0">
-<tr>
-    <td class="iconHolder"><img src="${skinPath}/images/NXBundle.png"/></td>
-    <td class="linkHolder">
-      <A href="${Root.path}/${distId}/listBundleGroups">
-       Bundle groups
-      </A>
-    </td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-</tr>
-<tr>
-    <td>&nbsp;</td>
-    <td class="iconHolder"><img src="${skinPath}/images/NXBundle.png"/></td>
-    <td class="linkHolder">
-      <A href="${Root.path}/${distId}/listBundles">
-       Bundles
-      </A>
-    </td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-</tr>
-<tr>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td class="iconHolder"><img src="${skinPath}/images/NXComponent.png"/></td>
-    <td class="linkHolder">
-      <A href="${Root.path}/${distId}/listComponents">
-       Components
-    </td>
-    <td>&nbsp;</td>
-</tr>
-<tr>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td class="iconHolder"><img src="${skinPath}/images/NXService.png"/></td>
-    <td class="linkHolder">
-      <A href="${Root.path}/${distId}/listServices">
-       Services
-      </A>
-    </td>
-
-</tr>
-<tr>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td class="iconHolder"><img src="${skinPath}/images/NXExtensionPoint.png"/></td>
-    <td class="linkHolder">
-      <A href="${Root.path}/${distId}/listExtensionPoints">
-       Extension points
-      </A>
-    </td>
-
-</tr>
-<tr>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td class="iconHolder"><img src="${skinPath}/images/NXContribution.png"/></td>
-    <td class="linkHolder" colspan="2">
-      <A href="${Root.path}/${distId}/listContributions">
-       Contributions
-      </A>
-    </td>
-
-</tr>
-</table>
 
 </@block>
 

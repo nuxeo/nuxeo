@@ -19,7 +19,7 @@ height:280px;
 }
 
 h1 {
-font:normal 1.9em "Lucida Grande", Verdana, sans-serif;
+font:bold 1.9em "Lucida Grande", Verdana, sans-serif;
 margin:10px 0 15px;
 color:black;
 }
@@ -86,11 +86,11 @@ outline-style:none;
 .pageheader {
  background: #000000 url("../images/header_nuxeo.png") no-repeat right bottom ;
  border-bottom: 1px solid #BBBBBB;
- padding:5px 5px 5px 20px;
+ padding: 2px 2px 2px 20px;
  text-shadow: 2px 2px 2px #000;
- -moz-box-shadow:  0 0 3px #555555;
- -webkit-box-shadow:  0 0 3px #555555;
- box-shadow:  0 0 3px #555555;
+ -moz-box-shadow:  -3px 0px 3px #555555;
+ -webkit-box-shadow:  -3px 0px 3px #555555;
+ box-shadow:  -3px 0px 3px #555555;
 }
 
 .logo {
@@ -369,8 +369,13 @@ color:#fff;
  text-align:right;
   }
 
-.currentNavPoint {
-  background-color:#EEEEFF;
+.currentNavPoint, li.selected {
+  font-weight:normal;
+  padding:3px 7px;
+  background:#c0dcf5;
+  -moz-border-radius:3px;
+  -webkit-border-radius:3px;
+  border-radius:3px;
 }
 
 .spacerTab {
@@ -438,11 +443,11 @@ color:#fff;
  }
 
 .row_odd {
-  background-color:#f6f6f6;
+  background-color:#fff;
 }
 
 .row_even {
-  background-color:#eeeeff;
+  background-color:#ECF6FF;
 }
 
 code, code span {
@@ -452,25 +457,125 @@ code, code span {
 .tablesorter .header {
   background-position: center left;
   background-repeat: no-repeat;
-  padding: 2px 2px 2px 20px;
+  padding-left:20px;
 }
 
 .tablesorter .headerSortDown {
-  background-color: #F8F8FF;
   background-image: url(../images/down.gif);
 }
 
 .tablesorter .headerSortUp {
-  background-color: #F8F8FF;
   background-image: url(../images/up.gif);
 }
 
 .tablesorter .odd {
-  background-color: #f6f6f6;
+  background-color: #fff;
 }
 
 .tablesorter .even {
-  background-color: #eeeeff;
+  background-color: #ECF6FF;
 }
 
+/* Design refresh feb 2011 */
 
+/* Apibrowser */
+
+ul.apibrowser {
+}
+
+ul.apibrowser li {
+  padding: 5px 0;
+  margin-left: 5px;
+}
+
+ul.apibrowser li a {
+  font-size: 16px;
+}
+
+li.bundles, li.bundle, li.component, li.service, li.extension, li.contribution {
+}
+
+/* All tables */
+.tablesorter {
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+  border:1px solid #ccc;
+}
+
+.tablesorter td, .tablesorter th {
+  padding:5px;
+}
+
+.tablesorter th {
+  background-color: #333;
+  color: white;
+  text-align: left;
+  font-weight: bold;
+}
+
+/* Welcome layout table */
+.welcome td {
+  padding:10px;
+  vertical-align: top;
+}
+
+/* Distributions table in welcome page */
+.distributions {}
+
+/* Welcome buttton in column */
+
+p.explore a {
+  background-color: #4E9AE1;
+  line-height: 100%;
+  padding: 10px 15px;
+  margin:5px;
+  -moz-border-radius: 15px;
+  -webkit-border-radius: 15px;
+  display: inline-block;
+  color:#fff;
+}
+
+p.explored {
+  background-color: #fff;
+  line-height: 100%;
+  padding: 10px 15px;
+  margin:5px;
+  -moz-border-radius: 15px;
+  -webkit-border-radius: 15px;
+  display: inline-block;
+  color:#666;
+  border: 1px solid #666;
+}
+
+p.explore a:visited, p.welcome a:hover {
+  color: white;
+}
+
+.distributions p {
+  margin: 0;
+}
+
+.distributions p.explore a {
+  margin: 0px;
+  float:right;  
+}
+
+/* Nav left */
+
+.nav-box {
+  border:1px solid #C0DCF5;
+  margin: 10px 0 15px 0;
+  padding-bottom: 10px;
+}
+
+.nav-box h4 {
+  background-color: #4E9AE1;
+  padding:5px 10px;
+  margin-bottom: 10px;
+  color: white;
+  font-weight: bold;
+  }
+  
+.nav-box ul {
+}

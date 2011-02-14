@@ -1,26 +1,21 @@
 <@extends src="base.ftl">
 
-<@block name="stylesheets"></@block>
-<@block name="header_scripts"></@block>
+<@block name="stylesheets">
+</@block>
+
+
+<@block name="header_scripts">
+</@block>
 
 <@block name="right">
 
-<h1> Nuxeo Platform Explorer </h1>
+<h1>Welcome to Nuxeo Platform Explorer</h1>
 
-<p>
-This application allows you to explore Nuxeo Enterprise Platform.
-</p>
-
-<p>
-You can explore the current live Nuxeo distribution (i.e. the one that runs this server)
-or browse a distribution that has been snapshotted and saved into local Document Repository.
-</p>
-
-<p>
-Keep in mind that only snapshotted distributions (i.e non-live) are stored as documents and
-therefore they are the only one to be searchable.
-</p>
-
+<table class="welcome">
+  <tr>
+   <tr>
+    <td colspan="2">
+    
 <h2>Nuxeo EP Distributions</h2>
 
 <p>
@@ -30,14 +25,14 @@ Here are the currently available distributions:
 <#assign rtSnap=Root.runtimeDistribution/>
 <#assign snapMap=Root.persistedDistributions/>
 
-<table width="90%">
+<table class="tablesorter distributions">
 <tr>
-<th> Distribution name  </th>
-<th> Version  </th>
-<th> Creation date  </th>
-<th> &nbsp;  </th>
-<th> &nbsp;  </th>
-<th> &nbsp;  </th>
+<th> Distribution name</th>
+<th> Version</th>
+<th> Creation date</th>
+<th></th>
+<th></th>
+<th></th>
 </tr>
 
 <tr>
@@ -45,9 +40,7 @@ Here are the currently available distributions:
 <td>${rtSnap.version}</td>
 <td>${rtSnap.creationDate?datetime}</td>
 <td style="color:green">Current deployed distribution (live) </td>
-<td>
-  <A href="${Root.path}/current/"> Explore </A>
-</td>
+
 <td>
 <#if Root.isEditor()>
   <form method="POST" action="${Root.path}/save">
@@ -55,6 +48,11 @@ Here are the currently available distributions:
   </form>
 </#if>
 </td>
+
+<td>
+  <p class="explore"><a href="${Root.path}/current/"> Explore </a></p>
+</td>
+
 </tr>
 
 <#assign names=snapMap?keys/>
@@ -65,9 +63,9 @@ Here are the currently available distributions:
   <td>${distrib.name}</td>
   <td>${distrib.version}</td>
   <td>${distrib.creationDate?datetime}</td>
-  <td>&nbsp; </td>
+  <td>&nbsp;</td>
   <td>
-    <A href="${Root.path}/${distrib.key}/"> Explore </A>
+    <a href="${Root.path}/${distrib.key}/"> Explore </a>
   </td>
   <td>
     <A href="${Root.path}/download/${distrib.key}">Export</A> as zip.
@@ -87,9 +85,22 @@ Here are the currently available distributions:
 </form>
 </#if>
 
-
-<br/>
-
+    </td>
+  </tr> 
+    <td width="50%">
+      <h2>What is Nuxeo Platform Explorer?</h2>
+      <p>
+        This application allows you to explore Nuxeo Enterprise Platform.
+      </p>
+      <p>
+       You can explore the current live Nuxeo distribution (i.e. the one that runs this server) or browse a distribution that has been snapshotted and saved into local Document Repository.
+      </p>
+      <p>
+        Keep in mind that only snapshotted distributions (i.e non-live) are stored as documents and therefore they are the only one to be searchable.
+      </p>
+    </td>
+    <td width="50%">
+    
 <h2>Documentation</h2>
 
 <p>
@@ -111,6 +122,10 @@ You can use the form below to upload a documentation pack (zip):<br/>
   <input type="submit" value="Upload doc pack">
 </form>
 </#if>
+    
+    </td>
+  </tr>
+</table>
 
 </@block>
 
