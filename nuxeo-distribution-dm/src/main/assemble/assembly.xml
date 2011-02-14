@@ -62,6 +62,9 @@
         <excludes>
           <artifact artifactId="gwt-dev" />
           <artifact artifactId="gwt-user" />
+          <artifact artifactId="gwt-log" />
+          <artifact artifactId="gwt-dnd" />
+          <artifact artifactId="gwt-presenter" />
           <artifact artifactId="json-jena" />
           <artifact artifactId="h2" />
         </excludes>
