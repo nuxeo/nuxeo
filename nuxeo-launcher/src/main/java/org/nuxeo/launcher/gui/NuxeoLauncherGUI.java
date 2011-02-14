@@ -96,7 +96,7 @@ public class NuxeoLauncherGUI {
     public String execute() {
         initFrame(this);
         String command = launcher.getCommand();
-        if (command != null) {
+        if (command != null && !launcher.isWizardRequired()) {
             if ("start".equalsIgnoreCase(command)) {
                 start();
             } else if ("stop".equalsIgnoreCase(command)) {

@@ -7,33 +7,33 @@
   <artifactId>nuxeo-startup-wizard</artifactId>
   <name>Nuxeo Startup Wizard</name>
   <description>Nuxeo Startup Wizard WebApp</description>
-  <version>1.0-SNAPSHOT</version>
+  <version>5.4.1-SNAPSHOT</version>
   <packaging>war</packaging>
 
   <dependencies>
-      <dependency>
-        <groupId>javax.servlet</groupId>
-        <artifactId>servlet-api</artifactId>
-        <version>2.4</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>commons-logging</groupId>
-        <artifactId>commons-logging</artifactId>
-        <version>1.1</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>commons-codec</groupId>
-        <artifactId>commons-codec</artifactId>
-        <version>1.4</version>
-        <scope>provided</scope>
-      </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <version>2.4</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging</artifactId>
+      <version>1.1</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>commons-codec</groupId>
+      <artifactId>commons-codec</artifactId>
+      <version>1.4</version>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
- 
+
   <build>
-      <plugins>
-       <plugin>
+    <plugins>
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
@@ -41,7 +41,7 @@
           <target>1.6</target>
         </configuration>
       </plugin>
-     <plugin>
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
         <version>2.1</version>
@@ -55,10 +55,10 @@
             <configuration>
               <artifactItems>
                 <artifactItem>
-                   <groupId>javax.servlet</groupId>
-                   <artifactId>jstl</artifactId>
-                   <version>1.1.2</version>
-                   <type>jar</type>
+                  <groupId>javax.servlet</groupId>
+                  <artifactId>jstl</artifactId>
+                  <version>1.1.2</version>
+                  <type>jar</type>
                 </artifactItem>
                 <artifactItem>
                   <groupId>taglibs</groupId>
@@ -78,12 +78,12 @@
           </execution>
         </executions>
       </plugin>
-       <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-war-plugin</artifactId>
-          <version>2.1-beta-1</version>
-        </plugin>
-      </plugins> 
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-war-plugin</artifactId>
+        <version>2.1-beta-1</version>
+      </plugin>
+    </plugins>
   </build>
 
 

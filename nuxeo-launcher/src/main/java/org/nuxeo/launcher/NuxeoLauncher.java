@@ -207,7 +207,7 @@ public abstract class NuxeoLauncher {
         for (String property : properties) {
             String value = configurationGenerator.getUserConfig().getProperty(
                     property);
-            if (value != null && ! value.isEmpty()) {
+            if (value != null && !value.isEmpty()) {
                 ret = ret.replace("${" + property + "}", value);
             }
         }
@@ -383,6 +383,14 @@ public abstract class NuxeoLauncher {
         NuxeoLauncherGUI launcherGUI = null;
         String command = launcher.command;
         boolean commandSucceeded = true;
+        if (launcher.isWizardRequired()) {
+            if (command != null
+                    && (command.contains("start") || command.contains("console"))) {
+                launcher.startWizard();
+            }
+        } else {
+            launcher.checkTomcatXMLConfFiles();
+        }
         if (launcher.useGui) {
             launcherGUI = new NuxeoLauncherGUI(launcher);
             command = launcherGUI.execute();
@@ -442,6 +450,12 @@ public abstract class NuxeoLauncher {
             System.exit(1);
         }
     }
+
+    protected abstract void checkTomcatXMLConfFiles();
+
+    protected abstract void startWizard();
+
+    public abstract boolean isWizardRequired();
 
     /**
      * @see #doStartAndWait(boolean)

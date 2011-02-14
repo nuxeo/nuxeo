@@ -74,4 +74,19 @@ public class NuxeoJettyLauncher extends NuxeoLauncher {
     protected String getServerPrint() {
         return JettyConfigurator.STARTUP_CLASS;
     }
+
+    @Override
+    protected void startWizard() {
+        // Nothing to do
+    }
+
+    @Override
+    public boolean isWizardRequired() {
+        return false;
+    }
+
+    @Override
+    protected void checkTomcatXMLConfFiles() {
+        // Nothing to do
+    }
 }
