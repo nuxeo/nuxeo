@@ -43,6 +43,7 @@
     <module>nuxeo-platform-categorization/nuxeo-platform-categorization-subjects</module>
     <module>nuxeo-shell</module>
     <module>nuxeo-filesystem-connectors</module>
+    <module>nuxeo-gsa-connector</module>
 
     <!--
       deactivated since 5.3.2 release; reactivate modules after alignment on 5.4
