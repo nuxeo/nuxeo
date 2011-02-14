@@ -12,6 +12,7 @@ import org.nuxeo.ecm.webengine.model.WebObject;
 /**
  * @author Stéphane Fourrier
  */
+@Path("/gwt-container")
 @WebObject(type = "GwtContainerRoot")
 public class GwtContainerRoot extends GwtResource {
     @GET

@@ -29,7 +29,6 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
 import org.nuxeo.ecm.spaces.api.AbstractSpaceProvider;
-import org.nuxeo.ecm.spaces.api.Constants;
 import org.nuxeo.ecm.spaces.api.Space;
 import org.nuxeo.ecm.spaces.api.exceptions.SpaceException;
 import org.nuxeo.opensocial.container.shared.layout.api.LayoutHelper;
@@ -37,7 +36,7 @@ import org.nuxeo.runtime.api.Framework;
 
 public class DashboardSpaceProvider extends AbstractSpaceProvider {
 
-    public static final String DASHBOARD_SPACE_NAME = "dashboardSpace";
+    public static final String DASHBOARD_SPACE_NAME = "userDashboardSpace";
 
     private static final Log log = LogFactory.getLog(DashboardSpaceProvider.class);
 
