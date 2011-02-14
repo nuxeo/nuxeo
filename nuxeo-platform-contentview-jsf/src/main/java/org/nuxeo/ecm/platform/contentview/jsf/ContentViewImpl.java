@@ -222,6 +222,25 @@ public class ContentViewImpl implements ContentView {
     public PageProvider<?> getPageProvider(DocumentModel searchDocument,
             List<SortInfo> sortInfos, Long pageSize, Long currentPage,
             Object... params) throws ClientException {
+        // resolve search doc so that it can be used in EL expressions defined
+        // in XML configuration
+        DocumentModel finalSearchDocument = null;
+        if (searchDocument != null) {
+            finalSearchDocument = searchDocument;
+        } else {
+            if (pageProvider != null) {
+                // try to retrieve it on current page provider
+                finalSearchDocument = pageProvider.getSearchDocumentModel();
+            }
+            if (finalSearchDocument == null) {
+                // initialize it
+                finalSearchDocument = getSearchDocumentModel();
+            }
+        }
+        // set it on content view so that it can be used when resolving EL
+        // expressions
+        setSearchDocumentModel(finalSearchDocument);
+
         // fallback on local parameters if defined in the XML configuration
         if (params == null) {
             params = getQueryParameters();
@@ -245,6 +264,11 @@ public class ContentViewImpl implements ContentView {
                 pageSize = resolvePageSize();
             }
         }
+
+        // parameters changed => reset provider.
+        // do not force setting of sort infos as they can be set directly on
+        // the page provider and this method will be called after so they could
+        // be lost.
         if (pageProvider == null
                 || getParametersChanged(pageProvider.getParameters(), params)) {
             try {
@@ -260,8 +284,6 @@ public class ContentViewImpl implements ContentView {
                 throw new ClientException(e);
             }
         } else {
-            // do not set sort infos as they can be set directly on the page
-            // provider
             if (pageSize != null) {
                 pageProvider.setPageSize(pageSize.longValue());
             }
@@ -269,15 +291,10 @@ public class ContentViewImpl implements ContentView {
                 pageProvider.setCurrentPage(currentPage.longValue());
             }
         }
-        if (searchDocument != null) {
-            pageProvider.setSearchDocumentModel(searchDocument);
-        } else {
-            // initialize on page provider only if not already set
-            DocumentModel searchDoc = getSearchDocumentModel();
-            if (searchDoc != null
-                    && pageProvider.getSearchDocumentModel() == null) {
-                pageProvider.setSearchDocumentModel(searchDoc);
-            }
+        // set search doc again as page provider may not have been initialized
+        // when it was first set
+        if (finalSearchDocument != null) {
+            setSearchDocumentModel(finalSearchDocument);
         }
         return pageProvider;
     }
@@ -331,12 +348,17 @@ public class ContentViewImpl implements ContentView {
             return null;
         }
         FacesContext context = FacesContext.getCurrentInstance();
-        Object[] res = new Object[queryParameters.length];
-        for (int i = 0; i < queryParameters.length; i++) {
-            res[i] = ComponentTagUtils.resolveElExpression(context,
-                    queryParameters[i]);
+        Object previousSearchDocValue = addSearchDocumentToELContext(context);
+        try {
+            Object[] res = new Object[queryParameters.length];
+            for (int i = 0; i < queryParameters.length; i++) {
+                res[i] = ComponentTagUtils.resolveElExpression(context,
+                        queryParameters[i]);
+            }
+            return res;
+        } finally {
+            removeSearchDocumentFromELContext(context, previousSearchDocValue);
         }
-        return res;
     }
 
     public List<String> getRefreshEventNames() {
@@ -421,13 +443,19 @@ public class ContentViewImpl implements ContentView {
         }
         // else resolve bindings
         FacesContext context = FacesContext.getCurrentInstance();
-        Object value = ComponentTagUtils.resolveElExpression(context,
-                resultColumnsBinding);
-        if (value != null && !(value instanceof List)) {
-            log.error(String.format("Error processing expression '%s', "
-                    + "result is not a List: %s", resultColumnsBinding, value));
+        Object previousSearchDocValue = addSearchDocumentToELContext(context);
+        try {
+            Object value = ComponentTagUtils.resolveElExpression(context,
+                    resultColumnsBinding);
+            if (value != null && !(value instanceof List)) {
+                log.error(String.format("Error processing expression '%s', "
+                        + "result is not a List: %s", resultColumnsBinding,
+                        value));
+            }
+            return (List) value;
+        } finally {
+            removeSearchDocumentFromELContext(context, previousSearchDocValue);
         }
-        return (List) value;
     }
 
     @Override
@@ -441,46 +469,52 @@ public class ContentViewImpl implements ContentView {
             return null;
         }
         FacesContext context = FacesContext.getCurrentInstance();
-        Object value = ComponentTagUtils.resolveElExpression(context,
-                sortInfosBinding);
-        if (value != null && !(value instanceof List)) {
-            log.error(String.format("Error processing expression '%s', "
-                    + "result is not a List: %s", sortInfosBinding, value));
-        }
-        if (value == null) {
-            return null;
-        }
-        List<SortInfo> res = new ArrayList<SortInfo>();
-        List listValue = (List) value;
-        for (Object listItem : listValue) {
-            if (listItem instanceof SortInfo) {
-                res.add((SortInfo) listItem);
-            } else if (listItem instanceof Map) {
-                // XXX: MapProperty does not implement containsKey, so resolve
-                // value instead
-                if (listItem instanceof MapProperty) {
-                    try {
-                        listItem = ((MapProperty) listItem).getValue();
-                    } catch (Exception e) {
-                        log.error("Cannot resolve sort info item: " + listItem,
-                                e);
+        Object previousSearchDocValue = addSearchDocumentToELContext(context);
+        try {
+            Object value = ComponentTagUtils.resolveElExpression(context,
+                    sortInfosBinding);
+            if (value != null && !(value instanceof List)) {
+                log.error(String.format("Error processing expression '%s', "
+                        + "result is not a List: %s", sortInfosBinding, value));
+            }
+            if (value == null) {
+                return null;
+            }
+            List<SortInfo> res = new ArrayList<SortInfo>();
+            List listValue = (List) value;
+            for (Object listItem : listValue) {
+                if (listItem instanceof SortInfo) {
+                    res.add((SortInfo) listItem);
+                } else if (listItem instanceof Map) {
+                    // XXX: MapProperty does not implement containsKey, so
+                    // resolve
+                    // value instead
+                    if (listItem instanceof MapProperty) {
+                        try {
+                            listItem = ((MapProperty) listItem).getValue();
+                        } catch (Exception e) {
+                            log.error("Cannot resolve sort info item: "
+                                    + listItem, e);
+                        }
                     }
-                }
-                Map map = (Map) listItem;
-                SortInfo sortInfo = SortInfo.asSortInfo(map);
-                if (sortInfo != null) {
-                    res.add(sortInfo);
+                    Map map = (Map) listItem;
+                    SortInfo sortInfo = SortInfo.asSortInfo(map);
+                    if (sortInfo != null) {
+                        res.add(sortInfo);
+                    } else {
+                        log.error("Cannot resolve sort info item: " + listItem);
+                    }
                 } else {
                     log.error("Cannot resolve sort info item: " + listItem);
                 }
-            } else {
-                log.error("Cannot resolve sort info item: " + listItem);
             }
+            if (res.isEmpty()) {
+                return null;
+            }
+            return res;
+        } finally {
+            removeSearchDocumentFromELContext(context, previousSearchDocValue);
         }
-        if (res.isEmpty()) {
-            return null;
-        }
-        return res;
     }
 
     protected Long resolvePageSize() {
@@ -488,22 +522,45 @@ public class ContentViewImpl implements ContentView {
             return null;
         }
         FacesContext context = FacesContext.getCurrentInstance();
-        Object value = ComponentTagUtils.resolveElExpression(context,
-                pageSizeBinding);
-        if (value == null) {
-            return null;
-        }
-        if (value instanceof String) {
-            try {
-                return Long.valueOf((String) value);
-            } catch (NumberFormatException e) {
-                log.error(String.format("Error processing expression '%s', "
-                        + "result is not a Long: %s", pageSizeBinding, value));
+        Object previousSearchDocValue = addSearchDocumentToELContext(context);
+        try {
+            Object value = ComponentTagUtils.resolveElExpression(context,
+                    pageSizeBinding);
+            if (value == null) {
+                return null;
             }
-        } else if (value instanceof Number) {
-            return Long.valueOf(((Number) value).longValue());
+            if (value instanceof String) {
+                try {
+                    return Long.valueOf((String) value);
+                } catch (NumberFormatException e) {
+                    log.error(String.format(
+                            "Error processing expression '%s', "
+                                    + "result is not a Long: %s",
+                            pageSizeBinding, value));
+                }
+            } else if (value instanceof Number) {
+                return Long.valueOf(((Number) value).longValue());
+            }
+            return null;
+        } finally {
+            removeSearchDocumentFromELContext(context, previousSearchDocValue);
         }
-        return null;
+    }
+
+    protected Object addSearchDocumentToELContext(FacesContext facesContext) {
+        Map<String, Object> requestMap = facesContext.getExternalContext().getRequestMap();
+        Object previousValue = requestMap.get(SEARCH_DOCUMENT_EL_VARIABLE);
+        requestMap.put(SEARCH_DOCUMENT_EL_VARIABLE, searchDocumentModel);
+        return previousValue;
+    }
+
+    protected void removeSearchDocumentFromELContext(FacesContext facesContext,
+            Object previousValue) {
+        Map<String, Object> requestMap = facesContext.getExternalContext().getRequestMap();
+        requestMap.remove(SEARCH_DOCUMENT_EL_VARIABLE);
+        if (previousValue != null) {
+            requestMap.put(SEARCH_DOCUMENT_EL_VARIABLE, previousValue);
+        }
     }
 
     @Override

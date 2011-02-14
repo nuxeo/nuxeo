@@ -44,6 +44,8 @@ import org.nuxeo.ecm.platform.query.api.PageProvider;
  */
 public interface ContentView extends Serializable {
 
+    public static final String SEARCH_DOCUMENT_EL_VARIABLE = "searchDocument";
+
     /**
      * Returns the name of this content view
      */
