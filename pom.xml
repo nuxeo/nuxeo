@@ -102,6 +102,7 @@
     <apacheds.version>1.5.1</apacheds.version>
     <apachedshared.version>0.9.7</apachedshared.version>
     <gwt.version>1.5.3</gwt.version>
+    <gwt2.version>2.0.4</gwt2.version>
     <jersey.version>1.1.5</jersey.version>
     <jetty.mortbay.version>6.1.14</jetty.mortbay.version>
     <shindig.version>1.1-BETA5-incubating</shindig.version>
@@ -1499,8 +1500,18 @@
       <dependency>
         <groupId>com.google.gwt</groupId>
         <artifactId>gwt-servlet</artifactId>
-        <version>${gwt.version}</version>
+        <version>${gwt2.version}</version>
         <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>com.google.code.gson</groupId>
+        <artifactId>gson</artifactId>
+        <version>1.4</version>
+      </dependency>
+      <dependency>
+        <groupId>org.restlet</groupId>
+        <artifactId>org.restlet.gwt</artifactId>
+        <version>1.1.10</version>
       </dependency>
       <dependency>
         <groupId>com.google.gwt.google-apis</groupId>
@@ -1516,6 +1527,36 @@
         <groupId>com.allen_sauer.gwt.log</groupId>
         <artifactId>gwt-log</artifactId>
         <version>2.5.2</version>
+      </dependency>
+      <dependency>
+        <groupId>net.customware.gwt.presenter</groupId>
+        <artifactId>gwt-presenter</artifactId>
+        <version>1.0.0</version>
+      </dependency>
+      <dependency>
+        <groupId>net.customware.gwt.dispatch</groupId>
+        <artifactId>gwt-dispatch</artifactId>
+        <version>1.0.0</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.code</groupId>
+        <artifactId>gwt-dnd</artifactId>
+        <version>3.0.1</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.gwt</groupId>
+        <artifactId>gwt-gadgets</artifactId>
+        <version>1.1</version>
+      </dependency>
+      <dependency>
+        <groupId>com.googlecode.gwt.inject</groupId>
+        <artifactId>gin</artifactId>
+        <version>1.0</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.inject.extensions</groupId>
+        <artifactId>guice-servlet</artifactId>
+        <version>2.0</version>
       </dependency>
 
       <dependency>
