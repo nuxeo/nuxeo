@@ -16,6 +16,9 @@
         </pattern>
         <parameter>#{documentSearchActions.simpleSearchKeywords}</parameter>
         <sort column="dc:title" ascending="true" />
+        <sortInfosBinding>
+          #{documentSearchActions.searchSortInfos}
+        </sortInfosBinding>
         <pageSize>20</pageSize>
       </coreQueryPageProvider>
 
@@ -27,6 +30,9 @@
       <cacheKey>only_one_cache</cacheKey>
       <cacheSize>1</cacheSize>
 
+      <resultColumns>
+        #{documentSearchActions.selectedLayoutColumns}
+      </resultColumns>
       <resultLayouts>
         <layout name="search_listing_ajax" title="document_listing"
           translateTitle="true" iconPath="/icons/document_listing_icon.png"
@@ -133,6 +139,9 @@
         </whereClause>
         <sort column="dc:title" ascending="true" />
         <pageSize>20</pageSize>
+        <sortInfosBinding>
+          #{documentSearchActions.searchSortInfos}
+        </sortInfosBinding>
       </coreQueryPageProvider>
 
       <searchLayout name="advanced_search" />
@@ -145,8 +154,9 @@
       <cacheKey>only_one_cache</cacheKey>
       <cacheSize>1</cacheSize>
 
-      <!-- TODO: add bindings here instead of search results templates -->
-
+      <resultColumns>
+        #{documentSearchActions.selectedLayoutColumns}
+      </resultColumns>
       <resultLayouts>
         <layout name="search_listing_ajax" title="document_listing"
           translateTitle="true" iconPath="/icons/document_listing_icon.png"
@@ -171,6 +181,9 @@
         <pattern quoteParameters="false" escapeParameters="false">?</pattern>
         <parameter>#{documentSearchActions.nxqlQuery}</parameter>
         <sort column="dc:title" ascending="true" />
+        <sortInfosBinding>
+          #{documentSearchActions.searchSortInfos}
+        </sortInfosBinding>
         <pageSize>20</pageSize>
       </coreQueryPageProvider>
 
@@ -183,6 +196,9 @@
       <cacheKey>only_one_cache</cacheKey>
       <cacheSize>1</cacheSize>
 
+      <resultColumns>
+        #{documentSearchActions.selectedLayoutColumns}
+      </resultColumns>
       <resultLayouts>
         <layout name="search_listing_ajax" title="document_listing"
           translateTitle="true" iconPath="/icons/document_listing_icon.png"
