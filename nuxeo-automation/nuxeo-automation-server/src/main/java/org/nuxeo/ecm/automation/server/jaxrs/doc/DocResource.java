@@ -113,6 +113,9 @@ public class DocResource {
     }
 
     public String[] getInputs(OperationDocumentation op) {
+        if (op == null) {
+            throw new IllegalArgumentException("Operation must not be null");
+        }
         if (op.signature == null && op.signature.length == 0) {
             return new String[0];
         }
@@ -124,6 +127,9 @@ public class DocResource {
     }
 
     public String[] getOutputs(OperationDocumentation op) {
+        if (op == null) {
+            throw new IllegalArgumentException("Operation must not be null");
+        }
         if (op.signature == null && op.signature.length == 0) {
             return new String[0];
         }
