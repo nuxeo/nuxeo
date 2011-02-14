@@ -6,7 +6,7 @@
 
 <p class="explore"><a href="${Root.path}"> See all available distributions </A></p>
 
-<p class="explored"> ${Root.currentDistribution.name} ${Root.currentDistribution.version}
+<p class="explored"><a href="${Root.path}/current/">${Root.currentDistribution.name} ${Root.currentDistribution.version}</a>
 <#if Root.currentDistribution.isLive()>
  (Live)
 </#if>
