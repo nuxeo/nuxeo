@@ -24,7 +24,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
-import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
+import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
 
 
 /**
@@ -42,7 +42,7 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public abstract class GwtResource extends DefaultObject {
+public abstract class GwtResource extends ModuleRoot {
 
     /**
      * Gets a static resource from the GWT module.
