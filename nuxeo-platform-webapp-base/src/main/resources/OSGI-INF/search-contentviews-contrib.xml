@@ -7,6 +7,14 @@
 
     <contentView name="simple_search">
 
+      <title>label.search.form.simple</title>
+      <translateTitle>true</translateTitle>
+      <iconPath>/icons/document_listing_icon.png</iconPath>
+      <showTitle>true</showTitle>
+
+      <emptySentence>label.content.empty.search</emptySentence>
+      <translateEmptySentence>true</translateEmptySentence>
+
       <coreQueryPageProvider>
         <property name="coreSession">#{documentManager}</property>
         <pattern>
@@ -22,6 +30,7 @@
         <pageSize>20</pageSize>
       </coreQueryPageProvider>
 
+      <showPageSizeSelector>true</showPageSizeSelector>
       <useGlobalPageSize>true</useGlobalPageSize>
       <refresh>
         <event>documentChanged</event>
@@ -53,6 +62,13 @@
 
 
     <contentView name="advanced_search">
+
+      <title>command.advancedSearch</title>
+      <translateTitle>true</translateTitle>
+      <showTitle>true</showTitle>
+
+      <emptySentence>label.content.empty.search</emptySentence>
+      <translateEmptySentence>true</translateEmptySentence>
 
       <coreQueryPageProvider>
         <property name="coreSession">#{documentManager}</property>
@@ -146,6 +162,7 @@
 
       <searchLayout name="advanced_search" />
 
+      <showPageSizeSelector>true</showPageSizeSelector>
       <useGlobalPageSize>true</useGlobalPageSize>
       <refresh>
         <event>documentChanged</event>
@@ -176,6 +193,10 @@
     </contentView>
 
     <contentView name="nxql_search">
+
+      <emptySentence>label.content.empty.search</emptySentence>
+      <translateEmptySentence>true</translateEmptySentence>
+
       <coreQueryPageProvider>
         <property name="coreSession">#{documentManager}</property>
         <pattern quoteParameters="false" escapeParameters="false">?</pattern>
@@ -187,6 +208,7 @@
         <pageSize>20</pageSize>
       </coreQueryPageProvider>
 
+      <showPageSizeSelector>true</showPageSizeSelector>
       <useGlobalPageSize>true</useGlobalPageSize>
       <refresh>
         <event>documentChanged</event>

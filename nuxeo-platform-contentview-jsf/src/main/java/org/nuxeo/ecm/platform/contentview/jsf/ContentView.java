@@ -58,8 +58,18 @@ public interface ContentView extends Serializable {
 
     /**
      * Returns a boolean stating if title has to be translated
+     *
+     * @see #getTitle()
      */
     boolean getTranslateTitle();
+
+    /**
+     * Returns true is the title should be displayed before the result layout
+     * selector.
+     *
+     * @since 5.4.1
+     */
+    boolean getShowTitle();
 
     /**
      * Returns the selection list name
@@ -254,6 +264,13 @@ public interface ContentView extends Serializable {
     boolean getUseGlobalPageSize();
 
     /**
+     * Returns true is the page size selector should be displayed.
+     *
+     * @since 5.4.1
+     */
+    boolean getShowPageSizeSelector();
+
+    /**
      * Returns the search document model as set on the content view.
      * <p>
      * If this document is null and a EL binding has been set on the content
@@ -279,5 +296,21 @@ public interface ContentView extends Serializable {
      * configuration.
      */
     String getSearchDocumentModelType();
+
+    /**
+     * Returns a sentence to display when this content view is empty
+     *
+     * @since 5.4.1
+     */
+    String getEmptySentence();
+
+    /**
+     * Returns a boolean stating if sentence to display is empty has to be
+     * translated
+     *
+     * @see #getEmptySentence()
+     * @since 5.4.1
+     */
+    boolean getTranslateEmptySentence();
 
 }

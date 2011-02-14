@@ -19,6 +19,7 @@
         <pageSize>20</pageSize>
       </coreQueryPageProvider>
 
+      <showPageSizeSelector>true</showPageSizeSelector>
       <useGlobalPageSize>true</useGlobalPageSize>
       <refresh>
         <event>documentChanged</event>
@@ -58,8 +59,8 @@
         <pageSize>20</pageSize>
       </coreQueryPageProvider>
 
+      <showPageSizeSelector>true</showPageSizeSelector>
       <useGlobalPageSize>true</useGlobalPageSize>
-
       <refresh>
         <event>documentChanged</event>
         <event>documentChildrenChanged</event>
@@ -98,6 +99,7 @@
         <pageSize>20</pageSize>
       </coreQueryPageProvider>
 
+      <showPageSizeSelector>true</showPageSizeSelector>
       <useGlobalPageSize>true</useGlobalPageSize>
       <refresh>
         <event>documentChanged</event>
@@ -138,6 +140,7 @@
         <pageSize>20</pageSize>
       </coreQueryPageProvider>
 
+      <showPageSizeSelector>true</showPageSizeSelector>
       <useGlobalPageSize>true</useGlobalPageSize>
       <refresh>
         <event>documentChanged</event>

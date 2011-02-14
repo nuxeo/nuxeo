@@ -22,14 +22,7 @@ function confirmDeleteDocumentsForever() {
   <nxu:set var="contentViewId" value="#{widget.id}">
   <nxu:set var="contentViewName" value="#{widgetProperty_contentViewName}">
 
-    <ui:decorate template="/incl/content_view.xhtml">
-      <c:if test="#{widgetProperty_showHeaderBeforeSelector}">
-        <ui:define name="content_view_header_after_selector" />
-      </c:if>
-      <c:if test="#{widgetProperty_showHeaderAfterSelector}">
-        <ui:define name="content_view_header_before_selector" />
-      </c:if>
-    </ui:decorate>
+    <ui:decorate template="/incl/content_view.xhtml" />
 
   </nxu:set>
   </nxu:set>

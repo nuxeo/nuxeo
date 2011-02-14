@@ -72,13 +72,23 @@ public class ContentViewServiceImpl extends DefaultComponent implements
         }
         Boolean useGlobalPageSize = desc.getUseGlobalPageSize();
         if (useGlobalPageSize == null) {
-            // default value
             useGlobalPageSize = Boolean.FALSE;
         }
         Boolean translateTitle = desc.getTranslateTitle();
         if (translateTitle == null) {
-            // default value
             translateTitle = Boolean.FALSE;
+        }
+        Boolean translateEmptySentence = desc.getTranslateEmptySentence();
+        if (translateEmptySentence == null) {
+            translateEmptySentence = Boolean.FALSE;
+        }
+        Boolean showTitle = desc.getShowTitle();
+        if (showTitle == null) {
+            showTitle = Boolean.FALSE;
+        }
+        Boolean showPageSizeSelector = desc.getShowPageSizeSelector();
+        if (showPageSizeSelector == null) {
+            showPageSizeSelector = Boolean.FALSE;
         }
 
         String[] queryParams = null;
@@ -139,7 +149,9 @@ public class ContentViewServiceImpl extends DefaultComponent implements
                 useGlobalPageSize.booleanValue(),
                 allQueryParams.toArray(new String[] {}), searchDocBinding,
                 searchDocumentType, desc.getResultColumnsBinding(),
-                sortInfosBinding, pageSizeBinding);
+                sortInfosBinding, pageSizeBinding, showTitle.booleanValue(),
+                showPageSizeSelector.booleanValue(), desc.getEmptySentence(),
+                translateEmptySentence.booleanValue());
 
         if (searchDocBinding == null) {
             // initialize search doc

@@ -49,6 +49,12 @@ public class ContentViewDescriptor {
     @XNode("translateTitle")
     Boolean translateTitle;
 
+    @XNode("emptySentence")
+    String emptySentence;
+
+    @XNode("translateEmptySentence")
+    Boolean translateEmptySentence;
+
     @XNode("iconPath")
     String iconPath;
 
@@ -96,6 +102,12 @@ public class ContentViewDescriptor {
 
     @XNode("useGlobalPageSize")
     Boolean useGlobalPageSize;
+
+    @XNode("showTitle")
+    Boolean showTitle;
+
+    @XNode("showPageSizeSelector")
+    Boolean showPageSizeSelector = Boolean.TRUE;
 
     @XNodeList(value = "refresh/event", type = ArrayList.class, componentType = String.class)
     List<String> refreshEventNames;
@@ -189,6 +201,34 @@ public class ContentViewDescriptor {
 
     public boolean isEnabled() {
         return enabled;
+    }
+
+    /**
+     * @since 5.4.1
+     */
+    public Boolean getShowTitle() {
+        return showTitle;
+    }
+
+    /**
+     * @since 5.4.1
+     */
+    public Boolean getShowPageSizeSelector() {
+        return showPageSizeSelector;
+    }
+
+    /**
+     * @since 5.4.1
+     */
+    public String getEmptySentence() {
+        return emptySentence;
+    }
+
+    /**
+     * @since 5.4.1
+     */
+    public Boolean getTranslateEmptySentence() {
+        return translateEmptySentence;
     }
 
 }

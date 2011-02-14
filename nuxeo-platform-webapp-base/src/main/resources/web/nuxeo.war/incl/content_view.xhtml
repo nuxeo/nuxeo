@@ -37,9 +37,9 @@
         <c:set var="title"
           value="#{nxu:test(contentView.translateTitle, messages[contentView.title], contentView.title)}" />
 
-        <ui:insert name="content_view_header_before_selector">
-          <c:if test="#{!empty title}">
-            <div class="action_bar">
+        <ui:insert name="content_view_title">
+          <c:if test="#{contentView.showTitle and not empty title}">
+            <div class="contentViewTitle">
               <h3>
                 <c:if test="#{!empty contentView.iconPath}">
                   <nxu:graphicImage value="#{contentView.iconPath}" title="#{title}" />
@@ -55,17 +55,6 @@
           <div style="clear:both;" />
         </ui:insert>
 
-        <ui:insert name="content_view_header_after_selector">
-          <c:if test="#{!empty title}">
-            <h3>
-              <c:if test="#{!empty contentView.iconPath}">
-                <nxu:graphicImage value="#{contentView.iconPath}" title="#{title}" />
-              </c:if>
-              #{title}
-            </h3>
-          </c:if>
-        </ui:insert>
-
         <ui:decorate template="/incl/documents_layout_table.xhtml">
           <ui:param name="documents" value="#{provider.currentSelectPage}" />
           <ui:param name="listName" value="#{contentView.selectionListName}" />
@@ -73,7 +62,9 @@
 
           <ui:define name="empty_folder_label">
             <ui:insert name="empty_content_view_label">
-              <h:outputText value="#{messages['label.content.emptyFolder']}"
+              <c:set var="emptySentence"
+                value="#{nxu:test(contentView.translateEmptySentence, messages[contentView.emptySentence], contentView.emptySentence)}" />
+              <h:outputText value="#{nxu:test(empty emptySentence, messages['label.content.emptyFolder'], emptySentence)}"
                 rendered="#{documents.rowCount == 0 and not provider.hasError()}" />
             </ui:insert>
           </ui:define>

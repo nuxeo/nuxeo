@@ -60,7 +60,13 @@ public class ContentViewImpl implements ContentView {
 
     protected boolean translateTitle;
 
+    protected String emptySentence;
+
+    protected boolean translateEmptySentence;
+
     protected String iconPath;
+
+    protected boolean showTitle;
 
     protected String selectionList;
 
@@ -88,6 +94,8 @@ public class ContentViewImpl implements ContentView {
 
     protected boolean useGlobalPageSize;
 
+    protected boolean showPageSizeSelector;
+
     protected Long currentPageSize;
 
     protected String[] queryParameters;
@@ -112,7 +120,9 @@ public class ContentViewImpl implements ContentView {
             List<String> resetEventNames, boolean useGlobalPageSize,
             String[] queryParameters, String searchDocumentModelBinding,
             String searchDocumentModelType, String resultColumnsBinding,
-            String sortInfosBinding, String pageSizeBinding) {
+            String sortInfosBinding, String pageSizeBinding, boolean showTitle,
+            boolean showPageSizeSelector, String emptySentence,
+            boolean translateEmptySentence) {
         this.name = name;
         this.title = title;
         this.translateTitle = translateTitle;
@@ -134,6 +144,10 @@ public class ContentViewImpl implements ContentView {
         this.resultColumnsBinding = resultColumnsBinding;
         this.pageSizeBinding = pageSizeBinding;
         this.sortInfosBinding = sortInfosBinding;
+        this.showTitle = showTitle;
+        this.showPageSizeSelector = showPageSizeSelector;
+        this.emptySentence = emptySentence;
+        this.translateEmptySentence = translateEmptySentence;
     }
 
     public String getName() {
@@ -579,6 +593,24 @@ public class ContentViewImpl implements ContentView {
                             + "for content view '%s'",
                     SEARCH_DOCUMENT_EL_VARIABLE, getName()));
         }
+    }
+
+    @Override
+    public boolean getShowPageSizeSelector() {
+        return showPageSizeSelector;
+    }
+
+    @Override
+    public boolean getShowTitle() {
+        return showTitle;
+    }
+
+    public String getEmptySentence() {
+        return emptySentence;
+    }
+
+    public boolean getTranslateEmptySentence() {
+        return translateEmptySentence;
     }
 
     @Override
