@@ -1,121 +1,124 @@
 var currentPage = 0;
 var maxPage = 0;
 
-      function showErrorMessage(message,debug) {
-        _gel("errorMessage").innerHTML=message;
-        if (debug) {
-          _gel("debugInfo").innerHTML=debug;
+function showErrorMessage(message, debug) {
+    _gel("errorMessage").innerHTML = message;
+    if (debug) {
+        _gel("debugInfo").innerHTML = debug;
+    }
+    _gel("errorDivMessage").style.display = 'block';
+}
+function hideErrorMessage() {
+    _gel("errorMessage").innerHTML = "";
+    _gel("debugInfo").innerHTML = "";
+    _gel("errorDivMessage").style.display = 'none';
+}
+function showWaitMessage() {
+    _gel("waitMessage").style.display = 'block';
+}
+function hideWaitMessage() {
+    _gel("waitMessage").style.display = 'none';
+}
+function showOAuthPrompt(openCallback, doneCallback) {
+    _gel("oAuthPromptMessage").style.display = 'block';
+    _gel('nxauth').onclick = openCallback;
+    _gel('approvaldone').onclick = doneCallback;
+    hideWaitMessage();
+}
+function hideOAuthPrompt(openCallback, doneCallback) {
+    _gel("oAuthPromptMessage").style.display = 'none';
+}
+function showOAuthInProgress() {
+    _gel("oAuthWaitMessage").style.display = 'block';
+    hideOAuthPrompt();
+}
+function hideOAuthInProgress() {
+    _gel("oAuthWaitMessage").style.display = 'none';
+}
+
+function doAutomationRequest(nxParams) {
+
+    showWaitMessage();
+    hideErrorMessage();
+
+    var url = NXGadgetContext.serverSideBaseUrl + "site/automation/" + nxParams.operationId;
+
+    // add random TS to walkaround caching issues ...
+    var ts = new Date().getTime() + "" + Math.random() * 11;
+    url += "?ts=" + ts;
+
+    // add target repository if needed
+    if (typeof(getTargetRepository) == 'function') {
+        var repoName = getTargetRepository();
+        if (repoName != null && repoName != '') {
+            url += "&nxrepository=" + repoName;
         }
-        _gel("errorDivMessage").style.display='block';
-      }
-      function hideErrorMessage() {
-        _gel("errorMessage").innerHTML="";
-        _gel("debugInfo").innerHTML="";
-        _gel("errorDivMessage").style.display='none';
-      }
-      function showWaitMessage() {
-        _gel("waitMessage").style.display='block';
-      }
-      function hideWaitMessage() {
-        _gel("waitMessage").style.display='none';
-      }
-      function showOAuthPrompt(openCallback, doneCallback) {
-        _gel("oAuthPromptMessage").style.display='block';
-        _gel('nxauth').onclick = openCallback;
-        _gel('approvaldone').onclick = doneCallback;
-        hideWaitMessage();
-      }
-      function hideOAuthPrompt(openCallback, doneCallback) {
-          _gel("oAuthPromptMessage").style.display='none';
-      }
-      function showOAuthInProgress() {
-        _gel("oAuthWaitMessage").style.display='block';
-        hideOAuthPrompt();
-      }
-      function hideOAuthInProgress() {
-        _gel("oAuthWaitMessage").style.display='none';
-      }
-
-      function doAutomationRequest(nxParams) {
-
-        showWaitMessage();
-        hideErrorMessage();
-
-        var url = NXGadgetContext.serverSideBaseUrl + "site/automation/" + nxParams.operationId;
-
-        // add random TS to walkaround caching issues ...
-        var ts = new Date().getTime() + "" + Math.random()*11
-        url += "?ts=" + ts;
-
-        // add target repository if needed
-        if (typeof(getTargetRepository)=='function') {
-          var repoName = getTargetRepository();
-          if (repoName!=null && repoName !='') {
-            url+= "&nxrepository=" + repoName;
-          }
-        }
-
-        var rParams = {};
-        // select auth mode
-        if (NXGadgetContext.insideNuxeo) {
-          rParams[gadgets.io.RequestParameters.AUTHORIZATION] = gadgets.io.AuthorizationType.SIGNED;
-          rParams[gadgets.io.RequestParameters.OAUTH_SERVICE_NAME] = "nuxeo4shindig";
-        } else {
-          rParams[gadgets.io.RequestParameters.AUTHORIZATION] = gadgets.io.AuthorizationType.OAUTH;
-          rParams[gadgets.io.RequestParameters.OAUTH_SERVICE_NAME] = "nuxeo";
-          rParams[gadgets.io.RequestParameters.OAUTH_USE_TOKEN]="always";
-        }
-        rParams[gadgets.io.RequestParameters.METHOD] = gadgets.io.MethodType.POST;
-
-        rParams[gadgets.io.RequestParameters.CONTENT_TYPE] = gadgets.io.ContentType.JSON;
-
-        if (nxParams.usePagination) {
-          nxParams.operationParams.page=currentPage;
-        }
-
-        // Build automation body
-        var automationParams = {};
-        automationParams.input=nxParams.operationInput;
-        automationParams.params=nxParams.operationParams;
-        automationParams.context=nxParams.operationContext;
-        automationParams.documentProperties=nxParams.operationDocumentProperties;
-
-        rParams[gadgets.io.RequestParameters.POST_DATA] = gadgets.io.encodeValues({jsondata : JSON.stringify(automationParams)});
-
-        gadgets.io.makeRequest(url, function(response) {requestCompleted(response,nxParams);}, rParams);
     }
 
-    function requestCompleted(response,nxParams) {
-      if (response.data) {
+    var rParams = {};
+    // select auth mode
+    if (NXGadgetContext.insideNuxeo) {
+        rParams[gadgets.io.RequestParameters.AUTHORIZATION] = gadgets.io.AuthorizationType.SIGNED;
+        rParams[gadgets.io.RequestParameters.OAUTH_SERVICE_NAME] = "nuxeo4shindig";
+    } else {
+        rParams[gadgets.io.RequestParameters.AUTHORIZATION] = gadgets.io.AuthorizationType.OAUTH;
+        rParams[gadgets.io.RequestParameters.OAUTH_SERVICE_NAME] = "nuxeo";
+        rParams[gadgets.io.RequestParameters.OAUTH_USE_TOKEN] = "always";
+    }
+    rParams[gadgets.io.RequestParameters.METHOD] = gadgets.io.MethodType.POST;
+
+    rParams[gadgets.io.RequestParameters.CONTENT_TYPE] = gadgets.io.ContentType.JSON;
+
+    if (nxParams.usePagination) {
+        nxParams.operationParams.page = currentPage;
+    }
+
+    // Build automation body
+    var automationParams = {};
+    automationParams.input = nxParams.operationInput;
+    automationParams.params = nxParams.operationParams;
+    automationParams.context = nxParams.operationContext;
+    automationParams.documentProperties = nxParams.operationDocumentProperties;
+
+    rParams[gadgets.io.RequestParameters.POST_DATA] = gadgets.io.encodeValues(
+            {jsondata : JSON.stringify(automationParams)});
+
+    gadgets.io.makeRequest(url, function(response) {
+        requestCompleted(response, nxParams);
+    }, rParams);
+}
+
+function requestCompleted(response, nxParams) {
+    if (response.data) {
         hideWaitMessage();
         hideOAuthInProgress();
-        if (response.data['entity-type']==nxParams.entityType) {
-          if (nxParams.usePagination) {
-            maxPage = response.data['pageCount'];
-          }
+        if (response.data['entity-type'] == nxParams.entityType) {
+            if (nxParams.usePagination) {
+                maxPage = response.data['pageCount'];
+            }
 
-          // set callback
-          nxParams.refreshCB=doAutomationRequest;
+            // set callback
+            nxParams.refreshCB = doAutomationRequest;
 
-          nxParams.displayMethod(response.data.entries,nxParams);
+            nxParams.displayMethod(response.data.entries, nxParams);
         }
         else {
-          alert(response.data.entity-type);
+            alert(response.data.entity - type);
         }
-      } else if (response.oauthApprovalUrl) {
-            var onOpen = function() {
-              showOAuthInProgress();
-            };
+    } else if (response.oauthApprovalUrl) {
+        var onOpen = function() {
+            showOAuthInProgress();
+        };
 
-            var onClose = function() {
-              doAutomationRequest(nxParams);
-            };
-            var popup = new gadgets.oauth.Popup(response.oauthApprovalUrl,
+        var onClose = function() {
+            doAutomationRequest(nxParams);
+        };
+        var popup = new gadgets.oauth.Popup(response.oauthApprovalUrl,
                 'height=600,width=800', onOpen, onClose);
-            showOAuthPrompt(popup.createOpenerOnClick(), popup.createApprovedOnClick());
-      }
-      else {
-        showErrorMessage("No data received from server", response);
-      }
+        showOAuthPrompt(popup.createOpenerOnClick(), popup.createApprovedOnClick());
     }
+    else {
+        showErrorMessage("No data received from server", response);
+    }
+}
 

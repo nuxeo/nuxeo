@@ -39,7 +39,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.model.PropertyException;
-import org.nuxeo.ecm.webengine.session.UserSession;
+import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -76,7 +76,7 @@ public class AutomationResource {
     String uid, @QueryParam("path")
     String path) {
         try {
-            CoreSession session = UserSession.getCurrentSession(request).getCoreSession();
+            CoreSession session = SessionFactory.getSession(request);
             DocumentModel doc = session.getDocument(new IdRef(uid));
             Object obj = null;
             try {

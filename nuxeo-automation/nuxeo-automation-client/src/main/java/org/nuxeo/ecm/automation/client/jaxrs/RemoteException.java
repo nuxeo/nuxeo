@@ -16,6 +16,9 @@
  */
 package org.nuxeo.ecm.automation.client.jaxrs;
 
+import java.io.PrintStream;
+import java.io.PrintWriter;
+
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -49,4 +52,17 @@ public class RemoteException extends AutomationException {
         return status + " - " + getMessage() + "\n" + stackTrace;
     }
 
+    @Override
+    public void printStackTrace(PrintStream s) {
+        super.printStackTrace(s);
+        s.println("====== Remote Stack Trace:");
+        s.print(getRemoteStackTrace());
+    }
+
+    @Override
+    public void printStackTrace(PrintWriter s) {
+        super.printStackTrace(s);
+        s.println("====== Remote Stack Trace:");
+        s.print(getRemoteStackTrace());
+    }
 }

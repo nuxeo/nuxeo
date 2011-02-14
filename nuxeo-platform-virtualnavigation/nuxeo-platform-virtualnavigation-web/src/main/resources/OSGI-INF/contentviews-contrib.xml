@@ -8,6 +8,9 @@
     <contentView name="bySubjectsContentView">
       <title>label.virtualnavigation.subjects</title>
       <translateTitle>true</translateTitle>
+      <showTitle>true</showTitle>
+      <emptySentence>label.content.empty.search</emptySentence>
+      <translateEmptySentence>true</translateEmptySentence>
 
       <coreQueryPageProvider>
         <property name="coreSession">#{documentManager}</property>
@@ -25,6 +28,7 @@
         <pageSize>10</pageSize>
       </coreQueryPageProvider>
 
+      <showPageSizeSelector>true</showPageSizeSelector>
       <useGlobalPageSize>true</useGlobalPageSize>
       <refresh>
         <event>documentChildrenChanged</event>
@@ -35,7 +39,8 @@
       <resultLayouts>
         <layout name="document_virtual_navigation_listing_ajax"
           title="document_listing" translateTitle="true"
-          iconPath="/icons/document_listing_icon.png" />
+          iconPath="/icons/document_listing_icon.png"
+          showCSVExport="true" />
         <layout
           name="document_virtual_navigation_listing_ajax_compact_2_columns"
           title="document_listing_compact_2_columns" translateTitle="true"
@@ -53,6 +58,9 @@
     <contentView name="byCoverageContentView">
       <title>label.virtualnavigation.coverage</title>
       <translateTitle>true</translateTitle>
+      <showTitle>true</showTitle>
+      <emptySentence>label.content.empty.search</emptySentence>
+      <translateEmptySentence>true</translateEmptySentence>
 
       <coreQueryPageProvider>
         <property name="coreSession">#{documentManager}</property>
@@ -70,6 +78,7 @@
         <pageSize>10</pageSize>
       </coreQueryPageProvider>
 
+      <showPageSizeSelector>true</showPageSizeSelector>
       <useGlobalPageSize>true</useGlobalPageSize>
       <refresh>
         <event>documentChildrenChanged</event>
@@ -80,7 +89,8 @@
       <resultLayouts>
         <layout name="document_virtual_navigation_listing_ajax"
           title="document_listing" translateTitle="true"
-          iconPath="/icons/document_listing_icon.png" />
+          iconPath="/icons/document_listing_icon.png"
+          showCSVExport="true" />
         <layout
           name="document_virtual_navigation_listing_ajax_compact_2_columns"
           title="document_listing_compact_2_columns" translateTitle="true"

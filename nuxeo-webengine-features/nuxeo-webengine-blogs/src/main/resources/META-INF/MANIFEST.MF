@@ -17,3 +17,4 @@ Require-Bundle: org.nuxeo.ecm.webapp.core,
   org.nuxeo.ecm.platform.webengine.sites,
   org.nuxeo.ecm.platform.webengine.blogs.api
 Export-Package: org.nuxeo.webengine.blogs
+Nuxeo-WebModule: org.nuxeo.ecm.webengine.app.WebEngineModule

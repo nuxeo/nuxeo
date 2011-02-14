@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.annotations.service;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -36,7 +37,6 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
- *
  */
 public abstract class AbstractAnnotationTest extends RepositoryOSGITestCase {
 
@@ -46,7 +46,8 @@ public abstract class AbstractAnnotationTest extends RepositoryOSGITestCase {
 
     protected Annotation annotation1;
 
-    protected final NuxeoPrincipal user = new UserPrincipal("bob");
+    protected final NuxeoPrincipal user = new UserPrincipal("bob",
+            new ArrayList<String>(), false, false);
 
     protected final AnnotationManager manager = new AnnotationManager();
 
@@ -68,7 +69,7 @@ public abstract class AbstractAnnotationTest extends RepositoryOSGITestCase {
         deployBundle("org.nuxeo.ecm.relations");
         deployBundle("org.nuxeo.ecm.annotations");
         deployBundle("org.nuxeo.ecm.annotations.contrib");
-        deployTestContrib("org.nuxeo.ecm.annotations","/test-ann-contrib.xml");
+        deployTestContrib("org.nuxeo.ecm.annotations", "/test-ann-contrib.xml");
         deployBundle("org.nuxeo.ecm.relations.jena");
         deployBundle("org.nuxeo.ecm.platform.usermanager");
         deployBundle("org.nuxeo.ecm.platform.types.core");

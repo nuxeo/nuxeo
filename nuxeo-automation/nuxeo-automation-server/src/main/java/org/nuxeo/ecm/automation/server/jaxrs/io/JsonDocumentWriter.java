@@ -37,6 +37,8 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONNull;
 import net.sf.json.JSONObject;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
 import org.nuxeo.common.utils.StringUtils;
@@ -50,7 +52,6 @@ import org.nuxeo.ecm.core.api.model.impl.ComplexProperty;
 import org.nuxeo.ecm.core.api.model.impl.ListProperty;
 import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
 import org.nuxeo.ecm.core.schema.utils.DateParser;
-import org.nuxeo.ecm.webengine.WebException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -58,6 +59,8 @@ import org.nuxeo.ecm.webengine.WebException;
 @Provider
 @Produces({ "application/json+nxentity", "application/json" })
 public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
+
+    private static final Log log = LogFactory.getLog(JsonDocumentWriter.class);
 
     @Context
     protected HttpHeaders headers;
@@ -87,7 +90,8 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
             }
             arg6.write(obj.toString(2).getBytes("UTF-8"));
         } catch (Exception e) {
-            throw WebException.wrap(e);
+            log.error("Failed to serialize document", e);
+            throw new WebApplicationException(500);
         }
     }
 

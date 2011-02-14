@@ -32,6 +32,7 @@ import org.nuxeo.opensocial.gadgets.service.api.GadgetDeclaration;
 import org.nuxeo.opensocial.gadgets.service.api.GadgetService;
 import org.nuxeo.runtime.api.Framework;
 
+@Path("/gadgets")
 @WebObject(type = "gadgets")
 @Produces("text/html; charset=UTF-8")
 public class Gadgets extends ModuleRoot {

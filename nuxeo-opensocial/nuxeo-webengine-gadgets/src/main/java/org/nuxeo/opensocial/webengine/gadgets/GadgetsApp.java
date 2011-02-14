@@ -20,15 +20,14 @@ package org.nuxeo.opensocial.webengine.gadgets;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.ws.rs.core.Application;
+import org.nuxeo.ecm.webengine.app.WebEngineModule;
 
-public class GadgetsApp extends Application {
+public class GadgetsApp extends WebEngineModule {
 
     @Override
-    public Set<Class<?>> getClasses() {
-        HashSet<Class<?>> set = new HashSet<Class<?>>();
-        set.add(Gadgets.class);
-        set.add(GadgetStreamWriter.class);
+    public Set<Object> getSingletons() {
+        HashSet<Object> set = new HashSet<Object>();
+        set.add(new GadgetStreamWriter());
         return set;
     }
 

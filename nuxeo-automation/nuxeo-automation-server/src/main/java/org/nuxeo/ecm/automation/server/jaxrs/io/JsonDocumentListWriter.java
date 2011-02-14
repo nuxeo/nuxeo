@@ -35,11 +35,12 @@ import javax.ws.rs.ext.Provider;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.automation.core.util.PaginableDocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.webengine.WebException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -50,6 +51,8 @@ public class JsonDocumentListWriter implements
         MessageBodyWriter<DocumentModelList> {
 
     public static final String DOCUMENT_PROPERTIES_HEADER = "X-NXDocumentProperties";
+
+    private static final Log log = LogFactory.getLog(JsonDocumentListWriter.class);
 
     @Context
     protected HttpHeaders headers;
@@ -93,7 +96,8 @@ public class JsonDocumentListWriter implements
 
             arg6.write(json.toString(2).getBytes("UTF-8"));
         } catch (Exception e) {
-            throw WebException.wrap(e);
+            log.error("Failed to wserialize document list", e);
+            throw new WebApplicationException(500);
         }
     }
 }

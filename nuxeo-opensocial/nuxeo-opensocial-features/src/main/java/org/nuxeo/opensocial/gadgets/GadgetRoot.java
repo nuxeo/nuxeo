@@ -17,6 +17,7 @@ import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.model.exceptions.WebSecurityException;
 import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
 
+@Path("/gadgetDocumentAPI")
 @WebObject(type = "GadgetDocumentRoot")
 public class GadgetRoot extends ModuleRoot {
 

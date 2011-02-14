@@ -37,13 +37,13 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 
 import net.sf.json.JSONObject;
 
-import org.nuxeo.ecm.webengine.forms.FormData;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
 import org.nuxeo.theme.webwidgets.Manager;
 import org.nuxeo.theme.webwidgets.WidgetData;
 import org.nuxeo.theme.webwidgets.WidgetType;
 
+@Path("/nxthemes-webwidgets")
 @WebObject(type = "nxthemes-webwidgets")
 @Produces("text/html")
 public class Main extends ModuleRoot {

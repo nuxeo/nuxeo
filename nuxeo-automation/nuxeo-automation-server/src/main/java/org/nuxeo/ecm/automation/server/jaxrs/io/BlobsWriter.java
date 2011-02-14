@@ -24,13 +24,12 @@ import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
+import javax.mail.MessagingException;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
-
-import org.nuxeo.ecm.webengine.WebException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -46,8 +45,8 @@ public class BlobsWriter implements MessageBodyWriter<MultipartBlobs> {
         try {
             blobs.writeTo(entityStream);
             entityStream.flush();
-        } catch (Throwable e) {
-            throw WebException.wrap("Failed to return blobs", e);
+        } catch (MessagingException e) {
+            throw new IOException("Failed to return blobs", e);
         }
     }
 

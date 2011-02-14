@@ -23,33 +23,22 @@ import java.util.List;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 
-import org.nuxeo.ecm.webengine.WebEngine;
-import org.nuxeo.ecm.webengine.app.impl.DefaultContext;
-import org.nuxeo.ecm.webengine.model.Module;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.model.exceptions.WebSecurityException;
-import org.nuxeo.ecm.webengine.model.impl.AbstractWebContext;
 import org.nuxeo.ecm.webengine.model.impl.ModuleConfiguration;
-import org.nuxeo.ecm.webengine.model.impl.ModuleImpl;
-import org.nuxeo.ecm.webengine.model.impl.ModuleManager;
 import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
 import org.nuxeo.ecm.webengine.model.impl.ModuleShortcut;
-import org.nuxeo.ecm.webengine.model.impl.ResourceTypeImpl;
 
 /**
  * The web entry point of WebEngine.
  * <p>
  * This is a mix between an webengine module and a JAX-RS root resource
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @Path("/")
@@ -57,36 +46,8 @@ import org.nuxeo.ecm.webengine.model.impl.ResourceTypeImpl;
 @WebObject(type = "base")
 public class Main extends ModuleRoot {
 
-    protected final ModuleManager mgr;
-
-    protected Module module;
-
-    public Main(@Context UriInfo info, @Context HttpHeaders headers) {
-        ctx = WebEngine.getActiveContext();
-        ((DefaultContext) ctx).setUriInfo(info);
-        ((DefaultContext) ctx).setHttpHeaders(headers);
-        path = ctx.getBasePath();
-        mgr = ctx.getEngine().getModuleManager();
-    }
-
-    /**
-     * Initializes the current module context.
-     */
-    protected void init() {
-        ModuleConfiguration mc = mgr.getRootModule();
-        if (mc == null) {
-            throw new WebResourceNotFoundException("Root module not registered");
-        }
-        module = mc.get();
-        ((AbstractWebContext) ctx).setModule(module);
-        type = (ResourceTypeImpl) ((ModuleImpl) module).getRootType();
-        setRoot(true);
-        ctx.push(this);
-    }
-
     @GET
     public Object doGet() {
-        init();
         ArrayList<ModuleShortcut> list = new ArrayList<ModuleShortcut>();
         for (ModuleConfiguration mc : ctx.getEngine().getModuleManager().getModules()) {
             List<ModuleShortcut> items = mc.getShortcuts();
@@ -97,8 +58,13 @@ public class Main extends ModuleRoot {
                     }
                 }
                 list.addAll(items);
-            } else if (!mc.isHeadless && mc.path != null) {
-                list.add(new ModuleShortcut(mc.path, mc.name));
+            } else if (!mc.isHeadless) {
+                if (mc.roots != null && mc.roots.length > 0){
+                    Path path = mc.roots[0].getAnnotation(Path.class);
+                    if (path != null) {
+                        list.add(new ModuleShortcut(path.value(), mc.name));
+                    }
+                }
             }
         }
         Collections.sort(list, new Comparator<ModuleShortcut>() {
@@ -112,26 +78,13 @@ public class Main extends ModuleRoot {
     @GET
     @Path("help")
     public Object getHelp() {
-        init();
         return getTemplate("help/help.ftl");
     }
 
     @GET
     @Path("about")
     public Object getAbout() {
-        init();
         return getTemplate("help/about.ftl");
-    }
-
-    @Path("{path}")
-    public Object dispatch(@PathParam("path") String path) {
-        ModuleConfiguration md = mgr.getModuleByPath(path);
-        if (md != null) {
-            return md.get().getRootObject(ctx);
-        } else {
-            throw new WebResourceNotFoundException("No resource found at "
-                    + path);
-        }
     }
 
     // handle errors

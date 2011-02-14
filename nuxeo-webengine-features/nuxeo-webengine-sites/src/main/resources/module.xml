@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<module name="sites" root-type="sites" path="/sites" extends="base">
+<module name="sites" extends="base" path="/sites">
   <links>
     <link id="action_webpage_edit" path="edit">
       <category>SITE_ACTIONS</category>

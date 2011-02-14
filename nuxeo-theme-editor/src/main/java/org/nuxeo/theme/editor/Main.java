@@ -58,6 +58,7 @@ import org.nuxeo.theme.themes.ThemeSerializer;
 import org.nuxeo.theme.types.TypeFamily;
 import org.nuxeo.theme.views.ViewType;
 
+@Path("/nxthemes-editor")
 @WebObject(type = "nxthemes-editor", administrator = Access.GRANT)
 @Produces(MediaType.TEXT_HTML)
 public class Main extends ModuleRoot {

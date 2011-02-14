@@ -43,8 +43,8 @@ import org.nuxeo.ecm.automation.server.jaxrs.ExceptionHandler;
 import org.nuxeo.ecm.automation.server.jaxrs.ExecutionRequest;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
-import org.nuxeo.ecm.webengine.session.RequestCleanupHandler;
-import org.nuxeo.ecm.webengine.session.UserSession;
+import org.nuxeo.ecm.webengine.jaxrs.context.RequestCleanupHandler;
+import org.nuxeo.ecm.webengine.jaxrs.context.RequestContext;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -125,7 +125,7 @@ public class MultiPartRequestReader implements
         final File tmp = File.createTempFile("nx-automation-upload-", ".tmp");
         FileUtils.copyToFile(pin, tmp);
         FileBlob blob = new FileBlob(tmp, ctype, null, fname, null);
-        UserSession.addRequestCleanupHandler(request,
+        RequestContext.getActiveContext(request).addRequestCleanupHandler(
                 new RequestCleanupHandler() {
                     public void cleanup(HttpServletRequest req) {
                         tmp.delete();

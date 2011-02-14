@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
@@ -10,12 +11,13 @@
   </parent>
 
   <artifactId>nuxeo-platform-syndication</artifactId>
-  <name>Nuxeo Syndication Service</name>
+  <name>*DEPRECATED* Nuxeo Syndication Service</name>
   <description>
-        Nuxeo Enterprise Platform: Syndication Service. This service
-        build syndication feeds (RSS &amp; ATOM) on content objects. It
-        defines Interfaces so that any content object implementing those
-        interfaces can produce syndication feeds or be included in it.
+    Nuxeo Enterprise Platform: Syndication Service. This service build
+    syndication feeds (RSS &amp; ATOM) on content objects. It defines Interfaces
+    so that any content object implementing those interfaces can produce
+    syndication feeds or be included in it. As of Nuxeo 5.4.1, it is deprecated
+    since content views already offer RSS and ATOM exports.
   </description>
 
   <dependencies>

@@ -10,7 +10,7 @@ Bundle-Name: Nuxeo WebEngine Base
 Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.nuxeo.ecm.webengine.core
-Nuxeo-WebModule: org.nuxeo.ecm.webengine.base.BaseModule; explode:=true; compat:=true
+Nuxeo-WebModule: org.nuxeo.ecm.webengine.app.WebEngineModule
 Bundle-Version: 0.0.0.SNAPSHOT
 Bundle-ManifestVersion: 2
 Import-Package: javax.annotation,

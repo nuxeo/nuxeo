@@ -22,6 +22,7 @@ package org.nuxeo.ecm.platform.annotations.service;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -52,7 +53,8 @@ public class AnnotationRepositoryTest extends AbstractRepositoryTestCase {
 
     private DocumentModel version1;
 
-    private final NuxeoPrincipal user = new UserPrincipal("bob");
+    private final NuxeoPrincipal user = new UserPrincipal("bob",
+            new ArrayList<String>(), false, false);
 
     @Override
     public void setUp() throws Exception {

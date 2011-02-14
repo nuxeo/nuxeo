@@ -22,13 +22,10 @@ import java.net.URL;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.UriInfo;
 
 import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.webengine.model.WebObject;
-import org.nuxeo.ecm.webengine.model.impl.RootResource;
+import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -36,11 +33,7 @@ import org.nuxeo.ecm.webengine.model.impl.RootResource;
  */
 @Path("/shell")
 @WebObject(type = "Shell")
-public class Shell extends RootResource {
-
-    public Shell(@Context UriInfo info, @Context HttpHeaders headers) {
-        super(info, headers, "Admin");
-    }
+public class Shell extends ModuleRoot {
 
     @GET
     @Produces("text/html;charset=UTF-8")

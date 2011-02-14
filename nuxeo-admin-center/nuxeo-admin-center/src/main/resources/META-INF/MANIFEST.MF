@@ -8,3 +8,4 @@ Nuxeo-Component: OSGI-INF/actions-contrib.xml,
  OSGI-INF/theme-contrib.xml,
  OSGI-INF/auth-contrib.xml
 Export-Package: i18n
+Nuxeo-WebModule: org.nuxeo.ecm.webengine.app.WebEngineModule

@@ -64,3 +64,4 @@ Import-Package: javax.annotation,
  org.nuxeo.webengine.sites.utils
 Provide-Package: org.nuxeo.ecm.platform.webengine.jsf
 Bundle-SymbolicName: org.nuxeo.ecm.platform.webengine.sites
+Nuxeo-WebModule: org.nuxeo.ecm.webengine.app.WebEngineModule

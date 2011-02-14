@@ -38,8 +38,8 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.webengine.WebEngine;
-import org.nuxeo.ecm.webengine.model.view.TemplateView;
+import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
+import org.nuxeo.ecm.webengine.jaxrs.views.TemplateView;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -85,7 +85,7 @@ public class DebugResource {
     public Response doPost(@FormParam("input")
     String input, @FormParam("chain")
     String chainXml) throws Exception {
-        CoreSession session = WebEngine.getActiveContext().getCoreSession();
+        CoreSession session = SessionFactory.getSession();
         if (!((NuxeoPrincipal) session.getPrincipal()).isAdministrator()) {
             return Response.status(403).build();
         }
@@ -111,7 +111,7 @@ public class DebugResource {
     String chainId) throws Exception {
         try {
             OperationContext ctx = new OperationContext(
-                    WebEngine.getActiveContext().getCoreSession());
+                    SessionFactory.getSession());
             ctx.setInput(getDocumentRef(input));
             getOperationService().run(ctx, chainId);
             return Response.ok("Operation Done.").build();

@@ -22,6 +22,6 @@ Import-Package: com.thoughtworks.xstream,
  org.nuxeo.runtime.model
 Provide-Package: org.nuxeo.ecm.webengine.management,
  org.nuxeo.ecm.webengine.management.statuses
-Nuxeo-WebModule: org.nuxeo.ecm.webengine.management
+Nuxeo-WebModule: org.nuxeo.ecm.webengine.app.WebEngineModule
 Bundle-SymbolicName: org.nuxeo.ecm.webengine.management;singleton=true
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
