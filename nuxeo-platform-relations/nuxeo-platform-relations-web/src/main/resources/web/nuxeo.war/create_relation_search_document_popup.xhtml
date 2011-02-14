@@ -43,27 +43,15 @@
 
       <a4j:outputPanel id="content">
         <ui:decorate template="/incl/content_view.xhtml">
-          <ui:define name="empty_content_view_label">
-            <h:outputText value="#{messages['label.content.empty.search']}"
-              rendered="#{documents.rowCount == 0 and not provider.hasError()}" />
-          </ui:define>
-          <ui:define name="content_view_header_before_selector">
-            <div class="action_bar">
-              <h3>
-                <h:outputText value="#{messages['label.search.results']}" />
-              </h3>
-            </div>
-          </ui:define>
           <ui:define name="pageNavigationControls">
             <ui:include src="/pagination/a4jPageNavigationControls.xhtml">
               <ui:param name="contentIdToBeReRendered" value="content"/>
             </ui:include>
           </ui:define>
-          <ui:define name="content_view_header_after_selector" />
           <ui:define name="content_view_syndication_buttons" />
           <ui:define name="content_view_selector">
             <div style="clear:both;" />
-        </ui:define>
+          </ui:define>
         </ui:decorate>
       </a4j:outputPanel>
     </nxu:set>

@@ -6,6 +6,12 @@
 
     <contentView name="relation_search">
 
+      <title>label.search.results</title>
+      <translateTitle>true</translateTitle>
+
+      <emptySentence>label.content.empty.search</emptySentence>
+      <translateEmptySentence>true</translateEmptySentence>
+
       <coreQueryPageProvider>
         <parameter>#{currentDocument.id}</parameter>
         <property name="coreSession">#{documentManager}</property>
@@ -23,7 +29,8 @@
           </predicate>
 
           <fixedPart>
-            ecm:uuid != ? AND ecm:mixinType != 'HiddenInNavigation' AND ecm:mixinType != 'Folderish' AND ecm:isCheckedInVersion = 0
+            ecm:uuid != ? AND ecm:mixinType != 'HiddenInNavigation' AND
+            ecm:mixinType != 'Folderish' AND ecm:isCheckedInVersion = 0
           </fixedPart>
         </whereClause>
         <sort column="dc:title" ascending="true" />
@@ -32,6 +39,7 @@
 
       <searchLayout name="relation_search" />
 
+      <showPageSizeSelector>true</showPageSizeSelector>
       <useGlobalPageSize>true</useGlobalPageSize>
       <refresh>
         <event>documentChanged</event>

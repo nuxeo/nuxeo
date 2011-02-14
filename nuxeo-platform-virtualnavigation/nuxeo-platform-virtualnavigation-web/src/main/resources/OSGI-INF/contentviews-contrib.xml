@@ -8,6 +8,9 @@
     <contentView name="bySubjectsContentView">
       <title>label.virtualnavigation.subjects</title>
       <translateTitle>true</translateTitle>
+      <showTitle>true</showTitle>
+      <emptySentence>label.content.empty.search</emptySentence>
+      <translateEmptySentence>true</translateEmptySentence>
 
       <coreQueryPageProvider>
         <property name="coreSession">#{documentManager}</property>
@@ -25,6 +28,7 @@
         <pageSize>10</pageSize>
       </coreQueryPageProvider>
 
+      <showPageSizeSelector>true</showPageSizeSelector>
       <useGlobalPageSize>true</useGlobalPageSize>
       <refresh>
         <event>documentChildrenChanged</event>
@@ -54,6 +58,9 @@
     <contentView name="byCoverageContentView">
       <title>label.virtualnavigation.coverage</title>
       <translateTitle>true</translateTitle>
+      <showTitle>true</showTitle>
+      <emptySentence>label.content.empty.search</emptySentence>
+      <translateEmptySentence>true</translateEmptySentence>
 
       <coreQueryPageProvider>
         <property name="coreSession">#{documentManager}</property>
@@ -71,6 +78,7 @@
         <pageSize>10</pageSize>
       </coreQueryPageProvider>
 
+      <showPageSizeSelector>true</showPageSizeSelector>
       <useGlobalPageSize>true</useGlobalPageSize>
       <refresh>
         <event>documentChildrenChanged</event>
