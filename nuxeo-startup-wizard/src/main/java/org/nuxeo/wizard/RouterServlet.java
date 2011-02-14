@@ -1,0 +1,266 @@
+/*
+ * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     tdelprat
+ *
+ * $Id$
+ */
+
+
+package org.nuxeo.wizard;
+
+import java.io.IOException;
+import java.lang.reflect.Method;
+import java.net.URLEncoder;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.wizard.context.Context;
+import org.nuxeo.wizard.context.ParamCollector;
+import org.nuxeo.wizard.helpers.IPValidator;
+import org.nuxeo.wizard.helpers.NumberValidator;
+import org.nuxeo.wizard.nav.DummyNavigationHandler;
+import org.nuxeo.wizard.nav.Page;
+
+/**
+ * Main entry point : find the right handler and start jsp rendering
+ *
+ * @author Tiry (tdelprat@nuxeo.com)
+ *
+ */
+public class RouterServlet extends HttpServlet {
+
+    private static final long serialVersionUID = 1L;
+
+    protected static Log log = LogFactory.getLog(RouterServlet.class);
+
+    protected DummyNavigationHandler navHandler = new DummyNavigationHandler();
+
+    public static final String CONNECT_TOKEN_KEY = "ConnectRegistrationToken";
+
+    protected String getAction(HttpServletRequest req) {
+        String uri = req.getRequestURI();
+        String action = uri.replace(req.getContextPath()+"/router/", "");
+        if (action.startsWith("/")) {
+            action = action.substring(1);
+        }
+        return action;
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+
+        // process action
+        handleAction(getAction(req), req, resp);
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+
+        // store posted data
+        Context.instance(req).getCollector().collectConfigurationParams(req);
+
+        doGet(req, resp);
+    }
+
+    protected Method findhandler(Page currentPage, String verb) {
+
+        String methodName = "handle" + currentPage.getAction() + verb;
+        Method method=null;
+        try {
+            method= this.getClass().getMethod(methodName, Page.class, HttpServletRequest.class, HttpServletResponse.class );
+        } catch (Exception e) {
+            // fall back to default Handler lookup
+            methodName = "handleDefault" + verb;
+            try {
+                method= this.getClass().getMethod(methodName, Page.class,HttpServletRequest.class, HttpServletResponse.class );
+            } catch (Exception e2) {
+                log.error("Unable to resolve default handler for " + verb, e);
+            }
+        }
+        return method;
+    }
+
+
+    protected void handleAction(String action, HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+
+        // locate page
+        Page currentPage = navHandler.getCurrentPage(action);
+        if (currentPage==null) {
+            resp.sendError(404, "Action " + action + " is not supported");
+            return;
+        }
+
+        // find action handler
+        Method handler = findhandler(currentPage, req.getMethod());
+        if (handler==null) {
+            resp.sendError(500, "No handler found for " + action);
+            return;
+        }
+
+        // execute handler => triggers rendering
+        try {
+            handler.invoke(this, currentPage, req, resp);
+        } catch (Exception e) {
+            log.error("Error during handler execution", e);
+            req.setAttribute("error", e);
+            req.getRequestDispatcher("/error.jsp").forward(req, resp);
+        }
+    }
+
+    // default handlers
+
+    public void handleDefaultGET(Page currentPage, HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        currentPage.dispatchToJSP(req, resp);
+    }
+
+    public void handleDefaultPOST(Page currentPage, HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        // XXX validate data
+        currentPage.next().dispatchToJSP(req, resp, true);
+    }
+
+    // custom handlers
+
+    public void handleConnectGET(Page currentPage,HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+
+        // compute CB url
+        String cbUrl = req.getRequestURL().toString();
+        cbUrl = cbUrl.replace("/router/" + currentPage.getAction(), "/jsp/connectCallBack.jsp?next=" + currentPage.next().getAction());
+        cbUrl = URLEncoder.encode(cbUrl,"UTF-8");
+
+        req.setAttribute("callBackUrl", cbUrl);
+
+        // fake response for testing
+        StringBuffer sb = new StringBuffer();
+        sb.append("registrationOK:true\n");
+        sb.append("CLID:XXXXXXXXTESTXXXXXXXXX-XXXXXXXXXXCLIDXXXXXXXXX\n");
+        String fakeToken = new String(Base64.encodeBase64(sb.toString().getBytes()));
+        req.setAttribute("fakeToken", fakeToken);
+
+        handleDefaultGET(currentPage, req, resp);
+    }
+
+
+    public void handleConnectFinishGET(Page currentPage,HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+
+        // get the connect Token and decode associated infos
+        String token = req.getParameter(CONNECT_TOKEN_KEY);
+        Map<String, String> connectMap = new HashMap<String, String>();
+        if (token!=null) {
+            String tokenData = new String(Base64.decodeBase64(token));
+            String[] tokenDataLines = tokenData.split("\n");
+            for (String line : tokenDataLines) {
+                String[] parts = line.split(":");
+                if (parts.length>1) {
+                    connectMap.put(parts[0], parts[1]);
+                }
+            }
+            Context.instance(req).storeConnectMap(connectMap);
+        }
+
+        handleDefaultGET(currentPage, req, resp);
+    }
+
+    public void handleDBPOST(Page currentPage,HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+
+        Context ctx = Context.instance(req);
+        ParamCollector collector = ctx.getCollector();
+
+        if (!collector.getConfigurationParam("nuxeo.db.template").equals("default")) {
+            if (collector.getConfigurationParam("nuxeo.db.name").isEmpty()) {
+                ctx.trackError("nuxeo.db.name", "error.dbname.required");
+            }
+            if (collector.getConfigurationParam("nuxeo.db.user").isEmpty()) {
+                ctx.trackError("nuxeo.db.user", "error.dbuser.required");
+            }
+            if (collector.getConfigurationParam("nuxeo.db.password").isEmpty()) {
+                ctx.trackError("nuxeo.db.password", "error.dbpassword.required");
+            }
+            if (collector.getConfigurationParam("nuxeo.db.host").isEmpty()) {
+                ctx.trackError("nuxeo.db.host", "error.dbhost.required");
+            }
+            if (collector.getConfigurationParam("nuxeo.db.port").isEmpty()) {
+                ctx.trackError("nuxeo.db.port", "error.dbport.required");
+            }
+        }
+
+        if (ctx.hasErrors()) {
+            currentPage.dispatchToJSP(req, resp);
+        } else {
+            currentPage.next().dispatchToJSP(req, resp, true);
+        }
+
+    }
+
+    public void handleSmtpPOST(Page currentPage,HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+
+        Context ctx = Context.instance(req);
+        ParamCollector collector = ctx.getCollector();
+
+        if (collector.getConfigurationParam("mail.smtp.auth").equals("true")) {
+            if (collector.getConfigurationParam("mail.smtp.username").isEmpty()) {
+                ctx.trackError("mail.smtp.username", "error.mail.smtp.username.required");
+            }
+            if (collector.getConfigurationParam("mail.smtp.password").isEmpty()) {
+                ctx.trackError("mail.smtp.password", "error.mail.smtp.password.required");
+            }
+        }
+
+        if (!collector.getConfigurationParam("mail.smtp.port").isEmpty()) {
+            if (!NumberValidator.validate(collector.getConfigurationParam("mail.smtp.port"))) {
+                ctx.trackError("mail.smtp.port", "error.mail.smtp.port.mustbeanumber");
+            }
+        }
+
+        if (ctx.hasErrors()) {
+            currentPage.dispatchToJSP(req, resp);
+        } else {
+            currentPage.next().dispatchToJSP(req, resp, true);
+        }
+
+    }
+    public void handleRecapPOST(Page currentPage,HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        // display waiting page
+        // => page will trigger the restart
+        new Page("","reStarting.jsp").dispatchToJSP(req, resp);
+    }
+
+    public void handleGeneralPOST(Page currentPage,HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+
+        Context ctx = Context.instance(req);
+        ParamCollector collector = ctx.getCollector();
+        String bindAddress = collector.getConfigurationParamValue("nuxeo.bind.address");
+        if (bindAddress!=null && !bindAddress.isEmpty()) {
+            if (!IPValidator.validate(bindAddress)) {
+                ctx.trackError("nuxeo.bind.address", "error.invalid.ip");
+            }
+        }
+
+        if (ctx.hasErrors()) {
+            currentPage.dispatchToJSP(req, resp);
+        } else {
+            currentPage.next().dispatchToJSP(req, resp, true);
+        }
+    }
+
+
+}
