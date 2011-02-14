@@ -93,6 +93,10 @@ public class ConfigurationGenerator {
     public static final List<String> DB_LIST = Arrays.asList("default",
             "postgresql", "oracle", "mysql", "mssql");
 
+    private static final String PARAM_WIZARD_DONE = "nuxeo.wizard.done";
+
+    public static final String PARAM_WIZARD_COMMAND_AND_PARAMS = "nuxeo.wizard.command.and.params";
+
     private final File nuxeoHome;
 
     // User configuration file
@@ -621,6 +625,15 @@ public class ConfigurationGenerator {
         File log4jConfFile = serverConfigurator.getLogConfFile();
         System.setProperty(Environment.NUXEO_LOG_DIR, getLogDir().getPath());
         return Log4JHelper.getFileAppendersFiles(log4jConfFile);
+    }
+
+    /**
+     * @return true if configuration wizard is required before starting Nuxeo
+     * @since 5.4.1
+     */
+    public boolean isWizardRequired() {
+        return !"true".equalsIgnoreCase(getUserConfig().getProperty(
+                PARAM_WIZARD_DONE, "false"));
     }
 
 }
