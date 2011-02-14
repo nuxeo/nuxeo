@@ -38,9 +38,11 @@
     </antcall>
     <antcall target="copy-resources-with-jdbc-lib">
       <param name="distribution" value="templates-jboss" />
+      <param name="default-lib-dir" value="nuxeo.ear/lib" />
     </antcall>
     <antcall target="copy-resources-with-jdbc-lib">
       <param name="distribution" value="templates-tomcat" />
+      <param name="default-lib-dir" value="lib" />
     </antcall>
     <antcall target="build-resources">
       <param name="distribution" value="templates-tomcat-dm" />
@@ -80,20 +82,16 @@
     <antcall target="copy-resources">
       <param name="distribution" value="${distribution}" />
     </antcall>
-    <mkdir dir="${outdir}/${distribution}/mssql/lib" />
     <copy todir="${outdir}/${distribution}/mssql/lib">
       <artifact:file artifactId="jtds" />
     </copy>
-    <mkdir dir="${outdir}/${distribution}/mysql/lib" />
     <copy todir="${outdir}/${distribution}/mysql/lib">
       <artifact:file artifactId="mysql-connector-java" />
     </copy>
-    <mkdir dir="${outdir}/${distribution}/postgresql/lib" />
     <copy todir="${outdir}/${distribution}/postgresql/lib">
       <artifact:file artifactId="postgresql" />
     </copy>
-    <mkdir dir="${outdir}/${distribution}/default/lib" />
-    <copy todir="${outdir}/${distribution}/default/lib">
+    <copy todir="${outdir}/${distribution}/default/${default-lib-dir}">
       <artifact:file artifactId="h2" />
       <artifact:file artifactId="derby" />
     </copy>
