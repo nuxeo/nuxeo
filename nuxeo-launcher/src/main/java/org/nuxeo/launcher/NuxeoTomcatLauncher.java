@@ -20,10 +20,12 @@
 package org.nuxeo.launcher;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.launcher.config.TomcatConfigurator;
 
@@ -77,5 +79,89 @@ public class NuxeoTomcatLauncher extends NuxeoLauncher {
     @Override
     protected String getServerPrint() {
         return TomcatConfigurator.STARTUP_CLASS;
+    }
+
+    @Override
+    protected void startWizard() {
+        try {
+            // Make Tomcat start only wizard application, not Nuxeo
+            File serverXMLBase = new File(
+                    configurationGenerator.getNuxeoHome(), "conf");
+            File contextXMLBase = new File(
+                    configurationGenerator.getNuxeoHome(), "conf"
+                            + File.pathSeparator + "Catalina"
+                            + File.pathSeparator + "localhost");
+
+            // manage server.xml
+            File nuxeoServerXML = new File(serverXMLBase, "server.xml");
+            File nuxeoServerXMLBackup = new File(serverXMLBase, "server.xml.nx");
+            if (!nuxeoServerXMLBackup.exists()) {
+                FileUtils.moveFile(nuxeoServerXML, nuxeoServerXMLBackup);
+            }
+            File tomcatServerXMLBackup = new File(serverXMLBase,
+                    "server.xml.bak");
+            FileUtils.copyFile(tomcatServerXMLBackup, nuxeoServerXML);
+
+            // manage nuxeo.xml
+            File nuxeoContextXML = new File(contextXMLBase, "nuxeo.xml");
+            File nuxeoContextXMLBackup = new File(contextXMLBase,
+                    "nuxeo.xml.nx");
+            if (!nuxeoContextXMLBackup.exists()) {
+                FileUtils.moveFile(nuxeoContextXML, nuxeoContextXMLBackup);
+            }
+
+            System.setProperty(
+                    ConfigurationGenerator.PARAM_WIZARD_COMMAND_AND_PARAMS,
+                    command + " " + params);
+            command = null;
+            params = new String[0];
+            checkNoRunningServer();
+            start(true);
+        } catch (IOException e) {
+            log.error(
+                    "Could not manage server.xml and nuxeo.xml for running wizard instead of Nuxeo.",
+                    e);
+        } catch (InterruptedException e) {
+            log.error(e);
+        }
+    }
+
+    @Override
+    public boolean isWizardRequired() {
+        return (configurationGenerator.isWizardRequired() && new File(
+                configurationGenerator.getNuxeoHome(), "webapps"
+                        + File.pathSeparator + "nuxeo-startup-wizard.war").exists());
+    }
+
+    @Override
+    protected void checkTomcatXMLConfFiles() {
+        try {
+            // Ensure Tomcat will start only Nuxeo, not the wizard application
+            File serverXMLBase = new File(
+                    configurationGenerator.getNuxeoHome(), "conf");
+            File contextXMLBase = new File(
+                    configurationGenerator.getNuxeoHome(), "conf"
+                            + File.pathSeparator + "Catalina"
+                            + File.pathSeparator + "localhost");
+
+            // manage server.xml
+            File nuxeoServerXML = new File(serverXMLBase, "server.xml");
+            File nuxeoServerXMLBackup = new File(serverXMLBase, "server.xml.nx");
+            if (nuxeoServerXMLBackup.exists()) {
+                FileUtils.moveFile(nuxeoServerXMLBackup, nuxeoServerXML);
+            }
+
+            // manage nuxeo.xml
+            File nuxeoContextXML = new File(contextXMLBase, "nuxeo.xml");
+            File nuxeoContextXMLBackup = new File(contextXMLBase,
+                    "nuxeo.xml.nx");
+            if (nuxeoContextXMLBackup.exists()) {
+                FileUtils.moveFile(nuxeoContextXMLBackup, nuxeoContextXML);
+            }
+        } catch (IOException e) {
+            log.error(
+                    "Could not manage server.xml and nuxeo.xml for running Nuxeo instead of wizard.",
+                    e);
+        }
     }
 }
