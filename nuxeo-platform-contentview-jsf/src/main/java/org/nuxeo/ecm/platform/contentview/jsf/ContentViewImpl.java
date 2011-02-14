@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 
 import org.apache.commons.logging.Log;
@@ -548,18 +549,35 @@ public class ContentViewImpl implements ContentView {
     }
 
     protected Object addSearchDocumentToELContext(FacesContext facesContext) {
-        Map<String, Object> requestMap = facesContext.getExternalContext().getRequestMap();
-        Object previousValue = requestMap.get(SEARCH_DOCUMENT_EL_VARIABLE);
-        requestMap.put(SEARCH_DOCUMENT_EL_VARIABLE, searchDocumentModel);
-        return previousValue;
+        ExternalContext econtext = facesContext.getExternalContext();
+        if (econtext != null) {
+            Map<String, Object> requestMap = econtext.getRequestMap();
+            Object previousValue = requestMap.get(SEARCH_DOCUMENT_EL_VARIABLE);
+            requestMap.put(SEARCH_DOCUMENT_EL_VARIABLE, searchDocumentModel);
+            return previousValue;
+        } else {
+            log.error(String.format(
+                    "External context is null: cannot expose variable '%s' "
+                            + "for content view '%s'",
+                    SEARCH_DOCUMENT_EL_VARIABLE, getName()));
+            return null;
+        }
     }
 
     protected void removeSearchDocumentFromELContext(FacesContext facesContext,
             Object previousValue) {
-        Map<String, Object> requestMap = facesContext.getExternalContext().getRequestMap();
-        requestMap.remove(SEARCH_DOCUMENT_EL_VARIABLE);
-        if (previousValue != null) {
-            requestMap.put(SEARCH_DOCUMENT_EL_VARIABLE, previousValue);
+        ExternalContext econtext = facesContext.getExternalContext();
+        if (econtext != null) {
+            Map<String, Object> requestMap = econtext.getRequestMap();
+            requestMap.remove(SEARCH_DOCUMENT_EL_VARIABLE);
+            if (previousValue != null) {
+                requestMap.put(SEARCH_DOCUMENT_EL_VARIABLE, previousValue);
+            }
+        } else {
+            log.error(String.format(
+                    "External context is null: cannot dispose variable '%s' "
+                            + "for content view '%s'",
+                    SEARCH_DOCUMENT_EL_VARIABLE, getName()));
         }
     }
 
