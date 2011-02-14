@@ -14,6 +14,9 @@
 
     <contentView name="nxql_incremental_smart_folder">
 
+      <emptySentence>label.content.empty.search</emptySentence>
+      <translateEmptySentence>true</translateEmptySentence>
+
       <coreQueryPageProvider>
         <property name="coreSession">#{documentManager}</property>
         <pattern quoteParameters="false" escapeParameters="false">
@@ -28,6 +31,7 @@
         <sortInfosBinding>#{currentDocument.cvd.sortInfos}</sortInfosBinding>
       </coreQueryPageProvider>
 
+      <showPageSizeSelector>true</showPageSizeSelector>
       <useGlobalPageSize>false</useGlobalPageSize>
       <refresh>
         <event>documentChanged</event>

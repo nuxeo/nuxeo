@@ -14,6 +14,9 @@
 
     <contentView name="nxql_incremental_smart_query">
 
+      <emptySentence>label.content.empty.search</emptySentence>
+      <translateEmptySentence>true</translateEmptySentence>
+
       <coreQueryPageProvider>
         <property name="coreSession">#{documentManager}</property>
         <pattern quoteParameters="false" escapeParameters="false">
@@ -29,6 +32,7 @@
         </sortInfosBinding>
       </coreQueryPageProvider>
 
+      <showPageSizeSelector>true</showPageSizeSelector>
       <useGlobalPageSize>true</useGlobalPageSize>
       <refresh>
         <event>documentChanged</event>

@@ -48,12 +48,8 @@
             value="#{smartNXQLQueryActions.selectedLayoutColumns}" />
           <ui:param name="contentViewSortInfos"
             value="#{smartNXQLQueryActions.searchSortInfos}" />
-          <ui:define name="empty_content_view_label">
-            <h:outputText value="#{messages['label.content.empty.search']}"
-              rendered="#{documents.rowCount == 0 and not provider.hasError()}" />
-          </ui:define>
-          <ui:define name="content_view_header_before_selector">
-            <div class="action_bar">
+          <ui:define name="content_view_title">
+            <div class="contentViewTitle">
               <h3>
                 <h:outputText value="#{messages['label.smart.search.results']}" />
                 <f:verbatim>&amp;nbsp;</f:verbatim>
@@ -61,7 +57,6 @@
               </h3>
             </div>
           </ui:define>
-          <ui:define name="content_view_header_after_selector" />
         </ui:decorate>
 
       </nxu:set>
