@@ -666,6 +666,11 @@
         <line-height>1.25em</line-height>
         <padding>0</padding>
       </selector>
+      <selector path=".contentViewTitle">
+        <margin>10px 10px 10px 0</margin>
+        <line-height>normal</line-height>
+        <float>left</float>
+      </selector>
       <selector path=".listingLayoutSelector">
         <float>right</float>
         <margin>11px 0 10px 7px</margin>
