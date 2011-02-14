@@ -174,6 +174,8 @@
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-wss-backend</artifactId>
     </dependency>
+
+    <!-- OpenSocial -->
     <dependency>
       <groupId>org.nuxeo.ecm.opensocial</groupId>
       <artifactId>nuxeo-opensocial-gadgets</artifactId>
@@ -206,7 +208,7 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.opensocial</groupId>
-      <artifactId>nuxeo-opensocial-container-space-config</artifactId>
+      <artifactId>nuxeo-opensocial-container-webapp</artifactId>
       <version>${nuxeo.features.version}</version>
     </dependency>
     <dependency>
@@ -216,17 +218,7 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.opensocial</groupId>
-      <artifactId>nuxeo-spaces-api</artifactId>
-      <version>${nuxeo.features.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.opensocial</groupId>
-      <artifactId>nuxeo-spaces-core</artifactId>
-      <version>${nuxeo.features.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.opensocial</groupId>
-      <artifactId>nuxeo-spaces-web</artifactId>
+      <artifactId>nuxeo-opensocial-spaces</artifactId>
       <version>${nuxeo.features.version}</version>
     </dependency>
     <dependency>
