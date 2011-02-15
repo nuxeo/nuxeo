@@ -20,16 +20,6 @@
       <filter-id>user_dashboard_enabled</filter-id>
       </action>
     -->
-
-    <action id="TAB_DOCUMENT_DASHBOARD" link="/incl/tabs/document_dashboard.xhtml" order="5"
-      label="action.view.content" icon="/icons/file.gif">
-      <category>VIEW_ACTION_LIST</category>
-      <filter id="canSeeDashboard">
-        <rule grant="true">
-          <type>Workspace</type>
-        </rule>
-      </filter>
-    </action>
   </extension>
 
 </component>
