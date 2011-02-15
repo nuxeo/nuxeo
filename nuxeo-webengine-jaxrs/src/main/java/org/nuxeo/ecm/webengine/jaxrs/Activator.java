@@ -82,8 +82,9 @@ public class Activator implements BundleActivator, BundleTrackerCustomizer, Serv
         // start bundle tracker
         tracker = new BundleTracker(context, Bundle.ACTIVE | Bundle.STARTING | Bundle.RESOLVED, this);
         tracker.open();
-        httpServiceTracker = new ServiceTracker(context, HttpService.class.getName(), this);
-        httpServiceTracker.open();
+        //TODO temporary disable servicetracker since it breaks on nuxeo tomcat ...
+        //httpServiceTracker = new ServiceTracker(context, HttpService.class.getName(), this);
+        //httpServiceTracker.open();
     }
 
     @Override
