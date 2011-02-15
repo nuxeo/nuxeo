@@ -1,9 +1,0 @@
-<component name="org.nuxeo.opensocial.service.appdata">
-
-  <implementation class="org.nuxeo.opensocial.services.appdata.AppDataServiceImpl"/>
-
-  <service>
-    <provide interface="org.apache.shindig.social.opensocial.spi.AppDataService"/>
-  </service>
-
-</component>

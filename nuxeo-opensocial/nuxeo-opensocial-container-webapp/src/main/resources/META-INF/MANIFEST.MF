@@ -1,4 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 1
-Bundle-Name: lm-opensocial-container-webapp
-Bundle-SymbolicName: com.leroymerlin.corp.nuxeo.gwt.container.webapp;singleton:=true

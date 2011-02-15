@@ -1,9 +1,0 @@
-<component name="org.nuxeo.opensocial.service.activity">
-
-  <implementation class="org.nuxeo.opensocial.services.activity.ActivityServiceImpl"/>
-
-  <service>
-    <provide interface="org.apache.shindig.social.opensocial.spi.ActivityService"/>
-  </service>
-
-</component>

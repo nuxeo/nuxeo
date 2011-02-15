@@ -1,6 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 1
-Bundle-Name: Nuxeo OpenSocial Spaces Test
-Bundle-SymbolicName: org.nuxeo.ecm.opensocial.spaces.test;singleton:=true
-Bundle-Version: 1.0.0
-Bundle-Vendor: Leroy Merlin

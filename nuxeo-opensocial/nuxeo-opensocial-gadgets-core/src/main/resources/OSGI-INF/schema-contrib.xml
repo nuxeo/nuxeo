@@ -1,6 +1,0 @@
-<?xml version="1.0"?>
-<component name="xml-opensocialDashboard.schemaContrib">
-  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
-    <schema name="externalgadget" src="schemas/externalGadget.xsd"/>
-  </extension>
-</component>

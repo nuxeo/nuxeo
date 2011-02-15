@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<module rename-to='richtexteditor'>
-  <inherits name='com.google.gwt.user.User'/>
-  <inherits name='com.google.gwt.i18n.I18N' />
-  <inherits name='com.google.gwt.user.theme.standard.Standard'/>
-  <stylesheet src="RichTextToolbar.css"/>
-</module>

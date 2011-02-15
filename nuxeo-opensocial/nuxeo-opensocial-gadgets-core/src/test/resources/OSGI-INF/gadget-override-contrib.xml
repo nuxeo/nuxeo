@@ -1,6 +1,0 @@
-<?xml version="1.0"?>
-<component name="org.nuxeo.opensocial.gadgets.test.override.contrib" version="1.0">
-  <extension target="org.nuxeo.opensocial.gadgets.service" point="gadget">
-     <internalGadget name="meteo" disabled="true" />
-  </extension>
-</component>

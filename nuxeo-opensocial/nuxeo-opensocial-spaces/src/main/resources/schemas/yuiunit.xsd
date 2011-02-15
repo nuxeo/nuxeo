@@ -1,7 +1,0 @@
-<?xml version="1.0"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-  targetNamespace="http://portal.fr.corp.leroymerlin.com/schemas/portal/yuiunit"
-  xmlns:tns="http://portal.fr.corp.leroymerlin.com/schemas/portal/yuiunit">
-    <xs:element name="position" type="xs:int"/>
-    <xs:element name="zoneIndex" type="xs:int"/>
-</xs:schema>
