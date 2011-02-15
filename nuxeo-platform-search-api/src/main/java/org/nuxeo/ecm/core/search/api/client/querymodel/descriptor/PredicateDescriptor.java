@@ -97,7 +97,15 @@ public class PredicateDescriptor {
                         fieldDescriptor.getSchema(), fieldDescriptor.getName()));
             }
         }
-        return "(" + fieldDescriptor.getRawValue(model) + ")";
+
+        Object subclause = fieldDescriptor.getRawValue(model);
+
+        if (subclause == null) {
+            // value not provided: ignore predicate
+            return "";
+        }
+
+        return "(" + subclause + ")";
     }
 
     protected String atomicQueryElement(DocumentModel model, Escaper escaper)

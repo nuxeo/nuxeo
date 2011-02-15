@@ -258,7 +258,12 @@ public class NXQLQueryBuilder {
                         fieldDescriptor.getSchema(), fieldDescriptor.getName()));
             }
         }
-        return "(" + getRawValue(model, fieldDescriptor) + ")";
+        Object subclauseValue = getRawValue(model, fieldDescriptor);
+        if (subclauseValue == null) {
+            return "";
+        }
+
+        return "(" + subclauseValue + ")";
     }
 
     protected static String atomicQueryElement(DocumentModel model,

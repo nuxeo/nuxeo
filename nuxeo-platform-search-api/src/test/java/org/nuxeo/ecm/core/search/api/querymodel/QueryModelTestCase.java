@@ -538,6 +538,25 @@ public class QueryModelTestCase extends RepositoryOSGITestCase {
                 descriptor.getQuery(doc));
     }
 
+    public void testStatefulWithSubClauseNull() throws ClientException {
+        QueryModelDescriptor descriptor = service.getQueryModelDescriptor("statefulModelWithSubClause");
+        QueryModel qm = initializeStatefulQueryModel(descriptor);
+        DocumentModel doc = qm.getDocumentModel();
+        doc.setProperty(QM_SCHEMA, "subclause", null);
+        assertEquals("SELECT * FROM Document",
+                descriptor.getQuery(doc));
+        // this is valid NXQL
+        SQLQueryParser.parse(descriptor.getQuery(doc));
+        doc.setProperty(QM_SCHEMA, "intfield", 3L);
+        assertEquals(
+                "SELECT * FROM Document WHERE intparameter = 3",
+                descriptor.getQuery(doc));
+        doc.setProperty(QM_SCHEMA, "textfield", "zork");
+        assertEquals(
+                "SELECT * FROM Document WHERE intparameter = 3 AND textparameter = 'zork'",
+                descriptor.getQuery(doc));
+    }
+
     public void testStatefulModelWithSingleStartswith() throws ClientException {
         QueryModelDescriptor descriptor = statefulModelWithSingleStartswith.getDescriptor();
         assertFalse(statefulModelWithSingleStartswith.getDescriptor().isStateless());
