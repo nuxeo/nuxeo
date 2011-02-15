@@ -12,6 +12,11 @@
   <artifactId>nuxeo-platform-imaging-tiling-preview</artifactId>
   <name>Nuxeo Picture Tiling Preview</name>
 
+  <properties>
+    <!-- Explicitly set GWT version to 1.5.3 to compile imaging tiling  module -->
+    <gwt.version>1.5.3</gwt.version>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
@@ -36,16 +41,19 @@
     <dependency>
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-user</artifactId>
+      <version>${gwt.version}</version>
     </dependency>
     <dependency>
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-dev</artifactId>
+      <version>${gwt.version}</version>
       <classifier>${platform}-libs</classifier>
       <type>zip</type>
     </dependency>
     <dependency>
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-dev</artifactId>
+      <version>${gwt.version}</version>
       <classifier>${platform}</classifier>
     </dependency>
     <dependency>

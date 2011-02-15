@@ -10,6 +10,11 @@
   <artifactId>nuxeo-platform-annotations-web</artifactId>
   <name>Nuxeo Platform Annotation Service Client </name>
 
+  <properties>
+    <!-- Explicitly set GWT version to 1.5.3 to compile annotations module -->
+    <gwt.version>1.5.3</gwt.version>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>com.google.gwt</groupId>
@@ -19,11 +24,13 @@
     <dependency>
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-user</artifactId>
+      <version>${gwt.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-dev</artifactId>
+      <version>${gwt.version}</version>
       <scope>provided</scope>
       <classifier>${platform}</classifier>
     </dependency>
