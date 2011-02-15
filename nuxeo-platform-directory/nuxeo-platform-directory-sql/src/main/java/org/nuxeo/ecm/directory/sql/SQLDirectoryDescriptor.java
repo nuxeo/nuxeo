@@ -39,6 +39,8 @@ public class SQLDirectoryDescriptor {
         subinitial, subfinal, subany
     }
 
+    protected final static char DEFAULT_CHARACTER_SEPARATOR = ',';
+
     private static final String[] SCRIPT_POLICIES = { "never",
             "on_missing_columns", "always", };
 
@@ -82,6 +84,9 @@ public class SQLDirectoryDescriptor {
 
     @XNode("dataFile")
     public String dataFileName;
+
+    @XNode(value = "dataFileCharacterSeparator", trim = false)
+    public String dataFileCharacterSeparator = ",";
 
     public String createTablePolicy;
 
@@ -184,6 +189,24 @@ public class SQLDirectoryDescriptor {
 
     public String getDataFileName() {
         return dataFileName;
+    }
+
+    public char getDataFileCharacterSeparator() {
+        if (dataFileCharacterSeparator == null
+                || dataFileCharacterSeparator.length() == 0) {
+            log.info("Character separator not well set will "
+                    + "take the default value, \""
+                    + DEFAULT_CHARACTER_SEPARATOR + "\"");
+            return DEFAULT_CHARACTER_SEPARATOR;
+        }
+
+        if (dataFileCharacterSeparator.length() > 1) {
+            log.warn("More than one character found for character separator, "
+                    + "will take the first one \""
+                    + dataFileCharacterSeparator.charAt(0) + "\"");
+        }
+
+        return dataFileCharacterSeparator.charAt(0);
     }
 
     public String getPasswordField() {
@@ -329,7 +352,7 @@ public class SQLDirectoryDescriptor {
     }
 
     public SQLStaticFilter[] getStaticFilters() {
-        if (staticFilters==null) {
+        if (staticFilters == null) {
             return new SQLStaticFilter[0];
         }
         return staticFilters;

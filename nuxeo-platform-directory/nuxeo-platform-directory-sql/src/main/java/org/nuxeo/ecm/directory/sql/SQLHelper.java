@@ -71,18 +71,29 @@ public class SQLHelper {
 
     private final String dataFileName;
 
+    protected final char characterSeparator;
+
     public static final String SQL_NULL_MARKER = "__NULL__";
 
     private static final String SQL_SCRIPT_CHARSET = "UTF-8";
 
     public SQLHelper(Connection connection, Dialect dialect, Table table,
-            String dataFileName, String policy) {
+            String dataFileName, char characterSeparator, String policy) {
         this.table = table;
         this.connection = connection;
         this.policy = policy;
         this.dataFileName = dataFileName;
         this.dialect = dialect;
         tableName = table.getName();
+        this.characterSeparator = characterSeparator;
+
+    }
+
+    public SQLHelper(Connection connection, Dialect dialect, Table table,
+            String dataFileName, String policy) {
+
+        this(connection, dialect, table, dataFileName, ',', policy);
+
     }
 
     public boolean setupTable() throws DirectoryException {
@@ -190,18 +201,19 @@ public class SQLHelper {
             DatabaseMetaData metaData = connection.getMetaData();
             String schemaName = null;
             String productName = metaData.getDatabaseProductName();
-            if("Oracle".equals(productName)) {
+            if ("Oracle".equals(productName)) {
                 Statement st = connection.createStatement();
                 String sql = "SELECT SYS_CONTEXT('USERENV', 'SESSION_USER') FROM DUAL";
                 log.trace("SQL: " + sql);
                 ResultSet rs = st.executeQuery(sql);
                 rs.next();
                 schemaName = rs.getString(1);
-                log.trace("checking existing tables for oracle database, schema: " + schemaName);
+                log.trace("checking existing tables for oracle database, schema: "
+                        + schemaName);
                 st.close();
             }
-            ResultSet rs = metaData.getTables(null, schemaName, table.getName(),
-                    new String[] { "TABLE" });
+            ResultSet rs = metaData.getTables(null, schemaName,
+                    table.getName(), new String[] { "TABLE" });
             boolean exists = rs.next();
             log.debug(String.format("checking if table %s exists: %s",
                     table.getName(), exists));
@@ -236,7 +248,8 @@ public class SQLHelper {
             InputStream is = getClass().getClassLoader().getResourceAsStream(
                     dataFileName);
             if (is == null) {
-                is = Framework.getResourceLoader().getResourceAsStream(dataFileName);
+                is = Framework.getResourceLoader().getResourceAsStream(
+                        dataFileName);
                 if (is == null) {
                     throw new DirectoryException("data file not found: "
                             + dataFileName);
@@ -244,7 +257,7 @@ public class SQLHelper {
             }
 
             csvReader = new CSVReader(new InputStreamReader(is,
-                    SQL_SCRIPT_CHARSET));
+                    SQL_SCRIPT_CHARSET), characterSeparator);
 
             String[] columnNames = csvReader.readNext();
             List<Column> columns = new ArrayList<Column>();

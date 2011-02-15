@@ -155,7 +155,9 @@ public class SQLDirectory extends AbstractDirectory {
         try {
 
             SQLHelper helper = new SQLHelper(sqlConnection, dialect, table,
-                    config.dataFileName, config.createTablePolicy);
+                    config.dataFileName,
+                    config.getDataFileCharacterSeparator(),
+                    config.createTablePolicy);
             helper.setupTable();
 
             if (config.autoincrementIdField) {
@@ -284,9 +286,9 @@ public class SQLDirectory extends AbstractDirectory {
     }
 
     /**
-     * Gets the dialect, by connecting to the datasource if needed to check
-     * what database is used.
-     *
+     * Gets the dialect, by connecting to the datasource if needed to check what
+     * database is used.
+     * 
      * @throws DirectoryException if a SQL connection problem occurs.
      */
     private Dialect buildDialect() throws DirectoryException {
@@ -301,8 +303,7 @@ public class SQLDirectory extends AbstractDirectory {
             DatabaseMetaData metadata = connection.getMetaData();
             dialect = HibernateDialectHelper.determineDialect(metadata);
             return dialect;
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             throw new DirectoryException("Unable to resolve Dialect", e);
         } finally {
             if (connection != null) {
