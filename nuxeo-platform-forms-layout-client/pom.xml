@@ -43,6 +43,10 @@
       <groupId>org.jboss.seam</groupId>
       <artifactId>jboss-seam</artifactId>
     </dependency>
+    <dependency>
+      <groupId>xerces</groupId>
+      <artifactId>xercesImpl</artifactId>
+    </dependency>
 
     <!-- EL + JSF + facelets deps -->
     <dependency>
