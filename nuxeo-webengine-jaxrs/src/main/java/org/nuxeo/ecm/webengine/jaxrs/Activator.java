@@ -28,12 +28,18 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.webengine.jaxrs.servlet.JerseyServlet;
+import org.nuxeo.ecm.webengine.jaxrs.servlet.config.ServletRegistry;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
+import org.osgi.framework.ServiceReference;
+import org.osgi.service.http.HttpService;
+import org.osgi.service.packageadmin.PackageAdmin;
 import org.osgi.util.tracker.BundleTracker;
 import org.osgi.util.tracker.BundleTrackerCustomizer;
+import org.osgi.util.tracker.ServiceTracker;
+import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
 import com.sun.jersey.server.impl.provider.RuntimeDelegateImpl;
 
@@ -41,7 +47,7 @@ import com.sun.jersey.server.impl.provider.RuntimeDelegateImpl;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class Activator implements BundleActivator, BundleTrackerCustomizer {
+public class Activator implements BundleActivator, BundleTrackerCustomizer, ServiceTrackerCustomizer {
 
     private static final Log log = LogFactory.getLog(Activator.class);
 
@@ -51,12 +57,16 @@ public class Activator implements BundleActivator, BundleTrackerCustomizer {
         return instance;
     }
 
+    protected ServiceTracker httpServiceTracker;
+
     protected BundleContext context;
     protected BundleTracker tracker;
+    protected ServiceReference pkgAdm;
 
     protected CompositeApplication app;
 
     protected List<Reloadable> toReload;
+
 
     @Override
     public void start(BundleContext context) throws Exception {
@@ -68,22 +78,35 @@ public class Activator implements BundleActivator, BundleTrackerCustomizer {
         this.context = context;
         toReload = new Vector<Reloadable>();
         app = new CompositeApplication();
+        pkgAdm = context.getServiceReference(PackageAdmin.class.getName());
+        // start bundle tracker
         tracker = new BundleTracker(context, Bundle.ACTIVE | Bundle.STARTING | Bundle.RESOLVED, this);
         tracker.open();
+        httpServiceTracker = new ServiceTracker(context, HttpService.class.getName(), this);
+        httpServiceTracker.open();
     }
 
     @Override
     public void stop(BundleContext context) throws Exception {
+        httpServiceTracker.close();
+        httpServiceTracker = null;
+        ServletRegistry.dispose();
         instance = null;
+        context.ungetService(pkgAdm);
+        pkgAdm = null;
         tracker.close();
         tracker = null;
         toReload = null;
         app = null;
-        context = null;
+        this.context = null;
     }
 
     public BundleContext getContext() {
         return context;
+    }
+
+    public PackageAdmin getPackageAdmin() {
+        return (PackageAdmin)context.getService(pkgAdm);
     }
 
     public CompositeApplication getApplication() {
@@ -171,4 +194,41 @@ public class Activator implements BundleActivator, BundleTrackerCustomizer {
         return map;
     }
 
+    @Override
+    public Object addingService(ServiceReference reference) {
+        Object service = context.getService(reference);
+        try {
+            if (service instanceof HttpService) {
+                ServletRegistry.getInstance().initHttpService((HttpService)service);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to initialize http service", e);
+        }
+        return service;
+    }
+
+    @Override
+    public void removedService(ServiceReference reference, Object service) {
+        try {
+            if (ServletRegistry.getInstance().getHttpService() == service) {
+                ServletRegistry.getInstance().initHttpService(null);
+            }
+        } catch (Exception e) {
+            log.error("Failed to remove http service", e);
+        } finally {
+            context.ungetService(reference);
+        }
+    }
+
+    @Override
+    public void modifiedService(ServiceReference reference, Object service) {
+        try {
+            if (ServletRegistry.getInstance().getHttpService() == service) {
+                ServletRegistry.getInstance().initHttpService(null);
+                ServletRegistry.getInstance().initHttpService((HttpService)service);
+            }
+        } catch (Exception e) {
+            log.error("Failed to update http service", e);
+        }
+    }
 }

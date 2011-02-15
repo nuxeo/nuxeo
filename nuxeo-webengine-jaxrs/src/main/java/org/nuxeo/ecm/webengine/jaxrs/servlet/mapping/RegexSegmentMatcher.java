@@ -14,7 +14,7 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.webengine.jaxrs.context.mapping;
+package org.nuxeo.ecm.webengine.jaxrs.servlet.mapping;
 
 import java.util.regex.Pattern;
 

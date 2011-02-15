@@ -17,8 +17,6 @@
 package org.nuxeo.ecm.webengine.jaxrs.servlet;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.Filter;
@@ -30,15 +28,11 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 
-import org.nuxeo.ecm.webengine.jaxrs.Activator;
-import org.nuxeo.ecm.webengine.jaxrs.context.mapping.Path;
-import org.nuxeo.ecm.webengine.jaxrs.context.mapping.PathMapping;
-import org.nuxeo.ecm.webengine.jaxrs.context.mapping.PathMappingRegistry;
+import org.nuxeo.ecm.webengine.jaxrs.Utils;
+import org.nuxeo.ecm.webengine.jaxrs.servlet.mapping.Path;
+import org.nuxeo.ecm.webengine.jaxrs.servlet.mapping.PathMapping;
+import org.nuxeo.ecm.webengine.jaxrs.servlet.mapping.PathMappingRegistry;
 import org.nuxeo.runtime.api.Framework;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
-import org.osgi.service.packageadmin.PackageAdmin;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -51,39 +45,8 @@ public class CompositeFilter implements Filter {
     protected Filter[] filters;
 
 
-    private static Filter[] loadFilters(String v) throws Exception {
-        BundleContext ctx = Activator.getInstance().getContext();
-        ServiceReference ref = ctx.getServiceReference(PackageAdmin.class.getName());
-        PackageAdmin adm = (PackageAdmin) ctx.getService(ref);
-        List<Filter> filters = new ArrayList<Filter>();
-        try {
-            String[] ar = v.split("\\s+");
-            for (String s : ar) {
-                if (s.length() == 0) {
-                    continue;
-                }
-                Class<?> cl = null;
-                int i = s.indexOf(':');
-                if (i > -1) {
-                    String bname = s.substring(0, i);
-                    String cname = s.substring(i + 1);
-                    Bundle[] bundles = adm.getBundles(bname, null);
-                    if (bundles != null) {
-                        cl = bundles[0].loadClass(cname);
-                    } else {
-                        throw new IllegalStateException("No bundle was found: "+bname);
-                    }
-                } else {
-                    cl = CompositeFilter.class.getClassLoader().loadClass(s);
-                }
-                if (cl != null) {
-                    filters.add((Filter) cl.newInstance());
-                }
-            }
-        } finally {
-            ctx.ungetService(ref);
-        }
-        return filters.toArray(new Filter[filters.size()]);
+    private static Filter[] loadFilters(String classRefs) throws Exception {
+        return Utils.newInstances(Filter.class, classRefs);
     }
 
     public Filter[] getFilters() {
@@ -171,9 +134,8 @@ public class CompositeFilter implements Filter {
         public void doFilter(ServletRequest request, ServletResponse response)
                 throws IOException, ServletException {
             if (filterIndex < filters.length) {
-                Filter filter = filters[filterIndex];
+                Filter filter = filters[filterIndex++];
                 filter.doFilter(request, response, this);
-                filterIndex++;
             } else {
                 chain.doFilter(request, response);
             }
@@ -198,9 +160,8 @@ public class CompositeFilter implements Filter {
         public void doFilter(ServletRequest request, ServletResponse response)
                 throws IOException, ServletException {
             if (filterIndex < filters.length) {
-                Filter filter = filters[filterIndex];
+                Filter filter = filters[filterIndex++];
                 filter.doFilter(request, response, this);
-                filterIndex++;
             } else {
                 servlet.service(request, response);
             }

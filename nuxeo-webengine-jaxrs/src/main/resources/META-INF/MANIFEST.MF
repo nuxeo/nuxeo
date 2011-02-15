@@ -1,9 +1,9 @@
 Export-Package: org.nuxeo.ecm.webengine.jaxrs,
  org.nuxeo.ecm.webengine.jaxrs.annotations,
  org.nuxeo.ecm.webengine.jaxrs.context,
- org.nuxeo.ecm.webengine.jaxrs.context.mapping,
  org.nuxeo.ecm.webengine.jaxrs.login,
  org.nuxeo.ecm.webengine.jaxrs.servlet,
+ org.nuxeo.ecm.webengine.jaxrs.servlet.mapping,
  org.nuxeo.ecm.webengine.jaxrs.session,
  org.nuxeo.ecm.webengine.jaxrs.tx,
  org.nuxeo.ecm.webengine.jaxrs.views
@@ -44,8 +44,10 @@ Import-Package: freemarker.core;resolution:=optional,
  org.nuxeo.runtime.model,
  org.nuxeo.runtime.transaction;resolution:=optional,
  org.osgi.framework;version="1.4",
+ org.osgi.service.http,
  org.osgi.service.packageadmin,
  org.osgi.util.tracker
 Eclipse-BuddyPolicy: dependent
 Bundle-SymbolicName: org.nuxeo.ecm.webengine.jaxrs;singleton:=true
 Bundle-Activator: org.nuxeo.ecm.webengine.jaxrs.Activator
+Nuxeo-Component: OSGI-INF/servlet-registry.xml

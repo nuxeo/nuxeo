@@ -19,7 +19,6 @@ package org.nuxeo.ecm.webengine.jaxrs.views;
 import java.io.File;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.StringWriter;
 import java.io.Writer;
 import java.net.URL;
 import java.util.HashMap;

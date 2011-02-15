@@ -14,23 +14,17 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.webengine.jaxrs.context.mapping;
+package org.nuxeo.ecm.webengine.jaxrs;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public abstract class SegmentMatcher {
+@SuppressWarnings("serial")
+public class BundleNotFoundException extends Exception {
 
-    public static final SegmentMatcher ANY = new SegmentMatcher() {
-        public boolean matches(String segment) { return true; }
-    };
-
-    public static final SegmentMatcher ANY_SEGMENT = new SegmentMatcher() {
-        public boolean matches(String segment) { return true; }
-    };
-
-    public abstract boolean matches(String segment);
-
+    public BundleNotFoundException(String bundleName) {
+        super ("No bundle named '"+bundleName+"' was found.");
+    }
 
 }

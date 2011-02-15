@@ -28,6 +28,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.nuxeo.ecm.webengine.jaxrs.Utils;
+
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -47,11 +49,16 @@ public class FilteringServlet extends HttpServlet {
         if (v == null) {
             throw new ServletException("servlet init-parameter is required and must point to a servlet class to delegate request handling.");
         }
-        //TODO use bundle to load the class
-        //servlet = new xxx;
-        filter = new CompositeFilter();
-        filter.init(new FilterConfigAdapter(config));
-        servlet.init(config);
+        try {
+            servlet = (HttpServlet)Utils.newInstance(v.trim());
+            filter = new CompositeFilter();
+            filter.init(new FilterConfigAdapter(config));
+            servlet.init(config);
+        } catch (ServletException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ServletException("Initialization exception for servlet "+config.getServletName(), e);
+        }
     }
 
     @Override

@@ -14,11 +14,7 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.webengine.jaxrs.context.mapping;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+package org.nuxeo.ecm.webengine.jaxrs.servlet.config;
 
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -28,51 +24,43 @@ import org.nuxeo.runtime.model.DefaultComponent;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class PathMappingRegistry extends DefaultComponent {
+public class ServletRegistryComponent extends DefaultComponent {
 
-    public static final String XP_MAPPING = "mappings";
+    public final static String XP_SERVLETS = "servlets";
 
-    protected List<PathMapping> mappings;
-    protected volatile PathMapping[] cache;
 
+    protected ServletRegistry registry;
+
+    public ServletRegistryComponent() {
+    }
 
     @Override
     public void activate(ComponentContext context) throws Exception {
-        mappings = new ArrayList<PathMapping>();
+        registry = ServletRegistry.getInstance();
     }
 
     @Override
     public void deactivate(ComponentContext context) throws Exception {
-        mappings = null;
-    }
-
-    public PathMapping[] getMappings() {
-        PathMapping[] _cache = cache;
-        if (_cache == null) {
-            synchronized (this) {
-                _cache = mappings.toArray(new PathMapping[mappings.size()]);
-                Arrays.sort(_cache);
-                cache = _cache;
-            }
-        }
-        return _cache;
+        ServletRegistry.dispose();
+        registry = null;
     }
 
     @Override
     public void registerContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor)
             throws Exception {
-        mappings.add((PathMapping)contribution);
-        cache = null;
+        if (XP_SERVLETS.equals(extensionPoint)) {
+            registry.addServlet((ServletDescriptor)contribution);
+        }
     }
 
     @Override
     public void unregisterContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor)
             throws Exception {
-        mappings.remove((PathMapping)contribution);
-        // we are in a synchronized block
-        cache = null;
+        if (XP_SERVLETS.equals(extensionPoint)) {
+            registry.removeServlet((ServletDescriptor)contribution);
+        }
     }
 
 }
