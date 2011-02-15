@@ -1,9 +1,10 @@
 Case Management Document Routing Addon
 ----------------------------------------
 
-This addon adds the "routing" functionality to Nuxeo
+This addon adds the "routing" functionality to Nuxeo.
 A "route" is a list of steps that a list of documents will execute. 
 Steps can be:
+
     * distribute the documents
     * modify some metadata
     * create task for the document to be reviewed

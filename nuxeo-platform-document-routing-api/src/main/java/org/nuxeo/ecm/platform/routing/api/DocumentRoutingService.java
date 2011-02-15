@@ -186,7 +186,7 @@ public interface DocumentRoutingService {
      * @param session
      * @throws ClientException
      */
-    public void addRouteElementToRoute(DocumentRef parentDocumentRef, int idx,
+    void addRouteElementToRoute(DocumentRef parentDocumentRef, int idx,
             DocumentRouteElement routeElement, CoreSession session)
             throws DocumentRouteNotLockedException, ClientException;
 
@@ -202,7 +202,7 @@ public interface DocumentRoutingService {
      * @param session
      * @throws ClientException
      */
-    public void addRouteElementToRoute(DocumentRef parentDocumentRef,
+    void addRouteElementToRoute(DocumentRef parentDocumentRef,
             String sourceName, DocumentRouteElement routeElement,
             CoreSession session) throws DocumentRouteNotLockedException,
             ClientException;
@@ -214,7 +214,7 @@ public interface DocumentRoutingService {
      * @param session
      * @throws ClientException
      */
-    public void removeRouteElement(DocumentRouteElement routeElement,
+    void removeRouteElement(DocumentRouteElement routeElement,
             CoreSession session) throws DocumentRouteNotLockedException,
             ClientException;
 
@@ -226,7 +226,7 @@ public interface DocumentRoutingService {
      * @return
      * @throws ClientException
      */
-    public DocumentModelList getOrderedRouteElement(String routeElementId,
+    DocumentModelList getOrderedRouteElement(String routeElementId,
             CoreSession session) throws ClientException;
 
     /**
