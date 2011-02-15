@@ -33,6 +33,7 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
+import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.http.HttpService;
 import org.osgi.service.packageadmin.PackageAdmin;
@@ -82,15 +83,19 @@ public class Activator implements BundleActivator, BundleTrackerCustomizer, Serv
         // start bundle tracker
         tracker = new BundleTracker(context, Bundle.ACTIVE | Bundle.STARTING | Bundle.RESOLVED, this);
         tracker.open();
-        //TODO temporary disable servicetracker since it breaks on nuxeo tomcat ...
-        //httpServiceTracker = new ServiceTracker(context, HttpService.class.getName(), this);
-        //httpServiceTracker.open();
+        //TODO hack to disable service tracker on regular Nuxeo distribs until finding a better solution
+        if (!"Nuxeo".equals(context.getProperty(Constants.FRAMEWORK_VENDOR))) {
+            httpServiceTracker = new ServiceTracker(context, HttpService.class.getName(), this);
+            httpServiceTracker.open();
+        }
     }
 
     @Override
     public void stop(BundleContext context) throws Exception {
-        httpServiceTracker.close();
-        httpServiceTracker = null;
+        if (httpServiceTracker != null) {
+            httpServiceTracker.close();
+            httpServiceTracker = null;
+        }
         ServletRegistry.dispose();
         instance = null;
         context.ungetService(pkgAdm);
