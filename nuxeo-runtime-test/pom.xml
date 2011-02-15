@@ -107,11 +107,6 @@
     </dependency>
 
     <dependency>
-      <groupId>net.sourceforge.htmlunit</groupId>
-      <artifactId>htmlunit-core-js</artifactId>
-    </dependency>
-
-    <dependency>
       <groupId>org.seleniumhq.webdriver</groupId>
       <artifactId>webdriver-ie</artifactId>
     </dependency>
