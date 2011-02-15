@@ -49,10 +49,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
+import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Invalidations;
+import org.nuxeo.ecm.core.storage.sql.LockManager;
 import org.nuxeo.ecm.core.storage.sql.Mapper;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.Row;
@@ -831,6 +833,50 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             }
         }
         log.debug("rebuildReadAcls: done.");
+    }
+
+    /*
+     * ----- Locking -----
+     */
+
+    @Override
+    public Lock getLock(Serializable id) throws StorageException {
+        Row row = readSimpleRow(new RowId(Model.LOCK_TABLE_NAME, id));
+        return row == null ? null : new Lock(
+                (String) row.get(Model.LOCK_OWNER_KEY),
+                (Calendar) row.get(Model.LOCK_CREATED_KEY));
+    }
+
+    @Override
+    public Lock setLock(Serializable id, Lock lock) throws StorageException {
+        Lock oldLock = getLock(id);
+        if (oldLock == null) {
+            Row row = new Row(Model.LOCK_TABLE_NAME, id);
+            row.put(Model.LOCK_OWNER_KEY, lock.getOwner());
+            row.put(Model.LOCK_CREATED_KEY, lock.getCreated());
+            insertSimpleRow(row);
+        }
+        return oldLock;
+    }
+
+    @Override
+    public Lock removeLock(Serializable id, String owner, boolean force)
+            throws StorageException {
+        Lock oldLock = force ? null : getLock(id);
+        if (!force && owner != null) {
+            if (oldLock == null) {
+                // not locked, nothing to do
+                return null;
+            }
+            if (!LockManager.canLockBeRemoved(oldLock, owner)) {
+                // existing mismatched lock, flag failure
+                return new Lock(oldLock, true);
+            }
+        }
+        if (force || oldLock != null) {
+            deleteRows(Model.LOCK_TABLE_NAME, id);
+        }
+        return oldLock;
     }
 
     /*

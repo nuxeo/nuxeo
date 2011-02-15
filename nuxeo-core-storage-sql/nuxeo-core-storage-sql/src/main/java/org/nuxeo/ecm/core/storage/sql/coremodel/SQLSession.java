@@ -874,7 +874,7 @@ public class SQLSession implements Session {
 
     protected Lock getLock(Node node) throws DocumentException {
         try {
-            return session.getLock(node);
+            return session.getLock(node.getId());
         } catch (StorageException e) {
             throw new DocumentException(e);
         }
@@ -882,7 +882,7 @@ public class SQLSession implements Session {
 
     protected Lock setLock(Node node, Lock lock) throws DocumentException {
         try {
-            return session.setLock(node, lock);
+            return session.setLock(node.getId(), lock);
         } catch (StorageException e) {
             throw new DocumentException(e);
         }
@@ -890,7 +890,7 @@ public class SQLSession implements Session {
 
     protected Lock removeLock(Node node, String owner) throws DocumentException {
         try {
-            return session.removeLock(node, owner);
+            return session.removeLock(node.getId(), owner, false);
         } catch (StorageException e) {
             throw new DocumentException(e);
         }

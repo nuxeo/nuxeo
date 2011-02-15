@@ -420,14 +420,14 @@ public interface Session extends Connection {
             QueryFilter queryFilter, Object... params) throws StorageException;
 
     /**
-     * Gets the lock state of document.
+     * Gets the lock state of a document.
      * <p>
-     * If document does not exist, {@code null} is returned.
+     * If the document does not exist, {@code null} is returned.
      *
-     * @param document the document
+     * @param id the document id
      * @return the existing lock, or {@code null} when there is no lock
      */
-    Lock getLock(Node document) throws StorageException;
+    Lock getLock(Serializable id) throws StorageException;
 
     /**
      * Sets a lock on a document.
@@ -435,12 +435,12 @@ public interface Session extends Connection {
      * If the document is already locked, returns its existing lock status
      * (there is no re-locking, {@link #removeLock} must be called first).
      *
-     * @param document the document
+     * @param id the document id
      * @param lock the lock object to set
      * @return {@code null} if locking succeeded, or the existing lock if
-     *         locking failed, or a
+     *         locking failed
      */
-    Lock setLock(Node document, Lock lock) throws StorageException;
+    Lock setLock(Serializable id, Lock lock) throws StorageException;
 
     /**
      * Removes a lock from a document.
@@ -454,11 +454,14 @@ public interface Session extends Connection {
      * owner for the lock to be removed. If it doesn't match, the returned lock
      * will return {@code true} for {@link Lock#getFailed}.
      *
-     * @param document the document
+     * @param id the document id
      * @param the owner to check, or {@code null} for no check
+     * @param force {@code true} to just do the remove and not return the
+     *            previous lock
      * @return the previous lock
      */
-    Lock removeLock(Node document, String owner) throws StorageException;
+    Lock removeLock(Serializable id, String owner, boolean force)
+            throws StorageException;
 
     /**
      * Read ACLs are optimized ACLs for the read permission, they need to be

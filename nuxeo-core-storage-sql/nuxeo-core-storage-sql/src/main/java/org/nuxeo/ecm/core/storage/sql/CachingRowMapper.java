@@ -180,10 +180,9 @@ public class CachingRowMapper implements RowMapper {
      */
 
     @Override
-    public InvalidationsPair receiveInvalidations(boolean synchronous)
-            throws StorageException {
+    public InvalidationsPair receiveInvalidations() throws StorageException {
         // invalidations from the underlying mapper (remote, cluster)
-        InvalidationsPair invals = rowMapper.receiveInvalidations(synchronous);
+        InvalidationsPair invals = rowMapper.receiveInvalidations();
 
         // add local accumulated invalidations to remote ones
         Invalidations invalidations = cacheQueue.getInvalidations();

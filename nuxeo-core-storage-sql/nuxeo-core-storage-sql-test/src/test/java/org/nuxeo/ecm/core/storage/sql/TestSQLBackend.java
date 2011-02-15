@@ -1296,13 +1296,13 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals(
                 new HashSet<String>(Arrays.asList("testschema", "tst:subjects",
                         "tst:bignotes", "tst:tags", //
-                        "acls", "versions", "misc", "locks")),
+                        "acls", "versions", "misc")),
                 model.getTypePrefetchedFragments("TestDoc"));
         assertEquals(new HashSet<String>(Arrays.asList("testschema2", //
-                "acls", "versions", "misc", "locks")),
+                "acls", "versions", "misc")),
                 model.getTypePrefetchedFragments("TestDoc2"));
         assertEquals(new HashSet<String>(Arrays.asList("tst:subjects", //
-                "acls", "versions", "misc", "locks")),
+                "acls", "versions", "misc")),
                 model.getTypePrefetchedFragments("TestDoc3"));
 
         Node root = session.getRootNode();
@@ -1866,32 +1866,32 @@ public class TestSQLBackend extends SQLBackendTestCase {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
         Node node = session.addChildNode(root, "foo", null, "TestDoc", false);
-        assertNull(session.getLock(node));
-        session.save();
         Serializable nodeId = node.getId();
+        assertNull(session.getLock(nodeId));
+        session.save();
 
         session.close();
         session = repository.getConnection();
         node = session.getNodeById(nodeId);
 
-        Lock lock = session.setLock(node, new Lock("bob", null));
+        Lock lock = session.setLock(nodeId, new Lock("bob", null));
         assertNull(lock);
-        assertNotNull(session.getLock(node));
+        assertNotNull(session.getLock(nodeId));
 
-        lock = session.setLock(node, new Lock("john", null));
+        lock = session.setLock(nodeId, new Lock("john", null));
         assertEquals("bob", lock.getOwner());
 
-        lock = session.removeLock(node, "steve");
+        lock = session.removeLock(nodeId, "steve", false);
         assertEquals("bob", lock.getOwner());
         assertTrue(lock.getFailed());
-        assertNotNull(session.getLock(node));
+        assertNotNull(session.getLock(nodeId));
 
-        lock = session.removeLock(node, null);
+        lock = session.removeLock(nodeId, null, false);
         assertEquals("bob", lock.getOwner());
         assertFalse(lock.getFailed());
-        assertNull(session.getLock(node));
+        assertNull(session.getLock(nodeId));
 
-        lock = session.removeLock(node, null);
+        lock = session.removeLock(nodeId, null, false);
         assertNull(lock);
     }
 
@@ -1902,7 +1902,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
     // TODO disabled as there still are problems in cluster mode
     // due to invalidations not really being synchronous
-    public void XXXtestLockingParallelClustered() throws Throwable {
+    public void testLockingParallelClustered() throws Throwable {
         if (this instanceof TestSQLBackendNet
                 || this instanceof ITSQLBackendNet) {
             return;
@@ -2002,7 +2002,6 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
         protected void doHeavyLockingJob() throws Exception {
             Session session = repository.getConnection();
-            Node node = session.getNodeById(nodeId);
             if (ready != null) {
                 ready.countDown();
             }
@@ -2014,7 +2013,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
                 // lock
                 while (true) {
-                    Lock lock = session.setLock(node, new Lock(name, null));
+                    Lock lock = session.setLock(nodeId, new Lock(name, null));
                     if (lock == null) {
                         break;
                     }
@@ -2024,7 +2023,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
                 // System.err.println(name + " locked");
 
                 // unlock
-                Lock lock = session.removeLock(node, null);
+                Lock lock = session.removeLock(nodeId, null, false);
                 assertNotNull("got no lock, expected " + name, lock);
                 assertEquals(name, lock.getOwner());
                 // System.err.println(name + " unlocked");

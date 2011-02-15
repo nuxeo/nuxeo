@@ -341,18 +341,18 @@ public class RepositoryImpl implements Repository {
             backend.initializeModelSetup(modelSetup);
             model = new Model(modelSetup);
             backend.initializeModel(model);
+
+            Mapper lockManagerMapper = backend.newMapper(model, null,
+                    credentials, true);
+            lockManager = new LockManager(lockManagerMapper,
+                    repositoryDescriptor.clusteringEnabled);
         }
 
         SessionPathResolver pathResolver = new SessionPathResolver();
         Mapper mapper = backend.newMapper(model, pathResolver, credentials,
-                create);
+                false);
         SessionImpl session = newSession(mapper, credentials);
         pathResolver.setSession(session);
-        if (create) {
-            lockManager = new LockManager(session,
-                    repositoryDescriptor.clusteringEnabled);
-            session = getConnection();
-        }
         sessions.add(session);
         return session;
     }
@@ -458,6 +458,9 @@ public class RepositoryImpl implements Repository {
         int n = 0;
         for (SessionImpl session : sessions) {
             n += session.clearCaches();
+        }
+        if (lockManager != null) {
+            lockManager.clearCaches();
         }
         return n;
     }

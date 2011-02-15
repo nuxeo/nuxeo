@@ -71,6 +71,7 @@ public class DialectDerby extends Dialect {
         case NODEIDFKNP:
         case NODEIDFKMUL:
         case NODEIDFKNULL:
+        case NODEIDPK:
         case NODEVAL:
             return jdbcInfo("VARCHAR(36)", Types.VARCHAR);
         case SYSNAME:

@@ -329,18 +329,20 @@ public class ConnectionImpl implements Session {
     }
 
     @Override
-    public Lock getLock(Node document) throws StorageException {
-        return getSession().getLock(document);
+    public Lock getLock(Serializable id) throws StorageException {
+        return getSession().getLock(id);
     }
 
     @Override
-    public Lock setLock(Node document, Lock lock) throws StorageException {
-        return getSession().setLock(document, lock);
+    public Lock setLock(Serializable id, Lock lock)
+            throws StorageException {
+        return getSession().setLock(id, lock);
     }
 
     @Override
-    public Lock removeLock(Node document, String owner) throws StorageException {
-        return getSession().removeLock(document, owner);
+    public Lock removeLock(Serializable id, String owner, boolean force)
+            throws StorageException {
+        return getSession().removeLock(id, owner, force);
     }
 
     @Override

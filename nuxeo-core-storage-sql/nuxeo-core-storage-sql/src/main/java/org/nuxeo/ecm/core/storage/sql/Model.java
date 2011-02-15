@@ -258,8 +258,7 @@ public class Model {
 
     /** Fragments that are always prefetched. */
     public static final String[] ALWAYS_PREFETCHED_FRAGMENTS = {
-            ACL_TABLE_NAME, VERSION_TABLE_NAME, LOCK_TABLE_NAME,
-            MISC_TABLE_NAME };
+            ACL_TABLE_NAME, VERSION_TABLE_NAME, MISC_TABLE_NAME };
 
     protected final RepositoryDescriptor repositoryDescriptor;
 
@@ -1255,7 +1254,8 @@ public class Model {
     }
 
     /**
-     * Special model for the locks table.
+     * Special model for the locks table (also, primary key has no foreign key,
+     * see {@link SQLInfo#initFragmentSQL}.
      */
     private void initLocksModel() {
         addPropertyInfo(null, LOCK_OWNER_PROP, PropertyType.STRING,

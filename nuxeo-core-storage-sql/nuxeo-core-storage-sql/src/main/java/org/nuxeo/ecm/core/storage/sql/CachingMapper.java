@@ -23,6 +23,7 @@ import javax.transaction.xa.XAResource;
 import javax.transaction.xa.Xid;
 
 import org.nuxeo.ecm.core.api.IterableQueryResult;
+import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.StorageException;
@@ -132,6 +133,22 @@ public class CachingMapper extends CachingRowMapper implements Mapper {
     @Override
     public Invalidations getClusterInvalidations() throws StorageException {
         return mapper.getClusterInvalidations();
+    }
+
+    @Override
+    public Lock getLock(Serializable id) throws StorageException {
+        return mapper.getLock(id);
+    }
+
+    @Override
+    public Lock setLock(Serializable id, Lock lock) throws StorageException {
+        return mapper.setLock(id, lock);
+    }
+
+    @Override
+    public Lock removeLock(Serializable id, String owner, boolean force)
+            throws StorageException {
+        return mapper.removeLock(id, owner, force);
     }
 
     @Override

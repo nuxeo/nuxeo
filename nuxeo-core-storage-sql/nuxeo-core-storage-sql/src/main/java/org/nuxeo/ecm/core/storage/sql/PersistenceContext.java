@@ -343,9 +343,9 @@ public class PersistenceContext {
      * <p>
      * Called pre-transaction by start or transactionless save;
      */
-    protected void processReceivedInvalidations(boolean synchronous)
+    protected void processReceivedInvalidations()
             throws StorageException {
-        InvalidationsPair invals = mapper.receiveInvalidations(synchronous);
+        InvalidationsPair invals = mapper.receiveInvalidations();
         if (invals == null) {
             return;
         }
@@ -652,8 +652,12 @@ public class PersistenceContext {
     protected void removeNode(Fragment hierFragment) throws StorageException {
         hierContext.removeNode(hierFragment);
 
-        // find all the fragments with this id in the maps
         Serializable id = hierFragment.getId();
+
+        // remove the lock using the lock manager
+        session.removeLock(id, null, false);
+
+        // find all the fragments with this id in the maps
         List<Fragment> fragments = new LinkedList<Fragment>();
         for (Fragment fragment : pristine.values()) {
             if (id.equals(fragment.getId())) {

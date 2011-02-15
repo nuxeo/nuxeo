@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
@@ -94,8 +93,6 @@ public class SessionImpl implements Session, XAResource {
 
     private String threadName;
 
-    private boolean synchronousInvalidations;
-
     public SessionImpl(RepositoryImpl repository, Model model, Mapper mapper,
             Credentials credentials) throws StorageException {
         this.repository = repository;
@@ -114,13 +111,6 @@ public class SessionImpl implements Session, XAResource {
         }
 
         computeRootNode();
-    }
-
-    /** Sets invalidations to be synchronous. Used for the LockManager session. */
-    // doesn't really work yet, as the cluster node handler runs in
-    // a different connection from the session that needs it
-    protected void setSynchronousInvalidations() {
-        synchronousInvalidations = true;
     }
 
     private void checkLive() {
@@ -475,7 +465,7 @@ public class SessionImpl implements Session, XAResource {
      * Called pre-transaction by start or transactionless save;
      */
     protected void processReceivedInvalidations() throws StorageException {
-        context.processReceivedInvalidations(synchronousInvalidations);
+        context.processReceivedInvalidations();
     }
 
     /**
@@ -1013,90 +1003,23 @@ public class SessionImpl implements Session, XAResource {
         return mapper.queryAndFetch(query, queryType, queryFilter, params);
     }
 
-    protected boolean isLockManagerSession() {
-        return repository.getLockManager().session == this;
+    @Override
+    public Lock getLock(Serializable id) throws StorageException {
+        return repository.getLockManager().getLock(id);
     }
 
     @Override
-    public Lock getLock(Node node) throws StorageException {
-        if (node == null) {
-            // doc not yet committed
-            return null; // no lock
-        }
-        if (!isLockManagerSession()) {
-            return repository.getLockManager().getLock(node.getId());
-        }
-        return getLockInternal(node);
-    }
-
-    protected Lock getLockInternal(Node node) throws StorageException {
-        String owner = (String) node.getSimpleProperty(Model.LOCK_OWNER_PROP).getValue();
-        if (owner == null) {
-            return null;
-        }
-        Calendar created = (Calendar) node.getSimpleProperty(
-                Model.LOCK_CREATED_PROP).getValue();
-        return new Lock(owner, created);
-    }
-
-    // used to flag attempt to lock/unlock a document that doesn't exist
-    protected static final Lock UNSAVED = new Lock(null, null);
-
-    @Override
-    public Lock setLock(Node node, Lock lock) throws StorageException {
-        if (node == null) {
-            // doc not yet committed in this thread
-            return UNSAVED;
-        }
+    public Lock setLock(Serializable id, Lock lock) throws StorageException {
         if (lock == null) {
-            throw new NullPointerException("Attempt to use null lock on: "
-                    + node);
+            throw new NullPointerException("Attempt to use null lock on: " + id);
         }
-        if (!isLockManagerSession()) {
-            Lock res = repository.getLockManager().setLock(node.getId(), lock);
-            if (res != UNSAVED) {
-                return res;
-            }
-            // else do a setLock in this session, for later save
-        }
-
-        Lock oldLock = getLockInternal(node);
-        if (oldLock == null) {
-            node.setSimpleProperty(Model.LOCK_OWNER_PROP, lock.getOwner());
-            node.setSimpleProperty(Model.LOCK_CREATED_PROP, lock.getCreated());
-        }
-        return oldLock;
+        return repository.getLockManager().setLock(id, lock);
     }
 
     @Override
-    public Lock removeLock(Node node, String owner) throws StorageException {
-        if (node == null) {
-            // doc not yet committed in this thread
-            return UNSAVED;
-        }
-        if (!isLockManagerSession()) {
-            Lock res = repository.getLockManager().removeLock(node.getId(),
-                    owner);
-            if (res != UNSAVED) {
-                return res;
-            }
-            // else do a removeLock in this session, for later save
-        }
-
-        Lock oldLock = getLockInternal(node);
-        if (owner != null) {
-            if (oldLock == null) {
-                // not locked, nothing to do
-                return oldLock;
-            }
-            if (!owner.equals(oldLock.getOwner())) {
-                // existing mismatched lock, flag failure
-                return new Lock(oldLock, true);
-            }
-        }
-        node.setSimpleProperty(Model.LOCK_OWNER_PROP, null);
-        node.setSimpleProperty(Model.LOCK_CREATED_PROP, null);
-        return oldLock;
+    public Lock removeLock(Serializable id, String owner, boolean force)
+            throws StorageException {
+        return repository.getLockManager().removeLock(id, owner);
     }
 
     @Override

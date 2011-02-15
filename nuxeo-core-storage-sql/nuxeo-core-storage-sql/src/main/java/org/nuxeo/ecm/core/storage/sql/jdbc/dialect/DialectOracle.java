@@ -120,6 +120,7 @@ public class DialectOracle extends Dialect {
         case NODEIDFKNP:
         case NODEIDFKMUL:
         case NODEIDFKNULL:
+        case NODEIDPK:
         case NODEVAL:
             return jdbcInfo("VARCHAR2(36)", Types.VARCHAR);
         case SYSNAME:

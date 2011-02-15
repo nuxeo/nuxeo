@@ -18,13 +18,18 @@ package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
 import java.sql.SQLException;
+import java.util.LinkedHashMap;
+import java.util.Map.Entry;
 import java.util.concurrent.Callable;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReentrantLock;
 
 import javax.transaction.xa.XAException;
 import javax.transaction.xa.XAResource;
 import javax.transaction.xa.Xid;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.XidImpl;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.storage.StorageException;
@@ -40,85 +45,143 @@ import org.nuxeo.ecm.core.storage.StorageException;
  * can be atomic.
  * <p>
  * Transaction management can be done by hand because we're dealing with a
- * low-level {@link SessionImpl} and not something wrapped by a JCA pool.
+ * low-level {@link Mapper} and not something wrapped by a JCA pool.
  */
 public class LockManager {
 
+    private static final Log log = LogFactory.getLog(LockManager.class);
+
     /**
-     * The session to use. In this session we only ever touch the lock table, so
+     * The mapper to use. In this mapper we only ever touch the lock table, so
      * no need to deal with fulltext and complex saves, and we don't do
      * prefetch.
      */
-    public final SessionImpl session;
+    protected final Mapper mapper;
 
     /**
      * If clustering is enabled then we have to wrap test/set and test/remove in
      * a transaction.
      */
-    public final boolean clusteringEnabled;
+    protected final boolean clusteringEnabled;
 
     /**
-     * Lock serializing access to the session.
+     * Lock serializing access to the mapper.
      */
-    protected final ReentrantLock sessionLock;
+    protected final ReentrantLock serializationLock;
 
     /**
-     * Creates a lock manager using the given session.
+     * Counter to avoid having two identical transaction ids.
      * <p>
-     * The session will from then on be only used and closed by the lock
-     * manager.
+     * Used under {@link #serializationLock}.
+     */
+    protected static AtomicLong txCounter = new AtomicLong();
+
+    protected static final Lock NULL_LOCK = new Lock(null, null);
+
+    protected final boolean caching;
+
+    /**
+     * A cache of locks, used only in non-cluster mode, when this lock manager
+     * is the only one dealing with locks.
+     * <p>
+     * Used under {@link #serializationLock}.
+     */
+    protected final LRUCache<Serializable, Lock> lockCache;
+
+    protected static final int CACHE_SIZE = 100;
+
+    protected static class LRUCache<K, V> extends LinkedHashMap<K, V> {
+        private static final long serialVersionUID = 1L;
+
+        private final int max;
+
+        public LRUCache(int max) {
+            super(max, 1.0f, true);
+            this.max = max;
+        }
+
+        @Override
+        protected boolean removeEldestEntry(Entry<K, V> eldest) {
+            return size() > max;
+        }
+    }
+
+    /**
+     * Creates a lock manager using the given mapper.
+     * <p>
+     * The mapper will from then on be only used and closed by the lock manager.
      * <p>
      * {@link #shutdown} must be called when done with the lock manager.
      */
-    public LockManager(SessionImpl session, boolean clusteringEnabled) {
-        this.session = session;
-        session.setSynchronousInvalidations();
+    public LockManager(Mapper mapper, boolean clusteringEnabled) {
+        this.mapper = mapper;
         this.clusteringEnabled = clusteringEnabled;
-        sessionLock = new ReentrantLock(true); // fair
+        serializationLock = new ReentrantLock(true); // fair
+        caching = !clusteringEnabled;
+        lockCache = caching ? new LRUCache<Serializable, Lock>(CACHE_SIZE)
+                : null;
     }
 
     /**
      * Shuts down the lock manager.
      */
     public void shutdown() throws StorageException {
-        session.closeSession();
+        serializationLock.lock();
+        try {
+            mapper.close();
+        } finally {
+            serializationLock.unlock();
+        }
     }
 
     /**
      * Gets the lock on a document.
      */
     public Lock getLock(final Serializable id) throws StorageException {
-        return call(false, new Callable<Lock>() {
-            @Override
-            public Lock call() throws Exception {
-                Node node = session.getNodeById(id, false);
-                return session.getLock(node);
+        serializationLock.lock();
+        try {
+            Lock lock;
+            if (caching && (lock = lockCache.get(id)) != null) {
+                return lock == NULL_LOCK ? null : lock;
             }
-        });
+            // no transaction needed, single operation
+            lock = mapper.getLock(id);
+            lockCache.put(id, lock == null ? NULL_LOCK : lock);
+            return lock;
+        } finally {
+            serializationLock.unlock();
+        }
     }
 
     /**
      * Locks a document.
      */
-    public Lock setLock(final Serializable id, final Lock lock)
-            throws StorageException {
-        try {
-            return setLockInternal(id, lock);
-        } catch (StorageException e) {
-            Throwable c = e.getCause();
-            if (c != null && c instanceof SQLException) {
-                boolean duplicateKey = isDuplicateKeyException((SQLException) c);
-                if (duplicateKey) {
-                    // cluster: got duplicate key (two simultaneous inserts)
-                    // retry once, after the first insert is committed we'll get
-                    // an invalidation and can just update
-                    return setLockInternal(id, lock);
-                }
+    public Lock setLock(Serializable id, Lock lock) throws StorageException {
+        int RETRIES = 10;
+        for (int i = 0; i < RETRIES; i++) {
+            if (i > 0) {
+                log.debug("Retrying lock on " + id + ": try " + (i + 1));
             }
-            throw e;
+            try {
+                return setLockInternal(id, lock);
+            } catch (StorageException e) {
+                Throwable c = e.getCause();
+                if (c != null && c instanceof SQLException
+                        && isDuplicateKeyException((SQLException) c)) {
+                    // cluster: two simultaneous inserts
+                    // retry
+                    continue;
+                }
+                throw e;
+            }
         }
+        throw new StorageException("Failed to lock " + id
+                + ", too much concurrency (tried " + RETRIES + " times)");
     }
 
+    /**
+     * Is the exception about a duplicate primary key?
+     */
     protected boolean isDuplicateKeyException(SQLException e) {
         String sqlState = e.getSQLState();
         if ("23000".equals(sqlState)) {
@@ -140,15 +203,26 @@ public class LockManager {
 
     protected Lock setLockInternal(final Serializable id, final Lock lock)
             throws StorageException {
-        return call(true, new Callable<Lock>() {
-            @Override
-            public Lock call() throws Exception {
-                Node node = session.getNodeById(id, false);
-                Lock oldLock = session.setLock(node, lock);
-                session.flushWithoutFulltext();
+        serializationLock.lock();
+        try {
+            Lock oldLock;
+            if (caching && (oldLock = lockCache.get(id)) != null
+                    && oldLock != NULL_LOCK) {
                 return oldLock;
             }
-        });
+            oldLock = callInTransaction(new Callable<Lock>() {
+                @Override
+                public Lock call() throws Exception {
+                    return mapper.setLock(id, lock);
+                }
+            });
+            if (caching && oldLock == null) {
+                lockCache.put(id, lock == null ? NULL_LOCK : lock);
+            }
+            return oldLock;
+        } finally {
+            serializationLock.unlock();
+        }
     }
 
     /**
@@ -156,73 +230,117 @@ public class LockManager {
      */
     public Lock removeLock(final Serializable id, final String owner)
             throws StorageException {
-        return call(true, new Callable<Lock>() {
-            @Override
-            public Lock call() throws Exception {
-                Node node = session.getNodeById(id, false);
-                Lock oldLock = session.removeLock(node, owner);
-                session.flushWithoutFulltext();
-                return oldLock;
+        serializationLock.lock();
+        try {
+            Lock oldLock = null;
+            if (caching && (oldLock = lockCache.get(id)) == NULL_LOCK) {
+                return null;
             }
-        });
+            if (oldLock != null && !canLockBeRemoved(oldLock, owner)) {
+                // existing mismatched lock, flag failure
+                oldLock = new Lock(oldLock, true);
+            } else {
+                if (oldLock == null) {
+                    oldLock = callInTransaction(new Callable<Lock>() {
+                        @Override
+                        public Lock call() throws Exception {
+                            return mapper.removeLock(id, owner, false);
+                        }
+                    });
+                } else {
+                    // we know the previous lock, we can force
+                    // no transaction needed, single operation
+                    mapper.removeLock(id, owner, true);
+                }
+            }
+            if (caching) {
+                if (oldLock != null && oldLock.getFailed()) {
+                    // failed, but we now know the existing lock
+                    lockCache.put(id, new Lock(oldLock, false));
+                } else {
+                    lockCache.put(id, NULL_LOCK);
+                }
+            }
+            return oldLock;
+        } finally {
+            serializationLock.unlock();
+        }
     }
 
     /**
-     * Calls the callable, under a begin/commit if in cluster mode.
+     * Calls the callable, inside a transaction if in cluster mode.
+     * <p>
+     * Called under {@link #serializationLock}.
      */
-    protected Lock call(boolean hasWrites, Callable<Lock> callable)
+    protected Lock callInTransaction(Callable<Lock> callable)
             throws StorageException {
-        sessionLock.lock();
+        Xid xid = null;
+        boolean txStarted = false;
+        boolean txSuccess = false;
         try {
-            Xid xid = null;
-            boolean txStarted = false;
-            boolean txSuccess = false;
-            try {
-                if (hasWrites && clusteringEnabled) {
-                    xid = new XidImpl("nuxeolockmanager"
-                            + System.currentTimeMillis());
-                    try {
-                        session.start(xid, XAResource.TMNOFLAGS);
-                    } catch (XAException e) {
-                        throw new StorageException(e);
-                    }
-                    txStarted = true;
-                } else {
-                    // must still process received invalidations, as locks may
-                    // be written from a normal session on document creation
-                    session.processReceivedInvalidations();
-                }
-
-                // actual call
-                Lock result;
+            if (clusteringEnabled) {
+                xid = new XidImpl("nuxeolockmanager."
+                        + System.currentTimeMillis() + "."
+                        + txCounter.incrementAndGet());
                 try {
-                    result = callable.call();
-                } catch (StorageException e) {
-                    throw e;
-                } catch (Exception e) {
+                    mapper.start(xid, XAResource.TMNOFLAGS);
+                } catch (XAException e) {
                     throw new StorageException(e);
                 }
+                txStarted = true;
+            }
+            // else no need to process invalidations,
+            // only this mapper writes locks
 
-                txSuccess = true;
-                return result;
-            } finally {
-                if (txStarted) {
-                    try {
-                        if (txSuccess) {
-                            session.end(xid, XAResource.TMSUCCESS);
-                            session.commit(xid, true);
-                        } else {
-                            session.end(xid, XAResource.TMFAIL);
-                            session.rollback(xid);
-                        }
-                    } catch (XAException e) {
-                        throw new StorageException(e);
+            // actual call
+            Lock result;
+            try {
+                result = callable.call();
+            } catch (StorageException e) {
+                throw e;
+            } catch (Exception e) {
+                throw new StorageException(e);
+            }
+
+            txSuccess = true;
+            return result;
+        } finally {
+            if (txStarted) {
+                try {
+                    if (txSuccess) {
+                        mapper.end(xid, XAResource.TMSUCCESS);
+                        mapper.commit(xid, true);
+                    } else {
+                        mapper.end(xid, XAResource.TMFAIL);
+                        mapper.rollback(xid);
                     }
+                } catch (XAException e) {
+                    throw new StorageException(e);
                 }
             }
-        } finally {
-            sessionLock.unlock();
         }
+    }
+
+    public void clearCaches() {
+        serializationLock.lock();
+        try {
+            if (caching) {
+                lockCache.clear();
+            }
+        } finally {
+            serializationLock.unlock();
+        }
+    }
+
+    /**
+     * Checks if a given lock can be removed by the given owner.
+     *
+     * @param lock the lock
+     * @param owner the owner (may be {@code null})
+     * @return {@code true} if the lock can be removed
+     */
+    public static boolean canLockBeRemoved(Lock lock, String owner) {
+        return owner == null || owner.equals(lock.getOwner());
     }
 
 }

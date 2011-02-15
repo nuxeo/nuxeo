@@ -81,20 +81,20 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
     }
 
     @Override
-    public InvalidationsPair receiveInvalidations(boolean synchronous)
+    public InvalidationsPair receiveInvalidations()
             throws StorageException {
         Invalidations invalidations = null;
         if (clusterNodeHandler != null) {
-            receiveClusterInvalidations(synchronous);
+            receiveClusterInvalidations();
             invalidations = queue.getInvalidations();
         }
         return invalidations == null ? null : new InvalidationsPair(
                 invalidations, null);
     }
 
-    protected void receiveClusterInvalidations(boolean synchronous)
+    protected void receiveClusterInvalidations()
             throws StorageException {
-        Invalidations invalidations = clusterNodeHandler.receiveClusterInvalidations(synchronous);
+        Invalidations invalidations = clusterNodeHandler.receiveClusterInvalidations();
         // send received invalidations to all mappers
         if (invalidations != null && !invalidations.isEmpty()) {
             clusterNodeHandler.propagator.propagateInvalidations(invalidations,

@@ -135,6 +135,7 @@ public class DialectPostgreSQL extends Dialect {
         case NODEIDFKNP:
         case NODEIDFKMUL:
         case NODEIDFKNULL:
+        case NODEIDPK:
         case NODEVAL:
             return jdbcInfo("varchar(36)", Types.VARCHAR);
         case NODEARRAY:

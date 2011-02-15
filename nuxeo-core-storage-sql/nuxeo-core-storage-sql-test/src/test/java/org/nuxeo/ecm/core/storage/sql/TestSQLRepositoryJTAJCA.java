@@ -45,11 +45,10 @@ public class TestSQLRepositoryJTAJCA extends TXSQLRepositoryTestCase {
         }
 
         Repository repo = NXCore.getRepositoryService().getRepositoryManager().getRepository(REPOSITORY_NAME);
-        // 2 low level sessions, one normal and one for the LockManager
-        assertEquals(2, repo.getActiveSessionsCount());
+        assertEquals(1, repo.getActiveSessionsCount());
 
         CoreSession session2 = openSessionAs(SecurityConstants.ADMINISTRATOR);
-        assertEquals(2, repo.getActiveSessionsCount());
+        assertEquals(1, repo.getActiveSessionsCount());
         try {
             DocumentModel doc = new DocumentModelImpl("/", "doc", "Document");
             doc = session.createDocument(doc);
@@ -60,7 +59,7 @@ public class TestSQLRepositoryJTAJCA extends TXSQLRepositoryTestCase {
         } finally {
             closeSession(session2);
         }
-        assertEquals(2, repo.getActiveSessionsCount());
+        assertEquals(1, repo.getActiveSessionsCount());
     }
 
     /**

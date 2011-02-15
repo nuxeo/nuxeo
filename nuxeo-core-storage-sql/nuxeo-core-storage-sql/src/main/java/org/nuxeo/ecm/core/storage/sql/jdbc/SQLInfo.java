@@ -585,7 +585,7 @@ public class SQLInfo {
         maker.postProcess();
         maker.postProcessHierarchy();
         // if (!separateMainTable)
-        maker.postProcessIdGeneration();
+        // maker.postProcessIdGeneration();
 
         maker.table.addIndex(model.HIER_PARENT_KEY);
         maker.table.addIndex(model.HIER_PARENT_KEY, model.HIER_CHILD_NAME_KEY);
@@ -610,24 +610,21 @@ public class SQLInfo {
      */
     protected void initFragmentSQL(String tableName) {
         TableMaker maker = new TableMaker(tableName);
-        boolean isMain = tableName.equals(model.HIER_TABLE_NAME);
-
-        if (isMain) {
-            maker.newColumn(model.MAIN_KEY, ColumnType.NODEID);
+        ColumnType type;
+        if (tableName.equals(model.HIER_TABLE_NAME)) {
+            type = ColumnType.NODEID;
+        } else if (tableName.equals(model.LOCK_TABLE_NAME)) {
+            type = ColumnType.NODEIDPK; // no foreign key to hierarchy
+        } else if (model.isCollectionFragment(tableName)) {
+            type = ColumnType.NODEIDFKMUL;
         } else {
-            if (model.isCollectionFragment(tableName)) {
-                maker.newColumn(model.MAIN_KEY, ColumnType.NODEIDFKMUL);
-            } else {
-                maker.newColumn(model.MAIN_KEY, ColumnType.NODEIDFK);
-            }
+            type = ColumnType.NODEIDFK;
         }
-
+        maker.newColumn(model.MAIN_KEY, type);
         maker.newFragmentFields();
-
         maker.postProcess();
-        if (isMain) {
-            maker.postProcessIdGeneration();
-        }
+        // if (isMain)
+        // maker.postProcessIdGeneration();
     }
 
     // ----- prepare one table -----
@@ -661,7 +658,7 @@ public class SQLInfo {
                 column.setNullable(false);
                 column.setPrimary(true);
             }
-            if (type == ColumnType.NODEIDFK) {
+            if (type == ColumnType.NODEIDFK || type == ColumnType.NODEIDPK) {
                 column.setNullable(false);
                 column.setPrimary(true);
             }
@@ -723,13 +720,6 @@ public class SQLInfo {
             postProcessInsert();
             postProcessDelete();
             postProcessCopy();
-        }
-
-        /**
-         * Additional SQL for the main table.
-         */
-        protected void postProcessIdGeneration() {
-            // nothing to do
         }
 
         /**

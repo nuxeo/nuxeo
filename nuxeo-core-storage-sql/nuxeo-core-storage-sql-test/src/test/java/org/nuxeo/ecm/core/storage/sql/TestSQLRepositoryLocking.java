@@ -128,6 +128,27 @@ public class TestSQLRepositoryLocking extends TXSQLRepositoryTestCase {
         assertTrue(doc.isLocked());
     }
 
+    // check we don't have a SQL-level locking error due to the lock manager
+    // connection reading a row that was written but not yet committed by the
+    // main connection
+    public void testGetLockAfterCreate() throws Exception {
+        if (!hasPoolingConfig()) {
+            return;
+        }
+    
+        DocumentModel doc1 = new DocumentModelImpl("/", "doc1", "File");
+        doc1 = session.createDocument(doc1);
+        session.save();
+        // read lock after save (SQL INSERT)
+        assertNull(doc1.getLockInfo());
+    
+        DocumentModel doc2 = new DocumentModelImpl("/", "doc2", "File");
+        doc2 = session.createDocument(doc2);
+        session.save();
+        // set lock after save (SQL INSERT)
+        doc2.setLock();
+    }
+
     protected CountDownLatch threadStartLatch;
 
     protected CountDownLatch lockingLatch;
@@ -187,4 +208,5 @@ public class TestSQLRepositoryLocking extends TXSQLRepositoryTestCase {
 
         assertTrue(locked);
     }
+
 }
