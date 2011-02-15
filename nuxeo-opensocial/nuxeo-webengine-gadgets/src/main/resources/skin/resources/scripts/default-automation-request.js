@@ -92,16 +92,16 @@ function requestCompleted(response, nxParams) {
     if (response.data) {
         hideWaitMessage();
         hideOAuthInProgress();
-        if (response.data['entity-type'] == nxParams.entityType) {
+        if (response.data['entity-type'] == "documents" ) { // old behavior for 'documents' output type
             if (nxParams.usePagination) {
                 maxPage = response.data['pageCount'];
             }
 
             // set callback
             nxParams.refreshCB = doAutomationRequest;
-
             nxParams.displayMethod(response.data.entries, nxParams);
         }
+        // TODO handle the cases for other output types : document, blob, ...
         else {
             alert(response.data.entity - type);
         }
@@ -116,9 +116,19 @@ function requestCompleted(response, nxParams) {
         var popup = new gadgets.oauth.Popup(response.oauthApprovalUrl,
                 'height=600,width=800', onOpen, onClose);
         showOAuthPrompt(popup.createOpenerOnClick(), popup.createApprovedOnClick());
+    } else if ( response.rc == 204 ) { // operation successful but not data
+    	hideWaitMessage();
+        hideOAuthInProgress();
+    } else {
+    	showErrorMessage("No data received from server: ", errors);
     }
-    else {
-        showErrorMessage("No data received from server", response);
+
+    // call "operationCallback" method if defined
+    // this will allow customized behavior when operation is finished
+    if ( typeof(nxParams.operationCallback) != 'undefined' ) {
+    	nxParams.operationCallback(response, nxParams)
     }
+
+
 }
 
