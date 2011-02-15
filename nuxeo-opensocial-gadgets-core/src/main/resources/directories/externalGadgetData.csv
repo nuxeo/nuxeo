@@ -1,0 +1,7 @@
+id,label,enabled,category,url,iconUrl
+"activitystream","Activity Stream","0","Atlassian","http://marge:7070/rest/gadgets/1.0/g/com.atlassian.streams.confluence:activitystream-gadget/gadgets/conf-activitystream-gadget.xml","http://marge:7070/s/1724/1/2/_/download/resources/com.atlassian.streams.confluence:activitystream-gadget/images/activitystream-thumb.png"
+"quicknav","Quick Nav","0","Atlassian","http://marge:7070/rest/gadgets/1.0/g/com.atlassian.confluence.plugins.gadgets:gadget-search/gadgets/gadget-search.xml","http://marge:7070/s/1724/1/2/_/download/resources/com.atlassian.confluence.plugins.gadgets:static-resources/images/quick-nav-gadget.png"
+"atlassiannews","Atlassian News","0","Atlassian","http://marge:7070/rest/gadgets/1.0/g/com.atlassian.confluence.plugins.gadgets:confluence-news-gadget/gadgets/confluence-news-gadget.xml","http://www.atlassian.com/gadgets/images/thumb/confluence-news.png"
+"assignedtome","Assigned To Me","0","Atlassian","http://atlas.in.nuxeo.com/jira4/rest/gadgets/1.0/g/com.atlassian.jira.gadgets:assigned-to-me-gadget/gadgets/assigned-to-me-gadget.xml","http://atlas.in.nuxeo.com/jira4/s/466/1/2/_/download/resources/com.atlassian.jira.gadgets:assigned-to-me-gadget/filterResults-thumb.png"
+"roadmap","Road Map","0","Atlassian","http://atlas.in.nuxeo.com/jira4/rest/gadgets/1.0/g/com.atlassian.jira.gadgets:road-map-gadget/gadgets/roadmap-gadget.xml","http://atlas.in.nuxeo.com/jira4/s/466/1/2/_/download/resources/com.atlassian.jira.gadgets:road-map-gadget/roadmap-thumb.png"
+

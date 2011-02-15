@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Module>
+  <ModulePrefs title="Conflunce Stream Display" height="95" scrolling="true">
+    <Require feature="dynamic-height" />
+    <Require feature="oauthpopup" />
+    <OAuth>
+      <Service>
+        <Access url="http://127.0.0.1:9090/plugins/servlet/oauth/access-token"
+          method="POST" />
+        <Request url="http://127.0.0.1:9090/plugins/servlet/oauth/request-token"
+          method="POST" />
+        <Authorization
+          url="http://127.0.0.1:9090/plugins/servlet/oauth/authorize" />
+      </Service>
+    </OAuth>
+  </ModulePrefs>
+
+  <Content type="html">
+        <![CDATA[
+    <style>
+    #main {
+        margin: 0px;
+        padding: 0px;
+        font-family:Trebuchet, Arial,Verdana;
+        font-size:11px;
+    }
+    </style>
+
+    <div id="main" style="display: none">
+    </div>
+
+    <div id="approval" style="display: none">
+      <a href="#" id="personalize">Personalize this gadget</a>
+    </div>
+
+    <div id="waiting" style="display: none">
+      Please click
+      <a href="#" id="approvaldone">I've approved access</a>
+      once you've approved access to your data.
+    </div>
+
+    <script type="text/javascript" language="javascript" src="nuxeoauth.js"></script>
+        ]]>
+  </Content>
+</Module>

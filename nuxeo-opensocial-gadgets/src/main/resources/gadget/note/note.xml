@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Module>
+  <ModulePrefs title="Postit" description="Write your note here!" author="sergiosicari" author_email="sergiosicari+coolgadget@gmail.com" screenshot="http://www.fileden.com/files/2006/12/4/465575/Others/screenshot.png" author_location="Augusta(SR), Italy" author_affiliation="Google Inc." category="tools" height="263" scaling="false">
+  <Require feature="nuxeo" />
+  <Require feature="form" />
+  <Require feature="jquery" />
+  <Require feature="dynamic-height" />
+  </ModulePrefs>
+  <UserPref name="textFont" display_name="Police du texte" default_value="courier" datatype="enum">
+    <EnumValue value="courier" display_value="courier" />
+    <EnumValue value="arial" display_value="arial" />
+    <EnumValue value="verdana" display_value="verdana" />
+    <EnumValue value="Times New Roman" display_value="Times New Roman" />
+  </UserPref>
+   <UserPref name="textSize" display_name="Taille du texte" default_value="12px" datatype="enum">
+    <EnumValue value="10px" display_value="10" />
+    <EnumValue value="12px" display_value="12" />
+    <EnumValue value="14px" display_value="14" />
+    <EnumValue value="16px" display_value="16" />
+    <EnumValue value="18px" display_value="18" />
+  </UserPref>
+    <UserPref name="COLOR_txt" display_name="Couleur du texte" default_value="none" value="none" datatype="enum">
+    <EnumValue display_value="red" value="FF0000"/>
+    <EnumValue display_value="pink" value="FF0066"/>
+    <EnumValue display_value="orange" value="FF6600"/>
+    <EnumValue display_value="green" value="99CC00"/>
+    <EnumValue display_value="blue" value="66CCFF"/>
+    <EnumValue display_value="gray" value="999999"/>
+    <EnumValue display_value="light gray" value="CCCCCC"/>
+    <EnumValue display_value="white" value="FFFFFF"/>
+    <EnumValue display_value="none" value="none"/>
+  </UserPref>
+
+  <Content type="html">
+  <![CDATA[
+  <style type='text/css'>
+  #txtareapostit {
+    width: 93%;
+    height:220px;
+    color: black;
+    border: 0px solid white;
+    background-color:#fef8bc;
+    line-height:14px;
+    margin:auto;
+    display:block;
+    overflow: hidden;
+  }
+
+  #frmpostit{
+   margin:5px 0 5px 0;
+  }
+
+  #formtxt{
+   margin:0px;
+  }
+
+  #cacheText{
+  line-height:14px;
+  font-family:courier;
+  font-size:12px;
+  padding-left:10px;
+  padding-right:10px;
+  letter-spacing:0;
+  }
+
+  #txtCenter {
+    background-image: url(note_center.png);
+    background-repeat: repeat-y ;
+    width:294px;
+    margin:auto;
+  }
+
+  #txtTop{
+   width:294px;
+   height:5px;
+   font-size:0px;
+   background-image: url(note_top.png);
+   background-repeat: no-repeat ;
+   margin:auto;
+  }
+
+  #txtBottom{
+   width:294px;
+   height:14px;
+   background-image: url(note_bottom.png);
+   background-repeat: no-repeat ;
+   margin:auto;
+  }
+  </style>
+   <script type="text/javascript" language="javascript" src="jquery.elastic.js"></script>
+  <script type="text/javascript">
+  
+    var prefs  = new _IG_Prefs(__MODULE_ID__);
+    var perm = gadgets.nuxeo.isEditable();
+    var timeoutID = null;
+    
+    gadgets.util.registerOnLoadHandler(function () {
+      var idGadget = gadgets.nuxeo.getGadgetId();
+      jQuery("#formtxt").attr("action", gadgets.nuxeo.getFormActionUrl(idGadget));
+      
+      var url = gadgets.nuxeo.getHtmlActionUrl(idGadget);
+      jQuery.ajax({
+        type : "GET",
+        url :  gadgets.nuxeo.getHtmlActionUrl(idGadget),
+        success : function(html) {
+           setText(html);
+        }
+      });
+      jQuery("#txtareapostit").keyup(function(){
+        clearTimeout(timeoutID);
+        
+        timeoutID = setTimeout(function () {
+     	  jQuery('#formtxt').ajaxSubmit();
+   		}, 500);
+   		setTimeout(function(){
+     	   gadgets.window.adjustHeight();
+     	 },100);
+        return true;
+      });
+    }
+  );
+  
+   function setText(text){
+     var style = ["color:",prefs.getString("COLOR_txt"),";font-size:",
+     prefs.getString("textSize"),";font-family:", prefs.getString("textFont")+";"];
+     
+    
+     var fontSize = parseInt(jQuery("#txtareapostit").css('font-size'),'10');
+     
+     if(parseInt(jQuery("#txtareapostit").css('line-height'),10) < parseInt(prefs.getString("textSize").split("px")[0],10)){
+     	style.push(["line-height:",prefs.getString("textSize"),";"].join(""))
+     }
+     jQuery("#txtareapostit").attr("style",style.join("")).show();
+      
+     if(perm == false) {
+     	 jQuery("#formtxt").remove();
+     	 var textareaContent = gadgets.util.unescapeString(text).replace(/&/g,'&amp;').replace(/  /g, '&nbsp;')
+     	 .replace(/<|>/g, '&gt;').replace(/\n/g, '<br />');
+         jQuery("#cacheText").attr("style",style.join("")).html(textareaContent + "&nbsp;")
+         .css("word-wrap","break-word").css("min-height","220px")         
+         .show();
+          gadgets.window.adjustHeight();
+     } else {
+     	 jQuery("#txtareapostit").val(gadgets.util.unescapeString(text)).attr("style",style.join(""));
+     	 setTimeout(function(){
+     	   jQuery('#txtareapostit').elastic();
+     	   gadgets.window.adjustHeight();
+     	 },100);
+     }
+   }
+  </script>
+   <div id="frmpostit">
+
+   <div id="txtTop"></div>
+   <div id="txtCenter">
+   <div id="cacheText" style="display:none;" ></div>
+    <form style="text-align:center;" method="post" id="formtxt" enctype="application/x-www-form-urlencoded" action="#">
+    <textarea id="txtareapostit" style="display:block;" name="gadget:htmlContent" cols="30" wrap="hard">
+    </textarea>
+    </form>
+   </div>
+   <div id="txtBottom"></div>
+  </div>
+
+  <div style="clear:both"></div>
+    ]]>
+  </Content>
+</Module>

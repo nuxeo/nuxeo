@@ -1,0 +1,95 @@
+<?xml version="1.0"?>
+<project name="nuxeo-opensocial-gadgets-core" default="deploy-webengine" basedir=".">
+
+  <!-- From the pom.xml -->
+  <property name="name" value="nuxeo-opensocial-gadgets-core" />
+  <property name="version" value="${version}" />
+
+  <!-- Create a build.properties file from build.properties.sample
+       if you wish to override the JBoss paths -->
+  <property file="build.properties" />
+  <property name="jboss.dir" value="/opt/jboss" />
+
+  <property name="javac.debug" value="true" />
+  <property name="javac.deprecation" value="false" />
+
+  <!-- Boilerplate configuration -->
+  <property name="build.dir" value="${basedir}/target" />
+  <property name="deploy.dir" value="${jboss.dir}/server/default/deploy" />
+  <property name="nuxeo.ear" value="nuxeo.ear" />
+  <property name="mvn.opts" value="" />
+  <property name="lm.portal.dir.web.module" value="${lm.portal.dir}/web/modules/org.nuxeo.opensocial.spaces" />
+  <property name="webeng.dir" value="${jboss.dir}/server/default/deploy" />
+  <property name="webengine.bundle.dir" value="${webengine.dir}/bundles"/>
+
+  <condition property="osfamily-unix">
+    <os family="unix" />
+  </condition>
+  <condition property="osfamily-windows">
+    <os family="windows" />
+  </condition>
+
+  <target name="deploy" depends="install,copy" description="Build and copy to JBoss" />
+
+  <target name="deploy-webengine" depends="install,copy-webengine" description="Build and copy to Web Engine"/>
+
+  <target name="install" depends="install-unix,install-windows" description="Build" />
+  <target name="install-unix" if="osfamily-unix">
+    <exec executable="mvn" failonerror="true">
+      <arg value="install" />
+      <arg value="-Dmaven.test.skip=true" />
+    </exec>
+  </target>
+  <target name="install-windows" if="osfamily-windows">
+    <exec executable="cmd" failonerror="true">
+      <arg value="/c" />
+      <arg value="mvn.bat" />
+      <arg value="install" />
+      <arg value="-Dmaven.test.skip=true" />
+    </exec>
+  </target>
+
+  <target name="copy" description="Copy files to JBoss">
+    <echo message="${name}" />
+    <copy todir="${deploy.dir}/${nuxeo.ear}/system/" overwrite="true">
+      <fileset dir="${build.dir}" casesensitive="yes">
+        <include name="${name}-*.jar" />
+        <exclude name="${name}-*-sources.jar" />
+      </fileset>
+    </copy>
+    <!-- Could copy other files to .../config too -->
+  </target>
+
+  <target name="copy-webengine" description="Copy files to webengine">
+    <echo message="${name}" />
+	<copy todir="${webengine.bundle.dir}/" overwrite="true">
+  	  <fileset dir="${build.dir}" casesensitive="yes">
+  	    <include name="${name}-*.jar"/>
+  	    <exclude name="${name}-*-sources.jar"/>
+  	  </fileset>
+	</copy>
+  </target>
+
+  <target name="eclipseeclipse" depends="eclipseeclipse-unix,eclipseeclipse-windows" description="Build" />
+  <target name="eclipseeclipse-unix" if="osfamily-unix">
+    <exec executable="mvn" failonerror="true">
+      <arg value="eclipse:eclipse" />
+      <arg value="${mvn.opts}" />
+    </exec>
+  </target>
+  <target name="eclipseeclipse-windows" if="osfamily-windows">
+    <exec executable="cmd" failonerror="true">
+      <arg value="/c" />
+      <arg value="mvn.bat" />
+      <arg value="eclipse:eclipse" />
+      <arg value="${mvn.opts}" />
+    </exec>
+  </target>
+
+  <target name="web" description="Copy resources to module">
+    <copy todir="${lm.portal.dir.web.module}" overwrite="true">
+      <fileset dir="${build.dir}/classes" />
+    </copy>
+  </target>
+
+</project>

@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Module>
+  <ModulePrefs title="__UP_title__" category="tools"
+    render_inline="required" scrolling="false" author="" directory_title="ToDo List"
+    singleton="false">
+    <Require feature="opensocial-0.8" />
+    <Require feature="dynamic-height" />
+    <Require feature="setprefs" />
+    <Require feature="settitle" />
+    <Require feature="jquery" />
+    <Require feature="nuxeo" />
+    <Require feature="datepicker" />
+    <Require feature="tablesorter" />
+  </ModulePrefs>
+  <UserPref name="todolist" default_value="" datatype="hidden" />
+  <Content type="html">
+    <![CDATA[
+    <script type="text/javascript" language="javascript" src="todolist.js"></script>
+      <script>
+
+  var prefs = new _IG_Prefs(__MODULE_ID__);
+
+    jQuery(document).ready(function() {
+
+      jQuery(".entete th:first-child").addClass("headerLeft");
+
+
+      jQuery(".date-pick").datePicker({
+        clickInput : true
+      });
+
+    jQuery(".date-pick").click(function(){
+    jQuery(".dp-popup").attr("style","position:absolute;left:0;top:0;");
+  });
+
+    jQuery('.date-pick').keydown(function() {
+      return false;
+    });
+  });
+
+    _IG_RegisterOnloadHandler( function() {
+      var todoliststring = gadgets.util.unescapeString(prefs.getString("todolist"));
+      if (todoliststring == "")
+        todolist = {
+          "array" : []
+        };
+      else
+        todolist = gadgets.json.parse(todoliststring);
+      edited = false;
+
+      createTable();
+
+      var permission = gadgets.nuxeo.isEditable();
+      if(permission)
+        createAddItemButton()
+    })
+      </script>
+       <link rel="stylesheet" href="datePicker.css" type="text/css" media="screen" charset="utf-8" />
+      <style type="text/css">
+        *{
+          font-size:11px;
+          font-family:Arial,Verdana, sans-serif;
+        }
+
+        img{
+          border:0;
+        }
+
+        a.dp-choose-date{
+         display:none;
+        }
+
+        .jCalendar th, .jCalendar td{
+          font-size:10px;
+          line-height:1em;
+        }
+
+
+        input
+        {
+         border:1px solid #ffffff;
+        }
+
+        img.favicon{
+         display:none;
+        }
+
+        .delete {
+           border-style: none;
+        }
+
+        a.deleteLink{
+         display:block;
+         background-image:url(x.gif);
+         background-repeat:no-repeat;
+         width:16px;
+         height:16px;
+        }
+
+        a.editLink{
+        display:block;
+         background-image:url(editFolder.gif);
+         background-repeat:no-repeat;
+         width:16px;
+         height:16px;
+         float:right;
+        }
+
+        a.newWindowLink{
+         display:block;
+         background-image:url(newWindow.gif);
+         background-repeat:no-repeat;
+         width:13px;
+         height:13px;
+        }
+
+
+        .p1_:link, .p1_:visited {
+          color: red;
+          text-decoration: none;
+        }
+        .p2_:link, .p2_:visited {
+          color: blue;
+          text-decoration: none;
+        }
+        .p3_:link, .p3_:visited {
+          color: #ff00ff;
+          text-decoration: none;
+        }
+
+      #addText:link, .addText:visited {
+          text-decoration:none;
+          color: black;
+        }
+
+        #addItemForm{
+         width:100%;
+         background-color:#666666;
+        }
+
+        #addItemIcon{
+         height:25px
+         text-align:right;
+        }
+
+        #addItemIcon,#todolistDiv{
+         padding-left:5px;
+         padding-right:5px;
+        }
+
+        #todolistDiv{
+         padding-bottom:5px;
+        }
+
+      #addItemIcon{
+       text-align:right;
+       height:25px;
+      }
+
+        #name_input, #newNameInput, #newDeadLineInput {
+          padding: 0px;
+        }
+        #new_bookmark_td {
+          font-size: 11px
+        }
+        #input {
+          padding: 0px;
+        }
+        #todolistTable {
+          margin:0;
+          padding:0;
+          width:100%;
+        }
+
+        #newNameInput{
+         border:1px solid #ffffff;
+        }
+
+
+        .name_td, .owner_td, .deadline_td {
+          color: black;
+        }
+
+        .owner_td, .deadline_td {
+          text-align:center;
+        }
+
+        .addItem{
+         display:inline-block;
+        font-weight:bold;
+        height:16px;
+        text-decoration:none;
+        color:#000000;
+        background-image:url("bookmark_add.jpg");
+        background-repeat:no-repeat;
+        padding-left:20px;
+        font-size:11px;
+        }
+
+        .option {
+          padding: 0px;
+          margin: 0px;
+        }
+        #select {
+          width: 52px;
+          margin: 0px;
+          padding: 0px;
+        }
+        .even {
+          background: __UP_bgcolor__;
+        }
+        .odd {
+          background: white;
+        }
+
+        td.now{
+          background-color : #ffd583;
+        }
+
+        td.futur{
+          background-color : #ffffff;
+        }
+
+        td.past{
+           background-color : #ff9494;
+        }
+
+        span.label{
+          color:#ffffff;
+          font-weight:bold;
+        }
+
+         span.labelError{
+          color:#ff0000;
+          font-weight:bold;
+        }
+
+        #todolistTable thead tr th, #todolistTable tfoot tr th {
+         background-color: #eeffcc;
+         border: 1px solid #FFF;
+         font-size: 8pt;
+         padding: 4px;
+        }
+        #todolistTable thead tr .header {
+         background-image: url(bg.gif);
+         background-repeat: no-repeat;
+         background-position: center right;
+         cursor: pointer;
+        }
+
+        .headerLeft{
+          text-align:left;
+        }
+
+        #todolistTable thead tr .headerSortUp {
+         background-image: url(asc.gif);
+        }
+        #todolistTable thead tr .headerSortDown {
+         background-image: url(desc.gif);
+        }
+        #todolistTable thead tr .headerSortDown, #todolistTable thead tr .headerSortUp {
+        /*background-color: #8dbdd8;*/
+        text-decoration:underline;
+        }
+
+        #addItemIcon{
+         padding:2px 0 0 0;
+        }
+
+        #hideContainer {
+    text-align:right;
+    }
+
+    #valider{
+    background:url("accept.png") no-repeat scroll 0 0 transparent;
+    color:#FFFFFF;
+    display:block;
+    float:right;
+    font-weight:bold;
+    padding-left:18px;
+    text-decoration:none;
+    }
+
+    #hide img {
+    border:0 none;
+    padding:5px 5px 0 0;
+    }
+
+      </style>
+
+      <div id="todolistDiv"></div>
+      <div id="addItemIcon" style="display:block;"></div>
+      <div id="addItemForm" style="display: none">
+        <div id="hideContainer">
+          <a href="javascript: toogleForms();" id="hide" title="fermer">
+            <img src="x.gif">
+          </a>
+        </div>
+        <form id="newFormItem" name = "newItemForm" style="margin:0px;">
+            <input type="hidden" id="action" value="">
+             <input type="hidden" id="indexTab" value="">
+            <table cellspacing="5" width="100%">
+              <tr>
+                  <td id="new_bookmark_td" >
+                    <span class="label" id="labelIntitule">Intitulé:</span>
+                  </td>
+                  <td>
+                    <textarea rows="2" style="width:100%;height:33px;font-size: 11px;" id="newNameInput"></textarea>
+                  </td>
+               </tr>
+               <tr>
+                <td id="new_bookmark_td" >
+                    <span class="label" id="labelAttribution">Attribuée&nbsp;à&nbsp;:</span>
+                </td>
+                <td>
+                    <input id="newOwnerInput" type="text" style="width:100%; font-size: 11px;">
+                  </td>
+               </tr>
+               <tr>
+                <td id="new_bookmark_td" >
+                   <span class="label"  id="labelEcheance">Echéance&nbsp;:</span>
+                </td>
+                <td>
+                    <input id="newDeadLineInput" class="date-pick" type="text" style="width:100%; font-size: 11px;">
+                  </td>
+               </tr>
+               <tr>
+                 <td colspan="2" align="right">
+                   <a id="valider" href="#" onclick="javascript:addItem(document.newItemForm.newNameInput.value,document.newItemForm.newOwnerInput.value,document.newItemForm.newDeadLineInput.value, false);">Valider</a>
+                </td>
+               </tr>
+            </table>
+          </form>
+      </div>
+
+    ]]>
+  </Content>
+</Module>

@@ -1,0 +1,362 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Module>
+  <ModulePrefs title="Nuxeo Workspaces"
+    description="Simple listing of Nuxeo Workspaces "
+    author="tdeprat" author_email="tdelprat@nuxeo.com"
+    height="420">
+    <Locale lang="fr" country="fr" />
+    <Require feature="dynamic-height" />
+    <#if !insideNuxeo>
+    <Require feature="oauthpopup" />
+     <OAuth>
+      <Service name="nuxeo">
+        <Access url="${serverSideBaseUrl}oauth/access-token"
+          method="POST" />
+        <Request url="${serverSideBaseUrl}oauth/request-token"
+          method="POST" />
+        <Authorization
+          url="${serverSideBaseUrl}oauth/authorize" />
+      </Service>
+    </OAuth>
+    </#if>
+  </ModulePrefs>
+  <Content type="html">
+
+<![CDATA[
+<html>
+  <head>
+  <style>
+  .pageNavigationControls span {
+  color:#757575;
+  font-size:13px;
+  font-weight:bold;
+  margin:10px 5px;
+  vertical-align:top;
+  }
+
+  .pageNavigationControls {
+  border-bottom:1px solid #3399FF;
+  margin:0px;
+  padding:2px 0px 0px;
+  text-align:center;
+  }
+
+  .pageNavigationControls input {
+  margin-left:5px;
+  }
+
+  .dataList {
+  width:100%;
+  }
+
+  .dataList td {
+  border:1px solid #666666;
+  padding:3px;
+  font-family	: 'Lucida Grande',Verdana,Arial,sans-serif;
+  font-size :	11px;
+  line-height	: 13.75px;
+  background-color :transparent;
+  background-image :none;
+  margin : 0px;
+  padding-top	: 5px;
+  padding-right : 3px;
+  padding-bottom : 5px;
+  padding-left :3px;
+  border-top-width	: 0px;
+  border-right-width	: 0px;
+  border-bottom-width	: 1px;
+  border-left-width	: 0px;
+  border-top-color : #C7C7C7;
+  border-right-color: #000000;
+  border-bottom-color	: #C7C7C7;
+  border-left-color	: #000000;
+  border-top-style : solid;
+  border-right-style	: none;
+  border-bottom-style	: solid;
+  border-left-style	: none;
+  }
+  .dataOutput td table td {
+  border:0px none transparent;
+  }
+
+  .dataList thead th {
+  background:#F1F2F3 none repeat scroll 0% 0%;
+  border-bottom:1px solid #C7C7C7;
+  color:#606161;
+  padding:5px 3px;
+  text-align:left;
+  font-size :	10pt;
+  }
+
+  .dataList thead th a, .dataList thead th a:link {
+  color:#FFFFFF;
+  text-decoration:none;
+  }
+  .dataList thead th a:visited {
+  color:#FFFFFF;
+  }
+  .dataList thead th a:active {
+  color:#FFFFFF;
+  }
+  .dataList thead th a:hover {
+  color:#FFFFFF;
+  text-decoration:underline;
+  }
+
+  .dataList {
+  background:white none repeat scroll 0% 0%;
+  border-collapse:collapse;
+  margin:0pt;
+  }
+
+  .dataRowEven {
+  background:#F2F7FC none repeat scroll 0% 0%;
+  }
+
+  .dataRowOdd {
+  background:#ECF6FF none repeat scroll 0% 0%;
+}
+</style>
+  <script>
+    var prefs = new _IG_Prefs(__MODULE_ID__);
+    var currentPage = 0;
+    var maxPage=0;
+    var errors=0;
+
+    function requestCompleted(response) {
+      if (response.data) {
+        displayDocumentList(response.data);
+
+      } else if (response.oauthApprovalUrl) {
+
+            var onOpen = function() {
+              _gel("waiting").style.display='block';
+            };
+
+            var onClose = function() {
+              doRequest();
+            };
+
+            var popup = new gadgets.oauth.Popup(response.oauthApprovalUrl,
+                'height=600,width=800', onOpen, onClose);
+
+            $('nxauth').onclick = popup.createOpenerOnClick();
+            $('approvaldone').onclick = popup.createApprovedOnClick();
+
+           _gel("approval").style.display='block';
+
+      }
+      else {
+        _gel("error").innerHTML="No data received from server";
+      }
+    }
+
+    function $(x) {
+        return document.getElementById(x);
+    }
+
+    function showPopup() {
+      alert("starting popup oauth");
+      oauthPopupVar.createOpenerOnClick();
+    }
+
+    function hidePopup() {
+      oauthPopupVar.createApprovedOnClick();
+    }
+
+    function doRequest() {
+
+        var ts = new Date().getTime() + "" + Math.random()*11
+        var url ="${serverSideBaseUrl}restAPI/dashboard/USER_WORKSPACES"
+        url += "?format=JSON&lang=en&page="+ currentPage;
+        url += "&ts=" + ts;
+
+        var params = {};
+        <#if insideNuxeo>
+        params[gadgets.io.RequestParameters.AUTHORIZATION] = gadgets.io.AuthorizationType.SIGNED;
+        params[gadgets.io.RequestParameters.OAUTH_SERVICE_NAME] = "nuxeo4shindig";
+        <#else>
+        params[gadgets.io.RequestParameters.AUTHORIZATION] = gadgets.io.AuthorizationType.OAUTH;
+        params[gadgets.io.RequestParameters.OAUTH_SERVICE_NAME] = "nuxeo";
+        params[gadgets.io.RequestParameters.OAUTH_USE_TOKEN]="always";
+        </#if>
+        //params[gadgets.io.RequestParameters.METHOD] = gadgets.io.MethodType.GET;
+
+        gadgets.io.makeRequest(url, requestCompleted, params);
+    }
+
+    function getImageBaseUrl() {
+      return "${baseUrl}";
+    }
+
+  // insert the whole table, as stupid IE can't do a tbody.innerHtml
+  function tableStart(jsonObject) {
+      var title = "Document";
+      var modified = "Modified";
+      var creator = "Author";
+      var labelInfo = jsonObject.translations;
+      if (labelInfo != null && labelInfo != 'undefined') {
+          title = labelInfo['label.dublincore.title'];
+          modified = labelInfo['label.dublincore.modified'];
+          creator = labelInfo['label.dublincore.creator'];
+      }
+      var html = "";
+      html += "<table class='dataList'>";
+      html += "  <thead>";
+      html += "    <tr>";
+      html += "      <th/>";
+      html += "      <th>" + title + "</th>";
+      html += "      <th/>";
+      html += "      <th>" + modified + "</th>";
+      html += "      <th>" + creator + "</th>";
+      html += "      <th/>";
+      html += "    </tr>";
+      html += "  </thead>";
+      html += "  <tbody>";
+      return html;
+  }
+
+  function tableEnd() {
+      var html = "";
+      html += "  </tbody>";
+      html += "</table>";
+      return html
+  }
+
+  function displayDocumentList(jsonObject) {
+      if (!jsonObject.data) {
+         jsonObject = eval ( "(" + jsonObject + ")");
+      }
+      var htmlContent = tableStart(jsonObject);
+      var data = jsonObject.data;
+      for (var i=0; i< data.length; i++) {
+          htmlContent+=mkRow(data[i], i);
+      }
+      htmlContent += tableEnd();
+      _gel("nxDocumentListData").innerHTML = htmlContent + "<br/>";
+
+      // page info
+      var pageInfo = jsonObject.summary;
+      var pageInfoLabel = pageInfo.pageNumber+1;
+      pageInfoLabel+= "/";
+      pageInfoLabel+= pageInfo.pages;
+      maxPage = pageInfo.pages;
+      _gel("nxDocumentListPage").innerHTML = pageInfoLabel;
+
+      gadgets.window.adjustHeight();
+  }
+
+  function getBaseUrl() {
+     return "${baseUrl}";
+  }
+
+  function getDateForDisplay(datestr) {
+      try {
+          datestr = datestr.replace("-", "/").replace("-", "/");
+          var d = new Date(datestr);
+          var result = d.toLocaleDateString() + " " + d.toLocaleTimeString().substring(0,5);
+          return result;
+      }
+      catch(e) {
+          return datestr;
+      }
+  }
+
+  function mkRow(dashBoardItem, i) {
+      var htmlRow = "<tr class=\"";
+      if (i%2==0){
+      htmlRow+="dataRowEven";
+      } else {
+      htmlRow+="dataRowOdd";
+      }
+      htmlRow+="\">";
+      htmlRow+="<td class=\"iconColumn\">"
+      htmlRow+="<img alt=\"File\" src=\""
+      htmlRow+=getImageBaseUrl();
+      htmlRow+=dashBoardItem.icon;
+      htmlRow+="\"/>";
+      htmlRow+="</td><td><a target = \"_top\" title=\"";
+      htmlRow+=dashBoardItem.title;
+      htmlRow+="\" href=\"";
+      htmlRow+=getBaseUrl();
+      htmlRow+=dashBoardItem.url;
+      htmlRow+="\" />";
+      htmlRow+=dashBoardItem.title;
+      htmlRow+="</a></td><td class=\"iconColumn\"/>";
+      htmlRow+="<td>";
+      htmlRow+=getDateForDisplay(dashBoardItem.modified);
+      htmlRow+="</td>";
+      htmlRow+="<td>";
+      htmlRow+=dashBoardItem.creator;
+      htmlRow+="</td>";
+      htmlRow+="<td class=\"iconColumn\"/>";
+      htmlRow+="</tr>";
+      return htmlRow;
+    }
+
+  function nextPage() {
+      if (currentPage < maxPage-1) {
+          currentPage+=1;
+      }
+      refresh();
+  }
+
+  function prevPage() {
+      if (currentPage > 0) {
+          currentPage=currentPage-1;
+      }
+      refresh();
+  }
+
+  function firstPage() {
+      currentPage=0;
+      refresh();
+  }
+
+  function lastPage() {
+      currentPage=maxPage-1;
+      if (currentPage < 0) {
+          currentPage=0;
+      }
+      refresh();
+  }
+
+  function refresh() {
+     doRequest();
+  }
+
+  gadgets.util.registerOnLoadHandler(doRequest);
+  </script>
+  </head>
+   <body>
+      <div id="targetDiv"> Contacting Nuxeo Server ...</div>
+      <div id="nxDocumentList">
+        <div class="pageNavigationControls">
+        <input type="image" src="${clientSideBaseUrl}icons/action_page_rewind.gif" onclick="firstPage()"/>
+        <input type="image" src="${clientSideBaseUrl}icons/action_page_previous.gif" onclick="prevPage()"/>
+        <span class="currentPageStatus" id="nxDocumentListPage"></span>
+        <input type="image" src="${clientSideBaseUrl}icons/action_page_next.gif" onclick="nextPage()"/>
+        <input type="image" src="${clientSideBaseUrl}icons/action_page_fastforward.gif"onclick="lastPage()"/>
+        </div>
+        <div id="nxDocumentListData">
+          <img src="${clientSideBaseUrl}img/standart_waiter.gif">
+        </div>
+    </div>
+
+      <div id="approval" style="display: none">
+        <a href="#" id="nxauth">Click here to authenticate against Nuxeo Server</a>
+      </div>
+
+    <div id="waiting" style="display: none">
+      Please click
+      <a href="#" id="approvaldone">I've approved access</a>
+      once you've approved access to your data.
+    </div>
+
+    <div id="error">
+    </div>
+  </body>
+</html>
+]]>
+  </Content>
+</Module>

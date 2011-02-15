@@ -1,0 +1,84 @@
+#
+# we have duplicated most of the "built-in" shindig components here because
+# we don't want to use all of them and if we choose to use their list we
+# end up with things we don't want...
+#
+
+#
+#  Licensed to the Apache Software Foundation (ASF) under one
+#  or more contributor license agreements.  See the NOTICE file
+#  distributed with this work for additional information
+#  regarding copyright ownership.  The ASF licenses this file
+#  to you under the Apache License, Version 2.0 (the
+#  "License"); you may not use this file except in compliance
+#  with the License.  You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing,
+#  software distributed under the License is distributed on an
+#  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+#  KIND, either express or implied.  See the License for the
+#  specific language governing permissions and limitations
+#  under the License.
+#
+# List each feature you want to support here
+
+features/analytics/feature.xml
+features/auth-refresh/feature.xml
+#Replace with our own (Nuxeo) that doesn't have the valija.co.js problem
+#features/caja/feature.xml
+nxfeatures/caja/feature.xml
+features/content-rewrite/feature.xml
+features/core.auth/feature.xml
+features/core.config/feature.xml
+#features/core.io/feature.xml
+nxfeatures/core.io/feature.xml
+features/core.json/feature.xml
+features/core.legacy/feature.xml
+features/core.log/feature.xml
+features/core.prefs/feature.xml
+features/core.util/feature.xml
+features/core/feature.xml
+features/dynamic-height.util/feature.xml
+features/dynamic-height/feature.xml
+features/flash/feature.xml
+features/i18n/feature.xml
+features/locked-domain/feature.xml
+features/minimessage/feature.xml
+features/oauthpopup/feature.xml
+#features/opensocial-0.6/feature.xml
+#features/opensocial-0.7/feature.xml
+features/opensocial-0.8/feature.xml
+features/opensocial-0.9/feature.xml
+features/opensocial-base/feature.xml
+features/opensocial-current/feature.xml
+features/opensocial-data-context/feature.xml
+features/opensocial-data/feature.xml
+features/opensocial-jsonrpc/feature.xml
+features/opensocial-reference/feature.xml
+features/opensocial-templates/feature.xml
+features/osapi/feature.xml
+features/pubsub/feature.xml
+features/rpc/feature.xml
+features/security-token/feature.xml
+features/setprefs/feature.xml
+features/settitle/feature.xml
+#features/skins/feature.xml
+features/swfobject/feature.xml
+#features/tabs/feature.xml
+features/views/feature.xml
+features/xmlutil/feature.xml
+
+
+# List each feature you want to support here
+nxfeatures/jquery/feature.xml
+nxfeatures/datepicker/feature.xml
+nxfeatures/json/feature.xml
+nxfeatures/tablesorter/feature.xml
+nxfeatures/effects/feature.xml
+nxfeatures/ui/feature.xml
+nxfeatures/nuxeo/feature.xml
+nxfeatures/form/feature.xml
+nxfeatures/nicedit/feature.xml
+nxfeatures/documentmodel/feature.xml

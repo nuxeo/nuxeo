@@ -1,0 +1,77 @@
+<div xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+<c:if test="false">
+ Template rendering an OpenSocial GWT container
+
+ Parameters:
+ - repositoryName: the repository name to use, mandatory
+ - spaceId: the id of the Space document to use to generate the container.
+   If set, we use it to retrieve the Space, otherwise we use the spaceProviderName
+   to generate a Space.
+ - spaceProviderName: the name of the SpaceProvider to use to get the Space document
+ - documentContextId: the id of the DocumentModel considered as context, if any, optional
+ - spaceName: the Space name to use, optional
+</c:if>
+
+  <script type="text/javascript" src="/nuxeo/site/skin/gadgets/scripts/gadget-popup.js"></script>
+
+  <div id="popupChooser" style="display:none">
+    <a id="popupChooserClose">x</a>
+
+    <h1>Nuxeo OpenSocial Gadget selection</h1>
+
+    <p id="popupContent">
+      ... Loading ...
+    </p>
+  </div>
+  <div id="backgroundPopup"></div>
+
+  <script type="text/javascript">
+    var nuxeo = {
+      baseURL:"#{baseURL}",
+      container: {
+        repositoryName: "#{repositoryName}",
+        id:"#{spaceId}",
+        spaceProviderName: "#{spaceProviderName}",
+        documentContextId: "#{documentContextId}",
+        spaceName: "#{spaceName}",
+
+        parameters: {
+          showPreferencesAfterAddingGadget: false,
+          userLanguage: "#{localeSelector.language}"
+        }
+      }
+
+    };
+
+    function addGadget(name, url) {
+      nuxeo.container.addGadget('wcopensocial', [{WC_GADGET_DEF_URL:url}, {WC_GADGET_NAME:name}]);
+    }
+  </script>
+
+  <ui:insert name="opensocial_container_title">
+  </ui:insert>
+
+  <ui:insert name="opensocial_container_actions">
+    <c:if test="#{not currentUser.anonymous}">
+      <ul>
+        <li><button onclick="nuxeo.container.openContainerBuilder();" id="openContainerBuilder" title="#{messages['label.opensocial.container.change.layout']}">#{messages['label.opensocial.container.change.layout']}</button></li>
+        <li><button onclick="showPopup('#{baseURL}site/gadgets/?mode=popup');" title="#{messages['label.opensocial.container.add.gadget']}">#{messages['label.opensocial.container.add.gadget']}</button></li>
+      </ul>
+    </c:if>
+  </ui:insert>
+
+  <script type="text/javascript" language="javascript" src="/nuxeo/opensocial/gadgets/js/rpc.js?c=1"></script>
+  <script type="text/javascript" language="javascript" src="/nuxeo/site/gwt-container/gwtContainer/gwtContainer.nocache.js"></script>
+  <div id="containerPanel" style="background-color:white">
+    <div id="gwtContainerDiv" style="padding-left:20px"></div>
+  </div>
+
+</div>

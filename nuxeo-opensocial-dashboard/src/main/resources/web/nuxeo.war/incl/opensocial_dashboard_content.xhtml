@@ -1,0 +1,24 @@
+<div xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+  <nxu:set var="repositoryName" value="#{currentDocument.repositoryName}">
+  <nxu:set var="spaceProviderName" value="dashboardSpaceProvider">
+
+    <ui:decorate template="/incl/opensocial_container_template.xhtml">
+
+      <ui:define name="opensocial_container_title">
+        <h1>#{messages['label.user.dashboard']}</h1>
+      </ui:define>
+
+    </ui:decorate>
+
+  </nxu:set>
+  </nxu:set>
+
+</div>

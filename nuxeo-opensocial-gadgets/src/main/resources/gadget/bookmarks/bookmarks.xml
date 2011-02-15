@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Module>
+  <ModulePrefs title="bookmarks" category="tools" render_inline="required" scrolling="false" author="Joshua Kent" directory_title="Enhanced Bookmarks" author_aboutme="My name is Joshua Kent I am a student at MTSU and full time web application developer for Princeton University." singleton="false">
+      <Require feature="opensocial-0.8" />
+      <Require feature="dynamic-height" />
+      <Require feature="setprefs" />
+      <Require feature="settitle" />
+      <Require feature="nuxeo" />
+  </ModulePrefs>
+  <UserPref name="COLOR_bgcolor" display_name="Couleur des cellules" default_value="#none" datatype="enum" >
+    <EnumValue display_value="ref" value="FF0000"/>
+    <EnumValue display_value="pink" value="FF0066"/>
+    <EnumValue display_value="orange" value="FF6600"/>
+    <EnumValue display_value="green" value="99CC00"/>
+    <EnumValue display_value="blue" value="66CCFF"/>
+    <EnumValue display_value="gray" value="999999"/>
+    <EnumValue display_value="light gray" value="CCCCCC"/>
+    <EnumValue display_value="white" value="FFFFFF"/>
+    <EnumValue display_value="none" value="none"/>
+  </UserPref>
+  <UserPref name="bookmarks" default_value="" datatype="hidden"/>
+  <Content type="html">
+    <![CDATA[
+    <script type="text/javascript" language="javascript" src="bookmarks.js"></script>
+      <script>
+
+    _IG_RegisterOnloadHandler( function() {
+      prefs = new _IG_Prefs(__MODULE_ID__);
+
+      var bookmarksstring = gadgets.util.unescapeString(prefs.getString("bookmarks"));
+      if (bookmarksstring == "")
+        bookmarks = {
+          "array" : []
+        };
+      else
+        bookmarks = gadgets.json.parse(bookmarksstring);
+      edited = false;
+
+      var permission = gadgets.nuxeo.isEditable();
+      if(permission == true) {
+        createAddBookmarkButton()
+      }
+      createTable();
+
+    })
+      </script>
+      <style type="text/css">
+
+      *{
+          font-size:11px;
+          font-family:Arial,Verdana, sans-serif;
+        }
+
+        img{
+         border:0;
+        }
+
+        input
+        {
+         font-family:Arial,Verdana, sans-serif;
+         font-size:11px;
+         border:1px solid #ffffff;
+        }
+
+        img.favicon{
+         display:none;
+        }
+
+        .delete {
+           border-style: none;
+        }
+
+        a.deleteLink{
+         display:block;
+         background-image:url(x.png);
+         background-repeat:no-repeat;
+         width:16px;
+         height:16px;
+        }
+
+        a.editLink{
+        display:block;
+         background-image:url(editFolder.png);
+         background-repeat:no-repeat;
+         width:16px;
+         height:16px;
+        }
+
+        a.newWindowLink{
+         display:block;
+         background-image:url(newWindow.png);
+         background-repeat:no-repeat;
+         width:13px;
+         height:13px;
+        }
+
+        .favicon_td {
+          font-family: arial;
+          font-size: 11px;
+        }
+        .p1_:link, .p1_:visited {
+          color: red;
+          text-decoration: none;
+          font-size: 11px;
+        }
+        .p2_:link, .p2_:visited {
+          color: blue;
+          text-decoration: none;
+          font-size: 11px;
+        }
+        .p3_:link, .p3_:visited {
+          color: #ff00ff;
+          text-decoration: none;
+          font-size: 11px;
+        }
+        .name_a:link, .name_a:visited {
+          text-decoration:none;
+          font-size: 11px;
+          color: black;
+        }
+      #addText:link, .addText:visited {
+          text-decoration:none;
+          font-size: 11px;
+          color: black;
+        }
+
+        #addBookmarkForm{
+         background-color:#666666;
+         font-weight:bold;
+        }
+
+        #addBookmarkIcon{
+         text-align:right;
+        }
+
+        #addBookmarkIcon,#bookmarksDiv{
+         padding-left:5px;
+         padding-right:5px;
+        }
+
+        #bookmarksDiv{
+        padding-bottom:5px;
+        }
+
+      #addBookmarkIcon{
+       text-align:right;
+      }
+
+        #name_input, #newNameInput, #newUrlInput {
+
+          font-family: arial;
+          padding: 0px;
+        }
+        #new_bookmark_td {
+          font-size: 11px;
+          color:#ffffff;
+          font-weight:bold;
+        }
+        #input {
+          font-family: arial;
+          padding: 0px;
+        }
+        #bookmarksTable {
+          margin:0;
+          padding:0;
+          width:100%;
+        }
+        .name_td {
+          width:100%;
+        }
+
+        .addBookmark{
+          background-image:url(bookmark_add.jpg);
+          background-repeat:no-repeat;
+          padding-left:20px;
+          font-weight:bold;
+          display:inline-block;
+          height:16px;
+          text-decoration:none;
+          font-size: 11px;
+          color: black;
+        }
+
+        .option {
+          font-size: 11px;
+          padding: 0px;
+          margin: 0px;
+          font-family: arial;
+        }
+        #select {
+          font-family: arial;
+          width: 52px;
+          margin: 0px;
+          padding: 0px;
+        }
+        .even {
+          background:#__UP_COLOR_bgcolor__;
+        }
+        .odd {
+          background: white;
+        }
+
+        #hideContainer {
+        text-align:right;
+        }
+
+        #addButton{
+          background:url("accept.png") no-repeat scroll 0 0 transparent;
+          border:medium none;
+          color:#FFFFFF;
+          display:block;
+          font-weight:bold;
+          height:21px;
+          padding:0 0 7px 14px;
+          text-decoration:none;
+          width:61px;
+        }
+
+        #addButton:hover{
+          text-decoration:underline;
+          cursor:pointer;
+        }
+
+        #hide img {
+        border:0 none;
+        padding:5px 5px 0 0;
+        }
+      </style>
+
+      <div id="bookmarksDiv"></div>
+      <div id="addBookmarkIcon" style="display:block;">
+
+      </div>
+      <div id="addBookmarkForm" style="display: none">
+        <div id="hideContainer">
+          <a href="javascript: toogleForms();" id="hide" title="fermer">
+            <img src="x.png">
+          </a>
+        </div>
+        <form name = "newBookmarkForm" onsubmit="return addBookmark(document.newBookmarkForm.newNameInput.value,document.newBookmarkForm.newUrlInput.value, false)" style="margin:0px;">
+            <input type="hidden" id="action" value="">
+             <input type="hidden" id="indexTab" value="">
+            <table cellspacing="5" style="width:100%">
+              <tr>
+                  <td id="new_bookmark_td">
+                    <nobr>Intitulé:</nobr>
+                  </td>
+                  <td>
+                    <input id="newNameInput" type="text" style="width:100%; font-size: 11px;">
+                  </td>
+               </tr>
+               <tr>
+                <td id="new_bookmark_td">
+                    <nobr>URL:</nobr>
+                </td>
+                <td>
+                    <input id="newUrlInput" type="text" style="width:100%; font-size: 11px;">
+                  </td>
+               </tr>
+               <tr>
+                 <td colspan="2" align="right">
+                    <input type="button" id="addButton" onclick="return addBookmark(document.newBookmarkForm.newNameInput.value, document.newBookmarkForm.newUrlInput.value, false)" value="Valider">
+                </td>
+               </tr>
+            </table>
+          </form>
+      </div>
+    ]]>
+  </Content>
+</Module>

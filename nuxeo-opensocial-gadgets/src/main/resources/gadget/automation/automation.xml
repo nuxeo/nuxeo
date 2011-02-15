@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Module>
+  <ModulePrefs title="Nuxeo Automation"
+    description="Simple gadget that uses Nuxeo REST Automation API "
+    author="tdeprat" author_email="tdelprat@nuxeo.com"
+    height="420">
+    <#include "dynamic-translations.ftl"/>
+    <Require feature="dynamic-height" />
+    <#include "default-oauth-prefs.ftl"/>
+  </ModulePrefs>
+  <Content type="html">
+
+<![CDATA[
+<html>
+  <head>
+  <link rel="stylesheet" type="text/css" href="${specDirectoryUrl}documentlists.css"/>
+  <!-- insert JS Context -->
+  ${jsContext}
+
+  <script src="${specDirectoryUrl}default-automation-request.js"></script>
+  <script src="${specDirectoryUrl}default-documentlist-display.js"></script>
+
+  <script>
+   var prefs = new _IG_Prefs(__MODULE_ID__);
+
+   // configure Automation REST call
+   var NXRequestParams={ operationId : 'Document.PageProvider',            // id of operation or chain to execute
+     operationParams : { query : "Select * from Document", pageSize : 5},  // parameters for the chain or operation
+     operationContext : {},                                                // context
+     operationDocumentProperties : "common,dublincore",                    // schema that must be fetched from resulting documents
+     entityType : 'documents',                                             // result type : only document is supported for now
+     usePagination : true,                                                 // manage pagination or not
+     displayMethod : displayDocumentList,                                  // js method used to display the result
+     displayColumns : [ { type: 'builtin', field: 'icon'},                 // minimalist layout listing
+                      { type: 'builtin', field: 'titleWithLink', label: '__MSG_label.dublincore.title__'},
+                      { type: 'date', field: 'dc:modified', label: '__MSG_label.dublincore.modified__'},
+                      { type: 'text', field: 'dc:creator', label: '__MSG_label.dublincore.creator__'} ]
+   };
+
+   // execute automation request onload
+   gadgets.util.registerOnLoadHandler(function() {doAutomationRequest(NXRequestParams);} );
+
+  </script>
+  </head>
+   <body>
+
+   <#include "default-documentlist-layout.ftl"/>
+   <#include "default-request-controls.ftl"/>
+
+  </body>
+</html>
+]]>
+  </Content>
+</Module>

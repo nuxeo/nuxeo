@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Module>
+  <ModulePrefs title="Nuxeo User's workspaces"
+    description="List users workspaces for a given scope"
+    author="tdeprat" author_email="tdelprat@nuxeo.com"
+    >
+    <Require feature="setprefs"/>
+    <#include "dynamic-translations.ftl"/>
+    <Require feature="dynamic-height" />
+    <#include "default-oauth-prefs.ftl"/>
+  </ModulePrefs>
+  <#include "context-prefs.ftl"/>
+  <Content type="html">
+
+<![CDATA[
+<html>
+  <head>
+  <link rel="stylesheet" type="text/css" href="${specDirectoryUrl}documentlists.css"/>
+  <!-- insert JS Context -->
+  ${jsContext}
+
+  <script src="${specDirectoryUrl}default-automation-request.js"></script>
+  <script src="${specDirectoryUrl}default-documentlist-display.js"></script>
+  <script src="${specDirectoryUrl}context-management.js"></script>
+
+  <script>
+   var prefs = new _IG_Prefs(__MODULE_ID__);
+
+   // configure Automation REST call
+   var NXRequestParams={ operationId : 'Document.PageProvider',
+     operationParams : {pageSize : 5},
+     operationContext : {},
+     operationDocumentProperties : "common,dublincore",
+     entityType : 'documents',
+     usePagination : true,
+     displayMethod : displayDocumentList,
+     displayColumns : [ { type: 'builtin', field: 'icon'},
+                      { type: 'builtin', field: 'titleWithLink', label: '__MSG_label.dublincore.title__'},
+                      { type: 'date', field: 'dc:modified', label: '__MSG_label.dublincore.modified__'},
+                      { type: 'text', field: 'dc:creator', label: '__MSG_label.dublincore.creator__'} ]
+   };
+
+   // execute automation request onload
+   gadgets.util.registerOnLoadHandler(function() {buildQueryAndParams();} );
+
+  </script>
+  <script>
+
+  function buildQueryAndParams(){
+    var query = " SELECT * FROM Workspace WHERE ecm:mixinType != 'HiddenInNavigation' AND ecm:currentLifeCycleState != 'deleted' AND ecm:isProxy = 0";
+    var queryParams="";
+
+    var requestScope = getTargetContextPath();
+    if (requestScope!=null && requestScope!='') {
+      query+= " AND ecm:path STARTSWITH ? AND NOT ecm:path STARTSWITH ?";
+      queryParams= requestScope + "/, " + requestScope + "/templates/";
+    }
+    NXRequestParams.operationParams.query=query;
+    NXRequestParams.operationParams.queryParams=queryParams;
+    doAutomationRequest(NXRequestParams);
+    }
+  </script>
+  </head>
+   <body>
+
+   <#include "context-chooser-ui.ftl"/>
+   <#include "default-documentlist-layout.ftl"/>
+   <#include "default-request-controls.ftl"/>
+
+  </body>
+</html>
+]]>
+  </Content>
+</Module>

@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://nuxeo.org/schemas/opensocial/externalgadget"
+  xmlns:externalgadget="http://nuxeo.org/schemas/opensocial/externalgadgetsnamespace">
+
+  <xs:element name="id" type="xs:string"/>
+  <xs:element name="label" type="xs:string"/>
+  <xs:element name="enabled" type="xs:integer"/>
+  <xs:element name="category" type="xs:string"/>
+  <xs:element name="url" type="xs:string"/>
+  <xs:element name="iconUrl" type="xs:string"/>
+
+</xs:schema>
