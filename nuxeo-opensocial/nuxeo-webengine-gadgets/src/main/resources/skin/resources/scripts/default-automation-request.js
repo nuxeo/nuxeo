@@ -120,7 +120,7 @@ function requestCompleted(response, nxParams) {
     	hideWaitMessage();
         hideOAuthInProgress();
     } else {
-    	showErrorMessage("No data received from server: ", errors);
+    	showErrorMessage("No data received from server: ", response.errors);
     }
 
     // call "operationCallback" method if defined
