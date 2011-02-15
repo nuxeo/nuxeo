@@ -101,8 +101,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <apacheds.version>1.5.1</apacheds.version>
     <apachedshared.version>0.9.7</apachedshared.version>
-    <gwt.version>1.5.3</gwt.version>
-    <gwt2.version>2.0.4</gwt2.version>
+    <gwt.version>2.0.4</gwt.version>
     <jersey.version>1.1.5</jersey.version>
     <jetty.mortbay.version>6.1.14</jetty.mortbay.version>
     <shindig.version>1.1-BETA5-incubating</shindig.version>
@@ -1456,51 +1455,12 @@
         <groupId>com.google.gwt</groupId>
         <artifactId>gwt-dev</artifactId>
         <version>${gwt.version}</version>
-        <scope>provided</scope>
-        <classifier>windows</classifier>
-      </dependency>
-      <dependency>
-        <groupId>com.google.gwt</groupId>
-        <artifactId>gwt-dev</artifactId>
-        <version>${gwt.version}</version>
-        <classifier>windows-libs</classifier>
-        <type>zip</type>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>com.google.gwt</groupId>
-        <artifactId>gwt-dev</artifactId>
-        <version>${gwt.version}</version>
-        <scope>provided</scope>
-        <classifier>mac</classifier>
-      </dependency>
-      <dependency>
-        <groupId>com.google.gwt</groupId>
-        <artifactId>gwt-dev</artifactId>
-        <version>${gwt.version}</version>
-        <classifier>mac-libs</classifier>
-        <type>zip</type>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>com.google.gwt</groupId>
-        <artifactId>gwt-dev</artifactId>
-        <version>${gwt.version}</version>
-        <scope>provided</scope>
-        <classifier>linux</classifier>
-      </dependency>
-      <dependency>
-        <groupId>com.google.gwt</groupId>
-        <artifactId>gwt-dev</artifactId>
-        <version>${gwt.version}</version>
-        <classifier>linux-libs</classifier>
-        <type>zip</type>
-        <scope>provided</scope>
+        <scope>runtime</scope>
       </dependency>
       <dependency>
         <groupId>com.google.gwt</groupId>
         <artifactId>gwt-servlet</artifactId>
-        <version>${gwt2.version}</version>
+        <version>${gwt.version}</version>
         <scope>runtime</scope>
       </dependency>
       <dependency>
