@@ -64,6 +64,28 @@
       </coreQueryPageProvider>
     </contentView>
 
+    <contentView name="QUERY_WITH_SUBCLAUSE">
+      <searchDocument>#{searchDocument}</searchDocument>
+      <coreQueryPageProvider>
+        <property name="coreSession">#{documentManager}</property>
+        <property name="checkQueryCache">true</property>
+        <whereClause docType="File">
+          <fixedPart>
+            ecm:parentId = ? AND ecm:isCheckedInVersion = 0 AND ecm:mixinType !=
+            'HiddenInNavigation' AND ecm:currentLifeCycleState != 'deleted'
+          </fixedPart>
+          <predicate parameter="dc:title" operator="FULLTEXT">
+            <field schema="dublincore" name="title" />
+          </predicate>
+          <predicate type="subClause">
+            <field schema="dublincore" name="description" />
+          </predicate>
+        </whereClause>
+        <sort column="dc:title" ascending="true" />
+        <pageSize>2</pageSize>
+      </coreQueryPageProvider>
+    </contentView>
+
     <contentView name="CURRENT_DOCUMENT_CHILDREN_FETCH">
       <genericPageProvider
         class="org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider">

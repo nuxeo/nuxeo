@@ -171,10 +171,10 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
 
         assertNotNull(docs);
         assertEquals(2, docs.size());
-        assertEquals("Document number 0", docs.get(0).getPropertyValue(
-                "dc:title"));
-        assertEquals("Document number 1", docs.get(1).getPropertyValue(
-                "dc:title"));
+        assertEquals("Document number 0",
+                docs.get(0).getPropertyValue("dc:title"));
+        assertEquals("Document number 1",
+                docs.get(1).getPropertyValue("dc:title"));
 
         pp.nextPage();
         docs = pp.getCurrentPage();
@@ -195,10 +195,10 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
 
         assertNotNull(docs);
         assertEquals(2, docs.size());
-        assertEquals("Document number 2", docs.get(0).getPropertyValue(
-                "dc:title"));
-        assertEquals("Document number 3", docs.get(1).getPropertyValue(
-                "dc:title"));
+        assertEquals("Document number 2",
+                docs.get(0).getPropertyValue("dc:title"));
+        assertEquals("Document number 3",
+                docs.get(1).getPropertyValue("dc:title"));
 
         // test selection
         pp.setSelectedEntries(Arrays.asList(new DocumentModel[] { docs.get(1) }));
@@ -206,11 +206,13 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
         assertNotNull(selections);
         assertEquals(2, selections.getSize());
         assertFalse(selections.isSelected());
-        assertEquals("Document number 2",
+        assertEquals(
+                "Document number 2",
                 selections.getEntries().get(0).getData().getPropertyValue(
                         "dc:title"));
         assertFalse(selections.getEntries().get(0).isSelected());
-        assertEquals("Document number 3",
+        assertEquals(
+                "Document number 3",
                 selections.getEntries().get(1).getData().getPropertyValue(
                         "dc:title"));
         assertTrue(selections.getEntries().get(1).isSelected());
@@ -268,10 +270,10 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
 
         assertNotNull(docs);
         assertEquals(2, docs.size());
-        assertEquals("Document number 0", docs.get(0).getPropertyValue(
-                "dc:title"));
-        assertEquals("Document number 1", docs.get(1).getPropertyValue(
-                "dc:title"));
+        assertEquals("Document number 0",
+                docs.get(0).getPropertyValue("dc:title"));
+        assertEquals("Document number 1",
+                docs.get(1).getPropertyValue("dc:title"));
 
         pp.nextPage();
         docs = pp.getCurrentPage();
@@ -292,10 +294,10 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
 
         assertNotNull(docs);
         assertEquals(2, docs.size());
-        assertEquals("Document number 2", docs.get(0).getPropertyValue(
-                "dc:title"));
-        assertEquals("Document number 3", docs.get(1).getPropertyValue(
-                "dc:title"));
+        assertEquals("Document number 2",
+                docs.get(0).getPropertyValue("dc:title"));
+        assertEquals("Document number 3",
+                docs.get(1).getPropertyValue("dc:title"));
 
         // test selection
         pp.setSelectedEntries(Arrays.asList(new DocumentModel[] { docs.get(1) }));
@@ -303,11 +305,13 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
         assertNotNull(selections);
         assertEquals(2, selections.getSize());
         assertFalse(selections.isSelected());
-        assertEquals("Document number 2",
+        assertEquals(
+                "Document number 2",
                 selections.getEntries().get(0).getData().getPropertyValue(
                         "dc:title"));
         assertFalse(selections.getEntries().get(0).isSelected());
-        assertEquals("Document number 3",
+        assertEquals(
+                "Document number 3",
                 selections.getEntries().get(1).getData().getPropertyValue(
                         "dc:title"));
         assertTrue(selections.getEntries().get(1).isSelected());
@@ -494,10 +498,10 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
 
         assertNotNull(docs);
         assertEquals(2, docs.size());
-        assertEquals("Document number 0", docs.get(0).getPropertyValue(
-                "dc:title"));
-        assertEquals("Document number 1", docs.get(1).getPropertyValue(
-                "dc:title"));
+        assertEquals("Document number 0",
+                docs.get(0).getPropertyValue("dc:title"));
+        assertEquals("Document number 1",
+                docs.get(1).getPropertyValue("dc:title"));
 
         // fill search document with some properDocumentModelties
         searchDocument.setPropertyValue("dc:title", "0");
@@ -521,8 +525,41 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
 
         assertNotNull(docs);
         assertEquals(1, docs.size());
-        assertEquals("Document number 0", docs.get(0).getPropertyValue(
-                "dc:title"));
+        assertEquals("Document number 0",
+                docs.get(0).getPropertyValue("dc:title"));
 
     }
+
+    @SuppressWarnings("unchecked")
+    public void testCoreQueryWithSearchDocumentWithWhereClause()
+            throws Exception {
+        ContentView contentView = service.getContentView(
+                "QUERY_WITH_SUBCLAUSE", session);
+        assertNotNull(contentView);
+
+        // leave default values on doc for now: will filter on all docs with
+        // given parent
+        String parentIdParam = session.getRootDocument().getId();
+        PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) contentView.getPageProviderWithParams(parentIdParam);
+        checkCoreQueryWithSearchDocumentWithWhereClause(parentIdParam, pp);
+    }
+
+    protected void checkCoreQueryWithSearchDocumentWithWhereClause(
+            String parentIdParam, PageProvider<DocumentModel> pp)
+            throws Exception {
+        // init results
+        List<DocumentModel> docs = pp.getCurrentPage();
+
+        // check query
+        assertTrue(pp instanceof CoreQueryDocumentPageProvider);
+        assertEquals(
+                String.format(
+                        "SELECT * FROM Document WHERE ecm:parentId = '%s'"
+                                + " AND ecm:isCheckedInVersion = 0"
+                                + " AND ecm:mixinType != 'HiddenInNavigation'"
+                                + " AND ecm:currentLifeCycleState != 'deleted' ORDER BY dc:title",
+                        parentIdParam),
+                ((CoreQueryDocumentPageProvider) pp).getCurrentQuery());
+    }
+
 }
