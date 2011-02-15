@@ -57,7 +57,7 @@
         <tr valign="top" align="left">
         <#if !hideNav>
 
-          <td width="20%" style="padding:20px 10px 20px 20px; border-right:1px solid #d2d2d2">
+          <td width="20%" style="padding:10px; border-right:1px solid #d2d2d2">
           <@block name="left">
 
           <#include "nav.ftl">
@@ -65,29 +65,29 @@
           </@block>
           </td>
         </#if>
-          <td style="padding:10px 20px 20px 10px;">
+          <td style="padding:10px;">
      <#if enableDocumentationView && !Root.isEmbeddedMode() >
-            <table width="100% class="tabs" id="tabbox">
-            <tr>
-
-            <td width="25%" >
-              <div class="tabs <#if selectedTab=="defView">tabselected</#if>">
+     
+     
+     <div class="tabsbar">
+       <ul>
+         <li <#if selectedTab=="defView">class="selected"</#if> >
                 <a href="${This.path}/">View</a>
-              </div>
-            </td>
-
-            <td width="25%" >
-              <div class="tabs <#if selectedTab=="docView">tabselected</#if>">
+         </li>
+         <li <#if selectedTab=="docView">class="selected"</#if> >
                 <a href="${This.path}/doc">Documentation view</a>
-              </div>
-            </td>
-
-            </tr>
-            </table>
+         </li>
+       </ul>
+     </div>
+     
+     <div style="clear:both;"></div>        
+            
        </#if>
+         <div class="tabscontent">
           <@block name="right">
             Content
           </@block>
+          </div>
           </td>
         </tr>
       </table>

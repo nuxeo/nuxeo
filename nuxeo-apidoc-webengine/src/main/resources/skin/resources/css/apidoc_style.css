@@ -369,7 +369,7 @@ color:#fff;
  text-align:right;
   }
 
-.currentNavPoint, li.selected {
+.currentNavPoint, .nav-box li.selected {
   font-weight:normal;
   padding:3px 7px;
   background:#c0dcf5;
@@ -529,10 +529,10 @@ p.explore a {
   background-color: #4E9AE1;
   line-height: 100%;
   padding: 10px 15px;
-  margin:5px;
+  margin:5px 0;
   -moz-border-radius: 15px;
   -webkit-border-radius: 15px;
-  display: inline-block;
+  display: block;
   color:#fff;
 }
 
@@ -540,10 +540,9 @@ p.explored {
   background-color: #fff;
   line-height: 100%;
   padding: 10px 15px;
-  margin:5px;
+  margin:5px 0;
   -moz-border-radius: 15px;
   -webkit-border-radius: 15px;
-  display: inline-block;
   color:#666;
   border: 1px solid #666;
 }
@@ -579,3 +578,47 @@ p.explore a:visited, p.welcome a:hover {
   
 .nav-box ul {
 }
+
+/* Tabs bar */
+
+.tabsbar {
+  border-bottom: 6px solid #4E9AE1;
+  float: left;
+  line-height: normal;
+  margin-top: 5px;
+  width: 100%;
+}
+
+.tabsbar ul {
+  list-style: none outside none;
+  margin: 0;
+  padding: 0 10px 0 0;
+  }
+
+.tabsbar ul li {
+  float: left;
+  margin: 0 5px 0 0;
+  padding: 0;
+}  
+
+.tabsbar ul li a {
+  background: none repeat scroll 0 0 #FFFFFF;
+  border: 1px solid #C0DCF5;
+  display: block;
+  float: left;
+  font-weight: normal;
+  padding: 3px 7px;
+  text-decoration: none;
+}
+
+.tabsbar ul li.selected a, .tabsbar ul li a:hover  {
+  background-color:#4E9AE1;
+  border-color: #4E9AE1;
+  color:white;
+  }
+  
+.tabscontent {
+  padding:15px;
+  padding-top:5px;
+}  
+  
