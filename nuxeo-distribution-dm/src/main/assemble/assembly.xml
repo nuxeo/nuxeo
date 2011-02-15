@@ -42,6 +42,7 @@
           <artifact artifactId="nuxeo-generic-wss-front" />
           <artifact artifactId="nuxeo-apt-extensions" />
           <artifact artifactId="nuxeo-webengine-apt" />
+          <artifact artifactId="nuxeo-distribution-tools" />
         </excludes>
       </artifact:set>
     </copy>
