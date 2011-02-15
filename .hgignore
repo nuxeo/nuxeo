@@ -14,6 +14,7 @@ gwt-dev-1.5.3-mac-libs.zip
 .DS_Store
 nuxeo-platform-jbpm/nuxeo-platform-jbpm-web/src/main/resources/nuxeo.war/linkXhtml.sh
 nuxeo-opensocial/nuxeo-opensocial-features/maven-eclipse.xml
+nuxeo-opensocial/nuxeo-opensocial-container/war/
 *.gpd.*
 *cpJar*
 build.properties
