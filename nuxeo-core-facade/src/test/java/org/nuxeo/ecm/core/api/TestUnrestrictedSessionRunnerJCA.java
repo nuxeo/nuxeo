@@ -17,16 +17,12 @@
 package org.nuxeo.ecm.core.api;
 
 import org.nuxeo.ecm.core.storage.sql.TXSQLRepositoryTestCase;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
-public class TestTXUnrestrictedSessionRunner extends TXSQLRepositoryTestCase {
+public class TestUnrestrictedSessionRunnerJCA extends TXSQLRepositoryTestCase {
 
-    public void testUnrestrictedPropertySetter() throws ClientException {
-        CoreSession session = openSessionAs("bob");
-        UnrestrictedPropertySetter setter = new UnrestrictedPropertySetter(
-                session);
-        setter.runUnrestricted();
-        DocumentModel doc = session.getDocument(setter.getDocRef());
-        assertEquals(doc.getPropertyValue(UnrestrictedPropertySetter.DC_TITLE),
-                UnrestrictedPropertySetter.NEW_TITLE);
+    public void testUnrestrictedPropertySetter() throws Exception {
+        TestUnrestrictedSessionRunner.run(openSessionAs("bob"));
     }
+
 }

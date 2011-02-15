@@ -155,16 +155,20 @@ public abstract class UnrestrictedSessionRunner {
                     run();
                 } finally {
                     try {
+                        if (!session.isStateSharedByAllThreadSessions()) {
+                            // save unrestricted state for base session
+                            session.save();
+                        }
                         Repository.close(session);
                     } catch (Exception e) {
                         throw new ClientException(e);
                     } finally {
-                        session = baseSession;
-                        if (session != null
-                                && !session.isStateSharedByAllThreadSessions()) {
+                        if (baseSession != null
+                                && !baseSession.isStateSharedByAllThreadSessions()) {
                             // process invalidations from unrestricted session
-                            session.save();
+                            baseSession.save();
                         }
+                        session = baseSession;
                     }
                 }
             } finally {
