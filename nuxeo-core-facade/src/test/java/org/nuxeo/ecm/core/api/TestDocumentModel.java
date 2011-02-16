@@ -42,4 +42,10 @@ public class TestDocumentModel extends SQLRepositoryTestCase {
         doc.refresh();
     }
 
+    public void testContextDataOfCreatedDocument() throws Exception {
+        DocumentModel doc = session.createDocumentModel("/", "doc", "File");
+        doc.putContextData("key", "value");
+        doc = session.createDocument(doc);
+        assertEquals(doc.getContextData("key"), "value");
+    }
 }

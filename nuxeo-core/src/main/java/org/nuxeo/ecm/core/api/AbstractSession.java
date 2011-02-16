@@ -535,6 +535,19 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
     }
 
     /**
+     * Gets the document model for the given core document, preserving the contextData.
+     *
+     * @param doc the document
+     * @return the document model
+     */
+    protected DocumentModel readModel(Document doc, DocumentModel docModel)
+            throws ClientException {
+        DocumentModel newModel = readModel(doc);
+        newModel.copyContextData(docModel);
+        return newModel;
+    }
+
+    /**
      * @deprecated unused
      */
     @Deprecated
@@ -863,7 +876,7 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
                 // during remote publishing we want to skip versioning
                 // to avoid overwriting the version number
                 getVersioningService().doPostCreate(doc, options);
-                docModel = readModel(doc);
+                docModel = readModel(doc, docModel);
             }
 
             notifyEvent(DocumentEventTypes.DOCUMENT_CREATED, docModel, options,
