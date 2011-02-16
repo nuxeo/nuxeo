@@ -33,6 +33,7 @@
           <autoincrementIdField>false</autoincrementIdField>
           <createTablePolicy>on_missing_columns</createTablePolicy>
           <dataFile>setup-hsqldb.csv</dataFile>
+          <dataFileCharacterSeparator>,</dataFileCharacterSeparator>
           <querySizeLimit>1000</querySizeLimit>
           <init-dependencies>
             <dependency>dir1</dependency>
@@ -82,8 +83,15 @@
           otherwise the client has to supply the id.
         </li>
         <li>
-          dataFile - csv file from which to populate the table; the
-          first line must contain the column names.
+          dataFile - file from which to populate the table; the
+          first line must contain the column names. This can be a csv, tsv, psv file.
+          But you must take care of the dataFileCharacterSeparator to specify the character
+          separator
+        </li>
+        <li>
+          dataFileCharacterSeparator - character that separate each value
+          if more than one character is set, the first one is gotten and other
+          are skipped. The character is by default "," but you can set ";" or tabulation
         </li>
         <li>
           createTablePolicy - one of "never", "always" or
