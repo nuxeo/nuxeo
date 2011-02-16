@@ -163,7 +163,7 @@ public class TestContentViewService extends NXRuntimeTestCase {
     public void testGetContentViewNames() throws Exception {
         Set<String> names = service.getContentViewNames();
         assertNotNull(names);
-        assertEquals(6, names.size());
+        assertEquals(7, names.size());
         List<String> orderedNames = new ArrayList<String>();
         orderedNames.addAll(names);
         Collections.sort(orderedNames);
@@ -175,6 +175,8 @@ public class TestContentViewService extends NXRuntimeTestCase {
                 orderedNames.get(4));
         assertEquals("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT_REF",
                 orderedNames.get(5));
+        assertEquals("QUERY_WITH_SUBCLAUSE",
+                orderedNames.get(6));
 
         // check after override too
         deployContrib("org.nuxeo.ecm.platform.contentview.jsf.test",
@@ -182,7 +184,7 @@ public class TestContentViewService extends NXRuntimeTestCase {
 
         names = service.getContentViewNames();
         assertNotNull(names);
-        assertEquals(5, names.size());
+        assertEquals(6, names.size());
         orderedNames = new ArrayList<String>();
         orderedNames.addAll(names);
         Collections.sort(orderedNames);
@@ -193,6 +195,8 @@ public class TestContentViewService extends NXRuntimeTestCase {
                 orderedNames.get(3));
         assertEquals("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT_REF",
                 orderedNames.get(4));
+        assertEquals("QUERY_WITH_SUBCLAUSE",
+                orderedNames.get(5));
 
     }
 
