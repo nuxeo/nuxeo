@@ -37,8 +37,9 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="ogrisel@nuxeo.com">Olivier Grisel</a>
- *
+ * @deprecated use content views instead
  */
+@Deprecated
 public class QueryModelTestCase extends RepositoryOSGITestCase {
 
     private static final String QM_SCHEMA = "querymodel_test";

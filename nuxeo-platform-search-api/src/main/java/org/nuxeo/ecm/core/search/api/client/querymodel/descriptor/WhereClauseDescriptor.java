@@ -34,6 +34,10 @@ import org.nuxeo.ecm.core.search.api.client.querymodel.Escaper;
 import org.nuxeo.ecm.core.search.api.client.querymodel.LuceneMinimalEscaper;
 import org.nuxeo.runtime.model.RuntimeContext;
 
+/**
+ * @deprecated: use content views instead
+ */
+@Deprecated
 @XObject(value = "whereClause")
 public class WhereClauseDescriptor {
 

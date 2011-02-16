@@ -45,7 +45,9 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
  * @author <a href="mailto:gracinet@nuxeo.com">Georges Racinet</a>
+ * @deprecated use content views instead
  */
+@Deprecated
 public class TestSearchPageProvider extends NXRuntimeTestCase {
 
     @SuppressWarnings("serial")
