@@ -25,7 +25,6 @@
     <module>nuxeo-correspondence-marianne</module>
     <module>nuxeo-http-client</module>
     <module>nuxeo-platform-classification</module>
-    <module>nuxeo-platform-high-availability</module>
     <module>nuxeo-platform-importer</module>
     <module>nuxeo-platform-login</module>
     <module>nuxeo-platform-document-routing</module>
