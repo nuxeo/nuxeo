@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2011 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -39,18 +39,18 @@ public class Page {
 
     protected final String jsp;
 
-    protected int progress= -1;
+    protected int progress = -1;
 
     protected Page prev;
 
     protected Page next;
 
     public Page(String action, String jsp) {
-        this.action=action;
+        this.action = action;
         if (!jsp.startsWith("/")) {
             jsp = "/" + jsp;
         }
-        this.jsp=jsp;
+        this.jsp = jsp;
     }
 
     public String getAction() {
@@ -69,10 +69,13 @@ public class Page {
         return next;
     }
 
-    public void dispatchToJSP(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    public void dispatchToJSP(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
         dispatchToJSP(req, resp, false);
     }
-    public void dispatchToJSP(HttpServletRequest req, HttpServletResponse resp, boolean postBack) throws ServletException, IOException {
+
+    public void dispatchToJSP(HttpServletRequest req, HttpServletResponse resp,
+            boolean postBack) throws ServletException, IOException {
 
         // be sure to bind context
         Context.instance(req);
@@ -83,10 +86,10 @@ public class Page {
         // render JSP
         if (postBack && "POST".equals(req.getMethod())) {
             // handle POST-Back
-            // fixes urls and remove refresh warnings
-            String target = "/" + req.getContextPath()  + "/" + action;
+            // fixes URLs and remove refresh warnings
+            String target = "/" + req.getContextPath() + "/" + action;
             if (target.startsWith("//")) {
-                target=target.substring(1);
+                target = target.substring(1);
             }
             resp.sendRedirect(target);
         } else {
@@ -96,12 +99,11 @@ public class Page {
     }
 
     public String toString() {
-        return action + ":" + jsp ;
+        return action + ":" + jsp;
     }
 
     public int getProgress() {
         return progress;
     }
-
 
 }

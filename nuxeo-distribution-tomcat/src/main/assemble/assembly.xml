@@ -125,8 +125,8 @@
     </unzip>
 
     <!-- Nuxeo wizard -->
-    <copy tofile="${outdir}/webapps/nuxeo-startup-wizard.war">
-      <artifact:resolveFile key="org.nuxeo.ecm:nuxeo-startup-wizard:${nuxeo.distribution.version}:war" />
+    <copy tofile="${distribution.dir}/webapps/nuxeo-wizard.war">
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-startup-wizard:${nuxeo.distribution.version}:war" />
     </copy>
 
     <antcall target="reorganize-libs">
@@ -171,8 +171,8 @@
     </unzip>
 
     <!-- Nuxeo wizard -->
-    <copy tofile="${outdir}/webapps/nuxeo-startup-wizard.war">
-      <artifact:resolveFile key="org.nuxeo.ecm:nuxeo-startup-wizard:${nuxeo.distribution.version}:war" />
+    <copy tofile="${distribution.dir}/webapps/nuxeo-wizard.war">
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-startup-wizard:${nuxeo.distribution.version}:war" />
     </copy>
 
     <antcall target="reorganize-libs">

@@ -383,14 +383,6 @@ public abstract class NuxeoLauncher {
         NuxeoLauncherGUI launcherGUI = null;
         String command = launcher.command;
         boolean commandSucceeded = true;
-        if (launcher.isWizardRequired()) {
-            if (command != null
-                    && (command.contains("start") || command.contains("console"))) {
-                launcher.startWizard();
-            }
-        } else {
-            launcher.checkTomcatXMLConfFiles();
-        }
         if (launcher.useGui) {
             launcherGUI = new NuxeoLauncherGUI(launcher);
             command = launcherGUI.execute();
@@ -453,7 +445,7 @@ public abstract class NuxeoLauncher {
 
     protected abstract void checkTomcatXMLConfFiles();
 
-    protected abstract void startWizard();
+    protected abstract void prepareWizardStart();
 
     public abstract boolean isWizardRequired();
 
@@ -494,8 +486,9 @@ public abstract class NuxeoLauncher {
         boolean commandSucceeded = true;
         if (doStart(logProcessOutput)) {
             addShutdownHook();
-            if (!waitForEffectiveStart()) {
+            if (!isWizardRequired() && !waitForEffectiveStart()) {
                 commandSucceeded = false;
+                removeShutdownHook();
                 stop(logProcessOutput);
             } else {
                 removeShutdownHook();
@@ -609,6 +602,13 @@ public abstract class NuxeoLauncher {
             }
             checkNoRunningServer();
             configure();
+
+            if (isWizardRequired()) {
+                prepareWizardStart();
+            } else {
+                checkTomcatXMLConfFiles();
+            }
+
             start(logProcessOutput);
             serverStarted = isRunning();
             if (pid != null) {

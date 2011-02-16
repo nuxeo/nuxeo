@@ -44,11 +44,13 @@ function updateDBSettings() {
       $('#dbOracleWarn').css('display','none');
     }
   }
-
+  $('#refresh').val('true');
+  $('#wizardform').submit();
 }
 </script>
 
 <%@ include file="includes/form-start.jsp" %>
+<input id="refresh" type='hidden' name="refresh" value="false"/>
 
  <table>
     <tr>

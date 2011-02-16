@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2011 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     tdelprat
+ *     tdelprat, jcarsique
  *
  * $Id$
  */
@@ -25,6 +25,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.nuxeo.launcher.config.ConfigurationGenerator;
+
 /**
  * Manages all the parameters entered by User to configure his Nuxeo server
  *
@@ -35,12 +37,25 @@ public class ParamCollector {
 
     public static final String Key = "collector";
 
+    private ConfigurationGenerator configurationGenerator;
+
+    public ConfigurationGenerator getConfigurationGenerator() {
+        return configurationGenerator;
+    }
+
     protected Map<String, String> configurationParams = new HashMap<String, String>();
 
     protected Map<String, String> connectParams = new HashMap<String, String>();
 
+    public ParamCollector() {
+        configurationGenerator = new ConfigurationGenerator();
+        configurationGenerator.init();
+        addConfigurationParam("nuxeo.db.template",
+                configurationGenerator.extractDatabaseTemplateName());
+    }
+
     public void addConfigurationParam(String name, String value) {
-            configurationParams.put(name, value);
+        configurationParams.put(name, value);
     }
 
     public void addConnectParam(String name, String value) {
@@ -53,8 +68,8 @@ public class ParamCollector {
 
     public String getConfigurationParam(String name) {
         String param = configurationParams.get(name);
-        if (param==null) {
-            param = "";
+        if (param == null) {
+            param = configurationGenerator.getUserConfig().getProperty(name, "");
         }
         return param;
     }
@@ -68,12 +83,15 @@ public class ParamCollector {
     }
 
     public void collectConfigurationParams(HttpServletRequest req) {
+        @SuppressWarnings("unchecked")
         Enumeration<String> names = req.getParameterNames();
         while (names.hasMoreElements()) {
             String name = names.nextElement();
-            if (name.startsWith("org.nuxeo.") || name.startsWith("nuxeo.") || name.startsWith("mail.")) {
+            if (name.startsWith("org.nuxeo.") || name.startsWith("nuxeo.")
+                    || name.startsWith("mail.")) {
                 String value = req.getParameter(name);
-                if (!value.isEmpty() || (value.isEmpty() && configurationParams.containsKey(name))) {
+                if (!value.isEmpty()
+                        || (value.isEmpty() && configurationParams.containsKey(name))) {
                     addConfigurationParam(name, value);
                 }
             }
