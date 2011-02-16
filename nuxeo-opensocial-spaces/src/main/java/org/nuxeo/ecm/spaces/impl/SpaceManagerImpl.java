@@ -18,6 +18,7 @@
 
 package org.nuxeo.ecm.spaces.impl;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -152,6 +153,20 @@ public class SpaceManagerImpl extends DefaultComponent implements SpaceManager {
             String name = descriptor.getName();
             spaceProviders.remove(name);
             log.info("Unregistering space provider with name " + name);
+        }
+    }
+
+    @Override
+    public Collection<SpaceProvider> getSpaceProviders() {
+        return spaceProviders.values();
+    }
+
+    @Override
+    public SpaceProvider getSpaceProvider(String providerName) throws SpaceException {
+        if(spaceProviders.containsKey(providerName)) {
+            return spaceProviders.get(providerName);
+        } else {
+            throw new SpaceException("Provider " + providerName + " not found");
         }
     }
 

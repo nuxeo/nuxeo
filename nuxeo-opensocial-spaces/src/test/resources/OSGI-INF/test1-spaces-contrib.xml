@@ -8,6 +8,12 @@
       <param key="path">/home</param>
       <param key="title">Home</param>
     </spaceProvider>
+
+    <spaceProvider name="home2">
+      <class>org.nuxeo.ecm.spaces.core.SingleDocSpaceProvider</class>
+      <param key="path">/home2</param>
+      <param key="title">Home2</param>
+    </spaceProvider>
   </extension>
 
 </component>

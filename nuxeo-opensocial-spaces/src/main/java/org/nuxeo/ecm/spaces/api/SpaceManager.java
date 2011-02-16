@@ -17,6 +17,9 @@
 
 package org.nuxeo.ecm.spaces.api;
 
+import java.util.Collection;
+import java.util.List;
+
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.spaces.api.exceptions.SpaceException;
@@ -48,5 +51,12 @@ public interface SpaceManager {
 
     Space getSpaceFromId(String spaceId, CoreSession session)
             throws SpaceException;
+
+
+    Collection<SpaceProvider> getSpaceProviders();
+
+    SpaceProvider getSpaceProvider(String string) throws SpaceException;
+
+
 
 }
