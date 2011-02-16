@@ -93,9 +93,9 @@ public class ConfigurationGenerator {
     public static final List<String> DB_LIST = Arrays.asList("default",
             "postgresql", "oracle", "mysql", "mssql");
 
-    private static final String PARAM_WIZARD_DONE = "nuxeo.wizard.done";
+    public static final String PARAM_WIZARD_DONE = "nuxeo.wizard.done";
 
-    public static final String PARAM_WIZARD_COMMAND_AND_PARAMS = "nuxeo.wizard.command.and.params";
+    public static final String PARAM_WIZARD_RESTART_PARAMS = "wizard.restart.params";
 
     private final File nuxeoHome;
 
