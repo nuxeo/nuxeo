@@ -297,8 +297,8 @@ public class AppModel implements HasPermissionsMapper {
         }
     }
 
-    public void updateWebContent(String webContentId) {
-        updateWebContentService(webContentId);
+    public void updateWebContent(String webContentId, List<String> list) {
+        updateWebContentService(webContentId, list);
     }
 
     public void removeWebContent(String webContentId) {
@@ -543,9 +543,9 @@ public class AppModel implements HasPermissionsMapper {
                 });
     }
 
-    private void updateWebContentService(final String webContentId) {
+    private void updateWebContentService(final String webContentId, List<String> list) {
         dispatcher.execute(new UpdateWebContent(containerContext,
-                getWebContent(webContentId)),
+                getWebContent(webContentId), list),
                 new AbstractContainerAsyncCallback<UpdateWebContentResult>(
                         eventBus, errors.cannotUpdateWebContent()) {
                     @Override

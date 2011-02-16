@@ -106,4 +106,8 @@ public class OpenSocialData extends AbstractWebContentData {
             return DEFAULT_ICON_NAME;
         }
     }
+
+    public boolean hasFiles() {
+        return false;
+    }
 }

@@ -7,7 +7,7 @@ import org.nuxeo.opensocial.container.client.AppErrorMessages;
 import org.nuxeo.opensocial.container.client.AppInfoMessages;
 import org.nuxeo.opensocial.container.client.Container;
 import org.nuxeo.opensocial.container.client.ContainerConstants;
-import org.nuxeo.opensocial.container.client.bundles.ImageRessource;
+import org.nuxeo.opensocial.container.client.bundles.ImagesBundle;
 import org.nuxeo.opensocial.container.client.event.priv.app.HideMessageEvent;
 import org.nuxeo.opensocial.container.client.event.priv.app.SendMessageEvent;
 import org.nuxeo.opensocial.container.client.event.priv.service.LayoutLoadedEvent;
@@ -49,7 +49,7 @@ public class AppPresenter extends WidgetPresenter<AppPresenter.Display> {
 
     public static ContainerConstants containerConstants = GWT.create(ContainerConstants.class);
 
-    public static ImageRessource AppImages = GWT.create(ImageRessource.class);
+    public static ImagesBundle AppImages = GWT.create(ImagesBundle.class);
 
     public interface Display extends WidgetDisplay {
         void addContent(WidgetDisplay display);
@@ -98,7 +98,8 @@ public class AppPresenter extends WidgetPresenter<AppPresenter.Display> {
         registerHandler(eventBus.addHandler(UpdateWebContentEvent.TYPE,
                 new UpdateWebContentEventHandler() {
                     public void onUpdateWebContent(UpdateWebContentEvent event) {
-                        model.updateWebContent(event.getWebContentId());
+                        model.updateWebContent(event.getWebContentId(),
+                                event.getFiles());
                     }
                 }));
     }
@@ -211,7 +212,7 @@ public class AppPresenter extends WidgetPresenter<AppPresenter.Display> {
             // TODO The widget is not a PortletWidget
         }
 
-        model.updateWebContent(webContentId);
+        model.updateWebContent(webContentId, null);
     }
 
     @SuppressWarnings("unused")
@@ -233,7 +234,7 @@ public class AppPresenter extends WidgetPresenter<AppPresenter.Display> {
 
     @SuppressWarnings("unused")
     private void saveOpenSocialUserPref(String frameId) {
-        model.updateWebContent(getWebContentId(frameId));
+        model.updateWebContent(getWebContentId(frameId), null);
     }
 
     @SuppressWarnings("unused")

@@ -15,14 +15,31 @@
       <filter-name>NuxeoAuthenticationFilter</filter-name>
       <url-pattern>/gwtContainer/dispatch</url-pattern>
     </filter-mapping>
-  </extension>
 
-  <extension target="web#FILTER-MAPPING">
     <filter-mapping>
       <filter-name>guiceFilter</filter-name>
       <url-pattern>/gwtContainer/dispatch</url-pattern>
     </filter-mapping>
   </extension>
+
+  <extension target="web#SERVLET">
+ 		<servlet>
+ 			<servlet-name>UploadServlet</servlet-name>
+ 			<servlet-class>org.nuxeo.gwt.habyt.upload.server.UploadServlet</servlet-class>
+ 		</servlet>
+ 	</extension>
+
+ 	<extension target="web#SERVLET-MAPPING">
+ 		<servlet-mapping>
+ 			<servlet-name>UploadServlet</servlet-name>
+ 			<url-pattern>/gwtContainer/upload</url-pattern>
+ 		</servlet-mapping>
+ 		<servlet-mapping>
+ 			<servlet-name>UploadServlet</servlet-name>
+ 			<url-pattern>/gwtContainer/upload/*</url-pattern>
+ 		</servlet-mapping>
+ 	</extension>
+
 
   <extension target="web#LISTENER">
     <listener>

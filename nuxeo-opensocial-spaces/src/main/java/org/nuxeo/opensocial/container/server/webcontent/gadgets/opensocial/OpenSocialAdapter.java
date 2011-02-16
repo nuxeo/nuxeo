@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.shindig.common.uri.Uri;
 import org.apache.shindig.gadgets.GadgetContext;
 import org.apache.shindig.gadgets.GadgetSpecFactory;
@@ -21,7 +23,6 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.opensocial.container.server.utils.UrlBuilder;
 import org.nuxeo.opensocial.container.server.webcontent.abs.AbstractWebContentAdapter;
-import org.nuxeo.opensocial.container.server.webcontent.api.WebContentAdapter;
 import org.nuxeo.opensocial.container.shared.webcontent.OpenSocialData;
 import org.nuxeo.opensocial.container.shared.webcontent.enume.DataType;
 import org.nuxeo.opensocial.service.api.OpenSocialService;
@@ -30,8 +31,9 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * @author Stéphane Fourrier
  */
-public class OpenSocialAdapter extends AbstractWebContentAdapter implements
-        WebContentAdapter<OpenSocialData> {
+public class OpenSocialAdapter extends AbstractWebContentAdapter<OpenSocialData>  {
+
+    private static final Log log = LogFactory.getLog(OpenSocialAdapter.class);
 
     public static final String GADGETS_PORT = "gadgets.port";
 
@@ -49,12 +51,20 @@ public class OpenSocialAdapter extends AbstractWebContentAdapter implements
         super(doc);
     }
 
+    public void setGadgetDefUrl(String gadgetDefUrl) throws ClientException {
+        doc.setPropertyValue("wcopensocial:gadgetDefUrl", gadgetDefUrl);
+    }
+
+    public void setGadgetName(String gadgetDefUrl) throws ClientException {
+        doc.setPropertyValue("wcopensocial:gadgetname", gadgetDefUrl);
+    }
+
     @SuppressWarnings("unchecked")
     public void feedFrom(OpenSocialData data) throws ClientException {
         super.setMetadataFrom(data);
 
-        doc.setPropertyValue(WC_OPEN_SOCIAL_GADGET_DEF_URL_PROPERTY, data.getGadgetDef());
-        doc.setPropertyValue(WC_OPEN_SOCIAL_GADGET_NAME, data.getGadgetName());
+        setGadgetDefUrl(data.getGadgetDef());
+        setGadgetName(data.getGadgetName());
 
         List<Map<String, Serializable>> savedUserPrefs = (List<Map<String, Serializable>>) doc.getPropertyValue(WC_OPEN_SOCIAL_USER_PREFS_PROPERTY);
 
@@ -77,7 +87,7 @@ public class OpenSocialAdapter extends AbstractWebContentAdapter implements
     }
 
     private void setFrameUrlFor(OpenSocialData data) throws ClientException {
-        data.setFrameUrl(UrlBuilder.buildShindigUrl(data, getBaseUrl(), "ALL"));
+        data.setFrameUrl(UrlBuilder.buildShindigUrl(data, getBaseUrl()));
     }
 
     public String getBaseUrl() {
@@ -101,24 +111,23 @@ public class OpenSocialAdapter extends AbstractWebContentAdapter implements
         data.setGadgetDef((String) doc.getPropertyValue(WC_OPEN_SOCIAL_GADGET_DEF_URL_PROPERTY));
         data.setGadgetName((String) doc.getPropertyValue(WC_OPEN_SOCIAL_GADGET_NAME));
 
-        try {
-            // We get the values from nuxeo for each saved preference
-            List<Map<String, Serializable>> tempSavedUserPrefs = (List<Map<String, Serializable>>) doc.getPropertyValue(WC_OPEN_SOCIAL_USER_PREFS_PROPERTY);
-            Map<String, String> savedUserPrefs = new HashMap<String, String>();
+        // We get the values from nuxeo for each saved preference
+        List<Map<String, Serializable>> tempSavedUserPrefs = (List<Map<String, Serializable>>) doc.getPropertyValue(WC_OPEN_SOCIAL_USER_PREFS_PROPERTY);
+        Map<String, String> savedUserPrefs = new HashMap<String, String>();
 
-            for (Map<String, Serializable> preference : tempSavedUserPrefs) {
-                String name = (String) preference.get("name");
-                String value = (String) preference.get("value");
-                savedUserPrefs.put(name, value);
-            }
+        for (Map<String, Serializable> preference : tempSavedUserPrefs) {
+            String name = (String) preference.get("name");
+            String value = (String) preference.get("value");
+            savedUserPrefs.put(name, value);
+        }
 
-            // Get Preferences from shindig and wrap them into the data
-            // We don't use the class provided by shindig because of not
-            // implemented classes in GWT
-            OpenSocialService service = Framework.getService(OpenSocialService.class);
-            GadgetSpecFactory gadgetSpecFactory = service.getGadgetSpecFactory();
-            NXGadgetContext context = new NXGadgetContext(data.getGadgetDef());
-            GadgetSpec gadgetSpec = gadgetSpecFactory.getGadgetSpec(context);
+        // Get Preferences from shindig and wrap them into the data
+        // We don't use the class provided by shindig because of not
+        // implemented classes in GWT
+
+        GadgetSpec gadgetSpec = getGadgetSpec(data);
+
+        if (gadgetSpec != null) {
 
             Map<String, org.nuxeo.opensocial.container.shared.webcontent.UserPref> dataUserPrefs = new HashMap<String, org.nuxeo.opensocial.container.shared.webcontent.UserPref>();
 
@@ -148,13 +157,23 @@ public class OpenSocialAdapter extends AbstractWebContentAdapter implements
             }
 
             data.setUserPrefs(dataUserPrefs);
-        } catch (Exception e) {
-            throw new ClientException("Unable to get OpenSocial Service ...", e);
         }
 
         setFrameUrlFor(data);
 
         return data;
+    }
+
+    private GadgetSpec getGadgetSpec(OpenSocialData data) {
+        try {
+            OpenSocialService service = Framework.getService(OpenSocialService.class);
+            GadgetSpecFactory gadgetSpecFactory = service.getGadgetSpecFactory();
+            NXGadgetContext context = new NXGadgetContext(data.getGadgetDef());
+            return gadgetSpecFactory.getGadgetSpec(context);
+        } catch (Exception e) {
+            log.warn("Unable to get gadget spec for " + data.getName());
+            return null;
+        }
     }
 }
 

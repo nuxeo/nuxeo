@@ -25,7 +25,7 @@ public class CustomListBox extends ListBox implements HasMultipleValue<String> {
 
     public void setValue(String value) {
         for (int i = 0; i < getItemCount(); i++) {
-            if (getItemText(i).equals(value)) {
+            if (getValue(i).equals(value)) {
                 setSelectedIndex(i);
                 break;
             }

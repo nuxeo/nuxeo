@@ -269,7 +269,7 @@ public class PreferencesPresenter extends
                             }
                         }
 
-                        model.updateWebContent(data.getId());
+                        model.updateWebContent(data.getId(), null);
 
                         display.hidePopup();
                     }

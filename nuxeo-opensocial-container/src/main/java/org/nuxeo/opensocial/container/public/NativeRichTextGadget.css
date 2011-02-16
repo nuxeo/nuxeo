@@ -1,0 +1,39 @@
+.NativeRichTextGadget.center {
+
+}
+
+.NativeRichTextGadget.center img {
+	width: 100%;
+}
+
+.NativeRichTextGadget.center .gadget-content {
+	width: 100%;
+}
+
+.NativeRichTextGadget.left {
+
+}
+
+.NativeRichTextGadget.left img {
+	float: left;
+	width: 50%;
+}
+
+.NativeRichTextGadget.left .gadget-content {
+	float: left;
+	width: 50%;
+}
+
+.NativeRichTextGadget.right {
+
+}
+
+.NativeRichTextGadget.right img {
+	float: right;
+	width: 50%;
+}
+
+.NativeRichTextGadget.right .gadget-content {
+	float: left;
+	width: 50%;
+}

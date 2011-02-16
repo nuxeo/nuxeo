@@ -34,9 +34,9 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.RichTextArea;
-import com.google.gwt.user.client.ui.RichTextArea.Formatter;
 import com.google.gwt.user.client.ui.ToggleButton;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.RichTextArea.Formatter;
 
 public class RichTextToolbar extends Composite {
     public static RichTextEditorConstants constants = GWT.create(RichTextEditorConstants.class);
@@ -44,7 +44,6 @@ public class RichTextToolbar extends Composite {
     /** Local CONSTANTS **/
     // ImageMap and CSS related
     private static final String HTTP_STATIC_ICONS_GIF = "http://blog.elitecoderz.net/wp-includes/js/tinymce/themes/advanced/img/icons.gif";
-
     private static final String CSS_ROOT_NAME = "RichTextToolbar";
 
     // Color and Fontlists - First Value (key) is the Name to display, Second
@@ -71,23 +70,15 @@ public class RichTextToolbar extends Composite {
 
     // HTML Related (styles made by SPAN and DIV)
     private static final String HTML_STYLE_CLOSE_SPAN = "</span>";
-
     private static final String HTML_STYLE_CLOSE_DIV = "</div>";
-
     private static final String HTML_STYLE_OPEN_BOLD = "<span style=\"font-weight: bold;\">";
-
     private static final String HTML_STYLE_OPEN_ITALIC = "<span style=\"font-weight: italic;\">";
-
     private static final String HTML_STYLE_OPEN_UNDERLINE = "<span style=\"font-weight: underline;\">";
-
     // private static final String HTML_STYLE_OPEN_LINETHROUGH =
     // "<span style=\"font-weight: line-through;\">";
     private static final String HTML_STYLE_OPEN_ALIGNLEFT = "<div style=\"text-align: left;\">";
-
     private static final String HTML_STYLE_OPEN_ALIGNCENTER = "<div style=\"text-align: center;\">";
-
     private static final String HTML_STYLE_OPEN_ALIGNRIGHT = "<div style=\"text-align: right;\">";
-
     // private static final String HTML_STYLE_OPEN_INDENTRIGHT =
     // "<div style=\"margin-left: 40px;\">";
 
@@ -97,11 +88,8 @@ public class RichTextToolbar extends Composite {
     // private static final String HTML_STYLE_OPEN_SUPERSCRIPT = "<sup>";
     // private static final String HTML_STYLE_CLOSE_SUPERSCRIPT = "</sup>";
     private static final String HTML_STYLE_OPEN_ORDERLIST = "<ol><li>";
-
     private static final String HTML_STYLE_CLOSE_ORDERLIST = "</ol></li>";
-
     private static final String HTML_STYLE_OPEN_UNORDERLIST = "<ul><li>";
-
     private static final String HTML_STYLE_CLOSE_UNORDERLIST = "</ul></li>";
 
     // HTML Related (styles without closing Tag)
@@ -140,15 +128,12 @@ public class RichTextToolbar extends Composite {
     /** Private Variables **/
     // The main (Vertical)-Panel and the two inner (Horizontal)-Panels
     private VerticalPanel outer;
-
     private FlowPanel topPanel;
-
     private FlowPanel bottomPanel;
 
     // The RichTextArea this Toolbar referes to and the Interfaces to access the
     // RichTextArea
     private RichTextArea styleText;
-
     private Formatter styleTextFormatter;
 
     // We use an internal class of the ClickHandler and the KeyUpHandler to be
@@ -157,39 +142,26 @@ public class RichTextToolbar extends Composite {
 
     // The Buttons of the Menubar
     private ToggleButton bold;
-
     private ToggleButton italic;
-
     private ToggleButton underline;
-
     // private ToggleButton stroke;
     // private ToggleButton subscript;
     // private ToggleButton superscript;
     private PushButton alignleft;
-
     private PushButton alignmiddle;
-
     private PushButton alignright;
-
     private PushButton orderlist;
-
     private PushButton unorderlist;
-
     // private PushButton indentleft;
     // private PushButton indentright;
     private PushButton generatelink;
-
     private PushButton breaklink;
-
     private PushButton insertline;
-
     private PushButton insertimage;
-
     // private PushButton removeformatting;
     // private ToggleButton texthtml;
 
     private ListBox fontlist;
-
     private ListBox colorlist;
 
     /** Constructor of the Toolbar **/
@@ -239,20 +211,23 @@ public class RichTextToolbar extends Composite {
     private class EventHandler implements ClickHandler, KeyUpHandler,
             ChangeHandler {
         public void onClick(ClickEvent event) {
-            if (event.getSource().equals(bold)) {
+            if (event.getSource()
+                    .equals(bold)) {
                 if (isHTMLMode()) {
                     changeHtmlStyle(HTML_STYLE_OPEN_BOLD, HTML_STYLE_CLOSE_SPAN);
                 } else {
                     styleTextFormatter.toggleBold();
                 }
-            } else if (event.getSource().equals(italic)) {
+            } else if (event.getSource()
+                    .equals(italic)) {
                 if (isHTMLMode()) {
                     changeHtmlStyle(HTML_STYLE_OPEN_ITALIC,
                             HTML_STYLE_CLOSE_SPAN);
                 } else {
                     styleTextFormatter.toggleItalic();
                 }
-            } else if (event.getSource().equals(underline)) {
+            } else if (event.getSource()
+                    .equals(underline)) {
                 if (isHTMLMode()) {
                     changeHtmlStyle(HTML_STYLE_OPEN_UNDERLINE,
                             HTML_STYLE_CLOSE_SPAN);
@@ -284,35 +259,40 @@ public class RichTextToolbar extends Composite {
             // styleTextFormatter.toggleSuperscript();
             // }
             // }
-            else if (event.getSource().equals(alignleft)) {
+            else if (event.getSource()
+                    .equals(alignleft)) {
                 if (isHTMLMode()) {
                     changeHtmlStyle(HTML_STYLE_OPEN_ALIGNLEFT,
                             HTML_STYLE_CLOSE_DIV);
                 } else {
                     styleTextFormatter.setJustification(RichTextArea.Justification.LEFT);
                 }
-            } else if (event.getSource().equals(alignmiddle)) {
+            } else if (event.getSource()
+                    .equals(alignmiddle)) {
                 if (isHTMLMode()) {
                     changeHtmlStyle(HTML_STYLE_OPEN_ALIGNCENTER,
                             HTML_STYLE_CLOSE_DIV);
                 } else {
                     styleTextFormatter.setJustification(RichTextArea.Justification.CENTER);
                 }
-            } else if (event.getSource().equals(alignright)) {
+            } else if (event.getSource()
+                    .equals(alignright)) {
                 if (isHTMLMode()) {
                     changeHtmlStyle(HTML_STYLE_OPEN_ALIGNRIGHT,
                             HTML_STYLE_CLOSE_DIV);
                 } else {
                     styleTextFormatter.setJustification(RichTextArea.Justification.RIGHT);
                 }
-            } else if (event.getSource().equals(orderlist)) {
+            } else if (event.getSource()
+                    .equals(orderlist)) {
                 if (isHTMLMode()) {
                     changeHtmlStyle(HTML_STYLE_OPEN_ORDERLIST,
                             HTML_STYLE_CLOSE_ORDERLIST);
                 } else {
                     styleTextFormatter.insertOrderedList();
                 }
-            } else if (event.getSource().equals(unorderlist)) {
+            } else if (event.getSource()
+                    .equals(unorderlist)) {
                 if (isHTMLMode()) {
                     changeHtmlStyle(HTML_STYLE_OPEN_UNORDERLIST,
                             HTML_STYLE_CLOSE_UNORDERLIST);
@@ -335,7 +315,8 @@ public class RichTextToolbar extends Composite {
             // styleTextFormatter.leftIndent();
             // }
             // }
-            else if (event.getSource().equals(generatelink)) {
+            else if (event.getSource()
+                    .equals(generatelink)) {
                 String url = Window.prompt(constants.insertLinkUrl(), "http://");
                 if (url != null) {
                     if (isHTMLMode()) {
@@ -344,13 +325,15 @@ public class RichTextToolbar extends Composite {
                         styleTextFormatter.createLink(url);
                     }
                 }
-            } else if (event.getSource().equals(breaklink)) {
+            } else if (event.getSource()
+                    .equals(breaklink)) {
                 if (isHTMLMode()) {
                     // TODO nothing can be done here at the moment
                 } else {
                     styleTextFormatter.removeLink();
                 }
-            } else if (event.getSource().equals(insertimage)) {
+            } else if (event.getSource()
+                    .equals(insertimage)) {
                 String url = Window.prompt(constants.insertImageUrl(),
                         "http://");
                 if (url != null) {
@@ -360,7 +343,8 @@ public class RichTextToolbar extends Composite {
                         styleTextFormatter.insertImage(url);
                     }
                 }
-            } else if (event.getSource().equals(insertline)) {
+            } else if (event.getSource()
+                    .equals(insertline)) {
                 if (isHTMLMode()) {
                     changeHtmlStyle(HTML_STYLE_HLINE, "");
                 } else {
@@ -382,7 +366,8 @@ public class RichTextToolbar extends Composite {
             // styleText.setHTML(styleText.getText());
             // }
             // }
-            else if (event.getSource().equals(styleText)) {
+            else if (event.getSource()
+                    .equals(styleText)) {
                 // Change invoked by the richtextArea
             }
             updateStatus();
@@ -393,21 +378,21 @@ public class RichTextToolbar extends Composite {
         }
 
         public void onChange(ChangeEvent event) {
-            if (event.getSource().equals(fontlist)) {
+            if (event.getSource()
+                    .equals(fontlist)) {
                 if (isHTMLMode()) {
-                    changeHtmlStyle(
-                            "<span style=\"font-family: "
-                                    + fontlist.getValue(fontlist.getSelectedIndex())
-                                    + ";\">", HTML_STYLE_CLOSE_SPAN);
+                    changeHtmlStyle("<span style=\"font-family: "
+                            + fontlist.getValue(fontlist.getSelectedIndex())
+                            + ";\">", HTML_STYLE_CLOSE_SPAN);
                 } else {
                     styleTextFormatter.setFontName(fontlist.getValue(fontlist.getSelectedIndex()));
                 }
-            } else if (event.getSource().equals(colorlist)) {
+            } else if (event.getSource()
+                    .equals(colorlist)) {
                 if (isHTMLMode()) {
-                    changeHtmlStyle(
-                            "<span style=\"color: "
-                                    + colorlist.getValue(colorlist.getSelectedIndex())
-                                    + ";\">", HTML_STYLE_CLOSE_SPAN);
+                    changeHtmlStyle("<span style=\"color: "
+                            + colorlist.getValue(colorlist.getSelectedIndex())
+                            + ";\">", HTML_STYLE_CLOSE_SPAN);
                 } else {
                     styleTextFormatter.setForeColor(colorlist.getValue(colorlist.getSelectedIndex()));
                 }

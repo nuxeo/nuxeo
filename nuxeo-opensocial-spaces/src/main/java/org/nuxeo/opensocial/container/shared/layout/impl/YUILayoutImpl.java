@@ -20,6 +20,7 @@ public class YUILayoutImpl implements YUILayout, Serializable {
 
     private YUISideBarStyle sidebarStyle;
 
+    // TODO use YUIContent instead
     private YUIContentImpl content;
 
     private YUIUnit header;
@@ -40,9 +41,13 @@ public class YUILayoutImpl implements YUILayout, Serializable {
             boolean hasFooter, YUISideBarStyle sideBar) {
         setBodySize(size);
         setSideBarStyle(sideBar);
-        setHeader(new YUIUnitImpl());
+        if (hasHeader) {
+            setHeader(new YUIUnitImpl());
+        }
         setContent(new YUIContentImpl());
-        setFooter(new YUIUnitImpl());
+        if(hasFooter) {
+            setFooter(new YUIUnitImpl());
+        }
     }
 
     public YUISideBarStyle getSidebarStyle() {

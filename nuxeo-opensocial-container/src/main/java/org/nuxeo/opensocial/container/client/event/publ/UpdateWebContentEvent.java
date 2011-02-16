@@ -1,5 +1,7 @@
 package org.nuxeo.opensocial.container.client.event.publ;
 
+import java.util.List;
+
 import com.google.gwt.event.shared.GwtEvent;
 
 /**
@@ -11,12 +13,23 @@ public class UpdateWebContentEvent extends
 
     private String webContentId;
 
+    private List<String> files;
+
     public UpdateWebContentEvent(String webContentId) {
         this.webContentId = webContentId;
     }
 
+    public UpdateWebContentEvent(String webContentId, List<String> files) {
+        this(webContentId);
+        this.files = files;
+    }
+
     public String getWebContentId() {
         return webContentId;
+    }
+
+    public List<String> getFiles() {
+        return files;
     }
 
     @Override

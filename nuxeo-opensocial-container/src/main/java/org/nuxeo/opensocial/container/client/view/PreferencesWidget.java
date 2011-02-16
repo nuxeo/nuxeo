@@ -222,6 +222,7 @@ public class PreferencesWidget extends DialogBox implements
 
         CustomListBox listBox = new CustomListBox();
         listBox.setWidth("99%");
+        listBox.setName(name);
         preferencePanel.setWidget(preferenceIndex, 1, listBox);
 
         return listBox;

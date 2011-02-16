@@ -49,6 +49,8 @@ public class Constants {
 
     public static final String WC_HTML_HTML_TITLE_PROPERTY = "wchtml:htmltitle";
 
+    public static final String WC_HTML_HTML_TEMPLATE_PROPERTY = "template";
+
     public static final String WC_OPEN_SOCIAL_SCHEMA = "wcopensocial";
 
     public static final String WC_OPEN_SOCIAL_GADGET_NAME = "wcopensocial:gadgetname";

@@ -16,11 +16,25 @@ public class HTMLData extends AbstractWebContentData {
 
     public static final String ICONE_NAME = "richtext-icon";
 
-    public static String TYPE = "wchtml";
+    public static final String CENTER_TEMPLATE = "center";
+
+    public static final String RIGHT_TEMPLATE = "right";
+
+    public static final String LEFT_TEMPLATE = "left";
+
+    public static final String TYPE = "wchtml";
 
     private String html;
 
     private String htmlTitle;
+
+    private String htmlPictureLink;
+
+    private String htmlPictureLegend;
+
+    private boolean hasPicture;
+
+    private String template;
 
     public HTMLData() {
         super();
@@ -40,6 +54,38 @@ public class HTMLData extends AbstractWebContentData {
 
     public void setHtmlTitle(String htmlTitle) {
         this.htmlTitle = htmlTitle;
+    }
+
+    public void setHtmlPictureLink(String htmlPictureLink) {
+        this.htmlPictureLink = htmlPictureLink;
+    }
+
+    public String getHtmlPictureLink() {
+        return htmlPictureLink;
+    }
+
+    public void setHtmlPictureLegend(String htmlPictureLegend) {
+        this.htmlPictureLegend = htmlPictureLegend;
+    }
+
+    public String getHtmlPictureLegend() {
+        return htmlPictureLegend;
+    }
+
+    public void setHasPicture(boolean hasPicture) {
+        this.hasPicture = hasPicture;
+    }
+
+    public boolean hasPicture() {
+        return hasPicture;
+    }
+
+    public void setTemplate(String template) {
+        this.template = template;
+    }
+
+    public String getTemplate() {
+        return template;
     }
 
     @Override
@@ -67,5 +113,9 @@ public class HTMLData extends AbstractWebContentData {
     @Override
     public String getIcon() {
         return ICONE_NAME;
+    }
+
+    public boolean hasFiles() {
+        return true;
     }
 }

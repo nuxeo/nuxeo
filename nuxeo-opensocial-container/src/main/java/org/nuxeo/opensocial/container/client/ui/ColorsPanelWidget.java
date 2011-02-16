@@ -60,7 +60,7 @@ public class ColorsPanelWidget extends Composite implements HasClickHandlers,
         }
 
         if (colorWidget == null) {
-            colorWidget = getColor(ColorsEnum.TRANSPARENT.getCssColor());
+            colorWidget = getColor(ColorsEnum.NONE.getCssColor());
             colorWidget.setSelected(true);
             selectedColor = colorWidget;
         } else {

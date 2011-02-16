@@ -15,4 +15,10 @@ public interface GadgetsConstants extends Messages {
     String cancel();
 
     String save();
+
+    String link();
+
+    String legend();
+
+    String template();
 }

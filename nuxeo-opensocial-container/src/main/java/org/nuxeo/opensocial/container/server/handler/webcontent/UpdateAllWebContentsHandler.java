@@ -28,7 +28,8 @@ public class UpdateAllWebContentsHandler extends
             int position = 0;
             for (WebContentData webContent : unitEntry.getValue()) {
                 webContent.setPosition(position);
-                UpdateWebContentHandler.updateWebContent(webContent, space);
+                UpdateWebContentHandler.updateWebContent(webContent, null,
+                        space);
                 position++;
             }
         }

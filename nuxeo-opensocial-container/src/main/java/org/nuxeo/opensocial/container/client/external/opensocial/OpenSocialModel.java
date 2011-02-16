@@ -2,7 +2,6 @@ package org.nuxeo.opensocial.container.client.external.opensocial;
 
 import java.util.Map;
 
-import org.nuxeo.opensocial.container.client.ContainerConfiguration;
 import org.nuxeo.opensocial.container.client.external.HasPermissions;
 import org.nuxeo.opensocial.container.shared.webcontent.OpenSocialData;
 
@@ -17,7 +16,6 @@ public class OpenSocialModel implements HasPermissions {
     public OpenSocialModel(OpenSocialData data, Map<String, Boolean> permissions) {
         this.data = data;
         this.permissions = permissions;
-        computeFrameUrl();
     }
 
     public OpenSocialData getData() {
@@ -30,13 +28,6 @@ public class OpenSocialModel implements HasPermissions {
 
     public Boolean hasPermission(String permission) {
         return permissions.containsKey(permission);
-    }
-
-    protected void computeFrameUrl() {
-        String url = data.getFrameUrl();
-        url = url.replace("lang=ALL",
-                "lang=" + ContainerConfiguration.getUserLanguage());
-        data.setFrameUrl(url);
     }
 
 }

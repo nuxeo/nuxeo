@@ -1,0 +1,85 @@
+@CHARSET "UTF-8";
+
+.html-row {
+	border: 1px solid grey;
+	background-color: #FFF;
+}
+
+.gadget-title {
+	color: #13506B;
+	font-size: 14px;
+	font-weight: bold;
+	text-align: center;
+}
+
+.gadget-content {
+	font-size: medium;
+}
+
+.gadget-content>ol>li {
+	list-style-type: decimal;
+}
+
+.gadget-content>ul>li {
+	list-style-type: disc;
+}
+
+.gadget-form {
+	background: none repeat scroll 0 0 #666666;
+	border-collapse: separate;
+	color: #FFF;
+}
+
+.gadget-form-line td {
+	border-bottom: 1px solid #363636;
+	border-top: 1px solid #999999;
+	padding: 5px;
+	font-size: 11px;
+}
+
+.gadget-form-line .gwt-Label {
+	padding-left: 8px;
+	font-family: Tahoma, Arial, Verdana;
+	font-weight: bold;
+}
+
+.gadget-form .gwt-TextBox {
+	border: 1px solid #FFFFFF;
+	width: 98%;
+}
+
+button {
+	-moz-border-radius: 7px 7px 7px 7px;
+	-moz-box-shadow: 1px 1px 7px #363636;
+	border: 1px solid #99CC00;
+	color: white;
+	cursor: pointer;
+	display: block;
+	font-size: 11px;
+	font-weight: bold;
+	margin: 5px;
+	padding: 0 3px;
+	text-decoration: none;
+	font-family: Trebuchet, Arial, Verdana;
+	background-color: #99CC00;
+	text-transform: uppercase;
+}
+
+.gwt-RichTextArea {
+	border: 0;
+	background-color: #FFF;
+}
+
+button.green {
+	background-color: #99CC00;
+	float: right;
+}
+
+button.red {
+	background-color: #99CC00;
+	float: right;
+}
+
+.clear {
+	clear: both;
+}

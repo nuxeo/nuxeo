@@ -1,5 +1,8 @@
 package org.nuxeo.opensocial.container.client.external.picture;
 
+import org.nuxeo.gwt.habyt.upload.client.FileChanges;
+import org.nuxeo.gwt.habyt.upload.client.core.DefaultUploader;
+import org.nuxeo.gwt.habyt.upload.client.core.SimpleUpload;
 import org.nuxeo.opensocial.container.client.external.GadgetsConstants;
 import org.nuxeo.opensocial.container.client.gadgets.AbstractGadget;
 import org.nuxeo.opensocial.container.client.gadgets.facets.IsClosable;
@@ -38,17 +41,19 @@ public class PictureGadget extends AbstractGadget implements
 
     private Button cancelButton;
 
-    private TextBox sourceTextBox;
+    private SimpleUpload sourceUpload;
 
     private TextBox titleTextBox;
+
+    private TextBox linkTextBox;
+
+    private TextBox legendTextBox;
 
     private Label pictureTitle;
 
     public PictureGadget() {
         layout = new FlowPanel();
-
         enableFrontPanel();
-
         initWidget(layout);
     }
 
@@ -69,7 +74,7 @@ public class PictureGadget extends AbstractGadget implements
         layout.add(image);
     }
 
-    public void enableModifPanel() {
+    public void enableModifPanel(String baseUrl) {
         modifButton = new Button(constants.modify());
         modifButton.setStyleName("green");
         layout.add(modifButton);
@@ -79,28 +84,43 @@ public class PictureGadget extends AbstractGadget implements
         modifPanel.setWidth("100%");
         modifPanel.setVisible(false);
 
+        Label source = new Label(constants.source());
+        sourceUpload = new SimpleUpload(baseUrl + "lmContainer/upload");
+
+        modifPanel.setWidget(0, 0, source);
+        modifPanel.setWidget(0, 1, sourceUpload);
+        modifPanel.getRowFormatter().setStyleName(0, "gadget-form-line");
+
         Label title = new Label(constants.title());
         titleTextBox = new TextBox();
 
-        modifPanel.setWidget(0, 0, title);
-        modifPanel.setWidget(0, 1, titleTextBox);
-        modifPanel.getRowFormatter().setStyleName(0, "gadget-form-line");
+        modifPanel.setWidget(1, 0, title);
+        modifPanel.setWidget(1, 1, titleTextBox);
 
-        Label source = new Label(constants.source());
-        sourceTextBox = new TextBox();
-
-        modifPanel.setWidget(1, 0, source);
-        modifPanel.setWidget(1, 1, sourceTextBox);
         modifPanel.getRowFormatter().setStyleName(1, "gadget-form-line");
+
+        Label link = new Label(constants.link());
+        linkTextBox = new TextBox();
+
+        modifPanel.setWidget(2, 0, link);
+        modifPanel.setWidget(2, 1, linkTextBox);
+        modifPanel.getRowFormatter().setStyleName(2, "gadget-form-line");
+
+        Label legend = new Label(constants.legend());
+        legendTextBox = new TextBox();
+
+        modifPanel.setWidget(3, 0, legend);
+        modifPanel.setWidget(3, 1, legendTextBox);
+        modifPanel.getRowFormatter().setStyleName(3, "gadget-form-line");
 
         cancelButton = new Button(constants.cancel());
         cancelButton.setStyleName("red");
         saveButton = new Button(constants.save());
         saveButton.setStyleName("green");
 
-        modifPanel.setWidget(2, 0, cancelButton);
-        modifPanel.setWidget(2, 1, saveButton);
-        modifPanel.getRowFormatter().setStyleName(2, "gadget-form-line");
+        modifPanel.setWidget(4, 0, cancelButton);
+        modifPanel.setWidget(4, 1, saveButton);
+        modifPanel.getRowFormatter().setStyleName(4, "gadget-form-line");
 
         layout.add(modifPanel);
 
@@ -133,8 +153,16 @@ public class PictureGadget extends AbstractGadget implements
         return titleTextBox;
     }
 
-    public HasText getUrlTextBox() {
-        return sourceTextBox;
+    public HasText getLinkTextBox() {
+        return linkTextBox;
+    }
+
+    public HasText getLegendTextBox() {
+        return legendTextBox;
+    }
+
+    public FileChanges getUploadedFiles() {
+        return ((DefaultUploader) sourceUpload.getUploader()).getChanges();
     }
 
     public void switchToMainPanel() {
@@ -160,4 +188,5 @@ public class PictureGadget extends AbstractGadget implements
 
     public void stopProcessing() {
     }
+
 }

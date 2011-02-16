@@ -13,7 +13,7 @@ public class PictureModel implements HasPermissions {
 
     private Map<String, Boolean> permissions;
 
-    public PictureModel(PictureData data, Map<String, Boolean> permissions) {
+    public PictureModel(PictureData data, Map<String, Boolean> permissions  ) {
         this.data = data;
         this.permissions = permissions;
     }

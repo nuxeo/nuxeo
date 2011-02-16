@@ -71,18 +71,14 @@
 
     <doctype name="WCHtml" extends="File">
       <schema name="webcontent" />
-	  <schema name="gadget" />
-      <schema name="file" />
-      <schema name="files" />
+	    <schema name="gadget" />
       <facet name="Folderish" />
       <schema name="wchtml" />
     </doctype>
 
     <doctype name="WCOpenSocial" extends="File">
       <schema name="webcontent" />
-	  <schema name="gadget" />
-      <schema name="file" />
-      <schema name="files" />
+	    <schema name="gadget" />
       <facet name="Folderish" />
       <schema name="wcopensocial" />
     </doctype>

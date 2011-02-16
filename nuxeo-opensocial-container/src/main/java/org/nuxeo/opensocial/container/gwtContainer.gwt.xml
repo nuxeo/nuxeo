@@ -13,6 +13,8 @@
   <inherits name='net.customware.gwt.dispatch.Dispatch'/>
   <inherits name="com.google.gwt.json.JSON"/>
   <inherits name='org.restlet.GWT'/>
+  <inherits name='org.nuxeo.gwt.habyt.upload.gwt_habyt_upload' />
+  <stylesheet src="NativeRichTextGadget.css"/>
 
   <extend-property name='locale' values='en'/>
   <extend-property name='locale' values='fr'/>

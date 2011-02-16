@@ -72,8 +72,8 @@ public class WebContentTest {
         data = (HTMLData) service.create(data, unit.getId(), session);
         session.save();
 
-        WebContentData dataToTest = service.read(
-                session.getDocument(new IdRef(data.getId())), session);
+        WebContentData dataToTest = service.read(session.getDocument(new IdRef(
+                data.getId())), session);
 
         assertNotNull(dataToTest.getId());
         assertEquals(data.getName(), dataToTest.getName());
@@ -116,7 +116,8 @@ public class WebContentTest {
         PictureData data = (PictureData) initTest(new PictureData());
 
         data.setPictureTitle("picture title");
-        data.setUrl("http://...");
+        data.setPictureLegend("legend");
+        data.setPictureLink("http://");
 
         data = (PictureData) service.create(data, unit.getId(), session);
 
@@ -124,6 +125,7 @@ public class WebContentTest {
                 session.getDocument(new IdRef(data.getId())), session);
 
         assertEquals("picture title", dataToTest.getPictureTitle());
-        assertEquals("http://...", dataToTest.getUrl());
+        assertEquals("legend", dataToTest.getPictureLegend());
+        assertEquals("http://", dataToTest.getPictureLink());
     }
 }

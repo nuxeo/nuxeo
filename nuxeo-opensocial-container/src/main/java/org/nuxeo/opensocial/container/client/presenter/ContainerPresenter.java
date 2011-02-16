@@ -47,6 +47,7 @@ import org.nuxeo.opensocial.container.client.event.priv.model.ZoneUpdatedEvent;
 import org.nuxeo.opensocial.container.client.event.priv.model.ZoneUpdatedEventHandler;
 import org.nuxeo.opensocial.container.client.event.priv.service.WebContentsLoadedEvent;
 import org.nuxeo.opensocial.container.client.event.priv.service.WebContentsLoadedEventHandler;
+import org.nuxeo.opensocial.container.client.external.opensocial.OpenSocialPresenter;
 import org.nuxeo.opensocial.container.client.model.AppModel;
 import org.nuxeo.opensocial.container.client.model.adapter.GwtWebContentAdapter;
 import org.nuxeo.opensocial.container.client.ui.api.HasId;
@@ -87,6 +88,10 @@ import net.customware.gwt.presenter.client.widget.WidgetPresenter;
  */
 public class ContainerPresenter extends
         WidgetPresenter<ContainerPresenter.Display> {
+
+    private static final String CANVAS_VIEW = "canvas";
+
+    protected static final String DEFAULT_VIEW = "default";
 
     public interface Display extends WidgetDisplay {
         void setContainerHeader(boolean headerEnabled, String headerId);
@@ -558,7 +563,7 @@ public class ContainerPresenter extends
                         PortletPresenter gadget = (PortletPresenter) webContentPresenters.get(event.getId());
                         gadget.collapse();
                         model.getWebContent(event.getId()).setIsCollapsed(true);
-                        model.updateWebContent(event.getId());
+                        model.updateWebContent(event.getId(), null);
                     }
                 });
     }
@@ -570,7 +575,7 @@ public class ContainerPresenter extends
                         PortletPresenter gadget = (PortletPresenter) webContentPresenters.get(event.getId());
                         gadget.uncollapse();
                         model.getWebContent(event.getId()).setIsCollapsed(false);
-                        model.updateWebContent(event.getId());
+                        model.updateWebContent(event.getId(), null);
                     }
                 });
     }
@@ -578,10 +583,21 @@ public class ContainerPresenter extends
     private void registerBusEventWebContentPortletMaximization() {
         eventBus.addHandler(MaximizePortletEvent.TYPE,
                 new MaximizePortletEventHandler() {
+                    @SuppressWarnings("unchecked")
                     public void onMaximizeWebContent(MaximizePortletEvent event) {
                         if (!isMaximized) {
-                            WidgetDisplay gadgetView = ((WidgetDisplay) webContentPresenters.get(
-                                    event.getId()).getDisplay());
+                            // TODO We have to handle the different view for the
+                            // gadget. For the time, it is only handle by the
+                            // OpenSocialPresenter !
+                            WidgetPresenter presenter = (WidgetPresenter) webContentPresenters.get(event.getId());
+                            if (presenter instanceof PortletPresenter) {
+                                WidgetPresenter contentPresenter = (WidgetPresenter) ((PortletPresenter) presenter).getContentPresenter();
+                                if (contentPresenter instanceof OpenSocialPresenter) {
+                                    ((OpenSocialPresenter) contentPresenter).setView(CANVAS_VIEW);
+                                }
+                            }
+
+                            WidgetDisplay gadgetView = (WidgetDisplay) presenter.getDisplay();
 
                             WebContentData webContent = model.getWebContent(event.getId());
                             makeNotDraggable(webContent, gadgetView);
@@ -612,8 +628,20 @@ public class ContainerPresenter extends
     private void registerBusEventWebContentPortletMinimization() {
         eventBus.addHandler(MinimizePortletEvent.TYPE,
                 new MinimizePortletEventHandler() {
+                    @SuppressWarnings("unchecked")
                     public void onMinimizeWebContent(MinimizePortletEvent event) {
                         if (isMaximized) {
+                            // TODO We have to handle the different view for the
+                            // gadget. For the time, it is only handle by the
+                            // OpenSocialPresenter !
+                            WidgetPresenter presenter = (WidgetPresenter) webContentPresenters.get(event.getId());
+                            if (presenter instanceof PortletPresenter) {
+                                WidgetPresenter contentPresenter = (WidgetPresenter) ((PortletPresenter) presenter).getContentPresenter();
+                                if (contentPresenter instanceof OpenSocialPresenter) {
+                                    ((OpenSocialPresenter) contentPresenter).setView(DEFAULT_VIEW);
+                                }
+                            }
+
                             WidgetDisplay gadgetView = ((WidgetDisplay) webContentPresenters.get(
                                     event.getId()).getDisplay());
 

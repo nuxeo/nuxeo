@@ -30,7 +30,7 @@ public abstract class AbstractWebContentDAO<T extends WebContentData>
 
         doc = session.createDocument(doc);
 
-        WebContentAdapter adapter = doc.getAdapter(WebContentAdapter.class);
+        WebContentAdapter<T> adapter = doc.getAdapter(WebContentAdapter.class);
         adapter.feedFrom(data);
 
         doc = session.saveDocument(doc);

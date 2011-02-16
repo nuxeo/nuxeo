@@ -12,26 +12,16 @@ public class PictureData extends AbstractWebContentData {
 
     public static final String TITLE_PREFERENCE = "WC_PICTURE_TITLE";
 
-    public static final String URL_PREFERENCE = "WC_PICTURE_URL";
-
     private static final String ICONE_NAME = "photo-icon";
 
     public static String TYPE = "wcpicture";
 
-    private String url;
-
     private String pictureTitle;
+    private String pictureLegend;
+    private String pictureLink;
 
     public PictureData() {
         super();
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
     }
 
     public void setPictureTitle(String pictureTitle) {
@@ -42,14 +32,26 @@ public class PictureData extends AbstractWebContentData {
         return pictureTitle;
     }
 
+    public void setPictureLegend(String pictureLegend) {
+        this.pictureLegend = pictureLegend;
+    }
+
+    public String getPictureLegend() {
+        return pictureLegend;
+    }
+
+    public void setPictureLink(String pictureLink) {
+        this.pictureLink = pictureLink;
+    }
+
+    public String getPictureLink() {
+        return pictureLink;
+    }
+
     @Override
     public boolean initPrefs(Map<String, String> params) {
         if (params.get(TITLE_PREFERENCE) != null) {
             setPictureTitle(params.get(TITLE_PREFERENCE));
-        }
-
-        if (params.get(URL_PREFERENCE) != null) {
-            setUrl(params.get(URL_PREFERENCE));
         }
 
         return super.initPrefs(params);
@@ -67,5 +69,9 @@ public class PictureData extends AbstractWebContentData {
     @Override
     public String getIcon() {
         return ICONE_NAME;
+    }
+
+    public boolean hasFiles() {
+        return true;
     }
 }

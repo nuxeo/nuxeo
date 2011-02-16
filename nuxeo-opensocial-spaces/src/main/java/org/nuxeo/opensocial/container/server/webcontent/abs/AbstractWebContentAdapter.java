@@ -16,13 +16,15 @@ import java.util.Map.Entry;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.opensocial.container.server.webcontent.api.WebContentAdapter;
 import org.nuxeo.opensocial.container.shared.webcontent.WebContentData;
 import org.nuxeo.opensocial.container.shared.webcontent.enume.DefaultPortletPreference;
 
 /**
  * @author Stéphane Fourrier
  */
-public abstract class AbstractWebContentAdapter {
+public abstract class AbstractWebContentAdapter<T extends WebContentData>
+        implements WebContentAdapter<T> {
 
     protected DocumentModel doc;
 
@@ -30,14 +32,52 @@ public abstract class AbstractWebContentAdapter {
         this.doc = doc;
     }
 
+         public void setPosition(long position) throws ClientException {
+        doc.setPropertyValue(WEB_CONTENT_POSITION_PROPERTY, position);
+     }
+
+     public long getPosition() throws ClientException {
+        return (Long) doc.getPropertyValue(WEB_CONTENT_POSITION_PROPERTY);
+    }
+
+    public String getTitle() throws ClientException {
+        return (String) doc.getPropertyValue(WEB_CONTENT_TITLE_PROPERTY);
+    }
+
+    public void setTitle(String title) throws ClientException {
+        doc.setPropertyValue(WEB_CONTENT_TITLE_PROPERTY, title);
+    }
+
+    public long getHeight() throws ClientException {
+        return (Long) doc.getPropertyValue(WEB_CONTENT_HEIGHT_PROPERTY);
+    }
+
+    public void setHeight(long height) throws ClientException {
+        doc.setPropertyValue(WEB_CONTENT_HEIGHT_PROPERTY, height);
+    }
+
+    public boolean isInAPortlet() throws ClientException {
+        return (Boolean) doc.getPropertyValue(WEB_CONTENT_IS_IN_A_PORTLET_PROPERTY);
+    }
+
+    public void setInAPortlet(boolean isInAPortlet) throws ClientException {
+        doc.setPropertyValue(WEB_CONTENT_IS_IN_A_PORTLET_PROPERTY, isInAPortlet);
+    }
+
+    public boolean isCollapsed() throws ClientException {
+        return (Boolean) doc.getPropertyValue(WEB_CONTENT_IS_COLLAPSED_PROPERTY);
+    }
+
+    public void setCollapsed(boolean isCollapsed) throws ClientException {
+        doc.setPropertyValue(WEB_CONTENT_IS_COLLAPSED_PROPERTY, isCollapsed);
+     }
+
     protected void setMetadataFrom(WebContentData data) throws ClientException {
-        doc.setPropertyValue(WEB_CONTENT_TITLE_PROPERTY, data.getTitle());
-        doc.setPropertyValue(WEB_CONTENT_HEIGHT_PROPERTY, data.getHeight());
-        doc.setPropertyValue(WEB_CONTENT_POSITION_PROPERTY, data.getPosition());
-        doc.setPropertyValue(WEB_CONTENT_IS_IN_A_PORTLET_PROPERTY,
-                data.isInAPorlet());
-        doc.setPropertyValue(WEB_CONTENT_IS_COLLAPSED_PROPERTY,
-                data.isCollapsed());
+                setTitle(data.getTitle());
+        setHeight(data.getHeight());
+        setPosition(data.getPosition());
+        setInAPortlet(data.isInAPorlet());
+        setCollapsed(data.isCollapsed());
 
         List<Map<String, Serializable>> preferences = new ArrayList<Map<String, Serializable>>();
 
@@ -58,12 +98,12 @@ public abstract class AbstractWebContentAdapter {
     protected void getMetadataFor(WebContentData data) throws ClientException {
         data.setId(doc.getId());
         data.setName(doc.getName());
-        data.setTitle((String) doc.getPropertyValue(WEB_CONTENT_TITLE_PROPERTY));
+        data.setTitle(getTitle());
         data.setUnitId(doc.getCoreSession().getDocument(doc.getParentRef()).getId());
-        data.setHeight((Long) doc.getPropertyValue(WEB_CONTENT_HEIGHT_PROPERTY));
-        data.setPosition((Long) doc.getPropertyValue(WEB_CONTENT_POSITION_PROPERTY));
-        data.setIsInAPortlet((Boolean) doc.getPropertyValue(WEB_CONTENT_IS_IN_A_PORTLET_PROPERTY));
-        data.setIsCollapsed((Boolean) doc.getPropertyValue(WEB_CONTENT_IS_COLLAPSED_PROPERTY));
+        data.setHeight(getHeight());
+        data.setPosition(getPosition());
+        data.setIsInAPortlet(isInAPortlet());
+        data.setIsCollapsed(isCollapsed());
 
         data.setOwner((String) doc.getPropertyValue("dc:creator"));
         data.setViewer(doc.getCoreSession().getPrincipal().getName());

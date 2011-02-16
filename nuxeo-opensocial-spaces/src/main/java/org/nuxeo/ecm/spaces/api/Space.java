@@ -82,4 +82,5 @@ public interface Space extends SimplePermissionMapper {
 
     void moveWebContent(WebContentData data, String unitId)
             throws ClientException;
+
 }

@@ -1,7 +1,10 @@
 package org.nuxeo.opensocial.container.client.external.opensocial;
 
+import org.nuxeo.opensocial.container.client.ContainerConfiguration;
 import org.nuxeo.opensocial.container.client.ui.api.HasId;
 import org.nuxeo.opensocial.container.shared.PermissionsConstants;
+
+import com.google.gwt.i18n.client.LocaleInfo;
 
 import net.customware.gwt.presenter.client.EventBus;
 import net.customware.gwt.presenter.client.place.Place;
@@ -14,6 +17,10 @@ import net.customware.gwt.presenter.client.widget.WidgetPresenter;
  */
 public class OpenSocialPresenter extends
         WidgetPresenter<OpenSocialPresenter.Display> {
+
+    public static final String OS_LANG_ATTRIBUTE = "lang";
+
+    public static final String OS_VIEW_ATTRIBUTE = "view";
 
     public interface Display extends WidgetDisplay, HasId {
         void setUrl(String url);
@@ -40,11 +47,49 @@ public class OpenSocialPresenter extends
     private void fetchContent() {
         display.setId("open-social-" + model.getData().getId());
         display.setName("open-social-" + model.getData().getId());
+
+        setLanguage();
+
         display.setUrl(model.getData().getFrameUrl());
 
         if (model.hasPermission(PermissionsConstants.EVERYTHING)) {
             display.enableFacets();
         }
+    }
+
+    public void setLanguage() {
+        String locale = LocaleInfo.getCurrentLocale().getLocaleName();
+        String userLanguage = ContainerConfiguration.getUserLanguage();
+        if (userLanguage != null && !userLanguage.isEmpty()) {
+            locale = userLanguage;
+        }
+        model.getData().setFrameUrl(
+                changeParam(model.getData().getFrameUrl(), OS_LANG_ATTRIBUTE,
+                        locale));
+        refreshDisplay();
+    }
+
+    public void setView(String view) {
+        model.getData().setFrameUrl(
+                changeParam(model.getData().getFrameUrl(), OS_VIEW_ATTRIBUTE,
+                        view));
+        refreshDisplay();
+    }
+
+    // Make this method static in order to be easily tested !
+    public static String changeParam(String url, String name, String value) {
+        String temp = new String(url);
+
+        String paramsString = temp.substring(temp.indexOf("?"));
+
+        String[] params = paramsString.split("&");
+        for (String param : params) {
+            if (param.startsWith(name)) {
+                return temp.replace(param, name + "=" + value);
+            }
+        }
+
+        return url;
     }
 
     @Override

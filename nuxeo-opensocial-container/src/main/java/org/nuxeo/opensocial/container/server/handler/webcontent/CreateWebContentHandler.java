@@ -17,6 +17,7 @@ import net.customware.gwt.dispatch.server.ExecutionContext;
  */
 public class CreateWebContentHandler extends
         AbstractActionHandler<CreateWebContent, CreateWebContentResult> {
+
     protected CreateWebContentResult doExecute(CreateWebContent action,
             ExecutionContext context, CoreSession session)
             throws ClientException {

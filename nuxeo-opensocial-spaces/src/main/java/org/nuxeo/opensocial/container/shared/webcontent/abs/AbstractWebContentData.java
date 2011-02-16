@@ -1,7 +1,9 @@
 package org.nuxeo.opensocial.container.shared.webcontent.abs;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.opensocial.container.shared.webcontent.WebContentData;
@@ -40,10 +42,11 @@ public abstract class AbstractWebContentData implements Serializable,
 
     private Map<String, String> preferences;
 
-    private String locale;
+    private transient List<Serializable> files;
 
     public AbstractWebContentData() {
         preferences = new HashMap<String, String>();
+        files = new ArrayList<Serializable>();
     }
 
     public boolean isCollapsed() {
@@ -145,14 +148,6 @@ public abstract class AbstractWebContentData implements Serializable,
         return viewer;
     }
 
-    public String getLocale() {
-        return locale;
-    }
-
-    public void setLocale(String locale) {
-        this.locale = locale;
-    }
-
     public boolean initPrefs(Map<String, String> params) {
         if (params.get(WC_HEIGHT_PREFERENCE) != null) {
             setTitle(params.get(WC_HEIGHT_PREFERENCE));
@@ -168,4 +163,17 @@ public abstract class AbstractWebContentData implements Serializable,
     abstract public String getAssociatedType();
 
     abstract public String getIcon();
+
+    public void addFile(Serializable file) {
+        files.add(file);
+    }
+
+    public void clearFiles() {
+        files.clear();
+    }
+
+    public List<Serializable> getFiles() {
+        return files;
+    }
+
 }

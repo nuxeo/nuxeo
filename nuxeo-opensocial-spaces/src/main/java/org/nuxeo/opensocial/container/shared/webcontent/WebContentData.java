@@ -1,6 +1,7 @@
 package org.nuxeo.opensocial.container.shared.webcontent;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -60,4 +61,12 @@ public interface WebContentData extends Serializable {
     public String getAssociatedType();
 
     public String getIcon();
+
+    public boolean hasFiles();
+
+    public void addFile(Serializable file);
+
+    public void clearFiles();
+
+    public List<Serializable> getFiles();
 }

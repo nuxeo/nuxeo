@@ -108,9 +108,7 @@ public class DocSpaceImpl implements Space {
     }
 
     public boolean isReadOnly() throws ClientException {
-        // return
-        // !doc.getAdapter(DocPermissions.class).hasPermission(SecurityConstants.WRITE);
-        return false;
+        return session().hasPermission(doc.getRef(), SecurityConstants.WRITE);
     }
 
     public DocumentModel getDocument() {
@@ -296,10 +294,6 @@ public class DocSpaceImpl implements Space {
             throws ClientException {
         doc.setPropertyValue("dc:valid", datePublication);
     }
-
-    // public DocPermissions getPermissionsAdapter() {
-    // return doc.getAdapter(DocPermissions.class);
-    // }
 
     // TODO ******************************************************************
 

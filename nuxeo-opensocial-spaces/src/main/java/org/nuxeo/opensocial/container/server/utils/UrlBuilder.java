@@ -54,6 +54,8 @@ public class UrlBuilder {
 
     private static final String LANG_KEY = "lang";
 
+    private static final String DEFAULT_LANG_VALUE = "ALL";
+
     private static final String VIEW_KEY = "view";
 
     private static final String VIEW_VALUE = "default";
@@ -77,7 +79,7 @@ public class UrlBuilder {
     private static int containerId = 0;
 
     public static String buildShindigUrl(OpenSocialData data,
-            String serverBase, String locale) throws ClientException {
+            String serverBase) throws ClientException {
         String gadgetDef = data.getGadgetDef();
 
         StringBuilder sb = new StringBuilder();
@@ -85,8 +87,8 @@ public class UrlBuilder {
         // http://localhost:8080/nuxeo/opensocial/gadgets/ifr?
         sb.append(serverBase + SERVLET_PATH + "?");
 
-        // container=default&nocache=1&country=ALL&lang=ALL&view=default&
-        sb.append(getDefaultParams(locale) + "&");
+        // container=default&nocache=1&country=fr&lang=ALL&view=default&
+        sb.append(getDefaultParams() + "&");
 
         // mid=123456&
         sb.append(GADGET_ID_KEY + "=" + containerId++ + "&");
@@ -119,7 +121,7 @@ public class UrlBuilder {
             sb.append(SECURITY_TOKEN_KEY + "="
                     + getSecurityToken(data, gadgetDef));
         } catch (Exception e) {
-            throw new ClientException("Unable to getSecurity Token", e);
+            log.warn("Unable to get security token");
         }
 
         // #rpctoken=123415
@@ -178,10 +180,10 @@ public class UrlBuilder {
         return prefsParams;
     }
 
-    private static String getDefaultParams(String locale) {
+    private static String getDefaultParams() {
         return CONTAINER_KEY + "=" + CONTAINER_VALUE + "&" + NOCACHE_KEY + "="
                 + NOCACHE_VALUE + "&" + COUNTRY_KEY + "=" + COUNTRY_VALUE + "&"
-                + LANG_KEY + "=" + locale;
+                + LANG_KEY + "=" + DEFAULT_LANG_VALUE + "&" + VIEW_KEY + "=" + VIEW_VALUE;
     }
 
 }

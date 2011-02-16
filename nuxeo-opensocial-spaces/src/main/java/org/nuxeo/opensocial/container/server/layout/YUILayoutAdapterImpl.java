@@ -3,6 +3,7 @@ package org.nuxeo.opensocial.container.server.layout;
 import static org.nuxeo.ecm.spaces.api.Constants.UNIT_DOCUMENT_TYPE;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,10 +12,12 @@ import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.Filter;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.Sorter;
+import org.nuxeo.ecm.spaces.api.Constants;
 import org.nuxeo.opensocial.container.shared.layout.api.YUIBodySize;
 import org.nuxeo.opensocial.container.shared.layout.api.YUIComponent;
 import org.nuxeo.opensocial.container.shared.layout.api.YUIComponentZone;
@@ -49,22 +52,16 @@ public class YUILayoutAdapterImpl implements YUILayoutAdapter {
 
     public static final String YUI_UNIT_ZONE_INDEX_PROPERTY = "yuiunit:zoneIndex";
 
-    private YUILayout layout;
+    public static final String HEADER = "header";
+
+    public static final String FOOTER = "footer";
+
+    public static final String SIDEBAR = "sidebar";
 
     private DocumentModel doc;
 
-    private CoreSession session;
-
     public YUILayoutAdapterImpl(DocumentModel doc) {
-        this.session = doc.getCoreSession();
         this.doc = doc;
-
-        layout = new YUILayoutImpl();
-    }
-
-    public YUILayout getLayout() throws ClientException {
-        mapDataValuesWithLayout();
-        return layout;
     }
 
     public void setBodySize(YUIBodySize size) throws ClientException {
@@ -76,26 +73,25 @@ public class YUILayoutAdapterImpl implements YUILayoutAdapter {
         doc.setPropertyValue(YUI_LAYOUT_SIDEBAR_PROPERTY, sideBar.toString());
 
         if (!sideBar.equals(YUISideBarStyle.YUI_SB_NO_COLUMN)) {
-            try {
-                DocumentModel sideBarDoc;
+            String sidebarPath = doc.getPathAsString() + '/'
+                    + SIDEBAR;
+            DocumentRef sidebarRef = new PathRef(sidebarPath);
 
-                sideBarDoc = session.getChild(doc.getRef(), "sidebar");
-                save();
+            if (session().exists(sidebarRef)) {
+                DocumentModel sideBarDoc = session().getDocument(sidebarRef);
                 return new YUIUnitImpl(sideBarDoc.getId());
-            } catch (ClientException e) {
-                DocumentModel sideBarDoc;
-
-                sideBarDoc = session.createDocumentModel(doc.getPathAsString(),
-                        "sidebar", UNIT_DOCUMENT_TYPE);
-                sideBarDoc = session.createDocument(sideBarDoc);
-                sideBarDoc = session.saveDocument(sideBarDoc);
+            } else {
+                DocumentModel sideBarDoc = session().createDocumentModel(
+                        doc.getPathAsString(), SIDEBAR,
+                        Constants.UNIT_DOCUMENT_TYPE);
+                sideBarDoc = session().createDocument(sideBarDoc);
                 save();
                 return new YUIUnitImpl(sideBarDoc.getId());
             }
         } else {
             PathRef sideBarRef = new PathRef(doc.getPathAsString() + "/sidebar");
-            if (session.exists(sideBarRef)) {
-                session.removeDocument(sideBarRef);
+            if (session().exists(sideBarRef)) {
+                session().removeDocument(sideBarRef);
             }
             save();
             return null;
@@ -105,17 +101,17 @@ public class YUILayoutAdapterImpl implements YUILayoutAdapter {
     public YUIUnit setHeader(YUIUnit header) throws ClientException {
         if (header != null) {
             DocumentModel headerDoc;
-            headerDoc = session.createDocumentModel(doc.getPathAsString(),
-                    "header", UNIT_DOCUMENT_TYPE);
-            headerDoc = session.createDocument(headerDoc);
-            headerDoc = session.saveDocument(headerDoc);
+            headerDoc = session().createDocumentModel(doc.getPathAsString(),
+                    HEADER, UNIT_DOCUMENT_TYPE);
+            headerDoc = session().createDocument(headerDoc);
+            headerDoc = session().saveDocument(headerDoc);
             save();
             ((YUIComponent) header).setId(headerDoc.getId());
             return header;
         } else {
             PathRef headerRef = new PathRef(doc.getPathAsString() + "/header");
-            if (session.exists(headerRef)) {
-                session.removeDocument(headerRef);
+            if (session().exists(headerRef)) {
+                session().removeDocument(headerRef);
             }
             save();
             return null;
@@ -125,17 +121,17 @@ public class YUILayoutAdapterImpl implements YUILayoutAdapter {
     public YUIUnit setFooter(YUIUnit footer) throws ClientException {
         if (footer != null) {
             DocumentModel footerDoc;
-            footerDoc = session.createDocumentModel(doc.getPathAsString(),
-                    "footer", UNIT_DOCUMENT_TYPE);
-            footerDoc = session.createDocument(footerDoc);
-            footerDoc = session.saveDocument(footerDoc);
+            footerDoc = session().createDocumentModel(doc.getPathAsString(),
+                    FOOTER, UNIT_DOCUMENT_TYPE);
+            footerDoc = session().createDocument(footerDoc);
+            footerDoc = session().saveDocument(footerDoc);
             save();
             ((YUIComponent) footer).setId(footerDoc.getId());
             return footer;
         } else {
             PathRef footerRef = new PathRef(doc.getPathAsString() + "/footer");
-            if (session.exists(footerRef)) {
-                session.removeDocument(footerRef);
+            if (session().exists(footerRef)) {
+                session().removeDocument(footerRef);
             }
             save();
             return null;
@@ -158,13 +154,13 @@ public class YUILayoutAdapterImpl implements YUILayoutAdapter {
         for (YUIComponent unitComponent : ((YUIComponent) zone).getComponents()) {
             DocumentModel unitDoc;
 
-            unitDoc = session.createDocumentModel(doc.getPathAsString(),
+            unitDoc = session().createDocumentModel(doc.getPathAsString(),
                     IdUtils.generateStringId(), UNIT_DOCUMENT_TYPE);
 
             unitDoc.setPropertyValue(YUI_UNIT_POSITION_PROPERTY, unitIndex);
             unitDoc.setPropertyValue(YUI_UNIT_ZONE_INDEX_PROPERTY, zoneIndex);
 
-            unitDoc = session.createDocument(unitDoc);
+            unitDoc = session().createDocument(unitDoc);
 
             unitComponent.setId(unitDoc.getId());
 
@@ -190,7 +186,7 @@ public class YUILayoutAdapterImpl implements YUILayoutAdapter {
                 YUIUnitImpl unit = (YUIUnitImpl) ((YUIAbstractComponent) zone).getComponents().get(
                         i);
 
-                session.removeDocument(new IdRef(unit.getId()));
+                session().removeDocument(new IdRef(unit.getId()));
 
                 ((YUIAbstractComponent) zone).getComponents().remove(i);
             }
@@ -199,14 +195,14 @@ public class YUILayoutAdapterImpl implements YUILayoutAdapter {
                 YUIUnitImpl unit = new YUIUnitImpl();
                 zone.addComponent(unit);
 
-                DocumentModel unitDoc = session.createDocumentModel(
+                DocumentModel unitDoc = session().createDocumentModel(
                         doc.getPathAsString(), IdUtils.generateStringId(),
                         UNIT_DOCUMENT_TYPE);
 
                 unitDoc.setPropertyValue(YUI_UNIT_POSITION_PROPERTY, i);
                 unitDoc.setPropertyValue(YUI_UNIT_ZONE_INDEX_PROPERTY, zoneIndex);
 
-                unitDoc = session.createDocument(unitDoc);
+                unitDoc = session().createDocument(unitDoc);
 
                 unit.setId(unitDoc.getId());
             }
@@ -225,7 +221,7 @@ public class YUILayoutAdapterImpl implements YUILayoutAdapter {
 
     @SuppressWarnings({ "serial", "unchecked" })
     public void deleteZone(final int zoneIndex) throws ClientException {
-        for (DocumentModel unitDoc : session.getChildren(doc.getRef(), UNIT_DOCUMENT_TYPE,
+        for (DocumentModel unitDoc : session().getChildren(doc.getRef(), UNIT_DOCUMENT_TYPE,
                 new Filter() {
                     public boolean accept(DocumentModel arg0) {
                         try {
@@ -235,7 +231,7 @@ public class YUILayoutAdapterImpl implements YUILayoutAdapter {
                         }
                     }
                 }, null)) {
-            session.removeDocument(unitDoc.getRef());
+            session().removeDocument(unitDoc.getRef());
         }
 
         List<Map<String, Serializable>> properties = (List<Map<String, Serializable>>) doc.getPropertyValue(YUI_LAYOUT_ZONES_PROPERTY);
@@ -246,7 +242,7 @@ public class YUILayoutAdapterImpl implements YUILayoutAdapter {
     }
 
     public void save() throws ClientException {
-        session.saveDocument(doc);
+        session().saveDocument(doc);
     }
 
     public void initLayout(YUILayout layout) throws ClientException {
@@ -265,29 +261,35 @@ public class YUILayoutAdapterImpl implements YUILayoutAdapter {
         save();
     }
 
+    @SuppressWarnings("unchecked")
     private void cleanLayout() throws ClientException {
         List<Map<String, Serializable>> properties = (List<Map<String, Serializable>>) doc.getPropertyValue(YUI_LAYOUT_ZONES_PROPERTY);
         properties.clear();
         doc.setPropertyValue(YUI_LAYOUT_ZONES_PROPERTY,
                 (Serializable) properties);
 
-        session.removeChildren(doc.getRef());
+        session().removeChildren(doc.getRef());
     }
 
     @SuppressWarnings({ "unchecked", "serial" })
-    private void mapDataValuesWithLayout() throws ClientException {
-        // TODO
-        try {
-            DocumentModel header = session.getChild(doc.getRef(), "header");
-            layout.setHeader(new YUIUnitImpl(header.getId()));
-        } catch (ClientException e) {
+    public YUILayout getLayout() throws ClientException {
+        YUILayout layout = new YUILayoutImpl();
+                String headerPath = doc.getPathAsString() + '/'
+               + HEADER;
+        DocumentRef headerRef = new PathRef(headerPath);
+        if (session().exists(headerRef)) {
+            DocumentModel headerDoc = session().getDocument(headerRef);
+            layout.setHeader(new YUIUnitImpl(headerDoc.getId()));
+        } else {
             layout.setHeader(null);
         }
-        // TODO
-        try {
-            DocumentModel footer = session.getChild(doc.getRef(), "footer");
-            layout.setFooter(new YUIUnitImpl(footer.getId()));
-        } catch (ClientException e) {
+                String footerPath = doc.getPathAsString() + '/'
+                + FOOTER;
+        DocumentRef footerRef = new PathRef(footerPath);
+        if (session().exists(footerRef)) {
+            DocumentModel footerDoc = session().getDocument(footerRef);
+            layout.setFooter(new YUIUnitImpl(footerDoc.getId()));
+        } else {
             layout.setFooter(null);
         }
 
@@ -311,14 +313,16 @@ public class YUILayoutAdapterImpl implements YUILayoutAdapter {
         }
 
         layout.setSideBarStyle(YUISideBarStyle.valueOf((String) doc.getPropertyValue(YUI_LAYOUT_SIDEBAR_PROPERTY)));
-        try {
-            DocumentModel sidebar = session.getChild(doc.getRef(), "sidebar");
+                String sidebarPath = doc.getPathAsString() + '/' + SIDEBAR;
+        DocumentRef sidebarRef = new PathRef(sidebarPath);
+        if(session().exists(sidebarRef)) {
+            DocumentModel sidebar = session().getDocument(sidebarRef);
             layout.setSideBar(new YUIUnitImpl(sidebar.getId()));
-        } catch (ClientException e) {
+        } else {
             layout.setSideBarStyle(YUISideBarStyle.YUI_SB_NO_COLUMN);
         }
 
-        layout.setSideBarStyle(YUISideBarStyle.valueOf((String) doc.getPropertyValue("sidebar")));
+        layout.setSideBarStyle(YUISideBarStyle.valueOf((String) doc.getPropertyValue(SIDEBAR)));
 
         List<Map<String, Serializable>> properties = (List<Map<String, Serializable>>) doc.getPropertyValue(YUI_LAYOUT_ZONES_PROPERTY);
 
@@ -327,22 +331,17 @@ public class YUILayoutAdapterImpl implements YUILayoutAdapter {
             final YUIComponentZoneImpl zone = new YUIComponentZoneImpl(template);
             layout.getContent().addComponent(zone);
 
-            for (DocumentModel unitDoc : session.getChildren(doc.getRef(),
+            for (DocumentModel unitDoc : session().getChildren(doc.getRef(),
                     UNIT_DOCUMENT_TYPE, new Filter() {
-                        public boolean accept(DocumentModel arg0) {
-                            try {
-                                return layout.getContent().getComponents().indexOf(
-                                        zone) == ((Long) arg0.getPropertyValue(YUI_UNIT_ZONE_INDEX_PROPERTY))
-                                        && !"header".equals(arg0.getName())
-                                        && !"footer".equals(arg0.getName())
-                                        && !"sidebar".equals(arg0.getName());
-                            } catch (Exception e) {
-                                return false;
-                            }
-                        }
+                        public boolean accept(DocumentModel doc) {
+                            List<String> specialUnits = Arrays.asList(HEADER,
+                                    FOOTER,
+                                    SIDEBAR);
+                            return !specialUnits.contains(doc.getName());
+                         }
                     }, new Sorter() {
                         public int compare(DocumentModel doc1,
-                                DocumentModel doc2) {
+                                           DocumentModel doc2) {
                             Long pos1;
                             Long pos2;
                             try {
@@ -357,5 +356,11 @@ public class YUILayoutAdapterImpl implements YUILayoutAdapter {
                 zone.addComponent(new YUIUnitImpl(unitDoc.getId()));
             }
         }
+        return layout;
     }
+
+    private CoreSession session() {
+        return doc.getCoreSession();
+    }
+
 }

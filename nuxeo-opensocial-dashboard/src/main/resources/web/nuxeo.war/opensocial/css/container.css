@@ -214,7 +214,7 @@ html,body {
 	text-align: center;
 }
 
-.folder .name, .folder-preview .name, .folder-preview .creator {
+.folder .name,.folder-preview .name,.folder-preview .creator {
 	color: #FFF;
 	font-size: 11px;
 	font-weight: bold;
@@ -229,9 +229,150 @@ html,body {
 	opacity: 0.97;
 }
 
-.header>.flash-icon {
-	background: url("gadgets/flash-icon.png") no-repeat scroll -1px 1px
-		transparent;
+.header-color-FF0000 {
+	background: -moz-linear-gradient(center top, #FF0000 0%, #FF0000 100%)
+		repeat scroll 0 0 transparent;
+}
+
+.header-color-FF0066 {
+
+
+	background: -moz-linear-gradient(center top, #FF0066 0%, #FF0066 100%)
+
+
+
+
+
+
+		repeat scroll 0 0 transparent;
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+.header-color-FF6600 {
+	background: -moz-linear-gradient(center top, #FF6600 0%, #FF6600 100%)
+		repeat scroll 0 0 transparent;
+}
+
+.header-color-99CC00 {
+	background: -moz-linear-gradient(center top, #99CC00 0%, #99CC00 100%)
+		repeat scroll 0 0 transparent;
+}
+
+.header-color-66CCFF {
+	background: -moz-linear-gradient(center top, #66CCFF 0%, #66CCFF 100%)
+		repeat scroll 0 0 transparent;
+}
+
+.header-color-999999 {
+	background: -moz-linear-gradient(center top, #999999 0%, #999999 100%)
+		repeat scroll 0 0 transparent;
+}
+
+.header-color-CCCCCC {
+	background: -moz-linear-gradient(center top, #CCCCCC 0%, #CCCCCC 100%)
+		repeat scroll 0 0 transparent;
+}
+
+.header-color-FFFFFF {
+	background: -moz-linear-gradient(center top, #FFFFFF 0%, #FFFFFF 100%)
+		repeat scroll 0 0 transparent;
+}
+
+.header-color-none {
+	background: -moz-linear-gradient(center top, #FFFFFF 0%, #CCCCCC 100%)
+		repeat scroll 0 0 transparent;
+}
+
+.border-color-FF0000,.border-color-FF0066,.border-color-FF6600,.border-color-99CC00,.border-color-66CCFF,.border-color-999999,.border-color-CCCCCC,.border-color-FFFFFF,.border-color-none
+	{
+	border-width: 1px;
+	border-style: solid;
+}
+
+.border-color-FF0000 {
+	border-color: #FF0000;
+}
+
+.border-color-FF0066 {
+	border-color: #FF0066;
+}
+
+.border-color-FF6600 {
+	border-color: #FF6600;
+}
+
+.border-color-99CC00 {
+	border-color: #99CC00;
+}
+
+.border-color-66CCFF {
+	border-color: #66CCFF;
+}
+
+.border-color-999999 {
+	border-color: #999999;
+}
+
+.border-color-CCCCCC {
+	border-color: #CCCCCC;
+}
+
+.border-color-FFFFFF {
+	border-color: #FFFFFF;
+}
+
+.border-color-none {
+	border-style: none;
+}
+
+.title-color-FF0000 {
+	color: #FF0000;
+}
+
+.title-color-FF0066 {
+	color: #FF0066;
+}
+
+.title-color-FF6600 {
+	color: #FF6600;
+}
+
+.title-color-99CC00 {
+	color: #99CC00;
+}
+
+.title-color-66CCFF {
+	color: #66CCFF;
+}
+
+.title-color-999999 {
+	color: #999999;
+}
+
+.title-color-CCCCCC {
+	color: #CCCCCC;
+}
+
+.title-color-FFFFFF {
+	color: #FFFFFF;
+}
+
+.title-color-none {
+	color: #13506B;
 }
 
 .header>.caclulette-icon {

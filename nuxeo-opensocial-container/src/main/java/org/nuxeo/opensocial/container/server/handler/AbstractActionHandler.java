@@ -1,15 +1,24 @@
 package org.nuxeo.opensocial.container.server.handler;
 
+import java.io.IOException;
+
+import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.spaces.api.Space;
 import org.nuxeo.ecm.spaces.api.SpaceManager;
+import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.opensocial.container.client.rpc.AbstractAction;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.streaming.ByteArraySource;
+import org.nuxeo.runtime.services.streaming.InputStreamSource;
+import org.nuxeo.runtime.services.streaming.StreamSource;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import net.customware.gwt.dispatch.server.ActionHandler;
@@ -43,9 +52,10 @@ public abstract class AbstractActionHandler<T extends AbstractAction<R>, R exten
                 return result;
             } catch (Exception e) {
                 TransactionHelper.setTransactionRollbackOnly();
-                throw new ActionException(
-                        "Error occured during action... rollbacking : "
-                                + e.getMessage(), e);
+                String message = "Error occured during action... rollbacking : "
+                        + e.getMessage();
+                log.error(message, e);
+                throw new ActionException(message, e);
             } finally {
                 TransactionHelper.commitOrRollbackTransaction();
                 CoreInstance.getInstance().close(session);
@@ -90,6 +100,24 @@ public abstract class AbstractActionHandler<T extends AbstractAction<R>, R exten
         } catch (Exception e) {
             throw new ActionException("Unable to get session", e);
         }
+    }
+
+    protected static Blob getBlob(FileItem item) {
+        StreamSource src;
+        if (item.isInMemory()) {
+            src = new ByteArraySource(item.get());
+        } else {
+            try {
+                src = new InputStreamSource(item.getInputStream());
+            } catch (IOException e) {
+                throw WebException.wrap("Failed to get blob data", e);
+            }
+        }
+        String ctype = item.getContentType();
+        StreamingBlob blob = new StreamingBlob(src,
+                ctype == null ? "application/octet-stream" : ctype);
+        blob.setFilename(item.getName());
+        return blob;
     }
 
 }

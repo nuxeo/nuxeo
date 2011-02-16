@@ -417,8 +417,7 @@ public class ContainerBuilderPresenter extends
 
                             display.setSizePanelVisible(true);
                             if (bodySize.getSize() == -1) {
-                                display.getCustomSizeTextBox().setValue(
-                                        String.valueOf("unknown"));
+                                display.getCustomSizeTextBox().setValue("");
                             } else {
                                 display.getCustomSizeTextBox().setValue(
                                         String.valueOf(bodySize.getSize()));

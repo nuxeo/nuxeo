@@ -2,7 +2,7 @@ package org.nuxeo.opensocial.container.client.view;
 
 import org.nuxeo.opensocial.container.client.presenter.PortletPresenter;
 
-import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.dom.client.MouseMoveEvent;
@@ -25,6 +25,12 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class PortletWidget extends Composite implements
         PortletPresenter.Display {
+
+    private static final String BORDER_COLOR_PREFIX_CSS = "border-color-";
+
+    private static final String HEADER_COLOR_PREFIX_CSS = "header-color-";
+
+    private static final String TITLE_COLOR_PREFIX_CSS = "title-color-";
 
     private FlowPanel portletPanel;
 
@@ -116,7 +122,7 @@ public class PortletWidget extends Composite implements
     public void setBorderColor(String color) {
         if (color != null) {
             this.getElement().getStyle().setBorderColor(color);
-            this.getElement().getStyle().setBorderWidth(1, Unit.PX);
+            this.getElement().getStyle().setBorderWidth(1, Style.Unit.PX);
         } else {
             this.getElement().getStyle().clearBorderColor();
             this.getElement().getStyle().clearBorderWidth();

@@ -74,16 +74,20 @@ public class PortletPresenter extends WidgetPresenter<PortletPresenter.Display> 
         fetchLayoutContent();
     }
 
-    private void fetchLayoutContent() {
-        display.addContent(((WidgetDisplay) contentPresenter.getDisplay()).asWidget());
+    public Presenter getContentPresenter() {
+        return contentPresenter;
+    }
 
-        display.setBorderColor(data.getPreferences().get(
+    private void fetchLayoutContent() {
+        display.addContent(((WidgetDisplay) getContentPresenter().getDisplay()).asWidget());
+
+        setBorderColor(data.getPreferences().get(
                 DefaultPortletPreference.WC_BORDER_COLOR.toString()));
 
-        display.setHeaderColor(data.getPreferences().get(
+        setHeaderColor(data.getPreferences().get(
                 DefaultPortletPreference.WC_HEADER_COLOR.toString()));
 
-        display.setTitleColor(data.getPreferences().get(
+        setTitleColor(data.getPreferences().get(
                 DefaultPortletPreference.WC_TITLE_COLOR.toString()));
 
         display.setId(data.getId());
@@ -96,7 +100,7 @@ public class PortletPresenter extends WidgetPresenter<PortletPresenter.Display> 
 
         display.setIcon(data.getIcon());
 
-        final HasFacets content = ((HasFacets) ((WidgetDisplay) contentPresenter.getDisplay()).asWidget());
+        final HasFacets content = ((HasFacets) ((WidgetDisplay) getContentPresenter().getDisplay()).asWidget());
         for (final Facet facet : content.getFacets()) {
             display.addTool(facet.asWidget());
 
@@ -218,7 +222,7 @@ public class PortletPresenter extends WidgetPresenter<PortletPresenter.Display> 
 
     public void refreshDisplay() {
         display.setTitle(data.getTitle());
-        contentPresenter.refreshDisplay();
+        getContentPresenter().refreshDisplay();
     }
 
     public void revealDisplay() {

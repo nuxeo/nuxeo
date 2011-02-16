@@ -30,12 +30,11 @@ public class Color extends Composite implements HasClickHandlers, HasColor {
 
     public Color(ColorsEnum color, boolean isSelected) {
         this.isSelected = isSelected;
-        if (color.equals(ColorsEnum.TRANSPARENT)) {
+        if (color.equals(ColorsEnum.NONE)) {
             widget = new Image(ImageBundle.INSTANCE.colorNone().getURL());
         } else {
             widget = new SimplePanel();
-            widget.getElement().getStyle().setBackgroundColor(
-                    color.getCssColor());
+            widget.getElement().getStyle().setBackgroundColor("#" + color.getCssColor());
         }
         this.color = color.getCssColor();
         init();
