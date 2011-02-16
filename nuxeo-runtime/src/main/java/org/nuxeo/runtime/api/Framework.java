@@ -35,6 +35,7 @@ import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.RuntimeServiceEvent;
 import org.nuxeo.runtime.RuntimeServiceListener;
 import org.nuxeo.runtime.ServiceManager;
+import org.nuxeo.runtime.api.login.LoginAs;
 import org.nuxeo.runtime.api.login.LoginService;
 
 /**
@@ -205,6 +206,19 @@ public final class Framework {
             return loginService.loginAs(username);
         }
         return null;
+    }
+
+    /**
+     * Login in the system as the given user without checking the password.
+     *
+     * @param username the user name to login as.
+     * @return the login context
+     * @throws LoginException if any error occurs
+     *
+     * @since 5.4.1
+     */
+    public static LoginContext loginAsUser(String username) throws LoginException {
+        return getLocalService(LoginAs.class).loginAs(username);
     }
 
     /**
