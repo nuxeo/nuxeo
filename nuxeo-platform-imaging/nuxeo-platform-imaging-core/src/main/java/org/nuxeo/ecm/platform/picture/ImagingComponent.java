@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.picture;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,6 +29,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
 import org.nuxeo.ecm.platform.picture.api.ImageInfo;
 import org.nuxeo.ecm.platform.picture.api.ImagingConfigurationDescriptor;
 import org.nuxeo.ecm.platform.picture.api.ImagingService;
@@ -230,9 +232,11 @@ public class ImagingComponent extends DefaultComponent implements
         try {
             blob.transferTo(tmpFile);
             imageInfo = ImageIdentifier.getInfo(tmpFile.getAbsolutePath());
-        } catch (Exception e) {
-            log.error("Failed to get the ImageInfo for file"
-                    + blob.getFilename(), e);
+        } catch (CommandNotAvailable e) {
+            log.error("Failed to get ImageInfo for file " + blob.getFilename(),
+                    e);
+        } catch (IOException e) {
+            log.error("Failed to tranfert file " + blob.getFilename(), e);
         } finally {
             tmpFile.delete();
         }
