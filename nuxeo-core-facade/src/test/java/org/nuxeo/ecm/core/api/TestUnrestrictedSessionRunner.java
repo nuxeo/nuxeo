@@ -22,25 +22,54 @@ import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 
+/**
+ * Test unrestricted session runner to check iso functionnality with and without
+ * JCA
+ *
+ * @see TestUnrestrictedSessionRunnerJCA
+ */
 public class TestUnrestrictedSessionRunner extends SQLRepositoryTestCase {
+
+    private static final String DOC_NAME = "doc";
 
     public static final String DC_TITLE = "dc:title";
 
     public static final String NEW_TITLE = "new title";
 
     public void testUnrestrictedPropertySetter() throws Exception {
-        run(openSessionAs("bob"));
+        seeDocCreatedByUnrestricted(openSessionAs("bob"));
+    }
+
+    public void _testUnrestrictedSessionSeesDocCreatedBefore() throws Exception {
+        unrestrictedSeesDocCreatedBefore(openSessionAs("Administrator"));
     }
 
     /**
-     * Actual test. Also run in JCA mode.
+     * Actual test. Also run in JCA mode. An unrestrictetd session creates a doc
+     * then the calling session try to access it.
      */
-    public static void run(CoreSession session) throws Exception {
+    public static void seeDocCreatedByUnrestricted(CoreSession session)
+            throws Exception {
         UnrestrictedPropertySetter setter = new UnrestrictedPropertySetter(
                 session);
         setter.runUnrestricted();
         DocumentModel doc = session.getDocument(setter.docRef);
         assertEquals(doc.getPropertyValue(DC_TITLE), NEW_TITLE);
+    }
+
+    /**
+     * Actual test. Also run in JCA mode. A session creates a doc, the call an
+     * unrestricted session that modifies it.
+     */
+    public static void unrestrictedSeesDocCreatedBefore(CoreSession session)
+            throws Exception {
+        DocumentModel doc = session.createDocumentModel("/", DOC_NAME, "File");
+        doc = session.createDocument(doc);
+        // session.save(); otherwise the unrestricted session won't see the doc
+        UnrestrictedDocumentReader reader = new UnrestrictedDocumentReader(
+                session, doc.getRef());
+        reader.runUnrestricted();
+        assertEquals(DOC_NAME, reader.getName());
     }
 
     protected static class UnrestrictedPropertySetter extends
@@ -59,10 +88,33 @@ public class TestUnrestrictedSessionRunner extends SQLRepositoryTestCase {
             ACL acl = acp.getOrCreateACL("LOCAL");
             acl.add(new ACE("bob", SecurityConstants.READ_WRITE, true));
             session.setACP(rootRef, acp, true);
-            DocumentModel doc = session.createDocumentModel("/", "doc", "File");
+            DocumentModel doc = session.createDocumentModel("/", DOC_NAME,
+                    "File");
             doc.setPropertyValue(DC_TITLE, NEW_TITLE);
             doc = session.createDocument(doc);
             docRef = doc.getRef();
+        }
+    }
+
+    protected static class UnrestrictedDocumentReader extends
+            UnrestrictedSessionRunner {
+        private DocumentRef ref;
+
+        private String name;
+
+        public UnrestrictedDocumentReader(CoreSession session, DocumentRef ref) {
+            super(session);
+            this.ref = ref;
+        }
+
+        @Override
+        public void run() throws ClientException {
+            DocumentModel doc = session.getDocument(ref);
+            name = doc.getName();
+        }
+
+        public String getName() {
+            return name;
         }
     }
 
