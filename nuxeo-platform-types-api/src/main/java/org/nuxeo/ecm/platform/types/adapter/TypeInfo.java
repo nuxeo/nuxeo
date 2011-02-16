@@ -85,10 +85,16 @@ public interface TypeInfo {
     Map<String, SubType> getAllowedSubTypes();
 
     /**
-     * Return content views defined on this document type for given category
+     * Returns content views defined on this document type for given category
      *
      * @since 5.4
      */
     String[] getContentViews(String category);
 
+    /**
+     * Returns content views defined on this document type for all categories.
+     *
+     * @since 5.4.1
+     */
+    Map<String, String[]> getContentViews();
 }
