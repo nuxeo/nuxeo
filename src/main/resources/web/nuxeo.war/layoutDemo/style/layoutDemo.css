@@ -5,6 +5,10 @@
 /* Remove default padding from Nuxeo Galaxy Theme
  But nxStylenumber changes each time, so workaround (that impacts header & footer) */
 
+body tbody:first-child tr:first-child td:first-child {
+  border:none;  
+}
+
 body tbody:first-child tr:first-child td:first-child div:first-child {
   padding:0px;  
 }
