@@ -1,33 +1,35 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>org.nuxeo.ecm</groupId>
+  <parent>
+    <groupId>org.nuxeo.ecm.distribution</groupId>
+    <artifactId>nuxeo-distribution</artifactId>
+    <version>5.4.1-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+
   <artifactId>nuxeo-startup-wizard</artifactId>
   <name>Nuxeo Startup Wizard</name>
   <description>Nuxeo Startup Wizard WebApp</description>
-  <version>5.4.1-SNAPSHOT</version>
   <packaging>war</packaging>
 
   <dependencies>
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>servlet-api</artifactId>
-      <version>2.4</version>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>commons-logging</groupId>
       <artifactId>commons-logging</artifactId>
-      <version>1.1</version>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>commons-codec</groupId>
       <artifactId>commons-codec</artifactId>
-      <version>1.4</version>
-      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-launcher-commons</artifactId>
     </dependency>
   </dependencies>
 
@@ -35,16 +37,7 @@
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <source>1.6</source>
-          <target>1.6</target>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
-        <version>2.1</version>
         <executions>
           <execution>
             <id>copy-installed</id>
@@ -57,18 +50,14 @@
                 <artifactItem>
                   <groupId>javax.servlet</groupId>
                   <artifactId>jstl</artifactId>
-                  <version>1.1.2</version>
-                  <type>jar</type>
                 </artifactItem>
                 <artifactItem>
                   <groupId>taglibs</groupId>
                   <artifactId>standard</artifactId>
-                  <version>1.1.2</version>
                 </artifactItem>
                 <artifactItem>
                   <groupId>commons-codec</groupId>
                   <artifactId>commons-codec</artifactId>
-                  <version>1.4</version>
                 </artifactItem>
               </artifactItems>
               <outputDirectory>
@@ -77,11 +66,6 @@
             </configuration>
           </execution>
         </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-war-plugin</artifactId>
-        <version>2.1-beta-1</version>
       </plugin>
     </plugins>
   </build>

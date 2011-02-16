@@ -91,7 +91,7 @@ public class NuxeoJBossLauncher extends NuxeoLauncher {
     }
 
     @Override
-    protected void startWizard() {
+    protected void prepareWizardStart() {
         // Nothing to do
     }
 

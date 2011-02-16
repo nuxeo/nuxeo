@@ -76,7 +76,7 @@ public class NuxeoJettyLauncher extends NuxeoLauncher {
     }
 
     @Override
-    protected void startWizard() {
+    protected void prepareWizardStart() {
         // Nothing to do
     }
 

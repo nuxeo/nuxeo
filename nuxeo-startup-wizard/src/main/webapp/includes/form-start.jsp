@@ -1,2 +1,2 @@
 <%@ include file="feedback.jsp" %>
-<form action="<%=contextPath%>/<%=currentPage.getAction()%>" method="POST">
+<form id="wizardform" action="<%=contextPath%>/<%=currentPage.getAction()%>" method="POST">
