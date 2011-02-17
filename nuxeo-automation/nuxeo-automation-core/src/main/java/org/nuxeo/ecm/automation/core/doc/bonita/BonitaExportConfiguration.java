@@ -42,11 +42,11 @@ public class BonitaExportConfiguration {
     // reserved field name for output
     static String NUXEO_AUTOMATION_RESULT = "nuxeoAutomationResult";
 
-    public String getConnectorId(String operationId) {
+    public static String getConnectorId(String operationId) {
         return "Nuxeo" + operationId + "Connector";
     }
 
-    public String getSetterName(String fieldName) {
+    public static String getSetterName(String fieldName) {
         String res = "set" + fieldName.substring(0).toUpperCase();
         if (fieldName.length() > 1) {
             res += fieldName.substring(1);
@@ -54,7 +54,7 @@ public class BonitaExportConfiguration {
         return res;
     }
 
-    public String getGetterName(String fieldName) {
+    public static String getGetterName(String fieldName) {
         String res = "get" + fieldName.substring(0).toUpperCase();
         if (fieldName.length() > 1) {
             res += fieldName.substring(1);
