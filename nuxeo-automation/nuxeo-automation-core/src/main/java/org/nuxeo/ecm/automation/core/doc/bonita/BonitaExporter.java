@@ -57,8 +57,6 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class BonitaExporter {
 
-    public static final String ENCODING = "UTF-8";
-
     public static final String ZIP_ENTRY_ENCODING_PROPERTY = "zip.entry.encoding";
 
     public static enum ZIP_ENTRY_ENCODING_OPTIONS {
@@ -69,15 +67,15 @@ public class BonitaExporter {
 
     public static String getJavaClass(OperationDocumentation doc)
             throws IOException {
-        BonitaExportConfiguration conf = new BonitaExportConfiguration();
-        BonitaJavaExporter exporter = new BonitaJavaExporter(conf, doc);
+        BonitaOperationDocumentation op = new BonitaOperationDocumentation(doc);
+        BonitaJavaExporter exporter = new BonitaJavaExporter(op);
         return exporter.run();
     }
 
     public static String getXMLDescription(OperationDocumentation doc)
             throws IOException, UnsupportedEncodingException {
-        BonitaExportConfiguration conf = new BonitaExportConfiguration();
-        BonitaXMLExporter exporter = new BonitaXMLExporter(conf, doc);
+        BonitaOperationDocumentation op = new BonitaOperationDocumentation(doc);
+        BonitaXMLExporter exporter = new BonitaXMLExporter(op);
         return exporter.run();
     }
 
@@ -139,7 +137,9 @@ public class BonitaExporter {
     protected static void addToZip(ZipOutputStream zip, byte[] data,
             String path, String content) throws IOException {
         BufferedInputStream buffi = new BufferedInputStream(
-                new ByteArrayInputStream(content.getBytes(ENCODING)), BUFFER);
+                new ByteArrayInputStream(
+                        content.getBytes(BonitaExportConstants.ENCODING)),
+                BUFFER);
         ZipEntry entry = new ZipEntry(path);
         zip.putNextEntry(entry);
         int count = buffi.read(data, 0, BUFFER);

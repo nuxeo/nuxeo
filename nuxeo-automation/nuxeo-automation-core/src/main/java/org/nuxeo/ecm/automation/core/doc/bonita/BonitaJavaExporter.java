@@ -31,26 +31,25 @@ import org.nuxeo.ecm.automation.OperationDocumentation.Param;
  */
 public class BonitaJavaExporter {
 
-    protected final BonitaExportConfiguration configuration;
+    protected final BonitaOperationDocumentation bonitaOperation;
 
     protected final OperationDocumentation operation;
 
-    public BonitaJavaExporter(BonitaExportConfiguration configuration,
-            OperationDocumentation operation) {
+    public BonitaJavaExporter(BonitaOperationDocumentation bonitaOperation) {
         super();
-        this.configuration = configuration;
-        this.operation = operation;
+        this.bonitaOperation = bonitaOperation;
+        this.operation = bonitaOperation.getOperation();
     }
 
     public String run() throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         OutputStreamWriter fw = new OutputStreamWriter(out,
-                BonitaExportConfiguration.ENCODING);
-        fw.write(writePackage(configuration.getDefaultConnectorsPackage()));
-        for (String importLib : configuration.getDefaultImports()) {
+                BonitaExportConstants.ENCODING);
+        fw.write(writePackage(BonitaExportConstants.getDefaultConnectorsPackage()));
+        for (String importLib : BonitaExportConstants.getDefaultImports()) {
             fw.write(writeImport(importLib));
         }
-        fw.write(writeClass(configuration.getConnectorId(operation.id),
+        fw.write(writeClass(bonitaOperation.getConnectorId(operation.id),
                 writeClassBody()));
         fw.close();
         return out.toString();
@@ -58,7 +57,8 @@ public class BonitaJavaExporter {
 
     public String writeClass(String className, StringBuffer classBody) {
         return String.format("public class %s extends %s {\n  %s \n}\n",
-                className, configuration.getDefaultAbstractConnectorClass(),
+                className,
+                BonitaExportConstants.getDefaultAbstractConnectorClass(),
                 classBody);
     }
 
@@ -112,7 +112,8 @@ public class BonitaJavaExporter {
         StringBuffer inputParamBuff = new StringBuffer(" ");
         if (input != null) {
             if (!(outputType instanceof java.util.List<?>)) {
-                // instance new DocRef or new Blob; but Blob seems not supported
+                // instance new DocRef or new Blob; but Blob seems not
+                // supported
                 inputParamBuff.append(".setInput(new DocRef(" + input + "))");
             }
         }

@@ -22,7 +22,7 @@ import java.util.List;
 /**
  * @since 5.4.1
  */
-public class BonitaExportConfiguration {
+public class BonitaExportConstants {
 
     public static final String ENCODING = "UTF-8";
 
@@ -45,26 +45,6 @@ public class BonitaExportConfiguration {
     // reserved field name for output
     static String NUXEO_AUTOMATION_RESULT = "nuxeoAutomationResult";
 
-    public static String getConnectorId(String operationId) {
-        return "Nuxeo" + operationId + "Connector";
-    }
-
-    public static String getSetterName(String fieldName) {
-        String res = "set" + fieldName.substring(0).toUpperCase();
-        if (fieldName.length() > 1) {
-            res += fieldName.substring(1);
-        }
-        return res;
-    }
-
-    public static String getGetterName(String fieldName) {
-        String res = "get" + fieldName.substring(0).toUpperCase();
-        if (fieldName.length() > 1) {
-            res += fieldName.substring(1);
-        }
-        return res;
-    }
-
     public static String getDefaultConnectorsPackage() {
         return "org.bonitasoft.connectors.nuxeo";
     }
@@ -81,4 +61,5 @@ public class BonitaExportConfiguration {
     public static String getDefaultAbstractConnectorClass() {
         return "AbstractNuxeoProcessConnector";
     }
+
 }
