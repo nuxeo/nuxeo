@@ -42,6 +42,9 @@ public class TestFileUpload extends AbstractTest {
         LoginPage loginPage = PageFactory.initElements(driver, LoginPage.class);
         DocumentBasePage documentBasePage = loginPage.login("Administrator",
                 "Administrator", DocumentBasePage.class);
+        // Get the the content tab and go to the existing Workspace root folder
+        documentBasePage = documentBasePage.getContentTab().goToDocument(
+                "Workspaces");
 
 
     }
