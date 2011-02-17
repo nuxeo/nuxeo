@@ -18,7 +18,7 @@
         <td class="adminTabsColumn">
           <ui:include src="/incl/user_center_view_selector.xhtml"/>
         </td>
-        <c:if test="#{currentUserCenterView}">
+        <c:if test="#{not empty currentUserCenterView}">
           <td class="adminContentColumn">
             <ui:include src="#{currentUserCenterView.link}"/>
           </td>

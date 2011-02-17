@@ -14,6 +14,7 @@
 
   <modules>
     <module>nuxeo-user-center</module>
+    <module>nuxeo-user-dashboard</module>
     <module>nuxeo-usersettings</module>
   </modules>
 
@@ -22,6 +23,16 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-user-center</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-user-dashboard</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.opensocial</groupId>
+        <artifactId>nuxeo-opensocial-spaces</artifactId>
         <version>${nuxeo.features.version}</version>
       </dependency>
     </dependencies>

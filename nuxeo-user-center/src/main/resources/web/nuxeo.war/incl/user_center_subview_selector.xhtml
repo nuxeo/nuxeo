@@ -5,20 +5,15 @@
   xmlns:c="http://java.sun.com/jstl/core"
   class="tabsBar">
 
-  <nxu:set var="availableSubActions" value="#{userCenterViews.availableSubActions}">
+  <h:form>
+    <nxu:dataList layout="unorderedList" var="userCenterSubTab" value="#{userCenterViews.availableSubActions}"
+      itemStyleClass="#{nxu:test(userCenterViews.currentSubViewId == userCenterSubTab.id, 'selected', '')}">
 
-    <c:if test="#{availableSubActions.size > 1}">
-      <h:form>
-        <nxu:dataList layout="unorderedList" var="userCenterSubTab" value="#{availableSubActions}"
-          itemStyleClass="#{nxu:test(userCenterViews.currentSubViewId == userCenterSubTab.id, 'selected', '')}">
+      <a4j:commandLink action="#{userCenterViews.setCurrentSubViewId(userCenterSubTab.id)}" immediate="true" reRender="user_center_subtab">
+        <h:outputText value="#{messages[userCenterSubTab.label]}" />
+      </a4j:commandLink>
 
-          <a4j:commandLink action="#{userCenterViews.setCurrentSubViewId(userCenterSubTab.id)}" immediate="true" reRender="user_center_subtab">
-            <h:outputText value="#{messages[userCenterSubTab.label]}" />
-          </a4j:commandLink>
+    </nxu:dataList>
+  </h:form>
 
-        </nxu:dataList>
-      </h:form>
-    </c:if>
-
-  </nxu:set>
 </div>

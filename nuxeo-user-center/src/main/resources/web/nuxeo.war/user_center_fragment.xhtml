@@ -12,7 +12,12 @@
      <a4j:outputPanel id="user_center_subtab">
 
       <ui:include src="/incl/message_banner.xhtml"/>
-      <ui:include src="/incl/user_center_subview_selector.xhtml"/>
+
+      <nxu:set var="availableSubActions" value="#{userCenterViews.availableSubActions}">
+        <c:if test="#{availableSubActions.size > 1}">
+          <ui:include src="/incl/user_center_subview_selector.xhtml"/>
+        </c:if>
+      </nxu:set>
 
       <div style="clear:both"></div>
       <div class="tabsContent">
