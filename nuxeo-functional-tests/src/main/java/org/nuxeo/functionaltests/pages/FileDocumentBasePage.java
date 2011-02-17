@@ -14,25 +14,24 @@
  * Contributors:
  *     Sun Seng David TAN <stan@nuxeo.com>
  */
-package org.nuxeo.functionaltests;
+package org.nuxeo.functionaltests.pages;
 
-import org.nuxeo.functionaltests.pages.AbstractPage;
 import org.openqa.selenium.WebDriver;
 
 /**
  * @author Sun Seng David TAN <stan@nuxeo.com>
  *
  */
-public class FileSummaryTabSubPage extends AbstractPage {
+public class FileDocumentBasePage extends DocumentBasePage {
 
     /**
      * @param driver
      */
-    public FileSummaryTabSubPage(WebDriver driver) {
+    public FileDocumentBasePage(WebDriver driver) {
         super(driver);
     }
 
-    public String getMainFile() {
+    public FileSummaryTabSubPage getFileSummaryTab() {
         return null;
     }
 

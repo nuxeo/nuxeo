@@ -14,25 +14,27 @@
  * Contributors:
  *     Sun Seng David TAN <stan@nuxeo.com>
  */
-package org.nuxeo.functionaltests;
+package org.nuxeo.functionaltests.pages;
 
-import org.nuxeo.functionaltests.pages.DocumentBasePage;
+import java.io.File;
+
 import org.openqa.selenium.WebDriver;
 
 /**
  * @author Sun Seng David TAN <stan@nuxeo.com>
- *
+ * 
  */
-public class FileDocumentBasePage extends DocumentBasePage {
+public class FileCreationFormPage extends AbstractPage {
 
     /**
      * @param driver
      */
-    public FileDocumentBasePage(WebDriver driver) {
+    public FileCreationFormPage(WebDriver driver) {
         super(driver);
     }
 
-    public FileSummaryTabSubPage getFileSummaryTab() {
+    public FileDocumentBasePage createFileDocument(String string,
+            String string2, File fileToUpload) {
         return null;
     }
 
