@@ -24,13 +24,12 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
-import org.openqa.selenium.support.PageFactory;
 
 /**
  * Nuxeo default login page. Connect to the login page and login.
- *
+ * 
  * @author Sun Seng David TAN <stan@nuxeo.com>
- *
+ * 
  */
 public class LoginPage {
 
@@ -55,7 +54,7 @@ public class LoginPage {
 
     /**
      * login.jsp
-     *
+     * 
      * @param baseUrl the url to use
      * @param username
      * @param password
@@ -78,6 +77,5 @@ public class LoginPage {
         }
         submitButton.click();
     }
-
 
 }
