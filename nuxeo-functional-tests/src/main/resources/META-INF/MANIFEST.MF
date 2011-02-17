@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo Functional Tests
+Bundle-SymbolicName: org.nuxeo.functionaltests;singleton:=true
+Bundle-Vendor: Nuxeo
