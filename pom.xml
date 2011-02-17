@@ -15,6 +15,7 @@
   <modules>
     <module>nuxeo-user-center</module>
     <module>nuxeo-user-dashboard</module>
+    <module>nuxeo-user-profile</module>
     <module>nuxeo-usersettings</module>
   </modules>
 

@@ -5,19 +5,15 @@
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:c="http://java.sun.com/jstl/core"
-  xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:a4j="https://ajax4jsf.dev.java.net/ajax">
 
      <a4j:outputPanel id="user_center_subtab">
 
       <ui:include src="/incl/message_banner.xhtml"/>
-
-      <nxu:set var="availableSubActions" value="#{userCenterViews.availableSubActions}">
-        <c:if test="#{availableSubActions.size > 1}">
-          <ui:include src="/incl/user_center_subview_selector.xhtml"/>
-        </c:if>
-      </nxu:set>
+      <c:if test="#{userCenterViews.availableSubActions.size > 1}">
+        <ui:include src="/incl/user_center_subview_selector.xhtml"/>
+      </c:if>
 
       <div style="clear:both"></div>
       <div class="tabsContent">
