@@ -67,7 +67,8 @@ public class BonitaExporter {
 
     private static final int BUFFER = 2048;
 
-    public static String getJavaClass(OperationDocumentation doc) {
+    public static String getJavaClass(OperationDocumentation doc)
+            throws IOException {
         BonitaExportConfiguration conf = new BonitaExportConfiguration();
         BonitaJavaExporter exporter = new BonitaJavaExporter(conf, doc);
         return exporter.run();

@@ -80,6 +80,7 @@ public class BonitaExportTest {
                 BonitaExporter.getXMLDescription(getOperationDoc(operationId)));
     }
 
+    @Ignore
     @Test
     public void generateJavaCode() throws Exception {
         String operationId = "Document.Create";

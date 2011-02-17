@@ -16,6 +16,9 @@
  */
 package org.nuxeo.ecm.automation.core.doc.bonita;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @since 5.4.1
  */
@@ -62,4 +65,20 @@ public class BonitaExportConfiguration {
         return res;
     }
 
+    public static String getDefaultConnectorsPackage() {
+        return "org.bonitasoft.connectors.nuxeo";
+    }
+
+    public static List<String> getDefaultImports() {
+        List<String> importsList = new ArrayList<String>();
+        importsList.add("java.util.List");
+        importsList.add("org.nuxeo.ecm.automation.client.jaxrs.Session");
+        importsList.add("org.nuxeo.ecm.automation.client.jaxrs.model.DocRef");
+        importsList.add("org.ow2.bonita.connector.core.ConnectorError");
+        return importsList;
+    }
+
+    public static String getDefaultAbstractConnectorClass() {
+        return "AbstractNuxeoProcessConnector";
+    }
 }
