@@ -51,8 +51,9 @@ public class DocumentBasePage extends AbstractPage {
      *
      * @return
      */
-    public WorkspaceContentTabSubPage getWorkspaceContentTab() {
-        return null;
+    public WorkspaceContentTabSubPage getWorkspaceContentTab() {        
+        contentTabLink.click();
+        return asPage(WorkspaceContentTabSubPage.class);
     }
 
 }
