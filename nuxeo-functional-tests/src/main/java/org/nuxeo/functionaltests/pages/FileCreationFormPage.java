@@ -16,8 +16,6 @@
  */
 package org.nuxeo.functionaltests.pages;
 
-import java.io.File;
-
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -25,7 +23,7 @@ import static junit.framework.Assert.assertNotNull;
 
 /**
  * @author Sun Seng David TAN <stan@nuxeo.com>
- *
+ * 
  */
 public class FileCreationFormPage extends AbstractPage {
 
@@ -37,10 +35,10 @@ public class FileCreationFormPage extends AbstractPage {
 
     @FindBy(id = "document_create:button_create")
     public WebElement createButton;
-    
-    @FindBy(id ="document_create:nxl_file:nxw_file:nxw_file_file:upload")
+
+    @FindBy(id = "document_create:nxl_file:nxw_file:nxw_file_file:upload")
     public WebElement fileInput;
-    
+
     @FindBy(id = "document_create:nxl_file:nxw_file:nxw_file_file:choiceupload")
     public WebElement uploadFileRadioButton;
 
@@ -52,7 +50,7 @@ public class FileCreationFormPage extends AbstractPage {
     }
 
     public FileDocumentBasePage createFileDocument(String title,
-            String description, File fileToUpload) {
+            String description, String fileToUploadPath) {
         assertNotNull(titleTextInput);
         assertNotNull(descriptionTextInput);
         assertNotNull(createButton);
@@ -60,7 +58,7 @@ public class FileCreationFormPage extends AbstractPage {
         titleTextInput.sendKeys(title);
         descriptionTextInput.sendKeys(description);
         uploadFileRadioButton.setSelected();
-        fileInput.sendKeys(fileToUpload.getAbsolutePath());        
+        fileInput.sendKeys(fileToUploadPath);
         createButton.click();
         return asPage(FileDocumentBasePage.class);
     }

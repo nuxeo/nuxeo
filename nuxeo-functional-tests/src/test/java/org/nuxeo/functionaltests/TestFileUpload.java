@@ -18,8 +18,9 @@
 package org.nuxeo.functionaltests;
 
 import static org.junit.Assert.assertTrue;
-
+import static org.junit.Assert.assertEquals;
 import java.io.File;
+import java.net.URL;
 
 import org.junit.Test;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
@@ -33,7 +34,7 @@ import org.nuxeo.functionaltests.pages.WorkspaceFormPage;
 public class TestFileUpload extends AbstractTest {
 
     @Test
-    public void testLoginPage() {
+    public void testFileUpload() {
         // Get the the content tab and go to the existing Workspace root folder
         DocumentBasePage documentBasePage = login().getContentTab().goToDocument(
                 "Workspaces");
@@ -49,11 +50,23 @@ public class TestFileUpload extends AbstractTest {
 
         // Fill the form and upload the file
         // get a file location from resources
-        File fileToUpload = new File("/etc/hosts");
-
+        String fileToUpload = getFileFromResource("filetoupload.txt");
+        String fileName = fileToUpload.substring(fileToUpload.lastIndexOf(File.separator)+1);
+        
         FileDocumentBasePage fileDocumentBasePage = fileFormPage.createFileDocument(
                 "file title", "file description", fileToUpload);
 
+        String uploadedFileName = fileDocumentBasePage.getFileSummaryTab().getMainContentFileText();
+        assertTrue("The uploaded file name " + uploadedFileName
+                + " didn't match the updated file name",
+                uploadedFileName.contains(fileName));
+    }
+
+    protected String getFileFromResource(String filePath) {
+        ClassLoader cl = Thread.currentThread().getContextClassLoader();
+        URL fileUrl = cl.getResource(filePath);
+        assertEquals("file", fileUrl.getProtocol());
+        return fileUrl.getPath();
 
     }
 
