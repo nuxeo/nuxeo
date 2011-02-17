@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,11 +12,12 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     bstefanescu
+ *     Anahide Tchertchian
  */
 package org.nuxeo.ecm.automation.server.jaxrs.io;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
@@ -28,54 +29,43 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
-import org.nuxeo.ecm.automation.OperationDocumentation;
-import org.nuxeo.ecm.automation.core.doc.JSONExporter;
+import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.ecm.automation.core.doc.BonitaExporter;
 import org.nuxeo.ecm.automation.server.jaxrs.AutomationInfo;
 
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * Produces a zip to be contributed to the Nuxeo Bonita connector.
+ *
+ * @since 5.4.1
  */
 @Provider
-@Produces( { "application/json+nxautomation", "application/json" })
-public class JsonAutomationInfoWriter implements
+@Produces( { "application/bonita+nxautomation", "application/zip" })
+public class BonitaAutomationInfoWriter implements
         MessageBodyWriter<AutomationInfo> {
 
+    @Override
     public long getSize(AutomationInfo arg0, Class<?> arg1, Type arg2,
             Annotation[] arg3, MediaType arg4) {
         return -1;
     }
 
+    @Override
     public boolean isWriteable(Class<?> arg0, Type arg1, Annotation[] arg2,
             MediaType arg3) {
         return AutomationInfo.class.isAssignableFrom(arg0);
     }
 
+    @Override
     public void writeTo(AutomationInfo arg0, Class<?> arg1, Type arg2,
             Annotation[] arg3, MediaType arg4,
             MultivaluedMap<String, Object> arg5, OutputStream arg6)
             throws IOException, WebApplicationException {
-        JSONObject json = new JSONObject();
-        JSONObject paths = new JSONObject();
-        paths.element("login", "login");
-        json.element("paths", paths);
-        // operations
-        JSONArray ops = new JSONArray();
-        for (OperationDocumentation doc : arg0.getOperations()) {
-            JSONObject op = JSONExporter.toJSON(doc);
-            ops.add(op);
+        try {
+            InputStream res = BonitaExporter.toZip();
+            FileUtils.copy(res, arg6);
+        } catch (Exception e) {
+            throw new WebApplicationException(e);
         }
-        json.element("operations", ops);
-        // operation chains
-        JSONArray chains = new JSONArray();
-        for (OperationDocumentation doc : arg0.getChains()) {
-            JSONObject op = JSONExporter.toJSON(doc);
-            op.element("url", "Chain." + doc.id);
-            chains.add(op);
-        }
-        json.element("chains", chains);
-        arg6.write(json.toString(2).getBytes("UTF-8"));
     }
+
 }

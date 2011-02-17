@@ -38,4 +38,6 @@ public interface OperationType {
      */
     AutomationService getService();
 
+    OperationDocumentation getDocumentation();
+
 }
