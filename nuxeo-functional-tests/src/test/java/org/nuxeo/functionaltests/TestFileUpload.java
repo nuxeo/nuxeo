@@ -12,31 +12,24 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Sun Seng David TAN <stan@nuxeo.com>
+ *     Sun Seng David TAN
+ *     Florent Guillaume
  */
 package org.nuxeo.functionaltests;
 
 import org.junit.Test;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
-import org.nuxeo.functionaltests.pages.LoginPage;
 
 /**
- * Testing file upload in nuxeo dm
- *
- * @author Sun Seng David TAN <stan@nuxeo.com>
- *
+ * Test file upload in Nuxeo DM.
  */
 public class TestFileUpload extends AbstractTest {
 
     @Test
     public void testLoginPage() {
-        LoginPage loginPage = get("http://localhost:8080/nuxeo", LoginPage.class);
-        DocumentBasePage documentBasePage = loginPage.login("Administrator",
-                "Administrator", DocumentBasePage.class);
         // Get the the content tab and go to the existing Workspace root folder
-        documentBasePage = documentBasePage.getContentTab().goToDocument(
+        DocumentBasePage documentBasePage = login().getContentTab().goToDocument(
                 "Workspaces");
-
 
     }
 

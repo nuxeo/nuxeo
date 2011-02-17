@@ -25,6 +25,8 @@ import java.net.URL;
 import org.apache.commons.io.IOUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.nuxeo.functionaltests.pages.DocumentBasePage;
+import org.nuxeo.functionaltests.pages.LoginPage;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.support.PageFactory;
@@ -33,6 +35,8 @@ import org.openqa.selenium.support.PageFactory;
  * Base functions for all pages.
  */
 public abstract class AbstractTest {
+
+    public static final String NUXEO_URL = "http://localhost:8080/nuxeo";
 
     private static final String FIREBUG_XPI = "firebug-1.6.2-fx.xpi";
 
@@ -110,6 +114,18 @@ public abstract class AbstractTest {
 
     public static <T> T asPage(Class<T> pageClassToProxy) {
         return PageFactory.initElements(driver, pageClassToProxy);
+    }
+
+    public LoginPage getLoginPage() {
+        return get(NUXEO_URL, LoginPage.class);
+    }
+
+    public DocumentBasePage login() {
+        return login("Administrator", "Administrator");
+    }
+
+    public DocumentBasePage login(String username, String password) {
+        return getLoginPage().login(username, password, DocumentBasePage.class);
     }
 
 }
