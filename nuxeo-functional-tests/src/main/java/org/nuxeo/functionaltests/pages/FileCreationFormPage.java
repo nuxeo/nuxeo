@@ -19,12 +19,30 @@ package org.nuxeo.functionaltests.pages;
 import java.io.File;
 
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+import static junit.framework.Assert.assertNotNull;
 
 /**
  * @author Sun Seng David TAN <stan@nuxeo.com>
- * 
+ *
  */
 public class FileCreationFormPage extends AbstractPage {
+
+    @FindBy(id = "document_create:nxl_heading:nxw_title")
+    public WebElement titleTextInput;
+
+    @FindBy(id = "document_create:nxl_heading:nxw_description")
+    public WebElement descriptionTextInput;
+
+    @FindBy(id = "document_create:button_create")
+    public WebElement createButton;
+    
+    @FindBy(id ="document_create:nxl_file:nxw_file:nxw_file_file:upload")
+    public WebElement fileInput;
+    
+    @FindBy(id = "document_create:nxl_file:nxw_file:nxw_file_file:choiceupload")
+    public WebElement uploadFileRadioButton;
 
     /**
      * @param driver
@@ -33,9 +51,18 @@ public class FileCreationFormPage extends AbstractPage {
         super(driver);
     }
 
-    public FileDocumentBasePage createFileDocument(String string,
-            String string2, File fileToUpload) {
-        return null;
+    public FileDocumentBasePage createFileDocument(String title,
+            String description, File fileToUpload) {
+        assertNotNull(titleTextInput);
+        assertNotNull(descriptionTextInput);
+        assertNotNull(createButton);
+        assertNotNull(fileInput);
+        titleTextInput.sendKeys(title);
+        descriptionTextInput.sendKeys(description);
+        uploadFileRadioButton.setSelected();
+        fileInput.sendKeys(fileToUpload.getAbsolutePath());        
+        createButton.click();
+        return asPage(FileDocumentBasePage.class);
     }
 
 }

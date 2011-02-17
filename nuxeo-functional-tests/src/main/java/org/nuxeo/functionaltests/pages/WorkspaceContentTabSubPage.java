@@ -17,6 +17,8 @@
 package org.nuxeo.functionaltests.pages;
 
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
 
 /**
  * @author Sun Seng David TAN <stan@nuxeo.com>
@@ -24,12 +26,16 @@ import org.openqa.selenium.WebDriver;
  */
 public class WorkspaceContentTabSubPage extends ContentTabSubPage {
 
+    @FindBy(linkText="Create a new workspace")
+    WebElement createNewWorkspaceLink;
+
     public WorkspaceContentTabSubPage(WebDriver driver) {
         super(driver);
     }
 
     public WorkspaceFormPage getWorkspaceCreatePage() {
-        return null;
+        createNewWorkspaceLink.click();
+        return asPage(WorkspaceFormPage.class);
     }
 
 }

@@ -17,21 +17,26 @@
 package org.nuxeo.functionaltests.pages;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import static junit.framework.Assert.assertNotNull;
 
 /**
  * The content tab sub page. Most of the time available for folderish documents
  * and displaying the current document's children
- *
+ * 
  * @author Sun Seng David TAN <stan@nuxeo.com>
- *
+ * 
  */
 public class ContentTabSubPage extends AbstractPage {
 
-    @FindBy(id="document_content")
+    @FindBy(id = "document_content")
     WebElement documentContentForm;
+
+    @FindBy(linkText = "New")
+    WebElement newButton;
 
     public ContentTabSubPage(WebDriver driver) {
         super(driver);
@@ -39,7 +44,7 @@ public class ContentTabSubPage extends AbstractPage {
 
     /**
      * Clicking on one of the child with the title.
-     *
+     * 
      * @param documentTitle
      * @return
      */
@@ -48,8 +53,29 @@ public class ContentTabSubPage extends AbstractPage {
         return asPage(DocumentBasePage.class);
     }
 
-    public <T> T getNewDocumentPage(String string, Class<T> class1) {
-        return null;
-    }
+    /**
+     * Clicks on the new button and select the type of document to create
+     * 
+     * @param docType the document type to create
+     * @param pageClassToProxy The page object type to return
+     * @return The create form page object
+     */
+    public <T> T getDocumentCreatePage(String docType, Class<T> pageClassToProxy) {
+        assertNotNull(newButton);
+        newButton.click();
+        WebElement link = null;
+        for (WebElement element : driver.findElements(By.className("documentType"))) {
+            try {
+                link = element.findElement(By.linkText(docType));
+                break;
+            } catch (NoSuchElementException e) {
+                // next
+            }
 
+        }
+        assertNotNull(link);
+        link.click();
+        return asPage(pageClassToProxy);
+
+    }
 }

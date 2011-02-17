@@ -16,13 +16,24 @@
 package org.nuxeo.functionaltests.pages;
 
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
 
 /**
- *
+ * 
  * @author Sun Seng David TAN <stan@nuxeo.com>
- *
+ * 
  */
 public class WorkspaceFormPage extends AbstractPage {
+
+    @FindBy(id = "document_create:nxl_heading:nxw_title")
+    WebElement titleTextInput;
+
+    @FindBy(id = "document_create:nxl_heading:nxw_description")
+    WebElement descriptionTextInput;
+
+    @FindBy(id = "document_create:button_create")
+    WebElement createButton;
 
     public WorkspaceFormPage(WebDriver driver) {
         super(driver);
@@ -30,7 +41,11 @@ public class WorkspaceFormPage extends AbstractPage {
 
     public DocumentBasePage createNewWorkspace(String workspaceTitle,
             String workspaceDescription) {
-        return null;
+        titleTextInput.sendKeys(workspaceTitle);
+        descriptionTextInput.sendKeys(workspaceDescription);
+        createButton.click();
+
+        return asPage(DocumentBasePage.class);
     }
 
 }

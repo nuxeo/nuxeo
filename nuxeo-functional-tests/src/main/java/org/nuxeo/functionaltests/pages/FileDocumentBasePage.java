@@ -17,6 +17,7 @@
 package org.nuxeo.functionaltests.pages;
 
 import org.openqa.selenium.WebDriver;
+import static junit.framework.Assert.assertNotNull;
 
 /**
  * @author Sun Seng David TAN <stan@nuxeo.com>
@@ -24,15 +25,16 @@ import org.openqa.selenium.WebDriver;
  */
 public class FileDocumentBasePage extends DocumentBasePage {
 
-    /**
-     * @param driver
-     */
+
+
     public FileDocumentBasePage(WebDriver driver) {
         super(driver);
     }
 
     public FileSummaryTabSubPage getFileSummaryTab() {
-        return null;
+        assertNotNull(summaryTabLink);
+        summaryTabLink.click();
+        return asPage(FileSummaryTabSubPage.class);
     }
 
 }
