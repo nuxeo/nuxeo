@@ -83,7 +83,7 @@ public class LoginPage extends AbstractPage {
      * @param password the password
      */
     public void login(String username, String password) {
-        login(username, password, null);
+        login(username, password, (String) null);
     }
 
     /**
@@ -94,7 +94,7 @@ public class LoginPage extends AbstractPage {
      * @param page the next page's class
      * @return the next page
      */
-    public <T> T loginTo(String username, String password, Class<T> page) {
+    public <T> T login(String username, String password, Class<T> page) {
         login(username, password);
         return PageFactory.initElements(driver, page);
     }
