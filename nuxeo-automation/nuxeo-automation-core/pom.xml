@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
@@ -76,7 +77,7 @@
       <groupId>javax.script</groupId>
       <artifactId>script-api</artifactId>
     </dependency>
-    <!-- only for documentation genration -->
+    <!-- only for documentation generation -->
     <dependency>
       <groupId>net.sf.json-lib</groupId>
       <artifactId>json-lib</artifactId>
@@ -86,11 +87,10 @@
       <groupId>net.sf.ezmorph</groupId>
       <artifactId>ezmorph</artifactId>
     </dependency>
-    <!--
-      dependency> <groupId>org.codehaus.jackson</groupId>
-      <artifactId>jackson-core-asl</artifactId> <version>1.4.0</version>
-      <optional>true</optional> </dependency
-    -->
+    <dependency>
+      <groupId>dom4j</groupId>
+      <artifactId>dom4j</artifactId>
+    </dependency>
     <!-- only for tests -->
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
