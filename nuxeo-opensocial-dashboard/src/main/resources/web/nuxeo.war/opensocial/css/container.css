@@ -1,7 +1,6 @@
 @CHARSET "UTF-8";
 
 html,body {
-	width: 100%;
 	height: 100%;
 }
 
@@ -11,7 +10,7 @@ html,body {
 }
 
 .yui-unit {
-  height: 1px;
+	min-height: 1px;
 }
 
 .yui-unit.highLight {
@@ -24,7 +23,8 @@ html,body {
 }
 
 .header .facet {
-	background: transparent url("/nuxeo/opensocial/images/tool-sprites.png") no-repeat scroll 0 0;
+	background: url("/nuxeo/opensocial/images/tool-sprites.png") no-repeat scroll 0 0
+		transparent;
 	cursor: pointer;
 	float: right;
 	height: 16px;
@@ -140,7 +140,7 @@ html,body {
 .preferences-title {
 	width: 273px;
 	height: 18px;
-	background: url("images/text-bg.gif") repeat-x scroll 0 0 #FFFFFF;
+	background: url("/nuxeo/opensocial/images/text-bg.gif") repeat-x scroll 0 0 #FFFFFF;
 	border: 1px solid #B5B8C8;
 	padding: 1px 3px;
 	font: 12px tahoma, arial, helvetica, sans-serif;
@@ -235,32 +235,9 @@ html,body {
 }
 
 .header-color-FF0066 {
-
-
 	background: -moz-linear-gradient(center top, #FF0066 0%, #FF0066 100%)
-
-
-
-
-
-
 		repeat scroll 0 0 transparent;
-
-
-
-
 }
-
-
-
-
-
-
-
-
-
-
-
 
 .header-color-FF6600 {
 	background: -moz-linear-gradient(center top, #FF6600 0%, #FF6600 100%)
@@ -481,8 +458,6 @@ html,body {
 }
 
 
-/* portal.css */
-
 #FKtabs li.welcomePage:before {
 	content: url(../images/theme/icons/home.png);
 }
@@ -667,15 +642,12 @@ ul#managerTabs {
 	-moz-box-shadow: 1px -1px 6px #999;
 	box-shadow: 1px 1px 7px #333;
 	-webkit-box-shadow: 0.1em 0.1em 0.8em #363636;
-	border: 1px solid #D4D0C8;
 	background-color: #EEE;
 	margin-bottom: 0.5em;
 	margin-top: 0.5em;
 }
 
 .widget>.header {
-	color: #13506B;
-	border-bottom: 1px solid #D4D0C8;
 	-moz-border-radius-topleft: 3px;
 	-moz-border-radius-topright: 3px;
 	-webkit-border-top-left-radius: 3px;
@@ -686,8 +658,6 @@ ul#managerTabs {
 	min-height: 1.5em;
 	background: -webkit-gradient(linear, left top, left bottom, color-stop(0, rgb(255,
 		255, 255) ), color-stop(1, rgb(204, 204, 204) ) );
-	background: -moz-linear-gradient(center top, rgb(255, 255, 255) 0%,
-		rgb(204, 204, 204) 100% );
 }
 
 .widget>.content {
@@ -696,7 +666,6 @@ ul#managerTabs {
 	-moz-border-radius-bottomright: 6px;
 	-webkit-border-bottom-left-radius: 6px;
 	-webkit-border-bottom-right-radius: 6px;
-	padding:5px;
 }
 
 .sub_menu {

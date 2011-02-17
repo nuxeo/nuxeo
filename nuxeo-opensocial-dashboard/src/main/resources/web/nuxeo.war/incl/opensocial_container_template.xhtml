@@ -62,8 +62,8 @@
   <ui:insert name="opensocial_container_actions">
     <c:if test="#{not currentUser.anonymous}">
       <ul>
-        <li><button onclick="nuxeo.container.openContainerBuilder();" id="openContainerBuilder" title="#{messages['label.opensocial.container.change.layout']}">#{messages['label.opensocial.container.change.layout']}</button></li>
-        <li><button onclick="showPopup('#{baseURL}site/gadgets/?mode=popup');" title="#{messages['label.opensocial.container.add.gadget']}">#{messages['label.opensocial.container.add.gadget']}</button></li>
+        <li><a onclick="nuxeo.container.openContainerBuilder();" id="openContainerBuilder" title="#{messages['label.opensocial.container.change.layout']}">#{messages['label.opensocial.container.change.layout']}</a></li>
+        <li><a onclick="showPopup('#{baseURL}site/gadgets/?mode=popup');" title="#{messages['label.opensocial.container.add.gadget']}">#{messages['label.opensocial.container.add.gadget']}</a></li>
       </ul>
     </c:if>
   </ui:insert>
