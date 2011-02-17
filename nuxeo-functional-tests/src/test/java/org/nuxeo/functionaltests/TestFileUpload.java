@@ -43,34 +43,6 @@ public class TestFileUpload extends AbstractTest {
         DocumentBasePage documentBasePage = loginPage.login("Administrator",
                 "Administrator", DocumentBasePage.class);
 
-        // Get the the content tab and go to the existing Workspace root folder
-        assertEquals("The current content should be ", "Content",
-                documentBasePage.getActiveTabName());
-        documentBasePage = documentBasePage.getContentTab().goToDocument(
-                "Workspace");
-
-        // create a new workspace in there named workspace1
-        WorkspaceFormPage workspaceCreationFormPage = documentBasePage.getWorkspaceContentTab().getWorkspaceCreatePage();
-        DocumentBasePage workspacePage = workspaceCreationFormPage.createNewWorkspace(
-                "workspace1", "a workspace description");
-
-        // create a new File document by clicking on New and filling file
-        FileCreationFormPage fileFormPage = workspacePage.getContentTab().getNewDocumentPage(
-                "File", FileCreationFormPage.class);
-
-        // Fill the form and upload the file
-        // get a file location from resources
-        File fileToUpload = null;
-
-        FileDocumentBasePage fileDocumentBasePage = fileFormPage.createFileDocument(
-                "file title", "file description", fileToUpload);
-        assertEquals("The current content should be ", "Summary",
-                fileDocumentBasePage.getActiveTabName());
-        String uploadedFileName = fileDocumentBasePage.getFileSummaryTab().getMainFile();
-
-        assertTrue("The uploaded file name " + uploadedFileName
-                + " didn't match the updated file name",
-                fileToUpload.getName().contains(uploadedFileName));
 
     }
 

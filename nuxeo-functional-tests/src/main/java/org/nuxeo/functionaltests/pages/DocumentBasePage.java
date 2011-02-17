@@ -17,6 +17,9 @@
 package org.nuxeo.functionaltests.pages;
 
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
 
 /**
  * The nuxeo main document base page
@@ -26,17 +29,11 @@ import org.openqa.selenium.WebDriver;
  */
 public class DocumentBasePage extends AbstractPage {
 
+    @FindBy(xpath = "//div[@class=\"tabsBar\"]/form/ul/li/a[text()=\"Content\"]")
+    WebElement contentTabLink;
+
     public DocumentBasePage(WebDriver driver) {
         super(driver);
-    }
-
-    /**
-     * Get the current active tab name
-     *
-     * @return
-     */
-    public String getActiveTabName() {
-        return null;
     }
 
     /**
@@ -45,7 +42,8 @@ public class DocumentBasePage extends AbstractPage {
      * @return
      */
     public ContentTabSubPage getContentTab() {
-        return null;
+        contentTabLink.click();
+        return PageFactory.initElements(driver, ContentTabSubPage.class);
     }
 
     /**

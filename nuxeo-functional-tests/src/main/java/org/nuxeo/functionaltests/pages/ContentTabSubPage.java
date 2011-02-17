@@ -16,7 +16,11 @@
  */
 package org.nuxeo.functionaltests.pages;
 
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
 
 /**
  * The content tab sub page. Most of the time available for folderish documents
@@ -27,6 +31,9 @@ import org.openqa.selenium.WebDriver;
  */
 public class ContentTabSubPage extends AbstractPage {
 
+    @FindBy(id="document_content")
+    WebElement documentContentForm;
+    
     public ContentTabSubPage(WebDriver driver) {
         super(driver);
     }
@@ -38,7 +45,8 @@ public class ContentTabSubPage extends AbstractPage {
      * @return
      */
     public DocumentBasePage goToDocument(String documentTitle) {
-        return null;
+        documentContentForm.findElement(By.linkText(documentTitle)).click();
+        return PageFactory.initElements(driver, DocumentBasePage.class);
     }
 
     public <T> T getNewDocumentPage(String string, Class<T> class1) {
