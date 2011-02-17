@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<component name="org.nuxeo.ecm.usersettings.web.api.ecmtypes">
+
+	<require>org.nuxeo.ecm.platform.types</require>
+
+	<extension target="org.nuxeo.ecm.platform.types.TypeService"
+		point="types">
+
+		<type id="UserSettings">
+			<label>label.usersettings</label>
+			<icon>/icons/file.gif</icon>
+			<bigIcon>/icons/file_100.png</bigIcon>
+			<description>usersettings.description</description>
+			<category>SimpleDocument</category>
+			<default-view>view_documents</default-view>
+			<layouts mode="any">
+				<layout>usersettings</layout>
+			</layouts>
+		</type>
+
+		<type id="Workspace">
+			<subtypes>
+				<type>UserSettings</type>
+			</subtypes>
+		</type>
+
+
+	</extension>
+</component>
+

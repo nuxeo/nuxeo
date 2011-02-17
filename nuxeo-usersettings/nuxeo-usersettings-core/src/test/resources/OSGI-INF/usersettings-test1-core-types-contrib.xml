@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<component name="com.nuxeo.ecm.usersettings.core.test.types1">
+
+	<require>org.nuxeo.ecm.core.schema.TypeService</require>
+
+
+	<extension target="org.nuxeo.ecm.core.schema.TypeService"
+		point="schema">
+		<schema name="testsettings1" src="schemas/testsettings1.xsd"
+			prefix="test1" />
+	</extension>
+
+	<extension target="org.nuxeo.ecm.core.schema.TypeService"
+		point="doctype">
+		<doctype name="TestSettings1" extends="Document">
+			<schema name="testsettings1" />
+			<schema name="usersettings" />
+			<schema name="common" />
+			<schema name="dublincore" />
+			<schema name="uid" />
+		</doctype>
+	</extension>
+
+
+</component>
+

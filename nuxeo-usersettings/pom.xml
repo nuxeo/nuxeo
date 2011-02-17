@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.nuxeo.ecm.platform</groupId>
+    <artifactId>nuxeo-user-center-parent</artifactId>
+    <version>5.4.1-SNAPSHOT</version>
+  </parent>
+
+  <packaging>pom</packaging>
+  <artifactId>nuxeo-usersettings-parent</artifactId>
+  <name>Nuxeo User Settings Management Service - Parent</name>
+  <description>Nuxeo Enterprise Platform: User Settings Management Service Parent pom,
+    allows to register and manipulate user settings documents </description>
+
+  <modules>
+    <module>nuxeo-usersettings-api</module>
+    <module>nuxeo-usersettings-core</module>
+    <module>nuxeo-usersettings-web</module>
+  </modules>
+
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-usersettings-api</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-usersettings-core</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-usersettings-web</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+</project>

@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.usersettings.web.api.layouts">
+
+	<require>org.nuxeo.ecm.platform.forms.layouts.webapp</require>
+	<extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+		point="layouts">
+
+		<layout name="usersettings">
+
+			<templates>
+				<template mode="any">/layouts/layout_default_template.xhtml
+				</template>
+			</templates>
+
+		</layout>
+
+	</extension>
+
+</component>
+

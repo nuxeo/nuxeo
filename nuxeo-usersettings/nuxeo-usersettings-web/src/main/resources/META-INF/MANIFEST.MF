@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Vilogia training bundle
+Bundle-SymbolicName: org.nuxeo.ecm.usersettings.web;singleton=true
+Bundle-Vendor: Nuxeo
+Bundle-Category: stateless
+Require-Bundle: org.nuxeo.ecm.usersettings.api, org.nuxeo.ecm.usersettings.core, org.nuxeo.ecm.usersettings.types, org.nuxeo.ecm.core.api
+Nuxeo-Component: OSGI-INF/usersettings-layouts-contrib.xml,
+ OSGI-INF/usersettings-ecm-types-contrib.xml,
+ OSGI-INF/usersettings-actions-contrib.xml
+ 

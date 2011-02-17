@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<component
+	name="org.nuxeo.ecm.usersettings.test.core.SettingsProvider1">
+
+	<require>org.nuxeo.ecm.usersettings.core.UserSettingsService</require>
+	
+	<extension target="org.nuxeo.ecm.usersettings.UserSettingsService"
+		point="userSettingsProvider">
+		
+		<userSettingsProvider  name="SettingsProvider1"
+			class="com.nuxeo.ecm.usersettings.core.SettingsProvider1">
+		</userSettingsProvider>
+
+	</extension>
+
+</component>
