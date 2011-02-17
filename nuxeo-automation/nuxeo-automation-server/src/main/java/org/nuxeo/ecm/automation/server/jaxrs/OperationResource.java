@@ -74,9 +74,13 @@ public class OperationResource extends ExecutableResource {
     @Produces("text/plain")
     @Path("bonita/java")
     public Object doGetBonitaJava() {
-        OperationDocumentation doc = type.getDocumentation();
-        String java = BonitaExporter.getJavaClass(doc);
-        return Response.ok(java).type("text/plain").build();
+        try {
+            OperationDocumentation doc = type.getDocumentation();
+            String java = BonitaExporter.getJavaClass(doc);
+            return Response.ok(java).type("text/plain").build();
+        } catch (IOException e) {
+            return Response.status(500).build();
+        }
     }
 
     @GET
