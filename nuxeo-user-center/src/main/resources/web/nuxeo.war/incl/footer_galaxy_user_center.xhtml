@@ -1,0 +1,21 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+     xmlns:c="http://java.sun.com/jstl/core"
+     xmlns:ui="http://java.sun.com/jsf/facelets"
+     xmlns:f="http://java.sun.com/jsf/core"
+     class="footerBlock">
+
+<ui:insert name="footer">
+  Copyright <f:verbatim> &amp;copy; </f:verbatim> 2006-2010 Nuxeo. <f:verbatim> &amp;nbsp; </f:verbatim>
+  <h:outputLink onclick="window.open(this.href); return false;" value="http://nuxeo.com/subscription/connect?utm_source=dm&amp;utm_medium=pages-footer&amp;utm_campaign=products">
+  <h:outputText value="#{messages['label.login.getSupport']}" />
+    </h:outputLink> | <!-- &nbsp; -->
+  <h:outputLink onclick="window.open(this.href); return false;" value="http://www.nuxeo.org/discussions/index.jspa?utm_source=dm&amp;utm_medium=pages-footer&amp;utm_campaign=products">
+    <h:outputText value="#{messages['label.login.forums']}" />
+  </h:outputLink>
+  | <!-- &nbsp; -->
+  <h:outputLink onclick="window.open(this.href); return false;" value="http://doc.nuxeo.com/?utm_source=dm&amp;utm_medium=pages-footer&amp;utm_campaign=products">
+    <h:outputText value="#{messages['label.login.documentation']}" />
+  </h:outputLink>
+
+</ui:insert>
+</div>
