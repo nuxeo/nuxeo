@@ -28,7 +28,7 @@ import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationDocumentation;
-import org.nuxeo.ecm.automation.core.doc.BonitaExporter;
+import org.nuxeo.ecm.automation.core.doc.bonita.BonitaExporter;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;

@@ -30,7 +30,7 @@ import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
 import org.nuxeo.common.utils.FileUtils;
-import org.nuxeo.ecm.automation.core.doc.BonitaExporter;
+import org.nuxeo.ecm.automation.core.doc.bonita.BonitaExporter;
 import org.nuxeo.ecm.automation.server.jaxrs.AutomationInfo;
 
 /**

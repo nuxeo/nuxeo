@@ -30,8 +30,8 @@ import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationDocumentation;
 import org.nuxeo.ecm.automation.OperationType;
-import org.nuxeo.ecm.automation.core.doc.BonitaExporter;
 import org.nuxeo.ecm.automation.core.doc.JSONExporter;
+import org.nuxeo.ecm.automation.core.doc.bonita.BonitaExporter;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
