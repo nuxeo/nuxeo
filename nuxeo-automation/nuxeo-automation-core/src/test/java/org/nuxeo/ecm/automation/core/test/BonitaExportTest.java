@@ -72,6 +72,7 @@ public class BonitaExportTest {
         return service.getOperation(operationId).getDocumentation();
     }
 
+    @Ignore
     @Test
     public void generateXMLCode() throws Exception {
         String operationId = "Document.Create";
