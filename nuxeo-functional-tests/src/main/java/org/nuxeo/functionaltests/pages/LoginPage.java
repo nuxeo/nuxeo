@@ -24,12 +24,13 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
 
 /**
  * Nuxeo default login page. Connect to the login page and login.
- * 
+ *
  * @author Sun Seng David TAN <stan@nuxeo.com>
- * 
+ *
  */
 public class LoginPage {
 
@@ -53,13 +54,14 @@ public class LoginPage {
     }
 
     /**
-     * login.jsp
-     * 
+     * Having that we are on the login page, fill the form with the username,
+     * password and language
+     *
      * @param baseUrl the url to use
      * @param username
      * @param password
      * @param language is a value of one of the options in the language select
-     *            box. For example, en_US or fr
+     *            box. For example, English (United States)
      */
     public void login(String username, String password, String language) {
 
@@ -76,6 +78,32 @@ public class LoginPage {
             }
         }
         submitButton.click();
+    }
+
+    /**
+     * Having that we are on the login page, fill the form with the username,
+     * password. It will use the default language.
+     *
+     * @param baseUrl the url to use
+     * @param username
+     * @param password
+     */
+    public void login(String username, String password) {
+        login(username, password, null);
+    }
+
+    /**
+     * Login and return the next page.
+     *
+     * @param <T>
+     * @param username
+     * @param password
+     * @param page
+     * @return
+     */
+    public <T> T loginTo(String username, String password, Class<T> page) {
+        login(username, password);
+        return PageFactory.initElements(driver, page);
     }
 
 }
