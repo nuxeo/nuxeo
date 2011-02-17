@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2011 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     tdelprat
+ *     tdelprat, jcarsique
  *
  * $Id$
  */
@@ -30,14 +30,16 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * Filter that let the default servlet handle the resources and forward processing calls to the servlet
+ * Filter that let the default servlet handle the resources and forward
+ * processing calls to the servlet
  *
  * @author Tiry (tdelprat@nuxeo.com)
  *
  */
 public class ResourceFilter implements Filter {
 
-    protected String[] resourcesPrefix = {"/css/","/images/","/scripts/","/jsp/"};
+    protected String[] resourcesPrefix = { "/css/", "/images/", "/scripts/",
+            "/jsp/" };
 
     protected boolean isResourceCall(String uri) {
         for (String prefix : resourcesPrefix) {
@@ -55,15 +57,15 @@ public class ResourceFilter implements Filter {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
 
         String uri = httpRequest.getRequestURI();
-        uri = uri.replace(httpRequest.getContextPath(), "");
+        uri = uri.replaceFirst(httpRequest.getContextPath(), "");
 
         if (!isResourceCall(uri)) {
-            request.getRequestDispatcher("/router" + uri).forward(request, response);
+            request.getRequestDispatcher("/router" + uri).forward(request,
+                    response);
         } else {
             chain.doFilter(httpRequest, response);
         }
     }
-
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {

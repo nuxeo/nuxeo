@@ -3,6 +3,7 @@ syntax:glob
 #.project
 .settings
 nuxeo-distribution-*/bin
+nuxeo-startup-wizard/bin
 target
 target*
 *~

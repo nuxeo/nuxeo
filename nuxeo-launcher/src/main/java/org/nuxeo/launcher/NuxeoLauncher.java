@@ -207,7 +207,7 @@ public abstract class NuxeoLauncher {
         for (String property : properties) {
             String value = configurationGenerator.getUserConfig().getProperty(
                     property);
-            if (value != null && ! value.isEmpty()) {
+            if (value != null && !value.isEmpty()) {
                 ret = ret.replace("${" + property + "}", value);
             }
         }
@@ -443,6 +443,12 @@ public abstract class NuxeoLauncher {
         }
     }
 
+    protected abstract void checkTomcatXMLConfFiles();
+
+    protected abstract void prepareWizardStart();
+
+    public abstract boolean isWizardRequired();
+
     /**
      * @see #doStartAndWait(boolean)
      */
@@ -480,8 +486,9 @@ public abstract class NuxeoLauncher {
         boolean commandSucceeded = true;
         if (doStart(logProcessOutput)) {
             addShutdownHook();
-            if (!waitForEffectiveStart()) {
+            if (!isWizardRequired() && !waitForEffectiveStart()) {
                 commandSucceeded = false;
+                removeShutdownHook();
                 stop(logProcessOutput);
             } else {
                 removeShutdownHook();
@@ -595,6 +602,13 @@ public abstract class NuxeoLauncher {
             }
             checkNoRunningServer();
             configure();
+
+            if (isWizardRequired()) {
+                prepareWizardStart();
+            } else {
+                checkTomcatXMLConfFiles();
+            }
+
             start(logProcessOutput);
             serverStarted = isRunning();
             if (pid != null) {

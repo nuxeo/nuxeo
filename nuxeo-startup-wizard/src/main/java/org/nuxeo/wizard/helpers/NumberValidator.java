@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2011 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -30,16 +30,16 @@ import java.util.regex.Pattern;
 public class NumberValidator {
 
     private static Pattern pattern;
+
     private static Matcher matcher;
 
-    private static final String NUMBER_PATTERN =
-        "^(\\d)+$";
+    private static final String NUMBER_PATTERN = "^(\\d)+$";
 
-    public static synchronized boolean validate(String ip){
+    public static synchronized boolean validate(String ip) {
         if (pattern == null) {
             pattern = Pattern.compile(NUMBER_PATTERN);
         }
-      matcher = pattern.matcher(ip);
-      return matcher.matches();
+        matcher = pattern.matcher(ip);
+        return matcher.matches();
     }
 }

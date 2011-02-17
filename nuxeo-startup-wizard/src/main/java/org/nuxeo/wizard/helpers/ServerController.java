@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2011 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,13 +12,14 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     tdelprat
+ *     tdelprat, jcarsique
  *
  * $Id$
  */
 package org.nuxeo.wizard.helpers;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -28,6 +29,9 @@ import javax.servlet.ServletContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.launcher.config.ConfigurationGenerator;
+import org.nuxeo.wizard.context.Context;
+import org.nuxeo.wizard.context.ParamCollector;
 
 /**
  * Manages execution of NuxeoCtl
@@ -37,8 +41,9 @@ import org.apache.commons.logging.LogFactory;
  */
 public class ServerController {
 
-    protected static final String CMD_POSIX ="nuxeoctl";
-    protected static final String CMD_WIN ="nuxeoctl.exe";
+    protected static final String CMD_POSIX = "nuxeoctl";
+
+    protected static final String CMD_WIN = "nuxeoctl.bat";
 
     protected static Log log = LogFactory.getLog(ServerController.class);
 
@@ -53,7 +58,7 @@ public class ServerController {
         List<String> output = new ArrayList<String>();
 
         String cmdName = CMD_POSIX;
-        String paramString = " restart";
+        String paramString = "restart";
 
         if (!isWindows()) {
             // POXIX
@@ -62,9 +67,11 @@ public class ServerController {
             // WIN
             cmdName = CMD_WIN;
         }
+        paramString += System.getProperty(
+                ConfigurationGenerator.PARAM_WIZARD_RESTART_PARAMS, "");
 
         String[] cmd = { "/bin/sh", "-c",
-                cmdName + " " + paramString };
+                new File(path, cmdName).getPath() + " " + paramString };
 
         if (isWindows()) {
             cmd[0] = "cmd";
@@ -73,6 +80,7 @@ public class ServerController {
 
         Process p1;
         try {
+            log.debug("Restart command: " + cmd);
             p1 = Runtime.getRuntime().exec(cmd);
         } catch (IOException e) {
             log.error("Unable to restart server", e);
@@ -87,23 +95,26 @@ public class ServerController {
                 output.add(strLine);
             }
         } catch (IOException e) {
-            log.error("Error while reading output",e);
+            log.error("Error while reading output", e);
             return false;
         }
 
         return true;
     }
 
-
     public static boolean restart(ServletContext servletContext) {
-
-        // /opt/dm/tomcat-bare/webapps/nuxeo-startup-wizard-1.0-SNAPSHOT/
-
         String basePath = servletContext.getRealPath("/");
         basePath = basePath.split("/webapps/")[0];
 
         basePath = basePath + "/bin";
 
         return doExec(basePath);
+    }
+
+    public static boolean restart(Context context) {
+        ParamCollector collector = context.getCollector();
+        File nuxeoHome = collector.getConfigurationGenerator().getNuxeoHome();
+        String binPath = new File(nuxeoHome, "bin").getPath();
+        return doExec(binPath);
     }
 }

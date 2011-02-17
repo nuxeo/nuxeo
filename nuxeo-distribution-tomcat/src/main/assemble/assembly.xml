@@ -91,9 +91,9 @@
       -->
 
     <unzip dest="${tomcat}/templates" overwrite="true">
-      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${maven.project.version}:zip"
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${nuxeo.distribution.version}:zip"
                             classifier="templates-common" />
-      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${maven.project.version}:zip"
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${nuxeo.distribution.version}:zip"
                             classifier="templates-tomcat" />
     </unzip>
 
@@ -119,8 +119,13 @@
 
     <!-- Nuxeo CAP -->
     <unzip dest="${distribution.dir}/nxserver">
-      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-cap:${nuxeo.features.version}:zip" />
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-cap:${nuxeo.distribution.version}:zip" />
     </unzip>
+
+    <!-- Nuxeo wizard -->
+    <copy tofile="${distribution.dir}/webapps/nuxeo-wizard.war">
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-startup-wizard:${nuxeo.distribution.version}:war" />
+    </copy>
 
     <antcall target="reorganize-libs">
       <param name="distribution.dir" value="${distribution.dir}" />
@@ -162,6 +167,11 @@
     <unzip dest="${distribution.dir}/nxserver">
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-dm:${nuxeo.distribution.version}:zip" />
     </unzip>
+
+    <!-- Nuxeo wizard -->
+    <copy tofile="${distribution.dir}/webapps/nuxeo-wizard.war">
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-startup-wizard:${nuxeo.distribution.version}:war" />
+    </copy>
 
     <antcall target="reorganize-libs">
       <param name="distribution.dir" value="${distribution.dir}" />

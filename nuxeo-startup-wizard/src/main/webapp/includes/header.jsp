@@ -49,7 +49,7 @@ function showError(id) {
 
 <table width="100%">
 <tr>
-<td width="200px">Left Border</td>
+<td width="200px"></td>
 <td class="mainClell">
 
 <% if (currentPage.getProgress()>=0) { %>

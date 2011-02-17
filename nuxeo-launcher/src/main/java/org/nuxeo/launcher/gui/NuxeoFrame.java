@@ -396,6 +396,10 @@ public class NuxeoFrame extends JFrame {
             mainButton.setIcon(startIcon);
         }
         mainButton.setEnabled(true);
+//      if (controller.launcher.isWizardRequired()) {
+//      // disable start button
+//      // TODO look about where enabling start button
+//  }
         mainButton.validate();
     }
 
