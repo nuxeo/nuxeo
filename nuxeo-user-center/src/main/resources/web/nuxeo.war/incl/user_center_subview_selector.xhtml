@@ -2,15 +2,23 @@
   xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:c="http://java.sun.com/jstl/core"
   class="tabsBar">
-  <h:form>
-    <nxu:dataList layout="unorderedList" var="adminSubTab" value="#{userCenterViews.availableSubActions}"
-      itemStyleClass="#{nxu:test(userCenterViews.currentSubViewId == adminSubTab.id, 'selected', '')}">
 
-      <a4j:commandLink action="#{userCenterViews.setCurrentSubViewId(adminSubTab.id)}" immediate="true" reRender="admin_subtab">
-        <h:outputText value="#{messages[adminSubTab.label]}" />
-      </a4j:commandLink>
+  <nxu:set var="availableSubActions" value="#{userCenterViews.availableSubActions}">
 
-    </nxu:dataList>
-  </h:form>
+    <c:if test="#{availableSubActions.size > 1}">
+      <h:form>
+        <nxu:dataList layout="unorderedList" var="userCenterSubTab" value="#{availableSubActions}"
+          itemStyleClass="#{nxu:test(userCenterViews.currentSubViewId == userCenterSubTab.id, 'selected', '')}">
+
+          <a4j:commandLink action="#{userCenterViews.setCurrentSubViewId(userCenterSubTab.id)}" immediate="true" reRender="user_center_subtab">
+            <h:outputText value="#{messages[userCenterSubTab.label]}" />
+          </a4j:commandLink>
+
+        </nxu:dataList>
+      </h:form>
+    </c:if>
+
+  </nxu:set>
 </div>

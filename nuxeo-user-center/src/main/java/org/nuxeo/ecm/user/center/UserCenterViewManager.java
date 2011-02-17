@@ -55,7 +55,10 @@ public class UserCenterViewManager implements Serializable {
     @Factory(value = "currentUserCenterView", scope = ScopeType.EVENT)
     public Action getCurrentView() {
         if (currentView == null) {
-            currentView = getAvailableActions().get(0);
+            List<Action> availableActions = getAvailableActions();
+            if (!availableActions.isEmpty()) {
+                currentView = availableActions.get(0);
+            }
         }
         return currentView;
     }
@@ -80,8 +83,11 @@ public class UserCenterViewManager implements Serializable {
     @Factory(value = "currentUserCenterSubView", scope = ScopeType.EVENT)
     public Action getCurrentSubView() {
         if (currentSubViews.get(getCurrentViewId()) == null) {
-            currentSubViews.put(getCurrentViewId(),
-                    getAvailableSubActions().get(0));
+            List<Action> availableSubActions = getAvailableSubActions();
+            if (!availableSubActions.isEmpty()) {
+                currentSubViews.put(getCurrentViewId(),
+                        availableSubActions.get(0));
+            }
         }
         return currentSubViews.get(getCurrentViewId());
     }

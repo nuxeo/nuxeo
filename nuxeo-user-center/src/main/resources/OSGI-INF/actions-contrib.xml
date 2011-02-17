@@ -8,41 +8,6 @@
       <category>USER_SERVICES</category>
     </action>
 
-    <action id="Dashboard" link="user_center_fragment.xhtml" label="user.center.dashboard"
-      order="10">
-      <category>USER_CENTER</category>
-    </action>
-
-    <action id="Profile" link="user_center_fragment.xhtml" label="user.center.profile"
-      order="20">
-      <category>USER_CENTER</category>
-    </action>
-
-    <action id="Settings" link="user_center_fragment.xhtml" label="user.center.settings"
-      order="30">
-      <category>USER_CENTER</category>
-    </action>
-
-    <action id="DashboardMain" link="/incl/dashboard/user_dashboard.xhtml" label=""
-      order="10">
-      <category>USER_CENTER_Dashboard</category>
-    </action>
-
-    <action id="ProfileView" link="/incl/profile/user_profile.xhtml" label="tab.user.center.profile.view"
-      order="10">
-      <category>USER_CENTER_Profile</category>
-    </action>
-
-    <action id="Settings1" link="/incl/settings/tab1.xhtml" label="tab.user.center.settings.1"
-      order="10">
-      <category>USER_CENTER_Settings</category>
-    </action>
-
-    <action id="Settings2" link="/incl/settings/tab2.xhtml" label="tab.user.center.settings.1"
-      order="20">
-      <category>USER_CENTER_Settings</category>
-    </action>
-
     <action id="adm_logout" link="#{loginLogoutAction.logout()}" label="command.logout">
       <category>USER_CENTER_USER_SERVICES</category>
     </action>
