@@ -63,7 +63,7 @@ public class SQLSimpleProperty extends SQLBaseProperty {
 
     @Override
     public void setValue(Object value) throws DocumentException {
-        if (!VERSION_WRITABLE_PROPS.contains(getName())) {
+        if (!isSpecialSystemProperty(getName())) {
             checkWritable();
         }
         if (value != null && !(value instanceof Serializable)) {

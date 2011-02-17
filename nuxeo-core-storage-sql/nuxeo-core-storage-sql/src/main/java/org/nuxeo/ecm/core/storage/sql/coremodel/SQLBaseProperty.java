@@ -54,9 +54,14 @@ public abstract class SQLBaseProperty implements Property {
                     RELATED_TEXT_RESOURCES //
             ));
 
+    public static boolean isSpecialSystemProperty(String name) {
+        return name != null && ( VERSION_WRITABLE_PROPS.contains(name)
+                || name.startsWith(Model.FULLTEXT_BINARYTEXT_PROP));
+    }
+
     public SQLBaseProperty(Type type, String name, boolean readonly) {
         this.type = type;
-        if (VERSION_WRITABLE_PROPS.contains(name)) {
+        if (isSpecialSystemProperty(name)) {
             // special handling of system properties
             this.readonly = false;
         } else {
