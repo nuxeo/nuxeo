@@ -16,18 +16,24 @@
  */
 package org.nuxeo.ecm.automation.core.test;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.net.URL;
+
 import junit.framework.Assert;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.AutomationService;
-import org.nuxeo.ecm.automation.OperationType;
+import org.nuxeo.ecm.automation.OperationDocumentation;
 import org.nuxeo.ecm.automation.core.doc.BonitaExporter;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
+
+import com.google.inject.Inject;
 
 /**
  * @since 5.4.1
@@ -37,19 +43,45 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 @Deploy("org.nuxeo.ecm.automation.core")
 public class BonitaExportTest {
 
+    @Inject
+    AutomationService service;
+
+    protected String getTestJavaContent(String operationId) throws IOException {
+        String filePath = "bonita/" + operationId + ".java.test";
+        return getTestFile(filePath);
+    }
+
+    protected String getTestXMLContent(String operationId) throws IOException {
+        String filePath = "bonita/" + operationId + ".xml";
+        return getTestFile(filePath);
+    }
+
+    protected String getTestFile(String filePath) throws IOException {
+        URL fileUrl = Thread.currentThread().getContextClassLoader().getResource(
+                filePath);
+        if (fileUrl == null) {
+            throw new RuntimeException("File not found: " + filePath);
+        }
+        return FileUtils.read(new FileInputStream(
+                FileUtils.getFilePathFromUrl(fileUrl)));
+    }
+
+    protected OperationDocumentation getOperationDoc(String operationId)
+            throws Exception {
+        return service.getOperation(operationId).getDocumentation();
+    }
+
     @Test
     public void generateXMLCode() throws Exception {
-        AutomationService service = Framework.getService(AutomationService.class);
-        OperationType op = service.getOperation("Document.Create");
-        Assert.assertEquals("xml description content",
-                BonitaExporter.getXMLDescription(op.getDocumentation()));
+        String operationId = "Document.Create";
+        Assert.assertEquals(getTestXMLContent(operationId),
+                BonitaExporter.getXMLDescription(getOperationDoc(operationId)));
     }
 
     @Test
     public void generateJavaCode() throws Exception {
-        AutomationService service = Framework.getService(AutomationService.class);
-        OperationType op = service.getOperation("Document.Create");
-        Assert.assertEquals("java class content",
-                BonitaExporter.getJavaClass(op.getDocumentation()));
+        String operationId = "Document.Create";
+        Assert.assertEquals(getTestJavaContent(operationId),
+                BonitaExporter.getJavaClass(getOperationDoc(operationId)));
     }
 }
