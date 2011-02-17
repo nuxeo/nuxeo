@@ -27,6 +27,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
+import org.openqa.selenium.support.PageFactory;
 
 /**
  * Base functions for all pages.
@@ -100,6 +101,15 @@ public abstract class AbstractTest {
             tmp_firebug_xpi.delete();
             tmp_firebug_xpi.getParentFile().delete();
         }
+    }
+
+    public static <T> T get(String url, Class<T> pageClassToProxy) {
+        driver.get(url);
+        return asPage(pageClassToProxy);
+    }
+
+    public static <T> T asPage(Class<T> pageClassToProxy) {
+        return PageFactory.initElements(driver, pageClassToProxy);
     }
 
 }

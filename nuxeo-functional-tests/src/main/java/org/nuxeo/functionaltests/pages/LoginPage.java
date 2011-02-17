@@ -91,12 +91,12 @@ public class LoginPage extends AbstractPage {
      *
      * @param username the username
      * @param password the password
-     * @param page the next page's class
+     * @param pageClassToProxy the next page's class
      * @return the next page
      */
-    public <T> T login(String username, String password, Class<T> page) {
+    public <T> T login(String username, String password, Class<T> pageClassToProxy) {
         login(username, password);
-        return PageFactory.initElements(driver, page);
+        return asPage(pageClassToProxy);
     }
 
 }

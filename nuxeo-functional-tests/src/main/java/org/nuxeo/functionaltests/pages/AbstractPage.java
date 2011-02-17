@@ -17,6 +17,7 @@
  */
 package org.nuxeo.functionaltests.pages;
 
+import org.nuxeo.functionaltests.AbstractTest;
 import org.openqa.selenium.WebDriver;
 
 /**
@@ -28,6 +29,14 @@ public abstract class AbstractPage {
 
     public AbstractPage(WebDriver driver) {
         this.driver = driver;
+    }
+
+    public <T> T get(String url, Class<T> pageClassToProxy) {
+        return AbstractTest.get(url, pageClassToProxy);
+    }
+
+    public <T> T asPage(Class<T> pageClassToProxy) {
+        return AbstractTest.asPage(pageClassToProxy);
     }
 
 }

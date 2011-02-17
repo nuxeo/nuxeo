@@ -43,7 +43,7 @@ public class DocumentBasePage extends AbstractPage {
      */
     public ContentTabSubPage getContentTab() {
         contentTabLink.click();
-        return PageFactory.initElements(driver, ContentTabSubPage.class);
+        return asPage(ContentTabSubPage.class);
     }
 
     /**

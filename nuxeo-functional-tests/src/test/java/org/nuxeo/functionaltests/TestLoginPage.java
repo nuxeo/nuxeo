@@ -19,7 +19,6 @@ package org.nuxeo.functionaltests;
 
 import org.junit.Test;
 import org.nuxeo.functionaltests.pages.LoginPage;
-import org.openqa.selenium.support.PageFactory;
 
 /**
  * Tests that we connect to the login page.
@@ -28,8 +27,7 @@ public class TestLoginPage extends AbstractTest {
 
     @Test
     public void testLoginPage() {
-        driver.get("http://localhost:8080/nuxeo");
-        PageFactory.initElements(driver, LoginPage.class);
+        get("http://localhost:8080/nuxeo", LoginPage.class);
     }
 
 }

@@ -33,7 +33,7 @@ public class ContentTabSubPage extends AbstractPage {
 
     @FindBy(id="document_content")
     WebElement documentContentForm;
-    
+
     public ContentTabSubPage(WebDriver driver) {
         super(driver);
     }
@@ -46,7 +46,7 @@ public class ContentTabSubPage extends AbstractPage {
      */
     public DocumentBasePage goToDocument(String documentTitle) {
         documentContentForm.findElement(By.linkText(documentTitle)).click();
-        return PageFactory.initElements(driver, DocumentBasePage.class);
+        return asPage(DocumentBasePage.class);
     }
 
     public <T> T getNewDocumentPage(String string, Class<T> class1) {
