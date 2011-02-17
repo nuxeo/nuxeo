@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2009 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,7 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Sun Seng David TAN <stan@nuxeo.com>
+ *     Sun Seng David TAN
+ *     Florent Guillaume
  */
 package org.nuxeo.functionaltests.pages;
 
@@ -27,14 +28,9 @@ import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 
 /**
- * Nuxeo default login page. Connect to the login page and login.
- *
- * @author Sun Seng David TAN <stan@nuxeo.com>
- *
+ * Nuxeo default login page.
  */
-public class LoginPage {
-
-    WebDriver driver;
+public class LoginPage extends AbstractPage {
 
     @FindBy(id = "username")
     WebElement usernameInputTextBox;
@@ -48,20 +44,19 @@ public class LoginPage {
     @FindBy(id = "language")
     WebElement languageSelectBox;
 
-    public LoginPage(WebDriver webdriver) {
-        driver = webdriver;
+    public LoginPage(WebDriver driver) {
+        super(driver);
         assertNotNull(driver.findElement(By.id("username")));
+        assertNotNull(driver.findElement(By.id("password")));
     }
 
     /**
-     * Having that we are on the login page, fill the form with the username,
-     * password and language
+     * Fills in the login form with the username, password and language.
      *
-     * @param baseUrl the url to use
-     * @param username
-     * @param password
-     * @param language is a value of one of the options in the language select
-     *            box. For example, English (United States)
+     * @param username the username
+     * @param password the password
+     * @param language value of one of the options in the language select box.
+     *            For example, English (United States)
      */
     public void login(String username, String password, String language) {
 
@@ -81,25 +76,23 @@ public class LoginPage {
     }
 
     /**
-     * Having that we are on the login page, fill the form with the username,
-     * password. It will use the default language.
+     * Fills in the login form with the username and password. Uses the default
+     * language.
      *
-     * @param baseUrl the url to use
-     * @param username
-     * @param password
+     * @param username the username
+     * @param password the password
      */
     public void login(String username, String password) {
         login(username, password, null);
     }
 
     /**
-     * Login and return the next page.
+     * Logs in and returns the next page.
      *
-     * @param <T>
-     * @param username
-     * @param password
-     * @param page
-     * @return
+     * @param username the username
+     * @param password the password
+     * @param page the next page's class
+     * @return the next page
      */
     public <T> T loginTo(String username, String password, Class<T> page) {
         login(username, password);

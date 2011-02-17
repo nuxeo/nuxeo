@@ -15,21 +15,19 @@
  *     Sun Seng David TAN
  *     Florent Guillaume
  */
-package org.nuxeo.functionaltests;
+package org.nuxeo.functionaltests.pages;
 
-import org.junit.Test;
-import org.nuxeo.functionaltests.pages.LoginPage;
-import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.WebDriver;
 
 /**
- * Tests that we connect to the login page.
+ * Base functions for all pages.
  */
-public class TestLoginPage extends AbstractTest {
+public abstract class AbstractPage {
 
-    @Test
-    public void testLoginPage() {
-        driver.get("http://localhost:8080/nuxeo");
-        PageFactory.initElements(driver, LoginPage.class);
+    protected WebDriver driver;
+
+    public AbstractPage(WebDriver driver) {
+        this.driver = driver;
     }
 
 }

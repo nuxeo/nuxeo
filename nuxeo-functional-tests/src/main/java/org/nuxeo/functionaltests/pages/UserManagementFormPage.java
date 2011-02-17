@@ -12,7 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Sun Seng David TAN <stan@nuxeo.com>
+ *     Sun Seng David TAN
+ *     Florent Guillaume
  */
 package org.nuxeo.functionaltests.pages;
 
@@ -24,11 +25,9 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
 /**
- * @author Sun Seng David TAN <stan@nuxeo.com>
- *
+ * Nuxeo DM user management page.
  */
-public class UserManagementFormPage {
-    WebDriver driver;
+public class UserManagementFormPage extends AbstractPage {
 
     @FindBy(id = "createUser:nxl_user:nxw_username")
     WebElement usernameInput;
@@ -58,7 +57,7 @@ public class UserManagementFormPage {
     WebElement createButton;
 
     public UserManagementFormPage(WebDriver driver) {
-        this.driver = driver;
+        super(driver);
     }
 
     public void createUser(String username, String firstname, String lastname,
