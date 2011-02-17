@@ -104,11 +104,11 @@
           <setter reference="/connector/inputs/setter[6]"/>
           <size>20</size>
         </text>
-        <text>
+        <list>
           <labelId>properties</labelId>
           <setter reference="/connector/inputs/setter[7]"/>
-          <size>20</size>
-        </text>
+          <maxRows>0</maxRows>
+        </list>
       </widgets>
     </page>
   </pages>

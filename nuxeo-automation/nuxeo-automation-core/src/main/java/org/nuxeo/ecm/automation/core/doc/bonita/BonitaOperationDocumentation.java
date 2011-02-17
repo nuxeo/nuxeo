@@ -40,7 +40,7 @@ public class BonitaOperationDocumentation {
         TYPES_TO_BONITA_TYPES.put("document", "string");
         TYPES_TO_BONITA_TYPES.put("documents", "string"); // TODO
         TYPES_TO_BONITA_TYPES.put("properties", "string"); // FIXME
-        TYPES_TO_BONITA_TYPES.put("resource", "string"); // TODO
+        TYPES_TO_BONITA_TYPES.put("resource", "list"); // TODO
 
         TYPES_TO_BONITA_WIDGETS.put("string", "text");
         TYPES_TO_BONITA_WIDGETS.put("boolean", "checkbox");
@@ -49,7 +49,7 @@ public class BonitaOperationDocumentation {
         TYPES_TO_BONITA_WIDGETS.put("date", "text");
         TYPES_TO_BONITA_WIDGETS.put("document", "text");
         TYPES_TO_BONITA_WIDGETS.put("documents", "text"); // TODO
-        TYPES_TO_BONITA_WIDGETS.put("properties", "text"); // FIXME
+        TYPES_TO_BONITA_WIDGETS.put("properties", "list");
         TYPES_TO_BONITA_WIDGETS.put("resource", "text"); // TODO
     }
 

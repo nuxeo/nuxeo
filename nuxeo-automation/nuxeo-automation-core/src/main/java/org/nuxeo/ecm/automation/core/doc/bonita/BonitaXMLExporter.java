@@ -182,6 +182,9 @@ public class BonitaXMLExporter {
         if ("text".equals(widgetId) || "password".equals(widgetId)) {
             widget.addElement("size").setText("20");
         }
+        if ("list".equals(widgetId)) {
+            widget.addElement("maxRows").setText("0");
+        }
     }
 
     protected void addOutputs(Element outputsEl) {
