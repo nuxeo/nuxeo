@@ -32,10 +32,9 @@ public class DocumentBasePage extends AbstractPage {
 
     @FindBy(xpath = "//div[@class=\"tabsBar\"]/form/ul/li/a[text()=\"Content\"]")
     WebElement contentTabLink;
-    
+
     @FindBy(xpath = "//div[@class=\"tabsBar\"]/form/ul/li/a[text()=\"Summary\"]")
     WebElement summaryTabLink;
-    
 
     public DocumentBasePage(WebDriver driver) {
         super(driver);
@@ -56,7 +55,7 @@ public class DocumentBasePage extends AbstractPage {
      *
      * @return
      */
-    public WorkspaceContentTabSubPage getWorkspaceContentTab() {        
+    public WorkspaceContentTabSubPage getWorkspaceContentTab() {
         contentTabLink.click();
         return asPage(WorkspaceContentTabSubPage.class);
     }
