@@ -16,6 +16,8 @@
  */
 package org.nuxeo.functionaltests.pages;
 
+import static org.junit.Assert.assertNotNull;
+
 import org.nuxeo.functionaltests.pages.tabs.ContentTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.WorkspaceContentTabSubPage;
 import org.openqa.selenium.WebDriver;
@@ -31,10 +33,13 @@ import org.openqa.selenium.support.FindBy;
 public class DocumentBasePage extends AbstractPage {
 
     @FindBy(xpath = "//div[@class=\"tabsBar\"]/form/ul/li/a[text()=\"Content\"]")
-    WebElement contentTabLink;
+    public WebElement contentTabLink;
 
     @FindBy(xpath = "//div[@class=\"tabsBar\"]/form/ul/li/a[text()=\"Summary\"]")
-    WebElement summaryTabLink;
+    public WebElement summaryTabLink;
+
+    @FindBy(xpath = "/html/body/table[2]/tbody/tr/td[2]/div[2]//div[@class=\"tabsBar\"]/form/ul/li[@class=\"selected\"]/a")
+    public WebElement selectedTab;
 
     public DocumentBasePage(WebDriver driver) {
         super(driver);
@@ -46,7 +51,12 @@ public class DocumentBasePage extends AbstractPage {
      * @return
      */
     public ContentTabSubPage getContentTab() {
-        contentTabLink.click();
+        assertNotNull(contentTabLink);
+        assertNotNull(selectedTab);
+
+        if (!selectedTab.equals(contentTabLink)) {
+            contentTabLink.click();
+        }
         return asPage(ContentTabSubPage.class);
     }
 
@@ -56,8 +66,13 @@ public class DocumentBasePage extends AbstractPage {
      * @return
      */
     public WorkspaceContentTabSubPage getWorkspaceContentTab() {
-        contentTabLink.click();
+        assertNotNull(contentTabLink);
+        assertNotNull(selectedTab);
+
+        if (!selectedTab.equals(contentTabLink)) {
+            contentTabLink.click();
+        }
+
         return asPage(WorkspaceContentTabSubPage.class);
     }
-
 }
