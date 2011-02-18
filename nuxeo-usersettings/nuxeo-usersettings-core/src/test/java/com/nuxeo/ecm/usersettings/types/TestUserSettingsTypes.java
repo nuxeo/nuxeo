@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2011 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -55,11 +55,6 @@ public class TestUserSettingsTypes {
     private static final String TEST_USERNAME2 = "testusername2";
     private static final String DEFAULT_DOMAIN = "/default-domain";
 
-    @Test(expected = ClientException.class)
-    public void testWrapperConstructorException() throws Exception {
-        new UserSettingsWrapper(null);
-    }
-
     @Test
     public void testCreateUserSettingsDocument() throws Exception {
         DocumentModel doc = createUserSettingsDoc();
@@ -68,16 +63,6 @@ public class TestUserSettingsTypes {
         assertNotNull(o);
         assertTrue(o instanceof String);
         assertEquals(TEST_USERNAME1, (String) o);
-    }
-
-    @Test
-    public void testWrapper() throws Exception {
-        DocumentModel doc = createUserSettingsDoc();
-        UserSettingsWrapper w = new UserSettingsWrapper(doc);
-        assertEquals(TEST_USERNAME1, w.getUser());
-        w.setUser(TEST_USERNAME2);
-        session.saveDocument(doc);
-        assertEquals(TEST_USERNAME2, w.getUser());
     }
 
     private DocumentModel createUserSettingsDoc() throws ClientException {

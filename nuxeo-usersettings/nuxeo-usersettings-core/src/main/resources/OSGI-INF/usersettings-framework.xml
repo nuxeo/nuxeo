@@ -16,7 +16,7 @@
 
   <extension-point name="userSettingsConfiguration">
     <documentation>
-      Defines the class to use to implement the UserSettingsService 
+      Define UserSettingsService implementation.
     </documentation>
     <object
       class="org.nuxeo.ecm.usersettings.UserSettingsDescriptor" />
@@ -24,7 +24,15 @@
 
   <extension-point name="userSettingsProvider">
     <documentation>
-      User settings provider extension point 
+      Add a document Type as a settings provider.
+      Example:
+      <code>
+        <userSettingsProvider enabled="true" type="NavigationSettings" category="Default" />
+      </code>
+      - type: type is the document type.
+      - category: category could be anything and is used to sort providers.
+      - enabled: default value is true. False will remove the settings provider from the
+        service registry.
     </documentation>
     <object
       class="org.nuxeo.ecm.usersettings.UserSettingsProviderDescriptor" />

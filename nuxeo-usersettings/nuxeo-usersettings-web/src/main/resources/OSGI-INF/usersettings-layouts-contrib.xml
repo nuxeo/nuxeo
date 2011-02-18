@@ -71,7 +71,7 @@
           <property name="styleClass">dataInputText</property>
         </properties>
       </widget>
-      <widget name="fullNavigation" type="boolean">
+      <widget name="fullNavigation" type="checkbox">
         <labels>
           <label mode="any">label.settings.fullNavigation</label>
         </labels>
@@ -79,9 +79,6 @@
         <fields>
           <field>nset:fullNavigation</field>
         </fields>
-        <properties widgetMode="edit">
-          <property name="styleClass">dataInputText</property>
-        </properties>
       </widget>
 
     </layout>
