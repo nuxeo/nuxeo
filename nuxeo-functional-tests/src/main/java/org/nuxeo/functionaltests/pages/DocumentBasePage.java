@@ -82,6 +82,10 @@ public class DocumentBasePage extends AbstractPage {
         clickOnLinkIfNotSelected(editTabLink);
         return asPage(SummaryTabSubPage.class);
     }
+    
+    public NavigationSubPage getNavigationSubPage() {
+        return asPage(NavigationSubPage.class);
+    }
 
     protected void clickOnLinkIfNotSelected(WebElement tabLink) {
         assertNotNull(tabLink);
@@ -130,5 +134,6 @@ public class DocumentBasePage extends AbstractPage {
     public String getCurrentDocumentTitle() {
         return currentDocumentTitle.getText();
     }
+
 
 }

@@ -17,6 +17,8 @@
  */
 package org.nuxeo.functionaltests;
 
+import java.util.Date;
+
 import org.junit.Test;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.forms.WorkspaceFormPage;
@@ -43,17 +45,27 @@ public class TestModifyWorskpaceDescription extends AbstractTest {
         // login
         DocumentBasePage documentBasePage = login().getContentTab().goToDocument(
                 "Workspaces");
-        // create a new workspace in there named workspace1
+        // create a new workspace in there named workspaceDescriptionModify
+        // (current time)
         WorkspaceFormPage workspaceCreationFormPage = documentBasePage.getWorkspaceContentTab().getWorkspaceCreatePage();
-        String workspaceTitle = "workspaceDescriptionModify";
+        String workspaceTitle = "workspaceDescriptionModify"
+                + new Date().getTime();
         DocumentBasePage workspacePage = workspaceCreationFormPage.createNewWorkspace(
                 workspaceTitle, "a workspace description");
         String descriptionModified = "Description modified";
         documentBasePage = workspacePage.getEditTab().edit(null,
                 descriptionModified);
+
         assertEquals(descriptionModified,
                 documentBasePage.getCurrentDocumentDescription());
         assertEquals(workspaceTitle, documentBasePage.getCurrentDocumentTitle());
+
+        // cleaning
+        documentBasePage = documentBasePage.getNavigationSubPage().goToDocument(
+                "Workspaces");
+
+        // documentBasePage =
+        // documentBasePage.getContentTab().removeDocument(workspaceTitle);
 
     }
 
