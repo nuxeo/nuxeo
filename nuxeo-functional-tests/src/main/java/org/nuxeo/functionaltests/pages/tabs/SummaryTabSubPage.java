@@ -16,28 +16,17 @@
  */
 package org.nuxeo.functionaltests.pages.tabs;
 
+import org.nuxeo.functionaltests.pages.AbstractPage;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.FindBy;
 
 /**
  * @author Sun Seng David TAN <stan@nuxeo.com>
  *
  */
-public class FileSummaryTabSubPage extends SummaryTabSubPage {
+public class SummaryTabSubPage extends AbstractPage {
 
-    @FindBy(xpath = "//div[@class=\"content_block\"]//td[@class=\"fieldColumn\"]")
-    WebElement mainContentViewField;
-
-    /**
-     * @param driver
-     */
-    public FileSummaryTabSubPage(WebDriver driver) {
+    public SummaryTabSubPage(WebDriver driver) {
         super(driver);
-    }
-
-    public String getMainContentFileText() {
-        return mainContentViewField.getText();
     }
 
 }

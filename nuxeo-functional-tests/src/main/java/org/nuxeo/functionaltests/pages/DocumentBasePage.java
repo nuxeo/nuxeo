@@ -20,6 +20,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import org.nuxeo.functionaltests.pages.tabs.ContentTabSubPage;
+import org.nuxeo.functionaltests.pages.tabs.EditTabSubPage;
+import org.nuxeo.functionaltests.pages.tabs.SummaryTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.WorkspaceContentTabSubPage;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -39,6 +41,9 @@ public class DocumentBasePage extends AbstractPage {
     @FindBy(xpath = "//div[@class=\"tabsBar\"]/form/ul/li/a[text()=\"Summary\"]")
     public WebElement summaryTabLink;
 
+    @FindBy(xpath = "//div[@class=\"tabsBar\"]/form/ul/li/a[text()=\"Edit\"]")
+    public WebElement editTabLink;
+
     @FindBy(xpath = "/html/body/table[2]/tbody/tr/td[2]/div[2]//div[@class=\"tabsBar\"]/form/ul/li[@class=\"selected\"]/a")
     public WebElement selectedTab;
 
@@ -47,6 +52,12 @@ public class DocumentBasePage extends AbstractPage {
 
     @FindBy(xpath = "//div[@class=\"userActions\"]")
     public WebElement userActions;
+
+    @FindBy(id = "nxl_document_header:nxw_header_description")
+    public WebElement currentDocumentDescription;
+
+    @FindBy(xpath = "/html/body/table[2]/tbody/tr/td[2]/div[2]//h1")
+    public WebElement currentDocumentTitle;
 
     public DocumentBasePage(WebDriver driver) {
         super(driver);
@@ -58,9 +69,18 @@ public class DocumentBasePage extends AbstractPage {
      * @return
      */
     public ContentTabSubPage getContentTab() {
-
         clickOnLinkIfNotSelected(contentTabLink);
         return asPage(ContentTabSubPage.class);
+    }
+
+    public EditTabSubPage getEditTab() {
+        clickOnLinkIfNotSelected(editTabLink);
+        return asPage(EditTabSubPage.class);
+    }
+
+    public SummaryTabSubPage getSummaryTab() {
+        clickOnLinkIfNotSelected(editTabLink);
+        return asPage(SummaryTabSubPage.class);
     }
 
     protected void clickOnLinkIfNotSelected(WebElement tabLink) {
@@ -102,4 +122,13 @@ public class DocumentBasePage extends AbstractPage {
         assertNotNull(userServicesForm);
         return asPage(HeaderLinksSubPage.class);
     }
+
+    public String getCurrentDocumentDescription() {
+        return currentDocumentDescription.getText();
+    }
+
+    public String getCurrentDocumentTitle() {
+        return currentDocumentTitle.getText();
+    }
+
 }
