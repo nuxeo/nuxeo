@@ -19,6 +19,7 @@ package org.nuxeo.functionaltests.pages;
 import static org.junit.Assert.assertNotNull;
 
 import org.nuxeo.functionaltests.pages.tabs.ContentTabSubPage;
+import org.nuxeo.functionaltests.pages.tabs.HeaderLinksSubPage;
 import org.nuxeo.functionaltests.pages.tabs.WorkspaceContentTabSubPage;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -40,6 +41,9 @@ public class DocumentBasePage extends AbstractPage {
 
     @FindBy(xpath = "/html/body/table[2]/tbody/tr/td[2]/div[2]//div[@class=\"tabsBar\"]/form/ul/li[@class=\"selected\"]/a")
     public WebElement selectedTab;
+
+    @FindBy(name = "userServicesForm")
+    public WebElement userServicesForm;
 
     public DocumentBasePage(WebDriver driver) {
         super(driver);
@@ -74,5 +78,16 @@ public class DocumentBasePage extends AbstractPage {
         }
 
         return asPage(WorkspaceContentTabSubPage.class);
+    }
+
+    /**
+     * Get the top bar navigation sub page.
+     *
+     * @return
+     */
+    public HeaderLinksSubPage getHeaderLinks() {
+        assertNotNull(userServicesForm);
+
+        return asPage(HeaderLinksSubPage.class);
     }
 }
