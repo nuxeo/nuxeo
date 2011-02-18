@@ -52,6 +52,8 @@ public class DocumentBasePage extends AbstractPage {
     public DocumentBasePage(WebDriver driver) {
         super(driver);
     }
+    
+    
 
     /**
      * Click on the content tab and return the subpage of this page.
@@ -92,5 +94,15 @@ public class DocumentBasePage extends AbstractPage {
     public void checkUserConnected(String username) {
         String expectedConnectedMessage = "You are logged as " + username;
         assertTrue(userActions.getText().contains(expectedConnectedMessage));
+    }
+    
+    /**
+     * Get the top bar navigation sub page.
+     *
+     * @return
+     */
+    public HeaderLinksSubPage getHeaderLinks() {
+        assertNotNull(userServicesForm);
+        return asPage(HeaderLinksSubPage.class);
     }
 }
