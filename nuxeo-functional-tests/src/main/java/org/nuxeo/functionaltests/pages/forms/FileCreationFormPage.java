@@ -16,8 +16,6 @@
  */
 package org.nuxeo.functionaltests.pages.forms;
 
-import static junit.framework.Assert.assertNotNull;
-
 import org.nuxeo.functionaltests.pages.AbstractPage;
 import org.nuxeo.functionaltests.pages.FileDocumentBasePage;
 import org.openqa.selenium.WebDriver;
@@ -54,10 +52,6 @@ public class FileCreationFormPage extends AbstractPage {
 
     public FileDocumentBasePage createFileDocument(String title,
             String description, String fileToUploadPath) {
-        assertNotNull(titleTextInput);
-        assertNotNull(descriptionTextInput);
-        assertNotNull(createButton);
-        assertNotNull(fileInput);
         titleTextInput.sendKeys(title);
         descriptionTextInput.sendKeys(description);
         uploadFileRadioButton.setSelected();

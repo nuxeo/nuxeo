@@ -18,6 +18,7 @@ package org.nuxeo.functionaltests.pages.tabs;
 
 import static junit.framework.Assert.assertNotNull;
 
+import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.pages.AbstractPage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.openqa.selenium.By;
@@ -35,6 +36,7 @@ import org.openqa.selenium.support.FindBy;
  */
 public class ContentTabSubPage extends AbstractPage {
 
+    @Required
     @FindBy(id = "document_content")
     WebElement documentContentForm;
 
@@ -64,7 +66,6 @@ public class ContentTabSubPage extends AbstractPage {
      * @return The create form page object
      */
     public <T> T getDocumentCreatePage(String docType, Class<T> pageClassToProxy) {
-        assertNotNull(newButton);
         newButton.click();
         WebElement link = null;
         for (WebElement element : driver.findElements(By.className("documentType"))) {

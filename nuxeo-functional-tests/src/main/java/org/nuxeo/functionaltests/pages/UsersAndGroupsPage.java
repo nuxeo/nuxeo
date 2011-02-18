@@ -16,10 +16,8 @@
  */
 package org.nuxeo.functionaltests.pages;
 
-import static junit.framework.Assert.assertNotNull;
-
+import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.pages.tabs.UsersTabSubPage;
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -29,13 +27,13 @@ import org.openqa.selenium.support.FindBy;
  */
 public class UsersAndGroupsPage extends DocumentBasePage {
 
+    @Required
     @FindBy(xpath = "//div[@class=\"tabsBar\"]/form/ul/li/a[text()=\"Users\"]")
     public WebElement usersTabLink;
 
 
     public UsersAndGroupsPage(WebDriver driver) {
         super(driver);
-        assertNotNull(driver.findElement(By.id("createUserActionsForm")));
     }
     /**
      * View the Users tab.

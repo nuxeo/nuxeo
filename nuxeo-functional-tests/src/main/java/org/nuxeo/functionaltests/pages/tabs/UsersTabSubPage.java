@@ -16,6 +16,7 @@
  */
 package org.nuxeo.functionaltests.pages.tabs;
 
+import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.pages.AbstractPage;
 import org.nuxeo.functionaltests.pages.forms.UserCreationFormPage;
 import org.openqa.selenium.By;
@@ -26,6 +27,7 @@ import org.openqa.selenium.support.FindBy;
 
 public class UsersTabSubPage extends AbstractPage {
 
+    @Required
     @FindBy(linkText = "Create a new user")
     WebElement createNewUserLink;
 

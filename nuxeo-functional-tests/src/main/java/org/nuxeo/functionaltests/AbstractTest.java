@@ -18,22 +18,32 @@
  */
 package org.nuxeo.functionaltests;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.LoginPage;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.Speed;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
+import org.openqa.selenium.internal.WrapsElement;
 import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.Clock;
+import org.openqa.selenium.support.ui.SystemClock;
 
 /**
  * Base functions for all pages.
@@ -47,6 +57,8 @@ public abstract class AbstractTest {
     private static final String FIREBUG_VERSION = "1.6.2";
 
     private static final int LOAD_TIMEOUT_SECONDS = 5;
+
+    private static final int AJAX_TIMEOUT_SECONDS = 5;
 
     protected static FirefoxDriver driver;
 
@@ -130,8 +142,52 @@ public abstract class AbstractTest {
     public static <T> T asPage(Class<T> pageClassToProxy) {
         T page = instantiatePage(driver, pageClassToProxy);
         PageFactory.initElements(new VariableElementLocatorFactory(driver,
-                LOAD_TIMEOUT_SECONDS), page);
-        return page;
+                AJAX_TIMEOUT_SECONDS), page);
+        // check all required WebElements on the page and wait for their loading
+        List<String> fieldNames = new ArrayList<String>();
+        List<WrapsElement> elements = new ArrayList<WrapsElement>();
+        for (Field field : pageClassToProxy.getDeclaredFields()) {
+            if (field.getAnnotation(Required.class) != null) {
+                try {
+                    field.setAccessible(true);
+                    fieldNames.add(field.getName());
+                    elements.add((WrapsElement) field.get(page));
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+        Clock clock = new SystemClock();
+        long end = clock.laterBy(SECONDS.toMillis(LOAD_TIMEOUT_SECONDS));
+        String notLoaded = null;
+        while (clock.isNowBefore(end)) {
+            notLoaded = anyElementNotLoaded(elements, fieldNames);
+            if (notLoaded == null) {
+                return page;
+            }
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                // ignore
+            }
+        }
+        throw new RuntimeException("Timeout loading page "
+                + pageClassToProxy.getSimpleName() + " missing element "
+                + notLoaded);
+    }
+
+    protected static String anyElementNotLoaded(List<WrapsElement> proxies,
+            List<String> fieldNames) {
+        for (int i = 0; i < proxies.size(); i++) {
+            WrapsElement proxy = proxies.get(i);
+            try {
+                // method implemented in LocatingElementHandler
+                proxy.getWrappedElement();
+            } catch (NoSuchElementException e) {
+                return fieldNames.get(i);
+            }
+        }
+        return null;
     }
 
     // private in PageFactory...

@@ -16,6 +16,7 @@
  */
 package org.nuxeo.functionaltests.pages;
 
+import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.pages.AbstractPage;
 import org.nuxeo.functionaltests.pages.UsersAndGroupsPage;
 import org.openqa.selenium.WebDriver;
@@ -24,6 +25,7 @@ import org.openqa.selenium.support.FindBy;
 
 public class HeaderLinksSubPage extends AbstractPage {
 
+    @Required
     @FindBy(linkText = "Users & groups")
     WebElement userAndGroupsLink;
 

@@ -16,6 +16,7 @@
  */
 package org.nuxeo.functionaltests.pages.tabs;
 
+import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.pages.AbstractPage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.openqa.selenium.WebDriver;
@@ -28,12 +29,15 @@ import org.openqa.selenium.support.FindBy;
  */
 public class EditTabSubPage extends AbstractPage {
 
+    @Required
     @FindBy(id="document_edit:nxl_heading:nxw_title")
     WebElement titleInputText;
 
+    @Required
     @FindBy(id="document_edit:nxl_heading:nxw_description")
     WebElement descriptionInputText;
 
+    @Required
     @FindBy(xpath="//input[@value=\"Save\"]")
     WebElement save;
 

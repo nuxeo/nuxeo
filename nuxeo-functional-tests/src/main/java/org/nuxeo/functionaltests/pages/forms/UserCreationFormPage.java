@@ -17,6 +17,7 @@
  */
 package org.nuxeo.functionaltests.pages.forms;
 
+import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.finders.ElementNotFoundException;
 import org.nuxeo.functionaltests.finders.FindElementUntil;
 import org.nuxeo.functionaltests.pages.AbstractPage;
@@ -31,30 +32,39 @@ import org.openqa.selenium.support.FindBy;
  */
 public class UserCreationFormPage extends AbstractPage {
 
+    @Required
     @FindBy(id = "createUser:nxl_user:nxw_username")
     WebElement usernameInput;
 
+    @Required
     @FindBy(id = "createUser:nxl_user:nxw_firstname")
     WebElement firstnameInput;
 
+    @Required
     @FindBy(id = "createUser:nxl_user:nxw_lastname")
     WebElement lastnameInput;
 
+    @Required
     @FindBy(id = "createUser:nxl_user:nxw_company")
     WebElement companyInput;
 
+    @Required
     @FindBy(id = "createUser:nxl_user:nxw_email")
     WebElement emailInput;
 
+    @Required
     @FindBy(id = "createUser:nxl_user:nxw_firstPassword")
     WebElement firstPasswordInput;
 
+    @Required
     @FindBy(id = "createUser:nxl_user:nxw_secondPassword")
     WebElement secondPasswordInput;
 
+    @Required
     @FindBy(id = "createUser:nxl_user:nxw_groups_suggest")
     WebElement groupInput;
 
+    @Required
     @FindBy(id = "createUser:button_create")
     WebElement createButton;
 
