@@ -51,13 +51,18 @@ public class DocumentBasePage extends AbstractPage {
      * @return
      */
     public ContentTabSubPage getContentTab() {
-        assertNotNull(contentTabLink);
+        
+        clickOnLinkIfNotSelected(contentTabLink);
+        return asPage(ContentTabSubPage.class);
+    }
+
+    protected void clickOnLinkIfNotSelected(WebElement tabLink) {
+        assertNotNull(tabLink);
         assertNotNull(selectedTab);
 
-        if (!selectedTab.equals(contentTabLink)) {
-            contentTabLink.click();
+        if (!selectedTab.equals(tabLink)) {
+            tabLink.click();
         }
-        return asPage(ContentTabSubPage.class);
     }
 
     /**
@@ -66,13 +71,7 @@ public class DocumentBasePage extends AbstractPage {
      * @return
      */
     public WorkspaceContentTabSubPage getWorkspaceContentTab() {
-        assertNotNull(contentTabLink);
-        assertNotNull(selectedTab);
-
-        if (!selectedTab.equals(contentTabLink)) {
-            contentTabLink.click();
-        }
-
+        clickOnLinkIfNotSelected(contentTabLink);
         return asPage(WorkspaceContentTabSubPage.class);
     }
 }
