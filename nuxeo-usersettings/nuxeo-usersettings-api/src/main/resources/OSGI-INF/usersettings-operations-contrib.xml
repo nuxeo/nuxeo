@@ -6,7 +6,9 @@
     point="operations">
 
     <operation
-      class="org.nuxeo.ecm.usersettings.operations.GetUserSettingsOperation" />
+      class="org.nuxeo.ecm.usersettings.operations.GetUserSettingOperation" />
+    <operation
+      class="org.nuxeo.ecm.usersettings.operations.GetUserCategorySettingsOperation" />
       
   </extension>    
 

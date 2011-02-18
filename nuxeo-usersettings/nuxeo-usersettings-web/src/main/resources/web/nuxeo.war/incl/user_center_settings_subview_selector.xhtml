@@ -13,12 +13,11 @@
       value="#{availableSettingsCategories}"
       itemStyleClass="#{nxu:test(userSettingsActions.currentCategory == category, 'selected', '')}">
 
-      <a4j:commandLink
+      <h:commandLink
         action="#{userSettingsActions.setCurrentCategory(category)}"
-        immediate="true"
-        reRender="user_center_subtab">
+        immediate="true">
         <h:outputText value="#{messages[category]}" />
-      </a4j:commandLink>
+      </h:commandLink>
 
     </nxu:dataList>
   </h:form>

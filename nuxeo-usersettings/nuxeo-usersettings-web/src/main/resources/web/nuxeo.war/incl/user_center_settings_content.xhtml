@@ -9,11 +9,9 @@
     <c:forEach var="row" items="#{userSettingsActions.currentSettings}" >
       <nxl:documentLayout mode="edit" value="#{row}" />
     </c:forEach>
-    
-    <h:commandButton value="#{messages['command.save']}"
+    <h:commandButton reRender="user_center_subtab" value="#{messages['command.save']}"
       action="#{userSettingsActions.saveCurrentSettings()}"/>
-
-    <h:commandButton value="#{messages['command.reset.category']}"
+    <h:commandButton reRender="user_center_subtab" value="#{messages['command.reset.category']}"
       action="#{userSettingsActions.resetCurrentSettingCategory()}"/>
   </h:form>
 

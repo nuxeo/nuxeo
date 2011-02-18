@@ -29,9 +29,9 @@ import org.nuxeo.ecm.usersettings.UserSettingsService;
 import org.nuxeo.runtime.api.Framework;
 
 
-@Operation(id = GetUserSettingsOperation.ID, category = Constants.CAT_USERS_GROUPS, label = "Get User Settings", description = "Get user settings providers")
-public class GetUserSettingsOperation {
-    public final static String ID = "User.getSettings";
+@Operation(id = GetUserSettingOperation.ID, category = Constants.CAT_USERS_GROUPS, label = "Get User Setting", description = "Get user setting from given type")
+public class GetUserSettingOperation {
+    public final static String ID = "Document.getSetting";
 
     @Context
     protected OperationContext context;
@@ -51,7 +51,7 @@ public class GetUserSettingsOperation {
     }
 
     @OperationMethod
-    public DocumentModel getUserSettings() throws ClientException {
+    public DocumentModel getUserSetting() throws ClientException {
         return getDistributionService().getCurrentSettingsByType(session, type);
     }
 }

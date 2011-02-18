@@ -7,7 +7,6 @@
 	<extension target="org.nuxeo.ecm.platform.types.TypeService"
 		point="types">
 
-
     <type id="DefaultSettings" >
       <label>DefaultSettings</label>
       <icon>/icons/folder.gif</icon>

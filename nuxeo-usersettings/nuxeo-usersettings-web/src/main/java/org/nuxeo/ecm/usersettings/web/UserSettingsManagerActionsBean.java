@@ -75,12 +75,15 @@ public class UserSettingsManagerActionsBean implements Serializable {
         return currentCategory;
     }
 
-    public void setCurrentCategory(String currentCategory) {
+    public void setCurrentCategory(String currentCategory) throws ClientException{
         this.currentCategory = currentCategory;
+        currentSettingsProvider = getUserSettingsService().getCurrentSettingsByCategory(documentManager, currentCategory);
     }
 
     public DocumentModelList getCurrentSettings() throws ClientException{
-        currentSettingsProvider = getUserSettingsService().getCurrentSettingsByCategory(documentManager, currentCategory);
+        if (currentSettingsProvider == null) {
+            currentSettingsProvider = getUserSettingsService().getCurrentSettingsByCategory(documentManager, currentCategory);
+        }
         return currentSettingsProvider;
     }
 
@@ -92,5 +95,6 @@ public class UserSettingsManagerActionsBean implements Serializable {
     
     public void resetCurrentSettingCategory() throws ClientException {
         getUserSettingsService().resetSettingsCategory(documentManager, currentCategory);
+        currentSettingsProvider = getUserSettingsService().getCurrentSettingsByCategory(documentManager, currentCategory);
     }
 }
