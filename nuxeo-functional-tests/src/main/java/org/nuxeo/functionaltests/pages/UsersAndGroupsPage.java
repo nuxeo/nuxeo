@@ -14,26 +14,21 @@
  * Contributors:
  *     Benoit Delbosc
  */
-package org.nuxeo.functionaltests.pages.tabs;
+package org.nuxeo.functionaltests.pages;
 
-import org.nuxeo.functionaltests.pages.AbstractPage;
-import org.nuxeo.functionaltests.pages.UserAndGroupsPage;
+import static junit.framework.Assert.assertNotNull;
+
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.FindBy;
 
-public class HeaderLinksSubPage extends AbstractPage {
+/**
+ * Nuxeo User and Groups page.
+ */
+public class UsersAndGroupsPage extends AbstractPage {
 
-    @FindBy(linkText = "Users & groups")
-    WebElement userAndGroupsLink;
-
-    public HeaderLinksSubPage(WebDriver driver) {
+    public UsersAndGroupsPage(WebDriver driver) {
         super(driver);
-    }
-
-    public UserAndGroupsPage goToUserManagementPage() {
-        userAndGroupsLink.click();
-        return asPage(UserAndGroupsPage.class);
+        assertNotNull(driver.findElement(By.id("createUserActionsForm")));
     }
 
 }

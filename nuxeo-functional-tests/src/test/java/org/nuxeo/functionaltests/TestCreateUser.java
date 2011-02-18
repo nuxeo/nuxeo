@@ -17,7 +17,7 @@
 package org.nuxeo.functionaltests;
 
 import org.junit.Test;
-import org.nuxeo.functionaltests.pages.UserAndGroupsPage;
+import org.nuxeo.functionaltests.pages.UsersAndGroupsPage;
 
 /**
  * Create a user in Nuxeo DM.
@@ -27,7 +27,7 @@ public class TestCreateUser extends AbstractTest {
     @Test
     public void testCreateUser() {
 
-        UserAndGroupsPage userPage = login().getHeaderLinks().goToUserManagementPage();
+        UsersAndGroupsPage userPage = login().getHeaderLinks().goToUserManagementPage();
     }
 
 }

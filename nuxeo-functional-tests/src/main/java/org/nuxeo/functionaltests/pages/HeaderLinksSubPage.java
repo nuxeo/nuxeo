@@ -16,19 +16,24 @@
  */
 package org.nuxeo.functionaltests.pages;
 
-import static junit.framework.Assert.assertNotNull;
-
-import org.openqa.selenium.By;
+import org.nuxeo.functionaltests.pages.AbstractPage;
+import org.nuxeo.functionaltests.pages.UsersAndGroupsPage;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
 
-/**
- * Nuxeo User and Groups page.
- */
-public class UserAndGroupsPage extends AbstractPage {
+public class HeaderLinksSubPage extends AbstractPage {
 
-    public UserAndGroupsPage(WebDriver driver) {
+    @FindBy(linkText = "Users & groups")
+    WebElement userAndGroupsLink;
+
+    public HeaderLinksSubPage(WebDriver driver) {
         super(driver);
-        assertNotNull(driver.findElement(By.id("createUserActionsForm")));
+    }
+
+    public UsersAndGroupsPage goToUserManagementPage() {
+        userAndGroupsLink.click();
+        return asPage(UsersAndGroupsPage.class);
     }
 
 }
