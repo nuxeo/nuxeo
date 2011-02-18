@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo User Center Notification
+Bundle-SymbolicName: org.nuxeo.ecm.user.center.notification;singleton:=true
+Bundle-Version: 0.0.1
+Bundle-Vendor: Nuxeo
+Nuxeo-Component: OSGI-INF/actions-contrib.xml
