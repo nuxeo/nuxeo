@@ -47,6 +47,7 @@
       <schema name="dublincore" />
       <schema name="uid" />
       <facet name="HiddenInNavigation" />
+      <facet name="HiddenInSettings" />
     </doctype>
 	</extension>
 

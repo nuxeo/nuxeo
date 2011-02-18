@@ -37,6 +37,7 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
+import org.nuxeo.ecm.usersettings.UserSettingsConstants;
 import org.nuxeo.ecm.usersettings.UserSettingsProviderDescriptor;
 import org.nuxeo.ecm.usersettings.UserSettingsService;
 import org.nuxeo.ecm.usersettings.UserSettingsType;
@@ -219,7 +220,13 @@ public class UserSettingsServiceImpl implements UserSettingsService {
     @Override
     public DocumentModelList getCurrentSettingsByCategory(
             CoreSession coreSession, String category) throws ClientException {
-        return findUserSettings(coreSession, category, null);
+        return findUserSettings(coreSession, category, null, true);
+    }
+
+    @Override
+    public DocumentModelList getCurrentSettingsByCategoryUnfiltered(
+            CoreSession coreSession, String category) throws ClientException {
+        return findUserSettings(coreSession, category, null, false);
     }
 
     @Override
@@ -231,12 +238,13 @@ public class UserSettingsServiceImpl implements UserSettingsService {
             return null;
         }
         DocumentModelList settings = findUserSettings(coreSession,
-                provider.getCategory(), type);
+                provider.getCategory(), type, false);
         return settings.get(0);
     }
 
     private DocumentModelList findUserSettings(CoreSession session,
-            String category, String type) throws ClientException {
+            String category, String type, boolean hiddenInSettingsFilter)
+            throws ClientException {
         DocumentModelList result = new DocumentModelListImpl();
         if (userSettingsProviders.size() == 0) {
             log.warn("No provider has been registered in the UserSettings service");
@@ -264,7 +272,9 @@ public class UserSettingsServiceImpl implements UserSettingsService {
                 provider = userSettingsProviders.get(providerType);
                 settingProviderDoc = getUserSettingProviderDoc(provider,
                         userSettingsRoot, session);
-                result.add(settingProviderDoc);
+                if (!(hiddenInSettingsFilter && settingProviderDoc.hasFacet(UserSettingsConstants.HIDDEN_IN_SETTINGS_FACET))) {
+                    result.add(settingProviderDoc);
+                }
             }
         }
         return result;

@@ -31,61 +31,78 @@ public interface UserSettingsService {
 
     /**
      * register the setting providers contributed to userSettingsProvider XP.
+     * 
      * @param provider
      * @throws ClientException
      */
-    public void registerProvider(UserSettingsProviderDescriptor provider)
+    void registerProvider(UserSettingsProviderDescriptor provider)
             throws ClientException;
 
     /**
      * Unregister the given documentType from the service registry.
+     * 
      * @param docType
      * @throws ClientException
      */
-    public void unRegisterProvider(String docType) throws ClientException;
+    void unRegisterProvider(String docType) throws ClientException;
 
-    public void clearProviders() throws ClientException;
+    void clearProviders() throws ClientException;
 
     /**
      * @return all registered Providers as UserSettingsProviderDescriptor.
      * @throws ClientException
      */
-    public Map<String, UserSettingsProviderDescriptor> getAllRegisteredProviders()
+    Map<String, UserSettingsProviderDescriptor> getAllRegisteredProviders()
             throws ClientException;
 
     /**
      * @return all found category.
      */
-    public Set<String> getCategories();
+    Set<String> getCategories();
 
     /**
      * Get all document type registered as providers for the given category.
+     * 
      * @param category
      * @return
      */
-    public List<String> getSettingsByCategory(String category);
+    List<String> getSettingsByCategory(String category);
 
     /**
+     * Provider with the HiddenInSettings facet won't be returned.
+     *
      * @param coreSession
      * @param category
-     * @return all the settings Provider of the given category from the session's user.
+     * @return all the settings Provider of the given category from the
+     *         session's user.
      * @throws ClientException
      */
-    public DocumentModelList getCurrentSettingsByCategory(
-            CoreSession coreSession, String category) throws ClientException;
+    DocumentModelList getCurrentSettingsByCategory(CoreSession coreSession,
+            String category) throws ClientException;
 
     /**
      * 
+     * @param coreSession
+     * @param category
+     * @return all the settings Provider of the given category from the
+     *         session's user.
+     * @throws ClientException
+     */
+    DocumentModelList getCurrentSettingsByCategoryUnfiltered(
+            CoreSession coreSession, String category) throws ClientException;
+
+    /**
+     *
      * @param coreSession
      * @param type
      * @return the setting provider from the session's user.
      * @throws ClientException
      */
-    public DocumentModel getCurrentSettingsByType(
-            CoreSession coreSession, String type) throws ClientException;
+    DocumentModel getCurrentSettingsByType(CoreSession coreSession, String type)
+            throws ClientException;
 
     /**
-     * Remove the setting provider from the session's user. 
+     * Remove the setting provider from the session's user.
      *
      * @param session
      * @param type
@@ -95,8 +112,9 @@ public interface UserSettingsService {
             throws ClientException;
 
     /**
-     * Remove all settings provider of the given category from the session's user. 
-     * 
+     * Remove all settings provider of the given category from the session's
+     * user.
+     *
      * @param session
      * @param category
      * @throws ClientException

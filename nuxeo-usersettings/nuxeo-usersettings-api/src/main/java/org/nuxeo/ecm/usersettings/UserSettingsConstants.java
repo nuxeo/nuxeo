@@ -22,4 +22,6 @@ public interface UserSettingsConstants {
     public static final String BASE_EXTENSION_POINT = "userSettingsConfiguration";
 
     public static final String SETTINGS_PROVIDER_EXTENSION_POINT = "userSettingsProvider";
+
+    public static final String HIDDEN_IN_SETTINGS_FACET = "HiddenInSettings";
 }

@@ -33,6 +33,9 @@
       - category: category could be anything and is used to sort providers.
       - enabled: default value is true. False will remove the settings provider from the
         service registry.
+        
+        When defining a documentType as provider, you can add the HiddenInSettings facet so
+        its layout won't be showed in the userCenter.
     </documentation>
     <object
       class="org.nuxeo.ecm.usersettings.UserSettingsProviderDescriptor" />
