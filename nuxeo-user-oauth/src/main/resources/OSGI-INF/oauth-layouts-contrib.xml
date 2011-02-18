@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.user.center.oauth.layouts">
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+    <layout name="authorizedApplications">
+      <templates>
+        <template mode="any">
+          /layouts/layout_authorized_applications_template.xhtml
+        </template>
+      </templates>
+      <rows>
+        <row>
+          <widget>appId</widget>
+        </row>
+        <row>
+          <widget>creationDate</widget>
+        </row>
+        <row>
+          <widget>duration</widget>
+        </row>
+      </rows>
+
+      <widget name="appId" type="text">
+        <labels>
+          <label mode="any">AppId (Gadget) </label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauthToken.appId</field>
+        </fields>
+        <properties mode="any">
+          <property name="help">
+          label.oauth.help.appId
+          </property>
+        </properties>
+      </widget>
+
+      <widget name="creationDate" type="datetime">
+        <labels>
+          <label mode="any">Creation Date </label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauthToken.creationDate</field>
+        </fields>
+        <properties mode="any">
+          <property name="help">
+          label.oauth.help.creationDate
+          </property>
+        </properties>
+      </widget>
+
+      <widget name="duration" type="int">
+        <labels>
+          <label mode="any">Duration (in minutes)</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauthToken.durationInMinutes</field>
+        </fields>
+        <properties mode="any">
+          <property name="help">
+          label.oauth.help.durationInMinutes
+          </property>
+        </properties>
+      </widget>
+    </layout>
+  </extension>
+
+</component>
