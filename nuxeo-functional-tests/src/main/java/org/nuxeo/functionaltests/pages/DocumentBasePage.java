@@ -54,7 +54,7 @@ public class DocumentBasePage extends AbstractPage {
     @FindBy(xpath = "//div[@class=\"userActions\"]")
     public WebElement userActions;
 
-    @FindBy(id = "nxl_document_header:nxw_header_description")
+    @FindBy(className = "currentDocumentDescription")
     public WebElement currentDocumentDescription;
 
     @FindBy(xpath = "/html/body/table[2]/tbody/tr/td[2]/div[2]//h1")
