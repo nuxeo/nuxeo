@@ -90,7 +90,7 @@ public class UserSettingsManagerActionsBean implements Serializable {
         }
     }
     
-    public void resetConfiguration() throws ClientException {
-        getUserSettingsService().clearProviders();
+    public void resetCurrentSettingCategory() throws ClientException {
+        getUserSettingsService().resetSettingsCategory(documentManager, currentCategory);
     }
 }

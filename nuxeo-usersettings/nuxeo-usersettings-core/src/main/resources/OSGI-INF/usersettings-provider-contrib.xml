@@ -6,11 +6,11 @@
 	
 	<extension target="org.nuxeo.ecm.usersettings.UserSettingsService"
 		point="userSettingsProvider">
+    
+    <userSettingsProvider type="Vcard" category="User" />
 
     <userSettingsProvider type="DefaultSettings" category="Default" />
     <userSettingsProvider type="NavigationSettings" category="Default" />
-    
-    <userSettingsProvider type="Vcard" category="User" />
 
 	</extension>
 
