@@ -3,11 +3,13 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.nuxeo.ecm.distribution</groupId>
-    <artifactId>nuxeo-distribution</artifactId>
+    <!-- avoid pulling unwanted test dependencies (old webdriver) -->
+    <groupId>org.nuxeo</groupId>
+    <artifactId>nuxeo-ecm</artifactId>
     <version>5.4.1-SNAPSHOT</version>
   </parent>
 
+  <groupId>org.nuxeo.ecm.distribution</groupId>
   <artifactId>nuxeo-functional-tests</artifactId>
   <name>nuxeo-functional-tests</name>
   <description>Nuxeo Functional Tests. Framework for testing nuxeo

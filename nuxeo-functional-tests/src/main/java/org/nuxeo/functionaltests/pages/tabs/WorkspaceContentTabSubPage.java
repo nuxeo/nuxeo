@@ -16,6 +16,7 @@
  */
 package org.nuxeo.functionaltests.pages.tabs;
 
+import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.pages.forms.WorkspaceFormPage;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -27,7 +28,8 @@ import org.openqa.selenium.support.FindBy;
  */
 public class WorkspaceContentTabSubPage extends ContentTabSubPage {
 
-    @FindBy(linkText="Create a new workspace")
+    @Required
+    @FindBy(linkText = "Create a new workspace")
     WebElement createNewWorkspaceLink;
 
     public WorkspaceContentTabSubPage(WebDriver driver) {

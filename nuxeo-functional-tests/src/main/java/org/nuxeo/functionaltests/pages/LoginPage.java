@@ -17,10 +17,9 @@
  */
 package org.nuxeo.functionaltests.pages;
 
-import static junit.framework.Assert.assertNotNull;
-
 import java.util.List;
 
+import org.nuxeo.functionaltests.Required;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -31,22 +30,24 @@ import org.openqa.selenium.support.FindBy;
  */
 public class LoginPage extends AbstractPage {
 
+    @Required
     @FindBy(id = "username")
     WebElement usernameInputTextBox;
 
+    @Required
     @FindBy(id = "password")
     WebElement passwordInputTextBox;
 
+    @Required
     @FindBy(name = "Submit")
     WebElement submitButton;
 
+    @Required
     @FindBy(id = "language")
     WebElement languageSelectBox;
 
     public LoginPage(WebDriver driver) {
         super(driver);
-        assertNotNull(driver.findElement(By.id("username")));
-        assertNotNull(driver.findElement(By.id("password")));
     }
 
     /**
@@ -93,7 +94,8 @@ public class LoginPage extends AbstractPage {
      * @param pageClassToProxy the next page's class
      * @return the next page
      */
-    public <T> T login(String username, String password, Class<T> pageClassToProxy) {
+    public <T> T login(String username, String password,
+            Class<T> pageClassToProxy) {
         login(username, password);
         return asPage(pageClassToProxy);
     }

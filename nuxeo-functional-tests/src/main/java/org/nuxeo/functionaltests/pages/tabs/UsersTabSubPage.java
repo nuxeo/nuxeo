@@ -16,16 +16,26 @@
  */
 package org.nuxeo.functionaltests.pages.tabs;
 
+import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.pages.AbstractPage;
 import org.nuxeo.functionaltests.pages.forms.UserCreationFormPage;
+import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
 public class UsersTabSubPage extends AbstractPage {
 
+    @Required
     @FindBy(linkText = "Create a new user")
     WebElement createNewUserLink;
+
+    @FindBy(name = "searchForm:searchText")
+    WebElement searchInput;
+
+    @FindBy(name = "searchForm:searchButton")
+    WebElement searchButton;
 
     public UsersTabSubPage(WebDriver driver) {
         super(driver);
@@ -34,6 +44,25 @@ public class UsersTabSubPage extends AbstractPage {
     public UserCreationFormPage getUserCreatePage() {
         createNewUserLink.click();
         return asPage(UserCreationFormPage.class);
+    }
+
+    public UsersTabSubPage searchUser(String query) {
+        searchInput.clear();
+        searchInput.sendKeys(query);
+        searchButton.click();
+        return asPage(UsersTabSubPage.class);
+    }
+
+    /**
+     * Is the username was found in the last search result page.
+     */
+    public boolean isUserFound(String username) {
+        try {
+            driver.findElement(By.linkText(username));
+        } catch (NoSuchElementException e) {
+            return false;
+        }
+        return true;
     }
 
 }

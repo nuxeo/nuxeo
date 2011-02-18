@@ -23,6 +23,7 @@ import org.nuxeo.functionaltests.pages.tabs.ContentTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.EditTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.SummaryTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.WorkspaceContentTabSubPage;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -53,11 +54,14 @@ public class DocumentBasePage extends AbstractPage {
     @FindBy(xpath = "//div[@class=\"userActions\"]")
     public WebElement userActions;
 
-    @FindBy(id = "nxl_document_header:nxw_header_description")
+    @FindBy(className = "currentDocumentDescription")
     public WebElement currentDocumentDescription;
 
     @FindBy(xpath = "/html/body/table[2]/tbody/tr/td[2]/div[2]//h1")
     public WebElement currentDocumentTitle;
+
+    @FindBy(xpath = "//div[@id=\"facesStatusMessage\"]/ul/li")
+    public WebElement infoFeedback;
 
     public DocumentBasePage(WebDriver driver) {
         super(driver);
@@ -118,7 +122,7 @@ public class DocumentBasePage extends AbstractPage {
     }
 
     /**
-     * Get the top bar navigation sub page.
+     * Gets the top bar navigation sub page.
      *
      * @return
      */
@@ -135,5 +139,19 @@ public class DocumentBasePage extends AbstractPage {
         return currentDocumentTitle.getText();
     }
 
+    /**
+     * Gets the info feedback message.
+     *
+     * @return the message if any or an empty string.
+     */
+    public String getFeedbackMessage() {
+        String ret;
+        try {
+            ret = infoFeedback.getText();
+        } catch (NoSuchElementException e) {
+            ret = "";
+        }
+        return ret.trim();
+    }
 
 }

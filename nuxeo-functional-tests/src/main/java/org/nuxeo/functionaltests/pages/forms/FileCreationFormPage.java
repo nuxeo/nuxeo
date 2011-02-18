@@ -21,11 +21,10 @@ import org.nuxeo.functionaltests.pages.FileDocumentBasePage;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
-import static junit.framework.Assert.assertNotNull;
 
 /**
  * @author Sun Seng David TAN <stan@nuxeo.com>
- * 
+ *
  */
 public class FileCreationFormPage extends AbstractPage {
 
@@ -53,10 +52,6 @@ public class FileCreationFormPage extends AbstractPage {
 
     public FileDocumentBasePage createFileDocument(String title,
             String description, String fileToUploadPath) {
-        assertNotNull(titleTextInput);
-        assertNotNull(descriptionTextInput);
-        assertNotNull(createButton);
-        assertNotNull(fileInput);
         titleTextInput.sendKeys(title);
         descriptionTextInput.sendKeys(description);
         uploadFileRadioButton.setSelected();

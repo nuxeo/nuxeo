@@ -18,6 +18,7 @@ package org.nuxeo.functionaltests.pages.tabs;
 
 import static junit.framework.Assert.assertNotNull;
 
+import org.nuxeo.functionaltests.Required;
 import java.util.List;
 
 import org.nuxeo.functionaltests.pages.AbstractPage;
@@ -31,12 +32,13 @@ import org.openqa.selenium.support.FindBy;
 /**
  * The content tab sub page. Most of the time available for folderish documents
  * and displaying the current document's children
- * 
+ *
  * @author Sun Seng David TAN <stan@nuxeo.com>
- * 
+ *
  */
 public class ContentTabSubPage extends AbstractPage {
 
+    @Required
     @FindBy(id = "document_content")
     WebElement documentContentForm;
 
@@ -52,7 +54,7 @@ public class ContentTabSubPage extends AbstractPage {
 
     /**
      * Clicking on one of the child with the title.
-     * 
+     *
      * @param documentTitle
      * @return
      */
@@ -63,13 +65,12 @@ public class ContentTabSubPage extends AbstractPage {
 
     /**
      * Clicks on the new button and select the type of document to create
-     * 
+     *
      * @param docType the document type to create
      * @param pageClassToProxy The page object type to return
      * @return The create form page object
      */
     public <T> T getDocumentCreatePage(String docType, Class<T> pageClassToProxy) {
-        assertNotNull(newButton);
         newButton.click();
         WebElement link = null;
         for (WebElement element : driver.findElements(By.className("documentType"))) {

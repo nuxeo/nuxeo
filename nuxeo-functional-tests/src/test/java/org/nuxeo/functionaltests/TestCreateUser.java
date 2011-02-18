@@ -16,9 +16,12 @@
  */
 package org.nuxeo.functionaltests;
 
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Test;
 import org.nuxeo.functionaltests.finders.ElementNotFoundException;
-import org.nuxeo.functionaltests.pages.forms.UserCreationFormPage;
+import org.nuxeo.functionaltests.pages.DocumentBasePage;
+import org.nuxeo.functionaltests.pages.tabs.UsersTabSubPage;
 
 /**
  * Create a user in Nuxeo DM.
@@ -27,11 +30,16 @@ public class TestCreateUser extends AbstractTest {
 
     @Test
     public void testCreateUser() throws ElementNotFoundException {
-
-        UserCreationFormPage form = login().getHeaderLinks().goToUserManagementPage().getUsersTab().getUserCreatePage();
-        form.createUser("test_user1", "firstname1", "lastname1", "company1",
-                "email1", "test_user1", "members");
-
+        String username = "test_user3";
+        DocumentBasePage page;
+        UsersTabSubPage userTab = login().getHeaderLinks().goToUserManagementPage().getUsersTab();
+        userTab = userTab.searchUser(username);
+        if (!userTab.isUserFound(username)) {
+            page = userTab.getUserCreatePage().createUser(username,
+                    "firstname1", "lastname1", "company1", "email1",
+                    "test_user1", "members");
+            assertEquals(page.getFeedbackMessage(), "User created");
+        }
     }
 
 }

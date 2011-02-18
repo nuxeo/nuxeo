@@ -15,6 +15,7 @@
  */
 package org.nuxeo.functionaltests.pages.forms;
 
+import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.pages.AbstractPage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.openqa.selenium.WebDriver;
@@ -22,18 +23,21 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
 /**
- * 
+ *
  * @author Sun Seng David TAN <stan@nuxeo.com>
- * 
+ *
  */
 public class WorkspaceFormPage extends AbstractPage {
 
+    @Required
     @FindBy(id = "document_create:nxl_heading:nxw_title")
     WebElement titleTextInput;
 
+    @Required
     @FindBy(id = "document_create:nxl_heading:nxw_description")
     WebElement descriptionTextInput;
 
+    @Required
     @FindBy(id = "document_create:button_create")
     WebElement createButton;
 
