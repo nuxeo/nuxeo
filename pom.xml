@@ -17,6 +17,7 @@
     <module>nuxeo-user-dashboard</module>
     <module>nuxeo-user-profile</module>
     <module>nuxeo-usersettings</module>
+    <module>nuxeo-user-oauth</module>
   </modules>
 
   <dependencyManagement>
