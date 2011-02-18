@@ -14,24 +14,26 @@
  * Contributors:
  *     Benoit Delbosc
  */
-package org.nuxeo.functionaltests;
+package org.nuxeo.functionaltests.pages.tabs;
 
-import org.junit.Test;
-import org.nuxeo.functionaltests.finders.ElementNotFoundException;
+import org.nuxeo.functionaltests.pages.AbstractPage;
 import org.nuxeo.functionaltests.pages.forms.UserCreationFormPage;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
 
-/**
- * Create a user in Nuxeo DM.
- */
-public class TestCreateUser extends AbstractTest {
+public class UsersTabSubPage extends AbstractPage {
 
-    @Test
-    public void testCreateUser() throws ElementNotFoundException {
+    @FindBy(linkText = "Create a new user")
+    WebElement createNewUserLink;
 
-        UserCreationFormPage form = login().getHeaderLinks().goToUserManagementPage().getUsersTab().getUserCreatePage();
-        form.createUser("test_user1", "firstname1", "lastname1", "company1",
-                "email1", "test_user1", "members");
+    public UsersTabSubPage(WebDriver driver) {
+        super(driver);
+    }
 
+    public UserCreationFormPage getUserCreatePage() {
+        createNewUserLink.click();
+        return asPage(UserCreationFormPage.class);
     }
 
 }

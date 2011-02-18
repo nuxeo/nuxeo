@@ -28,7 +28,7 @@ import org.openqa.selenium.support.FindBy;
 /**
  * Nuxeo DM user management page.
  */
-public class UserManagementFormPage extends AbstractPage {
+public class UserCreationFormPage extends AbstractPage {
 
     @FindBy(id = "createUser:nxl_user:nxw_username")
     WebElement usernameInput;
@@ -57,7 +57,7 @@ public class UserManagementFormPage extends AbstractPage {
     @FindBy(id = "createUser:button_create")
     WebElement createButton;
 
-    public UserManagementFormPage(WebDriver driver) {
+    public UserCreationFormPage(WebDriver driver) {
         super(driver);
     }
 
