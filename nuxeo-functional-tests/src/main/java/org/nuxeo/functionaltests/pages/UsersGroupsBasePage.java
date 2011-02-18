@@ -16,34 +16,30 @@
  */
 package org.nuxeo.functionaltests.pages;
 
-import org.nuxeo.functionaltests.Required;
-import org.nuxeo.functionaltests.pages.tabs.UsersTabSubPage;
+import static org.junit.Assert.assertNotNull;
+
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
 /**
- * Nuxeo User and Groups page.
+ * Nuxeo User and Groups Base page.
  */
-public class UsersAndGroupsPage extends DocumentBasePage {
+public class UsersGroupsBasePage extends AbstractPage {
+    @FindBy(xpath = "/html/body/table[2]/tbody/tr/td[2]/div[2]//div[@class=\"tabsBar\"]/form/ul/li[@class=\"selected\"]/a")
+    public WebElement selectedTab;
 
-    @Required
-    @FindBy(xpath = "//div[@class=\"tabsBar\"]/form/ul/li/a[text()=\"Users\"]")
-    public WebElement usersTabLink;
+    protected void clickOnLinkIfNotSelected(WebElement tabLink) {
+        assertNotNull(tabLink);
+        assertNotNull(selectedTab);
 
+        if (!selectedTab.equals(tabLink)) {
+            tabLink.click();
+        }
+    }
 
-    public UsersAndGroupsPage(WebDriver driver) {
+    public UsersGroupsBasePage(WebDriver driver) {
         super(driver);
     }
-    /**
-     * View the Users tab.
-     *
-     * @return
-     */
-    public UsersTabSubPage getUsersTab() {
-        clickOnLinkIfNotSelected(usersTabLink);
-        return asPage(UsersTabSubPage.class);
-    }
-
 
 }

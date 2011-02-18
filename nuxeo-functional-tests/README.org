@@ -15,10 +15,10 @@
     - PageObject fluent interface
   - [ ] More robust to UI change
     - PageObject
-** Risks [0/2]
-  - [ ] ajax call, handling wait (cf watir vs webdriver)
+** Risks [2/2]
+  - [X] ajax call, handling wait (cf watir vs webdriver)
 	[[http://blog.activelylazy.co.uk/2010/05/05/testing-asynchronous-applications-with-webdriver/][async call]]
-  - [ ] file upload
+  - [X] file upload
 	(not working on chrome ?, ok on ff)
 ** Plan
   - Initial plan: 
@@ -31,7 +31,6 @@
     3. replace selenium tests 
 ** Docs & links
   - [[http://code.google.com/p/selenium/wiki/PageObjects][Page Objects]]
-  - [[/home/ben/dev/adeo/src/lm-portal/lm-portal-it/src/test/java/com/leroymerlin/corp/fr/nuxeo/portal/pages][Leroy Merlin webdriver tests]]
   - [[http://web-qualite.over-blog.com/article-tester-avec-watir-webdriver-64478109.html][Watir vs webdriver]] interesting limitation
   - [[http://wiki.github.com/aslakhellesoy/cuke4duke/][Cuke4Duke wiki]] Cuke4Duke is hub for java that rely on
     Jruby/cucumber gem Cucumber is just a test framework defining a
@@ -42,6 +41,11 @@
    - [[/home/ben/dev/tools/webdriver/nuxeo-cuke-tests/README.markdown][Nuxeo cuke readme]] 
    - [[/home/ben/dev/tools/webdriver/nuxeo-cuke-tests/src/test/java/org/nuxeo/dm/cuketest/MigratedTests.java][Migrated selenium test into webdriver]]
    - [[/home/ben/dev/tools/webdriver/nuxeo-cuke-tests/features/10create_docs.feature][Cucumber scripts]]
+* Todo
+** TODO logout
+** TODO navigation by path
+** TODO creation folder/notes
+** TODO migrate suite1
 * Existing Selenium tests
 
   [[../nuxeo-distribution-dm/ftest/selenium/tests][Selenium test directory]]

@@ -17,13 +17,24 @@
  */
 package org.nuxeo.functionaltests.pages;
 
+import static org.junit.Assert.assertNotNull;
+
 import org.nuxeo.functionaltests.AbstractTest;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
 
 /**
  * Base functions for all pages.
  */
 public abstract class AbstractPage {
+
+    @FindBy(xpath = "//div[@id=\"facesStatusMessage\"]/ul/li")
+    public WebElement infoFeedback;
+
+    @FindBy(name = "userServicesForm")
+    public WebElement userServicesForm;
 
     protected WebDriver driver;
 
@@ -39,4 +50,28 @@ public abstract class AbstractPage {
         return AbstractTest.asPage(pageClassToProxy);
     }
 
+    /**
+     * Gets the info feedback message.
+     *
+     * @return the message if any or an empty string.
+     */
+    public String getFeedbackMessage() {
+        String ret;
+        try {
+            ret = infoFeedback.getText();
+        } catch (NoSuchElementException e) {
+            ret = "";
+        }
+        return ret.trim();
+    }
+
+    /**
+     * Gets the top bar navigation sub page.
+     *
+     * @return
+     */
+    public HeaderLinksSubPage getHeaderLinks() {
+        assertNotNull(userServicesForm);
+        return asPage(HeaderLinksSubPage.class);
+    }
 }

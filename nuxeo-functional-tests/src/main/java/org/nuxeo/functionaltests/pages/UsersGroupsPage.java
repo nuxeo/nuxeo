@@ -17,25 +17,33 @@
 package org.nuxeo.functionaltests.pages;
 
 import org.nuxeo.functionaltests.Required;
-import org.nuxeo.functionaltests.pages.AbstractPage;
-import org.nuxeo.functionaltests.pages.UsersGroupsPage;
+import org.nuxeo.functionaltests.pages.tabs.UsersTabSubPage;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
-public class HeaderLinksSubPage extends AbstractPage {
+/**
+ * Nuxeo User and Groups page.
+ */
+public class UsersGroupsPage extends UsersGroupsBasePage {
 
     @Required
-    @FindBy(linkText = "Users & groups")
-    WebElement userAndGroupsLink;
+    @FindBy(xpath = "//div[@class=\"tabsBar\"]/form/ul/li/a[text()=\"Users\"]")
+    public WebElement usersTabLink;
 
-    public HeaderLinksSubPage(WebDriver driver) {
+
+    public UsersGroupsPage(WebDriver driver) {
         super(driver);
     }
-
-    public UsersGroupsPage goToUserManagementPage() {
-        userAndGroupsLink.click();
-        return asPage(UsersGroupsPage.class);
+    /**
+     * View the Users tab.
+     *
+     * @return
+     */
+    public UsersTabSubPage getUsersTab() {
+        clickOnLinkIfNotSelected(usersTabLink);
+        return asPage(UsersTabSubPage.class);
     }
+
 
 }
