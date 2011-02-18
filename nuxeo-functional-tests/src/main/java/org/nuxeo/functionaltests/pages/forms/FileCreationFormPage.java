@@ -16,16 +16,17 @@
  */
 package org.nuxeo.functionaltests.pages.forms;
 
+import static junit.framework.Assert.assertNotNull;
+
 import org.nuxeo.functionaltests.pages.AbstractPage;
 import org.nuxeo.functionaltests.pages.FileDocumentBasePage;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
-import static junit.framework.Assert.assertNotNull;
 
 /**
  * @author Sun Seng David TAN <stan@nuxeo.com>
- * 
+ *
  */
 public class FileCreationFormPage extends AbstractPage {
 

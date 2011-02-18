@@ -16,6 +16,8 @@
  */
 package org.nuxeo.functionaltests.pages.tabs;
 
+import org.nuxeo.functionaltests.SlowLoading;
+import org.nuxeo.functionaltests.pages.AbstractPage;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -24,9 +26,10 @@ import org.openqa.selenium.support.FindBy;
  * @author Sun Seng David TAN <stan@nuxeo.com>
  *
  */
-public class FileSummaryTabSubPage extends SummaryTabSubPage {
+public class FileSummaryTabSubPage extends AbstractPage {
 
     @FindBy(xpath = "//div[@class=\"content_block\"]//td[@class=\"fieldColumn\"]")
+    @SlowLoading
     WebElement mainContentViewField;
 
     /**

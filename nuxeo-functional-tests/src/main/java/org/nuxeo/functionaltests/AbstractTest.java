@@ -21,6 +21,7 @@ package org.nuxeo.functionaltests;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.lang.reflect.Constructor;
 import java.net.URL;
 
 import org.apache.commons.io.IOUtils;
@@ -29,6 +30,7 @@ import org.junit.BeforeClass;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.LoginPage;
 import org.openqa.selenium.Speed;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.support.PageFactory;
@@ -43,6 +45,8 @@ public abstract class AbstractTest {
     private static final String FIREBUG_XPI = "firebug-1.6.2-fx.xpi";
 
     private static final String FIREBUG_VERSION = "1.6.2";
+
+    private static final int LOAD_TIMEOUT_SECONDS = 5;
 
     protected static FirefoxDriver driver;
 
@@ -124,7 +128,27 @@ public abstract class AbstractTest {
     }
 
     public static <T> T asPage(Class<T> pageClassToProxy) {
-        return PageFactory.initElements(driver, pageClassToProxy);
+        T page = instantiatePage(driver, pageClassToProxy);
+        PageFactory.initElements(new VariableElementLocatorFactory(driver,
+                LOAD_TIMEOUT_SECONDS), page);
+        return page;
+    }
+
+    // private in PageFactory...
+    protected static <T> T instantiatePage(WebDriver driver,
+            Class<T> pageClassToProxy) {
+        try {
+            try {
+                Constructor<T> constructor = pageClassToProxy.getConstructor(WebDriver.class);
+                return constructor.newInstance(driver);
+            } catch (NoSuchMethodException e) {
+                return pageClassToProxy.newInstance();
+            }
+        } catch (RuntimeException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public LoginPage getLoginPage() {
@@ -141,7 +165,8 @@ public abstract class AbstractTest {
     }
 
     public DocumentBasePage login(String username, String password) {
-        DocumentBasePage documentBasePage = getLoginPage().login(username, password, DocumentBasePage.class);
+        DocumentBasePage documentBasePage = getLoginPage().login(username,
+                password, DocumentBasePage.class);
         documentBasePage.checkUserConnected(username);
         return documentBasePage;
     }
