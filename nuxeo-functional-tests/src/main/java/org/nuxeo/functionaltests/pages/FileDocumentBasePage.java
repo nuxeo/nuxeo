@@ -16,6 +16,7 @@
  */
 package org.nuxeo.functionaltests.pages;
 
+import org.nuxeo.functionaltests.pages.tabs.FileSummaryTabSubPage;
 import org.openqa.selenium.WebDriver;
 import static junit.framework.Assert.assertNotNull;
 

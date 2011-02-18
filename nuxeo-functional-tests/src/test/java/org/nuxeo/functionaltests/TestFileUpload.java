@@ -24,9 +24,9 @@ import java.net.URL;
 
 import org.junit.Test;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
-import org.nuxeo.functionaltests.pages.FileCreationFormPage;
 import org.nuxeo.functionaltests.pages.FileDocumentBasePage;
-import org.nuxeo.functionaltests.pages.WorkspaceFormPage;
+import org.nuxeo.functionaltests.pages.forms.FileCreationFormPage;
+import org.nuxeo.functionaltests.pages.forms.WorkspaceFormPage;
 
 /**
  * Test file upload in Nuxeo DM.
@@ -67,7 +67,6 @@ public class TestFileUpload extends AbstractTest {
         URL fileUrl = cl.getResource(filePath);
         assertEquals("file", fileUrl.getProtocol());
         return fileUrl.getPath();
-
     }
 
 }

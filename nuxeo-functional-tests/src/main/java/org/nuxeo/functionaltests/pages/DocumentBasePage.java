@@ -16,6 +16,8 @@
  */
 package org.nuxeo.functionaltests.pages;
 
+import org.nuxeo.functionaltests.pages.tabs.ContentTabSubPage;
+import org.nuxeo.functionaltests.pages.tabs.WorkspaceContentTabSubPage;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;

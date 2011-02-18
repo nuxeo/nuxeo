@@ -13,8 +13,10 @@
  *
  * Contributors: Sun Seng David TAN <stan@nuxeo.com>
  */
-package org.nuxeo.functionaltests.pages;
+package org.nuxeo.functionaltests.pages.forms;
 
+import org.nuxeo.functionaltests.pages.AbstractPage;
+import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;

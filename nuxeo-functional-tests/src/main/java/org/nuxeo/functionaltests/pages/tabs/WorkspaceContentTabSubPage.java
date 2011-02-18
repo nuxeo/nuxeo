@@ -14,8 +14,9 @@
  * Contributors:
  *     Sun Seng David TAN <stan@nuxeo.com>
  */
-package org.nuxeo.functionaltests.pages;
+package org.nuxeo.functionaltests.pages.tabs;
 
+import org.nuxeo.functionaltests.pages.forms.WorkspaceFormPage;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -24,20 +25,18 @@ import org.openqa.selenium.support.FindBy;
  * @author Sun Seng David TAN <stan@nuxeo.com>
  *
  */
-public class FileSummaryTabSubPage extends AbstractPage {
+public class WorkspaceContentTabSubPage extends ContentTabSubPage {
 
-    @FindBy(xpath = "//div[@class=\"content_block\"]//td[@class=\"fieldColumn\"]")
-    WebElement mainContentViewField;
+    @FindBy(linkText="Create a new workspace")
+    WebElement createNewWorkspaceLink;
 
-    /**
-     * @param driver
-     */
-    public FileSummaryTabSubPage(WebDriver driver) {
+    public WorkspaceContentTabSubPage(WebDriver driver) {
         super(driver);
     }
 
-    public String getMainContentFileText() {
-        return mainContentViewField.getText();
+    public WorkspaceFormPage getWorkspaceCreatePage() {
+        createNewWorkspaceLink.click();
+        return asPage(WorkspaceFormPage.class);
     }
 
 }
