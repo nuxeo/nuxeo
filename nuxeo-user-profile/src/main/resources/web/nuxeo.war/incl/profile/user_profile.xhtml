@@ -5,32 +5,6 @@
   xmlns:a4j="http://richfaces.org/a4j">
 
   <a4j:region>
-
-    <rich:modalPanel id="editPasswordFormPanel" autosized="true"
-      styleClass="EditPasswordFormPanel">
-      <f:facet name="header">
-        <h:panelGroup>
-          <h:outputText value="#{messages['command.change.password']}"/>
-        </h:panelGroup>
-      </f:facet>
-      <f:facet name="controls">
-        <h:panelGroup>
-          <a4j:form id="editPasswordHideForm">
-            <a4j:commandLink
-              actionListener="#{editableListBean.resetAllListsCachedModels}"
-              id="editPasswordHideLink"
-              onclick="Richfaces.hideModalPanel('editPasswordFormPanel')"
-              immediate="true" reRender="editPasswordPanel">
-              <h:graphicImage value="/img/close.png" styleClass="hidelink" />
-            </a4j:commandLink>
-          </a4j:form>
-        </h:panelGroup>
-      </f:facet>
-      <a4j:outputPanel id="editPasswordPanel">
-        WIP
-      </a4j:outputPanel>
-    </rich:modalPanel>
-
     <a4j:outputPanel id="profilePanel">
 
       <a4j:form>
@@ -41,38 +15,37 @@
               <td class="labelColumn">
                 <a4j:commandButton
                   value="#{messages['label.userManager.editUser']}"
-                  action="#{userProfileActions.setEditing(true)}"
+                  action="#{userProfileActions.setMode('edit')}"
                   styleClass="button"
-                  rendered="#{!userProfileActions.editing and userManagerActions.allowEditUser and notReadOnly}"
+                  rendered="#{userProfileActions.mode == 'view' and userManagerActions.allowEditUser and notReadOnly}"
                   reRender="profilePanel" />
                 <a4j:commandButton
                   value="#{messages['command.cancel']}"
                   actionListener="#{editableListBean.resetAllListsCachedModels}"
-                  action="#{userProfileActions.setEditing(false)}"
+                  action="#{userProfileActions.setMode('view')}"
                   styleClass="button"
-                  rendered="#{userProfileActions.editing}"
+                  rendered="#{userProfileActions.mode != 'view'}"
                   reRender="profilePanel" />
               </td>
               <td class="fieldColumn">
                  <a4j:commandButton
                     value="#{messages['command.change.password']}"
+                    action="#{userProfileActions.setMode('editPassword')}"
                     styleClass="button"
-                    oncomplete="Richfaces.showModalPanel('editPasswordFormPanel')"
-                    rendered="#{!userProfileActions.editing and userManagerActions.allowEditUser and notReadOnly}"
-                    reRender="editPasswordPanel" />
+                    rendered="#{userProfileActions.mode == 'view' and userManagerActions.allowEditUser and notReadOnly}"
+                    reRender="profilePanel" />
               </td>
             </tr>
           </tbody>
         </table>
       </a4j:form>
 
-      <a4j:form id="viewUser" rendered="#{!userProfileActions.editing}">
+      <a4j:form id="viewUser" rendered="#{userProfileActions.mode == 'view'}">
         <nxl:layout name="user" mode="view" value="#{userManagerActions.selectedUser}" />
       </a4j:form>
 
-      <a4j:form id="editUser" rendered="#{userProfileActions.editing and userManagerActions.allowEditUser and notReadOnly}">
+      <a4j:form id="editUser" rendered="#{userProfileActions.mode == 'edit' and userManagerActions.allowEditUser and notReadOnly}">
         <nxl:layout name="user" mode="edit" value="#{userManagerActions.selectedUser}" />
-
         <table class="dataInput">
           <tbody>
             <tr>
@@ -88,6 +61,24 @@
           </tbody>
         </table>
       </a4j:form>
+
+      <h:form id="editUserPassword" rendered="#{userProfileActions.mode == 'editPassword' and userManagerActions.allowEditUser and notReadOnly}">
+        <nxl:layout name="user" mode="editPassword" value="#{userManagerActions.selectedUser}" />
+        <table class="dataInput">
+          <tbody>
+            <tr>
+              <td class="iconColumn"></td>
+              <td class="labelColumn">
+                <h:commandButton
+                  value="#{messages['command.save']}"
+                  action="#{userManagerActions.changePassword}"
+                  styleClass="button" />
+              </td>
+              <td class="fieldColumn"></td>
+            </tr>
+          </tbody>
+        </table>
+      </h:form>
 
     </a4j:outputPanel>
   </a4j:region>

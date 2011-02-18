@@ -16,30 +16,32 @@ public class UserProfileActions implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    public static final String PROFILE_VIEW_MODE = "view";
+
+    public static final String PROFILE_EDIT_MODE = "edit";
+
+    public static final String PROFILE_EDIT_PASSWORD_MODE = "editPassword";
+
     @In(create = true)
     protected transient UserManagerActionsBean userManagerActions;
 
     @In(create = true)
     protected NuxeoPrincipal currentUser;
 
-    protected boolean editing;
+    protected String mode = PROFILE_VIEW_MODE;
 
     public void updateUser() throws ClientException {
         userManagerActions.updateUser();
-        editing = false;
+        mode = PROFILE_VIEW_MODE;
     }
 
-    public void changePassword() throws ClientException {
-        userManagerActions.changePassword();
-    }
-
-    public boolean isEditing() throws ClientException {
+    public String getMode() throws ClientException {
         userManagerActions.setSelectedUser(currentUser.getModel());
-        return editing;
+        return mode;
     }
 
-    public void setEditing(boolean editing) {
-        this.editing = editing;
+    public void setMode(String mode) {
+        this.mode = mode;
     }
 
 }
