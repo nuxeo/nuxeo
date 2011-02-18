@@ -120,12 +120,19 @@ public abstract class AbstractTest {
         return get(NUXEO_URL, LoginPage.class);
     }
 
+    /**
+     * Login as Administrator
+     *
+     * @return the Document base page (by default returned by nuxeo dm)
+     */
     public DocumentBasePage login() {
         return login("Administrator", "Administrator");
     }
 
     public DocumentBasePage login(String username, String password) {
-        return getLoginPage().login(username, password, DocumentBasePage.class);
+        DocumentBasePage documentBasePage = getLoginPage().login(username, password, DocumentBasePage.class);
+        documentBasePage.checkUserConnected(username);
+        return documentBasePage;
     }
 
 }

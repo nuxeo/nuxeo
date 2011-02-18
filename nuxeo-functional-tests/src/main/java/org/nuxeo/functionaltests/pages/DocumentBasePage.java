@@ -17,6 +17,7 @@
 package org.nuxeo.functionaltests.pages;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import org.nuxeo.functionaltests.pages.tabs.ContentTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.WorkspaceContentTabSubPage;
@@ -26,9 +27,9 @@ import org.openqa.selenium.support.FindBy;
 
 /**
  * The nuxeo main document base page
- *
+ * 
  * @author Sun Seng David TAN <stan@nuxeo.com>
- *
+ * 
  */
 public class DocumentBasePage extends AbstractPage {
 
@@ -41,17 +42,20 @@ public class DocumentBasePage extends AbstractPage {
     @FindBy(xpath = "/html/body/table[2]/tbody/tr/td[2]/div[2]//div[@class=\"tabsBar\"]/form/ul/li[@class=\"selected\"]/a")
     public WebElement selectedTab;
 
+    @FindBy(xpath = "//div[@class=\"userActions\"]")
+    public WebElement userActions;
+
     public DocumentBasePage(WebDriver driver) {
         super(driver);
     }
 
     /**
      * Click on the content tab and return the subpage of this page.
-     *
+     * 
      * @return
      */
     public ContentTabSubPage getContentTab() {
-        
+
         clickOnLinkIfNotSelected(contentTabLink);
         return asPage(ContentTabSubPage.class);
     }
@@ -67,11 +71,22 @@ public class DocumentBasePage extends AbstractPage {
 
     /**
      * For workspace type, the content tab is a bit different.
-     *
+     * 
      * @return
      */
     public WorkspaceContentTabSubPage getWorkspaceContentTab() {
         clickOnLinkIfNotSelected(contentTabLink);
         return asPage(WorkspaceContentTabSubPage.class);
+    }
+
+    /**
+     * Check if the user is connected by looking for the text: You are logged as
+     * Username
+     * 
+     * @param username
+     */
+    public void checkUserConnected(String username) {
+        String expectedConnectedMessage = "You are logged as " + username;
+        assertTrue(userActions.getText().contains(expectedConnectedMessage));
     }
 }
