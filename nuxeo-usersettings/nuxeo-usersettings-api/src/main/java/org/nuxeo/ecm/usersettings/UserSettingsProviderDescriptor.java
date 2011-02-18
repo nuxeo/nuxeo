@@ -25,26 +25,38 @@ import org.nuxeo.common.xmap.annotation.XObject;
 /**
  * 
  * @author <a href="mailto:christophe.capon@vilogia.fr">Christophe Capon</a>
- * 
+ * @author Laurent Doguin
  */
-
 @XObject("userSettingsProvider")
 public class UserSettingsProviderDescriptor {
 
-    @XNode("@name")
-    private String userSettingsProviderName;
 
-    @XNode("@class")
-    private Class<? extends UserSettingsProvider> userSettingsProviderClass;
-
-    public Class<? extends UserSettingsProvider> getProviderClass() {
-
-        return userSettingsProviderClass;
-
+    public UserSettingsProviderDescriptor() {
     }
 
-    public String getProviderName() {
-        return userSettingsProviderName;
+    public UserSettingsProviderDescriptor(String type) {
+        this.type = type;
+    }
+
+    @XNode("@enabled")
+    private boolean enabled = true;
+
+    @XNode("@type")
+    private String type;
+
+    @XNode("@category")
+    private String category = "Default";
+
+    public String getType() {
+        return type;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
     }
 
 }

@@ -5,7 +5,6 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.usersettings.UserSettingsConstants;
 import org.nuxeo.ecm.usersettings.UserSettingsDescriptor;
-import org.nuxeo.ecm.usersettings.UserSettingsProvider;
 import org.nuxeo.ecm.usersettings.UserSettingsProviderDescriptor;
 import org.nuxeo.ecm.usersettings.UserSettingsService;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -95,62 +94,34 @@ public class UserSettingsServiceImplComponent extends DefaultComponent {
     private void registerUserSettingsProvider(Object contribution,
             String extensionPoint, ComponentInstance contributor)
             throws ClientException {
-
-        UserSettingsProviderDescriptor desc = (UserSettingsProviderDescriptor) contribution;
-
-        Class<?> klass = desc.getProviderClass();
-
-        try {
-
+        if (contribution instanceof UserSettingsProviderDescriptor) {
+            UserSettingsProviderDescriptor desc = (UserSettingsProviderDescriptor) contribution;
             UserSettingsService svc = getUserSettingsService();
-
-            if (klass == null) {
-                log.info(String.format(
-                        "No class specified for %s AlertProvider, trying to remove",
-                        desc.getProviderName()));
-                svc.unRegisterProvider(desc.getProviderName());
-            } else {
-                UserSettingsProvider provider = (UserSettingsProvider) klass.newInstance();
-                svc.registerProvider(desc.getProviderName(), provider);
-                log.info(String.format(
-                        "Registered %s extension point with %s name.",
-                        extensionPoint, desc.getProviderName()));
-            }
-
-        } catch (InstantiationException e) {
-            throw new ClientException("Failed to instantiate class " + klass, e);
-        } catch (IllegalAccessException e) {
-            throw new ClientException("Failed to instantiate class " + klass, e);
-        } catch (Exception e) {
-            throw new ClientException("Failed to get UserSettingsService", e);
+            svc.registerProvider(desc);
+            log.info(String.format(
+                    "Registered %s extension point with %s name.",
+                    extensionPoint, desc.getType()));
         }
-
     }
 
     private void unregisterPendingProviders() throws ClientException {
-
         getUserSettingsService().clearProviders();
-   
     }
 
     private void unregisterUserSettingsProvider(Object contribution,
             String extensionPoint, ComponentInstance contributor)
             throws ClientException {
-
-        UserSettingsProviderDescriptor desc = (UserSettingsProviderDescriptor) contribution;
-
-        try {
-
-            UserSettingsService svc = getUserSettingsService();
-
-            svc.unRegisterProvider(desc.getProviderName());
-
-            log.info(String.format("Unregistering settings provider %s",
-                    desc.getProviderName()));
-
-        } catch (Exception e) {
-            throw new ClientException(
-                    "Failed to unregister UserSettingsService", e);
+        if (contribution instanceof UserSettingsProviderDescriptor) {
+            UserSettingsProviderDescriptor desc = (UserSettingsProviderDescriptor) contribution;
+            try {
+                UserSettingsService svc = getUserSettingsService();
+                svc.unRegisterProvider(desc.getType());
+                log.info(String.format("Unregistering settings provider %s",
+                        desc.getType()));
+            } catch (Exception e) {
+                throw new ClientException(
+                        "Failed to unregister UserSettingsService", e);
+            }
         }
 
     }

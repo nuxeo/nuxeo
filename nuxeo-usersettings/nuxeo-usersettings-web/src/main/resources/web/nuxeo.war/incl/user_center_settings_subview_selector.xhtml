@@ -1,0 +1,27 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:c="http://java.sun.com/jstl/core"
+  class="tabsBar">
+
+  <nxu:set var="availableSettingsCategories" value="#{userSettingsActions.availableCategories}">    
+  <h:form>
+    <nxu:dataList
+      layout="unorderedList"
+      var="category"
+      value="#{availableSettingsCategories}"
+      itemStyleClass="#{nxu:test(userSettingsActions.currentCategory == category, 'selected', '')}">
+
+      <a4j:commandLink
+        action="#{userSettingsActions.setCurrentCategory(category)}"
+        immediate="true"
+        reRender="user_center_subtab">
+        <h:outputText value="#{messages[category]}" />
+      </a4j:commandLink>
+
+    </nxu:dataList>
+  </h:form>
+  </nxu:set>
+
+</div>

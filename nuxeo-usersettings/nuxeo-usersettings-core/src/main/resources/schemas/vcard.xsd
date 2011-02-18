@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+
+<xs:schema targetNamespace="http://www.nuxeo.core/ecm/schemas/usersettings"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  
+<!-- N   Name  A structured representation of the name of the person, place or thing associated with the vCard object. -->
+  <xs:element name="N" type="xs:string" />
+<!--FN  Formatted Name  The formatted name string associated with the vCard object -->
+  <xs:element name="FN" type="xs:string" />
+<!--NICKNAME  Nickname  A descriptive or familiar name given instead of or in addition to the one belonging to a person, place, or thing. -->
+  <xs:element name="NICKNAME" type="xs:string" />
+<!--PHOTO   Photograph  An image or photograph of the individual associated with the vCard -->
+  <xs:element name="PHOTO" type="xs:string" />
+<!--BDAY  Birthday  Date of birth of the individual associated with the vCard -->
+  <xs:element name="BDAY" type="xs:string" />
+<!--ADR   Delivery Address  A structured representation of the physical delivery address for the vCard object -->
+  <xs:element name="ADR" type="xs:string" />
+<!--LABEL   Label Address   Addressing label for physical delivery to the person/object associated with the vCard -->
+  <xs:element name="LABEL" type="xs:string" />
+<!--TEL   Telephone   The canonical number string for a telephone number for telephony communication with the vCard object -->
+  <xs:element name="TEL" type="xs:string" />
+<!--EMAIL   Email   The address for electronic mail communication with the vCard object -->
+  <xs:element name="EMAIL" type="xs:string" />
+<!--MAILER  Email Program (Optional)  Type of email program used -->
+  <xs:element name="MAILER" type="xs:string" />
+<!--TZ  Time Zone   Information related to the standard time zone of the vCard object -->
+  <xs:element name="TZ" type="xs:string" />
+<!--GEO   Global Positioning  The property specifies a latitude and longitude -->
+  <xs:element name="GEO" type="xs:string" />
+<!--TITLE   Title   Specifies the job title, functional position or function of the individual associated with the vCard object within an organization (V. P. Research and Development) -->
+  <xs:element name="TITLE" type="xs:string" />
+<!--ROLE  Role or occupation  The role, occupation, or business category of the vCard object within an organization (e.g. Executive) -->
+  <xs:element name="ROLE" type="xs:string" />
+<!--LOGO  Logo  An image or graphic of the logo of the organization that is associated with the individual to which the vCard belongs -->
+  <xs:element name="LOGO" type="xs:string" />
+<!--AGENT   Agent   Information about another person who will act on behalf of the vCard object. Typically this would be an area administrator, assistant, or secretary for the individual -->
+  <xs:element name="AGENT" type="xs:string" />
+<!--ORG   Organization Name or Organizational unit  The name and optionally the unit(s) of the organization associated with the vCard object. This property is based on the X.520 Organization Name attribute and the X.520 Organization Unit attribute -->
+  <xs:element name="ORG" type="xs:string" />
+<!--NOTE  Note  Specifies supplemental information or a comment that is associated with the vCard -->
+  <xs:element name="NOTE" type="xs:string" />
+<!--REV   Last Revision   Combination of the calendar date and time of day of the last update to the vCard object -->
+  <xs:element name="REV" type="xs:string" />
+<!--SOUND   Sound   By default, if this property is not grouped with other properties it specifies the pronunciation of the Formatted Name property of the vCard object. -->
+  <xs:element name="SOUND" type="xs:string" />
+<!--URL   URL   An URL is a representation of an Internet location that can be used to obtain real-time information about the vCard object -->
+  <xs:element name="URL" type="xs:string" />
+<!--UID   Unique Identifier   Specifies a value that represents a persistent, globally unique identifier associated with the object -->
+  <xs:element name="UID" type="xs:string" />
+<!--VERSION   Version   Version of the vCard Specification -->
+  <xs:element name="VERSION" type="xs:string" />
+<!--KEY   Public Key  The public encryption key associated with the vCard object -->
+	<xs:element name="KEY" type="xs:string" />
+</xs:schema>
+
+
+

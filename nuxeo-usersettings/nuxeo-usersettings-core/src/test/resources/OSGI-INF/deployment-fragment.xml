@@ -1,12 +1,7 @@
 <?xml version="1.0"?>
-<fragment>
-  <extension target="application#MODULE">
-    <module>
-      <java>${bundle.fileName}</java>
-    </module>
-  </extension> 
+<fragment version="1">
   
-     <install>
+  <install>
 
   	<!--  create a temp dir -->
 		<!--  be sure no directory with that name exists -->

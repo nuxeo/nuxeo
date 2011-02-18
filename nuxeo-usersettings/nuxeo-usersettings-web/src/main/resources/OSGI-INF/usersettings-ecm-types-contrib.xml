@@ -7,17 +7,31 @@
 	<extension target="org.nuxeo.ecm.platform.types.TypeService"
 		point="types">
 
-		<type id="UserSettings">
-			<label>label.usersettings</label>
-			<icon>/icons/file.gif</icon>
-			<bigIcon>/icons/file_100.png</bigIcon>
-			<description>usersettings.description</description>
-			<category>SimpleDocument</category>
-			<default-view>view_documents</default-view>
-			<layouts mode="any">
-				<layout>usersettings</layout>
-			</layouts>
-		</type>
+
+    <type id="DefaultSettings" >
+      <label>DefaultSettings</label>
+      <icon>/icons/folder.gif</icon>
+      <default-view>view_documents</default-view>
+      <layouts mode="any">
+        <layout>defaultSettings</layout>
+      </layouts>
+    </type>
+    <type id="NavigationSettings" >
+      <label>NavigationSettings</label>
+      <icon>/icons/folder.gif</icon>
+      <default-view>view_documents</default-view>
+      <layouts mode="any">
+        <layout>navigationSettings</layout>
+      </layouts>
+    </type>
+    <type id="Vcard" >
+      <label>Vcard</label>
+      <icon>/icons/folder.gif</icon>
+      <default-view>view_documents</default-view>
+      <layouts mode="any">
+        <layout>vcard</layout>
+      </layouts>
+    </type>
 
 		<type id="Workspace">
 			<subtypes>

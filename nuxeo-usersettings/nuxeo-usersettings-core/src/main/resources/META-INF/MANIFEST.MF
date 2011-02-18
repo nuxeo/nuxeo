@@ -9,4 +9,5 @@ Bundle-Category: core
 Require-Bundle: org.nuxeo.ecm.core, org.nuxeo.ecm.core.api, org.nuxeo.ecm.core.schema
 Nuxeo-Component: OSGI-INF/usersettings-core-types-contrib.xml,
  OSGI-INF/usersettings-framework.xml,
- OSGI-INF/usersettings-service-contrib.xml
+ OSGI-INF/usersettings-service-contrib.xml,
+ OSGI-INF/usersettings-provider-contrib.xml

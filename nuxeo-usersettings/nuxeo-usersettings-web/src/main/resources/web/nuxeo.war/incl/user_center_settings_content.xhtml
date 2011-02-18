@@ -1,0 +1,17 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:c="http://java.sun.com/jstl/core">
+
+  <h:form>
+    <c:forEach var="row" items="#{userSettingsActions.currentSettings}" >
+      <nxl:documentLayout mode="edit" value="#{row}" />
+    </c:forEach>
+    
+    <h:commandLink value="#{messages['command.save']}"
+      action="#{userSettingsActions.saveCurrentSettings()}"/>
+  </h:form>
+
+</div>

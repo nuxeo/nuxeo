@@ -6,10 +6,8 @@
 	
 	<extension target="org.nuxeo.ecm.usersettings.UserSettingsService"
 		point="userSettingsProvider">
-		
-		<userSettingsProvider  name="SettingsProvider2"
-			class="com.nuxeo.ecm.usersettings.core.SettingsProvider2">
-		</userSettingsProvider>
+
+    <userSettingsProvider type="TestSettings2" category="default" />
 
 	</extension>
 
