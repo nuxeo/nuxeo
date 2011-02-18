@@ -20,6 +20,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import org.nuxeo.functionaltests.pages.tabs.ContentTabSubPage;
+import org.nuxeo.functionaltests.pages.tabs.HeaderLinksSubPage;
 import org.nuxeo.functionaltests.pages.tabs.WorkspaceContentTabSubPage;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -41,6 +42,9 @@ public class DocumentBasePage extends AbstractPage {
 
     @FindBy(xpath = "/html/body/table[2]/tbody/tr/td[2]/div[2]//div[@class=\"tabsBar\"]/form/ul/li[@class=\"selected\"]/a")
     public WebElement selectedTab;
+
+    @FindBy(name = "userServicesForm")
+    public WebElement userServicesForm;
 
     @FindBy(xpath = "//div[@class=\"userActions\"]")
     public WebElement userActions;

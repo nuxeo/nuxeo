@@ -14,6 +14,7 @@
  * Contributors:
  *     Sun Seng David TAN
  *     Florent Guillaume
+ *     Benoit Delbosc
  */
 package org.nuxeo.functionaltests;
 
@@ -27,6 +28,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.LoginPage;
+import org.openqa.selenium.Speed;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.support.PageFactory;
@@ -50,7 +52,7 @@ public abstract class AbstractTest {
     public static void initDriver() throws Exception {
         FirefoxProfile profile = new FirefoxProfile();
 
-        // Set english as default language
+        // Set English as default language
         profile.setPreference("general.useragent.locale", "en");
         profile.setPreference("intl.accept_languages", "en");
 
@@ -61,10 +63,19 @@ public abstract class AbstractTest {
         addFireBug(profile);
 
         driver = new FirefoxDriver(profile);
+        // Set speed between user interaction: keyboard and mouse
+        // Fast: 0, MEDIUM: 0.5s SLOW: 1s
+        driver.manage().setSpeed(Speed.FAST);
     }
 
     @AfterClass
-    public static void quitDriver() {
+    public static void quitDriver() throws InterruptedException {
+        // Temporary code to take snapshots of the last page
+        // TODO: snapshots only test on failure, prefix using the test name
+        driver.saveScreenshot(new File("/tmp/screenshot-lastpage.png"));
+        Thread.currentThread().sleep(1000);
+        driver.saveScreenshot(new File("/tmp/screenshot-lastpage2.png"));
+
         if (driver != null) {
             driver.close();
             driver = null;
