@@ -28,9 +28,9 @@ import org.openqa.selenium.support.FindBy;
 
 /**
  * The nuxeo main document base page
- * 
+ *
  * @author Sun Seng David TAN <stan@nuxeo.com>
- * 
+ *
  */
 public class DocumentBasePage extends AbstractPage {
 
@@ -52,12 +52,10 @@ public class DocumentBasePage extends AbstractPage {
     public DocumentBasePage(WebDriver driver) {
         super(driver);
     }
-    
-    
 
     /**
      * Click on the content tab and return the subpage of this page.
-     * 
+     *
      * @return
      */
     public ContentTabSubPage getContentTab() {
@@ -77,7 +75,7 @@ public class DocumentBasePage extends AbstractPage {
 
     /**
      * For workspace type, the content tab is a bit different.
-     * 
+     *
      * @return
      */
     public WorkspaceContentTabSubPage getWorkspaceContentTab() {
@@ -88,14 +86,14 @@ public class DocumentBasePage extends AbstractPage {
     /**
      * Check if the user is connected by looking for the text: You are logged as
      * Username
-     * 
+     *
      * @param username
      */
     public void checkUserConnected(String username) {
         String expectedConnectedMessage = "You are logged as " + username;
         assertTrue(userActions.getText().contains(expectedConnectedMessage));
     }
-    
+
     /**
      * Get the top bar navigation sub page.
      *
