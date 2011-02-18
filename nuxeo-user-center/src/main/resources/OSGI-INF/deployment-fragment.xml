@@ -3,6 +3,7 @@
 
   <require>org.nuxeo.ecm.platform.lang</require>
   <require>org.nuxeo.ecm.webapp.core</require>
+  <require>org.nuxeo.ecm.webapp.ui</require>
 
   <install>
     <!--  unzip the war template -->

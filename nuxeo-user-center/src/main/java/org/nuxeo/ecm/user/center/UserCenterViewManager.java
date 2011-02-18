@@ -119,4 +119,9 @@ public class UserCenterViewManager implements Serializable {
                 + getCurrentViewId());
     }
 
+    public String navigateTo(Action action) {
+        setCurrentView(action);
+        return "user_center";
+    }
+
 }
