@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.nuxeo.functionaltests.pages.AbstractPage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
+import org.nuxeo.functionaltests.waitfor.WaitUntil;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
@@ -44,8 +45,8 @@ public class ContentTabSubPage extends AbstractPage {
 
     @FindBy(linkText = "New")
     WebElement newButton;
-    
-    @FindBy(xpath="//input[@value=\"Delete\"]")
+
+    @FindBy(id = "//input[@value=\"Delete\"]")
     WebElement deleteButton;
 
     public ContentTabSubPage(WebDriver driver) {
@@ -96,16 +97,26 @@ public class ContentTabSubPage extends AbstractPage {
         for (WebElement trItem : trelements) {
             try {
                 trItem.findElement(By.linkText(documentTitle));
-                WebElement checkBox = trItem.findElement(By.xpath("//input[@type=\"checkbox\"]"));
-                checkBox.setSelected();
+                WebElement checkBox = trItem.findElement(By.xpath("//input[@type=\"checkbox\"][@name=\"document_content:nxl_document_listing_ajax:nxw_listing_ajax_selection_box_with_current_document\"]"));
+                checkBox.click();
                 break;
             } catch (NoSuchElementException e) {
                 // next
             }
         }
+        boolean wait = true;
+
+        new WaitUntil() {
+            @Override
+            public boolean condition() {
+                deleteButton = driver.findElement(By.xpath("//input[@value=\"Delete\"]"));
+                return deleteButton.isEnabled();
+            }
+        }.waitUntil();
+
         deleteButton.click();
         driver.switchTo().alert().accept();
-        
+
         return asPage(DocumentBasePage.class);
     }
 }

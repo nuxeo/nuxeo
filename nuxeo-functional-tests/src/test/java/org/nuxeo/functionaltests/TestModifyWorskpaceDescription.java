@@ -64,8 +64,8 @@ public class TestModifyWorskpaceDescription extends AbstractTest {
         documentBasePage = documentBasePage.getNavigationSubPage().goToDocument(
                 "Workspaces");
 
-        // documentBasePage =
-        // documentBasePage.getContentTab().removeDocument(workspaceTitle);
+        documentBasePage = documentBasePage.getContentTab().removeDocument(
+                workspaceTitle);
 
     }
 
