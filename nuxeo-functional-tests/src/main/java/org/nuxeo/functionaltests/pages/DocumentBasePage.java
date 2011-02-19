@@ -92,9 +92,6 @@ public class DocumentBasePage extends AbstractPage {
     }
 
     protected void clickOnLinkIfNotSelected(WebElement tabLink) {
-        assertNotNull(tabLink);
-        assertNotNull(selectedTab);
-
         if (!selectedTab.equals(tabLink)) {
             tabLink.click();
         }
