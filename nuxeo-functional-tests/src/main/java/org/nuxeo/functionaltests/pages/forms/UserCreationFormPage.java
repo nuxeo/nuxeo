@@ -18,10 +18,10 @@
 package org.nuxeo.functionaltests.pages.forms;
 
 import org.nuxeo.functionaltests.Required;
-import org.nuxeo.functionaltests.finders.ElementNotFoundException;
-import org.nuxeo.functionaltests.finders.FindElementUntil;
 import org.nuxeo.functionaltests.pages.AbstractPage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
+import org.nuxeo.functionaltests.waitfor.ElementNotFoundException;
+import org.nuxeo.functionaltests.waitfor.FindElementUntil;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;

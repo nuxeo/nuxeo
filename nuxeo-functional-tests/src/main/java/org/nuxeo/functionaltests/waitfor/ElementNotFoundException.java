@@ -1,4 +1,4 @@
-package org.nuxeo.functionaltests.finders;
+package org.nuxeo.functionaltests.waitfor;
 /*
  * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and contributors.
  *

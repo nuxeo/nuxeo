@@ -19,9 +19,9 @@ package org.nuxeo.functionaltests;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
-import org.nuxeo.functionaltests.finders.ElementNotFoundException;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.tabs.UsersTabSubPage;
+import org.nuxeo.functionaltests.waitfor.ElementNotFoundException;
 
 /**
  * Create a user in Nuxeo DM.
