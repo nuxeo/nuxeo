@@ -22,6 +22,7 @@ import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.jsf.OperationHelper;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
+import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsPersistenceManager;
 
 /**
  * @author Anahide Tchertchian
@@ -36,8 +37,14 @@ public class ClearWorklist {
 
     @OperationMethod
     public void run() throws Exception {
-        OperationHelper.getDocumentListManager().resetWorkingList(
-                DocumentsListsManager.DEFAULT_WORKING_LIST);
+        if (OperationHelper.isSeamContextAvailable()) {
+            OperationHelper.getDocumentListManager().resetWorkingList(
+                    DocumentsListsManager.DEFAULT_WORKING_LIST);
+        }
+        else {
+            DocumentsListsPersistenceManager pm = new DocumentsListsPersistenceManager();
+            pm.clearPersistentList(ctx.getPrincipal().getName(), DocumentsListsManager.DEFAULT_WORKING_LIST);
+        }
     }
 
 }

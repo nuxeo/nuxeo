@@ -28,6 +28,10 @@ import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
  */
 public class OperationHelper {
 
+    public static boolean isSeamContextAvailable() {
+        return Contexts.isSessionContextActive();
+    }
+
     public static NavigationContext getNavigationContext() {
         return (NavigationContext) Contexts.getConversationContext().get(
                 "navigationContext");

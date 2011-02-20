@@ -27,6 +27,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
+import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsPersistenceManager;
 
 /**
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
@@ -41,9 +42,14 @@ public class FetchFromWorklist {
 
     @OperationMethod
     public DocumentModelList run() throws Exception {
-        List<DocumentModel> res = OperationHelper.getDocumentListManager().getWorkingList(
+        List<DocumentModel> res = null;
+        if (OperationHelper.isSeamContextAvailable()) {
+            res = OperationHelper.getDocumentListManager().getWorkingList(
                 DocumentsListsManager.DEFAULT_WORKING_LIST);
+        } else {
+            DocumentsListsPersistenceManager pm = new DocumentsListsPersistenceManager();
+            res = pm.loadPersistentDocumentsLists(ctx.getCoreSession(), ctx.getPrincipal().getName(), DocumentsListsManager.DEFAULT_WORKING_LIST);
+        }
         return new DocumentModelListImpl(res);
     }
-
 }

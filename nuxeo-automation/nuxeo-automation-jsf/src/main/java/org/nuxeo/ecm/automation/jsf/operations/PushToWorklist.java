@@ -24,6 +24,7 @@ import org.nuxeo.ecm.automation.jsf.OperationHelper;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
+import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsPersistenceManager;
 
 /**
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
@@ -38,15 +39,29 @@ public class PushToWorklist {
 
     @OperationMethod
     public DocumentModel run(DocumentModel doc) throws Exception {
-        OperationHelper.getDocumentListManager().addToWorkingList(
-                DocumentsListsManager.DEFAULT_WORKING_LIST, doc);
+        if (OperationHelper.isSeamContextAvailable()) {
+            OperationHelper.getDocumentListManager().addToWorkingList(
+                    DocumentsListsManager.DEFAULT_WORKING_LIST, doc);
+        }
+        else {
+            DocumentsListsPersistenceManager pm = new DocumentsListsPersistenceManager();
+            pm.addDocumentToPersistentList(ctx.getPrincipal().getName(), DocumentsListsManager.DEFAULT_WORKING_LIST, doc);
+        }
         return doc;
     }
 
     @OperationMethod
     public DocumentModelList run(DocumentModelList docs) throws Exception {
-        OperationHelper.getDocumentListManager().addToWorkingList(
-                DocumentsListsManager.DEFAULT_WORKING_LIST, docs);
+        if (OperationHelper.isSeamContextAvailable()) {
+            OperationHelper.getDocumentListManager().addToWorkingList(
+                    DocumentsListsManager.DEFAULT_WORKING_LIST, docs);
+        }
+        else {
+            DocumentsListsPersistenceManager pm = new DocumentsListsPersistenceManager();
+            for (DocumentModel doc :docs) {
+                pm.addDocumentToPersistentList(ctx.getPrincipal().getName(), DocumentsListsManager.DEFAULT_WORKING_LIST, doc);
+            }
+        }
         return docs;
     }
 
