@@ -90,8 +90,9 @@ public abstract class AbstractTest {
     public static void quitDriver() throws InterruptedException {
         // Temporary code to take snapshots of the last page
         // TODO: snapshots only test on failure, prefix using the test name
+        Thread.sleep(250);
         driver.saveScreenshot(new File("/tmp/screenshot-lastpage.png"));
-        Thread.currentThread().sleep(1000);
+        Thread.sleep(250);
         driver.saveScreenshot(new File("/tmp/screenshot-lastpage2.png"));
 
         if (driver != null) {
