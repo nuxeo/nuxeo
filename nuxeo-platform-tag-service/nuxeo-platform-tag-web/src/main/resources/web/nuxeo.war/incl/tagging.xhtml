@@ -8,7 +8,9 @@
 
     <c:if test="#{tagServiceEnabled}">
         <a4j:outputPanel id="taggingPanel" ajaxRendered="false">
-            <ui:include src="/incl/message_banner.xhtml"/>
+            <ui:include src="/incl/message_banner.xhtml">
+              <ui:param name="messagesFacesId" value="tagging_messages"/>
+            </ui:include>
             <nxu:dataTable id="tagsTable"
                 value="#{currentDocumentTags}" var="tag"
                 rendered="#{not empty currentDocumentTags}">

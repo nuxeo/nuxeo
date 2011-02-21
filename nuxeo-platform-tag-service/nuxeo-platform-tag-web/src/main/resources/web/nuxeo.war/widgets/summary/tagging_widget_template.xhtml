@@ -12,7 +12,9 @@
   </h3>
 
         <a4j:outputPanel id="taggingPanel" ajaxRendered="false">
-            <ui:include src="/incl/message_banner.xhtml"/>
+            <ui:include src="/incl/message_banner.xhtml">
+              <ui:param name="messagesFacesId" value="#{widget.id}_messages"/>
+            </ui:include>
             <nxu:dataTable id="tagsTable"
                 value="#{currentDocumentTags}" var="tag"
                 rendered="#{not empty currentDocumentTags}">
