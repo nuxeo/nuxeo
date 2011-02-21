@@ -22,6 +22,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -64,22 +65,65 @@ public class DocumentContentViewActions implements Serializable {
 
     protected Map<String, List<ContentViewHeader>> currentAvailableContentViews;
 
+    /**
+     * Map caching content views shown in export defined on a given document
+     * type
+     */
+    protected Map<String, Map<String, List<ContentViewHeader>>> typeToExportContentView = new HashMap<String, Map<String, List<ContentViewHeader>>>();
+
+    protected Map<String, List<ContentViewHeader>> currentExportContentViews;
+
     // API for content view support
 
-    protected List<ContentViewHeader> getContentViewHeaders(TypeInfo typeInfo,
-            String category) throws ClientException {
-        List<ContentViewHeader> res = new ArrayList<ContentViewHeader>();
-        String[] cvNames = typeInfo.getContentViews(category);
-        if (cvNames != null) {
-            for (String cvName : cvNames) {
-                ContentView cv = contentViewActions.getContentView(cvName);
-                if (cv != null) {
-                    res.add(new ContentViewHeader(cvName, cv.getTitle(),
-                            cv.getTranslateTitle(), cv.getIconPath()));
+    protected Map<String, List<ContentViewHeader>> getContentViewHeaders(
+            TypeInfo typeInfo, boolean export) throws ClientException {
+        Map<String, List<ContentViewHeader>> res = new LinkedHashMap<String, List<ContentViewHeader>>();
+        Map<String, String[]> cvNamesByCat;
+        if (export) {
+            cvNamesByCat = typeInfo.getContentViewsForExport();
+        } else {
+            cvNamesByCat = typeInfo.getContentViews();
+        }
+        if (cvNamesByCat != null) {
+            for (Map.Entry<String, String[]> cvNameByCat : cvNamesByCat.entrySet()) {
+                List<ContentViewHeader> headers = new ArrayList<ContentViewHeader>();
+                String[] cvNames = cvNameByCat.getValue();
+                if (cvNames != null) {
+                    for (String cvName : cvNames) {
+                        ContentView cv = contentViewActions.getContentView(cvName);
+                        if (cv != null) {
+                            headers.add(new ContentViewHeader(cvName,
+                                    cv.getTitle(), cv.getTranslateTitle(),
+                                    cv.getIconPath()));
+                        }
+                    }
                 }
+                res.put(cvNameByCat.getKey(), headers);
             }
         }
         return res;
+    }
+
+    protected void retrieveContentViewHeaders(DocumentModel doc)
+            throws ClientException {
+        String docType = doc.getType();
+        if (!typeToContentView.containsKey(docType)) {
+            TypeInfo typeInfo = doc.getAdapter(TypeInfo.class);
+            Map<String, List<ContentViewHeader>> byCategories = getContentViewHeaders(
+                    typeInfo, false);
+            typeToContentView.put(docType, byCategories);
+        }
+    }
+
+    protected void retrieveExportContentViewHeaders(DocumentModel doc)
+            throws ClientException {
+        String docType = doc.getType();
+        if (!typeToExportContentView.containsKey(docType)) {
+            TypeInfo typeInfo = doc.getAdapter(TypeInfo.class);
+            Map<String, List<ContentViewHeader>> byCategories = getContentViewHeaders(
+                    typeInfo, true);
+            typeToExportContentView.put(docType, byCategories);
+        }
     }
 
     /**
@@ -93,49 +137,82 @@ public class DocumentContentViewActions implements Serializable {
         if (doc == null) {
             return false;
         }
+        retrieveContentViewHeaders(doc);
         String docType = doc.getType();
-        if (!typeToContentView.containsKey(docType)) {
-            Map<String, List<ContentViewHeader>> byCategories = new HashMap<String, List<ContentViewHeader>>();
-            typeToContentView.put(docType, byCategories);
-        }
         if (!typeToContentView.get(docType).containsKey(category)) {
-            Map<String, List<ContentViewHeader>> byCategories = typeToContentView.get(docType);
-            TypeInfo typeInfo = doc.getAdapter(TypeInfo.class);
-            byCategories.put(category,
-                    getContentViewHeaders(typeInfo, category));
-            typeToContentView.put(docType, byCategories);
+            return false;
         }
         return !typeToContentView.get(docType).get(category).isEmpty();
     }
 
+    public Map<String, List<ContentViewHeader>> getAvailableContentViewsForDocument(
+            DocumentModel doc) throws ClientException {
+        if (doc == null) {
+            return Collections.emptyMap();
+        }
+        retrieveContentViewHeaders(doc);
+        String docType = doc.getType();
+        return typeToContentView.get(docType);
+    }
+
     public List<ContentViewHeader> getAvailableContentViewsForDocument(
             DocumentModel doc, String category) throws ClientException {
-        if (doc == null || !hasContentViewSupport(doc, category)) {
+        if (doc == null) {
             return Collections.emptyList();
         }
-        // call to hasContentViewSupport should have filled the type cache
+        retrieveContentViewHeaders(doc);
+        String docType = doc.getType();
+        if (!typeToContentView.get(docType).containsKey(category)) {
+            return Collections.emptyList();
+        }
         return typeToContentView.get(doc.getType()).get(category);
+    }
+
+    public Map<String, List<ContentViewHeader>> getAvailableContentViewsForCurrentDocument()
+            throws ClientException {
+        if (currentAvailableContentViews == null) {
+            DocumentModel currentDocument = navigationContext.getCurrentDocument();
+            currentAvailableContentViews = getAvailableContentViewsForDocument(currentDocument);
+        }
+        return currentAvailableContentViews;
     }
 
     public List<ContentViewHeader> getAvailableContentViewsForCurrentDocument(
             String category) throws ClientException {
-        if (currentAvailableContentViews == null
-                || !currentAvailableContentViews.containsKey(category)) {
-            if (currentAvailableContentViews == null) {
-                currentAvailableContentViews = new HashMap<String, List<ContentViewHeader>>();
-            }
-            DocumentModel currentDocument = navigationContext.getCurrentDocument();
-            currentAvailableContentViews.put(category,
-                    getAvailableContentViewsForDocument(currentDocument,
-                            category));
-        }
+        getAvailableContentViewsForCurrentDocument();
         return currentAvailableContentViews.get(category);
+    }
+
+    public Map<String, List<ContentViewHeader>> getExportContentViewsForDocument(
+            DocumentModel doc) throws ClientException {
+        if (doc == null) {
+            return Collections.emptyMap();
+        }
+        retrieveExportContentViewHeaders(doc);
+        String docType = doc.getType();
+        return typeToExportContentView.get(docType);
+    }
+
+    public Map<String, List<ContentViewHeader>> getExportContentViewsForCurrentDocument()
+            throws ClientException {
+        if (currentExportContentViews == null) {
+            DocumentModel currentDocument = navigationContext.getCurrentDocument();
+            currentExportContentViews = getExportContentViewsForDocument(currentDocument);
+        }
+        return currentExportContentViews;
+    }
+
+    public List<ContentViewHeader> getExportContentViewsForCurrentDocument(
+            String category) throws ClientException {
+        getExportContentViewsForCurrentDocument();
+        return currentExportContentViews.get(category);
     }
 
     @Observer(value = { EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED }, create = false)
     @BypassInterceptors
     public void documentChanged() {
         currentAvailableContentViews = null;
+        currentExportContentViews = null;
     }
 
 }
