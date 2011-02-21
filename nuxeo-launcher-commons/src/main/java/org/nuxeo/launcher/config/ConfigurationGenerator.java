@@ -633,7 +633,7 @@ public class ConfigurationGenerator {
      */
     public boolean isWizardRequired() {
         return !"true".equalsIgnoreCase(getUserConfig().getProperty(
-                PARAM_WIZARD_DONE, "false"));
+                PARAM_WIZARD_DONE, "true"));
     }
 
 }
