@@ -16,6 +16,8 @@
  */
 package org.nuxeo.ecm.platform.forms.layout.facelets.plugins;
 
+import org.jboss.seam.pdf.ui.UIHtmlText;
+import org.nuxeo.ecm.platform.forms.layout.api.BuiltinWidgetModes;
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
 import org.nuxeo.ecm.platform.forms.layout.api.exceptions.WidgetException;
 import org.nuxeo.ecm.platform.forms.layout.facelets.FaceletHandlerHelper;
@@ -25,6 +27,7 @@ import org.nuxeo.ecm.platform.forms.layout.facelets.TagConfigFactory;
 
 import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletHandler;
+import com.sun.facelets.tag.TagAttribute;
 import com.sun.facelets.tag.TagAttributes;
 import com.sun.facelets.tag.TagConfig;
 
@@ -49,7 +52,16 @@ public class LayoutWidgetTypeHandler extends AbstractWidgetTypeHandler {
         FaceletHandler leaf = new LeafFaceletHandler();
         TagConfig layoutTagConfig = TagConfigFactory.createTagConfig(tagConfig,
                 attributes, leaf);
-        return new LayoutTagHandler(layoutTagConfig);
+        String mode = widget.getMode();
+        FaceletHandler res = new LayoutTagHandler(layoutTagConfig);
+        if (BuiltinWidgetModes.PDF.equals(mode)) {
+            // add a surrounding p:html tag handler
+            return helper.getHtmlComponentHandler(new TagAttributes(
+                    new TagAttribute[0]), res, UIHtmlText.class.getName(), null);
+        } else {
+            return res;
+        }
+
     }
 
 }

@@ -26,6 +26,7 @@ import java.util.TimeZone;
 import javax.faces.component.html.HtmlOutputText;
 import javax.faces.convert.DateTimeConverter;
 
+import org.jboss.seam.pdf.ui.UIHtmlText;
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinWidgetModes;
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
 import org.nuxeo.ecm.platform.forms.layout.api.exceptions.WidgetException;
@@ -93,8 +94,16 @@ public class DateTimeWidgetTypeHandler extends AbstractWidgetTypeHandler {
                     tagConfig, convertAttributes, leaf,
                     DateTimeConverter.CONVERTER_ID);
             ConvertHandler convert = new ConvertDateTimeHandler(convertConfig);
-            return helper.getHtmlComponentHandler(attributes, convert,
-                    HtmlOutputText.COMPONENT_TYPE, null);
+            ComponentHandler output = helper.getHtmlComponentHandler(
+                    attributes, convert, HtmlOutputText.COMPONENT_TYPE, null);
+            if (BuiltinWidgetModes.PDF.equals(mode)) {
+                // add a surrounding p:html tag handler
+                return helper.getHtmlComponentHandler(new TagAttributes(
+                        new TagAttribute[0]), output,
+                        UIHtmlText.class.getName(), null);
+            } else {
+                return output;
+            }
         }
     }
 }

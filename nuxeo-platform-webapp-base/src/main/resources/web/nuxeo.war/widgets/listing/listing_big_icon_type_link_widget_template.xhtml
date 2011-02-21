@@ -4,8 +4,9 @@
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
-  xmlns:h="http://java.sun.com/jsf/html">
-<c:if test="#{nxl:isLikePlainMode(widget.mode)}">#{field_2}</c:if>
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:p="http://jboss.com/products/seam/pdf">
+<c:if test="#{nxl:isLikePlainMode(widget.mode)} and widget.mode != 'pdf'">#{field_2}</c:if>
 <c:if test="#{not nxl:isLikePlainMode(widget.mode)}">
   
   <div id="docRefTarget:#{field_1}">
@@ -24,5 +25,10 @@
       value="Droppables.add('docRefTarget:#{field_1}', {accept:'cell', onDrop:function(element){moveElement(element,'docRef:#{field_1}')}, hoverclass:'dropInto'});"/>
   </script>
     
+</c:if>
+<c:if test="#{widget.mode == 'pdf'}">
+
+  <p:image value="#{nxd:iconPath(field_0)}" />
+
 </c:if>
 </f:subview>

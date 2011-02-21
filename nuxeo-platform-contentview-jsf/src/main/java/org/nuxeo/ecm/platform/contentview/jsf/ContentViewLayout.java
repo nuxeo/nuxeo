@@ -53,4 +53,11 @@ public interface ContentViewLayout extends Serializable {
      */
     boolean getShowCSVExport();
 
+    /**
+     * Returns true if PDF export is enabled for this layout.
+     *
+     * @since 5.4.1
+     */
+    boolean getShowPDFExport();
+
 }

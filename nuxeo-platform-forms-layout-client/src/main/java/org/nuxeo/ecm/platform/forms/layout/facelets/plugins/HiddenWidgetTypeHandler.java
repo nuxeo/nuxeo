@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.forms.layout.facelets.plugins;
 
 import javax.faces.component.html.HtmlInputHidden;
 
+import org.jboss.seam.pdf.ui.UIHtmlText;
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinWidgetModes;
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
 import org.nuxeo.ecm.platform.forms.layout.api.exceptions.WidgetException;
@@ -30,6 +31,7 @@ import org.nuxeo.ecm.platform.forms.layout.facelets.LeafFaceletHandler;
 import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletHandler;
 import com.sun.facelets.tag.CompositeFaceletHandler;
+import com.sun.facelets.tag.TagAttribute;
 import com.sun.facelets.tag.TagAttributes;
 import com.sun.facelets.tag.TagConfig;
 import com.sun.facelets.tag.jsf.ComponentHandler;
@@ -71,7 +73,14 @@ public class HiddenWidgetTypeHandler extends AbstractWidgetTypeHandler {
             // default on text for other modes
             ComponentHandler output = helper.getHtmlComponentHandler(
                     attributes, leaf, HtmlInputHidden.COMPONENT_TYPE, null);
-            return output;
+            if (BuiltinWidgetModes.PDF.equals(mode)) {
+                // add a surrounding p:html tag handler
+                return helper.getHtmlComponentHandler(new TagAttributes(
+                        new TagAttribute[0]), output,
+                        UIHtmlText.class.getName(), null);
+            } else {
+                return output;
+            }
         }
     }
 }

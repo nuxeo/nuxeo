@@ -45,7 +45,7 @@
       <resultLayouts>
         <layout name="search_listing_ajax" title="document_listing"
           translateTitle="true" iconPath="/icons/document_listing_icon.png"
-          showCSVExport="true" />
+          showCSVExport="true" showPDFExport="true" />
         <layout
           name="document_virtual_navigation_listing_ajax_compact_2_columns"
           title="document_listing_compact_2_columns" translateTitle="true"
@@ -177,7 +177,7 @@
       <resultLayouts>
         <layout name="search_listing_ajax" title="document_listing"
           translateTitle="true" iconPath="/icons/document_listing_icon.png"
-          showCSVExport="true" />
+          showCSVExport="true" showPDFExport="true" />
         <layout
           name="document_virtual_navigation_listing_ajax_compact_2_columns"
           title="document_listing_compact_2_columns" translateTitle="true"
@@ -224,7 +224,7 @@
       <resultLayouts>
         <layout name="search_listing_ajax" title="document_listing"
           translateTitle="true" iconPath="/icons/document_listing_icon.png"
-          showCSVExport="true" />
+          showCSVExport="true" showPDFExport="true" />
         <layout
           name="document_virtual_navigation_listing_ajax_compact_2_columns"
           title="document_listing_compact_2_columns" translateTitle="true"

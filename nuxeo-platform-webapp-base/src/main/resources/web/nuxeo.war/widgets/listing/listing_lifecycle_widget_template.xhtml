@@ -1,2 +1,9 @@
-<h:outputText value="#{messages[field]}"
-   xmlns:h="http://java.sun.com/jsf/html" />
+<f:subview
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:p="http://jboss.com/products/seam/pdf">
+<c:if test="#{widget.mode != 'pdf'}">#{messages[field]}</c:if>
+<c:if test="#{widget.mode == 'pdf'}">
+  <p:html>#{messages[field]}</p:html>
+</c:if>
+</f:subview>

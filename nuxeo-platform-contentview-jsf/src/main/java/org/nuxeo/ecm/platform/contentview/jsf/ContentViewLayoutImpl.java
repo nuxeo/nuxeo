@@ -43,6 +43,9 @@ public class ContentViewLayoutImpl implements ContentViewLayout {
     @XNode("@showCSVExport")
     protected boolean showCSVExport = false;
 
+    @XNode("@showPDFExport")
+    protected boolean showPDFExport = false;
+
     public ContentViewLayoutImpl() {
     }
 
@@ -74,6 +77,11 @@ public class ContentViewLayoutImpl implements ContentViewLayout {
     @Override
     public boolean getShowCSVExport() {
         return showCSVExport;
+    }
+
+    @Override
+    public boolean getShowPDFExport() {
+        return showPDFExport;
     }
 
     @Override

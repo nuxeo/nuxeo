@@ -20,6 +20,7 @@ import javax.faces.component.html.HtmlInputText;
 import javax.faces.component.html.HtmlOutputText;
 import javax.faces.convert.DoubleConverter;
 
+import org.jboss.seam.pdf.ui.UIHtmlText;
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinWidgetModes;
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
 import org.nuxeo.ecm.platform.forms.layout.api.exceptions.WidgetException;
@@ -83,7 +84,14 @@ public class DoubleWidgetTypeHandler extends AbstractWidgetTypeHandler {
             ConvertHandler convert = new ConvertHandler(convertConfig);
             ComponentHandler output = helper.getHtmlComponentHandler(
                     attributes, convert, HtmlOutputText.COMPONENT_TYPE, null);
-            return output;
+            if (BuiltinWidgetModes.PDF.equals(mode)) {
+                // add a surrounding p:html tag handler
+                return helper.getHtmlComponentHandler(new TagAttributes(
+                        new TagAttribute[0]), output,
+                        UIHtmlText.class.getName(), null);
+            } else {
+                return output;
+            }
         }
     }
 

@@ -3,12 +3,16 @@
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
-  xmlns:h="http://java.sun.com/jsf/html">
-<c:if test="#{nxl:isLikePlainMode(widget.mode)}">#{nxu:userFullName(field)}</c:if>
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:p="http://jboss.com/products/seam/pdf">
+<c:if test="#{nxl:isLikePlainMode(widget.mode) and widget.mode !='pdf'}">#{nxu:userFullName(field)}</c:if>
 <c:if test="#{not nxl:isLikePlainMode(widget.mode)}">
   <span onmouseover="tooltip.show('#{field}', 150);" onmouseout="tooltip.hide();">
     <h:outputText value="#{nxu:userFullName(field)}"
       alt="#{field}" title="#{field}" />
   </span>
+</c:if>
+<c:if test="#{widget.mode == 'pdf'}">
+  <p:html>#{nxu:userFullName(field)}</p:html>
 </c:if>
 </f:subview>

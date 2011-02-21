@@ -29,6 +29,7 @@ import javax.faces.component.html.HtmlDataTable;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jboss.seam.pdf.ui.UIHtmlText;
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinWidgetModes;
 import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
@@ -133,7 +134,15 @@ public class DirectorySelectManyWidgetTypeHandler extends
             ComponentHandler table = helper.getHtmlComponentHandler(
                     tableAttributes, columnEntry, HtmlDataTable.COMPONENT_TYPE,
                     null);
-            return table;
+
+            if (BuiltinWidgetModes.PDF.equals(mode)) {
+                // add a surrounding p:html tag handler
+                return helper.getHtmlComponentHandler(new TagAttributes(
+                        new TagAttribute[0]), table,
+                        UIHtmlText.class.getName(), null);
+            } else {
+                return table;
+            }
         }
     }
 }

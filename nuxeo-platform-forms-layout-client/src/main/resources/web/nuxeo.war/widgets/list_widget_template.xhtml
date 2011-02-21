@@ -5,14 +5,25 @@
   xmlns:nxdir="http://nuxeo.org/nxdirectory"
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:p="http://jboss.com/products/seam/pdf"
   id="#{widget.id}">
-<c:if test="#{nxl:isLikePlainMode(widget.mode)}">
+<c:if test="#{nxl:isLikePlainMode(widget.mode) and widget.mode != 'pdf'}">
   <nxu:set var="numberOfSubWidgets" value="#{widget.subWidgets.length}" cache="true">
     <nxl:subWidget>
       <nxl:widget widget="#{widget}" value="#{field}" />
       <h:outputText value=", " rendered="#{widgetIndex != numberOfSubWidgets - 1}" />
     </nxl:subWidget>
   </nxu:set>
+</c:if>
+<c:if test="#{widget.mode == 'pdf'}">
+  <p:html>
+    <nxu:set var="numberOfSubWidgets" value="#{widget.subWidgets.length}" cache="true">
+      <nxl:subWidget>
+        <nxl:widget widget="#{widget}" value="#{field}" />
+        <h:outputText value=", " rendered="#{widgetIndex != numberOfSubWidgets - 1}" />
+      </nxl:subWidget>
+    </nxu:set>
+  </p:html>
 </c:if>
 <c:if test="#{widget.mode != 'edit' and not nxl:isLikePlainMode(widget.mode)}">
 
@@ -22,11 +33,14 @@
         rendered="#{not empty field}">
         <nxl:subWidget>
           <tr>
-            <td class="labelColumn"><h:outputText
-              value="#{messages[widget.label]}" styleClass="labelColumn" />
+            <td class="labelColumn">
+              <h:outputText value="#{messages[widget.label]}"
+                styleClass="labelColumn" />
             </td>
-            <td class="fieldColumn"><nxl:widget widget="#{widget}"
-              value="#{model.rowData}" /></td>
+            <td class="fieldColumn">
+              <nxl:widget widget="#{widget}"
+                value="#{model.rowData}" />
+            </td>
           </tr>
         </nxl:subWidget>
       </nxu:inputList>

@@ -81,7 +81,7 @@
       <redirect />
     </navigation-case>
 
-    <!-- content views export -->
+    <!-- export links -->
 
     <navigation-case>
       <from-outcome>csv</from-outcome>
@@ -107,7 +107,13 @@
       <redirect />
     </navigation-case>
 
-    <!-- end of content views export -->
+    <navigation-case>
+      <from-outcome>content_view_pdf</from-outcome>
+      <to-view-id>/incl/export/content_view_pdf.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+    <!-- end of export links -->
 
   </extension>
 
