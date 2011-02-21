@@ -82,7 +82,6 @@ public enum BrowserFamily {
         @Override
         public WebDriver createDriver() {
             InternetExplorerDriver driver = new InternetExplorerDriver();
-            driver.setVisible(true);
             driver.manage().setSpeed(Speed.FAST);
             return driver;
         }

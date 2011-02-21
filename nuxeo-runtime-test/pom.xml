@@ -14,10 +14,6 @@
   <name>Nuxeo Runtime Tests</name>
   <description>Nuxeo Runtime: Nuxeo Runtime Tests.</description>
 
-  <properties>
-    <webdriver.version>0.9.7376</webdriver.version>
-  </properties>
-
   <build>
     <plugins>
       <plugin>
@@ -94,41 +90,27 @@
       <artifactId>jetty-util</artifactId>
     </dependency>
 
-    <!-- for web driver support -->
-
     <dependency>
-      <groupId>org.seleniumhq.webdriver</groupId>
-      <artifactId>webdriver-htmlunit</artifactId>
+      <groupId>org.seleniumhq.selenium</groupId>
+      <artifactId>selenium</artifactId>
+      <version>2.0b1</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.testng</groupId>
+          <artifactId>testng</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
-
     <dependency>
-      <groupId>net.sourceforge.htmlunit</groupId>
-      <artifactId>htmlunit</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.seleniumhq.webdriver</groupId>
-      <artifactId>webdriver-ie</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.seleniumhq.webdriver</groupId>
-      <artifactId>webdriver-firefox</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.seleniumhq.webdriver</groupId>
-      <artifactId>webdriver-chrome</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.seleniumhq.webdriver</groupId>
-      <artifactId>webdriver-support</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.seleniumhq.webdriver</groupId>
-      <artifactId>webdriver-common</artifactId>
+      <groupId>org.seleniumhq.selenium</groupId>
+      <artifactId>selenium-server</artifactId>
+      <version>2.0b1</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.testng</groupId>
+          <artifactId>testng</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>
@@ -143,42 +125,36 @@
       <scope>compile</scope>
     </dependency>
 
-  <!--  needed for webdriver wait code - should be removed when a new webdriver release will be available -->
-  <dependency>
-    <groupId>com.google.collections</groupId>
-    <artifactId>google-collections</artifactId>
-  </dependency>
-
-  <dependency>
-    <groupId>org.concordion</groupId>
-    <artifactId>concordion</artifactId>
-  </dependency>
-
-   <!--  nuxeo-distribution tools is generating classloader pb - we disabled it for now -->
-   <!--
-   <dependency>
-      <groupId>org.nuxeo.build</groupId>
-      <artifactId>nuxeo-distribution-tools</artifactId>
-      <classifier>all</classifier>
+    <dependency>
+      <groupId>org.concordion</groupId>
+      <artifactId>concordion</artifactId>
     </dependency>
-    -->
 
-  <dependency>
-  	<groupId>org.slf4j</groupId>
-  	<artifactId>slf4j-api</artifactId>
-	<scope>test</scope>
-  </dependency>
-  <dependency>
-  	<groupId>org.slf4j</groupId>
-  	<artifactId>slf4j-log4j12</artifactId>
-	<scope>test</scope>
-  </dependency>
-  <dependency>
-  	<groupId>concurrent</groupId>
-  	<artifactId>concurrent</artifactId>
-  	<type>jar</type>
-  	<scope>compile</scope>
-  </dependency>
+     <!--  nuxeo-distribution tools is generating classloader pb - we disabled it for now -->
+     <!--
+     <dependency>
+        <groupId>org.nuxeo.build</groupId>
+        <artifactId>nuxeo-distribution-tools</artifactId>
+        <classifier>all</classifier>
+      </dependency>
+      -->
+
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>concurrent</groupId>
+      <artifactId>concurrent</artifactId>
+      <type>jar</type>
+      <scope>compile</scope>
+    </dependency>
   </dependencies>
 
 </project>
