@@ -218,5 +218,5 @@ CALL NX_UPGRADE_LASTCONTRIBUTOR();
 
 UPDATE locks SET
   owner = SUBSTRING(lock, 1, POSITION(':', lock) - 1),
-  created = PARSEDATETIME(SUBSTRING(lock, POSITION(':', lock) + 1), 'MMM d, yyyy')
+  created = PARSEDATETIME(SUBSTRING(lock, POSITION(':', lock) + 1), 'MMM d, yyyy', 'en_US')
   WHERE lock IS NOT NULL AND owner IS NULL;
