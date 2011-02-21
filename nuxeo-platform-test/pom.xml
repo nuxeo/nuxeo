@@ -14,11 +14,6 @@
   <name>Nuxeo Platform Test Framework</name>
   <description>Test Framework to test at platform level</description>
 
-
-    <properties>
-        <webdriver.version>0.9.7376</webdriver.version>
-    </properties>
-
   <dependencies>
     <dependency>
       <groupId>net.sf.opencsv</groupId>
