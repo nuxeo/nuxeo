@@ -5,7 +5,7 @@
       rendered="#{facesContext.maximumSeverity.ordinal >= 3}"
       class="errorFeedback" />
   </div>
-  <div id="facesStatusMessage" class="facesStatusMessage">
+  <div id="#{messagesFacesId}facesStatusMessage" class="facesStatusMessage">
     <h:messages globalOnly="true"
       infoClass="infoFeedback"
       warnClass="warningFeedback"
@@ -13,11 +13,7 @@
   </div>
   <script>
   <!--
-  function HideStatus()
-    {
-    document.getElementById("facesStatusMessage").style.visibility="hidden";
-    }
-  window.setTimeout("HideStatus()",5000);
+  window.setTimeout('document.getElementById(\"#{messagesFacesId}facesStatusMessage\").style.visibility=\"hidden\"',5000);
   -->
   </script>
 </div>
