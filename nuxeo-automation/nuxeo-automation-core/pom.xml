@@ -87,10 +87,6 @@
       <groupId>net.sf.ezmorph</groupId>
       <artifactId>ezmorph</artifactId>
     </dependency>
-    <dependency>
-      <groupId>dom4j</groupId>
-      <artifactId>dom4j</artifactId>
-    </dependency>
     <!-- only for tests -->
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
