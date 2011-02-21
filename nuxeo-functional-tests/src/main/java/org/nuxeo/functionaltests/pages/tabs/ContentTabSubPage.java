@@ -104,7 +104,6 @@ public class ContentTabSubPage extends AbstractPage {
                 // next
             }
         }
-        boolean wait = true;
 
         new WaitUntil() {
             @Override

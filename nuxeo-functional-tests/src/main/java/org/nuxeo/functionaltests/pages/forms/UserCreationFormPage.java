@@ -18,8 +18,6 @@
 package org.nuxeo.functionaltests.pages.forms;
 
 import org.nuxeo.functionaltests.Required;
-import org.nuxeo.functionaltests.pages.AbstractPage;
-import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.waitfor.ElementNotFoundException;
 import org.nuxeo.functionaltests.waitfor.FindElementUntil;
 import org.nuxeo.functionaltests.pages.UsersGroupsBasePage;
@@ -79,9 +77,9 @@ public class UserCreationFormPage extends UsersGroupsBasePage {
 
     }
 
-    public UsersGroupsBasePage createUser(String username, String firstname, String lastname,
-            String company, String email, String password, String group)
-            throws ElementNotFoundException {
+    public UsersGroupsBasePage createUser(String username, String firstname,
+            String lastname, String company, String email, String password,
+            String group) throws ElementNotFoundException {
         usernameInput.sendKeys(username);
         firstnameInput.sendKeys(firstname);
         lastnameInput.sendKeys(lastname);

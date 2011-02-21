@@ -16,12 +16,12 @@
  */
 package org.nuxeo.functionaltests;
 
-import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 import org.junit.Test;
-import org.nuxeo.functionaltests.finders.ElementNotFoundException;
+import org.nuxeo.functionaltests.waitfor.ElementNotFoundException;
 import org.nuxeo.functionaltests.pages.UsersGroupsBasePage;
 import org.nuxeo.functionaltests.pages.tabs.UsersTabSubPage;
 
@@ -49,9 +49,8 @@ public class TestUsers extends AbstractTest {
         assertTrue(usersTab.isUserFound(username));
 
         // user already exists
-        page = usersTab.getUserCreatePage().createUser(username,
-                "firstname1", "lastname1", "company1", "email1",
-                "test_user1", "members");
+        page = usersTab.getUserCreatePage().createUser(username, "firstname1",
+                "lastname1", "company1", "email1", "test_user1", "members");
         assertEquals(page.getFeedbackMessage(), "User already exists");
 
         // delete user

@@ -16,7 +16,6 @@
  */
 package org.nuxeo.functionaltests.pages;
 
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import org.nuxeo.functionaltests.pages.tabs.ContentTabSubPage;

@@ -37,7 +37,6 @@ import org.nuxeo.functionaltests.pages.LoginPage;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.Speed;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.internal.WrapsElement;
