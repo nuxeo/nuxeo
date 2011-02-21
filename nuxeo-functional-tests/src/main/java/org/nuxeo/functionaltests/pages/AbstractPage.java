@@ -20,7 +20,9 @@ package org.nuxeo.functionaltests.pages;
 import static org.junit.Assert.assertNotNull;
 
 import org.nuxeo.functionaltests.AbstractTest;
+import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.NotFoundException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -74,4 +76,54 @@ public abstract class AbstractPage {
         assertNotNull(userServicesForm);
         return asPage(HeaderLinksSubPage.class);
     }
+
+    /**
+     * Finds the first {@link WebElement} using the given method, with a
+     * timeout.
+     *
+     * @param by the locating mechanism
+     * @param timeout the timeout in milliseconds
+     * @return the first matching element on the current page, if found
+     * @throws NoSuchElementException when not found
+     */
+    public WebElement findElementWithTimeout(By by, int timeout)
+            throws NoSuchElementException {
+        return AbstractTest.findElementWithTimeout(by, timeout);
+    }
+
+    /**
+     * Finds the first {@link WebElement} using the given method, with a
+     * timeout.
+     *
+     * @param by the locating mechanism
+     * @param timeout the timeout in milliseconds
+     * @return the first matching element on the current page, if found
+     * @throws NoSuchElementException when not found
+     */
+    public static WebElement findElementWithTimeout(By by)
+            throws NoSuchElementException {
+        return AbstractTest.findElementWithTimeout(by);
+    }
+
+    /**
+     * Waits until an element is enabled, with a timeout.
+     *
+     * @param element the element
+     * @param timeout the timeout in milliseconds
+     */
+    public static void waitUntilEnabled(final WebElement element, int timeout)
+            throws NotFoundException {
+        AbstractTest.waitUntilEnabled(element, timeout);
+    }
+
+    /**
+     * Waits until an element is enabled, with a timeout.
+     *
+     * @param element the element
+     */
+    public static void waitUntilEnabled(WebElement element)
+            throws NotFoundException {
+        AbstractTest.waitUntilEnabled(element);
+    }
+
 }

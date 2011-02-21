@@ -18,12 +18,9 @@
 package org.nuxeo.functionaltests.pages.forms;
 
 import org.nuxeo.functionaltests.Required;
-import org.nuxeo.functionaltests.waitfor.ElementNotFoundException;
-import org.nuxeo.functionaltests.waitfor.FindElementUntil;
-import org.nuxeo.functionaltests.pages.AbstractPage;
-import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.UsersGroupsBasePage;
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -71,17 +68,11 @@ public class UserCreationFormPage extends UsersGroupsBasePage {
 
     public UserCreationFormPage(WebDriver driver) {
         super(driver);
-        assertNotNull(driver.findElement(By.id("createUser:nxl_user:nxw_firstPassword")));
     }
 
-    private void assertNotNull(WebElement findElement) {
-        // TODO Auto-generated method stub
-
-    }
-
-    public UsersGroupsBasePage createUser(String username, String firstname, String lastname,
-            String company, String email, String password, String group)
-            throws ElementNotFoundException {
+    public UsersGroupsBasePage createUser(String username, String firstname,
+            String lastname, String company, String email, String password,
+            String group) throws NoSuchElementException {
         usernameInput.sendKeys(username);
         firstnameInput.sendKeys(firstname);
         lastnameInput.sendKeys(lastname);
@@ -90,11 +81,9 @@ public class UserCreationFormPage extends UsersGroupsBasePage {
         firstPasswordInput.sendKeys(password);
         secondPasswordInput.sendKeys(password);
         groupInput.sendKeys(group);
-        WebElement ajaxUserListElement = new FindElementUntil(
-                driver,
-                By.xpath("//table[@id='createUser:nxl_user:nxw_groups_suggestionBox:suggest']/tbody/tr[1]/td[2]")).find();
+        WebElement ajaxUserListElement = findElementWithTimeout(By.xpath("//table[@id='createUser:nxl_user:nxw_groups_suggestionBox:suggest']/tbody/tr[1]/td[2]"));
         ajaxUserListElement.click();
-        driver.findElement(By.id("createUser:button_create")).click();
+        createButton.click();
         return asPage(UsersGroupsBasePage.class);
     }
 

@@ -34,9 +34,12 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.LoginPage;
+import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.NotFoundException;
 import org.openqa.selenium.Speed;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.internal.WrapsElement;
@@ -170,7 +173,7 @@ public abstract class AbstractTest {
                 // ignore
             }
         }
-        throw new RuntimeException("Timeout loading page "
+        throw new NoSuchElementException("Timeout loading page "
                 + pageClassToProxy.getSimpleName() + " missing element "
                 + notLoaded);
     }
@@ -206,6 +209,87 @@ public abstract class AbstractTest {
         }
     }
 
+    /**
+     * Finds the first {@link WebElement} using the given method, with a
+     * timeout.
+     *
+     * @param by the locating mechanism
+     * @param timeout the timeout in milliseconds
+     * @return the first matching element on the current page, if found
+     * @throws NoSuchElementException when not found
+     */
+    public static WebElement findElementWithTimeout(By by, int timeout)
+            throws NoSuchElementException {
+        Clock clock = new SystemClock();
+        long end = clock.laterBy(timeout);
+        NoSuchElementException lastException = null;
+        while (clock.isNowBefore(end)) {
+            try {
+                WebElement element = driver.findElement(by);
+                if (element != null) {
+                    return element;
+                }
+            } catch (NoSuchElementException e) {
+                lastException = e;
+            }
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                // ignore
+            }
+        }
+        throw new NoSuchElementException("Couldn't find element after timeout",
+                lastException);
+    }
+
+    /**
+     * Finds the first {@link WebElement} using the given method, with a
+     * timeout.
+     *
+     * @param by the locating mechanism
+     * @param timeout the timeout in milliseconds
+     * @return the first matching element on the current page, if found
+     * @throws NoSuchElementException when not found
+     */
+    public static WebElement findElementWithTimeout(By by)
+            throws NoSuchElementException {
+        return findElementWithTimeout(by, LOAD_TIMEOUT_SECONDS * 1000);
+    }
+
+    /**
+     * Waits until an element is enabled, with a timeout.
+     *
+     * @param element the element
+     * @param timeout the timeout in milliseconds
+     */
+    public static void waitUntilEnabled(final WebElement element, int timeout)
+            throws NotFoundException {
+        Clock clock = new SystemClock();
+        long end = clock.laterBy(timeout);
+        while (clock.isNowBefore(end)) {
+            if (element.isEnabled()) {
+                return;
+            }
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                // ignore
+            }
+        }
+        throw new NotFoundException("Element not enabled after timeout: "
+                + element);
+    }
+
+    /**
+     * Waits until an element is enabled, with a timeout.
+     *
+     * @param element the element
+     */
+    public static void waitUntilEnabled(WebElement element)
+            throws NotFoundException {
+        waitUntilEnabled(element, AJAX_TIMEOUT_SECONDS * 1000);
+    }
+
     public LoginPage getLoginPage() {
         return get(NUXEO_URL, LoginPage.class);
     }
@@ -225,6 +309,5 @@ public abstract class AbstractTest {
         documentBasePage.checkUserConnected(username);
         return documentBasePage;
     }
-
 
 }

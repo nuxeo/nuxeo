@@ -21,10 +21,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
-import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.UsersGroupsBasePage;
 import org.nuxeo.functionaltests.pages.tabs.UsersTabSubPage;
-import org.nuxeo.functionaltests.waitfor.ElementNotFoundException;
 
 /**
  * Create a user in Nuxeo DM.
@@ -32,18 +30,15 @@ import org.nuxeo.functionaltests.waitfor.ElementNotFoundException;
 public class ITUsers extends AbstractTest {
 
     @Test
-    public void testCreateViewDeleteUser() throws ElementNotFoundException {
+    public void testCreateViewDeleteUser() throws Exception {
         String username = "test_create_view_delete_user";
-        String password = "test";
-        String firstname = "firstname";
-
         UsersGroupsBasePage page;
         UsersTabSubPage usersTab = login().getHeaderLinks().goToUserManagementPage().getUsersTab();
         usersTab = usersTab.searchUser(username);
         if (!usersTab.isUserFound(username)) {
             page = usersTab.getUserCreatePage().createUser(username,
-                    firstname, "lastname1", "company1", "email1",
-                    password, "members");
+                    "firstname1", "lastname1", "company1", "email1",
+                    "test_user1", "members");
             assertEquals(page.getFeedbackMessage(), "User created");
             usersTab = page.getUsersTab(true);
         }
@@ -58,33 +53,21 @@ public class ITUsers extends AbstractTest {
         assertEquals(page.getFeedbackMessage(), "User already exists");
 
         // modify a user firstname
-        firstname = firstname + "modified";
         usersTab = page.getHeaderLinks().goToUserManagementPage().getUsersTab();
         usersTab = usersTab.viewUser(username).getEditUserTab().editUser(
-                firstname, null, "newcompany", null, "administrators").getUsersTab(true);
+                "newfirstname", null, "newcompany", null, "administrators").getUsersTab(true);
 
         // search user using its new firstname
-        usersTab = usersTab.searchUser(firstname);
+        usersTab = usersTab.searchUser("newfirstname");
         assertTrue(usersTab.isUserFound(username));
-
-        // try to login with the new user
-        usersTab.getHeaderLinks().logout();
-        DocumentBasePage homepage = login(username, password);
-        homepage.getHeaderLinks().logout();
-
-        // login as admin
-        usersTab = login().getHeaderLinks().goToUserManagementPage().getUsersTab();
 
         // delete user
         usersTab = page.getHeaderLinks().goToUserManagementPage().getUsersTab();
-        usersTab = usersTab.searchUser(firstname);
         usersTab = usersTab.viewUser(username).deleteUser();
 
         // search
         usersTab = usersTab.searchUser(username);
         assertFalse(usersTab.isUserFound(username));
-
-        usersTab.getHeaderLinks().logout();
     }
 
 }

@@ -12,18 +12,18 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Sun Seng David TAN <stan@nuxeo.com>
+ *     Sun Seng David TAN
+ *     Florent Guillaume
  */
 package org.nuxeo.functionaltests.pages.tabs;
 
 import static junit.framework.Assert.assertNotNull;
 
-import org.nuxeo.functionaltests.Required;
 import java.util.List;
 
+import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.pages.AbstractPage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
-import org.nuxeo.functionaltests.waitfor.WaitUntil;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
@@ -32,10 +32,7 @@ import org.openqa.selenium.support.FindBy;
 
 /**
  * The content tab sub page. Most of the time available for folderish documents
- * and displaying the current document's children
- *
- * @author Sun Seng David TAN <stan@nuxeo.com>
- *
+ * and displaying the current document's children.
  */
 public class ContentTabSubPage extends AbstractPage {
 
@@ -105,14 +102,7 @@ public class ContentTabSubPage extends AbstractPage {
             }
         }
 
-        new WaitUntil() {
-            @Override
-            public boolean condition() {
-                deleteButton = driver.findElement(By.xpath("//input[@value=\"Delete\"]"));
-                return deleteButton.isEnabled();
-            }
-        }.waitUntil();
-
+        waitUntilEnabled(deleteButton);
         deleteButton.click();
         driver.switchTo().alert().accept();
 

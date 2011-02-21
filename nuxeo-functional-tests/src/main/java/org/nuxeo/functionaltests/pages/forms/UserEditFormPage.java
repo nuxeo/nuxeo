@@ -19,9 +19,8 @@ package org.nuxeo.functionaltests.pages.forms;
 import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.pages.UsersGroupsBasePage;
 import org.nuxeo.functionaltests.pages.tabs.UserViewTabSubPage;
-import org.nuxeo.functionaltests.waitfor.ElementNotFoundException;
-import org.nuxeo.functionaltests.waitfor.FindElementUntil;
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -70,20 +69,18 @@ public class UserEditFormPage extends UsersGroupsBasePage {
      * @param password
      * @param group
      * @return
-     * @throws ElementNotFoundException
+     * @throws NoSuchElementException
      */
     public UserViewTabSubPage editUser(String firstname, String lastname,
             String company, String email, String group)
-            throws ElementNotFoundException {
+            throws NoSuchElementException {
         updateInput(firstnameInput, firstname);
         updateInput(lastnameInput, lastname);
         updateInput(companyInput, company);
         updateInput(emailInput, email);
         if (group != null) {
             groupInput.sendKeys(group);
-            WebElement ajaxUserListElement = new FindElementUntil(
-                    driver,
-                    By.xpath("//table[@id='editUser:nxl_user:nxw_groups_suggestionBox:suggest']/tbody/tr[1]/td[2]")).find();
+            WebElement ajaxUserListElement = findElementWithTimeout(By.xpath("//table[@id='editUser:nxl_user:nxw_groups_suggestionBox:suggest']/tbody/tr[1]/td[2]"));
             ajaxUserListElement.click();
         }
         saveButton.click();
