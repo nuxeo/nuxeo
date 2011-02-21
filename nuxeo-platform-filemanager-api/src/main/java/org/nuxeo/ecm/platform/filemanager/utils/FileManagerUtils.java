@@ -147,7 +147,8 @@ public final class FileManagerUtils {
         DocumentModel existing = null;
         String parentId = documentManager.getDocument(new PathRef(path)).getId();
         String query = "SELECT * FROM Document WHERE ecm:parentId = '"
-                + parentId + "' AND " + propertyName + " = '" + value
+                + parentId + "' AND " + propertyName + " = '"
+                + value.replace("'", "\\\'")
                 + "' AND ecm:currentLifeCycleState != '"
                 + LifeCycleConstants.DELETED_STATE + "'";
         DocumentModelList docs = documentManager.query(query);
