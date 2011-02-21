@@ -20,7 +20,9 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
  * @author <a href="gracinet@nuxeo.com">Georges Racinet</a>
+ * @deprecated: use content views instead of result providers
  */
+@Deprecated
 public class TestResultsProviderService extends NXRuntimeTestCase {
 
     private ResultsProviderService service;
@@ -28,13 +30,14 @@ public class TestResultsProviderService extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        deployContrib("org.nuxeo.ecm.webapp.base", "OSGI-INF/resultsprovider-framework.xml");
+        deployContrib("org.nuxeo.ecm.webapp.base",
+                "OSGI-INF/resultsprovider-framework.xml");
         deployContrib("org.nuxeo.ecm.webapp.core.tests",
                 "resultsprovider-components-test-setup.xml");
 
         // old style lookup kept to ensure BBB. See NXP-2161
-        service = (ResultsProviderService) Framework.getRuntime()
-                        .getComponent(ResultsProviderService.NAME);
+        service = (ResultsProviderService) Framework.getRuntime().getComponent(
+                ResultsProviderService.NAME);
     }
 
     // NXP-2161
@@ -46,7 +49,7 @@ public class TestResultsProviderService extends NXRuntimeTestCase {
         assertNotNull(service);
         assertEquals("searchActions", service.getFarmNameFor("MY_SEARCH"));
         assertEquals("dashboardsActions",
-                     service.getFarmNameFor("MY_DOCUMENTS"));
+                service.getFarmNameFor("MY_DOCUMENTS"));
     }
 
 }
