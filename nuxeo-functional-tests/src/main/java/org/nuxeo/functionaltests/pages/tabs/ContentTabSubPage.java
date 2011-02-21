@@ -43,7 +43,7 @@ public class ContentTabSubPage extends AbstractPage {
     @FindBy(linkText = "New")
     WebElement newButton;
 
-    @FindBy(id = "//input[@value=\"Delete\"]")
+    @FindBy(xpath = "//input[@value=\"Delete\"]")
     WebElement deleteButton;
 
     public ContentTabSubPage(WebDriver driver) {
