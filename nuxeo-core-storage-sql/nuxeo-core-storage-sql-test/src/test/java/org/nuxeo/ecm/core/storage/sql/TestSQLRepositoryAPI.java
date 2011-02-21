@@ -205,9 +205,12 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         doc.setPropertyValue("cmpf:attachedFile", (Serializable) attachedFile);
         session.saveDocument(doc);
         session.save();
+
         closeSession();
         eventService.waitForAsyncCompletion();
+        DatabaseHelper.DATABASE.sleepForFulltext();
         openSession();
+
         doc = session.getDocument(docRef);
         assertEquals(attachedFile,
                 doc.getProperty("cmpf:attachedFile").getValue());
@@ -234,8 +237,12 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         doc.setPropertyValue("cmpf:attachedFile", (Serializable) attachedFile);
         session.saveDocument(doc);
         session.save();
+
         closeSession();
+        eventService.waitForAsyncCompletion();
+        DatabaseHelper.DATABASE.sleepForFulltext();
         openSession();
+
         doc = session.getDocument(docRef);
         assertEquals(
                 "text/plain",
@@ -272,8 +279,10 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         doc.setPropertyValue("cmpf:attachedFile", (Serializable) attachedFile);
         session.saveDocument(doc);
         session.save();
+
         closeSession();
         eventService.waitForAsyncCompletion();
+        DatabaseHelper.DATABASE.sleepForFulltext();
         openSession();
 
         assertEquals(
@@ -297,8 +306,12 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
                 new ArrayList<Map<String, Object>>());
         session.saveDocument(doc);
         session.save();
+
         closeSession();
+        eventService.waitForAsyncCompletion();
+        DatabaseHelper.DATABASE.sleepForFulltext();
         openSession();
+
         results = session.query("SELECT * FROM Document"
                 + " WHERE ecm:fulltext = 'vignettelabel'", 2);
         assertNotNull(results);
