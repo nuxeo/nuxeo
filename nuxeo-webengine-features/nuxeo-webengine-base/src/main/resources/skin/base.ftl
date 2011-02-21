@@ -103,7 +103,7 @@
     </div>
     <div id="footer">
        <@block name="footer">
-       <p>&copy; 2000-2008 <a href="http://www.nuxeo.com/en/">Nuxeo</a>.</p>
+       <p>&copy; 2000-2011 <a href="http://www.nuxeo.com/en/">Nuxeo</a>.</p>
        </@block>
     </div>
 
