@@ -40,13 +40,17 @@ public class TestUnrestrictedSessionRunner extends SQLRepositoryTestCase {
         seeDocCreatedByUnrestricted(openSessionAs("bob"));
     }
 
-    public void _testUnrestrictedSessionSeesDocCreatedBefore() throws Exception {
+    public void testUnrestrictedSessionSeesDocCreatedBefore() throws Exception {
         unrestrictedSeesDocCreatedBefore(openSessionAs("Administrator"));
     }
 
+    /*
+     * ----- Actual tests. Also run in JCA mode. -----
+     */
+
     /**
-     * Actual test. Also run in JCA mode. An unrestrictetd session creates a doc
-     * then the calling session try to access it.
+     * An unrestricted session creates a doc then the calling session tries to
+     * access it.
      */
     public static void seeDocCreatedByUnrestricted(CoreSession session)
             throws Exception {
@@ -58,14 +62,13 @@ public class TestUnrestrictedSessionRunner extends SQLRepositoryTestCase {
     }
 
     /**
-     * Actual test. Also run in JCA mode. A session creates a doc, the call an
-     * unrestricted session that modifies it.
+     * A session creates a doc, then calls an unrestricted session that modifies
+     * it.
      */
     public static void unrestrictedSeesDocCreatedBefore(CoreSession session)
             throws Exception {
         DocumentModel doc = session.createDocumentModel("/", DOC_NAME, "File");
         doc = session.createDocument(doc);
-        // session.save(); otherwise the unrestricted session won't see the doc
         UnrestrictedDocumentReader reader = new UnrestrictedDocumentReader(
                 session, doc.getRef());
         reader.runUnrestricted();

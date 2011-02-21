@@ -128,6 +128,11 @@ public abstract class UnrestrictedSessionRunner {
             }
             try {
                 CoreSession baseSession = session;
+                if (baseSession != null
+                        && !baseSession.isStateSharedByAllThreadSessions()) {
+                    // save base session state for unrestricted one
+                    baseSession.save();
+                }
                 try {
                     Repository repository = Framework.getService(
                             RepositoryManager.class).getRepository(
