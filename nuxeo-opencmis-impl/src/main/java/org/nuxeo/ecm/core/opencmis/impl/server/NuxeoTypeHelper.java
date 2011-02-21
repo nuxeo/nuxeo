@@ -18,6 +18,9 @@
  */
 package org.nuxeo.ecm.core.opencmis.impl.server;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.chemistry.opencmis.commons.PropertyIds;
 import org.apache.chemistry.opencmis.commons.definitions.PropertyDefinition;
 import org.apache.chemistry.opencmis.commons.definitions.TypeDefinition;
@@ -108,6 +111,22 @@ public class NuxeoTypeHelper {
 
     private static final String NAMESPACE = "http://ns.nuxeo.org/cmis/type/";
 
+    protected AbstractTypeDefinition t;
+
+    // used to track down and log duplicates
+    protected Map<String, String> propertyToSchema;
+
+    /**
+     * Helper to construct one type.
+     */
+    protected NuxeoTypeHelper(String id, String parentId,
+            BaseTypeId baseTypeId, DocumentType documentType,
+            String nuxeoTypeId, boolean creatable) {
+        propertyToSchema = new HashMap<String, String>();
+        constructBase(id, parentId, baseTypeId, documentType, nuxeoTypeId,
+                creatable);
+    }
+
     /**
      * Gets the remapped parent type id, or {@code null} if the type is to be
      * ignored.
@@ -153,13 +172,13 @@ public class NuxeoTypeHelper {
             String parentId) {
         String nuxeoTypeId = documentType.getName();
         String id = mappedId(nuxeoTypeId);
-        AbstractTypeDefinition type = constructBase(id, parentId,
+        NuxeoTypeHelper h = new NuxeoTypeHelper(id, parentId,
                 getBaseTypeId(documentType), documentType, nuxeoTypeId, true);
         // Nuxeo Property Definitions
         for (Schema schema : documentType.getSchemas()) {
-            addSchemaPropertyDefinitions(type, schema);
+            h.addSchemaPropertyDefinitions(schema);
         }
-        return type;
+        return h.t;
     }
 
     /**
@@ -168,32 +187,31 @@ public class NuxeoTypeHelper {
      */
     public static TypeDefinition constructCmisBase(BaseTypeId baseTypeId,
             SchemaManager schemaManager) {
-        AbstractTypeDefinition type = constructBase(baseTypeId.value(), null,
+        NuxeoTypeHelper h = new NuxeoTypeHelper(baseTypeId.value(), null,
                 baseTypeId, null, null, true);
         DocumentType dt = schemaManager.getDocumentType(NUXEO_FOLDER); // has dc
-        addSchemaPropertyDefinitions(type, dt.getSchema(NX_DUBLINCORE));
-        return type;
+        h.addSchemaPropertyDefinitions(dt.getSchema(NX_DUBLINCORE));
+        return h.t;
     }
 
-    protected static void addSchemaPropertyDefinitions(
-            AbstractTypeDefinition type, Schema schema) {
+    protected void addSchemaPropertyDefinitions(Schema schema) {
         for (Field field : schema.getFields()) {
             PropertyType propertyType;
             Cardinality cardinality;
             Type fieldType = field.getType();
+            String schemaName = schema.getName();
             if (fieldType.isComplexType()) {
                 // complex type
-                log.debug("Ignoring complex type: " + schema.getName() + '/'
-                        + field.getName() + " in type: " + type.getId());
+                log.debug("Ignoring complex type: " + schemaName + '/'
+                        + field.getName() + " in type: " + t.getId());
                 continue;
             } else {
                 if (fieldType.isListType()) {
                     Type listFieldType = ((ListType) fieldType).getFieldType();
                     if (!listFieldType.isSimpleType()) {
                         // complex list
-                        log.debug("Ignoring complex list: " + schema.getName()
-                                + '/' + field.getName() + " in type: "
-                                + type.getId());
+                        log.debug("Ignoring complex list: " + schemaName + '/'
+                                + field.getName() + " in type: " + t.getId());
                         continue;
                     } else {
                         // array: use a collection table
@@ -210,19 +228,22 @@ public class NuxeoTypeHelper {
             PropertyDefinition<?> pd = newPropertyDefinition(name, name,
                     propertyType, cardinality, Updatability.READWRITE, false,
                     false, true);
-            if (type.getPropertyDefinitions().containsKey(pd.getId())) {
-                throw new RuntimeException(
-                        "Property already defined for name: " + name
-                                + " in type: " + type.getId());
+            if (t.getPropertyDefinitions().containsKey(pd.getId())) {
+                log.error("Type '" + t.getId() + "' has duplicate property '"
+                        + name + "' in schemas '"
+                        + propertyToSchema.get(pd.getId()) + "' and '"
+                        + schemaName + "', ignoring the one in '" + schemaName
+                        + "'");
+                continue;
             }
-            type.addPropertyDefinition(pd);
+            propertyToSchema.put(pd.getId(), schemaName);
+            t.addPropertyDefinition(pd);
         }
     }
 
-    protected static AbstractTypeDefinition constructBase(String id,
-            String parentId, BaseTypeId baseTypeId, DocumentType documentType,
+    protected void constructBase(String id, String parentId,
+            BaseTypeId baseTypeId, DocumentType documentType,
             String nuxeoTypeId, boolean creatable) {
-        AbstractTypeDefinition t;
         if (baseTypeId == BaseTypeId.CMIS_FOLDER) {
             t = new FolderTypeDefinitionImpl();
         } else if (baseTypeId == BaseTypeId.CMIS_RELATIONSHIP) {
@@ -247,7 +268,7 @@ public class NuxeoTypeHelper {
         t.setIsFulltextIndexed(Boolean.TRUE);
         t.setIsControllableAcl(Boolean.FALSE);
         t.setIsControllablePolicy(Boolean.FALSE);
-        addBasePropertyDefinitions(t);
+        addBasePropertyDefinitions();
         if (t instanceof FolderTypeDefinitionImpl) {
             FolderTypeDefinitionImpl ft = (FolderTypeDefinitionImpl) t;
             addFolderPropertyDefinitions(ft);
@@ -264,10 +285,9 @@ public class NuxeoTypeHelper {
             dt.setContentStreamAllowed(csa);
             addDocumentPropertyDefinitions(dt);
         }
-        return t;
     }
 
-    protected static void addBasePropertyDefinitions(AbstractTypeDefinition t) {
+    protected void addBasePropertyDefinitions() {
         t.addPropertyDefinition(newPropertyDefinition(PropertyIds.OBJECT_ID,
                 "Object ID", PropertyType.ID, Cardinality.SINGLE,
                 Updatability.READONLY, false, true, true));

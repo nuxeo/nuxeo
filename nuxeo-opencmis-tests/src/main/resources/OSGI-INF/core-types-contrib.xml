@@ -3,6 +3,7 @@
 
   <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
     <schema name="myschema" src="schemas/myschema.xsd" prefix="my" />
+    <schema name="myschemaagain" src="schemas/myschema.xsd" prefix="my" />
   </extension>
 
   <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
@@ -10,6 +11,7 @@
       <schema name="common" />
       <schema name="dublincore" />
       <schema name="myschema" />
+      <schema name="myschemaagain" />
     </doctype>
     <doctype name="UserWorkspaceRoot" extends="Folder">
       <facet name="SuperSpace"/>
