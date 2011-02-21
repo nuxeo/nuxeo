@@ -29,6 +29,9 @@ public class HeaderLinksSubPage extends AbstractPage {
     @FindBy(linkText = "Users & groups")
     WebElement userAndGroupsLink;
 
+    @FindBy(linkText = "Log out")
+    WebElement logoutLink;
+
     public HeaderLinksSubPage(WebDriver driver) {
         super(driver);
     }
@@ -36,6 +39,11 @@ public class HeaderLinksSubPage extends AbstractPage {
     public UsersGroupsPage goToUserManagementPage() {
         userAndGroupsLink.click();
         return asPage(UsersGroupsPage.class);
+    }
+
+    public LoginPage logout() {
+        logoutLink.click();
+        return asPage(LoginPage.class);
     }
 
 }

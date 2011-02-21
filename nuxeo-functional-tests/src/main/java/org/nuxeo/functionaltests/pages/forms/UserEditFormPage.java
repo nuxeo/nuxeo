@@ -51,7 +51,9 @@ public class UserEditFormPage extends UsersGroupsBasePage {
     @FindBy(id = "editUser:nxl_user:nxw_groups_suggest")
     WebElement groupInput;
 
-    @FindBy(name = "editUser:j_id334")
+
+    @Required
+    @FindBy(xpath="//form[@id=\"editUser\"]//input[@value=\"Save\"]")
     WebElement saveButton;
 
     public UserEditFormPage(WebDriver driver) {
