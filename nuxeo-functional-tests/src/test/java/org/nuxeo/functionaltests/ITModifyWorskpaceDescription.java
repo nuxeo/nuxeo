@@ -38,7 +38,7 @@ import static junit.framework.Assert.assertEquals;
  * <li>logout</li>
  * </ol>
  */
-public class TestModifyWorskpaceDescription extends AbstractTest {
+public class ITModifyWorskpaceDescription extends AbstractTest {
 
     @Test
     public void testModifyWsDescription() {

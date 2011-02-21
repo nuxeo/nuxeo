@@ -31,7 +31,7 @@ import org.nuxeo.functionaltests.pages.forms.WorkspaceFormPage;
 /**
  * Test file upload in Nuxeo DM.
  */
-public class TestFileUpload extends AbstractTest {
+public class ITFileUpload extends AbstractTest {
 
     @Test
     public void testFileUpload() {

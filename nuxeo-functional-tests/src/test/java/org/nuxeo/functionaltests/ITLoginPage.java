@@ -22,7 +22,7 @@ import org.junit.Test;
 /**
  * Tests that we connect to the login page.
  */
-public class TestLoginPage extends AbstractTest {
+public class ITLoginPage extends AbstractTest {
 
     @Test
     public void testLoginPage() {

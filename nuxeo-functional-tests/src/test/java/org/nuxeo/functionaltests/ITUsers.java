@@ -28,7 +28,7 @@ import org.nuxeo.functionaltests.pages.tabs.UsersTabSubPage;
 /**
  * Create a user in Nuxeo DM.
  */
-public class TestUsers extends AbstractTest {
+public class ITUsers extends AbstractTest {
 
     @Test
     public void testCreateViewDeleteUser() throws ElementNotFoundException {
