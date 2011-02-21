@@ -33,6 +33,7 @@ import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
 
+@Path("/error")
 @WebObject(type = "error")
 @Produces("text/html; charset=UTF-8")
 public class WebengineError extends ModuleRoot {
