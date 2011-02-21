@@ -111,6 +111,7 @@
     <event name="loginFailed" />
     <event name="logout" />
     <event name="documentCheckedIn"/>
+    <event name="versionRemoved" />
   </extension>
 
   <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
