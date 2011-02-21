@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<component
+	name="org.nuxeo.ecm.usersettings.test.core.TestSettingsProvider2">
+	
+	<extension target="org.nuxeo.ecm.usersettings.UserSettingsService"
+		point="userSettingsProvider">
+
+    <userSettingsProvider type="TestSettings2" category="default" />
+
+	</extension>
+
+</component>

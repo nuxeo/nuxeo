@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<component
+  name="org.nuxeo.ecm.usersettings.UserSettingsService">
+
+  <implementation
+    class="org.nuxeo.ecm.usersettings.core.UserSettingsServiceImpl" />
+
+  <service>
+    <provide
+      interface="org.nuxeo.ecm.usersettings.UserSettingsService" />
+  </service>
+
+  <documentation>
+    This component is used to provide the user settings service support.
+  </documentation>
+
+  <extension-point name="userSettingsProvider">
+    <documentation>
+      Add a document Type as a settings provider.
+      Example:
+      <code>
+        <userSettingsProvider enabled="true" type="NavigationSettings" category="Default" />
+      </code>
+      - type: type is the document type.
+      - category: category could be anything and is used to sort providers.
+      - enabled: default value is true. False will remove the settings provider from the
+        service registry.
+        
+        When defining a documentType as provider, you can add the HiddenInSettings facet so
+        its layout won't be showed in the userCenter.
+    </documentation>
+    <object
+      class="org.nuxeo.ecm.usersettings.UserSettingsProviderDescriptor" />
+  </extension-point>
+  
+  
+</component>
