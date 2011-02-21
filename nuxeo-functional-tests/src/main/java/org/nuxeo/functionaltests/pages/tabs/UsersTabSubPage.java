@@ -17,7 +17,7 @@
 package org.nuxeo.functionaltests.pages.tabs;
 
 import org.nuxeo.functionaltests.Required;
-import org.nuxeo.functionaltests.pages.AbstractPage;
+import org.nuxeo.functionaltests.pages.UsersGroupsBasePage;
 import org.nuxeo.functionaltests.pages.forms.UserCreationFormPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
@@ -25,7 +25,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
-public class UsersTabSubPage extends AbstractPage {
+public class UsersTabSubPage extends UsersGroupsBasePage {
 
     @Required
     @FindBy(linkText = "Create a new user")
@@ -63,6 +63,11 @@ public class UsersTabSubPage extends AbstractPage {
             return false;
         }
         return true;
+    }
+
+    public UserViewTabSubPage viewUser(String username) {
+        driver.findElement(By.linkText(username)).click();
+        return asPage(UserViewTabSubPage.class);
     }
 
 }

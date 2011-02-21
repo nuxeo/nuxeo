@@ -23,7 +23,6 @@ import org.nuxeo.functionaltests.pages.tabs.ContentTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.EditTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.SummaryTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.WorkspaceContentTabSubPage;
-import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -48,9 +47,6 @@ public class DocumentBasePage extends AbstractPage {
     @FindBy(xpath = "/html/body/table[2]/tbody/tr/td[2]/div[2]//div[@class=\"tabsBar\"]/form/ul/li[@class=\"selected\"]/a")
     public WebElement selectedTab;
 
-    @FindBy(name = "userServicesForm")
-    public WebElement userServicesForm;
-
     @FindBy(xpath = "//div[@class=\"userActions\"]")
     public WebElement userActions;
 
@@ -59,9 +55,6 @@ public class DocumentBasePage extends AbstractPage {
 
     @FindBy(xpath = "/html/body/table[2]/tbody/tr/td[2]/div[2]//h1")
     public WebElement currentDocumentTitle;
-
-    @FindBy(xpath = "//div[@id=\"facesStatusMessage\"]/ul/li")
-    public WebElement infoFeedback;
 
     public DocumentBasePage(WebDriver driver) {
         super(driver);
@@ -86,7 +79,7 @@ public class DocumentBasePage extends AbstractPage {
         clickOnLinkIfNotSelected(editTabLink);
         return asPage(SummaryTabSubPage.class);
     }
-    
+
     public NavigationSubPage getNavigationSubPage() {
         return asPage(NavigationSubPage.class);
     }
@@ -118,37 +111,12 @@ public class DocumentBasePage extends AbstractPage {
         assertTrue(userActions.getText().contains(expectedConnectedMessage));
     }
 
-    /**
-     * Gets the top bar navigation sub page.
-     *
-     * @return
-     */
-    public HeaderLinksSubPage getHeaderLinks() {
-        assertNotNull(userServicesForm);
-        return asPage(HeaderLinksSubPage.class);
-    }
-
     public String getCurrentDocumentDescription() {
         return currentDocumentDescription.getText();
     }
 
     public String getCurrentDocumentTitle() {
         return currentDocumentTitle.getText();
-    }
-
-    /**
-     * Gets the info feedback message.
-     *
-     * @return the message if any or an empty string.
-     */
-    public String getFeedbackMessage() {
-        String ret;
-        try {
-            ret = infoFeedback.getText();
-        } catch (NoSuchElementException e) {
-            ret = "";
-        }
-        return ret.trim();
     }
 
 }
