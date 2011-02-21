@@ -1764,7 +1764,7 @@ public abstract class AbstractSession implements CoreSession,
         doc.remove();
         if (doc.isVersion()) {
             if (sourceDoc != null) {
-                DocumentModel sourceDocModel = readModel(sourceDoc);
+                DocumentModel sourceDocModel = readModel(sourceDoc, null);
                 if (sourceDocModel != null) {
                     options.put("comment", versionLabel); // to be used by audit
                     // service
