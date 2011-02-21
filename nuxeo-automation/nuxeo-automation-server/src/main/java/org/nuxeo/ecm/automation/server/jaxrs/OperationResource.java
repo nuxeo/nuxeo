@@ -17,10 +17,8 @@
 package org.nuxeo.ecm.automation.server.jaxrs;
 
 import java.io.IOException;
-import java.io.InputStream;
 
 import javax.ws.rs.GET;
-import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
@@ -31,7 +29,6 @@ import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationDocumentation;
 import org.nuxeo.ecm.automation.OperationType;
 import org.nuxeo.ecm.automation.core.doc.JSONExporter;
-import org.nuxeo.ecm.automation.core.doc.bonita.BonitaExporter;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -52,45 +49,6 @@ public class OperationResource extends ExecutableResource {
             OperationDocumentation doc = type.getDocumentation();
             JSONObject json = JSONExporter.toJSON(doc);
             return Response.ok(json.toString(2)).type("application/json").build();
-        } catch (IOException e) {
-            return Response.status(500).build();
-        }
-    }
-
-    @GET
-    @Produces("application/zip")
-    @Path("bonita")
-    public Object doGetBonitaZip() {
-        try {
-            OperationDocumentation doc = type.getDocumentation();
-            InputStream res = BonitaExporter.getZip(doc);
-            return Response.ok(res).type("application/zip").build();
-        } catch (IOException e) {
-            return Response.status(500).build();
-        }
-    }
-
-    @GET
-    @Produces("text/plain")
-    @Path("bonita/java")
-    public Object doGetBonitaJava() {
-        try {
-            OperationDocumentation doc = type.getDocumentation();
-            String java = BonitaExporter.getJavaClass(doc);
-            return Response.ok(java).type("text/plain").build();
-        } catch (IOException e) {
-            return Response.status(500).build();
-        }
-    }
-
-    @GET
-    @Produces("text/plain")
-    @Path("bonita/xml")
-    public Object doGetBonitaXML() {
-        try {
-            OperationDocumentation doc = type.getDocumentation();
-            String java = BonitaExporter.getXMLDescription(doc);
-            return Response.ok(java).type("text/plain").build();
         } catch (IOException e) {
             return Response.status(500).build();
         }
