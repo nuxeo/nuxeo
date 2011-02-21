@@ -56,6 +56,7 @@
         </ui:insert>
 
         <ui:decorate template="/incl/documents_layout_table.xhtml">
+          <ui:param name="providerId" value="#{contentViewId}" />
           <ui:param name="documents" value="#{provider.currentSelectPage}" />
           <ui:param name="listName" value="#{contentView.selectionListName}" />
           <ui:param name="layoutName" value="#{contentView.currentResultLayout.name}" />
