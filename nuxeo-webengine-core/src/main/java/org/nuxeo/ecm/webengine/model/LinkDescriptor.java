@@ -198,12 +198,22 @@ public class LinkDescriptor implements Cloneable, LinkHandler {
     // TODO: here we are using absolute paths -> will be better to use relative
     // paths?
     public String getCode(LinkDescriptor link, Resource resource) {
+        String parentPath;
         if (adapter != ResourceType.ROOT_TYPE_NAME) {
-            return new StringBuilder().append(
-                    resource.getActiveAdapter().getPath()).append(path).toString();
+            parentPath = resource.getActiveAdapter().getPath();
         } else {
-            return new StringBuilder().append(resource.getPath()).append(path).toString();
+            parentPath = resource.getPath();
         }
+        StringBuilder res = new StringBuilder();
+        res.append(parentPath);
+        // avoid adding duplicate '/' character
+        if (parentPath != null && parentPath.endsWith("/") && path != null
+                && path.startsWith("/")) {
+            res.append(path.substring(1));
+        } else {
+            res.append(path);
+        }
+        return res.toString();
     }
 
     public boolean isFragment() {
