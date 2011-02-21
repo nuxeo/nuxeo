@@ -97,7 +97,6 @@
   </modules>
 
   <properties>
-    <webdriver.version>0.9.7376</webdriver.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <apacheds.version>1.5.1</apacheds.version>
     <apachedshared.version>0.9.7</apachedshared.version>
@@ -1827,19 +1826,26 @@
         <version>2.0.5</version>
       </dependency>
       <dependency>
-        <groupId>org.openqa.selenium.webdriver</groupId>
-        <artifactId>webdriver-htmlunit</artifactId>
-        <version>0.6.964</version>
+        <groupId>org.seleniumhq.selenium</groupId>
+        <artifactId>selenium</artifactId>
+        <version>2.0b1</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
-        <groupId>org.openqa.selenium.webdriver</groupId>
-        <artifactId>webdriver-ie</artifactId>
-        <version>0.6.964</version>
-      </dependency>
-      <dependency>
-        <groupId>org.openqa.selenium.webdriver</groupId>
-        <artifactId>webdriver-firefox</artifactId>
-        <version>0.6.964</version>
+        <groupId>org.seleniumhq.selenium</groupId>
+        <artifactId>selenium-server</artifactId>
+        <version>2.0b1</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>net.oauth.core</groupId>
@@ -2069,47 +2075,10 @@
         <version>2.3.0</version>
       </dependency>
 
-      <!-- runtime test dependencies -->
-      <dependency>
-        <groupId>org.seleniumhq.webdriver</groupId>
-        <artifactId>webdriver-htmlunit</artifactId>
-        <version>${webdriver.version}</version>
-      </dependency>
-
       <dependency>
         <groupId>asm</groupId>
         <artifactId>asm</artifactId>
         <version>3.0</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.seleniumhq.webdriver</groupId>
-        <artifactId>webdriver-ie</artifactId>
-        <version>${webdriver.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.seleniumhq.webdriver</groupId>
-        <artifactId>webdriver-firefox</artifactId>
-        <version>${webdriver.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.seleniumhq.webdriver</groupId>
-        <artifactId>webdriver-chrome</artifactId>
-        <version>${webdriver.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.seleniumhq.webdriver</groupId>
-        <artifactId>webdriver-support</artifactId>
-        <version>${webdriver.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.seleniumhq.webdriver</groupId>
-        <artifactId>webdriver-common</artifactId>
-        <version>${webdriver.version}</version>
       </dependency>
 
       <dependency>
