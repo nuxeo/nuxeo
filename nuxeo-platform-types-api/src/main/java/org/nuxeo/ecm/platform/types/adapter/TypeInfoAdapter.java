@@ -19,11 +19,11 @@
 
 package org.nuxeo.ecm.platform.types.adapter;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.platform.types.ContentViews;
+import org.nuxeo.ecm.platform.types.DocumentContentViews;
 import org.nuxeo.ecm.platform.types.FieldWidget;
 import org.nuxeo.ecm.platform.types.SubType;
 import org.nuxeo.ecm.platform.types.Type;
@@ -194,11 +194,11 @@ public class TypeInfoAdapter implements TypeInfo {
     @Override
     public Map<String, String[]> getContentViews() {
         if (type != null) {
-            Map<String, String[]> res = new HashMap<String, String[]>();
-            Map<String, ContentViews> defs = type.getContentViews();
+            Map<String, String[]> res = new LinkedHashMap<String, String[]>();
+            Map<String, DocumentContentViews> defs = type.getContentViews();
             if (defs != null) {
-                for (Map.Entry<String, ContentViews> def : defs.entrySet()) {
-                    res.put(def.getKey(), def.getValue().getContentViews());
+                for (Map.Entry<String, DocumentContentViews> def : defs.entrySet()) {
+                    res.put(def.getKey(), def.getValue().getContentViewNames());
                 }
             }
             return res;
@@ -206,4 +206,21 @@ public class TypeInfoAdapter implements TypeInfo {
         return null;
     }
 
+    @Override
+    public Map<String, String[]> getContentViewsForExport() {
+        if (type != null) {
+            Map<String, String[]> res = new LinkedHashMap<String, String[]>();
+            Map<String, DocumentContentViews> defs = type.getContentViews();
+            if (defs != null) {
+                for (Map.Entry<String, DocumentContentViews> def : defs.entrySet()) {
+                    String[] cvsByCat = def.getValue().getContentViewNamesForExport();
+                    if (cvsByCat != null && cvsByCat.length > 0) {
+                        res.put(def.getKey(), cvsByCat);
+                    }
+                }
+            }
+            return res;
+        }
+        return null;
+    }
 }

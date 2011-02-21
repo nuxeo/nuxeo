@@ -187,6 +187,19 @@ public class TypeTest extends NXRuntimeTestCase {
         assertEquals("cv_5", cv[1]);
         cv = type.getContentViews("foo");
         assertNull(cv);
+
+        Map<String, DocumentContentViews> allCvs = type.getContentViews();
+        assertEquals(2, allCvs.size());
+        DocumentContentViews defaultCvs = allCvs.get("default");
+        assertNotNull(defaultCvs);
+        DocumentContentView[] cvs = defaultCvs.getContentViews();
+        assertEquals(3, cvs.length);
+        assertEquals("cv_1", cvs[0].getContentViewName());
+        assertTrue(cvs[0].getShowInExportView());
+        assertEquals("cv_2", cvs[1].getContentViewName());
+        assertFalse(cvs[1].getShowInExportView());
+        assertEquals("cv_3", cvs[2].getContentViewName());
+        assertFalse(cvs[2].getShowInExportView());
     }
 
     public void testLayoutOverride() throws Exception {

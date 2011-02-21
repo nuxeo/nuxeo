@@ -114,8 +114,8 @@ public class Type implements Serializable {
     @XNodeMap(value = "layouts", key = "@mode", type = HashMap.class, componentType = Layouts.class)
     Map<String, Layouts> layouts;
 
-    @XNodeMap(value = "contentViews", key = "@category", type = HashMap.class, componentType = ContentViews.class)
-    protected Map<String, ContentViews> contentViews;
+    @XNodeMap(value = "contentViews", key = "@category", type = HashMap.class, componentType = DocumentContentViews.class)
+    protected Map<String, DocumentContentViews> contentViews;
 
     // for bundle update::
     @XNode("@remove")
@@ -325,19 +325,19 @@ public class Type implements Serializable {
      */
     public String[] getContentViews(String category) {
         if (contentViews != null) {
-            ContentViews cv = contentViews.get(category);
+            DocumentContentViews cv = contentViews.get(category);
             if (cv != null) {
-                return cv.getContentViews();
+                return cv.getContentViewNames();
             }
         }
         return null;
     }
 
-    public Map<String, ContentViews> getContentViews() {
+    public Map<String, DocumentContentViews> getContentViews() {
         return Collections.unmodifiableMap(contentViews);
     }
 
-    public void setContentViews(Map<String, ContentViews> contentViews) {
+    public void setContentViews(Map<String, DocumentContentViews> contentViews) {
         this.contentViews = contentViews;
     }
 

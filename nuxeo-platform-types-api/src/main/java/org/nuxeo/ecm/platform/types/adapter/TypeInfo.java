@@ -97,4 +97,15 @@ public interface TypeInfo {
      * @since 5.4.1
      */
     Map<String, String[]> getContentViews();
+
+    /**
+     * Returns content views defined on this document type for all categories
+     * that are shown in export views.
+     * <p>
+     * Categories holding no content view shown in export views are omitted.
+     *
+     * @since 5.4.1
+     */
+    Map<String, String[]> getContentViewsForExport();
+
 }

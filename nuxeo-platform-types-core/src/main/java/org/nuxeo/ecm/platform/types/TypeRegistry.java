@@ -211,23 +211,23 @@ public class TypeRegistry extends ExtensionRegistry<Type> {
             oldType.setLayouts(layoutsMerged);
         }
 
-        Map<String, ContentViews> contentViews = newType.getContentViews();
+        Map<String, DocumentContentViews> contentViews = newType.getContentViews();
         if (contentViews != null) {
-            Map<String, ContentViews> cvMerged = new HashMap<String, ContentViews>(
+            Map<String, DocumentContentViews> cvMerged = new HashMap<String, DocumentContentViews>(
                     oldType.getContentViews());
-            for (Map.Entry<String, ContentViews> entry : contentViews.entrySet()) {
+            for (Map.Entry<String, DocumentContentViews> entry : contentViews.entrySet()) {
                 String key = entry.getKey();
-                ContentViews newContentViews = entry.getValue();
+                DocumentContentViews newContentViews = entry.getValue();
                 if (cvMerged.containsKey(key) && newContentViews.getAppend()) {
-                    List<String> allContentViews = new ArrayList<String>();
-                    for (String layoutName : cvMerged.get(key).getContentViews()) {
-                        allContentViews.add(layoutName);
+                    List<DocumentContentView> allContentViews = new ArrayList<DocumentContentView>();
+                    for (DocumentContentView cv : cvMerged.get(key).getContentViews()) {
+                        allContentViews.add(cv);
                     }
-                    for (String layoutName : newContentViews.getContentViews()) {
-                        allContentViews.add(layoutName);
+                    for (DocumentContentView cv : newContentViews.getContentViews()) {
+                        allContentViews.add(cv);
                     }
-                    ContentViews mergedContentViews = new ContentViews();
-                    mergedContentViews.contentViews = allContentViews.toArray(new String[allContentViews.size()]);
+                    DocumentContentViews mergedContentViews = new DocumentContentViews();
+                    mergedContentViews.contentViews = allContentViews.toArray(new DocumentContentView[allContentViews.size()]);
                     cvMerged.put(key, mergedContentViews);
                 } else {
                     cvMerged.put(key, newContentViews);

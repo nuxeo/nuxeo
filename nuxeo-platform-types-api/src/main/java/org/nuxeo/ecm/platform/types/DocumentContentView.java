@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -16,35 +16,31 @@
  */
 package org.nuxeo.ecm.platform.types;
 
-import java.io.Serializable;
-
+import org.nuxeo.common.xmap.annotation.XContent;
 import org.nuxeo.common.xmap.annotation.XNode;
-import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
- * Content view descriptor put on document types.
- *
- * @author Anahide Tchertchian
- * @since 5.4
+ * @since 5.4.1
  */
-@XObject("contentViews")
-public class ContentViews implements Serializable {
+@XObject("contentView")
+public class DocumentContentView {
 
-    private static final long serialVersionUID = 1L;
+    @XNode("@showInExportView")
+    boolean showInExportView = true;
 
-    @XNode("@append")
-    boolean append;
+    @XContent
+    String contentView;
 
-    @XNodeList(value = "contentView", type = String[].class, componentType = String.class)
-    String[] contentViews = new String[0];
-
-    public String[] getContentViews() {
-        return contentViews;
+    public boolean getShowInExportView() {
+        return showInExportView;
     }
 
-    public boolean getAppend() {
-        return append;
+    public String getContentViewName() {
+        if (contentView != null) {
+            return contentView.trim();
+        }
+        return null;
     }
 
 }
