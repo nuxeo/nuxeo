@@ -36,7 +36,6 @@ import org.nuxeo.ecm.webengine.security.PermissionService;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @XObject("link")
 public class LinkDescriptor implements Cloneable, LinkHandler {
@@ -55,23 +54,22 @@ public class LinkDescriptor implements Cloneable, LinkHandler {
     @XNode("@handler")
     protected String handlerClass;
 
-    @XNodeList(value="category", type=ArrayList.class, componentType=String.class, nullByDefault=false)
+    @XNodeList(value = "category", type = ArrayList.class, componentType = String.class, nullByDefault = false)
     protected List<String> categories;
 
-    @XNode(value="type")
+    @XNode(value = "type")
     protected String type = ResourceType.ROOT_TYPE_NAME;
 
     /**
      * The object adapter the link may have as owner
      */
-    @XNode(value="adapter")
+    @XNode(value = "adapter")
     protected String adapter = ResourceType.ROOT_TYPE_NAME;
 
-    @XNodeList(value="facet", type=String[].class, componentType=String.class, nullByDefault=true)
+    @XNodeList(value = "facet", type = String[].class, componentType = String.class, nullByDefault = true)
     protected String[] facets;
 
     protected Guard guard = Guard.DEFAULT;
-
 
     public LinkDescriptor() {
     }
@@ -108,9 +106,10 @@ public class LinkDescriptor implements Cloneable, LinkHandler {
                 if (handlerClass != null) {
                     Object obj = resource.getModule().loadClass(handlerClass).newInstance();
                     if (obj instanceof LinkHandlerFactory) {
-                        handler = ((LinkHandlerFactory)obj).getHandler(this, resource);
+                        handler = ((LinkHandlerFactory) obj).getHandler(this,
+                                resource);
                     } else {
-                        handler = (LinkHandler)obj;
+                        handler = (LinkHandler) obj;
                     }
                 } else {
                     handler = this;
@@ -160,8 +159,7 @@ public class LinkDescriptor implements Cloneable, LinkHandler {
 
     public boolean acceptResource(Resource context) {
         if (type == ResourceType.ROOT_TYPE_NAME
-                && adapter == ResourceType.ROOT_TYPE_NAME
-                && facets == null) {
+                && adapter == ResourceType.ROOT_TYPE_NAME && facets == null) {
             return true;
         }
         if (facets != null && facets.length > 0) {
@@ -197,10 +195,12 @@ public class LinkDescriptor implements Cloneable, LinkHandler {
         return false;
     }
 
-    //TODO: here we are using absolute paths -> will be better to use relative paths?
+    // TODO: here we are using absolute paths -> will be better to use relative
+    // paths?
     public String getCode(LinkDescriptor link, Resource resource) {
         if (adapter != ResourceType.ROOT_TYPE_NAME) {
-            return new StringBuilder().append(resource.getActiveAdapter().getPath()).append(path).toString();
+            return new StringBuilder().append(
+                    resource.getActiveAdapter().getPath()).append(path).toString();
         } else {
             return new StringBuilder().append(resource.getPath()).append(path).toString();
         }
@@ -218,10 +218,12 @@ public class LinkDescriptor implements Cloneable, LinkHandler {
                 categories.addAll(fragment.categories);
             }
         }
-        if (fragment.type != null && !fragment.type.equals(ResourceType.ROOT_TYPE_NAME)) {
+        if (fragment.type != null
+                && !fragment.type.equals(ResourceType.ROOT_TYPE_NAME)) {
             type = fragment.type;
         }
-        if (fragment.adapter != null && !fragment.adapter.equals(ResourceType.ROOT_TYPE_NAME)) {
+        if (fragment.adapter != null
+                && !fragment.adapter.equals(ResourceType.ROOT_TYPE_NAME)) {
             adapter = fragment.adapter;
         }
         if (fragment.facets != null && fragment.facets.length > 0) {
@@ -249,7 +251,7 @@ public class LinkDescriptor implements Cloneable, LinkHandler {
 
     @Override
     public LinkDescriptor clone() throws CloneNotSupportedException {
-        return (LinkDescriptor)super.clone();
+        return (LinkDescriptor) super.clone();
     }
 
     @Override
