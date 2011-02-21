@@ -19,6 +19,7 @@ package org.nuxeo.functionaltests.pages.tabs;
 import static org.junit.Assert.assertEquals;
 
 import org.nuxeo.functionaltests.pages.UsersGroupsBasePage;
+import org.nuxeo.functionaltests.pages.forms.UserChangePasswordFormPage;
 import org.nuxeo.functionaltests.pages.forms.UserEditFormPage;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.WebDriver;
@@ -36,6 +37,9 @@ public class UserViewTabSubPage extends UsersGroupsBasePage {
     @FindBy(linkText = "Edit")
     WebElement editLink;
 
+    @FindBy(linkText = "Change password")
+    WebElement changePasswordLink;
+
     public UserViewTabSubPage(WebDriver driver) {
         super(driver);
     }
@@ -51,6 +55,11 @@ public class UserViewTabSubPage extends UsersGroupsBasePage {
     public UserEditFormPage getEditUserTab() {
         editLink.click();
         return asPage(UserEditFormPage.class);
+    }
+
+    public UserChangePasswordFormPage getChangePasswordUserTab() {
+        changePasswordLink.click();
+        return asPage(UserChangePasswordFormPage.class);
     }
 
 }

@@ -43,7 +43,11 @@
    - [[/home/ben/dev/tools/webdriver/nuxeo-cuke-tests/features/10create_docs.feature][Cucumber scripts]]
 * Todo
 ** User and groups
-*** TODO UserEditFormPage
+*** DONE UserEditFormPage
+    CLOSED: [2011-02-21 lun. 13:32]
+    :LOGBOOK:
+    - State "DONE"       from "TODO"       [2011-02-21 lun. 13:32]
+    :END:
 *** TODO UserChangePasswordFormPage
 *** TODO TestGroups
 *** TODO GroupsTabSubPage

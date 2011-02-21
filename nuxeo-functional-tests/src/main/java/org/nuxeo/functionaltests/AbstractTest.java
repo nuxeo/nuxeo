@@ -311,4 +311,17 @@ public abstract class AbstractTest {
         return documentBasePage;
     }
 
+    /**
+     * Login using an invalid credential.
+     *
+     * @param username
+     * @param password
+     * @return
+     */
+    public LoginPage loginInvalid(String username, String password) {
+        LoginPage loginPage = getLoginPage().login(username, password,
+                LoginPage.class);
+        return loginPage;
+    }
+
 }
