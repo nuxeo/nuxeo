@@ -27,22 +27,8 @@ import org.openqa.selenium.support.FindBy;
  */
 public class UsersGroupsPage extends UsersGroupsBasePage {
 
-    @Required
-    @FindBy(xpath = "//div[@class=\"tabsBar\"]/form/ul/li/a[text()=\"Users\"]")
-    public WebElement usersTabLink;
-
-
     public UsersGroupsPage(WebDriver driver) {
         super(driver);
-    }
-    /**
-     * View the Users tab.
-     *
-     * @return
-     */
-    public UsersTabSubPage getUsersTab() {
-        clickOnLinkIfNotSelected(usersTabLink);
-        return asPage(UsersTabSubPage.class);
     }
 
 

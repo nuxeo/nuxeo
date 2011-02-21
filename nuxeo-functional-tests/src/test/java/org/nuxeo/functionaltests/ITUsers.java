@@ -17,6 +17,7 @@
 package org.nuxeo.functionaltests;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 
@@ -41,7 +42,7 @@ public class ITUsers extends AbstractTest {
                     "firstname1", "lastname1", "company1", "email1",
                     "test_user1", "members");
             assertEquals(page.getFeedbackMessage(), "User created");
-            usersTab = page.getHeaderLinks().goToUserManagementPage().getUsersTab();
+            usersTab = page.getUsersTab(true);
         }
 
         // search user
@@ -52,6 +53,15 @@ public class ITUsers extends AbstractTest {
         page = usersTab.getUserCreatePage().createUser(username, "firstname1",
                 "lastname1", "company1", "email1", "test_user1", "members");
         assertEquals(page.getFeedbackMessage(), "User already exists");
+
+        // modify a user firstname
+        usersTab = page.getHeaderLinks().goToUserManagementPage().getUsersTab();
+        usersTab = usersTab.viewUser(username).getEditUserTab().editUser(
+                "newfirstname", null, "newcompany", null, "administrators").getUsersTab(true);
+
+        // search user using its new firstname
+        usersTab = usersTab.searchUser("newfirstname");
+        assertTrue(usersTab.isUserFound(username));
 
         // delete user
         usersTab = page.getHeaderLinks().goToUserManagementPage().getUsersTab();

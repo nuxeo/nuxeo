@@ -18,6 +18,8 @@ package org.nuxeo.functionaltests.pages;
 
 import static org.junit.Assert.assertNotNull;
 
+import org.nuxeo.functionaltests.Required;
+import org.nuxeo.functionaltests.pages.tabs.UsersTabSubPage;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -28,6 +30,10 @@ import org.openqa.selenium.support.FindBy;
 public class UsersGroupsBasePage extends AbstractPage {
     @FindBy(xpath = "/html/body/table[2]/tbody/tr/td[2]/div[2]//div[@class=\"tabsBar\"]/form/ul/li[@class=\"selected\"]/a")
     public WebElement selectedTab;
+
+    @Required
+    @FindBy(xpath = "//div[@class=\"tabsBar\"]/form/ul/li/a[text()=\"Users\"]")
+    public WebElement usersTabLink;
 
     protected void clickOnLinkIfNotSelected(WebElement tabLink) {
         assertNotNull(tabLink);
@@ -40,6 +46,24 @@ public class UsersGroupsBasePage extends AbstractPage {
 
     public UsersGroupsBasePage(WebDriver driver) {
         super(driver);
+    }
+
+    /**
+     * View the Users tab.
+     *
+     * @return
+     */
+    public UsersTabSubPage getUsersTab(boolean force) {
+        if (force) {
+            usersTabLink.click();
+        } else {
+            clickOnLinkIfNotSelected(usersTabLink);
+        }
+        return asPage(UsersTabSubPage.class);
+    }
+
+    public UsersTabSubPage getUsersTab() {
+        return getUsersTab(false);
     }
 
 }

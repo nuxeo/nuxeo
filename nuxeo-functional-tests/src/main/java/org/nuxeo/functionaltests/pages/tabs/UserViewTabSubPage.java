@@ -19,6 +19,7 @@ package org.nuxeo.functionaltests.pages.tabs;
 import static org.junit.Assert.assertEquals;
 
 import org.nuxeo.functionaltests.pages.UsersGroupsBasePage;
+import org.nuxeo.functionaltests.pages.forms.UserEditFormPage;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -32,6 +33,9 @@ public class UserViewTabSubPage extends UsersGroupsBasePage {
     @FindBy(linkText = "Delete")
     WebElement deleteUserLink;
 
+    @FindBy(linkText = "Edit")
+    WebElement editLink;
+
     public UserViewTabSubPage(WebDriver driver) {
         super(driver);
     }
@@ -42,6 +46,11 @@ public class UserViewTabSubPage extends UsersGroupsBasePage {
         assertEquals("Delete user?", alert.getText());
         alert.accept();
         return asPage(UsersTabSubPage.class);
+    }
+
+    public UserEditFormPage getEditUserTab() {
+        editLink.click();
+        return asPage(UserEditFormPage.class);
     }
 
 }
