@@ -1,8 +1,5 @@
 </td>
 <td width="100px">
-
-Right Border
-
 </td>
 </tr>
 </table>

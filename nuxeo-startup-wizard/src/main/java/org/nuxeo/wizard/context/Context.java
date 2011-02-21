@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2011 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -23,7 +23,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
-
 
 /**
  * Simple Context management
@@ -49,7 +48,7 @@ public class Context {
 
     public static Context instance(HttpServletRequest req) {
         Context ctx = (Context) req.getAttribute(CONTEXT_ATTRIBUTE);
-        if (ctx==null) {
+        if (ctx == null) {
             ctx = new Context(req);
             req.setAttribute(CONTEXT_ATTRIBUTE, ctx);
         }
@@ -57,7 +56,7 @@ public class Context {
     }
 
     public ParamCollector getCollector() {
-        if (collector==null) {
+        if (collector == null) {
             collector = new ParamCollector();
         }
         return collector;
@@ -68,7 +67,7 @@ public class Context {
     }
 
     public boolean hasErrors() {
-        return errors.size()>0;
+        return errors.size() > 0;
     }
 
     public Map<String, String> getErrorsMap() {
@@ -86,7 +85,7 @@ public class Context {
 
         sb.append("END]");
 
-        return sb.toString().replace(",END","");
+        return sb.toString().replace(",END", "");
     }
 
     public void storeConnectMap(Map<String, String> map) {
@@ -94,7 +93,8 @@ public class Context {
     }
 
     public boolean isConnectRegistrationDone() {
-        return connectMap!=null && "true".equals(connectMap.get("registrationOK"));
+        return connectMap != null
+                && "true".equals(connectMap.get("registrationOK"));
     }
 
     public static Map<String, String> getConnectMap() {

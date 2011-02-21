@@ -20,10 +20,12 @@
 package org.nuxeo.launcher;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.launcher.config.TomcatConfigurator;
 
@@ -77,5 +79,108 @@ public class NuxeoTomcatLauncher extends NuxeoLauncher {
     @Override
     protected String getServerPrint() {
         return TomcatConfigurator.STARTUP_CLASS;
+    }
+
+    @Override
+    protected void prepareWizardStart() {
+        try {
+            // Make Tomcat start only wizard application, not Nuxeo
+            File serverXMLBase = new File(
+                    configurationGenerator.getNuxeoHome(), "conf");
+            File contextXMLBase = new File(
+                    configurationGenerator.getNuxeoHome(), "conf"
+                            + File.separator + "Catalina" + File.separator
+                            + "localhost");
+            File webappsBase = new File(configurationGenerator.getNuxeoHome(),
+                    "webapps");
+
+            // manage server.xml
+            File nuxeoServerXML = new File(serverXMLBase, "server.xml");
+            File nuxeoServerXMLBackup = new File(serverXMLBase, "server.xml.nx");
+            nuxeoServerXMLBackup.delete();
+            FileUtils.moveFile(nuxeoServerXML, nuxeoServerXMLBackup);
+            FileUtils.copyFile(new File(serverXMLBase, "server.xml.bak"),
+                    nuxeoServerXML);
+
+            // manage nuxeo.xml
+            File nuxeoContextXMLBackup = new File(contextXMLBase,
+                    "nuxeo.xml.nx");
+            nuxeoContextXMLBackup.delete();
+            FileUtils.moveFile(new File(contextXMLBase, "nuxeo.xml"),
+                    nuxeoContextXMLBackup);
+
+            // manage wizard WAR
+            File wizardWAR = new File(webappsBase, "nuxeo-wizard.war");
+            if (wizardWAR.exists()) {
+                File nuxeoWAR = new File(webappsBase, "nuxeo.war");
+                nuxeoWAR.delete();
+                FileUtils.moveFile(wizardWAR, nuxeoWAR);
+            }
+
+            String paramsStr = "";
+            for (String param : params) {
+                paramsStr += " " + param;
+            }
+            System.setProperty(
+                    ConfigurationGenerator.PARAM_WIZARD_RESTART_PARAMS,
+                    paramsStr);
+        } catch (IOException e) {
+            log.error(
+                    "Could not change Tomcat configuration to run wizard instead of Nuxeo.",
+                    e);
+        }
+    }
+
+    @Override
+    public boolean isWizardRequired() {
+        File webappsBase = new File(configurationGenerator.getNuxeoHome(),
+                "webapps");
+        return (configurationGenerator.isWizardRequired() && (new File(
+                webappsBase, "nuxeo-wizard.war").exists() || new File(
+                webappsBase, "nuxeo.war").exists()));
+    }
+
+    @Override
+    protected void checkTomcatXMLConfFiles() {
+        try {
+            // Ensure Tomcat will start only Nuxeo, not the wizard application
+            File serverXMLBase = new File(
+                    configurationGenerator.getNuxeoHome(), "conf");
+            File contextXMLBase = new File(
+                    configurationGenerator.getNuxeoHome(), "conf"
+                            + File.separator + "Catalina" + File.separator
+                            + "localhost");
+            File webappsBase = new File(configurationGenerator.getNuxeoHome(),
+                    "webapps");
+
+            // manage server.xml
+            File nuxeoServerXMLBackup = new File(serverXMLBase, "server.xml.nx");
+            if (nuxeoServerXMLBackup.exists()) {
+                File nuxeoServerXML = new File(serverXMLBase, "server.xml");
+                nuxeoServerXML.delete();
+                FileUtils.moveFile(nuxeoServerXMLBackup, nuxeoServerXML);
+            }
+
+            // manage nuxeo.xml
+            File nuxeoContextXMLBackup = new File(contextXMLBase,
+                    "nuxeo.xml.nx");
+            if (nuxeoContextXMLBackup.exists()) {
+                File nuxeoContextXML = new File(contextXMLBase, "nuxeo.xml");
+                nuxeoContextXML.delete();
+                FileUtils.moveFile(nuxeoContextXMLBackup, nuxeoContextXML);
+            }
+
+            // manage wizard WAR
+            File nuxeoWAR = new File(webappsBase, "nuxeo.war");
+            if (nuxeoWAR.exists()) {
+                File wizardWAR = new File(webappsBase, "nuxeo-wizard.war");
+                wizardWAR.delete();
+                FileUtils.moveFile(nuxeoWAR, wizardWAR);
+            }
+        } catch (IOException e) {
+            log.error(
+                    "Could not change Tocmat configuration to run Nuxeo instead of wizard.",
+                    e);
+        }
     }
 }

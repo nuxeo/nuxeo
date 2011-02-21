@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2011 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,11 +12,10 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     tdelprat
+ *     tdelprat, jcarsique
  *
  * $Id$
  */
-
 
 package org.nuxeo.wizard;
 
@@ -34,6 +33,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.launcher.config.ConfigurationException;
+import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.wizard.context.Context;
 import org.nuxeo.wizard.context.ParamCollector;
 import org.nuxeo.wizard.helpers.IPValidator;
@@ -59,7 +60,7 @@ public class RouterServlet extends HttpServlet {
 
     protected String getAction(HttpServletRequest req) {
         String uri = req.getRequestURI();
-        String action = uri.replace(req.getContextPath()+"/router/", "");
+        String action = uri.replace(req.getContextPath() + "/router/", "");
         if (action.startsWith("/")) {
             action = action.substring(1);
         }
@@ -67,14 +68,16 @@ public class RouterServlet extends HttpServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
 
         // process action
         handleAction(getAction(req), req, resp);
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
 
         // store posted data
         Context.instance(req).getCollector().collectConfigurationParams(req);
@@ -85,14 +88,16 @@ public class RouterServlet extends HttpServlet {
     protected Method findhandler(Page currentPage, String verb) {
 
         String methodName = "handle" + currentPage.getAction() + verb;
-        Method method=null;
+        Method method = null;
         try {
-            method= this.getClass().getMethod(methodName, Page.class, HttpServletRequest.class, HttpServletResponse.class );
+            method = this.getClass().getMethod(methodName, Page.class,
+                    HttpServletRequest.class, HttpServletResponse.class);
         } catch (Exception e) {
             // fall back to default Handler lookup
             methodName = "handleDefault" + verb;
             try {
-                method= this.getClass().getMethod(methodName, Page.class,HttpServletRequest.class, HttpServletResponse.class );
+                method = this.getClass().getMethod(methodName, Page.class,
+                        HttpServletRequest.class, HttpServletResponse.class);
             } catch (Exception e2) {
                 log.error("Unable to resolve default handler for " + verb, e);
             }
@@ -100,19 +105,19 @@ public class RouterServlet extends HttpServlet {
         return method;
     }
 
-
-    protected void handleAction(String action, HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void handleAction(String action, HttpServletRequest req,
+            HttpServletResponse resp) throws ServletException, IOException {
 
         // locate page
         Page currentPage = navHandler.getCurrentPage(action);
-        if (currentPage==null) {
+        if (currentPage == null) {
             resp.sendError(404, "Action " + action + " is not supported");
             return;
         }
 
         // find action handler
         Method handler = findhandler(currentPage, req.getMethod());
-        if (handler==null) {
+        if (handler == null) {
             resp.sendError(500, "No handler found for " + action);
             return;
         }
@@ -129,23 +134,28 @@ public class RouterServlet extends HttpServlet {
 
     // default handlers
 
-    public void handleDefaultGET(Page currentPage, HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    public void handleDefaultGET(Page currentPage, HttpServletRequest req,
+            HttpServletResponse resp) throws ServletException, IOException {
         currentPage.dispatchToJSP(req, resp);
     }
 
-    public void handleDefaultPOST(Page currentPage, HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    public void handleDefaultPOST(Page currentPage, HttpServletRequest req,
+            HttpServletResponse resp) throws ServletException, IOException {
         // XXX validate data
         currentPage.next().dispatchToJSP(req, resp, true);
     }
 
     // custom handlers
 
-    public void handleConnectGET(Page currentPage,HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    public void handleConnectGET(Page currentPage, HttpServletRequest req,
+            HttpServletResponse resp) throws ServletException, IOException {
 
         // compute CB url
         String cbUrl = req.getRequestURL().toString();
-        cbUrl = cbUrl.replace("/router/" + currentPage.getAction(), "/jsp/connectCallBack.jsp?next=" + currentPage.next().getAction());
-        cbUrl = URLEncoder.encode(cbUrl,"UTF-8");
+        cbUrl = cbUrl.replace("/router/" + currentPage.getAction(),
+                "/jsp/connectCallBack.jsp?next="
+                        + currentPage.next().getAction());
+        cbUrl = URLEncoder.encode(cbUrl, "UTF-8");
 
         req.setAttribute("callBackUrl", cbUrl);
 
@@ -153,24 +163,26 @@ public class RouterServlet extends HttpServlet {
         StringBuffer sb = new StringBuffer();
         sb.append("registrationOK:true\n");
         sb.append("CLID:XXXXXXXXTESTXXXXXXXXX-XXXXXXXXXXCLIDXXXXXXXXX\n");
-        String fakeToken = new String(Base64.encodeBase64(sb.toString().getBytes()));
+        String fakeToken = new String(
+                Base64.encodeBase64(sb.toString().getBytes()));
         req.setAttribute("fakeToken", fakeToken);
 
         handleDefaultGET(currentPage, req, resp);
     }
 
-
-    public void handleConnectFinishGET(Page currentPage,HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    public void handleConnectFinishGET(Page currentPage,
+            HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
 
         // get the connect Token and decode associated infos
         String token = req.getParameter(CONNECT_TOKEN_KEY);
         Map<String, String> connectMap = new HashMap<String, String>();
-        if (token!=null) {
+        if (token != null) {
             String tokenData = new String(Base64.decodeBase64(token));
             String[] tokenDataLines = tokenData.split("\n");
             for (String line : tokenDataLines) {
                 String[] parts = line.split(":");
-                if (parts.length>1) {
+                if (parts.length > 1) {
                     connectMap.put(parts[0], parts[1]);
                 }
             }
@@ -180,12 +192,22 @@ public class RouterServlet extends HttpServlet {
         handleDefaultGET(currentPage, req, resp);
     }
 
-    public void handleDBPOST(Page currentPage,HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    public void handleDBPOST(Page currentPage, HttpServletRequest req,
+            HttpServletResponse resp) throws ServletException, IOException {
 
         Context ctx = Context.instance(req);
         ParamCollector collector = ctx.getCollector();
 
-        if (!collector.getConfigurationParam("nuxeo.db.template").equals("default")) {
+        if ("true".equals(req.getParameter("refresh"))) {
+            String templateName = collector.getConfigurationParam("nuxeo.db.template");
+            // TODO: recalculate parameters with db template = templateName
+
+            currentPage.dispatchToJSP(req, resp);
+            return;
+        }
+
+        if (!collector.getConfigurationParam("nuxeo.db.template").equals(
+                "default")) {
             if (collector.getConfigurationParam("nuxeo.db.name").isEmpty()) {
                 ctx.trackError("nuxeo.db.name", "error.dbname.required");
             }
@@ -211,23 +233,27 @@ public class RouterServlet extends HttpServlet {
 
     }
 
-    public void handleSmtpPOST(Page currentPage,HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    public void handleSmtpPOST(Page currentPage, HttpServletRequest req,
+            HttpServletResponse resp) throws ServletException, IOException {
 
         Context ctx = Context.instance(req);
         ParamCollector collector = ctx.getCollector();
 
         if (collector.getConfigurationParam("mail.smtp.auth").equals("true")) {
             if (collector.getConfigurationParam("mail.smtp.username").isEmpty()) {
-                ctx.trackError("mail.smtp.username", "error.mail.smtp.username.required");
+                ctx.trackError("mail.smtp.username",
+                        "error.mail.smtp.username.required");
             }
             if (collector.getConfigurationParam("mail.smtp.password").isEmpty()) {
-                ctx.trackError("mail.smtp.password", "error.mail.smtp.password.required");
+                ctx.trackError("mail.smtp.password",
+                        "error.mail.smtp.password.required");
             }
         }
 
         if (!collector.getConfigurationParam("mail.smtp.port").isEmpty()) {
             if (!NumberValidator.validate(collector.getConfigurationParam("mail.smtp.port"))) {
-                ctx.trackError("mail.smtp.port", "error.mail.smtp.port.mustbeanumber");
+                ctx.trackError("mail.smtp.port",
+                        "error.mail.smtp.port.mustbeanumber");
             }
         }
 
@@ -238,18 +264,32 @@ public class RouterServlet extends HttpServlet {
         }
 
     }
-    public void handleRecapPOST(Page currentPage,HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        // display waiting page
+
+    public void handleRecapPOST(Page currentPage, HttpServletRequest req,
+            HttpServletResponse resp) throws ServletException, IOException {
+        // Save configuration
+        Context ctx = Context.instance(req);
+        ParamCollector collector = ctx.getCollector();
+        ConfigurationGenerator cg = collector.getConfigurationGenerator();
+        Map<String, String> changedParameters = collector.getConfigurationParams();
+        changedParameters.put(ConfigurationGenerator.PARAM_WIZARD_DONE, "true");
+        try {
+            cg.saveConfiguration(changedParameters);
+        } catch (ConfigurationException e) {
+            log.error("Could not save wizard parameters.", e);
+        }
+
         // => page will trigger the restart
-        new Page("","reStarting.jsp").dispatchToJSP(req, resp);
+        new Page("", "reStarting.jsp").dispatchToJSP(req, resp);
     }
 
-    public void handleGeneralPOST(Page currentPage,HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    public void handleGeneralPOST(Page currentPage, HttpServletRequest req,
+            HttpServletResponse resp) throws ServletException, IOException {
 
         Context ctx = Context.instance(req);
         ParamCollector collector = ctx.getCollector();
         String bindAddress = collector.getConfigurationParamValue("nuxeo.bind.address");
-        if (bindAddress!=null && !bindAddress.isEmpty()) {
+        if (bindAddress != null && !bindAddress.isEmpty()) {
             if (!IPValidator.validate(bindAddress)) {
                 ctx.trackError("nuxeo.bind.address", "error.invalid.ip");
             }
@@ -262,5 +302,33 @@ public class RouterServlet extends HttpServlet {
         }
     }
 
+    public void handleProxyPOST(Page currentPage, HttpServletRequest req,
+            HttpServletResponse resp) throws ServletException, IOException {
+
+        Context ctx = Context.instance(req);
+        ParamCollector collector = ctx.getCollector();
+        String proxyType = collector.getConfigurationParamValue("org.nuxeo.connect.proxy.type");
+        if ("none".equals(proxyType)) {
+            collector.addConfigurationParam("org.nuxeo.connect.proxy.type",
+                    null);
+        } else {
+            if (!NumberValidator.validate(collector.getConfigurationParam("org.nuxeo.connect.proxy.port"))) {
+                ctx.trackError("org.nuxeo.connect.proxy.port",
+                        "error.org.nuxeo.connect.proxy.port");
+            }
+            if (collector.getConfigurationParam("org.nuxeo.connect.proxy.host").isEmpty()) {
+
+            }
+            if (collector.getConfigurationParam("org.nuxeo.connect.proxy.port").isEmpty()) {
+
+            }
+        }
+
+        if (ctx.hasErrors()) {
+            currentPage.dispatchToJSP(req, resp);
+        } else {
+            currentPage.next().dispatchToJSP(req, resp, true);
+        }
+    }
 
 }

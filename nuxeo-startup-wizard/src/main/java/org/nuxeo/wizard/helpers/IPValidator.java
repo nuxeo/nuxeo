@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2011 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -31,19 +31,19 @@ import java.util.regex.Pattern;
 public class IPValidator {
 
     private static Pattern pattern;
+
     private static Matcher matcher;
 
-    private static final String IPADDRESS_PATTERN =
-        "^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
-        "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
-        "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
-        "([01]?\\d\\d?|2[0-4]\\d|25[0-5])$";
+    private static final String IPADDRESS_PATTERN = "^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\."
+            + "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\."
+            + "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\."
+            + "([01]?\\d\\d?|2[0-4]\\d|25[0-5])$";
 
-    public static synchronized boolean validate(String ip){
+    public static synchronized boolean validate(String ip) {
         if (pattern == null) {
             pattern = Pattern.compile(IPADDRESS_PATTERN);
         }
-      matcher = pattern.matcher(ip);
-      return matcher.matches();
+        matcher = pattern.matcher(ip);
+        return matcher.matches();
     }
 }

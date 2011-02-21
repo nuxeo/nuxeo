@@ -7,5 +7,6 @@ RESTARTING ...
 
 <%
 // do the actual restart once we have displayed the waiting page
-ServerController.restart(getServletContext());
+// ServerController.restart(getServletContext());
+  ServerController.restart(ctx);
 %>
