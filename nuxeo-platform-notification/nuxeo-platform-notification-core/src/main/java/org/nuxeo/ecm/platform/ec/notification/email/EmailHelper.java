@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2011 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,9 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
+ *     npaslaru, tmartins, jcarsique
  *
- * $Id$
  */
 
 package org.nuxeo.ecm.platform.ec.notification.email;
@@ -66,8 +65,6 @@ import freemarker.template.Template;
  *
  * Currently only supports one email in to address
  *
- * @author <a href="mailto:npaslaru@nuxeo.com">Narcis Paslaru</a>
- * @author <a href="mailto:tmartins@nuxeo.com">Thierry Martins</a>
  */
 public class EmailHelper {
 
@@ -90,7 +87,7 @@ public class EmailHelper {
     public void sendmail(Map<String, Object> mail) throws Exception {
 
         Session session = getSession();
-        if (javaMailNotAvailable || session==null) {
+        if (javaMailNotAvailable || session == null) {
             log.warn("Not sending email since JavaMail is not configured");
             return;
         }
@@ -103,8 +100,8 @@ public class EmailHelper {
             log.error("Invalid email recipient: " + to);
             return;
         }
-        msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(
-                (String) to, false));
+        msg.setRecipients(Message.RecipientType.TO,
+                InternetAddress.parse((String) to, false));
 
         RenderingService rs = Framework.getService(RenderingService.class);
 
@@ -182,7 +179,7 @@ public class EmailHelper {
             InitialContext ic = new InitialContext();
             session = (Session) ic.lookup(service.getMailSessionJndiName());
         } catch (Exception ex) {
-            log.warn("Unable to find Java mail API");
+            log.warn("Unable to find Java mail API", ex);
             javaMailNotAvailable = true;
         }
 

@@ -70,6 +70,8 @@ import org.nuxeo.ecm.automation.core.operations.document.UpdateDocument;
 import org.nuxeo.ecm.automation.core.operations.execution.RunDocumentChain;
 import org.nuxeo.ecm.automation.core.operations.execution.RunOperation;
 import org.nuxeo.ecm.automation.core.operations.execution.SaveSession;
+import org.nuxeo.ecm.automation.core.operations.login.LoginAs;
+import org.nuxeo.ecm.automation.core.operations.login.Logout;
 import org.nuxeo.ecm.automation.core.operations.stack.PopBlob;
 import org.nuxeo.ecm.automation.core.operations.stack.PopBlobList;
 import org.nuxeo.ecm.automation.core.operations.stack.PopDocument;
@@ -179,6 +181,9 @@ public class AutomationComponent extends DefaultComponent {
 
         service.putOperation(RenderDocument.class);
         service.putOperation(RenderDocumentFeed.class);
+
+        service.putOperation(LoginAs.class);
+        service.putOperation(Logout.class);
 
         // disabled operations
         // service.putOperation(RunScriptFile.class);
