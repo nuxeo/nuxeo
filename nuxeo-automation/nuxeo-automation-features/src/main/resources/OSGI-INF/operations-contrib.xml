@@ -22,12 +22,7 @@
       class="org.nuxeo.ecm.automation.core.operations.users.GetDocumentPrincipalEmails" />
     <operation
       class="org.nuxeo.ecm.automation.core.operations.users.GetDocumentUsersAndGroups" />
-    
-    <operation
-      class="org.nuxeo.ecm.automation.core.operations.users.LoginAs" />
-    <operation
-      class="org.nuxeo.ecm.automation.core.operations.users.Logout" />
-      
+          
     <operation
       class="org.nuxeo.ecm.automation.core.operations.notification.SendMail" />
       

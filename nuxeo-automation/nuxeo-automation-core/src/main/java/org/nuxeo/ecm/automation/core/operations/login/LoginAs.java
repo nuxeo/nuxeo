@@ -14,7 +14,7 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.automation.core.operations.users;
+package org.nuxeo.ecm.automation.core.operations.login;
 
 import java.security.Principal;
 
@@ -26,7 +26,6 @@ import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
-import org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -54,7 +53,7 @@ public class LoginAs {
                 lc = Framework.login();
             }
         } else {
-            lc = NuxeoAuthenticationFilter.loginAs(name);
+            lc = Framework.loginAsUser(name);
         }
         if (lc != null) {
             ctx.getLoginStack().push(lc);
