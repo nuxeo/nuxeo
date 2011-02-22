@@ -36,6 +36,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelComparator;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -1232,4 +1233,14 @@ public class UserManagerImpl implements UserManager {
         }
         return usernames.toArray(new String[usernames.size()]);
     }
+
+    @Override
+    public boolean authenticate(String name, String password) {
+        try {
+            return checkUsernamePassword(name, password);
+        } catch (ClientException e) {
+            throw new ClientRuntimeException("Username / password authentication failed", e);
+        }
+    }
+
 }

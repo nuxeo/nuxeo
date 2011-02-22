@@ -31,6 +31,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
@@ -430,4 +431,12 @@ public class FakeUserManagerImpl implements UserManager {
         throw new UnsupportedOperationException();
     }
 
+    @Override
+    public boolean authenticate(String name, String password) {
+        try {
+            return checkUsernamePassword(name, password);
+        } catch (ClientException e) {
+            throw new ClientRuntimeException("Username / password authentication failed", e);
+        }
+    }
 }

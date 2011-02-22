@@ -540,4 +540,10 @@ public class UserManagerBean implements UserManagerLocal {
     public String[] getUsersForPermission(String perm, ACP acp) {
         return getUserManager().getUsersForPermission(perm, acp);
     }
+
+    @Override
+    public boolean authenticate(String name, String password) {
+        return getUserManager().authenticate(name, password);
+    }
+
 }

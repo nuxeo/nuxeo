@@ -27,6 +27,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.usermanager.UserManager.MatchType;
+import org.nuxeo.runtime.api.login.Authenticator;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
@@ -99,7 +100,7 @@ public class UserService extends DefaultComponent {
 
     @Override
     public <T> T getAdapter(Class<T> adapter) {
-        if (adapter.getName().equals(UserManager.class.getName())) {
+        if (Authenticator.class == adapter || UserManager.class == adapter) {
             try {
                 return adapter.cast(getUserManager());
             } catch (ClientException e) {

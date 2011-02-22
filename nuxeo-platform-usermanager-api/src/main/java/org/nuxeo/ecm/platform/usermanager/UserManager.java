@@ -34,13 +34,14 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.platform.usermanager.exceptions.GroupAlreadyExistsException;
 import org.nuxeo.ecm.platform.usermanager.exceptions.UserAlreadyExistsException;
+import org.nuxeo.runtime.api.login.Authenticator;
 
 /**
  * @author Anahide Tchertchian
  * @author Sun Seng David TAN <stan@nuxeo.com>
  *
  */
-public interface UserManager extends Serializable {
+public interface UserManager extends Authenticator, Serializable {
 
     enum MatchType {
         EXACT, SUBSTRING
