@@ -738,7 +738,7 @@ BEGIN
     END IF;
     major := r.minorversion = 0;
     UPDATE versions SET
-        label = r.majorversion || '.' || r.minorversion,
+        label = CAST(r.majorversion AS text) || '.' || CAST(r.minorversion AS text),
         islatest = latest,
         islatestmajor = major AND latestmajor
       WHERE id = r.id;
