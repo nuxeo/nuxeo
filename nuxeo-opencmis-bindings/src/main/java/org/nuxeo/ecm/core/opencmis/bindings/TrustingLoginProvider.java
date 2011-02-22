@@ -19,7 +19,7 @@ package org.nuxeo.ecm.core.opencmis.bindings;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
-import org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Login provider that does not check the password and just logs in the provided
@@ -30,7 +30,7 @@ public class TrustingLoginProvider implements LoginProvider {
     @Override
     public LoginContext login(String username, String password)
             throws LoginException {
-        return NuxeoAuthenticationFilter.loginAs(username);
+        return Framework.loginAsUser(username);
     }
 
 }
