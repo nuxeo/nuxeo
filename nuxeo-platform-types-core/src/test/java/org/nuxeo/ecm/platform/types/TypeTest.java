@@ -195,11 +195,11 @@ public class TypeTest extends NXRuntimeTestCase {
         DocumentContentView[] cvs = defaultCvs.getContentViews();
         assertEquals(3, cvs.length);
         assertEquals("cv_1", cvs[0].getContentViewName());
-        assertTrue(cvs[0].getShowInExportView());
+        assertFalse(cvs[0].getShowInExportView());
         assertEquals("cv_2", cvs[1].getContentViewName());
-        assertFalse(cvs[1].getShowInExportView());
+        assertTrue(cvs[1].getShowInExportView());
         assertEquals("cv_3", cvs[2].getContentViewName());
-        assertFalse(cvs[2].getShowInExportView());
+        assertTrue(cvs[2].getShowInExportView());
     }
 
     public void testLayoutOverride() throws Exception {
