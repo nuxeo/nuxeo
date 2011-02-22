@@ -85,7 +85,7 @@ public class PictureGadget extends AbstractGadget implements
         modifPanel.setVisible(false);
 
         Label source = new Label(constants.source());
-        sourceUpload = new SimpleUpload(baseUrl + "lmContainer/upload");
+        sourceUpload = new SimpleUpload(baseUrl + "gwtContainer/upload");
 
         modifPanel.setWidget(0, 0, source);
         modifPanel.setWidget(0, 1, sourceUpload);

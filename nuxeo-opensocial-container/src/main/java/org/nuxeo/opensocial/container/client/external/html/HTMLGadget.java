@@ -138,7 +138,7 @@ public class HTMLGadget extends AbstractGadget implements HTMLPresenter.Display 
         modifPanel.getRowFormatter().setStyleName(3, "gadget-form-line");
 
         Label source = new Label(constants.source());
-        sourceUpload = new SimpleUpload(baseUrl + "lmContainer/upload");
+        sourceUpload = new SimpleUpload(baseUrl + "gwtContainer/upload");
 
         modifPanel.setWidget(4, 0, source);
         modifPanel.setWidget(4, 1, sourceUpload);
