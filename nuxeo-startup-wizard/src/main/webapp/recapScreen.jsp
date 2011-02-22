@@ -1,3 +1,4 @@
+<%@page import="java.util.TreeMap"%>
 <%@ include file="includes/header.jsp" %>
 
 
@@ -19,7 +20,8 @@ boolean connectOK = ctx.isConnectRegistrationDone();
 
   <table>
   <%Map<String,String> changedParams = collector.getChangedParameters();
-  for (String pName : collector.getConfigurationParams().keySet()) {
+  Map<String, String> sortedParams = new TreeMap<String, String>(collector.getConfigurationParams());
+  for (String pName : sortedParams.keySet()) {
       String label = "label."+pName;%>
     <tr>
       <%if (changedParams.containsKey(pName)) {%>

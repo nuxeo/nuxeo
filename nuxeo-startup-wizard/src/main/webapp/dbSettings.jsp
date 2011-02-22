@@ -122,11 +122,11 @@ function updateDBSettings() {
       <td><input type="text" name="nuxeo.db.port" value="<%=collector.getConfigurationParam("nuxeo.db.port") %>"/></td>
     </tr>
   </table>
-  </td><td>
+  </td><td class="helpCell">
 
   <fmt:message key="label.dbSettings.doc"/>
 
-  <A href="http://doc.nuxeo.com/display/NXDOC/SQL+database+configuration" target="doc">
+  <A href="http://doc.nuxeo.com/x/AYxH" target="doc">
   <fmt:message key="label.dbSettings.doclink"/>
   </A>
 

@@ -221,6 +221,15 @@ public class RouterServlet extends HttpServlet {
             }
             if (collector.getConfigurationParam("nuxeo.db.port").isEmpty()) {
                 ctx.trackError("nuxeo.db.port", "error.dbport.required");
+            } else {
+                if (!NumberValidator.validate(collector.getConfigurationParam("nuxeo.db.port"))) {
+                    ctx.trackError("nuxeo.db.port", "error.invalid.port");
+                } else {
+                    int dbPort = Integer.parseInt(collector.getConfigurationParam("nuxeo.db.port"));
+                    if (dbPort < 1024 || dbPort > 65536) {
+                        ctx.trackError("nuxeo.db.port", "error.invalid.port");
+                    }
+                }
             }
         }
 

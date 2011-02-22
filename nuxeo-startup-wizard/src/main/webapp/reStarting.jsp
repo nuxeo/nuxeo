@@ -1,8 +1,7 @@
 <%@page import="org.nuxeo.wizard.helpers.ServerController"%>
 <%@ include file="includes/header.jsp"%>
 
-RESTARTING, PLEASE WAIT...<br /><br />
-Your browser will reload automatically when Nuxeo is ready.
+<fmt:message key="label.restart.wait"/>
 
 <%@ include file="includes/footer.jsp"%>
 

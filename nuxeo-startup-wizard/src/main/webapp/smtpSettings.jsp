@@ -38,12 +38,12 @@ function updateSmtpSettings() {
     <tr>
       <td class="labelCell"><fmt:message key="label.mail.smtp.host"/></td>
       <td><input type="text" name="mail.smtp.host" value="<%=collector.getConfigurationParam("mail.smtp.host") %>"/></td>
-      <td><fmt:message key="label.mail.smtp.host.help"/></td>
+      <td class="helpCell"><fmt:message key="label.mail.smtp.host.help"/></td>
     </tr>
     <tr>
       <td class="labelCell"><fmt:message key="label.mail.smtp.port"/></td>
       <td><input type="text" name="mail.smtp.port" value="<%=collector.getConfigurationParam("mail.smtp.port") %>"/></td>
-      <td><fmt:message key="label.mail.smtp.port.help"/></td>
+      <td class="helpCell"><fmt:message key="label.mail.smtp.port.help"/></td>
     </tr>
 
     <tr>
@@ -62,7 +62,7 @@ function updateSmtpSettings() {
      value="true"><fmt:message key="label.smtpSettings.auth" /></option>
   </select>
   </td>
-  <td><fmt:message key="label.mail.smtp.auth.help"/></td>
+  <td class="helpCell"><fmt:message key="label.mail.smtp.auth.help"/></td>
   </tr>
   </table>
 
@@ -71,12 +71,12 @@ function updateSmtpSettings() {
     <tr>
       <td class="labelCell"><fmt:message key="label.mail.smtp.username"/></td>
       <td><input type="text" name="mail.smtp.username" value="<%=collector.getConfigurationParam("mail.smtp.username") %>"/></td>
-      <td><fmt:message key="label.mail.smtp.username.help"/></td>
+      <td class="helpCell"><fmt:message key="label.mail.smtp.username.help"/></td>
     </tr>
     <tr>
       <td class="labelCell"><fmt:message key="label.mail.smtp.password"/></td>
       <td><input type="password" name="mail.smtp.password" value="<%=collector.getConfigurationParam("mail.smtp.password") %>"/></td>
-      <td><fmt:message key="label.mail.smtp.password.help"/></td>
+      <td class="helpCell"><fmt:message key="label.mail.smtp.password.help"/></td>
     </tr>
 
   </table>

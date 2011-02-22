@@ -6,8 +6,10 @@
 <p><fmt:message key="label.welcome.p2" /></p>
 <p><fmt:message key="label.welcome.p3" />
 <ul>
-  <li><fmt:message key="label.welcome.p3a" /></li>
-  <li><fmt:message key="label.welcome.p3b" /></li>
+  <li><a href="https://doc.nuxeo.com/x/lYFH" target="doc">
+  <fmt:message key="label.welcome.p3a" /></a></li>
+  <li><a href="https://doc.nuxeo.com/x/EIAV" target="doc">
+  <fmt:message key="label.welcome.p3b" /></a></li>
 </ul>
 </p>
 
