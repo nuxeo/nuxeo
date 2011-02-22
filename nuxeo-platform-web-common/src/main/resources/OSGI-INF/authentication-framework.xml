@@ -9,6 +9,10 @@
       - define authentication chains
     @author Thierry Delprat (td@nuxeo.com)
   </documentation>
+  
+  <service>
+      <provide interface="org.nuxeo.runtime.api.login.LoginAs" />
+  </service>
 
   <extension-point name="authenticators">
   <documentation>

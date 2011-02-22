@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.platform.ui.web.auth.service;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -28,11 +27,10 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
@@ -45,6 +43,7 @@ import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationSessionM
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoCallbackHandlerFactory;
 import org.nuxeo.ecm.platform.ui.web.auth.plugins.DefaultSessionManager;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
+import org.nuxeo.runtime.api.login.LoginAs;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -475,4 +474,14 @@ public class PluggableAuthenticationService extends DefaultComponent {
         }
         return preFilters;
     }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> T getAdapter(Class<T> adapter) {
+        if (LoginAs.class == adapter) {
+            return (T)new LoginAsImpl();
+        }
+        return super.getAdapter(adapter);
+    }
+
 }
