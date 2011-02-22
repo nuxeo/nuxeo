@@ -18,11 +18,22 @@ boolean connectOK = ctx.isConnectRegistrationDone();
 <%}%>
 
   <table>
-  <%for (String pName : collector.getConfigurationParams().keySet()) {
+  <%Map<String,String> changedParams = collector.getChangedParameters();
+  for (String pName : collector.getConfigurationParams().keySet()) {
       String label = "label."+pName;%>
     <tr>
-      <td><fmt:message key="<%=label%>"/></td>
-      <td><%=collector.getConfigurationParam(pName)%></td>
+      <%if (changedParams.containsKey(pName)) {%>
+      <td style="font-weight: bold;">
+      <%} else {%>
+      <td>
+      <%}%>
+      <fmt:message key="<%=label%>"/></td>
+      <%if (changedParams.containsKey(pName)) {%>
+      <td style="font-weight: bold;">
+      <%} else {%>
+      <td>
+      <%}%>
+      <%=collector.getConfigurationParam(pName)%></td>
     </tr>
   <%} %>
   </table>

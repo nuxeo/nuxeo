@@ -37,7 +37,7 @@ nuxeo.notification.eMailSubjectPrefix=[Nuxeo]
 mail.smtp.host=localhost
 # Mail server port
 mail.smtp.port=25
-mail.smtp.auth=true
+mail.smtp.auth=false
 mail.smtp.username=anonymous
 mail.smtp.password=password
 # The address mail will be from

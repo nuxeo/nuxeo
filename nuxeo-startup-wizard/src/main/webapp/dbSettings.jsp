@@ -11,7 +11,7 @@
 </span>
 
 <%
-String dbTemplate = collector.getConfigurationParam("nuxeo.db.template");
+String dbTemplate = collector.getConfigurationParam("nuxeo.dbtemplate");
 if (dbTemplate==null || dbTemplate.equals("")) {
     dbTemplate="default";
 }
@@ -54,9 +54,9 @@ function updateDBSettings() {
 
  <table>
     <tr>
-      <td class="labelCell"><fmt:message key="label.nuxeo.db.template"/></td>
+      <td class="labelCell"><fmt:message key="label.nuxeo.dbtemplate"/></td>
       <td>
-  <select id="dbTemplateSelector" name="nuxeo.db.template" onchange="updateDBSettings()">
+  <select id="dbTemplateSelector" name="nuxeo.dbtemplate" onchange="updateDBSettings()">
      <option
      <%if ("default".equals(dbTemplate)){%>
      selected

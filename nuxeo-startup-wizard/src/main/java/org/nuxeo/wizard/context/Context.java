@@ -14,7 +14,6 @@
  * Contributors:
  *     tdelprat
  *
- * $Id$
  */
 
 package org.nuxeo.wizard.context;
@@ -28,7 +27,7 @@ import javax.servlet.http.HttpServletRequest;
  * Simple Context management
  *
  * @author Tiry (tdelprat@nuxeo.com)
- *
+ * @since 5.4.1
  */
 public class Context {
 

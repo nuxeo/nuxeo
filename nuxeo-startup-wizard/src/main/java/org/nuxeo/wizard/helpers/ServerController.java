@@ -14,7 +14,6 @@
  * Contributors:
  *     tdelprat, jcarsique
  *
- * $Id$
  */
 package org.nuxeo.wizard.helpers;
 
@@ -24,8 +23,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.servlet.ServletContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -37,7 +34,7 @@ import org.nuxeo.wizard.context.ParamCollector;
  * Manages execution of NuxeoCtl
  *
  * @author Tiry (tdelprat@nuxeo.com)
- *
+ * @since 5.4.1
  */
 public class ServerController {
 
@@ -102,19 +99,21 @@ public class ServerController {
         return true;
     }
 
-    public static boolean restart(ServletContext servletContext) {
-        String basePath = servletContext.getRealPath("/");
-        basePath = basePath.split("/webapps/")[0];
-
-        basePath = basePath + "/bin";
-
-        return doExec(basePath);
-    }
-
     public static boolean restart(Context context) {
         ParamCollector collector = context.getCollector();
         File nuxeoHome = collector.getConfigurationGenerator().getNuxeoHome();
-        String binPath = new File(nuxeoHome, "bin").getPath();
-        return doExec(binPath);
+        final String binPath = new File(nuxeoHome, "bin").getPath();
+        new Thread("restart thread") {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(5000);
+                    doExec(binPath);
+                } catch (InterruptedException e) {
+                    log.error("Restart failed", e);
+                }
+            }
+        }.start();
+        return true;
     }
 }

@@ -14,13 +14,14 @@
  * Contributors:
  *     tdelprat, jcarsique
  *
- * $Id$
  */
 
 package org.nuxeo.wizard.context;
 
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -31,7 +32,7 @@ import org.nuxeo.launcher.config.ConfigurationGenerator;
  * Manages all the parameters entered by User to configure his Nuxeo server
  *
  * @author Tiry (tdelprat@nuxeo.com)
- *
+ * @since 5.4.1
  */
 public class ParamCollector {
 
@@ -50,12 +51,14 @@ public class ParamCollector {
     public ParamCollector() {
         configurationGenerator = new ConfigurationGenerator();
         configurationGenerator.init();
-        addConfigurationParam("nuxeo.db.template",
-                configurationGenerator.extractDatabaseTemplateName());
     }
 
     public void addConfigurationParam(String name, String value) {
-        configurationParams.put(name, value);
+        if (value == null && configurationParams.containsKey(name)) {
+            configurationParams.remove(name);
+        } else {
+            configurationParams.put(name, value);
+        }
     }
 
     public void addConnectParam(String name, String value) {
@@ -64,6 +67,10 @@ public class ParamCollector {
 
     public Map<String, String> getConfigurationParams() {
         return configurationParams;
+    }
+
+    public Map<String, String> getChangedParameters() {
+        return configurationGenerator.getChangedParameters(configurationParams);
     }
 
     public String getConfigurationParam(String name) {
@@ -95,6 +102,23 @@ public class ParamCollector {
                     addConfigurationParam(name, value);
                 }
             }
+        }
+    }
+
+    /**
+     * @see ConfigurationGenerator#changeDBTemplate(String)
+     * @param templateName database template to use
+     */
+    public void changeDBTemplate(String templateName) {
+        List<String> keys = new ArrayList<String>();
+        configurationGenerator.changeDBTemplate(templateName);
+        for (String key : configurationParams.keySet()) {
+            if (key.startsWith("nuxeo.db")) {
+                keys.add(key);
+            }
+        }
+        for (String key : keys) {
+            configurationParams.remove(key);
         }
     }
 }
