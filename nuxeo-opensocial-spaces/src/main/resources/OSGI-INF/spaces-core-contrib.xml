@@ -18,15 +18,15 @@
 
   <extension target="org.nuxeo.ecm.core.schema.TypeService"
     point="schema">
-    <schema name="space" src="schemas/space.xsd" />
-    <schema name="webcontent" src="schemas/webcontent.xsd" />
-    <schema name="wchtml" src="schemas/wchtml.xsd" />
-    <schema name="wcopensocial" src="schemas/wcopensocial.xsd" />
-    <schema name="yuilayout" src="schemas/yuilayout.xsd" />
-    <schema name="yuiunit" src="schemas/yuiunit.xsd" />
+    <schema name="space" prefix="space" src="schemas/space.xsd" />
+    <schema name="webcontent" prefix="wcontent" src="schemas/webcontent.xsd" />
+    <schema name="wchtml" prefix="wchtml" src="schemas/wchtml.xsd" />
+    <schema name="wcopensocial" prefix="wcopensocial" src="schemas/wcopensocial.xsd" />
+    <schema name="yuilayout" prefix="yuilayout" src="schemas/yuilayout.xsd" />
+    <schema name="yuiunit" prefix="yuiunit" src="schemas/yuiunit.xsd" />
 
     <!--  We keep it for compatibility reasons : needed for gadget type -->
-    <schema name="gadget" src="schemas/gadget.xsd" />
+    <schema name="gadget" prefix="gadget" src="schemas/gadget.xsd" />
   </extension>
 
   <extension target="org.nuxeo.ecm.core.schema.TypeService"
