@@ -87,7 +87,7 @@
                           <c:forEach var="actionCategory" items="#{contentView.actionsCategories}" varStatus="status">
                             <nxu:set var="actions" value="#{webActions.getUnfiltredActionsList(actionCategory)}" cache="true">
                               <nxu:dataList var="sel_action" value="#{actions}"
-                                id="clipboardActionsTable_#{contentViewId}_#{status.index}">
+                                id="clipboardActionsTable_#{contentViewId}">
                               <span id="#{sel_action.id}">
                                 <nxh:commandButton
                                   styleClass="button"
