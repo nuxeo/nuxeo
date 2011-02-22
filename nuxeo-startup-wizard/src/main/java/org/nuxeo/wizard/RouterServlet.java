@@ -14,7 +14,6 @@
  * Contributors:
  *     tdelprat, jcarsique
  *
- * $Id$
  */
 
 package org.nuxeo.wizard;
@@ -46,7 +45,7 @@ import org.nuxeo.wizard.nav.Page;
  * Main entry point : find the right handler and start jsp rendering
  *
  * @author Tiry (tdelprat@nuxeo.com)
- *
+ * @since 5.4.1
  */
 public class RouterServlet extends HttpServlet {
 
@@ -199,15 +198,15 @@ public class RouterServlet extends HttpServlet {
         ParamCollector collector = ctx.getCollector();
 
         if ("true".equals(req.getParameter("refresh"))) {
-            String templateName = collector.getConfigurationParam("nuxeo.db.template");
-            // TODO: recalculate parameters with db template = templateName
+            String templateName = collector.getConfigurationParam(ConfigurationGenerator.PARAM_TEMPLATE_DBNAME);
+            collector.changeDBTemplate(templateName);
 
             currentPage.dispatchToJSP(req, resp);
             return;
         }
 
-        if (!collector.getConfigurationParam("nuxeo.db.template").equals(
-                "default")) {
+        if (!collector.getConfigurationParam(
+                ConfigurationGenerator.PARAM_TEMPLATE_DBNAME).equals("default")) {
             if (collector.getConfigurationParam("nuxeo.db.name").isEmpty()) {
                 ctx.trackError("nuxeo.db.name", "error.dbname.required");
             }
@@ -274,12 +273,12 @@ public class RouterServlet extends HttpServlet {
         Map<String, String> changedParameters = collector.getConfigurationParams();
         changedParameters.put(ConfigurationGenerator.PARAM_WIZARD_DONE, "true");
         try {
-            cg.saveConfiguration(changedParameters);
+            cg.saveFilteredConfiguration(changedParameters);
         } catch (ConfigurationException e) {
             log.error("Could not save wizard parameters.", e);
         }
 
-        // => page will trigger the restart
+        // // => page will trigger the restart
         new Page("", "reStarting.jsp").dispatchToJSP(req, resp);
     }
 

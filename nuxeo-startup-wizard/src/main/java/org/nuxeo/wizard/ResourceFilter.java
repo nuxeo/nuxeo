@@ -14,7 +14,6 @@
  * Contributors:
  *     tdelprat, jcarsique
  *
- * $Id$
  */
 
 package org.nuxeo.wizard;
@@ -34,7 +33,7 @@ import javax.servlet.http.HttpServletRequest;
  * processing calls to the servlet
  *
  * @author Tiry (tdelprat@nuxeo.com)
- *
+ * @since 5.4.1
  */
 public class ResourceFilter implements Filter {
 
