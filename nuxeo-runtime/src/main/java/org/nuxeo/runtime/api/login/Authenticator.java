@@ -16,9 +16,6 @@
  */
 package org.nuxeo.runtime.api.login;
 
-import java.security.Principal;
-
-import javax.security.auth.login.LoginException;
 
 /**
  * Authenticate the given username against the given password.
@@ -30,6 +27,13 @@ import javax.security.auth.login.LoginException;
  */
 public interface Authenticator {
 
-    public Principal authenticate(String name, String password) throws LoginException;
+    /**
+     * Check the given username/password pair.
+     *
+     * @param name
+     * @param password
+     * @return true is valid, false otherwise
+     */
+    public boolean authenticate(String name, String password);
 
 }
