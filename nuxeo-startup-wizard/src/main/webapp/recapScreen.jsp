@@ -24,13 +24,15 @@ boolean connectOK = ctx.isConnectRegistrationDone();
   for (String pName : sortedParams.keySet()) {
       String label = "label."+pName;%>
     <tr>
-      <%if (changedParams.containsKey(pName)) {%>
+      <%if (changedParams.containsKey(pName) ||
+              pName.startsWith("nuxeo.db") && !"default".equals(collector.getConfigurationParam(pName))) {%>
       <td style="font-weight: bold;">
       <%} else {%>
       <td>
       <%}%>
       <fmt:message key="<%=label%>"/></td>
-      <%if (changedParams.containsKey(pName)) {%>
+      <%if (changedParams.containsKey(pName) ||
+              pName.startsWith("nuxeo.db") && !"default".equals(collector.getConfigurationParam(pName))) {%>
       <td style="font-weight: bold;">
       <%} else {%>
       <td>
