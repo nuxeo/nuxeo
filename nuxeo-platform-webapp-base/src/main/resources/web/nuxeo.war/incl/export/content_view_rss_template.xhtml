@@ -12,7 +12,7 @@
   last modified date, descending.
 
   accepted parameters:
-  - when using template: feedFormat (RSS20 or ATOM10)
+  - when using template: feedFormat (RSS20 or ATOM10), feedTitle and feedTitleWithDocument 
   - from request: contentViewName, currentPage, pageSize, contentViewState
 </c:if>
 
@@ -30,18 +30,27 @@
     cache="true">
   <nxu:set var="provider" value="#{contentView.currentPageProvider}"
     cache="true">
+  
+    <c:set var="contentViewTitle"
+      value="#{nxu:test(contentView.translateTitle, messages[contentView.title], contentView.title)}" />
+    <c:if test="#{empty contentViewTitle}">
+      <c:set var="contentViewTitle" value="#{contentView.name}" />
+    </c:if>
+
+    <c:set var="resolvedFeedTitle"
+      value="#{nxu:translate(feedTitleWithDocument, currentDocument.dc.title, contentViewTitle)}" />
 
     <c:if test="#{! empty currentDocument}">
-      <c:set var="feedTitle"
-        value="RSS feed for document #{currentDocument.dc.title} and content view #{contentViewName}" />
+      <c:set var="resolvedFeedTitle"
+        value="#{nxu:translate(feedTitleWithDocument, currentDocument.dc.title, contentViewTitle)}" />
     </c:if>
     <c:if test="#{empty currentDocument}">
-      <c:set var="feedTitle"
-        value="RSS feed for content view #{contentViewName}" />
+      <c:set var="resolvedFeedTitle"
+        value="#{nxu:translate(feedTitle, contentViewName)}" />
     </c:if>
 
     <nxr:feed
-      title="#{feedTitle}"
+      title="#{resolvedFeedTitle}"
       feedFormat="#{feedFormat}">
       <ui:repeat var="doc" value="#{provider.currentPage}">
         <r:entry

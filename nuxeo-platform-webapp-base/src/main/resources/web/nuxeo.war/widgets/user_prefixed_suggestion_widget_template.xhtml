@@ -100,8 +100,9 @@
             </h:column>
           </rich:suggestionbox>
           <br />
-          <h:outputText value="#{messages['label.suggestion.help.minChars.start']} " />
-          <h:outputText value="#{minChars} #{messages['label.suggestion.help.minChars.end']}" />
+          <h:outputFormat value="#{messages['label.suggestion.help.minChars']}">
+            <f:param value="#{minChars}" />
+          </h:outputFormat>
         </h:panelGroup>
 
         <h:panelGroup>

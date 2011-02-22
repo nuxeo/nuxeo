@@ -7,6 +7,10 @@
 
     <contentView name="document_content">
 
+      <title>label.contentview.document_content</title>
+      <translateTitle>true</translateTitle>
+      <showTitle>false</showTitle>
+
       <coreQueryPageProvider>
         <property name="coreSession">#{documentManager}</property>
         <pattern>
@@ -46,6 +50,10 @@
     </contentView>
 
     <contentView name="document_trash_content">
+
+      <title>label.contentview.document_trash_content</title>
+      <translateTitle>true</translateTitle>
+      <showTitle>false</showTitle>
 
       <coreQueryPageProvider>
         <property name="coreSession">#{documentManager}</property>
@@ -87,6 +95,10 @@
 
     <contentView name="section_content">
 
+      <title>label.contentview.section_content</title>
+      <translateTitle>true</translateTitle>
+      <showTitle>false</showTitle>
+
       <coreQueryPageProvider>
         <property name="coreSession">#{documentManager}</property>
         <pattern>
@@ -126,6 +138,10 @@
     </contentView>
 
     <contentView name="orderable_document_content">
+
+      <title>label.contentview.orderable_document_content</title>
+      <translateTitle>true</translateTitle>
+      <showTitle>false</showTitle>
 
       <coreQueryPageProvider>
         <property name="coreSession">#{documentManager}</property>

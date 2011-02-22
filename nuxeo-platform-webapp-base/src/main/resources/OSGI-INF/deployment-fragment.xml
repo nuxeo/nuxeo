@@ -84,6 +84,12 @@
     <!-- export links -->
 
     <navigation-case>
+      <from-outcome>export</from-outcome>
+      <to-view-id>/incl/export/export.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+    <navigation-case>
       <from-outcome>csv</from-outcome>
       <to-view-id>/incl/export/content_view_csv.xhtml</to-view-id>
       <redirect />

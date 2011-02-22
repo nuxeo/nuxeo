@@ -36,6 +36,7 @@ import org.apache.commons.lang.StringUtils;
 import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
@@ -126,13 +127,12 @@ public final class Functions {
     }
 
     public static String htmlEscape(String data) {
-        return  StringEscapeUtils.escapeHtml(data);
+        return StringEscapeUtils.escapeHtml(data);
     }
 
     /**
-     * Can be used in order to produce something like that
-     * "Julien, Alain , Thierry et Marc-Aur?le" where ' , ' and ' et ' is the
-     * final one.
+     * Can be used in order to produce something like that "Julien, Alain ,
+     * Thierry et Marc-Aurele" where ' , ' and ' et ' is the final one.
      */
     public static String joinCollectionWithFinalDelimiter(
             Collection<Object> collection, String separator,
@@ -365,8 +365,8 @@ public final class Functions {
      *
      * @param durationObj a Float, Double, Integer, Long or String instance
      *            representing a duration in seconds
-     * @param i18nLabels a map to translate the days, hours, minutes and seconds
-     *            labels
+     * @param i18nLabels a map to translate the days, hours, minutes and
+     *            seconds labels
      * @return the formatted string
      */
     public static String printFormattedDuration(Object durationObj,
@@ -402,14 +402,16 @@ public final class Functions {
         String representation = null;
         for (int i = 0; i < components.length; i++) {
             if (components[i] != 0 || i == components.length - 1) {
-                String i18nLabel = i18nLabels.get(I18N_DURATION_PREFIX + units[i]);
+                String i18nLabel = i18nLabels.get(I18N_DURATION_PREFIX
+                        + units[i]);
                 if (i18nLabel == null) {
                     i18nLabel = defaultLabels[i];
                 }
                 representation = String.format("%d %s", components[i],
                         i18nLabel);
                 if (i < components.length - 1) {
-                    i18nLabel = i18nLabels.get(I18N_DURATION_PREFIX + units[i + 1]);
+                    i18nLabel = i18nLabels.get(I18N_DURATION_PREFIX
+                            + units[i + 1]);
                     if (i18nLabel == null) {
                         i18nLabel = defaultLabels[i + 1];
                     }
@@ -424,6 +426,11 @@ public final class Functions {
 
     public static String printFormattedDuration(Object durationObj) {
         return printFormattedDuration(durationObj, null);
+    }
+
+    public static final String translate(String messageId, Object... params) {
+        return ComponentUtils.translate(FacesContext.getCurrentInstance(),
+                messageId, params);
     }
 
 }

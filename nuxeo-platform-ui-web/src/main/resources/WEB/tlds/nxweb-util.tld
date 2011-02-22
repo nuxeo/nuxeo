@@ -22,40 +22,65 @@
   <uri>http://nuxeo.org/nxweb/util</uri>
   <description>
     <![CDATA[
+    <p>The NXWebPlatform (re)definition of basic tags.</p>
     <p>
-    The NXWebPlatform (re)definition of basic tags.
+      Basic tags can be seen as useful tags which are still not really specific
+      to the Nuxeo 5 framework.
     </p>
-    <p>Basic tags can be seen as useful tags which are still not
-    really specific to the Nuxeo 5 framework.</p>
-    <p>
-    Also exposes utility functions like:
-    </p>
+    <p>Also exposes utility functions like:</p>
     <ul>
-      <li> test(Boolean, Object, Object): performs the java "if-then-else" operation.
+      <li>
+        test(Boolean, Object, Object): performs the java "if-then-else"
+        operation.
       </li>
-      <li> join(String[], String): performs a join on given array using given separator.
+      <li>
+        join(String[], String): performs a join on given array using given
+        separator.
       </li>
-      <li> joinCollection(Collection, String): performs a join on given collection using given separator.
+      <li>
+        joinCollection(Collection, String): performs a join on given collection
+        using given separator.
       </li>
-      <li> userIsMemberOf(String): tests if the user belongs to the named group.
+      <li>
+        userIsMemberOf(String): tests if the user belongs to the named group.
       </li>
-      <li> userFullName(String): returns the full name of a user given its id.
+      <li>
+        userFullName(String): returns the full name of a user given its id.
       </li>
-      <li> userDisplayName(String, String, String): returns the full name of a user given its id, first name and last name.
+      <li>
+        userDisplayName(String, String, String): returns the full name of a user
+        given its id, first name and last name.
       </li>
-      <li> htmlEscape(String): returns html escaped string (can be use to do safe h:outputText in scripts).
+      <li>
+        htmlEscape(String): returns html escaped string (can be use to do safe
+        h:outputText in scripts).
       </li>
-      <li> printFileSize(String size): same as printFormatedFileSize( size, "SI", true)
+      <li>
+        printFileSize(String size): same as printFormatedFileSize( size, "SI",
+        true)
       </li>
-      <li> printFormatedFileSize(String size, String format, bollean isShort) pretty print the size of
-      a file using the format given in its short or long form. The format available are "SI",
-      "IEC" or "JEDEC". See <a href="http://en.wikipedia.org/wiki/Byte">the wikipedia article on Byte</a>
-      for more information on those format.
+      <li>
+        printFormatedFileSize(String size, String format, bollean isShort)
+        pretty print the size of a file using the format given in its short or
+        long form. The format available are "SI", "IEC" or "JEDEC". See
+        <a href="http://en.wikipedia.org/wiki/Byte">
+          the wikipedia article on Byte
+        </a>
+        for more information on those format.
       </li>
-      <li>printFormattedDuration(Object durationInSeconds, Map<String, String> messages): pretty print raw duration measured
-       in seconds as "1 hr 23 min" or "31 min 29 sec" or "3 sec" for instance
+      <li>
+        printFormattedDuration(Object durationInSeconds, Map<String , String>
+        messages): pretty print raw duration measured in seconds as "1 hr 23
+        min" or "31 min 29 sec" or "3 sec" for instance
       </li>
-      <li>printFormattedDuration(Object durationInSeconds): same as printFormattedDuration(Object durationInSeconds, null)
+      <li>
+        printFormattedDuration(Object durationInSeconds): same as
+        printFormattedDuration(Object durationInSeconds, null)
+      </li>
+      <li>
+        translate(String messageKey, Object... params): returns translated
+        message with given parameters to be used when formatting the message
+        value.
       </li>
     </ul>
     ]]>
@@ -647,8 +672,8 @@
     <attribute>
       <name>hidden</name>
       <description>
-        Boolean indicating if the list of extensions is displayed.
-        Defaults to false.
+        Boolean indicating if the list of extensions is displayed. Defaults to
+        false.
       </description>
     </attribute>
     <example>

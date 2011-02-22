@@ -111,8 +111,9 @@
           </rich:suggestionbox>
           <c:if test="#{displayHelpLabel}">
             <br />
-            <h:outputText value="#{messages['label.suggestion.help.minChars.start']} " />
-            <h:outputText value="#{minChars} #{messages['label.suggestion.help.minChars.end']}" />
+            <h:outputFormat value="#{messages['label.suggestion.help.minChars']}">
+              <f:param value="#{minChars}" />
+            </h:outputFormat>
           </c:if>
         </h:panelGroup>
 
