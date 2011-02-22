@@ -34,7 +34,7 @@ import org.nuxeo.functionaltests.pages.forms.WorkspaceFormPage;
 public class ITFileUpload extends AbstractTest {
 
     @Test
-    public void testFileUpload() {
+    public void testFileUpload() throws Exception {
         // Get the the content tab and go to the existing Workspace root folder
         DocumentBasePage documentBasePage = login().getContentTab().goToDocument(
                 "Workspaces");
@@ -51,8 +51,8 @@ public class ITFileUpload extends AbstractTest {
         // Fill the form and upload the file
         // get a file location from resources
         String fileToUpload = getFileFromResource("filetoupload.txt");
-        String fileName = fileToUpload.substring(fileToUpload.lastIndexOf(File.separator)+1);
-        
+        String fileName = fileToUpload.substring(fileToUpload.lastIndexOf(File.separator) + 1);
+
         FileDocumentBasePage fileDocumentBasePage = fileFormPage.createFileDocument(
                 "file title", "file description", fileToUpload);
 

@@ -16,8 +16,6 @@
  */
 package org.nuxeo.functionaltests.pages;
 
-import static org.junit.Assert.assertTrue;
-
 import org.nuxeo.functionaltests.pages.tabs.ContentTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.EditTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.SummaryTabSubPage;
@@ -45,9 +43,6 @@ public class DocumentBasePage extends AbstractPage {
 
     @FindBy(xpath = "/html/body/table[2]/tbody/tr/td[2]/div[2]//div[@class=\"tabsBar\"]/form/ul/li[@class=\"selected\"]/a")
     public WebElement selectedTab;
-
-    @FindBy(xpath = "//div[@class=\"userActions\"]")
-    public WebElement userActions;
 
     @FindBy(className = "currentDocumentDescription")
     public WebElement currentDocumentDescription;
@@ -104,10 +99,14 @@ public class DocumentBasePage extends AbstractPage {
      * Username
      *
      * @param username
+     * @throws UserNotConnectedException
      */
-    public void checkUserConnected(String username) {
+    public void checkUserConnected(String username)
+            throws UserNotConnectedException {
         String expectedConnectedMessage = "You are logged as " + username;
-        assertTrue(userActions.getText().contains(expectedConnectedMessage));
+        if (!(getHeaderLinks().getText().contains(expectedConnectedMessage))) {
+            throw new UserNotConnectedException(username);
+        }
     }
 
     public String getCurrentDocumentDescription() {
@@ -116,6 +115,22 @@ public class DocumentBasePage extends AbstractPage {
 
     public String getCurrentDocumentTitle() {
         return currentDocumentTitle.getText();
+    }
+
+    /**
+     * Exception occured a user is expected to be connected but it isn't.
+     *
+     */
+    public class UserNotConnectedException extends Exception {
+        /**
+         *
+         */
+        private static final long serialVersionUID = 1L;
+
+        public UserNotConnectedException(String username) {
+            super("The user " + username
+                    + " is expected to be connected but isn't");
+        }
     }
 
 }

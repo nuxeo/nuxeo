@@ -32,7 +32,7 @@ import org.nuxeo.functionaltests.pages.tabs.UsersTabSubPage;
 public class ITUsers extends AbstractTest {
 
     @Test
-    public void testCreateViewDeleteUser() {
+    public void testCreateViewDeleteUser() throws Exception {
         String username = "test_create_view_delete_user";
         String password = "test";
         String firstname = "firstname";

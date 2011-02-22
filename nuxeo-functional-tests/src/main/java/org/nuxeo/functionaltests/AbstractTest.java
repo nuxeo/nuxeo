@@ -33,6 +33,7 @@ import org.apache.commons.io.IOUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
+import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedException;
 import org.nuxeo.functionaltests.pages.LoginPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
@@ -299,12 +300,14 @@ public abstract class AbstractTest {
      * Login as Administrator
      *
      * @return the Document base page (by default returned by nuxeo dm)
+     * @throws UserNotConnectedException
      */
-    public DocumentBasePage login() {
+    public DocumentBasePage login() throws UserNotConnectedException {
         return login("Administrator", "Administrator");
     }
 
-    public DocumentBasePage login(String username, String password) {
+    public DocumentBasePage login(String username, String password)
+            throws UserNotConnectedException {
         DocumentBasePage documentBasePage = getLoginPage().login(username,
                 password, DocumentBasePage.class);
         documentBasePage.checkUserConnected(username);

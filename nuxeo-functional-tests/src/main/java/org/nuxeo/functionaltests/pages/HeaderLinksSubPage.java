@@ -32,6 +32,9 @@ public class HeaderLinksSubPage extends AbstractPage {
     @FindBy(linkText = "Log out")
     WebElement logoutLink;
 
+    @FindBy(xpath = "//div[@class=\"userActions\"]")
+    public WebElement userActions;
+
     public HeaderLinksSubPage(WebDriver driver) {
         super(driver);
     }
@@ -44,6 +47,10 @@ public class HeaderLinksSubPage extends AbstractPage {
     public LoginPage logout() {
         logoutLink.click();
         return asPage(LoginPage.class);
+    }
+
+    public String getText() {
+        return userActions.getText();
     }
 
 }

@@ -21,6 +21,8 @@ import java.util.Date;
 
 import org.junit.Test;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
+import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedException;
+import org.nuxeo.functionaltests.pages.UsersGroupsBasePage;
 import org.nuxeo.functionaltests.pages.forms.WorkspaceFormPage;
 import static junit.framework.Assert.assertEquals;
 
@@ -41,10 +43,27 @@ import static junit.framework.Assert.assertEquals;
 public class ITModifyWorskpaceDescription extends AbstractTest {
 
     @Test
-    public void testModifyWsDescription() {
-        // login
-        DocumentBasePage documentBasePage = login().getContentTab().goToDocument(
-                "Workspaces");
+    public void testModifyWsDescription() throws Exception {
+        DocumentBasePage documentBasePage = null;
+        // Login as jsmith doesn't work for now as members doesn't have write
+        // rights on Workspaces
+        documentBasePage = login().getContentTab().goToDocument("Workspaces");
+        /*
+        try {
+            documentBasePage = login("jsmith", "jsmith1").getContentTab().goToDocument(
+                    "Workspaces");
+        } catch (Exception e) {
+            // create user, and try again
+            UsersGroupsBasePage usergroupPage = login().getHeaderLinks().goToUserManagementPage();
+            usergroupPage = usergroupPage.getUsersTab().getUserCreatePage().createUser(
+                    "jsmith", "John", "Smith", "Nuxeo", "jsmith@nuxeo.com",
+                    "jsmith1", "members");
+            usergroupPage.getHeaderLinks().logout();
+
+            documentBasePage = login("jsmith", "jsmith1").getContentTab().goToDocument(
+                    "Workspaces");
+        }
+        */
         // create a new workspace in there named workspaceDescriptionModify
         // (current time)
         WorkspaceFormPage workspaceCreationFormPage = documentBasePage.getWorkspaceContentTab().getWorkspaceCreatePage();
@@ -63,9 +82,10 @@ public class ITModifyWorskpaceDescription extends AbstractTest {
         // cleaning
         documentBasePage = documentBasePage.getNavigationSubPage().goToDocument(
                 "Workspaces");
-
         documentBasePage = documentBasePage.getContentTab().removeDocument(
                 workspaceTitle);
+        // disconnect
+        documentBasePage.getHeaderLinks().logout();
 
     }
 
