@@ -130,14 +130,40 @@ public class ImportExportActionBean implements Serializable {
     }
 
     /**
+     * Returns the REST URL for export of given document.
+     *
+     * @since 5.4.1
+     * @param doc the document to export
+     * @param exportAsZip a boolean stating if export should be given in ZIP
+     *            format. When exporting the tree, ZIP format is forced.
+     * @param exportAsTree a boolean stating if export should include the
+     *            document children.
+     */
+    public String getExportURL(DocumentModel doc, boolean exportAsZip,
+            boolean exportAsTree) {
+        if (doc == null) {
+            return null;
+        }
+        StringBuffer urlb = getRestletBaseURL(doc);
+        if (exportAsTree) {
+            urlb.append("exportTree");
+        } else {
+            if (exportAsZip) {
+                urlb.append("export?format=ZIP");
+            } else {
+                urlb.append("export?format=XML");
+            }
+        }
+        return urlb.toString();
+    }
+
+    /**
      * Generates URL to call export restlet on a leaf.
      *
      * @return export restlet URL
      */
     public String getDocumentExportURL() {
-        StringBuffer urlb = getRestletBaseURL(navigationContext.getCurrentDocument());
-        urlb.append("exportTree?format=XML");
-        return urlb.toString();
+        return getExportURL(navigationContext.getCurrentDocument(), true, true);
     }
 
     /**
@@ -146,9 +172,36 @@ public class ImportExportActionBean implements Serializable {
      * @return export restlet URL
      */
     public String getFolderExportURL() {
-        StringBuffer urlb = getRestletBaseURL(navigationContext.getCurrentDocument());
-        urlb.append("exportTree?format=ZIP");
-        return urlb.toString();
+        return getExportURL(navigationContext.getCurrentDocument(), true, true);
+    }
+
+    /**
+     * Returns the Rest URL for a document export in XML format
+     *
+     * @since 5.4.1
+     */
+    public String getDocumentXMLExportURL() {
+        return getExportURL(navigationContext.getCurrentDocument(), false,
+                false);
+    }
+
+    /**
+     * Returns the Rest URL for a document export in ZIP format
+     *
+     * @since 5.4.1
+     */
+    public String getDocumentZIPExportURL() {
+        return getExportURL(navigationContext.getCurrentDocument(), true, false);
+    }
+
+    /**
+     * Returns the Rest URL for a document tree export in ZIP format
+     *
+     * @since 5.4.1
+     * @return
+     */
+    public String getDocumentZIPTreeExportURL() {
+        return getExportURL(navigationContext.getCurrentDocument(), true, true);
     }
 
     public String exportCurrentList() {

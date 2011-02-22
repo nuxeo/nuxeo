@@ -7,26 +7,49 @@
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="actions">
 
+    <!-- old export icon for non folderish docs => disabled -->
     <action id="xmlExport" link="#{importExportAction.doExportDocument()}"
-      enabled="true" order="17" label="action.xml.export"
-      icon="/icons/zip.png">
+      order="17" label="action.xml.export" icon="/icons/zip.png"
+      enabled="false">
       <category>DOCUMENT_UPPER_ACTION</category>
       <filter-id>not_folder</filter-id>
     </action>
 
+    <!-- old export icon for non folderish docs => disabled -->
     <action id="xmlTreeExport" link="#{importExportAction.doExportFolder()}"
-      enabled="true" order="17" label="action.xmltree.export"
-      icon="/icons/zip.png">
+      order="17" label="action.xmltree.export" icon="/icons/zip.png"
+      enabled="false">
       <category>DOCUMENT_UPPER_ACTION</category>
-      <filter id="exportFolder">
-        <rule grant="true">
-          <facet>Folderish</facet>
-        </rule>
-      </filter>
+      <filter-id>folder</filter-id>
+    </action>
+
+    <action id="exportView" link="export" order="20" label="label.exportview"
+      icon="/icons/export.png">
+      <category>DOCUMENT_UPPER_ACTION</category>
+    </action>
+
+    <action id="exportViewXMLExport"
+      link="#{importExportAction.documentXMLExportURL}" order="10"
+      label="label.exportview.xmlExport" icon="/icons/xml.png">
+      <category>DOCUMENT_EXPORT_VIEW_ACTION</category>
+    </action>
+
+    <action id="exportViewZIPExport"
+      link="#{importExportAction.documentZIPExportURL}" order="20"
+      label="label.exportview.zipExport" icon="/icons/zip_export.png">
+      <category>DOCUMENT_EXPORT_VIEW_ACTION</category>
+    </action>
+
+    <action id="exportViewTreeZIPExport"
+      link="#{importExportAction.documentZIPTreeExportURL}" order="30"
+      label="label.exportview.zipTreeExport"
+      icon="/icons/zip_tree_export.png">
+      <category>DOCUMENT_EXPORT_VIEW_ACTION</category>
+      <filter-id>folder</filter-id>
     </action>
 
     <action id="WORKLIST_XMLEXPORT"
-      link="#{importExportAction.exportCurrentList()}" enabled="true"
+      link="#{importExportAction.exportCurrentList()}"
       label="command.clipboard.xmlZipExport"
       icon="/icons/action_export_zip.gif">
       <category>DEFAULT_LIST</category>
