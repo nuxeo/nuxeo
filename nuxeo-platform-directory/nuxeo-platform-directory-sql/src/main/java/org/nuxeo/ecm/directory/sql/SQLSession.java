@@ -691,40 +691,48 @@ public class SQLSession extends BaseSession implements EntrySource {
             select.setOrderBy(orderby.toString());
             String query = select.getStatement();
 
-            PreparedStatement ps = sqlConnection.prepareStatement(query);
-            int index = 1;
-            for (String fieldName : orderedFields) {
-                Object value = filterMap.get(fieldName);
-                setFieldValue(ps, index, fieldName, value);
-                index++;
-            }
-            addFilterValues(ps, index);
-
-            // execute the query and create a documentModel list
-            ResultSet rs = ps.executeQuery();
-            DocumentModelList list = new DocumentModelListImpl();
-            while (rs.next()) {
-
-                // fetch values for stored fields
-                Map<String, Object> map = new HashMap<String, Object>();
-                for (String fieldName : storedFieldNames) {
-                    Object o = getFieldValue(rs, fieldName);
-                    map.put(fieldName, o);
+            PreparedStatement ps = null;
+            try {
+                ps = sqlConnection.prepareStatement(query);
+                int index = 1;
+                for (String fieldName : orderedFields) {
+                    Object value = filterMap.get(fieldName);
+                    setFieldValue(ps, index, fieldName, value);
+                    index++;
                 }
+                addFilterValues(ps, index);
 
-                DocumentModel docModel = fieldMapToDocumentModel(map);
+                // execute the query and create a documentModel list
+                ResultSet rs = ps.executeQuery();
+                DocumentModelList list = new DocumentModelListImpl();
+                while (rs.next()) {
 
-                // fetch the reference fields
-                if (fetchReferences) {
-                    for (Reference reference : directory.getReferences()) {
-                        List<String> targetIds = reference.getTargetIdsForSource(docModel.getId());
-                        docModel.setProperty(schemaName,
-                                reference.getFieldName(), targetIds);
+                    // fetch values for stored fields
+                    Map<String, Object> map = new HashMap<String, Object>();
+                    for (String fieldName : storedFieldNames) {
+                        Object o = getFieldValue(rs, fieldName);
+                        map.put(fieldName, o);
                     }
+
+                    DocumentModel docModel = fieldMapToDocumentModel(map);
+
+                    // fetch the reference fields
+                    if (fetchReferences) {
+                        for (Reference reference : directory.getReferences()) {
+                            List<String> targetIds = reference.getTargetIdsForSource(docModel.getId());
+                            docModel.setProperty(schemaName,
+                                    reference.getFieldName(), targetIds);
+                        }
+                    }
+                    list.add(docModel);
                 }
-                list.add(docModel);
+                return list;
+            } finally {
+                if (ps != null) {
+                    ps.close();
+                }
             }
-            return list;
+            
         } catch (SQLException e) {
             try {
                 sqlConnection.close();
