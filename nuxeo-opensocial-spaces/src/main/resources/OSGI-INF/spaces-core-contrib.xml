@@ -38,9 +38,7 @@
       <schema name="file" />
       <schema name="yuilayout" />
       <facet name="Folderish" />
-      <facet name="Indexable" />
-      <facet name="Themable" />
-      <facet name="Searchable" />
+      <facet name="HiddenInNavigation" />
 
       <subtypes>
         <type>Unit</type>
@@ -53,6 +51,7 @@
       <schema name="yuiunit" />
       <schema name="file" />
       <facet name="Folderish" />
+      <facet name="HiddenInNavigation" />
 
       <subtypes>
         <type>WCPicture</type>
@@ -67,20 +66,23 @@
       <schema name="file" />
       <schema name="files" />
       <facet name="Folderish" />
+      <facet name="HiddenInNavigation" />
     </doctype>
 
     <doctype name="WCHtml" extends="File">
       <schema name="webcontent" />
 	    <schema name="gadget" />
-      <facet name="Folderish" />
       <schema name="wchtml" />
+      <facet name="Folderish" />
+      <facet name="HiddenInNavigation" />
     </doctype>
 
     <doctype name="WCOpenSocial" extends="File">
       <schema name="webcontent" />
 	    <schema name="gadget" />
-      <facet name="Folderish" />
       <schema name="wcopensocial" />
+      <facet name="Folderish" />
+      <facet name="HiddenInNavigation" />
     </doctype>
 
 
@@ -97,9 +99,7 @@
       <schema name="file" />
       <schema name="files" />
       <facet name="Folderish" />
-      <facet name="Indexable" />
-      <facet name="Themable" />
-      <facet name="Searchable" />
+      <facet name="HiddenInNavigation" />
     </doctype>
   </extension>
 </component>
