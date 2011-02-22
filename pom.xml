@@ -25,6 +25,7 @@
     <module>nuxeo-startup-wizard</module>
     <module>nuxeo-launcher</module>
     <module>nuxeo-distribution-resources</module>
+    <module>nuxeo-functional-tests</module>
   </modules>
 
   <profiles>
