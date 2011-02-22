@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -257,6 +258,16 @@ public class ConfigurationGenerator {
         }
     }
 
+    /**
+     * Change templates using given database template
+     *
+     * @param dbTemplate new database template
+     * @since 5.4.1
+     */
+    public void changeDBTemplate(String dbTemplate) {
+        changeTemplates(rebuildTemplatesStr(dbTemplate));
+    }
+
     private void setBasicConfiguration() throws ConfigurationException {
         try {
             // Load default configuration
@@ -410,8 +421,11 @@ public class ConfigurationGenerator {
 
     /**
      * Save changed parameters in {@code nuxeo.conf}.
+     * This method does not check values in map. Use
+     * {@link #saveFilteredConfiguration(Map)} for parameters filtering.
      *
      * @param changedParameters Map of modified parameters
+     * @see #saveFilteredConfiguration(Map)
      */
     public void saveConfiguration(Map<String, String> changedParameters)
             throws ConfigurationException {
@@ -419,6 +433,43 @@ public class ConfigurationGenerator {
         setOnceToFalse = false;
         setFalseToOnce = true;
         writeConfiguration(loadConfiguration(), changedParameters);
+    }
+
+    /**
+     * Save changed parameters in {@code nuxeo.conf}, filtering parameters with
+     * {@link #getChangedParametersMap(Map, Map)}
+     *
+     * @param changedParametersMaps Maps of modified parameters
+     * @since 5.4.1
+     * @see #getChangedParameters(Map)
+     */
+    public void saveFilteredConfiguration(Map<String, String> changedParameters)
+            throws ConfigurationException {
+        saveConfiguration(getChangedParameters(changedParameters));
+    }
+
+    /**
+     * Filters given parameters including them only if (there was no previous
+     * value and new value is not empty/null) or (there was a previous value and
+     * it differs from the new value)
+     *
+     * @param changedParameters parameters to be filtered
+     * @return filtered map
+     * @since 5.4.1
+     */
+    public Map<String, String> getChangedParameters(
+            Map<String, String> changedParameters) {
+        Map<String, String> filteredChangedParameters = new HashMap<String, String>();
+        for (String key : changedParameters.keySet()) {
+            String oldParam = userConfig.getProperty(key);
+            String newParam = changedParameters.get(key).trim();
+            if (oldParam == null && !newParam.isEmpty() || oldParam != null
+                    && !oldParam.trim().equals(newParam)) {
+                filteredChangedParameters.put(key,
+                        changedParameters.get(key).trim());
+            }
+        }
+        return filteredChangedParameters;
     }
 
     private void writeConfiguration(StringBuffer newContent,
@@ -505,6 +556,8 @@ public class ConfigurationGenerator {
     /**
      * Extract a database template from a list of templates.
      * Return the last one if there are multiples
+     *
+     * @see #rebuildTemplatesStr(String)
      */
     public String extractDatabaseTemplateName() {
         String dbTemplate = "unknown";
@@ -623,6 +676,27 @@ public class ConfigurationGenerator {
     public boolean isWizardRequired() {
         return !"true".equalsIgnoreCase(getUserConfig().getProperty(
                 PARAM_WIZARD_DONE, "true"));
+    }
+
+    /**
+     * Rebuild a templates string for use in nuxeo.conf
+     *
+     * @param dbTemplate database template to use instead of current one
+     * @return new templates string using given dbTemplate
+     * @since 5.4.1
+     * @see #extractDatabaseTemplateName()
+     * @see {@link #changeDBTemplate(String)}
+     * @see {@link #changeTemplates(String)}
+     */
+    public String rebuildTemplatesStr(String dbTemplate) {
+        String nodbTemplates = userConfig.getProperty(ConfigurationGenerator.PARAM_TEMPLATES_NODB);
+        if (nodbTemplates == null) {
+            extractDatabaseTemplateName();
+            nodbTemplates = userConfig.getProperty(ConfigurationGenerator.PARAM_TEMPLATES_NODB);
+        }
+        String newTemplates = nodbTemplates.isEmpty() ? dbTemplate : dbTemplate
+                + "," + nodbTemplates;
+        return newTemplates;
     }
 
 }
