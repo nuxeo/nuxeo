@@ -183,28 +183,12 @@ public class SetupWizardActionBean implements Serializable {
         // Calculates new templates string
         String currentDB = parameters.get(ConfigurationGenerator.PARAM_TEMPLATE_DBNAME);
         advancedParameters.put(ConfigurationGenerator.PARAM_TEMPLATES_NAME,
-                rebuildTemplatesStr(currentDB));
-
-        // Build a Map of changed parameters for ConfigurationGenerator
-        Map<String, String> changedParameters = new HashMap<String, String>();
-        for (String key : parameters.keySet()) {
-            String oldParam = userConfig.getProperty(key);
-            String newParam = parameters.get(key).trim();
-            if (oldParam == null && !newParam.isEmpty() || oldParam != null
-                    && !oldParam.trim().equals(newParam)) {
-                changedParameters.put(key, parameters.get(key).trim());
-            }
-        }
-        for (String key : advancedParameters.keySet()) {
-            String oldParam = userConfig.getProperty(key);
-            String newParam = advancedParameters.get(key).trim();
-            if (oldParam == null && !newParam.isEmpty() || oldParam != null
-                    && !oldParam.trim().equals(newParam)) {
-                changedParameters.put(key, advancedParameters.get(key).trim());
-            }
-        }
+                configGenerator.rebuildTemplatesStr(currentDB));
+        Map<String, String> customParameters = new HashMap<String, String>();
+        customParameters.putAll(parameters);
+        customParameters.putAll(advancedParameters);
         try {
-            configGenerator.saveConfiguration(changedParameters);
+            configGenerator.saveFilteredConfiguration(customParameters);
         } catch (ConfigurationException e) {
             log.error(e);
         }
@@ -227,19 +211,12 @@ public class SetupWizardActionBean implements Serializable {
             throw new AbortProcessingException("Bad component returned "
                     + select);
         }
-        configGenerator.changeTemplates(rebuildTemplatesStr(dbTemplate));
+        configGenerator.changeDBTemplate(dbTemplate);
         setParameters();
         Contexts.getPageContext().remove("setupParams");
         Contexts.getPageContext().remove("advancedParams");
         FacesContext context = FacesContext.getCurrentInstance();
         context.renderResponse();
-    }
-
-    private String rebuildTemplatesStr(String dbTemplate) {
-        String nodbTemplates = advancedParameters.get(ConfigurationGenerator.PARAM_TEMPLATES_NODB);
-        String templates = nodbTemplates.isEmpty() ? dbTemplate : dbTemplate
-                + "," + nodbTemplates;
-        return templates;
     }
 
 }
