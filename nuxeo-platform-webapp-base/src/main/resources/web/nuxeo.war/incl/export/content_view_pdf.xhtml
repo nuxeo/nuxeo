@@ -43,10 +43,9 @@
           #{titleOrId} [<p:pageNumber />]
         </p:footer>
       </f:facet>
-      
+
       <p:paragraph>#{titleOrId}</p:paragraph>
-      <p:image value="/icons/workspace.gif" />
-    
+
       <c:set var="emptySentence"
         value="#{nxu:test(contentView.translateEmptySentence, messages[contentView.emptySentence], contentView.emptySentence)}" />
       <c:if test="#{documents.rowCount == 0 and not provider.hasError()}">

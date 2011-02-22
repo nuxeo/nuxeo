@@ -5,7 +5,8 @@
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:h="http://java.sun.com/jsf/html"
-  xmlns:p="http://jboss.com/products/seam/pdf">
+  xmlns:p="http://jboss.com/products/seam/pdf"
+  xmlns:nxp="http://nuxeo.org/nxweb/seam/pdf">
 <c:if test="#{nxl:isLikePlainMode(widget.mode) and widget.mode != 'pdf'}">#{field_2}</c:if>
 <c:if test="#{not nxl:isLikePlainMode(widget.mode)}">
 
@@ -24,5 +25,12 @@
   </script>
 
 </c:if>
-<c:if test="#{widget.mode == 'pdf'}"><p:image value="#{nxd:iconPath(field_0)}" /></c:if>
+<c:if test="#{widget.mode == 'pdf'}">
+  <nxp:html>
+    <nxu:graphicImage
+      value="#{nxd:iconPath(field_0)}" alt="#{field_2}" title="#{field_2}"
+      rendered="#{!empty nxd:iconPath(field_0)}"
+      styleClass="smallIcon" />
+  </nxp:html>
+</c:if>
 </f:subview>

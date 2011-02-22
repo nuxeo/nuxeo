@@ -56,7 +56,7 @@ Needed parameters:
           </nxd:restDocumentLink>
         </li>
       </c:if>
-      <c:if test="#{contentView.currentResultLayout.showPDFExport or true}">
+      <c:if test="#{contentView.currentResultLayout.showPDFExport}">
         <li>
           <nxd:restDocumentLink document="#{currentDocument}"
             view="content_view_pdf" addTabInfo="false"

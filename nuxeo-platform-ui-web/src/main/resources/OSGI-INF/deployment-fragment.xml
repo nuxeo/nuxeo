@@ -238,7 +238,7 @@
         /WEB-INF/nxdirectory.taglib.xml; /WEB-INF/nxweb-html.taglib.xml;
         /WEB-INF/nxweb-util.taglib.xml; /WEB-INF/nxweb-document.taglib.xml;
         /WEB-INF/nxweb-ajax4jsf.taglib.xml; /WEB-INF/nx-seam-excel.taglib.xml;
-        /WEB-INF/nx-seam-rss.taglib.xml;
+        /WEB-INF/nx-seam-rss.taglib.xml; /WEB-INF/nx-seam-pdf.taglib.xml;
       </param-value>
     </context-param>
 
@@ -522,6 +522,16 @@
         org.nuxeo.ecm.platform.ui.web.component.seam.UIColumn
       </component-class>
     </component>
+
+    <component>
+      <component-type>
+        org.nuxeo.ecm.platform.ui.web.component.seam.UIHtmlText
+      </component-type>
+      <component-class>
+        org.nuxeo.ecm.platform.ui.web.component.seam.UIHtmlText
+      </component-class>
+    </component>
+
     <!-- end of override of buggy seam libraries -->
 
   </extension>
