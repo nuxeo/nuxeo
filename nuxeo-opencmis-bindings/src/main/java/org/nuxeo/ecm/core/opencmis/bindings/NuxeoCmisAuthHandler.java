@@ -28,9 +28,8 @@ import org.apache.chemistry.opencmis.server.impl.webservices.AbstractService;
 import org.apache.chemistry.opencmis.server.impl.webservices.AuthHandler;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.api.login.Authenticator;
 
 import com.sun.xml.ws.api.handler.MessageHandlerContext;
 
@@ -111,29 +110,27 @@ public class NuxeoCmisAuthHandler extends AuthHandler implements LoginProvider {
     public LoginContext login(String username, String password) {
         try {
             // check identity against UserManager
-            if (!getUserManager().checkUsernamePassword(username, password)) {
+            if (!getAuthenticator().authenticate(username, password)) {
                 throw new RuntimeException("Authentication failed for user '"
                         + username + "'");
             }
             // login to Nuxeo framework
             return Framework.login(username, password);
-        } catch (ClientException e) {
-            throw new RuntimeException("Cannot authenticate", e);
         } catch (LoginException e) {
             throw new RuntimeException("Login failed for user '" + username
                     + "'", e);
         }
     }
 
-    protected UserManager getUserManager() {
-        UserManager userManager;
+    protected Authenticator getAuthenticator() {
+        Authenticator userManager;
         try {
-            userManager = Framework.getService(UserManager.class);
+            userManager = Framework.getService(Authenticator.class);
         } catch (Exception e) {
-            throw new RuntimeException("Cannot get UserManager service", e);
+            throw new RuntimeException("Cannot get Authenticator service", e);
         }
         if (userManager == null) {
-            throw new RuntimeException("Cannot get UserManager service");
+            throw new RuntimeException("Cannot get Authenticator service");
         }
         return userManager;
     }
