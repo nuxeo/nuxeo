@@ -14,12 +14,16 @@
   <name>Nuxeo Shibboleth login module</name>
   <description>Nuxeo Shibboleth login module</description>
 
+  <properties>
+    <nuxeo.shibboleth.version>5.4.0.1</nuxeo.shibboleth.version>
+  </properties>
+
   <dependencies>
 
     <dependency>
       <artifactId>nuxeo-platform-login-shibboleth</artifactId>
       <groupId>org.nuxeo.ecm.platform</groupId>
-      <version>${nuxeo.platform.version}</version>
+      <version>${nuxeo.shibboleth.version}</version>
     </dependency>
 
     <dependency>

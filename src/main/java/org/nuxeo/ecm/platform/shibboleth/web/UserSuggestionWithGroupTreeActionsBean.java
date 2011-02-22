@@ -16,6 +16,9 @@
 
 package org.nuxeo.ecm.platform.shibboleth.web;
 
+import static org.jboss.seam.ScopeType.CONVERSATION;
+import static org.jboss.seam.annotations.Install.FRAMEWORK;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -36,9 +39,6 @@ import org.nuxeo.ecm.platform.shibboleth.web.tree.UserTreeNodeHelper;
 import org.nuxeo.ecm.platform.usermanager.UserManagerImpl;
 import org.nuxeo.ecm.webapp.security.UserSuggestionActionsBean;
 import org.richfaces.component.UITree;
-
-import static org.jboss.seam.ScopeType.CONVERSATION;
-import static org.jboss.seam.annotations.Install.FRAMEWORK;
 
 /**
  * Action bean handling tree's nodes generation and filling them with groups
@@ -67,8 +67,7 @@ public class UserSuggestionWithGroupTreeActionsBean extends
 
         treeRoot = new ArrayList<UserTreeNode>();
         treeRoot.addAll(UserTreeNodeHelper.getHierarcicalNodes(groups));
-        treeRoot.addAll(UserTreeNodeHelper.buildBranch(UserTreeNodeHelper.getShibbGroupBasePath(),
-                shibbGroups));
+        treeRoot.addAll(UserTreeNodeHelper.getHierarcicalNodes(shibbGroups));
     }
 
     /**
