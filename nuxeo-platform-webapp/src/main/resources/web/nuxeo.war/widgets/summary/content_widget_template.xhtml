@@ -74,8 +74,8 @@
             </td>
             <td class="fieldColumn">
               <nxh:graphicImage
-                value="#{nxd:fileIconPath(currentDocumentAsBlobHolder.blob)}"
-                rendered="#{! empty nxd:fileIconPath(currentDocumentAsBlobHolder.blob)}" />
+                value="#{nxd:fileIconPath(currentDocument.files.files[model.rowIndex].file)}"
+                rendered="#{! empty nxd:fileIconPath(currentDocument.files.files[model.rowIndex].file)}" />
               <h:outputText value="#{currentDocument.files.files[model.rowIndex].filename}"/>
               <h:outputText value=" (#{nxu:printFileSize(currentDocument.files.files[model.rowIndex].file.length)})"/>
             </td>
