@@ -14,6 +14,7 @@ Map<String,String> connectMap = ctx.getConnectMap();
    <h2> <fmt:message key="label.connectFinish.ok" /> </h2>
    <div><%=connectMap.get("CLID")%></div>
 
+   </div>
    <%@ include file="includes/prevnext.jsp" %>
 <%} else { %>
 
@@ -23,10 +24,11 @@ Map<String,String> connectMap = ctx.getConnectMap();
    <li><fmt:message key="label.connectFinish.ko.bad2" /></li>
   </ul>
   <br/>
-
+ </div>
+ <center>
  <input type="button" class="glossyButton" value="<fmt:message key="label.action.retry"/>" onclick="navigateTo('<%=currentPage.prev().getAction()%>');"/>
  <input type="submit" class="glossyButton" value="<fmt:message key="label.action.skip"/>"/>
-
+ </center>
  </form>
 
 <%}%>

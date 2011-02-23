@@ -2,16 +2,15 @@
 <%@ include file="includes/header.jsp" %>
 
 
-<h1><fmt:message key="label.recap" /></h1>
+<h1><fmt:message key="label.recapScreen" /></h1>
 
+<form id="wizardform" action="<%=contextPath%>/<%=currentPage.getAction()%>" method="POST">
 <span class="screenDescription">
-<fmt:message key="label.recap.description" /> <br/>
+<fmt:message key="label.recapScreen.description" /> <br/>
 </span>
 <%
 boolean connectOK = ctx.isConnectRegistrationDone();
 %>
-<%@ include file="includes/form-start.jsp" %>
-
 <%if (connectOK) {
    Map<String,String> connectMap = ctx.getConnectMap();%>
    <h2> <fmt:message key="label.connectFinish.ok" /> </h2>
@@ -42,11 +41,12 @@ boolean connectOK = ctx.isConnectRegistrationDone();
   <%} %>
   </table>
 
- <br/>
+ <center>
 <%if (currentPage.prev()!=null) { %>
  <input type="button" class="glossyButton" value="<fmt:message key="label.action.prev"/>" onclick="navigateTo('<%=currentPage.prev().getAction()%>');"/>
 <%}%>
  <input type="submit" class="glossyButton" value="<fmt:message key="label.action.finish"/>"/>
+</center>
 
 </form>
 

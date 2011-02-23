@@ -2,13 +2,6 @@
 
 <h1><fmt:message key="label.proxySettings" /></h1>
 
-<span class="screenDescription">
-<fmt:message key="label.proxySettings.description" /> <br/>
-</span>
-
-<span class="screenExplanations">
-<fmt:message key="label.proxySettings.explanations" /> <br/>
-</span>
 <%
 String proxyType = collector.getConfigurationParam("org.nuxeo.connect.proxy.type");
 String proxySettingStyle="";
@@ -46,7 +39,15 @@ function updateProxySettings() {
 </script>
 
 <%@ include file="includes/form-start.jsp" %>
+<span class="screenDescription">
+<fmt:message key="label.proxySettings.description" /> <br/>
+</span>
 
+<span class="screenExplanations">
+<fmt:message key="label.proxySettings.explanations" /> <br/>
+</span>
+
+<%@ include file="includes/feedback.jsp" %>
    <table>
     <tr>
       <td class="labelCell"><fmt:message key="label.org.nuxeo.connect.proxy.type"/></td>
@@ -79,7 +80,7 @@ function updateProxySettings() {
     </tr>
     <tr>
       <td class="labelCell"><fmt:message key="label.org.nuxeo.connect.proxy.port"/></td>
-      <td><input type="text" name="org.nuxeo.connect.proxy.port" value="<%=collector.getConfigurationParam("org.nuxeo.connect.proxy.port") %>"/></td>
+      <td><input type="text" name="org.nuxeo.connect.proxy.port" value="<%=collector.getConfigurationParam("org.nuxeo.connect.proxy.port") %>" size="4" /></td>
     </tr>
   </table>
   </div>

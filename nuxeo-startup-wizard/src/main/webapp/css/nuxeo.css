@@ -14,14 +14,6 @@ html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockq
   color:#664e4e;
 }
 
-iframe {
-  height:310px;
-}
-
-iframe body {
-  margin:8px;
-  }
-
 hr {
   color:#FFFFFF;
   height:1px;
@@ -30,7 +22,7 @@ hr {
 
 h1 {
   font:bold 22px "Lucida Grande", Verdana, sans-serif;
-  margin:20px 0 25px;
+  margin:10px 0 15px;
   color:#000;
   text-shadow:0 1px 0 #FFFFFF;
 }
@@ -838,4 +830,30 @@ ul.noBullet li {
 }
 .errItem {
   font-color:#BB0000;
+}
+
+.navItem {
+  padding:4px;
+  marging:4px;
+  font-color:#444444;
+}
+
+.navItemSelected {
+  background-color:#EEEEFF;
+  font-style:italic;
+  font-color:black;
+}
+
+.nuxeoIFrame {
+  border:none;
+  height:500px;
+  width:220px;
+  overflow:no;
+  background-color:#ffffff;
+  }
+
+.formPadding {
+  height:320px;
+  border-style:solid;
+  border-width:0px;
 }
