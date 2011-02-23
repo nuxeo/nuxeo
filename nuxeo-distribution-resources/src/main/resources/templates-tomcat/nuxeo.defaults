@@ -61,6 +61,7 @@ opensocial.proxy.proxyHost=
 opensocial.proxy.proxyPort=
 opensocial.proxy.user=
 opensocial.proxy.password=
+opensocial.trusted.hosts=
 
 # Clustering
 repository.clustering.enabled=false
