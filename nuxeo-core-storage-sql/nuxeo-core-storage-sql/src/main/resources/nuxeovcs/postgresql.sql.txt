@@ -629,6 +629,9 @@ RETURN NEW;
 END $$
 LANGUAGE plpgsql;
 
+# -- remove old trigger since 5.4.1
+DROP TRIGGER IF EXISTS nx_trig_read_acls_modified ON aclr;
+
 DROP TRIGGER IF EXISTS nx_trig_aclr_modified ON aclr;
 CREATE TRIGGER nx_trig_aclr_modified
   AFTER INSERT ON aclr
