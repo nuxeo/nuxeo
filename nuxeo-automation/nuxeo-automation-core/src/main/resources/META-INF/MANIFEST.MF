@@ -4,7 +4,6 @@ Bundle-Version: 5.4.1.qualifier
 Bundle-Name: Nuxeo Automation Core
 Bundle-SymbolicName: org.nuxeo.ecm.automation.core;singleton:=true
 Bundle-Vendor: Nuxeo
-Bundle-Localization: bundle
 Export-Package: org.nuxeo.ecm.automation,
  org.nuxeo.ecm.automation.core,
  org.nuxeo.ecm.automation.core.annotations,
@@ -24,7 +23,7 @@ Export-Package: org.nuxeo.ecm.automation,
  org.nuxeo.ecm.automation.core.rendering.operations,
  org.nuxeo.ecm.automation.core.scripting,
  org.nuxeo.ecm.automation.core.util
-Eclipse-LazyStart: true
+Bundle-ActivationPolicy: lazy
 Nuxeo-Component: OSGI-INF/AutomationService.xml
 Import-Package: freemarker.core,
  freemarker.template,
