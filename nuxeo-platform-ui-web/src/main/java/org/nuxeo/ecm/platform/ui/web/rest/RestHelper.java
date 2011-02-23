@@ -21,9 +21,16 @@ package org.nuxeo.ecm.platform.ui.web.rest;
 
 import static org.jboss.seam.ScopeType.EVENT;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.faces.context.FacesContext;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Begin;
@@ -41,6 +48,8 @@ import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.platform.types.adapter.TypeInfo;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
+import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
+import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
 import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
@@ -193,4 +202,74 @@ public class RestHelper implements Serializable {
         return BaseURL.getContextPath();
     }
 
+    public String doPrint(String defaultTheme) throws IOException {
+        return  doPrint(navigationContext.getCurrentDocument(), defaultTheme);
+    }
+
+    public String doPrint(DocumentModel doc, String defaultTheme) throws IOException {
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+        if (facesContext == null) {
+            return null;
+        }
+        HttpServletResponse response = getHttpServletResponse();
+        if (response != null) {
+            handleRedirect(response, getCurrentDocumentPrintUrl(doc, defaultTheme));
+        }
+        return null;
+    }
+
+    public String getCurrentDocumentPrintUrl(String defaultTheme) {
+        return getCurrentDocumentPrintUrl(navigationContext.getCurrentDocument(), defaultTheme);
+    }
+        
+    public String getCurrentDocumentPrintUrl(DocumentModel doc, String defaultTheme) {
+        Map<String, String> parameters  = new HashMap<String, String>();
+        int separatorIndex = defaultTheme.indexOf("/");
+        if (separatorIndex != -1) {
+            // defaultTheme includes the default page
+            defaultTheme = defaultTheme.substring(0, separatorIndex);
+            StringBuilder sb = new StringBuilder();
+            sb.append(defaultTheme);
+            sb.append("/print");
+            parameters.put("theme", sb.toString());
+        }
+        return DocumentModelFunctions.documentUrl(null, doc, null,
+                parameters, false, null);
+    }
+
+    public static HttpServletResponse getHttpServletResponse() {
+        ServletResponse response = null;
+        final FacesContext facesContext = FacesContext.getCurrentInstance();
+        if (facesContext != null) {
+            response = (ServletResponse) facesContext.getExternalContext().getResponse();
+        }
+
+        if (response != null && response instanceof HttpServletResponse) {
+            return (HttpServletResponse) response;
+        }
+        return null;
+    }
+
+    public static HttpServletRequest getHttpServletRequest() {
+        ServletRequest request = null;
+        final FacesContext facesContext = FacesContext.getCurrentInstance();
+        if (facesContext != null) {
+            request = (ServletRequest) facesContext.getExternalContext().getRequest();
+        }
+
+        if (request != null && request instanceof HttpServletRequest) {
+            return (HttpServletRequest) request;
+        }
+        return null;
+    }
+
+    public static void handleRedirect(HttpServletResponse response, String url)
+            throws IOException {
+        response.resetBuffer();
+        response.sendRedirect(url);
+        response.flushBuffer();
+        getHttpServletRequest().setAttribute(
+                NXAuthConstants.DISABLE_REDIRECT_REQUEST_KEY, true);
+        FacesContext.getCurrentInstance().responseComplete();
+    }
 }
