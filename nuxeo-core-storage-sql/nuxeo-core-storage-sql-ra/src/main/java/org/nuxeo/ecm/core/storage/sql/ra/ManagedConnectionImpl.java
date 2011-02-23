@@ -96,6 +96,7 @@ public class ManagedConnectionImpl implements ManagedConnection,
             ManagedConnectionFactoryImpl managedConnectionFactory,
             ConnectionRequestInfoImpl connectionRequestInfo)
             throws ResourceException {
+        log.debug("construct: " + this);
         out = managedConnectionFactory.getLogWriter();
         this.managedConnectionFactory = managedConnectionFactory;
         this.connectionSpec = connectionRequestInfo.connectionSpec;

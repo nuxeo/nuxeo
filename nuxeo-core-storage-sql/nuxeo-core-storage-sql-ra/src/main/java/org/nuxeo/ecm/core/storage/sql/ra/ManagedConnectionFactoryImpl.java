@@ -213,6 +213,7 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory,
             if (!this.equals(managedConnection.getManagedConnectionFactory())) {
                 continue;
             }
+            log.debug("matched: " + managedConnection);
             return managedConnection;
         }
         return null;
