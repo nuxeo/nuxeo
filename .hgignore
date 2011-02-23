@@ -26,5 +26,5 @@ nuxeo-*/META-INF
 nuxeo-*/OSGI-INF
 *.bak
 nuxeo-platform-jbpm/nuxeo-platform-jbpm-web/src/main/resources/nuxeo.war/linkXhtml.sh
-nuxeo-opensocial/nuxeo-opensocial-features/maven-eclipse.xml
-nuxeo-opensocial/nuxeo-opensocial-container/war/
+nuxeo-opensocial-features/maven-eclipse.xml
+nuxeo-opensocial-container/war/
