@@ -125,7 +125,7 @@
     </unzip>
 
     <!-- Nuxeo wizard -->
-    <copy tofile="${distribution.dir}/webapps/nuxeo-wizard.war">
+    <copy tofile="${distribution.dir}/templates/nuxeo-wizard.war">
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-startup-wizard:${nuxeo.distribution.version}:war" />
     </copy>
 

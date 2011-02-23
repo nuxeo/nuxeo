@@ -93,6 +93,8 @@ public class NuxeoTomcatLauncher extends NuxeoLauncher {
                             + "localhost");
             File webappsBase = new File(configurationGenerator.getNuxeoHome(),
                     "webapps");
+            File templatesBase = new File(
+                    configurationGenerator.getNuxeoHome(), "templates");
 
             // manage server.xml
             File nuxeoServerXML = new File(serverXMLBase, "server.xml");
@@ -110,7 +112,7 @@ public class NuxeoTomcatLauncher extends NuxeoLauncher {
                     nuxeoContextXMLBackup);
 
             // manage wizard WAR
-            File wizardWAR = new File(webappsBase, "nuxeo-wizard.war");
+            File wizardWAR = new File(templatesBase, "nuxeo-wizard.war");
             if (wizardWAR.exists()) {
                 File nuxeoWAR = new File(webappsBase, "nuxeo.war");
                 nuxeoWAR.delete();
@@ -135,8 +137,10 @@ public class NuxeoTomcatLauncher extends NuxeoLauncher {
     public boolean isWizardRequired() {
         File webappsBase = new File(configurationGenerator.getNuxeoHome(),
                 "webapps");
+        File templatesBase = new File(configurationGenerator.getNuxeoHome(),
+                "templates");
         return (configurationGenerator.isWizardRequired() && (new File(
-                webappsBase, "nuxeo-wizard.war").exists() || new File(
+                templatesBase, "nuxeo-wizard.war").exists() || new File(
                 webappsBase, "nuxeo.war").exists()));
     }
 
@@ -152,6 +156,8 @@ public class NuxeoTomcatLauncher extends NuxeoLauncher {
                             + "localhost");
             File webappsBase = new File(configurationGenerator.getNuxeoHome(),
                     "webapps");
+            File templatesBase = new File(
+                    configurationGenerator.getNuxeoHome(), "templates");
 
             // manage server.xml
             File nuxeoServerXMLBackup = new File(serverXMLBase, "server.xml.nx");
@@ -173,7 +179,7 @@ public class NuxeoTomcatLauncher extends NuxeoLauncher {
             // manage wizard WAR
             File nuxeoWAR = new File(webappsBase, "nuxeo.war");
             if (nuxeoWAR.exists()) {
-                File wizardWAR = new File(webappsBase, "nuxeo-wizard.war");
+                File wizardWAR = new File(templatesBase, "nuxeo-wizard.war");
                 wizardWAR.delete();
                 FileUtils.moveFile(nuxeoWAR, wizardWAR);
             }
