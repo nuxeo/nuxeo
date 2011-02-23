@@ -171,7 +171,8 @@ public class OpenSocialAdapter extends AbstractWebContentAdapter<OpenSocialData>
             NXGadgetContext context = new NXGadgetContext(data.getGadgetDef());
             return gadgetSpecFactory.getGadgetSpec(context);
         } catch (Exception e) {
-            log.warn("Unable to get gadget spec for " + data.getName());
+            log.warn("Unable to get gadget spec for " + data.getName() + ": " + e.getMessage());
+            log.debug(e, e);
             return null;
         }
     }

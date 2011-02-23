@@ -151,10 +151,10 @@ is only needed if you want to use a special, different key for this service prov
        This a list of nuxeo trusted hosts. Such a host will be passed the
        browsers jsession id to avoid the need to constantly re-authenticate to
        retrieve nuxeo data when the user is already logged into a nuxeo server
-       to access the dashboard. List should be colon separated.
+       to access the dashboard. List should be coma separated.
       -->
       <trustedHosts>
-        localhost:127.0.0.1:lisa
+        localhost,127.0.0.1,lisa
       </trustedHosts>
 
     </opensocial>

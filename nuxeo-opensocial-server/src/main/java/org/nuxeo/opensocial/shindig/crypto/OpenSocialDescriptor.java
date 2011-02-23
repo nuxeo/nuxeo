@@ -12,14 +12,17 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
+ *     Thomas Roger <troger@nuxeo.com>
  */
 
 package org.nuxeo.opensocial.shindig.crypto;
 
+import java.util.regex.Pattern;
+
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * This class is the java-level description of the parameters that are
@@ -31,10 +34,20 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * inside nuxeo itself (there is no extra "shindig process").
  *
  * @author iansmith
+ * @author Thomas Roger <troger@nuxeo.com>
  *
  */
 @XObject("opensocial")
 public class OpenSocialDescriptor {
+
+    public static final String TRUSTED_HOSTS_SEPARATOR = ",";
+
+    public static final String NUXEO_BIND_ADDRESS_PROPERTY = "nuxeo.bind.address";
+
+    public static final String LOCALHOST_BIND_ADDRESS = "localhost";
+
+    // match IPv5 and IPv6 address of the form "0.0.0.0" or "000:0000::0:0000:00"
+    public static final Pattern DEFAULT_BIND_ADDRESS_PATTERN = Pattern.compile("[0:]*|[0.]*");
 
     /**
      * This field is the key that is used by shindig to communicate with itself.
@@ -81,7 +94,7 @@ public class OpenSocialDescriptor {
      * retrieve nuxeo data when the user is already logged into a nuxeo server
      * to access the dashboard. Will be colon separated.
      */
-    @XNode("trustedHosts")
+
     protected String trustedHosts;
 
     public String getSigningKey() {
@@ -103,8 +116,37 @@ public class OpenSocialDescriptor {
         signingKey = keyAsBase64;
     }
 
+    @XNode("trustedHosts")
+    public void setTrustedHosts(String trustedHosts) {
+        // Add the nuxeo bind address as default trusted host
+        this.trustedHosts = getTrustedHostForNuxeoBindAddress();
+        if (trustedHosts != null && !trustedHosts.isEmpty()) {
+            this.trustedHosts += TRUSTED_HOSTS_SEPARATOR + trustedHosts;
+        }
+    }
+
+    /**
+     * Returns the default trusted host computed from the Nuxeo bind address. If
+     * Nuxeo listens on all IPs, returns "localhost", otherwise returns the
+     * Nuxeo bind address.
+     *
+     * @since 5.4.1
+     */
+    protected String getTrustedHostForNuxeoBindAddress() {
+        String nuxeoBindAddress = Framework.getProperty(
+                NUXEO_BIND_ADDRESS_PROPERTY, LOCALHOST_BIND_ADDRESS);
+        if (DEFAULT_BIND_ADDRESS_PATTERN.matcher(nuxeoBindAddress).matches()) {
+            nuxeoBindAddress = LOCALHOST_BIND_ADDRESS;
+        }
+        return nuxeoBindAddress;
+    }
+
     public String[] getTrustedHosts() {
-        return trustedHosts.split(":");
+        return trustedHosts.split(TRUSTED_HOSTS_SEPARATOR);
+    }
+
+    public boolean isTrustedHost(String host) {
+        return true;
     }
 
     /**
