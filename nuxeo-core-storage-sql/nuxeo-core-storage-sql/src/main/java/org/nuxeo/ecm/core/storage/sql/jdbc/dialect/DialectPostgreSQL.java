@@ -729,7 +729,7 @@ public class DialectPostgreSQL extends Dialect {
             throws SQLException {
         // Warn user if BROWSE permissions has changed
         Set<String> dbPermissions = new HashSet<String>();
-        String sql = "SELECT * FROM read_acl_permissions";
+        String sql = "SELECT * FROM aclr_permission";
         Statement s = connection.createStatement();
         ResultSet rs = s.executeQuery(sql);
         while (rs.next()) {
@@ -744,7 +744,7 @@ public class DialectPostgreSQL extends Dialect {
         }
         if (!dbPermissions.equals(confPermissions)) {
             log.error("Security permission for BROWSE has changed, you need to rebuild the optimized read acls:"
-                    + "DROP TABLE read_acl_permissions; DROP TABLE read_acls; then restart.");
+                    + "DROP TABLE aclr_permission; DROP TABLE aclr; then restart.");
         }
     }
 
