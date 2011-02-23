@@ -21,14 +21,19 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.junit.Assert.assertThat;
+
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import junit.framework.Assert;
 
+import org.hamcrest.Matchers;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -47,6 +52,7 @@ import org.nuxeo.ecm.automation.client.jaxrs.model.Document;
 import org.nuxeo.ecm.automation.client.jaxrs.model.Documents;
 import org.nuxeo.ecm.automation.client.jaxrs.model.FileBlob;
 import org.nuxeo.ecm.automation.client.jaxrs.model.OperationDocumentation;
+import org.nuxeo.ecm.automation.client.jaxrs.model.PaginableDocuments;
 import org.nuxeo.ecm.automation.client.jaxrs.model.PropertyList;
 import org.nuxeo.ecm.automation.client.jaxrs.model.PropertyMap;
 import org.nuxeo.ecm.automation.core.operations.blob.AttachBlob;
@@ -59,6 +65,7 @@ import org.nuxeo.ecm.automation.core.operations.document.FetchDocument;
 import org.nuxeo.ecm.automation.core.operations.document.GetDocumentChildren;
 import org.nuxeo.ecm.automation.core.operations.document.Query;
 import org.nuxeo.ecm.automation.core.operations.document.UpdateDocument;
+import org.nuxeo.ecm.automation.core.operations.services.PageProviderOperation;
 import org.nuxeo.ecm.automation.server.AutomationServer;
 import org.nuxeo.ecm.webengine.test.WebEngineFeature;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
@@ -76,7 +83,7 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features(WebEngineFeature.class)
 @Jetty(port = 18080)
-@Deploy({ "org.nuxeo.runtime.jtajca", "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.server" })
+@Deploy({ "org.nuxeo.runtime.jtajca", "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.server", "org.nuxeo.ecm.automation.features", "org.nuxeo.ecm.platform.query.api"  })
 @LocalDeploy("org.nuxeo.ecm.automation.server:test-bindings.xml")
 // @RepositoryConfig(cleanup=Granularity.METHOD)
 public class RestTest {
@@ -522,6 +529,14 @@ public class RestTest {
             // do nothing
         }
 
+    }
+    
+    @Test public void queriesArePaginable() throws Exception {
+        PaginableDocuments docs = (PaginableDocuments)
+        session.newRequest(PageProviderOperation.ID).set("query",  "SELECT * from Document").set("pageSize", 2).execute();
+        assertThat(docs.size(), Matchers.is(2));
+        assertThat(docs.getPageCount(), Matchers.is(8));
+        assertThat(docs.getPageSize(), Matchers.is(2));
     }
 
 }

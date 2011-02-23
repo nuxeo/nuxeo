@@ -35,6 +35,7 @@ import org.nuxeo.ecm.automation.client.jaxrs.model.Document;
 import org.nuxeo.ecm.automation.client.jaxrs.model.Documents;
 import org.nuxeo.ecm.automation.client.jaxrs.model.OperationDocumentation;
 import org.nuxeo.ecm.automation.client.jaxrs.model.OperationInput;
+import org.nuxeo.ecm.automation.client.jaxrs.model.PaginableDocuments;
 import org.nuxeo.ecm.automation.client.jaxrs.model.PropertyList;
 import org.nuxeo.ecm.automation.client.jaxrs.model.PropertyMap;
 import org.nuxeo.ecm.automation.client.jaxrs.util.JSONExporter;
@@ -87,9 +88,17 @@ public class JsonMarshalling {
         if ("document".equals(type)) {
             return readDocument(json);
         } else if ("documents".equals(type)) {
+            Documents docs;
             JSONArray ar = json.getJSONArray("entries");
             int size = ar.size();
-            Documents docs = new Documents(size);
+            if (json.optBoolean("isPaginable") == true) {
+                int pageSize = json.getInt("pageSize");
+                int pageCount = json.getInt("pageCount");
+                int pageIndex = json.getInt("pageIndex");
+                docs = new PaginableDocuments(size, pageSize, pageCount, pageIndex);
+            } else {
+                docs = new Documents(size);
+            }
             for (int i = 0; i < size; i++) {
                 JSONObject obj = ar.getJSONObject(i);
                 docs.add(readDocument(obj));
