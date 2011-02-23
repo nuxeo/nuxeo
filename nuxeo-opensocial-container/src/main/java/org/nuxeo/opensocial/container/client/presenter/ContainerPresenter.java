@@ -71,6 +71,7 @@ import com.allen_sauer.gwt.dnd.client.DragHandler;
 import com.allen_sauer.gwt.dnd.client.DragStartEvent;
 import com.allen_sauer.gwt.dnd.client.PickupDragController;
 import com.allen_sauer.gwt.dnd.client.VetoDragException;
+import com.google.gwt.dom.client.Style.Position;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -170,6 +171,7 @@ public class ContainerPresenter extends
 
     private void fetchLayoutContent() {
         dragController = new PickupDragController(Container.rootPanel, false);
+        Container.rootPanel.getElement().getStyle().setPosition(Position.RELATIVE);
         registerDragAndDropEvent();
         dragController.setBehaviorConstrainedToBoundaryPanel(false);
         dragController.setBehaviorMultipleSelection(false);
