@@ -2,6 +2,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@page import="org.nuxeo.wizard.context.Context"%>
 <%@page import="org.nuxeo.wizard.context.ParamCollector"%>
+<%@page import="org.nuxeo.wizard.nav.SimpleNavigationHandler"%>
 <%@page import="org.nuxeo.wizard.nav.Page"%>
 <%@page import="java.util.ResourceBundle"%>
 <%@page import="java.util.Map"%>
@@ -13,6 +14,7 @@ String contextPath = request.getContextPath();
 Context ctx = Context.instance(request);
 Page currentPage = (Page) request.getAttribute("currentPage");
 ParamCollector collector = ctx.getCollector();
+SimpleNavigationHandler nav = SimpleNavigationHandler.instance();
 %>
 
 <html>
@@ -49,7 +51,20 @@ function showError(id) {
 
 <table width="100%">
 <tr>
-<td width="200px"></td>
+<td width="100px">
+
+<br/><br/><br/><br/><br/>
+
+
+<%for (Page item : nav.getPages()) {%>
+
+<div
+  class="navItem <%=currentPage.getAction().equals(item.getAction()) ? "navItemSelected" : "" %>"
+><fmt:message key="<%=item.getLabelKey()%>"/></div>
+
+<%} %>
+
+</td>
 <td class="mainClell">
 
 <% if (currentPage.getProgress()>=0) { %>
@@ -59,7 +74,7 @@ function showError(id) {
 <td colspan="2" style="font-style:italic;font-color:#555555;text-align:center"><fmt:message key="label.nuxeo.wizard.progress" /></td>
 </tr>
 <tr style="border-style:solid;border-width:1px;border-color:#CCCCCC">
-<td width="<%=currentPage.getProgress()%>%" style="background-color:#55FF55;padding:0px;margin:0px">&nbsp;</td>
+<td width="<%=currentPage.getProgress()%>%" style="background-color:#2888f8;padding:0px;margin:0px">&nbsp;</td>
 <td width="<%=100-currentPage.getProgress()%>%" style="background-color:#DDDDDD;padding:0px;margin:0px"></td>
 </tr>
 </table>

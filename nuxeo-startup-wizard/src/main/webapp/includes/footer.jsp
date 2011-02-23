@@ -1,5 +1,10 @@
 </td>
-<td width="100px">
+<td width="250px">
+
+ <iframe class="nuxeoIFrame" style="visibility:hidden" scrolling="no" frameborder="0"
+ onload="javascript:this.style.visibility='visible';"
+ src="<%=currentPage.getAssociatedIFrameUrl()%>"></iframe>
+
 </td>
 </tr>
 </table>

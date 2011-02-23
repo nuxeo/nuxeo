@@ -38,7 +38,7 @@ import org.nuxeo.wizard.context.Context;
 import org.nuxeo.wizard.context.ParamCollector;
 import org.nuxeo.wizard.helpers.IPValidator;
 import org.nuxeo.wizard.helpers.NumberValidator;
-import org.nuxeo.wizard.nav.DummyNavigationHandler;
+import org.nuxeo.wizard.nav.SimpleNavigationHandler;
 import org.nuxeo.wizard.nav.Page;
 
 /**
@@ -53,7 +53,7 @@ public class RouterServlet extends HttpServlet {
 
     protected static Log log = LogFactory.getLog(RouterServlet.class);
 
-    protected DummyNavigationHandler navHandler = new DummyNavigationHandler();
+    protected SimpleNavigationHandler navHandler = SimpleNavigationHandler.instance();
 
     public static final String CONNECT_TOKEN_KEY = "ConnectRegistrationToken";
 
@@ -154,6 +154,7 @@ public class RouterServlet extends HttpServlet {
         cbUrl = cbUrl.replace("/router/" + currentPage.getAction(),
                 "/jsp/connectCallBack.jsp?next="
                         + currentPage.next().getAction());
+        cbUrl += "&prev=" + currentPage.prev().getAction();
         cbUrl = URLEncoder.encode(cbUrl, "UTF-8");
 
         req.setAttribute("callBackUrl", cbUrl);

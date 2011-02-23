@@ -27,7 +27,7 @@ import java.util.List;
  * @author Tiry (tdelprat@nuxeo.com)
  * @since 5.4.1
  */
-public class DummyNavigationHandler {
+public class SimpleNavigationHandler {
 
     // I am too lazy to load a file
     protected static final String[] nav = { " |welcome.jsp",
@@ -38,7 +38,16 @@ public class DummyNavigationHandler {
 
     protected List<Page> pages = new ArrayList<Page>();
 
-    public DummyNavigationHandler() {
+    protected static SimpleNavigationHandler instance;
+
+    public static SimpleNavigationHandler instance() {
+        if (instance==null) {
+            instance = new SimpleNavigationHandler();
+        }
+        return instance;
+    }
+
+    protected SimpleNavigationHandler() {
 
         Page previousPage = null;
         for (int idx = 0; idx < nav.length; idx++) {
@@ -72,6 +81,10 @@ public class DummyNavigationHandler {
             }
         }
         return currentPage;
+    }
+
+    public List<Page> getPages() {
+        return pages;
     }
 
 }

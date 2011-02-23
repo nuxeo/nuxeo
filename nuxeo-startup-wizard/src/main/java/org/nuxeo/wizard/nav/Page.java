@@ -34,6 +34,8 @@ import org.nuxeo.wizard.context.Context;
  */
 public class Page {
 
+    public static String NUXEO_COM_URL = "http://www.nuxeo.com/embedded/wizard/";
+
     protected final String action;
 
     protected final String jsp;
@@ -103,6 +105,14 @@ public class Page {
 
     public int getProgress() {
         return progress;
+    }
+
+    public String getAssociatedIFrameUrl() {
+        return NUXEO_COM_URL + action;
+    }
+
+    public String getLabelKey() {
+        return "label.short." + jsp.replace(".jsp", "").substring(1);
     }
 
 }

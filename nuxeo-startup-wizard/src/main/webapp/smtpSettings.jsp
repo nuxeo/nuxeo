@@ -2,16 +2,6 @@
 
 <h1><fmt:message key="label.smtpSettings" /></h1>
 
-<span class="screenDescription">
-<fmt:message key="label.smtpSettings.description" /> <br/>
-</span>
-
-<span class="screenExplanations">
-<fmt:message key="label.smtpSettings.explanations" /> <br/>
-</span>
-
-<%@ include file="includes/form-start.jsp" %>
-
 <%
 String smtpAuthType = collector.getConfigurationParam("mail.smtp.auth");
 String smtpAuthSettingStyle="display:none";
@@ -34,6 +24,18 @@ function updateSmtpSettings() {
 }
 </script>
 
+<%@ include file="includes/form-start.jsp" %>
+
+<span class="screenDescription">
+<fmt:message key="label.smtpSettings.description" /> <br/>
+</span>
+
+<span class="screenExplanations">
+<fmt:message key="label.smtpSettings.explanations" /> <br/>
+</span>
+
+
+<%@ include file="includes/feedback.jsp" %>
   <table>
     <tr>
       <td class="labelCell"><fmt:message key="label.mail.smtp.host"/></td>
@@ -42,7 +44,7 @@ function updateSmtpSettings() {
     </tr>
     <tr>
       <td class="labelCell"><fmt:message key="label.mail.smtp.port"/></td>
-      <td><input type="text" name="mail.smtp.port" value="<%=collector.getConfigurationParam("mail.smtp.port") %>"/></td>
+      <td><input type="text" name="mail.smtp.port" value="<%=collector.getConfigurationParam("mail.smtp.port") %>" size="4" /></td>
       <td class="helpCell"><fmt:message key="label.mail.smtp.port.help"/></td>
     </tr>
 

@@ -2,14 +2,6 @@
 
 <h1><fmt:message key="label.dbSettings" /></h1>
 
-<span class="screenDescription">
-<fmt:message key="label.dbSettings.description" /> <br/>
-</span>
-
-<span class="screenExplanations">
-<fmt:message key="label.dbSettings.explanations" /> <br/>
-</span>
-
 <%
 String dbTemplate = collector.getConfigurationParam("nuxeo.dbtemplate");
 if (dbTemplate==null || dbTemplate.equals("")) {
@@ -49,7 +41,18 @@ function updateDBSettings() {
 }
 </script>
 
+
 <%@ include file="includes/form-start.jsp" %>
+<span class="screenDescription">
+<fmt:message key="label.dbSettings.description" /> <br/>
+</span>
+
+<span class="screenExplanations">
+<fmt:message key="label.dbSettings.explanations" /> <br/>
+</span>
+
+
+<%@ include file="includes/feedback.jsp" %>
 <input id="refresh" type='hidden' name="refresh" value="false"/>
 
  <table>
@@ -119,7 +122,7 @@ function updateDBSettings() {
     </tr>
     <tr>
       <td class="labelCell"><fmt:message key="label.nuxeo.db.port"/></td>
-      <td><input type="text" name="nuxeo.db.port" value="<%=collector.getConfigurationParam("nuxeo.db.port") %>"/></td>
+      <td><input type="text" name="nuxeo.db.port" value="<%=collector.getConfigurationParam("nuxeo.db.port") %>" size="5"/></td>
     </tr>
   </table>
   </td><td class="helpCell">

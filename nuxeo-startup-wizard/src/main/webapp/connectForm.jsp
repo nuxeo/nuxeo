@@ -12,7 +12,7 @@ boolean showRegistrationForm = !ctx.isConnectRegistrationDone();
 %>
 <script>
 function setSize() {
- $('#connectForm').css('height','400px');
+ $('#connectForm').css('height','450px');
  $('#connectForm').css('display','block');
 }
 </script>
@@ -21,9 +21,10 @@ function setSize() {
 
 <iframe id="connectForm" src="<%=formUrl%>" onload="setSize()" width="100%" scrolling="no" marginwidth="0" marginheight="0" frameborder="0" vspace="0" hspace="0" style="overflow:visible; width:100%; display:none"></iframe>
 
+<!--
 <input type="button" class="glossyButton" value="<fmt:message key="label.action.prev"/>" onclick="navigateTo('<%=currentPage.prev().getAction()%>');"/>
 <input type="button" class="glossyButton" value="<fmt:message key="label.action.skip"/>" onclick="navigateTo('<%=currentPage.next().next().getAction()%>');"/>
-
+ -->
 <% } else { %>
 
 <h2> <fmt:message key="label.connectFinish.ok" /> </h2>
