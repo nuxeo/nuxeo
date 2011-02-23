@@ -67,8 +67,8 @@ DECLARE
   first boolean := true;
 BEGIN
   WHILE curid IS NOT NULL LOOP
-    FOR r in SELECT acls.grant, acls.permission, acls.user FROM acls WHERE acls.id = curid ORDER BY acls.pos LOOP
-      IF r.permission = ANY(permissions) AND r.user = ANY(users) THEN
+    FOR r in SELECT acls.grant, acls.permission, acls.users FROM acls WHERE acls.id = curid ORDER BY acls.pos LOOP
+      IF r.permission = ANY(permissions) AND r.users = ANY(users) THEN
         RETURN r.grant;
       END IF;
     END LOOP;
@@ -235,50 +235,79 @@ CREATE TRIGGER NX_TRIG_FT_UPDATE
   BEFORE INSERT OR UPDATE ON ${fulltextTable}
   FOR EACH ROW EXECUTE PROCEDURE NX_UPDATE_FULLTEXT();
 
-
+# -- migrate table from read_acls into aclr, since 5.4.1
 #TEST:
 SELECT 1 FROM pg_tables WHERE tablename = 'read_acls';
 
+#IF: !emptyResult
+ALTER TABLE read_acls RENAME TO aclr;
+ALTER TABLE aclr RENAME COLUMN id TO acl_id;
+
+
+# ------------------------------------------------------------
+# -- Read acls table
+# -- acl ex: jsmith,administrators,-Everyone
+# -- acl_id = md5(acl)
+#TEST:
+SELECT 1 FROM pg_tables WHERE tablename = 'aclr';
+
 #IF: emptyResult
-# table to store canonical read acls
-CREATE TABLE read_acls (
-  id varchar(34) PRIMARY KEY,
+CREATE TABLE aclr (
+  acl_id varchar(34) PRIMARY KEY,
   acl varchar(${readAclMaxSize})
 );
 
 
-# table to cache read acls for users
+# -- Known users table
+# -- users ex: {members,jsmith,Everyone}
+# -- user_id = md5(users)
 #TEST:
-SELECT 1 FROM pg_tables WHERE tablename = 'read_acls_cache';
+SELECT 1 FROM pg_tables WHERE tablename = 'aclr_user';
 
 #IF: emptyResult
-CREATE TABLE read_acls_cache (
-  users_md5 varchar(34) NOT NULL,
-  acl_id varchar(34)
+CREATE TABLE aclr_user (
+  user_id varchar(34) PRIMARY KEY,
+  users varchar(127)[]
 );
 
 
-# add index
+# -- Jonction between aclr and aclr_user
 #TEST:
-SELECT 1 FROM pg_indexes WHERE indexname = 'read_acls_cache_users_md5_idx';
+SELECT 1 FROM pg_tables WHERE tablename = 'aclr_user_map';
 
 #IF: emptyResult
-CREATE INDEX read_acls_cache_users_md5_idx ON read_acls_cache USING btree(users_md5);
+CREATE TABLE aclr_user_map (
+  user_id varchar(34) NOT NULL,
+  acl_id varchar(34) NOT NULL
+);
 
 
-# table to maintain a read acl for each hierarchy entry
+#TEST:
+SELECT 1 FROM pg_indexes WHERE indexname = 'aclr_user_map_user_id_idx';
+
+#IF: emptyResult
+CREATE INDEX aclr_user_map_user_id_idx ON aclr_user_map USING btree(user_id);
+
+
+#TEST:
+SELECT 1 FROM pg_indexes WHERE indexname = 'aclr_user_map_acl_id_idx';
+
+#IF: emptyResult
+CREATE INDEX aclr_user_map_acl_id_idx ON aclr_user_map USING btree(acl_id, user_id);
+
+
+# -- Associate a read acl for each hierarchy entry
 #TEST:
 SELECT 1 FROM pg_tables WHERE tablename='hierarchy_read_acl';
 
 #IF: emptyResult
 CREATE TABLE hierarchy_read_acl (
-  id ${idType} PRIMARY KEY,
+  id ${idType} NOT NULL,
   acl_id varchar(34),
   CONSTRAINT hierarchy_read_acl_id_fk FOREIGN KEY(id) REFERENCES hierarchy(id) ON DELETE CASCADE
 );
 
 
-# add index
 #TEST:
 SELECT 1 FROM pg_indexes WHERE indexname='hierarchy_read_acl_acl_id_idx';
 
@@ -286,33 +315,49 @@ SELECT 1 FROM pg_indexes WHERE indexname='hierarchy_read_acl_acl_id_idx';
 CREATE INDEX hierarchy_read_acl_acl_id_idx ON hierarchy_read_acl USING btree(acl_id);
 
 
-# log hierarchy with updated read acl
+# -- Remove old table since 5.4.1
 #TEST:
 SELECT 1 FROM pg_tables WHERE tablename='hierarchy_modified_acl';
 
+#IF: ! emptyResult
+DROP TABLE hierarchy_modified_acl;
+
+
+# -- Log modified document that require an aclr update
+#TEST:
+SELECT 1 FROM pg_tables WHERE tablename='aclr_modified';
+
 #IF: emptyResult
-CREATE TABLE hierarchy_modified_acl (
-  id ${idType},
+CREATE TABLE aclr_modified (
+  hierarchy_id character varying(36),
   is_new boolean
 );
 
 
-# browse permission table
+# -- Remove old table since 5.4.1
 #TEST:
 SELECT 1 FROM pg_tables WHERE tablename='read_acl_permissions';
 
+#IF: ! emptyResult
+DROP TABLE read_acl_permissions;
+
+
+#-- List of permission that grant the read access
+#TEST:
+SELECT 1 FROM pg_tables WHERE tablename='aclr_permission';
+
 #IF: emptyResult
-CREATE TABLE read_acl_permissions (
-  permission varchar(250)
+CREATE TABLE aclr_permission (
+  permission character varying(250)
 );
 
 
-# dump browse permissions into table
 #TEST:
-SELECT 1 FROM read_acl_permissions;
+SELECT 1 FROM aclr_permission;
 
 #IF: emptyResult
-INSERT INTO read_acl_permissions VALUES ${readPermissions};
+INSERT INTO aclr_permission VALUES ${readPermissions};
+
 
 
 CREATE OR REPLACE FUNCTION nx_get_local_read_acl(id varchar)
@@ -332,7 +377,7 @@ BEGIN
     END || acls.user AS op
   FROM acls
   WHERE acls.id = curid AND
-      permission IN (SELECT permission FROM read_acl_permissions)
+      permission IN (SELECT permission FROM aclr_permission)
   ORDER BY acls.pos LOOP
     IF r.op IS NULL THEN
       CONTINUE;
@@ -398,14 +443,15 @@ AS $$
 -- List read acl ids for a list of user/groups using cache
 DECLARE
   in_cache boolean;
-  md5_users varchar(34);
+  user_md5 varchar(34);
 BEGIN
-  SELECT md5(array_to_string(users, '${usersSeparator}')) INTO md5_users;
-  SELECT true INTO in_cache WHERE EXISTS (SELECT 1 FROM read_acls_cache WHERE users_md5 = md5_users);
+  SELECT md5(array_to_string(users, '${usersSeparator}')) INTO user_md5;
+  SELECT true INTO in_cache WHERE EXISTS (SELECT 1 FROM aclr_user WHERE user_id = user_md5);
   IF in_cache IS NULL THEN
-    INSERT INTO read_acls_cache SELECT md5_users, acl_id FROM nx_list_read_acls_for(users) AS acl_id;
+    INSERT INTO aclr_user VALUES (user_md5, users);
+    INSERT INTO aclr_user_map SELECT user_md5, acl_id FROM nx_list_read_acls_for(users) AS acl_id;
   END IF;
-  RETURN QUERY SELECT acl_id::text FROM read_acls_cache WHERE users_md5 = md5_users;
+  RETURN QUERY SELECT acl_id::text FROM aclr_user_map WHERE user_id = user_md5;
   RETURN;
 END $$
 LANGUAGE plpgsql
@@ -425,14 +471,14 @@ BEGIN
   SELECT regexp_split_to_array('-' || array_to_string(users, '${usersSeparator}-'), '${usersSeparator}')
     INTO users_blacklist;
   <<acl_loop>>
-  FOR r IN SELECT read_acls.id, read_acls.acl FROM read_acls LOOP
-    -- RAISE DEBUG 'ACL %', r.id;
+  FOR r IN SELECT aclr.acl_id, aclr.acl FROM aclr LOOP
+    -- RAISE DEBUG 'ACL %', r.acl_id;
     -- split the acl into aces
     FOR rr IN SELECT ace FROM regexp_split_to_table(r.acl, '${usersSeparator}') AS ace LOOP
        -- RAISE DEBUG '  ACE %', rr.ace;
        IF (rr.ace = ANY(users)) THEN
          -- RAISE DEBUG '  GRANT %', users;
-         RETURN NEXT r.id;
+         RETURN NEXT r.acl_id;
          CONTINUE acl_loop;
          -- ok
        ELSEIF (rr.ace = ANY(users_blacklist)) THEN
@@ -459,7 +505,7 @@ BEGIN
   ELSE
     doc_id := NEW.id;
   END IF;
-  INSERT INTO hierarchy_modified_acl VALUES(doc_id, 'f');
+  INSERT INTO aclr_modified VALUES(doc_id, 'f');
   RETURN NEW;
 END $$
 LANGUAGE plpgsql;
@@ -482,12 +528,12 @@ BEGIN
   IF (TG_OP = 'INSERT') THEN
     IF (NEW.isproperty = 'f') THEN
       -- New document
-      INSERT INTO hierarchy_modified_acl VALUES(NEW.id, 't');
+      INSERT INTO aclr_modified VALUES(NEW.id, 't');
     END IF;
   ELSEIF (TG_OP = 'UPDATE') THEN
     IF (NEW.isproperty = 'f' AND NEW.parentid != OLD.parentid) THEN
       -- New container
-      INSERT INTO hierarchy_modified_acl VALUES(NEW.id, 'f');
+      INSERT INTO aclr_modified VALUES(NEW.id, 'f');
     END IF;
   END IF;
   RETURN NEW;
@@ -505,16 +551,60 @@ CREATE TRIGGER nx_trig_hierarchy_modified
 ALTER TABLE hierarchy DISABLE TRIGGER nx_trig_hierarchy_modified;
 
 
+CREATE OR REPLACE FUNCTION nx_aclr_modified()
+RETURNS trigger
+AS $$
+-- Trigger to update the user_read_alcs
+DECLARE
+  r record;
+  rr record;
+  users_blacklist varchar[];
+BEGIN
+  IF (NEW.acl IS NULL) THEN
+     RETURN NEW;
+  END IF;
+  <<user_loop>>
+  FOR r IN SELECT * FROM aclr_user LOOP
+    SELECT regexp_split_to_array('-' || array_to_string(r.users, '${usersSeparator}-'), '${usersSeparator}')
+      INTO users_blacklist;
+    FOR rr IN SELECT ace FROM regexp_split_to_table(NEW.acl, '${usersSeparator}') AS ace LOOP
+       -- RAISE DEBUG '  ACE %', rr.ace;
+       IF (rr.ace = ANY(r.users)) THEN
+         -- GRANTED
+         INSERT INTO aclr_user_map SELECT * FROM (SELECT r.user_id, NEW.id) AS input
+            WHERE NOT EXISTS (SELECT 1 FROM aclr_user_map AS u WHERE u.user_id=r.user_id AND u.acl_id = NEW.id);
+         CONTINUE user_loop;
+       ELSEIF (rr.ace = ANY(users_blacklist)) THEN
+         -- RAISE DEBUG '  DENY';
+         CONTINUE user_loop;
+       END IF;
+    END LOOP;
+  END LOOP user_loop;
+RETURN NEW;
+END $$
+LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS nx_trig_aclr_modified ON aclr;
+CREATE TRIGGER nx_trig_aclr_modified
+  AFTER INSERT ON aclr
+  FOR EACH ROW EXECUTE PROCEDURE nx_aclr_modified();
+
+
+#IF: ! aclOptimizationsEnabled
+ALTER TABLE aclr DISABLE TRIGGER nx_aclr_modified;
+
+
 CREATE OR REPLACE FUNCTION nx_rebuild_read_acls()
 RETURNS void
 AS $$
 -- Rebuild the read acls tables
 BEGIN
-  RAISE DEBUG 'nx_rebuild_read_acls truncating read_acls tables ...';
-  TRUNCATE TABLE read_acls;
-  TRUNCATE TABLE read_acls_cache;
+  RAISE DEBUG 'nx_rebuild_read_acls truncating aclr_ tables ...';
+  TRUNCATE TABLE aclr;
+  TRUNCATE TABLE aclr_user;
+  TRUNCATE TABLE aclr_user_map;
   TRUNCATE TABLE hierarchy_read_acl;
-  TRUNCATE TABLE hierarchy_modified_acl;
+  TRUNCATE TABLE aclr_modified;
   RAISE DEBUG 'nx_rebuild_read_acls rebuilding hierarchy_read_acl ...';
   INSERT INTO hierarchy_read_acl
     SELECT id, md5(nx_get_read_acl(id))
@@ -534,16 +624,18 @@ DECLARE
   update_count integer;
 BEGIN
   RAISE INFO 'nx_vacuum_read_acls vacuuming ...';
-  DELETE FROM read_acls WHERE id IN (SELECT r.id FROM read_acls AS r
-    LEFT JOIN hierarchy_read_acl AS h ON r.id=h.acl_id
+  DELETE FROM aclr WHERE acl_id IN (SELECT r.acl_id FROM aclr AS r
+    LEFT JOIN hierarchy_read_acl AS h ON r.acl_id=h.acl_id
     WHERE h.acl_id IS NULL);
   GET DIAGNOSTICS update_count = ROW_COUNT;
   RAISE INFO 'nx_vacuum_read_acls done, % read acls removed.', update_count;
+  TRUNCATE aclr_user;
+  TRUNCATE aclr_user_map;
+  TRUNCATE aclr_modified;
   RETURN;
 END $$
 LANGUAGE plpgsql
 VOLATILE;
-
 
 CREATE OR REPLACE FUNCTION nx_update_read_acls()
 RETURNS void
@@ -553,32 +645,28 @@ DECLARE
   update_count integer;
   reset_cache boolean := false;
 BEGIN
-  -- New hierarchy_read_acl entry
+  --
+  -- 1/ New documents, no new ACL
   RAISE DEBUG 'nx_update_read_acls inserting new hierarchy_read_acl ...';
   INSERT INTO hierarchy_read_acl
     SELECT id, md5(nx_get_read_acl(id))
-    FROM (SELECT DISTINCT(id) AS id
-        FROM hierarchy_modified_acl
+    FROM (SELECT DISTINCT(hierarchy_id) AS id
+        FROM aclr_modified
         WHERE is_new AND
-            EXISTS (SELECT 1 FROM hierarchy WHERE hierarchy_modified_acl.id=hierarchy.id)) AS uids;
+            EXISTS (SELECT 1 FROM hierarchy WHERE aclr_modified.hierarchy_id=hierarchy.id)) AS uids;
   GET DIAGNOSTICS update_count = ROW_COUNT;
   RAISE DEBUG 'nx_update_read_acls % entries added.', update_count;
-  DELETE FROM hierarchy_modified_acl WHERE is_new;
+  DELETE FROM aclr_modified WHERE is_new;
   --
-  -- Update hierarchy_read_acl entry
+  -- 2/ Handles new ACLs, marking read acl with a NULL marker
   RAISE DEBUG 'nx_update_read_acls updating hierarchy_read_acl ...';
-  -- Mark acl that need to be updated (set to NULL)
   UPDATE hierarchy_read_acl SET acl_id = NULL WHERE id IN (
-    SELECT DISTINCT(id) AS id FROM hierarchy_modified_acl WHERE NOT is_new);
+    SELECT DISTINCT(hierarchy_id) AS hierarchy_id FROM aclr_modified WHERE NOT is_new);
   GET DIAGNOSTICS update_count = ROW_COUNT;
   RAISE DEBUG 'nx_update_read_acls mark % lines to update', update_count;
-  DELETE FROM hierarchy_modified_acl WHERE NOT is_new;
-  IF (update_count > 0) THEN
-    -- list of read_acls have changed
-    reset_cache := true;
-  END IF;
+  DELETE FROM aclr_modified WHERE NOT is_new;
   --
-  -- Mark all childrens
+  -- 3/ Mark all children with the NULL marker
   LOOP
     UPDATE hierarchy_read_acl SET acl_id = NULL WHERE id IN (
       SELECT h.id
@@ -592,17 +680,12 @@ BEGIN
       EXIT;
     END IF;
   END LOOP;
-  -- Update hierarchy_read_acl acl_ids
+  --
+  -- 4/ Compute the new read ACLs for updated documents
   RAISE DEBUG 'nx_update_read_acls computing read acls ...';
   UPDATE hierarchy_read_acl SET acl_id = md5(nx_get_read_acl(id)) WHERE acl_id IS NULL;
   GET DIAGNOSTICS update_count = ROW_COUNT;
   RAISE INFO 'nx_update_read_acls % updated.', update_count;
-  --
-  IF (reset_cache) THEN
-    RAISE DEBUG 'nx_update_read_acls reset read_acls cache';
-    TRUNCATE TABLE read_acls_cache;
-  END IF;
-  --
   RETURN;
 END $$
 LANGUAGE plpgsql
@@ -615,9 +698,9 @@ AS $$
 -- Trigger to update the read_acls tables
 BEGIN
   IF (NEW.acl_id IS NOT NULL) THEN
-    INSERT INTO read_acls
+    INSERT INTO aclr
       SELECT md5(acl), acl FROM (SELECT nx_get_read_acl(NEW.id) AS acl) AS input
-      WHERE NOT EXISTS (SELECT 1 FROM read_acls AS r WHERE r.id = NEW.acl_id);
+      WHERE NOT EXISTS (SELECT 1 FROM aclr AS r WHERE r.acl_id = NEW.acl_id);
   END IF;
   RETURN NEW;
 END $$
@@ -633,7 +716,7 @@ CREATE TRIGGER nx_trig_hierarchy_read_acl_modified
 # build the read acls if empty, this takes care of the upgrade
 #IF: aclOptimizationsEnabled
 #TEST:
-SELECT 1 FROM read_acls LIMIT 1;
+SELECT 1 FROM aclr LIMIT 1;
 
 #IF: aclOptimizationsEnabled
 #IF: emptyResult
