@@ -4,7 +4,6 @@ Export-Package: org.nuxeo.ecm.platform.dublincore,
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Manifest-Version: 1.0
-Bundle-Localization: plugin
 Bundle-Name: NXDublinCore
 Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
