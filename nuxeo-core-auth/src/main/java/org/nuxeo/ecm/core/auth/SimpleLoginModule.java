@@ -43,7 +43,7 @@ public class SimpleLoginModule implements LoginModule {
 
 
     public Principal authenticate(String[] login) throws LoginException {
-        return Activator.getInstance().getRegistry().authenticate(login[0], login[1]);
+        return Activator.getInstance().getRegistry().getPrincipal(login[0], login[1]);
     }
 
     @Override

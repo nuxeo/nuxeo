@@ -18,6 +18,7 @@ package org.nuxeo.ecm.core.auth;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.security.Principal;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -25,12 +26,13 @@ import javax.security.auth.login.LoginException;
 
 import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.runtime.api.login.Authenticator;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class SimpleUserRegistry {
+public class SimpleUserRegistry implements Authenticator {
 
     protected Map<String, SimpleNuxeoPrincipal> users;
 
@@ -68,22 +70,29 @@ public class SimpleUserRegistry {
         return users.values().toArray(new NuxeoPrincipal[users.size()]);
     }
 
-    public NuxeoPrincipal authenticate(String name, String password) throws LoginException {
+    public Principal getPrincipal(String name, String password) throws LoginException {
+        NuxeoPrincipal principal = doAuthenticate(name, password);
+        if (principal == null) {
+            throw new LoginException("Failed to authenticate user "+name);
+        }
+        return principal;
+    }
+
+    public NuxeoPrincipal doAuthenticate(String name, String password) {
         NuxeoPrincipal principal = getUser(name);
         if (principal == null) {
             return null;
         }
         String pwd = principal.getPassword();
-        if (password == pwd) {
-            throw new LoginException("Failed to authenticate user "+name);
-        }
-        if (password == null) {
-            throw new LoginException("Failed to authenticate user "+name);
-        }
-        if (!password.equals(pwd)) {
-            throw new LoginException("Failed to authenticate user "+name);
+        if (password == null || !password.equals(pwd)) {
+            return null;
         }
         return principal;
+    }
+
+    @Override
+    public boolean authenticate(String name, String password) {
+        return doAuthenticate(name, password) != null;
     }
 
 }

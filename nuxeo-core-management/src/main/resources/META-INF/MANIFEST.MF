@@ -37,5 +37,5 @@ Import-Package: javax.annotation;version="1.0",
  org.nuxeo.runtime.model,
  org.nuxeo.runtime.services.event,
  org.osgi.framework
-Bundle-SymbolicName: org.nuxeo.ecm.core.management;singleton=true
+Bundle-SymbolicName: org.nuxeo.ecm.core.management;singleton:=true
 Require-Bundle: org.nuxeo.ecm.core;bundle-version="0.0.0"

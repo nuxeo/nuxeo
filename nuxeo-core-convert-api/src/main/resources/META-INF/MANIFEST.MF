@@ -2,7 +2,6 @@ Export-Package: org.nuxeo.ecm.core.convert.api
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Manifest-Version: 1.0
-Bundle-Localization: plugin
 Bundle-Name: NXCore Covert API
 Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
