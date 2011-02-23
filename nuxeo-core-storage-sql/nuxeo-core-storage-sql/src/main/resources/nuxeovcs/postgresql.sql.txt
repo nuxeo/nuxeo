@@ -244,6 +244,14 @@ ALTER TABLE read_acls RENAME TO aclr;
 ALTER TABLE aclr RENAME COLUMN id TO acl_id;
 
 
+# -- Remove useless primary key since 5.4.1
+#TEST:
+SELECT 1 FROM pg_constraint WHERE conname='read_acls_pkey';
+
+#IF: ! emptyResult
+ALTER TABLE aclr DROP CONSTRAINT read_acls_pkey;
+
+
 # ------------------------------------------------------------
 # -- Read acls table
 # -- acl ex: jsmith,administrators,-Everyone
@@ -253,9 +261,24 @@ SELECT 1 FROM pg_tables WHERE tablename = 'aclr';
 
 #IF: emptyResult
 CREATE TABLE aclr (
-  acl_id varchar(34) PRIMARY KEY,
+  acl_id varchar(34) NOT NULL,
   acl varchar(${readAclMaxSize})
 );
+
+
+#TEST:
+SELECT 1 FROM pg_indexes WHERE indexname = 'aclr_acl_id_idx';
+
+#IF: emptyResult
+CREATE INDEX aclr_acl_id_idx ON aclr USING btree(acl_id);
+
+
+# -- Migration since 5.4.1
+#TEST:
+SELECT 1 FROM pg_tables WHERE tablename = 'read_acls_cache';
+
+#IF: ! emptyResult
+DROP TABLE read_acls_cache;
 
 
 # -- Known users table
@@ -266,9 +289,16 @@ SELECT 1 FROM pg_tables WHERE tablename = 'aclr_user';
 
 #IF: emptyResult
 CREATE TABLE aclr_user (
-  user_id varchar(34) PRIMARY KEY,
+  user_id varchar(34) NOT NULL,
   users varchar(127)[]
 );
+
+
+#TEST:
+SELECT 1 FROM pg_indexes WHERE indexname = 'aclr_user_user_id_idx';
+
+#IF: emptyResult
+CREATE INDEX aclr_user_user_id_idx ON aclr_user USING btree(user_id);
 
 
 # -- Jonction between aclr and aclr_user
@@ -306,6 +336,21 @@ CREATE TABLE hierarchy_read_acl (
   acl_id varchar(34),
   CONSTRAINT hierarchy_read_acl_id_fk FOREIGN KEY(id) REFERENCES hierarchy(id) ON DELETE CASCADE
 );
+
+
+# -- Remove useless primary key
+#TEST:
+SELECT 1 FROM pg_constraint WHERE conname='hierarchy_read_acl_pkey';
+
+#IF: ! emptyResult
+ALTER TABLE hierarchy_read_acl DROP CONSTRAINT hierarchy_read_acl_pkey;
+
+
+#TEST:
+SELECT 1 FROM pg_indexes WHERE indexname='hierarchy_read_acl_id_idx';
+
+#IF: emptyResult
+CREATE INDEX hierarchy_read_acl_id_idx ON hierarchy_read_acl USING btree(id);
 
 
 #TEST:
@@ -637,6 +682,7 @@ END $$
 LANGUAGE plpgsql
 VOLATILE;
 
+
 CREATE OR REPLACE FUNCTION nx_update_read_acls()
 RETURNS void
 AS $$
@@ -695,7 +741,7 @@ VOLATILE;
 CREATE OR REPLACE FUNCTION nx_log_hierarchy_read_acl_modified()
 RETURNS trigger
 AS $$
--- Trigger to update the read_acls tables
+-- Trigger to update the aclr tables
 BEGIN
   IF (NEW.acl_id IS NOT NULL) THEN
     INSERT INTO aclr
@@ -726,7 +772,10 @@ LOG.INFO Upgrading to optimized acls
 #IF: emptyResult
 SELECT * FROM nx_rebuild_read_acls();
 
-# Vacuum the read acls table if needed
+#IF: aclOptimizationsEnabled
+LOG.INFO Vacuuming tables used by optmized acls
+
+# Vacuum the read acls tables
 #IF: aclOptimizationsEnabled
 SELECT nx_vacuum_read_acls();
 
@@ -885,3 +934,4 @@ UPDATE locks SET
   owner = SUBSTRING(lock FROM 1 FOR POSITION(':' in lock) - 1),
   created = SUBSTRING(lock FROM POSITION(':' in lock) + 1)::timestamp
   WHERE lock IS NOT NULL AND owner IS NULL;
+
