@@ -60,6 +60,8 @@ public class TextTemplate {
 
     private List<String> extensions;
 
+    private boolean extensionsContainsDot = false;
+
     public boolean isTrim() {
         return trim;
     }
@@ -154,15 +156,29 @@ public class TextTemplate {
                 out = new File(out, in.getName());
             }
 
-            int extIndex = in.getName().lastIndexOf('.');
-            String extension = extIndex == -1 ? "" : in.getName().substring(
-                    extIndex + 1).toLowerCase();
+            boolean processText = false;
+            if (!extensionsContainsDot) {
+                int extIndex = in.getName().lastIndexOf('.');
+                String extension = extIndex == -1 ? ""
+                        : in.getName().substring(extIndex + 1).toLowerCase();
+                processText = extensions == null
+                        || extensions.contains(extension);
+            } else {
+                // Check for each extension if it matches end of filename
+                String filename = in.getName().toLowerCase();
+                for (String ext : extensions) {
+                    if (filename.endsWith(ext)) {
+                        processText = true;
+                        break;
+                    }
+                }
+            }
+
             FileInputStream is = null;
             FileOutputStream os = new FileOutputStream(out);
             try {
                 is = new FileInputStream(in);
-                process(is, os,
-                        extensions == null || extensions.contains(extension));
+                process(is, os, processText);
             } finally {
                 if (is != null) {
                     is.close();
@@ -205,8 +221,11 @@ public class TextTemplate {
         StringTokenizer st = new StringTokenizer(extensionsList, ",");
         extensions = new ArrayList<String>();
         while (st.hasMoreTokens()) {
-            extensions.add(st.nextToken());
+            String extension = st.nextToken();
+            extensions.add(extension);
+            if (!extensionsContainsDot && extension.contains(".")) {
+                extensionsContainsDot = true;
+            }
         }
     }
-
 }
