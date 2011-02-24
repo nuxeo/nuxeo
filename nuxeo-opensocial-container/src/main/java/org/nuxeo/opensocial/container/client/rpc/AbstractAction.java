@@ -16,6 +16,8 @@
 
 package org.nuxeo.opensocial.container.client.rpc;
 
+import java.util.Map;
+
 import net.customware.gwt.dispatch.shared.Action;
 import net.customware.gwt.dispatch.shared.Result;
 
@@ -32,11 +34,16 @@ public abstract class AbstractAction<T extends Result> implements Action<T> {
 
     protected String documentContextId;
 
+    protected String userLanguage;
+
+    protected Map<String, String> parameters;
 
     public AbstractAction(ContainerContext containerContext) {
         this.repositoryName = containerContext.getRepositoryName();
         this.spaceId = containerContext.getSpaceId();
         this.documentContextId = containerContext.getDocumentContextId();
+        this.userLanguage = containerContext.getUserLanguage();
+        this.parameters = containerContext.getParameters();
     }
 
     protected AbstractAction() {
@@ -52,6 +59,14 @@ public abstract class AbstractAction<T extends Result> implements Action<T> {
 
     public String getDocumentContextId() {
         return documentContextId;
+    }
+
+    public String getUserLanguage() {
+        return userLanguage;
+    }
+
+    public Map<String, String> getParameters() {
+        return parameters;
     }
 
 }

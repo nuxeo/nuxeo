@@ -72,6 +72,8 @@ public class AppModel implements HasPermissionsMapper {
 
     private static final YUITemplate defaultNewZoneTemplate = YUITemplate.YUI_ZT_100;
 
+    public static final String GENERATE_TITLE_PARAMETER_NAME = "generateTitle";
+
     private static final String EVERYTHING = "Everything";
 
     private YUILayout layout;
@@ -330,7 +332,8 @@ public class AppModel implements HasPermissionsMapper {
         ContainerContext tempContainerContext = new ContainerContext(
                 ContainerConfiguration.getSpaceId(),
                 ContainerConfiguration.getRepositoryName(),
-                ContainerConfiguration.getDocumentContextId());
+                ContainerConfiguration.getDocumentContextId(),
+                ContainerConfiguration.getUserLanguage());
         dispatcher.execute(new InitApplication(tempContainerContext,
                 ContainerConfiguration.getSpaceProviderName(),
                 ContainerConfiguration.getSpaceName()),
@@ -341,7 +344,9 @@ public class AppModel implements HasPermissionsMapper {
                         containerContext = new ContainerContext(
                                 result.getSpaceId(),
                                 ContainerConfiguration.getRepositoryName(),
-                                ContainerConfiguration.getDocumentContextId());
+                                ContainerConfiguration.getDocumentContextId(),
+                                ContainerConfiguration.getUserLanguage());
+                        containerContext.setParameter(GENERATE_TITLE_PARAMETER_NAME, ContainerConfiguration.generateTitle());
                         setPermissions(result.getPermissions());
                         setLayout(result.getLayout());
                         eventBus.fireEvent(new LayoutLoadedEvent());

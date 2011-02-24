@@ -25,31 +25,35 @@ public class ContainerConfiguration {
     }
 
     public static native String getRepositoryName() /*-{
-                                                    return $wnd.nuxeo.container.repositoryName;
-                                                    }-*/;
+        return $wnd.nuxeo.container.repositoryName;
+    }-*/;
 
     public static native String getSpaceId() /*-{
-                                             return $wnd.nuxeo.container.id;
-                                             }-*/;
+        return $wnd.nuxeo.container.id;
+    }-*/;
 
     public static native String getSpaceProviderName() /*-{
-                                                       return $wnd.nuxeo.container.spaceProviderName;
-                                                       }-*/;
+        return $wnd.nuxeo.container.spaceProviderName;
+    }-*/;
 
     public static native String getDocumentContextId() /*-{
-                                                       return $wnd.nuxeo.container.documentContextId;
-                                                       }-*/;
+        return $wnd.nuxeo.container.documentContextId;
+    }-*/;
 
     public static native String getSpaceName() /*-{
-                                               return $wnd.nuxeo.container.spaceName;
-                                               }-*/;
+        return $wnd.nuxeo.container.spaceName;
+    }-*/;
 
     public static native boolean showPreferencesAfterAddingGadget() /*-{
-                                                                    return $wnd.nuxeo.container.parameters.showPreferencesAfterAddingGadget;
-                                                                    }-*/;
+        return $wnd.nuxeo.container.parameters.showPreferencesAfterAddingGadget;
+    }-*/;
 
     public static native String getUserLanguage() /*-{
-                                                  return $wnd.nuxeo.container.parameters.userLanguage;
-                                                  }-*/;
+        return $wnd.nuxeo.container.parameters.userLanguage;
+    }-*/;
+
+    public static native boolean generateTitle() /*-{
+        return $wnd.nuxeo.container.parameters.generateTitle;
+    }-*/;
 
 }

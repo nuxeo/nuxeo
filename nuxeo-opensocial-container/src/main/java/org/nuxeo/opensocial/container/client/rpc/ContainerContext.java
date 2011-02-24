@@ -17,6 +17,8 @@
 package org.nuxeo.opensocial.container.client.rpc;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Contains
@@ -31,14 +33,27 @@ public class ContainerContext implements Serializable {
 
     protected String documentContextId;
 
+    protected String userLanguage;
+
+    protected Map<String, String> parameters;
+
     private ContainerContext() {
     }
 
     public ContainerContext(String spaceId, String repositoryName,
-            String documentContextId) {
+            String documentContextId, String userLanguage) {
+        this(spaceId, repositoryName, documentContextId, userLanguage,
+                new HashMap<String, String>());
+    }
+
+    public ContainerContext(String spaceId, String repositoryName,
+            String documentContextId, String userLanguage,
+            Map<String, String> parameters) {
         this.spaceId = spaceId;
         this.repositoryName = repositoryName;
         this.documentContextId = documentContextId;
+        this.userLanguage = userLanguage;
+        this.parameters = parameters;
     }
 
     public String getSpaceId() {
@@ -51,6 +66,22 @@ public class ContainerContext implements Serializable {
 
     public String getDocumentContextId() {
         return documentContextId;
+    }
+
+    public String getUserLanguage() {
+        return userLanguage;
+    }
+
+    public Map<String, String> getParameters() {
+        return parameters;
+    }
+
+    public void setParameter(String name, String value) {
+        parameters.put(name, value);
+    }
+
+    public String getParameter(String name) {
+        return parameters.get(name);
     }
 
 }
