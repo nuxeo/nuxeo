@@ -269,8 +269,8 @@ public class ResolvedResourcesFactory {
             } catch (Throwable t) {
                 // We don't want the whole indexing process to fail if there is
                 // an underlying error transformation plugin side.
-                log.error("Canot extract blob content using transformer..."
-                        + " Cancelling. Fulltext won't be available completly "
+                log.error("Cannot extract blob content using transformer..."
+                        + " Canceling. Fulltext won't be available completely "
                         + " for this document", t);
             }
         } else {
