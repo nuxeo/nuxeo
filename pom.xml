@@ -120,7 +120,7 @@
       </activation>
       <modules>
         <module>nuxeo-opensocial-container</module>
-        <module>nuxeo-richtexteditor-gadget</module>
+        <module>nuxeo-gwt-richtexteditor</module>
       </modules>
     </profile>
   </profiles>

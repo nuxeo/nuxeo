@@ -10,7 +10,7 @@
     <version>5.4.1-SNAPSHOT</version>
   </parent>
 
-  <artifactId>nuxeo-richtexteditor-gadget</artifactId>
+  <artifactId>nuxeo-gwt-richtexteditor</artifactId>
   <name>GWT2 RichTextEditor</name>
   <description>GWT2 RichTextEditor</description>
 
