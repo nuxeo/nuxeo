@@ -194,6 +194,11 @@
       <filter-id>not_folder</filter-id>
     </action>
 
+    <action id="print" link="#{restHelper.doPrint(WebcontainerThemeActions.defaultTheme)}" order="100"
+      label="label.print" icon="/icons/printer.gif">
+      <category>DOCUMENT_UPPER_ACTION_BLANK_TARGET</category>
+    </action>
+
     <action id="TAB_EDIT" link="/incl/tabs/document_edit.xhtml" order="20"
       label="action.view.modification" icon="/icons/file.gif">
       <category>VIEW_ACTION_LIST</category>
