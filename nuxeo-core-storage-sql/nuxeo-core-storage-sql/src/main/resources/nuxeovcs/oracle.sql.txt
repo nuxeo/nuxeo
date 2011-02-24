@@ -609,7 +609,11 @@ END;
 
 #CATEGORY: upgradeLocks
 
+ALTER TABLE locks DROP CONSTRAINT locks_id_hierarchy_fk
+
+DELETE FROM locks WHERE "LOCK" IS NULL
+
 UPDATE locks SET
   owner = SUBSTR("LOCK", 1, INSTR("LOCK", ':') - 1),
   created = TO_TIMESTAMP(SUBSTR("LOCK", INSTR("LOCK", ':') + 1), 'MON DD, YYYY')
-  WHERE "LOCK" IS NOT NULL AND owner IS NULL
+  WHERE owner IS NULL

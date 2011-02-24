@@ -360,7 +360,7 @@ public class DialectSQLServer extends Dialect {
     public Map<String, Serializable> getSQLStatementsProperties(Model model,
             Database database) {
         Map<String, Serializable> properties = new HashMap<String, Serializable>();
-        properties.put("idType", "NVARCHAR(36)");
+        properties.put("idType", "VARCHAR(36)");
         properties.put("fulltextEnabled", Boolean.valueOf(!fulltextDisabled));
         properties.put("fulltextCatalog", fulltextCatalog);
         return properties;

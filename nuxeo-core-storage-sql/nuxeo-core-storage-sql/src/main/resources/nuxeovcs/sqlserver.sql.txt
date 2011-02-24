@@ -287,7 +287,11 @@ UPDATE dublincore SET lastContributor = dc_c.item
 
 #CATEGORY: upgradeLocks
 
+ALTER TABLE locks DROP CONSTRAINT locks_id_hierarchy_fk;
+
+DELETE FROM locks WHERE lock IS NULL;
+
 UPDATE locks SET
   owner = SUBSTRING(lock, 1, CHARINDEX(':', lock) - 1),
   created = CONVERT(DATETIME, SUBSTRING(lock, CHARINDEX(':', lock) + 1, 9999), 107)
-  WHERE lock IS NOT NULL AND owner IS NULL
+  WHERE owner IS NULL

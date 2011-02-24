@@ -50,18 +50,25 @@ CREATE TABLE nxp_tagging (
   is_private INTEGER
 );
 
-# create old table locks
+# create old table locks with constraints
 
 CREATE TABLE locks (
   id ${idType} NOT NULL,
   lock VARCHAR(256)
-)
+);
+
+ALTER TABLE locks ADD CONSTRAINT locks_pk PRIMARY KEY (id);
 
 
 ############################################################
 
 
 #CATEGORY: testUpgradeOldTables
+
+# old foreign keys
+
+ALTER TABLE locks ADD CONSTRAINT locks_id_hierarchy_fk FOREIGN KEY (id)
+  REFERENCES hierarchy ON DELETE CASCADE;
 
 # create old values in old tables
 
@@ -148,3 +155,7 @@ INSERT INTO versions (id, versionableid, created)
 #IF: testUpgradeLocks
 INSERT INTO locks (id, lock)
   VALUES ('dddddddd-dddd-dddd-dddd-dddddddddddd', 'bob:Jan 26, 2011')
+
+#IF: testUpgradeLocks
+INSERT INTO locks (id, lock)
+  VALUES ('11111111-2222-3333-4444-555555555555', NULL);

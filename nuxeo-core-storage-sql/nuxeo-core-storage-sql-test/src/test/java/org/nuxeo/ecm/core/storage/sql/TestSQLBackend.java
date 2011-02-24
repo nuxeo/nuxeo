@@ -2048,15 +2048,22 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
     protected void doTestLocksUpgrade() throws Exception {
         Session session = repository.getConnection();
-        Node doc = session.getNodeById("dddddddd-dddd-dddd-dddd-dddddddddddd");
+        String id;
+        Lock lock;
+
         // check lock has been upgraded from 'bob:Jan 26, 2011'
-        String owner = doc.getSimpleProperty(Model.LOCK_OWNER_PROP).getString();
-        assertEquals("bob", owner);
-        Calendar created = (Calendar) doc.getSimpleProperty(
-                Model.LOCK_CREATED_PROP).getValue();
+        id = "dddddddd-dddd-dddd-dddd-dddddddddddd";
+        lock = session.getLock(id);
+        assertNotNull(lock);
+        assertEquals("bob", lock.getOwner());
         Calendar expected = new GregorianCalendar(2011, Calendar.JANUARY, 26,
                 0, 0, 0);
-        assertEquals(expected, created);
+        assertEquals(expected, lock.getCreated());
+
+        // old lock was nulled after unlock
+        id = "11111111-2222-3333-4444-555555555555";
+        lock = session.getLock(id);
+        assertNull(lock);
     }
 
 }
