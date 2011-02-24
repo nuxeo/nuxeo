@@ -19,13 +19,17 @@ public abstract class AbstractWebContentDAO<T extends WebContentData>
     @SuppressWarnings("unchecked")
     public T create(T data, String parentId, CoreSession session)
             throws Exception {
+        return create(data, data.getName(), parentId, session);
+    }
+
+    protected T create(T data, String webContentName, String parentId, CoreSession session) throws Exception {
         // TODO Remove call to the service !
         WebContentSaverService service = Framework.getService(WebContentSaverService.class);
 
         String unitPath = session.getDocument(new IdRef(parentId)).getPathAsString();
         // TODO data.getName() + date
         DocumentModel doc = session.createDocumentModel(unitPath,
-                data.getName(), service.getDocTypeFor(data));
+                webContentName, service.getDocTypeFor(data));
 
         doc = session.createDocument(doc);
 
@@ -34,7 +38,7 @@ public abstract class AbstractWebContentDAO<T extends WebContentData>
 
         doc = session.saveDocument(doc);
 
-        return (T) adapter.getData();
+        return adapter.getData();
     }
 
     @SuppressWarnings("unchecked")
