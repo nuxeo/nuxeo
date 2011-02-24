@@ -19,19 +19,25 @@ package org.nuxeo.apidoc.browse;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.ws.rs.core.Application;
-
 import org.nuxeo.apidoc.doc.DocumentationItemReader;
 import org.nuxeo.apidoc.export.ArchiveFileWriter;
+import org.nuxeo.ecm.webengine.app.WebEngineModule;
 
-public class ApiDocApplication extends Application {
+// before 5.4.1 you extended javax.ws.rs.core.Application
+// if the MANIFEST.MF contained
+// Nuxeo-WebModule: org.nuxeo.apidoc.browse.ApiDocApplication; explode:=true; compat:=true
+// and the module.xml had a proper path="/distribution"
+
+public class ApiDocApplication extends WebEngineModule {
 
     @Override
     public Set<Class<?>> getClasses() {
-        Set<Class<?>> result = new HashSet<Class<?>>();
-        result.add(DocumentationItemReader.class);
-        result.add(ArchiveFileWriter.class);
-        return result;
+        Set<Class<?>> classes = super.getClasses();
+        classes = classes == null ? new HashSet<Class<?>>()
+                : new HashSet<Class<?>>(classes);
+        classes.add(DocumentationItemReader.class);
+        classes.add(ArchiveFileWriter.class);
+        return classes;
     }
 
 }

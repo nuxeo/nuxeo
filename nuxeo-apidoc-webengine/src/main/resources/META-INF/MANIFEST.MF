@@ -8,4 +8,4 @@ Nuxeo-Require: org.nuxeo.ecm.webengine.core,
  org.nuxeo.apidoc.core
 Nuxeo-Component: OSGI-INF/gadget-contrib.xml,
  OSGI-INF/actions-contrib.xml
-Nuxeo-WebModule: org.nuxeo.apidoc.browse.ApiDocApplication; explode:=true; compat:=true
+Nuxeo-WebModule: org.nuxeo.apidoc.browse.ApiDocApplication

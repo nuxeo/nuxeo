@@ -47,6 +47,7 @@ import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
+@Path("/distribution") // needed for 5.4.1
 @WebObject(type = "distribution")
 public class Distribution extends ModuleRoot {
 

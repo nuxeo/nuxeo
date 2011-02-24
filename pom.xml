@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.nuxeo</groupId>
     <artifactId>nuxeo-ecm</artifactId>
-    <version>5.4.0</version>
+    <version>5.4.1-SNAPSHOT</version>
   </parent>
 
   <groupId>org.nuxeo.ecm.platform</groupId>  
@@ -17,9 +17,9 @@
   <version>5.4.1-SNAPSHOT</version>
 
   <properties>
-    <nuxeo.platform.version>5.4.0</nuxeo.platform.version>
-    <nuxeo.features.version>5.4.0</nuxeo.features.version>
-    <nuxeo.core.version>5.4.0</nuxeo.core.version>
+    <nuxeo.platform.version>5.4.1-SNAPSHOT</nuxeo.platform.version>
+    <nuxeo.features.version>5.4.1-SNAPSHOT</nuxeo.features.version>
+    <nuxeo.core.version>5.4.1-SNAPSHOT</nuxeo.core.version>
   </properties>
 
   <modules>
@@ -53,6 +53,11 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-content-template-manager</artifactId>
+        <version>${nuxeo.platform.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.webengine</groupId>
+        <artifactId>nuxeo-webengine-jaxrs</artifactId>
         <version>${nuxeo.platform.version}</version>
       </dependency>
       <dependency>

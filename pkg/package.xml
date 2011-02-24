@@ -11,7 +11,7 @@
   <nuxeo-validation>inprocess</nuxeo-validation>
   <production-state>none</production-state>
   <platforms>
-    <platform>DM-5.4.0</platform>
+    <platform>DM-5.4.1</platform>
   </platforms>
   <dependencies>
   </dependencies>
