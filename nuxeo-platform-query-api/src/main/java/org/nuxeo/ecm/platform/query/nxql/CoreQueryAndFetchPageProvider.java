@@ -103,7 +103,7 @@ public class CoreQueryAndFetchPageProvider extends
 
                 Iterator<Map<String, Serializable>> it = result.iterator();
                 int pos = 0;
-                while (it.hasNext() && pos < getPageSize()) {
+                while (it.hasNext() && pos < pageSize) {
                     pos += 1;
                     Map<String, Serializable> item = it.next();
                     currentItems.add(item);

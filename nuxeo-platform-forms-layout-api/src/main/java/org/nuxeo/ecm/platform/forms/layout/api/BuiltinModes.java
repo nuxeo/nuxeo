@@ -42,8 +42,6 @@ public class BuiltinModes {
 
     public static final String SUMMARY = "summary";
 
-    public static final String HEADER = "header";
-
     public static final String CSV = "csv";
 
     /**
@@ -78,11 +76,10 @@ public class BuiltinModes {
      * Returns the default mode to use for a widget, given the layout mode.
      * <p>
      * Returns {@link BuiltinWidgetModes#EDIT} for all modes bound to edit,
-     * {@link BuiltinWidgetModes#VIEW} for modes {@link #VIEW},
-     * {@link #HEADER} and {@link #SUMMARY}. {@link #PDF} and {@link #CSV} are
-     * respectively bound to {@link BuiltinWidgetModes#PDF} and
-     * {@link BuiltinWidgetModes#CSV}. In other cases, returns
-     * {@link BuiltinWidgetModes#PLAIN}.
+     * {@link BuiltinWidgetModes#VIEW} for modes {@link #VIEW} and
+     * {@link #SUMMARY}. {@link #PDF} and {@link #CSV} are respectively bound
+     * to {@link BuiltinWidgetModes#PDF} and {@link BuiltinWidgetModes#CSV}.
+     * In other cases, returns {@link BuiltinWidgetModes#PLAIN}.
      * <p>
      * This method is not called when mode is explicitely set on the widget.
      */
@@ -91,8 +88,7 @@ public class BuiltinModes {
             if (BuiltinModes.isBoundToEditMode(layoutMode)) {
                 return BuiltinWidgetModes.EDIT;
             } else if (layoutMode.startsWith(VIEW)
-                    || layoutMode.startsWith(SUMMARY)
-                    || layoutMode.startsWith(HEADER)) {
+                    || layoutMode.startsWith(SUMMARY)) {
                 return BuiltinWidgetModes.VIEW;
             } else if (layoutMode.startsWith(CSV)) {
                 return BuiltinWidgetModes.CSV;

@@ -60,6 +60,4 @@ public interface PageProviderDefinition extends Serializable {
 
     String getPageSizeBinding();
 
-    Long getMaxPageSize();
-
 }

@@ -45,8 +45,6 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
 
     protected long pageSize = 0;
 
-    protected long maxPageSize = DEFAULT_MAX_PAGE_SIZE;
-
     protected long resultsCount = UNKNOWN_SIZE;
 
     protected int currentEntryIndex = 0;
