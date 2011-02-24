@@ -213,16 +213,16 @@ public class RestHelper implements Serializable {
         }
         HttpServletResponse response = getHttpServletResponse();
         if (response != null) {
-            handleRedirect(response, getCurrentDocumentPrintUrl(doc, defaultTheme));
+            handleRedirect(response, getPrintUrl(doc, defaultTheme));
         }
         return null;
     }
 
-    public String getCurrentDocumentPrintUrl(String defaultTheme) {
-        return getCurrentDocumentPrintUrl(navigationContext.getCurrentDocument(), defaultTheme);
+    public String getPrintUrl(String defaultTheme) {
+        return getPrintUrl(navigationContext.getCurrentDocument(), defaultTheme);
     }
         
-    public String getCurrentDocumentPrintUrl(DocumentModel doc, String defaultTheme) {
+    public String getPrintUrl(DocumentModel doc, String defaultTheme) {
         Map<String, String> parameters  = new HashMap<String, String>();
         int separatorIndex = defaultTheme.indexOf("/");
         if (separatorIndex != -1) {
