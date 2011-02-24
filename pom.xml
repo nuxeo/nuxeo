@@ -14,7 +14,7 @@
   <name>Nuxeo Documentation Server</name>
   <description>Parent for Documentation Server</description>
   <packaging>pom</packaging>
-  <version>5.4.1-SNAPSHOT</version>
+  <version>5.4.0.1-SNAPSHOT</version>
 
   <properties>
     <nuxeo.platform.version>5.4.0</nuxeo.platform.version>
