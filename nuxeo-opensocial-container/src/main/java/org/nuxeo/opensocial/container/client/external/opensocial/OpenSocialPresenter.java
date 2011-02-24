@@ -72,7 +72,6 @@ public class OpenSocialPresenter extends
         model.getData().setFrameUrl(
                 changeParam(model.getData().getFrameUrl(), OS_LANG_ATTRIBUTE,
                         locale));
-        refreshDisplay();
     }
 
     public void setPermissions() {
@@ -96,7 +95,6 @@ public class OpenSocialPresenter extends
         model.getData().setFrameUrl(
                 changeParam(model.getData().getFrameUrl(), OS_VIEW_ATTRIBUTE,
                         view));
-        refreshDisplay();
     }
 
     // Make this method static in order to be easily tested !
@@ -133,6 +131,8 @@ public class OpenSocialPresenter extends
     }
 
     public void refreshDisplay() {
+        setLanguage();
+        setPermissions();
         display.setUrl(model.getData().getFrameUrl());
     }
 

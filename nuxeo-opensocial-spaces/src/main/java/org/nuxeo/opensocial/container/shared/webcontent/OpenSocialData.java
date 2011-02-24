@@ -89,7 +89,6 @@ public class OpenSocialData extends AbstractWebContentData {
     }
 
     public void updateFrom(WebContentData data) {
-        // TODO
         this.frameUrl = ((OpenSocialData) data).getFrameUrl();
     }
 
