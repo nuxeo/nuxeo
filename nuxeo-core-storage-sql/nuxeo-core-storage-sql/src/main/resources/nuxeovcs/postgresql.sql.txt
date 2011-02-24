@@ -616,8 +616,8 @@ BEGIN
        -- RAISE DEBUG '  ACE %', rr.ace;
        IF (rr.ace = ANY(r.users)) THEN
          -- GRANTED
-         INSERT INTO aclr_user_map SELECT * FROM (SELECT r.user_id, NEW.id) AS input
-            WHERE NOT EXISTS (SELECT 1 FROM aclr_user_map AS u WHERE u.user_id=r.user_id AND u.acl_id = NEW.id);
+         INSERT INTO aclr_user_map SELECT * FROM (SELECT r.user_id, NEW.acl_id) AS input
+            WHERE NOT EXISTS (SELECT 1 FROM aclr_user_map AS u WHERE u.user_id=r.user_id AND u.acl_id = NEW.acl_id);
          CONTINUE user_loop;
        ELSEIF (rr.ace = ANY(users_blacklist)) THEN
          -- RAISE DEBUG '  DENY';

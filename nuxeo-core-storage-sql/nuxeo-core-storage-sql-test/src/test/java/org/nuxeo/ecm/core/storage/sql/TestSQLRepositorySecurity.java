@@ -13,6 +13,7 @@
  *
  * Contributors:
  *     Florent Guillaume
+ *     Benoit Delbosc
  */
 
 package org.nuxeo.ecm.core.storage.sql;
@@ -535,8 +536,28 @@ public class TestSQLRepositorySecurity extends SQLRepositoryTestCase {
             }
             assertEquals("Expecting " + docNames + " got " + names,
                     browsePermissions.length, list.size());
+
+            // Add a new folder to update the read acls
+            DocumentModel folder = new DocumentModelImpl(
+                    root.getPathAsString(), "new-folder", "Folder");
+            folder = session.createDocument(folder);
+            ACP acp = folder.getACP();
+            assertNotNull(acp); // the acp inherited from root is returned
+            acp = new ACPImpl();
+            ACL acl = new ACLImpl();
+            acl.add(new ACE("joe", browsePermissions[0], true));
+            acl.add(new ACE("bob", browsePermissions[0], true));
+            acp.addACL(acl);
+            folder.setACP(acp, true);
+            session.save();
+
+            list = joeSession.query("SELECT * FROM Folder");
+            assertEquals(browsePermissions.length + 1, list.size());
+
         } finally {
             closeSession(joeSession);
         }
+
+
     }
 }
