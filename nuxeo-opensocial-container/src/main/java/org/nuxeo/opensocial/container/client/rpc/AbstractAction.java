@@ -32,13 +32,11 @@ public abstract class AbstractAction<T extends Result> implements Action<T> {
 
     protected String documentContextId;
 
-    protected String locale;
 
     public AbstractAction(ContainerContext containerContext) {
         this.repositoryName = containerContext.getRepositoryName();
         this.spaceId = containerContext.getSpaceId();
         this.documentContextId = containerContext.getDocumentContextId();
-        this.locale = containerContext.getLocale();
     }
 
     protected AbstractAction() {
@@ -54,10 +52,6 @@ public abstract class AbstractAction<T extends Result> implements Action<T> {
 
     public String getDocumentContextId() {
         return documentContextId;
-    }
-
-    public String getLocale() {
-        return locale;
     }
 
 }

@@ -330,8 +330,7 @@ public class AppModel implements HasPermissionsMapper {
         ContainerContext tempContainerContext = new ContainerContext(
                 ContainerConfiguration.getSpaceId(),
                 ContainerConfiguration.getRepositoryName(),
-                ContainerConfiguration.getDocumentContextId(),
-                ContainerConfiguration.getUserLanguage());
+                ContainerConfiguration.getDocumentContextId());
         dispatcher.execute(new InitApplication(tempContainerContext,
                 ContainerConfiguration.getSpaceProviderName(),
                 ContainerConfiguration.getSpaceName()),
@@ -342,8 +341,7 @@ public class AppModel implements HasPermissionsMapper {
                         containerContext = new ContainerContext(
                                 result.getSpaceId(),
                                 ContainerConfiguration.getRepositoryName(),
-                                ContainerConfiguration.getDocumentContextId(),
-                                ContainerConfiguration.getUserLanguage());
+                                ContainerConfiguration.getDocumentContextId());
                         setPermissions(result.getPermissions());
                         setLayout(result.getLayout());
                         eventBus.fireEvent(new LayoutLoadedEvent());

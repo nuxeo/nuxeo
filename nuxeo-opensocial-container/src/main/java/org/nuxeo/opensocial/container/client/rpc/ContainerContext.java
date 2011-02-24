@@ -31,17 +31,14 @@ public class ContainerContext implements Serializable {
 
     protected String documentContextId;
 
-    protected String locale;
-
     private ContainerContext() {
     }
 
     public ContainerContext(String spaceId, String repositoryName,
-            String documentContextId, String locale) {
+            String documentContextId) {
         this.spaceId = spaceId;
         this.repositoryName = repositoryName;
         this.documentContextId = documentContextId;
-        this.locale = locale;
     }
 
     public String getSpaceId() {
@@ -54,10 +51,6 @@ public class ContainerContext implements Serializable {
 
     public String getDocumentContextId() {
         return documentContextId;
-    }
-
-    public String getLocale() {
-        return locale;
     }
 
 }

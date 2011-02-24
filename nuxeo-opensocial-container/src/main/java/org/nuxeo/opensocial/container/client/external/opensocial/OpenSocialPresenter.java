@@ -99,14 +99,13 @@ public class OpenSocialPresenter extends
 
     // Make this method static in order to be easily tested !
     public static String changeParam(String url, String name, String value) {
-        String temp = new String(url);
 
-        String paramsString = temp.substring(temp.indexOf("?"));
+        String paramsString = url.substring(url.indexOf("?"));
 
         String[] params = paramsString.split("&");
         for (String param : params) {
             if (param.startsWith(name)) {
-                return temp.replace(param, name + "=" + value);
+                return url.replace(param, name + "=" + value);
             }
         }
 
