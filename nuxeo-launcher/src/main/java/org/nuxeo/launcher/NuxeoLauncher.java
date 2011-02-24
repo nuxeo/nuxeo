@@ -443,10 +443,21 @@ public abstract class NuxeoLauncher {
         }
     }
 
-    protected abstract void checkTomcatXMLConfFiles();
+    /**
+     * Ensure the wizard won't be started and nuxeo is ready for use
+     */
+    protected abstract void cleanupPostWizard();
 
+    /**
+     * Ensure the server will start only wizard application, not Nuxeo
+     */
     protected abstract void prepareWizardStart();
 
+    /**
+     * Check if wizard must and can be ran
+     *
+     * @return true if wizard must (and can) be ran before nuxeo
+     */
     public abstract boolean isWizardRequired();
 
     /**
@@ -606,7 +617,7 @@ public abstract class NuxeoLauncher {
             if (isWizardRequired()) {
                 prepareWizardStart();
             } else {
-                checkTomcatXMLConfFiles();
+                cleanupPostWizard();
             }
 
             start(logProcessOutput);

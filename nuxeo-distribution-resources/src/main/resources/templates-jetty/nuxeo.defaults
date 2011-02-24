@@ -51,4 +51,4 @@ opensocial.proxy.proxyPort=
 opensocial.proxy.user=
 opensocial.proxy.password=
 
-nuxeo.templates.parsing.extensions=xml,properties
+nuxeo.templates.parsing.extensions=xml,properties,nx

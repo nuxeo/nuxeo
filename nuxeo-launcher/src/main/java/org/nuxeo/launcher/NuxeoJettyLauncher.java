@@ -86,7 +86,7 @@ public class NuxeoJettyLauncher extends NuxeoLauncher {
     }
 
     @Override
-    protected void checkTomcatXMLConfFiles() {
+    protected void cleanupPostWizard() {
         // Nothing to do
     }
 }
