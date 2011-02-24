@@ -19,9 +19,8 @@ public abstract class AbstractWebContentDAO<T extends WebContentData>
     @SuppressWarnings("unchecked")
     public T create(T data, String parentId, CoreSession session)
             throws Exception {
-        WebContentSaverService service;
         // TODO Remove call to the service !
-        service = Framework.getService(WebContentSaverService.class);
+        WebContentSaverService service = Framework.getService(WebContentSaverService.class);
 
         String unitPath = session.getDocument(new IdRef(parentId)).getPathAsString();
         // TODO data.getName() + date

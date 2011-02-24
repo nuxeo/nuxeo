@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -99,8 +98,7 @@ public class YUILayoutAdapterImpl implements YUILayoutAdapter {
 
     public YUIUnit setHeader(YUIUnit header) throws ClientException {
         if (header != null) {
-            DocumentModel headerDoc;
-            headerDoc = session().createDocumentModel(doc.getPathAsString(),
+            DocumentModel headerDoc = session().createDocumentModel(doc.getPathAsString(),
                     HEADER, UNIT_DOCUMENT_TYPE);
             headerDoc = session().createDocument(headerDoc);
             headerDoc = session().saveDocument(headerDoc);
@@ -119,8 +117,7 @@ public class YUILayoutAdapterImpl implements YUILayoutAdapter {
 
     public YUIUnit setFooter(YUIUnit footer) throws ClientException {
         if (footer != null) {
-            DocumentModel footerDoc;
-            footerDoc = session().createDocumentModel(doc.getPathAsString(),
+            DocumentModel footerDoc = session().createDocumentModel(doc.getPathAsString(),
                     FOOTER, UNIT_DOCUMENT_TYPE);
             footerDoc = session().createDocument(footerDoc);
             footerDoc = session().saveDocument(footerDoc);
@@ -152,10 +149,9 @@ public class YUILayoutAdapterImpl implements YUILayoutAdapter {
         int unitIndex = 0;
 
         for (YUIComponent unitComponent : ((YUIComponent) zone).getComponents()) {
-            DocumentModel unitDoc;
-
-            unitDoc = session().createDocumentModel(doc.getPathAsString(),
-                    IdUtils.generateStringId(), UNIT_DOCUMENT_TYPE);
+            String unitName = "unit" + unitIndex;
+            DocumentModel unitDoc = session().createDocumentModel(doc.getPathAsString(),
+                    unitName, UNIT_DOCUMENT_TYPE);
 
             unitDoc.setPropertyValue(YUI_UNIT_POSITION_PROPERTY, unitIndex);
             unitDoc.setPropertyValue(YUI_UNIT_ZONE_INDEX_PROPERTY, zoneIndex);
@@ -197,8 +193,9 @@ public class YUILayoutAdapterImpl implements YUILayoutAdapter {
                 YUIUnitImpl unit = new YUIUnitImpl();
                 zone.addComponent(unit);
 
+                String unitName = "unit" + i;
                 DocumentModel unitDoc = session().createDocumentModel(
-                        doc.getPathAsString(), IdUtils.generateStringId(),
+                        doc.getPathAsString(), unitName,
                         UNIT_DOCUMENT_TYPE);
 
                 unitDoc.setPropertyValue(YUI_UNIT_POSITION_PROPERTY, i);
