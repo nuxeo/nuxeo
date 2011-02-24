@@ -16,8 +16,6 @@ public abstract class AbstractWebContentData implements Serializable,
 
     private static final long serialVersionUID = 1L;
 
-    public static final String WC_HEIGHT_PREFERENCE = "WC_HEIGHT";
-
     public static final String WC_TITLE_PREFERENCE = "WC_TITLE";
 
     private String id;
@@ -29,8 +27,6 @@ public abstract class AbstractWebContentData implements Serializable,
     private String unitId;
 
     private long position;
-
-    private long height;
 
     private String owner;
 
@@ -105,14 +101,6 @@ public abstract class AbstractWebContentData implements Serializable,
         this.position = position;
     }
 
-    public long getHeight() {
-        return height;
-    }
-
-    public void setHeight(long height) {
-        this.height = height;
-    }
-
     public int compareTo(AbstractWebContentData webContent) {
         long pos1 = webContent.getPosition();
         long pos2 = this.getPosition();
@@ -149,10 +137,6 @@ public abstract class AbstractWebContentData implements Serializable,
     }
 
     public boolean initPrefs(Map<String, String> params) {
-        if (params.get(WC_HEIGHT_PREFERENCE) != null) {
-            setTitle(params.get(WC_HEIGHT_PREFERENCE));
-        }
-
         if (params.get(WC_TITLE_PREFERENCE) != null) {
             setTitle(params.get(WC_TITLE_PREFERENCE));
         }

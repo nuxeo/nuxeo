@@ -1,6 +1,5 @@
 package org.nuxeo.opensocial.container.server.webcontent.abs;
 
-import static org.nuxeo.ecm.spaces.api.Constants.WEB_CONTENT_HEIGHT_PROPERTY;
 import static org.nuxeo.ecm.spaces.api.Constants.WEB_CONTENT_IS_COLLAPSED_PROPERTY;
 import static org.nuxeo.ecm.spaces.api.Constants.WEB_CONTENT_IS_IN_A_PORTLET_PROPERTY;
 import static org.nuxeo.ecm.spaces.api.Constants.WEB_CONTENT_POSITION_PROPERTY;
@@ -32,11 +31,11 @@ public abstract class AbstractWebContentAdapter<T extends WebContentData>
         this.doc = doc;
     }
 
-         public void setPosition(long position) throws ClientException {
+    public void setPosition(long position) throws ClientException {
         doc.setPropertyValue(WEB_CONTENT_POSITION_PROPERTY, position);
-     }
+    }
 
-     public long getPosition() throws ClientException {
+    public long getPosition() throws ClientException {
         return (Long) doc.getPropertyValue(WEB_CONTENT_POSITION_PROPERTY);
     }
 
@@ -46,14 +45,6 @@ public abstract class AbstractWebContentAdapter<T extends WebContentData>
 
     public void setTitle(String title) throws ClientException {
         doc.setPropertyValue(WEB_CONTENT_TITLE_PROPERTY, title);
-    }
-
-    public long getHeight() throws ClientException {
-        return (Long) doc.getPropertyValue(WEB_CONTENT_HEIGHT_PROPERTY);
-    }
-
-    public void setHeight(long height) throws ClientException {
-        doc.setPropertyValue(WEB_CONTENT_HEIGHT_PROPERTY, height);
     }
 
     public boolean isInAPortlet() throws ClientException {
@@ -70,11 +61,10 @@ public abstract class AbstractWebContentAdapter<T extends WebContentData>
 
     public void setCollapsed(boolean isCollapsed) throws ClientException {
         doc.setPropertyValue(WEB_CONTENT_IS_COLLAPSED_PROPERTY, isCollapsed);
-     }
+    }
 
     protected void setMetadataFrom(WebContentData data) throws ClientException {
-                setTitle(data.getTitle());
-        setHeight(data.getHeight());
+        setTitle(data.getTitle());
         setPosition(data.getPosition());
         setInAPortlet(data.isInAPorlet());
         setCollapsed(data.isCollapsed());
@@ -100,7 +90,6 @@ public abstract class AbstractWebContentAdapter<T extends WebContentData>
         data.setName(doc.getName());
         data.setTitle(getTitle());
         data.setUnitId(doc.getCoreSession().getDocument(doc.getParentRef()).getId());
-        data.setHeight(getHeight());
         data.setPosition(getPosition());
         data.setIsInAPortlet(isInAPortlet());
         data.setIsCollapsed(isCollapsed());

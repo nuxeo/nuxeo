@@ -52,7 +52,6 @@ public class WebContentTest {
                 "blue");
 
         data.setUnitId(unit.getId());
-        data.setHeight(200);
         data.setPosition(2);
         data.setTitle("title");
         data.setName("test");
@@ -80,7 +79,6 @@ public class WebContentTest {
         assertEquals("title", dataToTest.getTitle());
         assertNotNull(dataToTest.getUnitId());
         assertEquals(2, dataToTest.getPosition());
-        assertEquals(200, dataToTest.getHeight());
         assertEquals(true, dataToTest.isInAPorlet());
         assertEquals(true, dataToTest.isCollapsed());
         assertEquals(1, dataToTest.getPreferences().size());

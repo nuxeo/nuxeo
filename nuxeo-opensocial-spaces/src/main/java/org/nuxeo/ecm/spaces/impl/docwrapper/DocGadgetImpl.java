@@ -2,7 +2,6 @@ package org.nuxeo.ecm.spaces.impl.docwrapper;
 
 import static org.nuxeo.ecm.spaces.api.Constants.WC_OPEN_SOCIAL_GADGET_DEF_URL_PROPERTY;
 import static org.nuxeo.ecm.spaces.api.Constants.WC_OPEN_SOCIAL_GADGET_NAME;
-import static org.nuxeo.ecm.spaces.api.Constants.WEB_CONTENT_HEIGHT_PROPERTY;
 import static org.nuxeo.ecm.spaces.api.Constants.WEB_CONTENT_IS_COLLAPSED_PROPERTY;
 import static org.nuxeo.ecm.spaces.api.Constants.WEB_CONTENT_POSITION_PROPERTY;
 import static org.nuxeo.ecm.spaces.api.Constants.WEB_CONTENT_PREFERENCES_PROPERTY;
@@ -164,12 +163,12 @@ public class DocGadgetImpl extends AbstractGadget {
     }
 
     public int getHeight() throws ClientException {
-        Long result = (Long) doc.getPropertyValue(WEB_CONTENT_HEIGHT_PROPERTY);
-        return (result == null) ? 0 : result.intValue();
+        //TODO
+        return 0;
     }
 
     public void setHeight(int height) throws ClientException {
-        doc.setPropertyValue(WEB_CONTENT_HEIGHT_PROPERTY, height);
+        //TODO
     }
 
     public void copyFrom(Gadget gadget) throws ClientException {

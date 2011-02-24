@@ -105,9 +105,6 @@ public class UrlBuilder {
         sb.append(URL_KEY + "=" + gadgetDef + getUserPrefs(data.getUserPrefs())
                 + "&");
 
-        // up_=150&
-        sb.append("up_" + data.getHeight() + "&");
-
         // turn on debugging for the JS (avoid compression)
         if (SHINDIG_DEBUG) {
             sb.append("debug=1" + "&");

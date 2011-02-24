@@ -5,10 +5,9 @@
 
   <xs:element name="title" type="xs:string" default=""></xs:element>
   <xs:element name="position" type="xs:int" default="0"></xs:element>
-  <xs:element name="height" type="xs:int" default=""></xs:element>
   <xs:element name="isinaportlet" type="xs:boolean" default="true"></xs:element>
   <xs:element name="iscollapsed" type="xs:boolean" default="false"></xs:element>
-  
+
   <xs:element name="preferences" type="nxs:properties" />
 
   <xs:complexType name="properties">

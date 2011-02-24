@@ -33,8 +33,6 @@ public class Constants {
 
     public static final String WEB_CONTENT_TITLE_PROPERTY = "webcontent:title";
 
-    public static final String WEB_CONTENT_HEIGHT_PROPERTY = "webcontent:height";
-
     public static final String WEB_CONTENT_POSITION_PROPERTY = "webcontent:position";
 
     public static final String WEB_CONTENT_IS_COLLAPSED_PROPERTY = "webcontent:iscollapsed";

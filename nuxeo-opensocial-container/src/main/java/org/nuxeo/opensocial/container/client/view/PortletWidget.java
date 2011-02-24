@@ -93,12 +93,6 @@ public class PortletWidget extends Composite implements
                 HasVerticalAlignment.ALIGN_TOP);
     }
 
-    public void setHeight(long height) {
-        if (height != 0) {
-            contentPanel.setHeight(height + "px");
-        }
-    }
-
     public String getId() {
         return this.getElement().getAttribute("id");
     }

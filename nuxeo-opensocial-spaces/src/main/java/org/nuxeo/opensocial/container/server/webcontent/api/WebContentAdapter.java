@@ -20,10 +20,6 @@ public interface WebContentAdapter<T extends WebContentData> {
 
     public void setTitle(String title) throws ClientException;
 
-    public long getHeight() throws ClientException;
-
-    public void setHeight(long height) throws ClientException;
-
     public long getPosition() throws ClientException;
 
     public void setPosition(long position) throws ClientException;

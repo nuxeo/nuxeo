@@ -36,10 +36,6 @@ public interface WebContentData extends Serializable {
 
     public void setPosition(long position);
 
-    public long getHeight();
-
-    public void setHeight(long height);
-
     public void addPreference(String pref, String value);
 
     public void setPreferences(Map<String, String> preferences);

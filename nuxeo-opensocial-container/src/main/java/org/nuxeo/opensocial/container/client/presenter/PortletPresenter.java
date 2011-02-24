@@ -42,8 +42,6 @@ public class PortletPresenter extends WidgetPresenter<PortletPresenter.Display> 
 
         String getParentId();
 
-        void setHeight(long height);
-
         void setTitle(String title);
 
         void addTool(Widget widget);
@@ -91,8 +89,6 @@ public class PortletPresenter extends WidgetPresenter<PortletPresenter.Display> 
                 DefaultPortletPreference.WC_TITLE_COLOR.toString()));
 
         display.setId(data.getId());
-
-        display.setHeight(data.getHeight());
 
         if (data.isCollapsed()) {
             display.hideContent();
