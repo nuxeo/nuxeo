@@ -64,6 +64,9 @@ public class GenericPageProviderDescriptor implements PageProviderDefinition {
     @XNode("pageSizeBinding")
     String pageSizeBinding;
 
+    @XNode("maxPageSize")
+    Long maxPageSize;
+
     @XNode("sortable")
     boolean sortable = true;
 
@@ -152,6 +155,11 @@ public class GenericPageProviderDescriptor implements PageProviderDefinition {
 
     public String getName() {
         return name;
+    }
+
+    @Override
+    public Long getMaxPageSize() {
+        return maxPageSize;
     }
 
 }

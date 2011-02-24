@@ -58,6 +58,9 @@ public class CoreQueryPageProviderDescriptor implements PageProviderDefinition {
     @XNode("pageSizeBinding")
     String pageSizeBinding;
 
+    @XNode("maxPageSize")
+    Long maxPageSize;
+
     @XNode("sortable")
     boolean sortable = true;
 
@@ -142,6 +145,11 @@ public class CoreQueryPageProviderDescriptor implements PageProviderDefinition {
 
     public String getName() {
         return name;
+    }
+
+    @Override
+    public Long getMaxPageSize() {
+        return maxPageSize;
     }
 
 }
