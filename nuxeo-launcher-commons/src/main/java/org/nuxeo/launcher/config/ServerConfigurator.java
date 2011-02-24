@@ -79,7 +79,7 @@ public abstract class ServerConfigurator {
         templateParser.setTrim(true);
         templateParser.setParsingExtensions(config.getProperty(
                 ConfigurationGenerator.PARAM_TEMPLATES_PARSING_EXTENSIONS,
-                "xml,properties"));
+                "xml,properties,nx"));
 
         // add included templates directories
         for (File includedTemplate : generator.getIncludedTemplates()) {
