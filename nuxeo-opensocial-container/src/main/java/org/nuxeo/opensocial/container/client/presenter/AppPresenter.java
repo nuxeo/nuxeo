@@ -49,7 +49,7 @@ public class AppPresenter extends WidgetPresenter<AppPresenter.Display> {
 
     public static ContainerConstants containerConstants = GWT.create(ContainerConstants.class);
 
-    public static ImagesBundle AppImages = GWT.create(ImagesBundle.class);
+    public static ImagesBundle images = GWT.create(ImagesBundle.class);
 
     public interface Display extends WidgetDisplay {
         void addContent(WidgetDisplay display);

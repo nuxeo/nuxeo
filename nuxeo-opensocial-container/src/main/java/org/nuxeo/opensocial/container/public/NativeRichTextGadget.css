@@ -1,8 +1,4 @@
-.NativeRichTextGadget.center {
-
-}
-
-.NativeRichTextGadget.center img {
+.NativeRichTextGadget.center .RichTextImage {
 	width: 100%;
 }
 
@@ -10,11 +6,7 @@
 	width: 100%;
 }
 
-.NativeRichTextGadget.left {
-
-}
-
-.NativeRichTextGadget.left img {
+.NativeRichTextGadget.left .RichTextImage {
 	float: left;
 	width: 50%;
 }
@@ -24,16 +16,20 @@
 	width: 50%;
 }
 
-.NativeRichTextGadget.right {
-
-}
-
-.NativeRichTextGadget.right img {
+.NativeRichTextGadget.right .RichTextImage {
 	float: right;
 	width: 50%;
 }
 
 .NativeRichTextGadget.right .gadget-content {
 	float: left;
+	width: 50%;
+}
+
+.NativeRichTextGadget .deletePicture {
+	cursor: pointer;
+}
+
+.NativeRichTextGadget .previewPicture {
 	width: 50%;
 }

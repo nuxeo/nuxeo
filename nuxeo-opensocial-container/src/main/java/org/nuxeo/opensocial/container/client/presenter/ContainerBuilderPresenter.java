@@ -4,6 +4,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.customware.gwt.presenter.client.EventBus;
+import net.customware.gwt.presenter.client.place.Place;
+import net.customware.gwt.presenter.client.place.PlaceRequest;
+import net.customware.gwt.presenter.client.widget.WidgetDisplay;
+import net.customware.gwt.presenter.client.widget.WidgetPresenter;
+
 import org.nuxeo.opensocial.container.client.ContainerConstants;
 import org.nuxeo.opensocial.container.client.api.adapter.html.YUILayoutHtmlAdapter;
 import org.nuxeo.opensocial.container.client.event.priv.app.SendMessageEvent;
@@ -32,12 +38,6 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.inject.Inject;
-
-import net.customware.gwt.presenter.client.EventBus;
-import net.customware.gwt.presenter.client.place.Place;
-import net.customware.gwt.presenter.client.place.PlaceRequest;
-import net.customware.gwt.presenter.client.widget.WidgetDisplay;
-import net.customware.gwt.presenter.client.widget.WidgetPresenter;
 
 /**
  * @author Stéphane Fourrier

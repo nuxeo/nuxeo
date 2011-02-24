@@ -31,7 +31,7 @@ class FolderWidgetImpl extends Composite implements FolderWidget {
         layout.setStyleName("folder");
         this.id = id;
 
-        Image folder = new Image(AppPresenter.AppImages.folder());
+        Image folder = new Image(AppPresenter.images.folder());
         layout.add(folder);
 
         Label title = new Label(name);

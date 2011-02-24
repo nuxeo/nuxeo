@@ -9,6 +9,7 @@ import org.nuxeo.opensocial.container.client.gadgets.facets.IsClosable;
 import org.nuxeo.opensocial.container.client.gadgets.facets.IsCollapsable;
 import org.nuxeo.opensocial.container.client.gadgets.facets.IsConfigurable;
 import org.nuxeo.opensocial.container.client.gadgets.facets.IsMaximizable;
+import org.nuxeo.opensocial.container.client.presenter.AppPresenter;
 import org.nuxeo.opensocial.container.client.ui.CustomListBox;
 import org.nuxeo.opensocial.container.client.ui.api.HasMultipleValue;
 import org.nuxeo.opensocial.wysiwyg.client.RichTextToolbar;
@@ -69,6 +70,10 @@ public class HTMLGadget extends AbstractGadget implements HTMLPresenter.Display 
 
     private CustomListBox templateListBox;
 
+    private Image previewImage;
+
+    private Image deletePictureImage;
+
     public HTMLGadget() {
         layout = new FlowPanel();
         layout.setStyleName(RICHTEXT_GADGET_CLASSNAME);
@@ -94,6 +99,7 @@ public class HTMLGadget extends AbstractGadget implements HTMLPresenter.Display 
         layout.add(htmlTitle);
 
         htmlPicture = new Image();
+        htmlPicture.setStyleName("RichTextImage");
         layout.add(htmlPicture);
 
         htmlContent = new HTML();
@@ -102,6 +108,9 @@ public class HTMLGadget extends AbstractGadget implements HTMLPresenter.Display 
     }
 
     public void enableModifPanel(String baseUrl) {
+
+        int rowNumber = 0;
+
         modifyButton = new Button(constants.modify());
         modifyButton.setStyleName("green");
         layout.add(modifyButton);
@@ -114,51 +123,71 @@ public class HTMLGadget extends AbstractGadget implements HTMLPresenter.Display 
         Label title = new Label(constants.title());
         titleTextBox = new TextBox();
 
-        modifPanel.setWidget(0, 0, title);
-        modifPanel.setWidget(0, 1, titleTextBox);
-        modifPanel.getRowFormatter().setStyleName(0, "gadget-form-line");
+        modifPanel.setWidget(rowNumber, 0, title);
+        modifPanel.setWidget(rowNumber, 1, titleTextBox);
+        modifPanel.getRowFormatter()
+                .setStyleName(rowNumber, "gadget-form-line");
+
+        rowNumber++;
 
         initRichTextEditor();
 
-        modifPanel.setWidget(1, 0, richTextEditorPanel);
-        modifPanel.getFlexCellFormatter().setColSpan(1, 0, 0);
+
+        modifPanel.setWidget(rowNumber, 0, richTextEditorPanel);
+        modifPanel.getFlexCellFormatter()
+                .setColSpan(rowNumber, 0, 0);
+
+        rowNumber++;
+
 
         Label link = new Label(constants.link());
         linkTextBox = new TextBox();
 
-        modifPanel.setWidget(2, 0, link);
-        modifPanel.setWidget(2, 1, linkTextBox);
-        modifPanel.getRowFormatter().setStyleName(2, "gadget-form-line");
+        modifPanel.setWidget(rowNumber, 0, link);
+        modifPanel.setWidget(rowNumber, 1, linkTextBox);
+        modifPanel.getRowFormatter()
+                .setStyleName(rowNumber, "gadget-form-line");
+        rowNumber++;
 
         Label legend = new Label(constants.legend());
         legendTextBox = new TextBox();
 
-        modifPanel.setWidget(3, 0, legend);
-        modifPanel.setWidget(3, 1, legendTextBox);
-        modifPanel.getRowFormatter().setStyleName(3, "gadget-form-line");
+        modifPanel.setWidget(rowNumber, 0, legend);
+        modifPanel.setWidget(rowNumber, 1, legendTextBox);
+        modifPanel.getRowFormatter()
+                .setStyleName(rowNumber, "gadget-form-line");
 
-        Label source = new Label(constants.source());
-        sourceUpload = new SimpleUpload(baseUrl + "gwtContainer/upload");
-
-        modifPanel.setWidget(4, 0, source);
-        modifPanel.setWidget(4, 1, sourceUpload);
-        modifPanel.getRowFormatter().setStyleName(4, "gadget-form-line");
+        rowNumber++;
 
         Label template = new Label(constants.template());
         templateListBox = new CustomListBox();
 
-        modifPanel.setWidget(5, 0, template);
-        modifPanel.setWidget(5, 1, templateListBox);
-        modifPanel.getRowFormatter().setStyleName(5, "gadget-form-line");
+        modifPanel.setWidget(rowNumber, 0, template);
+        modifPanel.setWidget(rowNumber, 1, templateListBox);
+        modifPanel.getRowFormatter()
+                .setStyleName(rowNumber, "gadget-form-line");
+        rowNumber++;
+
+        Label source = new Label(constants.source());
+        sourceUpload = new SimpleUpload(baseUrl + "lmContainer/upload");
+
+        modifPanel.setWidget(rowNumber, 0, source);
+        modifPanel.setWidget(rowNumber, 1, sourceUpload);
+        modifPanel.getRowFormatter()
+                .setStyleName(rowNumber, "gadget-form-line");
+        rowNumber++;
 
         cancelButton = new Button(constants.cancel());
         cancelButton.setStyleName("red");
         saveButton = new Button(constants.save());
         saveButton.setStyleName("green");
 
-        modifPanel.setWidget(6, 0, cancelButton);
-        modifPanel.setWidget(6, 1, saveButton);
-        modifPanel.getRowFormatter().setStyleName(6, "gadget-form-line");
+        modifPanel.setWidget(rowNumber, 0, cancelButton);
+        modifPanel.setWidget(rowNumber, 1, saveButton);
+        modifPanel.getRowFormatter()
+                .setStyleName(rowNumber, "gadget-form-line");
+
+        rowNumber++;
 
         layout.add(modifPanel);
 
@@ -191,6 +220,28 @@ public class HTMLGadget extends AbstractGadget implements HTMLPresenter.Display 
 
     public String getHtmlFromView() {
         return htmlContent.getHTML();
+    }
+
+    public void setPicturePreview(String pictureUrl) {
+        deletePictureImage = new Image(AppPresenter.images.closeIcon());
+        deletePictureImage.setStyleName("deletePicture");
+        previewImage = new Image();
+        previewImage.setStyleName("previewPicture");
+
+        modifPanel.setWidget(6, 0, deletePictureImage);
+        previewImage.setUrl(pictureUrl);
+        modifPanel.setWidget(6, 1, previewImage);
+        modifPanel.getRowFormatter()
+                .setStyleName(6, "gadget-form-line");
+    }
+
+    public Image getPreviewImage() {
+        return previewImage;
+    }
+
+    public void removePicturePreview() {
+        deletePictureImage.removeFromParent();
+        previewImage.removeFromParent();
     }
 
     public void setHtmlContent(String html) {
@@ -265,5 +316,9 @@ public class HTMLGadget extends AbstractGadget implements HTMLPresenter.Display 
     }
 
     public void stopProcessing() {
+    }
+
+    public HasClickHandlers getDeletePictureImage() {
+        return deletePictureImage;
     }
 }

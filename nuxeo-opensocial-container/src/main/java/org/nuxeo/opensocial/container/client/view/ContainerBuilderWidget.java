@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.nuxeo.opensocial.container.client.ContainerConstants;
-import org.nuxeo.opensocial.container.client.images.ImageBundle;
 import org.nuxeo.opensocial.container.client.presenter.AppPresenter;
 import org.nuxeo.opensocial.container.client.presenter.ContainerBuilderPresenter;
 import org.nuxeo.opensocial.container.client.ui.CustomListBox;
@@ -232,8 +231,7 @@ public class ContainerBuilderWidget extends DialogBox implements
         if (cell != null && cell.getRowIndex() != 0) {
             properties.put("cellIndex", cell.getRowIndex());
             properties.put("rowIndex", cell.getCellIndex());
-            properties.put(
-                    "template",
+            properties.put("template",
                     (((CustomListBox) listOfZoneDesigner.getWidget(
                             cell.getRowIndex(), 1)).getValue()));
         }
@@ -274,7 +272,7 @@ public class ContainerBuilderWidget extends DialogBox implements
     }
 
     public int addZone() {
-        Image deleteZone = new Image(ImageBundle.INSTANCE.closeIcon().getURL());
+        Image deleteZone = new Image(AppPresenter.images.closeIcon().getURL());
         int rowIndex = listOfZoneDesigner.getRowCount();
 
         deleteZone.getElement().getStyle().setCursor(Cursor.POINTER);

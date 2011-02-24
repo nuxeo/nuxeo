@@ -5,5 +5,11 @@ import com.google.gwt.resources.client.ImageResource;
 
 public interface ImagesBundle extends ClientBundle {
     @Source("folder_icon.png")
-    ImageResource folder();
+    public ImageResource folder();
+
+    @Source("close-icon.png")
+    public ImageResource closeIcon();
+
+    @Source("color-none.png")
+    public ImageResource colorNone();
 }

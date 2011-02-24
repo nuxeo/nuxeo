@@ -70,9 +70,17 @@ public class HTMLPresenter extends WidgetPresenter<HTMLPresenter.Display> {
 
         Image getHtmlPicture();
 
+        Image getPreviewImage();
+
         HasMultipleValue<String> getTemplateListBox();
 
         void setTemplate(String template);
+
+        void setPicturePreview(String buildFileUrl);
+
+        HasClickHandlers getDeletePictureImage();
+
+        void removePicturePreview();
     }
 
     public static final Place PLACE = null;
@@ -101,7 +109,8 @@ public class HTMLPresenter extends WidgetPresenter<HTMLPresenter.Display> {
     }
 
     private void setHtmlTemplate() {
-        String template = model.getData().getTemplate();
+        String template = model.getData()
+                .getTemplate();
         if (template == null) {
             display.setTemplate(HTMLData.CENTER_TEMPLATE);
         } else {
@@ -118,21 +127,27 @@ public class HTMLPresenter extends WidgetPresenter<HTMLPresenter.Display> {
     }
 
     private void setHtmlContent() {
-        display.setHtmlContent(model.getData().getHtml());
+        display.setHtmlContent(model.getData()
+                .getHtml());
     }
 
     private void setHtmlTitle() {
-        display.getHtmlTitle().setText(model.getData().getHtmlTitle());
+        display.getHtmlTitle()
+                .setText(model.getData()
+                        .getHtmlTitle());
     }
 
     private void setHtmlPictureUrl() {
-        display.getHtmlPicture().setUrl(
-                FileUtils.buildFileUrl(model.getData().getId()));
+        display.getHtmlPicture()
+                .setUrl(FileUtils.buildFileUrl(model.getData()
+                        .getId()));
     }
 
     private void setHtmlPictureLegend() {
-        display.getHtmlPicture().getElement().setTitle(
-                model.getData().getHtmlPictureLegend());
+        display.getHtmlPicture()
+                .getElement()
+                .setTitle(model.getData()
+                        .getHtmlPictureLegend());
     }
 
     @Override
@@ -152,30 +167,49 @@ public class HTMLPresenter extends WidgetPresenter<HTMLPresenter.Display> {
     }
 
     private void registerImageClick() {
-        display.getHtmlPicture().addClickHandler(new ClickHandler() {
-            public void onClick(ClickEvent event) {
-                String url = model.getData().getHtmlPictureLink();
-                if (url != null && !url.isEmpty()) {
-                    Window.open(url, "_blank", null);
-                }
-            }
-        });
+        display.getHtmlPicture()
+                .addClickHandler(new ClickHandler() {
+                    public void onClick(ClickEvent event) {
+                        String url = model.getData()
+                                .getHtmlPictureLink();
+                        if (url != null && !url.isEmpty()) {
+                            Window.open(url, "_blank", null);
+                        }
+                    }
+                });
     }
 
     private void registerModifyEvent() {
-        registerHandler(display.getModifyButton().addClickHandler(
-                new ClickHandler() {
+        registerHandler(display.getModifyButton()
+                .addClickHandler(new ClickHandler() {
                     public void onClick(ClickEvent event) {
-                        display.getTitleTextBox().setText(
-                                model.getData().getHtmlTitle());
-                        display.setHtmlEditor(model.getData().getHtml());
+                        display.getTitleTextBox()
+                                .setText(model.getData()
+                                        .getHtmlTitle());
+                        display.setHtmlEditor(model.getData()
+                                .getHtml());
 
-                        display.getLegendTextBox().setText(
-                                model.getData().getHtmlPictureLegend());
-                        display.getLinkTextBox().setText(
-                                model.getData().getHtmlPictureLink());
-                        display.getTemplateListBox().setValue(
-                                model.getData().getTemplate());
+                        display.getLegendTextBox()
+                                .setText(model.getData()
+                                        .getHtmlPictureLegend());
+                        display.getLinkTextBox()
+                                .setText(model.getData()
+                                        .getHtmlPictureLink());
+                        display.getTemplateListBox()
+                                .setValue(model.getData()
+                                        .getTemplate());
+
+                        if (model.getData()
+                                .hasPicture()) {
+                            display.setPicturePreview(FileUtils.buildFileUrl(model.getData()
+                                    .getId()));
+                            display.getDeletePictureImage()
+                                    .addClickHandler(new ClickHandler() {
+                                        public void onClick(ClickEvent event) {
+                                            display.removePicturePreview();
+                                        }
+                                    });
+                        }
 
                         display.switchToModifyPanel();
                     }
@@ -183,8 +217,8 @@ public class HTMLPresenter extends WidgetPresenter<HTMLPresenter.Display> {
     }
 
     private void registerCancelButtonEvent() {
-        registerHandler(display.getCancelButton().addClickHandler(
-                new ClickHandler() {
+        registerHandler(display.getCancelButton()
+                .addClickHandler(new ClickHandler() {
                     public void onClick(ClickEvent event) {
                         display.switchToMainPanel();
                     }
@@ -192,12 +226,13 @@ public class HTMLPresenter extends WidgetPresenter<HTMLPresenter.Display> {
     }
 
     private void registerSaveEvent() {
-        registerHandler(display.getSaveButton().addClickHandler(
-                new ClickHandler() {
+        registerHandler(display.getSaveButton()
+                .addClickHandler(new ClickHandler() {
                     public void onClick(ClickEvent event) {
                         HTMLData data = model.getData();
 
-                        List<FileRef> fileRefList = display.getUploadedFiles().getAddedFiles();
+                        List<FileRef> fileRefList = display.getUploadedFiles()
+                                .getAddedFiles();
                         List<String> files = new ArrayList<String>();
 
                         if (!fileRefList.isEmpty()) {
@@ -206,20 +241,33 @@ public class HTMLPresenter extends WidgetPresenter<HTMLPresenter.Display> {
                             for (FileRef ref : fileRefList) {
                                 files.add(ref.getId());
                             }
+
+                            display.getUploadedFiles()
+                                    .getAddedFiles()
+                                    .clear();
+                        } else {
+                            model.getData()
+                                    .setHasPicture(display.getPreviewImage()
+                                            .isAttached());
                         }
 
-                        data.setHtmlTitle(display.getTitleTextBox().getText());
+                        data.setHtmlTitle(display.getTitleTextBox()
+                                .getText());
                         data.setHtml(display.getHtmlFromEditor());
-                        data.setHtmlPictureLegend(display.getLegendTextBox().getText());
-                        String link = display.getLinkTextBox().getText();
+                        data.setHtmlPictureLegend(display.getLegendTextBox()
+                                .getText());
+                        String link = display.getLinkTextBox()
+                                .getText();
                         if (!link.isEmpty() && !link.startsWith(HTTP_PREFIX)) {
                             link = HTTP_PREFIX + link;
                         }
                         data.setHtmlPictureLink(link);
-                        data.setTemplate(display.getTemplateListBox().getValue());
+                        data.setTemplate(display.getTemplateListBox()
+                                .getValue());
 
                         eventBus.fireEvent(new UpdateWebContentEvent(
-                                model.getData().getId(), files));
+                                model.getData()
+                                        .getId(), files));
                     }
                 }));
     }
@@ -228,8 +276,9 @@ public class HTMLPresenter extends WidgetPresenter<HTMLPresenter.Display> {
         eventBus.addHandler(WebContentUpdatedEvent.TYPE,
                 new WebContentUpdatedEventHandler() {
                     public void onWebContentUpdated(WebContentUpdatedEvent event) {
-                        if (event.getWebContentId().equals(
-                                model.getData().getId())) {
+                        if (event.getWebContentId()
+                                .equals(model.getData()
+                                        .getId())) {
                             setHtmlTitle();
                             setHtmlContent();
                             setHtmlPictureUrl();

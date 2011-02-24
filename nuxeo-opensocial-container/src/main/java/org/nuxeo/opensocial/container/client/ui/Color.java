@@ -1,6 +1,6 @@
 package org.nuxeo.opensocial.container.client.ui;
 
-import org.nuxeo.opensocial.container.client.images.ImageBundle;
+import org.nuxeo.opensocial.container.client.presenter.AppPresenter;
 import org.nuxeo.opensocial.container.client.ui.api.HasColor;
 import org.nuxeo.opensocial.container.client.ui.enume.ColorsEnum;
 
@@ -31,7 +31,7 @@ public class Color extends Composite implements HasClickHandlers, HasColor {
     public Color(ColorsEnum color, boolean isSelected) {
         this.isSelected = isSelected;
         if (color.equals(ColorsEnum.NONE)) {
-            widget = new Image(ImageBundle.INSTANCE.colorNone().getURL());
+            widget = new Image(AppPresenter.images.colorNone().getURL());
         } else {
             widget = new SimplePanel();
             widget.getElement().getStyle().setBackgroundColor("#" + color.getCssColor());

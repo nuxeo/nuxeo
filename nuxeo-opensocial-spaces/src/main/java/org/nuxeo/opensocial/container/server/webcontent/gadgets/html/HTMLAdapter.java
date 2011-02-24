@@ -35,6 +35,8 @@ public class HTMLAdapter extends AbstractWebContentAdapter<HTMLData> {
         if (!data.getFiles().isEmpty()) {
             Serializable pictureFile = data.getFiles().get(0);
             doc.setPropertyValue("file:content", pictureFile);
+        } else if(!data.hasPicture()) {
+            doc.setPropertyValue("file:content", null);
         }
     }
 
