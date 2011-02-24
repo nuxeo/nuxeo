@@ -274,4 +274,9 @@ public class MockUserManager implements UserManager {
         throw new UnsupportedOperationException();
     }
 
+    @Override
+    public boolean authenticate(String name, String password) {
+        throw new UnsupportedOperationException();
+    }
+
 }
