@@ -99,8 +99,7 @@ public class UrlBuilder {
 
         // perm=1 -> does the session has write perm on gadget
         // XXX: is this used ?
-        // TODO stub
-        sb.append(PERMISSION_KEY + "=[Everything]&");
+        sb.append(PERMISSION_KEY + "=[]&");
 
         // url=http://.../gadget.xml?up_prefname=prefvalue
         sb.append(URL_KEY + "=" + gadgetDef + getUserPrefs(data.getUserPrefs())
