@@ -169,12 +169,13 @@ public class HTMLGadget extends AbstractGadget implements HTMLPresenter.Display 
         rowNumber++;
 
         Label source = new Label(constants.source());
-        sourceUpload = new SimpleUpload(baseUrl + "lmContainer/upload");
+        sourceUpload = new SimpleUpload(baseUrl + "gwtContainer/upload");
 
         modifPanel.setWidget(rowNumber, 0, source);
         modifPanel.setWidget(rowNumber, 1, sourceUpload);
         modifPanel.getRowFormatter()
                 .setStyleName(rowNumber, "gadget-form-line");
+        rowNumber++;
         rowNumber++;
 
         cancelButton = new Button(constants.cancel());
@@ -228,11 +229,13 @@ public class HTMLGadget extends AbstractGadget implements HTMLPresenter.Display 
         previewImage = new Image();
         previewImage.setStyleName("previewPicture");
 
-        modifPanel.setWidget(6, 0, deletePictureImage);
+        int previewIndex = modifPanel.getRowCount() - 2;
+
+        modifPanel.setWidget(previewIndex, 0, deletePictureImage);
         previewImage.setUrl(pictureUrl);
-        modifPanel.setWidget(6, 1, previewImage);
+        modifPanel.setWidget(previewIndex, 1, previewImage);
         modifPanel.getRowFormatter()
-                .setStyleName(6, "gadget-form-line");
+                .setStyleName(previewIndex, "gadget-form-line");
     }
 
     public Image getPreviewImage() {
