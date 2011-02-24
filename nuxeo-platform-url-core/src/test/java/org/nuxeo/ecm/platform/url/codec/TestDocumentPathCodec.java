@@ -33,7 +33,6 @@ import org.nuxeo.ecm.platform.url.api.DocumentView;
 
 /**
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public class TestDocumentPathCodec extends TestCase {
 
@@ -97,6 +96,11 @@ public class TestDocumentPathCodec extends TestCase {
         docView = getDocumentView(docid, "/path/ca f\u00e9/doc",
                 "view_documents");
         url = "nxpath/demo/path/ca%20f%C3%A9/doc@view_documents?tabId=TAB_CONTENT";
+        assertEquals(url, codec.getUrlFromDocumentView(docView));
+
+        // with @ character
+        docView = getDocumentView(docid, "/path/foo@bar/doc", "view_documents");
+        url = "nxpath/demo/path/foo%40bar/doc@view_documents?tabId=TAB_CONTENT";
         assertEquals(url, codec.getUrlFromDocumentView(docView));
     }
 
@@ -174,6 +178,16 @@ public class TestDocumentPathCodec extends TestCase {
         assertEquals("demo", docLoc.getServerName());
         assertEquals(new PathRef("/ca f\u00e9doc"), docLoc.getDocRef());
         assertEquals("view_domains", docView.getViewId());
+        assertNull(docView.getSubURI());
+
+        // with @ character
+        url = "nxpath/demo/path/foo%40bar/doc@view_documents?tabId=TAB_CONTENT";
+        docView = codec.getDocumentViewFromUrl(url);
+        assertNotNull(docView);
+        docLoc = docView.getDocumentLocation();
+        assertEquals("demo", docLoc.getServerName());
+        assertEquals(new PathRef("/path/foo@bar/doc"), docLoc.getDocRef());
+        assertEquals("view_documents", docView.getViewId());
         assertNull(docView.getSubURI());
     }
 
