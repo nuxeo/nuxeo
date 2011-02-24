@@ -346,7 +346,10 @@ public class AppModel implements HasPermissionsMapper {
                                 ContainerConfiguration.getRepositoryName(),
                                 ContainerConfiguration.getDocumentContextId(),
                                 ContainerConfiguration.getUserLanguage());
-                        containerContext.setParameter(GENERATE_TITLE_PARAMETER_NAME, ContainerConfiguration.generateTitle());
+                        containerContext.setParameter(
+                                GENERATE_TITLE_PARAMETER_NAME,
+                                new Boolean(
+                                        ContainerConfiguration.generateTitle()).toString());
                         setPermissions(result.getPermissions());
                         setLayout(result.getLayout());
                         eventBus.fireEvent(new LayoutLoadedEvent());
@@ -546,7 +549,8 @@ public class AppModel implements HasPermissionsMapper {
                 });
     }
 
-    private void updateWebContentService(final String webContentId, List<String> list) {
+    private void updateWebContentService(final String webContentId,
+            List<String> list) {
         dispatcher.execute(new UpdateWebContent(containerContext,
                 getWebContent(webContentId), list),
                 new AbstractContainerAsyncCallback<UpdateWebContentResult>(
