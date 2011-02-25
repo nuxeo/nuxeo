@@ -27,12 +27,13 @@
     value="#{nxu:test(selectedResultLayoutColumns == null, contentView.currentResultLayoutColumns, selectedResultLayoutColumns)}"
     cache="true">
 
-    <c:set var="contentViewTitle"
-      value="#{nxu:test(contentView.translateTitle, messages[contentView.title], contentView.title)}" />
-    <nxp:paragraph>#{nxu:test(empty contentViewTitle, contentViewName, contentViewTitle)}</nxp:paragraph>
 
     <nxp:document title="#{titleOrId}" orientation="landscape"
       fileName="#{contentViewName}.pdf">
+
+    <c:set var="contentViewTitle"
+      value="#{nxu:test(contentView.translateTitle, messages[contentView.title], contentView.title)}" />
+    <c:set var="titleOrId" value="#{nxu:test(empty contentViewTitle, contentViewName, contentViewTitle)}" />
 
       <f:facet name="header">
         <nxp:footer borderWidthTop="1" borderColorTop="blue"
