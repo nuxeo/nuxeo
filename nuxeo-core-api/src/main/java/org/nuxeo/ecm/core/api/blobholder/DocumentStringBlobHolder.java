@@ -58,7 +58,11 @@ public class DocumentStringBlobHolder extends DocumentBlobHolder {
         } else if ("text/xml".equals(mt)) {
             ext = ".xml";
         }
-        blob.setFilename(doc.getTitle() + ext);
+        String title = doc.getTitle();
+        if (!title.endsWith(ext)) {
+            title = title.concat(ext);
+        }
+        blob.setFilename(title);
         return blob;
     }
 
