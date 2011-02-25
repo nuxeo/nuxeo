@@ -12,10 +12,23 @@ Map<String,String> connectMap = ctx.getConnectMap();
 <%if (registrationOK) { %>
 
    <h2> <fmt:message key="label.connectFinish.ok" /> </h2>
-   <div><%=connectMap.get("CLID")%></div>
+
+   <div><fmt:message key="label.connectFinish.CLID" /> <%=connectMap.get("CLID")%></div>
+
+   <p>
+       <fmt:message key="label.connectFinish.usage" />
+   </p>
+
+   <p class="details">
+       <fmt:message key="label.connectFinish.needValidate" />
+   </p>
 
    </div>
-   <%@ include file="includes/prevnext.jsp" %>
+ <center>
+ <input type="button" class="glossyButton" value="<fmt:message key="label.action.prev"/>" onclick="navigateTo('<%=currentPage.prev().prev().getAction()%>');"/>
+ <input type="submit" class="glossyButton" value="<fmt:message key="label.action.next"/>"/>
+ </center>
+ </form>
 <%} else { %>
 
   <h2> <fmt:message key="label.connectFinish.ko" /> </h2>
@@ -24,6 +37,9 @@ Map<String,String> connectMap = ctx.getConnectMap();
    <li><fmt:message key="label.connectFinish.ko.bad2" /></li>
   </ul>
   <br/>
+  <p class="details">
+       <fmt:message key="label.connectFinish.ko.free" />
+   </p>
  </div>
  <center>
  <input type="button" class="glossyButton" value="<fmt:message key="label.action.retry"/>" onclick="navigateTo('<%=currentPage.prev().getAction()%>');"/>

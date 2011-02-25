@@ -1,5 +1,5 @@
 </td>
-<td width="250px">
+<td width="260px">
 
  <iframe class="nuxeoIFrame" style="visibility:hidden" scrolling="no" frameborder="0"
  onload="javascript:this.style.visibility='visible';"
