@@ -35,6 +35,7 @@ import org.nuxeo.ecm.platform.audit.api.FilterMapEntry;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.api.query.AuditQueryException;
 import org.nuxeo.ecm.platform.audit.api.query.DateRangeParser;
+import org.nuxeo.ecm.platform.audit.impl.LogEntryImpl;
 
 public class LogEntryProvider {
 
@@ -149,7 +150,7 @@ public class LogEntryProvider {
         if (log.isDebugEnabled()) {
             log.debug("getLogEntriesFor() logID=" + id);
         }
-        return doPublish(em.find(LogEntry.class, id));
+        return doPublish(em.find(LogEntryImpl.class, id));
     }
 
     @SuppressWarnings("unchecked")

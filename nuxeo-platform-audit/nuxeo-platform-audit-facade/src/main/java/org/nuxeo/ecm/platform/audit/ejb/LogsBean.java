@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.platform.audit.ejb;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -176,4 +177,12 @@ public class LogsBean implements Logs {
         return mkSerializable(entries);
     }
 
+    public ExtendedInfo newExtendedInfo(Serializable value) {
+        return service().newExtendedInfo(value);
+    }
+
+    @Override
+    public LogEntry newLogEntry() {
+        return service().newLogEntry();
+    }
 }

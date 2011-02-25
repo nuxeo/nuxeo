@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.platform.audit.api;
 
+import java.io.Serializable;
 import java.util.List;
 
 import org.nuxeo.ecm.core.event.Event;
@@ -30,6 +31,18 @@ import org.nuxeo.ecm.core.event.EventBundle;
  * @author tiry
  */
 public interface AuditLogger {
+
+    /**
+     * Create a new LogEntry instance.
+     * @return
+     */
+    LogEntry newLogEntry();
+
+    /**
+     * Create a new ExtendedInfo instance
+     * @return
+     */
+    ExtendedInfo newExtendedInfo(Serializable value);
 
     /**
      * Adds given log entries.

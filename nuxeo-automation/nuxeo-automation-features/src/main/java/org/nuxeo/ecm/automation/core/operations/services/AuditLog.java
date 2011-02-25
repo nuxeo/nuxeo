@@ -79,7 +79,7 @@ public class AuditLog {
     }
 
     protected LogEntry newEntry(DocumentModel doc, String principal, Date date) {
-        LogEntry entry = new LogEntry();
+        LogEntry entry = logger.newLogEntry();
         entry.setEventId(event);
         entry.setEventDate(new Date());
         entry.setCategory(category);

@@ -21,6 +21,7 @@ import java.io.Serializable;
 import java.util.Map;
 
 import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
+import org.nuxeo.ecm.platform.audit.impl.ExtendedInfoImpl;
 import org.nuxeo.ecm.platform.audit.service.extension.ExtendedInfoDescriptor;
 import org.nuxeo.ecm.platform.el.ExpressionEvaluator;
 
@@ -41,7 +42,7 @@ public class ExtendedInfoInjector  {
             return;
         }
         String key = descriptor.getKey();
-        info.put(key, ExtendedInfo.createExtendedInfo(value));
+        info.put(key, ExtendedInfoImpl.createExtendedInfo(value));
     }
 
 }

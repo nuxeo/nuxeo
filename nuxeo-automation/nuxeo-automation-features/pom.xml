@@ -110,6 +110,10 @@
       <groupId>javax.transaction</groupId>
       <artifactId>jta</artifactId>
     </dependency>
+    <dependency>
+      <groupId>javax.persistence</groupId>
+      <artifactId>persistence</artifactId>
+    </dependency>    
     <!-- for audit serialization -->
     <dependency>
       <groupId>net.sf.json-lib</groupId>

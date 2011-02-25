@@ -21,26 +21,8 @@ package org.nuxeo.ecm.platform.audit.api;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.MapKey;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.nuxeo.ecm.core.api.DocumentRef;
 
 /**
@@ -48,107 +30,41 @@ import org.nuxeo.ecm.core.api.DocumentRef;
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
-@Entity(name = "LogEntry")
-@NamedQueries( {
-        @NamedQuery(name = "LogEntry.removeByEventIdAndPath",
-                query = "delete LogEntry log where log.eventId = :eventId and log.docPath like :pathPattern"),
-        @NamedQuery(name = "LogEntry.findByDocument",
-                query = "from LogEntry log where log.docUUID=:docUUID ORDER BY log.eventDate DESC"),
-        @NamedQuery(name = "LogEntry.findAll",
-                query = "from LogEntry log order by log.eventDate DESC"),
-        @NamedQuery(name = "LogEntry.findByEventIdAndPath",
-                query = "from LogEntry log where log.eventId=:eventId and log.docPath LIKE :pathPattern"),
-        @NamedQuery(name = "LogEntry.findByHavingExtendedInfo",
-                query = "from LogEntry log where log.extendedInfos['one'] is not null order by log.eventDate DESC"),
-        @NamedQuery(name = "LogEntry.countEventsById",
-                query = "select count(log.eventId) from LogEntry log where log.eventId=:eventId"),
-        @NamedQuery(name = "LogEntry.findEventIds",
-                query = "select distinct log.eventId from LogEntry log")
-        })
-        @Table(name = "NXP_LOGS")
-public class LogEntry implements Serializable {
-
-    private static final long serialVersionUID = 3037187381843636097L;
-
-    private long id;
-
-    private String principalName;
-
-    private String eventId;
-
-    private Date eventDate;
-
-    private String docUUID;
-
-    private String docType;
-
-    private String docPath;
-
-    private String category;
-
-    private String comment;
-
-    private String docLifeCycle;
-
-    private Map<String, ExtendedInfo> extendedInfos = new HashMap<String, ExtendedInfo>();
+public interface LogEntry extends Serializable {
 
     /**
      * @return the log identifier
      */
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "LOG_ID", nullable = false, columnDefinition = "integer")
-    public long getId() {
-        return id;
-    }
+    long getId();
 
-    public void setId(long id) {
-        this.id = id;
-    }
+    void setId(long id);
 
     /**
      * Returns the name of the principal who originated the log entry.
      *
      * @return the name of the principal who originated the log entry
      */
-    @Column(name = "LOG_PRINCIPAL_NAME")
-    public String getPrincipalName() {
-        return principalName;
-    }
+    String getPrincipalName();
 
-    public void setPrincipalName(String principalName) {
-        this.principalName = principalName;
-    }
+    void setPrincipalName(String principalName);
 
     /**
      * Returns the identifier of the event that originated the log entry.
      *
      * @return the identifier of the event that originated the log entry
      */
-    @Column(name = "LOG_EVENT_ID", nullable = false)
-    @MapKey(name = "logKey")
-    public String getEventId() {
-        return eventId;
-    }
+    String getEventId();
 
-    public void setEventId(String eventId) {
-        this.eventId = eventId;
-    }
+    void setEventId(String eventId);
 
     /**
      * Returns the date of the event that originated the log entry.
      *
      * @return the date of the event that originated the log entry
      */
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "LOG_EVENT_DATE")
-    public Date getEventDate() {
-        return eventDate;
-    }
+    Date getEventDate();
 
-    public void setEventDate(Date eventDate) {
-        this.eventDate = eventDate;
-    }
+    void setEventDate(Date eventDate);
 
     /**
      * Returns the doc UUID related to the log entry.
@@ -158,21 +74,11 @@ public class LogEntry implements Serializable {
      *
      * @return the doc UUID related to the log entry.
      */
-    @Column(name = "LOG_DOC_UUID")
-    public String getDocUUID() {
-        return docUUID;
-    }
+    String getDocUUID();
 
-    public void setDocUUID(String docUUID) {
-        this.docUUID = docUUID;
-    }
+    void setDocUUID(String docUUID);
 
-    public void setDocUUID(DocumentRef docRef) {
-        if (docRef.type() != DocumentRef.ID) {
-            throw new IllegalArgumentException("not an id reference " + docRef);
-        }
-        docUUID = (String) docRef.reference();
-    }
+    void setDocUUID(DocumentRef docRef);
 
     /**
      * Returns the doc path related to the log entry.
@@ -182,14 +88,9 @@ public class LogEntry implements Serializable {
      *
      * @return the doc path related to the log entry.
      */
-    @Column(name = "LOG_DOC_PATH", length = 1024)
-    public String getDocPath() {
-        return docPath;
-    }
+    String getDocPath();
 
-    public void setDocPath(String docPath) {
-        this.docPath = docPath;
-    }
+    void setDocPath(String docPath);
 
     /**
      * Returns the doc type related to the log entry.
@@ -199,14 +100,9 @@ public class LogEntry implements Serializable {
      *
      * @return the doc type related to the log entry.
      */
-    @Column(name = "LOG_DOC_TYPE")
-    public String getDocType() {
-        return docType;
-    }
+    String getDocType();
 
-    public void setDocType(String docType) {
-        this.docType = docType;
-    }
+    void setDocType(String docType);
 
     /**
      * Returns the category for this log entry.
@@ -216,28 +112,18 @@ public class LogEntry implements Serializable {
      *
      * @return the category for this log entry.
      */
-    @Column(name = "LOG_EVENT_CATEGORY")
-    public String getCategory() {
-        return category;
-    }
+    String getCategory();
 
-    public void setCategory(String category) {
-        this.category = category;
-    }
+    void setCategory(String category);
 
     /**
      * Returns the associated comment for this log entry.
      *
      * @return the associated comment for this log entry
      */
-    @Column(name = "LOG_EVENT_COMMENT", length = 1024)
-    public String getComment() {
-        return comment;
-    }
+    String getComment();
 
-    public void setComment(String comment) {
-        this.comment = comment;
-    }
+    void setComment(String comment);
 
     /**
      * Return the life cycle if the document related to the log entry.
@@ -247,30 +133,12 @@ public class LogEntry implements Serializable {
      *
      * @return the life cycle if the document related to the log entry.
      */
-    @Column(name = "LOG_DOC_LIFE_CYCLE")
-    public String getDocLifeCycle() {
-        return docLifeCycle;
-    }
+    String getDocLifeCycle();
 
-    public void setDocLifeCycle(String docLifeCycle) {
-        this.docLifeCycle = docLifeCycle;
-    }
+    void setDocLifeCycle(String docLifeCycle);
 
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinTable(name = "NXP_LOGS_MAPEXTINFOS", joinColumns = { @JoinColumn(name = "LOG_FK") },
-            inverseJoinColumns = { @JoinColumn(name = "INFO_FK") })
-    @org.hibernate.annotations.MapKey(columns={@Column(name="mapkey",nullable=false)})
-    public Map<String, ExtendedInfo> getExtendedInfos() {
-        return extendedInfos;
-    }
+    Map<String, ExtendedInfo> getExtendedInfos();
 
-    public void setExtendedInfos(Map<String, ExtendedInfo> infos) {
-        extendedInfos = infos;
-    }
-
-    @Override
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this);
-    }
+    void setExtendedInfos(Map<String, ExtendedInfo> infos);
 
 }

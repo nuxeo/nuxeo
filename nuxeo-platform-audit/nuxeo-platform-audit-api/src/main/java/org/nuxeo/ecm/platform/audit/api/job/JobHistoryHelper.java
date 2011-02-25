@@ -59,16 +59,20 @@ public class JobHistoryHelper {
     }
 
     protected LogEntry getNewLogEntry() {
-        LogEntry entry = new LogEntry();
+        LogEntry entry = getLogger().newLogEntry();
         entry.setCategory(jobName);
         entry.setPrincipalName(SecurityConstants.SYSTEM_USERNAME);
         entry.setEventDate(new Date());
         return entry;
     }
 
-    protected AuditLogger getLogger() throws Exception {
+    protected AuditLogger getLogger() {
         if (logger == null) {
+            try {
             logger = Framework.getService(AuditLogger.class);
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to lookup AuditLogger", e);
+            }
         }
         return logger;
     }
@@ -117,7 +121,7 @@ public class JobHistoryHelper {
         query.append(jobName);
         query.append("'  ORDER BY log.eventDate DESC");
 
-        List result = reader.nativeQuery(query.toString(), 1, 1);
+        List<?> result = reader.nativeQuery(query.toString(), 1, 1);
 
         if (!result.isEmpty()) {
             LogEntry entry = (LogEntry) result.get(0);

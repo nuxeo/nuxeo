@@ -53,15 +53,17 @@ import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.persistence.PersistenceProvider;
-import org.nuxeo.ecm.core.persistence.PersistenceProviderFactory;
 import org.nuxeo.ecm.core.persistence.PersistenceProvider.RunCallback;
 import org.nuxeo.ecm.core.persistence.PersistenceProvider.RunVoid;
+import org.nuxeo.ecm.core.persistence.PersistenceProviderFactory;
 import org.nuxeo.ecm.platform.audit.api.AuditException;
 import org.nuxeo.ecm.platform.audit.api.AuditRuntimeException;
 import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
 import org.nuxeo.ecm.platform.audit.api.FilterMapEntry;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.api.NXAuditEvents;
+import org.nuxeo.ecm.platform.audit.impl.ExtendedInfoImpl;
+import org.nuxeo.ecm.platform.audit.impl.LogEntryImpl;
 import org.nuxeo.ecm.platform.audit.service.extension.AdapterDescriptor;
 import org.nuxeo.ecm.platform.audit.service.extension.EventDescriptor;
 import org.nuxeo.ecm.platform.audit.service.extension.ExtendedInfoDescriptor;
@@ -272,7 +274,7 @@ public class NXAuditEventsService extends DefaultComponent implements
                 continue;
             }
             extendedInfos.put(descriptor.getKey(),
-                    ExtendedInfo.createExtendedInfo(value));
+                    newExtendedInfo(value));
         }
     }
 
@@ -348,7 +350,7 @@ public class NXAuditEventsService extends DefaultComponent implements
 
     protected LogEntry doCreateAndFillEntryFromDocument(DocumentModel doc,
             Principal principal) {
-        LogEntry entry = new LogEntry();
+        LogEntry entry = newLogEntry();
         entry.setDocPath(doc.getPathAsString());
         entry.setDocType(doc.getType());
         entry.setDocUUID(doc.getId());
@@ -760,7 +762,7 @@ public class NXAuditEventsService extends DefaultComponent implements
         Principal principal = docCtx.getPrincipal();
         Map<String, Serializable> properties = docCtx.getProperties();
 
-        LogEntry entry = new LogEntry();
+        LogEntry entry = newLogEntry();
         entry.setEventId(eventName);
         entry.setEventDate(eventDate);
         if (document != null) {
@@ -809,7 +811,7 @@ public class NXAuditEventsService extends DefaultComponent implements
         Principal principal = ctx.getPrincipal();
         Map<String, Serializable> properties = ctx.getProperties();
 
-        LogEntry entry = new LogEntry();
+        LogEntry entry = newLogEntry();
         entry.setEventId(eventName);
         entry.setEventDate(eventDate);
         if (principal != null) {
@@ -860,4 +862,13 @@ public class NXAuditEventsService extends DefaultComponent implements
                 categories, path,pageNb,pageSize);
     }
 
+    @Override
+    public LogEntry newLogEntry() {
+        return new LogEntryImpl();
+    }
+
+    @Override
+    public ExtendedInfo newExtendedInfo(Serializable value) {
+        return ExtendedInfoImpl.createExtendedInfo(value);
+    }
 }

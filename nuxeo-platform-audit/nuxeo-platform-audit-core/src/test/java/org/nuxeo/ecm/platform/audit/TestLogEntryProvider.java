@@ -34,6 +34,8 @@ import org.nuxeo.ecm.platform.audit.api.FilterMapEntry;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.api.query.AuditQueryException;
 import org.nuxeo.ecm.platform.audit.api.query.DateRangeParser;
+import org.nuxeo.ecm.platform.audit.impl.ExtendedInfoImpl;
+import org.nuxeo.ecm.platform.audit.impl.LogEntryImpl;
 import org.nuxeo.ecm.platform.audit.service.LogEntryProvider;
 
 /**
@@ -54,7 +56,7 @@ public class TestLogEntryProvider extends PersistenceTestCase {
 
     protected Map<String, ExtendedInfo> createExtendedInfos() {
         Map<String, ExtendedInfo> infos = new HashMap<String, ExtendedInfo>();
-        ExtendedInfo info = ExtendedInfo.createExtendedInfo(new Long(1));
+        ExtendedInfo info = ExtendedInfoImpl.createExtendedInfo(new Long(1));
         infos.put("id", info);
         return infos;
     }
@@ -68,7 +70,7 @@ public class TestLogEntryProvider extends PersistenceTestCase {
     }
 
     protected LogEntry doCreateEntry(String docId) {
-        LogEntry createdEntry = new LogEntry();
+        LogEntry createdEntry = new LogEntryImpl();
         createdEntry.setEventId(eventId());
         createdEntry.setDocUUID(docId);
         createdEntry.setEventDate(new Date());

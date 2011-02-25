@@ -44,7 +44,6 @@ import org.nuxeo.ecm.platform.audit.api.AuditRuntimeException;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.api.Logs;
 import org.nuxeo.ecm.platform.audit.api.NXAuditEvents;
-import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
 import org.nuxeo.ecm.platform.io.api.AbstractIOResourceAdapter;
 import org.nuxeo.ecm.platform.io.api.IOResources;
 import org.nuxeo.runtime.api.Framework;
@@ -60,7 +59,6 @@ public class IOAuditAdapter extends AbstractIOResourceAdapter {
 
     private static final long serialVersionUID = -3661302796286246086L;
 
-    private Map<String, Serializable> properties;
 
     /**
      * Should be overridden if IOLogEntryBase is subclassed.
@@ -103,8 +101,12 @@ public class IOAuditAdapter extends AbstractIOResourceAdapter {
     }
 
     public static NXAuditEvents getNXAuditEventsService() {
-        return (NXAuditEvents) Framework.getRuntime().getComponent(
-                NXAuditEventsService.NAME);
+        try {
+            return Framework.getService(NXAuditEvents.class);
+        } catch (Exception e) {
+            log.error("Failed to lookup NXAuditEvents service");
+            return null;
+        }
     }
 
     /**
