@@ -50,7 +50,7 @@ public class JettyConfigurator extends ServerConfigurator {
     }
 
     /**
-     * @return true if "config" files directory already exists
+     * @return true if {@link #JETTY_CONFIG} file directory already exists
      */
     @Override
     protected boolean isConfigured() {
@@ -81,8 +81,12 @@ public class JettyConfigurator extends ServerConfigurator {
 
     @Override
     public File getLogConfFile() {
-        return new File(generator.getNuxeoHome(), "config" + File.separator
-                + "log4j.xml");
+        return new File(getConfigDir(), "log4j.xml");
+    }
+
+    @Override
+    public File getConfigDir() {
+        return new File(generator.getNuxeoHome(), "config");
     }
 
 }

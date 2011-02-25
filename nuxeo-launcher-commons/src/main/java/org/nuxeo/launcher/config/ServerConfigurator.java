@@ -161,7 +161,7 @@ public abstract class ServerConfigurator {
             System.out.println("Try to configure logs with " + logFile);
             System.setProperty(Environment.NUXEO_LOG_DIR, getLogDir().getPath());
             DOMConfigurator.configure(logFile.toURI().toURL());
-            log.info("Logs succesfully configured.");
+            log.info("Logs successfully configured.");
         } catch (MalformedURLException e) {
             log.error("Could not initialize logs with " + logFile, e);
         }
@@ -320,5 +320,11 @@ public abstract class ServerConfigurator {
             lockFile.delete();
         }
     }
+
+    /**
+     * @return Nuxeo config directory
+     * @since 5.4.1
+     */
+    public abstract File getConfigDir();
 
 }

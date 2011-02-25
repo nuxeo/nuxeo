@@ -78,8 +78,7 @@ public class JBossConfigurator extends ServerConfigurator {
 
     @Override
     protected File getOutputDirectory() {
-        return new File(generator.getNuxeoHome(),
-                new File(getJBossConfig()).getParent());
+        return getConfigDir().getParentFile();
     }
 
     public String getJBossConfig() {
@@ -144,6 +143,11 @@ public class JBossConfigurator extends ServerConfigurator {
         final String defaultTmpDir = "server" + File.separator
                 + getConfiguration() + File.separator + "tmp";
         return defaultTmpDir;
+    }
+
+    @Override
+    public File getConfigDir() {
+        return new File(generator.getNuxeoHome(), getJBossConfig());
     }
 
 }
