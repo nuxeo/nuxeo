@@ -8,6 +8,9 @@
 <span class="screenDescription">
 <fmt:message key="label.recapScreen.description" /> <br/>
 </span>
+<span class="screenExplanations">
+<fmt:message key="label.recapScreen.explanations" /> <br/>
+</span>
 <%
 boolean connectOK = ctx.isConnectRegistrationDone();
 %>
