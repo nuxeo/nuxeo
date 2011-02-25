@@ -1,8 +1,9 @@
 package org.nuxeo.opensocial.container.client.view;
 
 import org.nuxeo.opensocial.container.client.presenter.PortletPresenter;
+import org.nuxeo.opensocial.container.client.ui.enume.ColorsEnum;
+import org.nuxeo.opensocial.container.client.utils.ElementUtils;
 
-import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.dom.client.MouseMoveEvent;
@@ -114,33 +115,33 @@ public class PortletWidget extends Composite implements
     }
 
     public void setBorderColor(String color) {
+        ElementUtils.removeStyle(this.getElement(), BORDER_COLOR_PREFIX_CSS);
         if (color != null) {
-            this.getElement().getStyle().setBorderColor(color);
-            this.getElement().getStyle().setBorderWidth(1, Style.Unit.PX);
+            this.addStyleName(BORDER_COLOR_PREFIX_CSS + color);
         } else {
-            this.getElement().getStyle().clearBorderColor();
-            this.getElement().getStyle().clearBorderWidth();
+            this.addStyleName(BORDER_COLOR_PREFIX_CSS
+                    + ColorsEnum.NONE.getCssColor());
         }
     }
 
     public void setHeaderColor(String color) {
+        ElementUtils.removeStyle(headerPanel.getElement(),
+                HEADER_COLOR_PREFIX_CSS);
         if (color != null) {
-            headerPanel.getElement().getStyle().setProperty(
-                    "background",
-                    "-moz-linear-gradient(center top , " + color + " 0%, "
-                            + color + " 100%) repeat scroll 0 0 transparent");
+            headerPanel.addStyleName(HEADER_COLOR_PREFIX_CSS + color);
         } else {
-            headerPanel.getElement().getStyle().setProperty(
-                    "background",
-                    "-moz-linear-gradient(center top , transparent 0%, transparent 100%) repeat scroll 0 0 transparent");
+            headerPanel.addStyleName(HEADER_COLOR_PREFIX_CSS
+                    + ColorsEnum.NONE.getCssColor());
         }
     }
 
     public void setTitleColor(String color) {
+        ElementUtils.removeStyle(title.getElement(), TITLE_COLOR_PREFIX_CSS);
         if (color != null) {
-            title.getElement().getStyle().setColor(color);
+            title.addStyleName(TITLE_COLOR_PREFIX_CSS + color);
         } else {
-            title.getElement().getStyle().clearColor();
+            title.addStyleName(TITLE_COLOR_PREFIX_CSS
+                    + ColorsEnum.NONE.getCssColor());
         }
     }
 
