@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.opensocial.container.gwt.transactional.filter.config">
+
+  <extension target="org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService"
+    point="filterConfig">
+    <filterConfig name="GWTContainerTransactional" transactional="true" synchonize="false">
+      <pattern>${org.nuxeo.ecm.contextPath}/gwtContainer</pattern>
+    </filterConfig>
+  </extension>
+
+</component>
