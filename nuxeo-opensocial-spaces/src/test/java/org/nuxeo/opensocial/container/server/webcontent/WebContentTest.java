@@ -20,7 +20,6 @@ import org.nuxeo.opensocial.container.server.service.WebContentSaverService;
 import org.nuxeo.opensocial.container.shared.webcontent.HTMLData;
 import org.nuxeo.opensocial.container.shared.webcontent.PictureData;
 import org.nuxeo.opensocial.container.shared.webcontent.WebContentData;
-import org.nuxeo.opensocial.container.shared.webcontent.enume.DefaultPortletPreference;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
@@ -37,7 +36,8 @@ public class WebContentTest {
     WebContentSaverService service;
 
     public DocumentModel createNxUnit() throws ClientException {
-        DocumentModel unit = session.createDocumentModel("/", "unit", UNIT_DOCUMENT_TYPE);
+        DocumentModel unit = session.createDocumentModel("/", "unit",
+                UNIT_DOCUMENT_TYPE);
         unit = session.createDocument(unit);
         session.save();
 
@@ -48,8 +48,7 @@ public class WebContentTest {
         DocumentModel unit = createNxUnit();
 
         Map<String, String> preferences = new HashMap<String, String>();
-        preferences.put(DefaultPortletPreference.WC_BORDER_COLOR.toString(),
-                "blue");
+        preferences.put(WebContentData.WC_BORDER_COLOR, "blue");
 
         data.setUnitId(unit.getId());
         data.setPosition(2);
@@ -82,10 +81,8 @@ public class WebContentTest {
         assertEquals(true, dataToTest.isInAPorlet());
         assertEquals(true, dataToTest.isCollapsed());
         assertEquals(1, dataToTest.getPreferences().size());
-        assertEquals(
-                "blue",
-                dataToTest.getPreferences().get(
-                        DefaultPortletPreference.WC_BORDER_COLOR.toString()));
+        assertEquals("blue", dataToTest.getPreferences().get(
+                WebContentData.WC_BORDER_COLOR.toString()));
         assertEquals(session.getPrincipal().getName(), data.getViewer());
     }
 

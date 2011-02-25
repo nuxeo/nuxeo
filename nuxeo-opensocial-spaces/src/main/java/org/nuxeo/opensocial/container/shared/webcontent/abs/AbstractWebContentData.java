@@ -13,10 +13,7 @@ import org.nuxeo.opensocial.container.shared.webcontent.WebContentData;
  */
 public abstract class AbstractWebContentData implements Serializable,
         Comparable<AbstractWebContentData>, WebContentData {
-
     private static final long serialVersionUID = 1L;
-
-    public static final String WC_TITLE_PREFERENCE = "WC_TITLE";
 
     private String id;
 

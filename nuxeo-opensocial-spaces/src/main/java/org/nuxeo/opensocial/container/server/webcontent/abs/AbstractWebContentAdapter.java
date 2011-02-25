@@ -17,7 +17,6 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.opensocial.container.server.webcontent.api.WebContentAdapter;
 import org.nuxeo.opensocial.container.shared.webcontent.WebContentData;
-import org.nuxeo.opensocial.container.shared.webcontent.enume.DefaultPortletPreference;
 
 /**
  * @author Stéphane Fourrier
@@ -102,8 +101,7 @@ public abstract class AbstractWebContentAdapter<T extends WebContentData>
         for (Map<String, Serializable> preference : preferences) {
             String name = (String) preference.get("name");
             String value = (String) preference.get("value");
-            data.addPreference(
-                    DefaultPortletPreference.valueOf(name).toString(), value);
+            data.addPreference(name, value);
         }
     }
 }

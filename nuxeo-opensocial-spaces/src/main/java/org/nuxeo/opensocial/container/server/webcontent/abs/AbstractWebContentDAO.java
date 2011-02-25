@@ -16,12 +16,12 @@ import org.nuxeo.runtime.api.Framework;
 public abstract class AbstractWebContentDAO<T extends WebContentData>
         implements WebContentDAO<T> {
 
-    @SuppressWarnings("unchecked")
     public T create(T data, String parentId, CoreSession session)
             throws Exception {
         return create(data, data.getName(), parentId, session);
     }
 
+    @SuppressWarnings("unchecked")
     protected T create(T data, String webContentName, String parentId, CoreSession session) throws Exception {
         // TODO Remove call to the service !
         WebContentSaverService service = Framework.getService(WebContentSaverService.class);

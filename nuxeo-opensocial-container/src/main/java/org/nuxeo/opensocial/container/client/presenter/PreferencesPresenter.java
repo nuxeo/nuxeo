@@ -4,6 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 
+import net.customware.gwt.presenter.client.EventBus;
+import net.customware.gwt.presenter.client.place.Place;
+import net.customware.gwt.presenter.client.place.PlaceRequest;
+import net.customware.gwt.presenter.client.widget.WidgetDisplay;
+import net.customware.gwt.presenter.client.widget.WidgetPresenter;
+
 import org.nuxeo.opensocial.container.client.event.priv.presenter.FolderChosenEvent;
 import org.nuxeo.opensocial.container.client.event.priv.presenter.FolderChosenEventHandler;
 import org.nuxeo.opensocial.container.client.model.AppModel;
@@ -16,7 +22,6 @@ import org.nuxeo.opensocial.container.client.view.FolderPickerWidget;
 import org.nuxeo.opensocial.container.shared.webcontent.OpenSocialData;
 import org.nuxeo.opensocial.container.shared.webcontent.UserPref;
 import org.nuxeo.opensocial.container.shared.webcontent.WebContentData;
-import org.nuxeo.opensocial.container.shared.webcontent.enume.DefaultPortletPreference;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -29,12 +34,6 @@ import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
-
-import net.customware.gwt.presenter.client.EventBus;
-import net.customware.gwt.presenter.client.place.Place;
-import net.customware.gwt.presenter.client.place.PlaceRequest;
-import net.customware.gwt.presenter.client.widget.WidgetDisplay;
-import net.customware.gwt.presenter.client.widget.WidgetPresenter;
 
 /**
  * @author Stéphane Fourrier
@@ -105,11 +104,11 @@ public class PreferencesPresenter extends
     private void fetchContent() {
         display.getTitleBox().setText(data.getTitle());
         display.setTitleColor(data.getPreferences().get(
-                DefaultPortletPreference.WC_TITLE_COLOR.toString()));
+                WebContentData.WC_TITLE_COLOR));
         display.setBorderColor(data.getPreferences().get(
-                DefaultPortletPreference.WC_BORDER_COLOR.toString()));
+                WebContentData.WC_BORDER_COLOR));
         display.setHeaderColor(data.getPreferences().get(
-                DefaultPortletPreference.WC_HEADER_COLOR.toString()));
+                WebContentData.WC_HEADER_COLOR));
 
         // TODO Should be done with any type of WebContentData ! To be improved
         // ...
@@ -200,8 +199,8 @@ public class PreferencesPresenter extends
     }
 
     private native NXIDPreference evaluateNXIDPref(String json) /*-{
-                                                                return eval("(" + json + ")");
-                                                                }-*/;
+        return eval("(" + json + ")");
+    }-*/;
 
     @Override
     protected void onBind() {
@@ -228,13 +227,13 @@ public class PreferencesPresenter extends
         portletPresenter.setTitle(data.getTitle());
 
         portletPresenter.setBorderColor(data.getPreferences().get(
-                DefaultPortletPreference.WC_BORDER_COLOR.toString()));
+                WebContentData.WC_BORDER_COLOR));
 
         portletPresenter.setTitleColor(data.getPreferences().get(
-                DefaultPortletPreference.WC_TITLE_COLOR.toString()));
+                WebContentData.WC_TITLE_COLOR));
 
         portletPresenter.setHeaderColor(data.getPreferences().get(
-                DefaultPortletPreference.WC_HEADER_COLOR.toString()));
+                WebContentData.WC_HEADER_COLOR));
     }
 
     private void registerPreferencesSave() {
@@ -245,15 +244,15 @@ public class PreferencesPresenter extends
                         data.setTitle(display.getTitleBox().getText());
 
                         data.addPreference(
-                                DefaultPortletPreference.WC_TITLE_COLOR.toString(),
+                                WebContentData.WC_TITLE_COLOR,
                                 ((ColorsPanelWidget) display.getTitleColors()).getSelectedColor().getColorAsString());
 
                         data.addPreference(
-                                DefaultPortletPreference.WC_BORDER_COLOR.toString(),
+                                WebContentData.WC_BORDER_COLOR,
                                 ((ColorsPanelWidget) display.getBorderColors()).getSelectedColor().getColorAsString());
 
                         data.addPreference(
-                                DefaultPortletPreference.WC_HEADER_COLOR.toString(),
+                                WebContentData.WC_HEADER_COLOR,
                                 ((ColorsPanelWidget) display.getHeaderColors()).getSelectedColor().getColorAsString());
 
                         // TODO Should be done with any type of WebContentData !
