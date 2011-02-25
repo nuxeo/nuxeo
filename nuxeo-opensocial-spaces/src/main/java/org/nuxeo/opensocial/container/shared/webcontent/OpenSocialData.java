@@ -1,6 +1,7 @@
 package org.nuxeo.opensocial.container.shared.webcontent;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.opensocial.container.shared.webcontent.abs.AbstractWebContentData;
@@ -29,11 +30,11 @@ public class OpenSocialData extends AbstractWebContentData {
 
     private String gadgetName;
 
-    private Map<String, UserPref> userPrefs;
+    private List<UserPref> userPrefs;
 
     public OpenSocialData() {
         super();
-        setUserPrefs(new HashMap<String, UserPref>());
+        setUserPrefs(new ArrayList<UserPref>());
     }
 
     public String getFrameUrl() {
@@ -60,12 +61,23 @@ public class OpenSocialData extends AbstractWebContentData {
         return securityToken;
     }
 
-    public void setUserPrefs(Map<String, UserPref> userPrefs) {
+    public void setUserPrefs(List<UserPref> userPrefs) {
         this.userPrefs = userPrefs;
     }
 
-    public Map<String, UserPref> getUserPrefs() {
+    public List<UserPref> getUserPrefs() {
         return userPrefs;
+    }
+
+    public UserPref getUserPrefByName(String name) {
+        if (name != null) {
+            for (UserPref pref : userPrefs) {
+                if (name.equals(pref.getName())) {
+                    return pref;
+                }
+            }
+        }
+        return null;
     }
 
     public void setGadgetName(String name) {

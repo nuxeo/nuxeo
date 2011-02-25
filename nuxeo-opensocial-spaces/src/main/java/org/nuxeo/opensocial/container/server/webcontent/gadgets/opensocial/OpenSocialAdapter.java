@@ -5,11 +5,11 @@ import static org.nuxeo.ecm.spaces.api.Constants.WC_OPEN_SOCIAL_GADGET_NAME;
 import static org.nuxeo.ecm.spaces.api.Constants.WC_OPEN_SOCIAL_USER_PREFS_PROPERTY;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -31,7 +31,8 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * @author Stéphane Fourrier
  */
-public class OpenSocialAdapter extends AbstractWebContentAdapter<OpenSocialData>  {
+public class OpenSocialAdapter extends
+        AbstractWebContentAdapter<OpenSocialData> {
 
     private static final Log log = LogFactory.getLog(OpenSocialAdapter.class);
 
@@ -68,9 +69,7 @@ public class OpenSocialAdapter extends AbstractWebContentAdapter<OpenSocialData>
 
         List<Map<String, Serializable>> savedUserPrefs = (List<Map<String, Serializable>>) doc.getPropertyValue(WC_OPEN_SOCIAL_USER_PREFS_PROPERTY);
 
-        for (Entry<String, org.nuxeo.opensocial.container.shared.webcontent.UserPref> dataPrefs : data.getUserPrefs().entrySet()) {
-            org.nuxeo.opensocial.container.shared.webcontent.UserPref dataPref = dataPrefs.getValue();
-
+        for (org.nuxeo.opensocial.container.shared.webcontent.UserPref dataPref : data.getUserPrefs()) {
             if (dataPref.getActualValue() != null) {
                 Map<String, Serializable> savedUserPref = new HashMap<String, Serializable>();
                 savedUserPref.put("name", dataPref.getName());
@@ -129,7 +128,7 @@ public class OpenSocialAdapter extends AbstractWebContentAdapter<OpenSocialData>
 
         if (gadgetSpec != null) {
 
-            Map<String, org.nuxeo.opensocial.container.shared.webcontent.UserPref> dataUserPrefs = new HashMap<String, org.nuxeo.opensocial.container.shared.webcontent.UserPref>();
+            List<org.nuxeo.opensocial.container.shared.webcontent.UserPref> dataUserPrefs = new ArrayList<org.nuxeo.opensocial.container.shared.webcontent.UserPref>();
 
             for (UserPref openSocialUserPref : gadgetSpec.getUserPrefs()) {
                 org.nuxeo.opensocial.container.shared.webcontent.UserPref dataPref = new org.nuxeo.opensocial.container.shared.webcontent.UserPref(
@@ -153,7 +152,7 @@ public class OpenSocialAdapter extends AbstractWebContentAdapter<OpenSocialData>
                     dataPref.setActualValue(savedUserPrefs.get(name));
                 }
 
-                dataUserPrefs.put(name, dataPref);
+                dataUserPrefs.add(dataPref);
             }
 
             data.setUserPrefs(dataUserPrefs);
@@ -171,7 +170,8 @@ public class OpenSocialAdapter extends AbstractWebContentAdapter<OpenSocialData>
             NXGadgetContext context = new NXGadgetContext(data.getGadgetDef());
             return gadgetSpecFactory.getGadgetSpec(context);
         } catch (Exception e) {
-            log.warn("Unable to get gadget spec for " + data.getName() + ": " + e.getMessage());
+            log.warn("Unable to get gadget spec for " + data.getName() + ": "
+                    + e.getMessage());
             log.debug(e, e);
             return null;
         }

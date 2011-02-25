@@ -19,8 +19,7 @@ package org.nuxeo.opensocial.container.server.utils;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.Map;
-import java.util.Map.Entry;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -78,8 +77,8 @@ public class UrlBuilder {
 
     private static int containerId = 0;
 
-    public static String buildShindigUrl(OpenSocialData data,
-            String serverBase) throws ClientException {
+    public static String buildShindigUrl(OpenSocialData data, String serverBase)
+            throws ClientException {
         String gadgetDef = data.getGadgetDef();
 
         StringBuilder sb = new StringBuilder();
@@ -154,21 +153,21 @@ public class UrlBuilder {
      * @param prefs
      * @return String &up_key=value&up..
      */
-    protected static String getUserPrefs(Map<String, UserPref> prefs) {
+    protected static String getUserPrefs(List<UserPref> prefs) {
         String prefsParams = "";
-        for (Entry<String, UserPref> pref : prefs.entrySet()) {
+        for (UserPref pref : prefs) {
             String value;
 
-            if (pref.getValue().getActualValue() == null) {
-                value = pref.getValue().getDefaultValue();
+            if (pref.getActualValue() == null) {
+                value = pref.getDefaultValue();
             } else {
-                value = pref.getValue().getActualValue();
+                value = pref.getActualValue();
             }
 
             // TODO has to be tested
             try {
-                prefsParams += "&" + PREF_PREFIX + pref.getValue().getName()
-                        + "=" + URLEncoder.encode(value, "UTF-8");
+                prefsParams += "&" + PREF_PREFIX + pref.getName() + "="
+                        + URLEncoder.encode(value, "UTF-8");
             } catch (UnsupportedEncodingException e) {
                 log.error(e);
             }
@@ -179,7 +178,8 @@ public class UrlBuilder {
     private static String getDefaultParams() {
         return CONTAINER_KEY + "=" + CONTAINER_VALUE + "&" + NOCACHE_KEY + "="
                 + NOCACHE_VALUE + "&" + COUNTRY_KEY + "=" + COUNTRY_VALUE + "&"
-                + LANG_KEY + "=" + DEFAULT_LANG_VALUE + "&" + VIEW_KEY + "=" + VIEW_VALUE;
+                + LANG_KEY + "=" + DEFAULT_LANG_VALUE + "&" + VIEW_KEY + "="
+                + VIEW_VALUE;
     }
 
 }

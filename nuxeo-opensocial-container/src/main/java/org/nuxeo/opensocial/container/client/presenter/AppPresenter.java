@@ -218,8 +218,7 @@ public class AppPresenter extends WidgetPresenter<AppPresenter.Display> {
     @SuppressWarnings("unused")
     private void setOpenSocialUserPref(String frameId, String name, String value) {
         try {
-            UserPref userPref = ((OpenSocialData) model.getWebContent(getWebContentId(frameId))).getUserPrefs().get(
-                    name);
+            UserPref userPref = ((OpenSocialData) model.getWebContent(getWebContentId(frameId))).getUserPrefByName(name);
             if (userPref != null) {
                 userPref.setActualValue(value);
             } else {

@@ -113,8 +113,8 @@ public class PreferencesPresenter extends
         // TODO Should be done with any type of WebContentData ! To be improved
         // ...
         if (data instanceof OpenSocialData) {
-            for (Entry<String, UserPref> userPref : ((OpenSocialData) data).getUserPrefs().entrySet()) {
-                addUserPref(userPref.getValue());
+            for (UserPref userPref : ((OpenSocialData) data).getUserPrefs()) {
+                addUserPref(userPref);
             }
         }
     }
@@ -261,8 +261,7 @@ public class PreferencesPresenter extends
                             for (Widget widget : prefsValues) {
                                 String name = ((HasName) widget).getName();
                                 String value = ((HasValue) widget).getValue().toString();
-                                UserPref userPref = ((OpenSocialData) data).getUserPrefs().get(
-                                        name);
+                                UserPref userPref = ((OpenSocialData) data).getUserPrefByName(name);
                                 if (userPref != null)
                                     userPref.setActualValue(value);
                             }
