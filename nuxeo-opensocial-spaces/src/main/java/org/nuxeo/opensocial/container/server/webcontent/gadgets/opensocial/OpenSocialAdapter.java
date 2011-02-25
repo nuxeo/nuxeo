@@ -1,3 +1,20 @@
+/*
+ * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ * Contributors:
+ *     Stéphane Fourrier
+ *     Thomas Roger <troger@nuxeo.com>
+ */
+
 package org.nuxeo.opensocial.container.server.webcontent.gadgets.opensocial;
 
 import static org.nuxeo.ecm.spaces.api.Constants.WC_OPEN_SOCIAL_GADGET_DEF_URL_PROPERTY;
@@ -68,14 +85,21 @@ public class OpenSocialAdapter extends AbstractWebContentAdapter<OpenSocialData>
 
         List<Map<String, Serializable>> savedUserPrefs = (List<Map<String, Serializable>>) doc.getPropertyValue(WC_OPEN_SOCIAL_USER_PREFS_PROPERTY);
 
+        // add the additional preferences as user preferences
+        Map<String, String> additionalPreferences = data.getAdditionalPreferences();
+        for (Entry<String, String> entry : additionalPreferences.entrySet()) {
+                Map<String, Serializable> savedUserPref = new HashMap<String, Serializable>();
+                savedUserPref.put("name", entry.getKey());
+                savedUserPref.put("value", entry.getValue());
+                savedUserPrefs.add(savedUserPref);
+        }
+
         for (Entry<String, org.nuxeo.opensocial.container.shared.webcontent.UserPref> dataPrefs : data.getUserPrefs().entrySet()) {
             org.nuxeo.opensocial.container.shared.webcontent.UserPref dataPref = dataPrefs.getValue();
-
             if (dataPref.getActualValue() != null) {
                 Map<String, Serializable> savedUserPref = new HashMap<String, Serializable>();
                 savedUserPref.put("name", dataPref.getName());
                 savedUserPref.put("value", dataPref.getActualValue());
-
                 savedUserPrefs.add(savedUserPref);
             }
         }

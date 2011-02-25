@@ -6,7 +6,7 @@
    </#list>
 </UserPref>
 <#else>
-<UserPref name="targetRepository" default_value="${contextHelper.getDefaultRepoName()}"  datatype="hidden"/>
+<UserPref name="nuxeoTargetRepository" datatype="hidden" default_value="${contextHelper.getDefaultRepoName()}" />
 </#if>
-<UserPref name="targetContextPath" datatype="hidden" default_value="default-domain"/>
-<UserPref name="targetContextObject" datatype="hidden" default_value="Domain"/>
+<UserPref name="nuxeoTargetContextPath" datatype="hidden" default_value="/default-domain" />
+<UserPref name="nuxeoTargetContextObject" datatype="hidden" default_value="Domain" />

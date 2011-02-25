@@ -97,7 +97,6 @@ public abstract class AbstractWebContentAdapter<T extends WebContentData>
         data.setViewer(doc.getCoreSession().getPrincipal().getName());
 
         List<Map<String, Serializable>> preferences = (List<Map<String, Serializable>>) doc.getPropertyValue(WEB_CONTENT_PREFERENCES_PROPERTY);
-
         for (Map<String, Serializable> preference : preferences) {
             String name = (String) preference.get("name");
             String value = (String) preference.get("value");

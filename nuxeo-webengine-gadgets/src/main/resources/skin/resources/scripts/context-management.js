@@ -1,11 +1,11 @@
 var contextListLoaded = false;
 
 function getTargetRepository() {
-    return gadgets.util.unescapeString(prefs.getString("targetRepository"));
+    return gadgets.util.unescapeString(prefs.getString("nuxeoTargetRepository"));
 }
 
 function getTargetContextPath() {
-    var targetContextPath = gadgets.util.unescapeString(prefs.getString("targetContextPath"));
+    var targetContextPath = gadgets.util.unescapeString(prefs.getString("nuxeoTargetContextPath"));
     if (targetContextPath == null || targetContextPath == '') {
         targetContextPath = "/default-domain"; //in Nuxeo pref should be set at creation time
     }
@@ -13,7 +13,7 @@ function getTargetContextPath() {
 }
 
 function getTargetContextObject() {
-    var targetContextObject = gadgets.util.unescapeString(prefs.getString("targetContextObject"));
+    var targetContextObject = gadgets.util.unescapeString(prefs.getString("nuxeoTargetContextObject"));
     if (targetContextObject == null || targetContextObject == '') {
         targetContextObject = "Domain"; //in Nuxeo pref should be set at creation time
     }
@@ -22,7 +22,7 @@ function getTargetContextObject() {
 
 function saveContext() {
     var contextPath = _gel("contextPathChooser").value;
-    prefs.set("targetContextPath", contextPath);
+    prefs.set("nuxeoTargetContextPath", contextPath);
     _gel("contextChooser").style.display = "none";
 }
 
