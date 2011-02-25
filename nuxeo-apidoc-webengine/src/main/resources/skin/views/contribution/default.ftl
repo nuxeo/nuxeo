@@ -25,7 +25,7 @@ of component
 
 <h2>XML source</h2>
 <span class="resourceToggle">View XML source</span>
-<div class="hiddenResource"
+<div class="hiddenResource">
   <pre><code>${nxItem.xml?html}</code></pre>
 </div>
 
