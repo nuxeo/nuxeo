@@ -85,7 +85,7 @@ public class ConfigurationGenerator {
      */
     protected static final String PARAM_INCLUDED_TEMPLATES = "nuxeo.template.includes";
 
-    protected static final String PARAM_FORCE_GENERATION = "nuxeo.force.generation";
+    public static final String PARAM_FORCE_GENERATION = "nuxeo.force.generation";
 
     public static final String BOUNDARY_BEGIN = "### BEGIN - DO NOT EDIT BETWEEN BEGIN AND END ###";
 
@@ -201,8 +201,21 @@ public class ConfigurationGenerator {
         log.info("Nuxeo configuration: " + nuxeoConf.getPath());
     }
 
+    /**
+     * @see #PARAM_FORCE_GENERATION
+     * @param forceGeneration
+     */
     public void setForceGeneration(boolean forceGeneration) {
         this.forceGeneration = forceGeneration;
+    }
+
+    /**
+     * @see #PARAM_FORCE_GENERATION
+     * @return true if configuration will be generated from templates
+     * @since 5.4.1
+     */
+    public boolean isForceGeneration() {
+        return forceGeneration;
     }
 
     public Properties getUserConfig() {
