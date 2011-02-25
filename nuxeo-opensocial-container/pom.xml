@@ -37,7 +37,7 @@
 
     <dependency>
       <groupId>org.nuxeo.ecm.opensocial</groupId>
-      <artifactId>nuxeo-richtexteditor-gadget</artifactId>
+      <artifactId>nuxeo-gwt-richtexteditor</artifactId>
     </dependency>
 
 
