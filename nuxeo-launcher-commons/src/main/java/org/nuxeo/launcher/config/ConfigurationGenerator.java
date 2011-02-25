@@ -723,4 +723,12 @@ public class ConfigurationGenerator {
         return newTemplates;
     }
 
+    /**
+     * @return Nuxeo config directory
+     * @since 5.4.1
+     */
+    public File getConfigDir() {
+        return serverConfigurator.getConfigDir();
+    }
+
 }

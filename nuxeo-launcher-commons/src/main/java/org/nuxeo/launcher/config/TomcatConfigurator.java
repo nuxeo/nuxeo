@@ -46,7 +46,7 @@ public class TomcatConfigurator extends ServerConfigurator {
     }
 
     /**
-     * @return true if "config" files directory already exists
+     * @return true if {@link #TOMCAT_CONFIG} file already exists
      */
     @Override
     protected boolean isConfigured() {
@@ -99,6 +99,12 @@ public class TomcatConfigurator extends ServerConfigurator {
     public File getLogConfFile() {
         return new File(generator.getNuxeoHome(), "lib" + File.separator
                 + "log4j.xml");
+    }
+
+    @Override
+    public File getConfigDir() {
+        return new File(generator.getNuxeoHome(), "nxserver" + File.separator
+                + "config");
     }
 
 }
