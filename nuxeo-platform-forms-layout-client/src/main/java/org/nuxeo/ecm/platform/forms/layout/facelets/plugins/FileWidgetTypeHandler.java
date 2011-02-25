@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.platform.forms.layout.facelets.plugins;
 
-import org.jboss.seam.pdf.ui.UIHtmlText;
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinWidgetModes;
 import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
@@ -29,6 +28,7 @@ import org.nuxeo.ecm.platform.forms.layout.facelets.LeafFaceletHandler;
 import org.nuxeo.ecm.platform.forms.layout.facelets.ValueExpressionHelper;
 import org.nuxeo.ecm.platform.ui.web.component.file.UIInputFile;
 import org.nuxeo.ecm.platform.ui.web.component.file.UIOutputFile;
+import org.nuxeo.ecm.platform.ui.web.component.seam.UIHtmlText;
 
 import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletHandler;

@@ -5,8 +5,7 @@
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:h="http://java.sun.com/jsf/html"
-  xmlns:p="http://jboss.com/products/seam/pdf"
-  xmlns:nxp="http://nuxeo.org/nxweb/seam/pdf">
+  xmlns:nxp="http://nuxeo.org/nxweb/pdf">
 <c:if test="#{nxl:isLikePlainMode(widget.mode) and widget.mode != 'pdf'}">#{field_2}</c:if>
 <c:if test="#{not nxl:isLikePlainMode(widget.mode)}">
 

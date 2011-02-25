@@ -1,0 +1,236 @@
+<?xml version="1.0"?>
+<!DOCTYPE facelet-taglib PUBLIC
+   "-//Sun Microsystems, Inc.//DTD Facelet Taglib 1.0//EN"
+   "facelet-taglib_1_0.dtd">
+<facelet-taglib>
+  <!-- prefix: nxp -->
+  <namespace>http://nuxeo.org/nxweb/pdf</namespace>
+
+  <tag>
+    <tag-name>document</tag-name>
+    <component>
+      <component-type>org.jboss.seam.pdf.ui.UIDocument</component-type>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>header</tag-name>
+    <component>
+      <component-type>org.jboss.seam.pdf.ui.UIHeader</component-type>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>footer</tag-name>
+    <component>
+      <component-type>org.jboss.seam.pdf.ui.UIFooter</component-type>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>pageNumber</tag-name>
+    <component>
+      <component-type>org.jboss.seam.pdf.ui.UIPageNumber</component-type>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>paragraph</tag-name>
+    <component>
+      <component-type>org.jboss.seam.pdf.ui.UIParagraph</component-type>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>newPage</tag-name>
+    <component>
+      <component-type>org.jboss.seam.pdf.ui.UIPage</component-type>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>list</tag-name>
+    <component>
+      <component-type>org.jboss.seam.pdf.ui.UIList</component-type>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>listItem</tag-name>
+    <component>
+      <component-type>org.jboss.seam.pdf.ui.UIListItem</component-type>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>font</tag-name>
+    <component>
+      <component-type>org.jboss.seam.pdf.ui.UIFont</component-type>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>image</tag-name>
+    <component>
+      <!-- 
+        <component-type>org.jboss.seam.pdf.ui.UIImage</component-type>
+      -->
+      <component-type>
+        org.nuxeo.ecm.platform.ui.web.component.seam.UIImage
+      </component-type>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>anchor</tag-name>
+    <component>
+      <component-type>org.jboss.seam.pdf.ui.UIAnchor</component-type>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>chapter</tag-name>
+    <component>
+      <component-type>org.jboss.seam.pdf.ui.UIChapter</component-type>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>section</tag-name>
+    <component>
+      <component-type>org.jboss.seam.pdf.ui.UISection</component-type>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>title</tag-name>
+    <component>
+      <component-type>org.jboss.seam.pdf.ui.UITitle</component-type>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>table</tag-name>
+    <component>
+      <component-type>org.jboss.seam.pdf.ui.UITable</component-type>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>cell</tag-name>
+    <component>
+      <component-type>org.jboss.seam.pdf.ui.UICell</component-type>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>signature</tag-name>
+    <component>
+      <component-type>org.jboss.seam.pdf.ui.UISignature</component-type>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>text</tag-name>
+    <component>
+      <component-type>org.jboss.seam.pdf.ui.UIOutputText</component-type>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>element</tag-name>
+    <component>
+      <component-type>org.jboss.seam.pdf.ui.UIElement</component-type>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>barCode</tag-name>
+    <component>
+      <component-type>org.jboss.seam.pdf.ui.UIBarCode</component-type>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>piechart</tag-name>
+    <component>
+      <component-type>org.jboss.seam.pdf.ui.UIPieChart</component-type>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>barchart</tag-name>
+    <component>
+      <component-type>org.jboss.seam.pdf.ui.UIBarChart</component-type>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>linechart</tag-name>
+    <component>
+      <component-type>org.jboss.seam.pdf.ui.UILineChart</component-type>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>data</tag-name>
+    <component>
+      <component-type>org.jboss.seam.pdf.ui.UIChartData</component-type>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>series</tag-name>
+    <component>
+      <component-type>org.jboss.seam.pdf.ui.UIChartSeries</component-type>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>color</tag-name>
+    <component>
+      <component-type>org.jboss.seam.pdf.ui.UIColor</component-type>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>stroke</tag-name>
+    <component>
+      <component-type>org.jboss.seam.pdf.ui.UIStroke</component-type>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>html</tag-name>
+    <component>
+      <!-- 
+        <component-type>org.jboss.seam.pdf.ui.UIHtmlText</component-type>
+      -->
+      <component-type>
+        org.nuxeo.ecm.platform.ui.web.component.seam.UIHtmlText
+      </component-type>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>swing</tag-name>
+    <component>
+      <component-type>org.jboss.seam.pdf.ui.UISwingComponent</component-type>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>form</tag-name>
+    <component>
+      <component-type>org.jboss.seam.pdf.ui.UIForm</component-type>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>field</tag-name>
+    <component>
+      <component-type>org.jboss.seam.pdf.ui.UIField</component-type>
+    </component>
+  </tag>
+
+</facelet-taglib>

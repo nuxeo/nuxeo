@@ -6,7 +6,7 @@
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:rich="http://richfaces.org/rich"
   xmlns:nxh="http://nuxeo.org/nxweb/html"
-  xmlns:p="http://jboss.com/products/seam/pdf">
+  xmlns:nxp="http://nuxeo.org/nxweb/pdf">
 <c:if test="#{nxl:isLikePlainMode(widget.mode) and widget.mode != 'pdf'}">#{field_0}</c:if>
 <c:if test="#{widget.mode != 'edit' and not nxl:isLikePlainMode(widget.mode)}">
 
@@ -84,6 +84,6 @@ function changeEditorType(cbo) {
 
 </c:if>
 <c:if test="#{widget.mode == 'pdf'}">
-  <p:html>#{field_0}</p:html>
+  <nxp:html>#{field_0}</nxp:html>
 </c:if>
 </f:subview>

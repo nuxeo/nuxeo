@@ -50,8 +50,7 @@
                 title="#{messages[action.label]}"
                 alt="#{messages[action.label]}"
                 target="_blank">
-                <h:graphicImage value="#{action.icon}"
-                  styleClass="smallIcon" />
+                <h:graphicImage value="#{action.icon}" />
                 <h:outputText value=" #{messages[action.label]}" />
               </nxh:metaOutputLink>
               <br />
@@ -78,21 +77,16 @@
                 <nxu:set var="contentView"
                   value="#{contentViewActions.getContentViewWithProvider(contentViewHeader.name)}"
                   cache="true">
-                <nxu:set var="contentViewState"
-                  value="#{contentViewRestActions.getContentViewState(contentView)}"
-                  cache="true">
 
-                  <c:set var="title"
+                  <c:set var="contentViewTitle"
                     value="#{nxu:test(contentView.translateTitle, messages[contentView.title], contentView.title)}" />
-                  <h:outputText value="#{title} " />
-                  <h:outputText value="#{contentViewHeader.name} " rendered="#{empty title}" />
+                  <h:outputText value="#{nxu:test(empty contentViewTitle, contentViewName, contentViewTitle)} " />
 
                   <nxd:restDocumentLink document="#{currentDocument}"
                     view="rss" addTabInfo="false"
                     newConversation="true" target="_blank">
                     <f:param name="contentViewName" value="#{contentView.name}" />
                     <f:param name="currentPage" value="0" />
-                    <f:param name="contentViewState" value="#{contentViewState}" />
                     <h:graphicImage value="/icons/rss_export.png"
                       styleClass="smallIcon" />
                     <h:outputText value=" #{messages['label.contentview.export.rss']}"/>
@@ -104,7 +98,6 @@
                     newConversation="true" target="_blank">
                     <f:param name="contentViewName" value="#{contentView.name}" />
                     <f:param name="currentPage" value="0" />
-                    <f:param name="contentViewState" value="#{contentViewState}" />
                     <h:graphicImage value="/icons/atom_export.png"
                       styleClass="smallIcon" />
                     <h:outputText value=" #{messages['label.contentview.export.atom']}" />
@@ -118,7 +111,6 @@
                       <f:param name="contentViewName" value="#{contentView.name}" />
                       <f:param name="currentPage" value="0" />
                       <f:param name="pageSize" value="0" />
-                      <f:param name="contentViewState" value="#{contentViewState}" />
                       <h:graphicImage value="/icons/csv_export.png"
                         alt="#{messages['label.contentview.export.csv']}"
                         title="#{messages['label.contentview.export.csv']}" />
@@ -134,17 +126,14 @@
                       <f:param name="contentViewName" value="#{contentView.name}" />
                       <f:param name="currentPage" value="0" />
                       <f:param name="pageSize" value="0" />
-                      <f:param name="contentViewState" value="#{contentViewState}" />
                       <h:graphicImage value="/icons/pdf_export.png"
                         alt="#{messages['label.contentview.export.pdf']}"
-                        title="#{messages['label.contentview.export.pdf']}"
-                        width="16" />
+                        title="#{messages['label.contentview.export.pdf']}" />
                       <h:outputText value=" #{messages['label.contentview.export.pdf']}"/>
                     </nxd:restDocumentLink>
                     <h:outputText value="  " />
                   </c:if>
 
-                </nxu:set>
                 </nxu:set>
                 <br />
 

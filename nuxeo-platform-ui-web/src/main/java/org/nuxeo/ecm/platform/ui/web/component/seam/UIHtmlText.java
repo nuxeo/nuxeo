@@ -25,6 +25,8 @@ import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 import javax.servlet.ServletRequest;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ui.util.JSF;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 
@@ -38,6 +40,8 @@ import com.lowagie.text.html.simpleparser.StyleSheet;
  * @since 5.4.1
  */
 public class UIHtmlText extends org.jboss.seam.pdf.ui.UIHtmlText {
+
+    private static final Log log = LogFactory.getLog(UIHtmlText.class);
 
     @Override
     public void encodeChildren(FacesContext context) throws IOException {
@@ -74,9 +78,14 @@ public class UIHtmlText extends org.jboss.seam.pdf.ui.UIHtmlText {
             base = base.substring(0, base.length() - 1);
         }
         interfaceProps.put("img_baseurl", base);
-        for (Object o : HTMLWorker.parseToList(new StringReader(html),
-                getStyle(), interfaceProps)) {
-            addToITextParent(o);
+        try {
+            for (Object o : HTMLWorker.parseToList(new StringReader(html),
+                    getStyle(), interfaceProps)) {
+                addToITextParent(o);
+            }
+        } catch (Exception e) {
+            // XXX avoid crash when rendering an image with resource not found
+            log.error("Error converting HTML to PDF", e);
         }
     }
 

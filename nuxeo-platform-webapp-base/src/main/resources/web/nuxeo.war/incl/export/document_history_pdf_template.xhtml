@@ -1,0 +1,49 @@
+<f:subview xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxp="http://nuxeo.org/nxweb/pdf">
+
+<nxp:paragraph>
+
+<nxp:font size="14" style="bold">
+  <nxp:paragraph>
+    #{messages['action.view.history']}
+  </nxp:paragraph>
+</nxp:font>
+
+<nxp:table columns="5" widths="2 3 2 2 2" widthPercentage="90" headerRows="1">
+  <nxp:cell grayFill=".6">
+    <nxp:paragraph alignment="center">#{messages['label.performedAction']}</nxp:paragraph>
+  </nxp:cell>
+  <nxp:cell grayFill=".6">
+    <nxp:paragraph alignment="center">#{messages['label.date']}</nxp:paragraph>
+  </nxp:cell>
+  <nxp:cell grayFill=".6">
+    <nxp:paragraph alignment="center">#{messages['label.username']}</nxp:paragraph>
+  </nxp:cell>
+  <nxp:cell grayFill=".6">
+    <nxp:paragraph alignment="center">#{messages['label.category']}</nxp:paragraph>
+  </nxp:cell>
+  <nxp:cell grayFill=".6">
+    <nxp:paragraph alignment="center">#{messages['label.lifecycle']}</nxp:paragraph>
+  </nxp:cell>
+  <c:forEach items="#{logEntries}" var="logEntry">
+    <nxp:cell>#{messages[logEntry.eventId]}</nxp:cell>
+    <nxp:cell>
+      <nxl:widgetType name="datetime" mode="pdf"
+        value="#{logEntry.eventDate}"
+        pattern="#{nxu:basicDateAndTimeFormater()}" />
+    </nxp:cell>
+    <nxp:cell>#{nxu:userFullName(logEntry.principalName)}</nxp:cell>
+    <nxp:cell>#{messages[logEntry.category]}</nxp:cell>
+    <nxp:cell>#{messages[logEntry.docLifeCycle]}</nxp:cell>
+  </c:forEach>
+</nxp:table>
+
+</nxp:paragraph>
+
+</f:subview>

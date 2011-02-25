@@ -1,0 +1,70 @@
+<f:subview xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxp="http://nuxeo.org/nxweb/pdf">
+
+<c:set var="hasMainBlob" value="#{!empty currentDocumentAsBlobHolder.blob}" />
+<c:set var="hasOtherBlobs" value="#{currentDocument.hasSchema('files') and !empty currentDocument.files.files}" />
+<c:if test="#{hasMainBlob or hasOtherBlobs}">
+
+  <nxp:font size="14" style="bold">
+    <nxp:paragraph>
+      #{messages['action.view.content']}
+    </nxp:paragraph>
+  </nxp:font>
+  
+  <c:if test="#{hasMainBlob}">
+    <nxp:paragraph>
+      <nxp:font style="bold">
+        <nxp:paragraph>
+          #{messages['label.summary.download.file']}
+        </nxp:paragraph>
+      </nxp:font>
+    </nxp:paragraph>
+    <nxp:paragraph alignment="center">
+      <nxp:anchor reference="#{nxd:fileUrl('downloadFile', currentDocument, 'blobholder:0', currentDocumentAsBlobHolder.blob.filename)}">
+        <nxp:html>
+          <nxh:graphicImage value="#{nxd:fileIconPath(currentDocumentAsBlobHolder.blob)}" />
+        </nxp:html>
+        <nxp:text value=" #{currentDocumentAsBlobHolder.blob.filename}"/>
+        <nxp:text value=" (#{nxu:printFileSize(currentDocumentAsBlobHolder.blob.length)})"/>
+        <nxp:html>
+          <nxh:graphicImage value="/icons/download.png" />
+        </nxp:html>
+      </nxp:anchor>
+    </nxp:paragraph>          
+  </c:if>
+  
+  <c:if test="#{hasOtherBlobs}">
+    <nxp:paragraph>
+      <nxp:font style="bold">
+        <nxp:paragraph>
+          #{messages['label.summary.download.attachments']}
+        </nxp:paragraph>
+      </nxp:font>
+    </nxp:paragraph>
+    <nxu:inputList value="#{currentDocument.files.files}"  id="files_input" model="model">
+      <nxp:paragraph alignment="center" spacingBefore="10">
+        <nxp:anchor reference="#{nxd:fileUrl('downloadFile', currentDocument, 'blobholder:0', currentDocumentAsBlobHolder.blob.filename)}">
+          <nxp:html>
+            <nxh:graphicImage
+              value="#{nxd:fileIconPath(currentDocument.files.files[model.rowIndex].file)}" />
+          </nxp:html>
+          <nxp:text value=" #{currentDocument.files.files[model.rowIndex].filename}"/>
+          <nxp:text value=" (#{nxu:printFileSize(currentDocument.files.files[model.rowIndex].file.length)})"/>
+          <nxp:html>
+            <nxh:graphicImage value="/icons/download.png" />
+          </nxp:html>
+        </nxp:anchor>
+      </nxp:paragraph>
+    </nxu:inputList>          
+  </c:if>
+
+</c:if>
+
+</f:subview>

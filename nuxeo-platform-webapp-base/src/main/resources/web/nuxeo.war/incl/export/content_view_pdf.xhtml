@@ -5,7 +5,7 @@
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
-  xmlns:p="http://jboss.com/products/seam/pdf">
+  xmlns:nxp="http://nuxeo.org/nxweb/pdf">
 
 <c:if test="false">
   displays a content view using PDF JSF library.
@@ -26,60 +26,27 @@
   <nxu:set var="selectedResultLayoutColumns"
     value="#{nxu:test(selectedResultLayoutColumns == null, contentView.currentResultLayoutColumns, selectedResultLayoutColumns)}"
     cache="true">
-  <nxu:set var="provider" value="#{contentView.currentPageProvider}"
-    cache="true">
 
-    <c:set var="title"
+    <c:set var="contentViewTitle"
       value="#{nxu:test(contentView.translateTitle, messages[contentView.title], contentView.title)}" />
-    <c:set var="titleOrId"
-      value="#{nxu:test(empty title, contentViewName, title)}" />
+    <nxp:paragraph>#{nxu:test(empty contentViewTitle, contentViewName, contentViewTitle)}</nxp:paragraph>
 
-    <p:document title="#{titleOrId}" orientation="landscape"
+    <nxp:document title="#{titleOrId}" orientation="landscape"
       fileName="#{contentViewName}.pdf">
 
       <f:facet name="header">
-        <p:footer borderWidthTop="1" borderColorTop="blue"
+        <nxp:footer borderWidthTop="1" borderColorTop="blue"
           borderWidthBottom="0" alignment="center">
-          #{titleOrId} [<p:pageNumber />]
-        </p:footer>
+          #{titleOrId} [<nxp:pageNumber />]
+        </nxp:footer>
       </f:facet>
 
-      <p:paragraph>#{titleOrId}</p:paragraph>
+      <nxp:paragraph>#{titleOrId}</nxp:paragraph>
 
-      <c:set var="emptySentence"
-        value="#{nxu:test(contentView.translateEmptySentence, messages[contentView.emptySentence], contentView.emptySentence)}" />
-      <c:if test="#{documents.rowCount == 0 and not provider.hasError()}">
-        <p:paragraph>
-          #{nxu:test(empty emptySentence, messages['label.content.emptyFolder'], emptySentence)}
-        </p:paragraph>
-      </c:if>
+      <ui:include src="/incl/export/content_view_pdf_template.xhtml" />
 
-      <c:if test="#{provider.hasError()}">
-        <p:paragraph>
-          #{provider.errorMessage}
-        </p:paragraph>
-      </c:if>
+    </nxp:document>
 
-      #{layoutColumnCounter.setCurrentIndex(0)}
-      <nxu:set var="countRows" value="true">
-        <nxl:layout name="#{contentView.currentResultLayout.name}"
-          mode="pdf" selectedColumns="#{selectedResultLayoutColumns}"
-          value="" />
-      </nxu:set>
-
-      <p:table columns="#{layoutColumnCounter.currentIndex}" headerRows="1">
-        <c:forEach var="row" items="#{provider.currentSelectPage.rows}"
-          varStatus="layoutListingStatus">
-          <c:set var="showListingHeader" value="#{layoutListingStatus.index == 0}" />
-          <nxl:layout name="#{contentView.currentResultLayout.name}"
-            value="#{row}" mode="pdf"
-            selectedColumns="#{selectedResultLayoutColumns}" />
-        </c:forEach>
-      </p:table>
-
-    </p:document>
-
-  </nxu:set>
   </nxu:set>
   </nxu:set>
   </nxu:set>

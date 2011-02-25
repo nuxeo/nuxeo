@@ -1,0 +1,58 @@
+<f:subview xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxp="http://nuxeo.org/nxweb/pdf">
+
+<c:if test="false">
+  displays a content view content using PDF JSF library.
+
+  needed parameters:
+  - contentView
+  - selectedResultLayoutColumns (optional)
+</c:if>
+
+<nxu:set var="provider" value="#{contentView.currentPageProvider}"
+  cache="true">
+
+  <c:set var="emptySentence"
+    value="#{nxu:test(contentView.translateEmptySentence, messages[contentView.emptySentence], contentView.emptySentence)}" />
+  <c:if test="#{provider.currentSelectPage.rowCount == 0 and not provider.hasError()}">
+    <nxp:paragraph>
+      #{nxu:test(empty emptySentence, messages['label.content.emptyFolder'], emptySentence)}
+    </nxp:paragraph>
+  </c:if>
+
+  <c:if test="#{provider.hasError()}">
+    <nxp:paragraph>
+      #{provider.errorMessage}
+    </nxp:paragraph>
+  </c:if>
+
+  #{layoutColumnCounter.setCurrentIndex(0)}
+  <nxu:set var="countRows" value="true">
+    <nxl:layout name="#{contentView.currentResultLayout.name}"
+      mode="pdf" selectedColumns="#{selectedResultLayoutColumns}"
+      value="" />
+  </nxu:set>
+  
+  <c:if test="#{not empty provider.currentSelectPage.rows}">
+    <nxp:paragraph spacingBefore="10">
+      <nxp:table columns="#{layoutColumnCounter.currentIndex}" headerRows="1">
+        <c:forEach var="row" items="#{provider.currentSelectPage.rows}"
+          varStatus="layoutListingStatus">
+          <c:set var="showListingHeader" value="#{layoutListingStatus.index == 0}" />
+          <nxl:layout name="#{contentView.currentResultLayout.name}"
+            value="#{row}" mode="pdf"
+            selectedColumns="#{selectedResultLayoutColumns}" />
+        </c:forEach>
+      </nxp:table>
+    </nxp:paragraph>
+  </c:if>
+
+</nxu:set>
+
+</f:subview>

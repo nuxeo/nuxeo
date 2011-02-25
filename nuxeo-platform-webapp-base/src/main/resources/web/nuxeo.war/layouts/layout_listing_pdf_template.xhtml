@@ -5,7 +5,7 @@
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:fn="http://java.sun.com/jsp/jstl/functions"
-  xmlns:p="http://jboss.com/products/seam/pdf">
+  xmlns:nxp="http://nuxeo.org/nxweb/pdf">
 <c:if test="#{countRows}">
   <c:forEach var="row" items="#{layout.rows}">
     <c:if test="#{not row.properties.isHidden}">
@@ -22,14 +22,14 @@
         <c:choose>
           <c:when test="#{layoutColumn.properties.useFirstWidgetLabelAsColumnHeader}">
             <c:if test="#{!layoutColumn.widgets[0].translated}">
-              <p:cell horizontalAlignment="center" verticalAlignment="middle">#{layoutColumn.widgets[0].label}</p:cell>
+              <nxp:cell horizontalAlignment="center" verticalAlignment="middle">#{layoutColumn.widgets[0].label}</nxp:cell>
             </c:if>
             <c:if test="#{layoutColumn.widgets[0].translated}">
-              <p:cell horizontalAlignment="center" verticalAlignment="middle">#{messages[layoutColumn.widgets[0].label]}</p:cell>
+              <nxp:cell horizontalAlignment="center" verticalAlignment="middle">#{messages[layoutColumn.widgets[0].label]}</nxp:cell>
             </c:if>
           </c:when>
           <c:otherwise>
-            <p:cell></p:cell>
+            <nxp:cell></nxp:cell>
           </c:otherwise>
         </c:choose>
       </c:if>
@@ -39,11 +39,11 @@
 
   <nxl:layoutColumn>
     <c:if test="#{not layoutColumn.properties.isHidden}">
-      <p:cell horizontalAlignment="left" verticalAlignment="middle">
+      <nxp:cell horizontalAlignment="left" verticalAlignment="middle">
         <nxl:layoutColumnWidget>
           <nxl:widget widget="#{widget}" value="#{value}" />
         </nxl:layoutColumnWidget>
-      </p:cell>    
+      </nxp:cell>    
     </c:if>
   </nxl:layoutColumn>
 

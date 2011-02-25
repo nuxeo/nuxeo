@@ -1,0 +1,226 @@
+<f:subview xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:p="http://jboss.com/products/seam/pdf"
+  xmlns:nxp="http://nuxeo.org/nxweb/seam/pdf">
+
+<c:if test="false">
+  displays a document view using PDF JSF library.
+</c:if>
+
+<c:set var="titleOrId" value="#{nxd:titleOrId(currentDocument)}" />
+
+<p:document title="#{titleOrId}" orientation="portrait"
+  fileName="#{titleOrId}.pdf">
+
+  <p:table columns="2" widths="1 3">
+    <p:cell>#{messages['label.title']}</p:cell>
+    <p:cell><p:paragraph alignment="center">#{titleOrId}</p:paragraph></p:cell>
+    <p:cell>#{messages['label.exportview.pdfExport.generationDate']}</p:cell>
+    <p:cell>
+      <p:paragraph alignment="center">
+        <nxl:widgetType name="datetime" mode="pdf"
+          value="#{currentDate}"
+          pattern="#{nxu:basicDateAndTimeFormater()}" />
+      </p:paragraph>
+    </p:cell>
+    <p:cell colspan="2">
+      <p:barCode type="code128"
+        barHeight="40"
+        textSize="20"
+        code="#{currentDocument.id}"
+        codeType="code128_ucc"
+        altText="#{currentDocument.id}" />
+    </p:cell>
+  </p:table>
+
+  <p:paragraph>
+    <p:font size="14" style="bold">
+      <p:paragraph alignment="justify">
+        #{messages['label.permalink']}
+      </p:paragraph>
+    </p:font>
+    <p:paragraph />
+    <p:list style="numbered">
+      <p:listItem>
+        <nxu:set var="url"
+          value="#{nxd:complexDocumentUrl('default', currentDocument, null, null, true)}">
+          <p:anchor reference="#{url}">#{url}</p:anchor>
+        </nxu:set>
+      </p:listItem>
+      <p:listItem>
+        <nxu:set var="url"
+          value="#{nxd:complexDocumentUrl('id', currentDocument, null, null, true)}">
+          <p:anchor reference="#{url}">#{url}</p:anchor>
+        </nxu:set>
+      </p:listItem>
+    </p:list>
+    
+    <nxu:set var="exportActions"
+      value="#{webActions.getActionsList('DOCUMENT_EXPORT_VIEW_ACTION')}"
+      cache="true">
+      <c:if test="#{not empty exportActions}">
+        <c:forEach var="action" items="#{exportActions}">
+          <p:paragraph>
+            <nxp:html>
+              <nxu:graphicImage value="#{action.icon}" />
+            </nxp:html>
+            <p:anchor reference="">
+              <p:text value=" #{messages[action.label]}" />              
+            </p:anchor>
+          </p:paragraph>
+        </c:forEach>
+      </c:if>
+    </nxu:set>
+    
+  </p:paragraph>
+
+  <p:paragraph>
+    <p:font size="14" style="bold">
+      <p:paragraph alignment="justify">
+        #{messages['action.view.metadata.specific']}
+      </p:paragraph>
+    </p:font>
+    <nxl:documentLayout value="#{currentDocument}" mode="pdf"
+      template="/layouts/layout_pdf_template.xhtml" />
+  </p:paragraph>
+
+  <p:paragraph>
+    <p:font size="14" style="bold">
+      <p:paragraph alignment="justify">
+        #{messages['action.view.metadata.common']}
+      </p:paragraph>
+    </p:font>
+    <nxl:layout value="#{currentDocument}" mode="pdf"
+      name="dublincore" 
+      template="/layouts/layout_pdf_template.xhtml" />
+  </p:paragraph>
+
+  <c:set var="hasMainBlob" value="#{!empty currentDocumentAsBlobHolder.blob}" />
+  <c:set var="hasOtherBlobs" value="#{currentDocument.hasSchema('files') and !empty currentDocument.files.files}" />
+  <c:if test="#{hasMainBlob or hasOtherBlobs}">
+
+    <p:paragraph alignment="justify">
+      <p:font size="14" style="bold">
+        <p:paragraph alignment="justify">
+          #{messages['action.view.content']}
+        </p:paragraph>
+      </p:font>
+
+      <c:if test="#{hasMainBlob}">
+        <p:paragraph>
+          <p:font style="bold">
+            <p:paragraph alignment="justify">
+              #{messages['label.summary.download.file']}
+            </p:paragraph>
+          </p:font>
+        </p:paragraph>
+        <p:paragraph>
+          <p:anchor reference="#{nxd:fileUrl('downloadFile', currentDocument, 'blobholder:0', currentDocumentAsBlobHolder.blob.filename)}">
+            <nxp:html>
+              <nxh:graphicImage value="#{nxd:fileIconPath(currentDocumentAsBlobHolder.blob)}" />
+            </nxp:html>
+            <p:text value=" #{currentDocumentAsBlobHolder.blob.filename}"/>
+            <p:text value=" (#{nxu:printFileSize(currentDocumentAsBlobHolder.blob.length)})"/>
+            <nxp:html>
+              <nxh:graphicImage value="/icons/download.png" />
+            </nxp:html>
+          </p:anchor>
+        </p:paragraph>          
+      </c:if>
+
+      <c:if test="#{hasOtherBlobs}">
+        <p:paragraph>
+          <p:font style="bold">
+            <p:paragraph alignment="justify">
+              #{messages['label.summary.download.attachments']}
+            </p:paragraph>
+          </p:font>
+        </p:paragraph>
+        <nxu:inputList value="#{currentDocument.files.files}"  id="files_input" model="model">
+          <p:paragraph>
+            <p:anchor reference="#{nxd:fileUrl('downloadFile', currentDocument, 'blobholder:0', currentDocumentAsBlobHolder.blob.filename)}">
+              <nxp:html>
+                <nxh:graphicImage
+                  value="#{nxd:fileIconPath(currentDocument.files.files[model.rowIndex].file)}" />
+              </nxp:html>
+              <p:text value=" #{currentDocument.files.files[model.rowIndex].filename}"/>
+              <p:text value=" (#{nxu:printFileSize(currentDocument.files.files[model.rowIndex].file.length)})"/>
+              <nxp:html>
+                <nxh:graphicImage value="/icons/download.png" />
+              </nxp:html>
+            </p:anchor>
+          </p:paragraph>
+        </nxu:inputList>          
+      </c:if>
+    </p:paragraph>
+
+  </c:if>
+
+  <p:newPage />
+  <p:paragraph>
+
+    <p:font size="14" style="bold">
+      <p:paragraph alignment="justify">
+        #{messages['action.view.history']}
+      </p:paragraph>
+    </p:font>
+
+    <ui:include src="/incl/export/document_history_pdf_template.xhtml" />
+
+  </p:paragraph>
+
+  <nxu:set var="exportContentViews"
+    value="#{documentContentViewActions.getExportContentViewsForCurrentDocument()}"
+    cache="true">
+    <c:if test="#{not empty exportContentViews}">
+
+      <p:newPage />
+      <p:paragraph>
+        <p:font size="14" style="bold">
+          <p:paragraph alignment="justify">
+            #{messages['label.exportview.contentviews']}
+          </p:paragraph>
+        </p:font>
+
+        <c:forEach var="contentViewByCategory"
+          items="#{documentContentViewActions.getExportContentViewsForCurrentDocument()}">
+  
+          <p:font size="12" style="bold">
+            <p:paragraph alignment="justify">
+              #{messages['label.exportview.contentviews.category']} '#{contentViewByCategory.key}'
+            </p:paragraph>
+          </p:font>
+  
+          <c:forEach var="contentViewHeader"
+            items="#{contentViewByCategory.value}">
+
+            <c:set var="contentViewTitle"
+              value="#{nxu:test(contentViewHeader.translateTitle, messages[contentViewHeader.title], contentViewHeader.title)}" />
+            <p:font size="10" style="bold">
+              <p:paragraph alignment="justify">
+                #{nxu:test(empty contentViewTitle, contentViewHeader.name, contentViewTitle)}
+              </p:paragraph>
+            </p:font>
+
+            <nxu:set var="contentView"
+              value="#{contentViewActions.getContentViewWithProvider(contentViewHeader.name)}"
+              cache="true">
+              <ui:include src="/incl/export/content_view_pdf_template.xhtml" />
+            </nxu:set>
+          </c:forEach>
+  
+        </c:forEach>
+  
+      </p:paragraph>
+    </c:if>
+  </nxu:set>
+
+</p:document>
+
+</f:subview>

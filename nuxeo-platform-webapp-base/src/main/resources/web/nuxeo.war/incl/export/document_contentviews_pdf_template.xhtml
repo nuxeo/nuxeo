@@ -1,0 +1,61 @@
+<f:subview xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxp="http://nuxeo.org/nxweb/pdf">
+
+<c:if test="false">
+  displays a document content views using PDF JSF library.
+
+  needed parameters:
+  - exportContentViews
+</c:if>
+
+<nxp:font size="14" style="bold">
+  <nxp:paragraph>
+    #{messages['label.exportview.contentviews']}
+  </nxp:paragraph>
+</nxp:font>
+
+<c:forEach var="contentViewByCategory"
+  items="#{exportContentViews}">
+
+  <nxp:font size="12" style="bold">
+    <nxp:paragraph>
+      #{messages['label.exportview.contentviews.category']} '#{contentViewByCategory.key}'
+    </nxp:paragraph>
+  </nxp:font>
+
+  <c:forEach var="contentViewHeader"
+    items="#{contentViewByCategory.value}">
+  
+    <nxu:set var="contentView"
+      value="#{contentViewActions.getContentViewWithProvider(contentViewHeader.name)}"
+      cache="true">
+
+    <c:set var="contentViewTitle"
+      value="#{nxu:test(contentViewHeader.translateTitle, messages[contentViewHeader.title], contentViewHeader.title)}" />
+    <nxp:paragraph>
+      <nxp:font size="10" style="bold">
+        #{nxu:test(empty contentViewTitle, contentViewHeader.name, contentViewTitle)}
+      </nxp:font>
+    </nxp:paragraph>
+    <ui:include src="/incl/export/content_view_pdf_template.xhtml" />
+
+    <nxp:paragraph algnment="justify">
+      <nxp:font size="10" style="italic">
+        #{messages['label.contentview.exportLinks']}
+      </nxp:font>
+    </nxp:paragraph>
+    <ui:include src="/incl/export/content_view_export_pdf_template.xhtml" />
+
+    </nxu:set>
+
+  </c:forEach>
+
+</c:forEach>
+
+</f:subview>

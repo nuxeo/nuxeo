@@ -189,6 +189,23 @@ public class RestHelper implements Serializable {
         }
     }
 
+    public String getDocumentUrl(DocumentModel doc) {
+        return DocumentModelFunctions.documentUrl(doc);
+    }
+
+    public String getDocumentUrl(DocumentModel doc, String viewId,
+            boolean newConversation) {
+        return DocumentModelFunctions.documentUrl(null, doc, viewId, null,
+                newConversation, null);
+    }
+
+    public String getDocumentUrl(String patternName, DocumentModel doc,
+            String viewId, Map<String, String> parameters,
+            boolean newConversation) {
+        return DocumentModelFunctions.documentUrl(patternName, doc, viewId,
+                parameters, newConversation, null);
+    }
+
     @Factory(value = "baseURL", scope = ScopeType.CONVERSATION)
     public String getBaseURL() {
         if (baseURL.equals("")) {
@@ -203,10 +220,11 @@ public class RestHelper implements Serializable {
     }
 
     public String doPrint(String defaultTheme) throws IOException {
-        return  doPrint(navigationContext.getCurrentDocument(), defaultTheme);
+        return doPrint(navigationContext.getCurrentDocument(), defaultTheme);
     }
 
-    public String doPrint(DocumentModel doc, String defaultTheme) throws IOException {
+    public String doPrint(DocumentModel doc, String defaultTheme)
+            throws IOException {
         FacesContext facesContext = FacesContext.getCurrentInstance();
         if (facesContext == null) {
             return null;
@@ -221,9 +239,9 @@ public class RestHelper implements Serializable {
     public String getPrintUrl(String defaultTheme) {
         return getPrintUrl(navigationContext.getCurrentDocument(), defaultTheme);
     }
-        
+
     public String getPrintUrl(DocumentModel doc, String defaultTheme) {
-        Map<String, String> parameters  = new HashMap<String, String>();
+        Map<String, String> parameters = new HashMap<String, String>();
         int separatorIndex = defaultTheme.indexOf("/");
         if (separatorIndex != -1) {
             // defaultTheme includes the default page
@@ -233,8 +251,8 @@ public class RestHelper implements Serializable {
             sb.append("/print");
             parameters.put("theme", sb.toString());
         }
-        return DocumentModelFunctions.documentUrl(null, doc, null,
-                parameters, false, null);
+        return DocumentModelFunctions.documentUrl(null, doc, null, parameters,
+                false, null);
     }
 
     public static HttpServletResponse getHttpServletResponse() {

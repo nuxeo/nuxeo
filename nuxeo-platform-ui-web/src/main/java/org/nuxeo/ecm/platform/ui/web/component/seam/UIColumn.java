@@ -31,7 +31,7 @@ import org.jboss.seam.excel.ui.UIWorksheet;
 import org.jboss.seam.excel.ui.command.Command;
 
 /**
- * Overrides default column for better intropection of children.
+ * Overrides default column for better introspection of children.
  * <p>
  * If e:column tags are not direct children, the work sheet will not find them.
  * As layout templating adds additional JSF components, the children tree has

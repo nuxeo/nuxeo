@@ -21,12 +21,12 @@ package org.nuxeo.ecm.platform.forms.layout.facelets.plugins;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.seam.pdf.ui.UIHtmlText;
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinWidgetModes;
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
 import org.nuxeo.ecm.platform.forms.layout.api.exceptions.WidgetException;
 import org.nuxeo.ecm.platform.forms.layout.facelets.FaceletHandlerHelper;
 import org.nuxeo.ecm.platform.forms.layout.facelets.LeafFaceletHandler;
+import org.nuxeo.ecm.platform.ui.web.component.seam.UIHtmlText;
 import org.nuxeo.ecm.platform.ui.web.directory.DirectoryEntryOutputComponent;
 import org.nuxeo.ecm.platform.ui.web.directory.SelectOneListboxComponent;
 

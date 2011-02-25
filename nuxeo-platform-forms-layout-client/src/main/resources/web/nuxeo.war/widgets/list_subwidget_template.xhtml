@@ -5,7 +5,7 @@
   xmlns:nxdir="http://nuxeo.org/nxdirectory"
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
-  xmlns:p="http://jboss.com/products/seam/pdf"
+  xmlns:nxp="http://nuxeo.org/nxweb/pdf"
   id="#{widget.id}">
 <c:if test="#{nxl:isLikePlainMode(widget.mode) and widget.mode != 'pdf'}">
   <nxu:set var="numberOfSubWidgets" value="#{widget.subWidgets.length}" cache="true">
@@ -16,14 +16,14 @@
   </nxu:set>
 </c:if>
 <c:if test="#{widget.mode == 'pdf'}">
-  <p:html>
+  <nxp:html>
     <nxu:set var="numberOfSubWidgets" value="#{widget.subWidgets.length}" cache="true">
       <nxl:subWidget>
         <nxl:widget widget="#{widget}" value="#{field}" />
         <h:outputText value=", " rendered="#{widgetIndex != numberOfSubWidgets - 1}" />
       </nxl:subWidget>
     </nxu:set>
-  </p:html>
+  </nxp:html>
 </c:if>
 <c:if test="#{widget.mode != 'edit' and not nxl:isLikePlainMode(widget.mode)}">
 

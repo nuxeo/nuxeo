@@ -237,8 +237,8 @@
       <param-value>
         /WEB-INF/nxdirectory.taglib.xml; /WEB-INF/nxweb-html.taglib.xml;
         /WEB-INF/nxweb-util.taglib.xml; /WEB-INF/nxweb-document.taglib.xml;
-        /WEB-INF/nxweb-ajax4jsf.taglib.xml; /WEB-INF/nx-seam-excel.taglib.xml;
-        /WEB-INF/nx-seam-rss.taglib.xml; /WEB-INF/nx-seam-pdf.taglib.xml;
+        /WEB-INF/nxweb-ajax4jsf.taglib.xml; /WEB-INF/nxweb-pdf.taglib.xml;
+        /WEB-INF/nx-seam-excel.taglib.xml; /WEB-INF/nx-seam-rss.taglib.xml;
       </param-value>
     </context-param>
 
@@ -529,6 +529,15 @@
       </component-type>
       <component-class>
         org.nuxeo.ecm.platform.ui.web.component.seam.UIHtmlText
+      </component-class>
+    </component>
+
+    <component>
+      <component-type>
+        org.nuxeo.ecm.platform.ui.web.component.seam.UIImage
+      </component-type>
+      <component-class>
+        org.nuxeo.ecm.platform.ui.web.component.seam.UIImage
       </component-class>
     </component>
 

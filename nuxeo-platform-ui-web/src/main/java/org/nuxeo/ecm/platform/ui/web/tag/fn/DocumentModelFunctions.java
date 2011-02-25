@@ -522,8 +522,8 @@ public final class DocumentModelFunctions implements LiveEditConstants {
      *
      * @param patternName
      * @param doc The document model.
-     * @param index index of the element containing the blob. <code>index</code>
-     *            starts at 0.
+     * @param index index of the element containing the blob.
+     *            <code>index</code> starts at 0.
      * @param filename The filename of the blob.
      * @return the REST URL for the blob, or <code>null</code> if an error
      *         occurred.
@@ -601,7 +601,7 @@ public final class DocumentModelFunctions implements LiveEditConstants {
             boolean newConversation, HttpServletRequest req) {
         try {
             DocumentLocation docLoc = new DocumentLocationImpl(doc);
-            if (viewId == null) {
+            if (viewId == null || viewId.length() == 0) {
                 viewId = getDefaultView(doc);
             }
             parameters = parameters == null ? new HashMap<String, String>()
@@ -615,7 +615,7 @@ public final class DocumentModelFunctions implements LiveEditConstants {
 
             // generate url
             URLPolicyService service = Framework.getService(URLPolicyService.class);
-            if (patternName == null) {
+            if (patternName == null || patternName.length() == 0) {
                 patternName = service.getDefaultPatternName();
             }
 
@@ -772,8 +772,8 @@ public final class DocumentModelFunctions implements LiveEditConstants {
     }
 
     /**
-     * Build the nxedit URL for the "create new document from template" use case
-     * with "File" doc type and "file" schema
+     * Build the nxedit URL for the "create new document from template" use
+     * case with "File" doc type and "file" schema
      *
      * @param template the document holding the blob to be used as template
      * @return the encoded URL string
@@ -787,7 +787,8 @@ public final class DocumentModelFunctions implements LiveEditConstants {
     }
 
     /**
-     * Build the nxedit URL for the "create new document from template" use case
+     * Build the nxedit URL for the "create new document from template" use
+     * case
      *
      * @param template the document holding the blob to be used as template
      * @param templateSchemaName the schema of the blob holding the template
@@ -797,7 +798,8 @@ public final class DocumentModelFunctions implements LiveEditConstants {
      * @param schemaName the schema of the new blob to be saved as attachment
      * @param blobFieldName the field name of the new blob to be saved as
      *            attachment
-     * @param filenameFieldName the field name of the filename of the attachment
+     * @param filenameFieldName the field name of the filename of the
+     *            attachment
      * @return the encoded URL string
      * @throws ClientException if the URL encoding fails
      */
