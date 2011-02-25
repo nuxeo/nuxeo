@@ -45,15 +45,15 @@ Needed parameters:
         <c:if test="#{contentView.currentResultLayout.showCSVExport}">
           <li>
             <nxd:restDocumentLink document="#{currentDocument}"
-              view="csv" addTabInfo="false"
+              view="xl" addTabInfo="false"
               newConversation="true" target="_blank">
               <f:param name="contentViewName" value="#{contentView.name}" />
               <f:param name="currentPage" value="0" />
               <f:param name="pageSize" value="0" />
               <f:param name="contentViewState" value="#{contentViewState}" />
               <h:graphicImage value="/icons/csv_export.png"
-                alt="#{messages['label.contentview.export.csv']}"
-                title="#{messages['label.contentview.export.csv']}" />
+                alt="#{messages['label.contentview.export.xl']}"
+                title="#{messages['label.contentview.export.xl']}" />
             </nxd:restDocumentLink>
           </li>
         </c:if>
