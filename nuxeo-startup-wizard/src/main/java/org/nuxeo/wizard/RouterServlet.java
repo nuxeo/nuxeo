@@ -38,8 +38,8 @@ import org.nuxeo.wizard.context.Context;
 import org.nuxeo.wizard.context.ParamCollector;
 import org.nuxeo.wizard.helpers.IPValidator;
 import org.nuxeo.wizard.helpers.NumberValidator;
-import org.nuxeo.wizard.nav.SimpleNavigationHandler;
 import org.nuxeo.wizard.nav.Page;
+import org.nuxeo.wizard.nav.SimpleNavigationHandler;
 
 /**
  * Main entry point : find the right handler and start jsp rendering
@@ -284,12 +284,14 @@ public class RouterServlet extends HttpServlet {
         changedParameters.put(ConfigurationGenerator.PARAM_WIZARD_DONE, "true");
         try {
             cg.saveFilteredConfiguration(changedParameters);
+
+            // // => page will trigger the restart
+            // new Page("", "reStarting.jsp").dispatchToJSP(req, resp);
+            currentPage.next().dispatchToJSP(req, resp, true);
         } catch (ConfigurationException e) {
             log.error("Could not save wizard parameters.", e);
+            currentPage.dispatchToJSP(req, resp);
         }
-
-        // // => page will trigger the restart
-        new Page("", "reStarting.jsp").dispatchToJSP(req, resp);
     }
 
     public void handleGeneralPOST(Page currentPage, HttpServletRequest req,

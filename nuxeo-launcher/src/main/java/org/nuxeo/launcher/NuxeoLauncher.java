@@ -615,6 +615,14 @@ public abstract class NuxeoLauncher {
             configure();
 
             if (isWizardRequired()) {
+                if (!configurationGenerator.isForceGeneration()) {
+                    log.error("Cannot start setup wizard with "
+                            + ConfigurationGenerator.PARAM_FORCE_GENERATION
+                            + "=false. Either set it to true or once, either set "
+                            + ConfigurationGenerator.PARAM_WIZARD_DONE
+                            + "=true to skip the wizard.");
+                    return false;
+                }
                 prepareWizardStart();
             } else {
                 cleanupPostWizard();
