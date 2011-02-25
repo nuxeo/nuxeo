@@ -1,7 +1,8 @@
 <%@page import="org.nuxeo.wizard.helpers.ServerController"%>
 <%@ include file="includes/header.jsp"%>
 
-<div id="loading"><fmt:message key="label.restart.wait" /></div>
+<div id="loading"><fmt:message key="label.restart.wait" /><br/><br/>
+<img src="<%=contextPath%>/images/restart_waiter.gif" /></div>
 
 <%@ include file="includes/footer.jsp"%>
 
@@ -12,8 +13,8 @@
 
 <script type="text/javascript">
     var intId = setInterval(function isNuxeoReady() {
-        $.get("/nuxeo/login.jsp", function(data, textStatus) {
-            location.href="/nuxeo/"
+        $.get("<%=contextPath%>/login.jsp", function(data, textStatus) {
+            window.location.href='<%=contextPath%>/';
         });
     }, 1000);
 </script>
