@@ -43,6 +43,9 @@ public class NavTreeDescriptor implements Serializable {
     @XNode("@order")
     private Integer order = 100;
 
+    @XNode("@enabled")
+    private boolean enabled = true;
+
     public boolean isDirectoryTreeBased() {
         return directoryTreeBased;
     }
@@ -91,6 +94,14 @@ public class NavTreeDescriptor implements Serializable {
 
     public Integer getOrder() {
         return order;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
     }
 
 }

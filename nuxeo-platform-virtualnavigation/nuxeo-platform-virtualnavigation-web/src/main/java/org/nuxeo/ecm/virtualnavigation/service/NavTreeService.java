@@ -20,7 +20,9 @@ package org.nuxeo.ecm.virtualnavigation.service;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.nuxeo.ecm.virtualnavigation.action.NavTreeDescriptor;
 import org.nuxeo.ecm.webapp.directory.DirectoryTreeService;
@@ -33,16 +35,17 @@ import org.nuxeo.runtime.model.DefaultComponent;
  * Very simple component to manage Navigation tree registration
  *
  * @author Thierry Delprat
+ * @author Thierry Martins
  */
 public class NavTreeService extends DefaultComponent {
 
     public static String NAVTREE_EP = "navigationTree";
 
-    protected List<NavTreeDescriptor> descriptors;
+    protected Map<String, NavTreeDescriptor> registry;
 
     public List<NavTreeDescriptor> getTreeDescriptors() {
         List<NavTreeDescriptor> allTrees = new ArrayList<NavTreeDescriptor>();
-        allTrees.addAll(descriptors);
+        allTrees.addAll(registry.values());
         List<NavTreeDescriptor> directoryTrees = getDirectoryTrees();
         if (directoryTrees != null) {
             allTrees.addAll(directoryTrees);
@@ -71,13 +74,24 @@ public class NavTreeService extends DefaultComponent {
             String extensionPoint, ComponentInstance contributor)
             throws Exception {
         if (NAVTREE_EP.equals(extensionPoint)) {
-            descriptors.add((NavTreeDescriptor) contribution);
+            NavTreeDescriptor contrib = (NavTreeDescriptor) contribution;
+            if (registry.containsKey(contrib.getTreeId())) {
+                registry.remove(contrib.getTreeId());
+            }
+            if (contrib.isEnabled()) {
+                registry.put(contrib.getTreeId(), contrib);
+            }
         }
     }
 
     @Override
     public void activate(ComponentContext context) throws Exception {
-        descriptors = new ArrayList<NavTreeDescriptor>();
+        registry = new HashMap<String, NavTreeDescriptor>();
+    }
+
+    @Override
+    public void deactivate(ComponentContext context) {
+        registry = null;
     }
 
     /**
