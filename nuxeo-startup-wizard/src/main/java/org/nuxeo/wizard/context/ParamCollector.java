@@ -70,8 +70,8 @@ public class ParamCollector {
         try {
             Properties distribution = new Properties();
             distribution.load(new FileInputStream(new File(
-                    configurationGenerator.getNuxeoHome(), "config"
-                            + File.separator + "distribution.properties")));
+                    configurationGenerator.getConfigDir(),
+                    "distribution.properties")));
             distributionName = distribution.getProperty(
                     "org.nuxeo.distribution.name", "dm").toLowerCase();
         } catch (FileNotFoundException e) {
