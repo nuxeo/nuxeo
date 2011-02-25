@@ -17,6 +17,9 @@
 
 package org.nuxeo.opensocial.shindig.crypto;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import org.nuxeo.common.xmap.annotation.XNode;
@@ -95,7 +98,7 @@ public class OpenSocialDescriptor {
      * to access the dashboard. Will be colon separated.
      */
 
-    protected String trustedHosts;
+    protected List<String> trustedHosts = new ArrayList<String>();
 
     public String getSigningKey() {
         return signingKey;
@@ -119,10 +122,11 @@ public class OpenSocialDescriptor {
     @XNode("trustedHosts")
     public void setTrustedHosts(String trustedHosts) {
         // Add the nuxeo bind address as default trusted host
-        this.trustedHosts = getTrustedHostForNuxeoBindAddress();
+        String allTrustedHosts = getTrustedHostForNuxeoBindAddress();
         if (trustedHosts != null && !trustedHosts.isEmpty()) {
-            this.trustedHosts += TRUSTED_HOSTS_SEPARATOR + trustedHosts;
+            allTrustedHosts += TRUSTED_HOSTS_SEPARATOR + trustedHosts;
         }
+        this.trustedHosts.addAll(Arrays.asList(allTrustedHosts.split(TRUSTED_HOSTS_SEPARATOR)));
     }
 
     /**
@@ -142,11 +146,17 @@ public class OpenSocialDescriptor {
     }
 
     public String[] getTrustedHosts() {
-        return trustedHosts.split(TRUSTED_HOSTS_SEPARATOR);
+        return trustedHosts.toArray(new String[trustedHosts.size()]);
     }
 
     public boolean isTrustedHost(String host) {
-        return true;
+        // special case
+        if (host.equals(LOCALHOST_BIND_ADDRESS) || host.startsWith("127.")) {
+            if (trustedHosts.contains(LOCALHOST_BIND_ADDRESS)) {
+                return true;
+            }
+        }
+        return trustedHosts.contains(host);
     }
 
     /**

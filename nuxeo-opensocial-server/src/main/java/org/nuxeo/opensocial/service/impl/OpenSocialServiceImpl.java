@@ -205,6 +205,11 @@ public class OpenSocialServiceImpl extends DefaultComponent implements
         return os.getTrustedHosts();
     }
 
+    @Override
+    public boolean isTrustedHost(String host) {
+        return os.isTrustedHost(host);
+    }
+
     public byte[] getSigningStateKeyBytes() {
         try {
             if (signingStateKeyBytes == null) {

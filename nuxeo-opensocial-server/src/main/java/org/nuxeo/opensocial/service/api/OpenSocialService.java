@@ -79,6 +79,12 @@ public interface OpenSocialService {
     String[] getTrustedHosts();
 
     /**
+     * Returns {@code true} if the given host is a trusted host, {@code false}
+     * otherwise.
+     */
+    boolean isTrustedHost(String host);
+
+    /**
      * We have had to make this public because it must be called at exactly the
      * right time the initialization sequence. This should be called BEFORE
      * guice initialization of shindig happens.
