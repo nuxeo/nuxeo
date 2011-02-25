@@ -20,11 +20,11 @@
         <configuration>
           <artifactItems>
             <artifactItem>
-              <groupId>org.seleniumhq.selenium.server</groupId>
+              <groupId>org.seleniumhq.selenium</groupId>
               <artifactId>selenium-server</artifactId>
-              <version>1.0.3</version>
+              <version>2.0a4</version>
               <classifier>standalone</classifier>
-              <overWrite>false</overWrite>
+              <overWrite>true</overWrite>
               <outputDirectory>.</outputDirectory>
               <destFileName>selenium-server.jar</destFileName>
             </artifactItem>
