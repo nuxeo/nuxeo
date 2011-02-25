@@ -25,7 +25,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.chemistry.opencmis.commons.server.CallContext;
 import org.apache.chemistry.opencmis.server.shared.CallContextHandler;
-import org.apache.commons.codec.binary.Base64;
 
 /**
  * Call Context Handler for Nuxeo authentication that extracts the relevant user

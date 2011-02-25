@@ -1114,7 +1114,9 @@ public class NuxeoCmisService extends AbstractCmisService {
         try {
             AuditReader reader = Framework.getService(AuditReader.class);
             if (reader == null) {
-                throw new CmisRuntimeException("Cannot find audit service");
+                log.warn("Audit Service not found. latest change log token will be '0'");
+                return "0";
+                //throw new CmisRuntimeException("Cannot find audit service");
             }
             // TODO XXX repositoryId as well
             Map<String, Object> params = new HashMap<String, Object>();
