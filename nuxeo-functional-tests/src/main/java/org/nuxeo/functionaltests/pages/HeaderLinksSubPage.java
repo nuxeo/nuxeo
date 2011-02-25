@@ -53,4 +53,8 @@ public class HeaderLinksSubPage extends AbstractPage {
         return userActions.getText();
     }
 
+    public NavigationSubPage getNavigationSubPage() {
+        return asPage(NavigationSubPage.class);
+    }
+
 }

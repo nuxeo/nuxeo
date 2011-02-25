@@ -21,9 +21,11 @@ import java.util.Date;
 
 import org.junit.Test;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
-import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedException;
 import org.nuxeo.functionaltests.pages.UsersGroupsBasePage;
 import org.nuxeo.functionaltests.pages.forms.WorkspaceFormPage;
+import org.nuxeo.functionaltests.pages.tabs.AccessRightsSubPage;
+import org.nuxeo.functionaltests.pages.tabs.UsersTabSubPage;
+
 import static junit.framework.Assert.assertEquals;
 
 /**
@@ -44,26 +46,29 @@ public class ITModifyWorskpaceDescription extends AbstractTest {
 
     @Test
     public void testModifyWsDescription() throws Exception {
-        DocumentBasePage documentBasePage = null;
-        // Login as jsmith doesn't work for now as members doesn't have write
-        // rights on Workspaces
-        documentBasePage = login().getContentTab().goToDocument("Workspaces");
-        /*
-        try {
-            documentBasePage = login("jsmith", "jsmith1").getContentTab().goToDocument(
-                    "Workspaces");
-        } catch (Exception e) {
-            // create user, and try again
-            UsersGroupsBasePage usergroupPage = login().getHeaderLinks().goToUserManagementPage();
+
+        // As an administrator, check that jsmith is created and has rights
+        UsersGroupsBasePage usergroupPage = login().getHeaderLinks().goToUserManagementPage();
+        UsersTabSubPage page = usergroupPage.getUsersTab().searchUser("jsmith");
+        if (!page.isUserFound("jsmith")) {
+
             usergroupPage = usergroupPage.getUsersTab().getUserCreatePage().createUser(
                     "jsmith", "John", "Smith", "Nuxeo", "jsmith@nuxeo.com",
                     "jsmith1", "members");
-            usergroupPage.getHeaderLinks().logout();
-
-            documentBasePage = login("jsmith", "jsmith1").getContentTab().goToDocument(
-                    "Workspaces");
         }
-        */
+        DocumentBasePage documentBasePage = usergroupPage.getHeaderLinks().getNavigationSubPage().goToDocument(
+                "Workspaces");
+        AccessRightsSubPage accessRightSubTab = documentBasePage.getManageTab().getAccessRightsSubTab();
+        if (!accessRightSubTab.hasPermissionForUser("Write", "jsmith")) {
+            accessRightSubTab.addPermissionForUser("jsmith", "Write", true);
+        }
+
+        accessRightSubTab.getHeaderLinks().logout();
+
+        // Starting the test for real
+        documentBasePage = login("jsmith", "jsmith1").getContentTab().goToDocument(
+                "Workspaces");
+
         // create a new workspace in there named workspaceDescriptionModify
         // (current time)
         WorkspaceFormPage workspaceCreationFormPage = documentBasePage.getWorkspaceContentTab().getWorkspaceCreatePage();

@@ -16,6 +16,7 @@
  */
 package org.nuxeo.functionaltests.pages;
 
+import org.nuxeo.functionaltests.pages.tabs.ManageTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.ContentTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.EditTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.SummaryTabSubPage;
@@ -40,6 +41,9 @@ public class DocumentBasePage extends AbstractPage {
 
     @FindBy(xpath = "//div[@class=\"tabsBar\"]/form/ul/li/a[text()=\"Edit\"]")
     public WebElement editTabLink;
+
+    @FindBy(xpath = "//div[@class=\"tabsBar\"]/form/ul/li/a[text()=\"Manage\"]")
+    public WebElement manageTabLink;
 
     @FindBy(xpath = "/html/body/table[2]/tbody/tr/td[2]/div[2]//div[@class=\"tabsBar\"]/form/ul/li[@class=\"selected\"]/a")
     public WebElement selectedTab;
@@ -70,8 +74,13 @@ public class DocumentBasePage extends AbstractPage {
     }
 
     public SummaryTabSubPage getSummaryTab() {
-        clickOnLinkIfNotSelected(editTabLink);
+        clickOnLinkIfNotSelected(summaryTabLink);
         return asPage(SummaryTabSubPage.class);
+    }
+
+    public ManageTabSubPage getManageTab() {
+        clickOnLinkIfNotSelected(manageTabLink);
+        return asPage(ManageTabSubPage.class);
     }
 
     public NavigationSubPage getNavigationSubPage() {
