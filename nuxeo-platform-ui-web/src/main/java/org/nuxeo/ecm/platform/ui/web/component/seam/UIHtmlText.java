@@ -23,12 +23,11 @@ import java.util.HashMap;
 
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
-import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ui.util.JSF;
-import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 
 import com.lowagie.text.html.simpleparser.HTMLWorker;
 import com.lowagie.text.html.simpleparser.StyleSheet;
@@ -69,15 +68,10 @@ public class UIHtmlText extends org.jboss.seam.pdf.ui.UIHtmlText {
 
     private void addFromHtml(String html, FacesContext context)
             throws IOException {
-        // XXX: fill in the server url for images resolution
         HashMap<String, Object> interfaceProps = new HashMap<String, Object>();
-        String base = VirtualHostHelper.getServerURL(
-                (ServletRequest) context.getExternalContext().getRequest(),
-                false);
-        if (base != null && base.endsWith("/")) {
-            base = base.substring(0, base.length() - 1);
-        }
-        interfaceProps.put("img_baseurl", base);
+        interfaceProps.put("img_provider", new NuxeoITextImageProvider(
+                (HttpServletRequest) context.getExternalContext().getRequest()));
+
         try {
             for (Object o : HTMLWorker.parseToList(new StringReader(html),
                     getStyle(), interfaceProps)) {

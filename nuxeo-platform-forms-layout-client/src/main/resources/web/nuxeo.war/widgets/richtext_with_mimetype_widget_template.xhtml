@@ -84,6 +84,6 @@ function changeEditorType(cbo) {
 
 </c:if>
 <c:if test="#{widget.mode == 'pdf'}">
-  <nxp:html>#{field_0}</nxp:html>
+  <nxp:html><h:outputText value="#{field_0}" escape="false" /></nxp:html>
 </c:if>
 </f:subview>
