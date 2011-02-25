@@ -53,5 +53,6 @@ opensocial.proxy.proxyHost=
 opensocial.proxy.proxyPort=
 opensocial.proxy.user=
 opensocial.proxy.password=
+opensocial.trusted.hosts=
 
-nuxeo.templates.parsing.extensions=xml,properties
+nuxeo.templates.parsing.extensions=xml,properties,nx

@@ -443,10 +443,21 @@ public abstract class NuxeoLauncher {
         }
     }
 
-    protected abstract void checkTomcatXMLConfFiles();
+    /**
+     * Ensure the wizard won't be started and nuxeo is ready for use
+     */
+    protected abstract void cleanupPostWizard();
 
+    /**
+     * Ensure the server will start only wizard application, not Nuxeo
+     */
     protected abstract void prepareWizardStart();
 
+    /**
+     * Check if wizard must and can be ran
+     *
+     * @return true if wizard must (and can) be ran before nuxeo
+     */
     public abstract boolean isWizardRequired();
 
     /**
@@ -604,9 +615,17 @@ public abstract class NuxeoLauncher {
             configure();
 
             if (isWizardRequired()) {
+                if (!configurationGenerator.isForceGeneration()) {
+                    log.error("Cannot start setup wizard with "
+                            + ConfigurationGenerator.PARAM_FORCE_GENERATION
+                            + "=false. Either set it to true or once, either set "
+                            + ConfigurationGenerator.PARAM_WIZARD_DONE
+                            + "=true to skip the wizard.");
+                    return false;
+                }
                 prepareWizardStart();
             } else {
-                checkTomcatXMLConfFiles();
+                cleanupPostWizard();
             }
 
             start(logProcessOutput);

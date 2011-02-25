@@ -6,9 +6,9 @@
     point="openSocialConfig">
 
     <!--overall configuration of opensocial that is sufficient for most people -->
-    <opensocial>   
-        <!--most users don't need to create this key but it can be 
-        created with this command line on unix 
+    <opensocial>
+        <!--most users don't need to create this key but it can be
+        created with this command line on unix
         dd if=/dev/random bs=32 count=1  | openssl base64 > /tmp/key.txt
         then just paste the contents of key.txt into this tag-->
       <signingKey></signingKey>
@@ -41,10 +41,10 @@
       the "consumer private key" in the language of OAuth. It must be of type
       RSA because we currently do not have support for the HMAC style keys. The
       generation of this private key can be done like this on unix:
-      
+
       openssl req -newkey rsa:1024 -days 365 -nodes -x509 -keyout testkey.pem -out testkey.pem -subj '/CN=mytestkey'
       openssl pkcs8 -in testkey.pem -out oauthkey.pem -topk8 -nocrypt -outform PEM
-      
+
      The result is in oauth and should be pasted into the configuration file
      as the externalPrivateKey value.
     -->
@@ -72,7 +72,7 @@ CtChzksnyjXXLZUO
     <externalPrivateKeyName>nuxeo</externalPrivateKeyName>
 
 
-    <!-- 
+    <!--
      This is here just for convenience of keeping everything together. This is
      the public key (really a certificate) that you need to give to external
      oauth provider to indicate that you have the private key above. Assuming
@@ -80,7 +80,7 @@ CtChzksnyjXXLZUO
      paste the "certificate" portion of the testkey.pem file into this field.
      It is not used by nuxeo in any way, but <b>will</b> be needed when you
      configure an external provider.
-     
+
      Note that many providers accept the certificate then run a computation to
      extract the public key from it. This means that the value displayed when
      you look at the provider configuration may be different than the one you
@@ -102,20 +102,20 @@ A4GBAE58p3e9ZJXRal2E1tD9sb041XhzMIyOu1jiDYuLPSg1rgKzpJFK9cDgvYmJ
 rs11LfViqxODsyQ7wedcLssNoE1Y4QMmUFIilPf+OzVv5efp
 -----END CERTIFICATE-----
 </externalPublicCertificate>
-  
-  <!--list of outside oauth providers that you have told about 
+
+  <!--list of outside oauth providers that you have told about
    nuxeo being a consumer... and thus nuxeo can run their
    gadgets that need oauth -->
   <oauthservices>
-    <!-- 
+    <!--
     <oauthservice>
       these are gadgets that are displayed on the nuxeo dashboard that need oauth
       <gadgetUrl>http://hostname:port/nuxeo/site/gadgets/confluencefeed/confluencefeed.xml</gadgetUrl>
-      
+
       this must match the service name in the gadget's oauth service section.. if you don't see
           such a service name, leave this blank and the service name will default to ""
       <serviceName></serviceName>
-      
+
       this is something you supply to the service provider... it's just a string
       <consumerKey>nuxeo-opensocial</consumerKey>
 
@@ -125,16 +125,16 @@ rs11LfViqxODsyQ7wedcLssNoE1Y4QMmUFIilPf+OzVv5efp
     </oauthservice>
      -->
   </oauthservices>
-  
-  
+
+
     <!--
       This a list of nuxeo trusted hosts. Such a host will be passed the
       browsers jsession id to avoid the need to constantly re-authenticate to
       retrieve nuxeo data when the user is already logged into a nuxeo server
-      to access the dashboard. List should be colon separated.
+      to access the dashboard. List should be coma separated.
      -->
      <trustedHosts>
-      localhost:127.0.0.1
+      ${opensocial.trusted.hosts}
      </trustedHosts>
 
   </opensocial>

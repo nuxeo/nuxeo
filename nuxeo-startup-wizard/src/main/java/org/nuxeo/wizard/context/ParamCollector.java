@@ -18,14 +18,21 @@
 
 package org.nuxeo.wizard.context;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
 
 /**
@@ -35,6 +42,7 @@ import org.nuxeo.launcher.config.ConfigurationGenerator;
  * @since 5.4.1
  */
 public class ParamCollector {
+    private static final Log log = LogFactory.getLog(ParamCollector.class);
 
     public static final String Key = "collector";
 
@@ -48,9 +56,29 @@ public class ParamCollector {
 
     protected Map<String, String> connectParams = new HashMap<String, String>();
 
+    private String distributionName = "dm";
+
+    private String logo = null;
+
+    public String getDistributionName() {
+        return distributionName;
+    }
+
     public ParamCollector() {
         configurationGenerator = new ConfigurationGenerator();
         configurationGenerator.init();
+        try {
+            Properties distribution = new Properties();
+            distribution.load(new FileInputStream(new File(
+                    configurationGenerator.getConfigDir(),
+                    "distribution.properties")));
+            distributionName = distribution.getProperty(
+                    "org.nuxeo.distribution.name", "dm").toLowerCase();
+        } catch (FileNotFoundException e) {
+            log.error(e);
+        } catch (IOException e) {
+            log.error(e);
+        }
     }
 
     public void addConfigurationParam(String name, String value) {
@@ -120,5 +148,22 @@ public class ParamCollector {
         for (String key : keys) {
             configurationParams.remove(key);
         }
+    }
+
+    public String getLogo() {
+        if (logo == null) {
+            if ("dm".equalsIgnoreCase(distributionName)) {
+                logo = "/images/logo_dm_72dpi_white.png";
+            } else if ("cap".equalsIgnoreCase(distributionName)) {
+                logo = "/images/logo_ep_72dpi_white.png";
+            } else if ("dam".equalsIgnoreCase(distributionName)) {
+                logo = "/images/logo_dam_72dpi_white.png";
+            } else if ("cmf".equalsIgnoreCase(distributionName)) {
+                logo = "/images/logo_cmf_72dpi_white.png";
+            } else {
+                logo = "/images/logo_ep_72dpi_white.png";
+            }
+        }
+        return logo;
     }
 }

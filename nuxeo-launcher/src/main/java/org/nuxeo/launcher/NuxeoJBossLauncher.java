@@ -101,7 +101,7 @@ public class NuxeoJBossLauncher extends NuxeoLauncher {
     }
 
     @Override
-    protected void checkTomcatXMLConfFiles() {
+    protected void cleanupPostWizard() {
         // Nothing to do
     }
 
