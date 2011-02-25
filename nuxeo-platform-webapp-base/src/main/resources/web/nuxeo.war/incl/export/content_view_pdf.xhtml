@@ -18,10 +18,9 @@
   <nxu:set var="currentPage" value="#{request.getParameter('currentPage')}">
   <nxu:set var="pageSize" value="#{request.getParameter('pageSize')}">
   <nxu:set var="contentViewState" value="#{request.getParameter('contentViewState')}">
-  <nxu:set var="sortInfos" value="#{contentViewRestActions.getSortInfos('dc:modified', false)}">
 
   <nxu:set var="contentView"
-    value="#{contentViewRestActions.restoreContentView(contentViewName, nxu:test(!empty currentPage, currentPage, -1), nxu:test(!empty pageSize, pageSize, -1), sortInfos, contentViewState)}"
+    value="#{contentViewRestActions.restoreContentView(contentViewName, nxu:test(!empty currentPage, currentPage, -1), nxu:test(!empty pageSize, pageSize, -1), null, contentViewState)}"
     cache="true">
   <nxu:set var="selectedResultLayoutColumns"
     value="#{nxu:test(selectedResultLayoutColumns == null, contentView.currentResultLayoutColumns, selectedResultLayoutColumns)}"
@@ -48,7 +47,6 @@
 
     </nxp:document>
 
-  </nxu:set>
   </nxu:set>
   </nxu:set>
   </nxu:set>
