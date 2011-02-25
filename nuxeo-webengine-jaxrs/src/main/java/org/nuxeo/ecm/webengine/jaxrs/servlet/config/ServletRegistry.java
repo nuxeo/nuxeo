@@ -41,6 +41,7 @@ import org.osgi.service.http.HttpService;
  */
 public class ServletRegistry {
 
+    public final static String SERVLET_NAME = ServletRegistry.class.getName()+".name";
 
     private static volatile ServletRegistry instance;
 
@@ -128,6 +129,9 @@ public class ServletRegistry {
         if (service != null) {
             ClassRef ref = sd.getClassRef();
             HttpContext ctx = getHttpContext(ref.bundle());
+            if (sd.name != null) {
+                sd.initParams.put(SERVLET_NAME, sd.name);
+            }
             service.registerServlet(sd.path, sd.getServlet(), sd.initParams, ctx);
         }
     }

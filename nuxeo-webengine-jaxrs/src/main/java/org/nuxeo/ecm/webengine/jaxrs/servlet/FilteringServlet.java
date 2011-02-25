@@ -39,11 +39,17 @@ public class FilteringServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
 
+    protected volatile CompositeListener listener = null;
     protected CompositeFilter filter;
     protected HttpServlet servlet;
 
     @Override
     public void init(ServletConfig config) throws ServletException {
+        try {
+            listener = CompositeListener.getListeners(config);
+        } catch (Exception e) {
+            throw new ServletException("Failed to initialize listeners", e);
+        }
         super.init(config);
         String v = config.getInitParameter("servlet");
         if (v == null) {
@@ -71,6 +77,11 @@ public class FilteringServlet extends HttpServlet {
         if (filter != null) {
             filter.destroy();
             filter = null;
+        }
+        if (listener != null) {
+            if (CompositeListener.destroyListeners(listener)) {
+                listener = null;
+            }
         }
     }
 
