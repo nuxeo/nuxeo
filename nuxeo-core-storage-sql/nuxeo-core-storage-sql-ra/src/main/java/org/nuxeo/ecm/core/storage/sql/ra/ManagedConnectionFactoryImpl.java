@@ -214,6 +214,9 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory,
                 continue;
             }
             log.debug("matched: " + managedConnection);
+            if (log.isTraceEnabled()) {
+                log.trace("debug stack trace", new Exception());
+            }
             return managedConnection;
         }
         return null;

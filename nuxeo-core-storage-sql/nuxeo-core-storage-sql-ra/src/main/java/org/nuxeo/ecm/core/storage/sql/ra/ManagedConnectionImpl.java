@@ -97,6 +97,9 @@ public class ManagedConnectionImpl implements ManagedConnection,
             ConnectionRequestInfoImpl connectionRequestInfo)
             throws ResourceException {
         log.debug("construct: " + this);
+        if (log.isTraceEnabled()) {
+            log.trace("debug stack trace", new Exception());
+        }
         out = managedConnectionFactory.getLogWriter();
         this.managedConnectionFactory = managedConnectionFactory;
         this.connectionSpec = connectionRequestInfo.connectionSpec;
@@ -138,6 +141,9 @@ public class ManagedConnectionImpl implements ManagedConnection,
     @Override
     public void cleanup() {
         log.debug("cleanup: " + this);
+        if (log.isTraceEnabled()) {
+            log.trace("debug stack trace", new Exception());
+        }
         synchronized (connections) {
             // TODO session.cancel
             connections.clear();
