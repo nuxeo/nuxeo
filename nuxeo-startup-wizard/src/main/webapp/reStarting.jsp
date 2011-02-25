@@ -1,7 +1,7 @@
 <%@page import="org.nuxeo.wizard.helpers.ServerController"%>
 <%@ include file="includes/header.jsp"%>
 
-<fmt:message key="label.restart.wait"/>
+<div id="loading"><fmt:message key="label.restart.wait" /></div>
 
 <%@ include file="includes/footer.jsp"%>
 
@@ -9,3 +9,11 @@
     // do the actual restart once we have displayed the waiting page
     ServerController.restart(ctx);
 %>
+
+<script type="text/javascript">
+    var intId = setInterval(function isNuxeoReady() {
+        $.get("/nuxeo/login.jsp", function(data, textStatus) {
+            location.href="/nuxeo/"
+        });
+    }, 1000);
+</script>

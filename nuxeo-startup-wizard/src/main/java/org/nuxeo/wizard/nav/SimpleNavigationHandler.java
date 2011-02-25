@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     tdelprat
+ *     tdelprat, jcarsique
  *
  */
 
@@ -34,14 +34,14 @@ public class SimpleNavigationHandler {
             "General|generalSettings.jsp", "Proxy|proxySettings.jsp",
             "DB|dbSettings.jsp", "Smtp|smtpSettings.jsp",
             "Connect|connectForm.jsp", "ConnectFinish|connectFinish.jsp",
-            "Recap|recapScreen.jsp" };
+            "Recap|recapScreen.jsp", "Restart|reStarting.jsp" };
 
     protected List<Page> pages = new ArrayList<Page>();
 
     protected static SimpleNavigationHandler instance;
 
     public static SimpleNavigationHandler instance() {
-        if (instance==null) {
+        if (instance == null) {
             instance = new SimpleNavigationHandler();
         }
         return instance;
