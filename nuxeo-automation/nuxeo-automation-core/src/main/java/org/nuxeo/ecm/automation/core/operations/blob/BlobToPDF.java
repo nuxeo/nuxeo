@@ -26,6 +26,7 @@ import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.util.BlobList;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
@@ -42,6 +43,26 @@ public class BlobToPDF {
 
     @Context
     protected ConversionService service;
+
+
+    @OperationMethod
+    public Blob run(DocumentModel doc) throws Exception {
+        BlobHolder bh = doc.getAdapter(BlobHolder.class);
+        if (bh==null) {
+            return null;
+        }
+        BlobHolder pdfBh = service.convertToMimeType("application/pdf", bh,
+                new HashMap<String, Serializable>());
+        Blob result = pdfBh.getBlob();
+
+        String fname = result.getFilename();
+        if(fname==null || fname.isEmpty()) {
+            fname = bh.getBlob().getFilename();
+            fname = fname.split(".")[0] + ".pdf";
+            result.setFilename(fname);
+        }
+        return result;
+    }
 
     @OperationMethod
     public Blob run(Blob blob) throws Exception {
