@@ -117,6 +117,7 @@
       </properties>
       <widgetModes>
         <mode value="any">view</mode>
+        <mode value="pdf">pdf</mode>
       </widgetModes>
     </widget>
 
@@ -133,6 +134,7 @@
       </properties>
       <widgetModes>
         <mode value="any">view</mode>
+        <mode value="pdf">pdf</mode>
       </widgetModes>
     </widget>
 
@@ -170,7 +172,7 @@
       <fields>
         <field>dc:expired</field>
       </fields>
-      <properties widgetMode="view">
+      <properties widgetMode="any">
         <property name="pattern">#{nxu:basicDateFormater()}</property>
       </properties>
       <properties widgetMode="edit">
@@ -191,6 +193,7 @@
       </fields>
       <widgetModes>
         <mode value="any">view</mode>
+        <mode value="pdf">pdf</mode>
       </widgetModes>
       <properties mode="any">
         <property name="template">
@@ -231,6 +234,7 @@
       </fields>
       <widgetModes>
         <mode value="any">view</mode>
+        <mode value="pdf">pdf</mode>
       </widgetModes>
       <properties mode="any">
         <property name="template">
