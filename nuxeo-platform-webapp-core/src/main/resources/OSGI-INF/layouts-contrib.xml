@@ -459,20 +459,6 @@
           <widget>note</widget>
         </row>
       </rows>
-      <!--      <widget name="note" type="htmltext">
-        <labels>
-        <label mode="any">note</label>
-        </labels>
-        <translated>true</translated>
-        <fields>
-        <field>note:note</field>
-        </fields>
-        <properties mode="view">
-        <property name="value">
-        #{noteActions.translateImageLinks(value.note.note)}
-        </property>
-        </properties>
-        </widget>-->
     </layout>
 
     <layout name="files">
