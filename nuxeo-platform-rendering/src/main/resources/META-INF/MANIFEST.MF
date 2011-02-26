@@ -34,8 +34,7 @@ Import-Package: freemarker.cache,
  org.nuxeo.ecm.core.schema.types.primitives,
  org.nuxeo.runtime.api,
  org.nuxeo.runtime.model,
- org.nuxeo.runtime.services.streaming,
- org.wikimodel.wem,
- org.wikimodel.wem.common
+ org.wikimodel.wem;resolution:=optional,
+ org.wikimodel.wem.common;resolution:=optional
 Bundle-SymbolicName: org.nuxeo.ecm.platform.rendering;singleton:=true
 Originally-Created-By: 1.6.0_20 (Sun Microsystems Inc.)
