@@ -28,7 +28,7 @@ import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.contexts.Contexts;
-import org.nuxeo.ecm.core.event.jmx.EventMonitoring;
+import org.nuxeo.ecm.core.management.events.EventMonitoring;
 
 /**
  * Simple Seam Bean that wraps {@link EventMonitoring} to expose it to JSF/Seam
