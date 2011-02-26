@@ -341,14 +341,20 @@ public class Editor {
         if (themeDescriptor == null) {
             throw new ThemeException("Theme not found: " + themeName);
         }
-        if (themeDescriptor.isSaveable()) {
-            String themeSrc = themeDescriptor.getSrc();
-            try {
-                ThemeManager.saveTheme(themeSrc);
-            } catch (ThemeIOException e) {
-                throw new ThemeException("Theme cannot be saved: " + themeName,
-                        e);
+        String themeSrc = themeDescriptor.getSrc();
+        if (!themeDescriptor.isSaveable()) {
+            if (themeDescriptor.isCustomizable()) {
+                themeDescriptor = ThemeManager.customizeTheme(themeDescriptor);
+                themeSrc = themeDescriptor.getSrc();
+            } else {
+                throw new ThemeException("Theme cannot be customized: "
+                        + themeName);
             }
+        }
+        try {
+            ThemeManager.saveTheme(themeSrc);
+        } catch (ThemeIOException e) {
+            throw new ThemeException("Theme cannot be saved: " + themeName, e);
         }
         final ThemeManager themeManager = Manager.getThemeManager();
         themeManager.themeModified(themeName);
@@ -521,16 +527,6 @@ public class Editor {
         }
         ThemeDescriptor themeDef = ThemeManager.createCustomTheme(name);
         String themeName = themeDef.getName();
-        return String.format("%s/default", themeName);
-    }
-
-    public static String customizeTheme(String src) throws ThemeException {
-        ThemeDescriptor themeDescriptor = ThemeManager.getThemeDescriptor(src);
-        if (themeDescriptor == null) {
-            throw new ThemeException("Theme not found: " + src);
-        }
-        String themeName = themeDescriptor.getName();
-        ThemeManager.customizeTheme(themeDescriptor);
         return String.format("%s/default", themeName);
     }
 

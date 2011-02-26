@@ -752,16 +752,6 @@ public class Main extends ModuleRoot {
     }
 
     @POST
-    @Path("customize_theme")
-    public String customizeTheme(@FormParam("src") String src) {
-        try {
-            return Editor.customizeTheme(src);
-        } catch (Exception e) {
-            throw new ThemeEditorException(e.getMessage(), e);
-        }
-    }
-
-    @POST
     @Path("uncustomize_theme")
     public String uncustomizeTheme(@FormParam("src") String src) {
         try {

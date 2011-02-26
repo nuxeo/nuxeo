@@ -1,5 +1,4 @@
 <#assign screen="style manager">
-<#assign saveable=current_theme && current_theme.saveable>
 
 <!-- style menu -->
 <@nxthemes_view resource="style-menu.json" />
@@ -43,7 +42,7 @@
 </ul>
 
 <div style="padding: 0; margin-top: 5px">
-  <button class="nxthemesActionButton" <#if !saveable>disabled="disabled"</#if> type="submit"
+  <button class="nxthemesActionButton" type="submit"
   onclick="javascript:NXThemesStyleEditor.createNamedStyle(null, '${current_theme.name}', 'style manager')">
   Create style</button>
 </div>
@@ -59,7 +58,7 @@
     <div>
       <input type="hidden" name="style_uid" value="#{selected_named_style.uid}" />
       <input type="hidden" name="theme_name" value="${current_theme_name}" />
-      <textarea <#if !selected_named_style.customized>disabled="disabled"</#if> id="namedStyleCssEditor"
+      <textarea id="namedStyleCssEditor"
       name="css_source" rows="15" cols="72"
       style="border: 1px solid #ccc; font-family: monospace; width: 100%; height: 270px; font-size: 11px;">
 ${selected_named_style_css}
@@ -67,7 +66,7 @@ ${selected_named_style_css}
     </div>
 
     <div style="margin-top: 5px">
-     <button <#if !saveable>disabled="disabled"</#if> type="submit"><#if selected_named_style.customized>Save<#else>Customize CSS</#if></button>
+     <button type="submit"><#if selected_named_style.customized>Save<#else>Customize CSS</#if></button>
     </div>
 
   </form>
@@ -100,7 +99,7 @@ ${selected_named_style_css}
   </form>
 
   <p class="nxthemesEditor" style="float: right; margin-top: -19px">
-    <button class="nxthemesActionButton" <#if !saveable>disabled="disabled"</#if>
+    <button class="nxthemesActionButton"
     onclick="NXThemesStyleManager.deleteNamedStyle('${current_theme_name?js_string}', '${selected_named_style.name?js_string}')">Delete style</button>
   </p>
 
@@ -197,7 +196,7 @@ ${selected_named_style_css}
 
   <tr>
     <td></td>
-    <td><button class="nxthemesActionButton" <#if !saveable>disabled="disabled"</#if> type="submit">Save</button></td>
+    <td><button class="nxthemesActionButton" type="submit">Save</button></td>
   </tr>
 
   </table>
@@ -260,15 +259,4 @@ ${selected_named_style_css}
 
 </#if>
 
-
-<#if !saveable>
-  <div id="nxthemesTopBanner" style="position: absolute">
-    <div class="nxthemesInfoMessage">
-      <img src="${basePath}/skin/nxthemes-editor/img/error.png" width="16" height="16" style="vertical-align: bottom" />
-      <span>Before managing styles you need to customize the <strong>${current_theme.name}</strong> theme.</span>
-      <button class="nxthemesActionButton"
-       onclick="NXThemesEditor.customizeTheme('${current_theme.src?js_string}', 'style manager')">Customize theme</button>
-    </div>
-  </div>
-</#if>
 

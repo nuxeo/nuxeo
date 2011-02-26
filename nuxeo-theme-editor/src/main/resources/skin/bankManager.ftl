@@ -1,5 +1,4 @@
 
-<#assign saveable=current_theme && current_theme.saveable>
 
 <div class="window">
 <div class="title">Manage bank connections</div>
@@ -48,7 +47,7 @@
       </a>
     <#else>
      <strong style="color: #c00">Not connected</strong>&nbsp;
-     <button <#if !saveable>disabled="disabled"</#if>
+     <button
         class="nxthemesActionButton" href="javascript:void(0)"
         onclick="NXThemesEditor.useResourceBank('${current_theme.src?js_string}', '${selected_bank.name}', 'bank manager')">
       Connect
@@ -115,15 +114,4 @@
 
 <#else>
 <p>No banks have been registered</p>
-</#if>
-
-<#if !saveable>
-  <div id="nxthemesTopBanner" style="position: absolute">
-    <div class="nxthemesInfoMessage">
-      <img src="${basePath}/skin/nxthemes-editor/img/error.png" width="16" height="16" style="vertical-align: bottom" />
-      <span>Before connecting to a bank you need to customize the <strong>${current_theme.name}</strong> theme.</span>
-      <button class="nxthemesActionButton"
-       onclick="NXThemesEditor.customizeTheme('${current_theme.src?js_string}', 'bank manager')">Customize theme</button>
-    </div>
-  </div>
 </#if>
