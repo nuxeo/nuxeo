@@ -16,7 +16,7 @@
  *
  * $Id$
  */
-package org.nuxeo.ecm.core.event.jmx;
+package org.nuxeo.ecm.core.management.events;
 
 import java.util.HashMap;
 import java.util.Map;

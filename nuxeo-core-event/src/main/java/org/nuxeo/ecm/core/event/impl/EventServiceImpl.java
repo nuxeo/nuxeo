@@ -34,13 +34,14 @@ import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.EventServiceAdmin;
+import org.nuxeo.ecm.core.event.EventStats;
 import org.nuxeo.ecm.core.event.EventTransactionListener;
 import org.nuxeo.ecm.core.event.PostCommitEventListener;
 import org.nuxeo.ecm.core.event.ReconnectedEventBundle;
 import org.nuxeo.ecm.core.event.jms.AsyncProcessorConfig;
-import org.nuxeo.ecm.core.event.jmx.EventStatsHolder;
 import org.nuxeo.ecm.core.event.tx.BulkExecutor;
 import org.nuxeo.ecm.core.event.tx.PostCommitSynchronousRunner;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Implementation of the event service.
@@ -155,6 +156,15 @@ public class EventServiceImpl implements EventService, EventServiceAdmin{
         }
     }
 
+    protected EventStats getEventStats() {
+        try {
+            return Framework.getService(EventStats.class);
+        } catch (Exception e) {
+            log.warn("Failed to lookup event stats service", e);
+        }
+        return null;
+    }
+
     @Override
     public void fireEvent(String name, EventContext context)
             throws ClientException {
@@ -182,12 +192,15 @@ public class EventServiceImpl implements EventService, EventServiceAdmin{
             }
         }
         String ename = event.getName();
+        EventStats stats = getEventStats();
         for (EventListenerDescriptor desc : listenerDescriptors.getEnabledInlineListenersDescriptors()) {
             if (desc.acceptEvent(ename)) {
                 try {
                     long t0 = System.currentTimeMillis();
                     desc.asEventListener().handleEvent(event);
-                    EventStatsHolder.logSyncExec(desc, System.currentTimeMillis()-t0);
+                    if (stats != null) {
+                        stats.logSyncExec(desc, System.currentTimeMillis()-t0);
+                    }
                 } catch (Throwable t) {
                     log.error("Error during sync listener execution", t);
                 } finally {

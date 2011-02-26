@@ -16,7 +16,7 @@
  *
  * $Id$
  */
-package org.nuxeo.ecm.core.event.jmx;
+package org.nuxeo.ecm.core.management.events;
 
 import org.nuxeo.ecm.core.event.EventServiceAdmin;
 import org.nuxeo.ecm.core.event.impl.EventListenerDescriptor;

@@ -5,6 +5,9 @@
     point="factories">
     <factory name="managementStatusesFactory"
       class="org.nuxeo.ecm.core.management.StatusesManagementFactory" />
+    <factory name="EventMonitoring"
+      class="org.nuxeo.ecm.core.management.events.EventMonitoringFactory" />      
   </extension>
+
 
 </component>

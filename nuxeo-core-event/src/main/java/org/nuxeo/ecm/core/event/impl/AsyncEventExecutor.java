@@ -29,8 +29,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.event.EventBundle;
+import org.nuxeo.ecm.core.event.EventStats;
 import org.nuxeo.ecm.core.event.ReconnectedEventBundle;
-import org.nuxeo.ecm.core.event.jmx.EventStatsHolder;
 import org.nuxeo.ecm.core.event.tx.EventBundleTransactionHandler;
 import org.nuxeo.runtime.api.Framework;
 
@@ -145,6 +145,15 @@ public class AsyncEventExecutor {
             }
         }
 
+        protected EventStats getEventStats() {
+            try {
+                return Framework.getService(EventStats.class);
+            } catch (Exception e) {
+                log.warn("Failed to lookup event stats service", e);
+            }
+            return null;
+        }
+
         @Override
         public void run() {
             EventBundleTransactionHandler txh = new EventBundleTransactionHandler();
@@ -153,7 +162,10 @@ public class AsyncEventExecutor {
                 txh.beginNewTransaction(listener.getTransactionTimeout());
                 listener.asPostCommitListener().handleEvent(bundle);
                 txh.commitOrRollbackTransaction();
-                EventStatsHolder.logAsyncExec(listener, System.currentTimeMillis()-t0);
+                EventStats stats = getEventStats();
+                if (stats != null) {
+                    stats.logAsyncExec(listener, System.currentTimeMillis()-t0);
+                }
                 log.debug("Async listener executed, commited tx");
             } catch (Throwable t) {
                 log.error("Failed to execute async event " + bundle.getName()

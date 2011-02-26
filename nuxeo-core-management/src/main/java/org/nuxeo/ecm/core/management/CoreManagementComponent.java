@@ -16,9 +16,11 @@
  */
 package org.nuxeo.ecm.core.management;
 
+import org.nuxeo.ecm.core.event.EventStats;
 import org.nuxeo.ecm.core.management.api.AdministrativeStatusManager;
 import org.nuxeo.ecm.core.management.api.GlobalAdministrativeStatusManager;
 import org.nuxeo.ecm.core.management.api.ProbeManager;
+import org.nuxeo.ecm.core.management.events.EventStatsImpl;
 import org.nuxeo.ecm.core.management.probes.ProbeDescriptor;
 import org.nuxeo.ecm.core.management.probes.ProbeManagerImpl;
 import org.nuxeo.ecm.core.management.statuses.AdministrableServiceDescriptor;
@@ -52,6 +54,8 @@ public class CoreManagementComponent extends DefaultComponent {
 
     protected final GlobalAdministrativeStatusManager globalManager = new GlobalAdministrativeStatusManagerImpl();
 
+    protected final EventStats eventStats = new EventStatsImpl();
+
     protected final ProbeManagerImpl probeRunner = new ProbeManagerImpl();
 
     protected final DocumentStoreManager storageManager = new DocumentStoreManager();
@@ -67,6 +71,9 @@ public class CoreManagementComponent extends DefaultComponent {
 
     @Override
     public <T> T getAdapter(Class<T> adapter) {
+        if (adapter == EventStats.class) {
+            return adapter.cast(eventStats);
+        }
         if (adapter.isAssignableFrom(GlobalAdministrativeStatusManager.class)) {
             return adapter.cast(globalManager);
         }

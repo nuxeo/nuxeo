@@ -16,24 +16,40 @@
  *
  * $Id$
  */
-package org.nuxeo.ecm.core.event.jmx;
-
-import org.nuxeo.runtime.management.AbstractResourceFactory;
-import org.nuxeo.runtime.management.ObjectNameFactory;
+package org.nuxeo.ecm.core.management.events;
 
 /**
- * Factory for Monitoring MBean
+ * Simple class to store Listeners call statistics.
  *
  * @author Thierry Delprat
  */
-public class EventMonitoringFactory extends AbstractResourceFactory {
+public class CallStat {
 
-    @Override
-    public void registerResources() {
-        EventMonitoring instance = new EventMonitoring();
-         service.registerResource("EventMonitoring",
-                 ObjectNameFactory.formatQualifiedName("EventMonitoring"),
-                 EventMonitoringMBean.class, instance);
+    long accumulatedTime = 0;
+
+    int callCount = 0;
+
+    final String label;
+
+    public CallStat(String label) {
+        this.label = label;
+    }
+
+    void update(long delta) {
+        callCount++;
+        accumulatedTime += delta;
+    }
+
+    public long getAccumulatedTime() {
+        return accumulatedTime;
+    }
+
+    public int getCallCount() {
+        return callCount;
+    }
+
+    public String getLabel() {
+        return label;
     }
 
 }

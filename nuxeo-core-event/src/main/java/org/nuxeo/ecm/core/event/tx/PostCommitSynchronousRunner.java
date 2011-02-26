@@ -24,10 +24,11 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.event.EventBundle;
+import org.nuxeo.ecm.core.event.EventStats;
 import org.nuxeo.ecm.core.event.ReconnectedEventBundle;
 import org.nuxeo.ecm.core.event.impl.EventListenerDescriptor;
 import org.nuxeo.ecm.core.event.impl.ReconnectedEventBundleImpl;
-import org.nuxeo.ecm.core.event.jmx.EventStatsHolder;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Runs synchronous Listeners in a separated thread in order to enable TX
@@ -97,11 +98,21 @@ public class PostCommitSynchronousRunner {
 
         protected EventBundleTransactionHandler txh = new EventBundleTransactionHandler();
 
+        protected EventStats getEventStats() {
+            try {
+                return Framework.getService(EventStats.class);
+            } catch (Exception e) {
+                log.warn("Failed to lookup event stats service", e);
+            }
+            return null;
+        }
+
         @Override
         public void run() {
             long t0 = System.currentTimeMillis();
             log.debug("Start post commit sync execution in Thread "
                     + Thread.currentThread().getId());
+            EventStats stats = getEventStats();
             for (EventListenerDescriptor listener : listeners) {
                 try {
                     long t1 = System.currentTimeMillis();
@@ -109,8 +120,10 @@ public class PostCommitSynchronousRunner {
                     listener.asPostCommitListener().handleEvent(event);
                     event.disconnect();
                     txh.commitOrRollbackTransaction();
-                    EventStatsHolder.logAsyncExec(listener,
-                            System.currentTimeMillis() - t1);
+                    if (stats != null) {
+                        stats.logAsyncExec(listener,
+                                System.currentTimeMillis() - t1);
+                    }
                     log.debug("End of post commit sync execution for listener "
                             + listener.getName() + " "
                             + (System.currentTimeMillis() - t1) + "ms");
