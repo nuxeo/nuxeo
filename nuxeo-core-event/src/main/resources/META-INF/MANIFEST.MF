@@ -1,7 +1,6 @@
 Export-Package: org.nuxeo.ecm.core.event,
  org.nuxeo.ecm.core.event.impl,
  org.nuxeo.ecm.core.event.jms;api=split,
- org.nuxeo.ecm.core.event.jmx,
  org.nuxeo.ecm.core.event.script,
  org.nuxeo.ecm.core.event.tx
 Bundle-ActivationPolicy: lazy
@@ -12,8 +11,7 @@ Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Version: 5.4.1.qualifier
 Bundle-ManifestVersion: 2
-Nuxeo-Component: OSGI-INF/EventService.xml,
-  OSGI-INF/management-contrib.xml
+Nuxeo-Component: OSGI-INF/EventService.xml
 Import-Package: javax.naming,
  javax.script,
  javax.security.auth.login,
@@ -30,7 +28,6 @@ Import-Package: javax.naming,
  org.nuxeo.ecm.core.api.security,
  org.nuxeo.ecm.core.schema,
  org.nuxeo.runtime.api,
- org.nuxeo.runtime.management,
  org.nuxeo.runtime.model,
  org.nuxeo.runtime.transaction,
  org.osgi.framework;version="1.4"

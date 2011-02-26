@@ -4,7 +4,6 @@ Export-Package: org.nuxeo.ecm.core.storage,
  org.nuxeo.ecm.core.storage.sql.jdbc,
  org.nuxeo.ecm.core.storage.sql.jdbc.db,
  org.nuxeo.ecm.core.storage.sql.jdbc.dialect,
- org.nuxeo.ecm.core.storage.sql.management,
  org.nuxeo.ecm.core.storage.sql.net
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
@@ -72,8 +71,6 @@ Import-Package: org.osgi.framework,
  org.nuxeo.ecm.core.versioning,
  org.nuxeo.runtime,
  org.nuxeo.runtime.api,
- org.nuxeo.runtime.management,
- org.nuxeo.runtime.management.metrics,
  org.nuxeo.runtime.model,
  org.nuxeo.runtime.services.event,
  org.nuxeo.runtime.services.streaming
