@@ -612,6 +612,10 @@
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-storage-sql-extensions</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-storage-sql-management</artifactId>
+    </dependency>
   </dependencies>
 
   <build>
