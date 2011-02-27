@@ -162,7 +162,6 @@ public class DocumentRouteElementImpl implements DocumentRouteElement,
             CoreSession session, boolean recursive) {
         try {
             document.followTransition(transition.name());
-            session.save();
             if (Framework.isTestModeSet()) {
                 Framework.getLocalService(EventService.class).waitForAsyncCompletion();
             }
@@ -182,7 +181,6 @@ public class DocumentRouteElementImpl implements DocumentRouteElement,
     public void save(CoreSession session) {
         try {
             session.saveDocument(document);
-            session.save();
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         }
@@ -198,7 +196,7 @@ public class DocumentRouteElementImpl implements DocumentRouteElement,
     @Override
     public void setValidated(CoreSession session) {
         followTransition(ElementLifeCycleTransistion.toValidated, session,
-                false);
+                true);
     }
 
     @Override
@@ -249,7 +247,6 @@ public class DocumentRouteElementImpl implements DocumentRouteElement,
 
             doc.setACP(acp, true);
             session.saveDocument(doc);
-            session.save();
         }
     }
 
@@ -282,7 +279,6 @@ public class DocumentRouteElementImpl implements DocumentRouteElement,
         try {
             document.setACP(acp, true);
             session.saveDocument(document);
-            session.save();
         } catch (ClientException e) {
             throw new RuntimeException(e);
         }

@@ -348,7 +348,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
         docRouteElement = session.createDocument(docRouteElement);
         session.orderBefore(parentDocumentRef, docRouteElement.getName(),
                 sourceName);
-        session.save();
+        session.save();//the new document will be queried later on
     }
 
     @Override
@@ -360,7 +360,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
             throw new DocumentRouteNotLockedException();
         }
         session.removeDocument(routeElement.getDocument().getRef());
-        session.save();
+        session.save();//the document will be queried later on
     }
 
     @Override

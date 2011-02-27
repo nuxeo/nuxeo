@@ -201,7 +201,7 @@ public class DocumentRoutingActionsBean implements Serializable {
         // force computing of tabs
         webActions.resetTabList();
         Contexts.removeFromAllContexts("relatedRoutes");
-
+        documentManager.save();
         return navigationContext.navigateToDocument(navigationContext.getCurrentDocument());
     }
 

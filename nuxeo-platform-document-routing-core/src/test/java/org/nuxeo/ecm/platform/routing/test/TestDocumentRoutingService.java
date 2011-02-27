@@ -297,6 +297,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         service.lockDocumentRoute(route, session);
         route = service.validateRouteModel(route, session);
         service.unlockDocumentRoute(route, session);
+        session.save();
         assertEquals("validated",
                 route.getDocument().getCurrentLifeCycleState());
         assertEquals("validated", session.getChildren(

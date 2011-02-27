@@ -81,7 +81,6 @@ public class DocumentRoutingTreePersister implements DocumentRoutingPersister {
                     DocumentRoutingConstants.ATTACHED_DOCUMENTS_PROPERTY_NAME,
                     model.getPropertyValue(DocumentRoutingConstants.ATTACHED_DOCUMENTS_PROPERTY_NAME));
             session.saveDocument(result);
-            session.save();
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         }
@@ -134,7 +133,6 @@ public class DocumentRoutingTreePersister implements DocumentRoutingPersister {
         ACL acl = acp.getOrCreateACL(ACL.LOCAL_ACL);
         acl.addAll(getACEs());
         session.setACP(root.getRef(), acp, true);
-        session.save();
         return root;
     }
 

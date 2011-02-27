@@ -48,6 +48,7 @@ public class TestDocumentRoutingTreePersister extends DocumentRoutingTestCase {
         assertNotNull(doc);
         assertEquals(doc.getPathAsString(),
                 TestConstants.DEFAULT_DOMAIN_DOCUMENT_ROUTE_INSTANCES_ROOT);
+        session.save();
         closeSession();
         session = openSessionAs("members");
         assertFalse(session.hasPermission(doc.getRef(), SecurityConstants.READ));

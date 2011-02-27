@@ -58,14 +58,12 @@ public class LockableDocumentRouteImpl implements LockableDocumentRoute {
     @Override
     public void lockDocument(CoreSession session) throws ClientException {
         session.setLock(doc.getRef());
-        session.save();
     }
 
     @Override
     public void unlockDocument(CoreSession session) throws ClientException {
         DocumentRef ref = doc.getRef();
         session.removeLock(ref);
-        session.save();
     }
 
     @Override
