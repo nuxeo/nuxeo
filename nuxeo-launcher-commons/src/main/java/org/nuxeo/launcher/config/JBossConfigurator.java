@@ -150,4 +150,19 @@ public class JBossConfigurator extends ServerConfigurator {
         return new File(generator.getNuxeoHome(), getJBossConfig());
     }
 
+    @Override
+    public void prepareWizardStart() {
+        // Nothing to do
+    }
+
+    @Override
+    public void cleanupPostWizard() {
+        // Nothing to do
+    }
+
+    @Override
+    public boolean isWizardAvailable() {
+        return false;
+    }
+
 }

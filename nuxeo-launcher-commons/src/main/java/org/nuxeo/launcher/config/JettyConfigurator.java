@@ -89,4 +89,19 @@ public class JettyConfigurator extends ServerConfigurator {
         return new File(generator.getNuxeoHome(), "config");
     }
 
+    @Override
+    public void prepareWizardStart() {
+        // Nothing to do
+    }
+
+    @Override
+    public void cleanupPostWizard() {
+        // Nothing to do
+    }
+
+    @Override
+    public boolean isWizardAvailable() {
+        return false;
+    }
+
 }

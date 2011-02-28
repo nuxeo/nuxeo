@@ -327,4 +327,21 @@ public abstract class ServerConfigurator {
      */
     public abstract File getConfigDir();
 
+    /**
+     * @since 5.4.1
+     */
+    public abstract void prepareWizardStart();
+
+    /**
+     * @since 5.4.1
+     */
+
+    public abstract void cleanupPostWizard();
+
+    /**
+     * @return true if configuration wizard is required before starting Nuxeo
+     * @since 5.4.1
+     */
+    public abstract boolean isWizardAvailable();
+
 }
