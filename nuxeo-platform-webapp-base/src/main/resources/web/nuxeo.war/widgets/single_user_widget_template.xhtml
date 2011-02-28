@@ -5,8 +5,8 @@
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:nxp="http://nuxeo.org/nxweb/pdf">
-<c:if test="#{nxl:isLikePlainMode(widget.mode) and widget.mode !='pdf'}">#{nxu:userFullName(field)}</c:if>
-<c:if test="#{not nxl:isLikePlainMode(widget.mode)}">
+<c:if test="#{nxl:isLikePlainMode(widget.mode)}">#{nxu:userFullName(field)}</c:if>
+<c:if test="#{nxl:isLikeViewMode(widget.mode)}">
   <span onmouseover="tooltip.show('#{field}', 150);" onmouseout="tooltip.hide();">
     <h:outputText value="#{nxu:userFullName(field)}"
       alt="#{field}" title="#{field}" />

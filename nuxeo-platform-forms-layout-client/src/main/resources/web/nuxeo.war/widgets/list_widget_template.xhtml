@@ -7,7 +7,7 @@
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:nxp="http://nuxeo.org/nxweb/pdf"
   id="#{widget.id}">
-<c:if test="#{nxl:isLikePlainMode(widget.mode) and widget.mode != 'pdf'}">
+<c:if test="#{nxl:isLikePlainMode(widget.mode)}">
   <nxu:set var="numberOfSubWidgets" value="#{widget.subWidgets.length}" cache="true">
     <nxl:subWidget>
       <nxl:widget widget="#{widget}" value="#{field}" />
@@ -25,7 +25,7 @@
     </nxu:set>
   </nxp:html>
 </c:if>
-<c:if test="#{widget.mode != 'edit' and not nxl:isLikePlainMode(widget.mode)}">
+<c:if test="#{nxl:isLikeViewMode(widget.mode)}">
 
   <table>
     <tbody>

@@ -5,13 +5,14 @@
   xmlns:nxdir="http://nuxeo.org/nxdirectory"
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxp="http://nuxeo.org/nxweb/pdf"
   id="#{widget.id}">
 <c:if test="#{nxl:isLikePlainMode(widget.mode)}">
   <nxl:subWidget>
     <nxl:widget widget="#{widget}" value="#{value}" />
   </nxl:subWidget>
 </c:if>
-<c:if test="#{widget.mode != 'edit' and not nxl:isLikePlainMode(widget.mode)}">
+<c:if test="#{nxl:isLikeViewMode(widget.mode)}">
 
   <table>
     <tbody>
@@ -47,5 +48,12 @@
     </tbody>
   </table>
 
+</c:if>
+<c:if test="#{widget.mode == 'pdf'}">
+  <nxp:html>
+    <nxl:subWidget>
+      <nxl:widget widget="#{widget}" value="#{value}" />
+    </nxl:subWidget>
+  </nxp:html>
 </c:if>
 </f:subview>

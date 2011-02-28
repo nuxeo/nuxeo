@@ -69,9 +69,14 @@
           5.4.0.
         </li>
         <li>
-          isLikePlainMode(String): returns true if given widget or layout mode
-          should be mapped by default to the 'plain' mode for widgets. Available
-          since 5.4.1.
+          isLikePlainMode(String): returns true if given widget mode should be
+          considered as 'plain', for instance when rendering values for CSV export.
+          Available since 5.4.1.
+        </li>
+        <li>
+          isLikeViewMode(String): returns true if given widget mode should be
+          considered as 'view' (old default mode), e.g. non-null mode, and none of
+          edit, pdf, plain modes. Available since 5.4.1.
         </li>
       </ul>
     </p>

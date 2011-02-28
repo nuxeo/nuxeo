@@ -4,8 +4,8 @@
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:nxp="http://nuxeo.org/nxweb/pdf">
-<c:if test="#{nxl:isLikePlainMode(widget.mode) and widget.mode != 'pdf'}">#{field.versionLabel}</c:if>
-<c:if test="#{not nxl:isLikePlainMode(widget.mode)}">
+<c:if test="#{nxl:isLikePlainMode(widget.mode)}">#{field.versionLabel}</c:if>
+<c:if test="#{nxl:isLikeViewMode(widget.mode)}">
   <h:outputText value="#{field.versionLabel}"
     id="#{widget.id}" />
 </c:if>

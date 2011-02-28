@@ -134,6 +134,14 @@ public class LayoutTagLibrary extends AbstractTagLibrary {
             log.error(e, e);
         }
 
+        try {
+            Method isLikeViewMode = BuiltinWidgetModes.class.getMethod(
+                    "isLikeViewMode", new Class[] { String.class });
+            addFunction("isLikeViewMode", isLikeViewMode);
+        } catch (NoSuchMethodException e) {
+            log.error(e, e);
+        }
+
     }
 
     // JSF functions
