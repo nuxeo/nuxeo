@@ -35,6 +35,7 @@ import org.nuxeo.ecm.core.convert.api.ConversionService;
  * Save the input document
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author tiry
  */
 @Operation(id = BlobToPDF.ID, category = Constants.CAT_CONVERSION, label = "Convert To PDF", description = "Convert the input file to a PDF and return the new file.")
 public class BlobToPDF {
@@ -58,7 +59,7 @@ public class BlobToPDF {
         String fname = result.getFilename();
         if(fname==null || fname.isEmpty()) {
             fname = bh.getBlob().getFilename();
-            fname = fname.split(".")[0] + ".pdf";
+            fname = fname + ".pdf";
             result.setFilename(fname);
         }
         return result;

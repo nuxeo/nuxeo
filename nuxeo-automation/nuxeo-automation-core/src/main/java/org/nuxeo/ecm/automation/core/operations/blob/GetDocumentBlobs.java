@@ -16,6 +16,8 @@
  */
 package org.nuxeo.ecm.automation.core.operations.blob;
 
+import java.util.List;
+
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
@@ -24,6 +26,7 @@ import org.nuxeo.ecm.automation.core.collectors.BlobListCollector;
 import org.nuxeo.ecm.automation.core.util.BlobList;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.impl.ListProperty;
 
@@ -31,6 +34,7 @@ import org.nuxeo.ecm.core.api.model.impl.ListProperty;
  * Get document blobs inside the files:files property
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author tiry
  */
 @Operation(id = GetDocumentBlobs.ID, category = Constants.CAT_BLOB, label = "Get Document Files", description = "Gets a list of files that are attached on the input document. The files location should be specified using the blob list property xpath. Returns a list of files.")
 public class GetDocumentBlobs {
@@ -45,6 +49,15 @@ public class GetDocumentBlobs {
         BlobList blobs = new BlobList();
         ListProperty list = (ListProperty) doc.getProperty(xpath);
         if (list == null) {
+            BlobHolder bh = doc.getAdapter(BlobHolder.class);
+            if (bh!=null) {
+                List<Blob> docBlobs = bh.getBlobs();
+                if (docBlobs!=null) {
+                    for (Blob blob : docBlobs) {
+                        blobs.add(blob);
+                    }
+                }
+            }
             return blobs;
         }
         for (Property p : list) {
