@@ -29,6 +29,8 @@
     <operation
       class="org.nuxeo.ecm.automation.core.operations.services.GetPictureView" />
 
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.services.PictureResize" />
   </extension>
 
 </component>
