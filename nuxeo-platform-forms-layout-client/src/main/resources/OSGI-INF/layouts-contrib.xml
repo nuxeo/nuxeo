@@ -1488,8 +1488,7 @@
                 </labels>
                 <helpLabels>
                   <label mode="any">
-                    Image path to use for the trigger. Defaults to
-                    "jscalendar/calendar.png". Available since 5.4.
+                    Image path to use for the trigger. Available since 5.4.
                   </label>
                 </helpLabels>
                 <fields>
