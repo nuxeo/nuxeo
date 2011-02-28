@@ -66,26 +66,6 @@
       <resource>seam-remote.js</resource>
       <resource>bsn.AutoSuggest_2.1.3.js</resource>
       <resource>foldable-box.js</resource>
-      <!-- include calendar resources so that they're
-        available on all the pages -->
-      <resource>calendar.js</resource>
-      <resource>calendar-en.js</resource>
-      <resource>calendar-ca.js</resource>
-      <resource>calendar-cn.js</resource>
-      <resource>calendar-cz.js</resource>
-      <resource>calendar-es.js</resource>
-      <resource>calendar-fr.js</resource>
-      <resource>calendar-it.js</resource>
-      <resource>calendar-jp.js</resource>
-      <resource>calendar-nl.js</resource>
-      <resource>calendar-pl.js</resource>
-      <resource>calendar-pt.js</resource>
-      <resource>calendar-ro.js</resource>
-      <resource>calendar-ru.js</resource>
-      <resource>calendar-sv.js</resource>
-      <resource>calendar.css</resource>
-      <resource>calendar-border-radius.css</resource>
-      <resource>calendar-galaxy.css</resource>
       <!-- include JS used for waiter -->
       <resource>effects.js</resource>
       <resource>window.js</resource>
@@ -230,63 +210,6 @@
     <resource name="foldable-box.js">
       <path>scripts/foldable-box.js</path>
       <require>effects.js</require>
-    </resource>
-
-    <!-- calendar resources -->
-    <resource name="calendar.js">
-      <path>jscalendar/js/jscal2.js</path>
-    </resource>
-    <resource name="calendar-en.js">
-      <path>jscalendar/js/lang/en.js</path>
-    </resource>
-    <resource name="calendar-ca.js">
-      <path>jscalendar/js/lang/ca.js</path>
-    </resource>
-    <resource name="calendar-cn.js">
-      <path>jscalendar/js/lang/cn.js</path>
-    </resource>
-    <resource name="calendar-cz.js">
-      <path>jscalendar/js/lang/cz.js</path>
-    </resource>
-    <resource name="calendar-es.js">
-      <path>jscalendar/js/lang/es.js</path>
-    </resource>
-    <resource name="calendar-fr.js">
-      <path>jscalendar/js/lang/fr.js</path>
-    </resource>
-    <resource name="calendar-it.js">
-      <path>jscalendar/js/lang/it.js</path>
-    </resource>
-    <resource name="calendar-jp.js">
-      <path>jscalendar/js/lang/jp.js</path>
-    </resource>
-    <resource name="calendar-nl.js">
-      <path>jscalendar/js/lang/nl.js</path>
-    </resource>
-    <resource name="calendar-pl.js">
-      <path>jscalendar/js/lang/pl.js</path>
-    </resource>
-    <resource name="calendar-pt.js">
-      <path>jscalendar/js/lang/pt.js</path>
-    </resource>
-    <resource name="calendar-ro.js">
-      <path>jscalendar/js/lang/ro.js</path>
-    </resource>
-    <resource name="calendar-ru.js">
-      <path>jscalendar/js/lang/ru.js</path>
-    </resource>
-    <resource name="calendar-sv.js">
-      <path>jscalendar/js/lang/sv.js</path>
-    </resource>
-    <resource name="calendar.css">
-      <path>jscalendar/css/jscal2.css</path>
-      <context-path>${org.nuxeo.ecm.contextPath}/jscalendar/css/</context-path>
-    </resource>
-    <resource name="calendar-border-radius.css">
-      <path>jscalendar/css/border-radius.css</path>
-    </resource>
-    <resource name="calendar-galaxy.css">
-      <path>jscalendar/css/galaxy/galaxy.css</path>
     </resource>
 
     <resource name="window.js">
