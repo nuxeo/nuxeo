@@ -90,19 +90,4 @@ public class NuxeoJBossLauncher extends NuxeoLauncher {
         return JBossConfigurator.STARTUP_CLASS;
     }
 
-    @Override
-    protected void prepareWizardStart() {
-        // Nothing to do
-    }
-
-    @Override
-    public boolean isWizardRequired() {
-        return false;
-    }
-
-    @Override
-    protected void cleanupPostWizard() {
-        // Nothing to do
-    }
-
 }

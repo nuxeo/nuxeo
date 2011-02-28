@@ -307,6 +307,7 @@ public abstract class NuxeoLauncher {
             osCommand.add(linearizedCommand);
             // osCommand.add("&");
             return osCommand;
+            // return roughCommand;
         } else if (PlatformUtils.isWindows()) {
             // for (Iterator<String> iterator = roughCommand.iterator();
             // iterator.hasNext();) {
@@ -367,7 +368,7 @@ public abstract class NuxeoLauncher {
                 filename);
         if (!classPathEntry.exists()) {
             throw new RuntimeException(
-                    "Tried to add inexistant classpath entry: "
+                    "Tried to add inexistent classpath entry: "
                             + classPathEntry);
         }
         cp += System.getProperty("path.separator") + classPathEntry.getPath();
@@ -444,23 +445,6 @@ public abstract class NuxeoLauncher {
     }
 
     /**
-     * Ensure the wizard won't be started and nuxeo is ready for use
-     */
-    protected abstract void cleanupPostWizard();
-
-    /**
-     * Ensure the server will start only wizard application, not Nuxeo
-     */
-    protected abstract void prepareWizardStart();
-
-    /**
-     * Check if wizard must and can be ran
-     *
-     * @return true if wizard must (and can) be ran before nuxeo
-     */
-    public abstract boolean isWizardRequired();
-
-    /**
      * @see #doStartAndWait(boolean)
      */
     public boolean doStartAndWait() {
@@ -497,7 +481,8 @@ public abstract class NuxeoLauncher {
         boolean commandSucceeded = true;
         if (doStart(logProcessOutput)) {
             addShutdownHook();
-            if (!isWizardRequired() && !waitForEffectiveStart()) {
+            if (!configurationGenerator.isWizardRequired()
+                    && !waitForEffectiveStart()) {
                 commandSucceeded = false;
                 removeShutdownHook();
                 stop(logProcessOutput);
@@ -614,7 +599,7 @@ public abstract class NuxeoLauncher {
             checkNoRunningServer();
             configure();
 
-            if (isWizardRequired()) {
+            if (configurationGenerator.isWizardRequired()) {
                 if (!configurationGenerator.isForceGeneration()) {
                     log.error("Cannot start setup wizard with "
                             + ConfigurationGenerator.PARAM_FORCE_GENERATION
@@ -623,9 +608,16 @@ public abstract class NuxeoLauncher {
                             + "=true to skip the wizard.");
                     return false;
                 }
-                prepareWizardStart();
+                String paramsStr = "";
+                for (String param : params) {
+                    paramsStr += " " + param;
+                }
+                System.setProperty(
+                        ConfigurationGenerator.PARAM_WIZARD_RESTART_PARAMS,
+                        paramsStr);
+                configurationGenerator.prepareWizardStart();
             } else {
-                cleanupPostWizard();
+                configurationGenerator.cleanupPostWizard();
             }
 
             start(logProcessOutput);
