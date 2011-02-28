@@ -25,6 +25,13 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import net.oauth.OAuth;
+import net.oauth.OAuth.Parameter;
+import net.oauth.OAuthAccessor;
+import net.oauth.OAuthException;
+import net.oauth.OAuthMessage;
+import net.oauth.OAuthProblemException;
+
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.IOUtils;
@@ -57,13 +64,6 @@ import org.nuxeo.runtime.api.Framework;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-
-import net.oauth.OAuth;
-import net.oauth.OAuth.Parameter;
-import net.oauth.OAuthAccessor;
-import net.oauth.OAuthException;
-import net.oauth.OAuthMessage;
-import net.oauth.OAuthProblemException;
 
 /***
  * This is complete crap. I end up copying the class because the idiots made all
@@ -199,6 +199,7 @@ public class NuxeoOAuthRequest extends OAuthRequest {
 
     protected boolean isInternalRequest() {
         String requestedURI = realRequest.getUri().toString();
+
 
         OpenSocialService os = Framework.getLocalService(OpenSocialService.class);
         for (String trustedHost : os.getTrustedHosts()) {

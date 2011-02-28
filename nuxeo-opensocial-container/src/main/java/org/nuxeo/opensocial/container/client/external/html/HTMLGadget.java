@@ -125,28 +125,23 @@ public class HTMLGadget extends AbstractGadget implements HTMLPresenter.Display 
 
         modifPanel.setWidget(rowNumber, 0, title);
         modifPanel.setWidget(rowNumber, 1, titleTextBox);
-        modifPanel.getRowFormatter()
-                .setStyleName(rowNumber, "gadget-form-line");
+        modifPanel.getRowFormatter().setStyleName(rowNumber, "gadget-form-line");
 
         rowNumber++;
 
         initRichTextEditor();
 
-
         modifPanel.setWidget(rowNumber, 0, richTextEditorPanel);
-        modifPanel.getFlexCellFormatter()
-                .setColSpan(rowNumber, 0, 0);
+        modifPanel.getFlexCellFormatter().setColSpan(rowNumber, 0, 0);
 
         rowNumber++;
-
 
         Label link = new Label(constants.link());
         linkTextBox = new TextBox();
 
         modifPanel.setWidget(rowNumber, 0, link);
         modifPanel.setWidget(rowNumber, 1, linkTextBox);
-        modifPanel.getRowFormatter()
-                .setStyleName(rowNumber, "gadget-form-line");
+        modifPanel.getRowFormatter().setStyleName(rowNumber, "gadget-form-line");
         rowNumber++;
 
         Label legend = new Label(constants.legend());
@@ -154,8 +149,7 @@ public class HTMLGadget extends AbstractGadget implements HTMLPresenter.Display 
 
         modifPanel.setWidget(rowNumber, 0, legend);
         modifPanel.setWidget(rowNumber, 1, legendTextBox);
-        modifPanel.getRowFormatter()
-                .setStyleName(rowNumber, "gadget-form-line");
+        modifPanel.getRowFormatter().setStyleName(rowNumber, "gadget-form-line");
 
         rowNumber++;
 
@@ -164,8 +158,7 @@ public class HTMLGadget extends AbstractGadget implements HTMLPresenter.Display 
 
         modifPanel.setWidget(rowNumber, 0, template);
         modifPanel.setWidget(rowNumber, 1, templateListBox);
-        modifPanel.getRowFormatter()
-                .setStyleName(rowNumber, "gadget-form-line");
+        modifPanel.getRowFormatter().setStyleName(rowNumber, "gadget-form-line");
         rowNumber++;
 
         Label source = new Label(constants.source());
@@ -173,8 +166,7 @@ public class HTMLGadget extends AbstractGadget implements HTMLPresenter.Display 
 
         modifPanel.setWidget(rowNumber, 0, source);
         modifPanel.setWidget(rowNumber, 1, sourceUpload);
-        modifPanel.getRowFormatter()
-                .setStyleName(rowNumber, "gadget-form-line");
+        modifPanel.getRowFormatter().setStyleName(rowNumber, "gadget-form-line");
         rowNumber++;
         rowNumber++;
 
@@ -185,8 +177,7 @@ public class HTMLGadget extends AbstractGadget implements HTMLPresenter.Display 
 
         modifPanel.setWidget(rowNumber, 0, cancelButton);
         modifPanel.setWidget(rowNumber, 1, saveButton);
-        modifPanel.getRowFormatter()
-                .setStyleName(rowNumber, "gadget-form-line");
+        modifPanel.getRowFormatter().setStyleName(rowNumber, "gadget-form-line");
 
         rowNumber++;
 
@@ -234,8 +225,8 @@ public class HTMLGadget extends AbstractGadget implements HTMLPresenter.Display 
         modifPanel.setWidget(previewIndex, 0, deletePictureImage);
         previewImage.setUrl(pictureUrl);
         modifPanel.setWidget(previewIndex, 1, previewImage);
-        modifPanel.getRowFormatter()
-                .setStyleName(previewIndex, "gadget-form-line");
+        modifPanel.getRowFormatter().setStyleName(previewIndex,
+                "gadget-form-line");
     }
 
     public Image getPreviewImage() {

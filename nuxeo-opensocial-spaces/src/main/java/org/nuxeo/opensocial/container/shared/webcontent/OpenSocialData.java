@@ -121,4 +121,5 @@ public class OpenSocialData extends AbstractWebContentData {
     public boolean hasFiles() {
         return false;
     }
+
 }

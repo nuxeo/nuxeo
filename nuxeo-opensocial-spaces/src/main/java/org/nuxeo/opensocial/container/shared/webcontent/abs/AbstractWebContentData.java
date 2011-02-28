@@ -35,10 +35,13 @@ public abstract class AbstractWebContentData implements Serializable,
 
     private Map<String, String> preferences;
 
+    private Map<String, String> additionalPreferences;
+
     private transient List<Serializable> files;
 
     public AbstractWebContentData() {
         preferences = new HashMap<String, String>();
+        additionalPreferences = new HashMap<String, String>();
         files = new ArrayList<Serializable>();
     }
 
@@ -115,6 +118,11 @@ public abstract class AbstractWebContentData implements Serializable,
 
     public Map<String, String> getPreferences() {
         return preferences;
+    }
+
+    @Override
+    public Map<String, String> getAdditionalPreferences() {
+        return additionalPreferences;
     }
 
     public void setOwner(String owner) {

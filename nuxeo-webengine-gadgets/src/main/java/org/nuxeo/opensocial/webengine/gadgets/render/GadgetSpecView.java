@@ -99,12 +99,8 @@ public class GadgetSpecView {
         }
 
         String remoteIP = httpRequest.getRemoteAddr();
-        for (String host : getTrustedHosts()) {
-            if (host.contains(remoteIP)) {
-                return true;
-            }
-        }
-        return false;
+        OpenSocialService os = Framework.getLocalService(OpenSocialService.class);
+        return os.isTrustedHost(remoteIP);
     }
 
     protected static String getJSContext(Map<String, Object> input) {

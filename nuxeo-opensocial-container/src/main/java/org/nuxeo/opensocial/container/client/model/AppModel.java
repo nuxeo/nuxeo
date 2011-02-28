@@ -348,8 +348,7 @@ public class AppModel implements HasPermissionsMapper {
                                 ContainerConfiguration.getUserLanguage());
                         containerContext.setParameter(
                                 GENERATE_TITLE_PARAMETER_NAME,
-                                new Boolean(
-                                        ContainerConfiguration.generateTitle()).toString());
+                                Boolean.valueOf(ContainerConfiguration.generateTitle()).toString());
                         setPermissions(result.getPermissions());
                         setLayout(result.getLayout());
                         eventBus.fireEvent(new LayoutLoadedEvent());

@@ -2,6 +2,11 @@ package org.nuxeo.opensocial.container.server.handler;
 
 import java.io.IOException;
 
+import net.customware.gwt.dispatch.server.ActionHandler;
+import net.customware.gwt.dispatch.server.ExecutionContext;
+import net.customware.gwt.dispatch.shared.ActionException;
+import net.customware.gwt.dispatch.shared.Result;
+
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -21,11 +26,6 @@ import org.nuxeo.runtime.services.streaming.InputStreamSource;
 import org.nuxeo.runtime.services.streaming.StreamSource;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
-import net.customware.gwt.dispatch.server.ActionHandler;
-import net.customware.gwt.dispatch.server.ExecutionContext;
-import net.customware.gwt.dispatch.shared.ActionException;
-import net.customware.gwt.dispatch.shared.Result;
-
 /**
  * This class abstracts all the job for getting the CoreSession, make sure
  * session is cleaned after being used and all Tx stuff goes well
@@ -41,23 +41,17 @@ public abstract class AbstractActionHandler<T extends AbstractAction<R>, R exten
             throws ActionException {
         CoreSession session = openSession(action.getRepositoryName());
 
-        if (!TransactionHelper.startTransaction()) {
-            log.warn("Unable to start transaction : there will be no Tx support");
-        }
-
         if (session != null) {
             try {
                 R result = doExecute(action, context, session);
                 session.save();
                 return result;
             } catch (Exception e) {
-                TransactionHelper.setTransactionRollbackOnly();
                 String message = "Error occured during action... rollbacking : "
                         + e.getMessage();
                 log.error(message, e);
                 throw new ActionException(message, e);
             } finally {
-                TransactionHelper.commitOrRollbackTransaction();
                 CoreInstance.getInstance().close(session);
             }
         } else {
