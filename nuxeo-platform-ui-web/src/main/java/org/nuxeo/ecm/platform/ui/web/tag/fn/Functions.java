@@ -27,6 +27,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
@@ -44,18 +46,23 @@ import org.nuxeo.runtime.api.Framework;
  * Util functions.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
+ * @author <a href="mailto:tm@nuxeo.com">Thierry Martins</a>
  */
 public final class Functions {
 
     public static final String I18N_DURATION_PREFIX = "label.duration.unit.";
 
+    public static final String BIG_FILE_SIZE_LIMIT_PROPERTY = "org.nuxeo.big.file.size.limit";
+
+    public static final long DEFAULT_BIG_FILE_SIZE_LIMIT = 5 * 1024 * 1024;
+
     public enum BytePrefix {
 
         SI(1000, new String[] { "", "k", "M", "G", "T", "P", "E", "Z", "Y" },
-                new String[] { "", "kilo", "mega", "giga", "tera", "exa",
+                new String[] { "", "kilo", "mega", "giga", "tera", "peta", "exa",
                         "zetta", "yotta" }), IEC(1024, new String[] { "", "Ki",
                 "Mi", "Gi", "Ti", "Pi", "Ei", "Zi", "Yi" }, new String[] { "",
-                "kibi", "mebi", "tebi", "pebi", "exbi", "zebi", "yobi" }), JEDEC(
+                "kibi", "mebi", "gibi", "tebi", "pebi", "exbi", "zebi", "yobi" }), JEDEC(
                 1024, new String[] { "", "K", "M", "G" }, new String[] { "",
                         "kilo", "mega", "giga" });
 
@@ -433,4 +440,54 @@ public final class Functions {
                 messageId, params);
     }
 
+    /**
+     * 
+     * @return the big file size limit defined with the property org.nuxeo.big.file.size.limit
+     */
+    public static long getBigFileSizeLimit() {
+        return getFileSize(Framework.getProperty(BIG_FILE_SIZE_LIMIT_PROPERTY, ""));
+    }
+    
+    public static long getFileSize(String value) {
+        Pattern pattern = Pattern.compile("([1-9][0-9]*)([kmgi]*)", Pattern.CASE_INSENSITIVE);
+        Matcher m = pattern.matcher(value);
+        long number;
+        String multiplier;
+        if (!m.matches()) {
+            return DEFAULT_BIG_FILE_SIZE_LIMIT;
+        }
+        number = Long.valueOf(m.group(1));
+        multiplier = m.group(2);
+        return getValueFromMultiplier(multiplier) * number;
+    }
+    
+    /**
+     * 
+     * Transform the parameter in entry according to these unit systems:
+     * <ul>
+     *   <li> SI prefixes: k/M/G for kilo, mega, giga </li>
+     *   <li> IEC prefixes: Ki/Mi/Gi for kibi, mebi, gibi </li>
+     * </ul>
+     * 
+     * @param m : binary prefix multiplier
+     * @return the value of the multiplier as a long
+     */
+    public static long getValueFromMultiplier(String m) {
+        if ("k".equalsIgnoreCase(m)) {
+            return 1L * 1000;
+        } else if ("Ki".equalsIgnoreCase(m)) {
+                return 1L << 10;
+        }  else if ("M".equalsIgnoreCase(m)) {
+                return 1L * 1000 * 1000;
+        }  else if ("Mi".equalsIgnoreCase(m)) {
+                return 1L << 20;
+        }  else if ("G".equalsIgnoreCase(m)) {
+                return 1L * 1000 * 1000 * 1000;
+        }  else if ("Gi".equalsIgnoreCase(m)) {
+                return 1L << 30;
+        } else {
+            return 1L;
+        }
+    }
+    
 }

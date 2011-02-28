@@ -64,6 +64,7 @@ import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
 import org.nuxeo.ecm.platform.ui.web.cache.SeamCacheHelper;
+import org.nuxeo.ecm.platform.ui.web.tag.fn.Functions;
 import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.webapp.base.InputController;
@@ -880,7 +881,7 @@ public class ClipboardActionsBean extends InputController implements
                 setFacesMessage("label.clipboard.emptyDocuments");
                 return null;
             } else {
-                if (tmpFile.length() > ComponentUtils.BIG_FILE_SIZE_LIMIT) {
+                if (tmpFile.length() > Functions.getBigFileSizeLimit()) {
                     HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
                     request.setAttribute(
                             NXAuthConstants.DISABLE_REDIRECT_REQUEST_KEY, true);
