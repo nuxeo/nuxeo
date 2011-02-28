@@ -694,12 +694,15 @@ public class ConfigurationGenerator {
     }
 
     /**
+     * Check if wizard must and can be ran
+     *
      * @return true if configuration wizard is required before starting Nuxeo
      * @since 5.4.1
      */
     public boolean isWizardRequired() {
         return !"true".equalsIgnoreCase(getUserConfig().getProperty(
-                PARAM_WIZARD_DONE, "true"));
+                PARAM_WIZARD_DONE, "true"))
+                && serverConfigurator.isWizardAvailable();
     }
 
     /**
@@ -729,6 +732,24 @@ public class ConfigurationGenerator {
      */
     public File getConfigDir() {
         return serverConfigurator.getConfigDir();
+    }
+
+    /**
+     * Ensure the server will start only wizard application, not Nuxeo
+     *
+     * @since 5.4.1
+     */
+    public void prepareWizardStart() {
+        serverConfigurator.prepareWizardStart();
+    }
+
+    /**
+     * Ensure the wizard won't be started and nuxeo is ready for use
+     *
+     * @since 5.4.1
+     */
+    public void cleanupPostWizard() {
+        serverConfigurator.cleanupPostWizard();
     }
 
 }
