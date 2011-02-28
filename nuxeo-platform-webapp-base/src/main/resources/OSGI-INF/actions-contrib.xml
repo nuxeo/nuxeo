@@ -22,6 +22,13 @@
       <category>DOCUMENT_EXPORT_VIEW_ACTION</category>
     </action>
 
+    <action id="exportViewZipBlobExport"
+      link="#{clipboardActions.exportWorklistAsZip(currentDocument)}"
+      label="label.exportview.zipBlobExport"
+      icon="/icons/action_export_zip.gif">
+      <category>DOCUMENT_EXPORT_VIEW_COMMAND_ACTION</category>
+    </action>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"

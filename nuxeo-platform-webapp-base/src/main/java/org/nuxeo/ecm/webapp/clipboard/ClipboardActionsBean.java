@@ -26,6 +26,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -549,6 +550,12 @@ public class ClipboardActionsBean extends InputController implements
     public String exportWorklistAsZip(List<DocumentModel> documents)
             throws ClientException {
         return exportWorklistAsZip(documents, true);
+    }
+
+    public String exportWorklistAsZip(DocumentModel document)
+            throws ClientException {
+        return exportWorklistAsZip(
+                Arrays.asList(new DocumentModel[] { document }), true);
     }
 
     /**

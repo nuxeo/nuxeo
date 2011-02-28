@@ -25,7 +25,9 @@
         <contentView>document_content</contentView>
       </contentViews>
       <contentViews category="trash_content">
-        <contentView>document_trash_content</contentView>
+        <contentView showInExportView="false">
+          document_trash_content
+        </contentView>
       </contentViews>
     </type>
 
@@ -57,7 +59,9 @@
         <contentView>document_content</contentView>
       </contentViews>
       <contentViews category="trash_content">
-        <contentView>document_trash_content</contentView>
+        <contentView showInExportView="false">
+          document_trash_content
+        </contentView>
       </contentViews>
     </type>
 
@@ -83,7 +87,9 @@
         <contentView>document_content</contentView>
       </contentViews>
       <contentViews category="trash_content">
-        <contentView>document_trash_content</contentView>
+        <contentView showInExportView="false">
+          document_trash_content
+        </contentView>
       </contentViews>
     </type>
 
@@ -109,7 +115,9 @@
         <contentView>document_content</contentView>
       </contentViews>
       <contentViews category="trash_content">
-        <contentView>document_trash_content</contentView>
+        <contentView showInExportView="false">
+          document_trash_content
+        </contentView>
       </contentViews>
     </type>
 
@@ -142,7 +150,9 @@
         <contentView>document_content</contentView>
       </contentViews>
       <contentViews category="trash_content">
-        <contentView>document_trash_content</contentView>
+        <contentView showInExportView="false">
+          document_trash_content
+        </contentView>
       </contentViews>
     </type>
 
@@ -168,7 +178,9 @@
         <contentView>section_content</contentView>
       </contentViews>
       <contentViews category="trash_content">
-        <contentView>document_trash_content</contentView>
+        <contentView showInExportView="false">
+          document_trash_content
+        </contentView>
       </contentViews>
     </type>
 
@@ -194,7 +206,9 @@
         <contentView>section_content</contentView>
       </contentViews>
       <contentViews category="trash_content">
-        <contentView>document_trash_content</contentView>
+        <contentView showInExportView="false">
+          document_trash_content
+        </contentView>
       </contentViews>
     </type>
 
@@ -223,7 +237,9 @@
         <contentView>document_content</contentView>
       </contentViews>
       <contentViews category="trash_content">
-        <contentView>document_trash_content</contentView>
+        <contentView showInExportView="false">
+          document_trash_content
+        </contentView>
       </contentViews>
     </type>
 
@@ -252,7 +268,9 @@
         <contentView>orderable_document_content</contentView>
       </contentViews>
       <contentViews category="trash_content">
-        <contentView>document_trash_content</contentView>
+        <contentView showInExportView="false">
+          document_trash_content
+        </contentView>
       </contentViews>
     </type>
 

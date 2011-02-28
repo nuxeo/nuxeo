@@ -43,7 +43,10 @@
         <nxu:set var="exportActions"
           value="#{webActions.getActionsList('DOCUMENT_EXPORT_VIEW_ACTION')}"
           cache="true">
-          <c:if test="#{not empty exportActions}">
+        <nxu:set var="exportCommandActions"
+          value="#{webActions.getActionsList('DOCUMENT_EXPORT_VIEW_COMMAND_ACTION')}"
+          cache="true">
+          <c:if test="#{not empty exportActions or not empty exportCommandActions}">
             <h1>#{messages['label.exportview.document']}</h1>
             <c:forEach var="action" items="#{exportActions}">
               <nxh:metaOutputLink value="#{action.getLink()}"
@@ -55,7 +58,19 @@
               </nxh:metaOutputLink>
               <br />
             </c:forEach>
+            <h:form>
+              <c:forEach var="action" items="#{exportCommandActions}">
+                <nxh:commandLink action="#{action.getLink()}"
+                  title="#{messages[action.label]}"
+                  alt="#{messages[action.label]}">
+                  <h:graphicImage value="#{action.icon}" />
+                  <h:outputText value=" #{messages[action.label]}" />
+                </nxh:commandLink>
+                <br />
+              </c:forEach>
+            </h:form>
           </c:if>
+        </nxu:set>
         </nxu:set>
         
         <br /><br />
