@@ -87,4 +87,17 @@ public class TestFunctions extends TestCase {
         assertEquals("0 secondes", Functions.printFormattedDuration(null,
                 messages));
     }
+    
+    public void testGetFileSize() {
+        assertEquals(512, Functions.getFileSize("512"));
+        assertEquals(1 * 1000, Functions.getFileSize("1k"));
+        assertEquals(1 * 1024, Functions.getFileSize("1Ki"));
+        assertEquals(2 * 1000 * 1000, Functions.getFileSize("2m"));
+        assertEquals(2 * 1024 * 1024, Functions.getFileSize("2Mi"));
+        assertEquals(3L * 1000 * 1000 * 1000, Functions.getFileSize("3g"));
+        assertEquals(3L * 1024 * 1024 * 1024, Functions.getFileSize("3Gi"));
+        
+        // Some bad values
+        assertEquals(5 * 1024 * 1024, Functions.getFileSize("128h"));
+    }
 }

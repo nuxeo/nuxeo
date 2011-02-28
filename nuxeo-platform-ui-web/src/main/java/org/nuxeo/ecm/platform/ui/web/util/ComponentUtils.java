@@ -55,8 +55,6 @@ import org.nuxeo.ecm.platform.ui.web.component.list.UIEditableList;
  */
 public final class ComponentUtils {
 
-    public static final long BIG_FILE_SIZE_LIMIT = 1024 * 1024 * 5;
-
     public static final String WHITE_SPACE_CHARACTER = "&#x0020;";
 
     private static final Log log = LogFactory.getLog(ComponentUtils.class);
