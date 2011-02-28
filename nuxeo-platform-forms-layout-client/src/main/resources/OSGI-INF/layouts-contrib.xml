@@ -1453,6 +1453,8 @@
                 <helpLabels>
                   <label mode="any">
                     Flag indicating that the calendar must show a time choice.
+                    Since 5.4.1, this property is ignored and time is shown
+                    depending on the date format.
                   </label>
                 </helpLabels>
                 <fields>

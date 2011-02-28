@@ -770,9 +770,7 @@
     <tag-class>None</tag-class>
     <description>
       <![CDATA[
-      Calendar with date and time chosing. Complete documentation can be found
-      at (<a href="http://www.dynarch.com/projects/calendar/" target="_blank">
-        http://www.dynarch.com/projects/calendar/</a>)
+      Calendar with date and time chosing.
       ]]>
     </description>
     <attribute>
@@ -814,7 +812,8 @@
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
       <description>
-        Flag indicating that the calendar must show a time choice.
+        Flag indicating that the calendar must show a time choice. Ignored since
+        5.4.1 as time is shown according to date format chosen.
       </description>
     </attribute>
     <attribute>
@@ -875,13 +874,15 @@
     <attribute>
       <name>onclick</name>
       <description>
-        Javascript onclick event handler, set on the text input
+        Javascript onclick event handler, set on the text input. Ignored since
+        5.4.1 as RichFaces calendar does not handle it.
       </description>
     </attribute>
     <attribute>
       <name>onselect</name>
       <description>
-        Javascript onselect event handler, set on the text input
+        Javascript onselect event handler, set on the text input. Ignored since
+        5.4.1 as RichFaces calendar does not handle it.
       </description>
     </attribute>
     <example>

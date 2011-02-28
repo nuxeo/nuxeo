@@ -328,11 +328,9 @@
   <tag>
     <tag-name>inputDateTime</tag-name>
     <component>
-      <component-type>
-        org.nuxeo.ecm.platform.ui.web.component.date.UIInputDateTime
-      </component-type>
+      <component-type>org.richfaces.Calendar</component-type>
       <handler-class>
-        com.sun.facelets.tag.jsf.html.HtmlComponentHandler
+        org.nuxeo.ecm.platform.ui.web.tag.handler.InputDateTimeTagHandler
       </handler-class>
     </component>
   </tag>
