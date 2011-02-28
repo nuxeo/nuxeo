@@ -20,12 +20,10 @@
 package org.nuxeo.launcher;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.launcher.config.TomcatConfigurator;
 
@@ -81,56 +79,4 @@ public class NuxeoTomcatLauncher extends NuxeoLauncher {
         return TomcatConfigurator.STARTUP_CLASS;
     }
 
-    @Override
-    protected void prepareWizardStart() {
-        try {
-            // overwrite server.xml with server.xml.nx (default Tomcat file)
-            File serverXMLBase = new File(
-                    configurationGenerator.getNuxeoHome(), "conf");
-            File nuxeoServerXML = new File(serverXMLBase, "server.xml");
-            File nuxeoServerXMLOrg = new File(serverXMLBase, "server.xml.nx");
-            nuxeoServerXML.delete();
-            FileUtils.moveFile(nuxeoServerXMLOrg, nuxeoServerXML);
-
-            // remove conf/Catalina/localhost/nuxeo.xml
-            File contextXML = new File(configurationGenerator.getNuxeoHome(),
-                    "conf" + File.separator + "Catalina" + File.separator
-                            + "localhost" + File.separator + "nuxeo.xml");
-            contextXML.delete();
-
-            // deploy wizard WAR
-            File wizardWAR = new File(configurationGenerator.getNuxeoHome(),
-                    "templates" + File.separator + "nuxeo-wizard.war");
-            File nuxeoWAR = new File(configurationGenerator.getNuxeoHome(),
-                    "webapps" + File.separator + "nuxeo.war");
-            nuxeoWAR.delete();
-            FileUtils.copyFile(wizardWAR, nuxeoWAR);
-
-            String paramsStr = "";
-            for (String param : params) {
-                paramsStr += " " + param;
-            }
-            System.setProperty(
-                    ConfigurationGenerator.PARAM_WIZARD_RESTART_PARAMS,
-                    paramsStr);
-        } catch (IOException e) {
-            log.error(
-                    "Could not change Tomcat configuration to run wizard instead of Nuxeo.",
-                    e);
-        }
-    }
-
-    @Override
-    public boolean isWizardRequired() {
-        File wizardWAR = new File(configurationGenerator.getNuxeoHome(),
-                "templates" + File.separator + "nuxeo-wizard.war");
-        return (configurationGenerator.isWizardRequired() && wizardWAR.exists());
-    }
-
-    @Override
-    protected void cleanupPostWizard() {
-        File nuxeoWAR = new File(configurationGenerator.getNuxeoHome(),
-                "webapps" + File.separator + "nuxeo.war");
-        nuxeoWAR.delete();
-    }
 }
