@@ -135,6 +135,8 @@ public class ConfigurationGenerator {
     // if PARAM_FORCE_GENERATION=false, set to once; else keep the current value
     private boolean setFalseToOnce = false;
 
+    private String wizardParam = null;
+
     public boolean isConfigurable() {
         return configurable;
     }
@@ -456,6 +458,7 @@ public class ConfigurationGenerator {
         // Keep true or once; switch false to once
         setOnceToFalse = false;
         setFalseToOnce = true;
+        wizardParam = changedParameters.remove(PARAM_WIZARD_DONE);
         writeConfiguration(loadConfiguration(), changedParameters);
     }
 
@@ -546,6 +549,10 @@ public class ConfigurationGenerator {
                             }
                             if (setFalseToOnce && !forceGeneration) {
                                 line = PARAM_FORCE_GENERATION + "=once";
+                            }
+                        } else if (line.startsWith(PARAM_WIZARD_DONE)) {
+                            if (wizardParam != null) {
+                                line = PARAM_WIZARD_DONE + "=" + wizardParam;
                             }
                         }
                         newContent.append(line
