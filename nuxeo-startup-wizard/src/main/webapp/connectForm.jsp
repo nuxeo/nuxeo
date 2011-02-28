@@ -51,12 +51,10 @@ window.setTimeout(handleFallbackIfNeeded, 25000);
 <h1> <fmt:message key="label.connectFinish.ok" /> </h1>
 <div class="formPadding">
 <fmt:message key="label.connectFinish.ok.details" />
-</div>
-<input type="button" class="glossyButton" value="<fmt:message key="label.action.prev"/>" onclick="navigateTo('<%=currentPage.prev().getAction()%>');"/>
-<input type="button" class="glossyButton" value="<fmt:message key="label.action.next"/>" onclick="navigateTo('<%=currentPage.next().next().getAction()%>');"/>
+<%@ include file="includes/prevnext.jsp" %>
 
 <script>
-  window.setTimeout(function() {navigateTo('<%=currentPage.next().next().getAction()%>')}, 3000);
+  window.setTimeout(function() {navigateTo('<%=currentPage.next().getAction()%>')}, 3000);
 </script>
 <%} %>
 

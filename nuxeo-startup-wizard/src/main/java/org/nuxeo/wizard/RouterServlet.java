@@ -59,6 +59,11 @@ public class RouterServlet extends HttpServlet {
 
     protected String getAction(HttpServletRequest req) {
         String uri = req.getRequestURI();
+
+        int idx = uri.indexOf("?");
+        if (idx>0) {
+            uri = uri.substring(0, idx-1);
+        }
         String action = uri.replace(req.getContextPath() + "/router/", "");
         if (action.startsWith("/")) {
             action = action.substring(1);
@@ -151,24 +156,64 @@ public class RouterServlet extends HttpServlet {
 
         // compute CB url
         String cbUrl = req.getRequestURL().toString();
-        cbUrl = cbUrl.replace("/router/" + currentPage.getAction(),
-                "/jsp/connectCallBack.jsp?next="
-                        + currentPage.next().getAction());
-        cbUrl += "&prev=" + currentPage.prev().getAction();
+        cbUrl = cbUrl.replace("/router/" + currentPage.getAction(),"/ConnectCallback?cb=yo");
         cbUrl = URLEncoder.encode(cbUrl, "UTF-8");
 
         req.setAttribute("callBackUrl", cbUrl);
 
-        // fake response for testing
-        StringBuffer sb = new StringBuffer();
-        sb.append("registrationOK:true\n");
-        sb.append("CLID:XXXXXXXXTESTXXXXXXXXX-XXXXXXXXXXCLIDXXXXXXXXX\n");
-        String fakeToken = new String(
-                Base64.encodeBase64(sb.toString().getBytes()));
-        req.setAttribute("fakeToken", fakeToken);
-
         handleDefaultGET(currentPage, req, resp);
     }
+
+    public void handleConnectCallbackGET(Page currentPage,
+            HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+
+        String token = req.getParameter(CONNECT_TOKEN_KEY);
+        String action = req.getParameter("action");
+        String targetNav=null;
+
+        if (action==null || action.isEmpty()) {
+            action="skip";
+        }
+        if (action.equals("register") && (token==null || token.isEmpty())) {
+            action = "skip";
+        }
+
+        if ("register".equals(action)) {
+          // store the registration info
+          Map<String, String> connectMap = new HashMap<String, String>();
+          if (token != null) {
+              String tokenData = new String(Base64.decodeBase64(token));
+              String[] tokenDataLines = tokenData.split("\n");
+              for (String line : tokenDataLines) {
+                  String[] parts = line.split(":");
+                  if (parts.length > 1) {
+                      connectMap.put(parts[0], parts[1]);
+                  }
+              }
+              Context.instance(req).storeConnectMap(connectMap);
+          }
+
+          // deactivate the confirm form
+          SimpleNavigationHandler.instance().deactivatePage("ConnectFinish");
+          // go to the next page
+          targetNav = currentPage.next().getAction();
+
+        } else if ("skip".equals(action)) {
+          // activate the confirm form
+          SimpleNavigationHandler.instance().activatePage("ConnectFinish");
+          // go to it
+          targetNav = currentPage.next().getAction();
+        } else if ("prev".equals(action)) {
+          targetNav = currentPage.prev().prev().getAction();
+        }
+
+        String targetUrl = req.getContextPath() + "/" + targetNav;
+
+        req.setAttribute("targetUrl", targetUrl);
+        handleDefaultGET(currentPage, req, resp);
+    }
+
 
     public void handleConnectFinishGET(Page currentPage,
             HttpServletRequest req, HttpServletResponse resp)

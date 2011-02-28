@@ -56,13 +56,23 @@ function showError(id) {
 <br/><br/><br/><br/><br/>
 
 
-<%for (Page item : nav.getPages()) {%>
+<%for (Page item : nav.getPages()) {
+
+    if (item.isVisibleInNavigationMenu()) {
+%>
 
 <div
   class="navItem <%=currentPage.getAction().equals(item.getAction()) ? "navItemSelected" : "" %>"
-><fmt:message key="<%=item.getLabelKey()%>"/></div>
-
+>
+<% if (item.hasBeenNavigatedBefore()) { %>
+   <A href="#" onclick="navigateTo('<%=item.getAction()%>')"> <fmt:message key="<%=item.getLabelKey()%>"/> </A>
+<% } else { %>
+  <fmt:message key="<%=item.getLabelKey()%>"/>
 <%} %>
+</div>
+
+<% }
+} %>
 
 </td>
 <td class="mainClell">

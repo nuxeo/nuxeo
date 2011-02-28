@@ -46,12 +46,28 @@ public class Page {
 
     protected Page next;
 
-    public Page(String action, String jsp) {
-        this.action = action;
-        if (!jsp.startsWith("/")) {
-            jsp = "/" + jsp;
+    protected boolean active = true;
+
+    protected boolean hidden = false;
+
+    protected boolean navigated = false;
+
+    public Page(String pageConfigString) {
+
+        String[] parts = pageConfigString.split("\\|");
+
+        action = parts[0];
+        String jspPage = parts[1];
+        if (!jspPage.startsWith("/")) {
+            jspPage = "/" + jspPage;
         }
-        this.jsp = jsp;
+        jsp = jspPage;
+        if ("0".equals(parts[2])) {
+            active=false;
+        }
+        if ("1".equals(parts[3])) {
+            hidden=true;
+        }
     }
 
     public String getAction() {
@@ -63,11 +79,19 @@ public class Page {
     }
 
     public Page prev() {
-        return prev;
+        if (prev.isActive()) {
+            return prev;
+        } else {
+          return prev.prev();
+        }
     }
 
     public Page next() {
-        return next;
+        if (next.isActive()) {
+            return next;
+        } else {
+            return next.next();
+        }
     }
 
     public void dispatchToJSP(HttpServletRequest req, HttpServletResponse resp)
@@ -115,4 +139,15 @@ public class Page {
         return "label.short." + jsp.replace(".jsp", "").substring(1);
     }
 
+    public boolean isVisibleInNavigationMenu() {
+        return active && (!hidden);
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public boolean hasBeenNavigatedBefore() {
+        return navigated;
+    }
 }

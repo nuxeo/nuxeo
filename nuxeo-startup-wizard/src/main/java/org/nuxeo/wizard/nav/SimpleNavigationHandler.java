@@ -30,11 +30,17 @@ import java.util.List;
 public class SimpleNavigationHandler {
 
     // I am too lazy to load a file
-    protected static final String[] nav = { " |welcome.jsp",
-            "General|generalSettings.jsp", "Proxy|proxySettings.jsp",
-            "DB|dbSettings.jsp", "Smtp|smtpSettings.jsp",
-            "Connect|connectForm.jsp", "ConnectFinish|connectFinish.jsp",
-            "Recap|recapScreen.jsp", "Restart|reStarting.jsp" };
+    // navCode / jsp Page / active flag / hidden flag
+    protected static final String[] nav = { " |welcome.jsp|1|0",
+            "General|generalSettings.jsp|1|0",
+            "Proxy|proxySettings.jsp|1|0",
+            "DB|dbSettings.jsp|1|0",
+            "Smtp|smtpSettings.jsp|1|0",
+            "Connect|connectForm.jsp|1|0",
+            "ConnectCallback|connectCallback.jsp|0|1",
+            "ConnectFinish|connectFinish.jsp|0|0",
+            "Recap|recapScreen.jsp|1|0",
+            "Restart|reStarting.jsp|1|1" };
 
     protected List<Page> pages = new ArrayList<Page>();
 
@@ -47,13 +53,17 @@ public class SimpleNavigationHandler {
         return instance;
     }
 
+    public static void reset() {
+        instance=null;
+    }
+
     protected SimpleNavigationHandler() {
 
         Page previousPage = null;
         for (int idx = 0; idx < nav.length; idx++) {
             String token = nav[idx];
-            String[] parts = token.split("\\|");
-            Page page = new Page(parts[0].trim(), parts[1].trim());
+
+            Page page = new Page(token);
             pages.add(page);
 
             if (previousPage != null) {
@@ -67,20 +77,58 @@ public class SimpleNavigationHandler {
         }
     }
 
-    public Page getCurrentPage(String action) {
+    public int getProgress(String action) {
 
-        if (action == null || action.isEmpty()) {
-            return pages.get(0);
-        }
+        int activePageIdx=0;
+        int totalActivePages=0;
 
-        Page currentPage = null;
         for (int idx = 0; idx < pages.size(); idx++) {
+
+            if (pages.get(idx).isVisibleInNavigationMenu()) {
+                totalActivePages+=1;
+            }
             if (pages.get(idx).getAction().equals(action)) {
-                currentPage = pages.get(idx);
-                break;
+                activePageIdx=totalActivePages;
             }
         }
+        if (totalActivePages==0) {
+            return 0;
+        }
+        return new Double((activePageIdx) * (100.0 / totalActivePages)).intValue();
+    }
+
+    public Page getCurrentPage(String action) {
+
+        Page currentPage = null;
+
+        if (action == null || action.isEmpty()) {
+            currentPage =  pages.get(0);
+        }
+        else {
+            currentPage = findPageByAction(action);
+        }
+
+        // mark as navigated
+        currentPage.navigated=true;
+
         return currentPage;
+    }
+
+    public Page findPageByAction(String action) {
+        for (int idx = 0; idx < pages.size(); idx++) {
+            if (pages.get(idx).getAction().equals(action)) {
+                return pages.get(idx);
+            }
+        }
+        return null;
+    }
+
+    public void activatePage(String action) {
+        findPageByAction(action).active=true;
+    }
+
+    public void deactivatePage(String action) {
+        findPageByAction(action).active=false;
     }
 
     public List<Page> getPages() {
