@@ -443,7 +443,7 @@ public final class Functions {
     
     public static long getFileSize(String value) {
         Pattern pattern = Pattern.compile("([1-9][0-9]*)([kmgi]*)", Pattern.CASE_INSENSITIVE);
-        Matcher m = pattern.matcher(value);
+        Matcher m = pattern.matcher(value.trim());
         long number;
         String multiplier;
         if (!m.matches()) {
