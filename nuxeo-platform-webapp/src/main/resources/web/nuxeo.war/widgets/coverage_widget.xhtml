@@ -8,7 +8,7 @@
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:nxp="http://nuxeo.org/nxweb/pdf"
   id="#{widget.id}">
-<c:if test="#{nxl:isLikePlainMode(widget.mode) and widget.mode != 'pdf'}">
+<c:if test="#{nxl:isLikePlainMode(widget.mode)}">
 <f:subview rendered="#{not empty field}"><nxdir:directoryEntryOutput
     directoryName="continent"
     value="#{fn:split(field_0, '/')[0]}"
@@ -31,7 +31,7 @@
     </nxdir:chainSelect>
   </nxp:html>
 </c:if>
-<c:if test="#{widget.mode != 'edit' and not nxl:isLikePlainMode(widget.mode)}">
+<c:if test="#{nxl:isLikeViewMode(widget.mode)}">
 
   <nxdir:chainSelect id="#{widget.id}_viewselect" size="2" value="#{field}"
     displayValueOnly="true">
