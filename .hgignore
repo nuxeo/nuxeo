@@ -15,6 +15,7 @@ target*
 *.ipr
 *.iws
 *.bak
+dependency-tree.log
 nuxeo-distribution-dm/ftest/funkload/log/*
 nuxeo-distribution-dm/ftest/selenium/result-*.html
 nuxeo-distribution-dm/ftest/selenium/run.conf
