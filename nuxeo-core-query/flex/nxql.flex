@@ -45,8 +45,8 @@ import org.nuxeo.ecm.core.query.*;
 
   private void scanError() throws QueryParseException {
     StringBuffer buf = new StringBuffer("Lexical Error: Illegal character <")
-    	.append(yytext()).append("> at offset ").append(yychar);
-  	throw new QueryParseException(buf.toString());
+        .append(yytext()).append("> at offset ").append(yychar);
+      throw new QueryParseException(buf.toString());
   }
 
 %}
@@ -85,176 +85,175 @@ Exponent = [eE] [+-]? [0-9]+
 
 /* keywords */
 <YYINITIAL> {
-  /* White spaces */
-  {WhiteSpace}                  { /* ignore */ }
 
-  /* SQL Keywords */
+    /* White spaces */
+    {WhiteSpace}        { /* ignore */ }
 
-	/* GR: didn't find a syntax for mapping several tokens at once */
-	"SELECT"			{ return symbol(sym.SELECT); }
-	"Select"			{ return symbol(sym.SELECT); }
-	"select"			{ return symbol(sym.SELECT); }
+    /* SQL Keywords */
 
-	"FROM"				{ return symbol(sym.FROM); }
-	"From"				{ return symbol(sym.FROM); }
-	"from"				{ return symbol(sym.FROM); }
+    "SELECT"            { return symbol(sym.SELECT); }
+    "Select"            { return symbol(sym.SELECT); }
+    "select"            { return symbol(sym.SELECT); }
 
-	"WHERE"				{ return symbol(sym.WHERE); }
-	"Where" 			{ return symbol(sym.WHERE); }
-	"where" 			{ return symbol(sym.WHERE); }
+    "FROM"              { return symbol(sym.FROM); }
+    "From"              { return symbol(sym.FROM); }
+    "from"              { return symbol(sym.FROM); }
 
-	"AS"				{ return symbol(sym.AS); }
-	"As"				{ return symbol(sym.AS); }
-	"as"				{ return symbol(sym.AS); }
+    "WHERE"             { return symbol(sym.WHERE); }
+    "Where"             { return symbol(sym.WHERE); }
+    "where"             { return symbol(sym.WHERE); }
 
-	"NOT"				{ return symbol(sym.NOT); }
-	"Not"				{ return symbol(sym.NOT); }
-	"not"				{ return symbol(sym.NOT); }
+    "AS"                { return symbol(sym.AS); }
+    "As"                { return symbol(sym.AS); }
+    "as"                { return symbol(sym.AS); }
 
-	"AND"				{ return symbol(sym.AND); }
-	"And"				{ return symbol(sym.AND); }
-	"and"				{ return symbol(sym.AND); }
+    "NOT"               { return symbol(sym.NOT); }
+    "Not"               { return symbol(sym.NOT); }
+    "not"               { return symbol(sym.NOT); }
 
-	"OR"				{ return symbol(sym.OR); }
-	"Or"				{ return symbol(sym.OR); }
-	"or"				{ return symbol(sym.OR); }
+    "AND"               { return symbol(sym.AND); }
+    "And"               { return symbol(sym.AND); }
+    "and"               { return symbol(sym.AND); }
 
-  "LIKE"        { return symbol(sym.LIKE); }
-  "Like"        { return symbol(sym.LIKE); }
-  "like"        { return symbol(sym.LIKE); }
+    "OR"                { return symbol(sym.OR); }
+    "Or"                { return symbol(sym.OR); }
+    "or"                { return symbol(sym.OR); }
 
-  "ILIKE"        { return symbol(sym.ILIKE); }
-  "ILike"        { return symbol(sym.ILIKE); }
-  "ilike"        { return symbol(sym.ILIKE); }
+    "LIKE"              { return symbol(sym.LIKE); }
+    "Like"              { return symbol(sym.LIKE); }
+    "like"              { return symbol(sym.LIKE); }
 
-	"DISTINCT"			{ return symbol(sym.DISTINCT); }
-	"Distinct"			{ return symbol(sym.DISTINCT); }
-	"distinct"			{ return symbol(sym.DISTINCT); }
+    "ILIKE"             { return symbol(sym.ILIKE); }
+    "ILike"             { return symbol(sym.ILIKE); }
+    "ilike"             { return symbol(sym.ILIKE); }
 
-	"ALL"				{ return symbol(sym.ALL); }
-	"All"				{ return symbol(sym.ALL); }
-	"all"				{ return symbol(sym.ALL); }
+    "DISTINCT"          { return symbol(sym.DISTINCT); }
+    "Distinct"          { return symbol(sym.DISTINCT); }
+    "distinct"          { return symbol(sym.DISTINCT); }
 
-	"BETWEEN"			{ return symbol(sym.BETWEEN); }
-	"Between"			{ return symbol(sym.BETWEEN); }
-	"between"			{ return symbol(sym.BETWEEN); }
+    "ALL"               { return symbol(sym.ALL); }
+    "All"               { return symbol(sym.ALL); }
+    "all"               { return symbol(sym.ALL); }
 
-	"IN"				{ return symbol(sym.IN); }
-	"In"				{ return symbol(sym.IN); }
-	"in"				{ return symbol(sym.IN); }
+    "BETWEEN"           { return symbol(sym.BETWEEN); }
+    "Between"           { return symbol(sym.BETWEEN); }
+    "between"           { return symbol(sym.BETWEEN); }
 
-	"ORDER BY"			{ return symbol(sym.ORDERBY); }
-	"Order By"			{ return symbol(sym.ORDERBY); }
-	"order by"			{ return symbol(sym.ORDERBY); }
+    "IN"                { return symbol(sym.IN); }
+    "In"                { return symbol(sym.IN); }
+    "in"                { return symbol(sym.IN); }
 
-	"ASC"				{ return symbol(sym.ASC); }
-	"Asc"				{ return symbol(sym.ASC); }
-	"asc"				{ return symbol(sym.ASC); }
+    "ORDER BY"          { return symbol(sym.ORDERBY); }
+    "Order By"          { return symbol(sym.ORDERBY); }
+    "order by"          { return symbol(sym.ORDERBY); }
 
-	"DESC"				{ return symbol(sym.DESC); }
-	"Desc"				{ return symbol(sym.DESC); }
-	"desc"				{ return symbol(sym.DESC); }
+    "ASC"               { return symbol(sym.ASC); }
+    "Asc"               { return symbol(sym.ASC); }
+    "asc"               { return symbol(sym.ASC); }
 
-	/*rich literals*/
-	"DATE"              { return symbol(sym.DATE); }
-	"Date"              { return symbol(sym.DATE); }
-	"date"              { return symbol(sym.DATE); }
+    "DESC"              { return symbol(sym.DESC); }
+    "Desc"              { return symbol(sym.DESC); }
+    "desc"              { return symbol(sym.DESC); }
 
-	"TIMESTAMP"         { return symbol(sym.TIMESTAMP); }
-	"TimeStamp"         { return symbol(sym.TIMESTAMP); }
-	"Timestamp"         { return symbol(sym.TIMESTAMP); }
-	"timestamp"         { return symbol(sym.TIMESTAMP); }
+    /*rich literals*/
+    "DATE"              { return symbol(sym.DATE); }
+    "Date"              { return symbol(sym.DATE); }
+    "date"              { return symbol(sym.DATE); }
 
-	/*not yet implemented */
-	"GROUP BY"			{ return symbol(sym.GROUPBY); }
-	"Group By"			{ return symbol(sym.GROUPBY); }
-	"group by"			{ return symbol(sym.GROUPBY); }
+    "TIMESTAMP"         { return symbol(sym.TIMESTAMP); }
+    "TimeStamp"         { return symbol(sym.TIMESTAMP); }
+    "Timestamp"         { return symbol(sym.TIMESTAMP); }
+    "timestamp"         { return symbol(sym.TIMESTAMP); }
 
-	"HAVING"			{ return symbol(sym.HAVING); }
-	"Having"			{ return symbol(sym.HAVING); }
-	"having"			{ return symbol(sym.HAVING); }
+    "GROUP BY"          { return symbol(sym.GROUPBY); }
+    "Group By"          { return symbol(sym.GROUPBY); }
+    "group by"          { return symbol(sym.GROUPBY); }
 
-	"LIMIT"				{ return symbol(sym.LIMIT); }
-	"Limit"				{ return symbol(sym.LIMIT); }
-	"limit"				{ return symbol(sym.LIMIT); }
+    "HAVING"            { return symbol(sym.HAVING); }
+    "Having"            { return symbol(sym.HAVING); }
+    "having"            { return symbol(sym.HAVING); }
 
-        "OFFSET"                        { return symbol(sym.OFFSET); }
-        "Offset"                        { return symbol(sym.OFFSET); }
-        "offset"                        { return symbol(sym.OFFSET); }
+    "LIMIT"             { return symbol(sym.LIMIT); }
+    "Limit"             { return symbol(sym.LIMIT); }
+    "limit"             { return symbol(sym.LIMIT); }
 
-	"TYPE"				{ return symbol(sym.TYPE); }
-	"Type"				{ return symbol(sym.TYPE); }
-	"type"				{ return symbol(sym.TYPE); }
+    "OFFSET"            { return symbol(sym.OFFSET); }
+    "Offset"            { return symbol(sym.OFFSET); }
+    "offset"            { return symbol(sym.OFFSET); }
 
-	"LOCATION"			{ return symbol(sym.LOCATION); }
-	"Location"			{ return symbol(sym.LOCATION); }
-	"location"			{ return symbol(sym.LOCATION); }
+    "TYPE"              { return symbol(sym.TYPE); }
+    "Type"              { return symbol(sym.TYPE); }
+    "type"              { return symbol(sym.TYPE); }
 
-	"STARTSWITH"		{ return symbol(sym.STARTSWITH); }
-	"StartsWith"		{ return symbol(sym.STARTSWITH); }
-	"Startswith"		{ return symbol(sym.STARTSWITH); }
-	"startswith"		{ return symbol(sym.STARTSWITH); }
+    "LOCATION"          { return symbol(sym.LOCATION); }
+    "Location"          { return symbol(sym.LOCATION); }
+    "location"          { return symbol(sym.LOCATION); }
 
-	/* Operators */
-	"+"					{ return symbol(sym.SUM); }
-	"-"					{ return symbol(sym.SUB); }
-	"*"					{ return symbol(sym.MUL); }
-	"/"					{ return symbol(sym.DIV); }
+    "STARTSWITH"        { return symbol(sym.STARTSWITH); }
+    "StartsWith"        { return symbol(sym.STARTSWITH); }
+    "Startswith"        { return symbol(sym.STARTSWITH); }
+    "startswith"        { return symbol(sym.STARTSWITH); }
 
-	/* Logical operators */
-	"="					{ return symbol(sym.EQ); }
-	"!="				{ return symbol(sym.NOTEQ); }
-	"<>"				{ return symbol(sym.NOTEQ); }
-	"<"					{ return symbol(sym.LT); }
-	">"					{ return symbol(sym.GT); }
-	"<="				{ return symbol(sym.LTEQ); }
-	">="				{ return symbol(sym.GTEQ); }
+    /* Operators */
+    "+"                 { return symbol(sym.SUM); }
+    "-"                 { return symbol(sym.SUB); }
+    "*"                 { return symbol(sym.MUL); }
+    "/"                 { return symbol(sym.DIV); }
 
-	/* Symbols */
-	"("					{ return symbol(sym.LPARA); }
-	")"					{ return symbol(sym.RPARA); }
-	","					{ return symbol(sym.COMMA); }
+    /* Logical operators */
+    "="                 { return symbol(sym.EQ); }
+    "!="                { return symbol(sym.NOTEQ); }
+    "<>"                { return symbol(sym.NOTEQ); }
+    "<"                 { return symbol(sym.LT); }
+    ">"                 { return symbol(sym.GT); }
+    "<="                { return symbol(sym.LTEQ); }
+    ">="                { return symbol(sym.GTEQ); }
 
-	/* String literals */
-	\"					{ string.setLength(0); yybegin(STRING); }
-	"'"					{ string.setLength(0); yybegin(SQ_STRING); }
+    /* Symbols */
+    "("                 { return symbol(sym.LPARA); }
+    ")"                 { return symbol(sym.RPARA); }
+    ","                 { return symbol(sym.COMMA); }
 
-	/* Numeric literals */
-	{DecIntegerLiteral}	{ return symbol(sym.INTEGER, yytext()); }
-	{DoubleLiteral}		{ return symbol(sym.DOUBLE, yytext()); }
+    /* String literals */
+    \"                  { string.setLength(0); yybegin(STRING); }
+    "'"                 { string.setLength(0); yybegin(SQ_STRING); }
 
-	/* Identifiers */
-	{Identifier}        { return symbol(sym.IDENTIFIER, yytext()); }
-	{PathIdentifier}    { return symbol(sym.PATH_IDENTIFIER, yytext()); }
-	{FromIdentifier}    { return symbol(sym.FROM_IDENTIFIER, yytext()); }
+    /* Numeric literals */
+    {DecIntegerLiteral} { return symbol(sym.INTEGER, yytext()); }
+    {DoubleLiteral}     { return symbol(sym.DOUBLE, yytext()); }
+
+    /* Identifiers */
+    {Identifier}        { return symbol(sym.IDENTIFIER, yytext()); }
+    {PathIdentifier}    { return symbol(sym.PATH_IDENTIFIER, yytext()); }
+    {FromIdentifier}    { return symbol(sym.FROM_IDENTIFIER, yytext()); }
 
 }
 
 <STRING> {
-	\"                  { yybegin(YYINITIAL);
-	                      return symbol(sym.STRING, string.toString());
-	                    }
-	[^\n\r\"\\]+        { string.append( yytext() ); }
-	\\t                 { string.append('\t'); }
-	\\n                 { string.append('\n'); }
-	\\r                 { string.append('\r'); }
-	\\\"                { string.append('\"'); }
-	\\                  { string.append('\\'); }
+    \"                  { yybegin(YYINITIAL);
+                          return symbol(sym.STRING, string.toString());
+                        }
+    [^\n\r\"\\]+        { string.append( yytext() ); }
+    \\t                 { string.append('\t'); }
+    \\n                 { string.append('\n'); }
+    \\r                 { string.append('\r'); }
+    \\\"                { string.append('\"'); }
+    \\                  { string.append('\\'); }
 }
 
 <SQ_STRING> {
-	\'					{ yybegin(YYINITIAL);
-	                      return symbol(sym.STRING,string.toString());
-	                    }
-	[^\n\r\'\\]+        { string.append( yytext() ); }
-	\\t                 { string.append('\t'); }
-	\\n                 { string.append('\n'); }
-	\\r                 { string.append('\r'); }
-	\\\'                { string.append('\''); }
-	\\                  { string.append('\\'); }
+    \'                  { yybegin(YYINITIAL);
+                          return symbol(sym.STRING,string.toString());
+                        }
+    [^\n\r\'\\]+        { string.append( yytext() ); }
+    \\t                 { string.append('\t'); }
+    \\n                 { string.append('\n'); }
+    \\r                 { string.append('\r'); }
+    \\\'                { string.append('\''); }
+    \\                  { string.append('\\'); }
 }
 
 
 
 /* error fallback */
-.|\n                             { scanError(); }
+.|\n                    { scanError(); }
