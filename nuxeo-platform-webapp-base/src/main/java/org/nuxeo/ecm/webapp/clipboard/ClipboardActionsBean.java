@@ -123,7 +123,6 @@ public class ClipboardActionsBean extends InputController implements
 
     private transient Map<String, List<Action>> actionCache;
 
-    // @Observer({EventNames.DOCUMENT_SELECTION_CHANGED})
     public void releaseClipboardableDocuments() {
     }
 
@@ -189,8 +188,7 @@ public class ClipboardActionsBean extends InputController implements
             Object[] params = { docsList.size() };
 
             FacesMessage message = FacesMessages.createFacesMessage(
-                    FacesMessage.SEVERITY_INFO,
-                    "#0 "
+                    FacesMessage.SEVERITY_INFO, "#0 "
                             + resourcesAccessor.getMessages().get(
                                     "n_copied_docs"), params);
 
@@ -217,19 +215,14 @@ public class ClipboardActionsBean extends InputController implements
         canEditSelectedDocs = null;
         if (null != docsList) {
             Object[] params = { docsList.size() };
-            facesMessages.add(
-                    FacesMessage.SEVERITY_INFO,
-                    "#0 "
-                            + resourcesAccessor.getMessages().get(
-                                    "n_added_to_worklist_docs"), params);
+            facesMessages.add(FacesMessage.SEVERITY_INFO, "#0 "
+                    + resourcesAccessor.getMessages().get(
+                            "n_added_to_worklist_docs"), params);
 
             // Add to the default working list
             documentsListsManager.addToWorkingList(
                     getCurrentSelectedListName(), docsList, forceAppend);
             log.debug("Elements copied to clipboard...");
-
-            // go back to previously selected list
-            // returnToPreviouslySelectedList();
 
         } else {
             log.debug("No copiedDocs to process copy on...");
@@ -455,8 +448,8 @@ public class ClipboardActionsBean extends InputController implements
         List<DocumentRef> proxyRefs = new ArrayList<DocumentRef>();
         for (DocumentModel doc : documentsToPast) {
             if (doc.isProxy() && !isPublishSpace) {
-                // in a non-publish space, we want to expand proxies into normal
-                // docs
+                // in a non-publish space, we want to expand proxies into
+                // normal docs
                 proxyRefs.add(doc.getRef());
             } else {
                 // copy as is
@@ -510,8 +503,9 @@ public class ClipboardActionsBean extends InputController implements
      * Rules:
      * <p>
      * In general the currentDocument is the parent. Exceptions to this rule:
-     * when the currentDocument is a domain or null. If Domain then content root
-     * is the parent. If null is passed, then the JCR root is taken as parent.
+     * when the currentDocument is a domain or null. If Domain then content
+     * root is the parent. If null is passed, then the JCR root is taken as
+     * parent.
      */
     protected DocumentModel getParent(DocumentModel currentDocument)
             throws ClientException {
@@ -549,22 +543,19 @@ public class ClipboardActionsBean extends InputController implements
     }
 
     public String exportMainBlobFromWorkingListAsZip() throws ClientException {
-       return exportWorklistAsZip();
+        return exportWorklistAsZip();
     }
 
     public String exportWorklistAsZip(List<DocumentModel> documents)
             throws ClientException {
-       return exportWorklistAsZip(documents, true);
+        return exportWorklistAsZip(documents, true);
     }
 
     /**
-     * Checks if Copy action is available in the context of the current
+     * Checks if copy action is available in the context of the current
      * Document.
      * <p>
-     * Conditions:
-     * <p>
-     * - the list of selected documents is not empty
-     *
+     * Condition: the list of selected documents is not empty.
      */
     public boolean getCanCopy() {
         if (navigationContext.getCurrentDocument() == null) {
@@ -719,7 +710,6 @@ public class ClipboardActionsBean extends InputController implements
         return getCanMoveInside(DocumentsListsManager.CLIPBOARD, document);
     }
 
-
     public void setCurrentSelectedList(String listId) {
         if (listId != null && !listId.equals(currentSelectedList)) {
             currentSelectedList = listId;
@@ -787,8 +777,8 @@ public class ClipboardActionsBean extends InputController implements
                 actionCache = new HashMap<String, List<Action>>();
             }
             if (!actionCache.containsKey(lstName)) {
-                actionCache.put(lstName,
-                        webActions.getActionsList(lstName + "_LIST"));
+                actionCache.put(lstName, webActions.getActionsList(lstName
+                        + "_LIST"));
             }
             return actionCache.get(lstName);
         } else {
