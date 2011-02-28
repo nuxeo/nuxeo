@@ -32,6 +32,8 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 
+import com.sun.tools.internal.xjc.generator.annotation.spec.XmlAttributeWriter;
+
 /**
  * The entry point for the JbpmService.
  * <p>
@@ -75,7 +77,7 @@ public interface JbpmService {
      *
      */
     enum TaskVariableName {
-        directive, validated
+        directive, validated, right;
     }
 
     /**

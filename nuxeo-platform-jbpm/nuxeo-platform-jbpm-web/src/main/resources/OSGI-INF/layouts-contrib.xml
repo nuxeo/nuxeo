@@ -34,6 +34,20 @@
         </property>
       </properties>
     </widget>
+    <widget name="right_task" type="template">
+      <fields>
+        <field>variablesLocally.right</field>
+      </fields>
+      <labels>
+        <label mode="any">label.review.right</label>
+      </labels>
+      <translated>true</translated>
+      <properties mode="any">
+        <property name="template">
+          /widgets/workflow_task_right_widget_template.xhtml
+        </property>
+      </properties>
+    </widget>
     <widget name="directive" type="template">
       <fields>
         <field>directive</field>
@@ -318,6 +332,9 @@
           <widget>pooledActors_task</widget>
         </column>
         <column>
+          <widget>right_task</widget>
+        </column>
+        <column>
           <widget>directive_task</widget>
         </column>
         <column>
@@ -372,6 +389,9 @@
         </column>
         <column>
           <widget>actors_virtualTask</widget>
+        </column>
+        <column>
+          <widget>right</widget>
         </column>
         <column>
           <widget>directive</widget>

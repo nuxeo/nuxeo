@@ -61,6 +61,8 @@ public class VirtualTaskInstanceController extends AbstractJbpmHandlerHelper {
                     vti.getComment()));
             taskInstance.setVariableLocally(TaskVariableName.directive.name(),
                     vti.getDirective());
+            taskInstance.setVariableLocally(TaskVariableName.right.name(),
+                    vti.getParameters().get("right"));
         } catch (Exception e) {
             log.error("Error in Virtual Task Instance Controller", e);
         }
