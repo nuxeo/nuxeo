@@ -47,10 +47,21 @@ public class Expression implements Operand {
         visitor.visitExpression(this);
     }
 
+    /**
+     * Is the unary operator pretty-printed after the operand?
+     */
+    public boolean isSuffix() {
+        return operator == Operator.ISNULL || operator == Operator.ISNOTNULL;
+    }
+
     @Override
     public String toString() {
         if (rvalue == null) {
-            return operator.toString() + ' ' + lvalue.toString();
+            if (isSuffix()) {
+                return lvalue.toString() + ' ' + operator.toString();
+            } else {
+                return operator.toString() + ' ' + lvalue.toString();
+            }
         } else {
             return lvalue.toString() + ' ' + operator.toString() + ' ' + rvalue.toString();
         }

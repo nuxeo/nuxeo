@@ -29,6 +29,7 @@ import org.nuxeo.ecm.core.query.sql.model.FromClause;
 import org.nuxeo.ecm.core.query.sql.model.Function;
 import org.nuxeo.ecm.core.query.sql.model.IntegerLiteral;
 import org.nuxeo.ecm.core.query.sql.model.LiteralList;
+import org.nuxeo.ecm.core.query.sql.model.Operand;
 import org.nuxeo.ecm.core.query.sql.model.OperandList;
 import org.nuxeo.ecm.core.query.sql.model.Operator;
 import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
@@ -256,6 +257,20 @@ public class TestQueryParser extends TestCase {
         list.add(new IntegerLiteral(10)); list.add(new IntegerLiteral(20));
         assertEquals(list, e.rvalue);
         assertEquals("p", ((Reference) e.lvalue).name);
+    }
+
+    public void testIsNull() {
+        SQLQuery query = SQLQueryParser.parse("SELECT p FROM t WHERE p IS NULL");
+        Operator op = query.getWhereClause().predicate.operator;
+        assertEquals(Operator.ISNULL, op);
+
+        query = SQLQueryParser.parse("SELECT p FROM t WHERE p IS NOT NULL");
+        op = query.getWhereClause().predicate.operator;
+        assertEquals(Operator.ISNOTNULL, op);
+
+        query = SQLQueryParser.parse("SELECT p FROM t WHERE p IS NULL OR p = 'abc'");
+        Predicate p = (Predicate) query.getWhereClause().predicate.lvalue;
+        assertEquals(Operator.ISNULL, p.operator);
     }
 
     public void testFunction() {

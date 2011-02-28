@@ -50,7 +50,7 @@ terminal SELECT, FROM, WHERE, AS,
          ORDERBY, GROUPBY, HAVING, LIMIT, DISTINCT, ALL,
          ASC, DESC, AND, OR, NOT, SUM, SUB, DIV, MUL, EQ, NOTEQ, LT, GT, LTEQ, GTEQ,
          COMMA, LPARA, RPARA, LOCATION, STARTSWITH, TYPE,
-         DATE, TIMESTAMP, OFFSET;
+         DATE, TIMESTAMP, OFFSET, IS, NULL, ISNULL, ISNOTNULL;
 
 terminal String IDENTIFIER, FROM_IDENTIFIER, PATH_IDENTIFIER, STRING, INTEGER, DOUBLE;
 
@@ -258,6 +258,10 @@ predicate ::= predicate:l AND predicate:r
                 {: RESULT = new Predicate(new Reference(name), Operator.NOTLIKE, new StringLiteral(s)); :}
             | IDENTIFIER:name NOT ILIKE STRING:s
                 {: RESULT = new Predicate(new Reference(name), Operator.NOTILIKE, new StringLiteral(s)); :}
+            | IDENTIFIER:name IS NULL
+                {: RESULT = new Predicate(new Reference(name), Operator.ISNULL, null); :}
+            | IDENTIFIER:name IS NOT NULL
+                {: RESULT = new Predicate(new Reference(name), Operator.ISNOTNULL, null); :}
 
             /* -- removed as it is replaced by ecm:path
             | LOCATION STARTSWITH STRING:s

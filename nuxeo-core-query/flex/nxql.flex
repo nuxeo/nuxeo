@@ -119,6 +119,14 @@ Exponent = [eE] [+-]? [0-9]+
     "Or"                { return symbol(sym.OR); }
     "or"                { return symbol(sym.OR); }
 
+    "IS"                { return symbol(sym.IS); }
+    "Is"                { return symbol(sym.IS); }
+    "is"                { return symbol(sym.IS); }
+
+    "NULL"              { return symbol(sym.NULL); }
+    "Null"              { return symbol(sym.NULL); }
+    "null"              { return symbol(sym.NULL); }
+
     "LIKE"              { return symbol(sym.LIKE); }
     "Like"              { return symbol(sym.LIKE); }
     "like"              { return symbol(sym.LIKE); }

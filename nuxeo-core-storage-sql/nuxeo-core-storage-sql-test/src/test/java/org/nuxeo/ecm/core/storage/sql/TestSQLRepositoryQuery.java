@@ -1851,4 +1851,31 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         assertEquals(1, docs.size());
     }
 
+    public void testQueryIsNull() throws Exception {
+        DocumentModelList dml;
+        createDocs();
+
+        dml = session.query("SELECT * FROM File WHERE dc:title IS NOT NULL");
+        assertEquals(3, dml.size());
+        dml = session.query("SELECT * FROM File WHERE dc:title IS NULL");
+        assertEquals(0, dml.size());
+
+        DocumentModel file1 = session.getDocument(new PathRef(
+                "/testfolder1/testfile1"));
+        file1.setPropertyValue("dc:title", null);
+        session.saveDocument(file1);
+        session.save();
+
+        dml = session.query("SELECT * FROM File WHERE dc:title IS NOT NULL");
+        assertEquals(2, dml.size());
+        dml = session.query("SELECT * FROM File WHERE dc:title IS NULL");
+        assertEquals(1, dml.size());
+
+        // we didn't write the uid schema for all files
+        dml = session.query("SELECT * FROM File WHERE uid IS NOT NULL");
+        assertEquals(1, dml.size());
+        dml = session.query("SELECT * FROM File WHERE uid IS NULL");
+        assertEquals(2, dml.size());
+    }
+
 }

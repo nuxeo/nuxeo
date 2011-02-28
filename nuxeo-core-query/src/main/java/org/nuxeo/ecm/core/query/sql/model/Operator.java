@@ -234,4 +234,20 @@ public abstract class Operator implements ASTNode {
         }
     };
 
+    public static final Operator ISNULL = new Operator(sym.ISNULL) {
+        private static final long serialVersionUID = 4907947855862157696L;
+        @Override
+        public String toString() {
+            return "IS NULL";
+        }
+    };
+
+    public static final Operator ISNOTNULL = new Operator(sym.ISNOTNULL) {
+        private static final long serialVersionUID = 312081088718468562L;
+        @Override
+        public String toString() {
+            return "IS NOT NULL";
+        }
+    };
+
 }

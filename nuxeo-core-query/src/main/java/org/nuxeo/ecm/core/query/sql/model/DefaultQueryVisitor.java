@@ -93,9 +93,15 @@ public class DefaultQueryVisitor implements IVisitor {
     @Override
     public void visitExpression(Expression node) {
         if (node.rvalue == null) {
-            // NOT
-            node.operator.accept(this);
-            node.lvalue.accept(this);
+            if (node.isSuffix()) {
+                // IS NULL, IS NOT NULL
+                node.lvalue.accept(this);
+                node.operator.accept(this);
+            } else {
+                // NOT
+                node.operator.accept(this);
+                node.lvalue.accept(this);
+            }
         } else {
             node.lvalue.accept(this);
             node.operator.accept(this);

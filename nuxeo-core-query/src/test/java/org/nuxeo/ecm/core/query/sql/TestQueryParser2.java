@@ -63,6 +63,8 @@ public class TestQueryParser2 extends TestCase {
             "SELECT p FROM t WHERE title = DATE '2007-01-30'",
             "SELECT p FROM t WHERE title = TIMESTAMP '2007-01-30T01:02:03.000+04:00'",
             "SELECT p FROM t WHERE title = '%test'",
+            "SELECT p FROM t WHERE title IS NULL",
+            "SELECT p FROM t WHERE title IS NOT NULL",
     };
 
     static final String[] GOOD_QUERIES = {

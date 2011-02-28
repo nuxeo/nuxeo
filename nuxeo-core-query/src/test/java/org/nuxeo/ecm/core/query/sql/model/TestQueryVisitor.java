@@ -116,6 +116,10 @@ public class TestQueryVisitor extends TestCase {
         v = new PrintVisitor();
         v.visitQuery(query);
         assertEquals(expected, v.toString());
+
+        sql = "select * from d where b IS NULL or b IS NOT NULL";
+        expected = "SELECT * FROM d WHERE ((IS NULL b) OR (IS NOT NULL b))";
+        check(sql, expected);
     }
 
     private static final Pattern REMOVE_TZ_PATTERN = Pattern.compile("(.*)((\\+|-).*|Z)'\\)$");
