@@ -44,17 +44,17 @@ public abstract class SQLDirectoryTestCase extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        deployContrib("org.nuxeo.ecm.directory.sql.tests",
-                "test-CoreService.xml");
-        deployContrib("org.nuxeo.ecm.directory.sql.tests",
-                "test-TypeService.xml");
+        deployBundle("org.nuxeo.ecm.core.schema");
+        deployBundle("org.nuxeo.ecm.core.api");
+        deployBundle("org.nuxeo.ecm.core");
+        deployBundle("org.nuxeo.ecm.directory");
+        deployBundle("org.nuxeo.ecm.directory.sql");
 
+        deployBundle("org.nuxeo.ecm.directory.types.contrib");
+        // override user schema with intField & dateField
         deployContrib("org.nuxeo.ecm.directory.sql.tests",
-                "sql-test-setup/DirectoryTypes.xml");
-        deployContrib("org.nuxeo.ecm.directory.sql.tests",
-                "sql-test-setup/DirectoryService.xml");
-        deployContrib("org.nuxeo.ecm.directory.sql.tests",
-                "sql-test-setup/SQLDirectoryFactory.xml");
+                "test-sql-directories-schema-override.xml");
+
         deployContrib("org.nuxeo.ecm.directory.sql.tests",
                 "test-sql-directories-bundle.xml");
     }
