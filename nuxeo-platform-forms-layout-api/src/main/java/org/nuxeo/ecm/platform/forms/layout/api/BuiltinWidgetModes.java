@@ -64,19 +64,39 @@ public class BuiltinWidgetModes {
     }
 
     /**
-     * Returns true if given mode is one of {@link #PLAIN}, {@link #PDF} or
-     * {@link #CSV}.
+     * Returns true if given mode is one of {@link #PLAIN}, or {@link #CSV}.
      *
      * @since 5.4.1
      */
     public static final boolean isLikePlainMode(String widgetMode) {
         if (widgetMode != null) {
-            if (PLAIN.equals(widgetMode) || PDF.equals(widgetMode)
-                    || CSV.equals(widgetMode)) {
+            if (PLAIN.equals(widgetMode) || CSV.equals(widgetMode)) {
                 return true;
             }
         }
         return false;
+    }
+
+    /**
+     * Returns true if given mode is not null and is not one of {@link #EDIT},
+     * {@link #PLAIN}, {@link #CSV}, {@link #PDF} or {@link #HIDDEN} mode.
+     *
+     * @since 5.4.1
+     * @param widgetMode
+     * @return
+     */
+    public static final boolean isLikeViewMode(String widgetMode) {
+        if (widgetMode == null) {
+            return false;
+        }
+        if (BuiltinWidgetModes.EDIT.equals(widgetMode)
+                || BuiltinWidgetModes.PLAIN.equals(widgetMode)
+                || BuiltinWidgetModes.CSV.equals(widgetMode)
+                || BuiltinWidgetModes.PDF.equals(widgetMode)
+                || BuiltinWidgetModes.HIDDEN.equals(widgetMode)) {
+            return false;
+        }
+        return true;
     }
 
 }
