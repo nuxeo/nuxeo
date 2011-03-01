@@ -38,12 +38,23 @@ public class BuiltinModes {
 
     public static final String SEARCH = "search";
 
+    /**
+     * @deprecated: use {@link #VIEW} instead
+     */
+    @Deprecated
     public static final String LISTING = "listing";
 
     public static final String SUMMARY = "summary";
 
+    /**
+     * @deprecated: use {@link #VIEW} instead
+     */
+    @Deprecated
     public static final String HEADER = "header";
 
+    /**
+     * @since 5.4.1
+     */
     public static final String CSV = "csv";
 
     /**
