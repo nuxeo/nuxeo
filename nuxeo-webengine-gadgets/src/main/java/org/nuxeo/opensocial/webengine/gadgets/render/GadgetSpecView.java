@@ -154,11 +154,13 @@ public class GadgetSpecView {
         input.put("spec", gadget);
         HttpServletRequest httpRequest = ctx.getRequest();
         String specAccessUrl = VirtualHostHelper.getBaseURL(httpRequest);
-        input.put("serverSideBaseUrl", specAccessUrl);
         input.put("contextPath", VirtualHostHelper.getContextPathProperty());
         if (isInsideNuxeo(httpRequest)) {
             // we are called by local Nuxeo-Shindig
             // so we don't know the client URL, but a relative URL is ok
+            input.put("serverSideBaseUrl",
+                    Framework.getProperty("org.nuxeo.runtime.loopback.url")
+                            + "/");
             input.put("clientSideBaseUrl",
                     VirtualHostHelper.getContextPathProperty() + "/");
             input.put("specDirectoryUrl",
@@ -168,6 +170,7 @@ public class GadgetSpecView {
         } else {
             // we are called by an external gadget container
             // => we use the same url as the one used to fetch the gadget spec
+            input.put("serverSideBaseUrl", specAccessUrl);
             input.put("clientSideBaseUrl", specAccessUrl);
             input.put("specDirectoryUrl", specAccessUrl + "site/gadgets/"
                     + gadget.getDirectory() + "/");
