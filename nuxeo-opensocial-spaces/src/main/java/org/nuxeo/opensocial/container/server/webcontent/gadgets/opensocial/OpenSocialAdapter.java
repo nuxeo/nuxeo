@@ -39,6 +39,7 @@ import org.apache.shindig.gadgets.spec.UserPref;
 import org.apache.shindig.gadgets.spec.UserPref.EnumValuePair;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.opensocial.container.server.utils.UrlBuilder;
 import org.nuxeo.opensocial.container.server.webcontent.abs.AbstractWebContentAdapter;
 import org.nuxeo.opensocial.container.shared.webcontent.OpenSocialData;
@@ -54,11 +55,11 @@ public class OpenSocialAdapter extends
 
     private static final Log log = LogFactory.getLog(OpenSocialAdapter.class);
 
+    public static final String GADGETS_RELATIVE_URLS = "gadgets.relative.urls";
+
     public static final String GADGETS_PORT = "gadgets.port";
 
     public static final String GADGETS_HOST = "gadgets.host";
-
-    public static final String NUXEO = "nuxeo";
 
     public static final String HTTP = "http://";
 
@@ -117,15 +118,22 @@ public class OpenSocialAdapter extends
     }
 
     public String getBaseUrl() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(HTTP);
-        sb.append(Framework.getProperty(GADGETS_HOST));
-        sb.append(HTTP_SEPARATOR);
-        sb.append(Framework.getProperty(GADGETS_PORT));
-        sb.append(SEPARATOR);
-        sb.append(NUXEO);
-        sb.append(SEPARATOR);
-        return sb.toString();
+        boolean useRelativeUrls = Boolean.valueOf(Framework.getProperty(GADGETS_RELATIVE_URLS, "true"));
+        if (useRelativeUrls) {
+            StringBuilder sb = new StringBuilder();
+            sb.append(VirtualHostHelper.getContextPathProperty());
+            sb.append(SEPARATOR);
+            return sb.toString();
+        } else {
+            StringBuilder sb = new StringBuilder();
+            sb.append(HTTP);
+            sb.append(Framework.getProperty(GADGETS_HOST));
+            sb.append(HTTP_SEPARATOR);
+            sb.append(Framework.getProperty(GADGETS_PORT));
+            sb.append(VirtualHostHelper.getContextPathProperty());
+            sb.append(SEPARATOR);
+            return sb.toString();
+        }
     }
 
     @SuppressWarnings("unchecked")
