@@ -178,7 +178,7 @@ public class NuxeoArchiveWriter extends AbstractDocumentWriter {
     }
 
     protected static void writeXML(Document doc, OutputStream out) throws IOException {
-        OutputFormat format = OutputFormat.createPrettyPrint();
+        OutputFormat format = AbstractDocumentWriter.createPrettyPrint();
         XMLWriter writer = new XMLWriter(out, format);
         writer.write(doc);
     }

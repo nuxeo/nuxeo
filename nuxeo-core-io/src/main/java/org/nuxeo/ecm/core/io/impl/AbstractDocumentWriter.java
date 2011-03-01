@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.dom4j.io.OutputFormat;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.io.DocumentTranslationMap;
 import org.nuxeo.ecm.core.io.DocumentWriter;
@@ -88,6 +89,20 @@ public abstract class AbstractDocumentWriter implements DocumentWriter {
             }
         }
         return new DocumentTranslationMapImpl(oldRepo, newRepo, newRefs);
+    }
+
+    public static OutputFormat createPrettyPrint() {
+        OutputFormat format = new OutputFormat();
+        format.setIndentSize(2);
+        format.setNewlines(true);
+        return format;
+    }
+
+    public static OutputFormat createCompactFormat() {
+        OutputFormat format = new OutputFormat();
+        format.setIndent(false);
+        format.setNewlines(false);
+        return format;
     }
 
 }

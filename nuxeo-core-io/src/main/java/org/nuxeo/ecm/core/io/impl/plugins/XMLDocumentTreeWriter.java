@@ -33,6 +33,7 @@ import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.io.DocumentTranslationMap;
 import org.nuxeo.ecm.core.io.ExportedDocument;
+import org.nuxeo.ecm.core.io.impl.AbstractDocumentWriter;
 import org.nuxeo.ecm.core.io.impl.DocumentTranslationMapImpl;
 
 public class XMLDocumentTreeWriter extends XMLDocumentWriter {
@@ -52,12 +53,10 @@ public class XMLDocumentTreeWriter extends XMLDocumentWriter {
     protected XMLWriter initWriter() {
         if (writer == null) {
             try {
-                OutputFormat format = OutputFormat.createCompactFormat();
+                OutputFormat format = AbstractDocumentWriter.createCompactFormat();
                 format.setSuppressDeclaration(true);
                 writer = new XMLWriter(out, format);
             } catch (UnsupportedEncodingException e) {
-                // XXX
-            } catch (IOException e) {
                 // XXX
             }
         }
