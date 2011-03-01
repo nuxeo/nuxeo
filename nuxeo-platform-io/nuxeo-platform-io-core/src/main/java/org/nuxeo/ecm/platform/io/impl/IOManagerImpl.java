@@ -105,10 +105,12 @@ public class IOManagerImpl implements IOManager {
         }
     }
 
+    @Override
     public IOResourceAdapter getAdapter(String name) throws ClientException {
         return adaptersRegistry.get(name);
     }
 
+    @Override
     public void addAdapter(String name, IOResourceAdapter adapter)
             throws ClientException {
         if (DOCUMENTS_ADAPTER_NAME.equals(name)) {
@@ -119,6 +121,7 @@ public class IOManagerImpl implements IOManager {
         adaptersRegistry.put(name, adapter);
     }
 
+    @Override
     public void removeAdapter(String name) throws ClientException {
         adaptersRegistry.remove(name);
     }
@@ -129,6 +132,7 @@ public class IOManagerImpl implements IOManager {
             throws ExportDocumentException, IOException, ClientException {
 
         DocumentsExporter docsExporter = new DocumentsExporter() {
+            @Override
             public DocumentTranslationMap exportDocs(OutputStream out)
                     throws ExportDocumentException, ClientException,
                     IOException {
@@ -142,6 +146,7 @@ public class IOManagerImpl implements IOManager {
         exportDocumentsAndResources(out, repo, docsExporter, ioAdapters);
     }
 
+    @Override
     public void exportDocumentsAndResources(OutputStream out,
             final String repo, final Collection<DocumentRef> sources,
             final boolean recurse, final String format,
@@ -149,6 +154,7 @@ public class IOManagerImpl implements IOManager {
             ClientException, ExportDocumentException {
 
         DocumentsExporter docsExporter = new DocumentsExporter() {
+            @Override
             public DocumentTranslationMap exportDocs(OutputStream out)
                     throws ExportDocumentException, ClientException,
                     IOException {
@@ -217,12 +223,14 @@ public class IOManagerImpl implements IOManager {
         }
     }
 
+    @Override
     public void importDocumentsAndResources(InputStream in, final String repo,
             final DocumentRef root) throws IOException, ClientException,
             ImportDocumentException {
 
         DocumentsImporter docsImporter = new DocumentsImporter() {
 
+            @Override
             public DocumentTranslationMap importDocs(InputStream sourceStream)
                     throws ImportDocumentException, ClientException,
                     IOException {
@@ -241,6 +249,7 @@ public class IOManagerImpl implements IOManager {
 
         DocumentsImporter docsImporter = new DocumentsImporter() {
 
+            @Override
             public DocumentTranslationMap importDocs(InputStream sourceStream)
                     throws ImportDocumentException, ClientException,
                     IOException {
@@ -313,6 +322,7 @@ public class IOManagerImpl implements IOManager {
         zip.close();
     }
 
+    @Override
     public Collection<DocumentRef> copyDocumentsAndResources(String repo,
             Collection<DocumentRef> sources, DocumentLocation targetLocation,
             Collection<String> ioAdapters) throws ClientException {
@@ -371,6 +381,7 @@ public class IOManagerImpl implements IOManager {
         return roots;
     }
 
+    @Override
     public void copyDocumentsAndResources(String repo,
             Collection<DocumentRef> sources, String serverAddress,
             int jndiPort, DocumentLocation targetLocation,
@@ -386,6 +397,7 @@ public class IOManagerImpl implements IOManager {
                 docWriterFactoryName, writerFactoryParams, ioAdapters);
     }
 
+    @Override
     public void copyDocumentsAndResources(String repo,
             Collection<DocumentRef> sources, IOManager remoteIOManager,
             DocumentLocation targetLocation, Collection<String> ioAdapters)
@@ -401,6 +413,7 @@ public class IOManagerImpl implements IOManager {
                 docWriterFactoryName, writerFactoryParams, ioAdapters);
     }
 
+    @Override
     public void importExportedFile(String uri, DocumentLocation targetLocation)
             throws ClientException {
         File tempFile = getLocalFile(uri);
@@ -422,6 +435,7 @@ public class IOManagerImpl implements IOManager {
         }
     }
 
+    @Override
     public void copyDocumentsAndResources(String repo,
             Collection<DocumentRef> sources, String serverAddress,
             int jndiPort, DocumentLocation targetLocation,
@@ -479,6 +493,7 @@ public class IOManagerImpl implements IOManager {
         }
     }
 
+    @Override
     public String externalizeExport(String repo,
             Collection<DocumentRef> sources, Collection<String> ioAdapters)
             throws ClientException {
@@ -486,6 +501,7 @@ public class IOManagerImpl implements IOManager {
         return externalizeExport(repo, sources, null, null, ioAdapters);
     }
 
+    @Override
     public String externalizeExport(String repo, String docReaderFactoryName,
             Map<String, Object> readerFactoryParams,
             Collection<String> ioAdapters) throws ClientException {
@@ -494,6 +510,7 @@ public class IOManagerImpl implements IOManager {
                 readerFactoryParams, ioAdapters);
     }
 
+    @Override
     public String externalizeExport(String repo,
             Collection<DocumentRef> sources, String docReaderFactoryName,
             Map<String, Object> readerFactoryParams,
@@ -561,6 +578,7 @@ public class IOManagerImpl implements IOManager {
         }
     }
 
+    @Override
     public void disposeExport(String uri) throws ClientException {
         StreamManager localStreamManager = Framework.getLocalService(StreamManager.class);
 
@@ -572,6 +590,7 @@ public class IOManagerImpl implements IOManager {
         localStreamManager.removeStream(uri);
     }
 
+    @Override
     public void importExportedFile(String uri, DocumentLocation targetLocation,
             String docWriterFactoryName, Map<String, Object> factoryParams)
             throws ClientException {
@@ -676,6 +695,7 @@ public class IOManagerImpl implements IOManager {
         return customDocReader;
     }
 
+    @Override
     public void importFromStreamSource(String uri,
             DocumentLocation targetLocation, String docReaderFactoryClassName,
             Map<String, Object> rFactoryParams,
