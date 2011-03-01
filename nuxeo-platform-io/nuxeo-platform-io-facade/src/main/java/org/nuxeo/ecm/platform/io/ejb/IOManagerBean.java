@@ -66,8 +66,10 @@ public class IOManagerBean implements IOManager {
         }
     }
 
-    public void remove() {}
+    public void remove() {
+    }
 
+    @Override
     public void addAdapter(String name, IOResourceAdapter adapter)
             throws ClientException {
         try {
@@ -77,6 +79,7 @@ public class IOManagerBean implements IOManager {
         }
     }
 
+    @Override
     public Collection<DocumentRef> copyDocumentsAndResources(String repo,
             Collection<DocumentRef> sources, DocumentLocation targetLocation,
             Collection<String> ioAdapters) throws ClientException {
@@ -88,6 +91,7 @@ public class IOManagerBean implements IOManager {
         }
     }
 
+    @Override
     public void exportDocumentsAndResources(OutputStream out, String repo,
             Collection<DocumentRef> sources, boolean recurse, String format,
             Collection<String> ioAdapters) throws ClientException {
@@ -99,6 +103,7 @@ public class IOManagerBean implements IOManager {
         }
     }
 
+    @Override
     public IOResourceAdapter getAdapter(String name) throws ClientException {
         try {
             return service.getAdapter(name);
@@ -107,7 +112,8 @@ public class IOManagerBean implements IOManager {
         }
     }
 
-//  ------------ this is not goood
+    // ------------ this is not goood
+    @Override
     public void importDocumentsAndResources(InputStream in, String repo,
             DocumentRef root) throws ClientException {
         try {
@@ -117,6 +123,7 @@ public class IOManagerBean implements IOManager {
         }
     }
 
+    @Override
     public void removeAdapter(String name) throws ClientException {
         try {
             service.removeAdapter(name);
@@ -125,6 +132,7 @@ public class IOManagerBean implements IOManager {
         }
     }
 
+    @Override
     public void copyDocumentsAndResources(String repo,
             Collection<DocumentRef> sources, String serverAddress, int rmiPort,
             DocumentLocation targetLocation, Collection<String> ioAdapters)
@@ -137,6 +145,7 @@ public class IOManagerBean implements IOManager {
         }
     }
 
+    @Override
     public void importExportedFile(String uri, DocumentLocation targetLocation)
             throws ClientException {
         try {
@@ -146,6 +155,7 @@ public class IOManagerBean implements IOManager {
         }
     }
 
+    @Override
     public void copyDocumentsAndResources(String repo,
             Collection<DocumentRef> sources, String serverAddress,
             int jndiPort, DocumentLocation targetLocation,
@@ -162,6 +172,7 @@ public class IOManagerBean implements IOManager {
         }
     }
 
+    @Override
     public void importExportedFile(String uri, DocumentLocation targetLocation,
             String docWriterFactoryName, Map<String, Object> wFactoryParams)
             throws ClientException {
@@ -173,6 +184,7 @@ public class IOManagerBean implements IOManager {
         }
     }
 
+    @Override
     public void copyDocumentsAndResources(String repo,
             Collection<DocumentRef> sources, IOManager remoteIOManager,
             DocumentLocation targetLocation, Collection<String> ioAdapters)
@@ -185,6 +197,7 @@ public class IOManagerBean implements IOManager {
         }
     }
 
+    @Override
     public String externalizeExport(String repo,
             Collection<DocumentRef> sources, Collection<String> ioAdapters)
             throws ClientException {
@@ -196,6 +209,7 @@ public class IOManagerBean implements IOManager {
         }
     }
 
+    @Override
     public String externalizeExport(String repo, String docReaderFactoryName,
             Map<String, Object> readerFactoryParams,
             Collection<String> ioAdapters) throws ClientException {
@@ -208,19 +222,21 @@ public class IOManagerBean implements IOManager {
         }
     }
 
+    @Override
     public String externalizeExport(String repo,
             Collection<DocumentRef> sources, String docReaderFactoryName,
             Map<String, Object> readerFactoryParams,
             Collection<String> ioAdapters) throws ClientException {
         try {
-            String uri = service.externalizeExport(repo, sources, docReaderFactoryName,
-                    readerFactoryParams, ioAdapters);
+            String uri = service.externalizeExport(repo, sources,
+                    docReaderFactoryName, readerFactoryParams, ioAdapters);
             return uri;
         } catch (Throwable t) {
             throw ClientException.wrap(t);
         }
     }
 
+    @Override
     public void disposeExport(String uri) throws ClientException {
         try {
             service.disposeExport(uri);
@@ -229,6 +245,7 @@ public class IOManagerBean implements IOManager {
         }
     }
 
+    @Override
     public void importFromStreamSource(String uri,
             DocumentLocation targetLocation, String docReaderFactoryClassName,
             Map<String, Object> rFactoryParams,
