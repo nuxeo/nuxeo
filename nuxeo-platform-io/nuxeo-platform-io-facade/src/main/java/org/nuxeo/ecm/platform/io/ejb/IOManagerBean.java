@@ -260,4 +260,19 @@ public class IOManagerBean implements IOManager {
         }
     }
 
+    @Override
+    public void importFromStream(InputStream in,
+            DocumentLocation targetLocation, String docReaderFactoryClassName,
+            Map<String, Object> rFactoryParams,
+            String docWriterFactoryClassName, Map<String, Object> wFactoryParams)
+            throws ClientException {
+        try {
+            service.importFromStream(in, targetLocation,
+                    docReaderFactoryClassName, rFactoryParams,
+                    docWriterFactoryClassName, wFactoryParams);
+        } catch (Throwable t) {
+            throw ClientException.wrap(t);
+        }
+    }
+
 }

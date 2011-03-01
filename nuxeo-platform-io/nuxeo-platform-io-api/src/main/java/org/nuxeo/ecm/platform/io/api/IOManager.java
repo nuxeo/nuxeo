@@ -200,4 +200,10 @@ public interface IOManager extends Serializable {
             String docWriterFactoryClassName, Map<String, Object> wFactoryParams)
             throws ClientException;
 
+    void importFromStream(InputStream in,
+            DocumentLocation targetLocation, String docReaderFactoryClassName,
+            Map<String, Object> rFactoryParams,
+            String docWriterFactoryClassName, Map<String, Object> wFactoryParams)
+            throws ClientException;
+
 }

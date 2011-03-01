@@ -696,23 +696,17 @@ public class IOManagerImpl implements IOManager {
     }
 
     @Override
-    public void importFromStreamSource(String uri,
+    public void importFromStream(InputStream in,
             DocumentLocation targetLocation, String docReaderFactoryClassName,
             Map<String, Object> rFactoryParams,
             String docWriterFactoryClassName, Map<String, Object> wFactoryParams)
             throws ClientException {
 
-        log.info("import source uri: " + uri);
-
         DocumentWriter customDocWriter = createDocWriter(
                 docWriterFactoryClassName, wFactoryParams);
         DocumentReader customDocReader = null;
 
-        File tempFile = getLocalFile(uri);
-        InputStream in = null;
         try {
-            in = new FileInputStream(tempFile);
-
             if (rFactoryParams == null) {
                 rFactoryParams = new HashMap<String, Object>();
             }
@@ -723,9 +717,6 @@ public class IOManagerImpl implements IOManager {
             IODocumentManager docManager = new IODocumentManagerImpl();
             DocumentTranslationMap map = docManager.importDocuments(
                     customDocReader, customDocWriter);
-        } catch (IOException e) {
-            String msg = "Cannot import from uri: " + uri;
-            throw new ClientException(msg, e);
         } finally {
             if (customDocReader != null) {
                 customDocReader.close();
@@ -739,6 +730,30 @@ public class IOManagerImpl implements IOManager {
                     log.error(e);
                 }
             }
+        }
+
+    }
+
+    @Override
+    public void importFromStreamSource(String uri,
+            DocumentLocation targetLocation, String docReaderFactoryClassName,
+            Map<String, Object> rFactoryParams,
+            String docWriterFactoryClassName, Map<String, Object> wFactoryParams)
+            throws ClientException {
+
+        log.info("import source uri: " + uri);
+
+        File tempFile = getLocalFile(uri);
+
+        InputStream in = null;
+        try {
+            in = new FileInputStream(tempFile);
+            importFromStream(in, targetLocation, docReaderFactoryClassName,
+                    rFactoryParams, docWriterFactoryClassName, wFactoryParams);
+        } catch (IOException e) {
+            String msg = "Cannot import from uri: " + uri;
+            throw new ClientException(msg, e);
+        } finally {
             tempFile.delete();
             disposeExport(uri);
         }
