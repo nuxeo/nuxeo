@@ -788,6 +788,7 @@ ul.noBullet li {
     font-color: #555555;
     margin-bottom: 10px;
     color: #227CE6;
+    display: block;
 }
 
 .labelCell {
