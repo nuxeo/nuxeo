@@ -12,7 +12,8 @@
 
 <body style="padding: 0; margin: 0">
 
-<#if Context.principal.administrator>
+<#assign principal=Context.principal />
+<#if principal && principal.administrator>
 
     <@nxthemes_accesskeys />
 
