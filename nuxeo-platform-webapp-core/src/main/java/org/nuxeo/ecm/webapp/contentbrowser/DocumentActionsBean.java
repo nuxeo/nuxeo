@@ -70,6 +70,7 @@ import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.platform.ui.web.model.SelectDataModel;
 import org.nuxeo.ecm.platform.ui.web.model.impl.SelectDataModelImpl;
 import org.nuxeo.ecm.platform.ui.web.model.impl.SelectDataModelRowEvent;
+import org.nuxeo.ecm.platform.ui.web.tag.fn.Functions;
 import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
@@ -97,8 +98,6 @@ public class DocumentActionsBean extends InputController implements
     private static final long serialVersionUID = -2069669959016643607L;
 
     private static final Log log = LogFactory.getLog(DocumentActionsBean.class);
-
-    protected static final long BIG_FILE_SIZE_LIMIT = 1024 * 1024 * 5;
 
     public static String DEFAULT_SUMMARY_LAYOUT = "default_summary_layout";
 
@@ -263,7 +262,7 @@ public class DocumentActionsBean extends InputController implements
                 String filename = DocumentFileCodec.getFilename(doc, docView);
                 // download
                 FacesContext context = FacesContext.getCurrentInstance();
-                if (blob.getLength() > BIG_FILE_SIZE_LIMIT) {
+                if (blob.getLength() > Functions.getBigFileSizeLimit()) {
                     HttpServletResponse response = (HttpServletResponse) context.getExternalContext().getResponse();
                     HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
 
