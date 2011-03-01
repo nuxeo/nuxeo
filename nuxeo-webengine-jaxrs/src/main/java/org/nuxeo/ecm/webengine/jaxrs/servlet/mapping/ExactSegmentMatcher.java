@@ -35,4 +35,9 @@ public class ExactSegmentMatcher extends SegmentMatcher {
         return pattern.equals(segment);
     }
 
+    @Override
+    public String toString() {
+        return pattern;
+    }
+
 }

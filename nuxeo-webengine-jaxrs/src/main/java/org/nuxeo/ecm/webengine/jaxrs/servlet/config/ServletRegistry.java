@@ -19,6 +19,7 @@ package org.nuxeo.ecm.webengine.jaxrs.servlet.config;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -26,6 +27,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.nuxeo.ecm.webengine.jaxrs.Activator;
 import org.nuxeo.ecm.webengine.jaxrs.Utils.ClassRef;
+import org.nuxeo.ecm.webengine.jaxrs.servlet.ServletHolder;
 import org.osgi.framework.Bundle;
 import org.osgi.service.http.HttpContext;
 import org.osgi.service.http.HttpService;
@@ -66,6 +68,8 @@ public class ServletRegistry {
      */
     protected List<ServletDescriptor> servlets;
 
+    protected List<FilterSetDescriptor> filters;
+
     /**
      * The HttpService instance is injected when the service becomes
      * available by the Activator.
@@ -80,6 +84,35 @@ public class ServletRegistry {
 
     private ServletRegistry() {
         this.servlets = new ArrayList<ServletDescriptor>();
+        this.filters = new ArrayList<FilterSetDescriptor>();
+    }
+
+    public synchronized ServletDescriptor[] getServletDescriptors() {
+        return servlets.toArray(new ServletDescriptor[servlets.size()]);
+    }
+
+    public synchronized FilterSetDescriptor[] getFilterSetDescriptors() {
+        return filters.toArray(new FilterSetDescriptor[filters.size()]);
+    }
+
+    public ServletDescriptor getServletDescriptor(String name) {
+        for (ServletDescriptor servlet : getServletDescriptors()) {
+            if (name.equals(servlet.name)) {
+                return servlet;
+            }
+        }
+        return null;
+    }
+
+
+    public List<FilterSetDescriptor> getFiltersFor(String name) {
+        ArrayList<FilterSetDescriptor> list = new ArrayList<FilterSetDescriptor>();
+        for (FilterSetDescriptor filter : getFilterSetDescriptors()) {
+            if (name.equals(filter.targetServlet)) {
+                list.add(filter);
+            }
+        }
+        return list;
     }
 
     /**
@@ -116,6 +149,13 @@ public class ServletRegistry {
         }
     }
 
+    public synchronized void addFilterSet(FilterSetDescriptor filter) {
+        filters.add(filter);
+    }
+
+    public synchronized void removeFilterSet(FilterSetDescriptor filter) {
+        filters.remove(filter);
+    }
 
     private synchronized void installServlets() throws Exception {
         if (service != null) {
@@ -129,10 +169,11 @@ public class ServletRegistry {
         if (service != null) {
             ClassRef ref = sd.getClassRef();
             HttpContext ctx = getHttpContext(ref.bundle());
+            Hashtable<String, String> params = new Hashtable<String, String>();
             if (sd.name != null) {
-                sd.initParams.put(SERVLET_NAME, sd.name);
+                params.put(SERVLET_NAME, sd.name);
             }
-            service.registerServlet(sd.path, sd.getServlet(), sd.initParams, ctx);
+            service.registerServlet(sd.path, new ServletHolder(), params, ctx);
         }
     }
 

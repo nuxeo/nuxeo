@@ -28,6 +28,8 @@ public class ServletRegistryComponent extends DefaultComponent {
 
     public final static String XP_SERVLETS = "servlets";
 
+    public final static String XP_FILTERS = "filters";
+
 
     protected ServletRegistry registry;
 
@@ -51,6 +53,8 @@ public class ServletRegistryComponent extends DefaultComponent {
             throws Exception {
         if (XP_SERVLETS.equals(extensionPoint)) {
             registry.addServlet((ServletDescriptor)contribution);
+        } else if (XP_FILTERS.equals(extensionPoint)) {
+            registry.addFilterSet((FilterSetDescriptor)contribution);
         }
     }
 
@@ -60,6 +64,8 @@ public class ServletRegistryComponent extends DefaultComponent {
             throws Exception {
         if (XP_SERVLETS.equals(extensionPoint)) {
             registry.removeServlet((ServletDescriptor)contribution);
+        } else if (XP_FILTERS.equals(extensionPoint)) {
+            registry.removeFilterSet((FilterSetDescriptor)contribution);
         }
     }
 

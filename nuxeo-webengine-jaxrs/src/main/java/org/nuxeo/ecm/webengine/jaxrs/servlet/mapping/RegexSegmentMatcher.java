@@ -39,4 +39,8 @@ public class RegexSegmentMatcher extends SegmentMatcher {
         return pattern.matcher(segment).matches();
     }
 
+    @Override
+    public String toString() {
+        return "("+pattern.toString()+")";
+    }
 }

@@ -24,14 +24,14 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.nuxeo.ecm.webengine.jaxrs.AbstractFilter;
+import org.nuxeo.ecm.webengine.jaxrs.HttpFilter;
 import org.nuxeo.ecm.webengine.jaxrs.session.impl.PerSessionCoreProvider;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class SessionCleanupFilter extends AbstractFilter {
+public class SessionCleanupFilter extends HttpFilter {
 
     public final String STATEFUL_KEY = SessionCleanupFilter.class.getName() + ".stateful";
 

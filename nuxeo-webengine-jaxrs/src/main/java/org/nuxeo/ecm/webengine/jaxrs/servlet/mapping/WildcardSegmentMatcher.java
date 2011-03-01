@@ -85,4 +85,9 @@ public class WildcardSegmentMatcher extends SegmentMatcher {
         return matches(segment, soff + 1, poff + 1);
 
     }
+
+    @Override
+    public String toString() {
+        return new String(pattern);
+    }
 }

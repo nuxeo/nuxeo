@@ -10,5 +10,10 @@
     <documentation>Servlet registration for OSGi HttpService</documentation>
     <object class="org.nuxeo.ecm.webengine.jaxrs.servlet.config.ServletDescriptor" />
   </extension-point>
+
+  <extension-point name="filters">
+    <documentation>Filters set registry to contribute new filters to an existing servlet</documentation>
+    <object class="org.nuxeo.ecm.webengine.jaxrs.servlet.config.FilterSetDescriptor" />
+  </extension-point>
   
 </component>

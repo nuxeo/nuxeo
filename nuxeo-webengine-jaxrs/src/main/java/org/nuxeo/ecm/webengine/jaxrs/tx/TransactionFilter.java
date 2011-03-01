@@ -24,7 +24,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.nuxeo.ecm.webengine.jaxrs.AbstractFilter;
+import org.nuxeo.ecm.webengine.jaxrs.HttpFilter;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -33,7 +33,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class TransactionFilter extends AbstractFilter {
+public class TransactionFilter extends HttpFilter {
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {

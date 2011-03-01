@@ -25,6 +25,8 @@ import java.util.List;
  */
 public class PathMatcher {
 
+    public static final PathMatcher ANY = new PathMatcher(new SegmentMatcher[0]);
+
     protected final SegmentMatcher[] matchers;
 
     public PathMatcher(SegmentMatcher... matchers) {
@@ -131,4 +133,15 @@ public class PathMatcher {
     }
 
 
+    @Override
+    public String toString() {
+        if (matchers.length == 0) {
+            return "/**";
+        }
+        StringBuilder buf = new StringBuilder();
+        for (int i=0; i<matchers.length; i++) {
+            buf.append("/").append(matchers[i]);
+        }
+        return buf.toString();
+    }
 }

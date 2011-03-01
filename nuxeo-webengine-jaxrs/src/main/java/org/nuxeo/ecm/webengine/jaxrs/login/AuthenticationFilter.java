@@ -32,7 +32,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.nuxeo.common.utils.Base64;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.local.ClientLoginModule;
-import org.nuxeo.ecm.webengine.jaxrs.AbstractFilter;
+import org.nuxeo.ecm.webengine.jaxrs.HttpFilter;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -41,7 +41,7 @@ import org.nuxeo.runtime.api.Framework;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class AuthenticationFilter extends AbstractFilter {
+public class AuthenticationFilter extends HttpFilter {
 
     public static final String DEFAULT_SECURITY_DOMAIN = "nuxeo-client-login";
 

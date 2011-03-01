@@ -239,5 +239,15 @@ public class Utils {
         public Object newInstance() throws Exception {
             return clazz.newInstance();
         }
+
+        @Override
+        public String toString() {
+            if (bundle != null) {
+                return bundle.getSymbolicName()+":"+clazz.getName();
+            }
+            return clazz.getName();
+        }
+
     }
+
 }
