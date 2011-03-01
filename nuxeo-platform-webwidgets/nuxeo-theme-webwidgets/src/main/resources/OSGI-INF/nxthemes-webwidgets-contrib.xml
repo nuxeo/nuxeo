@@ -10,7 +10,7 @@
 
   <extension target="org.nuxeo.ecm.webengine.WebEngineComponent"
     point="request-configuration">
-    <path value="/nxthemes-webwidgets" stateful="true" autoTx="true" />
+    <path value="/nxthemes-webwidgets" stateful="false" autoTx="true" />
   </extension>
 
   <extension target="org.nuxeo.theme.services.ThemeService"

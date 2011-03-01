@@ -19,10 +19,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpSession;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.webengine.WebEngine;
-import org.nuxeo.ecm.webengine.session.UserSession;
 import org.nuxeo.theme.webwidgets.DefaultWidget;
 import org.nuxeo.theme.webwidgets.Provider;
 import org.nuxeo.theme.webwidgets.ProviderException;
@@ -43,20 +44,20 @@ public class DefaultProvider implements Provider {
     }
 
     public void destroy() {
-        UserSession userSession = WebEngine.getActiveContext().getUserSession();
-        DefaultProviderSession session = (DefaultProviderSession) userSession.get(PROVIDER_SESSION_ID);
+        HttpSession httpSession = WebEngine.getActiveContext().getRequest().getSession();
+        DefaultProviderSession session = (DefaultProviderSession) httpSession.getAttribute(PROVIDER_SESSION_ID);
         if (session != null) {
             session.clear();
-            userSession.remove(PROVIDER_SESSION_ID);
+            httpSession.removeAttribute(PROVIDER_SESSION_ID);
         }
     }
 
     public DefaultProviderSession getDefaultProviderSession() {
-        UserSession userSession = WebEngine.getActiveContext().getUserSession();
-        DefaultProviderSession session = (DefaultProviderSession) userSession.get(PROVIDER_SESSION_ID);
+        HttpSession httpSession = WebEngine.getActiveContext().getRequest().getSession();
+        DefaultProviderSession session = (DefaultProviderSession) httpSession.getAttribute(PROVIDER_SESSION_ID);
         if (session == null) {
             session = new DefaultProviderSession();
-            userSession.put(PROVIDER_SESSION_ID, session);
+            httpSession.setAttribute(PROVIDER_SESSION_ID, session);
         }
         return session;
     }

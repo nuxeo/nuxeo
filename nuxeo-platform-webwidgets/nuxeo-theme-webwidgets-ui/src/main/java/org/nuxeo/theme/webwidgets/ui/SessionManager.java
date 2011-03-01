@@ -14,24 +14,24 @@
 
 package org.nuxeo.theme.webwidgets.ui;
 
+import javax.servlet.http.HttpSession;
+
 import org.nuxeo.ecm.webengine.WebEngine;
-import org.nuxeo.ecm.webengine.model.WebContext;
-import org.nuxeo.ecm.webengine.session.AbstractComponent;
 
-public class SessionManager extends AbstractComponent {
-
-    private static final long serialVersionUID = 1L;
+public class SessionManager {
 
     private static final String WIDGET_CATEGORY = "org.nuxeo.theme.widget_category";
 
+    private static HttpSession getHttpSession() {
+        return WebEngine.getActiveContext().getRequest().getSession();
+    }
+
     public static synchronized void setWidgetCategory(String id) {
-        WebContext ctx = WebEngine.getActiveContext();
-        ctx.getUserSession().put(WIDGET_CATEGORY, id);
+        getHttpSession().setAttribute(WIDGET_CATEGORY, id);
     }
 
     public static synchronized String getWidgetCategory() {
-        WebContext ctx = WebEngine.getActiveContext();
-        return (String) ctx.getUserSession().get(WIDGET_CATEGORY);
+        return (String) getHttpSession().getAttribute(WIDGET_CATEGORY);
     }
 
 }
