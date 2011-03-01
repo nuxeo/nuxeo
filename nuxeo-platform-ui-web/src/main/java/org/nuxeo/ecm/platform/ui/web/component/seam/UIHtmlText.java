@@ -1,6 +1,4 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and contributors.
- *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
@@ -12,6 +10,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
+ *     Original file from org.jboss.seam.pdf.ui.UIHtmlText.java in jboss-seam-pdf
  *     Anahide Tchertchian
  */
 package org.nuxeo.ecm.platform.ui.web.component.seam;
@@ -33,8 +32,8 @@ import com.lowagie.text.html.simpleparser.HTMLWorker;
 import com.lowagie.text.html.simpleparser.StyleSheet;
 
 /**
- * Overrides basic p:html tag to pass the application server url. Useful for
- * image resolutions.
+ * Overrides basic p:html tag to use {@link NuxeoITextImageProvider} to resolve
+ * image resources.
  *
  * @since 5.4.1
  */

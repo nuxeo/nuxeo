@@ -1,6 +1,4 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and contributors.
- *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
@@ -12,6 +10,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
+ *     Original file from org.jboss.seam.excel.ui.UIColumn.java in jboss-seam-excel
  *     Anahide Tchertchian
  */
 package org.nuxeo.ecm.platform.ui.web.component.seam;
@@ -35,9 +34,9 @@ import org.jboss.seam.excel.ui.command.Command;
  * <p>
  * If e:column tags are not direct children, the work sheet will not find them.
  * As layout templating adds additional JSF components, the children tree has
- * to be introspected further on.
+ * to be introspected further on, and other children components need to be
+ * processed (UIAliasHolder components used in layout rendering for instance).
  *
- * @author Anahide Tchertchian
  * @since 5.4.1
  */
 public class UIColumn extends org.jboss.seam.excel.ui.UIColumn {
@@ -79,38 +78,9 @@ public class UIColumn extends org.jboss.seam.excel.ui.UIColumn {
 
         // Get UiCell template this column's data cells and iterate over sheet
         // data
-        for (WorksheetItem item : getItems(getChildren())) {
-            Object oldValue = null;
-            Iterator iterator = null;
-            // Store away the old value for the sheet binding var (if there is
-            // one)
-            if (sheet.getVar() != null) {
-                oldValue = FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get(
-                        sheet.getVar());
-                iterator = sheet.getDataIterator();
-            } else {
-                // No var, no iteration...
-                iterator = new ArrayList().iterator();
-            }
-            while (iterator.hasNext()) {
-                // Store the bound data in the request map and add the cell
-                FacesContext.getCurrentInstance().getExternalContext().getRequestMap().put(
-                        sheet.getVar(), iterator.next());
-                excelWorkbook.addItem(item);
-            }
-
-            // No iteration, nothing to restore
-            if (sheet.getVar() == null) {
-                continue;
-            }
-            // Restore the previously modified request map (if there was a var)
-            if (oldValue == null) {
-                FacesContext.getCurrentInstance().getExternalContext().getRequestMap().remove(
-                        sheet.getVar());
-            } else {
-                FacesContext.getCurrentInstance().getExternalContext().getRequestMap().put(
-                        sheet.getVar(), oldValue);
-            }
+        // XXX: process all components instead of just UICell ones.
+        for (UIComponent child : getChildren()) {
+            encodeChild(facesContext, sheet, excelWorkbook, child);
         }
 
         // Add footer items (if any)
@@ -125,6 +95,59 @@ public class UIColumn extends org.jboss.seam.excel.ui.UIColumn {
     }
 
     @SuppressWarnings("unchecked")
+    protected void encodeChild(FacesContext facesContext, UIWorksheet sheet,
+            ExcelWorkbook excelWorkbook, UIComponent child) throws IOException {
+        Object oldValue = null;
+        Iterator iterator = null;
+        // Store away the old value for the sheet binding var (if there is
+        // one)
+        if (sheet.getVar() != null) {
+            oldValue = FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get(
+                    sheet.getVar());
+            iterator = sheet.getDataIterator();
+        } else {
+            // No var, no iteration...
+            iterator = new ArrayList().iterator();
+        }
+
+        while (iterator.hasNext()) {
+            // Store the bound data in the request map and add the cell
+            FacesContext.getCurrentInstance().getExternalContext().getRequestMap().put(
+                    sheet.getVar(), iterator.next());
+
+            // XXX make sure other components are processed
+            if (child instanceof WorksheetItem) {
+                excelWorkbook.addItem((WorksheetItem) child);
+            } else {
+                if (child.isRendered()) {
+                    child.encodeBegin(facesContext);
+                    // do not let component handling render of its children
+                    List subChildren = child.getChildren();
+                    for (int j = 0, size = child.getChildCount(); j < size; j++) {
+                        UIComponent subChild = (UIComponent) subChildren.get(j);
+                        encodeChild(facesContext, sheet, excelWorkbook,
+                                subChild);
+                    }
+                    child.encodeEnd(facesContext);
+                }
+            }
+        }
+
+        // No iteration, nothing to restore
+        if (sheet.getVar() == null) {
+            return;
+        }
+        // Restore the previously modified request map (if there was a var)
+        if (oldValue == null) {
+            FacesContext.getCurrentInstance().getExternalContext().getRequestMap().remove(
+                    sheet.getVar());
+        } else {
+            FacesContext.getCurrentInstance().getExternalContext().getRequestMap().put(
+                    sheet.getVar(), oldValue);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
     public static <T> List<T> getAllChildrenOfType(List<UIComponent> children,
             Class<T> childType) {
         List<T> matches = new ArrayList<T>();
@@ -132,7 +155,7 @@ public class UIColumn extends org.jboss.seam.excel.ui.UIColumn {
             if (childType.isAssignableFrom(child.getClass())) {
                 matches.add((T) child);
             } else {
-                // introspect children
+                // XXX introspect children
                 List<T> subChildren = getAllChildrenOfType(child.getChildren(),
                         childType);
                 if (subChildren != null && !subChildren.isEmpty()) {
@@ -151,17 +174,6 @@ public class UIColumn extends org.jboss.seam.excel.ui.UIColumn {
      */
     protected static List<Command> getCommands(List<UIComponent> children) {
         return getAllChildrenOfType(children, Command.class);
-    }
-
-    /**
-     * Returns all worksheet items (cells, images, hyperlinks) from a child
-     * list
-     *
-     * @param children The list to search
-     * @return The items
-     */
-    protected static List<WorksheetItem> getItems(List<UIComponent> children) {
-        return getAllChildrenOfType(children, WorksheetItem.class);
     }
 
 }

@@ -1,6 +1,4 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and contributors.
- *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
@@ -12,6 +10,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
+ *     Original file from org.jboss.seam.rss.ui.UIFeed.java in jboss-seam-rss
  *     Anahide Tchertchian
  */
 package org.nuxeo.ecm.platform.ui.web.component.seam;
@@ -35,7 +34,6 @@ import yarfraw.io.FeedWriter;
  * When this is a value expression, the original component does not decode the
  * value correctly.
  *
- * @author Anahide Tchertchian
  * @since 5.4.1
  */
 public class UIFeed extends org.jboss.seam.rss.ui.UIFeed {
