@@ -72,7 +72,7 @@ public class XMLDocumentWriter extends AbstractDocumentWriter {
     public DocumentTranslationMap write(ExportedDocument doc)
             throws IOException {
 
-        OutputFormat format = OutputFormat.createPrettyPrint();
+        OutputFormat format = AbstractDocumentWriter.createPrettyPrint();
         XMLWriter writer = null;
         try {
             writer = new XMLWriter(out, format);

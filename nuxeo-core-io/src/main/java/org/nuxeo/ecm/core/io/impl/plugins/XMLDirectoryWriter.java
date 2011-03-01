@@ -80,7 +80,7 @@ public class XMLDirectoryWriter extends AbstractDocumentWriter {
             throw new IOException("Cannot create target directory: "
                     + file.getAbsolutePath());
         }
-        OutputFormat format = OutputFormat.createPrettyPrint();
+        OutputFormat format = AbstractDocumentWriter.createPrettyPrint();
         XMLWriter writer = null;
         try {
             writer = new XMLWriter(new FileOutputStream(file.getAbsolutePath()
