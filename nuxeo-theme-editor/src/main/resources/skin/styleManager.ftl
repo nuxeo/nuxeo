@@ -58,7 +58,7 @@
     <div>
       <input type="hidden" name="style_uid" value="#{selected_named_style.uid}" />
       <input type="hidden" name="theme_name" value="${current_theme_name}" />
-      <textarea id="namedStyleCssEditor"
+      <textarea id="namedStyleCssEditor" <#if !selected_named_style.customized>disabled="disabled"</#if>
       name="css_source" rows="15" cols="72"
       style="border: 1px solid #ccc; font-family: monospace; width: 100%; height: 270px; font-size: 11px;">
 ${selected_named_style_css}
