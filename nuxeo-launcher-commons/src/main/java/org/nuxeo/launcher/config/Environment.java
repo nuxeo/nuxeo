@@ -25,7 +25,11 @@ package org.nuxeo.launcher.config;
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public interface Environment {
+public class Environment {
+
+    private Environment() {
+        // Constants class
+    }
 
     /**
      * Constants that identifies possible hosts for the framework.
@@ -52,5 +56,16 @@ public interface Environment {
     public static final String NUXEO_PID_DIR = "nuxeo.pid.dir";
 
     public static final String NUXEO_APP_HOME = "org.nuxeo.app.home";
+
+    public static final String NUXEO_LOOPBACK_URL = "org.nuxeo.runtime.loopback.url";
+
+    // OpenSocial
+    public static final String OPENSOCIAL_GADGETS_EMBEDDED_SERVER = "opensocial.gadgets.embeddedServer";
+
+    public static final String OPENSOCIAL_GADGETS_HOST = "opensocial.gadgets.host";
+
+    public static final String OPENSOCIAL_GADGETS_PORT = "opensocial.gadgets.port";
+
+    public static final String OPENSOCIAL_GADGETS_PATH = "opensocial.gadgets.path";
 
 }
