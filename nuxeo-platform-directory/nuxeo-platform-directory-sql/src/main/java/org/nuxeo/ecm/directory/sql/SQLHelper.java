@@ -287,6 +287,20 @@ public class SQLHelper {
                             + formatColumnValues(columnValues));
                     continue;
                 }
+
+                if (logger.isLogEnabled()) {
+                    List<Serializable> values = new ArrayList<Serializable>(
+                            columnNames.length);
+                    for (int i = 0; i < columnNames.length; i++) {
+                        String value = columnValues[i];
+                        if (SQL_NULL_MARKER.equals(value)) {
+                            value = null;
+                        }
+                        values.add((Serializable) value);
+                    }
+                    logger.logSQL(insertSql, values);
+                }
+
                 for (int i = 0; i < columnNames.length; i++) {
                     Column column = columns.get(i);
                     String value = columnValues[i];
@@ -375,12 +389,15 @@ public class SQLHelper {
 
     public static Column addColumn(Table table, String fieldName,
             ColumnType type, boolean nativeCase) {
-        if (nativeCase) {
-            return table.addColumn(fieldName, type, fieldName, null);
-        } else {
-            return ((TableImpl) table).addColumn(fieldName, new Column(table,
-                    fieldName, type, fieldName));
-        }
+        return ((TableImpl) table).addColumn(fieldName,
+                newColumn(table, fieldName, type, nativeCase));
+    }
+
+    public static Column newColumn(Table table, String fieldName,
+            ColumnType type, boolean nativeCase) {
+        String physicalName = nativeCase ? table.getDialect().getTableName(
+                fieldName) : fieldName;
+        return new Column(table, physicalName, type, fieldName);
     }
 
 }

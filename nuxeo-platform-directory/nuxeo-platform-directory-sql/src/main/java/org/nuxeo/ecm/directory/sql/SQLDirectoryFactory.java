@@ -20,9 +20,10 @@
 package org.nuxeo.ecm.directory.sql;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -30,7 +31,6 @@ import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.DirectoryFactory;
 import org.nuxeo.ecm.directory.DirectoryServiceImpl;
-import org.nuxeo.ecm.directory.InverseReference;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -46,11 +46,15 @@ public class SQLDirectoryFactory extends DefaultComponent implements
 
     private static final Log log = LogFactory.getLog(SQLDirectoryFactory.class);
 
-    private Map<String, Directory> proxies;
+    /** All descriptors registered. */
+    public List<SQLDirectoryDescriptor> descriptors = new ArrayList<SQLDirectoryDescriptor>();
+
+    /** Effective directories. */
+    private Map<String, Directory> directories;
 
     @Override
     public Directory getDirectory(String name) throws DirectoryException {
-        return proxies.get(name);
+        return directories.get(name);
     }
 
     @Override
@@ -60,12 +64,17 @@ public class SQLDirectoryFactory extends DefaultComponent implements
 
     @Override
     public void activate(ComponentContext context) {
-        proxies = new HashMap<String, Directory>();
+        directories = new LinkedHashMap<String, Directory>();
     }
 
     @Override
     public void deactivate(ComponentContext context) {
-        proxies = null;
+        try {
+            shutdown();
+        } catch (DirectoryException e) {
+            log.error("Error shutting down sql directories", e);
+        }
+        directories = null;
     }
 
     protected static DirectoryServiceImpl getDirectoryService() {
@@ -76,127 +85,96 @@ public class SQLDirectoryFactory extends DefaultComponent implements
     @Override
     public void registerExtension(Extension extension) throws Exception {
         Object[] contribs = extension.getContributions();
-        DirectoryServiceImpl dirService = getDirectoryService();
         for (Object contrib : contribs) {
             SQLDirectoryDescriptor descriptor = (SQLDirectoryDescriptor) contrib;
-            String descriptorName = descriptor.getName();
-
+            String directoryName = descriptor.getName();
             if (descriptor.getRemove()) {
-                log.info("Removing directory: " + descriptorName);
-                proxies.remove(descriptorName);
-                dirService.unregisterDirectory(descriptorName, this);
-                continue;
+                log.info("Removing directory: " + directoryName);
+            } else {
+                if (directories.containsKey(directoryName)) {
+                    log.info("Re-registered directory: " + directoryName);
+                } else {
+                    log.info("Registered directory: " + directoryName);
+                }
             }
-
-            if (proxies.containsKey(descriptorName)) {
-                mergeDescriptor(descriptor);
-            }
-
-            proxies.put(descriptorName, new SQLDirectoryProxy(descriptor));
-            dirService.registerDirectory(descriptorName, this);
-            log.info("Registered directory: " + descriptorName);
+            addDescriptor(descriptor);
         }
     }
 
-    private void mergeDescriptor(SQLDirectoryDescriptor descriptor) {
-        SQLDirectoryDescriptor oldDescriptor;
-        oldDescriptor = ((SQLDirectoryProxy) proxies.get(descriptor.getName())).getDescriptor();
+    protected void addDescriptor(SQLDirectoryDescriptor descriptor) {
+        descriptors.add(descriptor);
+        refresh();
+    }
 
-        if (descriptor.getDbUser() == null) {
-            descriptor.setDbUser(oldDescriptor.getDbUser());
-        }
+    protected void removeDescriptor(SQLDirectoryDescriptor descriptor) {
+        descriptors.remove(descriptor);
+        refresh();
+    }
 
-        if (descriptor.getDbPassword() == null) {
-            descriptor.setDbPassword(oldDescriptor.getDbPassword());
-        }
-
-        if (descriptor.getDataSourceName() == null) {
-            descriptor.setDataSourceName(oldDescriptor.getDataSourceName());
-        }
-
-        if (descriptor.getDbDriver() == null) {
-            descriptor.setDbDriver(oldDescriptor.getDbDriver());
-        }
-
-        if (descriptor.getDbUrl() == null) {
-            descriptor.setDbUrl(oldDescriptor.getDbUrl());
-        }
-
-        if (descriptor.getCreateTablePolicy() == null) {
+    /**
+     * Recompute effective directories from active descriptors.
+     */
+    protected void refresh() {
+        DirectoryServiceImpl dirService = getDirectoryService();
+        for (Entry<String, Directory> es : directories.entrySet()) {
+            String directoryName = es.getKey();
+            Directory directory = es.getValue();
+            dirService.unregisterDirectory(directoryName, this);
             try {
-                descriptor.setCreateTablePolicy(oldDescriptor.getCreateTablePolicy());
+                directory.shutdown();
             } catch (DirectoryException e) {
-                // Should never happend since Descriptor was already created
-                log.error(e);
+                log.error(
+                        "Error shutting down sql directory: " + directoryName,
+                        e);
             }
         }
+        directories.clear();
 
-        if (descriptor.getIdField() == null) {
-            descriptor.setIdField(oldDescriptor.getIdField());
+        // compute effective descriptors
+        Map<String, SQLDirectoryDescriptor> effective = new LinkedHashMap<String, SQLDirectoryDescriptor>();
+        for (SQLDirectoryDescriptor descriptor : descriptors) {
+            String directoryName = descriptor.getName();
+            if (descriptor.getRemove()) {
+                effective.remove(directoryName);
+                continue;
+            }
+            if (effective.containsKey(directoryName)) {
+                SQLDirectoryDescriptor old = effective.get(directoryName);
+                descriptor.merge(old);
+            }
+
+            effective.put(directoryName, descriptor);
         }
 
-        if (descriptor.getReadOnly() == null) {
-            descriptor.setReadOnly(oldDescriptor.getReadOnly());
-        }
-
-        if (descriptor.getSchemaName() == null) {
-            descriptor.setSchemaName(oldDescriptor.getSchemaName());
-        }
-
-        if (descriptor.getParentDirectory() == null) {
-            descriptor.setParentDirectory(oldDescriptor.getParentDirectory());
-        }
-
-        if (descriptor.getDataFileName() == null) {
-            descriptor.setDataFileName(oldDescriptor.getDataFileName());
-        }
-
-        if (descriptor.getTableName() == null) {
-            descriptor.setTableName(oldDescriptor.getTableName());
-        }
-
-        // References
-        // for now only reuse the old descriptor
-        // if no reference is set in the new one
-
-        if (descriptor.getInverseReferences() == null
-                || descriptor.getInverseReferences().length == 0) {
-            descriptor.setInverseReferences((InverseReference[]) oldDescriptor.getInverseReferences());
-        }
-
-        if (descriptor.getTableReferences() == null
-                || descriptor.getTableReferences().length == 0) {
-            descriptor.setTableReferences((TableReference[]) oldDescriptor.getTableReferences());
+        // compute effective directories
+        for (SQLDirectoryDescriptor descriptor : effective.values()) {
+            String descriptorName = descriptor.getName();
+            directories.put(descriptorName, new SQLDirectoryProxy(descriptor));
+            dirService.registerDirectory(descriptorName, this);
         }
     }
 
     @Override
     public void unregisterExtension(Extension extension) throws Exception {
         Object[] contribs = extension.getContributions();
-        DirectoryServiceImpl dirService = getDirectoryService();
         for (Object contrib : contribs) {
             SQLDirectoryDescriptor descriptor = (SQLDirectoryDescriptor) contrib;
-            String directoryName = descriptor.getName();
-            dirService.unregisterDirectory(directoryName, this);
-            Directory directory = proxies.remove(directoryName);
-            if (directory != null) {
-                directory.shutdown();
-            }
+            String descriptorName = descriptor.getName();
+            log.info("Unregistered directory: " + descriptorName);
+            removeDescriptor(descriptor);
         }
     }
 
     @Override
     public void shutdown() throws DirectoryException {
-        for (Directory directory : proxies.values()) {
+        for (Directory directory : directories.values()) {
             directory.shutdown();
         }
     }
 
     @Override
     public List<Directory> getDirectories() throws DirectoryException {
-        List<Directory> directoryList = new ArrayList<Directory>();
-        directoryList.addAll(proxies.values());
-        return directoryList;
+        return new ArrayList<Directory>(directories.values());
     }
 
 }

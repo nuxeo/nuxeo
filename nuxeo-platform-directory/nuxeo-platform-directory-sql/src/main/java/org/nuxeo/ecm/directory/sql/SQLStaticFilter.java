@@ -62,8 +62,10 @@ public class SQLStaticFilter implements Serializable {
         return value;
     }
 
-    public Column getDirectoryColumn(Table table) throws DirectoryException {
-        return new Column(table, column, getColumnType(type), null);
+    public Column getDirectoryColumn(Table table, boolean nativeCase)
+            throws DirectoryException {
+        return SQLHelper.newColumn(table, column, getColumnType(type),
+                nativeCase);
     }
 
     protected static ColumnType getColumnType(String type)

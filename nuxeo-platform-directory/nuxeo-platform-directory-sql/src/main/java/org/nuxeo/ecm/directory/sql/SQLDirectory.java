@@ -55,6 +55,8 @@ public class SQLDirectory extends AbstractDirectory {
 
     private final SQLDirectoryDescriptor config;
 
+    private final boolean nativeCase;
+
     private boolean managedSQLSession;
 
     private DataSource dataSource;
@@ -75,6 +77,7 @@ public class SQLDirectory extends AbstractDirectory {
 
     public SQLDirectory(SQLDirectoryDescriptor config) throws ClientException {
         this.config = config;
+        nativeCase = Boolean.TRUE.equals(config.nativeCase);
 
         // register the references to other directories
         addReferences(config.getInverseReferences());
@@ -281,7 +284,7 @@ public class SQLDirectory extends AbstractDirectory {
     }
 
     public boolean useNativeCase() {
-        return false;
+        return nativeCase;
     }
 
 }

@@ -87,7 +87,7 @@ public class SQLDirectoryDescriptor {
 
     public String createTablePolicy;
 
-    private SubstringMatchType substringMatchType = SubstringMatchType.subinitial;
+    public SubstringMatchType substringMatchType;
 
     @XNode("autoincrementIdField")
     public boolean autoincrementIdField;
@@ -121,6 +121,9 @@ public class SQLDirectoryDescriptor {
 
     @XNodeList(value = "filters/staticFilter", type = SQLStaticFilter[].class, componentType = SQLStaticFilter.class)
     private SQLStaticFilter[] staticFilters;
+
+    @XNode("nativeCase")
+    public Boolean nativeCase;
 
     public String getDataSourceName() {
         return dataSourceName;
@@ -337,7 +340,8 @@ public class SQLDirectoryDescriptor {
     }
 
     public SubstringMatchType getSubstringMatchType() {
-        return substringMatchType;
+        return substringMatchType == null ? SubstringMatchType.subinitial
+                : substringMatchType;
     }
 
     public void setSubstringMatchType(SubstringMatchType substringMatchType) {
@@ -350,4 +354,78 @@ public class SQLDirectoryDescriptor {
         }
         return staticFilters;
     }
+
+    public void merge(SQLDirectoryDescriptor other) {
+        if (dbUser == null) {
+            dbUser = other.dbUser;
+        }
+        if (dbPassword == null) {
+            dbPassword = other.dbPassword;
+        }
+        if (dataSourceName == null) {
+            dataSourceName = other.dataSourceName;
+        }
+        if (dbDriver == null) {
+            dbDriver = other.dbDriver;
+        }
+        if (dbUrl == null) {
+            dbUrl = other.dbUrl;
+        }
+
+        if (createTablePolicy == null) {
+            createTablePolicy = other.createTablePolicy;
+        }
+
+        if (idField == null) {
+            idField = other.idField;
+        }
+
+        if (readOnly == null) {
+            readOnly = other.readOnly;
+        }
+
+        if (schemaName == null) {
+            schemaName = other.schemaName;
+        }
+
+        if (parentDirectory == null) {
+            parentDirectory = other.parentDirectory;
+        }
+
+        if (dataFileName == null) {
+            dataFileName = other.dataFileName;
+        }
+
+        if (tableName == null) {
+            tableName = other.tableName;
+        }
+
+        if (substringMatchType == null) {
+            substringMatchType = other.substringMatchType;
+
+        }
+        if (passwordField == null) {
+            passwordField = other.passwordField;
+        }
+        if (passwordHashAlgorithm == null) {
+            passwordHashAlgorithm = other.passwordHashAlgorithm;
+        }
+
+        if (nativeCase == null) {
+            nativeCase = other.nativeCase;
+        }
+
+        // References
+        // for now only reuse the old descriptor
+        // if no reference is set in the new one
+
+        if (inverseReferences == null || inverseReferences.length == 0) {
+            inverseReferences = other.inverseReferences;
+        }
+
+        if (tableReferences == null || tableReferences.length == 0) {
+            tableReferences = other.tableReferences;
+        }
+    }
+
 }
