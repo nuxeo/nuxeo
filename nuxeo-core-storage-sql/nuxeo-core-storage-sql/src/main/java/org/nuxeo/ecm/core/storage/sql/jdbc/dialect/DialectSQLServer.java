@@ -58,10 +58,12 @@ public class DialectSQLServer extends Dialect {
             BinaryManager binaryManager,
             RepositoryDescriptor repositoryDescriptor) throws StorageException {
         super(metadata, binaryManager, repositoryDescriptor);
-        fulltextAnalyzer = repositoryDescriptor.fulltextAnalyzer == null ? DEFAULT_FULLTEXT_ANALYZER
-                : repositoryDescriptor.fulltextAnalyzer;
-        fulltextCatalog = repositoryDescriptor.fulltextCatalog == null ? DEFAULT_FULLTEXT_CATALOG
-                : repositoryDescriptor.fulltextCatalog;
+        fulltextAnalyzer = repositoryDescriptor == null ? null
+                : repositoryDescriptor.fulltextAnalyzer == null ? DEFAULT_FULLTEXT_ANALYZER
+                        : repositoryDescriptor.fulltextAnalyzer;
+        fulltextCatalog = repositoryDescriptor == null ? null
+                : repositoryDescriptor.fulltextCatalog == null ? DEFAULT_FULLTEXT_CATALOG
+                        : repositoryDescriptor.fulltextCatalog;
 
     }
 

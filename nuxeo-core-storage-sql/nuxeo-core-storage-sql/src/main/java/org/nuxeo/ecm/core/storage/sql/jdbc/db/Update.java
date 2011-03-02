@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2007-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2007-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -14,17 +14,16 @@
  * Contributors:
  *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.core.storage.sql.jdbc.db;
 
 import java.io.Serializable;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.nuxeo.common.utils.StringUtils;
 
 /**
  * An {@code UPDATE} statement.
- *
- * @author Florent Guillaume
  */
 public class Update implements Serializable {
 
@@ -48,6 +47,20 @@ public class Update implements Serializable {
 
     public void setNewValues(String newValues) {
         this.newValues = newValues;
+    }
+
+    /** Alternative to {@link #setNewValues} */
+    public void setUpdatedColumns(List<Column> columns) {
+        List<String> updatedColumns = new LinkedList<String>();
+        for (Column column : columns) {
+            if (column.isIdentity()) {
+                // identity column is never inserted
+                continue;
+            }
+            updatedColumns.add(column.getQuotedName() + " = "
+                    + column.getFreeVariableSetter());
+        }
+        newValues = StringUtils.join(updatedColumns, ", ");
     }
 
     /**

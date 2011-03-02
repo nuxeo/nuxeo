@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2008-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -14,7 +14,6 @@
  * Contributors:
  *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.core.storage.sql.jdbc.db;
 
 import java.util.ArrayList;
@@ -27,8 +26,6 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
 
 /**
  * An alias for an existing table. The returned columns are wrapped.
- *
- * @author Florent Guillaume
  */
 public class TableAlias implements Table {
 
@@ -100,6 +97,11 @@ public class TableAlias implements Table {
     @Override
     public Column getColumn(String name) {
         return new Column(table.getColumn(name), this);
+    }
+
+    @Override
+    public Column getPrimaryColumn() {
+        return new Column(table.getPrimaryColumn(), this);
     }
 
     // probably never used

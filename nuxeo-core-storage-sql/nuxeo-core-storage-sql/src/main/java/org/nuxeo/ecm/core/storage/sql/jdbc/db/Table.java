@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2007-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2007-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -14,7 +14,6 @@
  * Contributors:
  *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.core.storage.sql.jdbc.db;
 
 import java.io.Serializable;
@@ -27,8 +26,6 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
 
 /**
  * A SQL table.
- *
- * @author Florent Guillaume
  */
 public interface Table extends Serializable {
 
@@ -47,6 +44,8 @@ public interface Table extends Serializable {
     String getQuotedSuffixedName(String suffix);
 
     Column getColumn(String name);
+
+    Column getPrimaryColumn();
 
     Collection<Column> getColumns();
 

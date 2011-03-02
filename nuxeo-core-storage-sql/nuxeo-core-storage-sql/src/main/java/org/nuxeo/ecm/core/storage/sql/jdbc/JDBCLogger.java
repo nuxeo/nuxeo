@@ -35,20 +35,20 @@ import org.nuxeo.ecm.core.storage.sql.Row;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 
 /**
- * Logger for a mapper instance, used for debugging.
+ * Logger used for debugging.
  */
-public class JDBCMapperLogger {
+public class JDBCLogger {
 
-    public static final Log log = LogFactory.getLog(JDBCMapperLogger.class);
+    public static final Log log = LogFactory.getLog(JDBCLogger.class);
 
     public static final int DEBUG_MAX_STRING = 100;
 
     public static final int DEBUG_MAX_ARRAY = 10;
 
-    public final long instanceNumber;
+    public final String instance;
 
-    public JDBCMapperLogger(long instanceNumber) {
-        this.instanceNumber = instanceNumber;
+    public JDBCLogger(String instance) {
+        this.instance = instance;
     }
 
     public boolean isLogEnabled() {
@@ -56,7 +56,7 @@ public class JDBCMapperLogger {
     }
 
     public String formatMessage(String message) {
-        return "(" + instanceNumber + ") SQL: " + message;
+        return "(" + instance + ") SQL: " + message;
     }
 
     public void error(String message) {

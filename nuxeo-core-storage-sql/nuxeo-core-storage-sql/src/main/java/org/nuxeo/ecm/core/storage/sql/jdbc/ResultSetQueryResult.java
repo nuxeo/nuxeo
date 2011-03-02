@@ -53,7 +53,7 @@ public class ResultSetQueryResult implements IterableQueryResult,
 
     private long size = -1;
 
-    private final JDBCMapperLogger logger;
+    private final JDBCLogger logger;
 
     public ResultSetQueryResult(QueryMaker queryMaker, String query,
             QueryFilter queryFilter, PathResolver pathResolver,

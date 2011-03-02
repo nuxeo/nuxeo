@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2007-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2007-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -14,7 +14,6 @@
  * Contributors:
  *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.core.storage.sql.jdbc.db;
 
 import java.util.ArrayList;
@@ -33,14 +32,10 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
 
 /**
  * The basic implementation of a SQL table.
- *
- * @author Florent Guillaume
  */
 public class TableImpl implements Table {
 
     private static final long serialVersionUID = 1L;
-
-    protected final Database database;
 
     protected final Dialect dialect;
 
@@ -51,6 +46,8 @@ public class TableImpl implements Table {
     /** Map of logical names to columns. */
     private final LinkedHashMap<String, Column> columns;
 
+    private Column primaryColumn;
+
     /** Logical names of indexed columns. */
     private final List<String[]> indexedColumns;
 
@@ -60,9 +57,8 @@ public class TableImpl implements Table {
     /**
      * Creates a new empty table.
      */
-    public TableImpl(Database database, String name, String key) {
-        this.database = database;
-        dialect = database.dialect;
+    public TableImpl(Dialect dialect, String name, String key) {
+        this.dialect = dialect;
         this.key = key; // Model table name
         this.name = name;
         // we use a LinkedHashMap to have deterministic ordering
@@ -112,21 +108,41 @@ public class TableImpl implements Table {
     }
 
     @Override
+    public Column getPrimaryColumn() {
+        if (primaryColumn == null) {
+            for (Column column : columns.values()) {
+                if (column.isPrimary()) {
+                    primaryColumn = column;
+                    break;
+                }
+            }
+        }
+        return primaryColumn;
+    }
+
+    @Override
     public Collection<Column> getColumns() {
         return columns.values();
+    }
+
+    /**
+     * Adds a column without dialect physical name canonicalization (for
+     * directories).
+     */
+    public Column addColumn(String name, Column column) {
+        if (columns.containsKey(name)) {
+            throw new IllegalArgumentException("duplicate column " + name);
+        }
+        columns.put(name, column);
+        return column;
     }
 
     @Override
     public Column addColumn(String name, ColumnType type, String key,
             Model model) {
         String physicalName = dialect.getTableName(name);
-        if (columns.containsKey(physicalName)) {
-            throw new IllegalArgumentException("duplicate column "
-                    + physicalName);
-        }
         Column column = new Column(this, physicalName, type, key);
-        columns.put(name, column);
-        return column;
+        return addColumn(name, column);
     }
 
     /**

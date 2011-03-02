@@ -82,9 +82,11 @@ public class DialectPostgreSQL extends Dialect {
             BinaryManager binaryManager,
             RepositoryDescriptor repositoryDescriptor) throws StorageException {
         super(metadata, binaryManager, repositoryDescriptor);
-        fulltextAnalyzer = repositoryDescriptor.fulltextAnalyzer == null ? DEFAULT_FULLTEXT_ANALYZER
-                : repositoryDescriptor.fulltextAnalyzer;
-        pathOptimizationsEnabled = repositoryDescriptor.pathOptimizationsEnabled;
+        fulltextAnalyzer = repositoryDescriptor == null ? null
+                : repositoryDescriptor.fulltextAnalyzer == null ? DEFAULT_FULLTEXT_ANALYZER
+                        : repositoryDescriptor.fulltextAnalyzer;
+        pathOptimizationsEnabled = repositoryDescriptor == null ? false
+                : repositoryDescriptor.pathOptimizationsEnabled;
         int major, minor;
         try {
             major = metadata.getDatabaseMajorVersion();
@@ -93,8 +95,9 @@ public class DialectPostgreSQL extends Dialect {
             throw new StorageException(e);
         }
         supportsWith = major > 8 || (major == 8 && minor >= 4);
-        usersSeparator = repositoryDescriptor.usersSeparatorKey == null ? DEFAULT_USERS_SEPARATOR
-                : repositoryDescriptor.usersSeparatorKey;
+        usersSeparator = repositoryDescriptor == null ? null
+                : repositoryDescriptor.usersSeparatorKey == null ? DEFAULT_USERS_SEPARATOR
+                        : repositoryDescriptor.usersSeparatorKey;
     }
 
     @Override

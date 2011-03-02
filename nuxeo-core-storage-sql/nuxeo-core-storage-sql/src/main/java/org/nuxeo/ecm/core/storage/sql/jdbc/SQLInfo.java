@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2007-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2007-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -14,7 +14,6 @@
  * Contributors:
  *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.core.storage.sql.jdbc;
 
 import java.io.IOException;
@@ -54,8 +53,6 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.SQLStatement;
  * the operations needed by the {@link Mapper}, given a {@link Model}.
  * <p>
  * It is specific to one SQL dialect.
- *
- * @author Florent Guillaume
  */
 public class SQLInfo {
 
@@ -303,34 +300,28 @@ public class SQLInfo {
 
     public SQLInfoSelect getUpdateById(String tableName, Collection<String> keys) {
         Table table = database.getTable(tableName);
-        List<String> values = new LinkedList<String>();
-        List<Column> columns = new LinkedList<Column>();
         Column mainColumn = table.getColumn(model.MAIN_KEY);
+        List<Column> columns = new LinkedList<Column>();
         for (String key : keys) {
-            Column column = table.getColumn(key);
-            values.add(column.getQuotedName() + " = "
-                    + column.getFreeVariableSetter());
-            columns.add(column);
+            columns.add(table.getColumn(key));
         }
-        columns.add(mainColumn);
         Update update = new Update(table);
-        update.setNewValues(StringUtils.join(values, ", "));
+        update.setUpdatedColumns(columns);
         update.setWhere(mainColumn.getQuotedName() + " = ?");
+        columns.add(mainColumn);
         return new SQLInfoSelect(update.getStatement(), columns, null, null);
     }
 
     public Update getUpdateByIdForKeys(String tableName, List<String> keys) {
         Table table = database.getTable(tableName);
-        List<String> values = new ArrayList<String>(keys.size());
+        Column mainColumn = table.getColumn(model.MAIN_KEY);
+        List<Column> columns = new LinkedList<Column>();
         for (String key : keys) {
-            Column column = table.getColumn(key);
-            values.add(column.getQuotedName() + " = "
-                    + column.getFreeVariableSetter());
+            columns.add(table.getColumn(key));
         }
         Update update = new Update(table);
-        update.setNewValues(StringUtils.join(values, ", "));
-        update.setWhere(table.getColumn(model.MAIN_KEY).getQuotedName()
-                + " = ?");
+        update.setUpdatedColumns(columns);
+        update.setWhere(mainColumn.getQuotedName() + " = ?");
         return update;
     }
 

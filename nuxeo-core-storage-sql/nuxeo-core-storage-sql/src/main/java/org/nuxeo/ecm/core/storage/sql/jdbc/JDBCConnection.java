@@ -59,7 +59,8 @@ public class JDBCConnection {
     private final long instanceNumber = instanceCounter.incrementAndGet();
 
     // for debug
-    public final JDBCMapperLogger logger = new JDBCMapperLogger(instanceNumber);
+    public final JDBCLogger logger = new JDBCLogger(
+            String.valueOf(instanceNumber));
 
     /**
      * Creates a new Mapper.

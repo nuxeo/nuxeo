@@ -45,7 +45,7 @@ public interface CollectionIO {
      */
     void setToPreparedStatement(Serializable id, Serializable[] array,
             List<Column> columns, PreparedStatement ps, Model model,
-            List<Serializable> debugValues, String sql, JDBCMapperLogger logger)
+            List<Serializable> debugValues, String sql, JDBCLogger logger)
             throws SQLException;
 
 }

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2008-2009 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2008-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -14,7 +14,6 @@
  * Contributors:
  *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.core.storage.sql.jdbc.dialect;
 
 import java.io.Serializable;
@@ -23,16 +22,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.nuxeo.common.utils.StringUtils;
-import org.nuxeo.ecm.core.NXCore;
-import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.BinaryManager;
 import org.nuxeo.ecm.core.storage.sql.ColumnType;
@@ -40,28 +33,18 @@ import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Database;
-import org.nuxeo.ecm.core.storage.sql.jdbc.db.Join;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
 
 /**
- * H2-specific dialect.
- *
- * @author Florent Guillaume
+ * HSQLDB-specific dialect.
+ * <p>
+ * Not used for VCS, only for directories, so many features don't matter.
  */
-public class DialectH2 extends Dialect {
+public class DialectHSQLDB extends Dialect {
 
-    protected static final String DEFAULT_USERS_SEPARATOR = ",";
-
-    private static final String DEFAULT_FULLTEXT_ANALYZER = "org.apache.lucene.analysis.standard.StandardAnalyzer";
-
-    protected final String usersSeparator;
-
-    public DialectH2(DatabaseMetaData metadata, BinaryManager binaryManager,
+    public DialectHSQLDB(DatabaseMetaData metadata, BinaryManager binaryManager,
             RepositoryDescriptor repositoryDescriptor) throws StorageException {
         super(metadata, binaryManager, repositoryDescriptor);
-        usersSeparator = repositoryDescriptor == null ? null
-                : repositoryDescriptor.usersSeparatorKey == null ? DEFAULT_USERS_SEPARATOR
-                        : repositoryDescriptor.usersSeparatorKey;
     }
 
     @Override
@@ -188,62 +171,19 @@ public class DialectH2 extends Dialect {
     public String getCreateFulltextIndexSql(String indexName,
             String quotedIndexName, Table table, List<Column> columns,
             Model model) {
-        List<String> columnNames = new ArrayList<String>(columns.size());
-        for (Column col : columns) {
-            columnNames.add("'" + col.getPhysicalName() + "'");
-        }
-        String fullIndexName = String.format("PUBLIC_%s_%s",
-                table.getPhysicalName(), indexName);
-        String analyzer = model.getFulltextInfo().indexAnalyzer.get(indexName);
-        if (analyzer == null) {
-            analyzer = DEFAULT_FULLTEXT_ANALYZER;
-        }
-        return String.format(
-                "CALL NXFT_CREATE_INDEX('%s', 'PUBLIC', '%s', (%s), '%s')",
-                fullIndexName, table.getPhysicalName(),
-                StringUtils.join(columnNames, ", "), analyzer);
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public String getDialectFulltextQuery(String query) {
-        FulltextQuery ft = analyzeFulltextQuery(query);
-        if (ft == null) {
-            return "DONTMATCHANYTHINGFOREMPTYQUERY";
-        }
-        return translateFulltext(ft, "OR", "AND", "NOT", "\"");
+        throw new UnsupportedOperationException();
     }
 
-    // SELECT ..., 1 as nxscore
-    // FROM ... LEFT JOIN NXFT_SEARCH('default', ?) nxfttbl
-    // .................. ON hierarchy.id = nxfttbl.KEY
-    // WHERE ... AND nxfttbl.KEY IS NOT NULL
-    // ORDER BY nxscore DESC
     @Override
     public FulltextMatchInfo getFulltextScoredMatchInfo(String fulltextQuery,
             String indexName, int nthMatch, Column mainColumn, Model model,
             Database database) {
-        String phftname = database.getTable(model.FULLTEXT_TABLE_NAME).getPhysicalName();
-        String fullIndexName = "PUBLIC_" + phftname + "_" + indexName;
-        String nthSuffix = nthMatch == 1 ? "" : String.valueOf(nthMatch);
-        String tableAlias = "_nxfttbl" + nthSuffix;
-        String scoreAlias = "_nxscore" + nthSuffix;
-        // String scoreAlias = "_nxscore" + nthSuffix;
-        FulltextMatchInfo info = new FulltextMatchInfo();
-        info.joins = Collections.singletonList( //
-        new Join(
-                Join.LEFT, //
-                String.format("NXFT_SEARCH('%s', ?)", fullIndexName),
-                tableAlias, // alias
-                fulltextQuery, // param
-                String.format("%s.KEY", tableAlias), // on1
-                mainColumn.getFullQuotedName() // on2
-        ));
-        info.whereExpr = String.format("%s.KEY IS NOT NULL", tableAlias);
-        info.scoreExpr = String.format("1 AS %s", scoreAlias);
-        info.scoreAlias = scoreAlias;
-        info.scoreCol = new Column(mainColumn.getTable(), null,
-                ColumnType.DOUBLE, null);
-        return info;
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -258,7 +198,7 @@ public class DialectH2 extends Dialect {
 
     @Override
     public boolean supportsUpdateFrom() {
-        return false; // check this, unused
+        return false;
     }
 
     @Override
@@ -268,26 +208,22 @@ public class DialectH2 extends Dialect {
 
     @Override
     public boolean supportsReadAcl() {
-        return aclOptimizationsEnabled;
+        return false;
     }
 
     @Override
     public String getReadAclsCheckSql(String idColumnName) {
-        return String.format(
-                "%s IN (SELECT * FROM nx_get_read_acls_for(?, '%s'))",
-                idColumnName, getUsersSeparator());
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public String getUpdateReadAclsSql() {
-        return String.format("SELECT nx_update_read_acls('%s');",
-                getUsersSeparator());
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public String getRebuildReadAclsSql() {
-        return String.format("SELECT nx_rebuild_read_acls('%s');",
-                getUsersSeparator());
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -300,12 +236,12 @@ public class DialectH2 extends Dialect {
 
     @Override
     public String getSecurityCheckSql(String idColumnName) {
-        return String.format("NX_ACCESS_ALLOWED(%s, ?, ?)", idColumnName);
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public String getInTreeSql(String idColumnName) {
-        return String.format("NX_IN_TREE(%s, ?)", idColumnName);
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -315,48 +251,33 @@ public class DialectH2 extends Dialect {
 
     @Override
     public String getSQLStatementsFilename() {
-        return "nuxeovcs/h2.sql.txt";
+        return "nuxeovcs/hsqldb.sql.txt"; // TODO VCS
     }
 
     @Override
     public String getTestSQLStatementsFilename() {
-        return "nuxeovcs/h2.test.sql.txt";
+        return "nuxeovcs/hsqldb.test.sql.txt"; // TODO VCS
     }
 
     @Override
     public Map<String, Serializable> getSQLStatementsProperties(Model model,
             Database database) {
-        Map<String, Serializable> properties = new HashMap<String, Serializable>();
-        properties.put("idType", "VARCHAR(36)");
-        String[] permissions = NXCore.getSecurityService().getPermissionsToCheck(
-                SecurityConstants.BROWSE);
-        List<String> permsList = new LinkedList<String>();
-        for (String perm : permissions) {
-            permsList.add("('" + perm + "')");
-        }
-        properties.put("fulltextEnabled", Boolean.valueOf(!fulltextDisabled));
-        properties.put("readPermissions", StringUtils.join(permsList, ", "));
-        properties.put("h2Functions",
-                "org.nuxeo.ecm.core.storage.sql.db.H2Functions");
-        properties.put("h2Fulltext",
-                "org.nuxeo.ecm.core.storage.sql.db.H2Fulltext");
-        properties.put("usersSeparator", getUsersSeparator());
-        return properties;
+        return new HashMap<String, Serializable>();
     }
 
     @Override
     public boolean isClusteringSupported() {
-        return true;
+        return false;
     }
 
     @Override
     public String getClusterInsertInvalidations() {
-        return "CALL NX_CLUSTER_INVAL(?, ?, ?)";
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public String getClusterGetInvalidations() {
-        return "SELECT * FROM NX_CLUSTER_GET_INVALS()";
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -364,16 +285,10 @@ public class DialectH2 extends Dialect {
         return true;
     }
 
+    @SuppressWarnings("boxing")
     @Override
     public String getPagingClause(long limit, long offset) {
         return String.format("LIMIT %d OFFSET %d", limit, offset);
-    }
-
-    public String getUsersSeparator() {
-        if (usersSeparator == null) {
-            return DEFAULT_USERS_SEPARATOR;
-        }
-        return usersSeparator;
     }
 
 }

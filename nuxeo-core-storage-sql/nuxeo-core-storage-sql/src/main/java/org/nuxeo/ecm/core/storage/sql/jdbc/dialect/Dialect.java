@@ -127,6 +127,10 @@ public abstract class Dialect {
             return new DialectSQLServer(metadata, binaryManager,
                     repositoryDescriptor);
         }
+        if ("HSQL Database Engine".equals(databaseName)) {
+            return new DialectHSQLDB(metadata, binaryManager,
+                    repositoryDescriptor);
+        }
         throw new StorageException("Unsupported database: " + databaseName);
     }
 
@@ -138,9 +142,15 @@ public abstract class Dialect {
             throw new StorageException("An error has occured.", e);
         }
         this.binaryManager = binaryManager;
-        fulltextDisabled = repositoryDescriptor.fulltextDisabled;
-        aclOptimizationsEnabled = repositoryDescriptor.aclOptimizationsEnabled;
-        readAclMaxSize = repositoryDescriptor.readAclMaxSize;
+        if (repositoryDescriptor == null) {
+            fulltextDisabled = true;
+            aclOptimizationsEnabled = false;
+            readAclMaxSize = 0;
+        } else {
+            fulltextDisabled = repositoryDescriptor.fulltextDisabled;
+            aclOptimizationsEnabled = repositoryDescriptor.aclOptimizationsEnabled;
+            readAclMaxSize = repositoryDescriptor.readAclMaxSize;
+        }
     }
 
     public BinaryManager getBinaryManager() {
@@ -976,6 +986,13 @@ public abstract class Dialect {
      * Does the dialect support SQL-99 WITH common table expressions.
      */
     public boolean supportsWith() {
+        return false;
+    }
+
+    /**
+     * Does the dialect have an empty string identical to NULL (Oracle).
+     */
+    public boolean hasNullEmptyString() {
         return false;
     }
 

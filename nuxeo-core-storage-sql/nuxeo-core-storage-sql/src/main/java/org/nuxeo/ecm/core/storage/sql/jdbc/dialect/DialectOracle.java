@@ -69,8 +69,9 @@ public class DialectOracle extends Dialect {
             BinaryManager binaryManager,
             RepositoryDescriptor repositoryDescriptor) throws StorageException {
         super(metadata, binaryManager, repositoryDescriptor);
-        fulltextParameters = repositoryDescriptor.fulltextAnalyzer == null ? ""
-                : repositoryDescriptor.fulltextAnalyzer;
+        fulltextParameters = repositoryDescriptor == null ? null
+                : repositoryDescriptor.fulltextAnalyzer == null ? ""
+                        : repositoryDescriptor.fulltextAnalyzer;
     }
 
     @Override
@@ -429,6 +430,11 @@ public class DialectOracle extends Dialect {
 
     @Override
     public boolean supportsArrays() {
+        return true;
+    }
+
+    @Override
+    public boolean hasNullEmptyString() {
         return true;
     }
 
