@@ -739,7 +739,7 @@ public class Base64
          }   // end if: white space, equals sign or better
          else
          {
-            System.err.println("Bad Base64 input character at " + i + ": " + source[i] + "(decimal)");
+            // System.err.println("Bad Base64 input character at " + i + ": " + source[i] + "(decimal)");
             return null;
          }   // end else:
       }   // each input character
@@ -997,7 +997,7 @@ public class Base64
          // Check for size of file
          if (file.length() > Integer.MAX_VALUE)
          {
-            System.err.println("File is too big for this convenience method (" + file.length() + " bytes).");
+            // System.err.println("File is too big for this convenience method (" + file.length() + " bytes).");
             return null;
          }   // end if: file too big for int index
          buffer = new byte[(int)file.length()];
@@ -1016,7 +1016,7 @@ public class Base64
       }   // end try
       catch (java.io.IOException e)
       {
-         System.err.println("Error decoding from file " + filename);
+         // System.err.println("Error decoding from file " + filename);
       }   // end catch: IOException
       finally
       {
@@ -1067,7 +1067,7 @@ public class Base64
       }   // end try
       catch (java.io.IOException e)
       {
-         System.err.println("Error encoding from file " + filename);
+         // System.err.println("Error encoding from file " + filename);
       }   // end catch: IOException
       finally
       {
