@@ -847,11 +847,9 @@ public class SQLSession extends BaseSession implements EntrySource {
     private void setFieldValue(PreparedStatement ps, int index, Column column,
             Object value) throws DirectoryException {
         if (value instanceof String) {
-            if (column.getPhysicalName().equals(idField)) {
-                if (column.getType() == ColumnType.LONG) {
-                    // allow storing string into integer primary key
-                    value = Long.valueOf((String) value);
-                }
+            if (column.getType() == ColumnType.LONG) {
+                // allow storing string into integer/long key
+                value = Long.valueOf((String) value);
             }
             if (column.getPhysicalName().equals(passwordField)) {
                 // hash password if not already hashed
