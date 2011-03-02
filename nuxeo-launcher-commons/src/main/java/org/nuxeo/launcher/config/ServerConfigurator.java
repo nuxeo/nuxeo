@@ -111,6 +111,14 @@ public abstract class ServerConfigurator {
     protected abstract String getDefaultDataDir();
 
     /**
+     * Returns the Home of NuxeoRuntime
+     * (same as Framework.getRuntime().getHome().getAbsolutePath())
+     *
+     * @return
+     */
+    protected abstract String getRuntimeHome();
+
+    /**
      * @return Data directory
      * @since 5.4.1
      */

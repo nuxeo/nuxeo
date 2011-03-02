@@ -759,4 +759,7 @@ public class ConfigurationGenerator {
         serverConfigurator.cleanupPostWizard();
     }
 
+    public String getRuntimeHome() {
+        return serverConfigurator.getRuntimeHome();
+    }
 }
