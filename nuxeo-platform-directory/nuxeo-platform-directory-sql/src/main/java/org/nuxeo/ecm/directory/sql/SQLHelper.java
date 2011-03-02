@@ -43,6 +43,8 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCLogger;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Insert;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
+import org.nuxeo.ecm.core.storage.sql.jdbc.db.TableImpl;
+import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.runtime.api.Framework;
 
@@ -359,4 +361,26 @@ public class SQLHelper {
             }
         }
     }
+
+    public static Table addTable(String name, Dialect dialect,
+            boolean nativeCase) {
+        String physicalName;
+        if (nativeCase) {
+            physicalName = dialect.getTableName(name);
+        } else {
+            physicalName = name;
+        }
+        return new TableImpl(dialect, physicalName, null);
+    }
+
+    public static Column addColumn(Table table, String fieldName,
+            ColumnType type, boolean nativeCase) {
+        if (nativeCase) {
+            return table.addColumn(fieldName, type, fieldName, null);
+        } else {
+            return ((TableImpl) table).addColumn(fieldName, new Column(table,
+                    fieldName, type, fieldName));
+        }
+    }
+
 }

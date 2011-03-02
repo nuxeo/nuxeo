@@ -28,12 +28,10 @@ import java.util.Set;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.core.storage.sql.ColumnType;
-import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Delete;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Insert;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Select;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
-import org.nuxeo.ecm.core.storage.sql.jdbc.db.TableImpl;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
 import org.nuxeo.ecm.directory.AbstractReference;
 import org.nuxeo.ecm.directory.Directory;
@@ -484,22 +482,17 @@ public class TableReference extends AbstractReference {
 
     public Table getTable() throws DirectoryException {
         if (table == null) {
-            table = new TableImpl(getDialect(), tableName, null);
-            ((TableImpl) table).addColumn(sourceColumn,
-                    new Column(table, sourceColumn, ColumnType.VARCHAR, sourceColumn));
-            ((TableImpl) table).addColumn(targetColumn,
-                    new Column(table, targetColumn, ColumnType.VARCHAR, targetColumn));
+            boolean nativeCase = getSQLSourceDirectory().useNativeCase();
+            table = SQLHelper.addTable(tableName, getDialect(), nativeCase);
+            SQLHelper.addColumn(table, sourceColumn, ColumnType.VARCHAR, nativeCase);
+            SQLHelper.addColumn(table, targetColumn, ColumnType.VARCHAR, nativeCase);
         }
         return table;
     }
 
     private Dialect getDialect() throws DirectoryException {
         if (dialect == null) {
-            Directory dir = getSourceDirectory();
-            if (dir instanceof SQLDirectoryProxy) {
-                dir = ((SQLDirectoryProxy) dir).getDirectory();
-            }
-            dialect = ((SQLDirectory) dir).getDialect();
+            dialect = getSQLSourceDirectory().getDialect();
         }
         return dialect;
     }
