@@ -18,6 +18,8 @@
 
 package org.nuxeo.wizard;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URLEncoder;
@@ -156,7 +158,7 @@ public class RouterServlet extends HttpServlet {
 
         // compute CB url
         String cbUrl = req.getRequestURL().toString();
-        cbUrl = cbUrl.replace("/router/" + currentPage.getAction(),"/ConnectCallback?cb=yo");
+        cbUrl = cbUrl.replace("/router/" + currentPage.getAction(),"/ConnectCallback?cb=yes");
         cbUrl = URLEncoder.encode(cbUrl, "UTF-8");
 
         req.setAttribute("callBackUrl", cbUrl);
@@ -323,8 +325,27 @@ public class RouterServlet extends HttpServlet {
             HttpServletResponse resp) throws ServletException, IOException {
         // Save configuration
         Context ctx = Context.instance(req);
+
         ParamCollector collector = ctx.getCollector();
         ConfigurationGenerator cg = collector.getConfigurationGenerator();
+
+        if (ctx.isConnectRegistrationDone()) {
+            String regTargetPath = cg.getDataDir().getAbsolutePath(); //cg.getRuntimeHome();
+
+            if (!regTargetPath.endsWith("/")) {
+                regTargetPath = regTargetPath + "/";
+            }
+
+            String CLID1 = ctx.getConnectMap().get("CLID").split("--")[0];
+            String CLID2 = ctx.getConnectMap().get("CLID").split("--")[1];
+            String regFileContent = CLID1 + "\n" + CLID2 + "\nnew instance";
+
+            File regFile = new File(regTargetPath + "instance.clid");
+            FileWriter writer = new FileWriter(regFile);
+            writer.write(regFileContent);
+            writer.close();
+        }
+
         Map<String, String> changedParameters = collector.getConfigurationParams();
         changedParameters.put(ConfigurationGenerator.PARAM_WIZARD_DONE, "true");
         try {
@@ -387,4 +408,18 @@ public class RouterServlet extends HttpServlet {
         }
     }
 
+    public void handleResetGET(Page currentPage, HttpServletRequest req,
+            HttpServletResponse resp) throws ServletException, IOException {
+
+        // reset
+        Context.reset();
+        SimpleNavigationHandler.reset();
+
+        // resturn to first page
+        String target = "/" + req.getContextPath() + "/" + SimpleNavigationHandler.instance().getDefaultPage().getAction();
+        if (target.startsWith("//")) {
+            target = target.substring(1);
+        }
+        resp.sendRedirect(target);
+    }
 }
