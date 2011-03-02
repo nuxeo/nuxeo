@@ -15,7 +15,7 @@ import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
 /**
  * @author Stéphane Fourrier
  */
-@Path("/browser")
+@Path("/container")
 @WebObject(type = "containerRoot")
 public class ContainerRoot extends ModuleRoot {
     @GET
@@ -23,7 +23,7 @@ public class ContainerRoot extends ModuleRoot {
         return getView("index");
     }
 
-    @Path("{id}")
+    @Path("/browser/{id}")
     public Object doBrowse(@PathParam("id") String id) throws ClientException {
         IdRef ref = new IdRef(id);
         CoreSession session = ctx.getCoreSession();

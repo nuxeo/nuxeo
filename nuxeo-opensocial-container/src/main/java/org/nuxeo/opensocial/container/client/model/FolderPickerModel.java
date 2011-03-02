@@ -33,7 +33,7 @@ public class FolderPickerModel {
     }
 
     public void getFolderListRequest(Callback callback) {
-        String uri = new String(getBaseUrl() + "site/browser/" + gadgetId
+        String uri = new String(getBaseUrl() + "site/container/browser/" + gadgetId
                 + "/gadgetChildren?type=PictureBook");
         Request request = new Request(Method.GET, uri);
         client.handle(request, callback);

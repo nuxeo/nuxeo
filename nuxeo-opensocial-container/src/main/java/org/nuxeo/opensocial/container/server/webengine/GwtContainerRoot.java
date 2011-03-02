@@ -5,7 +5,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.webengine.gwt.GwtResource;
 import org.nuxeo.ecm.webengine.model.WebObject;
 
@@ -19,12 +18,5 @@ public class GwtContainerRoot extends GwtResource {
     @Produces("text/html")
     public Object getIndex() {
         return Response.status(404).build();
-    }
-
-    @GET
-    @Path("browser")
-    public Object doBrowse() throws ClientException {
-        // log.debug(logPrefix + id);
-        return newObject("browser");
     }
 }
