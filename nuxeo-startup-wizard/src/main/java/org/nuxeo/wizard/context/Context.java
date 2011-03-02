@@ -54,6 +54,11 @@ public class Context {
         return ctx;
     }
 
+    public static void reset() {
+        collector = null;
+        connectMap = null;
+    }
+
     public ParamCollector getCollector() {
         if (collector == null) {
             collector = new ParamCollector();

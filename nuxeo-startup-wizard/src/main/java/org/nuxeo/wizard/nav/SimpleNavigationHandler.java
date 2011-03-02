@@ -21,6 +21,9 @@ package org.nuxeo.wizard.nav;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * Very basic Navigation handler
  *
@@ -31,7 +34,7 @@ public class SimpleNavigationHandler {
 
     // I am too lazy to load a file
     // navCode / jsp Page / active flag / hidden flag
-    protected static final String[] nav = { " |welcome.jsp|1|0",
+    protected static final String[] nav = { "Home|welcome.jsp|1|0",
             "General|generalSettings.jsp|1|0",
             "Proxy|proxySettings.jsp|1|0",
             "DB|dbSettings.jsp|1|0",
@@ -40,11 +43,14 @@ public class SimpleNavigationHandler {
             "ConnectCallback|connectCallback.jsp|0|1",
             "ConnectFinish|connectFinish.jsp|0|0",
             "Recap|recapScreen.jsp|1|0",
-            "Restart|reStarting.jsp|1|1" };
+            "Restart|reStarting.jsp|1|1",
+            "Reset|Welcome.jsp|1|1"};
 
     protected List<Page> pages = new ArrayList<Page>();
 
     protected static SimpleNavigationHandler instance;
+
+    protected static Log log = LogFactory.getLog(SimpleNavigationHandler.class);
 
     public static SimpleNavigationHandler instance() {
         if (instance == null) {
@@ -77,6 +83,10 @@ public class SimpleNavigationHandler {
         }
     }
 
+    public Page getDefaultPage() {
+        return getCurrentPage(pages.get(0).action);
+    }
+
     public int getProgress(String action) {
 
         int activePageIdx=0;
@@ -106,6 +116,11 @@ public class SimpleNavigationHandler {
         }
         else {
             currentPage = findPageByAction(action);
+        }
+
+        if (currentPage==null) {
+            log.warn("No Page found for action" + action);
+            return null;
         }
 
         // mark as navigated
