@@ -20,6 +20,10 @@ package org.nuxeo.opensocial.container.server.webcontent.gadgets.opensocial;
 import static org.nuxeo.ecm.spaces.api.Constants.WC_OPEN_SOCIAL_GADGET_DEF_URL_PROPERTY;
 import static org.nuxeo.ecm.spaces.api.Constants.WC_OPEN_SOCIAL_GADGET_NAME;
 import static org.nuxeo.ecm.spaces.api.Constants.WC_OPEN_SOCIAL_USER_PREFS_PROPERTY;
+import static org.nuxeo.launcher.config.Environment.NUXEO_LOOPBACK_URL;
+import static org.nuxeo.launcher.config.Environment.OPENSOCIAL_GADGETS_EMBEDDED_SERVER;
+import static org.nuxeo.launcher.config.Environment.OPENSOCIAL_GADGETS_HOST;
+import static org.nuxeo.launcher.config.Environment.OPENSOCIAL_GADGETS_PORT;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -55,12 +59,6 @@ public class OpenSocialAdapter extends
 
     private static final Log log = LogFactory.getLog(OpenSocialAdapter.class);
 
-    public static final String GADGETS_RELATIVE_URLS = "gadgets.relative.urls";
-
-    public static final String GADGETS_PORT = "gadgets.port";
-
-    public static final String GADGETS_HOST = "gadgets.host";
-
     public static final String HTTP = "http://";
 
     public static final String HTTP_SEPARATOR = ":";
@@ -72,18 +70,21 @@ public class OpenSocialAdapter extends
     }
 
     public void setGadgetDefUrl(String gadgetDefUrl) throws ClientException {
-        doc.setPropertyValue("wcopensocial:gadgetDefUrl", gadgetDefUrl);
+        doc.setPropertyValue(WC_OPEN_SOCIAL_GADGET_DEF_URL_PROPERTY,
+                gadgetDefUrl);
     }
 
     public void setGadgetName(String gadgetDefUrl) throws ClientException {
-        doc.setPropertyValue("wcopensocial:gadgetname", gadgetDefUrl);
+        doc.setPropertyValue(WC_OPEN_SOCIAL_GADGET_NAME, gadgetDefUrl);
     }
 
     @SuppressWarnings("unchecked")
     public void feedFrom(OpenSocialData data) throws ClientException {
         super.setMetadataFrom(data);
 
-        setGadgetDefUrl(data.getGadgetDef());
+        String gadgetDefUrl = computeGadgetDefUrlBeforeSave(data.getGadgetDef());
+
+        setGadgetDefUrl(gadgetDefUrl);
         setGadgetName(data.getGadgetName());
 
         List<Map<String, Serializable>> savedUserPrefs = (List<Map<String, Serializable>>) doc.getPropertyValue(WC_OPEN_SOCIAL_USER_PREFS_PROPERTY);
@@ -113,25 +114,37 @@ public class OpenSocialAdapter extends
         setFrameUrlFor(data);
     }
 
-    private void setFrameUrlFor(OpenSocialData data) throws ClientException {
-        data.setFrameUrl(UrlBuilder.buildShindigUrl(data, getBaseUrl()));
+    protected String computeGadgetDefUrlBeforeSave(String gadgetDef) {
+        String urlToCheck = getBaseUrl(false);
+        if (gadgetDef.contains(urlToCheck)) {
+            gadgetDef = gadgetDef.split(urlToCheck)[1];
+        }
+        return gadgetDef;
     }
 
-    public String getBaseUrl() {
-        boolean useRelativeUrls = Boolean.valueOf(Framework.getProperty(GADGETS_RELATIVE_URLS, "true"));
-        if (useRelativeUrls) {
+    private void setFrameUrlFor(OpenSocialData data) throws ClientException {
+        data.setFrameUrl(UrlBuilder.buildShindigUrl(data, getBaseUrl(true)
+                + SEPARATOR));
+    }
+
+    protected String getBaseUrl(boolean relativeUrl) {
+        boolean gadgetsEmbeddedServer = Boolean.valueOf(Framework.getProperty(
+                OPENSOCIAL_GADGETS_EMBEDDED_SERVER, "true"));
+        if (gadgetsEmbeddedServer) {
             StringBuilder sb = new StringBuilder();
-            sb.append(VirtualHostHelper.getContextPathProperty());
-            sb.append(SEPARATOR);
+            if (relativeUrl) {
+                sb.append(VirtualHostHelper.getContextPathProperty());
+            } else {
+                sb.append(Framework.getProperty(NUXEO_LOOPBACK_URL));
+            }
             return sb.toString();
         } else {
             StringBuilder sb = new StringBuilder();
             sb.append(HTTP);
-            sb.append(Framework.getProperty(GADGETS_HOST));
+            sb.append(Framework.getProperty(OPENSOCIAL_GADGETS_HOST));
             sb.append(HTTP_SEPARATOR);
-            sb.append(Framework.getProperty(GADGETS_PORT));
+            sb.append(Framework.getProperty(OPENSOCIAL_GADGETS_PORT));
             sb.append(VirtualHostHelper.getContextPathProperty());
-            sb.append(SEPARATOR);
             return sb.toString();
         }
     }
@@ -139,10 +152,11 @@ public class OpenSocialAdapter extends
     @SuppressWarnings("unchecked")
     public OpenSocialData getData() throws ClientException {
         OpenSocialData data = new OpenSocialData();
-
         super.getMetadataFor(data);
 
-        data.setGadgetDef((String) doc.getPropertyValue(WC_OPEN_SOCIAL_GADGET_DEF_URL_PROPERTY));
+        String gadgetDefUrl = computeGadgetDefUrlAfterLoad((String) doc.getPropertyValue(WC_OPEN_SOCIAL_GADGET_DEF_URL_PROPERTY));
+        data.setGadgetDef(gadgetDefUrl);
+
         data.setGadgetName((String) doc.getPropertyValue(WC_OPEN_SOCIAL_GADGET_NAME));
 
         // We get the values from nuxeo for each saved preference
@@ -198,6 +212,13 @@ public class OpenSocialAdapter extends
         return data;
     }
 
+    protected String computeGadgetDefUrlAfterLoad(String gadgetDefUrl) {
+        if (!gadgetDefUrl.contains("://")) {
+            gadgetDefUrl = getBaseUrl(false) + gadgetDefUrl;
+        }
+        return gadgetDefUrl;
+    }
+
     private GadgetSpec getGadgetSpec(OpenSocialData data) {
         try {
             OpenSocialService service = Framework.getService(OpenSocialService.class);
@@ -211,6 +232,7 @@ public class OpenSocialAdapter extends
             return null;
         }
     }
+
 }
 
 class NXGadgetContext extends GadgetContext {

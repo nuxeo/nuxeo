@@ -200,7 +200,6 @@ public class NuxeoOAuthRequest extends OAuthRequest {
     protected boolean isInternalRequest() {
         String requestedURI = realRequest.getUri().toString();
 
-
         OpenSocialService os = Framework.getLocalService(OpenSocialService.class);
         for (String trustedHost : os.getTrustedHosts()) {
             if (requestedURI.startsWith("http://" + trustedHost)) {

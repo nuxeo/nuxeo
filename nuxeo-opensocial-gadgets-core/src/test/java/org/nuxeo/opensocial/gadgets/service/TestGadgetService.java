@@ -45,6 +45,8 @@ public class TestGadgetService extends NXRuntimeTestCase {
                 "OSGI-INF/gadget-contrib.xml");
         deployContrib("org.nuxeo.opensocial.gadgets.core.test",
         "OSGI-INF/directory-test-config.xml");
+
+        Framework.getProperties().put("org.nuxeo.runtime.loopback.url", "http://localhost:8080/nuxeo");
     }
 
     public void testServiceRegistration() throws Exception {

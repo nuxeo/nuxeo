@@ -17,6 +17,12 @@
 
 package org.nuxeo.opensocial.gadgets.service;
 
+import static org.nuxeo.launcher.config.Environment.NUXEO_LOOPBACK_URL;
+import static org.nuxeo.launcher.config.Environment.OPENSOCIAL_GADGETS_EMBEDDED_SERVER;
+import static org.nuxeo.launcher.config.Environment.OPENSOCIAL_GADGETS_HOST;
+import static org.nuxeo.launcher.config.Environment.OPENSOCIAL_GADGETS_PATH;
+import static org.nuxeo.launcher.config.Environment.OPENSOCIAL_GADGETS_PORT;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -25,6 +31,7 @@ import java.net.URL;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.opensocial.gadgets.service.api.GadgetDeclaration;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -36,12 +43,6 @@ public class InternalGadgetDescriptor extends BaseGadgetDescriptor implements
         GadgetDeclaration {
 
     private static final long serialVersionUID = 1L;
-
-    public static final String GADGETS_PORT = "gadgets.port";
-
-    public static final String GADGETS_HOST = "gadgets.host";
-
-    public static final String GADGETS_PATH = "gadgets.path";
 
     public static final String HTTP = "http://";
 
@@ -145,7 +146,7 @@ public class InternalGadgetDescriptor extends BaseGadgetDescriptor implements
 
     public String getIconUrl() {
         StringBuilder sb = new StringBuilder(
-                Framework.getProperty(GADGETS_PATH));
+                Framework.getProperty(OPENSOCIAL_GADGETS_PATH));
         sb.append(getMountPoint());
         sb.append(URL_SEPARATOR);
         sb.append(icon);
@@ -154,11 +155,18 @@ public class InternalGadgetDescriptor extends BaseGadgetDescriptor implements
 
     public StringBuilder getUrlPrefix() {
         StringBuilder sb = new StringBuilder();
-        sb.append(HTTP);
-        sb.append(Framework.getProperty(GADGETS_HOST, "127.0.0.1"));
-        sb.append(HTTP_SEPARATOR);
-        sb.append(Framework.getProperty(GADGETS_PORT, "8080"));
-        sb.append(Framework.getProperty(GADGETS_PATH, "/nuxeo/site/gadgets"));
+        boolean gadgetsEmbeddedServer = Boolean.valueOf(Framework.getProperty(OPENSOCIAL_GADGETS_EMBEDDED_SERVER, "true"));
+        if (gadgetsEmbeddedServer) {
+            sb.append(Framework.getProperty(NUXEO_LOOPBACK_URL));
+        } else {
+            sb.append(HTTP);
+            sb.append(Framework.getProperty(OPENSOCIAL_GADGETS_HOST));
+            sb.append(HTTP_SEPARATOR);
+            sb.append(Framework.getProperty(OPENSOCIAL_GADGETS_PORT));
+            sb.append(HTTP_SEPARATOR);
+            sb.append(VirtualHostHelper.getContextPathProperty());
+        }
+        sb.append(Framework.getProperty(OPENSOCIAL_GADGETS_PATH));
         return sb;
     }
 

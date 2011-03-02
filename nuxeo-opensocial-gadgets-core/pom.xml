@@ -15,11 +15,11 @@
   <dependencies>
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
-      <artifactId>nuxeo-runtime</artifactId>
+      <artifactId>nuxeo-runtime-osgi</artifactId>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
-      <artifactId>nuxeo-runtime-osgi</artifactId>
+      <artifactId>nuxeo-launcher-commons</artifactId>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.opensocial</groupId>
@@ -56,7 +56,7 @@
       <groupId>hsqldb</groupId>
       <artifactId>hsqldb</artifactId>
       <scope>test</scope>
-    </dependency>    
+    </dependency>
   </dependencies>
 
 </project>
