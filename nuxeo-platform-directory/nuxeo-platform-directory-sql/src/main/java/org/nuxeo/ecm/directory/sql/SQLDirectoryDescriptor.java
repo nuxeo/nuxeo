@@ -58,9 +58,6 @@ public class SQLDirectoryDescriptor {
     @XNode("dataSource")
     public String dataSourceName;
 
-    @XNode("dialect")
-    public String dialectName;
-
     @XNode("dbDriver")
     public String dbDriver;
 
@@ -321,10 +318,6 @@ public class SQLDirectoryDescriptor {
 
     public void setQuerySizeLimit(int querySizeLimit) {
         this.querySizeLimit = querySizeLimit;
-    }
-
-    public String getDialectName() {
-        return this.dialectName;
     }
 
     public void setRemove(boolean delete) {

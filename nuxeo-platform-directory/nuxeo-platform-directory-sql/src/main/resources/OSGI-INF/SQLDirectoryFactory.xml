@@ -26,7 +26,6 @@
           <schema>vocabulary</schema>
           <dataSource>java:/nxsqldirectory</dataSource>
           <table>t</table>
-          <dialect>org.hibernate.dialect.HSQLDialect</dialect>
           <idField>username</idField>
           <passwordField>password</passwordField>
           <passwordHashAlgorithm>SSHA</passwordHashAlgorithm>
@@ -61,10 +60,6 @@
         <li>
           table - The name of the sql table where the directory data
           will be stored.
-        </li>
-        <li>
-          dialect - Optional hibernate dialect class name; if missing,
-          autodetection will be performed.
         </li>
         <li>
           idField - the id field designs the primary key in the table,

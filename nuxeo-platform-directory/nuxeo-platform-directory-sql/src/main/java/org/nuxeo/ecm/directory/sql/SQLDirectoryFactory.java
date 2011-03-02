@@ -48,10 +48,12 @@ public class SQLDirectoryFactory extends DefaultComponent implements
 
     private Map<String, Directory> proxies;
 
+    @Override
     public Directory getDirectory(String name) throws DirectoryException {
         return proxies.get(name);
     }
 
+    @Override
     public String getName() {
         return NAME.getName();
     }
@@ -183,12 +185,14 @@ public class SQLDirectoryFactory extends DefaultComponent implements
         }
     }
 
+    @Override
     public void shutdown() throws DirectoryException {
         for (Directory directory : proxies.values()) {
             directory.shutdown();
         }
     }
 
+    @Override
     public List<Directory> getDirectories() throws DirectoryException {
         List<Directory> directoryList = new ArrayList<Directory>();
         directoryList.addAll(proxies.values());

@@ -55,34 +55,42 @@ public class SQLDirectoryProxy implements Directory {
         return directory;
     }
 
+    @Override
     public IdGenerator getIdGenerator() throws DirectoryException {
         return getDirectory().getIdGenerator();
     }
 
+    @Override
     public String getName() throws DirectoryException {
         return getDirectory().getName();
     }
 
+    @Override
     public String getSchema() throws DirectoryException {
         return getDirectory().getSchema();
     }
 
+    @Override
     public String getParentDirectory() throws DirectoryException {
         return getDirectory().getParentDirectory();
     }
 
+    @Override
     public String getIdField() throws DirectoryException {
         return getDirectory().getIdField();
     }
 
+    @Override
     public String getPasswordField() throws DirectoryException {
         return getDirectory().getPasswordField();
     }
 
+    @Override
     public Session getSession() throws DirectoryException {
         return getDirectory().getSession();
     }
 
+    @Override
     public void shutdown() throws DirectoryException {
         // This is called when unregistering extensions, no need
         // to create a directory just to shut it down.
@@ -91,10 +99,12 @@ public class SQLDirectoryProxy implements Directory {
         }
     }
 
+    @Override
     public Reference getReference(String referenceFieldName) throws DirectoryException {
         return getDirectory().getReference(referenceFieldName);
     }
 
+    @Override
     public Collection<Reference> getReferences() throws DirectoryException {
         return getDirectory().getReferences();
     }
@@ -103,10 +113,12 @@ public class SQLDirectoryProxy implements Directory {
         return descriptor;
     }
 
+    @Override
     public DirectoryCache getCache() throws DirectoryException {
         return getDirectory().getCache();
     }
 
+    @Override
     public void invalidateDirectoryCache() throws DirectoryException{
         getCache().invalidateAll();
     }

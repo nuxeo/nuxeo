@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,15 +12,12 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     George Lefter
+ *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.directory.sql;
 
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -32,11 +29,16 @@ import javax.sql.DataSource;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.dialect.Dialect;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.schema.NXSchema;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Schema;
+import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.storage.sql.ColumnType;
+import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
+import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
+import org.nuxeo.ecm.core.storage.sql.jdbc.db.TableImpl;
+import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
 import org.nuxeo.ecm.directory.AbstractDirectory;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
@@ -44,10 +46,6 @@ import org.nuxeo.ecm.directory.DirectoryServiceImpl;
 import org.nuxeo.ecm.directory.IdGenerator;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
-import org.nuxeo.ecm.directory.sql.repository.Column;
-import org.nuxeo.ecm.directory.sql.repository.ConfigurationException;
-import org.nuxeo.ecm.directory.sql.repository.FieldMapper;
-import org.nuxeo.ecm.directory.sql.repository.Table;
 import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.api.DataSourceHelper;
 import org.nuxeo.runtime.api.Framework;
@@ -87,74 +85,61 @@ public class SQLDirectory extends AbstractDirectory {
         cache.setMaxSize(config.getCacheMaxSize());
         cache.setTimeout(config.getCacheTimeout());
 
-        dialect = buildDialect();
-
-        if (config.initDependencies != null) {
-            // initialize dependent directories first
-            final RuntimeService runtime = Framework.getRuntime();
-            DirectoryServiceImpl directoryService = (DirectoryServiceImpl) runtime.getComponent(DirectoryService.NAME);
-            for (String dependency : config.initDependencies) {
-                log.debug("initializing dependencies first: " + dependency);
-                Directory dir = directoryService.getDirectory(dependency);
-                dir.getName();
-            }
-        }
-        // setup table and fields maps
-        table = new Table(config.tableName);
-        schema = NXSchema.getSchemaManager().getSchema(config.schemaName);
-        if (schema == null) {
-            throw new DirectoryException("schema not found: "
-                    + config.schemaName);
-        }
-        schemaFieldMap = new LinkedHashMap<String, Field>();
-        storedFieldNames = new LinkedList<String>();
-        boolean hasPrimary = false;
-        for (Field f : schema.getFields()) {
-            String fieldName = f.getName().toString();
-            schemaFieldMap.put(fieldName, f);
-
-            if (!isReference(fieldName)) {
-                // list of fields that are actually stored in the table of the
-                // current directory and not read from an external reference
-                storedFieldNames.add(fieldName);
-
-                int fieldSqlType;
-                try {
-                    fieldSqlType = FieldMapper.getSqlField(f.getType().getName());
-                } catch (DirectoryException e) {
-                    log.warn(String.format(
-                            "Field %s of type %s in SQLDirectory %s is not supported and thus ignored",
-                            fieldName, f.getType().getName(), config.getName()));
-                    continue;
-                }
-                Column column = new Column(fieldName, fieldSqlType, null);
-                if (fieldName.equals(config.getIdField())) {
-                    column.setPrimary(true);
-                    hasPrimary = true;
-                }
-                Object defaultValue = f.getDefaultValue();
-                if (defaultValue != null) {
-                    column.setDefaultValue(defaultValue.toString());
-                }
-
-                try {
-                    table.addColumn(column);
-                } catch (ConfigurationException e) {
-                    throw new DirectoryException(e);
-                }
-            }
-        }
-        if (!hasPrimary) {
-            throw new DirectoryException(
-                    String.format(
-                            "Directory '%s' id field '%s' is not present in schema '%s'",
-                            getName(), getIdField(), getSchema()));
-        }
-
         Connection sqlConnection = getConnection();
         try {
+            dialect = Dialect.createDialect(sqlConnection, null, null);
 
-            SQLHelper helper = new SQLHelper(sqlConnection, dialect, table,
+            if (config.initDependencies != null) {
+                // initialize dependent directories first
+                final RuntimeService runtime = Framework.getRuntime();
+                DirectoryServiceImpl directoryService = (DirectoryServiceImpl) runtime.getComponent(DirectoryService.NAME);
+                for (String dependency : config.initDependencies) {
+                    log.debug("initializing dependencies first: " + dependency);
+                    Directory dir = directoryService.getDirectory(dependency);
+                    dir.getName();
+                }
+            }
+            // setup table and fields maps
+            table = new TableImpl(dialect, config.tableName, null);
+            schema = NXSchema.getSchemaManager().getSchema(config.schemaName);
+            if (schema == null) {
+                throw new DirectoryException("schema not found: "
+                        + config.schemaName);
+            }
+            schemaFieldMap = new LinkedHashMap<String, Field>();
+            storedFieldNames = new LinkedList<String>();
+            boolean hasPrimary = false;
+            for (Field f : schema.getFields()) {
+                String fieldName = f.getName().toString();
+                schemaFieldMap.put(fieldName, f);
+
+                if (!isReference(fieldName)) {
+                    // list of fields that are actually stored in the table of
+                    // the
+                    // current directory and not read from an external reference
+                    storedFieldNames.add(fieldName);
+
+                    ColumnType type = ColumnType.fromFieldType(f.getType());
+                    Column column = ((TableImpl) table).addColumn(fieldName,
+                            new Column(table, fieldName, type, fieldName));
+                    if (fieldName.equals(config.getIdField())) {
+                        column.setPrimary(true);
+                        hasPrimary = true;
+                    }
+                    Object defaultValue = f.getDefaultValue();
+                    if (defaultValue != null) {
+                        column.setDefaultValue(defaultValue.toString());
+                    }
+                }
+            }
+            if (!hasPrimary) {
+                throw new DirectoryException(
+                        String.format(
+                                "Directory '%s' id field '%s' is not present in schema '%s'",
+                                getName(), getIdField(), getSchema()));
+            }
+
+            SQLHelper helper = new SQLHelper(sqlConnection, table,
                     config.dataFileName,
                     config.getDataFileCharacterSeparator(),
                     config.createTablePolicy);
@@ -162,7 +147,7 @@ public class SQLDirectory extends AbstractDirectory {
 
             if (config.autoincrementIdField) {
                 idGenerator = new SimpleIdGenerator(sqlConnection, table,
-                        dialect, config.getIdField());
+                        config.getIdField());
             } else {
                 idGenerator = null;
             }
@@ -174,6 +159,8 @@ public class SQLDirectory extends AbstractDirectory {
             } catch (SQLException e) {
                 throw new DirectoryException(e);
             }
+        } catch (StorageException e) {
+            throw new DirectoryException(e);
         } finally {
             try {
                 sqlConnection.close();
@@ -220,30 +207,37 @@ public class SQLDirectory extends AbstractDirectory {
         }
     }
 
+    @Override
     public IdGenerator getIdGenerator() {
         return idGenerator;
     }
 
+    @Override
     public String getName() {
         return config.getName();
     }
 
+    @Override
     public String getSchema() {
         return config.getSchemaName();
     }
 
+    @Override
     public String getParentDirectory() {
         return config.getParentDirectory();
     }
 
+    @Override
     public String getIdField() {
         return config.getIdField();
     }
 
+    @Override
     public String getPasswordField() {
         return config.getPasswordField();
     }
 
+    @Override
     public Session getSession() throws DirectoryException {
         Session session = new SQLSession(this, config, idGenerator,
                 managedSQLSession);
@@ -255,6 +249,7 @@ public class SQLDirectory extends AbstractDirectory {
         sessions.remove(session);
     }
 
+    @Override
     public void shutdown() {
         try {
             if (sessions != null) {
@@ -283,37 +278,6 @@ public class SQLDirectory extends AbstractDirectory {
 
     public Dialect getDialect() {
         return dialect;
-    }
-
-    /**
-     * Gets the dialect, by connecting to the datasource if needed to check what
-     * database is used.
-     * 
-     * @throws DirectoryException if a SQL connection problem occurs.
-     */
-    private Dialect buildDialect() throws DirectoryException {
-        String dialectName = config.getDialectName();
-        if (dialectName != null) {
-            return HibernateDialectHelper.buildDialect(dialectName);
-        }
-        // find a dialect from the datasource meta information
-        Dialect dialect;
-        Connection connection = getConnection();
-        try {
-            DatabaseMetaData metadata = connection.getMetaData();
-            dialect = HibernateDialectHelper.determineDialect(metadata);
-            return dialect;
-        } catch (SQLException e) {
-            throw new DirectoryException("Unable to resolve Dialect", e);
-        } finally {
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                    throw new DirectoryException(e);
-                }
-            }
-        }
     }
 
 }

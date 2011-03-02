@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -14,15 +14,13 @@
  * Contributors:
  *     George Lefter
  *     Florent Guillaume
- *
- * $Id$
  */
-
 package org.nuxeo.ecm.directory.sql;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
@@ -30,8 +28,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
-import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -39,23 +38,23 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.dialect.Dialect;
+import org.nuxeo.ecm.core.storage.sql.ColumnType;
+import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCLogger;
+import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
+import org.nuxeo.ecm.core.storage.sql.jdbc.db.Insert;
+import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
 import org.nuxeo.ecm.directory.DirectoryException;
-import org.nuxeo.ecm.directory.sql.repository.Column;
-import org.nuxeo.ecm.directory.sql.repository.Insert;
-import org.nuxeo.ecm.directory.sql.repository.Table;
 import org.nuxeo.runtime.api.Framework;
 
 import au.com.bytecode.opencsv.CSVReader;
 
-/**
- * @author <a href='mailto:glefter@nuxeo.com'>George Lefter</a>
- * @author Florent Guillaume
- *
- */
 public class SQLHelper {
 
     private static final Log log = LogFactory.getLog(SQLHelper.class);
+
+    public static final String SQL_NULL_MARKER = "__NULL__";
+
+    private static final String SQL_SCRIPT_CHARSET = "UTF-8";
 
     private static final Object DIRECTORY_INIT_LOCK = new Object();
 
@@ -67,33 +66,25 @@ public class SQLHelper {
 
     private final String policy;
 
-    private final Dialect dialect;
-
     private final String dataFileName;
 
     protected final char characterSeparator;
 
-    public static final String SQL_NULL_MARKER = "__NULL__";
+    private JDBCLogger logger = new JDBCLogger("SQLHelper");
 
-    private static final String SQL_SCRIPT_CHARSET = "UTF-8";
-
-    public SQLHelper(Connection connection, Dialect dialect, Table table,
-            String dataFileName, char characterSeparator, String policy) {
+    public SQLHelper(Connection connection, Table table, String dataFileName,
+            char characterSeparator, String policy) {
         this.table = table;
         this.connection = connection;
         this.policy = policy;
         this.dataFileName = dataFileName;
-        this.dialect = dialect;
-        tableName = table.getName();
+        tableName = table.getPhysicalName();
         this.characterSeparator = characterSeparator;
-
     }
 
-    public SQLHelper(Connection connection, Dialect dialect, Table table,
-            String dataFileName, String policy) {
-
-        this(connection, dialect, table, dataFileName, ',', policy);
-
+    public SQLHelper(Connection connection, Table table, String dataFileName,
+            String policy) {
+        this(connection, table, dataFileName, ',', policy);
     }
 
     public boolean setupTable() throws DirectoryException {
@@ -137,13 +128,17 @@ public class SQLHelper {
 
             if (tableExists) {
                 // drop table
-                String dropSql = table.getDropSql(dialect);
-                log.debug("dropping table: " + dropSql);
+                String dropSql = table.getDropSql();
+                if (logger.isLogEnabled()) {
+                    logger.log(dropSql);
+                }
                 stmt.execute(dropSql);
             }
 
-            String createSql = table.getCreateSql(dialect);
-            log.debug("creating table: " + createSql);
+            String createSql = table.getCreateSql();
+            if (logger.isLogEnabled()) {
+                logger.log(createSql);
+            }
             stmt.execute(createSql);
         } catch (SQLException e) {
             throw new DirectoryException(String.format(
@@ -172,7 +167,7 @@ public class SQLHelper {
             // check the field names match the column names (case-insensitive)
             for (Column column : table.getColumns()) {
                 // TODO: check types as well
-                String fieldName = column.getName();
+                String fieldName = column.getPhysicalName();
                 if (!columnNames.contains(fieldName)) {
                     log.debug(String.format(
                             "required field: %s, available columns: [%s]",
@@ -213,10 +208,10 @@ public class SQLHelper {
                 st.close();
             }
             ResultSet rs = metaData.getTables(null, schemaName,
-                    table.getName(), new String[] { "TABLE" });
+                    table.getPhysicalName(), new String[] { "TABLE" });
             boolean exists = rs.next();
             log.debug(String.format("checking if table %s exists: %s",
-                    table.getName(), exists));
+                    table.getPhysicalName(), Boolean.valueOf(exists)));
             return exists;
         } catch (SQLException e) {
             throw new DirectoryException(e);
@@ -230,7 +225,7 @@ public class SQLHelper {
             int i = 0;
             List<String> values = new ArrayList<String>();
             for (String columnValue : columnValues) {
-                values.add(String.format("%s: %s", i, columnValue));
+                values.add(i + ": " + columnValue);
                 i++;
             }
             buffer.append(StringUtils.join(values.iterator(), ", "));
@@ -261,6 +256,7 @@ public class SQLHelper {
 
             String[] columnNames = csvReader.readNext();
             List<Column> columns = new ArrayList<Column>();
+            Insert insert = new Insert(table);
             for (String columnName : columnNames) {
                 String trimmedColumnName = columnName.trim();
                 Column column = table.getColumn(trimmedColumnName);
@@ -269,8 +265,8 @@ public class SQLHelper {
                             + trimmedColumnName);
                 }
                 columns.add(table.getColumn(trimmedColumnName));
+                insert.addColumn(column);
             }
-            Insert insert = new Insert(dialect, table, columns);
             String insertSql = insert.getStatement();
             log.debug("insert statement: " + insertSql);
 
@@ -292,50 +288,50 @@ public class SQLHelper {
                 for (int i = 0; i < columnNames.length; i++) {
                     Column column = columns.get(i);
                     String value = columnValues[i];
-                    int columnLength = column.getLength();
-                    if (value != null && value.length() > columnLength) {
-                        log.warn(String.format(
-                                "Possible invalid value (length > %s): %s",
-                                columnLength, value));
-                    }
-                    switch (column.getSqlType()) {
-                    case Types.VARCHAR:
-                        if (SQL_NULL_MARKER.equals(value)) {
-                            value = null;
-                        }
-                        ps.setString(i + 1, value);
-                        break;
-                    case Types.INTEGER:
-                    case Types.DECIMAL:
+                    // int columnLength = column.getLength();
+                    // if (value != null && value.length() > columnLength) {
+                    // log.warn(String.format(
+                    // "Possible invalid value (length > %s): %s",
+                    // columnLength, value));
+                    // }
+                    Serializable v;
+                    if (column.getType() == ColumnType.VARCHAR) {
+                        v = SQL_NULL_MARKER.equals(value) ? null : value;
+                    } else if (column.getType() == ColumnType.BOOLEAN) {
+                        v = Boolean.valueOf(value);
+                    } else if (column.getType() == ColumnType.LONG) {
                         try {
-                            ps.setInt(i + 1, Integer.parseInt(value));
+                            v = Long.valueOf(value);
                         } catch (NumberFormatException e) {
                             throw new DirectoryException(
                                     String.format(
                                             "failed to set column '%s' on table '%s', values: %s",
-                                            column.getName(), table.getName(),
+                                            column.getPhysicalName(),
+                                            table.getPhysicalName(),
                                             formatColumnValues(columnValues)),
                                     e);
                         }
-                        break;
-                    case Types.TIMESTAMP:
+                    } else if (column.getType() == ColumnType.TIMESTAMP) {
                         try {
-                            ps.setTimestamp(i + 1, Timestamp.valueOf(value));
+                            Calendar cal = new GregorianCalendar();
+                            cal.setTime(Timestamp.valueOf(value));
+                            v = cal;
                         } catch (IllegalArgumentException e) {
                             throw new DirectoryException(
                                     String.format(
                                             "failed to set column '%s' on table '%s', values: %s",
-                                            column.getName(), table.getName(),
+                                            column.getPhysicalName(),
+                                            table.getPhysicalName(),
                                             formatColumnValues(columnValues)),
                                     e);
                         }
-                        break;
-                    default:
+                    } else {
                         throw new DirectoryException(
-                                "unrecognized column type: "
-                                        + column.getSqlType() + ", values: "
+                                "unrecognized column type: " + column.getType()
+                                        + ", values: "
                                         + formatColumnValues(columnValues));
                     }
+                    column.setToPreparedStatement(ps, i + 1, v);
                 }
                 ps.execute();
             }
@@ -345,7 +341,7 @@ public class SQLHelper {
         } catch (SQLException e) {
             throw new DirectoryException(String.format(
                     "Table '%s' initialization failed: %s, values: %s",
-                    table.getName(), e.getMessage(),
+                    table.getPhysicalName(), e.getMessage(),
                     formatColumnValues(columnValues)), e);
         } finally {
             try {

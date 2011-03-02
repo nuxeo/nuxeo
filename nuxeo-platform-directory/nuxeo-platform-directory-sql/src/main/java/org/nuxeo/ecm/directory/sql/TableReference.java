@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,11 +12,9 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id: JOOoConvertPluginImpl.java 18651 2007-05-13 20:28:53Z sfermigier $
+ *     Olivier Grisel
+ *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.directory.sql;
 
 import java.sql.PreparedStatement;
@@ -27,19 +25,19 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.hibernate.dialect.Dialect;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.core.storage.sql.ColumnType;
+import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
+import org.nuxeo.ecm.core.storage.sql.jdbc.db.Delete;
+import org.nuxeo.ecm.core.storage.sql.jdbc.db.Insert;
+import org.nuxeo.ecm.core.storage.sql.jdbc.db.Select;
+import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
+import org.nuxeo.ecm.core.storage.sql.jdbc.db.TableImpl;
+import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
 import org.nuxeo.ecm.directory.AbstractReference;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
-import org.nuxeo.ecm.directory.sql.repository.Column;
-import org.nuxeo.ecm.directory.sql.repository.ConfigurationException;
-import org.nuxeo.ecm.directory.sql.repository.Delete;
-import org.nuxeo.ecm.directory.sql.repository.FieldMapper;
-import org.nuxeo.ecm.directory.sql.repository.Insert;
-import org.nuxeo.ecm.directory.sql.repository.Select;
-import org.nuxeo.ecm.directory.sql.repository.Table;
 
 @XObject(value = "tableReference")
 public class TableReference extends AbstractReference {
@@ -88,12 +86,12 @@ public class TableReference extends AbstractReference {
         SQLDirectory directory = getSQLSourceDirectory();
         String createTablePolicy = directory.getConfig().createTablePolicy;
         Table table = getTable();
-        Dialect dialect = getDialect();
-        SQLHelper helper = new SQLHelper(sqlSession.sqlConnection, dialect,
-                table, dataFileName, createTablePolicy);
+        SQLHelper helper = new SQLHelper(sqlSession.sqlConnection, table,
+                dataFileName, createTablePolicy);
         helper.setupTable();
     }
 
+    @Override
     public void addLinks(String sourceId, List<String> targetIds)
             throws DirectoryException {
         if (targetIds == null) {
@@ -108,6 +106,7 @@ public class TableReference extends AbstractReference {
         }
     }
 
+    @Override
     public void addLinks(List<String> sourceIds, String targetId)
             throws DirectoryException {
         if (sourceIds == null) {
@@ -149,13 +148,12 @@ public class TableReference extends AbstractReference {
         // sourceColumn, targetColumn);
 
         Table table = getTable();
-        Dialect dialect = getDialect();
-        Select select = new Select(dialect);
-        select.setFrom(table.getQuotedName(dialect));
+        Select select = new Select(table);
+        select.setFrom(table.getQuotedName());
         select.setWhat("count(*)");
         String whereString = String.format("%s = ? and %s = ?",
-                table.getColumn(sourceColumn).getQuotedName(dialect),
-                table.getColumn(targetColumn).getQuotedName(dialect));
+                table.getColumn(sourceColumn).getQuotedName(),
+                table.getColumn(targetColumn).getQuotedName());
 
         select.setWhere(whereString);
 
@@ -205,9 +203,7 @@ public class TableReference extends AbstractReference {
         // "INSERT INTO %s (%s, %s) VALUES (?, ?)", tableName,
         // sourceColumn, targetColumn);
         Table table = getTable();
-        Dialect dialect = getDialect();
-        Insert insert = new Insert(dialect);
-        insert.setTable(table);
+        Insert insert = new Insert(table);
         insert.addColumn(table.getColumn(sourceColumn));
         insert.addColumn(table.getColumn(targetColumn));
         String insertSql = insert.getStatement();
@@ -238,12 +234,10 @@ public class TableReference extends AbstractReference {
         // String sql = String.format("SELECT %s FROM %s WHERE %s = ?",
         // table.getColumn(valueColumn), tableName, filterColumn);
         Table table = getTable();
-        Dialect dialect = getDialect();
-        Select select = new Select(dialect);
-        select.setWhat(table.getColumn(valueColumn).getQuotedName(dialect));
-        select.setFrom(table.getQuotedName(dialect));
-        select.setWhere(table.getColumn(filterColumn).getQuotedName(dialect)
-                + " = ?");
+        Select select = new Select(table);
+        select.setWhat(table.getColumn(valueColumn).getQuotedName());
+        select.setFrom(table.getQuotedName());
+        select.setWhere(table.getColumn(filterColumn).getQuotedName() + " = ?");
 
         String sql = select.getStatement();
 
@@ -265,11 +259,13 @@ public class TableReference extends AbstractReference {
         }
     }
 
+    @Override
     public List<String> getSourceIdsForTarget(String targetId)
             throws DirectoryException {
         return getIdsFor(sourceColumn, targetColumn, targetId);
     }
 
+    @Override
     public List<String> getTargetIdsForSource(String sourceId)
             throws DirectoryException {
         return getIdsFor(targetColumn, sourceColumn, sourceId);
@@ -278,10 +274,8 @@ public class TableReference extends AbstractReference {
     public void removeLinksFor(String column, String entryId, SQLSession session)
             throws DirectoryException {
         Table table = getTable();
-        Dialect dialect = getDialect();
         String sql = String.format("DELETE FROM %s WHERE %s = ?",
-                table.getQuotedName(dialect),
-                table.getColumn(column).getQuotedName(dialect));
+                table.getQuotedName(), table.getColumn(column).getQuotedName());
         PreparedStatement ps = null;
         try {
             ps = session.sqlConnection.prepareStatement(sql);
@@ -310,6 +304,7 @@ public class TableReference extends AbstractReference {
         removeLinksFor(targetColumn, targetId, session);
     }
 
+    @Override
     public void removeLinksForSource(String sourceId) throws DirectoryException {
         SQLSession session = getSQLSession();
         try {
@@ -320,6 +315,7 @@ public class TableReference extends AbstractReference {
         }
     }
 
+    @Override
     public void removeLinksForTarget(String targetId) throws DirectoryException {
         SQLSession session = getSQLSession();
         try {
@@ -340,13 +336,12 @@ public class TableReference extends AbstractReference {
             idsToAdd.addAll(ids);
         }
         Table table = getTable();
-        Dialect dialect = getDialect();
 
         // iterate over existing links to find what to add and what to remove
         String selectSql = String.format("SELECT %s FROM %s WHERE %s = ?",
-                table.getColumn(idsColumn).getQuotedName(dialect),
-                table.getQuotedName(dialect),
-                table.getColumn(filterColumn).getQuotedName(dialect));
+                table.getColumn(idsColumn).getQuotedName(),
+                table.getQuotedName(),
+                table.getColumn(filterColumn).getQuotedName());
         PreparedStatement ps = null;
         try {
             ps = session.sqlConnection.prepareStatement(selectSql);
@@ -381,11 +376,10 @@ public class TableReference extends AbstractReference {
             // String deleteSql = String.format(
             // "DELETE FROM %s WHERE %s = ? AND %s = ?", tableName,
             // filterColumn, idsColumn);
-            Delete delete = new Delete(dialect);
-            delete.setTable(table);
+            Delete delete = new Delete(table);
             String whereString = String.format("%s = ? AND %s = ?",
-                    table.getColumn(filterColumn).getQuotedName(dialect),
-                    table.getColumn(idsColumn).getQuotedName(dialect));
+                    table.getColumn(filterColumn).getQuotedName(),
+                    table.getColumn(idsColumn).getQuotedName());
             delete.setWhere(whereString);
             String deleteSql = delete.getStatement();
 
@@ -434,6 +428,7 @@ public class TableReference extends AbstractReference {
         setIdsFor(targetColumn, targetIds, sourceColumn, sourceId, session);
     }
 
+    @Override
     public void setSourceIdsForTarget(String targetId, List<String> sourceIds)
             throws DirectoryException {
         SQLSession session = getSQLSession();
@@ -445,6 +440,7 @@ public class TableReference extends AbstractReference {
         }
     }
 
+    @Override
     public void setTargetIdsForSource(String sourceId, List<String> targetIds)
             throws DirectoryException {
         SQLSession session = getSQLSession();
@@ -478,7 +474,8 @@ public class TableReference extends AbstractReference {
      * @param sqlSession
      * @throws DirectoryException
      */
-    protected void maybeInitialize(SQLSession sqlSession) throws DirectoryException {
+    protected void maybeInitialize(SQLSession sqlSession)
+            throws DirectoryException {
         if (!initialized) {
             initialize(sqlSession);
             initialized = true;
@@ -487,20 +484,11 @@ public class TableReference extends AbstractReference {
 
     public Table getTable() throws DirectoryException {
         if (table == null) {
-            try {
-                table = new Table(tableName);
-                String columnName = sourceColumn;
-                Column column = new Column(columnName,
-                        FieldMapper.getSqlField("string"), columnName);
-                table.addColumn(column);
-
-                columnName = targetColumn;
-                column = new Column(columnName,
-                        FieldMapper.getSqlField("string"), columnName);
-                table.addColumn(column);
-            } catch (ConfigurationException e) {
-                throw new DirectoryException(e);
-            }
+            table = new TableImpl(getDialect(), tableName, null);
+            ((TableImpl) table).addColumn(sourceColumn,
+                    new Column(table, sourceColumn, ColumnType.VARCHAR, sourceColumn));
+            ((TableImpl) table).addColumn(targetColumn,
+                    new Column(table, targetColumn, ColumnType.VARCHAR, targetColumn));
         }
         return table;
     }

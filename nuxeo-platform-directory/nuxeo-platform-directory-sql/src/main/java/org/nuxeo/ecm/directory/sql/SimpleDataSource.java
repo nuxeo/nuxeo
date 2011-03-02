@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,11 +12,9 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     George Lefter
+ *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.directory.sql;
 
 import java.io.PrintWriter;
@@ -27,15 +25,8 @@ import java.sql.SQLException;
 import javax.sql.DataSource;
 
 /**
- * TODO: OG: please someone explain here the goal of this empty implementation
- * of the DataSource interface. According to the Call hierarchy it is only
- * needed for the getConnection() method.
- *
- * TODO: OG: maybe methods with empty implementation should raise SQLException
- * wrapping UnexpectedOperationException instead.
- *
- * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
- *
+ * This class is used for tests, where datasources are set up from a driver, url
+ * and user/password instead of a JNDI name.
  */
 public class SimpleDataSource implements DataSource {
 
@@ -57,43 +48,47 @@ public class SimpleDataSource implements DataSource {
         this.password = password;
     }
 
+    @Override
     public Connection getConnection() throws SQLException {
         Connection con = DriverManager.getConnection(url, user, password);
         con.setAutoCommit(false);
         return con;
     }
 
+    @Override
     public Connection getConnection(String username, String password)
             throws SQLException {
-        return getConnection();
+        throw new UnsupportedOperationException();
     }
 
+    @Override
     public PrintWriter getLogWriter() throws SQLException {
-        // not used by Nuxeo SQLDirectory API
-        return null;
+        throw new UnsupportedOperationException();
     }
 
+    @Override
     public int getLoginTimeout() throws SQLException {
-        // not used by Nuxeo SQLDirectory API
-        return 0;
+        throw new UnsupportedOperationException();
     }
 
+    @Override
     public void setLogWriter(PrintWriter out) throws SQLException {
-        // not used by Nuxeo SQLDirectory API
+        throw new UnsupportedOperationException();
     }
 
+    @Override
     public void setLoginTimeout(int seconds) throws SQLException {
-        // not used by Nuxeo SQLDirectory API
+        throw new UnsupportedOperationException();
     }
 
+    @Override
     public boolean isWrapperFor(Class<?> iface) throws SQLException {
-        // not used by Nuxeo SQLDirectory API
-        return false;
+        throw new UnsupportedOperationException();
     }
 
+    @Override
     public <T> T unwrap(Class<T> iface) throws SQLException {
-        // not used by Nuxeo SQLDirectory API
-        return null;
+        throw new UnsupportedOperationException();
     }
 
 }

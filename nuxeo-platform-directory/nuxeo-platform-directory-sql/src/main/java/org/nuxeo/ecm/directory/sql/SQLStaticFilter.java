@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2010-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,18 +12,19 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
+ *     Thierry Delprat
+ *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.directory.sql;
 
 import java.io.Serializable;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.core.storage.sql.ColumnType;
+import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
+import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
 import org.nuxeo.ecm.directory.DirectoryException;
-import org.nuxeo.ecm.directory.sql.repository.Column;
-import org.nuxeo.ecm.directory.sql.repository.FieldMapper;
 
 @XObject(value = "staticFilter")
 public class SQLStaticFilter implements Serializable {
@@ -43,8 +44,7 @@ public class SQLStaticFilter implements Serializable {
     protected String value;
 
     @XNode("type")
-    protected String type="string";
-
+    protected String type = "string";
 
     public String getType() {
         return type;
@@ -62,7 +62,21 @@ public class SQLStaticFilter implements Serializable {
         return value;
     }
 
-    public Column getDirectoryColumn() throws DirectoryException {
-        return new Column(column,FieldMapper.getSqlField(type),column);
+    public Column getDirectoryColumn(Table table) throws DirectoryException {
+        return new Column(table, column, getColumnType(type), null);
     }
+
+    protected static ColumnType getColumnType(String type)
+            throws DirectoryException {
+        if (type.equals("integer") || type.equals("long")) {
+            return ColumnType.LONG;
+        } else if (type.equals("string")) {
+            return ColumnType.VARCHAR;
+        } else if (type.equals("date")) {
+            return ColumnType.TIMESTAMP;
+        } else {
+            throw new DirectoryException("No SQL type mapping for: " + type);
+        }
+    }
+
 }

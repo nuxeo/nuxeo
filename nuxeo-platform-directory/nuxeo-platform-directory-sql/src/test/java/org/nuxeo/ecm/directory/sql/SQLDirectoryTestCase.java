@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,17 +12,13 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     George Lefter
+ *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.directory.sql;
 
 import java.sql.Connection;
 import java.util.Properties;
-
-import javax.sql.DataSource;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.directory.Directory;
@@ -33,13 +29,7 @@ import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
-/**
- * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
- *
- */
 public abstract class SQLDirectoryTestCase extends NXRuntimeTestCase {
-
-    private DataSource dataSource;
 
     @Override
     public void setUp() throws Exception {
@@ -59,17 +49,15 @@ public abstract class SQLDirectoryTestCase extends NXRuntimeTestCase {
                 "test-sql-directories-bundle.xml");
     }
 
-    protected static Session getSession(String dirName)
-            throws ClientException {
-        DirectoryService dirService =
-                Framework.getLocalService(DirectoryService.class);
+    protected static Session getSession(String dirName) throws ClientException {
+        DirectoryService dirService = Framework.getLocalService(DirectoryService.class);
         return dirService.open(dirName);
     }
 
     protected static Directory getDirectory(String dirName)
             throws DirectoryException {
-        DirectoryServiceImpl dirServiceImpl =
-            (DirectoryServiceImpl) Framework.getRuntime().getComponent(DirectoryService.NAME);
+        DirectoryServiceImpl dirServiceImpl = (DirectoryServiceImpl) Framework.getRuntime().getComponent(
+                DirectoryService.NAME);
         Directory dir = dirServiceImpl.getDirectory(dirName);
         if (dir instanceof SQLDirectoryProxy) {
             dir = ((SQLDirectoryProxy) dir).getDirectory();
@@ -78,21 +66,14 @@ public abstract class SQLDirectoryTestCase extends NXRuntimeTestCase {
     }
 
     public Connection getConnection() throws Exception {
-        if (null == dataSource) {
-            dataSource = createDataSource();
-        }
-        return dataSource.getConnection();
+        return new SimpleDataSource("jdbc:hsqldb:mem:memid",
+                "org.hsqldb.jdbcDriver", "sa", "").getConnection();
     }
 
     public static void setUpContextFactory() {
         Properties props = System.getProperties();
         props.put("java.naming.factory.initial",
                 "org.nuxeo.ecm.directory.sql.LocalContextFactory");
-    }
-
-    public static DataSource createDataSource() {
-        return new SimpleDataSource("jdbc:hsqldb:mem:memid",
-                "org.hsqldb.jdbcDriver", "sa", "");
     }
 
 }

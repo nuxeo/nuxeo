@@ -34,6 +34,7 @@ public class TestIntIdField extends SQLDirectoryTestCase {
         deployContrib("org.nuxeo.ecm.directory.sql.tests", "intIdDirectory-contrib.xml");
     }
 
+    @SuppressWarnings("boxing")
     public void testIntIdDirectory() throws Exception {
         DirectoryServiceImpl dirServiceImpl =
             (DirectoryServiceImpl) Framework.getRuntime().getComponent(DirectoryService.NAME);
