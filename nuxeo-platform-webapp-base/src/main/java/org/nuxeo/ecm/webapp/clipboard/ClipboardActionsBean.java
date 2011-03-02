@@ -928,9 +928,8 @@ public class ClipboardActionsBean extends InputController implements
 
         for (Blob content : blobs) {
 
-            String fileName = content.getFilename();
-
             if (content != null) {
+                String fileName = content.getFilename();
 
                 SummaryEntry summaryLeaf = new SummaryEntry(doc);
                 summaryLeaf.setParent(parent);
