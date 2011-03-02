@@ -1,5 +1,7 @@
 <?xml version="1.0"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.nuxeo</groupId>
@@ -72,12 +74,14 @@
   </issueManagement>
 
   <ciManagement>
-    <system>Hudson</system>
-    <url>http://qa.nuxeo.org/hudson/</url>
+    <system>Jenkins</system>
+    <url>http://qa.nuxeo.org/jenkins/</url>
     <notifiers>
       <notifier>
         <type>mail</type>
-        <address>ecm-qa@lists.nuxeo.com</address>
+        <configuration>
+          <address>ecm-qa@lists.nuxeo.com</address>
+        </configuration>
       </notifier>
     </notifiers>
   </ciManagement>
@@ -2377,8 +2381,11 @@
               <configuration>
                 <tasks>
                   <echo>Running ANT assembly in ${basedir}</echo>
-                  <taskdef resource="org/nuxeo/build/ant/antlib.xml" />
-                  <antrun file="${basedir}/build.xml" optional="true" />
+                  <taskdef
+                    resource="org/nuxeo/build/ant/antlib.xml" />
+                  <antrun
+                    file="${basedir}/build.xml"
+                    optional="true" />
                 </tasks>
               </configuration>
             </execution>
