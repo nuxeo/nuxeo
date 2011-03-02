@@ -189,4 +189,9 @@ public class TomcatConfigurator extends ServerConfigurator {
                 + File.separator + "nuxeo-wizard.war");
         return wizardWAR.exists();
     }
+
+    @Override
+    public String getRuntimeHome() {
+        return generator.getNuxeoHome() + File.separator + "nxserver";
+    }
 }

@@ -165,4 +165,10 @@ public class JBossConfigurator extends ServerConfigurator {
         return false;
     }
 
+    @Override
+    protected String getRuntimeHome() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }
