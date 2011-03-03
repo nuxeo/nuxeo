@@ -68,7 +68,11 @@ public class CssStringWriter extends StringWriter {
         write("#");
         for (LexicalUnit current = lu; current != null; current = current.getNextLexicalUnit()) {
             if (current.getLexicalUnitType() == LexicalUnit.SAC_INTEGER) {
-                write(Integer.toHexString(current.getIntegerValue()));
+                String value = Integer.toHexString(current.getIntegerValue());
+                if ("0".equals(value)) {
+                    value = "00";
+                }
+                write(value);
             }
         }
     }
