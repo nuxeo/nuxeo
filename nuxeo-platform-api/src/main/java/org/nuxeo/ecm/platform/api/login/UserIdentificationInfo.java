@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.api.login;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -41,7 +42,7 @@ public class UserIdentificationInfo implements Serializable {
 
     protected String loginPluginName;
 
-    protected Map<String, String> loginParameters;
+    protected final Map<String, String> loginParameters = new HashMap<String,String>();
 
     public UserIdentificationInfo(String userName, String password) {
         this.userName = userName;
@@ -93,7 +94,7 @@ public class UserIdentificationInfo implements Serializable {
     }
 
     public void setLoginParameters(Map<String, String> loginParameters) {
-        this.loginParameters = loginParameters;
+        this.loginParameters.putAll(loginParameters);
     }
 
     /**
