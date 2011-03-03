@@ -71,11 +71,15 @@ public class DialectH2 extends Dialect {
 
     @Override
     public JDBCInfo getJDBCTypeAndString(ColumnType type) {
-        switch (type) {
-        case VARCHAR:
-            return jdbcInfo("VARCHAR", Types.VARCHAR);
-        case CLOB:
-            return jdbcInfo("CLOB", Types.CLOB);
+        switch (type.spec) {
+        case STRING:
+            if (type.isUnconstrained()) {
+                return jdbcInfo("VARCHAR", Types.VARCHAR);
+            } else if (type.isClob()) {
+                return jdbcInfo("CLOB", Types.CLOB);
+            } else {
+                return jdbcInfo("VARCHAR(%d)", type.length, Types.VARCHAR);
+            }
         case BOOLEAN:
             return jdbcInfo("BOOLEAN", Types.BOOLEAN);
         case LONG:

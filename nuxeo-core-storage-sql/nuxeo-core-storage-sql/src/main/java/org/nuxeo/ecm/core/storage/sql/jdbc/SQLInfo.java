@@ -569,7 +569,7 @@ public class SQLInfo {
         Column column = maker.newColumn(model.HIER_PARENT_KEY,
                 ColumnType.NODEIDFKNULL);
         maker.newColumn(model.HIER_CHILD_POS_KEY, ColumnType.INTEGER);
-        maker.newColumn(model.HIER_CHILD_NAME_KEY, ColumnType.VARCHAR);
+        maker.newColumn(model.HIER_CHILD_NAME_KEY, ColumnType.STRING);
         maker.newColumn(model.HIER_CHILD_ISPROPERTY_KEY, ColumnType.BOOLEAN); // notnull
         // if (!separateMainTable)
         maker.newFragmentFields();

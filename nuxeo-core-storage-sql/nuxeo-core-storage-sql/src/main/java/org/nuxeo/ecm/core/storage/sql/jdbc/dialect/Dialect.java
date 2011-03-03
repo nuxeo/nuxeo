@@ -31,7 +31,6 @@ import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
@@ -46,7 +45,6 @@ import org.nuxeo.ecm.core.storage.sql.Binary;
 import org.nuxeo.ecm.core.storage.sql.BinaryManager;
 import org.nuxeo.ecm.core.storage.sql.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.Model;
-import org.nuxeo.ecm.core.storage.sql.Node;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
 import org.nuxeo.ecm.core.storage.sql.jdbc.QueryMaker.QueryMakerException;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
@@ -73,8 +71,13 @@ public abstract class Dialect {
         }
     }
 
-    public JDBCInfo jdbcInfo(String string, int jdbcType) {
+    public static JDBCInfo jdbcInfo(String string, int jdbcType) {
         return new JDBCInfo(string, jdbcType);
+    }
+
+    public static JDBCInfo jdbcInfo(String string, int length, int jdbcType) {
+        return new JDBCInfo(String.format(string, Integer.valueOf(length)),
+                jdbcType);
     }
 
     protected final BinaryManager binaryManager;

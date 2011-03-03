@@ -100,11 +100,15 @@ public class DialectOracle extends Dialect {
 
     @Override
     public JDBCInfo getJDBCTypeAndString(ColumnType type) {
-        switch (type) {
-        case VARCHAR:
-            return jdbcInfo("NVARCHAR2(2000)", Types.VARCHAR);
-        case CLOB:
-            return jdbcInfo("NCLOB", Types.CLOB);
+        switch (type.spec) {
+        case STRING:
+            if (type.isUnconstrained()) {
+                return jdbcInfo("NVARCHAR2(2000)", Types.VARCHAR);
+            } else if (type.isClob() || type.length > 2000) {
+                return jdbcInfo("NCLOB", Types.CLOB);
+            } else {
+                return jdbcInfo("NVARCHAR2(%d)", type.length, Types.VARCHAR);
+            }
         case BOOLEAN:
             return jdbcInfo("NUMBER(1,0)", Types.BIT);
         case LONG:

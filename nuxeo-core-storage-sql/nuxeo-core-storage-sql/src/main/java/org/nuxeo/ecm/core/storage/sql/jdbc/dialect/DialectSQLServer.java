@@ -99,11 +99,15 @@ public class DialectSQLServer extends Dialect {
 
     @Override
     public JDBCInfo getJDBCTypeAndString(ColumnType type) {
-        switch (type) {
-        case VARCHAR:
-            return jdbcInfo("NVARCHAR(4000)", Types.VARCHAR);
-        case CLOB:
-            return jdbcInfo("NVARCHAR(MAX)", Types.CLOB);
+        switch (type.spec) {
+        case STRING:
+            if (type.isUnconstrained()) {
+                return jdbcInfo("NVARCHAR(4000)", Types.VARCHAR);
+            } else if (type.isClob() || type.length > 4000) {
+                return jdbcInfo("NVARCHAR(MAX)", Types.CLOB);
+            } else {
+                return jdbcInfo("NVARCHAR(%d)", type.length, Types.VARCHAR);
+            }
         case BOOLEAN:
             return jdbcInfo("BIT", Types.BIT);
         case LONG:

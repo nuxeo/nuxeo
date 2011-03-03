@@ -1230,7 +1230,7 @@ public class Model {
                 StringType.INSTANCE, ColumnType.SYSNAME);
         addPropertyInfo(null, VERSION_DESCRIPTION_PROP, PropertyType.STRING,
                 VERSION_TABLE_NAME, VERSION_DESCRIPTION_KEY, false,
-                StringType.INSTANCE, ColumnType.VARCHAR);
+                StringType.INSTANCE, ColumnType.STRING);
         addPropertyInfo(null, VERSION_IS_LATEST_PROP, PropertyType.BOOLEAN,
                 VERSION_TABLE_NAME, VERSION_IS_LATEST_KEY, false,
                 BooleanType.INSTANCE, ColumnType.BOOLEAN);
@@ -1353,11 +1353,12 @@ public class Model {
                         PropertyType propertyType = PropertyType.fromFieldType(
                                 listFieldType, true);
                         ColumnType type = ColumnType.fromFieldType(listFieldType);
-                        if (type == ColumnType.VARCHAR) {
+                        if (type.spec == ColumnSpec.STRING) {
                             for (FieldDescriptor fd : repositoryDescriptor.schemaFields) {
                                 if (propertyName.equals(fd.field)
                                         && FIELD_TYPE_LARGETEXT.equals(fd.type)) {
                                     type = ColumnType.CLOB;
+                                    break;
                                 }
                             }
                             log.debug("  String array field '" + propertyName
@@ -1389,16 +1390,23 @@ public class Model {
                     String fragmentName = typeFragmentName(complexType);
                     PropertyType propertyType = PropertyType.fromFieldType(
                             fieldType, false);
-                    ColumnType type = ColumnType.fromFieldType(fieldType);
-                    if (type == ColumnType.VARCHAR) {
+                    ColumnType type = ColumnType.fromField(field);
+                    if (type.spec == ColumnSpec.STRING) {
+                        // backward compat with largetext, since 5.4.1
                         for (FieldDescriptor fd : repositoryDescriptor.schemaFields) {
                             if (propertyName.equals(fd.field)
                                     && FIELD_TYPE_LARGETEXT.equals(fd.type)) {
+                                if (!type.isUnconstrained() && !type.isClob()) {
+                                    log.warn("  String field '" + propertyName
+                                            + "' has a schema constraint to "
+                                            + type
+                                            + " but is specified as largetext,"
+                                            + " using CLOB for it");
+                                }
                                 type = ColumnType.CLOB;
+                                break;
                             }
                         }
-                        log.debug("  String field '" + propertyName
-                                + "' using column type " + type);
                     }
                     String fragmentKey = field.getName().getLocalName();
                     if (MAIN_KEY.equalsIgnoreCase(fragmentKey)) {

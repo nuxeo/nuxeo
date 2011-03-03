@@ -50,11 +50,15 @@ public class DialectDerby extends Dialect {
 
     @Override
     public JDBCInfo getJDBCTypeAndString(ColumnType type) {
-        switch (type) {
-        case VARCHAR:
-            return jdbcInfo("VARCHAR(32672)", Types.VARCHAR);
-        case CLOB:
-            return jdbcInfo("CLOB", Types.CLOB);
+        switch (type.spec) {
+        case STRING:
+            if (type.isUnconstrained()) {
+                return jdbcInfo("VARCHAR(32672)", Types.VARCHAR);
+            } else if (type.isClob()) {
+                return jdbcInfo("CLOB", Types.CLOB);
+            } else {
+                return jdbcInfo("VARCHAR(%d)", type.length, Types.VARCHAR);
+            }
         case BOOLEAN:
             return jdbcInfo("SMALLINT", Types.SMALLINT);
         case LONG:

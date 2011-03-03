@@ -117,11 +117,15 @@ public class DialectPostgreSQL extends Dialect {
 
     @Override
     public JDBCInfo getJDBCTypeAndString(ColumnType type) {
-        switch (type) {
-        case VARCHAR:
-            return jdbcInfo("varchar", Types.VARCHAR);
-        case CLOB:
-            return jdbcInfo("text", Types.CLOB);
+        switch (type.spec) {
+        case STRING:
+            if (type.isUnconstrained()) {
+                return jdbcInfo("varchar", Types.VARCHAR);
+            } else if (type.isClob()) {
+                return jdbcInfo("text", Types.CLOB);
+            } else {
+                return jdbcInfo("varchar(%d)", type.length, Types.VARCHAR);
+            }
         case BOOLEAN:
             return jdbcInfo("bool", Types.BIT);
         case LONG:
