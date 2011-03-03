@@ -22,9 +22,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -44,7 +42,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.schema.types.Field;
-import org.nuxeo.ecm.core.storage.sql.ColumnType;
+import org.nuxeo.ecm.core.storage.sql.ColumnSpec;
 import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCLogger;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Delete;
@@ -817,32 +815,14 @@ public class SQLSession extends BaseSession implements EntrySource {
     private Object getFieldValue(ResultSet rs, String fieldName)
             throws DirectoryException {
         try {
-            Field field = schemaFieldMap.get(fieldName);
-            String typeName = field.getType().getName();
             Column column = table.getColumn(fieldName);
             if (column == null) {
                 throw new DirectoryException(String.format(
                         "Column '%s' does not exist in table '%s'", fieldName,
                         table.getKey()));
             }
-            String columnName = column.getPhysicalName();
-            if ("string".equals(typeName)) {
-                return rs.getString(columnName);
-            } else if ("integer".equals(typeName) || "long".equals(typeName)) {
-                return Long.valueOf(rs.getLong(columnName));
-            } else if ("date".equals(typeName)) {
-                Timestamp ts = rs.getTimestamp(columnName);
-                if (ts == null) {
-                    return null;
-                } else {
-                    Calendar cal = Calendar.getInstance();
-                    cal.setTimeInMillis(ts.getTime());
-                    return cal;
-                }
-            } else {
-                throw new DirectoryException(
-                        "Field type not supported in directories: " + typeName);
-            }
+            int index = rs.findColumn(column.getPhysicalName());
+            return column.getFromResultSet(rs, index);
         } catch (SQLException e) {
             throw new DirectoryException("getFieldValue failed", e);
         }
@@ -860,7 +840,7 @@ public class SQLSession extends BaseSession implements EntrySource {
 
     protected Serializable fieldValueForWrite(Object value, Column column) {
         if (value instanceof String) {
-            if (column.getType() == ColumnType.LONG) {
+            if (column.getType().spec == ColumnSpec.LONG) {
                 // allow storing string into integer/long key
                 return Long.valueOf((String) value);
             }
@@ -874,12 +854,12 @@ public class SQLSession extends BaseSession implements EntrySource {
                 return password;
             }
         } else if (value instanceof Number) {
-            if (column.getType() == ColumnType.LONG) {
+            if (column.getType().spec == ColumnSpec.LONG) {
                 // canonicalize to Long
                 if (value instanceof Integer) {
                     return Long.valueOf(((Integer) value).longValue());
                 }
-            } else if (column.getType() == ColumnType.VARCHAR) {
+            } else if (column.getType().spec == ColumnSpec.STRING) {
                 // allow storing number in string field
                 return value.toString();
             }

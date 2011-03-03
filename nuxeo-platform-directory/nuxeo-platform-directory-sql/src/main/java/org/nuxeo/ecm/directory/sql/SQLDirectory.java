@@ -122,7 +122,7 @@ public class SQLDirectory extends AbstractDirectory {
                     // current directory and not read from an external reference
                     storedFieldNames.add(fieldName);
 
-                    ColumnType type = ColumnType.fromFieldType(f.getType());
+                    ColumnType type = ColumnType.fromField(f);
                     Column column = SQLHelper.addColumn(table, fieldName, type,
                             useNativeCase());
                     if (fieldName.equals(config.getIdField())) {

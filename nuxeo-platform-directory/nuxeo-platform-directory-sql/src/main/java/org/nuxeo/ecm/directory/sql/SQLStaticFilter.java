@@ -21,7 +21,6 @@ import java.io.Serializable;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.ecm.core.storage.sql.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
 import org.nuxeo.ecm.directory.DirectoryException;
@@ -64,21 +63,7 @@ public class SQLStaticFilter implements Serializable {
 
     public Column getDirectoryColumn(Table table, boolean nativeCase)
             throws DirectoryException {
-        return SQLHelper.newColumn(table, column, getColumnType(type),
-                nativeCase);
-    }
-
-    protected static ColumnType getColumnType(String type)
-            throws DirectoryException {
-        if (type.equals("integer") || type.equals("long")) {
-            return ColumnType.LONG;
-        } else if (type.equals("string")) {
-            return ColumnType.VARCHAR;
-        } else if (type.equals("date")) {
-            return ColumnType.TIMESTAMP;
-        } else {
-            throw new DirectoryException("No SQL type mapping for: " + type);
-        }
+        return table.getColumn(column);
     }
 
 }

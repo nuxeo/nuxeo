@@ -38,6 +38,7 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.storage.sql.ColumnSpec;
 import org.nuxeo.ecm.core.storage.sql.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCLogger;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
@@ -311,11 +312,11 @@ public class SQLHelper {
                     // columnLength, value));
                     // }
                     Serializable v;
-                    if (column.getType() == ColumnType.VARCHAR) {
+                    if (column.getType().spec == ColumnSpec.STRING) {
                         v = SQL_NULL_MARKER.equals(value) ? null : value;
-                    } else if (column.getType() == ColumnType.BOOLEAN) {
+                    } else if (column.getType().spec == ColumnSpec.BOOLEAN) {
                         v = Boolean.valueOf(value);
-                    } else if (column.getType() == ColumnType.LONG) {
+                    } else if (column.getType().spec == ColumnSpec.LONG) {
                         try {
                             v = Long.valueOf(value);
                         } catch (NumberFormatException e) {
@@ -327,7 +328,7 @@ public class SQLHelper {
                                             formatColumnValues(columnValues)),
                                     e);
                         }
-                    } else if (column.getType() == ColumnType.TIMESTAMP) {
+                    } else if (column.getType().spec == ColumnSpec.TIMESTAMP) {
                         try {
                             Calendar cal = new GregorianCalendar();
                             cal.setTime(Timestamp.valueOf(value));
@@ -389,15 +390,10 @@ public class SQLHelper {
 
     public static Column addColumn(Table table, String fieldName,
             ColumnType type, boolean nativeCase) {
-        return ((TableImpl) table).addColumn(fieldName,
-                newColumn(table, fieldName, type, nativeCase));
-    }
-
-    public static Column newColumn(Table table, String fieldName,
-            ColumnType type, boolean nativeCase) {
         String physicalName = nativeCase ? table.getDialect().getTableName(
                 fieldName) : fieldName;
-        return new Column(table, physicalName, type, fieldName);
+        Column column = new Column(table, physicalName, type, fieldName);
+        return ((TableImpl) table).addColumn(fieldName, column);
     }
 
 }

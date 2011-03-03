@@ -484,8 +484,8 @@ public class TableReference extends AbstractReference {
         if (table == null) {
             boolean nativeCase = getSQLSourceDirectory().useNativeCase();
             table = SQLHelper.addTable(tableName, getDialect(), nativeCase);
-            SQLHelper.addColumn(table, sourceColumn, ColumnType.VARCHAR, nativeCase);
-            SQLHelper.addColumn(table, targetColumn, ColumnType.VARCHAR, nativeCase);
+            SQLHelper.addColumn(table, sourceColumn, ColumnType.STRING, nativeCase);
+            SQLHelper.addColumn(table, targetColumn, ColumnType.STRING, nativeCase);
         }
         return table;
     }
