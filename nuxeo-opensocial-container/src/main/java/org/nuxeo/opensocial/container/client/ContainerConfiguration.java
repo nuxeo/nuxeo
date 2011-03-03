@@ -12,6 +12,7 @@
  * Lesser General Public License for more details.
  * Contributors:
  * Thomas Roger
+ * Stéphane Fourrier
  */
 
 package org.nuxeo.opensocial.container.client;
@@ -56,4 +57,7 @@ public class ContainerConfiguration {
         return $wnd.nuxeo.container.parameters.generateTitle;
     }-*/;
 
+    public static native boolean isInDebugMode() /*-{
+        try { return $wnd.nuxeo.container.debug; } catch(e) { return false; }
+    }-*/;
 }

@@ -10,6 +10,8 @@ import net.customware.gwt.presenter.client.place.PlaceRequest;
 import net.customware.gwt.presenter.client.widget.WidgetDisplay;
 import net.customware.gwt.presenter.client.widget.WidgetPresenter;
 
+import org.nuxeo.opensocial.container.client.ContainerBuilderConfiguration;
+import org.nuxeo.opensocial.container.client.ContainerConfiguration;
 import org.nuxeo.opensocial.container.client.ContainerConstants;
 import org.nuxeo.opensocial.container.client.api.adapter.html.YUILayoutHtmlAdapter;
 import org.nuxeo.opensocial.container.client.event.priv.app.SendMessageEvent;
@@ -87,6 +89,20 @@ public class ContainerBuilderPresenter extends
         void showPopup();
 
         void hidePopup();
+
+        void showContainerSizePanel();
+
+        void showSideBarPanel();
+
+        void showZonesPanel();
+
+        void showHeaderPanel();
+
+        void showFooterPanel();
+
+        void showCodePreviewPanel();
+
+        void showCloseButtonPanel();
     }
 
     private ContainerConstants constants = AppPresenter.containerConstants;
@@ -105,83 +121,86 @@ public class ContainerBuilderPresenter extends
     }
 
     private void fetchLayoutContent() {
-        setContainerSize();
-        setSideBarPosition();
-        setZones();
-        setHeader();
-        setFooter();
+        initContainerSize();
+        initSideBar();
+        initZones();
+        initHeader();
+        initFooter();
+        initCodePreview();
+        initCloseButton();
 
         display.setData();
     }
 
-    private void setHeader() {
-        if (model.getLayout().getHeader() != null) {
-            display.setHeader(true);
-        } else {
-            display.setHeader(false);
-        }
+    private void initContainerSize() {
+        if (ContainerBuilderConfiguration.isContainerSizeConfigurable()) {
+            display.showContainerSizePanel();
 
-    }
+            YUISize[] sizeValues = YUISize.values();
+            int position = 0;
 
-    private void setFooter() {
-        if (model.getLayout().getFooter() != null) {
-            display.setFooter(true);
-        } else {
-            display.setHeader(false);
-        }
-    }
-
-    private void setContainerSize() {
-        YUISize[] sizeValues = YUISize.values();
-        int position = 0;
-
-        for (YUISize size : sizeValues) {
-            display.getContainerSizeListBox().addValue(size.getDescription(),
-                    size.name());
-        }
-
-        display.getContainerSizeListBox().addValue(constants.customSize(),
-                constants.customSize());
-
-        YUIBodySize bodySize = model.getLayout().getBodySize();
-
-        if (bodySize instanceof YUIFixedBodySize) {
             for (YUISize size : sizeValues) {
-                if (bodySize.getSize() == size.getSize()) {
-                    display.setSizePanelVisible(false);
-                    display.getContainerSizeListBox().setItemSelected(position);
+                display.getContainerSizeListBox().addValue(
+                        size.getDescription(), size.name());
+            }
+
+            display.getContainerSizeListBox().addValue(constants.customSize(),
+                    constants.customSize());
+
+            YUIBodySize bodySize = model.getLayout().getBodySize();
+
+            if (bodySize instanceof YUIFixedBodySize) {
+                for (YUISize size : sizeValues) {
+                    if (bodySize.getSize() == size.getSize()) {
+                        display.setSizePanelVisible(false);
+                        display.getContainerSizeListBox().setItemSelected(
+                                position);
+                    }
+                    position++;
+                }
+            } else if (bodySize instanceof YUICustomBodySize) {
+                display.getContainerSizeListBox().setItemSelected(
+                        display.getContainerSizeListBox().getItemCount() - 1);
+                display.setSizePanelVisible(true);
+                if (bodySize.getSize() == -1) {
+                    display.getCustomSizeTextBox().setValue(
+                            String.valueOf(constants.unknown()));
+                } else {
+                    display.getCustomSizeTextBox().setValue(
+                            String.valueOf(bodySize.getSize()));
+                }
+            }
+
+            registerDisplayEventContainerSizeChangement();
+            registerDisplayEventCustomSizeValidation();
+            registerBusEventContainerSizeChangement();
+        }
+    }
+
+    private void initSideBar() {
+        if (ContainerBuilderConfiguration.isSideBarConfigurable()) {
+            display.showSideBarPanel();
+
+            YUISideBarStyle[] sideBarValues = YUISideBarStyle.values();
+            int position = 0;
+
+            for (YUISideBarStyle sideBar : sideBarValues) {
+                display.getSideBarPositionListBox().addValue(
+                        sideBar.getDescription(), sideBar.name());
+                if (model.getLayout().getSidebarStyle().equals(sideBar)) {
+                    display.getSideBarPositionListBox().setItemSelected(
+                            position);
                 }
                 position++;
             }
-        } else if (bodySize instanceof YUICustomBodySize) {
-            display.getContainerSizeListBox().setItemSelected(
-                    display.getContainerSizeListBox().getItemCount() - 1);
-            display.setSizePanelVisible(true);
-            if (bodySize.getSize() == -1) {
-                display.getCustomSizeTextBox().setValue(
-                        String.valueOf(constants.unknown()));
-            } else {
-                display.getCustomSizeTextBox().setValue(
-                        String.valueOf(bodySize.getSize()));
-            }
+
+            registerDisplayEventSideBarChangement();
         }
     }
 
-    private void setSideBarPosition() {
-        YUISideBarStyle[] sideBarValues = YUISideBarStyle.values();
-        int position = 0;
+    private void initZones() {
+        display.showZonesPanel();
 
-        for (YUISideBarStyle sideBar : sideBarValues) {
-            display.getSideBarPositionListBox().addValue(
-                    sideBar.getDescription(), sideBar.name());
-            if (model.getLayout().getSidebarStyle().equals(sideBar)) {
-                display.getSideBarPositionListBox().setItemSelected(position);
-            }
-            position++;
-        }
-    }
-
-    private void setZones() {
         int zoneIndex = 0;
         YUITemplate[] templateValues = YUITemplate.values();
 
@@ -201,6 +220,53 @@ public class ContainerBuilderPresenter extends
 
             zoneIndex++;
         }
+
+        registerBusEventRowAddition();
+        registerDisplayEventRowAddition();
+        registerDisplayEventListOfZoneClick();
+        registerBusEventRowDeleted();
+    }
+
+    private void initHeader() {
+        if (ContainerBuilderConfiguration.isHeaderConfigurable()) {
+            display.showHeaderPanel();
+
+            if (model.getLayout().getHeader() != null) {
+                display.setHeader(true);
+            } else {
+                display.setHeader(false);
+            }
+
+            registerDisplayEventHeaderSelection();
+        }
+    }
+
+    private void initFooter() {
+        if (ContainerBuilderConfiguration.isFooterConfigurable()) {
+            display.showFooterPanel();
+
+            if (model.getLayout().getFooter() != null) {
+                display.setFooter(true);
+            } else {
+                display.setHeader(false);
+            }
+
+            registerDisplayEventFooterSelection();
+        }
+    }
+
+    private void initCodePreview() {
+        if (ContainerConfiguration.isInDebugMode()) {
+            display.showCodePreviewPanel();
+
+            registerDisplayEventCodeViewer();
+        }
+    }
+
+    private void initCloseButton() {
+        display.showCloseButtonPanel();
+
+        registerDisplayEventBuilderClose();
     }
 
     @Override
@@ -210,19 +276,7 @@ public class ContainerBuilderPresenter extends
 
     @Override
     protected void onBind() {
-        registerDisplayEventContainerSizeChangement();
-        registerDisplayEventCustomSizeValidation();
-        registerDisplayEventSideBarChangement();
-        registerDisplayEventRowAddition();
-        registerDisplayEventListOfZoneClick();
-        registerDisplayEventHeaderSelection();
-        registerDisplayEventFooterSelection();
-        registerDisplayEventCodeViewer();
-        registerDisplayEventBuilderClose();
 
-        registerBusEventRowDeleted();
-        registerBusEventContainerSizeChangement();
-        registerBusEventRowAddition();
     }
 
     @Override

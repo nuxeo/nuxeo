@@ -74,16 +74,9 @@ public class ContainerBuilderWidget extends DialogBox implements
         this.add(builderContent);
         builderContent.setWidth("200px");
         builderContent.setStyleName("builder");
-
-        builderContent.add(containerSizePanel());
-        builderContent.add(sidebar());
-        builderContent.add(customContentPanel());
-        builderContent.add(headerFooterPanel());
-        builderContent.add(showCodePanel());
-        builderContent.add(closeButtonPanel());
     }
 
-    private CaptionPanel containerSizePanel() {
+    public void showContainerSizePanel() {
         CaptionPanel bodySize = new CaptionPanel(constants.containerSizeTitle());
         bodySize.setWidth("185px");
 
@@ -113,10 +106,10 @@ public class ContainerBuilderWidget extends DialogBox implements
 
         content.add(setSizeDisclosurePanel);
 
-        return bodySize;
+        builderContent.add(bodySize);
     }
 
-    private Widget sidebar() {
+    public void showSideBarPanel() {
         CaptionPanel bodyColumn = new CaptionPanel(constants.sideBarTitle());
         bodyColumn.setWidth("185px");
 
@@ -124,10 +117,10 @@ public class ContainerBuilderWidget extends DialogBox implements
 
         bodyColumn.setContentWidget(sideBarPositionListBox);
 
-        return bodyColumn;
+        builderContent.add(bodyColumn);
     }
 
-    private Widget customContentPanel() {
+    public void showZonesPanel() {
         CaptionPanel splitContent = new CaptionPanel(
                 constants.customContentTitle());
         splitContent.setWidth("185px");
@@ -141,31 +134,20 @@ public class ContainerBuilderWidget extends DialogBox implements
 
         splitContent.setContentWidget(listOfZoneDesigner);
 
-        return splitContent;
+        builderContent.add(splitContent);
     }
 
-    private Widget headerFooterPanel() {
-        DisclosurePanel headerFooter = new DisclosurePanel(
-                constants.headerNFooterTitle());
-        headerFooter.setOpen(false);
-        headerFooter.setAnimationEnabled(true);
-
-        VerticalPanel vp = new VerticalPanel();
-        vp.setWidth("100%");
-
+    public void showHeaderPanel() {
         headerCheckBox = new CheckBox(constants.enableHeader());
-
-        footerCheckBox = new CheckBox(constants.enableFooter());
-
-        vp.add(headerCheckBox);
-        vp.add(footerCheckBox);
-
-        headerFooter.setContent(vp);
-
-        return headerFooter;
+        builderContent.add(headerCheckBox);
     }
 
-    private Widget showCodePanel() {
+    public void showFooterPanel() {
+        footerCheckBox = new CheckBox(constants.enableFooter());
+        builderContent.add(footerCheckBox);
+    }
+
+    public void showCodePreviewPanel() {
         CaptionPanel showCode = new CaptionPanel(constants.showCodeTitle());
         showCode.setWidth("185px");
 
@@ -179,10 +161,10 @@ public class ContainerBuilderWidget extends DialogBox implements
 
         showCode.setContentWidget(vp);
 
-        return showCode;
+        builderContent.add(showCode);
     }
 
-    private Widget closeButtonPanel() {
+    public void showCloseButtonPanel() {
         CaptionPanel closePanel = new CaptionPanel(constants.closeTitle());
         closePanel.setWidth("185px");
 
@@ -196,7 +178,7 @@ public class ContainerBuilderWidget extends DialogBox implements
 
         closePanel.setContentWidget(vp);
 
-        return closePanel;
+        builderContent.add(closePanel);
     }
 
     public HasMultipleValue<String> getContainerSizeListBox() {
