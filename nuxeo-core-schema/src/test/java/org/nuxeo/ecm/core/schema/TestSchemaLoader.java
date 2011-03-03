@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,9 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Bogdan Stefanescu
+ *     Florent Guillaume
  */
 
 package org.nuxeo.ecm.core.schema;
@@ -29,23 +28,23 @@ import junit.framework.Assert;
 
 import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.schema.types.CompositeType;
+import org.nuxeo.ecm.core.schema.types.Constraint;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Schema;
+import org.nuxeo.ecm.core.schema.types.SimpleTypeImpl;
+import org.nuxeo.ecm.core.schema.types.Type;
+import org.nuxeo.ecm.core.schema.types.constraints.StringLengthConstraint;
 import org.nuxeo.ecm.core.schema.types.primitives.StringType;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
-import static junit.framework.Assert.assertNotNull;
-
-/**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
- */
 public class TestSchemaLoader extends NXRuntimeTestCase {
 
     public static final String NS_XSD = "http://www.w3.org/2001/XMLSchema";
+
     private SchemaManagerImpl typeMgr;
+
     private XSDLoader reader;
 
     @Override
@@ -71,12 +70,13 @@ public class TestSchemaLoader extends NXRuntimeTestCase {
         URL url = getResource("schema/schema.xsd");
 
         reader.loadSchema("MySchema", "", url);
-        //Collection<Schema> schemas = typeMgr.getSchemas();
+        // Collection<Schema> schemas = typeMgr.getSchemas();
         // do not check schemas size - this is dynamic
-        //assertEquals(4, schemas.size()); // file, common, MySchema
+        // assertEquals(4, schemas.size()); // file, common, MySchema
         Schema schema = typeMgr.getSchema("MySchema");
         assertEquals("MySchema", schema.getName());
-        assertEquals("http://www.nuxeo.org/ecm/schemas/MySchema", schema.getNamespace().uri);
+        assertEquals("http://www.nuxeo.org/ecm/schemas/MySchema",
+                schema.getNamespace().uri);
         assertEquals("", schema.getNamespace().prefix);
 
         Collection<Field> fields = schema.getFields();
@@ -119,6 +119,7 @@ public class TestSchemaLoader extends NXRuntimeTestCase {
 
         Field field = schema.getField("title");
         assertNotNull(field);
+        assertEquals(-1, field.getMaxLength());
 
         field = schema.getField("description");
         assertNotNull(field);
@@ -181,7 +182,7 @@ public class TestSchemaLoader extends NXRuntimeTestCase {
         assertNotNull(rule);
         Field name = ((ComplexType) rule.getType()).getField("name");
         assertNotNull(name);
-        Assert.assertEquals(name.getType().getName(), StringType.INSTANCE.getName());
+        assertEquals(name.getType().getName(), StringType.INSTANCE.getName());
 
         // recursivity
 
@@ -192,6 +193,27 @@ public class TestSchemaLoader extends NXRuntimeTestCase {
         ruleGroup = ct.getField("RULE-GROUP");
         assertNotNull(ruleGroup);
         assertNotNull(ct.getField("RULE"));
+    }
+
+    public void testRestriction() throws Exception {
+        URL url = getResource("schema/testrestriction.xsd");
+        assertNotNull(url);
+        Schema schema = reader.loadSchema("testrestriction", "", url);
+        Field field = schema.getField("shortstring");
+        assertEquals(50, field.getMaxLength());
+
+        Type type = field.getType();
+        assertTrue(type instanceof SimpleTypeImpl);
+        SimpleTypeImpl t = (SimpleTypeImpl) type;
+        Type st = t.getSuperType();
+        assertEquals(st.getName(), StringType.INSTANCE.getName());
+        Constraint[] constraints = t.getConstraints();
+        assertNotNull(constraints);
+        Constraint c = constraints[0];
+        assertTrue(c instanceof StringLengthConstraint);
+        StringLengthConstraint slc = (StringLengthConstraint) c;
+        assertEquals(0, slc.getMin());
+        assertEquals(50, slc.getMax());
     }
 
 }

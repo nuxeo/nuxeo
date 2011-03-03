@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,23 +12,25 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Bogdan Stefanescu
+ *     Wojciech Sulejman
+ *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.core.schema;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.schema.types.ComplexTypeImpl;
+import org.nuxeo.ecm.core.schema.types.Constraint;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.ListTypeImpl;
@@ -39,6 +41,7 @@ import org.nuxeo.ecm.core.schema.types.SimpleTypeImpl;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.TypeBindingException;
 import org.nuxeo.ecm.core.schema.types.TypeException;
+import org.nuxeo.ecm.core.schema.types.constraints.StringLengthConstraint;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
@@ -50,6 +53,7 @@ import com.sun.xml.xsom.XSAttributeUse;
 import com.sun.xml.xsom.XSComplexType;
 import com.sun.xml.xsom.XSContentType;
 import com.sun.xml.xsom.XSElementDecl;
+import com.sun.xml.xsom.XSFacet;
 import com.sun.xml.xsom.XSListSimpleType;
 import com.sun.xml.xsom.XSModelGroup;
 import com.sun.xml.xsom.XSParticle;
@@ -58,11 +62,11 @@ import com.sun.xml.xsom.XSSchemaSet;
 import com.sun.xml.xsom.XSTerm;
 import com.sun.xml.xsom.XSType;
 import com.sun.xml.xsom.XmlString;
+import com.sun.xml.xsom.impl.RestrictionSimpleTypeImpl;
 import com.sun.xml.xsom.parser.XSOMParser;
 
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * Loader of XSD schemas into Nuxeo Schema objects.
  */
 public class XSDLoader {
 
@@ -297,7 +301,24 @@ public class XSDLoader {
             // have a base type
             superType = (SimpleType) loadType(schema, baseType);
         }
-        return new SimpleTypeImpl(superType, schema.getName(), name);
+        SimpleTypeImpl simpleType = new SimpleTypeImpl(superType,
+                schema.getName(), name);
+
+        // add constraints/restrictions to the simple type
+        if (type instanceof RestrictionSimpleTypeImpl) {
+            RestrictionSimpleTypeImpl restrictionType = (RestrictionSimpleTypeImpl) type;
+            List<Constraint> constraints = new ArrayList<Constraint>(1);
+            XSFacet maxLength = restrictionType.getFacet("maxLength");
+            if (maxLength != null) {
+                int min = 0; // for now
+                int max = Integer.parseInt(maxLength.getValue().toString());
+                Constraint constraint = new StringLengthConstraint(min, max);
+                constraints.add(constraint);
+            }
+            simpleType.setConstraints(constraints.toArray(new Constraint[0]));
+        }
+
+        return simpleType;
     }
 
     private ListType loadListType(Schema schema, XSListSimpleType type) {
@@ -406,7 +427,20 @@ public class XSDLoader {
         if (element.isNillable()) {
             flags |= Field.NILLABLE;
         }
-        return type.addField(elementName, fieldType.getRef(), defValue, flags);
+
+        Field field = type.addField(elementName, fieldType.getRef(), defValue, flags);
+
+        //set the max field length from the constraints
+        if (fieldType instanceof SimpleTypeImpl) {
+            for (Constraint constraint : ((SimpleTypeImpl) fieldType).getConstraints()) {
+                if (constraint instanceof StringLengthConstraint) {
+                    StringLengthConstraint slc = (StringLengthConstraint) constraint;
+                    field.setMaxLength(slc.getMax());
+                }
+            }
+        }
+
+        return field;
     }
 
     private static Field createField(ComplexType type, XSAttributeDecl element, Type fieldType) {

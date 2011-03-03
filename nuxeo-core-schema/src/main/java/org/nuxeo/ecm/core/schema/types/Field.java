@@ -134,4 +134,20 @@ public interface Field extends Serializable {
      */
     void setMinOccurs(int min);
 
+    /**
+     * Gets the maximum length for this field.
+     * <p>
+     * Value -1 means no constraint.
+     *
+     * @return the length
+     */
+    int getMaxLength();
+
+    /**
+     * Sets the maximum length for this field.
+     *
+     * @param length the length, or -1 for no constraint
+     */
+    void setMaxLength(int length);
+
 }

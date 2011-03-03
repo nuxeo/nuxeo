@@ -74,6 +74,10 @@ public class SimpleTypeImpl extends AbstractType implements SimpleType {
         this.constraints = constraints;
     }
 
+    public Constraint[] getConstraints() {
+        return constraints;
+    }
+
     @Override
     public SimpleType getPrimitiveType() {
         if (primitiveType == null) {

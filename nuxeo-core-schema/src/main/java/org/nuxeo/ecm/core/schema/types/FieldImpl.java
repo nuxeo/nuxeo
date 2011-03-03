@@ -39,17 +39,10 @@ public class FieldImpl implements Field {
 
     private String defaultValue;
 
-
-    public FieldImpl() {
-    }
+    private int maxLength = -1;
 
     public FieldImpl(QName name, Type declaringType, Type type) {
         this(name, declaringType.getRef(), type.getRef(), null, 0);
-    }
-
-    public FieldImpl(QName name, Type declaringType, Type type, String defaultValue,
-            int flags) {
-        this(name, declaringType.getRef(), type.getRef(), defaultValue, flags);
     }
 
     public FieldImpl(QName name, TypeRef<? extends Type> declaringType,
@@ -138,6 +131,16 @@ public class FieldImpl implements Field {
     @Override
     public void setMinOccurs(int min) {
         minOccurs = min;
+    }
+
+    @Override
+    public int getMaxLength() {
+        return maxLength;
+    }
+
+    @Override
+    public void setMaxLength(int length) {
+        maxLength = length;
     }
 
     @Override
