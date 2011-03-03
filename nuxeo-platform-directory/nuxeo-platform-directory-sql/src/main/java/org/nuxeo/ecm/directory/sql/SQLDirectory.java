@@ -37,7 +37,6 @@ import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
-import org.nuxeo.ecm.core.storage.sql.jdbc.db.TableImpl;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
 import org.nuxeo.ecm.directory.AbstractDirectory;
 import org.nuxeo.ecm.directory.Directory;
@@ -55,6 +54,8 @@ public class SQLDirectory extends AbstractDirectory {
     private static final Log log = LogFactory.getLog(SQLDirectory.class);
 
     private final SQLDirectoryDescriptor config;
+
+    private final boolean nativeCase;
 
     private boolean managedSQLSession;
 
@@ -76,6 +77,7 @@ public class SQLDirectory extends AbstractDirectory {
 
     public SQLDirectory(SQLDirectoryDescriptor config) throws ClientException {
         this.config = config;
+        nativeCase = Boolean.TRUE.equals(config.nativeCase);
 
         // register the references to other directories
         addReferences(config.getInverseReferences());
@@ -100,7 +102,8 @@ public class SQLDirectory extends AbstractDirectory {
                 }
             }
             // setup table and fields maps
-            table = new TableImpl(dialect, config.tableName, null);
+            table = SQLHelper.addTable(config.tableName, dialect,
+                    useNativeCase());
             schema = NXSchema.getSchemaManager().getSchema(config.schemaName);
             if (schema == null) {
                 throw new DirectoryException("schema not found: "
@@ -120,8 +123,8 @@ public class SQLDirectory extends AbstractDirectory {
                     storedFieldNames.add(fieldName);
 
                     ColumnType type = ColumnType.fromFieldType(f.getType());
-                    Column column = ((TableImpl) table).addColumn(fieldName,
-                            new Column(table, fieldName, type, fieldName));
+                    Column column = SQLHelper.addColumn(table, fieldName, type,
+                            useNativeCase());
                     if (fieldName.equals(config.getIdField())) {
                         column.setPrimary(true);
                         hasPrimary = true;
@@ -278,6 +281,10 @@ public class SQLDirectory extends AbstractDirectory {
 
     public Dialect getDialect() {
         return dialect;
+    }
+
+    public boolean useNativeCase() {
+        return nativeCase;
     }
 
 }

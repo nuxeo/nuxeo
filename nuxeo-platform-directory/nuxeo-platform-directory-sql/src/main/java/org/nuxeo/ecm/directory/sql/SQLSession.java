@@ -188,7 +188,7 @@ public class SQLSession extends BaseSession implements EntrySource {
         List<Column> columnList = new ArrayList<Column>(table.getColumns());
         for (Iterator<Column> i = columnList.iterator(); i.hasNext();) {
             Column column = i.next();
-            if (fieldMap.get(column.getPhysicalName()) == null) {
+            if (fieldMap.get(column.getKey()) == null) {
                 i.remove();
             }
         }
@@ -202,8 +202,8 @@ public class SQLSession extends BaseSession implements EntrySource {
             List<Serializable> values = new ArrayList<Serializable>(
                     columnList.size());
             for (Column column : columnList) {
-                Object value = fieldMap.get(column.getPhysicalName());
-                values.add((Serializable) value);
+                Object value = fieldMap.get(column.getKey());
+                values.add(fieldValueForWrite(value, column));
             }
             logger.logSQL(sql, values);
         }
@@ -214,7 +214,7 @@ public class SQLSession extends BaseSession implements EntrySource {
             ps = sqlConnection.prepareStatement(sql);
             int index = 1;
             for (Column column : columnList) {
-                Object value = fieldMap.get(column.getPhysicalName());
+                Object value = fieldMap.get(column.getKey());
                 setFieldValue(ps, index, column, value);
                 index++;
             }
@@ -274,7 +274,8 @@ public class SQLSession extends BaseSession implements EntrySource {
         }
         for (int i = 0; i < staticFilters.length; i++) {
             SQLStaticFilter filter = staticFilters[i];
-            whereClause += filter.getDirectoryColumn(table).getQuotedName();
+            whereClause += filter.getDirectoryColumn(table,
+                    directory.useNativeCase()).getQuotedName();
             whereClause += " " + filter.getOperator() + " ";
             whereClause += "? ";
 
@@ -289,7 +290,10 @@ public class SQLSession extends BaseSession implements EntrySource {
             throws DirectoryException {
         for (int i = 0; i < staticFilters.length; i++) {
             SQLStaticFilter filter = staticFilters[i];
-            setFieldValue(ps, startIdx + i, filter.getDirectoryColumn(table),
+            setFieldValue(
+                    ps,
+                    startIdx + i,
+                    filter.getDirectoryColumn(table, directory.useNativeCase()),
                     filter.getValue());
         }
     }
@@ -421,7 +425,7 @@ public class SQLSession extends BaseSession implements EntrySource {
                 List<Serializable> values = new ArrayList<Serializable>(
                         storedColumnList.size());
                 for (Column column : storedColumnList) {
-                    Object value = dataModel.getData(column.getPhysicalName());
+                    Object value = dataModel.getData(column.getKey());
                     values.add((Serializable) value);
                 }
                 values.add(docModel.getId());
@@ -435,7 +439,7 @@ public class SQLSession extends BaseSession implements EntrySource {
                 int index = 1;
                 // TODO: how can I reset dirty fields?
                 for (Column column : storedColumnList) {
-                    Object value = dataModel.getData(column.getPhysicalName());
+                    Object value = dataModel.getData(column.getKey());
                     setFieldValue(ps, index, column, value);
                     index++;
                 }
@@ -695,7 +699,7 @@ public class SQLSession extends BaseSession implements EntrySource {
                     ps = sqlConnection.prepareStatement(countQuery);
                     int index = 1;
                     for (Column column : orderedColumns) {
-                        Object value = filterMap.get(column.getPhysicalName());
+                        Object value = filterMap.get(column.getKey());
                         setFieldValue(ps, index, column, value);
                         index++;
                     }
@@ -746,7 +750,7 @@ public class SQLSession extends BaseSession implements EntrySource {
                 List<Serializable> values = new ArrayList<Serializable>(
                         orderedColumns.size());
                 for (Column column : orderedColumns) {
-                    Object value = filterMap.get(column.getPhysicalName());
+                    Object value = filterMap.get(column.getKey());
                     values.add((Serializable) value);
                 }
                 addFilterValuesForLog(values);
@@ -758,7 +762,7 @@ public class SQLSession extends BaseSession implements EntrySource {
                 ps = sqlConnection.prepareStatement(query);
                 int index = 1;
                 for (Column column : orderedColumns) {
-                    Object value = filterMap.get(column.getPhysicalName());
+                    Object value = filterMap.get(column.getKey());
                     setFieldValue(ps, index, column, value);
                     index++;
                 }
@@ -819,7 +823,7 @@ public class SQLSession extends BaseSession implements EntrySource {
             if (column == null) {
                 throw new DirectoryException(String.format(
                         "Column '%s' does not exist in table '%s'", fieldName,
-                        table.getPhysicalName()));
+                        table.getKey()));
             }
             String columnName = column.getPhysicalName();
             if ("string".equals(typeName)) {
@@ -846,38 +850,41 @@ public class SQLSession extends BaseSession implements EntrySource {
 
     private void setFieldValue(PreparedStatement ps, int index, Column column,
             Object value) throws DirectoryException {
+        try {
+            column.setToPreparedStatement(ps, index,
+                    fieldValueForWrite(value, column));
+        } catch (SQLException e) {
+            throw new DirectoryException("setFieldValue failed", e);
+        }
+    }
+
+    protected Serializable fieldValueForWrite(Object value, Column column) {
         if (value instanceof String) {
-            if (column.getPhysicalName().equals(idField)) {
-                if (column.getType() == ColumnType.LONG) {
-                    // allow storing string into integer primary key
-                    value = Long.valueOf((String) value);
-                }
+            if (column.getType() == ColumnType.LONG) {
+                // allow storing string into integer/long key
+                return Long.valueOf((String) value);
             }
-            if (column.getPhysicalName().equals(passwordField)) {
+            if (column.getKey().equals(passwordField)) {
                 // hash password if not already hashed
                 String password = (String) value;
                 if (!PasswordHelper.isHashed(password)) {
                     password = PasswordHelper.hashPassword(password,
                             passwordHashAlgorithm);
                 }
-                value = password;
+                return password;
             }
         } else if (value instanceof Number) {
             if (column.getType() == ColumnType.LONG) {
                 // canonicalize to Long
                 if (value instanceof Integer) {
-                    value = Long.valueOf(((Integer) value).longValue());
+                    return Long.valueOf(((Integer) value).longValue());
                 }
             } else if (column.getType() == ColumnType.VARCHAR) {
                 // allow storing number in string field
-                value = value.toString();
+                return value.toString();
             }
         }
-        try {
-            column.setToPreparedStatement(ps, index, (Serializable) value);
-        } catch (SQLException e) {
-            throw new DirectoryException("setFieldValue failed", e);
-        }
+        return (Serializable) value;
     }
 
     @Override

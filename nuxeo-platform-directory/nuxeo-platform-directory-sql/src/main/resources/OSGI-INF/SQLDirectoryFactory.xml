@@ -26,6 +26,7 @@
           <schema>vocabulary</schema>
           <dataSource>java:/nxsqldirectory</dataSource>
           <table>t</table>
+          <nativeCase>false</nativeCase>
           <idField>username</idField>
           <passwordField>password</passwordField>
           <passwordHashAlgorithm>SSHA</passwordHashAlgorithm>
@@ -105,6 +106,12 @@
         <li>
           init-dependencies - a list of directories that should be
           initialized before this one
+        </li>
+        <li>
+          nativeCase - false if table and column names should be used exactly
+          as specificed in the configuration and schemas (quoted), true if
+          they should be converted to database-native case (usually
+          uppercase); the default is false for backward-compatibility.
         </li>
       </ul>
       The references tag is used to define relations between

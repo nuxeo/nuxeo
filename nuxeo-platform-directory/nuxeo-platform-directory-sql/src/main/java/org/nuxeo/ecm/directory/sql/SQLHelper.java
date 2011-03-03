@@ -43,6 +43,8 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCLogger;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Insert;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
+import org.nuxeo.ecm.core.storage.sql.jdbc.db.TableImpl;
+import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.runtime.api.Framework;
 
@@ -285,6 +287,20 @@ public class SQLHelper {
                             + formatColumnValues(columnValues));
                     continue;
                 }
+
+                if (logger.isLogEnabled()) {
+                    List<Serializable> values = new ArrayList<Serializable>(
+                            columnNames.length);
+                    for (int i = 0; i < columnNames.length; i++) {
+                        String value = columnValues[i];
+                        if (SQL_NULL_MARKER.equals(value)) {
+                            value = null;
+                        }
+                        values.add((Serializable) value);
+                    }
+                    logger.logSQL(insertSql, values);
+                }
+
                 for (int i = 0; i < columnNames.length; i++) {
                     Column column = columns.get(i);
                     String value = columnValues[i];
@@ -359,4 +375,29 @@ public class SQLHelper {
             }
         }
     }
+
+    public static Table addTable(String name, Dialect dialect,
+            boolean nativeCase) {
+        String physicalName;
+        if (nativeCase) {
+            physicalName = dialect.getTableName(name);
+        } else {
+            physicalName = name;
+        }
+        return new TableImpl(dialect, physicalName, null);
+    }
+
+    public static Column addColumn(Table table, String fieldName,
+            ColumnType type, boolean nativeCase) {
+        return ((TableImpl) table).addColumn(fieldName,
+                newColumn(table, fieldName, type, nativeCase));
+    }
+
+    public static Column newColumn(Table table, String fieldName,
+            ColumnType type, boolean nativeCase) {
+        String physicalName = nativeCase ? table.getDialect().getTableName(
+                fieldName) : fieldName;
+        return new Column(table, physicalName, type, fieldName);
+    }
+
 }
