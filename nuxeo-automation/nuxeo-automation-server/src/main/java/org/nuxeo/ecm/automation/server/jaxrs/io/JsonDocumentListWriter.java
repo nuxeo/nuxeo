@@ -87,6 +87,7 @@ public class JsonDocumentListWriter implements
 
             if (docs instanceof PaginableDocumentModelList) {
                 PaginableDocumentModelList provider = (PaginableDocumentModelList) docs;
+                json.element("isPaginable", true);
                 json.element("pageIndex", provider.getCurrentPageIndex());
                 json.element("pageSize", provider.getPageSize());
                 json.element("pageCount", provider.getNumberOfPages());
