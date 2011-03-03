@@ -28,7 +28,7 @@ public class TestUtils extends TestCase {
     }
 
     public void testCssToStyle() {
-        String cssSource = "div {color: red; font: 12px Arial;} li a {text-decoration: none;} .action .input{color: #ffffff;}"
+        String cssSource = "div {color: red; font: 12px Arial;} li a {text-decoration: none;} .action .input{color: #ffff01;}"
                 + "ul a {color: #0F0;background-image:url(image.png)} a > b {color: \"green (nuxeo DM color)\"} ul {}";
         StyleFormat style = new StyleFormat();
 
@@ -44,6 +44,7 @@ public class TestUtils extends TestCase {
 
         Properties props0 = style.getPropertiesFor(viewName, ".action .input");
         assertNotNull(props0);
+        assertEquals("#ffff01", props0.getProperty("color"));
 
         Properties props1 = style.getPropertiesFor(viewName, "div");
         assertEquals("red", props1.getProperty("color"));
