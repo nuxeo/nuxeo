@@ -6,16 +6,16 @@
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:nxthemes="http://nuxeo.org/nxthemes">
-  
+
 <c:if test="#{! empty typesMap.entrySet}">
   <h:form id="selectDocumentTypeForCreationForm">
     <rich:modalPanel id="selectDocTypePanel"  autosized="true"
       onmaskclick="Richfaces.hideModalPanel('selectDocTypePanel')">
-  
+
       <f:facet name="header">
         <h:outputText value="#{messages['title.availableDocumentTypes']}" />
       </f:facet>
-  
+
       <f:facet name="controls">
         <h:panelGroup>
           <h:graphicImage value="/icons/action_delete_mini.gif"
@@ -24,11 +24,11 @@
             attachTo="hideDocTypePanel" operation="hide" event="onclick" />
         </h:panelGroup>
       </f:facet>
-  
+
       <h:outputText value="#{messages['help.chooseDocumentType']}" />
-  
+
       <table cellspacing="2">
-  
+
         <nxu:dataList var="typesList" value="#{typesMap.entrySet}"
           id="selectDocumentTypeForCreationTable">
           <td style="vertical-align : top;width : 300px; padding:0px 20px 0px 0px;">
@@ -64,7 +64,7 @@
             </div>
           </td>
         </nxu:dataList>
-  
+
       </table>
     </rich:modalPanel>
   </h:form>
