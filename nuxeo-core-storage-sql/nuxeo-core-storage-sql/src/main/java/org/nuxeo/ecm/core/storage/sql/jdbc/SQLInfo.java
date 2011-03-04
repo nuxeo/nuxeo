@@ -1201,4 +1201,8 @@ public class SQLInfo {
         }
     }
 
+    public int getMaximumArgsForIn() {
+        return dialect.getMaximumArgsForIn();
+    }
+
 }

@@ -1349,6 +1349,33 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals("Read", acls[0].permission);
     }
 
+    public void testBulkFetchMany() throws Exception {
+        Session session = repository.getConnection();
+        Node root = session.getRootNode();
+        Node node1 = session.addChildNode(root, "n1", null, "TestDoc", false);
+        Node node2 = session.addChildNode(root, "n2", null, "TestDoc2", false);
+        session.save();
+
+        // another session
+        session.close();
+        session = repository.getConnection();
+
+        List<Serializable> ids = new ArrayList<Serializable>();
+        ids.add(node2.getId());
+        ids.add(node1.getId());
+        int size = 2000; // > dialect.getMaximumArgsForIn()
+        for (int i = 0; i < size; i++) {
+            ids.add("nosuchid-" + i);
+        }
+        List<Node> nodes = session.getNodesByIds(ids);
+        assertEquals(2 + size, nodes.size());
+        assertEquals(node2.getId(), nodes.get(0).getId());
+        assertEquals(node1.getId(), nodes.get(1).getId());
+        for (int i = 0; i < size; i++) {
+            assertNull(nodes.get(2 + i));
+        }
+    }
+
     public void testFulltext() throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();

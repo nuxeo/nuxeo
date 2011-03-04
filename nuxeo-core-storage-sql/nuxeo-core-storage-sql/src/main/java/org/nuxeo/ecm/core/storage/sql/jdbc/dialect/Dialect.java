@@ -882,6 +882,19 @@ public abstract class Dialect {
     }
 
     /**
+     * Maximum number of values in a IN (?, ?, ...) statement.
+     * <p>
+     * Beyond this size we'll do the query in several chunks.
+     * <p>
+     * PostgreSQL is limited to 65535 values in a prepared statement.
+     * <p>
+     * Oracle is limited to 1000 expressions in a list (ORA-01795).
+     */
+    public int getMaximumArgsForIn() {
+        return 400;
+    }
+
+    /**
      * Gets the statement to update the read acls
      *
      */
