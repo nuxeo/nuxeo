@@ -83,8 +83,8 @@
       <filter-id>only_for_manager</filter-id>
     </action>
 
-    <action id="ConnectAppsLocal" link="/incl/appcenter/connectLocal.xhtml"
-      label="tab.appstore.local" order="30">
+    <action id="ConnectAppsStudio" link="/incl/appcenter/studio.xhtml"
+      label="tab.appstore.studio" order="30">
       <category>NUXEO_ADMIN_ConnectApps</category>
       <filter-id>only_for_manager</filter-id>
     </action>
@@ -95,12 +95,11 @@
       <filter-id>only_for_manager</filter-id>
     </action>
 
-    <action id="ConnectAppsStudio" link="/incl/appcenter/studio.xhtml"
-      label="tab.appstore.studio" order="50">
+    <action id="ConnectAppsLocal" link="/incl/appcenter/connectLocal.xhtml"
+      label="tab.appstore.local" order="50">
       <category>NUXEO_ADMIN_ConnectApps</category>
       <filter-id>only_for_manager</filter-id>
     </action>
-
 
     <action id="adm_logout" link="#{loginLogoutAction.logout()}" label="command.logout">
       <category>NUXEO_ADMIN_USER_SERVICES</category>

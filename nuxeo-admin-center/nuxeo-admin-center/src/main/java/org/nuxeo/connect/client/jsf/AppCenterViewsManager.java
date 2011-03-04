@@ -49,6 +49,8 @@ import org.nuxeo.connect.update.PackageUpdateService;
 import org.nuxeo.connect.update.task.Task;
 import org.nuxeo.runtime.api.Framework;
 
+import sun.security.action.GetLongAction;
+
 /**
  * Manages JSF views for Package Management.
  *
@@ -184,6 +186,10 @@ public class AppCenterViewsManager implements Serializable {
             df.setTimeZone(TimeZone.getTimeZone("GMT"));
             return "last update completed : "
                     + df.format(lastStudioSnapshotUpdate.getTime());
+        }
+
+        if (studioSnapshotStatus==null) {
+            return " No previous Studio package installation";
         }
 
         return studioSnapshotStatus;
