@@ -17,6 +17,7 @@
 
 package org.nuxeo.connect.client.jsf;
 
+import org.nuxeo.connect.connector.ConnectSecurityError;
 import org.nuxeo.connect.data.SubscriptionStatus;
 
 /**
@@ -26,10 +27,16 @@ import org.nuxeo.connect.data.SubscriptionStatus;
  */
 public class SubscriptionStatusWrapper extends SubscriptionStatus {
 
+    protected boolean isSecurityError=false;
+
     public SubscriptionStatusWrapper(String errorMessage) {
         this.errorMessage = errorMessage;
     }
 
+    public SubscriptionStatusWrapper(ConnectSecurityError securityException) {
+        this.errorMessage = securityException.getMessage();
+        isSecurityError = true;
+    }
     public SubscriptionStatusWrapper(SubscriptionStatus status) {
         contractStatus = status.getContractStatus();
         description = status.getDescription();
@@ -45,6 +52,14 @@ public class SubscriptionStatusWrapper extends SubscriptionStatus {
 
     public String getContractStatusLabel() {
         return "label.subscriptionStatus." + getContractStatus();
+    }
+
+    public boolean isError() {
+        return errorMessage!=null;
+    }
+
+    public boolean isSecurityError() {
+        return isSecurityError;
     }
 
 }

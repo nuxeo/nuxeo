@@ -37,7 +37,7 @@
                  warnClass="warningFeedback"
                  errorClass="errorFeedback"/></div>
 
-                 <h:form>
+                 <h:form rendered="#{!connectLoginValidated}">
                  <table class="loginTable">
                    <tr>
                      <td class="labelColumn"><h:outputText value="#{messages['label.nuxeo.connect.login']}"/></td>
@@ -60,11 +60,12 @@
                </h:form>
 
              <h:panelGroup rendered="#{connectLoginValidated}">
+               <h:outputText value="#{messages['label.nuxeo.connect.onlineRegistrationStep2Description']}"/>
                <h:form>
                  <table class="loginTable">
                    <tr>
                      <td class="labelColumn"><h:outputText value="#{messages['label.nuxeo.connect.instanceDescription']}"/></td>
-                     <td><h:inputText value="#{connectStatus.instanceDescription}"/></td>
+                     <td><h:inputText value="#{connectStatus.instanceDescription}" size="24"/></td>
                    </tr>
                    <tr>
                      <td class="labelColumn"><h:outputText value="#{messages['label.nuxeo.connect.instanceType']}"/></td>
@@ -99,7 +100,12 @@
                        </td>
                      </tr>
                      <tr>
-                       <td class="labelColumn"></td>
+                       <td>
+                        <a4j:commandButton value="#{messages['action.connect.cancel']}"
+                           styleClass="button"
+                           action="#{connectStatus.resetRegister}"
+                           reRender="connectStatusPanel"/>
+                       </td>
                        <td>
                          <a4j:commandButton value="#{messages['action.connect.register']}"
                            styleClass="button"
@@ -159,13 +165,14 @@
 
   <h:panelGroup rendered="#{registredConnectInstance}">
 
+
+    <c:if test="#{!connectStatus.status.isError()}">
+
      <div class="infoMessage">
        #{messages['connect.message.registred']}
      </div>
 
      <h3><h:outputText value="#{messages['label.nuxeo.connect.registration.summary.title']}"/></h3>
-
-    <c:if test="#{empty connectStatus.status.errorMessage}">
 
     <table class="dataInput">
       <tr>
@@ -218,8 +225,20 @@
       </tr>
     </table>
     </c:if>
-    <c:if test="#{not empty connectStatus.status.errorMessage}">
-      <h:outputText value="#{messages['label.nuxeo.connect.statusError']}"/>  <h:outputText value="#{connectStatus.status.errorMessage}"/>
+    <c:if test="#{connectStatus.status.isError()}">
+    <br/>
+     <div class="warningFeedback">
+       #{messages['connect.message.registred.problem']}
+     </div>
+    <br/>
+      <c:if test="#{connectStatus.status.isSecurityError()}">
+          <h:outputText value="#{messages['label.nuxeo.connect.securityError']}"/><br/>
+          (<h:outputText value="#{connectStatus.status.errorMessage}"/>)
+      </c:if>
+
+      <c:if test="#{!connectStatus.status.isSecurityError()}">
+          <h:outputText value="#{messages['label.nuxeo.connect.statusError']}"/>  <h:outputText value="#{connectStatus.status.errorMessage}"/>
+      </c:if>
     </c:if>
 
    </h:panelGroup>

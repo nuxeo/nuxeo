@@ -25,6 +25,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.faces.application.FacesMessage;
@@ -42,6 +44,7 @@ import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 import org.nuxeo.connect.connector.CanNotReachConnectServer;
 import org.nuxeo.connect.connector.ConnectClientVersionMismatchError;
+import org.nuxeo.connect.connector.ConnectSecurityError;
 import org.nuxeo.connect.connector.ConnectServerError;
 import org.nuxeo.connect.connector.NuxeoClientInstanceType;
 import org.nuxeo.connect.data.ConnectProject;
@@ -74,7 +77,7 @@ public class ConnectStatusActionBean implements Serializable {
 
     @In(create = true, required = false)
     protected FacesMessages facesMessages;
-	
+
     @In(create = true)
     protected ResourcesAccessor resourcesAccessor;
 
@@ -211,6 +214,9 @@ public class ConnectStatusActionBean implements Serializable {
                             "Connect Client does not have the required version to communicate with Nuxeo Connect Server",
                             e);
                     return new SubscriptionStatusWrapper(e.getMessage());
+                } catch (ConnectSecurityError e) {
+                    log.warn("Can not authenticated against Connect Server", e);
+                    return new SubscriptionStatusWrapper(e);
                 } catch (ConnectServerError e) {
                     log.error("Error while calling connect server", e);
                     return new SubscriptionStatusWrapper(e.getMessage());
@@ -254,19 +260,40 @@ public class ConnectStatusActionBean implements Serializable {
             return new ArrayList<ConnectProject>();
         }
         try {
-            return getService().getAvailableProjectsForRegistration(login,
-                    password);
+            List<ConnectProject> projects = getService().getAvailableProjectsForRegistration(login,password);
+            if (projects!=null && projects.size()>0) {
+                Collections.sort(projects, new Comparator<ConnectProject>() {
+                    @Override
+                    public int compare(ConnectProject o1, ConnectProject o2) {
+                        return o1.getName().compareTo(o2.getName());
+                    }
+                });
+            }
+            return projects;
         } catch (Exception e) {
             log.error("Error while getting remote project", e);
             return new ArrayList<ConnectProject>();
         }
     }
 
+    public String resetRegister() {
+        login=null;
+        password=null;
+        loginValidated = false;
+        registredProject=null;
+        instanceDescription = null;
+        flushEventCache();
+        return null;
+    }
+
     public String register() {
         if (registredProject == null) {
-            facesMessages.add(FacesMessage.SEVERITY_WARN, 
-			resourcesAccessor.getMessages().get("label.empty.project"));
+            facesMessages.add(FacesMessage.SEVERITY_WARN,
+            resourcesAccessor.getMessages().get("label.empty.project"));
             return null;
+        }
+        if (instanceDescription==null || instanceDescription.isEmpty()) {
+            instanceDescription = login + "'s " + instanceType + " instance";
         }
         try {
             getService().remoteRegisterInstance(login, password,
@@ -275,7 +302,7 @@ public class ConnectStatusActionBean implements Serializable {
                     instanceDescription);
         } catch (Exception e) {
             facesMessages.add(FacesMessage.SEVERITY_ERROR,
-					resourcesAccessor.getMessages().get("label.connect.registrationError"));
+                    resourcesAccessor.getMessages().get("label.connect.registrationError"));
             log.error("Error while registring instance", e);
         }
 
