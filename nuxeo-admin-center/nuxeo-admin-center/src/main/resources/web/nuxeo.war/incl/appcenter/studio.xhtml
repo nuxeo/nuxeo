@@ -6,36 +6,51 @@
 
   <a4j:outputPanel id="connectAppListing">
     <div class="actionBar marketplace">
-    	<span class="marketplaceLogo"><a target="_blank" href="https://doc.nuxeo.com/display/Studio/Nuxeo+Studio+Documentation+Center"><img src="/nuxeo/img/nuxeo_studio_logo.png" alt="Nuxeo Studio" /></a></span>
-    	<span class="label"><a class="connectLink" target="_blank" href="https://doc.nuxeo.com/display/Studio/Nuxeo+Studio+Documentation+Center"><h:outputText value="#{messages['label.tab.studio.intro']}"/></a></span>
-    </div>
-    
-		<div class="actionBar">
-      <h:panelGroup rendered="#{!appsViews.isStudioSnapshopUpdateInProgress()}">
-        <div>
-          <h:outputText value="#{messages['label.studio.update.lastStatus']}"/>
-          <h:outputText value="#{appsViews.getStudioInstallationStatus()}" styleClass="boldLabel"/>
-        </div>
-      </h:panelGroup>
-      
-      <h:form>
-      	<a4j:poll interval="1000" enabled="#{appsViews.isStudioSnapshopUpdateInProgress()}" reRender="connectAppListing"/>
-    	</h:form>
-    	
-    	<h:panelGroup rendered="#{!appsViews.isStudioSnapshopUpdateInProgress()}">
-    	  <div class="studioUpdateActions">
-          <h:outputText value="#{messages['label.studio.update']}" styleClass="boldLabel"/>
-          <h:outputText value="#{messages['label.studio.latest.config']}"/> 
-          <h:outputText value="#{messages['label.studio.refresh']}" styleClass="boldLabel"/> 
-          <h:outputText value="#{messages['label.studio.tagged.version']}"/>
-        </div>
-        <h:form>
-          <a4j:commandButton value="#{messages['admCommand.studio.update']}" actionListener="#{appsViews.installStudioSnapshot()}"  reRender="connectAppListing" />
-          <a4j:commandButton value="#{messages['admCommand.studio.refresh']}" actionListener="#{appsViews.flushCache()}"  reRender="connectAppListing" />
-        </h:form>
-    	</h:panelGroup>
+      <span class="marketplaceLogo"><a target="_blank" href="https://doc.nuxeo.com/display/Studio/Nuxeo+Studio+Documentation+Center"><img src="/nuxeo/img/nuxeo_studio_logo.png" alt="Nuxeo Studio" /></a></span>
+      <span class="label"><a class="connectLink" target="_blank" href="https://doc.nuxeo.com/display/Studio/Nuxeo+Studio+Documentation+Center"><h:outputText value="#{messages['label.tab.studio.intro']}"/></a></span>
     </div>
 
+  <div class="actionBar">
+
+      <h:form>
+        <a4j:poll interval="1000" enabled="#{appsViews.isStudioSnapshopUpdateInProgress()}" reRender="connectAppListing"/>
+      </h:form>
+
+        <div class="studioUpdateActions">
+          <h:outputText value="#{messages['label.studio.devmod.title']}" styleClass="boldLabel"/>
+        </div>
+        <div class="studioUpdateActions">
+          <h:outputText value="#{messages['label.studio.devmod.desc1']}"/>
+          <h:outputText value="#{messages['label.studio.devmod.desc2']}"/><br/>
+          <h:outputText value="#{messages['label.studio.devmod.desc3']}"/><br/>
+        </div>
+
+      <h:panelGroup rendered="#{!appsViews.isStudioSnapshopUpdateInProgress()}">
+        <h:form>
+        <div class="studioUpdateActions">
+          <h:outputText value="#{messages['label.studio.update.lastStatus']}"/>
+          <h:outputText value="#{appsViews.getStudioInstallationStatus()}" styleClass="boldLabel"/>
+          <a4j:commandButton value="#{messages['admCommand.studio.update']}" actionListener="#{appsViews.installStudioSnapshot()}"  reRender="connectAppListing" />
+          <h:outputText value="#{messages['label.studio.update']}"/>
+        </div>
+        </h:form>
+      </h:panelGroup>
+    </div>
+    <br/>
+    <div class="actionBar">
+        <div class="studioUpdateActions">
+          <h:outputText value="#{messages['label.studio.prodmod.title']}" styleClass="boldLabel"/>
+        </div>
+        <div class="studioUpdateActions">
+          <h:outputText value="#{messages['label.studio.prodmod.desc1']}"/>
+          ( <A href="https://doc.nuxeo.com/display/Studio/Version+Control#VersionControl-creatingtag" target="docnuxeocom" ><h:outputText value="#{messages['label.studio.prodmod.tagLink']}"/></A> )
+          <h:outputText value="#{messages['label.studio.prodmod.desc2']}"/>
+        </div>
+        <h:form>
+        <a4j:commandButton value="#{messages['admCommand.studio.refresh']}" actionListener="#{appsViews.flushCache()}"  reRender="connectAppListing" />
+        <h:outputText value="#{messages['label.studio.refresh']}"/>
+        </h:form>
+    </div>
 
     <h:panelGroup rendered="#{appsViews.isStudioSnapshopUpdateInProgress()}" styleClass="boldLabel">
       <div class="actionBar marketplace">
@@ -46,7 +61,7 @@
 
 
   <c:if test="#{connectServerReachable and registredConnectInstance}">
-    <iframe src="/nuxeo/site/connectClient/packages/studio" frameborder="0" scrolling="auto" width="100%" height="300px">
+    <iframe src="/nuxeo/site/connectClient/packages/studio" frameborder="0" scrolling="auto" width="100%" height="200px">
       <img src="/nuxeo/img/big_loading.gif"/>
     </iframe>
     </c:if>
