@@ -81,8 +81,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
     }
 
     @Override
-    public InvalidationsPair receiveInvalidations()
-            throws StorageException {
+    public InvalidationsPair receiveInvalidations() throws StorageException {
         Invalidations invalidations = null;
         if (clusterNodeHandler != null) {
             receiveClusterInvalidations();
@@ -92,8 +91,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                 invalidations, null);
     }
 
-    protected void receiveClusterInvalidations()
-            throws StorageException {
+    protected void receiveClusterInvalidations() throws StorageException {
         Invalidations invalidations = clusterNodeHandler.receiveClusterInvalidations();
         // send received invalidations to all mappers
         if (invalidations != null && !invalidations.isEmpty()) {
@@ -150,14 +148,37 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
         List<RowId> res = new ArrayList<RowId>(rowIds.size());
         for (Entry<String, Set<Serializable>> en : tableIds.entrySet()) {
             String tableName = en.getKey();
-            Set<Serializable> ids = en.getValue();
-            Collection<Row> rows;
-            if (model.isCollectionFragment(tableName)) {
-                rows = readCollectionArrays(tableName, ids);
+            Set<Serializable> ids = new HashSet<Serializable>(en.getValue());
+            int size = ids.size();
+            int chunkSize = sqlInfo.getMaximumArgsForIn();
+            List<Row> rows;
+            if (size > chunkSize) {
+                List<Serializable> idList = new ArrayList<Serializable>(ids);
+                rows = new ArrayList<Row>(size);
+                for (int start = 0; start < size; start += chunkSize) {
+                    int end = start + chunkSize;
+                    if (end > size) {
+                        end = size;
+                    }
+                    // needs to be Serializable -> copy
+                    List<Serializable> chunkIds = new ArrayList<Serializable>(
+                            idList.subList(start, end));
+                    List<Row> chunkRows;
+                    if (model.isCollectionFragment(tableName)) {
+                        chunkRows = readCollectionArrays(tableName, chunkIds);
+                    } else {
+                        chunkRows = readSimpleRows(tableName, chunkIds);
+                    }
+                    rows.addAll(chunkRows);
+                }
             } else {
-                rows = readSimpleRows(tableName, ids);
+                if (model.isCollectionFragment(tableName)) {
+                    rows = readCollectionArrays(tableName, ids);
+                } else {
+                    rows = readSimpleRows(tableName, ids);
+                }
             }
-            // check we have all the ids (readMultipleRows may have some
+            // check we have all the ids (readSimpleRows may have some
             // missing)
             for (Row row : rows) {
                 res.add(row);
