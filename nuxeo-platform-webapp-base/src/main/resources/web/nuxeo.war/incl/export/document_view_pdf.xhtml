@@ -39,15 +39,17 @@
 
 <ui:include src="/incl/export/document_content_pdf_template.xhtml" />
 
-<nxp:paragraph>
-  <nxp:font size="14" style="bold">
-    <nxp:paragraph>
-      #{messages['action.view.metadata.specific']}
-    </nxp:paragraph>
-  </nxp:font>
-  <nxl:documentLayout value="#{currentDocument}" mode="pdf"
-    template="/layouts/layout_pdf_template.xhtml" />
-</nxp:paragraph>
+<c:if test="#{not empty nxd:typeInfo(currentDocument).getLayouts('pdf')}">
+  <nxp:paragraph>
+    <nxp:font size="14" style="bold">
+      <nxp:paragraph>
+        #{messages['action.view.metadata.specific']}
+      </nxp:paragraph>
+    </nxp:font>
+   <nxl:documentLayout value="#{currentDocument}" mode="pdf"
+     template="/layouts/layout_pdf_template.xhtml" />
+  </nxp:paragraph>
+</c:if>
 
 <nxp:paragraph>
   <nxp:font size="14" style="bold">
