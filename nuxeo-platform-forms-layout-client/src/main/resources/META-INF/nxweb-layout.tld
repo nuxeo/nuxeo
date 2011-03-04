@@ -502,7 +502,16 @@
       <type>java.lang.String</type>
       <description>
         Mode in which layouts must be taken on the document definition, as well
-        as rendered.
+        as rendered if attribute "documentMode" is not defined.
+      </description>
+    </attribute>
+    <attribute>
+      <name>documentMode</name>
+      <required>false</required>
+      <type>java.lang.String</type>
+      <description>
+        Mode in which layouts must be taken on the document definition, if
+        defined (otherwise, will use the "mode" attribute value).
       </description>
     </attribute>
     <attribute>

@@ -62,6 +62,8 @@ public class DocumentLayoutTagHandler extends TagHandler {
 
     protected final TagAttribute mode;
 
+    protected final TagAttribute documentMode;
+
     protected final TagAttribute value;
 
     protected final TagAttribute template;
@@ -79,12 +81,14 @@ public class DocumentLayoutTagHandler extends TagHandler {
     protected final TagAttribute[] vars;
 
     protected final String[] reservedVarsArray = { "id", "name", "mode",
-            "value", "template", "defaultLayout", "includeAnyMode" };
+            "documentMode", "value", "template", "defaultLayout",
+            "includeAnyMode" };
 
     public DocumentLayoutTagHandler(TagConfig config) {
         super(config);
         this.config = config;
         mode = getRequiredAttribute("mode");
+        documentMode = getAttribute("documentMode");
         value = getRequiredAttribute("value");
         template = getAttribute("template");
         defaultLayout = getAttribute("defaultLayout");
@@ -107,11 +111,16 @@ public class DocumentLayoutTagHandler extends TagHandler {
             return;
         }
         String modeValue = mode.getValue(ctx);
+        String documentModeValue = null;
+        if (documentMode != null) {
+            documentModeValue = documentMode.getValue(ctx);
+        }
         boolean useAnyMode = true;
         if (includeAnyMode != null) {
             useAnyMode = includeAnyMode.getBoolean(ctx);
         }
-        String[] layoutNames = typeInfo.getLayouts(modeValue,
+        String[] layoutNames = typeInfo.getLayouts(
+                documentModeValue == null ? modeValue : documentModeValue,
                 useAnyMode ? BuiltinModes.ANY : null);
         if (layoutNames == null || layoutNames.length == 0) {
             // fallback on default layout
