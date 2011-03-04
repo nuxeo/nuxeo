@@ -28,7 +28,7 @@
       <h:outputText value="#{messages['help.chooseDocumentType']}" />
 
       <table cellspacing="2">
-
+        <tr>
         <nxu:dataList var="typesList" value="#{typesMap.entrySet}"
           id="selectDocumentTypeForCreationTable">
           <td style="vertical-align : top;width : 300px; padding:0px 20px 0px 0px;">
@@ -64,7 +64,7 @@
             </div>
           </td>
         </nxu:dataList>
-
+        </tr>
       </table>
     </rich:modalPanel>
   </h:form>
