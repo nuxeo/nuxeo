@@ -16,6 +16,6 @@
   <xs:element name="keyType" type="xs:string"/>
   <xs:element name="serviceName" type="xs:string"/>
 
-  <xs:element name="enabled" type="xs:integer"/>
+  <xs:element name="enabled" type="xs:boolean"/>
 
 </xs:schema>

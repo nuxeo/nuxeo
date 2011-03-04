@@ -79,8 +79,8 @@ public class NuxeoOAuthServiceProvider extends OAuthServiceProvider {
         provider.keyType = (String) entry.getProperty(SCHEMA, "keyType");
         provider.publicKey = (String) entry.getProperty(SCHEMA, "publicKey");
         provider.serviceName = (String) entry.getProperty(SCHEMA, "serviceName");
-        Long enabledFlag = (Long) entry.getProperty(SCHEMA, "enabled");
-        if (enabledFlag==0) {
+        Boolean enabledFlag = (Boolean) entry.getProperty(SCHEMA, "enabled");
+        if (Boolean.FALSE.equals(enabledFlag)) {
             provider.enabled=false;
         }
         return provider;
@@ -97,12 +97,7 @@ public class NuxeoOAuthServiceProvider extends OAuthServiceProvider {
         entry.setProperty(SCHEMA, "requestTokenURL", requestTokenURL);
         entry.setProperty(SCHEMA, "accessTokenURL", accessTokenURL);
         entry.setProperty(SCHEMA, "userAuthorizationURL", userAuthorizationURL);
-
-        if (enabled) {
-            entry.setProperty(SCHEMA, "enabled", 1);
-        } else {
-            entry.setProperty(SCHEMA, "enabled", 0);
-        }
+        entry.setProperty(SCHEMA, "enabled", Boolean.valueOf(enabled));
         return entry;
     }
 

@@ -87,13 +87,13 @@ public class NuxeoOAuthConsumer extends OAuthConsumer {
         consumer.signedFetchSupport = (String) entry.getProperty(SCHEMA, "signedFetchSupport");
         consumer.dedicatedLogin = (String) entry.getProperty(SCHEMA, "dedicatedLogin");
 
-        Long enabledFlag = (Long) entry.getProperty(SCHEMA, "enabled");
-        if (enabledFlag==0) {
+        Boolean enabledFlag = (Boolean) entry.getProperty(SCHEMA, "enabled");
+        if (Boolean.FALSE.equals(enabledFlag)) {
             consumer.enabled=false;
         }
 
-        Long allowBypassVerifierFlag = (Long) entry.getProperty(SCHEMA, "allowBypassVerifier");
-        if (allowBypassVerifierFlag==1) {
+        Boolean allowBypassVerifierFlag = (Boolean) entry.getProperty(SCHEMA, "allowBypassVerifier");
+        if (Boolean.TRUE.equals(allowBypassVerifierFlag)) {
             consumer.allowBypassVerifier=true;
         }
 
@@ -115,16 +115,9 @@ public class NuxeoOAuthConsumer extends OAuthConsumer {
         entry.setProperty(SCHEMA, "description", description);
         entry.setProperty(SCHEMA, "signedFetchSupport", signedFetchSupport);
         entry.setProperty(SCHEMA, "dedicatedLogin", dedicatedLogin);
-        if (enabled) {
-            entry.setProperty(SCHEMA, "enabled", 1);
-        } else {
-            entry.setProperty(SCHEMA, "enabled", 0);
-        }
-        if (allowBypassVerifier) {
-            entry.setProperty(SCHEMA, "allowBypassVerifier", 1);
-        } else {
-            entry.setProperty(SCHEMA, "allowBypassVerifier", 0);
-        }
+        entry.setProperty(SCHEMA, "enabled", Boolean.valueOf(enabled));
+        entry.setProperty(SCHEMA, "allowBypassVerifier",
+                Boolean.valueOf(allowBypassVerifier));
         return entry;
     }
 
