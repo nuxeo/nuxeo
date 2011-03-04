@@ -48,9 +48,10 @@ public class BuiltinModes {
 
     /**
      * @deprecated: use {@link #VIEW} instead
+     * @since 5.4.1
      */
     @Deprecated
-    public static final String HEADER = "header";
+    protected static final String HEADER = "header";
 
     /**
      * @since 5.4.1
@@ -103,6 +104,7 @@ public class BuiltinModes {
                 return BuiltinWidgetModes.EDIT;
             } else if (layoutMode.startsWith(VIEW)
                     || layoutMode.startsWith(SUMMARY)
+                    || layoutMode.startsWith(LISTING)
                     || layoutMode.startsWith(HEADER)) {
                 return BuiltinWidgetModes.VIEW;
             } else if (layoutMode.startsWith(CSV)) {
