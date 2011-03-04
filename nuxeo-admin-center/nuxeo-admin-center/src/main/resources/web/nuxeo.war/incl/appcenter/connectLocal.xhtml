@@ -3,6 +3,7 @@
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxd="http://nuxeo.org/nxweb/document">
 
+<div style="display:none" id="uploadForm">
 <h:form enctype="multipart/form-data" class="packageUploadBlock">
    <h5><h:outputText value="#{messages['label.upload.package']}" /></h5>
    <nxu:inputFile  id="t_pkgupload" editFilename="false" value="#{connectStatus.packageToUpload}"
@@ -11,12 +12,13 @@
     <h:message styleClass="errorMessage" for="t_pkgupload" />
    <h:commandButton value="#{messages['command.upload']}" action="#{connectStatus.uploadPackage()}"/>
 </h:form>
-
+</div>
 <a4j:outputPanel id="connectAppListing">
   <div class="actionBar">
-    <h:form>
-   <h:outputText value="#{messages[label.packagetype]}" />
-    <h:selectOneListbox class="dataInputText" size="1"
+  <h:outputText value="#{messages['connect.local.repository.desc']}" /><br/>
+   <h:form>
+   <h:outputText value="#{messages['label.packagetype']}" />
+   <h:selectOneListbox class="dataInputText" size="1"
                   value="#{appsViews.packageTypeFilter}"
                    onchange="Element.next(this).firstChild.click();">
 
@@ -29,6 +31,7 @@
                   <div style="display: none;">
                 <a4j:commandButton value="submit" reRender="connectAppListing"/>
             </div>
+    <input type="button" value="#{messages['label.upload.package']}" onclick="jQuery('#uploadForm').css('display','block');"/>
     </h:form>
   </div>
 
