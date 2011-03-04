@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.nuxeo.ecm.webengine.jaxrs.Activator;
 
+import com.sun.jersey.server.impl.container.WebApplicationProviderImpl;
 import com.sun.jersey.spi.container.servlet.ServletContainer;
 
 
@@ -101,7 +102,7 @@ public class JerseyServlet extends ServletContainer {
     protected void superInit() throws ServletException {
         Thread thread = Thread.currentThread();
         ClassLoader cl = thread.getContextClassLoader();
-        thread.setContextClassLoader(JerseyServlet.class.getClassLoader());
+        thread.setContextClassLoader(WebApplicationProviderImpl.class.getClassLoader());
         try {
             super.init();
         } finally {
@@ -112,7 +113,7 @@ public class JerseyServlet extends ServletContainer {
     protected void superDestroy() {
         Thread thread = Thread.currentThread();
         ClassLoader cl = thread.getContextClassLoader();
-        thread.setContextClassLoader(JerseyServlet.class.getClassLoader());
+        thread.setContextClassLoader(WebApplicationProviderImpl.class.getClassLoader());
         try {
             super.destroy();
         } finally {
