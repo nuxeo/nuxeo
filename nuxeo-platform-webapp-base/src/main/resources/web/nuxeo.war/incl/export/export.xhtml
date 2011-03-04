@@ -23,6 +23,14 @@
   <ui:define name="body">
     <div>
 
+      <div class="exportViewBrowseBack">
+        <p class="directoryBack">
+          <nxd:restDocumentLink document="#{currentDocument}">
+            <h:outputText value="#{messages['label.browse.backToDocumentView']}" />
+          </nxd:restDocumentLink>
+        </p>
+      </div>
+
       <nxl:documentLayout mode="header" value="#{currentDocument}"
         defaultLayout="document_header" includeAnyMode="false" />
 
