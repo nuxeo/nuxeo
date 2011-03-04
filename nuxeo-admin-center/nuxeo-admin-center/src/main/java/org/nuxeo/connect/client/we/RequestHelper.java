@@ -19,6 +19,7 @@ package org.nuxeo.connect.client.we;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.ecm.webengine.model.WebContext;
 
 public class RequestHelper {
@@ -35,8 +36,8 @@ public class RequestHelper {
         if (referer == null) {
             return false;
         }
-        String currentUrl = request.getRequestURL().toString();
 
+        String currentUrl = VirtualHostHelper.getServerURL(request) + request.getRequestURI().substring(1);
         String[] currentUrlParts = currentUrl.split("connectClient");
         String[] refererParts = referer.split("connectClient");
 
