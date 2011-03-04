@@ -267,6 +267,7 @@
         <exclude name="nuxeo-platform-url-api*" />
         <include name="nuxeo-platform-webapp*" />
         <include name="nuxeo-webengine-*" />
+        <exclude name="nuxeo-webengine-jaxrs*" />
         <exclude name="nuxeo-webengine-core*" />
         <exclude name="nuxeo-webengine-base*" />
         <exclude name="nuxeo-webengine-admin*" />

@@ -112,12 +112,12 @@ H2 {
   color: #454545;
   margin:0 0 0.8em 0;
   }
-  
+
 .footer {
   font: 9px "Lucida Grande", sans-serif;
   text-align: center;
   color: #ededed;
-  
+
   }
 
 -->
@@ -137,9 +137,9 @@ H2 {
                </p>
                <p class="welcomeText">
                  You'll find more information about Nuxeo and CMIS on the
-                 <a href="http://doc.nuxeo.org/xwiki/bin/view/Main/CMIS">Nuxeo CMIS Wiki</a>.<br/>
+                 <a href="https://doc.nuxeo.com/x/JIAO">Nuxeo CMIS Wiki</a>.<br/>
                  You can also discuss your Nuxeo and CMIS experience on the
-                 <a href="http://discussions.nuxeo.org/discussions/forum.jspa?forumID=12">Nuxeo CMIS forum</a>.
+                 <a href="http://forum.nuxeo.com/f/12/">Nuxeo CMIS forum</a>.
                </p>
     </div>
     <div class="footer">Copyright &copy; 2010 Nuxeo and its respective authors.</div>
