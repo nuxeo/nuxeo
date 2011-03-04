@@ -52,8 +52,13 @@ public class DocumentPathCodec extends AbstractDocumentViewCodec {
 
     public static final String PREFIX = "nxpath";
 
-    // nxpath/server/path/to/doc@view_id/?requestParams
-    public static final String URL_PATTERN = "/([\\w\\.]+)(/([^@?]*))?(@([\\w\\-\\.]+))(/)?(\\?(.*)?)?";
+    // nxpath/server/path/to/doc@view_id?requestParams
+    public static final String URL_PATTERN = "/" // slash
+            + "([\\w\\.]+)" // server name (group 1)
+            + "(?:/(.*))?" // path (group 2) (optional)
+            + "@([\\w\\-\\.]+)" // view id (group 3)
+            + "/?" // final slash (optional)
+            + "(?:\\?(.*)?)?"; // query (group 4) (optional)
 
     public DocumentPathCodec() {
     }
@@ -69,6 +74,7 @@ public class DocumentPathCodec extends AbstractDocumentViewCodec {
         return PREFIX;
     }
 
+    @Override
     public String getUrlFromDocumentView(DocumentView docView) {
         // Use DocumentIdCodec if the document is a version
         if ("true".equals(docView.getParameter("version"))) {
@@ -129,13 +135,14 @@ public class DocumentPathCodec extends AbstractDocumentViewCodec {
      * Extracts document location from a Zope-like URL, eg:
      * server/path_or_docId/view_id/tab_id .
      */
+    @Override
     public DocumentView getDocumentViewFromUrl(String url) {
         final Pattern pattern = Pattern.compile(getPrefix() + URL_PATTERN);
         Matcher m = pattern.matcher(url);
         if (m.matches()) {
 
             final String server = m.group(1);
-            String path = m.group(3);
+            String path = m.group(2);
             if (path != null) {
                 // add leading slash to make it absolute if it's not the root
                 path = "/" + URIUtils.unquoteURIPathComponent(path);
@@ -143,15 +150,11 @@ public class DocumentPathCodec extends AbstractDocumentViewCodec {
                 path = "/";
             }
             final DocumentRef docRef = new PathRef(path);
-            final String viewId = m.group(5);
+            final String viewId = m.group(3);
 
             // get other parameters
-
-            Map<String, String> params = null;
-            if (m.groupCount() > 7) {
-                String query = m.group(8);
-                params = URIUtils.getRequestParameters(query);
-            }
+            String query = m.group(4);
+            Map<String, String> params = URIUtils.getRequestParameters(query);
 
             final DocumentLocation docLoc = new DocumentLocationImpl(server,
                     docRef);

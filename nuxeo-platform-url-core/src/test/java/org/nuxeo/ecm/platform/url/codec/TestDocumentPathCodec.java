@@ -189,6 +189,17 @@ public class TestDocumentPathCodec extends TestCase {
         assertEquals(new PathRef("/path/foo@bar/doc"), docLoc.getDocRef());
         assertEquals("view_documents", docView.getViewId());
         assertNull(docView.getSubURI());
+
+        // with unescaped @ character (happens when Apache proxying forwards
+        // us an URL, some % decoding is done)
+        url = "nxpath/demo/path/foo@bar/doc@view_documents?tabId=TAB_CONTENT";
+        docView = codec.getDocumentViewFromUrl(url);
+        assertNotNull(docView);
+        docLoc = docView.getDocumentLocation();
+        assertEquals("demo", docLoc.getServerName());
+        assertEquals(new PathRef("/path/foo@bar/doc"), docLoc.getDocRef());
+        assertEquals("view_documents", docView.getViewId());
+        assertNull(docView.getSubURI());
     }
 
 }
