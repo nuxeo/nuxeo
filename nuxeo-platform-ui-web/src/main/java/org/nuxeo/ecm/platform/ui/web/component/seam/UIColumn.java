@@ -80,7 +80,40 @@ public class UIColumn extends org.jboss.seam.excel.ui.UIColumn {
         // data
         // XXX: process all components instead of just UICell ones.
         for (UIComponent child : getChildren()) {
-            encodeChild(facesContext, sheet, excelWorkbook, child);
+            Object oldValue = null;
+            Iterator iterator = null;
+            // Store away the old value for the sheet binding var (if there is
+            // one)
+            if (sheet.getVar() != null) {
+                oldValue = FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get(
+                        sheet.getVar());
+                iterator = sheet.getDataIterator();
+            } else {
+                // No var, no iteration...
+                iterator = new ArrayList().iterator();
+            }
+
+            while (iterator.hasNext()) {
+                // Store the bound data in the request map and add the cell
+                FacesContext.getCurrentInstance().getExternalContext().getRequestMap().put(
+                        sheet.getVar(), iterator.next());
+
+                encodeChild(facesContext, sheet, excelWorkbook, child);
+            }
+
+            // No iteration, nothing to restore
+            if (sheet.getVar() == null) {
+                return;
+            }
+            // Restore the previously modified request map (if there was a var)
+            if (oldValue == null) {
+                FacesContext.getCurrentInstance().getExternalContext().getRequestMap().remove(
+                        sheet.getVar());
+            } else {
+                FacesContext.getCurrentInstance().getExternalContext().getRequestMap().put(
+                        sheet.getVar(), oldValue);
+            }
+
         }
 
         // Add footer items (if any)
@@ -97,54 +130,22 @@ public class UIColumn extends org.jboss.seam.excel.ui.UIColumn {
     @SuppressWarnings("unchecked")
     protected void encodeChild(FacesContext facesContext, UIWorksheet sheet,
             ExcelWorkbook excelWorkbook, UIComponent child) throws IOException {
-        Object oldValue = null;
-        Iterator iterator = null;
-        // Store away the old value for the sheet binding var (if there is
-        // one)
-        if (sheet.getVar() != null) {
-            oldValue = FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get(
-                    sheet.getVar());
-            iterator = sheet.getDataIterator();
+        // XXX make sure other components are processed
+        if (child instanceof WorksheetItem) {
+            excelWorkbook.addItem((WorksheetItem) child);
         } else {
-            // No var, no iteration...
-            iterator = new ArrayList().iterator();
-        }
-
-        while (iterator.hasNext()) {
-            // Store the bound data in the request map and add the cell
-            FacesContext.getCurrentInstance().getExternalContext().getRequestMap().put(
-                    sheet.getVar(), iterator.next());
-
-            // XXX make sure other components are processed
-            if (child instanceof WorksheetItem) {
-                excelWorkbook.addItem((WorksheetItem) child);
-            } else {
-                if (child.isRendered()) {
-                    child.encodeBegin(facesContext);
-                    // do not let component handling render of its children
-                    List subChildren = child.getChildren();
-                    for (int j = 0, size = child.getChildCount(); j < size; j++) {
-                        UIComponent subChild = (UIComponent) subChildren.get(j);
-                        encodeChild(facesContext, sheet, excelWorkbook,
-                                subChild);
-                    }
-                    child.encodeEnd(facesContext);
+            if (child.isRendered()) {
+                child.encodeBegin(facesContext);
+                // do not let component handling render of its children
+                List subChildren = child.getChildren();
+                for (int j = 0, size = child.getChildCount(); j < size; j++) {
+                    UIComponent subChild = (UIComponent) subChildren.get(j);
+                    encodeChild(facesContext, sheet, excelWorkbook, subChild);
                 }
+                child.encodeEnd(facesContext);
             }
         }
 
-        // No iteration, nothing to restore
-        if (sheet.getVar() == null) {
-            return;
-        }
-        // Restore the previously modified request map (if there was a var)
-        if (oldValue == null) {
-            FacesContext.getCurrentInstance().getExternalContext().getRequestMap().remove(
-                    sheet.getVar());
-        } else {
-            FacesContext.getCurrentInstance().getExternalContext().getRequestMap().put(
-                    sheet.getVar(), oldValue);
-        }
     }
 
     @SuppressWarnings("unchecked")
