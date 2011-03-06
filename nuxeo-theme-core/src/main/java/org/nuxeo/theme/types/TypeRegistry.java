@@ -54,7 +54,9 @@ public final class TypeRegistry implements Registrable {
         TypeFamily typeFamily = type.getTypeFamily();
         String key = computeKey(typeFamily, typeName);
         registry.remove(key);
-        typeNames.get(typeFamily).remove(typeName);
+        if (typeNames.containsKey(typeFamily)) {
+            typeNames.get(typeFamily).remove(typeName);
+        }
         log.debug("Unregistered theme " + typeFamily + ": " + typeName);
     }
 
