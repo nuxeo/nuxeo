@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jbpm.graph.exe.ExecutionContext;
+import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -57,6 +58,11 @@ public class SendEventActionHandler extends AbstractJbpmHandlerHelper {
                 DocumentEventContext ctx = new DocumentEventContext(coreSession,
                         principal, documentModel);
                 ctx.setProperty("recipients", getRecipients());
+                // NXP-6440 Bug with Postgres/tomcat
+                ctx.setProperty("recipients_list", StringUtils.join(
+                        getRecipients(), ", ")
+                        .replaceAll("user:", "")
+                        .replaceAll("group:", ""));
                 eventProducer.fireEvent(ctx.newEvent(eventName));
             } finally {
                 closeCoreSession(coreSession);

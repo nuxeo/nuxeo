@@ -38,6 +38,7 @@ import org.jbpm.graph.exe.ProcessInstance;
 import org.jbpm.persistence.db.DbPersistenceServiceFactory;
 import org.jbpm.svc.Services;
 import org.jbpm.taskmgmt.exe.TaskInstance;
+import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -908,6 +909,9 @@ public class JbpmServiceImpl implements JbpmService {
         DocumentEventContext ctx = new DocumentEventContext(session, principal,
                 doc);
         ctx.setProperty("recipients", recipients);
+        // NXP-6440 Bug with Postgres/tomcat
+        ctx.setProperty("recipients_list", StringUtils.join(recipients, ", ")
+                .replaceAll("user:", "").replaceAll("group:", ""));
         ctx.getProperties().put("comment", comment);
         try {
             getEventProducer().fireEvent(ctx.newEvent(name));

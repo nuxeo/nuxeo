@@ -47,6 +47,29 @@
       </h:column>
       <h:column>
         <f:facet name="header">
+          <h:outputText value="#{messages['label.mail.recipients']}" />
+        </f:facet>
+        <h:outputText>
+          <h:outputText value="#{logEntry.extendedInfos['recipients'].serializableValue}" />
+        </h:outputText>
+      </h:column>
+      <h:column>
+      <f:facet name="header">
+        <h:outputText value="#{messages['label.workflow.task.directive']}" />
+      </f:facet>
+        <h:outputText value="#{messages[logEntry.extendedInfos['directive'].serializableValue]}"/>
+      </h:column>
+      <h:column>
+      <f:facet name="header">
+        <h:outputText value="#{messages['label.workflow.task.duedate']}" />
+      </f:facet>
+        <h:outputText value="#{logEntry.extendedInfos['dueDate'].serializableValue}" >
+          <f:convertDateTime pattern="#{nxu:basicDateFormater()}"
+            timeZone="#{timeZone}" />
+        </h:outputText>
+      </h:column>
+      <h:column>
+        <f:facet name="header">
           <h:outputText value="#{messages['label.comment']}" />
         </f:facet>
         <h:outputText value="#{messages[logEntriesComments[logEntry.id]]}" />
