@@ -17,7 +17,6 @@ package org.nuxeo.theme.test.html;
 import java.io.IOException;
 
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
-import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.Utils;
 import org.nuxeo.theme.html.JSUtils;
 import org.nuxeo.theme.themes.ThemeException;
@@ -31,12 +30,6 @@ public class TestJSUtils extends NXRuntimeTestCase {
                 "OSGI-INF/nxthemes-core-service.xml");
         deployContrib("org.nuxeo.theme.core",
                 "OSGI-INF/nxthemes-core-contrib.xml");
-    }
-
-    @Override
-    public void tearDown() throws Exception {
-        Manager.getRelationStorage().clear();
-        super.tearDown();
     }
 
     public void testCompressSource() throws ThemeException, IOException {

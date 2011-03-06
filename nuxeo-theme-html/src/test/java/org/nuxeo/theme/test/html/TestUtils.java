@@ -15,7 +15,6 @@
 package org.nuxeo.theme.test.html;
 
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
-import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.html.Utils;
 
 public class TestUtils extends NXRuntimeTestCase {
@@ -27,12 +26,6 @@ public class TestUtils extends NXRuntimeTestCase {
                 "OSGI-INF/nxthemes-core-service.xml");
         deployContrib("org.nuxeo.theme.core",
                 "OSGI-INF/nxthemes-core-contrib.xml");
-    }
-
-    @Override
-    public void tearDown() throws Exception {
-        Manager.getRelationStorage().clear();
-        super.tearDown();
     }
 
     public void testAddWebLengths() {
