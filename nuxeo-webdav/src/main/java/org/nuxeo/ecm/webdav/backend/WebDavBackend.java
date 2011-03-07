@@ -1,15 +1,15 @@
 package org.nuxeo.ecm.webdav.backend;
 
+import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.*;
 
+import java.util.LinkedList;
 import java.util.List;
 
 /**
  * @author Organization: Gagnavarslan ehf
  */
 public interface WebDavBackend {
-
-    public CoreSession getSession() throws ClientException;
 
     void saveChanges() throws ClientException;
 
@@ -25,6 +25,8 @@ public interface WebDavBackend {
 
     String getCheckoutUser(DocumentRef ref) throws ClientException;
 
+    Path parseLocation(String location);
+
     DocumentModel resolveLocation(String location) throws ClientException;
 
     void removeItem(String location) throws ClientException;
@@ -33,13 +35,17 @@ public interface WebDavBackend {
 
     void renameItem(DocumentModel source, String destinationName) throws ClientException;
 
-    void moveItem(DocumentModel source, PathRef targetParentRef) throws ClientException;
+    DocumentModel moveItem(DocumentModel source, PathRef targetParentRef) throws ClientException;
 
-    void copyItem(DocumentModel source, PathRef targetParentRef) throws ClientException;
+    DocumentModel copyItem(DocumentModel source, PathRef targetParentRef) throws ClientException;
 
     DocumentModel createFolder(String parentPath, String name) throws ClientException;
 
     DocumentModel createFile(String parentPath, String name, Blob content) throws ClientException;
+
+    DocumentModel createFile(String parentPath, String name) throws ClientException;
+
+    DocumentModel saveDocument(DocumentModel doc) throws ClientException;
 
     List<DocumentModel> getChildren(DocumentRef ref) throws ClientException;
 
@@ -47,10 +53,11 @@ public interface WebDavBackend {
 
     boolean exists(String location);
 
-    boolean exists(DocumentRef ref) throws ClientException;
+    boolean hasPermission(DocumentRef docRef, String permission) throws ClientException;
 
     String getDisplayName(DocumentModel doc);
 
-    String encode(byte[] bytes, String encoding) throws ClientException;
+    LinkedList<String> getVirtualFolderNames() throws ClientException;
 
+    boolean isVirtual();
 }

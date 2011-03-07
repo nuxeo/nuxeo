@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.webdav.resource;
 
+import net.java.dev.webdav.core.jaxrs.xml.properties.IsHidden;
 import net.java.dev.webdav.jaxrs.xml.elements.Prop;
 import net.java.dev.webdav.jaxrs.xml.elements.PropStat;
 import net.java.dev.webdav.jaxrs.xml.properties.*;
@@ -102,15 +103,15 @@ public class PropStatBuilderExt {
         return this;
     }
 
-//    public PropStatBuilderExt isHidden(boolean hide){
-//        if(!names.contains("ishidden")){
-//            IsHiddenProperty hidden = new IsHiddenProperty(hide);
-//            properties.add(hidden);
-//            names.add("ishidden");
-//        }
-//
-//        return this;
-//    }
+    public PropStatBuilderExt isHidden(boolean hide){
+        if(!names.contains("ishidden")){
+            IsHidden hidden = new IsHidden(hide?1:0);
+            properties.add(hidden);
+           names.add("ishidden");
+        }
+
+        return this;
+    }
 //
 //    public PropStatBuilderExt lastAccessed(Date dateTime){
 //        if(!names.contains("lastaccessed")){
@@ -130,12 +131,9 @@ public class PropStatBuilderExt {
                 Element element = (Element) prop;
                 String name = element.getLocalName();
                 if (!names.contains(name)) {
-                    System.out.println("notFound: " + name);
                     notFound.add(prop);
                     empty = false;
                 }
-            } else {
-                System.out.println("notfound-object - transformed into: " + prop.getClass().getSimpleName());
             }
         }
 

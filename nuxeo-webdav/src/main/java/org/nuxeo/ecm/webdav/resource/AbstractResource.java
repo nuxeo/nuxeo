@@ -40,12 +40,10 @@ public class AbstractResource {
     protected String name;
 
     protected HttpServletRequest request;
-    protected WebDavBackend backend;
 
-    protected AbstractResource(String path, HttpServletRequest request, WebDavBackend backend) throws Exception {
+    protected AbstractResource(String path, HttpServletRequest request) throws Exception {
         this.path = path;
         this.request = request;
-        this.backend = backend;
         parentPath = Util.getParentPath(path);
         name = Util.getNameFromPath(path);
     }

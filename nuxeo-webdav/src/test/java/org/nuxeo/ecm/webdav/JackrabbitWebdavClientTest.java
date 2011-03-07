@@ -33,6 +33,7 @@ import org.apache.jackrabbit.webdav.client.methods.PropFindMethod;
 import org.apache.jackrabbit.webdav.property.DavPropertyName;
 import org.apache.jackrabbit.webdav.property.DavPropertySet;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -42,6 +43,8 @@ import static org.junit.Assert.assertTrue;
  * Jackrabbit includes a WebDAV client library. Let's use it to test our
  * server.
  */
+
+@Ignore
 public class JackrabbitWebdavClientTest extends AbstractServerTest {
 
     private static HttpClient client;

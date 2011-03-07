@@ -25,6 +25,7 @@ import net.java.dev.webdav.core.jaxrs.xml.properties.IsHidden;
 import net.java.dev.webdav.jaxrs.methods.PROPFIND;
 import net.java.dev.webdav.jaxrs.xml.elements.*;
 import net.java.dev.webdav.jaxrs.xml.properties.*;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
@@ -58,8 +59,8 @@ public class FolderResource extends ExistingResource {
 
     private static final Log log = LogFactory.getLog(FolderResource.class);
 
-    public FolderResource(DocumentModel doc, HttpServletRequest request, WebDavBackend backend) throws Exception {
-        super(doc, request, backend);
+    public FolderResource(String path, DocumentModel doc, HttpServletRequest request, WebDavBackend backend) throws Exception {
+        super(path, doc, request, backend);
     }
 
     @GET
@@ -104,8 +105,8 @@ public class FolderResource extends ExistingResource {
         }
 
         // Get key properties from doc
-        Date lastModified = ((Calendar) doc.getPropertyValue("dc:modified")).getTime();
-        Date creationDate = ((Calendar) doc.getPropertyValue("dc:created")).getTime();
+        Date lastModified = getTimePropertyWrapper(doc, "dc:modified");
+        Date creationDate = getTimePropertyWrapper(doc, "dc:created");
 
         final net.java.dev.webdav.jaxrs.xml.elements.Response response
                 = new net.java.dev.webdav.jaxrs.xml.elements.Response(
@@ -139,8 +140,8 @@ public class FolderResource extends ExistingResource {
 
         List<DocumentModel> children = backend.getChildren(doc.getRef());
         for (DocumentModel child : children) {
-            lastModified = ((Calendar) child.getPropertyValue("dc:modified")).getTime();
-            creationDate = ((Calendar) child.getPropertyValue("dc:created")).getTime();
+            lastModified = getTimePropertyWrapper(child, "dc:modified");
+            creationDate = getTimePropertyWrapper(child, "dc:created"); 
             String childName = backend.getDisplayName(child);
             PropStatBuilderExt props = new PropStatBuilderExt();
             props.lastModified(lastModified).creationDate(creationDate).displayName(childName).status(OK);
@@ -153,6 +154,9 @@ public class FolderResource extends ExistingResource {
                 if (blob != null) {
                     size = blob.getLength();
                     mimeType = blob.getMimeType();
+                }
+                if(StringUtils.isEmpty(mimeType) || "???".equals(mimeType) ){
+                    mimeType = "application/octet-stream";
                 }
                 props.isResource(size, mimeType);
             }

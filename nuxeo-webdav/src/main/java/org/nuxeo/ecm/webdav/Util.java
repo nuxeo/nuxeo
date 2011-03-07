@@ -27,6 +27,7 @@ import net.java.dev.webdav.jaxrs.xml.properties.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Path;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
@@ -42,6 +43,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 
 /**
@@ -58,7 +60,8 @@ public class Util {
         if (userSession != null) {
             return userSession.getCoreSession();
         } else {
-            return getSession();
+            //return getSession();
+            return null;
         }
     }
 
@@ -121,7 +124,7 @@ public class Util {
         if (!path.startsWith("/")) {
             path = "/" + path;
         }
-        return path;
+        return cleanName(path);
     }
 
     public static String getNameFromPath(String path) {
@@ -140,6 +143,32 @@ public class Util {
         int tokenEnd = token.indexOf(">");
         token = token.substring(0, tokenEnd);
         return token;
+    }
+
+    public static String cleanName(String name) {
+        // XXX
+        String s = name.replaceAll(" ", "-");
+        /*s = s.replaceAll("[????]", "e");
+        s = s.replaceAll("[??]", "u");
+        s = s.replaceAll("[??]", "i");
+        s = s.replaceAll("[??]", "a");
+        s = s.replaceAll("?", "o");
+        s = s.replaceAll("?", "c");
+        s = s.replaceAll("[????]", "E");
+        s = s.replaceAll("[??]", "U");
+        s = s.replaceAll("[??]", "I");
+        s = s.replaceAll("[??]", "A");
+        s = s.replaceAll("?", "O");
+        s = s.replaceAll("?", "C");*/
+        return s;
+    }
+
+    public static String encode(byte[] bytes, String encoding) throws ClientException {
+        try {
+            return new String(bytes, encoding);
+        } catch (UnsupportedEncodingException e) {
+            throw new ClientException("Unsupported encoding " + encoding);
+        }
     }
 
 }

@@ -25,7 +25,10 @@ import net.java.dev.webdav.jaxrs.xml.properties.CreationDate;
 import net.java.dev.webdav.jaxrs.xml.properties.GetContentLength;
 import net.java.dev.webdav.jaxrs.xml.properties.GetContentType;
 import net.java.dev.webdav.jaxrs.xml.properties.GetLastModified;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.webdav.Util;
@@ -40,7 +43,9 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
+import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.util.Calendar;
 import java.util.Date;
@@ -52,8 +57,10 @@ import static javax.ws.rs.core.Response.Status.OK;
  */
 public class FileResource extends ExistingResource {
 
-    public FileResource(DocumentModel doc, HttpServletRequest request, WebDavBackend backend) throws Exception {
-        super(doc, request, backend);
+    private static final Log log = LogFactory.getLog(FileResource.class);
+
+    public FileResource(String path, DocumentModel doc, HttpServletRequest request, WebDavBackend backend) throws Exception {
+        super(path, doc, request, backend);
     }
 
     @GET
@@ -62,7 +69,16 @@ public class FileResource extends ExistingResource {
         if (content == null) {
             return Response.ok("").build();
         } else {
-            return Response.ok(content).type(content.getMimeType()).build();
+            String mimeType;
+            try {
+                mimeType = content.getMimeType();
+            } catch (Exception e) {
+                mimeType = "application/octet-stream";
+            }
+            if ("???".equals(mimeType)) {
+                mimeType = "application/octet-stream";
+            }
+            return Response.ok(content).type(mimeType).build();
         }
     }
 
@@ -72,15 +88,24 @@ public class FileResource extends ExistingResource {
             return Response.status(423).build();
         }
 
+        try {
         Blob content = new StreamingBlob(new InputStreamSource(request.getInputStream()));
-        content.setMimeType(request.getContentType());
+            String contentType = request.getContentType();
+            if (contentType == null) {
+                contentType = "application/octet-stream";
+            }
+            content.setMimeType(contentType);
         content.setFilename(name);
 
         doc.getProperty("file:content").setValue(content);
-        backend.getSession().saveDocument(doc);
+            doc.getProperty("file:filename").setValue(name);
+            backend.saveDocument(doc);
         backend.saveChanges();
-
         return Response.created(new URI(URLEncoder.encode(path, "UTF8"))).build();
+        } catch (Exception e) {
+            log.error("Error during PUT method execution", e);
+            return Response.status(409).build();
+        }
     }
 
     @PROPFIND
@@ -99,19 +124,19 @@ public class FileResource extends ExistingResource {
         }
         //Util.printAsXml(prop);
 
+        Date lastModified = getTimePropertyWrapper(doc, "dc:modified");
+        Date creationDate = getTimePropertyWrapper(doc, "dc:created");
 
-        Date lastModified = ((Calendar) doc.getPropertyValue("dc:modified")).getTime();
-        Date creationDate = ((Calendar) doc.getPropertyValue("dc:created")).getTime();
         Blob content = (Blob) doc.getPropertyValue("file:content");
+        Long contentLength = content != null ? content.getLength() : 0L;
 
-        System.out.println("@PROPFIND. Path: " + path + " content:" + content.getLength());
         net.java.dev.webdav.jaxrs.xml.elements.Response response;
         response = new net.java.dev.webdav.jaxrs.xml.elements.Response(
                 new HRef(uriInfo.getRequestUri()), null, null, null,
                 new PropStat(new Prop(
                         new CreationDate(creationDate), new GetLastModified(lastModified),
                         new GetContentType("application/octet-stream"),
-                        new GetContentLength(content.getLength())),
+                        new GetContentLength(contentLength)),
                         new Status(OK)));
 
         MultiStatus st = new MultiStatus(response);

@@ -20,11 +20,16 @@
 package org.nuxeo.ecm.webdav.resource;
 
 import com.sun.jersey.spi.CloseableService;
+import net.java.dev.webdav.jaxrs.methods.PROPFIND;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.webdav.backend.NuxeoWebDavBackend;
+import org.nuxeo.ecm.webdav.backend.Backend;
 import org.nuxeo.ecm.webdav.backend.WebDavBackend;
 
 import javax.servlet.http.HttpServletRequest;
@@ -32,6 +37,9 @@ import javax.ws.rs.*;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+import java.util.ArrayList;
+import java.util.List;
 
 @Path("dav")
 public class RootResource {
@@ -45,8 +53,6 @@ public class RootResource {
 
     private HttpServletRequest request;
 
-    private WebDavBackend backend;
-
     public RootResource(@Context HttpServletRequest request,
                         @Context CloseableService closeableService) throws Exception {
         log.debug(request.getMethod() + " " + request.getRequestURI());
@@ -58,24 +64,52 @@ public class RootResource {
             log.info(rootPath);
         }
 
-        backend = new NuxeoWebDavBackend("/", rootPath);
     }
 
     @GET
     @Produces("text/html")
     public Object getRoot() throws Exception {
-        return ((FolderResource) findResource("")).get();
+        return ((VirtualFolderResource) findResource("")).get();
+    }
+
+    @OPTIONS
+    public Object getRootOptions() throws Exception {
+        return ((VirtualFolderResource) findResource("")).options();
+    }
+
+    @PROPFIND
+    public Object getRootPropfind(@Context UriInfo uriInfo,
+            @HeaderParam("depth") String depth) throws Exception {
+        Object resource = findResource("");
+        if(resource instanceof VirtualFolderResource){
+            return ((VirtualFolderResource)resource).propfind(uriInfo, depth);
+        } else if(resource instanceof FolderResource){
+            return ((FolderResource)resource).propfind(uriInfo, depth);
+        }
+        return ((VirtualFolderResource) findResource("")).propfind(uriInfo, depth);
     }
 
     @Path("{path:.+}")
     public Object findResource(@PathParam("path") String path) throws Exception {
+        path = new String(path.getBytes(), "UTF-8");
+
+        WebDavBackend backend = Backend.get(path, request);
+
+        if(backend == null){
+            return Response.status(409).build();
+        }
+
+        if(backend.isVirtual()){
+            return new VirtualFolderResource(path, request, backend.getVirtualFolderNames());
+        }
 
         DocumentModel doc = null;
         try {
-            path = new String(path.getBytes(), "UTF-8");
             doc = backend.resolveLocation(path);
+
         } catch (Exception e) {
-            log.error("Error during resolving path: " + path, e);
+            log.error("Error during resolving path: " + path + " Message:" + e.getMessage());
+            return Response.status(409).build();
         }
 
         if (doc == null) {
@@ -83,14 +117,29 @@ public class RootResource {
         }
 
         // Send 401 error if not authorised to read.
-        if (!backend.getSession().hasPermission(doc.getRef(), SecurityConstants.READ)) {
+        if (!backend.hasPermission(doc.getRef(), SecurityConstants.READ)) {
             return Response.status(401);
         }
 
         if (doc.isFolder()) {
-            return new FolderResource(doc, request, backend);
+            return new FolderResource(getDocumentPath(doc), doc, request, backend);
         } else {
-            return new FileResource(doc, request, backend);
+            return new FileResource(getDocumentPath(doc), doc, request, backend);
+        }
+    }
+
+    private String getDocumentPath(DocumentModel source) throws ClientException {
+        if (source.isFolder()) {
+            return source.getPathAsString();
+        } else {
+            BlobHolder bh = source.getAdapter(BlobHolder.class);
+            if (bh != null) {
+                Blob blob = bh.getBlob();
+                if (blob != null) {
+                    return blob.getFilename();
+                }
+            }
+            return String.valueOf(source.getPropertyValue("dc:title"));
         }
     }
 

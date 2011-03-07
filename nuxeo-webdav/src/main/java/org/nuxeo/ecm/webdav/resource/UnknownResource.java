@@ -48,8 +48,11 @@ public class UnknownResource extends AbstractResource {
 
     private static final Log log = LogFactory.getLog(UnknownResource.class);
 
+    protected WebDavBackend backend;
+
     public UnknownResource(String path, HttpServletRequest request, WebDavBackend backend) throws Exception {
-        super(path, request, backend);
+        super(path, request);
+        this.backend = backend;
     }
 
     /**
@@ -71,12 +74,19 @@ public class UnknownResource extends AbstractResource {
         */
 
         ensureParentExists();
-
         Blob content = new StreamingBlob(new InputStreamSource(request.getInputStream()));
-        content.setMimeType(request.getContentType());
+        if (content.getLength() > 0) {
+            String contentType = request.getContentType();
+            if (contentType == null) {
+                contentType = "application/octet-stream";
+            }
+            content.setMimeType(contentType);
         content.setFilename(name);
-        System.out.println("@PUT. file:" + name + " content:"+ content.getLength());
         backend.createFile(parentPath, name, content);
+        } else {
+            backend.createFile(parentPath, name);
+        }
+
         backend.saveChanges();
         return Response.created(new URI(request.getRequestURI())).build();
     }

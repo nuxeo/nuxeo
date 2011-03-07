@@ -8,7 +8,7 @@ import javax.xml.bind.annotation.XmlValue;
  *
  * @author Organization: Gagnavarslan ehf
  */
-@XmlRootElement(name = "isFolder")
+@XmlRootElement(name = "IsHidden")
 public final class IsHidden {
 
     @XmlValue

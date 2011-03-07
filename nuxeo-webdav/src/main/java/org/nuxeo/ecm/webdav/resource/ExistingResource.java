@@ -29,10 +29,8 @@ import net.java.dev.webdav.jaxrs.xml.properties.LockDiscovery;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.*;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.webdav.Constants;
 import org.nuxeo.ecm.webdav.Util;
 import org.nuxeo.ecm.webdav.backend.WebDavBackend;
@@ -61,10 +59,12 @@ public class ExistingResource extends AbstractResource {
     private static final Log log = LogFactory.getLog(ExistingResource.class);
 
     protected DocumentModel doc;
+    protected WebDavBackend backend;
 
-    protected ExistingResource(DocumentModel doc, HttpServletRequest request, WebDavBackend backend) throws Exception {
-        super(doc.getPathAsString(), request, backend);
+    protected ExistingResource(String path, DocumentModel doc, HttpServletRequest request, WebDavBackend backend) throws Exception {
+        super(path, request);
         this.doc = doc;
+        this.backend = backend;
     }
 
     @DELETE
@@ -107,7 +107,7 @@ public class ExistingResource extends AbstractResource {
             return Response.status(423).build();
         }
 
-        dest = backend.encode(dest.getBytes(), "ISO-8859-1");
+        dest = Util.encode(dest.getBytes(), "ISO-8859-1");
 
         URI destUri = new URI(dest);
         String destPath = destUri.getPath();
@@ -117,17 +117,18 @@ public class ExistingResource extends AbstractResource {
 
         destPath = destPath.substring(
                 RootResource.rootPath.length() + Constants.DAV_HOME.length(), destPath.length());
+        destPath = backend.parseLocation(destPath).toString();
         log.info("to " + destPath);
 
-        DocumentRef destRef = new PathRef(destPath);
+        //DocumentRef destRef = new PathRef(destPath);
 
         // Remove dest if it exists and the Overwrite header is set to "T".
         int status = 201;
-        if (backend.exists(destRef)) {
+        if (backend.exists(destPath)) {
             if ("F".equals(overwrite)) {
                 return Response.status(412).build();
             }
-            backend.removeItem(destRef);
+            backend.removeItem(destPath);
             status = 204;
         }
 
@@ -136,7 +137,7 @@ public class ExistingResource extends AbstractResource {
         } else {
             String destParentPath = Util.getParentPath(destPath);
             PathRef destParentRef = new PathRef(destParentPath);
-            if (!backend.exists(destParentRef)) {
+            if (!backend.exists(destParentPath)) {
                 return Response.status(409).build();
             }
             if ("MOVE".equals(method)) {
@@ -157,17 +158,17 @@ public class ExistingResource extends AbstractResource {
             return Response.status(423).build();
         }
 
-        JAXBContext jc = Util.getJaxbContext();
+        /*JAXBContext jc = Util.getJaxbContext();
         Unmarshaller u = jc.createUnmarshaller();
         PropertyUpdate propertyUpdate;
         try {
             propertyUpdate = (PropertyUpdate) u.unmarshal(request.getInputStream());
         } catch (JAXBException e) {
             return Response.status(400).build();
-        }
+        }*/
         //Util.printAsXml(propertyUpdate);
 
-        List<RemoveOrSet> list = propertyUpdate.list();
+        /*List<RemoveOrSet> list = propertyUpdate.list();
 
         final List<PropStat> propStats = new ArrayList<PropStat>();
         for (RemoveOrSet set : list) {
@@ -177,7 +178,7 @@ public class ExistingResource extends AbstractResource {
                 PropStat propStat = new PropStat(new Prop(property), new Status(OK));
                 propStats.add(propStat);
             }
-        }
+        }*/
 
         //@TODO: patch properties if need.
 
@@ -214,7 +215,7 @@ public class ExistingResource extends AbstractResource {
     public Response lock(@Context UriInfo uriInfo) throws Exception {
         String token = null;
         Prop prop = null;
-        if (backend.isLocked(doc.getRef()) && !backend.canUnlock(doc.getRef())) {
+        if (backend.isLocked(doc.getRef())) {
             if (!backend.canUnlock(doc.getRef())) {
                 return Response.status(423).build();
             } else {
@@ -242,6 +243,7 @@ public class ExistingResource extends AbstractResource {
                 new LockRoot(new HRef(uriInfo.getRequestUri()))
         )));
 
+        backend.saveChanges();
         return Response.ok().entity(prop)
                 .header("Lock-Token", "urn:uuid:" + token).build();
     }
@@ -253,11 +255,28 @@ public class ExistingResource extends AbstractResource {
                 return Response.status(423).build();
             } else {
                 backend.unlock(doc.getRef());
+                backend.saveChanges();
                 return Response.status(204).build();
             }
         } else {
             // TODO: return an error
             return Response.status(204).build();
+        }
+    }
+
+    protected Date getTimePropertyWrapper(DocumentModel doc, String name){
+        Object property;
+        try {
+            property = doc.getPropertyValue(name);
+        } catch (ClientException e) {
+            property = null;
+            log.debug("Can't get property " + name + " from document " + doc.getId());
+        }
+
+        if(property != null){
+            return ((Calendar)property).getTime();
+        } else {
+            return new Date();
         }
     }
 

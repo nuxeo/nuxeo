@@ -19,6 +19,7 @@ package org.nuxeo.ecm.webdav;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -29,6 +30,7 @@ import static org.junit.Assert.fail;
  * Simple test using the Jersey HTTP client.
  * Only standard HTTP methods are supported, so we're only testing GET, PUT and DELETE.
  */
+@Ignore
 public class JerseyClientTest extends AbstractServerTest {
 
     @Test
