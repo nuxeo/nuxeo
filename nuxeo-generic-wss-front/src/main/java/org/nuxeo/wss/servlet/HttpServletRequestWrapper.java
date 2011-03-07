@@ -20,7 +20,6 @@ public class HttpServletRequestWrapper extends javax.servlet.http.HttpServletReq
 
             if (StringUtils.isNotEmpty(headerName)) {
                 String value = request.getHeader(headerName);
-                System.out.println("---> header.name:" + headerName + " value:" + value);
                 headers.put(headerName.toLowerCase(), value);
             }
         }

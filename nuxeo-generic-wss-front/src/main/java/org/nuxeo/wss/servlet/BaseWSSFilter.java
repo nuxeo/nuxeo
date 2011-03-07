@@ -31,7 +31,7 @@ public abstract class BaseWSSFilter implements Filter {
 
     public static final String WSSFORWARD_KEY = "WSSForward";
 
-    public static final String DEFAULT_WEBDAV_URL = "/site/dav/default-domain";
+    public static final String DEFAULT_WEBDAV_URL = "/site/dav";
 
     public static final String NUXEO_ROOT_URL = "/nuxeo";
 
@@ -45,8 +45,6 @@ public abstract class BaseWSSFilter implements Filter {
             HttpServletResponse httpResponse = (HttpServletResponse) response;
             String uri = httpRequest.getRequestURI();
 
-            System.out.println("URI:[" + uri + "] METHOD:[" + httpRequest.getMethod()
-                    + "] AGENT:[" + httpRequest.getHeader("User-Agent")+"]");
             if (isRootFilter()) {
                 String forward = httpRequest.getParameter(WSSFORWARD_KEY);
                 if (forward != null) {
@@ -157,7 +155,6 @@ public abstract class BaseWSSFilter implements Filter {
 
         //forward request to WebDAV
         String createdURL = createPathToWebDav(httpRequest.getRequestURI());
-        System.out.println("WebDAV request. Forwarded to " + createdURL);
         RequestDispatcher dispatcher = httpRequest.getRequestDispatcher(createdURL);
         dispatcher.forward(httpRequest, httpResponse);
     }
