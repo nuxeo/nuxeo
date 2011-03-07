@@ -26,10 +26,7 @@
                 <plugin>BASIC_AUTH</plugin>
                 <plugin>FORM_AUTH</plugin>
                 <plugin>DIGEST_AUTH</plugin>
-                <plugin>WEBENGINE_FORM_AUTH</plugin>
-                <plugin>ANONYMOUS_AUTH</plugin>
-                <plugin>WEBSERVICES_AUTH</plugin>
-            </plugins>
+                </plugins>
         </authenticationChain>
     </extension>
 

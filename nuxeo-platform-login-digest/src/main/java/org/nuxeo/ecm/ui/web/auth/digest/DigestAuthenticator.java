@@ -18,7 +18,7 @@ import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
  */
 public class DigestAuthenticator implements NuxeoAuthenticationPlugin {
 
-    protected static final String DEFAULT_REALMNAME = "Nuxeo";
+    protected static final String DEFAULT_REALMNAME = "NUXEO";
     protected static final Long DEFAULT_NONCE_VALIDITY_SECONDS = 1000L;
 
     protected static final String COMMA_SEPARATOR = ",";
@@ -62,7 +62,7 @@ public class DigestAuthenticator implements NuxeoAuthenticationPlugin {
         Map<String, String> headerMap = splitResponseParameters(header.substring(7));
         headerMap.put("httpMethod", httpRequest.getMethod());
 
-        String nonce = (String) headerMap.get("nonce");
+        String nonce = headerMap.get("nonce");
         String nonceAsPlainText = new String(
                 org.apache.commons.codec.binary.Base64.decodeBase64(nonce.getBytes()));
         String[] nonceTokens = nonceAsPlainText.split(":");
@@ -70,8 +70,8 @@ public class DigestAuthenticator implements NuxeoAuthenticationPlugin {
 
         //@TODO: check expiry time and do something 
 
-        String username = (String) headerMap.get("username");
-        String responseDigest = (String) headerMap.get("response");
+        String username = headerMap.get("username");
+        String responseDigest = headerMap.get("response");
         UserIdentificationInfo userIdent = new UserIdentificationInfo(username, responseDigest);
 
         /*

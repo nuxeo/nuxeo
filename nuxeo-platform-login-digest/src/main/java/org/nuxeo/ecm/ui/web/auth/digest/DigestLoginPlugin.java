@@ -1,13 +1,22 @@
 package org.nuxeo.ecm.ui.web.auth.digest;
 
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.directory.Directory;
+import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
 import org.nuxeo.ecm.platform.login.BaseLoginModule;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author Organization: Gagnavarslan ehf
  */
 public class DigestLoginPlugin extends BaseLoginModule {
+
+    private static final Log log = LogFactory.getLog(DigestLoginPlugin.class);
 
     protected static final String REALM = "realm";
     protected static final String HTTP_METHOD = "httpMethod";
@@ -16,22 +25,23 @@ public class DigestLoginPlugin extends BaseLoginModule {
     protected static final String NONCE = "nonce";
     protected static final String NC = "nc";
     protected static final String CNONCE = "cnonce";
+    protected static final String DIGEST_AUTH_DIRECTORY_NAME = "digest_auth";
 
     public Boolean initLoginModule() {
         return true;
     }
 
     public String validatedUserIdentity(UserIdentificationInfo userIdent) {
+        try {
+            String storedHA1 = getStoredHA1(userIdent.getUserName());
 
-        //@TODO: get a1Md5 value from DB
-        String a1Md5 = encodePassword(
-                userIdent.getUserName(),
-                userIdent.getLoginParameters().get(REALM),
-                "Administrator"    //@TODO: This is hardcoded password value
-        );
+            if (StringUtils.isEmpty(storedHA1)) {
+                log.warn("Digest authentication failed. Stored HA1 is empty");
+                return null;
+            }
 
         String generateDigest = generateDigest(
-                a1Md5,
+                    storedHA1,
                 userIdent.getLoginParameters().get(HTTP_METHOD),
                 userIdent.getLoginParameters().get(URI),
                 userIdent.getLoginParameters().get(QOP),   // RFC 2617 extension
@@ -40,16 +50,17 @@ public class DigestLoginPlugin extends BaseLoginModule {
                 userIdent.getLoginParameters().get(CNONCE) // RFC 2617 extension
                 );
 
-        System.out.println("DIGEST: httpMethod: " + userIdent.getLoginParameters().get(HTTP_METHOD));
-        System.out.println("DIGEST: uri: " + userIdent.getLoginParameters().get(URI));
-        System.out.println("DIGEST: password: " + userIdent.getPassword());
-
         if(generateDigest.equals(userIdent.getPassword())){
             return userIdent.getUserName();
         } else {
+                log.warn("Digest authentication failed for user:" + userIdent.getUserName() + " realm:"
+                        + userIdent.getLoginParameters().get(REALM));
+                return null;
+            }
+        } catch (Exception e) {
+            log.error("Digest authentication failed", e);
             return null;
         }
-
     }
 
     
@@ -76,4 +87,26 @@ public class DigestLoginPlugin extends BaseLoginModule {
         return DigestUtils.md5Hex(a1);
     }
     
+    private String getStoredHA1(String username) throws Exception {
+        DirectoryService directoryService = Framework.getService(DirectoryService.class);
+        Directory directory = directoryService.getDirectory(DIGEST_AUTH_DIRECTORY_NAME);
+        if (directory == null) {
+            throw new IllegalArgumentException("Directory '" + DIGEST_AUTH_DIRECTORY_NAME + "' did not found.");
+        }
+        org.nuxeo.ecm.directory.Session directorySession = null;
+        try {
+            directorySession = directoryService.open(DIGEST_AUTH_DIRECTORY_NAME);
+            String digestAuthDirectorySchema = directoryService.getDirectorySchema(DIGEST_AUTH_DIRECTORY_NAME);
+            DocumentModel entry = directorySession.getEntry(username, true);
+            if (entry == null) {
+                return null;
+            }
+            return (String) entry.getProperty(digestAuthDirectorySchema, directorySession.getPasswordField());
+        } finally {
+            if (directorySession != null) {
+                directorySession.close();
+            }
+        }
+    }
+
 }
