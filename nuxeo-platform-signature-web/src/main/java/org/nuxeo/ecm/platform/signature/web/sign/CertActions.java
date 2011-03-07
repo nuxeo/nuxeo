@@ -37,7 +37,7 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.directory.sql.PasswordHelper;
 import org.nuxeo.ecm.platform.signature.api.exception.CertException;
 import org.nuxeo.ecm.platform.signature.api.pki.CertService;
-import org.nuxeo.ecm.platform.signature.api.user.CertUserService;
+import org.nuxeo.ecm.platform.signature.api.user.CUserService;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
@@ -64,7 +64,7 @@ public class CertActions implements Serializable {
     protected transient CertService certService;
 
     @In(create = true)
-    protected transient CertUserService certUserService;
+    protected transient CUserService cUserService;
 
     @In(create = true)
     protected transient NavigationContext navigationContext;
@@ -95,7 +95,7 @@ public class CertActions implements Serializable {
             throws ClientException {
         String userID = (String) user.getPropertyValue("user:username");
 
-        return certUserService.getCertificate(userID);
+        return cUserService.getCertificate(userID);
     }
 
     /**
@@ -107,7 +107,7 @@ public class CertActions implements Serializable {
      */
     public boolean hasCertificate(DocumentModel user) throws ClientException {
         String userID = (String) user.getPropertyValue("user:username");
-        return certUserService.hasCertificateEntry(userID);
+        return cUserService.hasCertificate(userID);
     }
 
     /**
@@ -161,7 +161,7 @@ public class CertActions implements Serializable {
 
         if (isPasswordValid) {
             try {
-                certUserService.createCert(user, firstPassword);
+                cUserService.createCertificate(user, firstPassword);
                 facesMessages.add(FacesMessage.SEVERITY_INFO,
                         ComponentUtils.translate(
                                 FacesContext.getCurrentInstance(), "label.cert.created"), null);

@@ -32,7 +32,6 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -44,7 +43,7 @@ import org.nuxeo.ecm.platform.signature.api.pki.CertService;
 import org.nuxeo.ecm.platform.signature.api.sign.SignatureService;
 import org.nuxeo.ecm.platform.signature.api.user.AliasType;
 import org.nuxeo.ecm.platform.signature.api.user.AliasWrapper;
-import org.nuxeo.ecm.platform.signature.api.user.CertUserService;
+import org.nuxeo.ecm.platform.signature.api.user.CUserService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -52,7 +51,6 @@ import org.nuxeo.runtime.model.DefaultComponent;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.AcroFields;
-import com.lowagie.text.pdf.PdfFormField;
 import com.lowagie.text.pdf.PdfPKCS7;
 import com.lowagie.text.pdf.PdfReader;
 import com.lowagie.text.pdf.PdfSignatureAppearance;
@@ -72,7 +70,7 @@ public class SignatureServiceImpl extends DefaultComponent implements
 
     protected CertService certService;
 
-    protected CertUserService certUserService;
+    protected CUserService cUserService;
 
     public File signPDF(DocumentModel user, String keyPassword, String reason,
             InputStream origPdfStream) throws SignException {
@@ -85,11 +83,9 @@ public class SignatureServiceImpl extends DefaultComponent implements
                     new FileOutputStream(outputFile), '\0');
             PdfSignatureAppearance sap = stp.getSignatureAppearance();
 
-            PdfFormField signatureField = PdfFormField.createSignature(stp.getWriter());
-
             String userID = (String) user.getPropertyValue("user:username");
             AliasWrapper alias = new AliasWrapper(userID);
-            KeyStore keystore = getCertUserService().getUserKeystore(userID,
+            KeyStore keystore = getCUserService().getUserKeystore(userID,
                     keyPassword);
             Certificate certificate = getCertService().getCertificate(keystore,
                     alias.getId(AliasType.CERT));
@@ -161,11 +157,11 @@ public class SignatureServiceImpl extends DefaultComponent implements
         return certService;
     }
 
-    protected CertUserService getCertUserService() throws Exception {
-        if (certUserService == null) {
-            certUserService = Framework.getService(CertUserService.class);
+    protected CUserService getCUserService() throws Exception {
+        if (cUserService == null) {
+            cUserService = Framework.getService(CUserService.class);
         }
-        return certUserService;
+        return cUserService;
     }
 
     private String getReason() throws SignatureException {

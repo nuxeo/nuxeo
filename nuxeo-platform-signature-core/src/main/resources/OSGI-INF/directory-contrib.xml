@@ -6,11 +6,16 @@
 
     <directory name="certificate">
       <schema>cert</schema>
-      <dbDriver>org.hsqldb.jdbcDriver</dbDriver>
+      <!--dbDriver>org.hsqldb.jdbcDriver</dbDriver>
       <dbUrl>jdbc:hsqldb:mem:memid</dbUrl>
-      <dbUser>SA</dbUser>
-      <dbPassword></dbPassword>
-      <dbPassword>password</dbPassword>
+      <dbUser>SA</dbUser-->
+
+      <!--dbDriver>org.postgresql.Driver</dbDriver>
+      <dbUrl>jdbc:postgresql://localhost:5432/nuxeo</dbUrl>
+      <dbUser>nuxeo</dbUser>
+      <dbPassword>nuxeo</dbPassword-->
+
+      <dataSource>java:/nxsqldirectory</dataSource>
       <cacheTimeout>3600</cacheTimeout>
       <cacheMaxSize>1000</cacheMaxSize>
       <table>cert</table>

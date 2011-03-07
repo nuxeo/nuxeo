@@ -28,7 +28,7 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Unwrap;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.platform.signature.api.user.CertUserService;
+import org.nuxeo.ecm.platform.signature.api.user.CUserService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -37,37 +37,37 @@ import org.nuxeo.runtime.api.Framework;
  * @author <a href="mailto:ws@nuxeo.com">Wojciech Sulejman</a>
  */
 
-@Name("certUserService")
+@Name("cUserService")
 @Scope(SESSION)
-public class CertUserServiceBusinessDelegate implements Serializable {
+public class CUserServiceBusinessDelegate implements Serializable {
 
     private static final long serialVersionUID = 3L;
 
-    private static final Log log = LogFactory.getLog(CertUserServiceBusinessDelegate.class);
+    private static final Log log = LogFactory.getLog(CUserServiceBusinessDelegate.class);
 
-    protected CertUserService certUserService;
+    protected CUserService cUserService;
 
     @Unwrap
-    public CertUserService getService() throws ClientException {
-        if (certUserService == null) {
+    public CUserService getService() throws ClientException {
+        if (cUserService == null) {
             try {
-                certUserService = Framework.getService(CertUserService.class);
+                cUserService = Framework.getService(CUserService.class);
             } catch (Exception e) {
-                final String errMsg = "Error connecting to CertUserService. "
+                final String errMsg = "Error connecting to CUserService. "
                         + e.getMessage();
                 throw new ClientException(errMsg, e);
             }
-            if (certUserService == null) {
-                throw new ClientException("CertUserService service not bound");
+            if (cUserService == null) {
+                throw new ClientException("CUserService service not bound");
             }
         }
-        return certUserService;
+        return cUserService;
     }
 
     @Destroy
     public void destroy() {
-        if (certUserService != null) {
-            certUserService = null;
+        if (cUserService != null) {
+            cUserService = null;
         }
         log.debug("Destroyed the seam component");
     }

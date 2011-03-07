@@ -30,6 +30,8 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Vector;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.bouncycastle.asn1.ASN1Set;
 import org.bouncycastle.asn1.DERObjectIdentifier;
 import org.bouncycastle.asn1.DEROctetString;
@@ -50,6 +52,7 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.x509.X509V3CertificateGenerator;
 import org.bouncycastle.x509.extension.AuthorityKeyIdentifierStructure;
 import org.bouncycastle.x509.extension.SubjectKeyIdentifierStructure;
+import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.platform.signature.api.exception.CertException;
 import org.nuxeo.ecm.platform.signature.api.pki.CertService;
 import org.nuxeo.ecm.platform.signature.api.user.AliasType;
@@ -57,6 +60,7 @@ import org.nuxeo.ecm.platform.signature.api.user.AliasWrapper;
 import org.nuxeo.ecm.platform.signature.api.user.CNField;
 import org.nuxeo.ecm.platform.signature.api.user.RootService;
 import org.nuxeo.ecm.platform.signature.api.user.UserInfo;
+import org.nuxeo.ecm.platform.signature.core.sign.SignatureServiceImpl;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -71,6 +75,7 @@ public class CertServiceImpl extends DefaultComponent implements CertService {
     protected List<CertDescriptor> config;
     protected RootService rootService;
 
+    private static final Log log = LogFactory.getLog(CertServiceImpl.class);
 
     public void setRootService(RootService rootService) {
         this.rootService = rootService;
@@ -209,15 +214,20 @@ public class CertServiceImpl extends DefaultComponent implements CertService {
                             "You have to provide root key password");
                 }
             }
-            InputStream keystoreIS;
+            InputStream keystoreIS=null;
             File rootKeystoreFile = null;
             try {
                 rootKeystoreFile = new File(
                         rootService.getRootKeystoreFilePath());
+                if(!rootKeystoreFile.exists()){
+                    rootKeystoreFile = FileUtils.getResourceFileFromContext(rootService.getRootKeystoreFilePath());
+                    log.warn("No keystore file found at absolute path, using embedded test keystore at: "+rootKeystoreFile.getAbsolutePath());
+
+                }
                 keystoreIS = new FileInputStream(rootKeystoreFile);
             } catch (FileNotFoundException e) {
-                throw new CertException("Root keystore file missing at: "
-                        + rootKeystoreFile.getAbsolutePath());
+                // try local path
+                throw new CertException("Certificate not found at"+rootKeystoreFile.getAbsolutePath());
             }
             KeyStore keystore = getKeyStore(keystoreIS,
                     rootService.getRootKeystorePassword());

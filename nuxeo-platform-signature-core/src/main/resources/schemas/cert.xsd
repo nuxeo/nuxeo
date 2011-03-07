@@ -4,6 +4,12 @@
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
   xmlns:nxs="http://www.nuxeo.org/ecm/schemas/cert">
 
+ <!-- xs:simpleType name="store"> 
+  <xs:restriction base="xs:string"> 
+   <xs:maxLength value="8192"/>
+  </xs:restriction> 
+ </xs:simpleType -->
+
   <xs:include schemaLocation="core-types.xsd"/>
   <xs:element name="userid" type="xs:string"/>
   <xs:element name="certificate" type="xs:string"/>

@@ -31,7 +31,7 @@ import org.nuxeo.ecm.platform.signature.api.exception.CertException;
  * @author <a href="mailto:ws@nuxeo.com">Wojciech Sulejman</a>
  *
  */
-public interface CertUserService {
+public interface CUserService {
 
     /**
      * Generates user certificate and user keys, saves them to a user store, and
@@ -42,7 +42,7 @@ public interface CertUserService {
      * @throws CertException
      * @throws ClientException
      */
-    public DocumentModel createCert(DocumentModel user, String userKeyPassword)
+    public DocumentModel createCertificate(DocumentModel user, String userKeyPassword)
             throws CertException, ClientException;
 
     /**
@@ -56,7 +56,7 @@ public interface CertUserService {
     public UserInfo getUserInfo(DocumentModel userModel) throws CertException;
 
     /**
-     * Returns simplified textual representation of a certificate representing its contents.
+     * Returns simplified textual representation of a certificate's contents.
      *
      * @param certificate
      * @return Simple certificate string.
@@ -92,7 +92,7 @@ public interface CertUserService {
      * @return Is the user present in the certificate directory ?
      * @throws CertException
      */
-    public boolean hasCertificateEntry(String userID) throws CertException,
+    public boolean hasCertificate(String userID) throws CertException,
             ClientException;
 
     /**
@@ -110,7 +110,7 @@ public interface CertUserService {
      * @param user
      * @throws CertException
      */
-    public void deleteCertificateEntry(String userID) throws CertException,
+    public void deleteCertificate(String userID) throws CertException,
             ClientException;
 
 }

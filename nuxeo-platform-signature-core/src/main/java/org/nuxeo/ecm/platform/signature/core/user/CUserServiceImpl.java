@@ -36,20 +36,20 @@ import org.nuxeo.ecm.platform.signature.api.pki.CertService;
 import org.nuxeo.ecm.platform.signature.api.user.AliasType;
 import org.nuxeo.ecm.platform.signature.api.user.AliasWrapper;
 import org.nuxeo.ecm.platform.signature.api.user.CNField;
-import org.nuxeo.ecm.platform.signature.api.user.CertUserService;
+import org.nuxeo.ecm.platform.signature.api.user.CUserService;
 import org.nuxeo.ecm.platform.signature.api.user.UserInfo;
 import org.nuxeo.runtime.api.Framework;
 
 /**
  * Base implementation of the user certificate service.
- *
- *
+ * 
+ * 
  * @author <a href="mailto:ws@nuxeo.com">Wojciech Sulejman</a>
- *
+ * 
  */
-public class CertUserServiceImpl implements CertUserService {
+public class CUserServiceImpl implements CUserService {
 
-    private static final Log LOG = LogFactory.getLog(CertUserServiceImpl.class);
+    private static final Log LOG = LogFactory.getLog(CUserServiceImpl.class);
 
     private static final String CERTIFICATE_DIRECTORY_NAME = "certificate";
 
@@ -86,10 +86,10 @@ public class CertUserServiceImpl implements CertUserService {
     public KeyStore getUserKeystore(String userID, String userKeystorePassword)
             throws CertException, ClientException {
         KeyStore keystore = null;
-        Session sqlSession = getDirectoryService().open(
+        Session session = getDirectoryService().open(
                 CERTIFICATE_DIRECTORY_NAME);
         try {
-            DocumentModel entry = sqlSession.getEntry(userID);
+            DocumentModel entry = session.getEntry(userID);
             if (entry != null) {
                 String keystore64Encoded = (String) entry.getPropertyValue("cert:keystore");
                 byte[] keystoreBytes = Base64.decode(keystore64Encoded);
@@ -97,20 +97,19 @@ public class CertUserServiceImpl implements CertUserService {
                         keystoreBytes);
                 keystore = getCertService().getKeyStore(byteIS,
                         userKeystorePassword);
-                sqlSession.commit();
-                sqlSession.close();
+                session.commit();
             } else {
                 throw new CertException("No directory entry for " + userID);
             }
         } finally {
-            sqlSession.close();
+            session.close();
         }
         return keystore;
     }
 
     @Override
-    public DocumentModel createCert(DocumentModel user, String userKeyPassword)
-            throws CertException, ClientException {
+    public DocumentModel createCertificate(DocumentModel user,
+            String userKeyPassword) throws CertException, ClientException {
         String userKeystorePassword = userKeyPassword;
         DocumentModel certificate = null;
 
@@ -119,7 +118,7 @@ public class CertUserServiceImpl implements CertUserService {
 
         LOG.info("Starting certificate generation for: " + userID);
 
-        Session sqlSession = getDirectoryService().open(
+        Session session = getDirectoryService().open(
                 CERTIFICATE_DIRECTORY_NAME);
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("userid", userID);
@@ -136,13 +135,13 @@ public class CertUserServiceImpl implements CertUserService {
         map.put("keypassword", userKeyPassword);
 
         try {
-            certificate = sqlSession.createEntry(map);
-            sqlSession.commit();
+            certificate = session.createEntry(map);
+            session.commit();
         } catch (DirectoryException e) {
             LOG.error(e);
             throw new CertException(e);
         } finally {
-            sqlSession.close();
+            session.close();
         }
         return certificate;
     }
@@ -183,13 +182,13 @@ public class CertUserServiceImpl implements CertUserService {
 
     @Override
     public DocumentModel getCertificate(String userID) throws ClientException {
-        Session directorySQLSession = getDirectoryService().open("certificate");
-        DocumentModel certificate = directorySQLSession.getEntry(userID);
+        Session session = getDirectoryService().open(CERTIFICATE_DIRECTORY_NAME);
+        DocumentModel certificate = session.getEntry(userID);
         return certificate;
     }
 
     @Override
-    public boolean hasCertificateEntry(String userID) throws CertException,
+    public boolean hasCertificate(String userID) throws CertException,
             ClientException {
         DocumentModel entry;
         Session sqlSession = getDirectoryService().open(
@@ -203,7 +202,7 @@ public class CertUserServiceImpl implements CertUserService {
     }
 
     @Override
-    public void deleteCertificateEntry(String userID) throws CertException,
+    public void deleteCertificate(String userID) throws CertException,
             ClientException {
         Session sqlSession = getDirectoryService().open(
                 CERTIFICATE_DIRECTORY_NAME);
@@ -211,6 +210,7 @@ public class CertUserServiceImpl implements CertUserService {
             DocumentModel certEntry = sqlSession.getEntry(userID);
             sqlSession.deleteEntry(certEntry);
             sqlSession.commit();
+            assert (null == sqlSession.getEntry(userID));
         } catch (ClientException e) {
             throw new CertException(e);
         } finally {

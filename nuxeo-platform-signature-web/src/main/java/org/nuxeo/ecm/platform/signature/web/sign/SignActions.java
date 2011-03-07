@@ -49,7 +49,7 @@ import org.nuxeo.ecm.platform.signature.api.exception.CertException;
 import org.nuxeo.ecm.platform.signature.api.exception.SignException;
 import org.nuxeo.ecm.platform.signature.api.pki.CertService;
 import org.nuxeo.ecm.platform.signature.api.sign.SignatureService;
-import org.nuxeo.ecm.platform.signature.api.user.CertUserService;
+import org.nuxeo.ecm.platform.signature.api.user.CUserService;
 import org.nuxeo.ecm.platform.signature.api.user.UserInfo;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
@@ -73,7 +73,7 @@ public class SignActions implements Serializable {
     protected transient SignatureService signatureService;
 
     @In(create = true)
-    protected transient CertUserService certUserService;
+    protected transient CUserService cUserService;
 
     @In(create = true)
     protected transient CertService certService;
@@ -129,10 +129,10 @@ public class SignActions implements Serializable {
 
                 String userID = (String) user.getPropertyValue("user:username");
 
-                KeyStore keystore = certUserService.getUserKeystore(userID,
+                KeyStore keystore = cUserService.getUserKeystore(userID,
                         password);
 
-                UserInfo userInfo = certUserService.getUserInfo(user);
+                UserInfo userInfo = cUserService.getUserInfo(user);
 
                 File signedPdf;
                 signedPdf = signatureService.signPDF(user, password,

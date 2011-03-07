@@ -44,7 +44,6 @@ import org.nuxeo.ecm.platform.signature.api.user.AliasWrapper;
 import org.nuxeo.ecm.platform.signature.api.user.CNField;
 import org.nuxeo.ecm.platform.signature.api.user.RootService;
 import org.nuxeo.ecm.platform.signature.api.user.UserInfo;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -148,12 +147,6 @@ public class CertServiceTest {
         return keystore;
     }
 
-    public CertService getCertService() throws Exception {
-        if (certService == null) {
-            certService = Framework.getService(CertService.class);
-        }
-        return certService;
-    }
 
     private String getAliasId(UserInfo userInfo, AliasType aliasType) {
         AliasWrapper alias = new AliasWrapper(userInfo.getUserFields().get(CNField.UserID));

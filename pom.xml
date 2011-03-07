@@ -3,7 +3,7 @@
 <parent>
 <groupId>org.nuxeo.ecm.platform</groupId>
 <artifactId>nuxeo-features-parent</artifactId> 
-<version>5.4.0</version>
+<version>5.4.1-SNAPSHOT</version>
 </parent>      
   <groupId>org.nuxeo.ecm.platform</groupId>
   <artifactId>nuxeo-platform-signature-parent</artifactId>
@@ -12,9 +12,9 @@
   <packaging>pom</packaging>
   <version>1.0-SNAPSHOT</version>
   <properties>                                                                                                    
-    <nuxeo.core.version>5.4.0</nuxeo.core.version>                                                         
-    <nuxeo.features.version>5.4.0</nuxeo.features.version>
-    <nuxeo.platform.signature.version>5.4.0</nuxeo.platform.signature.version>
+    <nuxeo.core.version>5.4.1-SNAPSHOT</nuxeo.core.version>                                                         
+    <nuxeo.features.version>5.4.1-SNAPSHOT</nuxeo.features.version>
+    <nuxeo.platform.signature.version>1.0-SNAPSHOT</nuxeo.platform.signature.version>
   </properties>      
 
   <modules>

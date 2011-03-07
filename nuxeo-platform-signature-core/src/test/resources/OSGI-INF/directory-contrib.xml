@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.upcoming.test.directoryConfig">
+<component name="org.nuxeo.ecm.platform.signature.directory.test">
 
   <implementation
       class="org.nuxeo.ecm.directory.sql.SQLDirectoryDescriptor"/>
@@ -17,6 +17,7 @@
       <dbUrl>jdbc:hsqldb:mem:memid</dbUrl>
       <dbUser>sa</dbUser>
       <dbPassword></dbPassword>
+
 
       <table>users</table>
       <idField>username</idField>
@@ -64,10 +65,12 @@
 
   <directory name="certificate">
       <schema>cert</schema>
+
       <dbDriver>org.hsqldb.jdbcDriver</dbDriver>
       <dbUrl>jdbc:hsqldb:mem:memid</dbUrl>
-      <dbUser>SA</dbUser>
+      <dbUser>sa</dbUser>
       <dbPassword></dbPassword>
+
       <cacheTimeout>3600</cacheTimeout>
       <cacheMaxSize>1000</cacheMaxSize>
       <table>cert</table>
