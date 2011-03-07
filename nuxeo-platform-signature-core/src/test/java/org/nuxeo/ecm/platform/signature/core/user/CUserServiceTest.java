@@ -36,6 +36,7 @@ import org.nuxeo.common.jndi.NamingContextFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.BackendType;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.directory.sql.SimpleDataSource;
 import org.nuxeo.ecm.platform.signature.api.pki.CertService;
@@ -50,13 +51,14 @@ import com.google.inject.Inject;
 
 /**
  * @author <a href="mailto:ws@nuxeo.com">Wojciech Sulejman</a>
- * 
+ *
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@RepositoryConfig(type = BackendType.H2, user = "Administrator")
+@RepositoryConfig(cleanup=Granularity.METHOD, type = BackendType.H2, user = "Administrator")
 @Deploy( { "org.nuxeo.ecm.core", "org.nuxeo.ecm.core.api",
-        "org.nuxeo.runtime.management", "org.nuxeo.ecm.directory",
+        "org.nuxeo.runtime.management", "org.nuxeo.ecm.directory.api",
+         "org.nuxeo.ecm.directory",
         "org.nuxeo.ecm.directory.sql", "org.nuxeo.ecm.platform.usermanager",
         "org.nuxeo.ecm.platform.usermanager.api",
         "org.nuxeo.ecm.platform.signature.core",
@@ -80,7 +82,6 @@ public class CUserServiceTest {
         setUpContextFactory();
     }
 
-    @Test   
     public void testCreateCert() throws Exception {
         DocumentModel certificate = cUserService.createCertificate(getUser(),
                 USER_KEYSTORE_PASSWORD);

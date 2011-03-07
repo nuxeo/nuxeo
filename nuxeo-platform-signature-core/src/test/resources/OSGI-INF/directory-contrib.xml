@@ -63,6 +63,9 @@
 
     </directory>
 
+    <directory name="certificate" remove="true">
+    </directory>
+
   <directory name="certificate">
       <schema>cert</schema>
 
