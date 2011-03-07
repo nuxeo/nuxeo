@@ -69,24 +69,33 @@ public class RootResource {
     @GET
     @Produces("text/html")
     public Object getRoot() throws Exception {
+        Object resource = findResource("");
+        if(resource instanceof FolderResource){
+            return ((FolderResource)resource).get();
+        } else {
         return ((VirtualFolderResource) findResource("")).get();
+    }
     }
 
     @OPTIONS
     public Object getRootOptions() throws Exception {
+        Object resource = findResource("");
+        if(resource instanceof FolderResource){
+            return ((FolderResource)resource).options();
+        } else {
         return ((VirtualFolderResource) findResource("")).options();
+    }
     }
 
     @PROPFIND
     public Object getRootPropfind(@Context UriInfo uriInfo,
             @HeaderParam("depth") String depth) throws Exception {
         Object resource = findResource("");
-        if(resource instanceof VirtualFolderResource){
-            return ((VirtualFolderResource)resource).propfind(uriInfo, depth);
-        } else if(resource instanceof FolderResource){
+        if(resource instanceof FolderResource){
             return ((FolderResource)resource).propfind(uriInfo, depth);
-        }
+        } else {
         return ((VirtualFolderResource) findResource("")).propfind(uriInfo, depth);
+    }
     }
 
     @Path("{path:.+}")
