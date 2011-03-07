@@ -12,6 +12,7 @@
       <xs:element name="directive" type="xs:string" />
       <xs:element name="comment" type="xs:string" />
       <xs:element name="dueDate" type="xs:date" />
+      <xs:element name="right" type="xs:string" />
     </xs:sequence>
   </xs:complexType>
 

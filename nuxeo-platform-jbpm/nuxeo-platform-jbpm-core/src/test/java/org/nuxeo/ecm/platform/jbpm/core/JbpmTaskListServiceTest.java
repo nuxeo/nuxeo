@@ -89,6 +89,7 @@ public class JbpmTaskListServiceTest extends SQLRepositoryTestCase {
         task.setActors(Arrays.asList("user1", "user2"));
         task.setDirective("directive1");
         task.setComment("comment1");
+        task.getParameters().put("right", "Read");
         task.setDueDate(date);
 
         list.addTask(task);
@@ -97,6 +98,7 @@ public class JbpmTaskListServiceTest extends SQLRepositoryTestCase {
                 "user2"));
         assertEquals("directive1", list.getTasks().get(0).getDirective());
         assertEquals("comment1", list.getTasks().get(0).getComment());
+        assertEquals("Read", list.getTasks().get(0).getParameters().get("right"));
         assertEquals(list.getTasks().get(0).getDueDate(), date);
     }
 
@@ -125,6 +127,7 @@ public class JbpmTaskListServiceTest extends SQLRepositoryTestCase {
         task.setActors(Arrays.asList("user1", "user2"));
         task.setDirective("directive1");
         task.setComment("comment1");
+        task.getParameters().put("right", "Read");
         task.setDueDate(date);
 
         list.addTask(task);
@@ -135,6 +138,7 @@ public class JbpmTaskListServiceTest extends SQLRepositoryTestCase {
         assertEquals("directive1", list.getTasks().get(0).getDirective());
         assertEquals("comment1", list.getTasks().get(0).getComment());
         assertEquals(list.getTasks().get(0).getDueDate(), date);
+        assertEquals("Read", list.getTasks().get(0).getParameters().get("right"));
 
         // Save the list
         service.saveTaskList(session, list);
@@ -158,6 +162,7 @@ public class JbpmTaskListServiceTest extends SQLRepositoryTestCase {
         assertEquals("directive1", list.getTasks().get(0).getDirective());
         assertEquals("comment1", list.getTasks().get(0).getComment());
         assertEquals(list.getTasks().get(0).getDueDate(), date);
+        assertEquals("Read", list.getTasks().get(0).getParameters().get("right"));
 
         // Try to delete an unknown it
         service.deleteTaskList(session, "ListFake");

@@ -59,6 +59,7 @@ public class TaskListImpl implements TaskList {
             person.put("directive", task.getDirective());
             person.put("comment", task.getComment());
             person.put("dueDate", task.getDueDate());
+            person.put("right", task.getParameters().get("right"));
 
             newList.add(person);
 
@@ -81,6 +82,9 @@ public class TaskListImpl implements TaskList {
                     task.setActors((List<String>)participant.get("taskUsers"));
                     task.setDirective((String)participant.get("directive"));
                     task.setComment((String)participant.get("comment"));
+                    if (participant.containsKey("right")) {
+                        task.parameters.put("right", (String)participant.get("right"));
+                    }
                     GregorianCalendar calendar = (GregorianCalendar)participant.get("dueDate");
                     if(calendar != null){
                         task.setDueDate(calendar.getTime());
