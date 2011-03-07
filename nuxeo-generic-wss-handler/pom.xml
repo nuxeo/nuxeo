@@ -9,7 +9,10 @@
     <version>5.4.1-SNAPSHOT</version>
   </parent>
 
-  <groupId>org.nuxeo.ecm.platform</groupId>
+  <properties>
+        <nuxeo.version>5.4.1-SNAPSHOT</nuxeo.version>
+    </properties>
+    <groupId>org.nuxeo.ecm.platform</groupId>
   <artifactId>nuxeo-generic-wss-handler</artifactId>
   <name>Nuxeo Generic WSS bindings</name>
 
@@ -17,7 +20,8 @@
     <dependency>
        <groupId>org.nuxeo.ecm.platform</groupId>
        <artifactId>nuxeo-generic-wss-front</artifactId>
-    </dependency>
+    <version>${nuxeo.version}</version>
+        </dependency>
 
     <dependency>
       <groupId>org.freemarker</groupId>

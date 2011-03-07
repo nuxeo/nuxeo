@@ -76,6 +76,9 @@ public class WSSResponse extends WSSStaticResponse {
             }
 
             writer.close();
+            if (additionnalStream != null) {
+                additionnalStream.close();
+            }
 
             if (bufferizeRendering) {
                 int size = bufferedOs.size();
