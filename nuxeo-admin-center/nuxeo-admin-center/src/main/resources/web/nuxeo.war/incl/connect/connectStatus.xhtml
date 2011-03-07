@@ -207,6 +207,24 @@
           <h:outputText value="#{messages[connectStatus.status.instanceTypeLabel]}"/>
         </td>
       </tr>
+        <tr>
+        <td class="labelColumn">
+          <h:outputText value="#{messages['label.nuxeo.connect.refreshDate']}"/>
+        </td>
+        <td>
+          <h:form>
+          <h:outputText value="#{connectStatus.status.refreshDate.time}">
+                     <f:convertDateTime pattern="#{nxu:basicDateAndTimeFormater()}"
+            timeZone="#{timeZone}" />
+          </h:outputText>
+          <h:outputText value="&#160;" />
+           <a4j:commandButton value="#{messages['action.connect.refreshStatus']}"
+                         styleClass="button"
+                         action="#{connectStatus.refreshStatus}"
+                         reRender="connectStatusPanel"/>
+          </h:form>
+        </td>
+      </tr>
       <tr>
         <td class="labelColumn">
           <h:outputText value="#{messages['label.nuxeo.connect.id.CLID']}"/>
