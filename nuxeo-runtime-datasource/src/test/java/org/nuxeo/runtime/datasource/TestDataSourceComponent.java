@@ -27,11 +27,12 @@ import javax.naming.NamingException;
 import javax.sql.DataSource;
 
 import org.nuxeo.common.utils.FileUtils;
-import org.nuxeo.runtime.AbstractRuntimeService;
 import org.nuxeo.runtime.api.DataSourceHelper;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.jtajca.NuxeoContainer.TransactionManagerConfiguration;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 public class TestDataSourceComponent extends NXRuntimeTestCase {
 
@@ -56,7 +57,7 @@ public class TestDataSourceComponent extends NXRuntimeTestCase {
         File dir = new File(DIRECTORY);
         FileUtils.deleteTree(dir);
         dir.mkdirs();
-        ((AbstractRuntimeService) runtime).setProperty(PROP_NAME, dir.getPath());
+        Framework.getProperties().put(PROP_NAME, dir.getPath());
 
         deployBundle("org.nuxeo.runtime.datasource");
     }
@@ -106,7 +107,12 @@ public class TestDataSourceComponent extends NXRuntimeTestCase {
         initJTA();
         deployContrib("org.nuxeo.runtime.datasource.tests",
                 "OSGI-INF/xadatasource-contrib.xml");
-        checkDataSourceOk();
+        TransactionHelper.startTransaction();
+        try {
+            checkDataSourceOk();
+        } finally {
+            TransactionHelper.commitOrRollbackTransaction();
+        }
     }
 
 }
