@@ -41,20 +41,17 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.faces.FacesMessages;
-import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
-import org.nuxeo.connect.connector.CanNotReachConnectServer;
-import org.nuxeo.connect.connector.ConnectClientVersionMismatchError;
-import org.nuxeo.connect.connector.ConnectSecurityError;
-import org.nuxeo.connect.connector.ConnectServerError;
+import org.nuxeo.connect.client.status.ConnectStatusHolder;
+import org.nuxeo.connect.client.status.SubscriptionStatusWrapper;
 import org.nuxeo.connect.connector.NuxeoClientInstanceType;
 import org.nuxeo.connect.data.ConnectProject;
-import org.nuxeo.connect.data.SubscriptionStatus;
 import org.nuxeo.connect.identity.LogicalInstanceIdentifier;
 import org.nuxeo.connect.identity.TechnicalInstanceIdentifier;
 import org.nuxeo.connect.identity.LogicalInstanceIdentifier.InvalidCLID;
 import org.nuxeo.connect.registration.ConnectRegistrationService;
 import org.nuxeo.connect.update.PackageUpdateService;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -91,11 +88,7 @@ public class ConnectStatusActionBean implements Serializable {
 
     protected String instanceDescription;
 
-    protected SubscriptionStatus instanceStatus;
-
     protected boolean loginValidated = false;
-
-    protected boolean canNotReachConnectServer = false;
 
     protected String CLID;
 
@@ -194,40 +187,16 @@ public class ConnectStatusActionBean implements Serializable {
 
     @Factory(value = "connectServerReachable", scope = ScopeType.EVENT)
     public boolean isConnectServerReachable() {
-        return !canNotReachConnectServer;
+       return !ConnectStatusHolder.instance().getStatus().isConnectServerUnreachable();
+    }
+
+    public String refreshStatus() {
+        ConnectStatusHolder.instance().getStatus(true);
+        return null;
     }
 
     public SubscriptionStatusWrapper getStatus() {
-        if (instanceStatus == null) {
-            if (isRegistred()) {
-                try {
-                    instanceStatus = getService().getConnector().getConnectStatus();
-                    instanceType = instanceStatus.getInstanceType().toString();
-                    instanceDescription = instanceStatus.getDescription();
-                } catch (CanNotReachConnectServer e) {
-                    canNotReachConnectServer = true;
-                    log.warn("can not reach connect server", e);
-                    return new SubscriptionStatusWrapper(
-                            "Nuxeo Connect Server is not reachable");
-                } catch (ConnectClientVersionMismatchError e) {
-                    log.warn(
-                            "Connect Client does not have the required version to communicate with Nuxeo Connect Server",
-                            e);
-                    return new SubscriptionStatusWrapper(e.getMessage());
-                } catch (ConnectSecurityError e) {
-                    log.warn("Can not authenticated against Connect Server", e);
-                    return new SubscriptionStatusWrapper(e);
-                } catch (ConnectServerError e) {
-                    log.error("Error while calling connect server", e);
-                    return new SubscriptionStatusWrapper(e.getMessage());
-                }
-            }
-        }
-        if (instanceStatus != null) {
-            return new SubscriptionStatusWrapper(instanceStatus);
-        } else {
-            return null;
-        }
+        return ConnectStatusHolder.instance().getStatus();
     }
 
     public String getInstanceType() {
@@ -307,6 +276,7 @@ public class ConnectStatusActionBean implements Serializable {
         }
 
         flushEventCache();
+        ConnectStatusHolder.instance().flush();
         return null;
     }
 

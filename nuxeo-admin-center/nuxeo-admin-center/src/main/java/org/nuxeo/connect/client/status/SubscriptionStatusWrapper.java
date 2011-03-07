@@ -15,7 +15,9 @@
  *     Nuxeo - initial API and implementation
  */
 
-package org.nuxeo.connect.client.jsf;
+package org.nuxeo.connect.client.status;
+
+import java.util.Calendar;
 
 import org.nuxeo.connect.connector.ConnectSecurityError;
 import org.nuxeo.connect.data.SubscriptionStatus;
@@ -29,14 +31,22 @@ public class SubscriptionStatusWrapper extends SubscriptionStatus {
 
     protected boolean isSecurityError=false;
 
+    protected boolean canNotReachConnectServer = false;
+
+    protected boolean versionMismatch = false;
+
+    protected Calendar refreshDate;
+
     public SubscriptionStatusWrapper(String errorMessage) {
         this.errorMessage = errorMessage;
+        refreshDate = Calendar.getInstance();
     }
 
     public SubscriptionStatusWrapper(ConnectSecurityError securityException) {
-        this.errorMessage = securityException.getMessage();
+        this(securityException.getMessage());
         isSecurityError = true;
     }
+
     public SubscriptionStatusWrapper(SubscriptionStatus status) {
         contractStatus = status.getContractStatus();
         description = status.getDescription();
@@ -44,6 +54,7 @@ public class SubscriptionStatusWrapper extends SubscriptionStatus {
         message = status.getMessage();
         errorMessage = status.getErrorMessage();
         endDate = status.getEndDate();
+        refreshDate = Calendar.getInstance();
     }
 
     public String getinstanceTypeLabel() {
@@ -55,11 +66,23 @@ public class SubscriptionStatusWrapper extends SubscriptionStatus {
     }
 
     public boolean isError() {
-        return errorMessage!=null;
+        return errorMessage!=null || isSecurityError || versionMismatch || canNotReachConnectServer;
+    }
+
+    public boolean isConnectServerUnreachable() {
+        return canNotReachConnectServer;
+    }
+
+    public boolean isVersionMismatch() {
+        return versionMismatch;
     }
 
     public boolean isSecurityError() {
         return isSecurityError;
+    }
+
+    public Calendar getRefreshDate() {
+        return refreshDate;
     }
 
 }
