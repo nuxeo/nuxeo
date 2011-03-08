@@ -90,4 +90,25 @@ public class TestShibbolethAuthenticationService {
         assertEquals("test", service.getUserID(request));
     }
 
+    @Test
+    public void testUserMetada() {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setHeader("uid", "test");
+        request.setHeader("uid1", "value1");
+        request.setHeader("uid2", "value2");
+
+        String idField = "username";
+
+        request.setHeader("shib-identity-provider", "url1");
+        assertEquals("value1", service.getUserMetadata(idField,
+                request).get(idField));
+
+        request.setHeader("shib-identity-provider", "url2");
+        assertEquals("value2", service.getUserMetadata(idField,
+                request).get(idField));
+
+        request.setHeader("shib-identity-provider", "anotherUrl");
+        assertEquals("test", service.getUserMetadata(idField,
+                request).get(idField));
+    }
 }

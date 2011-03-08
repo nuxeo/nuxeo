@@ -82,12 +82,16 @@ public class ShibbolethAuthenticationServiceImpl extends DefaultComponent
     }
 
     @Override
-    public Map<String, Object> getUserMetadata(HttpServletRequest httpRequest) {
+    public Map<String, Object> getUserMetadata(String userIdField,
+            HttpServletRequest httpRequest) {
         Map<String, Object> fieldMap = new HashMap<String, Object>();
         for (String key : config.getFieldMapping().keySet()) {
             fieldMap.put(config.getFieldMapping().get(key),
                     httpRequest.getHeader(key));
         }
+        // Force userIdField to shibb userId value in case of the IdP do
+        // not use the same mapping as the default's one.
+        fieldMap.put(userIdField, getUserID(httpRequest));
         return fieldMap;
     }
 
