@@ -1,0 +1,16 @@
+<component name="org.nuxeo.ecm.platform.login.deputy.management.actions">
+    <require>org.nuxeo.ecm.platform.actions</require>
+
+    <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+        point="actions">
+
+
+        <action id="VIEW_DEPUTIES" link="view_deputies" enabled="true"
+            label="action.deputies.manage" icon="/icons/file.gif" order="120">
+            <category>USER_SERVICES</category>
+        </action>
+
+
+    </extension>
+
+</component>

@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo Login Deputy Management Module extension
+Bundle-SymbolicName: org.nuxeo.ecm.platform.login.deputy.management;singleton:=true
+Bundle-Version: 1.0.0
+Nuxeo-Component: OSGI-INF/actions-contrib.xml,
+ OSGI-INF/nxdirectories-contrib.xml,
+ OSGI-INF/deputymanagement-service.xml,
+ OSGI-INF/schemas-contrib.xml
