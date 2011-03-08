@@ -254,16 +254,22 @@ public class SQLDirectory extends AbstractDirectory {
     }
 
     public void shutdown() {
-        try {
-            if (sessions != null) {
-                // use toArray to avoid concurrent modification of list
-                for (Object session : sessions.toArray()) {
-                    ((Session) session).close();
-                }
-                sessions = null;
+        if (sessions.isEmpty()) {
+            return;
+        }
+        synchronized(sessions) {
+            if (sessions.isEmpty()) {
+                return;
             }
-        } catch (ClientException e) {
-            log.error("exception during shutdown", e);
+            List<Session> lastSessions = sessions;
+            sessions = new ArrayList<Session>();
+            for (Session session:lastSessions) {
+                try {
+                    session.close();
+                } catch (DirectoryException e) {
+                   log.error("Error during " + this.getName() + " shutdown", e);
+                }
+            }
         }
     }
 
