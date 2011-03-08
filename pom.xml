@@ -24,6 +24,7 @@
     <module>nuxeo-platform-login-portal-sso</module>
     <module>nuxeo-platform-login-cleartrust</module>
     <module>nuxeo-platform-login-shibboleth</module>
+    <module>nuxeo-platform-login-digest</module>
   </modules>
 
   <dependencyManagement>
