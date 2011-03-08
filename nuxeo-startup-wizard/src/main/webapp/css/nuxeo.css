@@ -97,7 +97,6 @@ ul {
 
 table {
     border-collapse: collapse;
-    margin-bottom: 10px;
 }
 
 td {
@@ -270,8 +269,23 @@ div.logout {
 /* Main Content style */
 .mainBlock {
     background-color: #fcfcfc;
-    padding: 0 30px 30px 0;
+    padding: 0 0px 0 0;
     border-bottom: 4px solid #ddd;
+}
+
+.leftCell {
+  width:15%;
+  padding:92px 10px;
+}
+
+.mainCell {
+  width: 65%;
+  padding:0 20px;
+}
+
+.rightCell {
+  width: 20%;
+  padding:0;
 }
 
 .homeBox {
@@ -743,8 +757,6 @@ table.registration .header {
     text-decoration: none;
     -moz-border-radius: 6px;
     -webkit-border-radius: 6px;
-    -moz-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
-    -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
     text-shadow: 0 -1px 1px rgba(0, 0, 0, 0.25);
     font-weight: bold;
     font-size: 15px;
@@ -756,6 +768,8 @@ table.registration .header {
     background-color: #2888f8;
     border: 1px solid #207ae4;
     color: #fff;
+    -moz-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+    -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);    
 }
 
 ul.noBullet {
@@ -834,6 +848,13 @@ ul.noBullet li {
     font-color: black;
 }
 
+.navItemSelected a, .navItem a.checked {
+  background: transparent url(../images/checked.gif) top right no-repeat;
+  padding-right: 20px;
+  display: inline-block;
+
+}
+
 .nuxeoIFrame {
     border: none;
     height: 500px;
@@ -844,6 +865,12 @@ ul.noBullet li {
 
 .formPadding {
     height: 280px;
+    overflow: auto;
     border-style: solid;
     border-width: 0px;
+}
+
+.progressbar {
+  margin-top: 10px;
+  margin-bottom: 30px;
 }
