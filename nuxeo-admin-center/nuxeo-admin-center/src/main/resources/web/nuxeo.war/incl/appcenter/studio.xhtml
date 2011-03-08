@@ -32,13 +32,13 @@
           <td width="70%">
           <h:outputText value="#{messages['label.studio.update.lastStatus']}"/>
           <h:outputText value="#{appsViews.getStudioInstallationStatus()}" styleClass="boldLabel"/>
-          <c:if test="#{connectServerReachable and registredConnectInstance}}">
+          <c:if test="#{connectServerReachable and registredConnectInstance}">
             <a4j:commandButton value="#{messages['admCommand.studio.update']}" actionListener="#{appsViews.installStudioSnapshot()}"  reRender="connectAppListing"/>
             <h:outputText value="#{messages['label.studio.update']}"/>
           </c:if>
           </td>
           <td style="text-align:center;vertical-align:middle">
-          <c:if test="#{connectServerReachable and registredConnectInstance}}">
+          <c:if test="#{connectServerReachable and registredConnectInstance}">
           <a target="studio" href="https://connect.nuxeo.com/nuxeo/site/studio/ide"><img src="/nuxeo/img/studio32.png"/><h:outputText value="#{messages['action.studio.go']}" styleClass="boldLabel"/>
           </a>
           </c:if>
