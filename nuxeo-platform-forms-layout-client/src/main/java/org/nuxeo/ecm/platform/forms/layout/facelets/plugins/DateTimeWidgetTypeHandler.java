@@ -32,7 +32,8 @@ import org.nuxeo.ecm.platform.forms.layout.api.exceptions.WidgetException;
 import org.nuxeo.ecm.platform.forms.layout.facelets.FaceletHandlerHelper;
 import org.nuxeo.ecm.platform.forms.layout.facelets.LeafFaceletHandler;
 import org.nuxeo.ecm.platform.forms.layout.facelets.TagConfigFactory;
-import org.nuxeo.ecm.platform.ui.web.component.date.UIInputDateTime;
+import org.nuxeo.ecm.platform.ui.web.tag.handler.InputDateTimeTagHandler;
+import org.richfaces.component.UICalendar;
 
 import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletHandler;
@@ -40,6 +41,7 @@ import com.sun.facelets.tag.CompositeFaceletHandler;
 import com.sun.facelets.tag.TagAttribute;
 import com.sun.facelets.tag.TagAttributes;
 import com.sun.facelets.tag.TagConfig;
+import com.sun.facelets.tag.jsf.ComponentConfig;
 import com.sun.facelets.tag.jsf.ComponentHandler;
 import com.sun.facelets.tag.jsf.ConvertHandler;
 import com.sun.facelets.tag.jsf.ConverterConfig;
@@ -65,8 +67,10 @@ public class DateTimeWidgetTypeHandler extends AbstractWidgetTypeHandler {
         TagAttributes attributes = helper.getTagAttributes(widgetId, widget);
         FaceletHandler leaf = new LeafFaceletHandler();
         if (BuiltinWidgetModes.EDIT.equals(mode)) {
-            ComponentHandler input = helper.getHtmlComponentHandler(attributes,
-                    leaf, UIInputDateTime.COMPONENT_TYPE, null);
+            ComponentConfig config = TagConfigFactory.createComponentConfig(
+                    tagConfig, attributes, leaf, UICalendar.COMPONENT_TYPE,
+                    null);
+            ComponentHandler input = new InputDateTimeTagHandler(config);
             String msgId = helper.generateMessageId(widgetName);
             ComponentHandler message = helper.getMessageComponentHandler(msgId,
                     widgetId, null);
