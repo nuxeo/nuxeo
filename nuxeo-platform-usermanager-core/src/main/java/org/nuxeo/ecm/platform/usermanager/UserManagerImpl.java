@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,11 +12,11 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id: JOOoConvertPluginImpl.java 18651 2007-05-13 20:28:53Z sfermigier $
+ *     George Lefter
+ *     Florent Guillaume
+ *     Anahide Tchertchian
+ *     Gagnavarslan ehf
  */
-
 package org.nuxeo.ecm.platform.usermanager;
 
 import java.io.Serializable;
@@ -33,6 +33,8 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -60,9 +62,7 @@ import org.nuxeo.runtime.services.event.Event;
 import org.nuxeo.runtime.services.event.EventService;
 
 /**
- * @author George Lefter
- * @author Florent Guillaume
- * @author Anahide Tchertchian
+ * Standard implementation of the Nuxeo UserManager.
  */
 public class UserManagerImpl implements UserManager {
 
@@ -146,6 +146,10 @@ public class UserManagerImpl implements UserManager {
 
     protected VirtualUser anonymousUser;
 
+    protected String digestAuthDirectory;
+
+    protected String digestAuthRealm;
+
     protected final Map<String, VirtualUserDescriptor> virtualUsers;
 
     public UserManagerImpl() {
@@ -187,6 +191,9 @@ public class UserManagerImpl implements UserManager {
         setUserDirectoryName(descriptor.userDirectoryName);
         setGroupDirectoryName(descriptor.groupDirectoryName);
         setVirtualUsers(descriptor.virtualUsers);
+
+        digestAuthDirectory = descriptor.digestAuthDirectory;
+        digestAuthRealm = descriptor.digestAuthRealm;
 
         userConfig = new UserConfig();
         userConfig.emailKey = userEmailField;
@@ -340,12 +347,66 @@ public class UserManagerImpl implements UserManager {
                 return false;
             }
 
-            return userDir.authenticate(username, password);
+            boolean authenticated = userDir.authenticate(username, password);
+            if (authenticated) {
+                syncDigestAuthPassword(username, password);
+            }
+            return authenticated;
         } finally {
             if (userDir != null) {
                 userDir.close();
             }
         }
+    }
+
+    protected void syncDigestAuthPassword(String username, String password)
+            throws ClientException {
+        if (StringUtils.isEmpty(digestAuthDirectory)
+                || StringUtils.isEmpty(digestAuthRealm) || username == null
+                || password == null) {
+            return;
+        }
+
+        String ha1 = encodeDigestAuthPassword(username, digestAuthRealm,
+                password);
+        Session dir = dirService.open(digestAuthDirectory);
+        try {
+            String schema = dirService.getDirectorySchema(digestAuthDirectory);
+            DocumentModel entry = dir.getEntry(username, true);
+            if (entry == null) {
+                entry = getDigestAuthModel();
+                entry.setProperty(schema, dir.getIdField(), username);
+                entry.setProperty(schema, dir.getPasswordField(), ha1);
+                dir.createEntry(entry);
+                dir.commit();
+                log.debug("Created digest auth password for user:" + username);
+            } else {
+                String storedHa1 = (String) entry.getProperty(schema,
+                        dir.getPasswordField());
+                if (!ha1.equals(storedHa1)) {
+                    entry.setProperty(schema, dir.getPasswordField(), ha1);
+                    dir.updateEntry(entry);
+                    dir.commit();
+                    log.debug("Updated digest auth password for user:"
+                            + username);
+                }
+            }
+        } catch (DirectoryException e) {
+            log.error("Digest auth password not synchronized", e);
+        } finally {
+            dir.close();
+        }
+    }
+
+    protected DocumentModel getDigestAuthModel() throws ClientException {
+        String schema = dirService.getDirectorySchema(digestAuthDirectory);
+        return BaseSession.createEntryModel(null, schema, null, null);
+    }
+
+    public static String encodeDigestAuthPassword(String username,
+            String realm, String password) {
+        String a1 = username + ":" + realm + ":" + password;
+        return DigestUtils.md5Hex(a1);
     }
 
     public boolean validatePassword(String password) {
@@ -789,8 +850,17 @@ public class UserManagerImpl implements UserManager {
                 throw new UserAlreadyExistsException();
             }
 
+            String schema = dirService.getDirectorySchema(userDirectoryName);
+            String clearUsername = (String) userModel.getProperty(schema,
+                    userDir.getIdField());
+            String clearPassword = (String) userModel.getProperty(schema,
+                    userDir.getPasswordField());
+
             userModel = userDir.createEntry(userModel);
             userDir.commit();
+
+            syncDigestAuthPassword(clearUsername, clearPassword);
+
             notifyUserChanged(userId);
             notify(userId, USERCREATED_EVENT_ID);
             return userModel;
@@ -1016,8 +1086,18 @@ public class UserManagerImpl implements UserManager {
             if (!userDir.hasEntry(userId)) {
                 throw new DirectoryException("user does not exist: " + userId);
             }
+
+            String schema = dirService.getDirectorySchema(userDirectoryName);
+            String clearUsername = (String) userModel.getProperty(schema,
+                    userDir.getIdField());
+            String clearPassword = (String) userModel.getProperty(schema,
+                    userDir.getPasswordField());
+
             userDir.updateEntry(userModel);
             userDir.commit();
+
+            syncDigestAuthPassword(clearUsername, clearPassword);
+
             notifyUserChanged(userId);
             notify(userId, USERMODIFIED_EVENT_ID);
         } finally {

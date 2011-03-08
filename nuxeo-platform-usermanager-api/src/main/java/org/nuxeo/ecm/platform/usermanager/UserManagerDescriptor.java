@@ -148,6 +148,12 @@ public class UserManagerDescriptor implements Serializable {
     @XNode("groups/listingMode")
     public String groupListingMode;
 
+    @XNode("digestAuthDirectory")
+    public String digestAuthDirectory;
+
+    @XNode("digestAuthRealm")
+    public String digestAuthRealm;
+
     /**
      * Merge with data from another descriptor.
      */
@@ -241,6 +247,12 @@ public class UserManagerDescriptor implements Serializable {
                     }
                 }
             }
+        }
+        if (other.digestAuthDirectory != null) {
+            digestAuthDirectory = other.digestAuthDirectory;
+        }
+        if (other.digestAuthRealm != null) {
+            digestAuthRealm = other.digestAuthRealm;
         }
     }
 

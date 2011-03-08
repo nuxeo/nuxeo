@@ -884,6 +884,13 @@ public class NuxeoAuthenticationFilter implements Filter {
                     // get the additional parameters
                     Map<String, String> parameters = service.getDescriptor(
                             pluginName).getParameters();
+                    if (userIdent.getLoginParameters() != null) {
+                        // keep existing parameters set by the auth plugin
+                        if (parameters == null) {
+                            parameters = new HashMap<String, String>();
+                        }
+                        parameters.putAll(userIdent.getLoginParameters());
+                    }
                     userIdent.setLoginParameters(parameters);
 
                     break;
