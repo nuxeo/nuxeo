@@ -28,6 +28,7 @@ import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
 import org.nuxeo.ecm.platform.login.BaseLoginModule;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -50,9 +51,6 @@ public class DigestLoginPlugin extends BaseLoginModule {
     protected static final String NC = "nc";
 
     protected static final String CNONCE = "cnonce";
-
-    // TODO introspect this config
-    protected static final String DIGEST_AUTH_DIRECTORY_NAME = "digest_auth";
 
     @Override
     public Boolean initLoginModule() {
@@ -93,17 +91,17 @@ public class DigestLoginPlugin extends BaseLoginModule {
         }
     }
 
-    public static String generateDigest(String a1md5, String httpMethod,
+    public static String generateDigest(String ha1, String httpMethod,
             String uri, String qop, String nonce, String nc, String cnonce)
             throws IllegalArgumentException {
         String a2 = httpMethod + ":" + uri;
-        String a2md5 = DigestUtils.md5Hex(a2);
+        String ha2 = DigestUtils.md5Hex(a2);
         String digest;
         if (qop == null) {
-            digest = a1md5 + ":" + nonce + ":" + a2md5;
+            digest = ha1 + ":" + nonce + ":" + ha2;
         } else if ("auth".equals(qop)) {
-            digest = a1md5 + ":" + nonce + ":" + nc + ":" + cnonce + ":" + qop
-                    + ":" + a2md5;
+            digest = ha1 + ":" + nonce + ":" + nc + ":" + cnonce + ":" + qop
+                    + ":" + ha2;
         } else {
             throw new IllegalArgumentException(
                     "This method does not support a qop: '" + qop + "'");
@@ -111,32 +109,29 @@ public class DigestLoginPlugin extends BaseLoginModule {
         return DigestUtils.md5Hex(digest);
     }
 
-    public static String encodePassword(String username, String realm,
-            String password) {
+    public static String encodeDigestAuthPassword(String username,
+            String realm, String password) {
         String a1 = username + ":" + realm + ":" + password;
         return DigestUtils.md5Hex(a1);
     }
 
     protected String getStoredHA1(String username) throws Exception {
+        UserManager userManager = Framework.getService(UserManager.class);
+        String dirName = userManager.getDigestAuthDirectory();
         DirectoryService directoryService = Framework.getService(DirectoryService.class);
-        Directory directory = directoryService.getDirectory(DIGEST_AUTH_DIRECTORY_NAME);
+        Directory directory = directoryService.getDirectory(dirName);
         if (directory == null) {
-            throw new IllegalArgumentException("Directory '"
-                    + DIGEST_AUTH_DIRECTORY_NAME + "' was not found.");
+            throw new IllegalArgumentException(
+                    "Digest Auth directory not found: " + dirName);
         }
-        Session dir = null;
+        Session dir = directoryService.open(dirName);
         try {
-            dir = directoryService.open(DIGEST_AUTH_DIRECTORY_NAME);
-            String schema = directoryService.getDirectorySchema(DIGEST_AUTH_DIRECTORY_NAME);
+            String schema = directoryService.getDirectorySchema(dirName);
             DocumentModel entry = dir.getEntry(username, true);
-            if (entry == null) {
-                return null;
-            }
-            return (String) entry.getProperty(schema, dir.getPasswordField());
+            return entry == null ? null : (String) entry.getProperty(schema,
+                    dir.getPasswordField());
         } finally {
-            if (dir != null) {
-                dir.close();
-            }
+            dir.close();
         }
     }
 

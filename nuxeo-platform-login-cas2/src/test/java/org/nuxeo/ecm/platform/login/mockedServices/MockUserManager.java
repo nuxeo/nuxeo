@@ -90,6 +90,16 @@ public class MockUserManager implements UserManager {
         return "Anonymous";
     }
 
+    @Override
+    public String getDigestAuthDirectory() {
+        return null;
+    }
+
+    @Override
+    public String getDigestAuthRealm() {
+        return null;
+    }
+
     public List<NuxeoGroup> getAvailableGroups() throws ClientException {
         return null;
     }
