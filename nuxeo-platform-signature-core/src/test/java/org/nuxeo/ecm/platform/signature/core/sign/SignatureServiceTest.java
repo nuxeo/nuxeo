@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -107,7 +107,8 @@ public class SignatureServiceTest {
     /**
      * A test keystore file a user pdfca with pdfcacert and pdfkey entries
      */
-    // mark this true if you want to keep the signed pdf for verification
+    
+    // mark this true if you want to keep the signed pdf for manual verification/preview
     private static final boolean KEEP_SIGNED_PDF = false;
 
     private static final String ROOT_KEY_PASSWORD = "abc";
@@ -167,14 +168,14 @@ public class SignatureServiceTest {
 
     @Test
     public void testSignPDF() throws Exception {
-        File outputFile = signatureService.signPDF(getUser(),
+        File signedFile = signatureService.signPDF(getUser(),
                 USER_KEY_PASSWORD, "test reason", new FileInputStream(
                         origPdfFile));
-        assertTrue(outputFile.exists());
+        assertTrue(signedFile.exists());
         if (KEEP_SIGNED_PDF) {
-            log.info("SIGNED PDF: " + outputFile.getAbsolutePath());
+            log.info("SIGNED PDF: " + signedFile.getAbsolutePath());
         } else {
-            outputFile.deleteOnExit();
+            signedFile.deleteOnExit();
         }
     }
 
@@ -193,6 +194,7 @@ public class SignatureServiceTest {
                 certificates.size() > 0);
         assertTrue(certificates.get(0).getSubjectDN().toString().contains(
                 "CN=Homer Simpson"));
+        signedFile.deleteOnExit();
     }
 
     InputStream getKeystoreIS(String keystoreFilePath) throws Exception {
