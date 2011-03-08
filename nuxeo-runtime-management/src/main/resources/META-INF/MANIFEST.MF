@@ -11,8 +11,7 @@ Bundle-Version: 5.4.1.qualifier
 Bundle-ManifestVersion: 2
 Nuxeo-Component: OSGI-INF/management-resource-publisher-service.xml,
   OSGI-INF/management-server-locator-service.xml
-Import-Package: javax.annotation;version="1.0",
- javax.management,
+Import-Package: javax.management,
  javax.management.modelmbean,
  javax.management.remote,
  javax.management.remote.rmi,

@@ -7,12 +7,16 @@ Bundle-Vendor: Nuxeo
 Bundle-Category: runtime
 Export-Package: org.nuxeo.runtime.start
 Bundle-ClassPath: .
-Import-Package: org.osgi.framework,
- org.nuxeo.runtime.api,
- org.nuxeo.runtime.osgi,
- org.nuxeo.runtime.jtajca,
- org.nuxeo.common.jndi,
+Import-Package: javax.naming,
  javax.naming.spi,
- javax.naming
+ org.apache.commons.logging;version="1.0.4",
+ org.eclipse.equinox.http.jetty,
+ org.eclipse.equinox.http.servlet,
+ org.nuxeo.common.jndi,
+ org.nuxeo.runtime.api,
+ org.nuxeo.runtime.jtajca,
+ org.nuxeo.runtime.osgi,
+ org.osgi.framework,
+ org.osgi.service.http
 Bundle-Activator: org.nuxeo.runtime.start.StartApplication
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
