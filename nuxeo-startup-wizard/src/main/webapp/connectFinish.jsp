@@ -10,7 +10,7 @@
   <li><fmt:message key="label.connectFinish.ko.bad2" /></li>
  </ul>
  <br/>
- <p class="details">
+ <p>
       <fmt:message key="label.connectFinish.ko.free" />
   </p>
 </div>

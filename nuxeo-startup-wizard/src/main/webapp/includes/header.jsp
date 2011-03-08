@@ -51,10 +51,7 @@ function showError(id) {
 
 <table width="100%">
 <tr>
-<td width="100px">
-
-<br/><br/><br/><br/><br/>
-
+<td class="leftCell">
 
 <%for (Page item : nav.getPages()) {
 
@@ -65,7 +62,7 @@ function showError(id) {
   class="navItem <%=currentPage.getAction().equals(item.getAction()) ? "navItemSelected" : "" %>"
 >
 <% if (item.hasBeenNavigatedBefore()) { %>
-   <A href="#" onclick="navigateTo('<%=item.getAction()%>')"> <fmt:message key="<%=item.getLabelKey()%>"/> </A>
+   <A href="#" onclick="navigateTo('<%=item.getAction()%>')" class="checked"> <fmt:message key="<%=item.getLabelKey()%>"/> </A>
 <% } else { %>
   <fmt:message key="<%=item.getLabelKey()%>"/>
 <%} %>
@@ -75,11 +72,10 @@ function showError(id) {
 } %>
 
 </td>
-<td class="mainClell">
+<td class="mainCell">
 
 <% if (currentPage.getProgress()>=0) { %>
-<center>
-<table width="60%">
+<table width="100%" class="progressbar">
 <tr>
 <td colspan="2" style="font-style:italic;font-color:#555555;text-align:center"><fmt:message key="label.nuxeo.wizard.progress" /></td>
 </tr>
@@ -88,5 +84,4 @@ function showError(id) {
 <td width="<%=100-currentPage.getProgress()%>%" style="background-color:#DDDDDD;padding:0px;margin:0px"></td>
 </tr>
 </table>
-</center>
 <%}%>
