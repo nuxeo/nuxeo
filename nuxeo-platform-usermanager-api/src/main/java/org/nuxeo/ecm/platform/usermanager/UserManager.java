@@ -402,6 +402,12 @@ public interface UserManager extends Authenticator, Serializable {
      */
     String getAnonymousUserId() throws ClientException;
 
+    /** Gets the Digest Auth directory. */
+    String getDigestAuthDirectory() throws ClientException;
+
+    /** Gets the Digest Auth realm. */
+    String getDigestAuthRealm() throws ClientException;
+
     /**
      * Sets the given configuration on the service.
      *

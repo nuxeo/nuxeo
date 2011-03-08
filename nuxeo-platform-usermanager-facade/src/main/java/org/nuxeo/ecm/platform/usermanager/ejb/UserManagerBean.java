@@ -268,6 +268,24 @@ public class UserManagerBean implements UserManagerLocal {
         }
     }
 
+    @Override
+    public String getDigestAuthDirectory() throws ClientException {
+        try {
+            return getUserManager().getDigestAuthDirectory();
+        } catch (Throwable e) {
+            throw ClientException.wrap(e);
+        }
+    }
+
+    @Override
+    public String getDigestAuthRealm() throws ClientException {
+        try {
+            return getUserManager().getDigestAuthRealm();
+        } catch (Throwable e) {
+            throw ClientException.wrap(e);
+        }
+    }
+
     public void setConfiguration(UserManagerDescriptor descriptor)
             throws ClientException {
         try {

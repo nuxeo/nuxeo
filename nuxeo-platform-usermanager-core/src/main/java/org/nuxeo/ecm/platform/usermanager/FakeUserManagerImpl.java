@@ -267,6 +267,16 @@ public class FakeUserManagerImpl implements UserManager {
         return anonymousUser.getId();
     }
 
+    @Override
+    public String getDigestAuthDirectory() {
+        return null;
+    }
+
+    @Override
+    public String getDigestAuthRealm() {
+        return null;
+    }
+
     public void setConfiguration(UserManagerDescriptor descriptor) {
         setDefaultGroup(descriptor.defaultGroup);
         defaultAdministratorIds = descriptor.defaultAdministratorIds;

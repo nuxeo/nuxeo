@@ -60,14 +60,17 @@
       <groupId>net.sf.opencsv</groupId>
       <artifactId>opencsv</artifactId>
     </dependency>
-
+    <dependency>
+      <groupId>commons-codec</groupId>
+      <artifactId>commons-codec</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core</artifactId>
       <scope>test</scope>
     </dependency>
-    
+
     <dependency>
         <groupId>jmock</groupId>
         <artifactId>jmock</artifactId>

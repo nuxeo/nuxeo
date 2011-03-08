@@ -409,6 +409,16 @@ public class UserManagerImpl implements UserManager {
         return DigestUtils.md5Hex(a1);
     }
 
+    @Override
+    public String getDigestAuthDirectory() {
+        return digestAuthDirectory;
+    }
+
+    @Override
+    public String getDigestAuthRealm() {
+        return digestAuthRealm;
+    }
+
     public boolean validatePassword(String password) {
         if (userPasswordPattern == null) {
             return true;
