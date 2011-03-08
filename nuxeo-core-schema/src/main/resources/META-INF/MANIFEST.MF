@@ -13,6 +13,7 @@ Bundle-Version: 5.4.1.qualifier
 Bundle-ManifestVersion: 2
 Nuxeo-Component: OSGI-INF/SchemaService.xml
 Import-Package: com.sun.xml.xsom,
+ com.sun.xml.xsom.impl,
  com.sun.xml.xsom.parser,
  org.apache.commons.logging,
  org.nuxeo.common.utils,

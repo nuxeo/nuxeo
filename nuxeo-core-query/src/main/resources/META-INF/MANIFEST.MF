@@ -11,9 +11,9 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Version: 5.4.1.qualifier
 Bundle-ManifestVersion: 2
 Import-Package: java_cup.runtime,
- org.joda.time;version="1.6",
+ org.joda.time,
  org.joda.time.base,
- org.joda.time.format;version="1.6",
+ org.joda.time.format,
  org.nuxeo.common.collections,
  org.nuxeo.common.utils,
  org.nuxeo.ecm.core;api=split,
