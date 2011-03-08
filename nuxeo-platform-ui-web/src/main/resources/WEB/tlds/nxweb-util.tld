@@ -715,8 +715,7 @@
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
       <description>
-        Image path to use for the trigger. Defaults to
-        "jscalendar/calendar.png".
+        Image path to use for the trigger.
       </description>
     </attribute>
     <attribute>
