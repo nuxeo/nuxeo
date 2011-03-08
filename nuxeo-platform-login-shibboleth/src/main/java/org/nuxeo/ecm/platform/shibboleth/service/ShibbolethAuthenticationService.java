@@ -75,6 +75,6 @@ public interface ShibbolethAuthenticationService {
      * @param HTTP request
      * @return metadata map
      */
-    Map<String, Object> getUserMetadata(HttpServletRequest httpRequest);
+    Map<String, Object> getUserMetadata(String idField, HttpServletRequest httpRequest);
 
 }

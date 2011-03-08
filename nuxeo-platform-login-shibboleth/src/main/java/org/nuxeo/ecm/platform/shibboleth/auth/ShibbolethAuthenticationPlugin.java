@@ -113,7 +113,8 @@ public class ShibbolethAuthenticationPlugin implements
             UserManager userManager = Framework.getService(UserManager.class);
             userDir = Framework.getService(DirectoryService.class).open(
                     userManager.getUserDirectoryName());
-            Map<String, Object> fieldMap = getService().getUserMetadata(httpRequest);
+            Map<String, Object> fieldMap = getService().getUserMetadata(
+                    userManager.getUserIdField(), httpRequest);
             DocumentModel entry = userDir.getEntry(userId);
             if (entry == null) {
                 userDir.createEntry(fieldMap);
