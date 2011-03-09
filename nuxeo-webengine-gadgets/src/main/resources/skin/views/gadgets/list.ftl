@@ -1,6 +1,6 @@
 <div>
     <#list gadgets as gadget>
-    <div class="gadget" onclick="selectGadget('${gadget_index}','${gadget.name}')" id="gadget${gadget_index}">
+    <div class="gadget" id="gadget${gadget_index}">
     <div style="width:125px;overflow:hidden;float:left;background-color:white;">
       <#if gadget.getThumbnail()>
         <#if gadget.getThumbnail()?starts_with("http")>
@@ -13,8 +13,11 @@
       </#if>
       </div>
       <div style="padding:2px;margin:2px">&nbsp;
-      ${gadget.getTitle()}
+      ${gadget.title}
+      ${gadget.description}
+      ${gadget.author}
       </div>
+      <input type="button" value="add" onclick="doAddGadget('${gadget.name}','${gadget.getGadgetDefinition().toString()}')"/>
       <div style="clear:both"></div>
 
     </div>
