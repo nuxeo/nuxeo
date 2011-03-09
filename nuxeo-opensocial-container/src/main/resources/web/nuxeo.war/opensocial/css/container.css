@@ -4,6 +4,14 @@ html,body {
 	height: 100%;
 }
 
+.opensocial_title {
+  float:left;
+}
+
+.opensocial_buttons {
+  float:right;  
+}
+
 #gwtContainer {
 	clear: both;
 	position: relative;

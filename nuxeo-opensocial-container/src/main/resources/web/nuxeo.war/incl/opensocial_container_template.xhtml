@@ -25,7 +25,7 @@
   <div id="popupChooser" style="display:none">
     <a id="popupChooserClose">x</a>
 
-    <h1>Nuxeo OpenSocial Gadget selection</h1>
+    <h1 class="opensocial_title">Nuxeo OpenSocial Gadget selection</h1>
 
     <p id="popupContent">
       ... Loading ...
@@ -62,12 +62,16 @@
 
   <ui:insert name="opensocial_container_actions">
     <c:if test="#{not currentUser.anonymous}">
-      <ul>
-        <li><a onclick="nuxeo.container.openContainerBuilder();" id="openContainerBuilder" title="#{messages['label.opensocial.container.change.layout']}">#{messages['label.opensocial.container.change.layout']}</a></li>
-        <li><a onclick="showPopup('#{baseURL}site/gadgets/?mode=popup');" title="#{messages['label.opensocial.container.add.gadget']}">#{messages['label.opensocial.container.add.gadget']}</a></li>
-      </ul>
+      <div class="opensocial_buttons">
+        <ul>
+          <li><a onclick="nuxeo.container.openContainerBuilder();" id="openContainerBuilder" title="#{messages['label.opensocial.container.change.layout']}">#{messages['label.opensocial.container.change.layout']}</a></li>
+          <li><a onclick="showPopup('#{baseURL}site/gadgets/?mode=popup');" title="#{messages['label.opensocial.container.add.gadget']}">#{messages['label.opensocial.container.add.gadget']}</a></li>
+        </ul>
+      </div>
     </c:if>
   </ui:insert>
+  
+  <div style="clear:both;"></div>
 
   <script type="text/javascript" language="javascript" src="/nuxeo/opensocial/gadgets/js/rpc.js?c=1"></script>
   <script type="text/javascript" language="javascript" src="/nuxeo/site/gwt-container/gwtContainer/gwtContainer.nocache.js"></script>
