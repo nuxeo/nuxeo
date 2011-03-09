@@ -6,7 +6,7 @@
 
     <action id="AuthorizedApplication" link="user_center_fragment.xhtml"
       label="user.center.authorizedApplication"
-      order="60">
+      order="50">
       <category>USER_CENTER</category>
     </action>
 

@@ -4,7 +4,7 @@
     point="actions">
 
     <action id="Notification" link="/incl/notification/user_subscriptions.xhtml" label="user.center.notification"
-      order="30">
+      order="40">
       <category>USER_CENTER</category>
     </action>
 

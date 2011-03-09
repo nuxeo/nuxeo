@@ -6,11 +6,14 @@
 	<extension target="org.nuxeo.ecm.platform.actions.ActionService"
 		point="actions">
 
+    <!-- Currently disabled as there is now way to use those preferences -->
+    <!--
     <action id="Settings" link="user_center_settings_fragment.xhtml"
       label="user.center.settings"
-      order="10">
+      order="30">
       <category>USER_CENTER</category>
     </action>
+    -->
 
 	</extension>
 
