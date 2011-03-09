@@ -132,9 +132,7 @@ public class OpenSocialAdapter extends
                 OPENSOCIAL_GADGETS_EMBEDDED_SERVER, "true"));
         if (gadgetsEmbeddedServer) {
             StringBuilder sb = new StringBuilder();
-            if (relativeUrl) {
-                sb.append(VirtualHostHelper.getContextPathProperty());
-            } else {
+            if (!relativeUrl) {
                 sb.append(Framework.getProperty(NUXEO_LOOPBACK_URL));
             }
             return sb.toString();

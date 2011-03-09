@@ -55,6 +55,7 @@ public class OpenSocialPresenter extends
 
         setLanguage();
         setPermissions();
+        setBaseURL();
 
         display.setUrl(model.getData().getFrameUrl());
 
@@ -97,6 +98,22 @@ public class OpenSocialPresenter extends
                         view));
     }
 
+    protected void setBaseURL() {
+        String url = model.getData().getFrameUrl();
+        if (!url.startsWith("http")) {
+            String baseUrl = getBaseUrl();
+            if (baseUrl.endsWith("/")) {
+                baseUrl = baseUrl.substring(0, baseUrl.length() - 1);
+            }
+            url = baseUrl + url;
+            model.getData().setFrameUrl(url);
+        }
+    }
+
+    private native String getBaseUrl() /*-{
+        return $wnd.nuxeo.baseURL;
+    }-*/;
+
     // Make this method static in order to be easily tested !
     public static String changeParam(String url, String name, String value) {
         String paramsString = url.substring(url.indexOf("?"));
@@ -129,6 +146,7 @@ public class OpenSocialPresenter extends
     public void refreshDisplay() {
         setLanguage();
         setPermissions();
+        setBaseURL();
         display.setUrl(model.getData().getFrameUrl());
     }
 
