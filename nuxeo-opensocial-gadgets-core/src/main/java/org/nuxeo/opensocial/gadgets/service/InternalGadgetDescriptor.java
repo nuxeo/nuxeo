@@ -163,7 +163,7 @@ public class InternalGadgetDescriptor extends BaseGadgetDescriptor implements
             sb.append(Framework.getProperty(OPENSOCIAL_GADGETS_HOST));
             sb.append(HTTP_SEPARATOR);
             sb.append(Framework.getProperty(OPENSOCIAL_GADGETS_PORT));
-            sb.append(HTTP_SEPARATOR);
+            sb.append(URL_SEPARATOR);
             sb.append(VirtualHostHelper.getContextPathProperty());
         }
         sb.append(Framework.getProperty(OPENSOCIAL_GADGETS_PATH));
