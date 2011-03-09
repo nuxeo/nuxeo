@@ -39,20 +39,42 @@ public class JettyFeature extends SimpleFeature implements WorkingDirectoryConfi
         if (jetty == null) {
             jetty = Defaults.of(Jetty.class);
         }
+        configureJetty(jetty);
+
+        runner.getFeature(RuntimeFeature.class).getHarness().addWorkingDirectoryConfigurator(this);
+    }
+
+    protected void configureJetty(Jetty jetty){
         int p = jetty.port();
+        try {
+            String s = System.getenv("JETTY_PORT");
+            if ( s != null) {
+                p = Integer.parseInt(s);
+            }
+        } catch (Exception e){
+            // do nothing ; the jetty.port
+        }
         if (p > 0) {
             System.setProperty("jetty.port", Integer.toString(p));
         }
-        String v = jetty.host();
-        if (v.length() > 0) {
-            System.setProperty("jetty.host", jetty.host());
+
+        String host = System.getenv("JETTY_HOST");
+        if ( host == null ){
+            host = jetty.host();
         }
-        v = jetty.config();
-        if (v.length() > 0) {
-            System.setProperty("org.nuxeo.jetty.config", jetty.config());
+        if (host.length() > 0) {
+            System.setProperty("jetty.host", host);
         }
-        runner.getFeature(RuntimeFeature.class).getHarness().addWorkingDirectoryConfigurator(this);
+
+        String config = System.getenv("JETTY_CONFIG");
+        if ( config == null ){
+            config = jetty.config();
+        }
+        if (config.length() > 0) {
+            System.setProperty("org.nuxeo.jetty.config", config);
+        }
     }
+
 
     @Override
     public void configure(RuntimeHarness harness, File workingDir) throws IOException {
