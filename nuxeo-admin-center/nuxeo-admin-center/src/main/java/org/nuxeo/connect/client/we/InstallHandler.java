@@ -32,6 +32,7 @@ import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.connect.client.vindoz.InstallAfterRestart;
 import org.nuxeo.connect.packages.PackageManager;
 import org.nuxeo.connect.packages.dependencies.DependencyResolution;
 import org.nuxeo.connect.update.LocalPackage;
@@ -116,6 +117,12 @@ public class InstallHandler extends DefaultObject {
             LocalPackage pkg = pus.getPackage(pkgId);
             if (pkg==null) {
                 throw new ClientException("Can not find package " + pkgId);
+            }
+
+            if (InstallAfterRestart.isNeededForPackage(pkg)) {
+                InstallAfterRestart.addPackage(pkg.getId());
+                return getView("installOnRestart").arg(
+                        "pkg", pkg).arg("source", source);
             }
 
             if (pkg.requireTermsAndConditionsAcceptance() & !(Boolean.TRUE.equals(acceptedTAC))) {
@@ -260,6 +267,13 @@ public class InstallHandler extends DefaultObject {
 
         try {
             LocalPackage pkg = pus.getPackage(pkgId);
+
+            if (InstallAfterRestart.isNeededForPackage(pkg)) {
+                InstallAfterRestart.addPackage(pkg.getId());
+                return getView("installOnRestart").arg(
+                        "pkg", pkg).arg("source", source);
+            }
+
             Task installTask = pkg.getInstallTask();
             Map<String, String> params = getInstallParameters(pkgId);
             try {

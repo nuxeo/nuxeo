@@ -206,7 +206,11 @@ public class PackageListingProvider extends DefaultObject {
     }
 
     public boolean canInstall(Package pkg) {
-        return PackageState.DOWNLOADED == pkg.getState();
+        return PackageState.DOWNLOADED == pkg.getState() && !InstallAfterRestart.isMarkedForInstallAfterRestart(pkg.getId());
+    }
+
+    public boolean needsRestart(Package pkg) {
+        return InstallAfterRestart.isMarkedForInstallAfterRestart(pkg.getId());
     }
 
     public boolean canUnInstall(Package pkg) {

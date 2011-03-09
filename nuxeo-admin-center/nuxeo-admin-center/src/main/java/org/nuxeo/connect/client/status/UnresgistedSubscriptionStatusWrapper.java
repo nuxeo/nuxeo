@@ -17,6 +17,12 @@
 
 package org.nuxeo.connect.client.status;
 
+/**
+ * PlaceHolder for Unregistred instances
+ *
+ * @author Tiry (tdelprat@nuxeo.com)
+ *
+ */
 public class UnresgistedSubscriptionStatusWrapper extends SubscriptionStatusWrapper {
 
     public UnresgistedSubscriptionStatusWrapper() {
