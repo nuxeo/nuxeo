@@ -29,6 +29,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 
 import org.nuxeo.connect.client.status.ConnectStatusHolder;
+import org.nuxeo.connect.client.vindoz.InstallAfterRestart;
 import org.nuxeo.connect.connector.http.ConnectUrlConfig;
 import org.nuxeo.connect.data.DownloadablePackage;
 import org.nuxeo.connect.data.DownloadingPackage;
@@ -207,7 +208,11 @@ public class PackageListingProvider extends DefaultObject {
     }
 
     public boolean canInstall(Package pkg) {
-        return PackageState.DOWNLOADED == pkg.getState();
+        return PackageState.DOWNLOADED == pkg.getState() && !InstallAfterRestart.isMarkedForInstallAfterRestart(pkg.getId());
+    }
+
+    public boolean needsRestart(Package pkg) {
+        return InstallAfterRestart.isMarkedForInstallAfterRestart(pkg.getId());
     }
 
     public boolean canUnInstall(Package pkg) {
