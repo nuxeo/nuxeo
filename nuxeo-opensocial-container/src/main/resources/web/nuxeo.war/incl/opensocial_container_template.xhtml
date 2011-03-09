@@ -25,7 +25,7 @@
   <div id="popupChooser" style="display:none">
     <a id="popupChooserClose">x</a>
 
-    <h1 class="opensocial_title">Nuxeo OpenSocial Gadget selection</h1>
+    <h1>Nuxeo OpenSocial Gadget selection</h1>
 
     <p id="popupContent">
       ... Loading ...
@@ -57,8 +57,10 @@
     }
   </script>
 
+  <div class="opensocial_title">
   <ui:insert name="opensocial_container_title">
   </ui:insert>
+  </div>
 
   <ui:insert name="opensocial_container_actions">
     <c:if test="#{not currentUser.anonymous}">
@@ -76,7 +78,7 @@
   <script type="text/javascript" language="javascript" src="/nuxeo/opensocial/gadgets/js/rpc.js?c=1"></script>
   <script type="text/javascript" language="javascript" src="/nuxeo/site/gwt-container/gwtContainer/gwtContainer.nocache.js"></script>
   <div id="containerPanel" style="background-color:white">
-    <div id="gwtContainerDiv" style="padding-left:20px"></div>
+    <div id="gwtContainerDiv" style=""></div>
   </div>
 
 </div>

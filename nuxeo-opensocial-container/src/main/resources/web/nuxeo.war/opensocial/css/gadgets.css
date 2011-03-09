@@ -48,21 +48,17 @@
 	width: 98%;
 }
 
-button {
-	-moz-border-radius: 7px 7px 7px 7px;
-	-moz-box-shadow: 1px 1px 7px #363636;
-	border: 1px solid #99CC00;
-	color: white;
-	cursor: pointer;
-	display: block;
-	font-size: 11px;
-	font-weight: bold;
-	margin: 5px;
-	padding: 0 3px;
-	text-decoration: none;
-	font-family: Trebuchet, Arial, Verdana;
-	background-color: #99CC00;
-	text-transform: uppercase;
+button.gwt-Button  {
+  background-color: #4E9AE1;
+  background-image: none;
+  line-height: 100%;
+  padding: 2px 5px;
+  margin:5px 0;
+  -moz-border-radius: 10px;
+  -webkit-border-radius: 10px;
+  border-radius: 10px;
+  color:#fff;
+  border:none;
 }
 
 .gwt-RichTextArea {
