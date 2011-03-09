@@ -1,9 +1,4 @@
 <style>
-.category { background-color:#EEEEEE;margin:2px;padding:2px;border:1px #AAAAAA solid;cursor:pointer}
-.currentCategory { background-color:#CCCCCC;}
-.gadget { margin: 2px; border:1px #AAAAAA solid;cursor:pointer;padding:2px}
-.currentGadget {background-color:#CCCCCC;}
-.gadgetTitle {}
 <#if mode=="popup">
 .addButton {float:right;}
 <#else>
@@ -16,32 +11,31 @@ var galleryBaseUrl = '${This.path}';
 </script>
 <script type="text/javascript" src="${skinPath}/scripts/gadget-gallery.js"></script>
 
-<table>
+<table class="gadgetBrowser">
 <tr>
 
- <td style="vertical-align:top">
- <div style="overflow:auto;">
+ <td>
+ <div class="categoryList">
+ <ul>
  <#list categories as cat>
   <#if cat==category>
-  <div class="category currentCategory" onclick="selectCategory('${cat_index}','${cat}');" id="cat${cat_index}">
+   <li class="category currentCategory">
+    <a onclick="selectCategory('${cat_index}','${cat}');" id="cat${cat_index}">
   <#else>
-  <div class="category" onclick="selectCategory('${cat_index}','${cat}');" id="cat${cat_index}">
+   <li class="category">
+    <a onclick="selectCategory('${cat_index}','${cat}');" id="cat${cat_index}">
   </#if>
   ${This.getCategoryLabel(cat)}
-  </div>
- </#list>
+  </a></li>
+   </#list>
+ </ul>
  </div>
  </td>
 
- <td width="300px" style="vertical-align:top">
-  <div style="overflow:auto;height:350px;text-align:left;" id="gadgetListContainer">
+ <td>
+  <div id="gadgetListContainer">
     <#include "/views/gadgets/list.ftl">
   </div>
- </td>
-
- <td width="320px" style="vertical-align:top">
-   <div id="gadgetDetails" style="overflow:auto;height:350px">
-   </div>
  </td>
 </tr>
 </table>

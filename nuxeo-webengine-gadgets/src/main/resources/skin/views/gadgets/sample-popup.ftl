@@ -29,7 +29,7 @@
 <div id="backgroundPopup"></div>
 
 <!-- link for trigger Popup display -->
-<A href="javascript:showPopup('http://127.0.0.1:8080/nuxeo/site/gadgets/?mode=popup')"> show </A>
+<A href="javascript:showPopup('http://localhost:8080/nuxeo/site/gadgets/?mode=popup')"> show </A>
 
 <br/>
 <br/>
