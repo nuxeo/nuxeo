@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -38,6 +39,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.regex.Pattern;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -98,6 +100,8 @@ public abstract class NuxeoLauncher {
     private static final int MAX_WAIT_LOGFILE = 10;
 
     private static final String PARAM_NUXEO_URL = "nuxeo.url";
+
+    private static final String INSTALLER_CLASS = "org.nuxeo.ecm.admin.offline.update.Main";
 
     protected ConfigurationGenerator configurationGenerator;
 
@@ -620,6 +624,11 @@ public abstract class NuxeoLauncher {
                 configurationGenerator.cleanupPostWizard();
             }
 
+            if (PlatformUtils.isWindows()
+                    && configurationGenerator.isInstallInProgress()) {
+                install();
+            }
+
             start(logProcessOutput);
             serverStarted = isRunning();
             if (pid != null) {
@@ -641,6 +650,56 @@ public abstract class NuxeoLauncher {
             log.error(e.getMessage());
         }
         return serverStarted;
+    }
+
+    private void install() throws IOException, InterruptedException {
+        List<String> startCommand = new ArrayList<String>();
+        startCommand.add(getJavaExecutable().getPath());
+        startCommand.addAll(Arrays.asList(getJavaOptsProperty().split(" ")));
+        startCommand.add("-cp");
+        File tmpDir = File.createTempFile("install", null);
+        startCommand.add(getInstallClassPath(tmpDir));
+        startCommand.addAll(getNuxeoProperties());
+        startCommand.add("-Dnuxeo.runtime.home="
+                + configurationGenerator.getRuntimeHome().getPath());
+        startCommand.add(INSTALLER_CLASS);
+        startCommand.add(tmpDir.getPath());
+        ProcessBuilder pb = new ProcessBuilder(getOSCommand(startCommand));
+        pb.directory(configurationGenerator.getNuxeoHome());
+        log.debug("Install command: " + pb.command());
+        Process installProcess = pb.start();
+        logProcessStreams(pb, installProcess, false);
+        Thread.sleep(1000);
+        installProcess.waitFor();
+    }
+
+    /**
+     * Copy required JARs into temporary directory and return it as classpath
+     *
+     * @param tmpDir temporary directory hosting classpath
+     * @throws IOException If temporary directory could not be created.
+     */
+    private String getInstallClassPath(File tmpDir) throws IOException {
+        String cp = ".";
+        tmpDir.delete();
+        tmpDir.mkdirs();
+        File bundlesDir = new File(configurationGenerator.getRuntimeHome(),
+                "bundles");
+        for (final String filePattern : new String[] { "nuxeo-runtime-osgi",
+                "nuxeo-runtime", "nuxeo-common", "nuxeo-connect-update",
+                "nuxeo-connect-client" }) {
+            File[] files = bundlesDir.listFiles(new FilenameFilter() {
+                @Override
+                public boolean accept(File basedir, String filename) {
+                    return filename.matches(filePattern + "-[0-9].*\\.jar");
+                }
+            });
+            FileUtils.copyFileToDirectory(files[0], tmpDir);
+            File classPathEntry = new File(tmpDir, files[0].getName());
+            cp += System.getProperty("path.separator")
+                    + classPathEntry.getPath();
+        }
+        return cp;
     }
 
     protected class ShutdownThread extends Thread {
