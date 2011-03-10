@@ -13,6 +13,7 @@
  *
  * Contributors:
  *     Florent Guillaume
+ *     Benoit Delbosc
  */
 
 package org.nuxeo.ecm.core.storage.sql.jdbc.dialect;
@@ -268,30 +269,6 @@ public class DialectH2 extends Dialect {
     @Override
     public boolean doesUpdateFromRepeatSelf() {
         return true;
-    }
-
-    @Override
-    public boolean supportsReadAcl() {
-        return aclOptimizationsEnabled;
-    }
-
-    @Override
-    public String getReadAclsCheckSql(String idColumnName) {
-        return String.format(
-                "%s IN (SELECT * FROM nx_get_read_acls_for(?, '%s'))",
-                idColumnName, getUsersSeparator());
-    }
-
-    @Override
-    public String getUpdateReadAclsSql() {
-        return String.format("SELECT nx_update_read_acls('%s');",
-                getUsersSeparator());
-    }
-
-    @Override
-    public String getRebuildReadAclsSql() {
-        return String.format("SELECT nx_rebuild_read_acls('%s');",
-                getUsersSeparator());
     }
 
     @Override

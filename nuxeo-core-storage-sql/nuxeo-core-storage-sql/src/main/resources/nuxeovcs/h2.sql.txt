@@ -37,14 +37,6 @@ CREATE ALIAS IF NOT EXISTS NX_CLUSTER_INVAL FOR "${h2Functions}.clusterInvalidat
 
 CREATE ALIAS IF NOT EXISTS NX_CLUSTER_GET_INVALS FOR "${h2Functions}.getClusterInvalidationsString";
 
-CREATE ALIAS IF NOT EXISTS nx_get_read_acl FOR "${h2Functions}.getReadAcl";
-
-CREATE ALIAS IF NOT EXISTS nx_get_read_acls_for FOR "${h2Functions}.getReadAclsFor";
-
-CREATE ALIAS IF NOT EXISTS nx_rebuild_read_acls FOR "${h2Functions}.rebuildReadAcls";
-
-CREATE ALIAS IF NOT EXISTS nx_update_read_acls FOR "${h2Functions}.updateReadAcls";
-
 CREATE ALIAS IF NOT EXISTS nx_upgrade_versions FOR "${h2Functions}.upgradeVersions";
 
 CREATE ALIAS IF NOT EXISTS nx_upgrade_lastContributor FOR "${h2Functions}.upgradeLastContributor";
@@ -61,63 +53,9 @@ CALL NXFT_INIT();
 
 #CATEGORY: afterTableCreation
 
-
-# table to store canonical read acls
-CREATE TABLE IF NOT EXISTS read_acls (
-  id VARCHAR(4096) PRIMARY KEY,
-  acl VARCHAR(4096)
-);
-
-
-# table to maintain a read acl for each hierarchy entry
-CREATE TABLE IF NOT EXISTS hierarchy_read_acl (
-  id ${idType} PRIMARY KEY,
-  acl_id VARCHAR(4096),
-  CONSTRAINT hierarchy_read_acl_id_fk FOREIGN KEY (id) REFERENCES hierarchy(id) ON DELETE CASCADE
-);
-
-# add index
-CREATE INDEX IF NOT EXISTS hierarchy_read_acl_acl_id_idx ON hierarchy_read_acl(acl_id);
-
-
-# log hierarchy with updated read acl
-CREATE TABLE IF NOT EXISTS hierarchy_modified_acl (
-  id ${idType},
-  is_new boolean
-);
-
-# dump browse permission into a table
-CREATE TABLE IF NOT EXISTS read_acl_permissions (
-  permission VARCHAR(250)
-);
-
-#TEST:
-SELECT 1 FROM read_acl_permissions;
-
-#IF: emptyResult
-INSERT INTO read_acl_permissions VALUES ${readPermissions};
-
-
 DROP TRIGGER IF EXISTS nx_trig_acls_modified;
 
-CREATE TRIGGER nx_trig_acls_modified
-  AFTER INSERT, UPDATE, DELETE ON acls
-  FOR EACH ROW CALL "${h2Functions}$LogAclsModified";
-
 DROP TRIGGER IF EXISTS nx_trig_hierarchy_modified;
-
-CREATE TRIGGER nx_trig_hierarchy_modified
-  AFTER INSERT, UPDATE ON hierarchy
-  FOR EACH ROW CALL "${h2Functions}$LogHierarchyModified";
-
-
-# build the read acls if empty, this takes care of the upgrade
-#TEST:
-SELECT 1 FROM read_acls LIMIT 1;
-
-#IF: emptyResult
-SELECT * FROM nx_rebuild_read_acls('${usersSeparator}');
-
 
 DROP TRIGGER IF EXISTS NX_TRIG_DESC;
 
