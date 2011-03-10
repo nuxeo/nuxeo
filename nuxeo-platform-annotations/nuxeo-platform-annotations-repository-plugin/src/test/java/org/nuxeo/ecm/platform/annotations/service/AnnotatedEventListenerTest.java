@@ -20,11 +20,11 @@
 package org.nuxeo.ecm.platform.annotations.service;
 
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.platform.annotations.api.Annotation;
 import org.nuxeo.ecm.platform.annotations.api.AnnotationException;
 import org.nuxeo.ecm.platform.annotations.api.AnnotationsConstants;
 import org.nuxeo.ecm.platform.annotations.repository.AbstractRepositoryTestCase;
-import org.nuxeo.ecm.platform.annotations.repository.FakeNuxeoPrincipal;
 import org.nuxeo.ecm.platform.relations.api.Statement;
 import org.nuxeo.ecm.platform.relations.api.impl.LiteralImpl;
 import org.nuxeo.ecm.platform.relations.api.impl.ResourceImpl;
@@ -40,7 +40,7 @@ public class AnnotatedEventListenerTest extends AbstractRepositoryTestCase {
     public void testTest() throws AnnotationException {
         DummyDocumentEventListener.resetTest();
         assertNotNull(annotation);
-        NuxeoPrincipal user = new FakeNuxeoPrincipal("bob");
+        NuxeoPrincipal user = new UserPrincipal("bob");
         Annotation createdAnnotation = service.addAnnotation(annotation, user,
                 HTTP_LOCALHOST_8080_NUXEO);
         assertNotNull(createdAnnotation);

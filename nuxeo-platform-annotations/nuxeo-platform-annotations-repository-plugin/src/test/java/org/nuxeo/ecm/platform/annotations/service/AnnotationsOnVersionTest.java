@@ -24,9 +24,9 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.platform.annotations.api.Annotation;
 import org.nuxeo.ecm.platform.annotations.repository.AbstractRepositoryTestCase;
-import org.nuxeo.ecm.platform.annotations.repository.FakeNuxeoPrincipal;
 import org.nuxeo.ecm.platform.annotations.repository.URNDocumentViewTranslator;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;
 
@@ -40,7 +40,7 @@ public class AnnotationsOnVersionTest extends AbstractRepositoryTestCase {
 
     private static final String SERVER = "http://server.com/nuxeo/";
 
-    private final NuxeoPrincipal user = new FakeNuxeoPrincipal("Administrator");
+    private final NuxeoPrincipal user = new UserPrincipal("Administrator");
 
     private final URNDocumentViewTranslator translator = new URNDocumentViewTranslator();
 

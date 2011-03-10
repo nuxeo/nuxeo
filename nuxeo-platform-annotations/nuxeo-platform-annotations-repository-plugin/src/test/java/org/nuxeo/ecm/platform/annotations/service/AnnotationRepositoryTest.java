@@ -29,11 +29,11 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.VersionModel;
+import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.api.impl.VersionModelImpl;
 import org.nuxeo.ecm.platform.annotations.api.Annotation;
 import org.nuxeo.ecm.platform.annotations.api.AnnotationException;
 import org.nuxeo.ecm.platform.annotations.repository.AbstractRepositoryTestCase;
-import org.nuxeo.ecm.platform.annotations.repository.FakeNuxeoPrincipal;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -54,7 +54,7 @@ public class AnnotationRepositoryTest extends AbstractRepositoryTestCase {
 
     private DocumentModel section;
 
-    private final NuxeoPrincipal user = new FakeNuxeoPrincipal("bob");
+    private final NuxeoPrincipal user = new UserPrincipal("bob");
 
     @Override
     public void setUp() throws Exception {
