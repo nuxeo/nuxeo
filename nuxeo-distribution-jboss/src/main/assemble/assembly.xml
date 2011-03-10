@@ -178,6 +178,12 @@
            perm="ug+x"
            includes="*.sh,*ctl,*.command" />
 
+    <!-- Nuxeo DM Doc -->
+    <unzip dest="${distribution.dir}">
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${nuxeo.distribution.version}:zip"
+                            classifier="doc-dm" />
+    </unzip>
+
     <!-- Nuxeo DM -->
     <unzip dest="${distribution.dir}/server/default/deploy/nuxeo.ear">
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-dm:${nuxeo.distribution.version}:zip" />
