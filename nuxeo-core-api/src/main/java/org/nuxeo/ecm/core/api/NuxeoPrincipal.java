@@ -66,6 +66,12 @@ public interface NuxeoPrincipal extends Principal, Serializable {
     String getCompany();
 
     /**
+     * Get the user email if any. Return null if not email was specified
+     * @return the user email or null if none
+     */
+    String getEmail();
+
+    /**
      * Gets the groups this principal is directly member of.
      *
      * @return the list of the groups

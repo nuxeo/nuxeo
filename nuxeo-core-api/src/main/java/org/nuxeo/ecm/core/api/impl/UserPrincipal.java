@@ -51,11 +51,15 @@ public class UserPrincipal implements NuxeoPrincipal, Serializable {
 
     protected String lastName;
 
+    protected String email;
+
     protected String company;
 
     protected String password;
 
     protected DocumentModel model;
+    
+
 
     /**
      * @deprecated use {{@link #UserPrincipal(String, List, boolean, boolean)}}
@@ -84,7 +88,15 @@ public class UserPrincipal implements NuxeoPrincipal, Serializable {
         this.administrator = administrator;
     }
 
-    public String getCompany() {
+    public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getCompany() {
         return company;
     }
 
