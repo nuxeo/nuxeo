@@ -402,6 +402,11 @@ public class ContentViewServiceImpl extends DefaultComponent implements
             oldDesc.useGlobalPageSize = useGlobalPageSize;
         }
 
+        Boolean showPageSizeSelector = newDesc.getShowPageSizeSelector();
+        if (showPageSizeSelector != null) {
+            oldDesc.showPageSizeSelector = showPageSizeSelector;
+        }
+
         return oldDesc;
     }
 
