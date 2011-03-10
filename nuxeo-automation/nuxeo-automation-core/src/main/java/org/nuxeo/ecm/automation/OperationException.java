@@ -25,6 +25,8 @@ public class OperationException extends Exception {
 
     private static final long serialVersionUID = 1L;
 
+    protected boolean rollback = true;
+
     public OperationException(String message) {
         super(message);
     }
@@ -37,4 +39,17 @@ public class OperationException extends Exception {
         super(message, cause);
     }
 
+    /**
+     * Whether this exception should rollback the current transaction.
+     * The default is true if not explicitly set by calling {@link #setNoRollback()}.
+     * @return
+     */
+    public boolean isRollback() {
+        return rollback;
+    }
+
+    public OperationException setNoRollback() {
+        this.rollback = false;
+        return this;
+    }
 }

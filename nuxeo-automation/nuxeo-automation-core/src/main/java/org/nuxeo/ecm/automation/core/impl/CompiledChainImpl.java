@@ -21,8 +21,10 @@ import java.util.Map;
 
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.CompiledChain;
+import org.nuxeo.ecm.automation.ExitException;
 import org.nuxeo.ecm.automation.InvalidChainException;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationParameters;
 import org.nuxeo.runtime.api.Framework;
 
@@ -94,7 +96,26 @@ class CompiledChainImpl implements CompiledChain {
         return false;
     }
 
-    public Object invoke(OperationContext ctx) throws Exception {
+    public Object invoke(OperationContext ctx) throws OperationException {
+        try {
+            return doInvoke(ctx);
+        } catch (ExitException e) {
+            if (e.isRollback()) {
+                ctx.setRollback();
+            }
+            return ctx.getInput();
+        } catch (OperationException e) {
+            if (e.isRollback()) {
+                ctx.setRollback();
+            }
+            throw e;
+        }
+    }
+
+    protected Object doInvoke(OperationContext ctx) throws OperationException {
+        // add debug info
+        ctx.addTrace(method.op.getId().concat(":").concat(method.method.getName()));
+        // invoke method
         Object out = method.invoke(ctx, args);
         ctx.setInput(out);
         if (next != null) {

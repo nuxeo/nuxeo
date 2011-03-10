@@ -27,19 +27,21 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationDocumentation;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationType;
+import org.nuxeo.ecm.automation.OutputCollector;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.automation.core.scripting.Expression;
+import org.nuxeo.ecm.automation.core.util.BlobList;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -81,15 +83,6 @@ public class OperationTypeImpl implements OperationType {
      */
     protected List<Field> injectableFields;
 
-    /**
-     * All the types this operation accept
-     */
-    protected Set<Class<?>> consumes;
-
-    /**
-     * All the type this operation may produce
-     */
-    protected Set<Class<?>> produces;
 
     public OperationTypeImpl(AutomationService service, Class<?> type) {
         Operation anno = type.getAnnotation(Operation.class);
@@ -106,8 +99,6 @@ public class OperationTypeImpl implements OperationType {
         params = new HashMap<String, Field>();
         methods = new ArrayList<InvokableMethod>();
         injectableFields = new ArrayList<Field>();
-        produces = new HashSet<Class<?>>();
-        consumes = new HashSet<Class<?>>();
         initMethods();
         initFields();
     }
@@ -126,11 +117,18 @@ public class OperationTypeImpl implements OperationType {
 
     protected void initMethods() {
         for (Method method : type.getMethods()) {
-            if (method.isAnnotationPresent(OperationMethod.class)) {
-                InvokableMethod im = new InvokableMethod(this, method);
+            OperationMethod anno = method.getAnnotation(OperationMethod.class);
+            if (anno == null) { // skip method
+                continue;
+            }
+            // register regular method
+            InvokableMethod im = new InvokableMethod(this, method, anno);
+            methods.add(im);
+            // check for iterable input support
+            if (anno.collector() != OutputCollector.class) {
+                // an iterable method - register it
+                im = new InvokableIteratorMethod(this, method, anno);
                 methods.add(im);
-                produces.add(im.getOutputType());
-                consumes.add(im.getInputType());
             }
         }
     }
@@ -146,14 +144,6 @@ public class OperationTypeImpl implements OperationType {
                 injectableFields.add(field);
             }
         }
-    }
-
-    public Set<Class<?>> getProduces() {
-        return produces;
-    }
-
-    public Set<Class<?>> getConsumes() {
-        return consumes;
     }
 
     public Object newInstance(OperationContext ctx, Map<String, Object> args)
@@ -271,7 +261,7 @@ public class OperationTypeImpl implements OperationType {
         ArrayList<String> result = new ArrayList<String>(methods.size() * 2);
         Collection<String> collectedSigs = new HashSet<String>();
         for (InvokableMethod m : methods) {
-            String in = getParamDocumentationType(m.getInputType());
+            String in = getParamDocumentationType(m.getInputType(), m.isIterable());
             String out = getParamDocumentationType(m.getOutputType());
             String sigKey = in + ":" + out;
             if (!collectedSigs.contains(sigKey)) {
@@ -285,13 +275,21 @@ public class OperationTypeImpl implements OperationType {
     }
 
     protected String getParamDocumentationType(Class<?> type) {
+        return getParamDocumentationType(type, false);
+    }
+
+    protected String getParamDocumentationType(Class<?> type, boolean isIterable) {
         String t;
         if (DocumentModel.class.isAssignableFrom(type)
                 || DocumentRef.class.isAssignableFrom(type)) {
-            t = Constants.T_DOCUMENT;
+            t = isIterable ? Constants.T_DOCUMENTS : Constants.T_DOCUMENT;
         } else if (DocumentModelList.class.isAssignableFrom(type)
                 || DocumentRefList.class.isAssignableFrom(type)) {
             t = Constants.T_DOCUMENTS;
+        } else if (BlobList.class.isAssignableFrom(type)) {
+            t = Constants.T_BLOBS;
+        } else if (Blob.class.isAssignableFrom(type)) {
+            t = isIterable ? Constants.T_BLOBS : Constants.T_BLOB;
         } else if (URL.class.isAssignableFrom(type)) {
             t = Constants.T_RESOURCE;
         } else if (Calendar.class.isAssignableFrom(type)) {

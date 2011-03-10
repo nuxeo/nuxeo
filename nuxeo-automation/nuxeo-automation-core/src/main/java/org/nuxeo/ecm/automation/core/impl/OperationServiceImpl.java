@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.nuxeo.ecm.automation.AdapterNotFoundException;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.CompiledChain;
 import org.nuxeo.ecm.automation.InvalidChainException;
@@ -45,8 +46,8 @@ import org.nuxeo.ecm.automation.core.annotations.Operation;
 public class OperationServiceImpl implements AutomationService {
 
     /**
-     * Modifiable operation registry. Modifying the registry is using a lock
-     * and it's thread safe. Modifications are removing the cache.
+     * Modifiable operation registry. Modifying the registry is using a lock and
+     * it's thread safe. Modifications are removing the cache.
      */
     protected final Map<String, OperationTypeImpl> operations;
 
@@ -77,8 +78,8 @@ public class OperationServiceImpl implements AutomationService {
         adapters = new AdapterKeyedRegistry();
     }
 
-    public Object run(OperationContext ctx, String chainId) throws Exception,
-            InvalidChainException {
+    public Object run(OperationContext ctx, String chainId)
+            throws OperationException, InvalidChainException, Exception {
         try {
             Object input = ctx.getInput();
             Class<?> inputType = input == null ? Void.TYPE : input.getClass();
@@ -98,7 +99,7 @@ public class OperationServiceImpl implements AutomationService {
     }
 
     public Object run(OperationContext ctx, OperationChain chain)
-            throws Exception, InvalidChainException {
+            throws OperationException, InvalidChainException, Exception {
         try {
             Object input = ctx.getInput();
             Class<?> inputType = input == null ? Void.TYPE : input.getClass();
@@ -275,8 +276,8 @@ public class OperationServiceImpl implements AutomationService {
         }
         TypeAdapter adapter = getTypeAdapter(toAdaptClass, targetType);
         if (adapter == null) {
-            throw new OperationException("No type adapter found for input: "
-                    + toAdapt.getClass() + " and output " + targetType);
+            throw new AdapterNotFoundException("No type adapter found for input: "
+                    + toAdapt.getClass() + " and output " + targetType, ctx);
         }
         return (T) adapter.getAdaptedValue(ctx, toAdapt);
     }

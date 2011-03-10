@@ -26,6 +26,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * An operation context. Holds context objects, a context parameters map and a
@@ -49,7 +50,7 @@ import org.nuxeo.runtime.api.Framework;
  * The context parameters map can be filled with contextual information by the
  * caller. Each operation will be able to access the contextual data at runtime
  * and to update it if needed.
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class OperationContext extends HashMap<String, Object> {
@@ -84,6 +85,11 @@ public class OperationContext extends HashMap<String, Object> {
      */
     protected Object input;
 
+    /**
+     * A list of trace messages useful to use in exception details.
+     */
+    protected List<String> trace;
+
     public OperationContext() {
         this(null);
     }
@@ -92,6 +98,7 @@ public class OperationContext extends HashMap<String, Object> {
         stacks = new HashMap<String, List<Object>>();
         cleanupHandlers = new ArrayList<CleanupHandler>();
         loginStack = new LoginStack(session);
+        trace = new ArrayList<String>();
     }
 
     public void setCoreSession(CoreSession session) {
@@ -177,6 +184,22 @@ public class OperationContext extends HashMap<String, Object> {
         }
     }
 
+    public void addTrace(String trace) {
+        this.trace.add(trace);
+    }
+
+    public List<String> getTrace() {
+        return trace;
+    }
+    public String getFormattedTrace() {
+        String crlf = System.getProperty("line.separator");
+        StringBuilder buf =new StringBuilder();
+        for (String t: trace) {
+            buf.append("> ").append(t).append(crlf);
+        }
+        return buf.toString();
+    }
+
     public void addCleanupHandler(CleanupHandler handler) {
         cleanupHandlers.add(handler);
     }
@@ -186,6 +209,7 @@ public class OperationContext extends HashMap<String, Object> {
     }
 
     public void dispose() throws OperationException {
+        trace.clear();
         loginStack.clear();
         for (CleanupHandler handler : cleanupHandlers) {
             try {
@@ -194,5 +218,14 @@ public class OperationContext extends HashMap<String, Object> {
                 log.error(e, e);
             }
         }
+    }
+
+    /**
+     * Set the rollback mark on the current tx. This will cause the transaction to rollback.
+     * Also this is setting the session commit flag on false
+     */
+    public void setRollback() {
+        setCommit(false);
+        TransactionHelper.setTransactionRollbackOnly();
     }
 }

@@ -60,6 +60,10 @@ public class Constants {
 
     public static final String T_DOCUMENTS = "documents"; // Document
 
+    public static final String T_BLOB = "blob";
+
+    public static final String T_BLOBS = "bloblist";
+
     // injectable as
     // DocumentRefList
     // /

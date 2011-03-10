@@ -31,6 +31,8 @@ import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import junit.framework.Assert;
+
 import org.hamcrest.Matchers;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -66,6 +68,7 @@ import org.nuxeo.ecm.automation.core.operations.document.UpdateDocument;
 import org.nuxeo.ecm.automation.core.operations.document.PageProviderOperation;
 import org.nuxeo.ecm.automation.server.AutomationServer;
 import org.nuxeo.ecm.webengine.test.WebEngineFeature;
+import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -260,7 +263,7 @@ public class RestTest {
 
     /**
      * test blob input / output
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -484,6 +487,56 @@ public class RestTest {
         assertThat(docs.size(), Matchers.is(2));
         assertThat(docs.getPageCount(), Matchers.is(7));
         assertThat(docs.getPageSize(), Matchers.is(2));
+    }
+
+    /**
+     * test a chain rollback
+     */
+    @Test
+    public void testChainRollback() throws Exception {
+
+        NuxeoContainer.install();
+
+        // get the root
+        Document root = (Document) session.newRequest(FetchDocument.ID).set(
+                "value", "/").execute();
+        // 1. create a note and exit gracefully
+        Document doc = (Document) session.newRequest("exitNoRollback").setInput(
+                root).execute();
+        assertEquals("/test-exit1", doc.getPath());
+        Document note = (Document) session.newRequest(FetchDocument.ID).set(
+                "value", "/test-exit1").execute();
+        assertEquals(doc.getPath(), note.getPath());
+
+        // 2. create a note and exit with rollback
+        doc = (Document) session.newRequest("exitRollback").setInput(
+                root).execute();
+        assertEquals("/test-exit2", doc.getPath());
+        try {
+            note = (Document) session.newRequest(FetchDocument.ID).set(
+                    "value", "/test-exit2").execute();
+            fail("document should not exist");
+        } catch (RemoteException e) {
+            // do nothing
+        }
+
+        // 3. create a note and exit with error (+rollback)
+        try {
+            doc = (Document) session.newRequest("exitError").setInput(
+                root).execute();
+            Assert.fail("expected error");
+        } catch (RemoteException t) {
+            assertTrue(t.getRemoteStackTrace().contains("termination error"));
+        }
+        // test the note was not created
+        try {
+            note = (Document) session.newRequest(FetchDocument.ID).set(
+                    "value", "/test-exit3").execute();
+            fail("document should not exist");
+        } catch (RemoteException e) {
+            // do nothing
+        }
+
     }
 
 }

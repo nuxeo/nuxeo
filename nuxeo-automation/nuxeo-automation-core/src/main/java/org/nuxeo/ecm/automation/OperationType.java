@@ -17,7 +17,6 @@
 package org.nuxeo.ecm.automation;
 
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Describe an operation class. Each registered operation will be stored in the
@@ -30,10 +29,6 @@ public interface OperationType {
     String getId();
 
     Class<?> getType();
-
-    Set<Class<?>> getProduces();
-
-    Set<Class<?>> getConsumes();
 
     Object newInstance(OperationContext ctx, Map<String, Object> args)
             throws Exception;
