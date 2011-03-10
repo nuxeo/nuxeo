@@ -111,6 +111,7 @@ public class FileChangeNotifier implements FileChangeListener {
     }
 
     class WatchTask extends TimerTask {
+        @SuppressWarnings("unchecked")
         @Override
         public void run() {
             try {

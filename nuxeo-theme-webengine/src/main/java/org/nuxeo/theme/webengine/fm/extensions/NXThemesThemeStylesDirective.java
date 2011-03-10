@@ -45,7 +45,6 @@ import freemarker.template.TemplateModelException;
  */
 public class NXThemesThemeStylesDirective implements TemplateDirectiveModel {
 
-    @SuppressWarnings("unchecked")
     public void execute(Environment env, Map params, TemplateModel[] loopVars,
             TemplateDirectiveBody body) throws TemplateException, IOException {
 
@@ -89,4 +88,5 @@ public class NXThemesThemeStylesDirective implements TemplateDirectiveModel {
         writer.write(ThemeStyles.render(attributes, cache, inline,
                 virtualHosting));
     }
+
 }

@@ -64,7 +64,6 @@ public class ThemeDirective implements TemplateDirectiveModel {
 
     private final Map<URL, Long> lastRefreshedMap = new HashMap<URL, Long>();
 
-    @SuppressWarnings("unchecked")
     public void execute(Environment env, Map params, TemplateModel[] loopVars,
             TemplateDirectiveBody body) throws TemplateException, IOException {
 

@@ -16,13 +16,7 @@
  */
 package org.nuxeo.ecm.webengine.model.impl;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -41,7 +35,6 @@ import org.nuxeo.ecm.webengine.model.WebObject;
  * a Groovy nature it will call at end the {@link GroovyTypeLoader}
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class DefaultTypeLoader {
 
@@ -100,8 +93,6 @@ public class DefaultTypeLoader {
 
     /**
      * New method to load types from the {@link WebApplication} declared types.
-     *
-     * @param types
      */
     protected void loadTypes(Class<?>[] types) {
         for (Class<?> type : types) {
@@ -114,9 +105,6 @@ public class DefaultTypeLoader {
 
     /**
      * Old method to load types from a web-types file generated at build time
-     *
-     * @param file
-     * @throws Exception
      */
     protected void loadTypesFile(File file) throws Exception {
         List<String> lines = FileUtils.readLines(file);

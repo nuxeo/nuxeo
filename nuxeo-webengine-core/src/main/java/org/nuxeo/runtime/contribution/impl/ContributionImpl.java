@@ -257,7 +257,6 @@ public class ContributionImpl<K, T> implements Contribution<K, T> {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public boolean equals(Object obj) {
         if (obj == this) {
             return true;

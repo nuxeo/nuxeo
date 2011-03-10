@@ -45,7 +45,6 @@ import freemarker.template.TemplateModelException;
  */
 public class NXThemesHeadDirective implements TemplateDirectiveModel {
 
-    @SuppressWarnings("unchecked")
     public void execute(Environment env, Map params, TemplateModel[] loopVars,
             TemplateDirectiveBody body) throws TemplateException, IOException {
 
