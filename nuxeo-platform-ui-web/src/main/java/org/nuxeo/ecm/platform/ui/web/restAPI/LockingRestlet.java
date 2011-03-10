@@ -18,8 +18,6 @@
 
 package org.nuxeo.ecm.platform.ui.web.restAPI;
 
-import java.util.Calendar;
-
 import org.dom4j.dom.DOMDocument;
 import org.dom4j.dom.DOMDocumentFactory;
 import org.joda.time.DateTime;
