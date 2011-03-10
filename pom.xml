@@ -44,6 +44,7 @@
     <module>nuxeo-shell</module>
     <module>nuxeo-filesystem-connectors</module>
     <module>nuxeo-opensocial</module>
+    <module>nuxeo-user-center</module>
   </modules>
 
   <repositories>
