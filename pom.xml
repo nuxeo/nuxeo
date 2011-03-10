@@ -1012,7 +1012,7 @@
         <groupId>org.milyn</groupId>
         <artifactId>milyn-commons</artifactId>
         <version>1.3.1</version>
-        <scope>provided</scope> 
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.milyn</groupId>
@@ -2765,7 +2765,28 @@
         </plugins>
       </build>
     </profile>
-
+    <profile>
+      <id>nightly</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-source-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>attach-sources</id>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
     <profile>
       <id>javadoc</id>
       <activation>
