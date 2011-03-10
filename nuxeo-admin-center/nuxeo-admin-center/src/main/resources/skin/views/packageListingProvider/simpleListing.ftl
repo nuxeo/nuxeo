@@ -89,7 +89,7 @@
            <a class="button uninstall" href="${Root.path}/uninstall/start/${pkg.id}?source=${source}"> Uninstall </a>
          </#if>
          <#if This.needsRestart(pkg)>
-           <a class="button restartNeeded" href="#" title="Installation will be completed on next restart">Restart&nbsp;needed</a>
+           <a class="button restartNeeded" href="#" title="Installation will be completed on next restart">Restart&nbsp;required</a>
          </#if>
     </td>
   </tr>

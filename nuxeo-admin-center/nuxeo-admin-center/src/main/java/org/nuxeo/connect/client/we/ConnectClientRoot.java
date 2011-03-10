@@ -19,8 +19,13 @@
 
 package org.nuxeo.connect.client.we;
 
+import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Response;
 
+import org.nuxeo.ecm.admin.NuxeoCtlManager;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
@@ -53,4 +58,15 @@ public class ConnectClientRoot extends ModuleRoot {
         return ctx.newObject("uninstallHandler");
     }
 
+    @GET
+    @Produces("text/html")
+    @Path(value = "restartView")
+    public Object restartServerView() {
+        if (((NuxeoPrincipal)getContext().getPrincipal()).isAdministrator()) {
+            NuxeoCtlManager.restart();
+            return getView("serverRestart").arg("nuxeoctl", new NuxeoCtlManager());
+        } else {
+            return Response.status(401).build();
+        }
+    }
 }

@@ -21,13 +21,20 @@ package org.nuxeo.ecm.admin;
 
 import static org.jboss.seam.ScopeType.CONVERSATION;
 
+import java.io.IOException;
 import java.io.Serializable;
+import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
+import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.Name;
@@ -43,6 +50,8 @@ import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.platform.audit.api.AuditReader;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
+import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
+import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -69,6 +78,8 @@ public class SystemInfoManager implements Serializable {
     protected RepoStat runningStat;
 
     protected RepoStatInfo statResult;
+
+    protected static Log log = LogFactory.getLog(SystemInfoManager.class);
 
     // *********************************
     // Host info Management
@@ -123,6 +134,30 @@ public class SystemInfoManager implements Serializable {
         sb.append("\n  Max size   : ");
         sb.append(Runtime.getRuntime().maxMemory() / (1024 * 1024));
         sb.append(" MB");
+
+        return sb.toString();
+    }
+
+    public String getUptime() {
+        RuntimeMXBean bean = ManagementFactory.getRuntimeMXBean();
+        long ut = bean.getUptime();
+        long uts = ut / 1000;
+
+        StringBuffer sb = new StringBuffer("Nuxeo Server UpTime : ");
+        long nbDays = uts / (24*3600);
+        if (nbDays>0) {
+            sb.append(nbDays + " days, ");
+            uts = uts % (24*3600);
+        }
+        long nbHours = uts / 3600;
+        sb.append(nbHours + " h ");
+        uts = uts % (3600);
+
+        long nbMin = uts / 60;
+        sb.append(nbMin + " m ");
+        uts = uts % (60);
+
+        sb.append(uts + " s  ");
 
         return sb.toString();
     }
@@ -293,4 +328,17 @@ public class SystemInfoManager implements Serializable {
                 "NuxeoAuthentication", null, currentAuditPage, pageSize);
     }
 
+    public String restartServer() {
+        FacesContext context = FacesContext.getCurrentInstance();
+        HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
+        request.setAttribute(NXAuthConstants.DISABLE_REDIRECT_REQUEST_KEY, true);
+        String restartUrl = BaseURL.getBaseURL(request);
+        restartUrl += "site/connectClient/restartView";
+        try {
+            context.getExternalContext().redirect(restartUrl);
+        } catch (IOException e) {
+            log.error("Error while redirecting to restart page", e);
+        }
+        return null;
+    }
 }
