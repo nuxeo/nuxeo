@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,9 +12,9 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id: JOOoConvertPluginImpl.java 18651 2007-05-13 20:28:53Z sfermigier $
+ *     Thierry Delprat
+ *     Anahide Tchertchian
+ *     Florent Guillaume
  */
 
 package org.nuxeo.ecm.platform.ui.web.rest;
@@ -30,6 +30,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.jboss.seam.transaction.Transaction;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.platform.ui.web.rest.api.URLPolicyService;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.NuxeoExceptionHandler;
@@ -38,10 +39,6 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Phase listener helper to perform redirection to meaningful urls.
- *
- * @author tiry
- * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- * @author Florent Guillaume
  */
 public class RestfulPhaseListener implements PhaseListener {
 
@@ -71,6 +68,14 @@ public class RestfulPhaseListener implements PhaseListener {
                 throw new ClientRuntimeException(e);
             }
             if (service.isCandidateForDecoding(httpRequest)) {
+                // Make sure we're in a transaction, and that Seam knows it.
+                // Sometimes, when there is a page action, SeamPhaseListener
+                // commits the transaction in RENDER_RESPONSE before this
+                // phase listener executes, but does not start a new one.
+                // (SeamPhaseListener.handleTransactionsAfterPageActions)
+                if (!Transaction.instance().isActiveOrMarkedRollback()) {
+                    Transaction.instance().begin();
+                }
                 // restore state
                 service.navigate(context);
                 // apply requests parameters after - they may need the state
@@ -83,7 +88,8 @@ public class RestfulPhaseListener implements PhaseListener {
     }
 
     public void afterPhase(PhaseEvent event) {
-        // nothing to do
+        // SeamPhaseListener.handleTransactionsAfterPhase will commit the
+        // transaction, so it has to be started using Seam methods.
     }
 
     protected void handleException(FacesContext context, Exception e)
