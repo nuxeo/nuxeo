@@ -5,41 +5,53 @@
   <parent>
     <groupId>org.nuxeo.ecm.automation</groupId>
     <artifactId>nuxeo-automation-parent</artifactId>
-    <version>5.4.0.2-SNAPSHOT</version>
+    <version>5.4.1-SNAPSHOT</version>
   </parent>
-  <artifactId>nuxeo-automation-core</artifactId>
-  <name>Nuxeo Automation Core</name>
-  <description>Automation Framework and Core Operations</description>
+  <artifactId>nuxeo-automation-features</artifactId>
+  <name>Nuxeo Automation Features</name>
+  <description>Additional operations that expose some Nuxeo platform features</description>
   <dependencies>
     <dependency>
-      <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-core-event</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-rendering</artifactId>
+      <groupId>org.nuxeo.ecm.automation</groupId>
+      <artifactId>nuxeo-automation-core</artifactId>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-core-convert-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-core-schema</artifactId>
     </dependency>
     <!-- for uid generator function-->
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-uidgen-core</artifactId>
     </dependency>
+    <!-- for relation operations -->
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-relations-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-relations-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-relations-jena-plugin</artifactId>
+      <scope>test</scope>
+    </dependency>
     <!-- for directory/vocabulary operations -->
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-directory-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-query-api</artifactId>
+    </dependency>
+    <!-- for audit operations -->
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-audit-api</artifactId>
     </dependency>
     <!-- for principal related operations -->
     <dependency>
@@ -53,6 +65,33 @@
     <dependency>
       <groupId>org.freemarker</groupId>
       <artifactId>freemarker</artifactId>
+    </dependency>
+    <!-- for send mail and templates -->
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-notification-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-notification-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-url-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-url-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <!--  for loginAs -->
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-web-common</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-api</artifactId>
     </dependency>
 
     <dependency>
@@ -68,26 +107,10 @@
       <artifactId>osgi-core</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.mvel</groupId>
-      <artifactId>mvel2</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.groovy</groupId>
-      <artifactId>groovy-all</artifactId>
-    </dependency>
-    <dependency>
       <groupId>javax.transaction</groupId>
       <artifactId>jta</artifactId>
     </dependency>
-    <!--
-      TODO this should use maven conditional dependencies. If java 6 we don't
-      need it since scripting is part of java 6
-    -->
-    <dependency>
-      <groupId>javax.script</groupId>
-      <artifactId>script-api</artifactId>
-    </dependency>
-    <!-- only for documentation genration -->
+    <!-- for audit serialization -->
     <dependency>
       <groupId>net.sf.json-lib</groupId>
       <artifactId>json-lib</artifactId>
@@ -97,11 +120,6 @@
       <groupId>net.sf.ezmorph</groupId>
       <artifactId>ezmorph</artifactId>
     </dependency>
-    <!--
-      dependency> <groupId>org.codehaus.jackson</groupId>
-      <artifactId>jackson-core-asl</artifactId> <version>1.4.0</version>
-      <optional>true</optional> </dependency
-    -->
     <!-- only for tests -->
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>

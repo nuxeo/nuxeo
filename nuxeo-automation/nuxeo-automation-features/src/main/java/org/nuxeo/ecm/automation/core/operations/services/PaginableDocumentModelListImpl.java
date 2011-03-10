@@ -14,12 +14,12 @@
  * Contributors:
  *     Nuxeo
  */
-package org.nuxeo.ecm.automation.core.impl.adapters;
+package org.nuxeo.ecm.automation.core.operations.services;
 
 import javax.swing.event.DocumentListener;
 
+import org.nuxeo.ecm.automation.core.util.PaginableDocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 
@@ -29,13 +29,13 @@ import org.nuxeo.ecm.platform.query.api.PageProvider;
  * @author Tiry (tdelprat@nuxeo.com)
  *
  */
-public class PageProviderAsDocumentModelList extends DocumentModelListImpl implements DocumentModelList {
+public class PaginableDocumentModelListImpl extends DocumentModelListImpl implements PaginableDocumentModelList {
 
     private static final long serialVersionUID = 1L;
 
     protected final PageProvider<DocumentModel> provider;
 
-    public PageProviderAsDocumentModelList(PageProvider<DocumentModel> provider) {
+    public PaginableDocumentModelListImpl(PageProvider<DocumentModel> provider) {
         super(provider.getCurrentPage());
         this.provider = provider;
     }

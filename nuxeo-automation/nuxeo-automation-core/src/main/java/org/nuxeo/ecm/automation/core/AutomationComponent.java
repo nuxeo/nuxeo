@@ -19,6 +19,7 @@ package org.nuxeo.ecm.automation.core;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.core.events.EventHandler;
 import org.nuxeo.ecm.automation.core.events.EventHandlerRegistry;
+import org.nuxeo.ecm.automation.core.events.operations.FireEvent;
 import org.nuxeo.ecm.automation.core.impl.OperationServiceImpl;
 import org.nuxeo.ecm.automation.core.operations.FetchContextDocument;
 import org.nuxeo.ecm.automation.core.operations.RestoreBlobInput;
@@ -37,7 +38,6 @@ import org.nuxeo.ecm.automation.core.operations.blob.CreateZip;
 import org.nuxeo.ecm.automation.core.operations.blob.GetDocumentBlob;
 import org.nuxeo.ecm.automation.core.operations.blob.GetDocumentBlobs;
 import org.nuxeo.ecm.automation.core.operations.blob.PostBlob;
-import org.nuxeo.ecm.automation.core.operations.blob.SetBlobFileName;
 import org.nuxeo.ecm.automation.core.operations.document.CheckInDocument;
 import org.nuxeo.ecm.automation.core.operations.document.CheckOutDocument;
 import org.nuxeo.ecm.automation.core.operations.document.CopyDocument;
@@ -53,7 +53,6 @@ import org.nuxeo.ecm.automation.core.operations.document.GetDocumentParent;
 import org.nuxeo.ecm.automation.core.operations.document.LockDocument;
 import org.nuxeo.ecm.automation.core.operations.document.MoveDocument;
 import org.nuxeo.ecm.automation.core.operations.document.MultiPublishDocument;
-import org.nuxeo.ecm.automation.core.operations.document.PageProviderOperation;
 import org.nuxeo.ecm.automation.core.operations.document.PublishDocument;
 import org.nuxeo.ecm.automation.core.operations.document.Query;
 import org.nuxeo.ecm.automation.core.operations.document.ReloadDocument;
@@ -70,14 +69,6 @@ import org.nuxeo.ecm.automation.core.operations.document.UpdateDocument;
 import org.nuxeo.ecm.automation.core.operations.execution.RunDocumentChain;
 import org.nuxeo.ecm.automation.core.operations.execution.RunOperation;
 import org.nuxeo.ecm.automation.core.operations.execution.SaveSession;
-import org.nuxeo.ecm.automation.core.operations.notification.FireEvent;
-import org.nuxeo.ecm.automation.core.operations.notification.SendMail;
-import org.nuxeo.ecm.automation.core.operations.services.AuditLog;
-import org.nuxeo.ecm.automation.core.operations.services.AuditQuery;
-import org.nuxeo.ecm.automation.core.operations.services.CreateRelation;
-import org.nuxeo.ecm.automation.core.operations.services.GetRelations;
-import org.nuxeo.ecm.automation.core.operations.services.RenderDocument;
-import org.nuxeo.ecm.automation.core.operations.services.RenderDocumentFeed;
 import org.nuxeo.ecm.automation.core.operations.stack.PopBlob;
 import org.nuxeo.ecm.automation.core.operations.stack.PopBlobList;
 import org.nuxeo.ecm.automation.core.operations.stack.PopDocument;
@@ -90,10 +81,8 @@ import org.nuxeo.ecm.automation.core.operations.stack.PushBlob;
 import org.nuxeo.ecm.automation.core.operations.stack.PushBlobList;
 import org.nuxeo.ecm.automation.core.operations.stack.PushDocument;
 import org.nuxeo.ecm.automation.core.operations.stack.PushDocumentList;
-import org.nuxeo.ecm.automation.core.operations.users.GetDocumentPrincipalEmails;
-import org.nuxeo.ecm.automation.core.operations.users.GetDocumentUsersAndGroups;
-import org.nuxeo.ecm.automation.core.operations.users.LoginAs;
-import org.nuxeo.ecm.automation.core.operations.users.Logout;
+import org.nuxeo.ecm.automation.core.rendering.operations.RenderDocument;
+import org.nuxeo.ecm.automation.core.rendering.operations.RenderDocumentFeed;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -101,7 +90,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
 /**
  * Nuxeo component that provide an implementation of the
  * {@link AutomationService} and handle extensions registrations.
- *
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class AutomationComponent extends DefaultComponent {
@@ -184,32 +173,14 @@ public class AutomationComponent extends DefaultComponent {
         service.putOperation(PullBlob.class);
         service.putOperation(PullBlobList.class);
 
-        // platform
-        service.putOperation(GetRelations.class);
-        service.putOperation(CreateRelation.class);
-        service.putOperation(SendMail.class);
-
-        service.putOperation(GetDocumentUsersAndGroups.class);
-        service.putOperation(GetDocumentPrincipalEmails.class);
-        service.putOperation(LoginAs.class);
-        service.putOperation(Logout.class);
-
-        service.putOperation(AuditLog.class);
-        service.putOperation(AuditQuery.class);
-
-        // provider
-        service.putOperation(PageProviderOperation.class);
+        service.putOperation(FireEvent.class);
+        service.putOperation(RunInputScript.class);
 
         service.putOperation(RenderDocument.class);
         service.putOperation(RenderDocumentFeed.class);
 
         // disabled operations
-        service.putOperation(FireEvent.class);
-        service.putOperation(RunInputScript.class);
         // service.putOperation(RunScriptFile.class);
-
-
-
 
         handlers = new EventHandlerRegistry(service);
     }

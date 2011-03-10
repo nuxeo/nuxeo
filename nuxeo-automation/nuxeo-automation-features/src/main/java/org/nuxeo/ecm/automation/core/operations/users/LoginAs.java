@@ -18,9 +18,7 @@ package org.nuxeo.ecm.automation.core.operations.users;
 
 import java.security.Principal;
 
-import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.login.LoginContext;
-import javax.security.auth.login.LoginException;
 
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.Constants;
@@ -28,8 +26,7 @@ import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
-import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
-import org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService;
+import org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -57,25 +54,11 @@ public class LoginAs {
                 lc = Framework.login();
             }
         } else {
-            lc = loginAs(name);
+            lc = NuxeoAuthenticationFilter.loginAs(name);
         }
         if (lc != null) {
             ctx.getLoginStack().push(lc);
         }
-    }
-
-    public static LoginContext loginAs(String username) throws LoginException {
-        // New code to test unrestricted session as somebody
-        UserIdentificationInfo userIdent = new UserIdentificationInfo(username,
-                username);
-
-        userIdent.setLoginPluginName("Trusting_LM");
-        PluggableAuthenticationService service = (PluggableAuthenticationService) Framework.getRuntime().getComponent(
-                PluggableAuthenticationService.NAME);
-        CallbackHandler handler = service.getCallbackHandler(userIdent);
-        LoginContext loginContext = new LoginContext("nuxeo-ecm-web", handler);
-        loginContext.login();
-        return loginContext;
     }
 
 }

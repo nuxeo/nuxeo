@@ -58,27 +58,29 @@
       <groupId>net.sf.ezmorph</groupId>
       <artifactId>ezmorph</artifactId>
     </dependency>
-
-    <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpclient</artifactId>
-    </dependency>
     <dependency>
       <groupId>javax.mail</groupId>
       <artifactId>mail</artifactId>
     </dependency>
 
-    <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpcore</artifactId>
-    </dependency>
-
+    
     <!--
       dependency> <groupId>org.codehaus.jackson</groupId>
       <artifactId>jackson-core-asl</artifactId> <version>1.4.0</version>
       <optional>true</optional> </dependency
     -->
     <!-- only for tests -->
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpcore</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient</artifactId>
+      <scope>test</scope>
+    </dependency>
+    
     <dependency>
       <groupId>org.nuxeo.ecm.automation</groupId>
       <artifactId>nuxeo-automation-client</artifactId>

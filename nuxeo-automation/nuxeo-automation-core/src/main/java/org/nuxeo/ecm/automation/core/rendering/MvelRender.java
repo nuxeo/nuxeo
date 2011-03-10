@@ -18,6 +18,7 @@ package org.nuxeo.ecm.automation.core.rendering;
 
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -29,8 +30,6 @@ import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.resource.ResourceService;
 
-import edu.emory.mathcs.backport.java.util.Collections;
-
 /**
  * MVEL rendering using a simple cache of compiled template.
  *
@@ -39,7 +38,6 @@ import edu.emory.mathcs.backport.java.util.Collections;
  */
 public class MvelRender implements Renderer {
 
-    @SuppressWarnings("unchecked")
     protected Map<String,CompiledTemplate> cache = Collections.synchronizedMap(new Cache());
 
     @Override
