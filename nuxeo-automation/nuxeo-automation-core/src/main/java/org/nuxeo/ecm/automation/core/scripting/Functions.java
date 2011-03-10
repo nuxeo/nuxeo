@@ -20,6 +20,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -131,4 +132,7 @@ public class Functions {
         return new DateWrapper(date);
     }
 
+    public String escapeHtml(Object obj) {
+        return StringEscapeUtils.escapeHtml(obj.toString());
+    }
 }

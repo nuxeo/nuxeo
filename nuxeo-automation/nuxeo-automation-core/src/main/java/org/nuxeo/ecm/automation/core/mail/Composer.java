@@ -23,13 +23,19 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import javax.activation.DataHandler;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMultipart;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.platform.rendering.api.RenderingException;
 import org.nuxeo.ecm.platform.rendering.api.ResourceLocator;
 import org.nuxeo.ecm.platform.rendering.fm.FreemarkerEngine;
@@ -153,6 +159,7 @@ public class Composer {
         return writer.toString();
     }
 
+
     public Mailer.Message newMessage() throws Exception {
         return mailer.newMessage();
     }
@@ -175,6 +182,34 @@ public class Composer {
             throws Exception {
         Mailer.Message msg = mailer.newMessage();
         msg.setContent(render(template, ctx), "text/html");
+        return msg;
+    }
+
+    public Mailer.Message newHtmlMessage(String templateContent, Object ctx)
+    throws Exception {
+        Mailer.Message msg = mailer.newMessage();
+        msg.setContent(render(templateContent, ctx), "text/html");
+        return msg;
+    }
+
+    public Mailer.Message newMixedMessage(String templateContent, Object ctx, String textType, List<Blob> attachments)
+    throws Exception {
+        if (textType == null) {
+            textType = "plain";
+        }
+        Mailer.Message msg = mailer.newMessage();
+        MimeMultipart mp = new MimeMultipart();
+        MimeBodyPart body = new MimeBodyPart();
+        String result = render(templateContent, ctx);
+        body.setText(result, "UTF-8", textType);
+        mp.addBodyPart(body);
+        for (Blob blob : attachments) {
+            MimeBodyPart a = new MimeBodyPart();
+            a.setDataHandler(new DataHandler(new BlobDataSource(blob)));
+            a.setFileName(blob.getFilename());
+            mp.addBodyPart(a);
+        }
+        msg.setContent(mp);
         return msg;
     }
 

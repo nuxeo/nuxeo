@@ -88,6 +88,24 @@
       <groupId>org.freemarker</groupId>
       <artifactId>freemarker</artifactId>
     </dependency>
+    <!-- for send mail and templates -->
+    <dependency>    
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-notification-api</artifactId>
+    </dependency>    
+    <dependency>    
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-notification-core</artifactId>
+    </dependency>    
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-url-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-url-core</artifactId>
+      <scope>test</scope>
+    </dependency>
     <!--  for loginAs -->    
     <dependency>    
       <groupId>org.nuxeo.ecm.platform</groupId>

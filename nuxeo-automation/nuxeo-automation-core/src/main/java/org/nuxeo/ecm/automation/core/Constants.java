@@ -117,6 +117,8 @@ public class Constants {
 
     public static final String W_TEMPLATE_RESOURCE = "TemplateResource";
 
+    public static final String W_MAIL_TEMPLATE = "MailTemplate";
+
     // to edit a properties table
     public static final String W_PROPERTIES = "Properties";
 
