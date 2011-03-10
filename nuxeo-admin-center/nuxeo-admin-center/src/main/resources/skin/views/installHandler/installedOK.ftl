@@ -17,18 +17,18 @@ function closePopup() {
      <div>
          You will need to restart your server to complete the installation.
          <br/>
-         <form method="POST" action=""${This.path}/restart">
-         Click on the restart button to restart the server now <input type="submit" value="Restart"/>
-         </form>Restart the server <a href="">now</a>.
+         <form method="GET" action=""${Root.path}/restartView">
+         Click on the restart button to restart the server now : <input type="submit" value="Restart"/>
+         </form>.
      </div>
     </#if>
 
     <br/>
 
     <#if source=="installer">
-    	<a href="javascript:closePopup()" class="installButton"> Finish </a>
+      <a href="javascript:closePopup()" class="installButton"> Finish </a>
     <#else>
-    	<a href="${Root.path}/packages/${source}" class="installButton"> Finish </a>
+      <a href="${Root.path}/packages/${source}" class="installButton"> Finish </a>
     </#if>
   </div>
 </@block>

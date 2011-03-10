@@ -293,19 +293,4 @@ public class InstallHandler extends DefaultObject {
         }
     }
 
-    @POST
-    @Path("restart")
-    public Object restartServer() {
-        if (!((NuxeoPrincipal) getContext().getPrincipal()).isAdministrator()) {
-            return Response.status(Status.FORBIDDEN).build();
-        }
-        PackageUpdateService pus = Framework.getLocalService(PackageUpdateService.class);
-        try {
-            pus.restart();
-        } catch (Exception e) {
-            throw WebException.wrap(e);
-        }
-        // TODO create a page that waits for the server to restart
-        return Response.ok().build();
-    }
 }
