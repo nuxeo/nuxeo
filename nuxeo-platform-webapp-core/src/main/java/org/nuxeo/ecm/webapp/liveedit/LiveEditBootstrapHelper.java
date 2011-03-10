@@ -53,7 +53,6 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
@@ -72,7 +71,7 @@ import org.nuxeo.runtime.api.Framework;
  * <li>browsed page calls a JSF function from the DocumentModelFunctions class
  * (edit a document, create new document, etc.) to generate;</li>
  *
- * <li>composing a specifc URL as result, triggering the bootstrap addon to
+ * <li>composing a specific URL as result, triggering the bootstrap addon to
  * popup;</li>
  *
  * <li>the addon come back with the URL composed allowing the present seam
