@@ -1,8 +1,12 @@
 package org.nuxeo.opensocial.container.shared.layout.api;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.nuxeo.opensocial.container.shared.layout.enume.YUISideBarStyle;
 import org.nuxeo.opensocial.container.shared.layout.enume.YUISize;
 import org.nuxeo.opensocial.container.shared.layout.enume.YUITemplate;
+import org.nuxeo.opensocial.container.shared.layout.exception.LayoutException;
 import org.nuxeo.opensocial.container.shared.layout.impl.YUIComponentZoneImpl;
 import org.nuxeo.opensocial.container.shared.layout.impl.YUIFixedBodySize;
 import org.nuxeo.opensocial.container.shared.layout.impl.YUILayoutImpl;
@@ -17,6 +21,12 @@ public class LayoutHelper {
                 "x-4-50-50-66-33"), X_4_100_66_33_100("x-4-100-66-33-100"), X_4_100_33_66_100(
                 "x-4-100-33-66-100");
 
+        private static final Map<String, Preset> stringToEnum = new HashMap<String, Preset>();
+        static {
+            for (Preset op : values())
+                stringToEnum.put(op.getName(), op);
+        }
+
         private String name;
 
         private Preset(String name) {
@@ -27,18 +37,26 @@ public class LayoutHelper {
             return name;
         }
 
+        /**
+         * @param layout
+         * @return
+         * @throws LayoutException when layout is not a known layout name.
+         */
+        public static Preset fromString(String layout) throws LayoutException {
+            if (!stringToEnum.containsKey(layout)) {
+                throw new LayoutException("Unknown layout '" + layout + "'.");
+            }
+            return stringToEnum.get(layout);
+        }
+
         public YUILayout getLayout() {
             return LayoutHelper.buildLayout(this);
         }
     }
 
-    public static YUILayout buildLayout(String layoutName) throws Exception {
-        for (Preset preset : Preset.values()) {
-            if (preset.getName().equals(layoutName)) {
-                return buildLayout(preset);
-            }
-        }
-        throw new Exception("Layout not found");
+    public static YUILayout buildLayout(String layoutName)
+            throws LayoutException {
+        return buildLayout(Preset.fromString(layoutName));
     }
 
     public static YUILayout buildLayout(Preset layoutPreset) {
