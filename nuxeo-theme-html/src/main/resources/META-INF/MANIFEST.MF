@@ -21,8 +21,7 @@ Bundle-Vendor: Chalmers
 Bundle-Version: 0.0.0.SNAPSHOT
 Nuxeo-Component: OSGI-INF/nxthemes-html-contrib.xml
 Bundle-ManifestVersion: 2
-Import-Package: com.steadystate.css.parser,
- javax.annotation;version="1.0",
+Import-Package: javax.annotation;version="1.0",
  javax.servlet,
  javax.servlet.http,
  net.sf.json,
