@@ -24,15 +24,12 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.api.VersionModel;
-import org.nuxeo.ecm.core.api.impl.VersionModelImpl;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.platform.filemanager.service.extension.AbstractFileImporter;
 import org.nuxeo.ecm.platform.filemanager.utils.FileManagerUtils;
@@ -47,7 +44,8 @@ public class ImagePlugin extends AbstractFileImporter {
 
     private static final Log log = LogFactory.getLog(ImagePlugin.class);
 
-    public DocumentModel create(CoreSession documentManager, Blob content,
+    @SuppressWarnings("unchecked")
+	public DocumentModel create(CoreSession documentManager, Blob content,
             String path, boolean overwrite, String fullname,
             TypeManager typeService) throws ClientException, IOException {
         path = getNearestContainerPath(documentManager, path);

@@ -38,17 +38,15 @@ import org.nuxeo.ecm.platform.relations.api.impl.StatementImpl;
 
 /**
  * @author Alexandre Russel
- *
  */
 public class AnnotationQuery {
     public static final String BASE_QUERY = "SELECT ?uri SELECT {}";
 
     private final AnnotationManager manager = new AnnotationManager();
 
-    @SuppressWarnings("unchecked")
     public List<Annotation> getAnnotationsForURIs(List<URI> uris, Graph graph)
             throws AnnotationException {
-        return getAnnotationsForURIs(uris, graph, Collections.<String, String>emptyMap());
+        return getAnnotationsForURIs(uris, graph, Collections.<String, String> emptyMap());
     }
 
     public List<Annotation> getAnnotationsForURIs(List<URI> uris, Graph graph,

@@ -49,8 +49,6 @@ import org.nuxeo.connect.update.PackageUpdateService;
 import org.nuxeo.connect.update.task.Task;
 import org.nuxeo.runtime.api.Framework;
 
-import sun.security.action.GetLongAction;
-
 /**
  * Manages JSF views for Package Management.
  *
@@ -278,6 +276,6 @@ public class AppCenterViewsManager implements Serializable {
                 isStudioSnapshopUpdateInProgress = false;
             }
         }
-
     }
+
 }

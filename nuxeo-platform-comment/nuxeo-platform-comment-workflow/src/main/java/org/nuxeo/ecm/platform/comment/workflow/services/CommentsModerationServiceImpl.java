@@ -113,7 +113,6 @@ public class CommentsModerationServiceImpl implements CommentsModerationService 
         }
     }
 
-    @SuppressWarnings("unchecked")
     protected TaskInstance getModerationTask(JbpmService jbpmService,
             CoreSession session, DocumentModel doc, String commentId)
             throws ClientException {

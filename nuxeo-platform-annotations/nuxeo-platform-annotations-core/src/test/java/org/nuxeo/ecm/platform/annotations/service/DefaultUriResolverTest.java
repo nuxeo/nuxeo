@@ -20,16 +20,13 @@
 package org.nuxeo.ecm.platform.annotations.service;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 
 import junit.framework.TestCase;
 
-import org.nuxeo.ecm.platform.annotations.api.AnnotationException;
 import org.nuxeo.ecm.platform.annotations.api.UriResolver;
 
 /**
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
- *
  */
 public class DefaultUriResolverTest extends TestCase {
 

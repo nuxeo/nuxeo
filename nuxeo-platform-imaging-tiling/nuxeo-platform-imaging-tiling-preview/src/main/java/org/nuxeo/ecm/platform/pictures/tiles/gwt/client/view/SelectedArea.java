@@ -21,7 +21,6 @@ package org.nuxeo.ecm.platform.pictures.tiles.gwt.client.view;
 
 import org.nuxeo.ecm.platform.pictures.tiles.gwt.client.util.Rectangle;
 
-import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Panel;
@@ -30,7 +29,6 @@ import com.google.gwt.user.client.ui.Widget;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- *
  */
 public class SelectedArea {
 

@@ -74,7 +74,6 @@ public class Visitor {
         visit(startNode.getOwnerDocument());
     }
 
-    @SuppressWarnings("unchecked")
     public void visit(Node node) {
         if (startNode == node) {
             processing = true;

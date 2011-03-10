@@ -21,7 +21,6 @@ package org.nuxeo.ecm.platform.syndication.restAPI;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -79,13 +78,13 @@ public abstract class BaseQueryModelRestlet extends BaseStatelessNuxeoRestlet {
 
     private static final String defaultFormat = "XML";
 
-    protected boolean sortAscending = false;
-
-    protected String sortColomn = "";
-
     private static QueryModelService qmService;
 
     private static final Log log = LogFactory.getLog(BaseQueryModelRestlet.class);
+
+    protected boolean sortAscending = false;
+
+    protected String sortColomn = "";
 
     protected abstract String getQueryModelName(Request req);
 

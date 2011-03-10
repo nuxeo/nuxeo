@@ -31,7 +31,6 @@ import org.nuxeo.ecm.platform.pictures.tiles.api.PictureTiles;
 import org.nuxeo.ecm.platform.pictures.tiles.api.PictureTilesImpl;
 import org.nuxeo.ecm.platform.pictures.tiles.api.PictureTilingService;
 import org.nuxeo.ecm.platform.pictures.tiles.gimp.GimpExecutor;
-import org.nuxeo.ecm.platform.pictures.tiles.gimp.tiler.GimpTiler;
 import org.nuxeo.ecm.platform.pictures.tiles.magick.tiler.MagickTiler;
 import org.nuxeo.ecm.platform.pictures.tiles.service.GCTask;
 import org.nuxeo.ecm.platform.pictures.tiles.service.PictureTilingCacheGCManager;

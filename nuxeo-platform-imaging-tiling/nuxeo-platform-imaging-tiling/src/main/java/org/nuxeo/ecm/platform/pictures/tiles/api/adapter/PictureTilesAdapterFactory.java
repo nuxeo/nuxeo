@@ -26,7 +26,6 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.adapter.DocumentAdapterFactory;
 import org.nuxeo.ecm.core.api.model.PropertyException;
-import org.nuxeo.ecm.platform.picture.api.adapters.DefaultPictureAdapter;
 import org.nuxeo.ecm.platform.picture.api.adapters.PictureResourceAdapter;
 import org.nuxeo.ecm.platform.pictures.tiles.api.PictureTilingService;
 import org.nuxeo.runtime.api.Framework;

@@ -44,7 +44,6 @@ import org.jboss.seam.annotations.remoting.WebRemote;
 import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
-import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -151,7 +150,8 @@ public class PictureManagerBean implements PictureManager, Serializable {
         this.selectItems = selectItems;
     }
 
-    public String addPicture() throws Exception {
+    @SuppressWarnings("unchecked")
+	public String addPicture() throws Exception {
         PathSegmentService pss = Framework.getService(PathSegmentService.class);
         DocumentModel doc = navigationContext.getChangeableDocument();
 
