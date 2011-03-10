@@ -46,8 +46,8 @@ public class MvelRender implements Renderer {
     public String render(String uriOrContent, Map<String,Object> root) throws Exception {
         CompiledTemplate compiled = null;
         String content = null;
-        if (uriOrContent.startsWith("resource:")) {
-            String name = uriOrContent.substring("resource:".length());
+        if (uriOrContent.startsWith(Renderer.TEMPLATE_PREFIX)) {
+            String name = uriOrContent.substring(Renderer.TEMPLATE_PREFIX.length());
             compiled = cache.get(name);
             if (compiled == null) {
                 URL url = Framework.getService(ResourceService.class).getResource(name);
