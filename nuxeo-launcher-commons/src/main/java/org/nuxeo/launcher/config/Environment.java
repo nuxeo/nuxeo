@@ -57,7 +57,7 @@ public class Environment {
 
     public static final String NUXEO_APP_HOME = "org.nuxeo.app.home";
 
-    public static final String NUXEO_LOOPBACK_URL = "org.nuxeo.runtime.loopback.url";
+    public static final String NUXEO_LOOPBACK_URL = "nuxeo.loopback.url";
 
     // OpenSocial
     public static final String OPENSOCIAL_GADGETS_EMBEDDED_SERVER = "opensocial.gadgets.embeddedServer";
