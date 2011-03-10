@@ -8,11 +8,11 @@
       <category>USER_SERVICES</category>
     </action>
 
-    <action id="adm_logout" link="#{loginLogoutAction.logout()}" label="command.logout">
+    <action id="userCenterLogout" link="#{loginLogoutAction.logout()}" label="command.logout">
       <category>USER_CENTER_USER_SERVICES</category>
     </action>
 
-    <action id="adm_exit" link="#{adminViews.exit()}" label="action.admin.exit">
+    <action id="userCenterExit" link="#{adminViews.exit()}" label="action.user.center.exit">
       <category>USER_CENTER_USER_SERVICES</category>
     </action>
 
