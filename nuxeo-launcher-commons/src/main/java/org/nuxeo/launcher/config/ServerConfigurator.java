@@ -125,7 +125,7 @@ public abstract class ServerConfigurator {
      *
      * @return
      */
-    protected abstract String getRuntimeHome();
+    protected abstract File getRuntimeHome();
 
     /**
      * @return Data directory

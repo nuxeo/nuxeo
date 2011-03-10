@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2011 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -21,7 +21,7 @@ package org.nuxeo.launcher.config;
 
 
 /**
- * Constants duplicated from {@link org.nuxeo.commons.Environment}
+ * Constants duplicated from {@link org.nuxeo.common.Environment}
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */

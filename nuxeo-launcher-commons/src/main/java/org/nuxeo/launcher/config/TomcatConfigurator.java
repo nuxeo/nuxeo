@@ -191,7 +191,7 @@ public class TomcatConfigurator extends ServerConfigurator {
     }
 
     @Override
-    public String getRuntimeHome() {
-        return generator.getNuxeoHome() + File.separator + "nxserver";
+    public File getRuntimeHome() {
+        return new File(generator.getNuxeoHome(), "nxserver");
     }
 }
