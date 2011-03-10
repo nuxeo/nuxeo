@@ -160,7 +160,6 @@ public class DetachedNuxeoPrincipal implements NuxeoPrincipal {
 
     }
 
-    @Override
     public void setEmail(String email) {
         this.email = email;
     }
@@ -207,4 +206,5 @@ public class DetachedNuxeoPrincipal implements NuxeoPrincipal {
     public void setOriginatingUser(String originatingUser) {
         throw new UnsupportedOperationException();
     }
+
 }
