@@ -17,6 +17,7 @@ Import-Package: javax.naming,
  org.nuxeo.runtime.jtajca,
  org.nuxeo.runtime.osgi,
  org.osgi.framework,
- org.osgi.service.http
+ org.osgi.service.http,
+ org.osgi.service.packageadmin
 Bundle-Activator: org.nuxeo.runtime.start.StartApplication
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6

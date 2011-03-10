@@ -18,17 +18,16 @@ package org.nuxeo.runtime.start;
 
 import javax.naming.NamingException;
 
-import org.apache.commons.logging.Log;
-import org.eclipse.equinox.http.jetty.JettyConfigurator;
 import org.nuxeo.common.jndi.NamingContextFactory;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.api.ServiceLocatorFactory;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
+import org.nuxeo.runtime.osgi.OSGiRuntimeService;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
-import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.ServiceReference;
+import org.osgi.service.packageadmin.PackageAdmin;
 
 /**
  * This bundle should be put in a startlevel superior than the one used to start nuxeo bundles.
@@ -41,14 +40,20 @@ public class StartApplication implements BundleActivator {
 
     @Override
     public void start(BundleContext context) throws Exception {
-        startRuntime();
+        startWebServices(context);
+        startRuntime(context);
         startContainer();
-        startWebServices();
-        //((OSGiRuntimeService)Framework.getRuntime()).fireApplicationStarted();
+        ((OSGiRuntimeService)Framework.getRuntime()).fireApplicationStarted();
     }
 
-    private void startRuntime() throws BundleException {
-        FrameworkUtil.getBundle(Framework.class).start();
+    private void startRuntime(BundleContext context) throws BundleException {
+        try {
+            context.getBundle().loadClass("org.nuxeo.runtime.api.Framework");
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+        // not in osgi.core r4
+        //FrameworkUtil.getBundle(Framework.class).start();
     }
 
     private void startContainer() throws NamingException {
@@ -56,12 +61,27 @@ public class StartApplication implements BundleActivator {
         NuxeoContainer.install();
     }
 
-    private void startWebServices() throws BundleException {
-        FrameworkUtil.getBundle(JettyConfigurator.class).start();
+    private void startWebServices(BundleContext context) throws BundleException {
+        ServiceReference pkgAdmin = context.getServiceReference(PackageAdmin.class.getName());
+        PackageAdmin pa = (PackageAdmin)context.getService(pkgAdmin);
+        tryStartJetty(pa);
+        context.ungetService(pkgAdmin);
     }
 
+    private boolean tryStartJetty(PackageAdmin pa) {
+        Bundle[] bundles = pa.getBundles("org.eclipse.equinox.http.jetty", null);
+        if (bundles != null && bundles.length > 0) {
+            try {
+                bundles[0].start();
+                return true;
+            } catch (Throwable t) {
+                t.printStackTrace();
+            }
+        }
+        return false;
+    }
 
     public void stop(BundleContext context) throws Exception {
-        
+
     }
 }
