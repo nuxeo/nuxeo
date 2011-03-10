@@ -3404,12 +3404,10 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
             String facet) throws ClientException {
         try {
             Document doc = resolveReference(docRef);
-            if (doc.hasFacet(facet)) {
-                return doc;
+            while (doc != null && !doc.hasFacet(facet)) {
+                doc = doc.getParent();
             }
-            Document parentDoc = doc.getParent();
-            return parentDoc != null ? getFirstParentDocumentWithFacet(
-                    new IdRef(parentDoc.getUUID()), facet) : null;
+            return doc;
         } catch (DocumentException e) {
             throw new ClientException(e);
         }
