@@ -57,6 +57,7 @@ jod.template.profile.dir=
 opensocial.gadgets.embeddedServer=true
 opensocial.gadgets.host=localhost
 opensocial.gadgets.port=8080
+opensocial.gadgets.path=/site/gadgets
 opensocial.proxy.proxySet=false
 opensocial.proxy.proxyHost=
 opensocial.proxy.proxyPort=
