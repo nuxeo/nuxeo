@@ -28,7 +28,7 @@ import java.util.Properties;
 public class JBossConfigurator extends ServerConfigurator {
 
     /**
-     * @deprecated Use {@link #getJBossConfig()}
+     * @deprecated Use {@link #getConfigPath()}
      */
     @Deprecated
     public static final String JBOSS_CONFIG = "server/default/deploy/nuxeo.ear/config";
@@ -73,7 +73,7 @@ public class JBossConfigurator extends ServerConfigurator {
     @Override
     public boolean isConfigured() {
         log.info("Detected JBoss server.");
-        return new File(generator.getNuxeoHome(), getJBossConfig()).exists();
+        return getConfigDir().exists();
     }
 
     @Override
@@ -81,10 +81,13 @@ public class JBossConfigurator extends ServerConfigurator {
         return getConfigDir().getParentFile();
     }
 
-    public String getJBossConfig() {
+    public String getConfigPath() {
+        return getEARPath() + File.separator + "config";
+    }
+
+    private String getEARPath() {
         return "server" + File.separator + getConfiguration() + File.separator
-                + "deploy" + File.separator + "nuxeo.ear" + File.separator
-                + "config";
+                + "deploy" + File.separator + "nuxeo.ear";
     }
 
     @Override
@@ -147,7 +150,7 @@ public class JBossConfigurator extends ServerConfigurator {
 
     @Override
     public File getConfigDir() {
-        return new File(generator.getNuxeoHome(), getJBossConfig());
+        return new File(generator.getNuxeoHome(), getConfigPath());
     }
 
     @Override
@@ -166,9 +169,8 @@ public class JBossConfigurator extends ServerConfigurator {
     }
 
     @Override
-    protected String getRuntimeHome() {
-        // TODO Auto-generated method stub
-        return null;
+    protected File getRuntimeHome() {
+        return new File(generator.getNuxeoHome(), getEARPath());
     }
 
 }

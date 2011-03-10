@@ -749,7 +749,19 @@ public class ConfigurationGenerator {
         serverConfigurator.cleanupPostWizard();
     }
 
-    public String getRuntimeHome() {
+    /**
+     * @return Nuxeo runtime home
+     */
+    public File getRuntimeHome() {
         return serverConfigurator.getRuntimeHome();
+    }
+
+    /**
+     * @since 5.4.1
+     * @return true if there's an install in progress
+     */
+    public boolean isInstallInProgress() {
+        return new File(serverConfigurator.getDataDir(),
+                "installAfterRestart.log").exists();
     }
 }

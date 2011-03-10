@@ -105,9 +105,8 @@ public class JettyConfigurator extends ServerConfigurator {
     }
 
     @Override
-    protected String getRuntimeHome() {
-        // TODO Auto-generated method stub
-        return null;
+    protected File getRuntimeHome() {
+        return generator.getNuxeoHome();
     }
 
 }
