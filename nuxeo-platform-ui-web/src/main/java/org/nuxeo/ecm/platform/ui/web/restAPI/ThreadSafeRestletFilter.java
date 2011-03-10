@@ -21,7 +21,6 @@ package org.nuxeo.ecm.platform.ui.web.restAPI;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.runtime.transaction.TransactionHelper;
 import org.restlet.Filter;
 import org.restlet.Restlet;
 import org.restlet.data.MediaType;
@@ -49,24 +48,15 @@ public class ThreadSafeRestletFilter extends Filter {
     @Override
     protected void doHandle(Request request, Response response) {
         if (getNext() != null) {
-            boolean started = false;
             try {
                 // get a new instance of the restlet each time it is called.
                 Restlet next = getNext().getClass().newInstance();
-                // start TX
-                started = TransactionHelper.startTransaction();
                 next.handle(request, response);
             } catch (Exception e) {
                 log.error("Restlet handling error", e);
-                TransactionHelper.setTransactionRollbackOnly();
                 response.setEntity(
                         "Error while getting a new Restlet instance: "
                                 + e.getMessage(), MediaType.TEXT_PLAIN);
-            } finally {
-                if (started) {
-                    // commit Tx
-                    TransactionHelper.commitOrRollbackTransaction();
-                }
             }
         } else {
             response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
