@@ -17,6 +17,8 @@
 
 package org.nuxeo.opensocial.gadgets.service;
 
+import static org.nuxeo.launcher.config.Environment.NUXEO_LOOPBACK_URL;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,7 +48,7 @@ public class TestGadgetService extends NXRuntimeTestCase {
         deployContrib("org.nuxeo.opensocial.gadgets.core.test",
         "OSGI-INF/directory-test-config.xml");
 
-        Framework.getProperties().put("org.nuxeo.runtime.loopback.url", "http://localhost:8080/nuxeo");
+        Framework.getProperties().put(NUXEO_LOOPBACK_URL, "http://localhost:8080/nuxeo");
     }
 
     public void testServiceRegistration() throws Exception {
@@ -67,6 +69,7 @@ public class TestGadgetService extends NXRuntimeTestCase {
     }
 
     public void testSpecParsing() throws Exception {
+        Framework.getProperties().put(NUXEO_LOOPBACK_URL, "http://localhost:8080/nuxeo");
 
         GadgetService service = Framework.getService(GadgetService.class);
         assertNotNull(service);
