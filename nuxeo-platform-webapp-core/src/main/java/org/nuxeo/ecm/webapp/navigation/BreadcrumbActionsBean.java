@@ -28,7 +28,6 @@ import java.util.List;
 
 import javax.faces.context.FacesContext;
 
-import org.ajax4jsf.Messages;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.annotations.Factory;
@@ -47,7 +46,6 @@ import org.nuxeo.ecm.platform.ui.web.pathelements.DocumentPathElement;
 import org.nuxeo.ecm.platform.ui.web.pathelements.PathElement;
 import org.nuxeo.ecm.platform.ui.web.pathelements.TextPathElement;
 import org.nuxeo.ecm.platform.ui.web.pathelements.VersionDocumentPathElement;
-import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 
 /**

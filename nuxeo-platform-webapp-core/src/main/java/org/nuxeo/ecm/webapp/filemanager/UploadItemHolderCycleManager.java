@@ -21,8 +21,6 @@ package org.nuxeo.ecm.webapp.filemanager;
 
 import java.io.Serializable;
 
-import javax.ejb.Remove;
-
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.Name;
