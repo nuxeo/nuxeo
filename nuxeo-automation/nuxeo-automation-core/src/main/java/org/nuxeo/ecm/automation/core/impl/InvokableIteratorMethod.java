@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.automation.core.impl;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -38,12 +39,13 @@ import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
  * annotation so that iterable inputs are automatically handled by the chain
  * executor.
  * <p>
- * This specialized implementation is declaring the same consume type as
- * its non-iterable counterpart. But at runtime it consumes any Iterable of the cosume type.
+ * This specialized implementation is declaring the same consume type as its
+ * non-iterable counterpart. But at runtime it consumes any Iterable of the
+ * cosume type.
  * <p>
- * To correctly generate the operation documentation the {@link OperationTypeImpl}
- * is checking if the method is iterable or not through {@link #isIterable()} to declare
- * the correct consume type.
+ * To correctly generate the operation documentation the
+ * {@link OperationTypeImpl} is checking if the method is iterable or not
+ * through {@link #isIterable()} to declare the correct consume type.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
@@ -60,16 +62,26 @@ public class InvokableIteratorMethod extends InvokableMethod {
         if (collector == OutputCollector.class) {
             throw new IllegalArgumentException("Not an iterable method");
         }
+        // check the collector match the method signature - to early detect invalid
+        // operation definitions.
         if (consume == Void.TYPE) {
-            throw new IllegalArgumentException("An iterable method must have an argument");
+            throw new IllegalArgumentException(
+                    "An iterable method must have an argument");
+        }
+        Type[] ctypes = IterableInputHelper.findCollectorTypes(collector);
+        if (!((Class<?>)ctypes[0]).isAssignableFrom(produce)) {
+            throw new IllegalArgumentException(
+            "The collector used on "+method+" doesn't match the method return type");
         }
         // must modify the produced type to fit the real produced type.
         try {
-            produce = collector.getMethod("getOutput").getReturnType();
+            produce = (Class<?>)ctypes[1];
         } catch (Exception e) {
-            throw new IllegalStateException("Invalid output collector: "+collector+". No getOutput method found.");
+            throw new IllegalStateException("Invalid output collector: "
+                    + collector + ". No getOutput method found.");
         }
-        // the consumed type is not used in chain compilation so we let it as is for now.
+        // the consumed type is not used in chain compilation so we let it as is
+        // for now.
     }
 
     @Override
@@ -98,7 +110,10 @@ public class InvokableIteratorMethod extends InvokableMethod {
         Iterable<?> iterable = (Iterable<?>) input;
         Iterator<?> it = iterable.iterator();
         while (it.hasNext()) {
-            list.add(super.doInvoke(ctx, args, it.next()));
+            Object in = it.next();
+            // update context to use as input the current entry
+            ctx.setInput(in);
+            list.collect(ctx, super.doInvoke(ctx, args, in));
         }
         return list.getOutput();
     }

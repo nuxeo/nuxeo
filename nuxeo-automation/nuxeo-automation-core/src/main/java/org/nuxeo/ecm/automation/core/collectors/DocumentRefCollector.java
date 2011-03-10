@@ -16,34 +16,41 @@
  */
 package org.nuxeo.ecm.automation.core.collectors;
 
+import java.util.ArrayList;
+
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OutputCollector;
-import org.nuxeo.ecm.automation.core.util.BlobList;
-import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.DocumentRefList;
 
 /**
- * This implementation collect {@link Blob} objects and return them as a
- * {@link BlobList} object.
+ * This implementation collect {@link DocumentRef} objects and return them as a
+ * {@link DocumentRefList} object.
  * <p>
  * You may use this to automatically iterate over iterable inputs in operation
- * methods that <b>return</b> a {@link Blob} object.
+ * methods that <b>return</b> a {@link DocumentRef} object.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class BlobCollector extends BlobList implements OutputCollector<Blob, BlobList> {
+public class DocumentRefCollector extends ArrayList<DocumentRef> implements DocumentRefList,
+        OutputCollector<DocumentRef, DocumentRefList> {
 
-    private static final long serialVersionUID = 5167860889224514027L;
+    private static final long serialVersionUID = 5732663048354570870L;
 
     @Override
-    public void collect(OperationContext ctx, Blob obj)
+    public long totalSize() {
+        return size();
+    }
+
+    public void collect(OperationContext ctx, DocumentRef ref)
             throws OperationException {
-        add(obj);
+        add(ref);
     }
 
     @Override
-    public BlobList getOutput() {
+    public DocumentRefList getOutput() {
         return this;
     }
 }

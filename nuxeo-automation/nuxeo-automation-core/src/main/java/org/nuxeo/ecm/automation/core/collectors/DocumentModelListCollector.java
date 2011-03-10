@@ -16,34 +16,42 @@
  */
 package org.nuxeo.ecm.automation.core.collectors;
 
+import java.util.ArrayList;
+
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OutputCollector;
-import org.nuxeo.ecm.automation.core.util.BlobList;
-import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 
 /**
- * This implementation collect {@link Blob} objects and return them as a
- * {@link BlobList} object.
+ * This implementation collect {@link DocumentModel} objects and return them as a
+ * {@link DocumentModelList} object.
  * <p>
  * You may use this to automatically iterate over iterable inputs in operation
- * methods that <b>return</b> a {@link Blob} object.
+ * methods that <b>return</b> a {@link DocumentModel} object
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class BlobCollector extends BlobList implements OutputCollector<Blob, BlobList> {
+public class DocumentModelListCollector extends ArrayList<DocumentModel> implements
+        DocumentModelList, OutputCollector<DocumentModelList, DocumentModelList> {
 
-    private static final long serialVersionUID = 5167860889224514027L;
+    private static final long serialVersionUID = 5732663048354570870L;
 
     @Override
-    public void collect(OperationContext ctx, Blob obj)
-            throws OperationException {
-        add(obj);
+    public long totalSize() {
+        return size();
     }
 
     @Override
-    public BlobList getOutput() {
+    public void collect(OperationContext ctx, DocumentModelList obj)
+            throws OperationException {
+        addAll(obj);
+    }
+
+    @Override
+    public DocumentModelList getOutput() {
         return this;
     }
 }

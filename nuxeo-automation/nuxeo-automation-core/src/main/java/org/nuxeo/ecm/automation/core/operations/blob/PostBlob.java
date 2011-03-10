@@ -26,10 +26,10 @@ import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
+import org.nuxeo.ecm.automation.core.collectors.BlobCollector;
 import org.nuxeo.ecm.core.api.Blob;
 
 /**
- * Save the input document
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -41,7 +41,7 @@ public class PostBlob {
     @Param(name = "url")
     protected String url;
 
-    @OperationMethod
+    @OperationMethod(collector=BlobCollector.class)
     public Blob run(Blob blob) throws Exception {
         URL target = new URL(url);
         URLConnection conn = target.openConnection();

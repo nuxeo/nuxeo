@@ -20,12 +20,11 @@ import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
+import org.nuxeo.ecm.automation.core.collectors.BlobListCollector;
 import org.nuxeo.ecm.automation.core.util.BlobList;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.model.Property;
-import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.impl.ListProperty;
 
 /**
@@ -41,7 +40,7 @@ public class GetDocumentBlobs {
     @Param(name = "xpath", required = false, values = "files:files")
     protected String xpath = "files:files";
 
-    @OperationMethod
+    @OperationMethod(collector=BlobListCollector.class)
     public BlobList run(DocumentModel doc) throws Exception {
         BlobList blobs = new BlobList();
         ListProperty list = (ListProperty) doc.getProperty(xpath);
@@ -54,17 +53,5 @@ public class GetDocumentBlobs {
         return blobs;
     }
 
-    @OperationMethod
-    public BlobList run(DocumentModelList docs) throws Exception {
-        BlobList blobs = new BlobList();
-        for (DocumentModel doc : docs) {
-            try {
-                blobs.addAll(run(doc));
-            } catch (PropertyException e) {
-                // continue -> ignore docs with no blobs
-            }
-        }
-        return blobs;
-    }
 
 }

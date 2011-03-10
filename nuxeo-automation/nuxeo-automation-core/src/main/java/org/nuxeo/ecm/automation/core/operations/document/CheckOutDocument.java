@@ -20,12 +20,10 @@ import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
+import org.nuxeo.ecm.automation.core.collectors.DocumentModelCollector;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.DocumentRefList;
-import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 
 /**
  * Check out the input document.
@@ -38,41 +36,20 @@ public class CheckOutDocument {
     @Context
     protected CoreSession session;
 
-    @OperationMethod
-    public DocumentRef run(DocumentRef doc) throws Exception {
+    @OperationMethod(collector=DocumentModelCollector.class)
+    public DocumentModel run(DocumentRef doc) throws Exception {
         if (!session.isCheckedOut(doc)) {
             session.checkOut(doc);
         }
-        return doc;
+        return session.getDocument(doc);
     }
 
-    @OperationMethod
+    @OperationMethod(collector=DocumentModelCollector.class)
     public DocumentModel run(DocumentModel doc) throws Exception {
         if (!doc.isCheckedOut()) {
             session.checkOut(doc.getRef());
-            doc.refresh(DocumentModel.REFRESH_STATE, null);
         }
-        return doc;
-    }
-
-    @OperationMethod
-    public DocumentModelList run(DocumentModelList docs) throws Exception {
-        DocumentModelList result = new DocumentModelListImpl(
-                (int) docs.totalSize());
-        for (DocumentModel doc : docs) {
-            result.add(run(doc));
-        }
-        return result;
-    }
-
-    @OperationMethod
-    public DocumentModelList run(DocumentRefList docs) throws Exception {
-        DocumentModelList result = new DocumentModelListImpl(
-                (int) docs.totalSize());
-        for (DocumentRef doc : docs) {
-            result.add(session.getDocument(run(doc)));
-        }
-        return result;
+        return session.getDocument(doc.getRef());
     }
 
 }

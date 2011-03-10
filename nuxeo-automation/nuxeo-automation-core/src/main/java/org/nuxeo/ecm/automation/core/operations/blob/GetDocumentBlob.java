@@ -20,12 +20,10 @@ import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
-import org.nuxeo.ecm.automation.core.util.BlobList;
+import org.nuxeo.ecm.automation.core.collectors.BlobCollector;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
-import org.nuxeo.ecm.core.api.model.PropertyException;
 
 /**
  * Get document blob inside the file:content property
@@ -40,7 +38,7 @@ public class GetDocumentBlob {
     @Param(name = "xpath", required = false, values = "file:content")
     protected String xpath = "file:content";
 
-    @OperationMethod
+    @OperationMethod(collector=BlobCollector.class)
     public Blob run(DocumentModel doc) throws Exception {
         Blob blob = (Blob) doc.getPropertyValue(xpath);
         // cannot return null since it may break the next operation
@@ -52,17 +50,5 @@ public class GetDocumentBlob {
         return blob;
     }
 
-    @OperationMethod
-    public BlobList run(DocumentModelList docs) throws Exception {
-        BlobList blobs = new BlobList(docs.size());
-        for (DocumentModel doc : docs) {
-            try {
-                blobs.add(run(doc));
-            } catch (PropertyException e) {
-                // continue -> ignore docs with no blobs
-            }
-        }
-        return blobs;
-    }
 
 }

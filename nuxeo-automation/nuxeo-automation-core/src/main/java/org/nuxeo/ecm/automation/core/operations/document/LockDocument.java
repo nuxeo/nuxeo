@@ -24,15 +24,12 @@ import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
+import org.nuxeo.ecm.automation.core.collectors.DocumentModelCollector;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.DocumentRefList;
-import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 
 /**
- * Save the input document
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -54,43 +51,22 @@ public class LockDocument {
         return result.toString();
     }
 
-    @OperationMethod
-    public DocumentRef run(DocumentRef doc) throws Exception {
+    @OperationMethod(collector=DocumentModelCollector.class)
+    public DocumentModel run(DocumentRef doc) throws Exception {
         if (owner == null) {
             owner = session.getPrincipal().getName();
         }
-
         session.setLock(doc, getDocumentLockKey(owner));
-        return doc;
+        return session.getDocument(doc);
     }
 
-    @OperationMethod
+    @OperationMethod(collector=DocumentModelCollector.class)
     public DocumentModel run(DocumentModel doc) throws Exception {
         if (owner == null) {
             owner = session.getPrincipal().getName();
         }
         session.setLock(doc.getRef(), getDocumentLockKey(owner));
-        return doc;
-    }
-
-    @OperationMethod
-    public DocumentModelList run(DocumentModelList docs) throws Exception {
-        DocumentModelList result = new DocumentModelListImpl(
-                (int) docs.totalSize());
-        for (DocumentModel doc : docs) {
-            result.add(run(doc));
-        }
-        return result;
-    }
-
-    @OperationMethod
-    public DocumentModelList run(DocumentRefList docs) throws Exception {
-        DocumentModelList result = new DocumentModelListImpl(
-                (int) docs.totalSize());
-        for (DocumentRef doc : docs) {
-            result.add(session.getDocument(run(doc)));
-        }
-        return result;
+        return session.getDocument(doc.getRef());
     }
 
 }

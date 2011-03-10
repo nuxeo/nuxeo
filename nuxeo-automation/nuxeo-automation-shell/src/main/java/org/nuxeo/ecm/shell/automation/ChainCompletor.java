@@ -21,13 +21,12 @@ import java.util.List;
 
 import jline.Completor;
 
-import org.nuxeo.ecm.automation.client.jaxrs.model.Document;
 import org.nuxeo.ecm.automation.client.jaxrs.model.OperationDocumentation;
 import org.nuxeo.ecm.shell.Shell;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public class ChainCompletor implements Completor {
 
@@ -39,14 +38,6 @@ public class ChainCompletor implements Completor {
 
     public ChainCompletor(RemoteContext ctx) {
         this.ctx = ctx;
-    }
-
-    protected Document fetchDocument(String path) {
-        try {
-            return ctx.resolveDocument(path);
-        } catch (Exception e) {
-            return null;
-        }
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
