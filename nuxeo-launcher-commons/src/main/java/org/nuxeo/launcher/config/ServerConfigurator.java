@@ -58,7 +58,7 @@ public abstract class ServerConfigurator {
      * @since 5.4.1
      */
     public static final String[] NUXEO_SYSTEM_PROPERTIES = new String[] {
-            "nuxeo.conf", "nuxeo.home", "launcher.java.opts" };
+            "nuxeo.conf", "nuxeo.home" };
 
     public ServerConfigurator(ConfigurationGenerator configurationGenerator) {
         generator = configurationGenerator;
