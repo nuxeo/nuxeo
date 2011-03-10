@@ -55,8 +55,8 @@ public final class Row extends RowId implements Serializable {
     /** Copy constructor. */
     private Row(Row row) {
         super(row);
-        keys = row.keys;
-        values = row.values;
+        keys = row.keys == null ? null : row.keys.clone();
+        values = row.values == null ? null : row.values.clone();
         size = row.size;
     }
 
