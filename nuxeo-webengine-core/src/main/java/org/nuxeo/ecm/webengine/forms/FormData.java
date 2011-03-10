@@ -120,7 +120,7 @@ public class FormData implements FormInstance {
             List<FileItem> list = entry.getValue();
             String[] ar = new String[list.size()];
             for (int i=0; i<ar.length; i++) {
-                ar[i++] = list.get(i).getString();
+                ar[i] = list.get(i).getString();
             }
             result.put(entry.getKey(), ar);
         }
