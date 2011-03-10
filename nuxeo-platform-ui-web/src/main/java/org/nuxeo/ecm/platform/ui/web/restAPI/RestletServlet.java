@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,9 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id: JOOoConvertPluginImpl.java 18651 2007-05-13 20:28:53Z sfermigier $
+ *     Thierry Delprat
+ *     Florent Guillaume
  */
 
 package org.nuxeo.ecm.platform.ui.web.restAPI;
@@ -31,6 +30,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.ui.web.restAPI.service.PluggableRestletService;
 import org.nuxeo.ecm.platform.ui.web.restAPI.service.RestletPluginDescriptor;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 import org.restlet.Filter;
 import org.restlet.Restlet;
 import org.restlet.Route;
@@ -39,10 +39,11 @@ import org.restlet.Router;
 import com.noelios.restlet.ext.servlet.ServletConverter;
 
 /**
- * Servlet used to run Restlet inside Nuxeo.
- * Setup Seam Restlet filter if needed
- *
- * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
+ * Servlet used to run a Restlet inside Nuxeo.
+ * <p>
+ * Setup Seam Restlet filter if needed.
+ * <p>
+ * Ensures a transaction is started/committed.
  */
 public class RestletServlet extends HttpServlet {
 
@@ -117,7 +118,24 @@ public class RestletServlet extends HttpServlet {
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
-        converter.service(req, res);
+        boolean tx = TransactionHelper.startTransaction();
+        try {
+            converter.service(req, res);
+        } catch (ServletException e) {
+            if (tx) {
+                TransactionHelper.setTransactionRollbackOnly();
+            }
+            throw e;
+        } catch (IOException e) {
+            if (tx) {
+                TransactionHelper.setTransactionRollbackOnly();
+            }
+            throw e;
+        } finally {
+            if (tx) {
+                TransactionHelper.commitOrRollbackTransaction();
+            }
+        }
     }
 
 }
