@@ -43,20 +43,20 @@
     <c:set var="maxSearchResults" value="#{nxu:test(!empty widget.properties.userSuggestionMaxSearchResults, widget.properties.userSuggestionMaxSearchResults, 0)}" />
     <c:set var="hideVirtualGroups" value="#{nxu:test(!empty widget.properties.hideVirtualGroups, widget.properties.hideVirtualGroups, false)}" />
 
-    <h:outputText value="#{messages['label.security.searchUsers']}"
-      rendered="#{searchType =='USER_TYPE'}"
-      class="rightsAddLabel" />
-    <h:outputText value="#{messages['label.security.searchGroups']}"
-      rendered="#{searchType =='GROUP_TYPE'}"
-      class="rightsAddLabel" />
-    <h:outputText value="#{messages['label.security.search']}"
-      rendered="#{searchType =='USER_GROUP_TYPE' or empty searchType}"
-      class="rightsAddLabel" />
-
     <a4j:region renderRegionOnly="true" id="#{widget.id}_ajax_region">
       <h:panelGrid id="#{widget.id}_panel" columns="2">
 
         <h:panelGroup id="#{widget.id}_panelGroup">
+          <h:outputText value="#{messages['label.security.searchUsers']}"
+            rendered="#{searchType =='USER_TYPE'}"
+            class="rightsAddLabel" />
+          <h:outputText value="#{messages['label.security.searchGroups']}"
+            rendered="#{searchType =='GROUP_TYPE'}"
+            class="rightsAddLabel" />
+          <h:outputText value="#{messages['label.security.search']}"
+            rendered="#{searchType =='USER_GROUP_TYPE' or empty searchType}"
+            class="rightsAddLabel" /><br/>
+
           <span id="#{widget.id}_suggestDiv">
             <h:inputText id="#{widget.id}_suggest"
               onkeydown="if (event.keyCode == 13) {return false;}" />
@@ -106,6 +106,18 @@
           <br />
           <h:outputText value="#{messages['label.suggestion.help.minChars.start']} " />
           <h:outputText value="#{minChars} #{messages['label.suggestion.help.minChars.end']}" />
+          <br/><br/>
+          <h:outputText value="#{messages['label.suggestion.custom.user']}" class="rightsAddLabel" /><br/>
+          <a4j:form id="#{widget.id}_userInputForm" ajaxSubmit="true">
+            <h:inputText value="#{shibbUserSuggestionWithGroupTree.shibbUserName}" id="#{widget.id}_sibbInput"/>
+            <a4j:commandButton value="#{messages['label.suggestion.custom.addUser']}"
+                             reRender="#{widget.id}_listRegion, #{widget.id}_userInputForm" id="#{widget.id}_sibbName">
+              <f:setPropertyActionListener value="#{shibbUserSuggestionWithGroupTree.shibbUserName}"
+                        target="#{suggestionActions.selectedValue}" />
+              <nxu:actionListenerMethod value="#{suggestionActions.addBoundSelectionToList}" />
+                      <f:param name="suggestionSelectionListId" value="#{widget.id}_list" />
+            </a4j:commandButton>
+          </a4j:form>
         </h:panelGroup>
 
         <h:panelGroup>
@@ -145,6 +157,7 @@
         </h:panelGroup>
 
         <h:panelGroup>
+          <h:outputText value="#{messages['label.security.searchGroups']}" class="rightsAddLabel" /><br/>
         <rich:tree id="#{widget.id}_tree">
           <rich:recursiveTreeNodesAdaptor
             roots="#{shibbUserSuggestionWithGroupTree.treeRoot}"

@@ -24,6 +24,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import javax.faces.event.ActionEvent;
+
+import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
@@ -33,6 +36,7 @@ import org.nuxeo.ecm.directory.SizeLimitExceededException;
 import org.nuxeo.ecm.platform.shibboleth.ShibbolethGroupHelper;
 import org.nuxeo.ecm.platform.shibboleth.web.tree.UserTreeNode;
 import org.nuxeo.ecm.platform.shibboleth.web.tree.UserTreeNodeHelper;
+import org.nuxeo.ecm.platform.ui.web.util.SuggestionActionsBean;
 import org.nuxeo.ecm.platform.usermanager.UserManagerImpl;
 import org.nuxeo.ecm.webapp.security.UserSuggestionActionsBean;
 import org.richfaces.component.UITree;
@@ -52,9 +56,14 @@ import static org.jboss.seam.annotations.Install.FRAMEWORK;
 public class UserSuggestionWithGroupTreeActionsBean extends
         UserSuggestionActionsBean {
 
+    @In(create = true)
+    SuggestionActionsBean suggestionActions;
+
     private static final long serialVersionUID = -1L;
 
     private List<UserTreeNode> treeRoot;
+
+    protected String shibbUserName = "";
 
     /**
      * Build the tree with all groups (not virtual) / shibbGroup and merge them
@@ -112,6 +121,21 @@ public class UserSuggestionWithGroupTreeActionsBean extends
         }
     }
 
+    @Override
+    public Map<String, Object> getUserInfo(String id) throws ClientException {
+        Map<String, Object> userInfo = super.getUserInfo(id);
+        if (userInfo.get(ENTRY_KEY_NAME) == null) {
+            DocumentModel doc = userManager.getBareUserModel();
+            doc.setProperty(userManager.getUserSchemaName(), userManager.getUserIdField(), id);
+            userInfo.put(ENTRY_KEY_NAME, doc);
+        }
+        return userInfo;
+    }
+
+    public void forceShibUserValue(String newValue) {
+        setShibbUserName(newValue);
+    }
+
     /**
      * Check if the node is open or not
      */
@@ -128,5 +152,13 @@ public class UserSuggestionWithGroupTreeActionsBean extends
             buildTree();
         }
         return treeRoot;
+    }
+
+    public String getShibbUserName() {
+        return shibbUserName;
+    }
+
+    public void setShibbUserName(String shibbUserName) {
+        this.shibbUserName = shibbUserName;
     }
 }
