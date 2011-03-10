@@ -38,6 +38,7 @@ import org.nuxeo.ecm.automation.core.operations.blob.CreateZip;
 import org.nuxeo.ecm.automation.core.operations.blob.GetDocumentBlob;
 import org.nuxeo.ecm.automation.core.operations.blob.GetDocumentBlobs;
 import org.nuxeo.ecm.automation.core.operations.blob.PostBlob;
+import org.nuxeo.ecm.automation.core.operations.blob.SetBlobFileName;
 import org.nuxeo.ecm.automation.core.operations.document.CheckInDocument;
 import org.nuxeo.ecm.automation.core.operations.document.CheckOutDocument;
 import org.nuxeo.ecm.automation.core.operations.document.CopyDocument;
