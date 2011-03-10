@@ -368,6 +368,7 @@ public class ConfigurationGenerator {
     protected void generateFiles() throws ConfigurationException {
         try {
             serverConfigurator.parseAndCopy(userConfig);
+            serverConfigurator.dumpProperties(userConfig);
             log.info("Configuration files generated.");
             // keep true or false, switch once to false
             if (onceGeneration) {
