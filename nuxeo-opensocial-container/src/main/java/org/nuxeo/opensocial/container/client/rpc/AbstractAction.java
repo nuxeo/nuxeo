@@ -28,45 +28,33 @@ import net.customware.gwt.dispatch.shared.Result;
  */
 public abstract class AbstractAction<T extends Result> implements Action<T> {
 
-    protected String spaceId;
-
-    protected String repositoryName;
-
-    protected String documentContextId;
-
-    protected String userLanguage;
-
-    protected Map<String, String> parameters;
+    protected ContainerContext containerContext;
 
     public AbstractAction(ContainerContext containerContext) {
-        this.repositoryName = containerContext.getRepositoryName();
-        this.spaceId = containerContext.getSpaceId();
-        this.documentContextId = containerContext.getDocumentContextId();
-        this.userLanguage = containerContext.getUserLanguage();
-        this.parameters = containerContext.getParameters();
+        this.containerContext = containerContext;
     }
 
     protected AbstractAction() {
     }
 
     public String getSpaceId() {
-        return spaceId;
+        return containerContext.getSpaceId();
     }
 
     public String getRepositoryName() {
-        return repositoryName;
+        return containerContext.getRepositoryName();
     }
 
     public String getDocumentContextId() {
-        return documentContextId;
+        return containerContext.getDocumentContextId();
     }
 
     public String getUserLanguage() {
-        return userLanguage;
+        return containerContext.getUserLanguage();
     }
 
     public Map<String, String> getParameters() {
-        return parameters;
+        return containerContext.getParameters();
     }
 
 }

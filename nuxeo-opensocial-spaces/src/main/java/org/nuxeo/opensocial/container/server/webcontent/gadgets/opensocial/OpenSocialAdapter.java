@@ -130,21 +130,20 @@ public class OpenSocialAdapter extends
     protected String getBaseUrl(boolean relativeUrl) {
         boolean gadgetsEmbeddedServer = Boolean.valueOf(Framework.getProperty(
                 OPENSOCIAL_GADGETS_EMBEDDED_SERVER, "true"));
+        StringBuilder sb = new StringBuilder();
         if (gadgetsEmbeddedServer) {
-            StringBuilder sb = new StringBuilder();
             if (!relativeUrl) {
                 sb.append(Framework.getProperty(NUXEO_LOOPBACK_URL));
+            } else {
+                sb.append(VirtualHostHelper.getContextPathProperty());
             }
-            return sb.toString();
         } else {
-            StringBuilder sb = new StringBuilder();
             sb.append(HTTP);
             sb.append(Framework.getProperty(OPENSOCIAL_GADGETS_HOST));
             sb.append(HTTP_SEPARATOR);
             sb.append(Framework.getProperty(OPENSOCIAL_GADGETS_PORT));
-            sb.append(VirtualHostHelper.getContextPathProperty());
-            return sb.toString();
         }
+        return sb.toString();
     }
 
     @SuppressWarnings("unchecked")

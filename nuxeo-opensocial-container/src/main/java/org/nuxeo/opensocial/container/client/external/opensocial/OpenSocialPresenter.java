@@ -27,6 +27,8 @@ public class OpenSocialPresenter extends
 
     public static final String OS_PERMISSIONS_ATTRIBUTE = "permission";
 
+    public static final String OS_PARENT_ATTRIBUTE = "parent";
+
     public interface Display extends WidgetDisplay, HasId {
         void setUrl(String url);
 
@@ -55,7 +57,7 @@ public class OpenSocialPresenter extends
 
         setLanguage();
         setPermissions();
-        setBaseURL();
+        setParent();
 
         display.setUrl(model.getData().getFrameUrl());
 
@@ -98,21 +100,11 @@ public class OpenSocialPresenter extends
                         view));
     }
 
-    protected void setBaseURL() {
-        String url = model.getData().getFrameUrl();
-        if (!url.startsWith("http")) {
-            String baseUrl = getBaseUrl();
-            if (baseUrl.endsWith("/")) {
-                baseUrl = baseUrl.substring(0, baseUrl.length() - 1);
-            }
-            url = baseUrl + url;
-            model.getData().setFrameUrl(url);
-        }
+    public void setParent() {
+        model.getData().setFrameUrl(
+                changeParam(model.getData().getFrameUrl(), OS_PARENT_ATTRIBUTE,
+                        ContainerConfiguration.getBaseUrl()));
     }
-
-    private native String getBaseUrl() /*-{
-        return $wnd.nuxeo.baseURL;
-    }-*/;
 
     // Make this method static in order to be easily tested !
     public static String changeParam(String url, String name, String value) {
@@ -146,7 +138,7 @@ public class OpenSocialPresenter extends
     public void refreshDisplay() {
         setLanguage();
         setPermissions();
-        setBaseURL();
+        setParent();
         display.setUrl(model.getData().getFrameUrl());
     }
 

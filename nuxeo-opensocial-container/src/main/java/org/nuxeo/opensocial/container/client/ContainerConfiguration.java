@@ -45,6 +45,10 @@ public class ContainerConfiguration {
         return $wnd.nuxeo.container.spaceName;
     }-*/;
 
+    public static native String getBaseUrl() /*-{
+        return $wnd.nuxeo.baseURL;
+    }-*/;
+
     public static native boolean showPreferencesAfterAddingGadget() /*-{
         return $wnd.nuxeo.container.parameters.showPreferencesAfterAddingGadget;
     }-*/;

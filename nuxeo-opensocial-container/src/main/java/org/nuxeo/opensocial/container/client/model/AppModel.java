@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import net.customware.gwt.presenter.client.EventBus;
+
 import org.nuxeo.opensocial.container.client.AppErrorMessages;
 import org.nuxeo.opensocial.container.client.ContainerConfiguration;
 import org.nuxeo.opensocial.container.client.event.priv.app.SendMessageEvent;
@@ -61,8 +63,6 @@ import org.nuxeo.opensocial.container.shared.layout.impl.YUIUnitImpl;
 import org.nuxeo.opensocial.container.shared.webcontent.WebContentData;
 
 import com.google.inject.Inject;
-
-import net.customware.gwt.presenter.client.EventBus;
 
 /**
  * @author Stéphane Fourrier
