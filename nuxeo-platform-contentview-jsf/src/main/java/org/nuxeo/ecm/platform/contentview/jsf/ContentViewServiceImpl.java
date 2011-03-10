@@ -90,6 +90,10 @@ public class ContentViewServiceImpl extends DefaultComponent implements
         if (showPageSizeSelector == null) {
             showPageSizeSelector = Boolean.FALSE;
         }
+        Boolean showRefreshPage = desc.getShowRefreshPage();
+        if (showRefreshPage == null) {
+            showRefreshPage = Boolean.TRUE;
+        }
 
         String[] queryParams = null;
         String searchDocumentType = null;
@@ -150,7 +154,7 @@ public class ContentViewServiceImpl extends DefaultComponent implements
                 allQueryParams.toArray(new String[] {}), searchDocBinding,
                 searchDocumentType, desc.getResultColumnsBinding(),
                 sortInfosBinding, pageSizeBinding, showTitle.booleanValue(),
-                showPageSizeSelector.booleanValue(), desc.getEmptySentence(),
+                showPageSizeSelector.booleanValue(), showRefreshPage.booleanValue(),desc.getEmptySentence(),
                 translateEmptySentence.booleanValue());
 
         if (searchDocBinding == null) {
@@ -405,6 +409,11 @@ public class ContentViewServiceImpl extends DefaultComponent implements
         Boolean showPageSizeSelector = newDesc.getShowPageSizeSelector();
         if (showPageSizeSelector != null) {
             oldDesc.showPageSizeSelector = showPageSizeSelector;
+        }
+
+        Boolean showRefreshPage = newDesc.getShowRefreshPage();
+        if (showRefreshPage != null) {
+            oldDesc.showRefreshPage = showRefreshPage;
         }
 
         return oldDesc;

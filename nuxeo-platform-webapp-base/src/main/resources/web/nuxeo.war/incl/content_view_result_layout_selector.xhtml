@@ -32,7 +32,9 @@ Needed parameters:
         </c:forEach>
       </ul>
     </c:if>
+   
     <ul class="layoutViewMode" style="display:inline;">
+     <c:if test="#{contentView.showRefreshPage}">
       <li>
         <h:commandLink action="#{contentView.refreshAndRewindPageProvider()}">
           <h:graphicImage value="/img/refresh.png"
@@ -40,6 +42,7 @@ Needed parameters:
             title="#{messages['label.refresh']}" />
         </h:commandLink>
       </li>
+     </c:if> 
       <nxu:set var="contentViewState"
         value="#{contentViewRestActions.getContentViewState(contentView)}">
         <c:if test="#{contentView.currentResultLayout.showCSVExport}">

@@ -271,6 +271,14 @@ public interface ContentView extends Serializable {
     boolean getShowPageSizeSelector();
 
     /**
+     * Returns true is the refresh page icon should be displayed.
+     *
+     * @since 5.4.1
+     */
+    boolean getShowRefreshPage();
+
+
+    /**
      * Returns the search document model as set on the content view.
      * <p>
      * If this document is null and a EL binding has been set on the content

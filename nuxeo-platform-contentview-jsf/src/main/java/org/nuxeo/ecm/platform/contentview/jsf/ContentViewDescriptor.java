@@ -109,6 +109,9 @@ public class ContentViewDescriptor {
     @XNode("showPageSizeSelector")
     Boolean showPageSizeSelector = Boolean.TRUE;
 
+    @XNode("showRefreshPage")
+    Boolean showRefreshPage = Boolean.TRUE;
+
     @XNodeList(value = "refresh/event", type = ArrayList.class, componentType = String.class)
     List<String> refreshEventNames;
 
@@ -215,6 +218,13 @@ public class ContentViewDescriptor {
      */
     public Boolean getShowPageSizeSelector() {
         return showPageSizeSelector;
+    }
+
+    /**
+     * @since 5.4.1
+     */
+    public Boolean getShowRefreshPage() {
+        return showRefreshPage;
     }
 
     /**

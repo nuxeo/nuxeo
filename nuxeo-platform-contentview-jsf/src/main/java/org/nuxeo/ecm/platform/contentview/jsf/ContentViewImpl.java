@@ -96,6 +96,8 @@ public class ContentViewImpl implements ContentView {
 
     protected boolean showPageSizeSelector;
 
+    protected boolean showRefreshPage;
+
     protected Long currentPageSize;
 
     protected String[] queryParameters;
@@ -121,7 +123,7 @@ public class ContentViewImpl implements ContentView {
             String[] queryParameters, String searchDocumentModelBinding,
             String searchDocumentModelType, String resultColumnsBinding,
             String sortInfosBinding, String pageSizeBinding, boolean showTitle,
-            boolean showPageSizeSelector, String emptySentence,
+            boolean showPageSizeSelector, boolean showRefreshPage, String emptySentence,
             boolean translateEmptySentence) {
         this.name = name;
         this.title = title;
@@ -146,6 +148,7 @@ public class ContentViewImpl implements ContentView {
         this.sortInfosBinding = sortInfosBinding;
         this.showTitle = showTitle;
         this.showPageSizeSelector = showPageSizeSelector;
+        this.showRefreshPage = showRefreshPage;
         this.emptySentence = emptySentence;
         this.translateEmptySentence = translateEmptySentence;
     }
@@ -598,6 +601,11 @@ public class ContentViewImpl implements ContentView {
     @Override
     public boolean getShowPageSizeSelector() {
         return showPageSizeSelector;
+    }
+
+    @Override
+    public boolean getShowRefreshPage(){
+        return showRefreshPage;
     }
 
     @Override
