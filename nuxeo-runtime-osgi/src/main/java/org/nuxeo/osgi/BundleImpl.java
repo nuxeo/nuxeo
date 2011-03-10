@@ -37,7 +37,7 @@ import org.osgi.framework.Version;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public class BundleImpl implements Bundle {
 
@@ -90,10 +90,12 @@ public class BundleImpl implements Bundle {
     public BundleContext getBundleContext() {
         // ensure BundleContext is not visible in RESOLVED state - to ensure
         // OSGi compat. - in our component activate method.
-        if (state == RESOLVED) {
-            throw new IllegalStateException(
-                    "You cannot use a BundleContext when in RESOLVED state. Do not use this in your component activate method!");
-        }
+        // TODO NXP-6035: disable for now the check until a better compatibility
+        // mode is implemented.
+        // if (state == RESOLVED) {
+        // throw new IllegalStateException(
+        // "You cannot use a BundleContext when in RESOLVED state. Do not use this in your component activate method!");
+        // }
         return context;
     }
 
