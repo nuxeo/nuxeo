@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.core.rest.security;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 

@@ -23,7 +23,6 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
-import org.nuxeo.webengine.sites.utils.SiteConstants;
 
 import static org.nuxeo.webengine.sites.utils.SiteConstants.WEBCONTAINER_URL;
 

@@ -20,9 +20,7 @@
 package org.nuxeo.ecm.platform.userworkspace.ejb;
 
 import javax.annotation.PostConstruct;
-import javax.ejb.Local;
 import javax.ejb.PostActivate;
-import javax.ejb.Remote;
 import javax.ejb.Stateless;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -32,7 +30,6 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author btatar
- *
  */
 @Stateless
 public class UserWorkspaceManagerBean implements UserWorkspaceService {
@@ -50,7 +47,6 @@ public class UserWorkspaceManagerBean implements UserWorkspaceService {
 
     public DocumentModel getCurrentUserPersonalWorkspace(String userName,
             DocumentModel currentDocument) throws ClientException {
-
         return userWorkspaceService.getCurrentUserPersonalWorkspace(userName,
                 currentDocument);
     }

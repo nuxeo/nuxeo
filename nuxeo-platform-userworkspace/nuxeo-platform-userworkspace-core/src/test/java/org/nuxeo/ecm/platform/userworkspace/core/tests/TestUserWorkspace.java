@@ -25,7 +25,6 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
-import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
@@ -38,7 +37,6 @@ public class TestUserWorkspace extends SQLRepositoryTestCase {
     public TestUserWorkspace() {
         super("");
     }
-
 
     @Override
     public void setUp() throws Exception {
@@ -73,7 +71,6 @@ public class TestUserWorkspace extends SQLRepositoryTestCase {
     }
 
     public void testMultiDomains() throws Exception {
-
         ACE ace = new ACE("Everyone", "Read", true);
         ACL acl = new ACLImpl();
         acl.add(ace);
@@ -84,7 +81,6 @@ public class TestUserWorkspace extends SQLRepositoryTestCase {
         ws1 = session.createDocument(ws1);
         ws1.setACP(acp, true);
         ws1 = session.saveDocument(ws1);
-
 
         DocumentModel alternate = session.createDocumentModel("/", "alternate-domain", "Domain");
         alternate = session.createDocument(alternate);
@@ -127,11 +123,8 @@ public class TestUserWorkspace extends SQLRepositoryTestCase {
         assertTrue(uw.getPathAsString().startsWith("/alternate-domain"));
     }
 
-
     public void testMultiDomainsCompat() throws Exception {
-
         deployContrib("org.nuxeo.ecm.platform.userworkspace.core", "OSGI-INF/compatUserWorkspaceImpl.xml");
-
 
         ACE ace = new ACE("Everyone", "Read", true);
         ACL acl = new ACLImpl();

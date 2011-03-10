@@ -37,7 +37,6 @@ public class Guard {
         this.expr = ExpressionFactory.createExpression(expr);
     }
 
-    @SuppressWarnings("unchecked")
     public boolean evaluate(final Map<String, Object> map) throws Exception {
         map.put("Version", new VersionHelper());
         map.put("Platform", new PlatformHelper());

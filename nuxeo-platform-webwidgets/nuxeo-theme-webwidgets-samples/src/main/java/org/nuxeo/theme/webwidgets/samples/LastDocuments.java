@@ -32,20 +32,14 @@ import net.sf.json.JSONObject;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.platform.ui.web.rest.api.URLPolicyService;
-import org.nuxeo.ecm.platform.url.DocumentViewImpl;
-import org.nuxeo.ecm.platform.url.api.DocumentView;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
-import org.nuxeo.runtime.api.Framework;
 
 /**
- *
  * Provide JSON data for the WebWidget "Last Created Documents"
  *
  * @author <a href="mailto:nulrich@nuxeo.com">Nicolas Ulrich</a>
- *
  */
 @WebObject(type = "lastdocuments")
 @Produces("text/html")

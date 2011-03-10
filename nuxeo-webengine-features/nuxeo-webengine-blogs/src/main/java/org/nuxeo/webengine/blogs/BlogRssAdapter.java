@@ -21,13 +21,12 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.webengine.model.Template;
 import org.nuxeo.ecm.webengine.model.WebAdapter;
 import org.nuxeo.webengine.sites.RssAdapter;
 
 /**
- * Adapter used as a rss feed. The version of the RSS format is 2.0.
+ * Adapter used as a RSS feed. The version of the RSS format is 2.0.
  *
  * @author mcedica
  */

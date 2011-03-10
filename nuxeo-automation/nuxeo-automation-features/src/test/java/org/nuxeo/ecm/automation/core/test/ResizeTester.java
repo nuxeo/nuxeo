@@ -1,6 +1,5 @@
 package org.nuxeo.ecm.automation.core.test;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -8,7 +7,6 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mvel2.ast.AssertNode;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
@@ -27,7 +25,13 @@ import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.features",  "org.nuxeo.ecm.platform.query.api", "org.nuxeo.ecm.platform.picture.api", "org.nuxeo.ecm.platform.commandline.executor", "org.nuxeo.ecm.platform.picture.core", "org.nuxeo.ecm.platform.picture.convert" })
+@Deploy({ "org.nuxeo.ecm.automation.core",
+	    "org.nuxeo.ecm.automation.features",
+		"org.nuxeo.ecm.platform.query.api",
+		"org.nuxeo.ecm.platform.picture.api",
+		"org.nuxeo.ecm.platform.commandline.executor",
+		"org.nuxeo.ecm.platform.picture.core",
+		"org.nuxeo.ecm.platform.picture.convert" })
 public class ResizeTester {
 
     @Inject
@@ -38,7 +42,6 @@ public class ResizeTester {
 
     @Test
     public void testResizer1() throws Exception {
-
         Blob source = new FileBlob(FileUtils.getResourceFileFromContext("test-data/sample.jpeg"));
 
         OperationContext ctx = new OperationContext(session);
@@ -57,4 +60,5 @@ public class ResizeTester {
         Assert.assertNotNull(result);
         //FileUtils.copyToFile(result.getStream(), new File("/tmp/convert.test"));
     }
+
 }

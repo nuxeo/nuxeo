@@ -18,8 +18,6 @@ package org.nuxeo.webengine.sites.utils;
 
 import java.util.regex.Pattern;
 
-import org.nuxeo.ecm.core.api.LifeCycleConstants;
-
 /**
  * Utility class used for registering constants.
  */
