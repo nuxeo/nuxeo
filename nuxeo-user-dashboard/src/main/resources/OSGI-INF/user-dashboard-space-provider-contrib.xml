@@ -6,7 +6,7 @@
     point="spaceProviders">
     <spaceProvider name="userDashboardSpaceProvider">
       <class>
-        org.nuxeo.opensocial.dashboard.DashboardSpaceProvider
+        org.nuxeo.ecm.user.center.dashboard.UserDashboardSpaceProvider
       </class>
     </spaceProvider>
   </extension>

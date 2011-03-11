@@ -3,6 +3,8 @@
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="actions">
 
+    <action id="user_dashboard" enabled="false" />
+
     <action id="Dashboard" link="user_center_fragment.xhtml"
       label="user.center.dashboard"
       order="10">
