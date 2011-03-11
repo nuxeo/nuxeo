@@ -67,7 +67,9 @@ public class SetupWizardActionBean implements Serializable {
             "mailservice.password", "mail.store.protocol",
             "mail.transport.protocol", "mail.pop3.host", "mail.debug",
             "mail.smtp.host", "mail.smtp.port", "mail.smtp.auth",
-            "mail.smtp.username", "mail.smtp.password", "mail.from" };
+            "mail.smtp.username", "mail.smtp.password", "mail.from",
+            "nuxeo.http.proxy.host", "nuxeo.http.proxy.port",
+            "nuxeo.http.proxy.login", "nuxeo.http.proxy.password" };
 
     @In(create = true, required = false)
     protected FacesMessages facesMessages;
@@ -76,7 +78,13 @@ public class SetupWizardActionBean implements Serializable {
 
     protected Map<String, String> advancedParameters = null;
 
-    @Factory(value = "advancedParams", scope = ScopeType.STATELESS)
+    protected final static String PROXY_NONE = "none";
+    protected final static String PROXY_ANONYMOUS = "anonymous";
+    protected final static String PROXY_AUTHENTICATED = "authenticated";
+
+    protected String proxyType = PROXY_NONE;
+
+    @Factory(value = "advancedParams", scope = ScopeType.EVENT)
     public Map<String, String> getAdvancedParameters() {
         if (advancedParameters == null) {
             readParameters();
@@ -128,7 +136,7 @@ public class SetupWizardActionBean implements Serializable {
         return needsRestart;
     }
 
-    @Factory(value = "setupParams", scope = ScopeType.STATELESS)
+    @Factory(value = "setupParams", scope = ScopeType.EVENT)
     public Map<String, String> getParameters() {
         if (parameters == null) {
             readParameters();
@@ -158,6 +166,14 @@ public class SetupWizardActionBean implements Serializable {
         for (String keyParam : managedKeyParameters) {
             setParameter(keyParam);
         }
+
+        proxyType = PROXY_NONE;
+        if (parameters.get("nuxeo.http.proxy.host")!=null) {
+            proxyType = PROXY_ANONYMOUS;
+            if (parameters.get("nuxeo.http.proxy.login")!=null) {
+                proxyType = PROXY_AUTHENTICATED;
+            }
+        }
     }
 
     /**
@@ -185,6 +201,16 @@ public class SetupWizardActionBean implements Serializable {
         advancedParameters.put(ConfigurationGenerator.PARAM_TEMPLATES_NAME,
                 configGenerator.rebuildTemplatesStr(currentDB));
         Map<String, String> customParameters = new HashMap<String, String>();
+
+        // manage httpProxy settings (setting null is not accepted)
+        if (!PROXY_AUTHENTICATED.equals(proxyType)) {
+            parameters.put("nuxeo.http.proxy.login", "");
+            parameters.put("nuxeo.http.proxy.password", "");
+        }
+        if (PROXY_NONE.equals(proxyType)) {
+            parameters.put("nuxeo.http.proxy.host", "");
+            parameters.put("nuxeo.http.proxy.port", "");
+        }
         customParameters.putAll(parameters);
         customParameters.putAll(advancedParameters);
         try {
@@ -196,8 +222,8 @@ public class SetupWizardActionBean implements Serializable {
 
     public void resetParameters() {
         readParameters();
-        Contexts.getPageContext().remove("setupParams");
-        Contexts.getPageContext().remove("advancedParams");
+        Contexts.getEventContext().remove("setupParams");
+        Contexts.getEventContext().remove("advancedParams");
         Contexts.getEventContext().remove("setupRequiresRestart");
     }
 
@@ -213,10 +239,33 @@ public class SetupWizardActionBean implements Serializable {
         }
         configGenerator.changeDBTemplate(dbTemplate);
         setParameters();
-        Contexts.getPageContext().remove("setupParams");
-        Contexts.getPageContext().remove("advancedParams");
+        Contexts.getEventContext().remove("setupParams");
+        Contexts.getEventContext().remove("advancedParams");
         FacesContext context = FacesContext.getCurrentInstance();
         context.renderResponse();
     }
+
+    public void proxyChange(ActionEvent event) {
+        UIComponent select = event.getComponent().getParent();
+        if (select instanceof ValueHolder) {
+            proxyType = (String) ((ValueHolder) select).getValue();
+        } else {
+            log.error("Bad component returned " + select);
+            throw new AbortProcessingException("Bad component returned "
+                    + select);
+        }
+        Contexts.getEventContext().remove("setupParams");
+        FacesContext context = FacesContext.getCurrentInstance();
+        context.renderResponse();
+    }
+
+    public String getProxyType() {
+        return proxyType;
+    }
+
+    public void setProxyType(String proxyType) {
+        this.proxyType = proxyType;
+    }
+
 
 }
