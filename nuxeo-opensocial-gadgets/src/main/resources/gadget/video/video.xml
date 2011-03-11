@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Module>
-  <ModulePrefs title="__UP_title__" category="tools"
+  <ModulePrefs title="Video" category="tools"
     render_inline="required" scrolling="false" directory_title="Video"
     singleton="false" author="Guillaume Cusnieux" author_email="gcusnieux@leroymerlin.fr"
     author_affiliation="Leroy Merlin" author_location="Lezennes, France">
