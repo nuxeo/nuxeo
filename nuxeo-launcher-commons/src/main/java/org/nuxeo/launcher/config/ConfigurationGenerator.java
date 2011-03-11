@@ -215,6 +215,13 @@ public class ConfigurationGenerator {
     }
 
     /**
+     * @since 5.4.1
+     */
+    public final ServerConfigurator getServerConfigurator() {
+        return serverConfigurator;
+    }
+
+    /**
      * Runs the configuration files generation.
      */
     public void run() throws ConfigurationException {
