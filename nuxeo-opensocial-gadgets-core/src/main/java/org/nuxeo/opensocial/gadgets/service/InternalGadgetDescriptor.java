@@ -144,8 +144,7 @@ public class InternalGadgetDescriptor extends BaseGadgetDescriptor implements
     }
 
     public String getIconUrl() {
-        StringBuilder sb = new StringBuilder(
-                Framework.getProperty(OPENSOCIAL_GADGETS_PATH));
+        StringBuilder sb = getUrlPrefix();
         sb.append(getMountPoint());
         sb.append(URL_SEPARATOR);
         sb.append(icon);
