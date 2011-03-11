@@ -384,20 +384,18 @@ public class RouterServlet extends HttpServlet {
 
         Context ctx = Context.instance(req);
         ParamCollector collector = ctx.getCollector();
-        String proxyType = collector.getConfigurationParamValue("org.nuxeo.connect.proxy.type");
+        String proxyType = collector.getConfigurationParamValue("nuxeo.http.proxy.type");
         if ("none".equals(proxyType)) {
-            collector.addConfigurationParam("org.nuxeo.connect.proxy.type",
+            collector.addConfigurationParam("nuxeo.http.proxy.type",
                     null);
         } else {
-            if (!NumberValidator.validate(collector.getConfigurationParam("org.nuxeo.connect.proxy.port"))) {
-                ctx.trackError("org.nuxeo.connect.proxy.port",
-                        "error.org.nuxeo.connect.proxy.port");
+            if (!NumberValidator.validate(collector.getConfigurationParam("nuxeo.http.proxy.port"))) {
+                ctx.trackError("nuxeo.http.proxy.port",
+                        "error.nuxeo.http.proxy.port");
             }
-            if (collector.getConfigurationParam("org.nuxeo.connect.proxy.host").isEmpty()) {
-
-            }
-            if (collector.getConfigurationParam("org.nuxeo.connect.proxy.port").isEmpty()) {
-
+            if (collector.getConfigurationParam("nuxeo.http.proxy.host").isEmpty()) {
+                ctx.trackError("nuxeo.http.proxy.port",
+                   "error.nuxeo.http.proxy.emptyHost");
             }
         }
 
