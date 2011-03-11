@@ -17,6 +17,8 @@
 
 package org.nuxeo.opensocial.webengine.gadgets.render;
 
+import static org.nuxeo.launcher.config.Environment.NUXEO_LOOPBACK_URL;
+
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.StringWriter;
@@ -159,7 +161,7 @@ public class GadgetSpecView {
             // we are called by local Nuxeo-Shindig
             // so we don't know the client URL, but a relative URL is ok
             input.put("serverSideBaseUrl",
-                    Framework.getProperty("org.nuxeo.runtime.loopback.url")
+                    Framework.getProperty(NUXEO_LOOPBACK_URL)
                             + "/");
             input.put("clientSideBaseUrl",
                     VirtualHostHelper.getContextPathProperty() + "/");

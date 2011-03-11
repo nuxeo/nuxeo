@@ -41,6 +41,10 @@
 
   <dependencies>
     <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-launcher-commons</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.nuxeo.ecm.opensocial</groupId>
       <artifactId>nuxeo-opensocial-gadgets-core</artifactId>
     </dependency>
@@ -73,7 +77,7 @@
     <dependency>
       <groupId>javax.ws.rs</groupId>
       <artifactId>jsr311-api</artifactId>
-    </dependency>    
+    </dependency>
 
   </dependencies>
 </project>
