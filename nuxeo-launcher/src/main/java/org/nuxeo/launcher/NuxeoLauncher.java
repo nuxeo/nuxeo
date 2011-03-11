@@ -932,7 +932,7 @@ public abstract class NuxeoLauncher {
         log.error("\t\t nogui\t\t\tWindows only. Deactivate gui option which is set by default under Windows.");
         log.error("\n\t Commands:");
         log.error("\t\t help\t\tPrint this message.");
-        log.error("\t\t start\t\tStart Nuxeo server in background, waiting for effective start. Useful for batch executions requiring the server being immediatly available after the script returned.");
+        log.error("\t\t start\t\tStart Nuxeo server in background, waiting for effective start. Useful for batch executions requiring the server being immediately available after the script returned.");
         log.error("\t\t stop\t\tStop any Nuxeo server started with the same nuxeo.conf file.");
         log.error("\t\t restart\tRestart Nuxeo server.");
         log.error("\t\t configure\tConfigure Nuxeo server with parameters from nuxeo.conf.");
