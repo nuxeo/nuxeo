@@ -119,7 +119,7 @@ public class SimpleNavigationHandler {
         }
 
         if (currentPage==null) {
-            log.warn("No Page found for action" + action);
+            log.warn("No Page found for action " + action);
             return null;
         }
 

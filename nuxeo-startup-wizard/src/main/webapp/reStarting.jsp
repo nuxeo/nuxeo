@@ -12,9 +12,12 @@
 %>
 
 <script type="text/javascript">
+setTimeout(startPolling, 10000);
+function startPolling() {
     var intId = setInterval(function isNuxeoReady() {
         $.get("<%=contextPath%>/login.jsp", function(data, textStatus) {
             window.location.href='<%=contextPath%>/';
         });
-    }, 1000);
+    }, 2000);
+}
 </script>
