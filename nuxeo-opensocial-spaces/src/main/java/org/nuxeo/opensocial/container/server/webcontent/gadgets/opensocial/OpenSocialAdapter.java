@@ -142,6 +142,8 @@ public class OpenSocialAdapter extends
             sb.append(Framework.getProperty(OPENSOCIAL_GADGETS_HOST));
             sb.append(HTTP_SEPARATOR);
             sb.append(Framework.getProperty(OPENSOCIAL_GADGETS_PORT));
+            sb.append(SEPARATOR);
+            sb.append(VirtualHostHelper.getContextPathProperty());
         }
         return sb.toString();
     }
