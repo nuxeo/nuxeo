@@ -333,6 +333,9 @@ nxthemes css is not used in login.jsp */
                     <option value="it" <%="it".equals(selectedLanguage)?"selected":""%>>
                       Italiano
                     </option>
+                    <option value="el_GR" <%="el_GR".equals(selectedLanguage)?"selected":""%>>
+                      Greek (Greece)
+                    </option>
                     <option value="es" <%="es".equals(selectedLanguage)?"selected":""%>>
                       Espa&ntilde;ol
                     </option>
