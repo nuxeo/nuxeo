@@ -3,7 +3,7 @@
 <h1><fmt:message key="label.proxySettings" /></h1>
 
 <%
-String proxyType = collector.getConfigurationParam("org.nuxeo.connect.proxy.type");
+String proxyType = collector.getConfigurationParam("nuxeo.http.proxy.type");
 String proxySettingStyle="";
 String proxyLoginStyle="display:none";
 if (proxyType==null || proxyType.equals("")) {
@@ -50,9 +50,9 @@ function updateProxySettings() {
 <%@ include file="includes/feedback.jsp" %>
    <table>
     <tr>
-      <td class="labelCell"><fmt:message key="label.org.nuxeo.connect.proxy.type"/></td>
+      <td class="labelCell"><fmt:message key="label.nuxeo.http.proxy.type"/></td>
       <td>
-  <select id="proxyTypeSelector" name="org.nuxeo.connect.proxy.type" onchange="updateProxySettings()">
+  <select id="proxyTypeSelector" name="nuxeo.http.proxy.type" onchange="updateProxySettings()">
      <option
      <%if ("none".equals(proxyType) || "".equals(proxyType) ){%>
      selected
@@ -75,12 +75,12 @@ function updateProxySettings() {
   <div id="proxySettings" style="<%=proxySettingStyle%>">
   <table>
     <tr>
-      <td class="labelCell"><fmt:message key="label.org.nuxeo.connect.proxy.host"/></td>
-      <td><input type="text" name="org.nuxeo.connect.proxy.host" value="<%=collector.getConfigurationParam("org.nuxeo.connect.proxy.host") %>"/></td>
+      <td class="labelCell"><fmt:message key="label.nuxeo.http.proxy.host"/></td>
+      <td><input type="text" name="nuxeo.http.proxy.host" value="<%=collector.getConfigurationParam("nuxeo.http.proxy.host") %>"/></td>
     </tr>
     <tr>
-      <td class="labelCell"><fmt:message key="label.org.nuxeo.connect.proxy.port"/></td>
-      <td><input type="text" name="org.nuxeo.connect.proxy.port" value="<%=collector.getConfigurationParam("org.nuxeo.connect.proxy.port") %>" size="4" /></td>
+      <td class="labelCell"><fmt:message key="label.nuxeo.http.proxy.port"/></td>
+      <td><input type="text" name="nuxeo.http.proxy.port" value="<%=collector.getConfigurationParam("nuxeo.http.proxy.port") %>" size="4" /></td>
     </tr>
   </table>
   </div>
@@ -88,12 +88,12 @@ function updateProxySettings() {
   <div id="proxyLogin" style="<%=proxyLoginStyle%>">
   <table>
     <tr>
-      <td class="labelCell"><fmt:message key="label.org.nuxeo.connect.proxy.login"/></td>
-      <td><input type="text" name="org.nuxeo.connect.proxy.login" value="<%=collector.getConfigurationParam("org.nuxeo.connect.proxy.login") %>"/></td>
+      <td class="labelCell"><fmt:message key="label.nuxeo.http.proxy.login"/></td>
+      <td><input type="text" name="nuxeo.http.proxy.login" value="<%=collector.getConfigurationParam("nuxeo.http.proxy.login") %>"/></td>
     </tr>
     <tr>
-      <td class="labelCell"><fmt:message key="label.org.nuxeo.connect.proxy.password"/></td>
-      <td><input type="password" name="org.nuxeo.connect.proxy.password" value="<%=collector.getConfigurationParam("org.nuxeo.connect.proxy.password") %>"/></td>
+      <td class="labelCell"><fmt:message key="label.nuxeo.http.proxy.password"/></td>
+      <td><input type="password" name="nuxeo.http.proxy.password" value="<%=collector.getConfigurationParam("nuxeo.http.proxy.password") %>"/></td>
     </tr>
   </table>
   </div>
