@@ -65,7 +65,7 @@ import org.nuxeo.ecm.automation.core.operations.document.FetchDocument;
 import org.nuxeo.ecm.automation.core.operations.document.GetDocumentChildren;
 import org.nuxeo.ecm.automation.core.operations.document.Query;
 import org.nuxeo.ecm.automation.core.operations.document.UpdateDocument;
-import org.nuxeo.ecm.automation.core.operations.document.PageProviderOperation;
+import org.nuxeo.ecm.automation.core.operations.services.PageProviderOperation;
 import org.nuxeo.ecm.automation.server.AutomationServer;
 import org.nuxeo.ecm.webengine.test.WebEngineFeature;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
@@ -485,7 +485,7 @@ public class RestTest {
         PaginableDocuments docs = (PaginableDocuments)
         session.newRequest(PageProviderOperation.ID).set("query",  "SELECT * from Document").set("pageSize", 2).execute();
         assertThat(docs.size(), Matchers.is(2));
-        assertThat(docs.getPageCount(), Matchers.is(7));
+        assertThat(docs.getPageCount(), Matchers.is(8));
         assertThat(docs.getPageSize(), Matchers.is(2));
     }
 
