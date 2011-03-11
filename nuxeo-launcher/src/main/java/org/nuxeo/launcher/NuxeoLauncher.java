@@ -134,6 +134,10 @@ public abstract class NuxeoLauncher {
 
     private boolean reloadConfiguration = false;
 
+    private int status = 4;
+
+    private int errorValue = 0;
+
     public NuxeoLauncher(ConfigurationGenerator configurationGenerator) {
         // super("Nuxeo");
         this.configurationGenerator = configurationGenerator;
@@ -226,10 +230,11 @@ public abstract class NuxeoLauncher {
      * @throws IllegalThreadStateException Thrown if a server is already
      *             running.
      */
-    public void checkNoRunningServer() throws IllegalThreadStateException {
+    public void checkNoRunningServer() throws IllegalStateException {
         try {
             String existingPid = getPid();
             if (existingPid != null) {
+                errorValue = 0;
                 throw new IllegalStateException(
                         "A server is already running with process ID "
                                 + existingPid);
@@ -380,6 +385,7 @@ public abstract class NuxeoLauncher {
     }
 
     public static void main(String[] args) throws ConfigurationException {
+        int exitStatus = 0;
         if (args.length == 0) {
             printHelp();
             return;
@@ -393,11 +399,12 @@ public abstract class NuxeoLauncher {
             command = launcherGUI.execute();
         }
         if (command == null) {
-            return;
+            // Nothing to do
         } else if ("help".equalsIgnoreCase(command)) {
             printHelp();
         } else if ("status".equalsIgnoreCase(command)) {
             log.info(launcher.status());
+            exitStatus = launcher.status;
         } else if ("startbg".equalsIgnoreCase(command)) {
             commandSucceeded = launcher.doStart();
         } else if ("start".equalsIgnoreCase(command)) {
@@ -430,14 +437,7 @@ public abstract class NuxeoLauncher {
                 commandSucceeded = false;
             }
         } else if ("pack".equalsIgnoreCase(command)) {
-            // java $JAVA_OPTS -classpath "$NUXEO_CONFIG_CLASSPATH" \
-            // -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" \
-            // -Dnuxeo.log.dir="$LOG_DIR" -Dnuxeo.data.dir="$DATA_DIR"
-            // -Dnuxeo.tmp.dir="$TMP_DIR" \
-            // -Dlog4j.configuration="$LOG4J_CONF" \
-            // org.nuxeo.runtime.deployment.preprocessor.PackZip $1 $2
-            // PackZip.main(Arrays.copyOfRange(params, 1, params.length));
-            throw new UnsupportedOperationException();
+            exitStatus = 3;
         } else {
             printHelp();
             commandSucceeded = false;
@@ -446,7 +446,10 @@ public abstract class NuxeoLauncher {
             launcherGUI.updateServerStatus();
         }
         if (!commandSucceeded) {
-            System.exit(1);
+            exitStatus = launcher.errorValue;
+        }
+        if (exitStatus != 0) {
+            System.exit(exitStatus);
         }
     }
 
@@ -505,19 +508,17 @@ public abstract class NuxeoLauncher {
      * @return true if the server started successfully
      */
     public boolean doStartAndWait(boolean logProcessOutput) {
-        boolean commandSucceeded = true;
+        boolean commandSucceeded = false;
         if (doStart(logProcessOutput)) {
             addShutdownHook();
             if (!configurationGenerator.isWizardRequired()
                     && !waitForEffectiveStart()) {
-                commandSucceeded = false;
                 removeShutdownHook();
                 stop(logProcessOutput);
             } else {
                 removeShutdownHook();
+                commandSucceeded = true;
             }
-        } else {
-            commandSucceeded = false;
         }
         return commandSucceeded;
     }
@@ -614,6 +615,7 @@ public abstract class NuxeoLauncher {
      * @return true if server successfully started
      */
     public boolean doStart(boolean logProcessOutput) {
+        errorValue = 0;
         boolean serverStarted = false;
         try {
             if (reloadConfiguration) {
@@ -633,6 +635,7 @@ public abstract class NuxeoLauncher {
                             + "=false. Either set it to true or once, either set "
                             + ConfigurationGenerator.PARAM_WIZARD_DONE
                             + "=true to skip the wizard.");
+                    errorValue = 6;
                     return false;
                 }
                 String paramsStr = "";
@@ -662,14 +665,15 @@ public abstract class NuxeoLauncher {
                 writer.close();
             }
         } catch (ConfigurationException e) {
+            errorValue = 6;
             log.error("Could not run configuration", e);
         } catch (IOException e) {
+            errorValue = 1;
             log.error("Could not start process", e);
         } catch (InterruptedException e) {
+            errorValue = 1;
             log.error("Could not start process", e);
         } catch (IllegalStateException e) {
-            log.error(e.getMessage());
-        } catch (IllegalThreadStateException e) {
             log.error(e.getMessage());
         }
         return serverStarted;
@@ -866,20 +870,42 @@ public abstract class NuxeoLauncher {
     /**
      * Return process status (running or not) as String, depending on OS
      * capability to manage processes.
+     * Set status value following
+     * "http://refspecs.freestandards.org/LSB_4.1.0/LSB-Core-generic/LSB-Core-generic/iniscrptact.html"
+     *
+     * @see #status
      */
     public String status() {
         if (processManager instanceof PureJavaProcessManager) {
+            status = 4;
             return "Can't check server status on your OS.";
         }
         try {
             if (getPid() == null) {
+                status = 3;
                 return "Server is not running.";
             } else {
+                status = 0;
                 return "Server is running with process ID " + getPid() + ".";
             }
         } catch (IOException e) {
+            status = 4;
             return "Could not check existing process (" + e.getMessage() + ").";
         }
+    }
+
+    /**
+     * Last status value set by {@link #status()}.
+     */
+    public int getStatus() {
+        return status;
+    }
+
+    /**
+     * Last error value set by any method.
+     */
+    public int getErrorValue() {
+        return errorValue;
     }
 
     /**
