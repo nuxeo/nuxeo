@@ -18,7 +18,9 @@ package org.nuxeo.ecm.automation.core.operations.users;
 
 import java.security.Principal;
 
+import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.login.LoginContext;
+import javax.security.auth.login.LoginException;
 
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.Constants;
@@ -26,7 +28,9 @@ import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
+import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
 import org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter;
+import org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -45,7 +49,7 @@ public class LoginAs {
 
     @OperationMethod
     public void run() throws Exception {
-        LoginContext lc = null;
+    	LoginContext lc = null;
         if (name == null) {
             Principal origPrincipal = ctx.getPrincipal();
             if (origPrincipal != null) {
@@ -54,11 +58,24 @@ public class LoginAs {
                 lc = Framework.login();
             }
         } else {
-            lc = NuxeoAuthenticationFilter.loginAs(name);
+        	lc = loginAs(name);
         }
         if (lc != null) {
             ctx.getLoginStack().push(lc);
         }
     }
+
+	private LoginContext loginAs(String username) throws LoginException {
+		UserIdentificationInfo userIdent = new UserIdentificationInfo(username,
+                username);
+
+        userIdent.setLoginPluginName("Trusting_LM");
+        PluggableAuthenticationService service = (PluggableAuthenticationService) Framework.getRuntime().getComponent(
+                PluggableAuthenticationService.NAME);
+        CallbackHandler handler = service.getCallbackHandler(userIdent);
+        LoginContext loginContext = new LoginContext("nuxeo-ecm-web", handler);
+        loginContext.login();
+        return loginContext;
+	}
 
 }

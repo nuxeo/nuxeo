@@ -792,6 +792,11 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.automation</groupId>
+        <artifactId>nuxeo-automation-features</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.automation</groupId>
         <artifactId>nuxeo-automation-jsf</artifactId>
         <version>${nuxeo.features.version}</version>
       </dependency>
