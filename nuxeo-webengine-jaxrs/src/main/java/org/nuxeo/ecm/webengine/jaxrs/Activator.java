@@ -172,7 +172,9 @@ public class Activator implements BundleActivator, BundleTrackerCustomizer, Serv
     @Override
     public void modifiedBundle(Bundle bundle, BundleEvent event, Object object) {
         //TODO not yet impl.
-        reload();
+        if (event.getType() == BundleEvent.UPDATED) {
+            reload();
+        }
     }
 
     @Override

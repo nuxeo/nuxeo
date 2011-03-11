@@ -27,7 +27,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.nuxeo.ecm.webengine.jaxrs.Activator;
 
-import com.sun.jersey.server.impl.container.WebApplicationProviderImpl;
 import com.sun.jersey.spi.container.servlet.ServletContainer;
 
 
@@ -102,7 +101,7 @@ public class JerseyServlet extends ServletContainer {
     protected void superInit() throws ServletException {
         Thread thread = Thread.currentThread();
         ClassLoader cl = thread.getContextClassLoader();
-        thread.setContextClassLoader(WebApplicationProviderImpl.class.getClassLoader());
+        thread.setContextClassLoader(ServiceClassLoader.getLoader());
         try {
             super.init();
         } finally {
@@ -113,11 +112,25 @@ public class JerseyServlet extends ServletContainer {
     protected void superDestroy() {
         Thread thread = Thread.currentThread();
         ClassLoader cl = thread.getContextClassLoader();
-        thread.setContextClassLoader(WebApplicationProviderImpl.class.getClassLoader());
+        thread.setContextClassLoader(ServiceClassLoader.getLoader());
         try {
             super.destroy();
         } finally {
             thread.setContextClassLoader(cl);
+        }
+    }
+
+    protected synchronized void superReload() {
+        if (isDirty) {
+            Thread thread = Thread.currentThread();
+            ClassLoader cl = thread.getContextClassLoader();
+            thread.setContextClassLoader(ServiceClassLoader.getLoader());
+            try {
+                super.reload();
+            } finally {
+                isDirty = false;
+                thread.setContextClassLoader(cl);
+            }
         }
     }
 
@@ -127,7 +140,7 @@ public class JerseyServlet extends ServletContainer {
         thread.setContextClassLoader(JerseyServlet.class.getClassLoader());
         try {
             if (isDirty) {
-                reload();
+                superReload();
             }
             super.service(request, response);
         } finally {
