@@ -109,9 +109,9 @@ public class TestUtils extends NXRuntimeTestCase {
     }
 
     public void testListImages() throws IOException {
-        assertEquals(
-                "[{\"name\":\"emoticon_smile.png\",\"collection\":\"Test\"},{\"name\":\"photo.png\",\"collection\":\"Test\"}]",
-                Utils.listImages(BANK_NAME));
+    	String listImages = Utils.listImages(BANK_NAME);
+    	assertThat(listImages, contains("emoticon_smile.png"));
+    	assertThat(listImages, contains("photo.png"));
     }
 
     public void disabledTestListStyles() throws IOException {
