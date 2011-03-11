@@ -113,6 +113,8 @@ public interface NuxeoPrincipal extends Principal, Serializable {
 
     void setPassword(String password);
 
+    void setEmail(String email);
+
     /**
      * Returns a generated id that is unique for each principal instance.
      *
