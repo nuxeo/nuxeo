@@ -420,6 +420,8 @@ public abstract class NuxeoLauncher {
         } else if ("restart".equalsIgnoreCase(command)) {
             launcher.stop();
             commandSucceeded = launcher.doStartAndWait();
+        } else if ("wizard".equalsIgnoreCase(command)) {
+            commandSucceeded = launcher.startWizard();
         } else if ("configure".equalsIgnoreCase(command)) {
             try {
                 launcher.configure();
@@ -446,6 +448,27 @@ public abstract class NuxeoLauncher {
         if (!commandSucceeded) {
             System.exit(1);
         }
+    }
+
+    private boolean startWizard() {
+        if (!configurationGenerator.getServerConfigurator().isWizardAvailable()) {
+            log.error("Sorry, the wizard is not available within that server.");
+            return false;
+        }
+        if (isRunning()) {
+            log.error("Server already running. "
+                    + "Please stop it before calling \"wizard\" command "
+                    + "or use the Admin Center instead of the wizard.");
+            return false;
+        }
+        if (reloadConfiguration) {
+            configurationGenerator = new ConfigurationGenerator();
+            configurationGenerator.init();
+            reloadConfiguration = false;
+        }
+        configurationGenerator.getUserConfig().setProperty(
+                ConfigurationGenerator.PARAM_WIZARD_DONE, "false");
+        return doStart();
     }
 
     /**
@@ -908,7 +931,7 @@ public abstract class NuxeoLauncher {
      * @throws URISyntaxException
      */
     public static void printHelp() {
-        log.error("\nnuxeoctl usage:\n\tnuxeoctl [gui|nogui] (help|start|stop|restart|configure|console|status|startbg|restartbg|pack) [additional parameters]");
+        log.error("\nnuxeoctl usage:\n\tnuxeoctl [gui|nogui] (help|start|stop|restart|configure|wizard|console|status|startbg|restartbg|pack) [additional parameters]");
         log.error("\njava usage:\n\tjava [-D"
                 + JAVA_OPTS_PROPERTY
                 + "=\"JVM options\"] [-D"
@@ -916,7 +939,7 @@ public abstract class NuxeoLauncher {
                 + "=\"/path/to/nuxeo\"] [-D"
                 + ConfigurationGenerator.NUXEO_CONF
                 + "=\"/path/to/nuxeo.conf\"] [-Djvmcheck=nofail] -jar \"path/to/nuxeo-launcher.jar\""
-                + " \\ \n\t\t[gui] (help|start|stop|restart|configure|console|status|startbg|restartbg|pack) [additional parameters]");
+                + " \\ \n\t\t[gui] (help|start|stop|restart|configure|wizard|console|status|startbg|restartbg|pack) [additional parameters]");
         log.error("\n\t Options:");
         log.error("\t\t " + JAVA_OPTS_PROPERTY
                 + "\tParameters for the server JVM (default are "
@@ -936,6 +959,7 @@ public abstract class NuxeoLauncher {
         log.error("\t\t stop\t\tStop any Nuxeo server started with the same nuxeo.conf file.");
         log.error("\t\t restart\tRestart Nuxeo server.");
         log.error("\t\t configure\tConfigure Nuxeo server with parameters from nuxeo.conf.");
+        log.error("\t\t wizard\tEnable the wizard (force the wizard to be played again in case the wizard configuration has already been done).");
         log.error("\t\t console\tStart Nuxeo server in a console mode. Ctrl-C will stop it.");
         log.error("\t\t status\t\tPrint server status (running or not).");
         log.error("\t\t startbg\tStart Nuxeo server in background, without waiting for effective start. Useful for starting Nuxeo as a service.");
