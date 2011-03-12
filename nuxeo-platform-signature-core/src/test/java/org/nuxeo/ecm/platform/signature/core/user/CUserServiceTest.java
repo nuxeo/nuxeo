@@ -18,6 +18,7 @@
 package org.nuxeo.ecm.platform.signature.core.user;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.sql.Connection;
@@ -92,14 +93,14 @@ public class CUserServiceTest {
     public void testGetCertificate() throws Exception {
         // try to retrieve a certificate that does not yet exist
         DocumentModel retrievedCertificate = cUserService.getCertificate(USER_ID);
-        assertTrue(null == retrievedCertificate);
+        assertNull(retrievedCertificate);
         // add missing certificate
         DocumentModel createdCertificate = cUserService.createCertificate(getUser(),
                 USER_KEYSTORE_PASSWORD);
-        assertTrue(null != createdCertificate);
+        assertNotNull(createdCertificate);
         // retry
         retrievedCertificate = cUserService.getCertificate(USER_ID);
-        assertTrue("The certificate could not be retrieved from the directory",null!=retrievedCertificate);
+        assertNotNull("The certificate could not be retrieved from the directory",retrievedCertificate);
         assertTrue(retrievedCertificate.getPropertyValue("cert:userid").equals(USER_ID));
     }
 

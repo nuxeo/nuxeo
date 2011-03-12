@@ -59,7 +59,11 @@ public class CertActions implements Serializable {
     private static final Log LOG = LogFactory.getLog(CertActions.class);
 
     private static final int MINIMUM_PASSWORD_LENGTH = 8;
-
+    private static final String USER_FIELD_FIRSTNAME="user:firstName";
+    private static final String USER_FIELD_LASTNAME="user:lastName";
+    private static final String USER_FIELD_EMAIL="user:email";
+    
+    
     @In(create = true)
     protected transient CertService certService;
 
@@ -149,17 +153,18 @@ public class CertActions implements Serializable {
      */
     public void createCertificate(DocumentModel user, String firstPassword,
             String secondPassword) throws ClientException{
-        boolean isPasswordValid = false;
+        boolean areRequirementsMet= false;
 
         try {
             validatePasswords(firstPassword, secondPassword);
-            // passed through validation
-            isPasswordValid = true;
+            validateRequiredUserFields();
+            // passed through validations
+            areRequirementsMet= true;
         } catch (ValidatorException v) {
             facesMessages.add(v.getFacesMessage());
         }
 
-        if (isPasswordValid) {
+        if (areRequirementsMet) {
             try {
                 cUserService.createCertificate(user, firstPassword);
                 facesMessages.add(FacesMessage.SEVERITY_INFO,
@@ -237,5 +242,48 @@ public class CertActions implements Serializable {
             LOG.warn(currentUser.getName()+" : "+message.getDetail());
             throw new ValidatorException(message);
         }
+    }
+    
+    
+    /**
+     * Validates user identity fields required for certificate generation
+     * NXP-6485
+     * <p>
+     *
+     */
+    public void validateRequiredUserFields()
+            throws ClientException {
+
+        final FacesContext facesContext = FacesContext.getCurrentInstance();
+        DocumentModel user = userManager.getUserModel(currentUser.getName());
+        // first name
+        String firstName=(String)user.getPropertyValue(USER_FIELD_FIRSTNAME);
+        if (null==firstName || firstName.length()==0) {
+            FacesMessage message = new FacesMessage(
+                    FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(
+                            facesContext, "label.cert.user.firstname.missing"), null);
+            LOG.warn(currentUser.getName()+" : "+message.getDetail());
+            throw new ValidatorException(message);
+        }
+        // last name
+        String lastName=(String)user.getPropertyValue(USER_FIELD_LASTNAME);
+        if (null==lastName || lastName.length()==0) {
+            FacesMessage message = new FacesMessage(
+                    FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(
+                            facesContext, "label.cert.user.lastname.missing"), null);
+            LOG.warn(currentUser.getName()+" : "+message.getDetail());
+            throw new ValidatorException(message);
+        }
+        // email - // a very forgiving check (e.g. accepts _@localhost)
+        String email =(String)user.getPropertyValue(USER_FIELD_EMAIL);
+        String emailRegex=".+@.+";
+        if (null==email || email.length()==0 || !email.matches(emailRegex)) {
+            FacesMessage message = new FacesMessage(
+                    FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(
+                            facesContext, "label.cert.user.email.problem"), null);
+            LOG.warn(currentUser.getName()+" : "+message.getDetail());
+            throw new ValidatorException(message);
+        }
+
     }
 }

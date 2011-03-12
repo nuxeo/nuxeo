@@ -116,10 +116,16 @@ public class CUserServiceImpl implements CUserService {
         // create an entry in the directory
         String userID = (String) user.getPropertyValue("user:username");
 
-        LOG.info("Starting certificate generation for: " + userID);
-
         Session session = getDirectoryService().open(
                 CERTIFICATE_DIRECTORY_NAME);
+
+        // make sure that no certificates are associated with the current userid 
+        boolean certificateExists= session.hasEntry(userID);
+        if(certificateExists){
+            throw new CertException(userID+" already has a certificate");
+        }
+        
+        LOG.info("Starting certificate generation for: " + userID);
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("userid", userID);
 

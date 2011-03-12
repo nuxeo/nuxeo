@@ -60,19 +60,19 @@ import org.nuxeo.ecm.platform.signature.api.user.AliasWrapper;
 import org.nuxeo.ecm.platform.signature.api.user.CNField;
 import org.nuxeo.ecm.platform.signature.api.user.RootService;
 import org.nuxeo.ecm.platform.signature.api.user.UserInfo;
-import org.nuxeo.ecm.platform.signature.core.sign.SignatureServiceImpl;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
  * Base implementation of the certification service.
- *
+ * 
  * @author <a href="mailto:ws@nuxeo.com">Wojciech Sulejman</a>
- *
+ * 
  */
 public class CertServiceImpl extends DefaultComponent implements CertService {
     protected List<CertDescriptor> config;
+
     protected RootService rootService;
 
     private static final Log log = LogFactory.getLog(CertServiceImpl.class);
@@ -88,7 +88,7 @@ public class CertServiceImpl extends DefaultComponent implements CertService {
 
     protected X509Certificate rootCertificate;
 
-    private static final int CERTIFICATE_DURATION_IN_MONTHS=12;
+    private static final int CERTIFICATE_DURATION_IN_MONTHS = 12;
 
     private static final String CERT_SIGNATURE_ALGORITHM = "SHA256WithRSAEncryption";
 
@@ -214,20 +214,26 @@ public class CertServiceImpl extends DefaultComponent implements CertService {
                             "You have to provide root key password");
                 }
             }
-            InputStream keystoreIS=null;
+            InputStream keystoreIS = null;
             File rootKeystoreFile = null;
             try {
                 rootKeystoreFile = new File(
                         rootService.getRootKeystoreFilePath());
-                if(!rootKeystoreFile.exists()){
-                    rootKeystoreFile = FileUtils.getResourceFileFromContext(rootService.getRootKeystoreFilePath());
-                    log.warn("No keystore file found at absolute path, using embedded test keystore at: "+rootKeystoreFile.getAbsolutePath());
-
+                if (rootKeystoreFile.exists()) {
+                    keystoreIS = new FileInputStream(rootKeystoreFile);
+                } else {// try a temporary resource keystore instead of a
+                        // configurable one
+                    keystoreIS = Thread.currentThread().getContextClassLoader().getResourceAsStream(
+                            rootService.getRootKeystoreFilePath());
                 }
-                keystoreIS = new FileInputStream(rootKeystoreFile);
             } catch (FileNotFoundException e) {
                 // try local path
-                throw new CertException("Certificate not found at"+rootKeystoreFile.getAbsolutePath());
+                throw new CertException("Certificate not found at"
+                        + rootKeystoreFile.getAbsolutePath());
+            } catch (Exception e) {
+                // try local path
+                throw new CertException("Root certificate problem: "
+                        + rootKeystoreFile.getAbsolutePath());
             }
             KeyStore keystore = getKeyStore(keystoreIS,
                     rootService.getRootKeystorePassword());
@@ -393,8 +399,8 @@ public class CertServiceImpl extends DefaultComponent implements CertService {
     }
 
     /**
-    * {@inheritDoc}
-    */
+     * {@inheritDoc}
+     */
     @Override
     public void storeCertificate(KeyStore keystore, OutputStream os,
             String keystorePassword) throws CertException {

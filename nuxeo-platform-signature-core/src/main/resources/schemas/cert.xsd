@@ -10,7 +10,6 @@
   </xs:restriction> 
  </xs:simpleType>
 
-  <xs:include schemaLocation="core-types.xsd"/>
   <xs:element name="userid" type="xs:string"/>
   <xs:element name="certificate" type="xs:string"/>
   <xs:element name="keypassword" type="xs:string"/>

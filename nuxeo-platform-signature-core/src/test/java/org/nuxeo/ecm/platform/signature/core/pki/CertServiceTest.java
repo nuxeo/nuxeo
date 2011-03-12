@@ -1,3 +1,4 @@
+package org.nuxeo.ecm.platform.signature.core.pki;
 /*
  * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
@@ -15,7 +16,7 @@
  *     Wojciech Sulejman
  */
 
-package org.nuxeo.ecm.platform.signature.core.pki;
+
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;

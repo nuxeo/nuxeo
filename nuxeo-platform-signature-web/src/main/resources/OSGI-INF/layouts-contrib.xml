@@ -20,7 +20,7 @@
         </labels>
         <translated>true</translated>
         <fields>
-          <field schema="cert">userid</field>
+          <field schema="certdir">userid</field>
         </fields>
         <widgetModes>
           <mode value="any">view</mode>
@@ -35,7 +35,7 @@
         </labels>
         <translated>true</translated>
         <fields>
-          <field schema="cert">certificate</field>
+          <field schema="certdir">certificate</field>
         </fields>
         <widgetModes>
           <mode value="any">view</mode>
