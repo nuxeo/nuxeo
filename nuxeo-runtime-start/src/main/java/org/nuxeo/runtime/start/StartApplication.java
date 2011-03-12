@@ -16,6 +16,8 @@
  */
 package org.nuxeo.runtime.start;
 
+import java.io.File;
+
 import javax.naming.NamingException;
 
 import org.nuxeo.common.jndi.NamingContextFactory;
@@ -40,10 +42,21 @@ public class StartApplication implements BundleActivator {
 
     @Override
     public void start(BundleContext context) throws Exception {
+        removeH2Lock();
         startWebServices(context);
         startRuntime(context);
         startContainer();
         ((OSGiRuntimeService)Framework.getRuntime()).fireApplicationStarted();
+    }
+
+    private void removeH2Lock() {
+        String h2 = System.getProperty("h2.baseDir");
+        if (h2 != null) {
+            File file = new File(h2);
+            file = new File(file, "nuxeo.lucene");
+            file = new File(file, "write.lock");
+            file.delete();
+        }
     }
 
     private void startRuntime(BundleContext context) throws BundleException {
