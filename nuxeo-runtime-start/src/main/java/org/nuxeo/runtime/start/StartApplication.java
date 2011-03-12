@@ -20,6 +20,12 @@ import java.io.File;
 
 import javax.naming.NamingException;
 
+import org.slf4j.LoggerFactory;
+
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.joran.JoranConfigurator;
+import ch.qos.logback.core.joran.spi.JoranException;
+
 import org.nuxeo.common.jndi.NamingContextFactory;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
@@ -42,6 +48,7 @@ public class StartApplication implements BundleActivator {
 
     @Override
     public void start(BundleContext context) throws Exception {
+       configureLogging();
         initEnvironment();
         removeH2Lock();
         startWebServices(context);
@@ -50,7 +57,7 @@ public class StartApplication implements BundleActivator {
         ((OSGiRuntimeService)Framework.getRuntime()).fireApplicationStarted();
     }
 
-    private void removeH2Lock() {
+    protected void removeH2Lock() {
         String h2 = System.getProperty("h2.baseDir");
         if (h2 != null) {
             File file = new File(h2);
@@ -60,29 +67,50 @@ public class StartApplication implements BundleActivator {
         }
     }
 
-    private void startRuntime(BundleContext context) throws BundleException {
+    protected void startRuntime(BundleContext context) throws BundleException {
         try {
             context.getBundle().loadClass("org.nuxeo.runtime.api.Framework");
         } catch (Throwable t) {
-            t.printStackTrace();
+            throw new BundleException("Cannot load framework", t);
         }
         // not in osgi.core r4
         //FrameworkUtil.getBundle(Framework.class).start();
     }
 
-    private void startContainer() throws NamingException {
+    protected void startContainer() throws NamingException {
         NamingContextFactory.install();
         NuxeoContainer.install();
     }
 
-    private void startWebServices(BundleContext context) throws BundleException {
+    protected void configureLogging() throws BundleException {
+        if (System.getProperty("logback.configurationFile") != null) {
+            return;
+        }
+        String home = System.getProperty("nuxeo.home");
+        if (home == null) {
+            return;
+        }
+        final String config = home.concat("/config/logback.xml");
+        LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
+        JoranConfigurator configurator = new JoranConfigurator();
+        configurator.setContext(lc);
+        lc.reset();
+        try {
+            configurator.doConfigure(config);
+        } catch (JoranException e) {
+            throw new BundleException("Cannot configure logging from " + config, e);
+        }
+    }
+
+    protected void startWebServices(BundleContext context)
+            throws BundleException {
         ServiceReference pkgAdmin = context.getServiceReference(PackageAdmin.class.getName());
         PackageAdmin pa = (PackageAdmin)context.getService(pkgAdmin);
         tryStartJetty(pa);
         context.ungetService(pkgAdmin);
     }
 
-    private boolean tryStartJetty(PackageAdmin pa) {
+    protected boolean tryStartJetty(PackageAdmin pa) {
         Bundle[] bundles = pa.getBundles("org.eclipse.equinox.http.jetty", null);
         if (bundles != null && bundles.length > 0) {
             try {
@@ -98,7 +126,7 @@ public class StartApplication implements BundleActivator {
     /**
      * Initialize environment using default values if no specified on the command line
      */
-    private void initEnvironment() {
+    protected void initEnvironment() {
         String home = System.getProperty("nuxeo.home");
         if (home == null) {
             home = System.getProperty("user.home")+File.separator+".nxserver-osgi";
