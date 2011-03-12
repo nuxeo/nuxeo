@@ -120,13 +120,18 @@ public class JerseyServlet extends ServletContainer {
         }
     }
 
-    protected synchronized void superReload() {
+    protected synchronized void superReload() throws ServletException {
         if (isDirty) {
             Thread thread = Thread.currentThread();
             ClassLoader cl = thread.getContextClassLoader();
             thread.setContextClassLoader(ServiceClassLoader.getLoader());
             try {
-                super.reload();
+            	// reload is not working correctly since old classes are still referenced
+            	// for this to work we need a custom ResourceConfig but all fields in jersey
+            	// classes are private so we cannot set it ...
+                //super.reload();
+            	super.destroy();
+            	super.init();
             } finally {
                 isDirty = false;
                 thread.setContextClassLoader(cl);
