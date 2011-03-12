@@ -102,7 +102,7 @@ public class BlogSiteArchiveFragment extends AbstractFragment {
      * @param year the name of the year
      * @return the model corresponding to the year received as parameter.
      */
-    private BlogSiteArchiveYearModel getYearModel(Model model, String year) {
+    private static BlogSiteArchiveYearModel getYearModel(Model model, String year) {
         BlogSiteArchiveYearModel yearModel = null;
         for (Model item : model.getItems()) {
             if (item instanceof BlogSiteArchiveYearModel) {
@@ -123,7 +123,7 @@ public class BlogSiteArchiveFragment extends AbstractFragment {
      * @param month the name of the month
      * @return the model corresponding to the month received as parameter
      */
-    private BlogSiteArchiveMonthModel getMonthModel(Model model, String month) {
+    private static BlogSiteArchiveMonthModel getMonthModel(Model model, String month) {
         BlogSiteArchiveMonthModel monthModel = null;
         for (Model item : model.getItems()) {
             if (item instanceof BlogSiteArchiveMonthModel) {

@@ -94,7 +94,7 @@ public class MultipartBlobs extends MimeMultipart {
     static class BoundaryMediaType extends MediaType {
         private final String ctype;
 
-        public BoundaryMediaType(String ctype) {
+        BoundaryMediaType(String ctype) {
             super("multipart", "mixed");
             this.ctype = ctype;
         }

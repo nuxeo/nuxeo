@@ -92,7 +92,6 @@ import org.nuxeo.runtime.api.Framework;
  * resources) and a value.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 @Name("relationActions")
 @Scope(CONVERSATION)

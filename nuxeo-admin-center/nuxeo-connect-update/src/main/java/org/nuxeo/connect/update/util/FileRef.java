@@ -100,11 +100,11 @@ public abstract class FileRef {
 
         protected String value;
 
-        public PatternFileRef(String path) {
+        PatternFileRef(String path) {
             this(new File(path));
         }
 
-        public PatternFileRef(File file) {
+        PatternFileRef(File file) {
             File dir = file.getParentFile();
             File[] files = dir.listFiles();
             if (files != null) {

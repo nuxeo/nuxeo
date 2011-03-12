@@ -46,7 +46,6 @@ import org.xml.sax.InputSource;
  * A command based task.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public abstract class CommandsTask extends AbstractTask {
 
@@ -58,16 +57,13 @@ public abstract class CommandsTask extends AbstractTask {
      */
     protected LinkedList<Command> log;
 
-    public CommandsTask() {
+    protected CommandsTask() {
         commands = new ArrayList<Command>();
         log = new LinkedList<Command>();
     }
 
     /**
-     * Gte the commands file from where to load commands for this task
-     *
-     * @param params
-     * @return
+     * Get the commands file from where to load commands for this task.
      */
     protected abstract File getCommandsFile() throws PackageException;
 
@@ -81,8 +77,6 @@ public abstract class CommandsTask extends AbstractTask {
     /**
      * Load the commands of this task given the user parameters. The parameter
      * map may be null.
-     *
-     * @throws PackageException
      */
     protected void loadCommands() throws PackageException {
         try {
@@ -95,27 +89,21 @@ public abstract class CommandsTask extends AbstractTask {
     }
 
     /**
-     * Get the commands to execute
-     *
-     * @return
+     * Gets the commands to execute.
      */
     public List<Command> getCommands() {
         return commands;
     }
 
     /**
-     * Get the command log. These are the commands ran so far.
-     *
-     * @return
+     * Gets the command log. These are the commands ran so far.
      */
     public List<Command> getCommandLog() {
         return log;
     }
 
     /**
-     * Add a command to this task
-     *
-     * @param command
+     * Adds a command to this task.
      */
     public void addCommand(Command command) {
         commands.add(command);

@@ -12,9 +12,7 @@ import org.nuxeo.ecm.platform.oauth.tokens.OAuthTokenStoreImpl;
 
 @Name("oauthProvidersTokensActions")
 @Scope(ScopeType.CONVERSATION)
-public class OAuthProvidersTokensActionBean extends DirectoryBasedEditor implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class OAuthProvidersTokensActionBean extends DirectoryBasedEditor {
 
     @Override
     protected Map<String, Serializable> getQueryFilter() {

@@ -12,7 +12,7 @@ import org.nuxeo.ecm.platform.oauth.tokens.OAuthTokenStoreImpl;
 
 @Name("oauthConsumersTokensActions")
 @Scope(ScopeType.CONVERSATION)
-public class OAuthConsumersTokensActionBean extends DirectoryBasedEditor implements Serializable {
+public class OAuthConsumersTokensActionBean extends DirectoryBasedEditor {
 
     private static final long serialVersionUID = 1L;
 

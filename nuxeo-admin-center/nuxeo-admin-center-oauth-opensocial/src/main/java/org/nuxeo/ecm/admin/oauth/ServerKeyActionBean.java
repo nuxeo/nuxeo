@@ -1,7 +1,5 @@
 package org.nuxeo.ecm.admin.oauth;
 
-import java.io.Serializable;
-
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
@@ -10,10 +8,7 @@ import org.nuxeo.runtime.api.Framework;
 
 @Name("oauthServerKeyActions")
 @Scope(ScopeType.EVENT)
-public class ServerKeyActionBean implements Serializable {
-
-    private static final long serialVersionUID = 1L;
-
+public class ServerKeyActionBean {
 
     public String getPublicCertificate() {
         OAuthServerKeyManager skm = Framework.getLocalService(OAuthServerKeyManager.class);

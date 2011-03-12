@@ -133,7 +133,7 @@ public class TestRepoStats {
     }
 
     @Test
-    public void testIntrospection() throws Exception {
+    public void testIntrospection() {
         SimplifiedServerInfo info = RuntimeInstrospection.getInfo();
         assertNotNull(info);
         System.out.print(info.toString());

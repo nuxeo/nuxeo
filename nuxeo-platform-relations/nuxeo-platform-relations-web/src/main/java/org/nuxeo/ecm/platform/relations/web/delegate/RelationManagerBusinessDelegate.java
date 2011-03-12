@@ -35,7 +35,6 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 @Name("relationManager")
 @Scope(SESSION)

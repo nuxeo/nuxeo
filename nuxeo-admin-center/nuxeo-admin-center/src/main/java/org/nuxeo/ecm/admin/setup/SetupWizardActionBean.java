@@ -78,9 +78,9 @@ public class SetupWizardActionBean implements Serializable {
 
     protected Map<String, String> advancedParameters = null;
 
-    protected final static String PROXY_NONE = "none";
-    protected final static String PROXY_ANONYMOUS = "anonymous";
-    protected final static String PROXY_AUTHENTICATED = "authenticated";
+    protected static final String PROXY_NONE = "none";
+    protected static final String PROXY_ANONYMOUS = "anonymous";
+    protected static final String PROXY_AUTHENTICATED = "authenticated";
 
     protected String proxyType = PROXY_NONE;
 

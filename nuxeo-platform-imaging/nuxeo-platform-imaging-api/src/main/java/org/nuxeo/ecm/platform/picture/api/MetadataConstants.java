@@ -73,5 +73,8 @@ public class MetadataConstants {
     public static final String META_TIME_CREATED = "timeCreated";
     public static final String META_URGENCY = "urgency";
     public static final String META_WRITER = "writer";
+    
+    private MetadataConstants() {
+    }
 
 }

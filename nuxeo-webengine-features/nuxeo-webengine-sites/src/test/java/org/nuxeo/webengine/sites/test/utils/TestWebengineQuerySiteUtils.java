@@ -207,7 +207,7 @@ public class TestWebengineQuerySiteUtils extends SQLRepositoryTestCase {
         assertEquals(1, lastWebSiteComments.size());
     }
 
-    protected CommentManager getCommentManager() throws Exception {
+    protected CommentManager getCommentManager() {
         CommentService commentService = CommentServiceHelper.getCommentService();
         CommentManager commentManager = commentService.getCommentManager();
         assertNotNull(commentManager);

@@ -37,7 +37,6 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public abstract class AbstractTask implements Task {
 
@@ -86,11 +85,11 @@ public abstract class AbstractTask implements Task {
 
     /**
      * A map of environment key/values that can be used in XML install files as
-     * variables
+     * variables.
      */
     protected Map<String, String> env;
 
-    public AbstractTask() {
+    protected AbstractTask() {
         env = new HashMap<String, String>();
         Environment nxenv = Environment.getDefault();
         File home = nxenv.getHome();

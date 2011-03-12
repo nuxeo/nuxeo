@@ -227,7 +227,7 @@ public class PackagePersistence {
         return new ArrayList<LocalPackage>();
     }
 
-    public synchronized void removePackage(String id) throws PackageException {
+    public synchronized void removePackage(String id) {
         states.remove(id);
         File file = new File(store, id);
         if (file.isDirectory()) {

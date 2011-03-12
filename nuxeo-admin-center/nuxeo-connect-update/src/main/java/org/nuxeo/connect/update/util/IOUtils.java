@@ -25,16 +25,17 @@ import org.nuxeo.connect.update.LocalPackage;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class IOUtils {
+    
+    private IOUtils() {
+    }
 
     /**
      * Backup the given file to the package backuo directory. The backup file
      * will be returned. The name of the backup file will be:
-     * filepathMD5_filename
+     * filepathMD5_filename.
      *
-     * @param file
      * @return the name of the backup file.
      */
     public static File backup(LocalPackage pkg, File file) throws Exception {

@@ -31,14 +31,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang.StringUtils;
-import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.model.Property;
-import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants;
@@ -414,7 +412,7 @@ public class SiteUtils {
      * Computes the arguments for rss feed.
      */
     public static Map<String, Object> getRssFeedArguments(WebContext ctx,
-            String key) throws Exception {
+            String key) {
         Map<String, Object> root = new HashMap<String, Object>();
         root.put("title", ctx.getMessage(key));
         root.put("link", " ");

@@ -23,10 +23,8 @@ import org.nuxeo.ecm.platform.annotations.gwt.client.controler.AnnotationControl
 
 import com.google.gwt.user.client.ui.HorizontalPanel;
 
-
 /**
  * @author <a href="mailto:bjalon@nuxeo.com">Benjamin JALON</a>
- *
  */
 public class AnnotationActionsBanner extends HorizontalPanel {
 

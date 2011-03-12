@@ -25,8 +25,6 @@ import org.nuxeo.ecm.webengine.WebEngine;
 
 public class SessionManager {
 
-    private static final long serialVersionUID = 1L;
-
     private static final String SELECTED_ELEMENT_ID = "org.nuxeo.theme.editor.selected_element";
 
     private static final String STYLE_EDIT_MODE = "org.nuxeo.theme.editor.style_edit_mode";

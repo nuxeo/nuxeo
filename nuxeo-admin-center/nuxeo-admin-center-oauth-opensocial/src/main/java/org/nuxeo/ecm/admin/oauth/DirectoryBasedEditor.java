@@ -50,9 +50,9 @@ public abstract class DirectoryBasedEditor {
         try {
             session.createEntry(creationEntry);
             session.commit();
-            creationEntry=null;
-            showAddForm=false;
-            entries=null;
+            creationEntry = null;
+            showAddForm = false;
+            entries = null;
         } finally {
             session.close();
         }
@@ -82,8 +82,7 @@ public abstract class DirectoryBasedEditor {
     }
 
     public DocumentModelList getEntries() throws Exception {
-        if (entries==null) {
-
+        if (entries == null) {
             DirectoryService ds = Framework.getService(DirectoryService.class);
             Session session = ds.open(getDirectoryName());
             try {
@@ -91,7 +90,6 @@ public abstract class DirectoryBasedEditor {
                 Set<String> emptySet = getOrderSet();
 
                 entries = session.query(emptyMap, emptySet, null, true);
-
             } finally {
                 session.close();
             }
@@ -115,8 +113,8 @@ public abstract class DirectoryBasedEditor {
         try {
             session.updateEntry(editableEntry);
             session.commit();
-            editableEntry=null;
-            entries=null;
+            editableEntry = null;
+            entries = null;
         } finally {
             session.close();
         }
@@ -128,13 +126,12 @@ public abstract class DirectoryBasedEditor {
         try {
             session.deleteEntry(entryId);
             if (editableEntry!=null && editableEntry.getId().equals(entryId)) {
-                editableEntry=null;
+                editableEntry = null;
             }
             entries = null;
         } finally {
             session.close();
         }
-
     }
 
 }

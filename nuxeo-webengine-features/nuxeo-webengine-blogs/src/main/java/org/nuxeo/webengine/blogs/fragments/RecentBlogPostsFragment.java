@@ -137,7 +137,7 @@ public class RecentBlogPostsFragment extends AbstractFragment {
      * @param day the name of the day
      * @return the model corresponding to the day received as parameter.
      */
-    private BlogSiteArchiveDayModel getYearModel(Model model, String day) {
+    private static BlogSiteArchiveDayModel getYearModel(Model model, String day) {
         BlogSiteArchiveDayModel dayModel = null;
         for (Model item : model.getItems()) {
             if (item instanceof BlogSiteArchiveDayModel) {

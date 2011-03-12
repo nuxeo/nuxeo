@@ -41,7 +41,8 @@ public class HideManagerButton extends ToggleButton {
 
     private IFrameElement previewFrame;
 
-    public HideManagerButton(AnnotationController controller, AnnotationManagerPanel panel, Frame previewFrame) {
+    public HideManagerButton(AnnotationController controller, AnnotationManagerPanel panel,
+            Frame previewFrame) {
         super();
         this.controller = controller;
         this.panel = panel;

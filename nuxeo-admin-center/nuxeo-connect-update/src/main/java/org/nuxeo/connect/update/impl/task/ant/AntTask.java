@@ -25,14 +25,13 @@ import org.nuxeo.connect.update.ValidationStatus;
 import org.nuxeo.connect.update.impl.task.AbstractTask;
 
 /**
- * A task based on ant
+ * A task based on ant.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public abstract class AntTask extends AbstractTask {
 
-    public AntTask() {
+    protected AntTask() {
     }
 
     protected abstract File getAntScript() throws PackageException;
