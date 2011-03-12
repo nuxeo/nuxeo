@@ -52,7 +52,7 @@ public class ContributionTest {
      * Test registration of a studio generated contribution
      */
     @Test
-    public void testContribution() throws Exception {
+    public void testContribution() {
         assertEquals(2, server.getBindings().length);
         RestBinding binding = server.getChainBinding("principals");
 

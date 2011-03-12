@@ -68,8 +68,7 @@ public class JsonRequestReader implements MessageBodyReader<ExecutionRequest> {
     }
 
     @SuppressWarnings("unchecked")
-    public static ExecutionRequest readRequest(String content, MultivaluedMap<String, String> headers)
-            throws IOException {
+    public static ExecutionRequest readRequest(String content, MultivaluedMap<String, String> headers) {
         JSONObject json = JSONObject.fromObject(content);
         String input = json.optString("input", null);
         JSONObject jsonParams = json.optJSONObject("params");

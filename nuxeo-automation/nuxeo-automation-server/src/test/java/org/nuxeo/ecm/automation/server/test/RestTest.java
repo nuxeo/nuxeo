@@ -129,7 +129,7 @@ public class RestTest {
     }
 
     @Test
-    public void testInvalidLogin() throws Exception {
+    public void testInvalidLogin() {
         try {
             client.getSession("foo", "bar");
             fail("login is supposed to fail");
@@ -178,7 +178,6 @@ public class RestTest {
         } catch (RemoteException e) {
             assertEquals(404, e.getStatus());
         }
-
     }
 
     /**
@@ -260,9 +259,7 @@ public class RestTest {
     }
 
     /**
-     * test blob input / output
-     *
-     * @throws Exception
+     * Tests blob input / output.
      */
     @Test
     public void testAttachAndGetFile() throws Exception {
@@ -529,7 +526,8 @@ public class RestTest {
 
     }
     
-    @Test public void queriesArePaginable() throws Exception {
+    @Test
+    public void queriesArePaginable() throws Exception {
         PaginableDocuments docs = (PaginableDocuments)
         session.newRequest(PageProviderOperation.ID).set("query",  "SELECT * from Document").set("pageSize", 2).execute();
         assertThat(docs.size(), Matchers.is(2));

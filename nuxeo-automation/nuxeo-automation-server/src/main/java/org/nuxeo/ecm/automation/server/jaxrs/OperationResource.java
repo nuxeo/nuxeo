@@ -16,8 +16,6 @@
  */
 package org.nuxeo.ecm.automation.server.jaxrs;
 
-import java.io.IOException;
-
 import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
@@ -65,4 +63,5 @@ public class OperationResource extends ExecutableResource {
     public boolean isChain() {
         return false;
     }
+
 }
