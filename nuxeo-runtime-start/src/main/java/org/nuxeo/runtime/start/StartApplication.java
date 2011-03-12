@@ -42,6 +42,7 @@ public class StartApplication implements BundleActivator {
 
     @Override
     public void start(BundleContext context) throws Exception {
+        initEnvironment();
         removeH2Lock();
         startWebServices(context);
         startRuntime(context);
@@ -92,6 +93,33 @@ public class StartApplication implements BundleActivator {
             }
         }
         return false;
+    }
+
+    /**
+     * Initialize environment using default values if no specified on the command line
+     */
+    private void initEnvironment() {
+        String home = System.getProperty("nuxeo.home");
+        if (home == null) {
+            home = System.getProperty("user.home")+File.separator+".nxserver-osgi";
+            System.setProperty("nuxeo.home", home);
+        }
+        String v = System.getProperty("h2.baseDir");
+        if (v == null) {
+            System.setProperty("h2.baseDir", home+File.separator+"data"+File.separator+"h2");
+        }
+        v = System.getProperty("jetty.logs");
+        if (v == null) {
+            System.setProperty("jetty.logs", home+File.separator+"log");
+        }
+        v = System.getProperty("org.eclipse.equinox.http.jetty.http.port");
+        if (v == null) {
+            System.setProperty("org.eclipse.equinox.http.jetty.http.port", "8080");
+        }
+        v = System.getProperty("logback.configurationFile");
+        if (v == null) {
+            System.setProperty("logback.configurationFile", home+File.separator+"config"+File.separator+"logback.xml");
+        }
     }
 
     public void stop(BundleContext context) throws Exception {
