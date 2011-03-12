@@ -56,7 +56,7 @@ function appendCSSData(cssData) {
 function showPopup(targetUrl) {
     if (cssLoaded == 0) {
         // load the css stuff
-        jQuery.get("/nuxeo/site/skin/gadgets/css/gadget-popup-style.css", function(data) {
+        jQuery.get("/nuxeo/opensocial/css/gadget-popup-style.css", function(data) {
             appendCSSData(data);
             doShowPopup(targetUrl);
         });
