@@ -159,8 +159,7 @@ public class Composer {
         return writer.toString();
     }
 
-
-    public Mailer.Message newMessage() throws Exception {
+    public Mailer.Message newMessage() {
         return mailer.newMessage();
     }
 

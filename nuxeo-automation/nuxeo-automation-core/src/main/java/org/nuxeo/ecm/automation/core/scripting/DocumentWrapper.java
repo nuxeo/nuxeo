@@ -81,15 +81,15 @@ public class DocumentWrapper extends HashMap<String, Serializable> {
         return doc.getTitle();
     }
 
-    public String getPath() throws Exception {
+    public String getPath() {
         return doc.getPathAsString();
     }
 
-    public String resolvePath(String relative) throws Exception {
+    public String resolvePath(String relative) {
         return doc.getPath().append(relative).toString();
     }
 
-    public DocumentRef resolvePathAsRef(String relative) throws Exception {
+    public DocumentRef resolvePathAsRef(String relative) {
         return new PathRef(doc.getPath().append(relative).toString());
     }
 
@@ -125,23 +125,23 @@ public class DocumentWrapper extends HashMap<String, Serializable> {
         return doc.getCurrentLifeCycleState();
     }
 
-    public boolean isLocked() throws Exception {
+    public boolean isLocked() {
         return doc.isLocked();
     }
 
-    public boolean isFolder() throws Exception {
+    public boolean isFolder() {
         return doc.isFolder();
     }
 
-    public boolean isImmutable() throws Exception {
+    public boolean isImmutable() {
         return doc.isImmutable();
     }
 
-    public boolean isProxy() throws Exception {
+    public boolean isProxy() {
         return doc.isProxy();
     }
 
-    public boolean isVersion() throws Exception {
+    public boolean isVersion() {
         return doc.isVersion();
     }
 
@@ -149,7 +149,7 @@ public class DocumentWrapper extends HashMap<String, Serializable> {
         return doc.isDownloadable();
     }
 
-    public boolean isVersionable() throws Exception {
+    public boolean isVersionable() {
         return doc.isVersionable();
     }
 
@@ -177,7 +177,7 @@ public class DocumentWrapper extends HashMap<String, Serializable> {
         doc.setPropertyValue(key, value);
     }
 
-    public String getVersionLabel() throws Exception {
+    public String getVersionLabel() {
         return doc.getVersionLabel();
     }
 

@@ -45,13 +45,9 @@ public class OperationResource extends ExecutableResource {
     @GET
     @Produces("application/json")
     public Object doGet() {
-        try {
-            OperationDocumentation doc = type.getDocumentation();
-            JSONObject json = JSONExporter.toJSON(doc);
-            return Response.ok(json.toString(2)).type("application/json").build();
-        } catch (IOException e) {
-            return Response.status(500).build();
-        }
+        OperationDocumentation doc = type.getDocumentation();
+        JSONObject json = JSONExporter.toJSON(doc);
+        return Response.ok(json.toString(2)).type("application/json").build();
     }
 
     @Override

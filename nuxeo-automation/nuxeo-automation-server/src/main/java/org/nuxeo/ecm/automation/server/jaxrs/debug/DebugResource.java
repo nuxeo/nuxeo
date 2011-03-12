@@ -54,7 +54,7 @@ public class DebugResource {
         xmap.register(OperationChainContribution.class);
     }
 
-    public AutomationService getOperationService() throws Exception {
+    public AutomationService getOperationService() {
         return Framework.getLocalService(AutomationService.class);
     }
 
@@ -64,7 +64,7 @@ public class DebugResource {
 
     @GET
     @Produces("text/html")
-    public Object doGet() throws Exception {
+    public Object doGet() {
         return new TemplateView(this, "index.ftl.html");
     }
 
@@ -82,9 +82,8 @@ public class DebugResource {
     }
 
     @POST
-    public Response doPost(@FormParam("input")
-    String input, @FormParam("chain")
-    String chainXml) throws Exception {
+    public Response doPost(@FormParam("input") String input,
+            @FormParam("chain") String chainXml) {
         CoreSession session = SessionFactory.getSession();
         if (!((NuxeoPrincipal) session.getPrincipal()).isAdministrator()) {
             return Response.status(403).build();
@@ -106,9 +105,8 @@ public class DebugResource {
 
     @POST
     @Path("{chainId}")
-    public Response doChainIdPost(@FormParam("input")
-    String input, @FormParam("chainId")
-    String chainId) throws Exception {
+    public Response doChainIdPost(@FormParam("input") String input,
+            @FormParam("chainId") String chainId) {
         try {
             OperationContext ctx = new OperationContext(
                     SessionFactory.getSession());

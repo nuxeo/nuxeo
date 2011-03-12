@@ -177,7 +177,7 @@ public class EventOperationsTest {
     }
 
     @Test
-    public void testXmlEncoding() throws Exception {
+    public void testXmlEncoding() {
         EventHandlerRegistry reg = Framework.getLocalService(EventHandlerRegistry.class);
         List<EventHandler> eh = reg.getEventHandlers("aboutToCreate");
         assertEquals("a < b & b > c", eh.get(0).getExpression());

@@ -36,13 +36,13 @@ public class PushDocument {
     protected OperationContext ctx;
 
     @OperationMethod
-    public DocumentModel run(DocumentModel doc) throws Exception {
+    public DocumentModel run(DocumentModel doc) {
         ctx.push(Constants.O_DOCUMENT, doc);
         return doc;
     }
 
     @OperationMethod
-    public DocumentRef run(DocumentRef doc) throws Exception {
+    public DocumentRef run(DocumentRef doc) {
         ctx.push(Constants.O_DOCUMENT, doc);
         return doc;
     }

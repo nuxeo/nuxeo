@@ -22,6 +22,9 @@ import java.util.Date;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class PropertiesHelper {
+	
+	private PropertiesHelper() {
+	}
 
     public static boolean isBlob(Object v) {
         return v instanceof Blob;

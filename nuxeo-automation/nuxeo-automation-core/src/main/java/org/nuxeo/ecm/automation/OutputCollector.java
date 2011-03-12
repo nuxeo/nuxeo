@@ -49,24 +49,16 @@ import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
  * the operation using it invalid.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public interface OutputCollector<T, R> {
 
     /**
-     * Collect a new partial result (the result of the last iteration step).
-     *
-     * @param ctx
-     * @param obj
-     * @return
-     * @throws OperationException
+     * Collects a new partial result (the result of the last iteration step).
      */
     void collect(OperationContext ctx, T obj) throws OperationException;
 
     /**
-     * Get the final output. This is usually a list or set of collected objects.
-     *
-     * @return
+     * Gets the final output. This is usually a list or set of collected objects.
      */
     R getOutput();
 

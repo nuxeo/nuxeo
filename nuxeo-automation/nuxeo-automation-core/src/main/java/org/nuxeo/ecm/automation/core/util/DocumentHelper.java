@@ -42,6 +42,9 @@ import org.nuxeo.ecm.core.schema.types.Type;
  */
 public class DocumentHelper {
 
+    private DocumentHelper() {
+    }
+
     /**
      * Saves the document and clear context data to avoid incrementing version
      * in next operations if not needed.

@@ -40,7 +40,7 @@ public class FetchFromClipboard {
     protected OperationContext ctx;
 
     @OperationMethod
-    public DocumentModelList run() throws Exception {
+    public DocumentModelList run() {
         List<DocumentModel> res = OperationHelper.getDocumentListManager().getWorkingList(
                 DocumentsListsManager.CLIPBOARD);
         return new DocumentModelListImpl(res);

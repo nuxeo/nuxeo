@@ -37,7 +37,7 @@ public class ChangeTab {
     protected String tab;
 
     @OperationMethod
-    public void run() throws Exception {
+    public void run() {
         OperationHelper.getWebActions().setCurrentTabId(tab);
     }
 

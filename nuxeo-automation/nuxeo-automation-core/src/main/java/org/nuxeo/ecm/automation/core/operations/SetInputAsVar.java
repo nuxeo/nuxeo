@@ -38,7 +38,7 @@ public class SetInputAsVar {
     protected String name;
 
     @OperationMethod
-    public void run() throws Exception {
+    public void run() {
         ctx.put(name, ctx.getInput());
     }
 

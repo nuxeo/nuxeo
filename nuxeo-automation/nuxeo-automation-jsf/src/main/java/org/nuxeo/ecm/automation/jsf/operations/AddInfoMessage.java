@@ -37,7 +37,7 @@ public class AddInfoMessage {
     protected String message;
 
     @OperationMethod
-    public void run() throws Exception {
+    public void run() {
         ctx.put(ID, message);
     }
 

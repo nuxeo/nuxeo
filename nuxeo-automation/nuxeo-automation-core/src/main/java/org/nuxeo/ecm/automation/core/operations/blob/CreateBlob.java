@@ -48,7 +48,7 @@ public class CreateBlob {
     protected String encoding;
 
     @OperationMethod
-    public Blob run() throws Exception {
+    public Blob run() {
         if (fileName == null) {
             fileName = file.getPath();
             int i = fileName.lastIndexOf('/');

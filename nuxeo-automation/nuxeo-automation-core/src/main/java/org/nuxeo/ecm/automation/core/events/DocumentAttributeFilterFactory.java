@@ -30,6 +30,9 @@ import org.nuxeo.ecm.core.api.Filter;
  */
 public class DocumentAttributeFilterFactory {
 
+    private DocumentAttributeFilterFactory() {
+    }
+
     public static final String ANY_DOC = "Any";
 
     public static final String REGULAR_DOC = "Regular Document";

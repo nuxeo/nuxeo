@@ -39,7 +39,7 @@ public class FetchDocumentFromSeamContext {
     protected String name;
 
     @OperationMethod
-    public DocumentModel run() throws Exception {
+    public DocumentModel run() {
         return (DocumentModel) Contexts.lookupInStatefulContexts(name);
     }
 

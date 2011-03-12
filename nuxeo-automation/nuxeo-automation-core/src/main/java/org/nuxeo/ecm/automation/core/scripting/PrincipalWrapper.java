@@ -68,7 +68,7 @@ public class PrincipalWrapper extends HashMap<String, Serializable> {
         return principal.getGroups();
     }
 
-    public String getEmail() throws Exception {
+    public String getEmail() {
         return principal.getEmail();
     }
 

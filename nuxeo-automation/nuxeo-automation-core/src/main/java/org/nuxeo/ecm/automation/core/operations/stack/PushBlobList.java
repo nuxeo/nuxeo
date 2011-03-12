@@ -26,7 +26,8 @@ import org.nuxeo.ecm.automation.core.util.BlobList;
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@Operation(id = PushBlobList.ID, category = Constants.CAT_EXECUTION_STACK, label = "Push File List", description = "Push the input file list on the context stack. The file list can be restored later as the input using the corrresponding pop operation. Returns the input file list.")
+@Operation(id = PushBlobList.ID, category = Constants.CAT_EXECUTION_STACK, label = "Push File List",
+        description = "Push the input file list on the context stack. The file list can be restored later as the input using the corrresponding pop operation. Returns the input file list.")
 public class PushBlobList {
 
     public static final String ID = "Blob.PushList";
@@ -35,7 +36,7 @@ public class PushBlobList {
     protected OperationContext ctx;
 
     @OperationMethod
-    public BlobList run(BlobList list) throws Exception {
+    public BlobList run(BlobList list) {
         ctx.push(Constants.O_BLOBS, list);
         return list;
     }

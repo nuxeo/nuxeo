@@ -32,6 +32,10 @@ import org.nuxeo.ecm.automation.client.jaxrs.model.OperationDocumentation.Param;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class JSONExporter {
+	
+	// Utility class
+	private JSONExporter() {
+	}
 
     public static String toJSON(List<OperationDocumentation> docs)
             throws IOException {

@@ -38,7 +38,7 @@ public class GetVarOperation {
     protected boolean flag;
 
     @OperationMethod
-    public String run() throws Exception {
+    public String run() {
         if (!flag) {
             throw new IllegalArgumentException("flag not set");
         }

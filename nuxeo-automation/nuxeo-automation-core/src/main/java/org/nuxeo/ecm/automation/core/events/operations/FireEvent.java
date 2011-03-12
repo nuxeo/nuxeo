@@ -32,7 +32,7 @@ import org.nuxeo.ecm.core.event.impl.EventContextImpl;
 
 /**
  * Save the session - TODO remove this?
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @Operation(id = FireEvent.ID, category = Constants.CAT_NOTIFICATION, label = "Send Event", description = "Send a Nuxeo event.")

@@ -125,7 +125,7 @@ public class Scripting {
     public static class GroovyScript implements Script {
         final groovy.lang.Script c;
 
-        public GroovyScript(String c) throws IOException {
+        public GroovyScript(String c) {
             this.c = gscripting.getScript(c, new Binding());
         }
 

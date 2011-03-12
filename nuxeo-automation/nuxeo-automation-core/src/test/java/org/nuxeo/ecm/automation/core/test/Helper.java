@@ -23,6 +23,9 @@ import org.nuxeo.ecm.automation.OperationContext;
  */
 public class Helper {
 
+    private Helper() {
+    }
+
     public static void updateContext(OperationContext ctx, String id,
             String message, String title) {
         updateTestParam(ctx, "chain", id);

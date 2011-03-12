@@ -27,7 +27,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 /**
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
  */
-@Operation(id = PushToSeamContext.ID, category = Constants.CAT_UI, requires = Constants.SEAM_CONTEXT, label = "Push to Seam Context", description = "Push the current input document into Seam context. Returns back the document.")
+@Operation(id = PushToSeamContext.ID, category = Constants.CAT_UI, requires = Constants.SEAM_CONTEXT, label = "Push to Seam Context",
+        description = "Push the current input document into Seam context. Returns back the document.")
 public class PushToSeamContext {
 
     public static final String ID = "Seam.PushDocument";
@@ -43,8 +44,7 @@ public class PushToSeamContext {
     protected String scope;
 
     @OperationMethod
-    public DocumentModel push(DocumentModel value) throws Exception {
-
+    public DocumentModel push(DocumentModel value) {
         if ("session".equalsIgnoreCase(scope)) {
             Contexts.getSessionContext().set(name, value);
         } else if ("conversation".equalsIgnoreCase(scope)) {

@@ -28,7 +28,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public class LoginStack {
 
@@ -49,7 +49,7 @@ public class LoginStack {
 
     /**
      * Get the current session
-     * 
+     *
      * @return
      */
     public CoreSession getSession() {
@@ -117,7 +117,7 @@ public class LoginStack {
     /**
      * Remove the stacked logins if any. This is called when chain execution is
      * done.
-     * 
+     *
      */
     protected void clear() throws OperationException {
         if (!stack.isEmpty()) {

@@ -33,6 +33,9 @@ import org.nuxeo.runtime.api.Framework;
  *
  */
 public class MailTemplateHelper {
+    
+    private MailTemplateHelper() {
+    }
 
     public static String getDocumentUrl(DocumentModel doc, String viewId) throws Exception {
         if (viewId == null) {
@@ -45,7 +48,6 @@ public class MailTemplateHelper {
                         docView,
                         true,
                         NotificationServiceHelper.getNotificationService().getServerUrlPrefix());
-
     }
 
     public static URL getTemplate(String name) {

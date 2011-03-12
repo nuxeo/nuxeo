@@ -55,7 +55,7 @@ public class StringToDocRef implements TypeAdapter {
         }
     }
 
-    public static DocumentRef createRef(String value) throws Exception {
+    public static DocumentRef createRef(String value) {
         return value.startsWith("/") ? new PathRef(value) : new IdRef(value);
     }
 

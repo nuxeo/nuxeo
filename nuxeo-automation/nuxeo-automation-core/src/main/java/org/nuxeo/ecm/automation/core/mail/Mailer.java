@@ -195,7 +195,7 @@ public class Mailer {
         return config;
     }
 
-    public void setConfiguration(Properties config) throws Exception {
+    public void setConfiguration(Properties config) {
         this.config = config;
     }
 

@@ -35,7 +35,7 @@ public class PushBlob {
     protected OperationContext ctx;
 
     @OperationMethod
-    public Blob run(Blob blob) throws Exception {
+    public Blob run(Blob blob) {
         ctx.push(Constants.O_BLOB, blob);
         return blob;
     }

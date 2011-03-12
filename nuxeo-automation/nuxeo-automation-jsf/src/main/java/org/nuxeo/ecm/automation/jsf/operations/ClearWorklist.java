@@ -36,7 +36,7 @@ public class ClearWorklist {
     protected OperationContext ctx;
 
     @OperationMethod
-    public void run() throws Exception {
+    public void run() {
         if (OperationHelper.isSeamContextAvailable()) {
             OperationHelper.getDocumentListManager().resetWorkingList(
                     DocumentsListsManager.DEFAULT_WORKING_LIST);

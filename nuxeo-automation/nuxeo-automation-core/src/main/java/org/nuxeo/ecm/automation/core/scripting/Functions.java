@@ -24,6 +24,8 @@ public class Functions {
 
     private static volatile Object fn = new CoreFunctions();
 
+    private Functions() {
+    }
 
     public static void setInstance(Object fn) {
         if (fn == null) {

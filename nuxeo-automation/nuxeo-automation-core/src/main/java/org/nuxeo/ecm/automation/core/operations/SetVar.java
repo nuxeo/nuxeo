@@ -45,7 +45,7 @@ public class SetVar {
     protected Object value;
 
     @OperationMethod
-    public void run() throws Exception {
+    public void run() {
         ctx.put(name, value);
     }
 

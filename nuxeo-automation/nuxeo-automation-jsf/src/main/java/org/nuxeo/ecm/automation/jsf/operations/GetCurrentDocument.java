@@ -30,7 +30,7 @@ public class GetCurrentDocument {
     public static final String ID = "Seam.GetCurrentDocument";
 
     @OperationMethod
-    public DocumentModel run() throws Exception {
+    public DocumentModel run() {
         return OperationHelper.getNavigationContext().getCurrentDocument();
     }
 

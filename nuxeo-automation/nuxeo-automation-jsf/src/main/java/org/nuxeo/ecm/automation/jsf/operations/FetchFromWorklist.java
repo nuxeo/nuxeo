@@ -41,7 +41,7 @@ public class FetchFromWorklist {
     protected OperationContext ctx;
 
     @OperationMethod
-    public DocumentModelList run() throws Exception {
+    public DocumentModelList run() {
         List<DocumentModel> res = null;
         if (OperationHelper.isSeamContextAvailable()) {
             res = OperationHelper.getDocumentListManager().getWorkingList(

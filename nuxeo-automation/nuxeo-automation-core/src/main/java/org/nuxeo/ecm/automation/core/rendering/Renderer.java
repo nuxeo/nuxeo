@@ -20,11 +20,11 @@ import java.util.Map;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public interface Renderer {
 
-    public final static String TEMPLATE_PREFIX = "template:";
+    String TEMPLATE_PREFIX = "template:";
 
-    public String render(String uriOrContent, Map<String, Object> root) throws Exception;
+    String render(String uriOrContent, Map<String, Object> root) throws Exception;
+
 }

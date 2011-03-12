@@ -35,7 +35,7 @@ public class ClearClipboard {
     protected OperationContext ctx;
 
     @OperationMethod
-    public void run() throws Exception {
+    public void run() {
         OperationHelper.getDocumentListManager().resetWorkingList(
                 DocumentsListsManager.CLIPBOARD);
     }

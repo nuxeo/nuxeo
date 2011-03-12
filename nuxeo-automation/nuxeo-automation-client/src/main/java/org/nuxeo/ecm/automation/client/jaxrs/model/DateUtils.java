@@ -27,6 +27,10 @@ import java.util.Date;
  */
 @SuppressWarnings("deprecation")
 public class DateUtils {
+	
+	// Utility class.
+	private DateUtils() {
+	}
 
     public static Date parseDate(String date) {
         int t = date.indexOf('T');

@@ -32,7 +32,7 @@ import org.codehaus.groovy.runtime.InvokerHelper;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public class GroovyScripting {
 
@@ -126,7 +126,7 @@ public class GroovyScripting {
         return InvokerHelper.createScript(klass, context);
     }
 
-    public Script getScript(String content, Binding context) throws IOException {
+    public Script getScript(String content, Binding context) {
         Class<?> klass = loader.parseClass(content); // compile
         return InvokerHelper.createScript(klass, context);
     }

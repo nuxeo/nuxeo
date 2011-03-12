@@ -35,7 +35,7 @@ public class FetchDocument {
     protected DocumentModel value;
 
     @OperationMethod
-    public DocumentModel run() throws Exception {
+    public DocumentModel run() {
         return value;
     }
 

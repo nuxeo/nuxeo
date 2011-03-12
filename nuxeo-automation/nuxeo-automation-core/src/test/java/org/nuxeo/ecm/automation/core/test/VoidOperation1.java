@@ -48,7 +48,7 @@ public class VoidOperation1 {
     }
 
     @OperationMethod
-    public DocumentModel printInfo3(DocumentModel doc) throws Exception {
+    public DocumentModel printInfo3(DocumentModel doc) {
         // System.out.println("O1:ref:doc: "+ref+". Session: "+session+".
         // message: "+message);
         Helper.updateContext(ctx, "V1:doc:doc", message, doc.getPathAsString());

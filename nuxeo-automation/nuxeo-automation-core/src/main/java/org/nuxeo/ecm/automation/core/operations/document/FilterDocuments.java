@@ -77,7 +77,7 @@ public class FilterDocuments {
     protected String attr;
 
     @OperationMethod
-    public DocumentModelList run(DocumentModelList docs) throws Exception {
+    public DocumentModelList run(DocumentModelList docs) {
         Condition cond = new Condition();
         DocumentModelList result = new DocumentModelListImpl();
         for (DocumentModel doc : docs) {

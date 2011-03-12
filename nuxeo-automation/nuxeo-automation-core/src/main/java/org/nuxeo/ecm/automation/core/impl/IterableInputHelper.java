@@ -35,6 +35,9 @@ public class IterableInputHelper {
 
     // protected static ConcurrentMap<String,String> cache;
 
+    private IterableInputHelper () {
+    }
+
     public static Class<?> getIterableType(Class<?> cl) {
         // TODO first look into a cache
         // Class<?> cl = cache.get(cl.getName());
@@ -88,10 +91,7 @@ public class IterableInputHelper {
         return null;
     }
 
-    /**
-     * @param args
-     */
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         DocumentModelListImpl o1 = new DocumentModelListImpl();
         DocumentModelCollector o2 = new DocumentModelCollector();
         MyIt o3 = new MyIt();
@@ -113,256 +113,116 @@ public class IterableInputHelper {
 
     static class MyList implements List<String> {
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see java.util.List#size()
-         */
         @Override
         public int size() {
-            // TODO Auto-generated method stub
             return 0;
         }
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see java.util.List#isEmpty()
-         */
         @Override
         public boolean isEmpty() {
-            // TODO Auto-generated method stub
             return false;
         }
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see java.util.List#contains(java.lang.Object)
-         */
         @Override
         public boolean contains(Object o) {
-            // TODO Auto-generated method stub
             return false;
         }
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see java.util.List#iterator()
-         */
         @Override
         public Iterator<String> iterator() {
-            // TODO Auto-generated method stub
             return null;
         }
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see java.util.List#toArray()
-         */
         @Override
         public Object[] toArray() {
-            // TODO Auto-generated method stub
             return null;
         }
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see java.util.List#toArray(T[])
-         */
         @Override
         public <T> T[] toArray(T[] a) {
-            // TODO Auto-generated method stub
             return null;
         }
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see java.util.List#add(java.lang.Object)
-         */
         @Override
         public boolean add(String e) {
-            // TODO Auto-generated method stub
             return false;
         }
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see java.util.List#remove(java.lang.Object)
-         */
         @Override
         public boolean remove(Object o) {
-            // TODO Auto-generated method stub
             return false;
         }
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see java.util.List#containsAll(java.util.Collection)
-         */
         @Override
         public boolean containsAll(Collection<?> c) {
-            // TODO Auto-generated method stub
             return false;
         }
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see java.util.List#addAll(java.util.Collection)
-         */
         @Override
         public boolean addAll(Collection<? extends String> c) {
-            // TODO Auto-generated method stub
             return false;
         }
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see java.util.List#addAll(int, java.util.Collection)
-         */
         @Override
         public boolean addAll(int index, Collection<? extends String> c) {
-            // TODO Auto-generated method stub
             return false;
         }
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see java.util.List#removeAll(java.util.Collection)
-         */
         @Override
         public boolean removeAll(Collection<?> c) {
-            // TODO Auto-generated method stub
             return false;
         }
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see java.util.List#retainAll(java.util.Collection)
-         */
         @Override
         public boolean retainAll(Collection<?> c) {
-            // TODO Auto-generated method stub
             return false;
         }
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see java.util.List#clear()
-         */
         @Override
         public void clear() {
-            // TODO Auto-generated method stub
-
         }
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see java.util.List#get(int)
-         */
         @Override
         public String get(int index) {
-            // TODO Auto-generated method stub
             return null;
         }
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see java.util.List#set(int, java.lang.Object)
-         */
         @Override
         public String set(int index, String element) {
-            // TODO Auto-generated method stub
             return null;
         }
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see java.util.List#add(int, java.lang.Object)
-         */
         @Override
         public void add(int index, String element) {
-            // TODO Auto-generated method stub
-
         }
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see java.util.List#remove(int)
-         */
         @Override
         public String remove(int index) {
-            // TODO Auto-generated method stub
             return null;
         }
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see java.util.List#indexOf(java.lang.Object)
-         */
         @Override
         public int indexOf(Object o) {
-            // TODO Auto-generated method stub
             return 0;
         }
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see java.util.List#lastIndexOf(java.lang.Object)
-         */
         @Override
         public int lastIndexOf(Object o) {
-            // TODO Auto-generated method stub
             return 0;
         }
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see java.util.List#listIterator()
-         */
         @Override
         public ListIterator<String> listIterator() {
-            // TODO Auto-generated method stub
             return null;
         }
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see java.util.List#listIterator(int)
-         */
         @Override
         public ListIterator<String> listIterator(int index) {
-            // TODO Auto-generated method stub
             return null;
         }
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see java.util.List#subList(int, int)
-         */
         @Override
         public List<String> subList(int fromIndex, int toIndex) {
-            // TODO Auto-generated method stub
             return null;
         }
 
@@ -370,148 +230,69 @@ public class IterableInputHelper {
 
     static class MyCol implements Collection<String> {
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see java.util.Collection#size()
-         */
         @Override
         public int size() {
-            // TODO Auto-generated method stub
             return 0;
         }
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see java.util.Collection#isEmpty()
-         */
         @Override
         public boolean isEmpty() {
-            // TODO Auto-generated method stub
             return false;
         }
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see java.util.Collection#contains(java.lang.Object)
-         */
         @Override
         public boolean contains(Object o) {
-            // TODO Auto-generated method stub
             return false;
         }
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see java.util.Collection#iterator()
-         */
         @Override
         public Iterator<String> iterator() {
-            // TODO Auto-generated method stub
             return null;
         }
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see java.util.Collection#toArray()
-         */
         @Override
         public Object[] toArray() {
-            // TODO Auto-generated method stub
             return null;
         }
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see java.util.Collection#toArray(T[])
-         */
         @Override
         public <T> T[] toArray(T[] a) {
-            // TODO Auto-generated method stub
             return null;
         }
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see java.util.Collection#add(java.lang.Object)
-         */
         @Override
         public boolean add(String e) {
-            // TODO Auto-generated method stub
             return false;
         }
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see java.util.Collection#remove(java.lang.Object)
-         */
         @Override
         public boolean remove(Object o) {
-            // TODO Auto-generated method stub
             return false;
         }
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see java.util.Collection#containsAll(java.util.Collection)
-         */
         @Override
         public boolean containsAll(Collection<?> c) {
-            // TODO Auto-generated method stub
             return false;
         }
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see java.util.Collection#addAll(java.util.Collection)
-         */
         @Override
         public boolean addAll(Collection<? extends String> c) {
-            // TODO Auto-generated method stub
             return false;
         }
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see java.util.Collection#removeAll(java.util.Collection)
-         */
         @Override
         public boolean removeAll(Collection<?> c) {
-            // TODO Auto-generated method stub
             return false;
         }
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see java.util.Collection#retainAll(java.util.Collection)
-         */
         @Override
         public boolean retainAll(Collection<?> c) {
-            // TODO Auto-generated method stub
             return false;
         }
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see java.util.Collection#clear()
-         */
         @Override
         public void clear() {
-            // TODO Auto-generated method stub
-
         }
-
     }
+
 }

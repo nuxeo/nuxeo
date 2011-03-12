@@ -36,13 +36,13 @@ public class PushDocumentList {
     protected OperationContext ctx;
 
     @OperationMethod
-    public DocumentModelList run(DocumentModelList doc) throws Exception {
+    public DocumentModelList run(DocumentModelList doc) {
         ctx.push(Constants.O_DOCUMENTS, doc);
         return doc;
     }
 
     @OperationMethod
-    public DocumentRefList run(DocumentRefList doc) throws Exception {
+    public DocumentRefList run(DocumentRefList doc) {
         ctx.push(Constants.O_DOCUMENTS, doc);
         return doc;
     }

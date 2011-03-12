@@ -31,7 +31,7 @@ public class StringListOperation {
     protected StringList emails;
 
     @OperationMethod
-    public StringList getEmails() throws Exception {
+    public StringList getEmails() {
         return emails;
     }
 

@@ -35,13 +35,15 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class JSONExporter {
 
+    private JSONExporter() {
+    }
+
     public static String toJSON() throws Exception {
         return toJSON(Framework.getService(AutomationService.class).getDocumentation());
     }
 
     public static void toJSON(Writer writer) throws Exception {
-        toJSON(
-                Framework.getService(AutomationService.class).getDocumentation(),
+        toJSON(Framework.getService(AutomationService.class).getDocumentation(),
                 writer);
     }
 
@@ -64,8 +66,7 @@ public class JSONExporter {
         writer.write(json.toString(2));
     }
 
-    public static JSONObject toJSON(OperationDocumentation doc)
-            throws IOException {
+    public static JSONObject toJSON(OperationDocumentation doc) {
         JSONObject op = new JSONObject();
         op.element("id", doc.id);
         op.element("label", doc.label);
