@@ -115,11 +115,13 @@ public final class Tree {
             return new Tree(rootNodes);
         }
 
-     public HierarchicalVocabulary getNode(HierarchicalVocabulary hv){
-         if (hv.getParent() == null)
-             return hv;
-         else return getNode(hv.getParent());
-     }
+        public HierarchicalVocabulary getNode(HierarchicalVocabulary hv) {
+            if (hv.getParent() == null) {
+                return hv;
+            } else {
+                return getNode(hv.getParent());
+            }
+        }
 
     }
 

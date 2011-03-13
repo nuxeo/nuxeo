@@ -29,7 +29,6 @@ import org.nuxeo.ecm.core.api.PathRef;
  * Example on how to use copy between repositories
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class Example {
 

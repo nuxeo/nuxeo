@@ -29,11 +29,13 @@ public abstract class AbstractDefaultXMLMarshaler {
     protected static final String publisherSerializerNSPrefix = "nxpub";
 
     protected String cleanUpXml(String data) {
-        if (data == null)
+        if (data == null) {
             return null;
-        if (data.startsWith("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"))
+        }
+        if (data.startsWith("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")) {
             data = data.replace("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n",
                     "");
+        }
         return data;
     }
 

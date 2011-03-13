@@ -184,7 +184,7 @@ public abstract class AbstractTask implements Task {
             File file = pkg.getData().getEntry(LocalPackage.INSTALL_PROPERTIES);
             FileOutputStream out = new FileOutputStream(file);
             try {
-                props.store(out, "user install paramaters");
+                props.store(out, "user install parameters");
             } finally {
                 out.close();
             }

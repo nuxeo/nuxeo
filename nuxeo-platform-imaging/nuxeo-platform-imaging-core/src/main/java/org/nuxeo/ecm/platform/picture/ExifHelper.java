@@ -44,6 +44,9 @@ public class ExifHelper {
 
     // the UNDEFINED data format
     public static final byte[] UNDEFINED = new byte[] { 0, 0, 0, 0, 0, 0, 0, 0 };
+    
+    private ExifHelper() {
+    }
 
     /**
      * Method used to perform the decode of the <b>Exif User comment</b> data
@@ -52,8 +55,8 @@ public class ExifHelper {
      * of the following cases: 65, 83, 67, 73, 73, 0, 0, 0 = ASCII 74, 73, 83,
      * 0, 0, 0, 0, 0 = JIS 0, 0, 0, 0, 0, 0, 0, 0 = UNDEFINED
      *
-     * @param rawBytes - the user comment represented as a byte array
-     * @return - the user comment as a String on the format retrieved from the
+     * @param rawBytes the user comment represented as a byte array
+     * @return the user comment as a String on the format retrieved from the
      *         data type.
      */
     public static String decodeUndefined(byte[] rawBytes) {
@@ -84,7 +87,6 @@ public class ExifHelper {
      * @param bytes the byte array
      * @param beginIndex the begin index which is zero based
      * @param endIndex the end index which is not zero based
-     * @return
      */
     public static byte[] extractBytes(byte[] bytes, int beginIndex, int endIndex) {
         byte[] result = new byte[endIndex - beginIndex];

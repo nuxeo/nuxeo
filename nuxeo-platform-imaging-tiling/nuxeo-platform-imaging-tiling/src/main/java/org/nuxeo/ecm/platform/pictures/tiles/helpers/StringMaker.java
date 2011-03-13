@@ -35,10 +35,12 @@ public class StringMaker {
 
     public static String getTileFileName(int x, int y, String prefix,
             String suffix, long lastModificationTime) {
-        if (prefix == null)
+        if (prefix == null) {
             prefix = "tile";
-        if (suffix == null)
+        }
+        if (suffix == null) {
             suffix = ".jpg";
+        }
 
         return prefix + x + "-" + y + '-' + lastModificationTime + suffix;
     }

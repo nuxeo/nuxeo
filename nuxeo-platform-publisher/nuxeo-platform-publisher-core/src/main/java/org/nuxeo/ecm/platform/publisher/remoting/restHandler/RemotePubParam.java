@@ -40,8 +40,9 @@ public class RemotePubParam {
     public PublicationNode getAsNode() {
         if (params.size() == 1) {
             return (PublicationNode) params.get(0);
-        } else
+        } else {
             return null;
+        }
     }
 
 }

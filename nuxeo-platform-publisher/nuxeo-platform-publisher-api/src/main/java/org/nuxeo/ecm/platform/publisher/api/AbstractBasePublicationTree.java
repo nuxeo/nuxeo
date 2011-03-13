@@ -62,9 +62,9 @@ public abstract class AbstractBasePublicationTree implements PublicationTree {
             throws ClientException {
         this.sid = sid;
         this.coreSession = coreSession;
-        if (factory != null)
+        if (factory != null) {
             this.factory = factory;
-        else {
+        } else {
             this.factory = getDefaultFactory();
             this.factory.init(coreSession, parameters);
         }

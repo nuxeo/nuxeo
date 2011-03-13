@@ -23,7 +23,6 @@ import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.jsf.OperationHelper;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsPersistenceManager;
 
 import static org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager.DEFAULT_WORKING_LIST;
@@ -58,10 +57,9 @@ public class PushToWorklist {
         if (OperationHelper.isSeamContextAvailable()) {
             OperationHelper.getDocumentListManager().addToWorkingList(
                     DEFAULT_WORKING_LIST, docs);
-        }
-        else {
+        } else {
             DocumentsListsPersistenceManager pm = new DocumentsListsPersistenceManager();
-            for (DocumentModel doc :docs) {
+            for (DocumentModel doc : docs) {
                 pm.addDocumentToPersistentList(ctx.getPrincipal().getName(), DEFAULT_WORKING_LIST, doc);
             }
         }

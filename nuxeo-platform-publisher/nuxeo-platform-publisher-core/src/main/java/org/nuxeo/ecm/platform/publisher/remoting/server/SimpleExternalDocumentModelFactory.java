@@ -86,8 +86,9 @@ public class SimpleExternalDocumentModelFactory extends
 
     public PublishedDocument wrapDocumentModel(DocumentModel doc)
             throws ClientException {
-        if (doc.isProxy())
+        if (doc.isProxy()) {
             return new SimpleCorePublishedDocument(doc);
+        }
         return new ExternalCorePublishedDocument(doc);
     }
 }

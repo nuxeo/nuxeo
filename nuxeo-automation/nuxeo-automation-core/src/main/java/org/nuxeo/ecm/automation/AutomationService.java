@@ -22,7 +22,7 @@ import org.nuxeo.ecm.automation.core.annotations.Operation;
 
 /**
  * Service providing an operation registry and operation execution methods. The
- * operation registry is thread safe and optimized for lookups. Progress monitor
+ * operation registry is thread-safe and optimized for lookups. Progress monitor
  * for asynchronous executions is not yet implemented.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>

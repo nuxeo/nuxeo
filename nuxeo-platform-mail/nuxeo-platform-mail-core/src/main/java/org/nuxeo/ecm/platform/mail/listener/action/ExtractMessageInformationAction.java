@@ -281,13 +281,15 @@ public class ExtractMessageInformationAction extends AbstractMailAction {
             for (int i = 0; i < mp.getCount(); i++) {
                 Part bp = mp.getBodyPart(i);
                 if (bp.isMimeType("text/plain")) {
-                    if (text == null)
+                    if (text == null) {
                         text = getText(bp);
+                    }
                     continue;
                 } else if (bp.isMimeType("text/html")) {
                     String s = getText(bp);
-                    if (s != null)
+                    if (s != null) {
                         return s;
+                    }
                 } else {
                     return getText(bp);
                 }
@@ -297,8 +299,9 @@ public class ExtractMessageInformationAction extends AbstractMailAction {
             Multipart mp = (Multipart)p.getContent();
             for (int i = 0; i < mp.getCount(); i++) {
                 String s = getText(mp.getBodyPart(i));
-                if (s != null)
+                if (s != null) {
                     return s;
+                }
             }
         }
 

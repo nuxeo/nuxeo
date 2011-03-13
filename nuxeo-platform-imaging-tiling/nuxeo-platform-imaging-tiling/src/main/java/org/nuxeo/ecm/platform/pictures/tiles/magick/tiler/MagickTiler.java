@@ -64,8 +64,9 @@ public class MagickTiler implements PictureTiler {
 
         if (input.getWidth() > input.getHeight()) {
             cropWidth = input.getWidth() / maxTiles;
-            if ((input.getWidth() % maxTiles) > 0)
+            if ((input.getWidth() % maxTiles) > 0) {
                 cropWidth += 1;
+            }
             Double exactCropHeight = (new Double(tileHeight)) / tileWidth
                     * cropWidth;
             if (exactCropHeight - exactCropHeight.intValue() > 0) {
@@ -75,22 +76,26 @@ public class MagickTiler implements PictureTiler {
             }
             ntx = maxTiles;
             nty = input.getHeight() / cropHeight;
-            if ((input.getHeight() % cropHeight) > 0)
+            if ((input.getHeight() % cropHeight) > 0) {
                 nty += 1;
+            }
         } else {
             cropHeight = input.getHeight() / maxTiles;
-            if ((input.getHeight() % maxTiles) > 0)
+            if ((input.getHeight() % maxTiles) > 0) {
                 cropHeight += 1;
+            }
             Double exactCropWidth = (new Double(tileWidth)) / tileHeight
                     * cropHeight;
-            if (exactCropWidth - exactCropWidth.intValue() > 0)
+            if (exactCropWidth - exactCropWidth.intValue() > 0) {
                 cropWidth = exactCropWidth.intValue() + 1;
-            else
+            } else {
                 cropWidth = exactCropWidth.intValue();
+            }
             nty = maxTiles;
             ntx = input.getWidth() / cropWidth;
-            if ((input.getWidth() % cropWidth) > 0)
+            if ((input.getWidth() % cropWidth) > 0) {
                 ntx += 1;
+            }
         }
 
         startX = xCenter * cropWidth;

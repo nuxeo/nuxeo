@@ -83,8 +83,9 @@ public class ClientRemotePublicationNode extends AbstractRemotableNode {
             return new BasicPublicationNode(rNode.getNodeType(),
                     rNode.getPath(), rNode.getTitle(), getTargetTreeName(),
                     serverSessionId);
-        } else
+        } else {
             return node;
+        }
 
         // return new ClientRemotePublicationNode(treeName, sessionId,node,
         // serverSessionId,
