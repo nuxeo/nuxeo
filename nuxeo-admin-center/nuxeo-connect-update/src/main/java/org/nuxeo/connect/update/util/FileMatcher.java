@@ -60,10 +60,6 @@ public class FileMatcher {
 
     /**
      * The pattern variable will be put in the given map if any.
-     *
-     * @param path
-     * @param map
-     * @return
      */
     public static File getMatchingFile(String path, Map<String, Object> map) {
         File file = new File(path);
@@ -86,9 +82,9 @@ public class FileMatcher {
         return null;
     }
 
-    protected Pattern pattern;
+    protected final Pattern pattern;
 
-    protected String key;
+    protected final String key;
 
     protected String value;
 

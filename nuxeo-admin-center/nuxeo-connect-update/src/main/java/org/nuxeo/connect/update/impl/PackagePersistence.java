@@ -48,9 +48,9 @@ public class PackagePersistence {
 
     private static final String FEATURES_DIR = "packages";
 
-    protected File root;
+    protected final File root;
 
-    protected File store;
+    protected final File store;
 
     protected final File temp;
 
@@ -248,7 +248,7 @@ public class PackagePersistence {
     protected File newTempDir(String id) {
         File tmp = new File(temp, id + "-" + random.nextInt());
         synchronized (temp) {
-            // FIXME: logic error here
+            // FIXME: logic error here - while doesn't loop!
             while (tmp.exists()) {
                 return newTempDir(id);
             }

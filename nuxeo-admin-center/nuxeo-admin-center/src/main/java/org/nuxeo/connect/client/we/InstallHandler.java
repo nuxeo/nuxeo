@@ -122,7 +122,7 @@ public class InstallHandler extends DefaultObject {
                         "pkg", pkg).arg("source", source);
             }
 
-            if (pkg.requireTermsAndConditionsAcceptance() & !(Boolean.TRUE.equals(acceptedTAC))) {
+            if (pkg.requireTermsAndConditionsAcceptance() && !Boolean.TRUE.equals(acceptedTAC)) {
                 return showTermsAndConditions(pkgId, source, depCheck);
             }
             if (!Boolean.FALSE.equals(depCheck)) {

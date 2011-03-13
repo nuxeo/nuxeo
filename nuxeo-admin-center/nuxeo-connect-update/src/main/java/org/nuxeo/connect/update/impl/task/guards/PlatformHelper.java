@@ -26,13 +26,12 @@ import org.nuxeo.runtime.api.Framework;
  * TODO: define the platform string format.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class PlatformHelper {
 
-    protected String name;
+    protected final String name;
 
-    protected String version;
+    protected final String version;
 
     public PlatformHelper() {
         name = Framework.getProperty("org.nuxeo.ecm.product.name");
@@ -50,9 +49,6 @@ public class PlatformHelper {
     /**
      * Test whether or not the current platform is same as (or compatible) with
      * the given one.
-     *
-     * @param platform
-     * @return
      */
     public boolean matches(String platform) {
         // TODO

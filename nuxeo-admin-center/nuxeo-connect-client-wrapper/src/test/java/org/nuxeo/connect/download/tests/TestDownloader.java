@@ -43,7 +43,6 @@ public class TestDownloader {
 
     @Test
     public void testSimpleDownload() throws Exception {
-
         ConnectDownloadManager cdm = NuxeoConnectClient.getDownloadManager();
         Assert.assertNotNull(cdm);
 

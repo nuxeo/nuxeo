@@ -38,11 +38,11 @@ public class StatsTask implements Runnable {
 
     private final DocumentRef rootDocRef;
 
-    protected boolean includeBlob;
+    protected final boolean includeBlob;
 
-    protected RepoStat cmdInstance;
+    protected final RepoStat cmdInstance;
 
-    protected String repositoryName;
+    protected final String repositoryName;
 
     public StatsTask(String repoName, DocumentRef rootDocRef,
             boolean includeBlob, RepoStat instance) throws Exception {

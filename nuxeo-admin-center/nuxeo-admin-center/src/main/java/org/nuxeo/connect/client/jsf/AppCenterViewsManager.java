@@ -62,9 +62,9 @@ public class AppCenterViewsManager implements Serializable {
 
     protected static final Log log = LogFactory.getLog(AppCenterViewsManager.class);
 
-    protected Map<String, String> packageTypeFilters = new HashMap<String, String>();
+    protected final Map<String, String> packageTypeFilters = new HashMap<String, String>();
 
-    protected Map<String, Boolean> platformFilters = new HashMap<String, Boolean>();
+    protected final Map<String, Boolean> platformFilters = new HashMap<String, Boolean>();
 
     @In(create = true)
     protected String currentAdminSubViewId;
@@ -207,7 +207,7 @@ public class AppCenterViewsManager implements Serializable {
 
     protected class StudioAutoInstaller implements Runnable {
 
-        protected DownloadingPackage pkg;
+        protected final DownloadingPackage pkg;
 
         protected StudioAutoInstaller(DownloadingPackage pkg) {
             this.pkg = pkg;

@@ -29,10 +29,9 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Helper class to call NuxeoCtl restart
+ * Helper class to call NuxeoCtl restart.
  *
  * @author Tiry (tdelprat@nuxeo.com)
- *
  */
 public class NuxeoCtlManager {
 
@@ -40,7 +39,7 @@ public class NuxeoCtlManager {
 
     protected static final String CMD_WIN = "nuxeoctl.bat";
 
-    protected static Log log = LogFactory.getLog(NuxeoCtlManager.class);
+    protected static final Log log = LogFactory.getLog(NuxeoCtlManager.class);
 
     public static boolean isWindows() {
         String osName = System.getProperty("os.name");
@@ -56,7 +55,7 @@ public class NuxeoCtlManager {
         String paramString = "restart";
 
         if (!isWindows()) {
-            // POXIX
+            // POSIX
             paramString += " 2>&1";
         } else {
             // WIN

@@ -49,7 +49,7 @@ public class AdminViewManager implements Serializable {
 
     protected Action currentView;
 
-    protected Map<String, Action> currentSubViews = new HashMap<String, Action>();
+    protected final Map<String, Action> currentSubViews = new HashMap<String, Action>();
 
     protected String externalPackageDownloadRequest;
 

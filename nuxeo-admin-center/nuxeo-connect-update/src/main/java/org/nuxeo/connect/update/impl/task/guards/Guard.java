@@ -28,7 +28,7 @@ import org.apache.commons.jexl.JexlContext;
  */
 public class Guard {
 
-    protected String value;
+    protected final String value;
 
     protected Expression expr;
 

@@ -50,14 +50,14 @@ public class IOUtils {
     }
 
     public static String createMd5(String text) throws Exception {
-        MessageDigest digest = java.security.MessageDigest.getInstance("MD5");
+        MessageDigest digest = MessageDigest.getInstance("MD5");
         digest.update(text.getBytes());
         byte[] hash = digest.digest();
         return md5ToHex(hash);
     }
 
     public static String createMd5(File file) throws Exception {
-        MessageDigest digest = java.security.MessageDigest.getInstance("MD5");
+        MessageDigest digest = MessageDigest.getInstance("MD5");
         FileInputStream in = new FileInputStream(file);
         byte[] bytes = new byte[64 * 1024];
         int r = in.read(bytes);
@@ -73,8 +73,8 @@ public class IOUtils {
 
     public static String md5ToHex(byte[] hash) {
         StringBuilder hexString = new StringBuilder();
-        for (int i = 0; i < hash.length; i++) {
-            String hex = Integer.toHexString(0xFF & hash[i]);
+        for (byte b : hash) {
+            String hex = Integer.toHexString(0xFF & b);
             if (hex.length() == 1) {
                 hexString.append('0');
             }

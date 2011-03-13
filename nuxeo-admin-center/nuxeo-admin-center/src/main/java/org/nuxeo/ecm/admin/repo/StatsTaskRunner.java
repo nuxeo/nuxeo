@@ -40,11 +40,11 @@ public class StatsTaskRunner extends UnrestrictedSessionRunner {
 
     protected static final Log log = LogFactory.getLog(StatsTaskRunner.class);
 
-    protected boolean includeBlob;
+    protected final boolean includeBlob;
 
-    protected DocumentRef rootref;
+    protected final DocumentRef rootref;
 
-    protected StatsTask hostTask;
+    protected final StatsTask hostTask;
 
     public StatsTaskRunner(String repositoryName, boolean includeBlob,
             DocumentRef rootref, StatsTask hostTask) {

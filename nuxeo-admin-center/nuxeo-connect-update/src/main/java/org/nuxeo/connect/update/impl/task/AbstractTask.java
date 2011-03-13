@@ -23,6 +23,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.FileUtils;
@@ -87,7 +88,7 @@ public abstract class AbstractTask implements Task {
      * A map of environment key/values that can be used in XML install files as
      * variables.
      */
-    protected Map<String, String> env;
+    protected final Map<String, String> env;
 
     protected AbstractTask() {
         env = new HashMap<String, String>();
@@ -178,7 +179,7 @@ public abstract class AbstractTask implements Task {
             return;
         }
         try {
-            java.util.Properties props = new java.util.Properties();
+            Properties props = new Properties();
             props.putAll(params);
             File file = pkg.getData().getEntry(LocalPackage.INSTALL_PROPERTIES);
             FileOutputStream out = new FileOutputStream(file);

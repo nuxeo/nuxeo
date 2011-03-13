@@ -23,12 +23,10 @@ import org.nuxeo.connect.update.model.PackageDefinition;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class XmlSerializer extends XmlWriter {
 
     public XmlSerializer() {
-        super();
     }
 
     public XmlSerializer(String tab) {
@@ -52,9 +50,9 @@ public class XmlSerializer extends XmlWriter {
         element("classifier", def.getClassifier());
         element("home-page", def.getHomePage());
 
-        element("hotreload-support", new Boolean(def.supportsHotReload()).toString());
-        element("supported", new Boolean(def.isSupported()).toString());
-        element("require-terms-and-conditions-acceptance", new Boolean(def.requireTermsAndConditionsAcceptance()).toString());
+        element("hotreload-support", Boolean.valueOf(def.supportsHotReload()).toString());
+        element("supported", Boolean.valueOf(def.isSupported()).toString());
+        element("require-terms-and-conditions-acceptance", Boolean.valueOf(def.requireTermsAndConditionsAcceptance()).toString());
         element("production-state", def.getProductionState().toString());
         element("nuxeo-validation", def.getValidationState().toString());
 

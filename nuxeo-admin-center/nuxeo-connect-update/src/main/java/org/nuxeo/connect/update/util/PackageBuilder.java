@@ -45,26 +45,25 @@ import org.nuxeo.connect.update.impl.xml.XmlSerializer;
 import org.nuxeo.connect.update.model.TaskDefinition;
 
 /**
- * Build an XML representation of a package
+ * Build an XML representation of a package.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class PackageBuilder {
 
-    protected PackageDefinitionImpl def;
+    protected final PackageDefinitionImpl def;
 
-    protected List<FormDefinition> installForms;
+    protected final List<FormDefinition> installForms;
 
-    protected List<FormDefinition> uninstallForms;
+    protected final List<FormDefinition> uninstallForms;
 
-    protected List<FormDefinition> validationForms;
+    protected final List<FormDefinition> validationForms;
 
-    protected List<String> platforms;
+    protected final List<String> platforms;
 
-    protected List<PackageDependency> dependencies;
+    protected final List<PackageDependency> dependencies;
 
-    protected LinkedHashMap<String, InputStream> entries;
+    protected final LinkedHashMap<String, InputStream> entries;
 
     public PackageBuilder() {
         def = new PackageDefinitionImpl();
@@ -237,10 +236,6 @@ public class PackageBuilder {
      * The entry content will be copied into the zip at build time and the given
      * input stream will be closed. (event if an exception occurs) - so you
      * don't need to handle stream closing.
-     *
-     * @param path
-     * @param in
-     * @return
      */
     public PackageBuilder addEntry(String path, InputStream in) {
         entries.put(path, in);
@@ -314,8 +309,8 @@ public class PackageBuilder {
         zout.closeEntry();
     }
 
+    // TODO: make it a unit test
     public static void main(String[] args) throws Exception {
-
         PackageBuilder builder = new PackageBuilder();
         builder.name("nuxeo-automation").version("5.3.2").type(
                 PackageType.ADDON);

@@ -33,13 +33,13 @@ import org.nuxeo.ecm.core.api.DocumentRef;
  */
 public class RepoStat {
 
-    protected ThreadPoolExecutor pool;
+    protected final ThreadPoolExecutor pool;
 
     protected int nbThreads = 5;
 
-    protected String repoName;
+    protected final String repoName;
 
-    protected boolean includeBlob;
+    protected final boolean includeBlob;
 
     protected RepoStatInfo info;
 

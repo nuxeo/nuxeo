@@ -24,15 +24,14 @@ import java.util.Map;
  * A file reference that can handle file name patterns. A file pattern can use
  * named variable that will be substituted with the actual value of the file
  * that matched the pattern.
- *
+ * <p>
  * Example: For a file pattern <code>nuxeo-automation-core-{v:.*}.jar</code>
  * that will match a file named <code>nuxeo-automation-core-5.3.2.jar</code> the
  * pattern variable will be <code>v=5.3.2</code>.
- *
+ * <p>
  * Note that only one pattern variable is supported.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public abstract class FileRef {
 
@@ -48,7 +47,7 @@ public abstract class FileRef {
     }
 
     /**
-     * Get the file referenced by this object. If the FileRef could not be
+     * Gets the file referenced by this object. If the FileRef could not be
      * resolved then null is returned.
      *
      * @return the referred file or null if none was found.
@@ -56,21 +55,17 @@ public abstract class FileRef {
     public abstract File getFile();
 
     /**
-     * Whether the referred file has a name pattern
-     *
-     * @return
+     * Whether the referred file has a name pattern.
      */
     public abstract boolean hasPattern();
 
     /**
      * Fill the given map with pattern variables.
-     *
-     * @param vars
      */
     public abstract void fillPatternVariables(Map<String, Object> vars);
 
     public static class ExactFileRef extends FileRef {
-        protected File file;
+        protected final File file;
 
         public ExactFileRef(String path) {
             this(new File(path));

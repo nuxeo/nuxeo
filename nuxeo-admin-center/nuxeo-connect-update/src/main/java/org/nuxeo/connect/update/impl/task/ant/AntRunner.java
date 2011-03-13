@@ -29,11 +29,10 @@ import org.nuxeo.connect.update.LocalPackage;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class AntRunner {
 
-    protected ClassLoader loader;
+    protected final ClassLoader loader;
 
     protected Project project;
 
@@ -106,7 +105,7 @@ public class AntRunner {
                         targets.toArray(new String[targets.size()]));
             } else {
                 project.getExecutor().executeTargets(project,
-                        new String[] { project.getDefaultTarget() });
+                        new String[]{project.getDefaultTarget()});
             }
 
             project.fireBuildFinished(null);

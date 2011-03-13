@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -83,8 +84,7 @@ public class UpdateServiceImpl implements PackageUpdateService {
     }
 
     public LocalPackage addPackage(File file) throws PackageException {
-        LocalPackage pkg = persistence.addPackage(file);
-        return pkg;
+        return persistence.addPackage(file);
     }
 
     public LocalPackage getPackage(String id) throws PackageException {
@@ -170,7 +170,7 @@ public class UpdateServiceImpl implements PackageUpdateService {
         Class<? extends Command> type = commands.get(id);
         if (type != null) {
             try {
-                return type.newInstance();
+                return type.getConstructor().newInstance();
             } catch (Exception e) {
                 throw new PackageException("Failed to load command " + id, e);
             }

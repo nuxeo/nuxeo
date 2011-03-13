@@ -38,13 +38,12 @@ public class PlatformVersionHelper {
     }
 
     public static boolean isCompatible(String[] targetPlatforms, String currentPlatform) {
-        if (targetPlatforms==null || targetPlatforms.length==0 || currentPlatform==null) {
+        if (targetPlatforms == null || targetPlatforms.length == 0 || currentPlatform == null) {
             return true;
-        } else {
-            for (String target : targetPlatforms) {
-                if (currentPlatform.equalsIgnoreCase(target)) {
-                    return true;
-                }
+        }
+        for (String target : targetPlatforms) {
+            if (currentPlatform.equalsIgnoreCase(target)) {
+                return true;
             }
         }
         return false;

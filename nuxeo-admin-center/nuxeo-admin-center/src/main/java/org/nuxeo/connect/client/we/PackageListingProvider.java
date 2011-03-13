@@ -222,8 +222,7 @@ public class PackageListingProvider extends DefaultObject {
 
     public boolean canDownload(Package pkg) {
         return PackageState.REMOTE == pkg.getState()
-                && (PackageType.STUDIO.equals(pkg.getType()) || (ConnectStatusHolder.instance().isRegistred() && ConnectStatusHolder.instance().getStatus().status().equals(
-                        SubscriptionStatusType.OK)));
+                && (PackageType.STUDIO == pkg.getType() || ConnectStatusHolder.instance().isRegistred() && ConnectStatusHolder.instance().getStatus().status() == SubscriptionStatusType.OK);
     }
 
     @GET

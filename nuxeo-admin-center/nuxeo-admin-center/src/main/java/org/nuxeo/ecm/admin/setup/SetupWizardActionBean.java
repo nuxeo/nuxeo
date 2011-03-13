@@ -46,6 +46,9 @@ import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 import org.nuxeo.launcher.config.ConfigurationException;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
 
+import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_TEMPLATES_NAME;
+import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_TEMPLATE_DBNAME;
+
 @Scope(ScopeType.SESSION)
 @Name("setupWizardAction")
 public class SetupWizardActionBean implements Serializable {
@@ -58,7 +61,7 @@ public class SetupWizardActionBean implements Serializable {
             "nuxeo.bind.address", "nuxeo.url", "nuxeo.data.dir",
             "nuxeo.log.dir", "org.nuxeo.ecm.product.name",
             "org.nuxeo.ecm.product.version", "nuxeo.conf",
-            ConfigurationGenerator.PARAM_TEMPLATE_DBNAME, "nuxeo.db.name",
+            PARAM_TEMPLATE_DBNAME, "nuxeo.db.name",
             "nuxeo.db.user", "nuxeo.db.password", "nuxeo.db.host",
             "nuxeo.db.port", "nuxeo.db.min-pool-size",
             "nuxeo.db.min-pool-size", "nuxeo.db.max-pool-size",
@@ -197,8 +200,8 @@ public class SetupWizardActionBean implements Serializable {
 
     protected void saveParameters() {
         // Calculates new templates string
-        String currentDB = parameters.get(ConfigurationGenerator.PARAM_TEMPLATE_DBNAME);
-        advancedParameters.put(ConfigurationGenerator.PARAM_TEMPLATES_NAME,
+        String currentDB = parameters.get(PARAM_TEMPLATE_DBNAME);
+        advancedParameters.put(PARAM_TEMPLATES_NAME,
                 configGenerator.rebuildTemplatesStr(currentDB));
         Map<String, String> customParameters = new HashMap<String, String>();
 

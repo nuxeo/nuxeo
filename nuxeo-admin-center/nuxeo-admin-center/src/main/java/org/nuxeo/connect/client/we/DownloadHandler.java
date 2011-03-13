@@ -63,21 +63,22 @@ public class DownloadHandler extends DefaultObject {
         DownloadablePackage pkg = getDownloadingPackage(pkgId);
         boolean downloadOver = false;
         // flag to start install after download
-        if (install==null) {
-            install=false;
+        if (install == null) {
+            install = false;
         }
-        if (depCheck==null) {
-            depCheck=true;
+        if (depCheck == null) {
+            depCheck = true;
         }
 
-        if (pkg==null) {
+        if (pkg == null) {
             PackageManager pm = Framework.getLocalService(PackageManager.class);
             pkg = pm.getPackage(pkgId);
-            if (pkg.getState()!= PackageState.DOWNLOADING) {
-                downloadOver=true;
+            if (pkg.getState() != PackageState.DOWNLOADING) {
+                downloadOver = true;
             }
         }
-        return getView("downloadStarted").arg("pkg", pkg).arg("source", source).arg("over", downloadOver).arg("install", install).arg("depCheck", depCheck);
+        return getView("downloadStarted").arg("pkg", pkg).arg("source", source)
+                .arg("over", downloadOver).arg("install", install).arg("depCheck", depCheck);
     }
 
     protected DownloadingPackage getDownloadingPackage(String pkgId) {

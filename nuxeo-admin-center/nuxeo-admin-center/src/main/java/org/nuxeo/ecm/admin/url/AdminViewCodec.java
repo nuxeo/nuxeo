@@ -31,8 +31,7 @@ import org.nuxeo.ecm.platform.url.service.AbstractDocumentViewCodec;
  *
  * @author tiry
  */
-public class AdminViewCodec extends AbstractDocumentViewCodec implements
-        DocumentViewCodec {
+public class AdminViewCodec extends AbstractDocumentViewCodec {
 
     public static final String PREFIX = "nxadm";
 

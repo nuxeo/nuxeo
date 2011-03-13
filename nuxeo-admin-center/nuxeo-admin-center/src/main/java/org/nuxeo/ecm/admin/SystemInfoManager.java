@@ -79,7 +79,7 @@ public class SystemInfoManager implements Serializable {
 
     protected RepoStatInfo statResult;
 
-    protected static Log log = LogFactory.getLog(SystemInfoManager.class);
+    protected static final Log log = LogFactory.getLog(SystemInfoManager.class);
 
     // *********************************
     // Host info Management
@@ -151,11 +151,11 @@ public class SystemInfoManager implements Serializable {
         }
         long nbHours = uts / 3600;
         sb.append(nbHours + " h ");
-        uts = uts % (3600);
+        uts = uts % 3600;
 
         long nbMin = uts / 60;
         sb.append(nbMin + " m ");
-        uts = uts % (60);
+        uts = uts % 60;
 
         sb.append(uts + " s  ");
 
@@ -221,10 +221,7 @@ public class SystemInfoManager implements Serializable {
         if (isStatInfoAvailable()) {
             return false;
         }
-        if (runningStat == null) {
-            return false;
-        }
-        return true;
+        return runningStat != null;
     }
 
     public boolean isStatInfoAvailable() {
@@ -278,11 +275,11 @@ public class SystemInfoManager implements Serializable {
             ranges.add(new SelectItem(i + "h", "label.timerange." + i + "h"));
         }
         for (int i = 1; i < 8; i++) {
-            ranges.add(new SelectItem((i * 24) + "h", "label.timerange." + i
+            ranges.add(new SelectItem(i * 24 + "h", "label.timerange." + i
                     + "d"));
         }
         for (int i = 2; i < 6; i++) {
-            ranges.add(new SelectItem((24 * 7) * i + "h", "label.timerange."
+            ranges.add(new SelectItem(24 * 7 * i + "h", "label.timerange."
                     + i + "w"));
         }
         return ranges;

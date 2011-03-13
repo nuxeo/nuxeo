@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -49,13 +50,13 @@ import org.xml.sax.InputSource;
  */
 public abstract class CommandsTask extends AbstractTask {
 
-    protected List<Command> commands;
+    protected final List<Command> commands;
 
     /**
      * The log is generated in the inverse order of commands to ensure last
      * command is rollbacked first.
      */
-    protected LinkedList<Command> log;
+    protected final LinkedList<Command> log;
 
     protected CommandsTask() {
         commands = new ArrayList<Command>();
@@ -184,7 +185,7 @@ public abstract class CommandsTask extends AbstractTask {
                     Command cmd = reg.getCommand(id);
                     if (cmd == null) { // my be the name of a embedded class
                         try {
-                            cmd = (Command) pkg.getData().loadClass(id).newInstance();
+                            cmd = (Command) pkg.getData().loadClass(id).getConstructor().newInstance();
                         } catch (Throwable t) {
                             throw new PackageException("Unknown command: " + id);
                         }

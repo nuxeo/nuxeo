@@ -40,13 +40,13 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class InstallAfterRestart {
 
-    protected static List<String> pkgIds = new ArrayList<String>();
+    protected static final List<String> pkgIds = new ArrayList<String>();
 
     public static final String FILE_NAME = "installAfterRestart.log";
 
     public static final String FAKE_VIDOZ = "org.nuxeo.fake.vindoz";
 
-    protected static Log log = LogFactory.getLog(InstallAfterRestart.class);
+    protected static final Log log = LogFactory.getLog(InstallAfterRestart.class);
 
     public static boolean isNeeded() {
         if ("true".equals(Framework.getProperty(FAKE_VIDOZ, "false"))) {
@@ -56,7 +56,7 @@ public class InstallAfterRestart {
     }
 
     public static boolean isNeededForPackage(Package pkg) {
-        return ((!PackageType.STUDIO.equals(pkg.getType())) && isNeeded());
+        return PackageType.STUDIO != pkg.getType() && isNeeded();
     }
 
     protected static boolean isVindozBox() {

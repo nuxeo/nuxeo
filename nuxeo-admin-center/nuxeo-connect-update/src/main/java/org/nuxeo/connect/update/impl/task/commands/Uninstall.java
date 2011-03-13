@@ -19,6 +19,7 @@ package org.nuxeo.connect.update.impl.task.commands;
 import java.io.File;
 import java.util.Map;
 import java.util.jar.JarFile;
+import java.util.jar.Manifest;
 
 import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.PackageUpdateComponent;
@@ -70,7 +71,7 @@ public class Uninstall extends AbstractCommand {
         JarFile jar = null;
         try {
             jar = new JarFile(file);
-            java.util.jar.Manifest mf = jar.getManifest();
+            Manifest mf = jar.getManifest();
             String name = mf.getMainAttributes().getValue("Bundle-SymbolicName");
             if (name != null) { // ignore errors
                 for (Bundle bundle : ctx.getBundles()) {

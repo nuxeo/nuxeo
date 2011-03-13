@@ -21,6 +21,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
 
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.xmap.XMap;
@@ -67,10 +68,9 @@ public class LocalPackageImpl implements LocalPackage {
         if (xmap==null) { // for tests
             xmap = UpdateServiceImpl.createXmap();
         }
-        InputStream in = null;
         try {
             this.data = new LocalPackageData(parent, file);
-            in = new FileInputStream(data.getManifest());
+            InputStream in = new FileInputStream(data.getManifest());
             def = (PackageDefinitionImpl) xmap.load(in);
         } catch (FileNotFoundException e) {
             throw new PackageException(
@@ -207,7 +207,7 @@ public class LocalPackageImpl implements LocalPackage {
     protected Task getTask(TaskDefinition tdef) throws PackageException {
         Task task = null;
         try {
-            task = (Task) data.loadClass(tdef.getType()).newInstance();
+            task = (Task) data.loadClass(tdef.getType()).getConstructor().newInstance();
         } catch (Exception e) {
             throw new PackageException("Could not instatiate custom task "
                     + tdef.getType() + " for package " + getId(), e);
@@ -219,7 +219,7 @@ public class LocalPackageImpl implements LocalPackage {
     public Validator getValidator() throws PackageException {
         if (def.getValidator() != null) {
             try {
-                return (Validator) data.loadClass(def.getValidator()).newInstance();
+                return (Validator) data.loadClass(def.getValidator()).getConstructor().newInstance();
             } catch (Exception e) {
                 throw new PackageException(
                         "Could not instatiate custom validator "
@@ -304,4 +304,5 @@ public class LocalPackageImpl implements LocalPackage {
     public boolean supportsHotReload() {
         return def.supportsHotReload();
     }
+
 }

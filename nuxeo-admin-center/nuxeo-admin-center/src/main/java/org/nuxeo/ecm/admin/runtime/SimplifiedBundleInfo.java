@@ -21,15 +21,15 @@ package org.nuxeo.ecm.admin.runtime;
 
 /**
  * Very simplified representation of a Nuxeo Bundle used for displaying in the
- * admin screens
+ * admin screens.
  *
  * @author tiry
  */
 public class SimplifiedBundleInfo implements Comparable<SimplifiedBundleInfo> {
 
-    protected String name;
+    protected final String name;
 
-    protected String version;
+    protected final String version;
 
     public SimplifiedBundleInfo(String name, String version) {
         this.name = name;

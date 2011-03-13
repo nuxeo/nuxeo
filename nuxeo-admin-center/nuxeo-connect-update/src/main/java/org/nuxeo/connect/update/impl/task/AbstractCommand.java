@@ -32,8 +32,8 @@ import org.w3c.dom.Element;
  * (null is returned as the inverse command) If fail is defined and evaluated to
  * true then the validation fails.
  * <p>
- * Commands extending this class must implement the {@link #doExecute()} and
- * {@link #doValidate(ValidationStatus)} methods instead of the one in the
+ * Commands extending this class must implement the {@link #doRun} and
+ * {@link #doValidate} methods instead of the one in the
  * interface. These methods are first testing for ignore and fail guards and
  * then if needed delegated to the doXXX method versions.
  *
@@ -41,9 +41,9 @@ import org.w3c.dom.Element;
  */
 public abstract class AbstractCommand implements Command {
 
-    protected String id;
+    protected final String id;
 
-    protected Map<String, Object> guardVars;
+    protected final Map<String, Object> guardVars;
 
     protected String fail;
 

@@ -22,7 +22,7 @@ package org.nuxeo.connect.update.impl.xml;
  */
 public class XmlWriter {
 
-    protected String tab;
+    protected final String tab;
 
     protected StringBuilder sb;
 
@@ -37,9 +37,6 @@ public class XmlWriter {
         this("  ");
     }
 
-    /**
-     * @param tab
-     */
     public XmlWriter(String tab) {
         this.tab = tab == null ? "" : tab;
         reset();
