@@ -146,7 +146,7 @@ public class OperationChainContribution {
                         break;
                     }
                     if (val == null) {
-                        val = param.value.toString();
+                        val = param.value;
                     }
                     params.set(param.name, val);
                 }

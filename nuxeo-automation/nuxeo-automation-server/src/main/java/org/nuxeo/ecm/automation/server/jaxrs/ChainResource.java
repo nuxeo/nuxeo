@@ -38,6 +38,7 @@ public class ChainResource extends ExecutableResource {
         return null;
     }
 
+    @Override
     public Object execute(ExecutionRequest xreq) throws Exception {
         OperationContext ctx = xreq.createContext(request, getCoreSession());
         return service.run(ctx, chainId);

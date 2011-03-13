@@ -22,10 +22,9 @@ import org.nuxeo.ecm.automation.client.jaxrs.spi.Request;
 import org.nuxeo.ecm.automation.client.jaxrs.util.Base64;
 
 /**
- * Inject the basic authentication header in the request
+ * Inject the basic authentication header in the request.
  *
  * @author matic
- *
  */
 public class BasicAuthInterceptor implements RequestInterceptor {
 
@@ -36,7 +35,7 @@ public class BasicAuthInterceptor implements RequestInterceptor {
     }
 
     public void setAuth(String username, String password) {
-        String info = username.concat(":").concat(password);
+        String info = username + ":" + password;
         token = "Basic " + Base64.encode(info);
     }
 

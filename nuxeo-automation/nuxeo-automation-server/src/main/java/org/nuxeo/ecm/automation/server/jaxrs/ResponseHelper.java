@@ -28,6 +28,9 @@ import org.nuxeo.ecm.core.api.Blob;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class ResponseHelper {
+    
+    private ResponseHelper() {
+    }
 
     public static Response notFound() {
         return Response.status(404).build();

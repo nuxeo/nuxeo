@@ -40,7 +40,7 @@ public class GetSelectedDocuments {
     protected OperationContext ctx;
 
     @OperationMethod
-    public DocumentModelList run() throws Exception {
+    public DocumentModelList run() {
         List<DocumentModel> res = OperationHelper.getDocumentListManager().getWorkingList(
                 DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
         return new DocumentModelListImpl(res);

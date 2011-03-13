@@ -87,7 +87,7 @@ public class MultipartBlobs extends MimeMultipart {
     }
 
     /**
-     * hack to be able to output boundary with quotes if needed.
+     * Hack to be able to output boundary with quotes if needed.
      *
      * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
      */

@@ -30,7 +30,7 @@ public class GetCurrentDomain {
     public static final String ID = "Seam.GetCurrentDomain";
 
     @OperationMethod
-    public DocumentModel run() throws Exception {
+    public DocumentModel run() {
         return OperationHelper.getNavigationContext().getCurrentDomain();
     }
 

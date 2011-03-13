@@ -57,7 +57,7 @@ public class AuditLog {
     protected String comment = "";
 
     @OperationMethod
-    public DocumentModel run(DocumentModel doc) throws Exception {
+    public DocumentModel run(DocumentModel doc) {
         Principal principal = ctx.getPrincipal();
         LogEntry entry = newEntry(doc, principal != null ? principal.getName()
                 : null, new Date());
@@ -66,7 +66,7 @@ public class AuditLog {
     }
 
     @OperationMethod
-    public DocumentModelList run(DocumentModelList docs) throws Exception {
+    public DocumentModelList run(DocumentModelList docs) {
         List<LogEntry> entries = new ArrayList<LogEntry>();
         Date date = new Date();
         Principal principal = ctx.getPrincipal();

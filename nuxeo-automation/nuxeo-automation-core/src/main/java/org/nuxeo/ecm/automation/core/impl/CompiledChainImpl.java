@@ -114,7 +114,7 @@ class CompiledChainImpl implements CompiledChain {
 
     protected Object doInvoke(OperationContext ctx) throws OperationException {
         // add debug info
-        ctx.addTrace(method.op.getId().concat(":").concat(method.method.getName()));
+        ctx.addTrace(method.op.getId() + ":" + method.method.getName());
         // invoke method
         Object out = method.invoke(ctx, args);
         ctx.setInput(out);

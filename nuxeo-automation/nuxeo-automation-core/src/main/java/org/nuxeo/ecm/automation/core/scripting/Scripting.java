@@ -18,7 +18,6 @@ package org.nuxeo.ecm.automation.core.scripting;
 
 import groovy.lang.Binding;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.net.URL;

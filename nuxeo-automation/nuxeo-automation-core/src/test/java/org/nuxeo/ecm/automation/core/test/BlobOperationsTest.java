@@ -237,7 +237,7 @@ public class BlobOperationsTest {
         chain.add(BlobToFile.ID).set("directory", dir.getAbsolutePath()).set(
                 "prefix", "test-");
         Blob out = (Blob) service.run(ctx, chain);
-        assertTrue(blob == out);
+        assertSame(blob, out);
 
         File file = new File(dir, "test-" + blob.getFilename());
         assertEquals(blob.getString(), FileUtils.readFile(file));

@@ -39,7 +39,7 @@ public abstract class ExecutableResource {
 
     protected AutomationService service;
 
-    public ExecutableResource(AutomationService service) {
+    protected ExecutableResource(AutomationService service) {
         this.service = service;
     }
 

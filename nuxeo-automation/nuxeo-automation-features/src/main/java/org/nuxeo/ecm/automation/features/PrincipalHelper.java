@@ -167,7 +167,7 @@ public class PrincipalHelper {
 
         protected HashSet<String> result = new HashSet<String>();
 
-        public EmailCollector(String userSchemaName, String userEmailFieldName) {
+        EmailCollector(String userSchemaName, String userEmailFieldName) {
             this.userSchemaName = userSchemaName;
             this.userEmailFieldName = userEmailFieldName;
         }
@@ -219,7 +219,7 @@ public class PrincipalHelper {
 
         protected HashSet<String> result = new HashSet<String>();
 
-        public IdCollector(boolean prefixIds) {
+        IdCollector(boolean prefixIds) {
             this.prefixIds = prefixIds;
         }
 

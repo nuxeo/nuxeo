@@ -67,6 +67,7 @@ public class Document extends DocRef {
         return ref;
     }
 
+    @Override
     public String getInputType() {
         return "document";
     }

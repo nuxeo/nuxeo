@@ -47,17 +47,13 @@ public interface AutomationClient {
     void setRequestInterceptor(RequestInterceptor interceptor);
 
     /**
-     * Get access to this request interceptor
-     *
-     * @return
+     * Gets access to this request interceptor
      */
     RequestInterceptor getRequestInterceptor();
 
     /**
      * Creates a new session. If no interceptors configured connect
      * anonymously.
-     *
-     * @return
      */
     Session getSession();
 

@@ -106,7 +106,7 @@ public class RestTest {
     // ------ Tests comes here --------
 
     @BeforeClass
-    public static void connect() throws Exception {
+    public static void connect() {
         try {
             client = new HttpAutomationClient(
                     "http://localhost:18080/automation");

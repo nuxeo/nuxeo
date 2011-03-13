@@ -133,7 +133,7 @@ public class DocumentService {
             PropertyMap properties) throws Exception {
         OperationRequest req = session.newRequest(CreateDocument).setInput(
                 parent).set("type", type).set("name", name);
-        if (properties != null && properties.size() > 0) {
+        if (properties != null && !properties.isEmpty()) {
             req.set("properties", properties);
         }
         return (Document) req.execute();

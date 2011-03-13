@@ -26,10 +26,13 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsPersistenceManager;
 
+import static org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager.DEFAULT_WORKING_LIST;
+
 /**
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
  */
-@Operation(id = PushToWorklist.ID, category = Constants.CAT_UI, requires = Constants.SEAM_CONTEXT, label = "Push to Worklist", description = "Add the input document(s) to worklist. Returns back the document(s)")
+@Operation(id = PushToWorklist.ID, category = Constants.CAT_UI, requires = Constants.SEAM_CONTEXT, label = "Push to Worklist",
+        description = "Add the input document(s) to worklist. Returns back the document(s)")
 public class PushToWorklist {
 
     public static final String ID = "Seam.AddToWorklist";
@@ -38,28 +41,28 @@ public class PushToWorklist {
     protected OperationContext ctx;
 
     @OperationMethod
-    public DocumentModel run(DocumentModel doc) throws Exception {
+    public DocumentModel run(DocumentModel doc) {
         if (OperationHelper.isSeamContextAvailable()) {
             OperationHelper.getDocumentListManager().addToWorkingList(
-                    DocumentsListsManager.DEFAULT_WORKING_LIST, doc);
+                    DEFAULT_WORKING_LIST, doc);
         }
         else {
             DocumentsListsPersistenceManager pm = new DocumentsListsPersistenceManager();
-            pm.addDocumentToPersistentList(ctx.getPrincipal().getName(), DocumentsListsManager.DEFAULT_WORKING_LIST, doc);
+            pm.addDocumentToPersistentList(ctx.getPrincipal().getName(), DEFAULT_WORKING_LIST, doc);
         }
         return doc;
     }
 
     @OperationMethod
-    public DocumentModelList run(DocumentModelList docs) throws Exception {
+    public DocumentModelList run(DocumentModelList docs) {
         if (OperationHelper.isSeamContextAvailable()) {
             OperationHelper.getDocumentListManager().addToWorkingList(
-                    DocumentsListsManager.DEFAULT_WORKING_LIST, docs);
+                    DEFAULT_WORKING_LIST, docs);
         }
         else {
             DocumentsListsPersistenceManager pm = new DocumentsListsPersistenceManager();
             for (DocumentModel doc :docs) {
-                pm.addDocumentToPersistentList(ctx.getPrincipal().getName(), DocumentsListsManager.DEFAULT_WORKING_LIST, doc);
+                pm.addDocumentToPersistentList(ctx.getPrincipal().getName(), DEFAULT_WORKING_LIST, doc);
             }
         }
         return docs;

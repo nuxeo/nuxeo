@@ -55,6 +55,7 @@ public class Composer {
 
     protected Mailer mailer;
 
+    // FIXME: don't put URLs in Maps, this is a serious performance issue.
     protected final ConcurrentMap<String, URL> urls;
 
     public Composer() {

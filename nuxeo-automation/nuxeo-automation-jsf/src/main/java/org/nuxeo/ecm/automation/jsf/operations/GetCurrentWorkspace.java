@@ -30,7 +30,7 @@ public class GetCurrentWorkspace {
     public static final String ID = "Seam.GetCurrentWorkspace";
 
     @OperationMethod
-    public DocumentModel run() throws Exception {
+    public DocumentModel run() {
         return OperationHelper.getNavigationContext().getCurrentWorkspace();
     }
 

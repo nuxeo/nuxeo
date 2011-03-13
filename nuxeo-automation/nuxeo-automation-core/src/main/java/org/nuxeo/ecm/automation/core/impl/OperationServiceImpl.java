@@ -207,7 +207,7 @@ public class OperationServiceImpl implements AutomationService {
         return op;
     }
 
-    private final Map<String, OperationTypeImpl> lookup() {
+    private Map<String, OperationTypeImpl> lookup() {
         Map<String, OperationTypeImpl> _lookup = lookup;
         if (_lookup == null) {
             synchronized (this) {
@@ -218,7 +218,7 @@ public class OperationServiceImpl implements AutomationService {
         return _lookup;
     }
 
-    private final Map<String, ChainEntry> chainLookup() {
+    private Map<String, ChainEntry> chainLookup() {
         Map<String, ChainEntry> _lookup = chainLookup;
         if (_lookup == null) {
             synchronized (this) {

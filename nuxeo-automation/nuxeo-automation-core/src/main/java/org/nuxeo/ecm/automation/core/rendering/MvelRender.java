@@ -77,11 +77,11 @@ public class MvelRender implements Renderer {
 
         protected int maxCachedItems;
 
-        public Cache() {
-            this (128);
+        private Cache() {
+            this(128);
         }
 
-        public Cache(int maxCachedItems) {
+        private Cache(int maxCachedItems) {
             super(maxCachedItems, 1.0f, true);
             this.maxCachedItems = maxCachedItems;
         }

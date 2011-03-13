@@ -26,19 +26,20 @@ import org.nuxeo.ecm.platform.picture.api.PictureView;
 import org.nuxeo.ecm.platform.picture.api.adapters.MultiviewPicture;
 
 /**
- *
- * Simple Operation to extract an image view from a Picture Document
- * This operation is needed because using the default blob operation is too complicated in the case of the Picture DocumentType
+ * Simple Operation to extract an image view from a Picture Document.
+ * <p>
+ * This operation is needed because using the default blob operation
+ * is too complicated in the case of the Picture DocumentType.
  *
  * @author Tiry (tdelprat@nuxeo.com)
- *
  */
-@Operation(id = GetPictureView.ID, category = Constants.CAT_CONVERSION, label = "Get image view", description = "Get an image from a Picture document.")
+@Operation(id = GetPictureView.ID, category = Constants.CAT_CONVERSION, label = "Get image view",
+        description = "Get an image from a Picture document.")
 public class GetPictureView {
 
     public static final String ID = "Picture.getView";
 
-    @Param(name = "viewName",required=false)
+    @Param(name = "viewName", required = false)
     protected String viewName;
 
     @OperationMethod
@@ -46,23 +47,21 @@ public class GetPictureView {
 
         MultiviewPicture mvp = doc.getAdapter(MultiviewPicture.class);
 
-        if(mvp==null) {
+        if (mvp == null) {
             return null;
         }
 
-        if (viewName==null) {
+        if (viewName == null) {
             viewName = mvp.getOrigin();
         }
 
         PictureView pv = mvp.getView(viewName);
 
-        if (pv==null) {
+        if (pv == null) {
             return null;
         }
 
-        Blob picture = (Blob) pv.getContent();
-
-        return picture;
+        return (Blob) pv.getContent();
     }
 
 }

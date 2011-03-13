@@ -20,6 +20,6 @@ package org.nuxeo.ecm.automation.jsf.operations;
  */
 public interface SeamOperation {
 
-    static final String OUTCOME = "Outcome";
+    String OUTCOME = "Outcome";
 
 }
