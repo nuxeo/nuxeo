@@ -16,17 +16,27 @@
  */
 package org.nuxeo.runtime.start;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Dictionary;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Properties;
 
 import javax.naming.NamingException;
 
-import org.slf4j.LoggerFactory;
-
-import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.classic.joran.JoranConfigurator;
-import ch.qos.logback.core.joran.spi.JoranException;
-
+import org.eclipse.equinox.http.jetty.JettyConfigurator;
+import org.eclipse.equinox.http.jetty.JettyConstants;
+import org.nuxeo.common.Environment;
 import org.nuxeo.common.jndi.NamingContextFactory;
+import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.osgi.OSGiRuntimeService;
@@ -34,8 +44,11 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
-import org.osgi.framework.ServiceReference;
-import org.osgi.service.packageadmin.PackageAdmin;
+import org.slf4j.LoggerFactory;
+
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.joran.JoranConfigurator;
+import ch.qos.logback.core.joran.spi.JoranException;
 
 /**
  * This bundle should be put in a startlevel superior than the one used to start nuxeo bundles.
@@ -46,15 +59,59 @@ import org.osgi.service.packageadmin.PackageAdmin;
  */
 public class StartApplication implements BundleActivator {
 
+    protected BundleContext context;
+
+    protected Configurator[] configurators;
+
     @Override
     public void start(BundleContext context) throws Exception {
-       configureLogging();
+        this.context = context;
+        initSystemProperties();
         initEnvironment();
+        configureLogging();
+        configurators = loadConfigurators();
+        beforeStart();
         removeH2Lock();
-        startWebServices(context);
-        startRuntime(context);
+        startJNDI();
+        startRuntime();
         startContainer();
+        startJetty();
         ((OSGiRuntimeService)Framework.getRuntime()).fireApplicationStarted();
+        afterStart();
+    }
+
+    public void stop(BundleContext context) throws Exception {
+        beforeStop();
+        this.context = null;
+        afterStop();
+        configurators = null;
+        JettyConfigurator.stopServer("nuxeo");
+    }
+
+    @SuppressWarnings("unchecked")
+    protected Configurator[] loadConfigurators() throws Exception {
+        ArrayList<Configurator> configurators = new ArrayList<Configurator>();
+        Bundle bundle = context.getBundle();
+        Enumeration<URL> urls = bundle.findEntries("/", ".configurators", false);
+        if (urls != null) {
+            while (urls.hasMoreElements()) {
+                InputStream in = urls.nextElement().openStream();
+                BufferedReader reader = new BufferedReader( new InputStreamReader(in, "UTF-8"));
+                try {
+                    String line = reader.readLine();
+                    while (line != null) {
+                        line = line.trim();
+                        if(line.length() > 0 && !line.startsWith("#")) {
+                            configurators.add((Configurator)bundle.loadClass(line).newInstance());
+                        }
+                        line = reader.readLine();
+                    }
+                } finally {
+                    in.close();
+                }
+            }
+        }
+        return configurators.toArray(new Configurator[configurators.size()]);
     }
 
     protected void removeH2Lock() {
@@ -67,7 +124,7 @@ public class StartApplication implements BundleActivator {
         }
     }
 
-    protected void startRuntime(BundleContext context) throws BundleException {
+    protected void startRuntime() throws BundleException {
         try {
             context.getBundle().loadClass("org.nuxeo.runtime.api.Framework");
         } catch (Throwable t) {
@@ -77,8 +134,11 @@ public class StartApplication implements BundleActivator {
         //FrameworkUtil.getBundle(Framework.class).start();
     }
 
-    protected void startContainer() throws NamingException {
+    protected void startJNDI() throws NamingException {
         NamingContextFactory.install();
+    }
+
+    protected void startContainer() throws NamingException {
         NuxeoContainer.install();
     }
 
@@ -90,7 +150,7 @@ public class StartApplication implements BundleActivator {
         if (home == null) {
             return;
         }
-        final String config = home.concat("/config/logback.xml");
+        final String config = home + File.separator + "config" + File.separator + "logback.xml";
         LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
         JoranConfigurator configurator = new JoranConfigurator();
         configurator.setContext(lc);
@@ -102,55 +162,265 @@ public class StartApplication implements BundleActivator {
         }
     }
 
-    protected void startWebServices(BundleContext context)
+    // TODO this kind of task should be done by a specific Configurator
+    // deployed by a fragment
+    protected void startJetty()
             throws BundleException {
-        ServiceReference pkgAdmin = context.getServiceReference(PackageAdmin.class.getName());
-        PackageAdmin pa = (PackageAdmin)context.getService(pkgAdmin);
-        tryStartJetty(pa);
-        context.ungetService(pkgAdmin);
+    	try {
+        Dictionary<String, Object> settings = createDefaultSettings(context);        		
+        JettyConfigurator.startServer("nuxeo", settings);
+    	} catch (Exception e) {
+    		throw new BundleException("Failed to start jetty server", e);
+    	}
     }
 
-    protected boolean tryStartJetty(PackageAdmin pa) {
-        Bundle[] bundles = pa.getBundles("org.eclipse.equinox.http.jetty", null);
-        if (bundles != null && bundles.length > 0) {
-            try {
-                bundles[0].start();
-                return true;
-            } catch (Throwable t) {
-                t.printStackTrace();
+    @SuppressWarnings("unchecked")
+    protected void initSystemProperties() throws IOException {
+        Bundle bundle = context.getBundle();
+        Enumeration<URL> urls = bundle.findEntries("/", "system.properties", false);
+        if (urls != null) {
+            while (urls.hasMoreElements()) {
+                InputStream in = urls.nextElement().openStream();
+                try {
+                    readSystemProperties(in);
+                } finally {
+                    in.close();
+                }
             }
         }
-        return false;
+    }
+
+
+    protected void beforeStart() throws Exception {
+        for (Configurator c : configurators) {
+            c.beforeStart(context);
+        }
+    }
+
+    protected void afterStart() throws Exception {
+        for (Configurator c : configurators) {
+            c.afterStart(context);
+        }
+    }
+
+    protected void beforeStop() throws Exception {
+        for (Configurator c : configurators) {
+            c.beforeStop(context);
+        }
+    }
+
+    protected void afterStop() throws Exception {
+        for (Configurator c : configurators) {
+            c.afterStop(context);
+        }
+    }
+
+
+    protected void initEnvironment() throws IOException {
+        if (Environment.getDefault() == null) {
+            String homeDir = System.getProperty("nuxeo.home");
+            if (homeDir != null) {
+                File home = new File(homeDir);
+                home.mkdirs();
+                Environment.setDefault(new Environment(home));
+            }
+        }
+        File configDir = Environment.getDefault().getConfig();
+        if (!configDir.isDirectory()) {
+            File home = Environment.getDefault().getHome();
+            new File(home, "data").mkdir();
+            new File(home, "log").mkdir();
+            new File(home, "tmp").mkdir();
+            // unzip configuration if any configuration fragment was deployed
+            tryUnzipConfig(new File(home, "config"));
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    protected void tryUnzipConfig(File configDir) throws IOException {
+        Bundle bundle = context.getBundle();
+        if (!configDir.isDirectory()) {
+            configDir.mkdir();
+            Enumeration<URL> urls = bundle.findEntries("config", "*.xml", true);
+            if (urls != null) {
+                while (urls.hasMoreElements()) {
+                    copyConfigEntry(urls.nextElement(), configDir);
+                }
+            }
+            urls = bundle.findEntries("config", "*.properties", true);
+            if (urls != null) {
+                while (urls.hasMoreElements()) {
+                    copyConfigEntry(urls.nextElement(), configDir);
+                }
+            }
+        }
+    }
+
+    private File newConfigFile(File configDir, URL url) {
+        String path = url.getPath();
+        int i = path.lastIndexOf("/config/");
+        if (i == -1) {
+            throw new IllegalArgumentException("Excpecting a /config/ path.");
+        }
+        path = path.substring(i+"/config/".length());
+        if (File.separatorChar == '/') {
+            return new File(configDir, path);
+        }
+        String[] ar = StringUtils.split(path, '/', false);
+        if (ar.length == 0) {
+            throw new IllegalArgumentException("Invalid config file path: "+path);
+        }
+        StringBuilder buf = new StringBuilder(ar[0]);
+        for (i = 1; i<ar.length; i++) {
+            buf.append(File.separatorChar).append(ar[i]);
+        }
+        return new File(configDir, buf.toString());
+    }
+
+    private void copyConfigEntry(URL url, File configDir) throws IOException {
+        InputStream in = url.openStream();
+        try {
+            File file = newConfigFile(configDir, url);
+            file.getParentFile().mkdirs();
+            FileUtils.copyToFile(in, file);
+        } finally {
+            in.close();
+        }
     }
 
     /**
-     * Initialize environment using default values if no specified on the command line
+     * Read a properties file by respecting the order in which properties
+     * are declared. Multiline properties or unicode encoding is not supported
+     * @param in
+     * @return
+     * @throws IOException
      */
-    protected void initEnvironment() {
-        String home = System.getProperty("nuxeo.home");
-        if (home == null) {
-            home = System.getProperty("user.home")+File.separator+".nxserver-osgi";
-            System.setProperty("nuxeo.home", home);
-        }
-        String v = System.getProperty("h2.baseDir");
-        if (v == null) {
-            System.setProperty("h2.baseDir", home+File.separator+"data"+File.separator+"h2");
-        }
-        v = System.getProperty("jetty.logs");
-        if (v == null) {
-            System.setProperty("jetty.logs", home+File.separator+"log");
-        }
-        v = System.getProperty("org.eclipse.equinox.http.jetty.http.port");
-        if (v == null) {
-            System.setProperty("org.eclipse.equinox.http.jetty.http.port", "8080");
-        }
-        v = System.getProperty("logback.configurationFile");
-        if (v == null) {
-            System.setProperty("logback.configurationFile", home+File.separator+"config"+File.separator+"logback.xml");
+    private void readSystemProperties(InputStream in) throws IOException {
+        Properties sysprops = System.getProperties();
+        List<String> lines = FileUtils.readLines(in);
+        for (String line : lines) {
+            line = line.trim();
+            if (line.length() > 0 && !line.startsWith("#")) {
+                int p = line.indexOf('=');
+                if (p > -1) {
+                    String key = line.substring(0, p).trim();
+                    if (!sysprops.containsKey(key)) {
+                        String v = line.substring(p+1).trim();
+                        v = StringUtils.expandVars(v, sysprops);
+                        sysprops.put(key, v);
+                    }
+                }
+            }
         }
     }
+    
 
-    public void stop(BundleContext context) throws Exception {
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private Dictionary<String, Object> createDefaultSettings(BundleContext context) {
+		final String PROPERTY_PREFIX = "org.eclipse.equinox.http.jetty."; //$NON-NLS-1$
+		Dictionary defaultSettings = new Hashtable<String, Object>();
 
-    }
+
+		// HTTP Enabled (default is true)
+		String httpEnabledProperty = context.getProperty(PROPERTY_PREFIX + JettyConstants.HTTP_ENABLED);
+		Boolean httpEnabled = (httpEnabledProperty == null) ? Boolean.TRUE : new Boolean(httpEnabledProperty);
+		defaultSettings.put(JettyConstants.HTTP_ENABLED, httpEnabled);
+
+		// HTTP Port
+		String httpPortProperty = context.getProperty(PROPERTY_PREFIX + JettyConstants.HTTP_PORT);
+
+		int httpPort = 80;
+		if (httpPortProperty != null) {
+			try {
+				httpPort = Integer.parseInt(httpPortProperty);
+			} catch (NumberFormatException e) {
+				//(log this) ignore and use default
+			}
+		}
+		defaultSettings.put(JettyConstants.HTTP_PORT, new Integer(httpPort));
+
+		// HTTP Host (default is 0.0.0.0)
+		String httpHost = context.getProperty(PROPERTY_PREFIX + JettyConstants.HTTP_HOST);
+		if (httpHost != null)
+			defaultSettings.put(JettyConstants.HTTP_HOST, httpHost);
+
+		// HTTPS Enabled (default is false)
+		Boolean httpsEnabled = new Boolean(context.getProperty(PROPERTY_PREFIX + JettyConstants.HTTPS_ENABLED));
+		defaultSettings.put(JettyConstants.HTTPS_ENABLED, httpsEnabled);
+
+		if (httpsEnabled.booleanValue()) {
+			// HTTPS Port
+			String httpsPortProperty = context.getProperty(PROPERTY_PREFIX + JettyConstants.HTTPS_PORT);
+			int httpsPort = 443;
+			if (httpsPortProperty != null) {
+				try {
+					httpsPort = Integer.parseInt(httpsPortProperty);
+				} catch (NumberFormatException e) {
+					//(log this) ignore and use default
+				}
+			}
+			defaultSettings.put(JettyConstants.HTTPS_PORT, new Integer(httpsPort));
+
+			// HTTPS Host (default is 0.0.0.0)
+			String httpsHost = context.getProperty(PROPERTY_PREFIX + JettyConstants.HTTPS_HOST);
+			if (httpsHost != null)
+				defaultSettings.put(JettyConstants.HTTPS_HOST, httpsHost);
+
+			// SSL SETTINGS
+			String keystore = context.getProperty(PROPERTY_PREFIX + JettyConstants.SSL_KEYSTORE);
+			if (keystore != null)
+				defaultSettings.put(JettyConstants.SSL_KEYSTORE, keystore);
+
+			String password = context.getProperty(PROPERTY_PREFIX + JettyConstants.SSL_PASSWORD);
+			if (password != null)
+				defaultSettings.put(JettyConstants.SSL_PASSWORD, password);
+
+			String keypassword = context.getProperty(PROPERTY_PREFIX + JettyConstants.SSL_KEYPASSWORD);
+			if (keypassword != null)
+				defaultSettings.put(JettyConstants.SSL_KEYPASSWORD, keypassword);
+
+			String needclientauth = context.getProperty(PROPERTY_PREFIX + JettyConstants.SSL_NEEDCLIENTAUTH);
+			if (needclientauth != null)
+				defaultSettings.put(JettyConstants.SSL_NEEDCLIENTAUTH, new Boolean(needclientauth));
+
+			String wantclientauth = context.getProperty(PROPERTY_PREFIX + JettyConstants.SSL_WANTCLIENTAUTH);
+			if (wantclientauth != null)
+				defaultSettings.put(JettyConstants.SSL_WANTCLIENTAUTH, new Boolean(wantclientauth));
+
+			String protocol = context.getProperty(PROPERTY_PREFIX + JettyConstants.SSL_PROTOCOL);
+			if (protocol != null)
+				defaultSettings.put(JettyConstants.SSL_PROTOCOL, protocol);
+
+			String algorithm = context.getProperty(PROPERTY_PREFIX + JettyConstants.SSL_ALGORITHM);
+			if (algorithm != null)
+				defaultSettings.put(JettyConstants.SSL_ALGORITHM, algorithm);
+
+			String keystoretype = context.getProperty(PROPERTY_PREFIX + JettyConstants.SSL_KEYSTORETYPE);
+			if (keystoretype != null)
+				defaultSettings.put(JettyConstants.SSL_KEYSTORETYPE, keystoretype);
+		}
+
+		// Servlet Context Path
+		String contextpath = context.getProperty(PROPERTY_PREFIX + JettyConstants.CONTEXT_PATH);
+		if (contextpath != null)
+			defaultSettings.put(JettyConstants.CONTEXT_PATH, contextpath);
+
+		// Session Inactive Interval (timeout)
+		String sessionInactiveInterval = context.getProperty(PROPERTY_PREFIX + JettyConstants.CONTEXT_SESSIONINACTIVEINTERVAL);
+		if (sessionInactiveInterval != null) {
+			try {
+				defaultSettings.put(JettyConstants.CONTEXT_SESSIONINACTIVEINTERVAL, new Integer(sessionInactiveInterval));
+			} catch (NumberFormatException e) {
+				//(log this) ignore
+			}
+		}
+
+		// Other Info
+		String otherInfo = context.getProperty(PROPERTY_PREFIX + JettyConstants.OTHER_INFO);
+		if (otherInfo != null)
+			defaultSettings.put(JettyConstants.OTHER_INFO, otherInfo);
+
+		return defaultSettings;
+	}
+
 }

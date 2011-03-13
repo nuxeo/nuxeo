@@ -19,17 +19,11 @@
 
 package org.nuxeo.runtime.osgi;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
-import java.util.Enumeration;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.Environment;
-import org.nuxeo.common.utils.FileUtils;
-import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.runtime.api.Framework;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
@@ -56,6 +50,7 @@ public class OSGiRuntimeActivator implements BundleActivator {
 
     protected BundleContext context;
 
+
     public static OSGiRuntimeActivator getInstance() {
         return instance;
     }
@@ -68,8 +63,10 @@ public class OSGiRuntimeActivator implements BundleActivator {
 
         pkgAdmin = context.getServiceReference(PackageAdmin.class.getName());
 
-        // if no environment was setup create it now.
-        initEnvironment();
+        // assert the environment is setup
+        if (Environment.getDefault() == null) {
+            throw new IllegalStateException("Environment is not setup");
+        }
 
         // create the runtime
         runtime = new OSGiRuntimeService(context);
@@ -112,78 +109,6 @@ public class OSGiRuntimeActivator implements BundleActivator {
         Bundle[] bundles = pa.getBundles(name, null);
         context.ungetService(pkgAdmin);
         return bundles[0];
-    }
-
-    protected void initEnvironment() throws IOException {
-        if (Environment.getDefault() == null) {
-            String homeDir = System.getProperty("nuxeo.home");
-            if (homeDir != null) {
-                File home = new File(homeDir);
-                home.mkdirs();
-                Environment.setDefault(new Environment(home));
-            }
-        }
-        File configDir = Environment.getDefault().getConfig();
-        if (!configDir.isDirectory()) {
-            File home = Environment.getDefault().getHome();
-            new File(home, "data").mkdir();
-            new File(home, "log").mkdir();
-            new File(home, "tmp").mkdir();
-            // unzip configuration if any configuration fragment was deployed
-            tryUnzipConfig(new File(home, "config"));
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    protected void tryUnzipConfig(File configDir) throws IOException {
-        Bundle bundle = context.getBundle();
-        if (!configDir.isDirectory()) {
-            configDir.mkdir();
-            Enumeration<URL> urls = bundle.findEntries("config", "*.xml", true);
-            if (urls != null) {
-                while (urls.hasMoreElements()) {
-                    copyConfigEntry(urls.nextElement(), configDir);
-                }
-            }
-            urls = bundle.findEntries("config", "*.properties", true);
-            if (urls != null) {
-                while (urls.hasMoreElements()) {
-                    copyConfigEntry(urls.nextElement(), configDir);
-                }
-            }
-        }
-    }
-
-    private File newConfigFile(File configDir, URL url) {
-        String path = url.getPath();
-        int i = path.lastIndexOf("/config/");
-        if (i == -1) {
-            throw new IllegalArgumentException("Excpecting a /config/ path.");
-        }
-        path = path.substring(i+"/config/".length());
-        if (File.separatorChar == '/') {
-            return new File(configDir, path);
-        }
-        String[] ar = StringUtils.split(path, '/', false);
-        if (ar.length == 0) {
-            throw new IllegalArgumentException("Invalid config file path: "+path);
-        }
-        StringBuilder buf = new StringBuilder(ar[0]);
-        for (i = 1; i<ar.length; i++) {
-            buf.append(File.separatorChar).append(ar[i]);
-        }
-        return new File(configDir, buf.toString());
-    }
-
-    private void copyConfigEntry(URL url, File configDir) throws IOException {
-        InputStream in = url.openStream();
-        try {
-            File file = newConfigFile(configDir, url);
-            file.getParentFile().mkdirs();
-            FileUtils.copyToFile(in, file);
-        } finally {
-            in.close();
-        }
     }
 
     /**
