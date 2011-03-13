@@ -26,11 +26,11 @@ import org.nuxeo.runtime.expression.JexlExpression;
 
 public class CachedJEXLManager {
 
-    private static final Map<String, JexlExpression> expCache = new ConcurrentHashMap<String, JexlExpression>();
-
     public static boolean enforceThreadSafe = false;
 
     public static boolean useCache = true;
+
+    private static final Map<String, JexlExpression> expCache = new ConcurrentHashMap<String, JexlExpression>();
 
     public static JexlExpression getExpression(String elString) throws Exception {
         if (!useCache) {

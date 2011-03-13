@@ -21,6 +21,9 @@ package org.nuxeo.ecm.platform.api.login;
 public class RestrictedLoginHelper {
 
     protected static boolean restrictedModeActivated = false;
+    
+    private RestrictedLoginHelper() {
+    }
 
     public static void setRestrictedModeActivated(boolean restrictedModeActivated) {
         RestrictedLoginHelper.restrictedModeActivated = restrictedModeActivated;

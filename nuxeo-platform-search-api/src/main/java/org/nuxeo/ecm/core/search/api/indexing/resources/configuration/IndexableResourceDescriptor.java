@@ -34,10 +34,8 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * Indexable document descriptor.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
  */
 @XObject("resource")
-@SuppressWarnings("unchecked")
 public class IndexableResourceDescriptor implements IndexableResourceConf {
 
     private static final long serialVersionUID = -6243415861302877651L;

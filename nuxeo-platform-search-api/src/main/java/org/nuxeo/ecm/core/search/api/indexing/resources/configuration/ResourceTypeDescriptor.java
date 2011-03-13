@@ -32,7 +32,6 @@ import org.nuxeo.ecm.core.search.api.client.indexing.resources.factory.Indexable
  *
  */
 @XObject("resourceType")
-@SuppressWarnings("unchecked")
 public class ResourceTypeDescriptor implements Serializable {
 
     private static final long serialVersionUID = 1L;

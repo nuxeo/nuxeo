@@ -111,7 +111,6 @@ public class TestSearchPageProvider extends NXRuntimeTestCase {
         return res;
     }
 
-    @SuppressWarnings("unchecked")
     public void testGetNumberOfPages() {
         ResultSet set = new ResultSetImpl((SQLQuery) null, null, 0, 10,
                 Collections.<ResultItem>emptyList(), 17, 10);
@@ -119,7 +118,6 @@ public class TestSearchPageProvider extends NXRuntimeTestCase {
         assertEquals(2, provider.getNumberOfPages());
     }
 
-    @SuppressWarnings("unchecked")
     public void testGetCurerntPageSize() {
         ResultSet set = new ResultSetImpl((SQLQuery) null, null, 10, 10,
                 Collections.<ResultItem>emptyList(), 17, 7);
@@ -170,7 +168,6 @@ public class TestSearchPageProvider extends NXRuntimeTestCase {
     /*
      * See NXP-1696
      */
-    @SuppressWarnings("unchecked")
     public void testEmptyResults() {
         SearchPageProvider provider = new SearchPageProvider(
                 new ResultSetImpl((SQLQuery) null, null, 0, 10, Collections.<ResultItem>emptyList(), 0, 0));

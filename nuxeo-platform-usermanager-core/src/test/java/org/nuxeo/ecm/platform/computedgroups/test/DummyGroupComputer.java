@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.nuxeo.ecm.platform.computedgroups.AbstractGroupComputer;
-import org.nuxeo.ecm.platform.computedgroups.GroupComputer;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 
 public class DummyGroupComputer extends AbstractGroupComputer {

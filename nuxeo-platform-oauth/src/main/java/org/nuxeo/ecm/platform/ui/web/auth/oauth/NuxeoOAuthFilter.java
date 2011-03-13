@@ -22,8 +22,6 @@ package org.nuxeo.ecm.platform.ui.web.auth.oauth;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.security.Principal;
-import java.util.Enumeration;
-import java.util.Map;
 
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
