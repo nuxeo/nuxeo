@@ -112,6 +112,8 @@ public class AnnotationRepositoryTest extends AbstractRepositoryTestCase {
         closeSession();
         openSession();
 
+        waitForAsyncExec();
+
         // we only find the live document, not the archived version: this is
         // intentional: even if the annotation have been copied to the archived
         // versioned, but not the potential proxies pointed to them, we do not
