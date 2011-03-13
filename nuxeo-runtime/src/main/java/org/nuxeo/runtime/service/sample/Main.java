@@ -23,11 +23,10 @@ import org.nuxeo.runtime.service.AdapterManager;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class Main {
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         AdapterManager mgr = AdapterManager.getInstance();
         mgr.registerAdapter(new Service2Adapter());
 

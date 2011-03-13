@@ -195,7 +195,6 @@ public class DefaultRuntimeContext implements RuntimeContext {
         return null;
     }
 
-
     public RegistrationInfoImpl createRegistrationInfo(StreamRef ref)
             throws Exception {
         String source = FileUtils.read(ref.getStream());
@@ -204,9 +203,7 @@ public class DefaultRuntimeContext implements RuntimeContext {
         try {
             return createRegistrationInfo(in);
         } finally {
-            if (in != null) {
-                in.close();
-            }
+            in.close();
         }
     }
 

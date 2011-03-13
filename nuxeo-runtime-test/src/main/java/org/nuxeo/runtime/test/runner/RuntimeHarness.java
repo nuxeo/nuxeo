@@ -21,10 +21,8 @@ import java.io.File;
 import java.net.URL;
 import java.util.Properties;
 
-import org.nuxeo.osgi.BundleFile;
 import org.nuxeo.osgi.OSGiAdapter;
 import org.nuxeo.runtime.model.RuntimeContext;
-import org.nuxeo.runtime.model.StreamRef;
 import org.nuxeo.runtime.test.WorkingDirectoryConfigurator;
 
 /**

@@ -84,7 +84,7 @@ public class NuxeoContainer {
      *
      * @since 5.4.1
      */
-    public synchronized static void install(TransactionManagerConfiguration txconfig,
+    public static synchronized void install(TransactionManagerConfiguration txconfig,
             ConnectionManagerConfiguration cmconfig) throws NamingException {
         initTransactionManager(txconfig);
         initConnectionManager(cmconfig);
@@ -92,11 +92,11 @@ public class NuxeoContainer {
         isInstalled = true;
     }
 
-    public synchronized static boolean isInstalled() {
+    public static synchronized boolean isInstalled() {
         return isInstalled;
     }
 
-    public synchronized static void uninstall() {
+    public static synchronized void uninstall() {
         if (!isInstalled) {
             return;
         }

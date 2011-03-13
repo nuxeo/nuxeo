@@ -47,11 +47,10 @@ import javax.security.auth.spi.LoginModule;
  * <code>org.nuxeo.runtime.api</code> in your manifest.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class LoginModuleWrapper implements LoginModule {
 
-    public final static String DELEGATE_CLASS_KEY = LoginModuleWrapper.class.getName()+".delegate";
+    public static final String DELEGATE_CLASS_KEY = LoginModuleWrapper.class.getName()+".delegate";
 
     protected LoginModule delegate;
 

@@ -31,11 +31,10 @@ import org.osgi.framework.BundleContext;
  * TODO: enable this activator when other distributions are tested and works correctly or use a framework property to activate it.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class Activator implements BundleActivator {
 
-    public final static String AUTO_ACTIVATION = "NuxeoContainer.autoactivation";
+    public static final String AUTO_ACTIVATION = "NuxeoContainer.autoactivation";
 
     @Override
     public void start(BundleContext context) throws Exception {

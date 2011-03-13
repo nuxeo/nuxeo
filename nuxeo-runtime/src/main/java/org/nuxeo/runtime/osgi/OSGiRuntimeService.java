@@ -420,12 +420,12 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
     }
 
     public void fireApplicationStarted() {
-    	synchronized (this) {
-    		if (appStarted) {        	
-    			return;
-    		}
-    		appStarted = true;			
-		}
+        synchronized (this) {
+            if (appStarted) {
+                return;
+            }
+            appStarted = true;
+        }
         try {
             persistence.loadPersistedComponents();
         } catch (Exception e) {
