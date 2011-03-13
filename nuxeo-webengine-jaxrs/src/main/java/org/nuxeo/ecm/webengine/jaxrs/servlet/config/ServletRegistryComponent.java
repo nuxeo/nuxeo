@@ -26,10 +26,9 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class ServletRegistryComponent extends DefaultComponent {
 
-    public final static String XP_SERVLETS = "servlets";
+    public static final String XP_SERVLETS = "servlets";
 
-    public final static String XP_FILTERS = "filters";
-
+    public static final String XP_FILTERS = "filters";
 
     protected ServletRegistry registry;
 

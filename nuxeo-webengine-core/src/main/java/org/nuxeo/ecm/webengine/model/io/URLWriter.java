@@ -55,7 +55,9 @@ public class URLWriter implements MessageBodyWriter<URL> {
         } catch (Throwable e) {
             throw WebException.wrap("Failed to render resource", e);
         } finally {
-            if (in != null) in.close();
+            if (in != null) {
+                in.close();
+            }
         }
     }
 

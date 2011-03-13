@@ -85,7 +85,7 @@ public class ScriptMethod implements TemplateMethodModelEx {
         WebContext ctx = WebEngine.getActiveContext();
         if (ctx != null) {
             try {
-                return args == null ? ctx.runScript(src) : ctx.runScript(src, args);
+                return ctx.runScript(src, args);
             } catch (WebException e) {
                 throw new TemplateModelException("Failed to run script: "+src, e);
             }

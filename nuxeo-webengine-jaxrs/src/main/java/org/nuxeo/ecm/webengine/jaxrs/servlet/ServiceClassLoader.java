@@ -36,7 +36,6 @@ import com.sun.jersey.server.impl.provider.RuntimeDelegateImpl;
  * Support for jersey ServiceFinder lookups in an OSGi environment.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class ServiceClassLoader extends ClassLoader {
 

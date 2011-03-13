@@ -54,13 +54,13 @@ public class WebEngineFilter implements Filter {
      * Framework property to control whether tx is started by webengine by
      * default
      */
-    public final static String TX_AUTO = "org.nuxeo.webengine.tx.auto";
+    public static final String TX_AUTO = "org.nuxeo.webengine.tx.auto";
 
     /**
      * Framework property giving the default session scope - stateful or
-     * stateles
+     * stateless.
      */
-    public final static String STATEFULL = "org.nuxeo.webengine.session.stateful";
+    public static final String STATEFULL = "org.nuxeo.webengine.session.stateful";
 
     protected WebEngine engine;
 

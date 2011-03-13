@@ -37,11 +37,8 @@ import org.nuxeo.ecm.webengine.gwt.GwtBundleActivator;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class NuxeoLauncher extends NuxeoAuthenticationFilter {
-
-    private static final long serialVersionUID = 1L;
 
     private static final Log log = LogFactory.getLog(NuxeoLauncher.class);
 
@@ -71,7 +68,7 @@ public class NuxeoLauncher extends NuxeoAuthenticationFilter {
 
     /**
      * Gets a custom configuration for the Nuxeo to build. By default no custom
-     * configuration is used - but bult-in configuration selected through
+     * configuration is used - but built-in configuration selected through
      * profiles.
      *
      * @return null if no custom configuration is wanted.

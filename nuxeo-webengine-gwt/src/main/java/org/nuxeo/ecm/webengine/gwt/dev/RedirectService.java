@@ -35,7 +35,6 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class RedirectService extends HttpServlet implements Debug {
 
@@ -54,6 +53,7 @@ public class RedirectService extends HttpServlet implements Debug {
     public RedirectService(String host, int port) {
         this.redirectHost = host;
         this.redirectPort = port;
+        // TODO: use logging instead
         System.out.println("----------------------------------------------------------");
         System.out.println("Redirect Service Enabled: ");
         System.out.println("redirect.prefix: "+redirectPrefix);
@@ -80,8 +80,6 @@ public class RedirectService extends HttpServlet implements Debug {
     public void setTraceContent(boolean traceContent) {
         this.traceContent = traceContent;
     }
-
-
 
     @SuppressWarnings("unchecked")
     public void redirect(HttpServletRequest req, HttpServletResponse resp)
@@ -138,9 +136,15 @@ public class RedirectService extends HttpServlet implements Debug {
                 traceln("===================================");
             }
         } finally {
-            if (rout != null) rout.close();
-            if (rin != null) rin.close();
-            if (in != null) in.close();
+            if (rout != null) {
+                rout.close();
+            }
+            if (rin != null) {
+                rin.close();
+            }
+            if (in != null) {
+                in.close();
+            }
         }
     }
 

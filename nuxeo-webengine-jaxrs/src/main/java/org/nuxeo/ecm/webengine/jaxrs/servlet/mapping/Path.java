@@ -21,7 +21,6 @@ import java.util.Arrays;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public final class Path {
 
@@ -38,11 +37,9 @@ public final class Path {
         return new PathParser().parse(path);
     }
 
-
     protected int bits;
 
     protected final String[] segments;
-
 
     public Path(String[] segments) {
         this (segments, 0);
@@ -68,15 +65,15 @@ public final class Path {
         return segments;
     }
 
-    public final boolean hasLeadingSlash() {
+    public boolean hasLeadingSlash() {
         return (bits & HAS_LEADING_SLASH) == HAS_LEADING_SLASH;
     }
 
-    public final boolean hasTrailingSlash() {
+    public boolean hasTrailingSlash() {
         return (bits & HAS_TRAILING_SLASH) == HAS_TRAILING_SLASH;
     }
 
-    public final boolean isAbsolute() {
+    public boolean isAbsolute() {
         return (bits & HAS_LEADING_SLASH) == HAS_LEADING_SLASH;
     }
 

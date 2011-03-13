@@ -33,17 +33,17 @@ import org.osgi.service.http.HttpContext;
 import org.osgi.service.http.HttpService;
 
 /**
- * Handle servlet registration from Nuxeo extension points.
- * This class is a singleton shared by the {@link Activator} and the {@link ServletRegistryComponent} component.
- * Because we don;t have yet a solution to synchronize the intialization time of the Activator and a Nuxeo component
- * we are using a singleton instance to be able
- *
+ * Handle servlet registration from Nuxeo extension points. This class is a
+ * singleton shared by the {@link Activator} and the
+ * {@link ServletRegistryComponent} component. Because we don't have yet a
+ * solution to synchronize the initialization time of the Activator and a Nuxeo
+ * component we are using a singleton instance to be able
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class ServletRegistry {
 
-    public final static String SERVLET_NAME = ServletRegistry.class.getName()+".name";
+    public static final String SERVLET_NAME = ServletRegistry.class.getName()+".name";
 
     private static volatile ServletRegistry instance;
 
@@ -58,7 +58,7 @@ public class ServletRegistry {
         return reg;
     }
 
-    public synchronized static void dispose() {
+    public static synchronized void dispose() {
         instance = null;
     }
 
