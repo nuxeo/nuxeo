@@ -127,7 +127,7 @@ public final class SimpleFragment extends Fragment {
         return keys == null ? Collections.<String> emptyList() : keys;
     }
 
-    private static final boolean same(Object a, Object b) {
+    private static boolean same(Object a, Object b) {
         if (a == null) {
             return b == null;
         } else {

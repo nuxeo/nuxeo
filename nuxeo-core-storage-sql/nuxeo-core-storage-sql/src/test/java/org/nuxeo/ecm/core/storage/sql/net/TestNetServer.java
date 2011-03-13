@@ -48,12 +48,12 @@ public class TestNetServer {
     public static HttpClient httpClient;
 
     @BeforeClass
-    public static void beforeClass() throws Exception {
+    public static void beforeClass() {
         httpClient = new HttpClient();
     }
 
     @AfterClass
-    public static void afterClass() throws Exception {
+    public static void afterClass() {
         NetServer.shutDown();
         httpClient = null;
     }

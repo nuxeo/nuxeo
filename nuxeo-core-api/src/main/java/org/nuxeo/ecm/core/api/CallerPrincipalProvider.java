@@ -31,7 +31,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public abstract class CallerPrincipalProvider {
 
-    private final static CallerPrincipalProvider NULL_CPP = new CallerPrincipalProvider() {
+    private static final CallerPrincipalProvider NULL_CPP = new CallerPrincipalProvider() {
         @Override
         public NuxeoPrincipal getCallerPrincipal() {
             return null;
@@ -40,7 +40,7 @@ public abstract class CallerPrincipalProvider {
 
     private static volatile CallerPrincipalProvider instance = null;
 
-    public synchronized static void setInstance(CallerPrincipalProvider cpp) {
+    public static synchronized void setInstance(CallerPrincipalProvider cpp) {
         instance = cpp;
     }
 

@@ -1780,7 +1780,7 @@ public interface CoreSession {
      *         the given {@code adapterClass}.
      * @since 5.4.1
      */
-    public <T extends DetachedAdapter> T adaptFirstMatchingDocumentWithFacet(DocumentRef docRef, String facet,
+    <T extends DetachedAdapter> T adaptFirstMatchingDocumentWithFacet(DocumentRef docRef, String facet,
             Class<T> adapterClass) throws ClientException;
 
 }

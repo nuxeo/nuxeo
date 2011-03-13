@@ -36,7 +36,7 @@ import org.nuxeo.ecm.core.query.sql.SQLQueryParser;
  */
 public class TestQueryVisitor extends TestCase {
 
-    private void check(String sql, String expected) {
+    private static void check(String sql, String expected) {
         PrintVisitor v = new PrintVisitor();
         SQLQuery query = SQLQueryParser.parse(sql);
         assertEquals(sql, query.toString());

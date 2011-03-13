@@ -27,11 +27,10 @@ import org.osgi.framework.BundleContext;
  * Needed to lookup local bundle resources - which should use Bundle API.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class Activator implements BundleActivator {
 
-    private volatile static Activator instance;
+    private static volatile Activator instance;
 
     private BundleContext context;
 

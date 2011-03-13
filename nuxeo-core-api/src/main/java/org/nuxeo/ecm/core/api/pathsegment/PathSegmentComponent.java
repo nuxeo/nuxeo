@@ -85,7 +85,6 @@ public class PathSegmentComponent extends DefaultComponent implements
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public void unregisterContribution(Object contrib, String xp,
             ComponentInstance contributor) throws Exception {
         if (!XP.equals(xp)) {

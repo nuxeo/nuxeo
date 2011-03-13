@@ -56,7 +56,7 @@ public abstract class UnrestrictedSessionRunner {
      *
      * @param session the available session
      */
-    public UnrestrictedSessionRunner(CoreSession session) {
+    protected UnrestrictedSessionRunner(CoreSession session) {
         this.session = session;
         sessionIsAlreadyUnrestricted = isUnrestricted(session);
         if (sessionIsAlreadyUnrestricted) {
@@ -75,7 +75,7 @@ public abstract class UnrestrictedSessionRunner {
      *
      * @param repositoryName the repository name
      */
-    public UnrestrictedSessionRunner(String repositoryName) {
+    protected UnrestrictedSessionRunner(String repositoryName) {
         session = null;
         sessionIsAlreadyUnrestricted = false;
         this.repositoryName = repositoryName;
@@ -88,7 +88,7 @@ public abstract class UnrestrictedSessionRunner {
      * @param repositoryName the repository name
      * @param originatingUser the user name behind the system user
      */
-    public UnrestrictedSessionRunner(String repositoryName,
+    protected UnrestrictedSessionRunner(String repositoryName,
             String originatingUser) {
         session = null;
         sessionIsAlreadyUnrestricted = false;

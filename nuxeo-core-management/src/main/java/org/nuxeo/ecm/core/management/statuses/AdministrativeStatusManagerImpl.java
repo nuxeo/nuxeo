@@ -28,8 +28,6 @@ import org.nuxeo.ecm.core.management.storage.AdministrativeStatusPersister;
 
 import static org.nuxeo.ecm.core.management.api.AdministrativeStatus.ACTIVE;
 import static org.nuxeo.ecm.core.management.api.AdministrativeStatus.PASSIVE;
-import static org.nuxeo.ecm.core.management.api.AdministrativeStatusManager.ACTIVATED_EVENT;
-import static org.nuxeo.ecm.core.management.api.AdministrativeStatusManager.GLOBAL_INSTANCE_AVAILABILITY;
 
 /**
  * Implementation class for the {@link AdministrativeStatusManager} service.

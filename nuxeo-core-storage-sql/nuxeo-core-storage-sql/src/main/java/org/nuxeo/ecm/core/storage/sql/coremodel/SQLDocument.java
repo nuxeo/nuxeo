@@ -28,8 +28,8 @@ import org.nuxeo.ecm.core.storage.sql.Node;
  */
 public interface SQLDocument extends Document, PropertyContainer, Property {
 
-    final String BINARY_TEXT_SYS_PROP = "binaryText";
-    final String FULLTEXT_JOBID_SYS_PROP = "fulltextJobId";
+    String BINARY_TEXT_SYS_PROP = "binaryText";
+    String FULLTEXT_JOBID_SYS_PROP = "fulltextJobId";
 
     /**
      * Returns the node with info about the hierarchy location.

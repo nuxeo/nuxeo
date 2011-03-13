@@ -81,7 +81,7 @@ public class TestCGCache extends NXRuntimeTestCase {
         return ConversionServiceImpl.getConverter("identity");
     }
 
-    private BlobHolder getBlobHolder(){
+    private static BlobHolder getBlobHolder(){
         File file = FileUtils.getResourceFileFromContext("test-data/hello.doc");
         assertNotNull(file);
         assertTrue(file.length() > 0);
@@ -89,7 +89,6 @@ public class TestCGCache extends NXRuntimeTestCase {
         blob.setFilename("hello.doc");
         blob.setMimeType("application/msword");
         return new SimpleBlobHolder(blob);
-
     }
 
 }

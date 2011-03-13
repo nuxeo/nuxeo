@@ -27,8 +27,8 @@ import org.nuxeo.ecm.core.event.impl.EventListenerDescriptor;
  */
 public interface EventStats {
 
-    public void logAsyncExec(EventListenerDescriptor desc, long delta);
+    void logAsyncExec(EventListenerDescriptor desc, long delta);
 
-    public void logSyncExec(EventListenerDescriptor desc, long delta);
+    void logSyncExec(EventListenerDescriptor desc, long delta);
 
 }

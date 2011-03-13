@@ -1439,7 +1439,7 @@ public class Model {
         return thisFragmentName;
     }
 
-    private String typeFragmentName(ComplexType type) {
+    private static String typeFragmentName(ComplexType type) {
         return type.getName();
     }
 

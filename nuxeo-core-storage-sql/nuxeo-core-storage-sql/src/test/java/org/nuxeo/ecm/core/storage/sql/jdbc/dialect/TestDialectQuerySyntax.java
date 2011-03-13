@@ -72,8 +72,7 @@ public class TestDialectQuerySyntax extends TestCase {
         repositoryDescriptor = new RepositoryDescriptor();
     }
 
-    protected static void assertFulltextException(String query)
-            throws Exception {
+    protected static void assertFulltextException(String query) {
         try {
             Dialect.analyzeFulltextQuery(query);
             fail("Query should fail: " + query);
@@ -112,8 +111,7 @@ public class TestDialectQuerySyntax extends TestCase {
         }
     }
 
-    protected static void assertFulltextQuery(String expected, String query)
-            throws Exception {
+    protected static void assertFulltextQuery(String expected, String query) {
         StringBuilder buf = new StringBuilder();
         FulltextQuery ftQuery = Dialect.analyzeFulltextQuery(query);
         if (ftQuery == null) {

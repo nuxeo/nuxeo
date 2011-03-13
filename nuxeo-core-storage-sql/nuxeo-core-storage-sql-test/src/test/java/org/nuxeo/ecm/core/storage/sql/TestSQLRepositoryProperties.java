@@ -192,10 +192,10 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
 
         Serializable actual = doc.getPropertyValue("tp:fileList");
         assertTrue(actual instanceof List);
+
         List<Blob> blobs = (List) actual;
         assertEquals(1, blobs.size());
         assertNotNull(blobs.get(0));
-        assertTrue(blobs.get(0) instanceof Blob);
     }
 
     // NXP-2301

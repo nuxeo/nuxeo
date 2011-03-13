@@ -44,7 +44,7 @@ public class TestMailConverter extends BaseConverterTest {
         assertNotNull(cs);
     }
 
-    private Blob getTestBlob(String filePath) {
+    private static Blob getTestBlob(String filePath) {
         File file = FileUtils.getResourceFileFromContext(filePath);
         return new FileBlob(file);
     }
@@ -53,9 +53,11 @@ public class TestMailConverter extends BaseConverterTest {
         BlobHolder bh = cs.convert(CONVERTER_NAME,
                 getBlobFromPath("test-docs/email/text.eml"), null);
         assertNotNull(bh);
+
         Blob result = bh.getBlob();
         assertNotNull(result);
         assertEquals("text/plain", result.getMimeType());
+
         Blob expected = getTestBlob("test-docs/email/text.txt");
         assertEquals(expected.getString(), result.getString());
     }
@@ -79,11 +81,12 @@ public class TestMailConverter extends BaseConverterTest {
                 getBlobFromPath("test-docs/email/text_and_html_with_attachments.eml"),
                 null);
         assertNotNull(bh);
+
         Blob result = bh.getBlob();
         assertNotNull(result);
         assertEquals("text/plain", result.getMimeType());
-        Blob expected = getTestBlob("test-docs/email/text_and_html_with_attachments.txt");
 
+        Blob expected = getTestBlob("test-docs/email/text_and_html_with_attachments.txt");
         assertTrue(textEquals(expected.getString(), result.getString()));
     }
 
@@ -93,11 +96,12 @@ public class TestMailConverter extends BaseConverterTest {
                 getBlobFromPath("test-docs/email/only_html_with_attachments.eml"),
                 null);
         assertNotNull(bh);
+
         Blob result = bh.getBlob();
         assertNotNull(result);
         assertEquals("text/plain", result.getMimeType());
-        Blob expected = getTestBlob("test-docs/email/only_html_with_attachments.txt");
 
+        Blob expected = getTestBlob("test-docs/email/only_html_with_attachments.txt");
         assertTrue(textEquals(expected.getString(), result.getString()));
     }
 

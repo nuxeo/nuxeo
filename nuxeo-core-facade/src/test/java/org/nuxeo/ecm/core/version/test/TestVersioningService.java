@@ -79,8 +79,7 @@ public class TestVersioningService extends SQLRepositoryTestCase {
         }
     }
 
-    protected void assertVersionLabel(String expected, DocumentModel doc)
-            throws Exception {
+    protected void assertVersionLabel(String expected, DocumentModel doc) {
         assertEquals(expected, service.getVersionLabel(doc));
     }
 

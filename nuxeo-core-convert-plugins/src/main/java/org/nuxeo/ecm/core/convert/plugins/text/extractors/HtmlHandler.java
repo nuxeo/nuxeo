@@ -32,7 +32,7 @@ public class HtmlHandler extends Xml2TextHandler {
         return filterAndJoin(buf.toString());
     }
 
-    private String filterAndJoin(String text) {
+    private static String filterAndJoin(String text) {
         boolean space = false;
         StringBuilder buffer = new StringBuilder();
         for (int i = 0; i < text.length(); i++) {

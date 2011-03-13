@@ -29,8 +29,6 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.management.api.AdministrativeStatus;
 
-import static org.nuxeo.ecm.core.management.storage.DocumentModelStatusPersister.*;
-
 /**
  * Used to control the server administrative status: the status of the server
  * can be passive or active.
