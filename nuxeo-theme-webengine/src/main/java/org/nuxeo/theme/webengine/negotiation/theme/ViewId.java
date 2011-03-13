@@ -40,7 +40,9 @@ public final class ViewId implements Scheme {
         if (targetObject == null) {
             return null;
         }
-        final String viewId = targetObject.getTrailingPath();
+        final String rootPath = webContext.getRoot().getPath();
+        final String viewId = targetObject.getPath().substring(
+                rootPath.length());
 
         final ViewDef view = application.getViewById(viewId);
         if (view == null) {
