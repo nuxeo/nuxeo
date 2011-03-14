@@ -994,7 +994,9 @@
         <version>1.1.114-nx</version>
         <scope>provided</scope>
       </dependency>
-      <!-- NXP-6296: remove later -->
+
+      <!-- NXP-6296: -->
+      <!-- use milyn-magger, milyn-commons, flute, sac instead of cssparser -->
       <dependency>
         <groupId>net.sourceforge.cssparser</groupId>
         <artifactId>cssparser</artifactId>
