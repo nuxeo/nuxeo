@@ -37,7 +37,6 @@ import org.nuxeo.ecm.core.storage.sql.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.Mapper;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.ModelFulltext;
-import org.nuxeo.ecm.core.storage.sql.RepositoryImpl;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Database;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Delete;
@@ -155,12 +154,11 @@ public class SQLInfo {
      * @param model the model
      * @param dialect the SQL dialect
      */
-    public SQLInfo(RepositoryImpl repository, Model model, Dialect dialect)
-            throws StorageException {
+    public SQLInfo(Model model, Dialect dialect) throws StorageException {
         this.model = model;
         this.dialect = dialect;
 
-        database = new Database(repository, dialect);
+        database = new Database(dialect);
 
         selectRootIdSql = null;
         selectRootIdWhatColumn = null;

@@ -144,7 +144,7 @@ public class JDBCBackend implements RepositoryBackend {
      */
     @Override
     public void initializeModel(Model model) throws StorageException {
-        sqlInfo = new SQLInfo(repository, model, dialect);
+        sqlInfo = new SQLInfo(model, dialect);
     }
 
     @Override
