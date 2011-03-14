@@ -75,7 +75,8 @@ gadgets.nuxeo.hasPermission = function(permissionName) {
 };
 
 gadgets.nuxeo.isEditable = function() {
-  return gadgets.util.getUrlParameters().permission == "1";
+  var permissions = gadgets.util.getUrlParameters().permission;
+  return permissions.indexOf("Write") != -1 || permissions.indexOf("Everything");
 };
 
 gadgets.nuxeo.getNXIDPreference = function(name, id) {
