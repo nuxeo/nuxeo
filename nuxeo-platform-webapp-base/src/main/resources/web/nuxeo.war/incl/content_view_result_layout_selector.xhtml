@@ -35,13 +35,13 @@ Needed parameters:
    
     <ul class="layoutViewMode" style="display:inline;">
      <c:if test="#{contentView.showRefreshPage}">
-      <li>
-        <h:commandLink action="#{contentView.refreshAndRewindPageProvider()}">
-          <h:graphicImage value="/img/refresh.png"
-            alt="#{messages['label.refresh']}"
-            title="#{messages['label.refresh']}" />
-        </h:commandLink>
-      </li>
+       <li>
+         <h:commandLink action="#{contentView.refreshAndRewindPageProvider()}">
+           <h:graphicImage value="/img/refresh.png"
+             alt="#{messages['label.refresh']}"
+             title="#{messages['label.refresh']}" />
+         </h:commandLink>
+       </li>
      </c:if> 
       <nxu:set var="contentViewState"
         value="#{contentViewRestActions.getContentViewState(contentView)}">
