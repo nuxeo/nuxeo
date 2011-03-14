@@ -62,35 +62,35 @@ public class LayoutHelper {
     public static YUILayout buildLayout(Preset layoutPreset) {
         switch (layoutPreset) {
         case X_2_DEFAULT:
-            return build(YUITemplate.YUI_ZT_50_50);
+            return buildLayout(YUITemplate.YUI_ZT_50_50);
         case X_2_66_33:
-            return build(YUITemplate.YUI_ZT_66_33);
+            return buildLayout(YUITemplate.YUI_ZT_66_33);
         case X_2_33_66:
-            return build(YUITemplate.YUI_ZT_33_66);
+            return buildLayout(YUITemplate.YUI_ZT_33_66);
         case X_3_DEFAULT:
-            return build(YUITemplate.YUI_ZT_33_33_33);
+            return buildLayout(YUITemplate.YUI_ZT_33_33_33);
         case X_3_HEADER_2COLS:
-            return build(YUITemplate.YUI_ZT_100, YUITemplate.YUI_ZT_50_50);
+            return buildLayout(YUITemplate.YUI_ZT_100, YUITemplate.YUI_ZT_50_50);
         case X_4_FOOTER_3COLS:
-            return build(YUITemplate.YUI_ZT_33_33_33, YUITemplate.YUI_ZT_100);
+            return buildLayout(YUITemplate.YUI_ZT_33_33_33, YUITemplate.YUI_ZT_100);
         case X_4_HEADER_3COLS:
-            return build(YUITemplate.YUI_ZT_100, YUITemplate.YUI_ZT_33_33_33);
+            return buildLayout(YUITemplate.YUI_ZT_100, YUITemplate.YUI_ZT_33_33_33);
         case X_4_66_33_50_50:
-            return build(YUITemplate.YUI_ZT_66_33, YUITemplate.YUI_ZT_50_50);
+            return buildLayout(YUITemplate.YUI_ZT_66_33, YUITemplate.YUI_ZT_50_50);
         case X_4_50_50_66_33:
-            return build(YUITemplate.YUI_ZT_50_50, YUITemplate.YUI_ZT_66_33);
+            return buildLayout(YUITemplate.YUI_ZT_50_50, YUITemplate.YUI_ZT_66_33);
         case X_4_100_66_33_100:
-            return build(YUITemplate.YUI_ZT_100, YUITemplate.YUI_ZT_66_33,
+            return buildLayout(YUITemplate.YUI_ZT_100, YUITemplate.YUI_ZT_66_33,
                     YUITemplate.YUI_ZT_100);
         case X_4_100_33_66_100:
-            return build(YUITemplate.YUI_ZT_100, YUITemplate.YUI_ZT_33_66,
+            return buildLayout(YUITemplate.YUI_ZT_100, YUITemplate.YUI_ZT_33_66,
                     YUITemplate.YUI_ZT_100);
         default:
-            return build(YUITemplate.YUI_ZT_100);
+            return buildLayout(YUITemplate.YUI_ZT_100);
         }
     }
 
-    private static YUILayout build(YUITemplate... templates) {
+    public static YUILayout buildLayout(YUITemplate... templates) {
         YUILayout layout = getBaseLayout();
         for (YUITemplate template : templates) {
             YUIComponentZoneImpl zone = new YUIComponentZoneImpl(template);
