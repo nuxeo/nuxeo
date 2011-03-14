@@ -11,8 +11,8 @@
   </parent>
 
   <artifactId>nuxeo-platform-shibboleth-groups-web</artifactId>
-  <name>Nuxeo Shibboleth login module</name>
-  <description>Nuxeo Shibboleth login module</description>
+  <name>Nuxeo Platform Shibboleth Groups Web</name>
+  <description>Nuxeo Platform Shibboleth Groups Web</description>
 
   <dependencies>
 
