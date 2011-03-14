@@ -1074,7 +1074,7 @@ public abstract class Dialect {
      * Checks if an exception received means that the low level connection has
      * been trashed and must be reset.
      */
-    public boolean connectionClosedByException(Throwable t) {
+    public boolean isConnectionClosedException(Throwable t) {
         while (t.getCause() != null) {
             t = t.getCause();
         }
@@ -1089,6 +1089,16 @@ public abstract class Dialect {
      */
     public void performAdditionalStatements(Connection connection)
             throws SQLException {
+    }
+
+    /**
+     * A query that, when executed, will make at least a round-trip to the
+     * server to check that the connection is alive.
+     * <p>
+     * The query should throw an error if the connection is dead.
+     */
+    public String getValidationQuery() {
+        return "SELECT 1";
     }
 
 }

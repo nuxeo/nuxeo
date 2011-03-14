@@ -380,7 +380,7 @@ public class DialectMySQL extends Dialect {
     }
 
     @Override
-    public boolean connectionClosedByException(Throwable t) {
+    public boolean isConnectionClosedException(Throwable t) {
         while (t.getCause() != null) {
             t = t.getCause();
         }
