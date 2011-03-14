@@ -154,7 +154,8 @@ public class ContentViewServiceImpl extends DefaultComponent implements
                 allQueryParams.toArray(new String[] {}), searchDocBinding,
                 searchDocumentType, desc.getResultColumnsBinding(),
                 sortInfosBinding, pageSizeBinding, showTitle.booleanValue(),
-                showPageSizeSelector.booleanValue(), showRefreshPage.booleanValue(),desc.getEmptySentence(),
+                showPageSizeSelector.booleanValue(),
+                showRefreshPage.booleanValue(), desc.getEmptySentence(),
                 translateEmptySentence.booleanValue());
 
         if (searchDocBinding == null) {

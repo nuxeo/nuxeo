@@ -123,8 +123,8 @@ public class ContentViewImpl implements ContentView {
             String[] queryParameters, String searchDocumentModelBinding,
             String searchDocumentModelType, String resultColumnsBinding,
             String sortInfosBinding, String pageSizeBinding, boolean showTitle,
-            boolean showPageSizeSelector, boolean showRefreshPage, String emptySentence,
-            boolean translateEmptySentence) {
+            boolean showPageSizeSelector, boolean showRefreshPage,
+            String emptySentence, boolean translateEmptySentence) {
         this.name = name;
         this.title = title;
         this.translateTitle = translateTitle;
@@ -604,7 +604,7 @@ public class ContentViewImpl implements ContentView {
     }
 
     @Override
-    public boolean getShowRefreshPage(){
+    public boolean getShowRefreshPage() {
         return showRefreshPage;
     }
 
