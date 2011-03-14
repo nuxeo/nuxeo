@@ -48,6 +48,18 @@ die() {
 }
 
 
+
+## Helper functions
+warn() {
+  echo "WARNING: "
+}
+
+die() {
+  echo "ERROR: "
+  exit 1
+}
+
+
 ## OS detection
 cygwin=false
 darwin=false
@@ -57,6 +69,7 @@ case "`uname`" in
   Darwin*) darwin=true;;
   #Linux) linux=true;;
 esac
+
 
 
 
