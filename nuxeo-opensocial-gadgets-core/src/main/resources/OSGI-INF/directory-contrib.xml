@@ -13,7 +13,6 @@
       <table>externalGadgets</table>
       <idField>id</idField>
       <autoincrementIdField>false</autoincrementIdField>
-      <dataFile>directories/externalGadgetData.csv</dataFile>
       <createTablePolicy>on_missing_columns</createTablePolicy>
     </directory>
 
