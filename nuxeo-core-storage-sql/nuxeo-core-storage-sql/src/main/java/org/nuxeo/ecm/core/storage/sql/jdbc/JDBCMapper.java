@@ -113,7 +113,6 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         super(model, sqlInfo, xadatasource, clusterNodeHandler,
                 connectionPropagator);
         this.pathResolver = pathResolver;
-        resetConnection();
         try {
             queryMakerService = Framework.getService(QueryMakerService.class);
         } catch (Exception e) {
