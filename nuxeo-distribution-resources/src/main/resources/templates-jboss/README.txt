@@ -81,7 +81,7 @@ Services backend: Derby
 2.2) postgresql
 
 Recommended configuration for production, based on PostgreSQL.
-See http://doc.nuxeo.com/display/KB/Configuring+PostgreSQL
+See http://doc.nuxeo.com/x/fwQz
 
 Repository backend: PostgreSQL XA
 Services backend: PostgreSQL XA
@@ -99,7 +99,7 @@ into $JBOSS/server/default/lib/.
 
 2.4) oracle
 
-See http://doc.nuxeo.com/display/KB/Configuring+Oracle
+See http://doc.nuxeo.com/x/ywE7
 
 Repository backend: Oracle XA
 Services backend: Oracle
@@ -109,7 +109,7 @@ into $JBOSS/server/default/lib/
 
 2.5) mssql
 
-See http://doc.nuxeo.com/display/KB/Configuring+SQL+Server
+See http://doc.nuxeo.com/x/EgI7
 
 Repository backend: Ms SQL Server XA
 Services backend: Ms SQL Server XA
