@@ -82,15 +82,17 @@ public class CoreQueryDocumentPageProvider extends
 
             try {
 
+                long minMaxPageSize = getMinMaxPageSize();
+
                 if (log.isDebugEnabled()) {
                     log.debug(String.format(
                             "Perform query for provider '%s': '%s' with pageSize=%s, offset=%s",
-                            getName(), query, Long.valueOf(getPageSize()),
+                            getName(), query, Long.valueOf(minMaxPageSize),
                             Long.valueOf(offset)));
                 }
 
                 DocumentModelList docs = coreSession.query(query, null,
-                        getPageSize(), offset, true);
+                        minMaxPageSize, offset, true);
                 resultsCount = docs.totalSize();
                 currentPageDocuments = docs;
 

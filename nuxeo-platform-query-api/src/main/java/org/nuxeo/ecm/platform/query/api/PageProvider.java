@@ -40,7 +40,12 @@ public interface PageProvider<T> extends Serializable {
     /**
      * Constant to express that the total number of result elements is unknown.
      */
-    long UNKNOWN_SIZE = -1;
+    public static final long UNKNOWN_SIZE = -1;
+
+    /**
+     * Default maximum page size value.
+     */
+    public static final long DEFAULT_MAX_PAGE_SIZE = 100;
 
     /**
      * Returns the provider identifier
@@ -83,6 +88,26 @@ public interface PageProvider<T> extends Serializable {
      * Sets the number results per page. 0 means no pagination.
      */
     void setPageSize(long pageSize);
+
+    /**
+     * Returns the max number of results per page. 0 means no pagination.
+     * <p>
+     * If page size is greater than this maximum value, it will be taken into
+     * account instead.
+     *
+     * @since 5.4.1
+     */
+    long getMaxPageSize();
+
+    /**
+     * Sets the max number of results per page. 0 means no pagination.
+     * <p>
+     * If page size is greater than this maximum value, it will be taken into
+     * account instead.
+     *
+     * @since 5.4.1
+     */
+    void setMaxPageSize(long pageSize);
 
     /**
      * Returns the number of result elements if available or

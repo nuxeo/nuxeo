@@ -45,6 +45,8 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
 
     protected long pageSize = 0;
 
+    protected long maxPageSize = DEFAULT_MAX_PAGE_SIZE;
+
     protected long resultsCount = UNKNOWN_SIZE;
 
     protected int currentEntryIndex = 0;
@@ -519,6 +521,31 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
     @Override
     public void setDefinition(PageProviderDefinition providerDefinition) {
         this.definition = providerDefinition;
+    }
+
+    public long getMaxPageSize() {
+        return maxPageSize;
+    }
+
+    public void setMaxPageSize(long maxPageSize) {
+        this.maxPageSize = maxPageSize;
+    }
+
+    /**
+     * Returns the minimal value for the max page size, taking the lower value
+     * between the requested page size and the maximum accepted page size.
+     *
+     * @since 5.4.1
+     */
+    public long getMinMaxPageSize() {
+        long pageSize = getPageSize();
+        long maxPageSize = getMaxPageSize();
+        if (pageSize <= 0 && maxPageSize > 0) {
+            return maxPageSize;
+        } else if (maxPageSize < pageSize) {
+            return maxPageSize;
+        }
+        return pageSize;
     }
 
 }

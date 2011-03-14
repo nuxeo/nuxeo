@@ -88,10 +88,12 @@ public class CoreQueryAndFetchPageProvider extends
             IterableQueryResult result = null;
             try {
 
+                long minMaxPageSize = getMinMaxPageSize();
+
                 if (log.isDebugEnabled()) {
                     log.debug(String.format(
                             "Perform query for provider '%s': '%s' with pageSize=%s, offset=%s",
-                            getName(), query, Long.valueOf(getPageSize()),
+                            getName(), query, Long.valueOf(minMaxPageSize),
                             Long.valueOf(offset)));
                 }
 
@@ -103,7 +105,7 @@ public class CoreQueryAndFetchPageProvider extends
 
                 Iterator<Map<String, Serializable>> it = result.iterator();
                 int pos = 0;
-                while (it.hasNext() && pos < pageSize) {
+                while (it.hasNext() && pos < minMaxPageSize) {
                     pos += 1;
                     Map<String, Serializable> item = it.next();
                     currentItems.add(item);
