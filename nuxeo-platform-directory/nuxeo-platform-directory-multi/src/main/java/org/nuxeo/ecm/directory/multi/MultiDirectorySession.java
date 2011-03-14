@@ -612,7 +612,7 @@ public class MultiDirectorySession extends BaseSession {
         }
     }
 
-    private void updateSubDirectoryEntry(SubDirectoryInfo dirInfo,
+    private static void updateSubDirectoryEntry(SubDirectoryInfo dirInfo,
             Map<String, Object> fieldMap, String id, boolean canCreateIfOptional)
             throws ClientException {
         if (dirInfo.getSession().isReadOnly()) {

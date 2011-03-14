@@ -97,10 +97,10 @@ public class RuntimeInventoryFactory extends AbstractResourceFactory {
         }
     }
 
-    private void doVisitInventoryContribution(Callback callback,
+    private static void doVisitInventoryContribution(Callback callback,
             String name, String qualifiedName, Object contribution) {
         String hexName = Integer.toHexString(contribution.hashCode());
-        name = name + "-" + hexName;
+        name += "-" + hexName;
         qualifiedName += ",contribution=" + hexName;
         callback.invokeFor(name, qualifiedName, contribution.getClass(), contribution);
     }

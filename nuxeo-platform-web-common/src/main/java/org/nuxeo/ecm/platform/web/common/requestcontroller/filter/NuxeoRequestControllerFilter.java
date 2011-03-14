@@ -76,7 +76,7 @@ public class NuxeoRequestControllerFilter implements Filter {
         doInitIfNeeded();
     }
 
-    private void doInitIfNeeded() {
+    private static void doInitIfNeeded() {
         if (rcm == null) {
             if (Framework.getRuntime() != null) {
                 rcm = Framework.getLocalService(RequestControllerManager.class);

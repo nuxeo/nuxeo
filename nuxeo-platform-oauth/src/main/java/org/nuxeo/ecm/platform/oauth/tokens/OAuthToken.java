@@ -29,7 +29,6 @@ import org.nuxeo.ecm.platform.oauth.consumers.OAuthConsumerRegistry;
  * Token.
  *
  * @author tiry
- *
  */
 public interface OAuthToken {
 
@@ -38,97 +37,69 @@ public interface OAuthToken {
     }
 
     /**
-     * Returns consumer application identifier
-     *
-     * @return
+     * Returns consumer application identifier.
      */
     String getAppId();
 
     /**
      * Returns consumer call back url (may be used to override what is provided
      * in the {@link OAuthConsumerRegistry}.
-     *
-     * @return
      */
     String getCallbackUrl();
 
     /**
-     * Returns Nuxeo Login as determined during the authorize phase
-     *
-     * @return
+     * Returns Nuxeo Login as determined during the authorize phase.
      */
     String getNuxeoLogin();
 
     /**
-     * Returns OAuth token
-     *
-     * @return
+     * Returns OAuth token.
      */
     String getToken();
 
     /**
-     * Returns secret associated to the Token
-     *
-     * @return
+     * Returns secret associated to the Token.
      */
     String getTokenSecret();
 
     /**
-     * Get the Consumer Key
-     *
-     * @return
+     * Gets the Consumer Key.
      */
     String getConsumerKey();
 
     /**
-     * Get the type of token : REQUEST / ACCESS
-     *
-     * @return
+     * Gets the type of token: REQUEST / ACCESS.
      */
     Type getType();
 
     /**
-     * Get creation date of the Token
-     *
-     * @return
+     * Gets creation date of the Token.
      */
     Calendar getCreationDate();
 
     /**
-     * Generic getter (not used for now)
-     *
-     * @param keyName
-     * @return
+     * Generic getter (not used for now).
      */
     String getValue(String keyName);
 
     /**
-     * Generic setter (not used for now)
-     *
-     * @param keyName
-     * @param value
+     * Generic setter (not used for now).
      */
     void setValue(String keyName, String value);
 
     /**
-     * Get the verifier code
-     *
-     * @return
+     * Gets the verifier code.
      */
     String getVerifier();
 
     /**
-     * Check is token is expired
-     *
-     * @return
+     * Checks is token is expired.
      */
     boolean isExpired();
 
     /**
-     *
-     * Setter for the Login
-     *
-     * @param login
+     * Setter for the Login.
      */
     void setNuxeoLogin(String login);
+
 }

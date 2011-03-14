@@ -65,11 +65,6 @@ public class TestGen extends NXRuntimeTestCase {
         Framework.getLocalService(SchemaManager.class).registerSchema(sch);
     }
 
-    @Override
-    public void tearDown() throws Exception {
-        super.tearDown();
-    }
-
     public void testUIDGenerator() throws Exception {
         // create Geide doc
         String docTypeName = "GeideDoc";

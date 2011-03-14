@@ -39,7 +39,7 @@ public class SQLDirectoryDescriptor {
         subinitial, subfinal, subany
     }
 
-    protected final static char DEFAULT_CHARACTER_SEPARATOR = ',';
+    protected static final char DEFAULT_CHARACTER_SEPARATOR = ',';
 
     private static final String[] SCRIPT_POLICIES = { "never",
             "on_missing_columns", "always", };

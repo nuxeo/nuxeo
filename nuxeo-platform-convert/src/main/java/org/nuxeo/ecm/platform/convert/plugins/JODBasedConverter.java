@@ -106,7 +106,7 @@ public class JODBasedConverter implements ExternalConverter {
         super.finalize();
     }
 
-    private boolean adaptFilterNameForHTML2PDF(DocumentFormat sourceFormat,
+    private static boolean adaptFilterNameForHTML2PDF(DocumentFormat sourceFormat,
             DocumentFormat destinationFormat) {
 
         // TODO: solve this

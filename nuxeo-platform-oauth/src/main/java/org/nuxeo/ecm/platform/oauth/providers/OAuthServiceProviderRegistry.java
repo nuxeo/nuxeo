@@ -20,65 +20,48 @@ package org.nuxeo.ecm.platform.oauth.providers;
 import java.util.List;
 
 /**
- * This service is used to manage OAuth Service Providers :
- *
- * i.e. REST Services that can be used by Nuxeo via OAuth.
- *
+ * This service is used to manage OAuth Service Providers:
+ * ie REST Services that can be used by Nuxeo via OAuth.
+ * <p>
  * Typically, this service is used by Shindig to determine what
  * what shared secret should be used by gadgets to fetch their data.
  *
  * @author tiry
- *
  */
 public interface OAuthServiceProviderRegistry {
 
     /**
-     * Select the best provider given
+     * Select the best provider given.
      *
      * @param gadgetUri the gadget url (or AppId)
-     * @param serviceName the service name as definied in MakeRequest
-     * @return
+     * @param serviceName the service name as defined in MakeRequest
      */
-    public abstract NuxeoOAuthServiceProvider getProvider(String gadgetUri,
+    NuxeoOAuthServiceProvider getProvider(String gadgetUri,
             String serviceName);
 
     /**
      * This method is here for compatibility reasons.
      * Providers that are directly contributed to the OpenSocialService
      * are forwarded to the new centralized service.
-     *
-     * @param gadgetUri
-     * @param serviceName
-     * @param consumerKey
-     * @param consumerSecret
-     * @param publicKey
-     * @return
      */
-    public abstract NuxeoOAuthServiceProvider addReadOnlyProvider(String gadgetUri,
+    NuxeoOAuthServiceProvider addReadOnlyProvider(String gadgetUri,
             String serviceName, String consumerKey, String consumerSecret,
             String publicKey);
 
     /**
-     * Deletes a provider
-     *
-     * @param gadgetUri
-     * @param serviceName
+     * Deletes a provider.
      */
-    public abstract void deleteProvider(String gadgetUri, String serviceName);
+    void deleteProvider(String gadgetUri, String serviceName);
 
     /**
-     * Deletes a provider
-     *
-     * @param providerId
+     * Deletes a provider.
      */
-    public abstract void deleteProvider(String providerId);
+    void deleteProvider(String providerId);
 
     /**
      * Return the list of all know providers
-     * (both readonly and editable ones)
-     *
-     * @return
+     * (both readonly and editable ones).
      */
-    public abstract List<NuxeoOAuthServiceProvider> listProviders();
+    List<NuxeoOAuthServiceProvider> listProviders();
 
 }

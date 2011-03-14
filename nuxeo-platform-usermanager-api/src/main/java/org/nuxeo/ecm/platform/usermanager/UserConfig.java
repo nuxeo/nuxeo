@@ -24,9 +24,9 @@ package org.nuxeo.ecm.platform.usermanager;
  */
 public class UserConfig {
 
-    public final static UserConfig DEFAULT = new UserConfig();
+    public static final UserConfig DEFAULT = new UserConfig();
 
-    /**
+    /*
      * The default key names
      */
     public static final String USERNAME_COLUMN = "username";
