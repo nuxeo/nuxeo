@@ -277,7 +277,6 @@ public interface ContentView extends Serializable {
      */
     boolean getShowRefreshPage();
 
-
     /**
      * Returns the search document model as set on the content view.
      * <p>
