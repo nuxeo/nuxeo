@@ -36,6 +36,7 @@
     <module>nuxeo-platform-sync</module>
     <module>nuxeo-platform-audio</module>
     <module>nuxeo-platform-video</module>
+    <module>nuxeo-platform-shibboleth-groups-web</module>
     <!--
       deactivated since 5.3.2 release; reactivate modules after alignment on 5.4
       <module>nuxeo-platform-audit-web-access</module>
