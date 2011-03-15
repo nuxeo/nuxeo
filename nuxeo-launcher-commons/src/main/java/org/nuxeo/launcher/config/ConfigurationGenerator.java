@@ -98,6 +98,8 @@ public class ConfigurationGenerator {
 
     public static final String PARAM_WIZARD_RESTART_PARAMS = "wizard.restart.params";
 
+    public static final String PARAM_FAKE_WINDOWS = "org.nuxeo.fake.vindoz";
+
     private final File nuxeoHome;
 
     // User configuration file
