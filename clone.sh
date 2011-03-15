@@ -20,7 +20,8 @@ fi
 
 . scripts/hgfunctions.sh
 
+hgf pull
 hgf up $VERSION
-( cd addons ; hg up $VERSION )
+( cd addons ; hg pull ; hg up $VERSION )
 ( cd addons ; ./clone.py $VERSION )
 
