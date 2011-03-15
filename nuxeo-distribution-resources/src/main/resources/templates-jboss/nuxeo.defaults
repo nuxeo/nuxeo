@@ -12,7 +12,6 @@ nuxeo.bind.address=0.0.0.0
 
 nuxeo.url=http://localhost:8080/nuxeo/
 
-# Application context path
 org.nuxeo.ecm.contextPath=/nuxeo
 
 org.nuxeo.ecm.product.name=Nuxeo DM
@@ -51,7 +50,6 @@ jod.office.home=
 jod.jpipe.lib.path=
 jod.template.profile.dir=
 
-opensocial.gadgets.embeddedServer=true
 opensocial.gadgets.host=localhost
 opensocial.gadgets.port=8080
 opensocial.proxy.proxySet=false

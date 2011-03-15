@@ -43,7 +43,6 @@ jod.office.home=
 jod.jpipe.lib.path=
 jod.template.profile.dir=
 
-opensocial.gadgets.embeddedServer=true
 opensocial.gadgets.host=localhost
 opensocial.gadgets.port=8080
 opensocial.proxy.proxySet=false
