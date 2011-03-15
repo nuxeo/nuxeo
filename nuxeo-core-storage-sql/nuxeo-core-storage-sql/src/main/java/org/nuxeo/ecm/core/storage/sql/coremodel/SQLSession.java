@@ -502,11 +502,11 @@ public class SQLSession implements Session {
 
     protected static final Pattern ORDER_BY_PATH_ASC = Pattern.compile(
             "(.*)\\s+ORDER\\s+BY\\s+" + NXQL.ECM_PATH + "\\s*$",
-            Pattern.CASE_INSENSITIVE);
+            Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
     protected static final Pattern ORDER_BY_PATH_DESC = Pattern.compile(
             "(.*)\\s+ORDER\\s+BY\\s+" + NXQL.ECM_PATH + "\\s+DESC\\s*$",
-            Pattern.CASE_INSENSITIVE);
+            Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
     protected class SQLSessionQuery implements FilterableQuery {
 
