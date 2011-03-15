@@ -155,7 +155,7 @@
       <name>properties</name>
       <required>false</required>
       <description>
-        The widget properties. Must resolve to an instance of Map&lt,String,
+        The widget properties. Must resolve to an instance of Map&lt;String,
         Serializable&gt;. Any other tag attributes are accepted and will be
         added on top of these properties.
       </description>
@@ -179,7 +179,7 @@
     </attribute>
     <example>
       <![CDATA[
-<nxl:widgetType name="text" mode="#{myMode}" value="#{myText}" required="true" />
+<nxl:widgetType name="text" mode="#{myMode}" value="#{myText}" required="true" /> or
 <nxl:widgetType name="#{myWidgetType}" mode="#{myMode}" value="#{myBoundProperty}"
   properties="#{myProperties}" />
       ]]>
