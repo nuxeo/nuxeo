@@ -17,6 +17,10 @@
 package org.nuxeo.ecm.user.center.dashboard;
 
 import static org.nuxeo.ecm.spaces.api.Constants.SPACE_DOCUMENT_TYPE;
+import static org.nuxeo.opensocial.container.shared.layout.enume.YUITemplate.YUI_ZT_50_50;
+
+import java.util.Locale;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -29,9 +33,9 @@ import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
 import org.nuxeo.ecm.spaces.api.AbstractSpaceProvider;
 import org.nuxeo.ecm.spaces.api.Space;
 import org.nuxeo.ecm.spaces.api.exceptions.SpaceException;
+import org.nuxeo.ecm.spaces.helper.WebContentHelper;
 import org.nuxeo.opensocial.container.shared.layout.api.LayoutHelper;
 import org.nuxeo.runtime.api.Framework;
-
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
@@ -44,27 +48,17 @@ public class UserDashboardSpaceProvider extends AbstractSpaceProvider {
 
     @Override
     protected Space doGetSpace(CoreSession session,
-            DocumentModel contextDocument, String spaceName)
+            DocumentModel contextDocument, String spaceName, Map<String, String> parameters)
             throws SpaceException {
         try {
-            return getOrCreateSpace(session);
+            return getOrCreateSpace(session, parameters);
         } catch (ClientException e) {
             log.error("Unable to create or get personal dashboard", e);
             return null;
         }
     }
 
-    protected static DocumentModel getUserPersonalWorkspace(CoreSession session)
-            throws ClientException {
-        try {
-            UserWorkspaceService svc = Framework.getService(UserWorkspaceService.class);
-            return svc.getCurrentUserPersonalWorkspace(session, null);
-        } catch (Exception e) {
-            throw new ClientException(e);
-        }
-    }
-
-    protected static Space getOrCreateSpace(CoreSession session)
+    protected Space getOrCreateSpace(CoreSession session, Map<String, String> parameters)
             throws ClientException {
         String userWorkspacePath = getUserPersonalWorkspace(session).getPathAsString();
         DocumentRef spaceRef = new PathRef(userWorkspacePath,
@@ -75,16 +69,45 @@ public class UserDashboardSpaceProvider extends AbstractSpaceProvider {
             return existingSpace.getAdapter(Space.class);
         } else {
             DocumentModel model = session.createDocumentModel(
-                    userWorkspacePath, USER_DASHBOARD_SPACE_NAME, SPACE_DOCUMENT_TYPE);
+                    userWorkspacePath, USER_DASHBOARD_SPACE_NAME,
+                    SPACE_DOCUMENT_TYPE);
             model.setPropertyValue("dc:title", "nuxeo user dashboard space");
             model.setPropertyValue("dc:description", "user dashboard space");
             model = session.createDocument(model);
-            session.save();
 
             Space space = model.getAdapter(Space.class);
-            space.initLayout(LayoutHelper.buildLayout(LayoutHelper.Preset.X_2_66_33));
-            return space;
+            initializeLayout(space);
+            String userLanguage = parameters.get("userLanguage");
+            Locale locale = userLanguage != null ? new Locale(userLanguage) : null;
+            initializeGadgets(space, session, locale);
+            session.saveDocument(model);
+            session.save();
+
+            return model.getAdapter(Space.class);
         }
+    }
+
+    protected DocumentModel getUserPersonalWorkspace(CoreSession session)
+            throws ClientException {
+        try {
+            UserWorkspaceService svc = Framework.getService(UserWorkspaceService.class);
+            return svc.getCurrentUserPersonalWorkspace(session, null);
+        } catch (Exception e) {
+            throw new ClientException(e);
+        }
+    }
+
+    protected void initializeLayout(Space space) throws ClientException {
+        space.initLayout(LayoutHelper.buildLayout(YUI_ZT_50_50, YUI_ZT_50_50,
+                YUI_ZT_50_50));
+    }
+
+    protected void initializeGadgets(Space space, CoreSession session, Locale locale) throws ClientException {
+        WebContentHelper.createOpenSocialGadget(space, session, locale, "userworkspaces", 0, 0, 0);
+        WebContentHelper.createOpenSocialGadget(space, session, locale, "userdocuments", 0, 0, 1);
+        WebContentHelper.createOpenSocialGadget(space, session, locale, "quicksearch", 0, 1, 0);
+        WebContentHelper.createOpenSocialGadget(space, session, locale, "waitingfor", 0, 1, 1);
+        WebContentHelper.createOpenSocialGadget(space, session, locale, "tasks", 0, 1, 2);
     }
 
     @Override
