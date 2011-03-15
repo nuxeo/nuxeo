@@ -31,6 +31,7 @@ import java.net.URL;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.opensocial.gadgets.service.api.GadgetDeclaration;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -144,19 +145,23 @@ public class InternalGadgetDescriptor extends BaseGadgetDescriptor implements
     }
 
     public String getIconUrl() {
-        StringBuilder sb = getUrlPrefix();
+        StringBuilder sb = getUrlPrefix(true);
         sb.append(getMountPoint());
         sb.append(URL_SEPARATOR);
         sb.append(icon);
         return sb.toString();
     }
 
-    public StringBuilder getUrlPrefix() {
+    public StringBuilder getUrlPrefix(boolean relativeUrl) {
         StringBuilder sb = new StringBuilder();
         boolean gadgetsEmbeddedServer = Boolean.valueOf(Framework.getProperty(
                 OPENSOCIAL_GADGETS_EMBEDDED_SERVER, "true"));
         if (gadgetsEmbeddedServer) {
-            sb.append(Framework.getProperty(NUXEO_LOOPBACK_URL));
+            if (!relativeUrl) {
+                sb.append(Framework.getProperty(NUXEO_LOOPBACK_URL));
+            } else {
+                sb.append(VirtualHostHelper.getContextPathProperty());
+            }
         } else {
             sb.append(HTTP);
             sb.append(Framework.getProperty(OPENSOCIAL_GADGETS_HOST));
@@ -186,7 +191,7 @@ public class InternalGadgetDescriptor extends BaseGadgetDescriptor implements
     }
 
     public URL getGadgetDefinition() throws MalformedURLException {
-        StringBuilder sb = getUrlPrefix();
+        StringBuilder sb = getUrlPrefix(false);
         sb.append(getMountPoint());
         sb.append(URL_SEPARATOR);
         sb.append(getEntryPoint());

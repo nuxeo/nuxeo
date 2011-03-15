@@ -4,15 +4,15 @@
         <div class="gadgetThumb">
       <#if gadget.getThumbnail()>
         <#if gadget.getThumbnail()?starts_with("http")>
-            <img src="${gadget.getThumbnail()}" width="120px" height="60px"/>
+            <img src="${gadget.getThumbnail()}" height="64px"/>
         <#else>
-            <img src="${Context.baseURL}${gadget.getThumbnail()}" height="60px"/>
+            <img src="${gadget.getThumbnail()}" height="64px"/>
         </#if>
       <#else>
-        <img src="${skinPath}/img/default-thumb.png"/>
+        <img src="${skinPath}/img/default-thumb.png" height="64px"/>
       </#if>
       </div>
-      
+
       <input type="button" value="add" class="addGadget" onclick="doAddGadget('${gadget.name}','${gadget.getGadgetDefinition().toString()}')"/>
 
       <h3>${gadget.title}</h3>

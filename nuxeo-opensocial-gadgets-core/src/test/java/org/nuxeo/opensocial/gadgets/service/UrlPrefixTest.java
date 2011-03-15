@@ -31,7 +31,7 @@ public class UrlPrefixTest {
         service.setProperty(OPENSOCIAL_GADGETS_EMBEDDED_SERVER, "true");
         service.setProperty(OPENSOCIAL_GADGETS_PATH, "/site/gadgets");
 
-        assertEquals("http://localhost:8080/nuxeo/site/gadgets", gadget.getUrlPrefix().toString());
+        assertEquals("http://localhost:8080/nuxeo/site/gadgets", gadget.getUrlPrefix(false).toString());
     }
 
     @Test
@@ -45,7 +45,7 @@ public class UrlPrefixTest {
         service.setProperty(OPENSOCIAL_GADGETS_PORT, "8081");
         service.setProperty(OPENSOCIAL_GADGETS_PATH, "/xxx/yyy");
 
-        assertEquals("http://mywebsite:8081/xxx/yyy", gadget.getUrlPrefix().toString());
+        assertEquals("http://mywebsite:8081/xxx/yyy", gadget.getUrlPrefix(false).toString());
 
     }
 }
