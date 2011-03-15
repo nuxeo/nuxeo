@@ -5,13 +5,13 @@ import java.util.Map;
 
 import net.customware.gwt.dispatch.server.ExecutionContext;
 
-import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.spaces.api.Space;
+import org.nuxeo.ecm.spaces.helper.GadgetI18nHelper;
 import org.nuxeo.opensocial.container.client.rpc.webcontent.action.CreateWebContent;
 import org.nuxeo.opensocial.container.client.rpc.webcontent.result.CreateWebContentResult;
 import org.nuxeo.opensocial.container.server.handler.AbstractActionHandler;
@@ -45,18 +45,10 @@ public class CreateWebContentHandler extends
         if (!"false".equals(shouldGenerateTitle)) {
             String name = data instanceof OpenSocialData ? ((OpenSocialData) data).getGadgetName()
                     : data.getName();
-            String labelKey = "label.gadget." + name;
-
             Locale locale = userLanguage != null ? new Locale(userLanguage)
-                    : Locale.getDefault();
-            String i18nTitle = I18NUtils.getMessageString("messages", labelKey,
-                    null, locale);
-            if (!i18nTitle.equals(labelKey)) {
-                // we found a match
-                data.setTitle(i18nTitle);
-            } else {
-                data.setTitle(name);
-            }
+                    : null;
+            String title = GadgetI18nHelper.getI18nGadgetTitle(name, locale);
+            data.setTitle(title);
         }
         return data;
     }

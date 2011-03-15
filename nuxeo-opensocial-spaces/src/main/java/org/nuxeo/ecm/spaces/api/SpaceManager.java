@@ -18,7 +18,7 @@
 package org.nuxeo.ecm.spaces.api;
 
 import java.util.Collection;
-import java.util.List;
+import java.util.Map;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -32,6 +32,10 @@ import org.nuxeo.ecm.spaces.api.exceptions.SpaceException;
  *
  */
 public interface SpaceManager {
+
+    Space getSpace(String spaceProviderName, CoreSession session,
+            DocumentModel contextDocument, String spaceName, Map<String, String> parameters)
+            throws SpaceException;
 
     Space getSpace(String spaceProviderName, CoreSession session,
             DocumentModel contextDocument, String spaceName)

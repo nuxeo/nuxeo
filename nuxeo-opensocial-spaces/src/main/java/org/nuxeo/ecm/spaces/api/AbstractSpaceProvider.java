@@ -2,6 +2,7 @@ package org.nuxeo.ecm.spaces.api;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,9 +32,9 @@ abstract public class AbstractSpaceProvider implements SpaceProvider {
 
     @Override
     final public Space getSpace(CoreSession session,
-            DocumentModel contextDocument, String spaceName)
+            DocumentModel contextDocument, String spaceName, Map<String, String> parameters)
             throws SpaceException {
-        Space result = doGetSpace(session, contextDocument, spaceName);
+        Space result = doGetSpace(session, contextDocument, spaceName, parameters);
         if (result == null) {
             throw new SpaceNotFoundException();
         } else {
@@ -41,8 +42,15 @@ abstract public class AbstractSpaceProvider implements SpaceProvider {
         }
     }
 
-    abstract protected Space doGetSpace(CoreSession session,
+    @Override
+    final public Space getSpace(CoreSession session,
             DocumentModel contextDocument, String spaceName)
+            throws SpaceException {
+        return getSpace(session, contextDocument, spaceName, new HashMap<String, String>());
+    }
+
+    abstract protected Space doGetSpace(CoreSession session,
+            DocumentModel contextDocument, String spaceName, Map<String, String> parameters)
             throws SpaceException;
 
     public List<Space> getAll(CoreSession session, DocumentModel contextDocument)

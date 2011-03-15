@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.customware.gwt.dispatch.server.ExecutionContext;
+
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -16,8 +18,6 @@ import org.nuxeo.opensocial.container.client.rpc.InitApplication;
 import org.nuxeo.opensocial.container.client.rpc.InitApplicationResult;
 import org.nuxeo.opensocial.container.shared.layout.api.YUILayout;
 import org.nuxeo.opensocial.container.shared.webcontent.WebContentData;
-
-import net.customware.gwt.dispatch.server.ExecutionContext;
 
 /**
  * @author Stéphane Fourrier
@@ -71,8 +71,10 @@ public class InitApplicationHandler extends
                 }
             }
             SpaceManager spaceManager = getSpaceManager();
+            Map<String, String> parameters = new HashMap<String, String>();
+            parameters.put("userLanguage", action.getUserLanguage());
             return spaceManager.getSpace(action.getSpaceProviderName(),
-                    session, documentContext, action.getSpaceName());
+                    session, documentContext, action.getSpaceName(), parameters);
         }
     }
 

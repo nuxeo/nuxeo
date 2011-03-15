@@ -29,6 +29,9 @@ public class Constants {
 
     public static final String UNIT_DOCUMENT_TYPE = "Unit";
 
+    public static final String OPEN_SOCIAL_GADGET_DOCUMENT_TYPE = "WCOpenSocial";
+
+
     public static final String WEB_CONTENT_SCHEMA = "webcontent";
 
     public static final String WEB_CONTENT_TITLE_PROPERTY = "webcontent:title";

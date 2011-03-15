@@ -77,17 +77,24 @@ public class SpaceManagerImpl extends DefaultComponent implements SpaceManager {
 
     @Override
     public Space getSpace(String spaceProviderName, CoreSession session,
-            DocumentModel contextDocument, String spaceName)
+            DocumentModel contextDocument, String spaceName, Map<String, String> parameters)
             throws SpaceException {
         SpaceProvider spaceProvider = spaceProviders.get(spaceProviderName);
         if (spaceProvider != null) {
-            return spaceProvider.getSpace(session, contextDocument, spaceName);
+            return spaceProvider.getSpace(session, contextDocument, spaceName, parameters);
         } else {
             String message = String.format(
                     "No Space found for '%s' provider and '%s' space name",
                     spaceProviderName, spaceName);
             throw new SpaceNotFoundException(message);
         }
+    }
+
+    @Override
+    public Space getSpace(String spaceProviderName, CoreSession session,
+            DocumentModel contextDocument, String spaceName)
+            throws SpaceException {
+        return getSpace(spaceProviderName, session, contextDocument, spaceName, new HashMap<String, String>());
     }
 
     @Override

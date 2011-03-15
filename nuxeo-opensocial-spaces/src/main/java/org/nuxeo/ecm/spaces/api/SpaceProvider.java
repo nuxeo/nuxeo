@@ -21,6 +21,9 @@ public interface SpaceProvider {
     String getName();
 
     Space getSpace(CoreSession session, DocumentModel contextDocument,
+            String spaceName, Map<String, String> parameters) throws SpaceException;
+
+    Space getSpace(CoreSession session, DocumentModel contextDocument,
             String spaceName) throws SpaceException;
 
     List<Space> getAll(CoreSession session, DocumentModel contextDocument)
