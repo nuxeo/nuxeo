@@ -145,8 +145,9 @@ public class DefaultFaceletFactory extends FaceletFactory {
             FacesException, ELException {
         ParameterCheck.notNull("url", url);
         String key = url.toString();
-        DefaultFacelet f = (DefaultFacelet) this.facelets.get(key);
-        if (f == null || this.needsToBeRefreshed(f)) {
+        Facelet f = (Facelet) this.facelets.get(key);
+        if (f == null || (f instanceof DefaultFacelet)
+                && this.needsToBeRefreshed((DefaultFacelet) f)) {
             f = this.createFacelet(url);
             if (this.refreshPeriod != 0) {
                 Map newLoc = new HashMap(this.facelets);
@@ -206,7 +207,7 @@ public class DefaultFaceletFactory extends FaceletFactory {
      * @throws FacesException
      * @throws ELException
      */
-    private DefaultFacelet createFacelet(URL url) throws IOException,
+    private Facelet createFacelet(URL url) throws IOException,
             FaceletException, FacesException, ELException {
         if (log.isLoggable(Level.FINE)) {
             log.fine("Creating Facelet for: " + url);
@@ -219,11 +220,11 @@ public class DefaultFaceletFactory extends FaceletFactory {
                     this.compiler.createExpressionFactory(), url, alias, h);
             return f;
         } catch (FileNotFoundException fnfe) {
-            if (log.isLoggable(Level.WARNING)) {
-                log.warning(alias + " not found at " + url.toExternalForm());
+            if (log.isLoggable(Level.SEVERE)) {
+                log.severe(alias + " not found at " + url.toExternalForm());
             }
-            throw new FileNotFoundException("Facelet Not Found: "
-                    + url.toExternalForm());
+            Facelet f = new NotFoundFacelet(alias);
+            return f;
         }
     }
 

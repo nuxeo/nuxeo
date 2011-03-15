@@ -14,8 +14,6 @@
 
 package org.nuxeo.theme.jsf.facelets;
 
-import java.io.IOException;
-
 import javax.faces.FacesException;
 import javax.faces.application.ViewHandler;
 import javax.faces.context.FacesContext;
@@ -99,11 +97,4 @@ public class NXThemesFaceletViewHandler extends FaceletViewHandler {
         return new NXThemesFaceletFactory(c, resolver, refreshPeriod);
     }
 
-    @Override
-    protected void handleFaceletNotFound(FacesContext context, String viewId)
-            throws FacesException, IOException {
-        log.error(String.format("Some included facelet is not found, "
-                + "check the template '%s' ", viewId));
-        super.handleFaceletNotFound(context, viewId);
-    }
 }

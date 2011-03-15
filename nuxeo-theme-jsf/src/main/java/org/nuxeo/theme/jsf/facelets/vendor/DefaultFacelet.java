@@ -44,7 +44,7 @@ import com.sun.facelets.tag.jsf.ComponentSupport;
 
 /**
  * Default Facelet implementation.
- * <p>
+ *
  * Copied from facelets-1.1.15.B1 by Jean-Marc Orliaguet <jmo@chalmers.se> -
  * class made public 2010/10/24.
  *
@@ -251,8 +251,7 @@ public final class DefaultFacelet extends Facelet {
 
     /**
      * Used for delegation by the DefaultFaceletContext. First pulls the URL
-     * from {@link #getRelativePath(String) getRelativePath(String)}, then
-     * calls
+     * from {@link #getRelativePath(String) getRelativePath(String)}, then calls
      * {@link #include(FaceletContext, UIComponent, URL) include(FaceletContext,
      * UIComponent, URL)}.
      *
@@ -286,8 +285,12 @@ public final class DefaultFacelet extends Facelet {
      */
     public void include(DefaultFaceletContext ctx, UIComponent parent, URL url)
             throws IOException, FacesException, FaceletException, ELException {
-        DefaultFacelet f = (DefaultFacelet) this.factory.getFacelet(url);
-        f.include(ctx, parent);
+        Facelet f = this.factory.getFacelet(url);
+        if (f instanceof DefaultFacelet) {
+            ((DefaultFacelet) f).include(ctx, parent);
+        } else {
+            f.apply(ctx.getFacesContext(), parent);
+        }
     }
 
     private static class ApplyToken implements Externalizable {
