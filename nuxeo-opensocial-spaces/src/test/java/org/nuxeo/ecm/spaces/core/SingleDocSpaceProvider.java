@@ -41,7 +41,7 @@ public class SingleDocSpaceProvider extends AbstractSpaceProvider {
 
     @Override
     protected Space doGetSpace(CoreSession session,
-            DocumentModel contextDocument, String spaceName)
+            DocumentModel contextDocument, String spaceName, Map<String, String> parameters)
             throws SpaceException {
         return getOrCreateSingleSpace(session).getAdapter(Space.class);
     }
