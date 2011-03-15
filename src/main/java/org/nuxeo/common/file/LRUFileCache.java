@@ -44,20 +44,20 @@ import org.apache.commons.io.IOUtils;
 public class LRUFileCache implements FileCache {
 
     /** Allowed key pattern, used as file path. */
-    public static Pattern SIMPLE_ASCII = Pattern.compile("[-_a-zA-Z0-9]+");
+    public static final Pattern SIMPLE_ASCII = Pattern.compile("[-_a-zA-Z0-9]+");
 
-    protected File dir;
+    protected final File dir;
 
-    protected long maxSize;
+    protected final long maxSize;
 
     /** Cached files. */
-    protected Map<String, LRUFileCacheEntry> cache;
+    protected final Map<String, LRUFileCacheEntry> cache;
 
     /** Size of the cached files. */
     protected long cacheSize;
 
     /** Most recently used entries from the cache are first. */
-    protected LinkedList<String> lru;
+    protected final LinkedList<String> lru;
 
     // this creates a new thread
     private static final FileCleaningTracker fileCleaningTracker = new FileCleaningTracker();
@@ -78,7 +78,7 @@ public class LRUFileCache implements FileCache {
      * @param dir the directory to use to store cached files
      * @param maxSize the maximum size of the cache (in bytes)
      */
-    public LRUFileCache(File dir, long maxSize) throws IOException {
+    public LRUFileCache(File dir, long maxSize) {
         this.dir = dir;
         this.maxSize = maxSize;
         cache = new HashMap<String, LRUFileCacheEntry>();
@@ -109,7 +109,7 @@ public class LRUFileCache implements FileCache {
      */
     @Override
     public synchronized File putFile(String key, InputStream in)
-            throws IllegalArgumentException, IOException {
+            throws IOException {
         try {
             LRUFileCacheEntry entry = cache.get(key);
             if (entry != null) {

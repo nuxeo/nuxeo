@@ -32,7 +32,7 @@ import java.io.InputStream;
  * into which to write some data, get one using {@link #getTempFile}, put the
  * actual binary in it, then pass this file to {@link #putFile(String, File)}.
  *
- * @see LRUCache
+ * @see LRUFileCache
  */
 public interface FileCache {
 
@@ -59,8 +59,7 @@ public interface FileCache {
      * @return the cached file
      * @throws IllegalArgumentException if the key is illegal
      */
-    File putFile(String key, InputStream in) throws IllegalArgumentException,
-            IOException;
+    File putFile(String key, InputStream in) throws IOException;
 
     /**
      * Puts a file in the cache.
@@ -73,8 +72,7 @@ public interface FileCache {
      * @return the cached file
      * @throws IllegalArgumentException if the key is illegal
      */
-    File putFile(String key, File file) throws IllegalArgumentException,
-            IOException;
+    File putFile(String key, File file) throws IOException;
 
     /**
      * Gets a file from the cache.

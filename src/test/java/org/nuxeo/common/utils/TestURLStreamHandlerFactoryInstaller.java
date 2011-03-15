@@ -17,7 +17,6 @@
 package org.nuxeo.common.utils;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -26,11 +25,8 @@ import java.net.URLStreamHandlerFactory;
 
 import junit.framework.TestCase;
 
-import org.nuxeo.common.utils.URLStreamHandlerFactoryInstaller.FactoryStack;
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class TestURLStreamHandlerFactoryInstaller extends TestCase {
 
@@ -46,7 +42,6 @@ public class TestURLStreamHandlerFactoryInstaller extends TestCase {
 
     }
 
-
     public static class TestHandler extends URLStreamHandler {
 
         @Override
@@ -58,7 +53,6 @@ public class TestURLStreamHandlerFactoryInstaller extends TestCase {
 
     URLStreamHandlerFactory f1;
     URLStreamHandlerFactory f2;
-
 
     @Override
     protected void setUp() throws Exception {
@@ -87,18 +81,21 @@ public class TestURLStreamHandlerFactoryInstaller extends TestCase {
 
     public void testInstaller() throws Exception {
         assertTrue(checkInstalled());
+
         URLStreamHandlerFactoryInstaller.uninstallURLStreamHandlerFactory();
         assertFalse(checkInstalled());
     }
 
-
-    public void testReset() throws MalformedURLException, SecurityException, IllegalArgumentException, NoSuchFieldException, IllegalAccessException {
+    public void testReset() throws Exception {
         new URL("test:pfff"); // create test protocol handler
         assertEquals(1, TestHandlerFactory.invokeCount);
+
         new URL("test:pfff"); // use cached handler
         assertEquals(1, TestHandlerFactory.invokeCount);
+
         URLStreamHandlerFactoryInstaller.uninstallURLStreamHandlerFactory(f1); // reset cache
         new URL("test:pfff"); // create new test protocol handler
         assertEquals(2, TestHandlerFactory.invokeCount);
     }
+
 }

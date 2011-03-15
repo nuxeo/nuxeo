@@ -135,8 +135,9 @@ public class URLStreamHandlerFactoryInstaller {
             } catch (Exception e) {
                 throw new Error("Cannot clear URL handlers cache");
             }
-            if (handlers != null)
+            if (handlers != null) {
                 handlers.clear();
+            }
         }
     }
 
