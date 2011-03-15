@@ -650,7 +650,8 @@ public abstract class NuxeoLauncher {
                 configurationGenerator.cleanupPostWizard();
             }
 
-            if (PlatformUtils.isWindows()
+            if ((PlatformUtils.isWindows() || "true".equals(configurationGenerator.getUserConfig().getProperty(
+                    ConfigurationGenerator.PARAM_FAKE_WINDOWS, "false")))
                     && configurationGenerator.isInstallInProgress()) {
                 install();
             }
