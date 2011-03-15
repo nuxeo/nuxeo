@@ -4,13 +4,17 @@ html,body {
 	height: 100%;
 }
 
+#containerPanel {
+  background-color:transparent;
+}
+
 .opensocial_title h1 {
   float:left;
   color:black;
 }
 
 .opensocial_buttons {
-  float:right;  
+  float:right;
 }
 
 .opensocial_buttons ul li {
@@ -21,7 +25,7 @@ html,body {
 .opensocial_buttons ul li a {
   display:block;
   padding: 5px 10px;
-  margin-left:5px;  
+  margin-left:5px;
   border:1px solid #ccc;
   background-color:#e7e7e7;
   text-decoration: none;
@@ -197,8 +201,8 @@ div.builder {
     center bottom,
     rgb(231,231,231) 0%,
     rgb(255,255,255) 66%);
-  border-bottom:1px solid #666;  
-}  
+  border-bottom:1px solid #666;
+}
 
 .builder td.dialogMiddleCenter {
 	opacity: 0.90;
