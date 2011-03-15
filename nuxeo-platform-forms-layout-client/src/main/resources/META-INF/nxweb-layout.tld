@@ -99,9 +99,7 @@
       </p>
       <p>
         In addition to the following attributes, any optional attributes are
-        accepted and are used as properties of the created widget. The widget
-        fields cannot be described: they are replaced by the single 'value'
-        attribute.
+        accepted and are used as properties of the created widget.
       </p>
       <p>
         When rendered, some variables are exposed to the resolution context:
@@ -137,12 +135,53 @@
     </attribute>
     <attribute>
       <name>value</name>
-      <required>true</required>
-      <description>The value on which widget will apply.</description>
+      <required>false</required>
+      <description>
+        The value on which widget will apply. If the "fields" attribute is not
+        defined, it has to represent the bound property. Otherwise, it is used
+        as a base for fields definitions that will represent the bound
+        properties.
+      </description>
+    </attribute>
+    <attribute>
+      <name>fields</name>
+      <required>false</required>
+      <description>
+        The field definitions on which the widget will apply. Must resolve to a
+        list of FieldDefinition instances, or a list of String items.
+      </description>
+    </attribute>
+    <attribute>
+      <name>properties</name>
+      <required>false</required>
+      <description>
+        The widget properties. Must resolve to an instance of Map&lt,String,
+        Serializable&gt;. Any other tag attributes are accepted and will be
+        added on top of these properties.
+      </description>
+    </attribute>
+    <attribute>
+      <name>label</name>
+      <required>false</required>
+      <description>The String widget label.</description>
+    </attribute>
+    <attribute>
+      <name>helpLabel</name>
+      <required>false</required>
+      <description>The String widget help label.</description>
+    </attribute>
+    <attribute>
+      <name>translated</name>
+      <required>false</required>
+      <description>
+        The boolean value stating it the widget labels have to be translated.
+      </description>
     </attribute>
     <example>
       <![CDATA[
 <nxl:widgetType name="text" mode="#{myMode}" value="#{myText}" required="true" />
+<nxl:widgetType name="#{myWidgetType}" mode="#{myMode}" value="#{myBoundProperty}"
+  properties="#{myProperties}" />
       ]]>
     </example>
   </tag>
