@@ -21,4 +21,5 @@ hg clone http://hg.nuxeo.org/addons ../nuxeo-addons
 
 svn export https://svn.nuxeo.org/nuxeo/tools/mercurial .
 
+hgf pull
 hgf up -C %VERSION%
