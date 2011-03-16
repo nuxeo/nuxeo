@@ -15,6 +15,7 @@
 
   <modules>
     <module>nuxeo-connect-update</module>
+    <module>nuxeo-connect-offline-update</module>
     <module>nuxeo-connect-client-wrapper</module>
     <module>nuxeo-admin-center</module>
     <module>nuxeo-admin-center-monitoring</module>
