@@ -5,6 +5,7 @@
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:fn="http://java.sun.com/jsp/jstl/functions"
   id="#{layout.id}">
 
   <c:set var="isEditMode" value="#{nxl:isBoundToEditMode(layout.mode)}" />
@@ -19,8 +20,10 @@
               <c:when test="#{widget.translated}">
                 <td class="iconColumn" style="vertical-align:top;">
                   <c:if test="#{!empty widget.helpLabel}">
+                    <c:set var="helpMessage" value="#{messages[widget.helpLabel]}" />
+                    <c:set var="helpMessageEscaped" value="#{fn:replace(helpMessage, '\'', '\\\\\'')}" />
                     <h:graphicImage value="/icons/lightbulb.png"
-                      onmouseover="tooltip.show('#{messages[widget.helpLabel]}', 500);"
+                      onmouseover="tooltip.show('#{helpMessageEscaped}', 500);"
                       onmouseout="tooltip.hide();" />
                   </c:if>
                 </td>
@@ -32,8 +35,10 @@
               <c:otherwise>
                 <td class="iconColumn" style="vertical-align:top;">
                   <c:if test="#{!empty widget.helpLabel}">
+                    <c:set var="helpMessage" value="#{widget.helpLabel}" />
+                    <c:set var="helpMessageEscaped" value="#{fn:replace(helpMessage, '\'', '\\\\\'')}" />
                     <h:graphicImage value="/icons/lightbulb.png"
-                      onmouseover="tooltip.show('#{widget.helpLabel}', 500);"
+                      onmouseover="tooltip.show('#{helpMessageEscaped}', 500);"
                       onmouseout="tooltip.hide();" />
                   </c:if>
                 </td>
