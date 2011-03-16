@@ -16,7 +16,10 @@
  */
 package org.nuxeo.ecm.automation.core.util;
 
+import java.io.InputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,8 +37,16 @@ import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
+import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.SimpleType;
 import org.nuxeo.ecm.core.schema.types.Type;
+import org.nuxeo.ecm.core.schema.types.primitives.BinaryType;
+import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
+import org.nuxeo.ecm.core.schema.types.primitives.DateType;
+import org.nuxeo.ecm.core.schema.types.primitives.DoubleType;
+import org.nuxeo.ecm.core.schema.types.primitives.IntegerType;
+import org.nuxeo.ecm.core.schema.types.primitives.LongType;
+import org.nuxeo.ecm.core.schema.types.primitives.StringType;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -115,20 +126,33 @@ public class DocumentHelper {
         for (Map.Entry<String, String> entry : values.entrySet()) {
             String key = entry.getKey();
             String value = entry.getValue();
-            if ("ecm:acl".equals(key)) {
-                setLocalAcl(session, doc, value);
+            setProperty(session, doc, key, value);
+        }
+    }
+
+    public static void setProperty(CoreSession session, DocumentModel doc,
+            String key, String value) throws Exception {
+        if ("ecm:acl".equals(key)) {
+            setLocalAcl(session, doc, value);
+        }
+        Property p = doc.getProperty(key);
+        if (value == null || value.length() == 0) {
+            p.setValue(null);
+            return;
+        }
+        Type type = p.getField().getType();
+        if (!type.isSimpleType()) {
+            if (type.isListType()) {
+                ListType ltype = (ListType)type;
+                if (ltype.isScalarList()) {
+                    p.setValue(readStringList(value, (SimpleType)ltype.getFieldType()));
+                    return;
+                }
             }
-            Property p = doc.getProperty(key);
-            Type type = p.getField().getType();
-            if (!type.isSimpleType()) {
-                throw new OperationException(
-                        "Only scalar types can be set using update operation");
-            }
-            if (value == null || value.length() == 0) {
-                p.setValue(null);
-            } else {
-                p.setValue(((SimpleType) type).getPrimitiveType().decode(value));
-            }
+            throw new OperationException(
+                    "Only scalar or scalar list types can be set using update operation");
+        } else {
+            p.setValue(((SimpleType) type).getPrimitiveType().decode(value));
         }
     }
 
@@ -147,5 +171,101 @@ public class DocumentHelper {
         }
         session.setACP(doc.getRef(), acp, false);
     }
+
+    /**
+     * Read an encoded string list as a comma separated list. To use comma inside list element values you need to escape them using '\'.
+     * If the given type is different from {@link StringType#ID} then array elements will be converted to the actual type.
+     * @param value
+     * @param type
+     * @return
+     */
+    public static Object readStringList(String value, SimpleType type) {
+        String[] ar = readStringList(value);
+        if (ar == null) {
+            return null;
+        }
+        if (StringType.INSTANCE == type) {
+            return ar;
+        } else if (DateType.INSTANCE == type) {
+            Calendar[] r = new Calendar[ar.length];
+            for (int i=0; i<r.length; i++) {
+                r[i] = (Calendar)type.decode(ar[i]);
+            }
+            return r;
+        } else if (LongType.INSTANCE == type) {
+            Long[] r = new Long[ar.length];
+            for (int i=0; i<r.length; i++) {
+                r[i] = (Long)type.decode(ar[i]);
+            }
+            return r;
+        } else if (IntegerType.INSTANCE == type) {
+            Integer[] r = new Integer[ar.length];
+            for (int i=0; i<r.length; i++) {
+                r[i] = (Integer)type.decode(ar[i]);
+            }
+            return r;
+        } else if (DoubleType.INSTANCE == type) {
+            Double[] r = new Double[ar.length];
+            for (int i=0; i<r.length; i++) {
+                r[i] = (Double)type.decode(ar[i]);
+            }
+            return r;
+        } else if (BooleanType.INSTANCE == type) {
+            Boolean[] r = new Boolean[ar.length];
+            for (int i=0; i<r.length; i++) {
+                r[i] = (Boolean)type.decode(ar[i]);
+            }
+            return r;
+        } else if (BinaryType.INSTANCE == type) {
+            InputStream[] r = new InputStream[ar.length];
+            for (int i=0; i<r.length; i++) {
+                r[i] = (InputStream)type.decode(ar[i]);
+            }
+            return r;
+        }
+        throw new IllegalArgumentException("Unsupported type when updating document properties from string representation: "+type);
+    }
+
+    /**
+     * Read an encoded string list as a comma separated list. To use comma inside list element values you need to escape them using '\'.
+     * @param value
+     * @return
+     */
+    public static String[] readStringList(String value) {
+        if (value == null) {
+            return null;
+        }
+        if (value.length() == 0) {
+            return new String[0];
+        }
+        ArrayList<String> result = new ArrayList<String>();
+        char[] chars = value.toCharArray();
+        StringBuilder buf = new StringBuilder();
+        boolean esc = false;
+        for (int i=0; i<chars.length; i++) {
+            char c = chars[i];
+            if (c == '\\') {
+                if (esc) {
+                    buf.append('\\');
+                    esc = false;
+                } else {
+                    esc = true;
+                }
+            } else if (c == ',') {
+                if (esc) {
+                    buf.append(',');
+                    esc = false;
+                } else {
+                    result.add(buf.toString());
+                    buf = new StringBuilder();
+                }
+            } else {
+                buf.append(c);
+            }
+        }
+        result.add(buf.toString());
+        return result.toArray(new String[result.size()]);
+    }
+
 
 }

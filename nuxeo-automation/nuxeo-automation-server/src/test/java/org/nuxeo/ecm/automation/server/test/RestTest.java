@@ -19,10 +19,9 @@ package org.nuxeo.ecm.automation.server.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.junit.Assert.assertThat;
-
 
 import java.io.File;
 import java.io.IOException;
@@ -539,4 +538,30 @@ public class RestTest {
 
     }
 
+
+    @Test
+    public void testSetArrayProperty() throws Exception {
+        Document root = (Document) session.newRequest(FetchDocument.ID).set(
+                "value", "/").execute();
+
+        assertNotNull(root);
+        assertEquals("/", root.getPath());
+
+        PropertyMap props = new PropertyMap();
+        props.set("dc:title", "My Test Folder");
+        props.set("dc:description", "test");
+        props.set("dc:subjects", "a,b,c\\,d");
+        Document folder = (Document) session.newRequest(CreateDocument.ID)
+            .setHeader("X-NXDocumentProperties", "*").setInput(
+                root).set("type", "Folder").set("name", "myfolder2").set(
+                "properties", props).execute();
+
+        assertEquals("My Test Folder", folder.getString("dc:title"));
+        assertEquals("test", folder.getString("dc:description"));
+        PropertyList ar = (PropertyList)folder.getProperties().get("dc:subjects");
+        assertEquals(3, ar.size());
+        assertEquals("a", ar.getString(0));
+        assertEquals("b", ar.getString(1));
+        assertEquals("c,d", ar.getString(2));
+    }
 }
