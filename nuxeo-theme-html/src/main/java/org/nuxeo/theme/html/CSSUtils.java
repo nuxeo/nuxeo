@@ -41,16 +41,6 @@ import org.nuxeo.theme.resources.ResourceBank;
 import org.nuxeo.theme.themes.ThemeDescriptor;
 import org.nuxeo.theme.themes.ThemeException;
 import org.nuxeo.theme.themes.ThemeManager;
-import org.w3c.css.sac.CSSException;
-import org.w3c.css.sac.InputSource;
-import org.w3c.dom.css.CSSRule;
-import org.w3c.dom.css.CSSRuleList;
-import org.w3c.dom.css.CSSStyleDeclaration;
-import org.w3c.dom.css.CSSStyleRule;
-import org.w3c.dom.css.CSSStyleSheet;
-import org.w3c.dom.css.CSSValue;
-
-import com.steadystate.css.parser.CSSOMParser;
 
 public final class CSSUtils {
 
@@ -101,65 +91,6 @@ public final class CSSUtils {
 
     public static Properties getCssProperties() {
         return cssProperties;
-    }
-
-    public static void loadCss(final Style style, String cssSource,
-            final String viewName) {
-        // pre-processing: replace empty selectors (which are invalid selectors)
-        // with a marker selector
-
-        final Matcher matcher = emptyCssSelectorPattern.matcher(cssSource);
-        final StringBuilder buf = new StringBuilder();
-        while (matcher.find()) {
-            if (matcher.group(1).trim().equals("")) {
-                buf.append(EMPTY_CSS_SELECTOR);
-            }
-            buf.append(matcher.group(0));
-        }
-        cssSource = buf.toString();
-
-        final CSSOMParser parser = new CSSOMParser();
-        final InputSource is = new InputSource(new StringReader(cssSource));
-        CSSStyleSheet css = null;
-        try {
-            css = parser.parseStyleSheet(is, null, null);
-        } catch (NumberFormatException e) {
-            log.error("Error while converting CSS value: \n" + cssSource);
-        } catch (CSSException e) {
-            log.error("Invalid CSS: \n" + cssSource);
-        } catch (IOException e) {
-            log.error("Could not parse CSS: \n" + cssSource);
-        }
-
-        if (css == null) {
-            return;
-        }
-
-        // remove existing properties
-        style.clearPropertiesFor(viewName);
-
-        final CSSRuleList rules = css.getCssRules();
-        for (int i = 0; i < rules.getLength(); i++) {
-            final CSSRule rule = rules.item(i);
-            if (rule.getType() == CSSRule.STYLE_RULE) {
-                final CSSStyleRule sr = (CSSStyleRule) rule;
-                final CSSStyleDeclaration s = sr.getStyle();
-                final Properties properties = new Properties();
-                for (int j = 0; j < s.getLength(); j++) {
-                    final String propertyName = s.item(j);
-                    final CSSValue value = s.getPropertyCSSValue(propertyName);
-                    properties.setProperty(propertyName, value.toString());
-                }
-                if (s.getLength() == 0) {
-                    properties.setProperty("", "");
-                }
-                String selector = sr.getSelectorText();
-                if (selector.equals(EMPTY_CSS_SELECTOR)) {
-                    selector = "";
-                }
-                style.setPropertiesFor(viewName, selector, properties);
-            }
-        }
     }
 
     public static String styleToCss(final Style style,

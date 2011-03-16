@@ -21,10 +21,12 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.regex.Matcher;
@@ -32,21 +34,18 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.milyn.magger.CSSParser;
+import org.milyn.magger.CSSProperty;
+import org.milyn.magger.CSSRule;
+import org.milyn.magger.CSSStylesheet;
+import org.milyn.resource.URIResourceLocator;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.theme.formats.styles.Style;
-import org.w3c.css.sac.CSSException;
-import org.w3c.css.sac.InputSource;
-import org.w3c.dom.css.CSSRule;
-import org.w3c.dom.css.CSSRuleList;
-import org.w3c.dom.css.CSSStyleDeclaration;
-import org.w3c.dom.css.CSSStyleRule;
-import org.w3c.dom.css.CSSStyleSheet;
-import org.w3c.dom.css.CSSValue;
+import org.w3c.css.sac.LexicalUnit;
+import org.w3c.css.sac.Selector;
 
 import au.com.bytecode.opencsv.CSVReader;
 import au.com.bytecode.opencsv.CSVWriter;
-
-import com.steadystate.css.parser.CSSOMParser;
 
 public final class Utils {
 
@@ -231,49 +230,47 @@ public final class Utils {
             buf.append(matcher.group(0));
         }
         cssSource = buf.toString();
-
-        final CSSOMParser parser = new CSSOMParser();
-        final InputSource is = new InputSource(new StringReader(cssSource));
-        CSSStyleSheet css = null;
+        CSSStylesheet styleSheet = null;
+        CSSParser parser = new CSSParser(new URIResourceLocator());
         try {
-            css = parser.parseStyleSheet(is, null, null);
-        } catch (NumberFormatException e) {
-            log.error("Error while converting CSS value: \n" + cssSource);
-        } catch (CSSException e) {
-            log.error("Invalid CSS: \n" + cssSource);
-        } catch (IOException e) {
-            log.error("Could not parse CSS: \n" + cssSource);
-        }
-
-        if (css == null) {
+            styleSheet = parser.parse(cssSource, URI.create(""), null);
+        } catch (Exception e) {
+            log.error("Could not parse CSS:\n" + cssSource, e);
             return;
         }
 
         // remove existing properties
         style.clearPropertiesFor(viewName);
 
-        final CSSRuleList rules = css.getCssRules();
-        for (int i = 0; i < rules.getLength(); i++) {
-            final CSSRule rule = rules.item(i);
-            if (rule.getType() == CSSRule.STYLE_RULE) {
-                final CSSStyleRule sr = (CSSStyleRule) rule;
-                final CSSStyleDeclaration s = sr.getStyle();
-                final Properties properties = new Properties();
-                for (int j = 0; j < s.getLength(); j++) {
-                    final String propertyName = s.item(j);
-                    final CSSValue value = s.getPropertyCSSValue(propertyName);
-                    properties.setProperty(propertyName, value.toString());
-                }
-                if (s.getLength() == 0) {
-                    properties.setProperty("", "");
-                }
-                String selector = sr.getSelectorText();
-                if (selector.equals(EMPTY_CSS_SELECTOR)) {
-                    selector = "";
-                }
-                style.setPropertiesFor(viewName, selector, properties);
+        CssStringWriter cssWriter = new CssStringWriter();
+
+        Iterator<CSSRule> rules = styleSheet.getRules().iterator();
+        while (rules.hasNext()) {
+            CSSRule rule = rules.next();
+
+            final Properties styleProperties = new Properties();
+
+            /* CSS selector */
+            Selector selector = rule.getSelector();
+            cssWriter.write(selector);
+            String selectorStr = cssWriter.toText();
+
+            if (selectorStr.equals(EMPTY_CSS_SELECTOR)) {
+                selectorStr = "";
             }
+
+            /* CSS properties */
+            CSSProperty property = rule.getProperty();
+            LexicalUnit value = property.getValue();
+            cssWriter.write(value, " ");
+            String strValue = cssWriter.toText();
+
+            if (property == null) {
+                styleProperties.setProperty("", "");
+            } else {
+                styleProperties.setProperty(property.getName(), strValue);
+            }
+            style.setPropertiesFor(viewName, selectorStr, styleProperties);
         }
     }
-
 }

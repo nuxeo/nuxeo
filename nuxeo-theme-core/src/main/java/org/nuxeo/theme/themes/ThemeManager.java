@@ -964,6 +964,32 @@ public final class ThemeManager implements Registrable {
         return styles;
     }
 
+    public List<Style> getSortedNamedStyles(String themeName) {
+        List<Style> namedStyles = getNamedStyles(themeName);
+        DAG graph = new DAG();
+        for (Style s : namedStyles) {
+            String styleName = s.getName();
+            graph.addVertex(styleName);
+            for (Format f : listFormatsDirectlyInheritingFrom(s)) {
+                if (!f.isNamed()) {
+                    continue;
+                }
+                try {
+                    graph.addEdge(styleName, f.getName());
+                } catch (CycleDetectedException e) {
+                    log.error("Cycle detected in style dependencies: ", e);
+                    return namedStyles;
+                }
+            }
+        }
+
+        List<Style> styles = new ArrayList<Style>();
+        for (Object name : TopologicalSorter.sort(graph)) {
+            styles.add((Style) getNamedObject(themeName, "style", (String) name));
+        }
+        return styles;
+    }
+
     // Cache management
     public Long getLastModified(String themeName) {
         final Long date = lastModified.get(themeName);

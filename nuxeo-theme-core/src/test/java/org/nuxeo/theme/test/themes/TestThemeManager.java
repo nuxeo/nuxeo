@@ -57,6 +57,16 @@ public class TestThemeManager extends NXRuntimeTestCase {
         deployContrib("org.nuxeo.theme.core.tests", "fragment-config.xml");
     }
 
+    private Style createNamedStyle(String name, String themeName)
+            throws ThemeException {
+        ThemeManager themeManager = Manager.getThemeManager();
+        Style s = (Style) FormatFactory.create("style");
+        s.setName(name);
+        themeManager.registerFormat(s);
+        themeManager.setNamedObject(themeName, "style", s);
+        return s;
+    }
+
     public void testValidateThemeName() {
         assertTrue(ThemeManager.validateThemeName("default"));
         assertTrue(ThemeManager.validateThemeName("default-1"));
@@ -701,7 +711,7 @@ public class TestThemeManager extends NXRuntimeTestCase {
     public void testRemoveInheritanceFrom() throws NodeException,
             ThemeException {
         ThemeManager themeManager = Manager.getThemeManager();
-        ;
+
         Style ancestor = (Style) FormatFactory.create("style");
         ancestor.setUid(0);
         Style descendant1 = (Style) FormatFactory.create("style");
@@ -770,4 +780,30 @@ public class TestThemeManager extends NXRuntimeTestCase {
         assertTrue(themeManager.getNamedStyles(currentThemeName).isEmpty());
     }
 
+    public void testStyleDependencySort() throws NodeException, ThemeException {
+        ThemeManager themeManager = Manager.getThemeManager();
+        String currentThemeName = "theme";
+
+        Style s1 = createNamedStyle("1", currentThemeName);
+        Style s2 = createNamedStyle("2", currentThemeName);
+        Style s3 = createNamedStyle("3", currentThemeName);
+        Style s4 = createNamedStyle("4", currentThemeName);
+        Style s5 = createNamedStyle("5", currentThemeName);
+        Style s6 = createNamedStyle("6", currentThemeName);
+
+        // (2 -> 1 -> 3) (4 -> 2) (6 -> 2) (5 -> 2)
+        themeManager.makeFormatInherit(s2, s1);
+        themeManager.makeFormatInherit(s1, s3);
+        themeManager.makeFormatInherit(s4, s2);
+        themeManager.makeFormatInherit(s6, s2);
+        themeManager.makeFormatInherit(s5, s2);
+
+        List<Style> sortedStyles = themeManager.getSortedNamedStyles(currentThemeName);
+        assertEquals("4", sortedStyles.get(0).getName());
+        assertEquals("6", sortedStyles.get(1).getName());
+        assertEquals("5", sortedStyles.get(2).getName());
+        assertEquals("2", sortedStyles.get(3).getName());
+        assertEquals("1", sortedStyles.get(4).getName());
+        assertEquals("3", sortedStyles.get(5).getName());
+    }
 }

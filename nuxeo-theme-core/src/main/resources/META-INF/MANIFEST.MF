@@ -37,6 +37,10 @@ Nuxeo-Component: OSGI-INF/nxthemes-core-service.xml,
  OSGI-INF/nxthemes-core-contrib.xml
 Bundle-ManifestVersion: 2
 Import-Package: au.com.bytecode.opencsv,
+ org.w3c.css.sac,
+ org.milyn.flute,
+ org.milyn.milyn-commons,
+ org.milyn.milyn-magger,
  javax.annotation;version="1.0",
  javax.servlet.http,
  javax.xml.namespace,

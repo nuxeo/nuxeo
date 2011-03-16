@@ -6,12 +6,12 @@
     Web-related features and resources are registered here.
     @author Jean-Marc Orliaguet (jmo@chalmers.se)
   </documentation>
-  
+
   <require>org.nuxeo.theme.core</require>
-    
+
   <extension target="org.nuxeo.theme.services.ThemeService"
     point="template-engines">
-    
+
     <template-engine name="html" title="Plain HTML"
       template-view="org.nuxeo.theme.html.HTMLView" />
 
@@ -195,6 +195,7 @@
       <renderer element="fragment">
         <filter>control fragment visibility</filter>
         <filter>add widget</filter>
+        <filter>set element name</filter>
         <filter>set style</filter>
         <filter>write fragment tag</filter>
       </renderer>

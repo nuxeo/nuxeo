@@ -11,7 +11,7 @@
         <cell name="right column">
           <fragment perspectives="default" type="dummy fragment"/>
           <!-- this fragment is visible in the view perspective only -->
-          <fragment type="dummy fragment"/>
+          <fragment type="dummy fragment" name="main"/>
         </cell>
       </section>
     </page>

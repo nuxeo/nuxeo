@@ -18,15 +18,24 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.nodes.Node;
 
 public class ThemeElement extends AbstractElement {
 
+    private static final Log log = LogFactory.getLog(ThemeElement.class);
+
     @Override
     public List<Node> getChildrenInContext(URL themeURL) {
         List<Node> children = new ArrayList<Node>();
-        children.add(Manager.getThemeManager().getThemePageByUrl(themeURL));
+        Node page = Manager.getThemeManager().getThemePageByUrl(themeURL);
+        if (page != null) {
+            children.add(page);
+        } else {
+            log.error("No page found for URL " + themeURL);
+        }
         return children;
     }
 

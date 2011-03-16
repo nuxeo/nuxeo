@@ -10,7 +10,7 @@
         </cell>
         <cell name="right column">
           <fragment type="dummy fragment"
-            perspectives="default" />
+            perspectives="default" name="main" />
           <!-- this fragment is visible in the view perspective only -->
           <fragment type="dummy fragment" perspectives="view" />
         </cell>

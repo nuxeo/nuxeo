@@ -37,22 +37,30 @@
       <artifactId>ezmorph</artifactId>
     </dependency>
     <dependency>
-      <groupId>net.sourceforge.cssparser</groupId>
-      <artifactId>cssparser</artifactId>
+      <groupId>javax.el</groupId>
+      <artifactId>el-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.milyn</groupId>
+      <artifactId>milyn-magger</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.milyn</groupId>
+      <artifactId>milyn-commons</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.milyn</groupId>
+      <artifactId>flute</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.w3c</groupId>
       <artifactId>sac</artifactId>
+      <scope>test</scope>
     </dependency>
-
-    <dependency>
-      <groupId>javax.el</groupId>
-      <artifactId>el-api</artifactId>
-    </dependency>
-    <!--
-      dependency> <groupId>javax.el</groupId> <artifactId>el-ri</artifactId>
-      </dependency
-    -->
 
     <dependency>
       <groupId>org.jboss.seam</groupId>
