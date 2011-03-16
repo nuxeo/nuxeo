@@ -42,7 +42,7 @@ import org.apache.commons.logging.LogFactory;
 import org.codehaus.plexus.util.dag.CycleDetectedException;
 import org.codehaus.plexus.util.dag.DAG;
 import org.codehaus.plexus.util.dag.TopologicalSorter;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.common.Environment;
 import org.nuxeo.theme.ApplicationType;
 import org.nuxeo.theme.CustomThemeNameFilter;
 import org.nuxeo.theme.Manager;
@@ -128,7 +128,7 @@ public final class ThemeManager implements Registrable {
             "(.*?)\\s\\((.*?)\\)$", Pattern.DOTALL);
 
     public static void createThemeDir() {
-        THEME_DIR = new File(Framework.getRuntime().getHome(), "themes");
+        THEME_DIR = new File(Environment.getDefault().getData(), "themes");
         THEME_DIR.mkdirs();
     }
 
