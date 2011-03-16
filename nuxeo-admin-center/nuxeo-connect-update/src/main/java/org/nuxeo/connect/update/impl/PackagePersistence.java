@@ -59,7 +59,13 @@ public class PackagePersistence {
     protected Map<String, Integer> states;
 
     public PackagePersistence() throws IOException {
-        root = new File(Environment.getDefault().getData(), FEATURES_DIR);
+        // check if we should use a custom dataDir - useful for offline update
+        String dataDir = System.getProperty("org.nuxeo.connect.update.dataDir");
+        if (dataDir != null) {
+            root = new File(new File(dataDir), FEATURES_DIR);
+        } else {
+            root = new File(Environment.getDefault().getData(), FEATURES_DIR);
+        }
         root.mkdirs();
         store = new File(root, "store");
         store.mkdirs();

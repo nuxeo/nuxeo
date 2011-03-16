@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.connect.update.LocalPackage;
 import org.nuxeo.connect.update.PackageException;
@@ -44,7 +45,7 @@ import org.nuxeo.runtime.api.Framework;
  * </ol>
  *
  * Example:
- * <code>Main "../nxserver" "bundlesDir" "configFile"
+ * <code>Main "workingdir" "targetHome" "configFile"
  *
  * <p>
  * The environment used by Nuxeo runtime can be specified as Java system properties.
@@ -84,10 +85,12 @@ public class Main {
 
 
     protected File home;
+    protected File wd;
     protected File bundlesDir;
     protected List<File> bundles;
     protected File config;
     protected Map<String,Object> env;
+    protected Environment targetEnv;
     protected List<String> packages;
     protected PackageUpdateService pus;
 
@@ -96,15 +99,21 @@ public class Main {
             System.out.println("Syntax Error: You must specify the home directory and the list of bundles as arguments of the Main class");
             System.exit(1);
         }
-        home = new File(args[0]);
-        initBundleFiles(args[1]);
-        env = initEnvironment();
+        wd = new File(args[0]);
+        home = new File(args[1]);
         config = new File(args[2]);
+        if (!wd.isDirectory()) {
+            throw new IllegalStateException("working directory is not a directory: "+wd);
+        }
+        bundlesDir = new File(wd, "bundles");
+        initBundleFiles();
+        env = initEnvironment();
         packages = readPackages();
         if (packages.isEmpty()) {
             System.out.println("Syntax Error: No bundles found in "+config);
             System.exit(1);
         }
+        targetEnv = createTargetEnvironment();
     }
 
     protected Map<String, Object> initEnvironment() {
@@ -113,15 +122,19 @@ public class Main {
         return env;
     }
 
-    protected void initBundleFiles(String path) throws Exception {
+    protected Environment createTargetEnvironment() {
+        //TODO
+        return new Environment(home);
+    }
+
+    protected void initBundleFiles() throws Exception {
         bundles = new ArrayList<File>();
-        bundlesDir = new File(path);
         if (!bundlesDir.isDirectory()) {
-            throw new FileNotFoundException("File "+path+" is not a directory");
+            throw new FileNotFoundException("File "+bundlesDir+" is not a directory");
         }
         File[] list = bundlesDir.listFiles();
         if (list == null) {
-            throw new FileNotFoundException("No bundles found in "+path);
+            throw new FileNotFoundException("No bundles found in "+bundlesDir);
         }
         for (File file : list) {
             String name = file.getName();
@@ -134,7 +147,8 @@ public class Main {
     }
 
     public void initialize() throws Exception {
-        FrameworkLoader.initialize(Main.class.getClassLoader(), home, bundles, env);
+        System.setProperty("org.nuxeo.connect.update.dataDir", targetEnv.getData().getAbsolutePath());
+        FrameworkLoader.initialize(Main.class.getClassLoader(), wd, bundles, env);
     }
 
     public void start() throws Exception {
@@ -152,8 +166,8 @@ public class Main {
             if (config != null) {
                 config.delete();
             }
-            if (bundlesDir != null) {
-                FileUtils.deleteTree(bundlesDir);
+            if (wd != null) {
+                FileUtils.deleteTree(wd);
             }
         }
     }
@@ -161,8 +175,14 @@ public class Main {
 
     public void update() throws Exception {
         System.out.println("Performing update ...");
-        for (String pkgId : packages) {
-            updatePackage(pkgId);
+        Environment env = Environment.getDefault();
+        try {
+            Environment.setDefault(targetEnv);
+            for (String pkgId : packages) {
+                updatePackage(pkgId);
+            }
+        } finally {
+            Environment.setDefault(env);
         }
         System.out.println("Done.");
     }
@@ -184,7 +204,7 @@ public class Main {
         if (pkg == null) {
             throw new IllegalStateException("No package found: "+pkgId);
         }
-
+        System.out.println("Updating "+pkgId);
         Task installTask = pkg.getInstallTask();
         ValidationStatus status = installTask.validate();
 
@@ -192,9 +212,6 @@ public class Main {
             System.out.println("Failed to install package "+pkgId+" -> "+status.getErrors());
             System.exit(3);
         }
-
-        //TODO: save user prefs in a .properties file and load the map from that file
-        installTask.run(new HashMap<String, String>());
 
         Map<String,String> params = getTaskParams(pkgId);
         try {
