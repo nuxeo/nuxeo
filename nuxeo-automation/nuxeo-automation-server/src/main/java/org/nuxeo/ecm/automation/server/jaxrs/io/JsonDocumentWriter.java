@@ -51,6 +51,7 @@ import org.nuxeo.ecm.core.api.model.impl.ArrayProperty;
 import org.nuxeo.ecm.core.api.model.impl.ComplexProperty;
 import org.nuxeo.ecm.core.api.model.impl.ListProperty;
 import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
+import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.utils.DateParser;
 
 /**
@@ -180,7 +181,7 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
                 }
                 JSONArray jsar = new JSONArray();
                 for (Object o : ar) {
-                    jsar.add(type.encode(o));
+                    jsar.add(((ListType)type).getFieldType().encode(o));
                 }
                 return jsar;
             } else {
