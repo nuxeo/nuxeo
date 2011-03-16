@@ -215,8 +215,12 @@ public class MimetypeRegistryService extends DefaultComponent implements
                 // check first 16 bytes
                 byte[] bytes = new byte[16];
                 FileInputStream is = new FileInputStream(file);
-                int n = is.read(bytes);
-                is.close();
+                int n = 0;
+                try {
+                    n = is.read(bytes);
+                } finally {
+                    is.close();
+                }
                 for (int i = 0; i < n; i++) {
                     if (bytes[i] == 0) {
                         mimeType = "application/octet-stream";
@@ -282,14 +286,14 @@ public class MimetypeRegistryService extends DefaultComponent implements
         File file = null;
         try {
             file = File.createTempFile("NXMimetypeBean", ".bin");
-            FileUtils.copyToFile(stream, file);
-            return getMimetypeFromFile(file);
+			try {
+				FileUtils.copyToFile(stream, file);
+				return getMimetypeFromFile(file);
+			} finally {
+				file.delete();
+			}
         } catch (IOException e) {
             throw new MimetypeDetectionException(e.getMessage(), e);
-        } finally {
-            if (file != null) {
-                file.delete();
-            }
         }
     }
 
@@ -324,14 +328,19 @@ public class MimetypeRegistryService extends DefaultComponent implements
                 blob = blob.persist();
             }
             file = File.createTempFile("NXMimetypeBean", ".bin");
-            FileUtils.copyToFile(blob.getStream(), file);
-            return getMimetypeFromFile(file);
-        } catch (IOException e) {
-            throw new MimetypeDetectionException(e.getMessage(), e);
-        } finally {
-            if (file != null) {
+            try {
+                InputStream is = blob.getStream();
+                try {
+                    FileUtils.copyToFile(is, file);
+                } finally {
+                    is.close();
+                }
+                return getMimetypeFromFile(file);
+            } finally {
                 file.delete();
             }
+        } catch (IOException e) {
+            throw new MimetypeDetectionException(e.getMessage(), e);
         }
     }
 
