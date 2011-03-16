@@ -1877,5 +1877,18 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         dml = session.query("SELECT * FROM File WHERE uid IS NULL");
         assertEquals(2, dml.size());
     }
+    
+    public void testMultilineQuery() throws Exception {
+        DocumentModelList dml;
+        createDocs();
+        
+        String query = "SELECT * \n 		FROM File \n      WHERE dc:title IS NOT NULL \n       ORDER BY ecm:path";
+        dml = session.query(query);
+        assertEquals(3, dml.size());
+        
+        query = "SELECT * \r\n        FROM File \r\n      WHERE dc:title IS NULL \r\n       ORDER BY ecm:path DESC";
+        dml = session.query(query);
+        assertEquals(0, dml.size());
+    }
 
 }
