@@ -1,8 +1,5 @@
-/*
- *    Copyright 2004 Original mockejb authors.
- *    Copyright 2007 Nuxeo SAS.
- *
- * This file is derived from mockejb-0.6-beta2
+/* 
+ * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +12,8 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ * 
+ * Contributors:
  */
 package org.nuxeo.common.jndi;
 
