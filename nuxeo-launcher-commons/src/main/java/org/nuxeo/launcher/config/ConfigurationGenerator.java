@@ -770,7 +770,15 @@ public class ConfigurationGenerator {
      * @return true if there's an install in progress
      */
     public boolean isInstallInProgress() {
+        return getInstallFile().exists();
+    }
+
+    /**
+     * @return Install/upgrade file
+     * @since 5.4.1
+     */
+    public File getInstallFile() {
         return new File(serverConfigurator.getDataDir(),
-                "installAfterRestart.log").exists();
+                "installAfterRestart.log");
     }
 }
