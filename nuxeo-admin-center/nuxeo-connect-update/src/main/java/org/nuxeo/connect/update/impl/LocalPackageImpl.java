@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2011 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -64,7 +64,7 @@ public class LocalPackageImpl implements LocalPackage {
             throws PackageException {
         this.state = state;
         XMap xmap = UpdateServiceImpl.getXmap();
-        if (xmap==null) { // for tests
+        if (xmap == null) { // for tests
             xmap = UpdateServiceImpl.createXmap();
         }
         InputStream in = null;
@@ -117,7 +117,7 @@ public class LocalPackageImpl implements LocalPackage {
                 return FileUtils.readFile(file);
             } catch (Exception e) {
                 throw new PackageException(
-                        "Failed to rad license.txt file for package: "
+                        "Failed to read license.txt file for package: "
                                 + getId());
             }
         }
@@ -209,7 +209,7 @@ public class LocalPackageImpl implements LocalPackage {
         try {
             task = (Task) data.loadClass(tdef.getType()).newInstance();
         } catch (Exception e) {
-            throw new PackageException("Could not instatiate custom task "
+            throw new PackageException("Could not instantiate custom task "
                     + tdef.getType() + " for package " + getId(), e);
         }
         task.initialize(this, tdef.getRequireRestart());
@@ -222,7 +222,7 @@ public class LocalPackageImpl implements LocalPackage {
                 return (Validator) data.loadClass(def.getValidator()).newInstance();
             } catch (Exception e) {
                 throw new PackageException(
-                        "Could not instatiate custom validator "
+                        "Could not instantiate custom validator "
                                 + def.getValidator() + " for package "
                                 + getId(), e);
             }
