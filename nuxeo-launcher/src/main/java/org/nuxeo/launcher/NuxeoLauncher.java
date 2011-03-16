@@ -694,6 +694,7 @@ public abstract class NuxeoLauncher {
                 + configurationGenerator.getRuntimeHome().getPath());
         startCommand.add(INSTALLER_CLASS);
         startCommand.add(tmpDir.getPath());
+        startCommand.add(configurationGenerator.getInstallFile().getPath());
         ProcessBuilder pb = new ProcessBuilder(getOSCommand(startCommand));
         pb.directory(configurationGenerator.getNuxeoHome());
         log.debug("Install command: " + pb.command());
@@ -713,23 +714,55 @@ public abstract class NuxeoLauncher {
         String cp = ".";
         tmpDir.delete();
         tmpDir.mkdirs();
-        File bundlesDir = new File(configurationGenerator.getRuntimeHome(),
+        File baseDir = new File(configurationGenerator.getRuntimeHome(),
                 "bundles");
-        for (final String filePattern : new String[] { "nuxeo-runtime-osgi",
+        String[] filenames = new String[] { "nuxeo-runtime-osgi",
                 "nuxeo-runtime", "nuxeo-common", "nuxeo-connect-update",
-                "nuxeo-connect-client", "nuxeo-connect-offline-update" }) {
-            File[] files = bundlesDir.listFiles(new FilenameFilter() {
+                "nuxeo-connect-client", "nuxeo-connect-offline-update",
+                "nuxeo-connect-client-wrapper", "nuxeo-runtime-reload" };
+        cp = getTempClassPath(tmpDir, cp, baseDir, filenames);
+        // should use dedicated method for getting nxserver/lib/ or
+        // nuxeo.ear/lib/
+        baseDir = new File(configurationGenerator.getRuntimeHome(), "lib");
+        filenames = new String[] { "commons-io", "groovy-all", "osgi-core",
+                "xercesImpl" };
+        cp = getTempClassPath(tmpDir, cp, baseDir, filenames);
+        // should use dedicated method for getting lib/ or server/default/lib/
+        baseDir = new File(configurationGenerator.getNuxeoHome(), "lib");
+        filenames = new String[] { "commons-logging", "log4j" };
+        cp = getTempClassPath(tmpDir, cp, baseDir, filenames);
+        return cp;
+    }
+
+    /**
+     * Build a temporary classpath directory, copying inside filenames from
+     * baseDir
+     *
+     * @param tmpDir temporary target directory
+     * @param classpath classpath including filenames with their new location in
+     *            tmpDir
+     * @param baseDir base directory where to look for filenames
+     * @param filenames filenames' patterns (must end with "-[0-9].*\\.jar)
+     * @return completed classpath
+     * @throws IOException in case of copy error
+     */
+    private String getTempClassPath(File tmpDir, String classpath,
+            File baseDir, String[] filenames) throws IOException {
+        File targetDir = new File(tmpDir, baseDir.getName());
+        targetDir.mkdirs();
+        for (final String filePattern : filenames) {
+            File[] files = baseDir.listFiles(new FilenameFilter() {
                 @Override
                 public boolean accept(File basedir, String filename) {
                     return filename.matches(filePattern + "-[0-9].*\\.jar");
                 }
             });
-            FileUtils.copyFileToDirectory(files[0], tmpDir);
-            File classPathEntry = new File(tmpDir, files[0].getName());
-            cp += System.getProperty("path.separator")
+            FileUtils.copyFileToDirectory(files[0], targetDir);
+            File classPathEntry = new File(targetDir, files[0].getName());
+            classpath += System.getProperty("path.separator")
                     + classPathEntry.getPath();
         }
-        return cp;
+        return classpath;
     }
 
     protected class ShutdownThread extends Thread {
