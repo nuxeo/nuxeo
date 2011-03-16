@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2011 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -267,6 +267,35 @@ public class Environment {
 
     public boolean isTomcat() {
         return TOMCAT_HOST.equals(hostAppName);
+    }
+
+    /**
+     * Initialization with System properties. Home must be set (it is usually
+     * nuxeo runtime home, not nuxeo home).
+     *
+     * @since 5.4.1
+     */
+    public void init() {
+        String dataDir = System.getProperty(NUXEO_DATA_DIR);
+        String configDir = System.getProperty(NUXEO_CONFIG_DIR);
+        String logDir = System.getProperty(NUXEO_LOG_DIR);
+        String tmpDir = System.getProperty(NUXEO_TMP_DIR);
+
+        if (dataDir != null && !dataDir.isEmpty()) {
+            setData(new File(dataDir));
+        }
+
+        if (configDir != null && !configDir.isEmpty()) {
+            setConfig(new File(configDir));
+        }
+
+        if (logDir != null && !logDir.isEmpty()) {
+            setLog(new File(logDir));
+        }
+
+        if (tmpDir != null && !tmpDir.isEmpty()) {
+            setTemp(new File(tmpDir));
+        }
     }
 
 }
