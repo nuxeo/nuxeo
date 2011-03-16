@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2010-2011 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,21 +12,19 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
+ *     tdelprat
  */
 
 package org.nuxeo.connect.client.status;
 
 /**
- * PlaceHolder for Unregistred instances
- *
- * @author Tiry (tdelprat@nuxeo.com)
- *
+ * PlaceHolder for Unregistered instances
  */
-public class UnresgistedSubscriptionStatusWrapper extends SubscriptionStatusWrapper {
+public class UnresgistedSubscriptionStatusWrapper extends
+        SubscriptionStatusWrapper {
 
     public UnresgistedSubscriptionStatusWrapper() {
-        super("Instance is not registred");
+        super("Instance is not registered");
     }
 
     public boolean isConnectServerUnreachable() {

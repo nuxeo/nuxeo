@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2010-2011 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
+ *     tdelprat
  */
 package org.nuxeo.connect.client.vindoz;
 
@@ -29,13 +29,12 @@ import org.nuxeo.connect.update.PackageType;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Helper class used to manage packagesinstallation issue under windows systems.
+ * Helper class used to manage packages installation issue under windows
+ * systems.
  *
- * Because the Vindoz OS locks all the jar files loaded by the JVM, we can not
+ * Because the Windows OS locks all the jar files loaded by the JVM, we can not
  * do proper installation. So installation is delayed until next restart where
  * installation is done before nuxeo starts (and loads the jars).
- *
- * @author Tiry (tdelprat@nuxeo.com)
  *
  */
 public class InstallAfterRestart {

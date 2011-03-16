@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2011 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,9 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
+ *     tdelprat
  *
- * $Id$
  */
 
 package org.nuxeo.connect.client.we;
@@ -45,8 +44,6 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Provides REST binding for {@link Package} listings.
- *
- * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
  */
 @WebObject(type = "packageListingProvider")
 public class PackageListingProvider extends DefaultObject {
@@ -136,9 +133,9 @@ public class PackageListingProvider extends DefaultObject {
     @Produces("text/html")
     @Path(value = "remote")
     public Object getRemote(@QueryParam("type") String type,
-        @QueryParam("onlyRemote") Boolean onlyRemote,
-        @QueryParam("searchString") String searchString,
-        @QueryParam("filterOnPlatform") Boolean filterOnPlatform) {
+            @QueryParam("onlyRemote") Boolean onlyRemote,
+            @QueryParam("searchString") String searchString,
+            @QueryParam("filterOnPlatform") Boolean filterOnPlatform) {
 
         PackageManager pm = Framework.getLocalService(PackageManager.class);
 
@@ -208,7 +205,8 @@ public class PackageListingProvider extends DefaultObject {
     }
 
     public boolean canInstall(Package pkg) {
-        return PackageState.DOWNLOADED == pkg.getState() && !InstallAfterRestart.isMarkedForInstallAfterRestart(pkg.getId());
+        return PackageState.DOWNLOADED == pkg.getState()
+                && !InstallAfterRestart.isMarkedForInstallAfterRestart(pkg.getId());
     }
 
     public boolean needsRestart(Package pkg) {
