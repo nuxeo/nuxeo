@@ -18,6 +18,9 @@
         <table class="dataInput">
           <tbody>
             <tr>
+
+            <td> <h:outputText value="#{userWorkspacePath}"/></td>
+
               <td><h:outputText
                 value="#{messages['label.cert.password.first']}"
                 rendered="#{certActions.canGenerateCertificate(userManagerActions.selectedUser)}"
@@ -34,7 +37,7 @@
                 rendered="#{certActions.canGenerateCertificate(userManagerActions.selectedUser)}" />
               </td>
               <td><h:commandButton type="submit"
-                value="#{messages['command.certificate.generate']}"
+                value="#{messages['command.cert.generate']}"
                 action="#{certActions.createCertificate(userManagerActions.selectedUser,firstPassword,secondPassword)}"
                 styleClass="button"
                 rendered="#{certActions.canGenerateCertificate(userManagerActions.selectedUser)}" />

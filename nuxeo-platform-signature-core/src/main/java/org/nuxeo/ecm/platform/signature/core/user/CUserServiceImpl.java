@@ -91,7 +91,7 @@ public class CUserServiceImpl implements CUserService {
         try {
             DocumentModel entry = session.getEntry(userID);
             if (entry != null) {
-                String keystore64Encoded = (String) entry.getPropertyValue("cert:keystore");
+                String keystore64Encoded = (String) entry.getPropertyValue("certdir:keystore");
                 byte[] keystoreBytes = Base64.decode(keystore64Encoded);
                 ByteArrayInputStream byteIS = new ByteArrayInputStream(
                         keystoreBytes);

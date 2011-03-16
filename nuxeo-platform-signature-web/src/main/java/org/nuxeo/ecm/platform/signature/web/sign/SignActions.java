@@ -19,7 +19,6 @@ package org.nuxeo.ecm.platform.signature.web.sign;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
-import java.security.KeyStore;
 import java.security.Principal;
 import java.security.cert.X509Certificate;
 import java.util.List;
@@ -50,7 +49,6 @@ import org.nuxeo.ecm.platform.signature.api.exception.SignException;
 import org.nuxeo.ecm.platform.signature.api.pki.CertService;
 import org.nuxeo.ecm.platform.signature.api.sign.SignatureService;
 import org.nuxeo.ecm.platform.signature.api.user.CUserService;
-import org.nuxeo.ecm.platform.signature.api.user.UserInfo;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.platform.versioning.api.VersioningManager;
@@ -127,12 +125,11 @@ public class SignActions implements Serializable {
                             "The attachment must be a PDF", null);
                 }
 
-                String userID = (String) user.getPropertyValue("user:username");
+//                String userID = (String) user.getPropertyValue("user:username");
 
-                KeyStore keystore = cUserService.getUserKeystore(userID,
-                        password);
-
-                UserInfo userInfo = cUserService.getUserInfo(user);
+//                KeyStore keystore = cUserService.getUserKeystore(userID,
+//                        password);
+//                UserInfo userInfo = cUserService.getUserInfo(user);
 
                 File signedPdf;
                 signedPdf = signatureService.signPDF(user, password,
@@ -243,7 +240,6 @@ public class SignActions implements Serializable {
      * @throws ClientException
      */
     public String getPDFCertificateInfo() throws SignException, ClientException {
-        boolean isSigned = false;
         String pdfCertificateInfo = "";
 
         DocumentModel currentDoc = navigationContext.getCurrentDocument();

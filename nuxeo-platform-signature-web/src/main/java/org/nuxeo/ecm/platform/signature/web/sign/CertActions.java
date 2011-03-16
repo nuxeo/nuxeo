@@ -98,7 +98,6 @@ public class CertActions implements Serializable {
     public DocumentModel getCertificate(DocumentModel user)
             throws ClientException {
         String userID = (String) user.getPropertyValue("user:username");
-
         return cUserService.getCertificate(userID);
     }
 
@@ -114,8 +113,20 @@ public class CertActions implements Serializable {
         return cUserService.hasCertificate(userID);
     }
 
+    
     /**
-     * Indicates whether a certificate is present for the current user
+     * Checks if a specified user has a certificate
+     *
+     * @param username
+     * @return
+     * @throws ClientException
+     */
+    public boolean hasCertificate(String username) throws ClientException {
+        return cUserService.hasCertificate(username);
+    }
+    
+    /**
+     * Checks if a specified user has a certificate
      *
      * @return
      * @throws ClientException

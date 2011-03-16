@@ -18,6 +18,7 @@
 package org.nuxeo.ecm.platform.signature.core.pki;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -137,11 +138,12 @@ public class TypeTest {
         map.put("keystore", keystore64Encoded);
 
         DocumentModel entry = sqlSession.createEntry(map);
+        assertNotNull(entry);
         sqlSession.commit();
 
         // retrieve a persisted entry from the directory
         DocumentModel entryFromSession=sqlSession.getEntry(userID);
-        String keystore64EncodedFromSession=(String)entryFromSession.getPropertyValue("cert:keystore");
+        String keystore64EncodedFromSession=(String)entryFromSession.getPropertyValue("certdir:keystore");
         byte[] keystoreBytes=Base64.decode(keystore64EncodedFromSession);
         ByteArrayInputStream keystoreByteIS = new ByteArrayInputStream(keystoreBytes);
         keystore.load(keystoreByteIS,USER_KEYSTORE_PASSWORD.toCharArray());
@@ -233,6 +235,7 @@ public class TypeTest {
                 return con;
             }
         };
+        assertNotNull(datasourceAutocommit);
         context.bind("java:comp/env/jdbc/nxsqldirectory", datasource);
     }
     

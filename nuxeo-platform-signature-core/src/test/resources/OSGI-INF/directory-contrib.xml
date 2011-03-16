@@ -67,7 +67,7 @@
     </directory>
 
   <directory name="certificate">
-      <schema>cert</schema>
+      <schema>certdir</schema>
 
       <dbDriver>org.hsqldb.jdbcDriver</dbDriver>
       <dbUrl>jdbc:hsqldb:mem:memid</dbUrl>

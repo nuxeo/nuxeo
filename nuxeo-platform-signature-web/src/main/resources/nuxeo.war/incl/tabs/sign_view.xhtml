@@ -93,13 +93,20 @@
         </table>
       </a4j:form>
     </c:if>
-
   </c:if>
+
   <c:if test="#{!certActions.hasCertificate()}">
-    <h:outputText value="#{messages['label.sign.certificate.prompt']}" />
-    <h:outputLink value="#{baseURL}@edit_certificate">
-      <h:outputText value="Create your certificate" />
-    </h:outputLink>
+        <h:outputText
+          value="#{messages['label.sign.certificate.prompt']}" />
+    <h:form>
+      <h:outputText
+        value="#{userManagerActions.setSelectedUser(userManager.getUserModel(currentUser.name))}" />
+      <h:commandLink action="#{userManagerActions.viewUser}"
+        immediate="true">
+        <h:outputText
+          value="#{messages['label.cert.navigate']}" />
+      </h:commandLink>
+    </h:form>
   </c:if>
 
 </a4j:outputPanel></div>

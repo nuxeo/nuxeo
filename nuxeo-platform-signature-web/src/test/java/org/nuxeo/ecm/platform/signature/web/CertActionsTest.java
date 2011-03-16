@@ -15,11 +15,9 @@
  *     Wojciech Sulejman
  */
 
-package org.nuxeo.ecm.platform.signature.core.user;
+package org.nuxeo.ecm.platform.signature.web;
 
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -40,71 +38,48 @@ import org.nuxeo.ecm.core.test.annotations.BackendType;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.directory.sql.SimpleDataSource;
-import org.nuxeo.ecm.platform.signature.api.pki.CertService;
-import org.nuxeo.ecm.platform.signature.api.user.CUserService;
+import org.nuxeo.ecm.platform.signature.web.sign.CertActions;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
-import com.google.inject.Inject;
-
 /**
  * @author <a href="mailto:ws@nuxeo.com">Wojciech Sulejman</a>
- *
+ * 
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@RepositoryConfig(cleanup=Granularity.METHOD, type = BackendType.H2, user = "Administrator")
+@RepositoryConfig(cleanup = Granularity.METHOD, type = BackendType.H2, user = "Administrator")
 @Deploy( { "org.nuxeo.ecm.core", "org.nuxeo.ecm.core.api",
         "org.nuxeo.runtime.management", "org.nuxeo.ecm.directory.api",
-         "org.nuxeo.ecm.directory",
-        "org.nuxeo.ecm.directory.sql", "org.nuxeo.ecm.platform.usermanager",
+        "org.nuxeo.ecm.directory", "org.nuxeo.ecm.directory.sql",
+        "org.nuxeo.ecm.platform.usermanager",
         "org.nuxeo.ecm.platform.usermanager.api",
         "org.nuxeo.ecm.platform.signature.core",
-        "org.nuxeo.ecm.platform.signature.core.test" })
-public class CUserServiceTest {
-
-    private static final String USER_KEYSTORE_PASSWORD = "abc";
-
-    @Inject
-    protected CUserService cUserService;
-
-    @Inject
-    protected CertService certService;
-
-    protected DocumentModel user;
+        "org.nuxeo.ecm.platform.signature.web", "org.nuxeo.ecm.platform.signature.web.test"  })
+public class CertActionsTest {
 
     private static final String USER_ID = "hsimpson";
 
+    protected DocumentModel user;
+    protected CertActions certActions;
+    
     @Before
     public void setup() throws Exception {
         setUpContextFactory();
-    }
-
-    public void testCreateCert() throws Exception {
-        DocumentModel certificate = cUserService.createCertificate(getUser(),
-                USER_KEYSTORE_PASSWORD);
-        assertTrue(certificate.getPropertyValue("cert:userid").equals(USER_ID));
+        certActions = new CertActions();
     }
 
     @Test
-    public void testGetCertificate() throws Exception {
-        // try to retrieve a certificate that does not yet exist
-        DocumentModel retrievedCertificate = cUserService.getCertificate(USER_ID);
-        assertNull(retrievedCertificate);
-        // add missing certificate
-        DocumentModel createdCertificate = cUserService.createCertificate(getUser(),
-                USER_KEYSTORE_PASSWORD);
-        assertNotNull(createdCertificate);
-        // retry
-        retrievedCertificate = cUserService.getCertificate(USER_ID);
-        assertNotNull("The certificate could not be retrieved from the directory",retrievedCertificate);
-        assertTrue(retrievedCertificate.getPropertyValue("certdir:userid").equals(USER_ID));
+    public void testValidateRequiredUserFields() throws Exception {
+        DocumentModel user = getFullUser();
+        assertNotNull("User not created", user);
+        //certActions.validateRequiredUserFields();
     }
 
-    public DocumentModel getUser() throws Exception {
+    public DocumentModel getFullUser() throws Exception {
         if (user == null) {
             user = getUserManager().getUserModel(USER_ID);
             if (user == null) {
@@ -143,4 +118,5 @@ public class CUserServiceTest {
         assertNotNull(datasourceAutocommit);
         context.bind("java:comp/env/jdbc/nxsqldirectory", datasource);
     }
+
 }

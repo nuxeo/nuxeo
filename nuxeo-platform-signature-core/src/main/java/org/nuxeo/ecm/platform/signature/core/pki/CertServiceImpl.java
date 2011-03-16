@@ -52,7 +52,6 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.x509.X509V3CertificateGenerator;
 import org.bouncycastle.x509.extension.AuthorityKeyIdentifierStructure;
 import org.bouncycastle.x509.extension.SubjectKeyIdentifierStructure;
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.platform.signature.api.exception.CertException;
 import org.nuxeo.ecm.platform.signature.api.pki.CertService;
 import org.nuxeo.ecm.platform.signature.api.user.AliasType;
@@ -167,6 +166,7 @@ public class CertServiceImpl extends DefaultComponent implements CertService {
         } catch (java.security.SignatureException e) {
             throw new CertException(e);
         }
+        log.debug("Certificate generated for subject: "+cert.getSubjectDN());
         return cert;
     }
 

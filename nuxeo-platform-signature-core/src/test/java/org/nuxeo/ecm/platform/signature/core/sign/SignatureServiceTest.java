@@ -60,7 +60,6 @@ import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.directory.sql.SQLDirectoryProxy;
 import org.nuxeo.ecm.directory.sql.SimpleDataSource;
-import org.nuxeo.ecm.platform.signature.api.exception.CertException;
 import org.nuxeo.ecm.platform.signature.api.pki.CertService;
 import org.nuxeo.ecm.platform.signature.api.sign.SignatureService;
 import org.nuxeo.ecm.platform.signature.api.user.AliasType;
@@ -113,13 +112,11 @@ public class SignatureServiceTest {
 
     private static final String ROOT_KEY_PASSWORD = "abc";
 
-    private static final String ROOT_KEYSTORE_PASSWORD = "abc";
+    private static final String KEYSTORE_PASSWORD = "abc";
 
     private static final String ROOT_USER_ID = "PDFCA";
 
     private static final String USER_KEY_PASSWORD = "abc";
-
-    private static final String USER_KEYSTORE_PASSWORD = "abc";
 
     private static final String CERTIFICATE_DIRECTORY_NAME = "certificate";
 
@@ -127,9 +124,7 @@ public class SignatureServiceTest {
 
     private File origPdfFile;
 
-    private static final String ROOT_KEYSTORE_PATH = "test-files/keystore.jks";
-
-    private static final String USER_KEYSTORE_PATH = "test-files/keystore.jks";
+    private static final String KEYSTORE_PATH = "test-files/keystore.jks";
 
     private static final String USER_ID = "hsimpson";
 
@@ -141,10 +136,11 @@ public class SignatureServiceTest {
         // setup the naming service
 
         setUpContextFactory();
-        // pre-populate user
+        // pre-populate user & certificate
         DocumentModel user = getUser();
         DocumentModel certificate = cUserService.createCertificate(user,
                 USER_KEY_PASSWORD);
+        assertNotNull(certificate);
         origPdfFile = FileUtils.getResourceFileFromContext("pdf-tests/original.pdf");
     }
 
@@ -202,33 +198,6 @@ public class SignatureServiceTest {
         return new FileInputStream(keystoreFile);
     }
 
-    private UserInfo getSampleUserInfo(DocumentModel userModel)
-            throws Exception {
-        UserInfo userInfo = null;
-        try {
-            String userID = (String) userModel.getPropertyValue("user:username");
-            String firstName = (String) userModel.getPropertyValue("user:firstName");
-            String lastName = (String) userModel.getPropertyValue("user:lastName");
-            String email = (String) userModel.getPropertyValue("user:email");
-
-            Map<CNField, String> userFields;
-            userFields = new HashMap<CNField, String>();
-
-            userFields.put(CNField.C, "US");
-            userFields.put(CNField.O, "Nuxeo");
-            userFields.put(CNField.OU, "IT");
-
-            userFields.put(CNField.CN, firstName + " " + lastName);
-            userFields.put(CNField.Email, email);
-            userFields.put(CNField.UserID, userID);
-            userInfo = new UserInfo(userFields);
-        } catch (ClientException e) {
-            throw new CertException(
-                    "User data could not be retrieved from the system", e);
-        }
-        return userInfo;
-    }
-
     public static void setUpContextFactory() throws NamingException {
         NamingContextFactory.setAsInitial();
         Context context = new InitialContext();
@@ -243,6 +212,7 @@ public class SignatureServiceTest {
                 return con;
             }
         };
+        assertNotNull(datasourceAutocommit);
         context.bind("java:comp/env/jdbc/nxsqldirectory", datasource);
     }
 
@@ -301,14 +271,14 @@ public class SignatureServiceTest {
 
     public CertService getCertServiceMock() throws Exception {
         KeyStore rootKeystore = certService.getKeyStore(
-                getKeystoreIS(ROOT_KEYSTORE_PATH), ROOT_KEYSTORE_PASSWORD);
+                getKeystoreIS(KEYSTORE_PATH), KEYSTORE_PASSWORD);
         RootService rootService = new RootService();
         AliasWrapper alias = new AliasWrapper(ROOT_USER_ID);
         rootService.setRootKeyAlias(alias.getId(AliasType.KEY));
         rootService.setRootCertificateAlias(alias.getId(AliasType.CERT));
         rootService.setRootKeyPassword(ROOT_KEY_PASSWORD);
         rootService.setRootKeyStore(rootKeystore);
-        rootService.setRootKeystorePassword(ROOT_KEYSTORE_PASSWORD);
+        rootService.setRootKeystorePassword(KEYSTORE_PASSWORD);
         certService.setRootService(rootService);
         return certService;
     }

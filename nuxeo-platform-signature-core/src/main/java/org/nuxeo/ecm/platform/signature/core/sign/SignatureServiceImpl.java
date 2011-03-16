@@ -98,6 +98,9 @@ public class SignatureServiceImpl extends DefaultComponent implements
             Certificate[] certChain = certificates.toArray(new Certificate[0]);
             sap.setCrypto(keyPair.getPrivate(), certChain, null,
                     PdfSignatureAppearance.SELF_SIGNED);
+            if(null==reason || reason==""){
+                reason=getSigningReason();   
+            }
             sap.setReason(reason);
             sap.setCertificationLevel(PdfSignatureAppearance.CERTIFIED_NO_CHANGES_ALLOWED);
             sap.setVisibleSignature(new Rectangle(400, 450, 200, 200), 1,
@@ -164,7 +167,7 @@ public class SignatureServiceImpl extends DefaultComponent implements
         return cUserService;
     }
 
-    private String getReason() throws SignatureException {
+    private String getSigningReason() throws SignatureException {
         String reason = null;
         for (SignatureDescriptor sd : config) {
             if (sd.getReason() != null) {
