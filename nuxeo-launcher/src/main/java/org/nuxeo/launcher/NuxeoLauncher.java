@@ -650,9 +650,11 @@ public abstract class NuxeoLauncher {
                 configurationGenerator.cleanupPostWizard();
             }
 
-            if ((PlatformUtils.isWindows() || "true".equals(configurationGenerator.getUserConfig().getProperty(
+            log.debug("Check if install in progress...");
+            if ((PlatformUtils.isWindows() || "true".equalsIgnoreCase(configurationGenerator.getUserConfig().getProperty(
                     ConfigurationGenerator.PARAM_FAKE_WINDOWS, "false")))
                     && configurationGenerator.isInstallInProgress()) {
+                log.debug("Install in progress...");
                 install();
             }
 
@@ -715,7 +717,7 @@ public abstract class NuxeoLauncher {
                 "bundles");
         for (final String filePattern : new String[] { "nuxeo-runtime-osgi",
                 "nuxeo-runtime", "nuxeo-common", "nuxeo-connect-update",
-                "nuxeo-connect-client" }) {
+                "nuxeo-connect-client", "nuxeo-connect-offline-update" }) {
             File[] files = bundlesDir.listFiles(new FilenameFilter() {
                 @Override
                 public boolean accept(File basedir, String filename) {
