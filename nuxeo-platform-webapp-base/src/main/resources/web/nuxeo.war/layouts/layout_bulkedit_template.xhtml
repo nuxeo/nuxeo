@@ -5,6 +5,7 @@
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:fn="http://java.sun.com/jsp/jstl/functions"
   id="#{layout.id}">
 
 <c:if test="false">
@@ -37,9 +38,11 @@
                     styleClass="#{nxu:test(widget.required, 'required', '')}" />
                   <c:if test="#{!empty widget.helpLabel}">
                     <h:outputText value=" " />
-                    <h:graphicImage value="/icons/info.gif"
-                      title="#{messages[widget.helpLabel]}"
-                      alt="#{messages[widget.helpLabel]}" />
+                    <c:set var="helpMessage" value="#{messages[widget.helpLabel]}" />
+                    <c:set var="helpMessageEscaped" value="#{fn:replace(helpMessage, '\'', '\\\\\'')}" />
+                    <h:graphicImage value="/icons/lightbulb.png"
+                      onmouseover="tooltip.show('#{helpMessageEscaped}', 500);"
+                      onmouseout="tooltip.hide();" />
                   </c:if>
                 </c:when>
                 <c:otherwise>
@@ -47,9 +50,11 @@
                     styleClass="#{nxu:test(widget.required, 'required', '')}" />
                   <c:if test="#{!empty widget.helpLabel}">
                     <h:outputText value=" " />
-                    <h:graphicImage value="/icons/info.gif"
-                      title="#{widget.helpLabel}"
-                      alt="#{widget.helpLabel}" />
+                    <c:set var="helpMessage" value="#{widget.helpLabel}" />
+                    <c:set var="helpMessageEscaped" value="#{fn:replace(helpMessage, '\'', '\\\\\'')}" />
+                    <h:graphicImage value="/icons/lightbulb.png"
+                      onmouseover="tooltip.show('#{helpMessageEscaped}', 500);"
+                      onmouseout="tooltip.hide();" />
                   </c:if>
                 </c:otherwise>
               </c:choose>
