@@ -554,6 +554,11 @@ public class DialectOracle extends Dialect {
         case 17002: // ORA-17002 IO Exception
             return true;
         }
+        // java.sql.SQLRecoverableException: No more data to read from socket
+        String message = t.getMessage();
+        if (message.contains("No more data to read from socket")) {
+            return true;
+        }
         return false;
     }
 
