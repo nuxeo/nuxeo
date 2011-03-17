@@ -10,8 +10,8 @@
   </parent>
 
   <artifactId>nuxeo-core-binarymanager-s3</artifactId>
-  <name>Nuxeo Core SQL BinaryManager</name>
-  <description>Nuxeo Core SQL BinaryManager</description>
+  <name>Nuxeo Core S3 BinaryManager</name>
+  <description>Nuxeo Core S3 BinaryManager</description>
 
   <dependencies>
 
