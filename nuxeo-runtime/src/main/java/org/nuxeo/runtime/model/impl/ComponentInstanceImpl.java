@@ -165,26 +165,6 @@ public class ComponentInstanceImpl implements ComponentInstance {
         }
     }
 
-    @Override
-    public void reload() throws Exception {
-        // activate the implementation instance
-        try {
-            if (instance instanceof ReloadableComponent) {
-                ((ReloadableComponent) instance).reload(this);
-            } else {
-                Method meth = instance.getClass().getDeclaredMethod("reload",
-                        ComponentContext.class);
-                meth.setAccessible(true);
-                meth.invoke(instance, this);
-            }
-        } catch (NoSuchMethodException e) {
-            // ignore this exception since the reload method is not mandatory
-        } catch (Exception e) {
-            log.error("Failed to reload component: "+getName(), e);
-            Framework.handleDevError(e);
-        }
-    }
-
     // TODO: cache info about implementation to avoid computing it each time
     public void registerExtension(Extension extension)
             throws Exception {

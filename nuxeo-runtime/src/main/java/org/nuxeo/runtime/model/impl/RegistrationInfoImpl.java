@@ -48,7 +48,7 @@ import org.nuxeo.runtime.model.RuntimeContext;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 @XObject("component")
 public class RegistrationInfoImpl implements RegistrationInfo {
@@ -106,7 +106,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
     /**
      * To be set when deploying configuration components that are not in a
      * bundle (e.g. from config. dir).
-     * 
+     *
      * Represent the bundle that will be assumed to be the owner of the
      * component.
      */
@@ -134,7 +134,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
 
     /**
      * Useful when dynamically registering components
-     * 
+     *
      * @param name the component name
      */
     public RegistrationInfoImpl(ComponentName name) {
@@ -242,16 +242,6 @@ public class RegistrationInfoImpl implements RegistrationInfo {
 
     public String getDocumentation() {
         return documentation;
-    }
-
-    /**
-     * Reload the underlying component if reload is supported
-     * @throws Exception
-     */
-    public synchronized void reload() throws Exception {
-        if (component != null) {
-            component.reload();
-        }
     }
 
     /**
