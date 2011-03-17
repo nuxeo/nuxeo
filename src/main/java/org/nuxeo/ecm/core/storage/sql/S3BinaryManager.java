@@ -57,7 +57,7 @@ public class S3BinaryManager extends DefaultBinaryManager {
     public static final String BUCKET_NAME_KEY = "nuxeo.s3storage.bucket";
 
     public static final String BUCKET_REGION_KEY = "nuxeo.s3storage.region";
-    public static final String DEFAULT_BUCKET_REGION = "us-east";
+    public static final String DEFAULT_BUCKET_REGION = null; // US East
 
     public static final String AWS_ID_KEY = "nuxeo.s3storage.awsid";
     public static final String AWS_SECRET_KEY = "nuxeo.s3storage.awssecret";
@@ -238,7 +238,7 @@ public class S3BinaryManager extends DefaultBinaryManager {
 
         if (!objectExists) {
             try {
-                s3client.putObject(bucketName, digest, tmp);
+                s3client.putObject(bucketName, digest, file);
             } catch (AmazonServiceException e) {
                 throw new IOException(e);
             } catch (AmazonClientException e) {
