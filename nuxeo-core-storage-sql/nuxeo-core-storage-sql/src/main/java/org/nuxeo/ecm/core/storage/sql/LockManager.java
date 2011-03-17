@@ -146,7 +146,9 @@ public class LockManager {
             }
             // no transaction needed, single operation
             lock = mapper.getLock(id);
-            lockCache.put(id, lock == null ? NULL_LOCK : lock);
+            if (caching) {
+                lockCache.put(id, lock == null ? NULL_LOCK : lock);
+            }
             return lock;
         } finally {
             serializationLock.unlock();
