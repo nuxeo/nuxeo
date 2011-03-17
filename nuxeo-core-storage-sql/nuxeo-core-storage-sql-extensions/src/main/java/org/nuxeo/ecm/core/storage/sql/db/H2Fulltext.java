@@ -1,9 +1,12 @@
-/*
- * Copyright 2004-2008 H2 Group. Multiple-Licensed under the H2 License,
- * Version 1.0, and under the Eclipse Public License, Version 1.0
- * (http://h2database.com/html/license.html).
- * Initial Developer: H2 Group
- * Contributor: Florent Guillaume
+/* 
+ * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
  */
 package org.nuxeo.ecm.core.storage.sql.db;
 
