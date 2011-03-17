@@ -90,7 +90,6 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
     @XNodeList(value = "filter", type = ActionFilter[].class, componentType = DefaultActionFilter.class)
     private ActionFilter[] filters;
 
-
     public Action() {
     }
 
@@ -223,8 +222,7 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
             return false;
         }
         Action otherAction = (Action) other;
-        return id == null ? otherAction.id == null
-                : id.equals(otherAction.id);
+        return id == null ? otherAction.id == null : id.equals(otherAction.id);
     }
 
     @Override
@@ -241,7 +239,7 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
     }
 
     public String getHelp() {
-        if (help == null){
+        if (help == null) {
             return "";
         }
         return help;
@@ -253,11 +251,10 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
 
     @Override
     public Action clone() throws CloneNotSupportedException {
-        Action clone = (Action)super.clone();
+        Action clone = (Action) super.clone();
 
         return clone;
     }
-
 
     public void mergeWith(Action newOne) {
         // Icon
@@ -272,7 +269,8 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
         }
 
         // Merge categories without duplicates
-        Set<String> mergedCategories = new HashSet<String>(Arrays.asList(getCategories()));
+        Set<String> mergedCategories = new HashSet<String>(
+                Arrays.asList(getCategories()));
         mergedCategories.addAll(Arrays.asList(newOne.getCategories()));
         setCategories(mergedCategories.toArray(new String[mergedCategories.size()]));
 
@@ -321,84 +319,9 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
         setFilterIds(new ArrayList<String>(newFilterIds));
 
         // filters
-        // we are not using filters on merged actions - filterIds were already merged - this is all we need.
+        // we are not using filters on merged actions - filterIds were already
+        // merged - this is all we need.
         setFilters(null);
     }
-
-
-    @Override
-    public Action clone() throws CloneNotSupportedException {
-        Action clone = (Action)super.clone();
-
-        return clone;
-    }
-
-
-    public void mergeWith(Action newOne) {
-        // Icon
-        String newIcon = newOne.getIcon();
-        if (newIcon != null && !newIcon.equals(getIcon())) {
-            setIcon(newIcon);
-        }
-
-        // Enabled ?
-        if (newOne.isEnabled() != isEnabled()) {
-            setEnabled(newOne.isEnabled());
-        }
-
-        // Merge categories without duplicates
-        Set<String> mergedCategories = new HashSet<String>(Arrays.asList(getCategories()));
-        mergedCategories.addAll(Arrays.asList(newOne.getCategories()));
-        setCategories(mergedCategories.toArray(new String[mergedCategories.size()]));
-
-        // label
-        String newLabel = newOne.getLabel();
-        if (newLabel != null && !newLabel.equals(getLabel())) {
-            setLabel(newLabel);
-        }
-
-        // link
-        String newLink = newOne.getLink();
-        if (newLink != null && !newLink.equals(getLink())) {
-            setLink(newLink);
-        }
-
-        // confirm
-        String newConfirm = newOne.getConfirm();
-        if (newConfirm != null && !newConfirm.equals(getConfirm())) {
-            setConfirm(newConfirm);
-        }
-
-        // title (tooltip)
-        String tooltip = newOne.getHelp();
-        if (tooltip != null && !tooltip.equals(getHelp())) {
-            setHelp(tooltip);
-        }
-
-        // XXX AT: maybe update param types but it seems a bit critical to do it
-        // without control: a new action should be registered for this kind of
-        // uses cases.
-
-        // order
-        int newOrder = newOne.getOrder();
-        if (newOrder > 0 && newOrder != getOrder()) {
-            setOrder(newOrder);
-        }
-
-        // filter ids
-        HashSet<String> newFilterIds = new HashSet<String>();
-        if (getFilterIds() != null) {
-            newFilterIds.addAll(getFilterIds());
-        }
-        if (newOne.getFilterIds() != null) {
-            newFilterIds.addAll(newOne.getFilterIds());
-        }
-        setFilterIds(new ArrayList<String>(newFilterIds));
-
-        // filters
-        // we are not using filters on merged actions - filterIds were already merged - this is all we need.
-        setFilters(null);
-    }
-
 
 }
