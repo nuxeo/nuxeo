@@ -149,7 +149,7 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
     }
 
     /**
-     * @since 5.4.1
+     * @since 5.4.2
      */
     public WidgetDefinitionImpl(String name, String type,
             Map<String, String> labels, Map<String, String> helpLabels,

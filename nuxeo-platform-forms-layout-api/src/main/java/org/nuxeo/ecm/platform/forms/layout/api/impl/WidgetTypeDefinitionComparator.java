@@ -25,7 +25,7 @@ import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeDefinition;
  * Compares widget types on id or label.
  *
  * @author Anahide Tchertchian
- * @since 5.4.1
+ * @since 5.4.2
  */
 public class WidgetTypeDefinitionComparator implements
         Comparator<WidgetTypeDefinition> {

@@ -37,7 +37,7 @@ import org.apache.commons.logging.LogFactory;
  * done with the right encoding.
  *
  * @author Anahide Tchertchian
- * @since 5.4.1
+ * @since 5.4.2
  */
 public class NuxeoEncodingFilter implements Filter {
 

@@ -126,7 +126,7 @@ public interface WidgetDefinition extends Serializable {
     /**
      * Returns the select options for this widget.
      *
-     * @since 5.4.1
+     * @since 5.4.2
      */
     WidgetSelectOption[] getSelectOptions();
 

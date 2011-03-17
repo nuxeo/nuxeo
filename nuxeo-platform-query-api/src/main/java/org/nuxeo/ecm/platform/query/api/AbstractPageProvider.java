@@ -535,7 +535,7 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
      * Returns the minimal value for the max page size, taking the lower value
      * between the requested page size and the maximum accepted page size.
      *
-     * @since 5.4.1
+     * @since 5.4.2
      */
     public long getMinMaxPageSize() {
         long pageSize = getPageSize();

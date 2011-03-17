@@ -24,7 +24,7 @@ import java.io.Serializable;
  * {@link Widget} generated from the definition.
  *
  * @author Anahide Tchertchian
- * @since 5.4.1
+ * @since 5.4.2
  */
 public interface WidgetSelectOption extends Serializable {
 

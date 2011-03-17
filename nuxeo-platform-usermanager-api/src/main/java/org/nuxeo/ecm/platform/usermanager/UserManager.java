@@ -492,7 +492,7 @@ public interface UserManager extends Authenticator, Serializable {
      * should be use with care as it can cause performance issues while getting
      * the list of users.
      *
-     * @since 5.4.1
+     * @since 5.4.2
      * @param perm the permission
      * @param acp The access control policy of the document
      * @return the list of user ids

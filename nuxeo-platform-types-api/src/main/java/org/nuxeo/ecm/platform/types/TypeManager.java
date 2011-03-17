@@ -62,7 +62,7 @@ public interface TypeManager {
      * a local UI types configuration retrieved from the {@code currentDoc}, if
      * any.
      *
-     * @since 5.4.1
+     * @since 5.4.2
      */
     Collection<Type> getAllowedSubTypes(String typeName,
             DocumentModel currentDoc);
@@ -71,7 +71,7 @@ public interface TypeManager {
      * Returns recursively all the allowed sub types from the given
      * {@code typeName}.
      *
-     * @since 5.4.1
+     * @since 5.4.2
      */
     Collection<Type> findAllAllowedSubTypesFrom(String typeName);
 
@@ -80,7 +80,7 @@ public interface TypeManager {
      * {@code typeName}, filtered by a local UI types configuration retrieved
      * from the {@code currentDoc}, if any.
      *
-     * @since 5.4.1
+     * @since 5.4.2
      */
     Collection<Type> findAllAllowedSubTypesFrom(String typeName,
             DocumentModel currentDoc);
@@ -90,7 +90,7 @@ public interface TypeManager {
      * UI types configuration retrieved from the {@code currentDoc}, if any, and
      * organized by type categories.
      *
-     * @since 5.4.1
+     * @since 5.4.2
      */
     Map<String, List<Type>> getTypeMapForDocumentType(String typeName,
             DocumentModel currentDoc);
@@ -99,7 +99,7 @@ public interface TypeManager {
      * Returns {@code true} if {@code typeName} is a sub type, allowed in
      * creation mode, of {@code containerTypeName}, {@code false} otherwise.
      *
-     * @since 5.4.1
+     * @since 5.4.2
      */
     boolean canCreate(String typeName, String containerTypeName);
 
@@ -111,7 +111,7 @@ public interface TypeManager {
      * {@code currentDoc} to filter the sub types of {@code typeName} before
      * checking the creation mode.
      *
-     * @since 5.4.1
+     * @since 5.4.2
      */
     boolean canCreate(String typeName, String containerTypeName,
             DocumentModel currentDoc);
@@ -120,7 +120,7 @@ public interface TypeManager {
      * Returns {@code true} if {@code typeName} is an allowed sub type of
      * {@code containerTypeName}, {@code false} otherwise.
      *
-     * @since 5.4.1
+     * @since 5.4.2
      */
     boolean isAllowedSubType(String typeName, String containerTypeName);
 
@@ -129,7 +129,7 @@ public interface TypeManager {
      * {@code containerTypeName}, filtered by a local UI types configuration
      * retrieved from the {@code currentDoc}, if any, {@code false} otherwise.
      *
-     * @since 5.4.1
+     * @since 5.4.2
      */
     boolean isAllowedSubType(String typeName, String containerTypeName,
             DocumentModel currentDoc);

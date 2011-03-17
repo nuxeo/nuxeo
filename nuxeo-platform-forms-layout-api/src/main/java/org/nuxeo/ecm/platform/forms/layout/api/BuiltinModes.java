@@ -48,23 +48,23 @@ public class BuiltinModes {
 
     /**
      * @deprecated: use {@link #VIEW} instead
-     * @since 5.4.1
+     * @since 5.4.2
      */
     @Deprecated
     protected static final String HEADER = "header";
 
     /**
-     * @since 5.4.1
+     * @since 5.4.2
      */
     public static final String CSV = "csv";
 
     /**
-     * @since 5.4.1
+     * @since 5.4.2
      */
     public static final String PDF = "pdf";
 
     /**
-     * @since 5.4.1
+     * @since 5.4.2
      */
     public static final String PLAIN = "plain";
 

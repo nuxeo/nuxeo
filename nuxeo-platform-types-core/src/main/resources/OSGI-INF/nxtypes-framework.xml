@@ -76,7 +76,7 @@
       - content views: the list of content views to use in a given category.
       Categories depend on the page displaying the content views. Available
       since 5.4.0. By default, all content views are shown in the export view of
-      the document (available since 5.4.1) except when adding
+      the document (available since 5.4.2) except when adding
       showInExportView="false" on the content view definition.
 
       - layout: deprecated layout configuration.

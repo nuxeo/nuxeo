@@ -95,7 +95,7 @@ public interface PageProvider<T> extends Serializable {
      * If page size is greater than this maximum value, it will be taken into
      * account instead.
      *
-     * @since 5.4.1
+     * @since 5.4.2
      */
     long getMaxPageSize();
 
@@ -105,7 +105,7 @@ public interface PageProvider<T> extends Serializable {
      * If page size is greater than this maximum value, it will be taken into
      * account instead.
      *
-     * @since 5.4.1
+     * @since 5.4.2
      */
     void setMaxPageSize(long pageSize);
 

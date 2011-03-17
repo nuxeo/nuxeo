@@ -53,7 +53,7 @@ public interface WidgetTypeConfiguration extends Serializable {
     /**
      * Returns configuration properties.
      *
-     * @since 5.4.1
+     * @since 5.4.2
      */
     Map<String, Serializable> getConfProperties();
 

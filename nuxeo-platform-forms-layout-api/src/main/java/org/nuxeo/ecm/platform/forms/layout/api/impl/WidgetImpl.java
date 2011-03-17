@@ -93,7 +93,7 @@ public class WidgetImpl implements Widget {
     }
 
     /**
-     * @since 5.4.1
+     * @since 5.4.2
      */
     public WidgetImpl(String layoutName, String name, String mode, String type,
             String valueName, FieldDefinition[] fields, String label,

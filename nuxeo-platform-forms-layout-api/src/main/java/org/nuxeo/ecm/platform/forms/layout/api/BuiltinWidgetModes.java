@@ -33,17 +33,17 @@ public class BuiltinWidgetModes {
     public static final String EDIT = BuiltinModes.EDIT;
 
     /**
-     * @since 5.4.1
+     * @since 5.4.2
      */
     public static final String PLAIN = BuiltinModes.PLAIN;
 
     /**
-     * @since 5.4.1
+     * @since 5.4.2
      */
     public static final String CSV = BuiltinModes.CSV;
 
     /**
-     * @since 5.4.1
+     * @since 5.4.2
      */
     public static final String PDF = BuiltinModes.PDF;
 
@@ -66,7 +66,7 @@ public class BuiltinWidgetModes {
     /**
      * Returns true if given mode is one of {@link #PLAIN}, or {@link #CSV}.
      *
-     * @since 5.4.1
+     * @since 5.4.2
      */
     public static final boolean isLikePlainMode(String widgetMode) {
         if (widgetMode != null) {
@@ -81,7 +81,7 @@ public class BuiltinWidgetModes {
      * Returns true if given mode is not null and is not one of {@link #EDIT},
      * {@link #PLAIN}, {@link #CSV}, {@link #PDF} or {@link #HIDDEN} mode.
      *
-     * @since 5.4.1
+     * @since 5.4.2
      * @param widgetMode
      * @return
      */

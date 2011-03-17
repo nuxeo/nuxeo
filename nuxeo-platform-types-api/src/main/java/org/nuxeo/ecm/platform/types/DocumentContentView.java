@@ -21,7 +21,7 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
- * @since 5.4.1
+ * @since 5.4.2
  */
 @XObject("contentView")
 public class DocumentContentView {
