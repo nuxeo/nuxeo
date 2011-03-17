@@ -26,7 +26,7 @@ import com.sun.faces.renderkit.html_basic.OutputLinkRenderer;
  * into account when building the URL.
  *
  * @see RestDocumentLink
- * @since 5.4.1
+ * @since 5.4.2
  */
 public class RestDocumentLinkRenderer extends OutputLinkRenderer {
 

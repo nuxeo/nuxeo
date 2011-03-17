@@ -26,7 +26,7 @@ import org.jboss.seam.annotations.Scope;
  * Useful when rendering listing layouts in a PDF table, where number of
  * columns need to be known in advance.
  *
- * @since 5.4.1
+ * @since 5.4.2
  */
 @Name("layoutColumnCounter")
 @Scope(ScopeType.EVENT)

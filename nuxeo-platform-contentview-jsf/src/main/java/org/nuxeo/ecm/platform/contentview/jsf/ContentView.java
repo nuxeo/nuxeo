@@ -67,7 +67,7 @@ public interface ContentView extends Serializable {
      * Returns true is the title should be displayed before the result layout
      * selector.
      *
-     * @since 5.4.1
+     * @since 5.4.2
      */
     boolean getShowTitle();
 
@@ -138,14 +138,14 @@ public interface ContentView extends Serializable {
      * EL expression set in the content view definition if columns where not
      * explicitely set with {@link #setCurrentResultLayoutColumns(List)}.
      *
-     * @since 5.4.1
+     * @since 5.4.2
      */
     List<String> getCurrentResultLayoutColumns();
 
     /**
      * Sets the list of result layout columns.
      *
-     * @since 5.4.1
+     * @since 5.4.2
      */
     void setCurrentResultLayoutColumns(List<String> resultColumns);
 
@@ -266,14 +266,14 @@ public interface ContentView extends Serializable {
     /**
      * Returns true is the page size selector should be displayed.
      *
-     * @since 5.4.1
+     * @since 5.4.2
      */
     boolean getShowPageSizeSelector();
 
     /**
      * Returns true is the refresh page icon should be displayed.
      *
-     * @since 5.4.1
+     * @since 5.4.2
      */
     boolean getShowRefreshPage();
 
@@ -307,7 +307,7 @@ public interface ContentView extends Serializable {
     /**
      * Returns a sentence to display when this content view is empty
      *
-     * @since 5.4.1
+     * @since 5.4.2
      */
     String getEmptySentence();
 
@@ -316,7 +316,7 @@ public interface ContentView extends Serializable {
      * translated
      *
      * @see #getEmptySentence()
-     * @since 5.4.1
+     * @since 5.4.2
      */
     boolean getTranslateEmptySentence();
 

@@ -38,7 +38,7 @@ import org.nuxeo.ecm.platform.contentview.json.JSONContentViewState;
 /**
  * Restful actions for save and restore of a content view
  *
- * @since 5.4.1
+ * @since 5.4.2
  */
 @Name("contentViewRestActions")
 @Scope(EVENT)

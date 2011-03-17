@@ -91,7 +91,7 @@ public interface ContentViewService extends Serializable {
      * This state can be used to restore the content view in another context.
      *
      * @see #restoreContentView(ContentViewState, CoreSession)
-     * @since 5.4.1
+     * @since 5.4.2
      * @param contentView
      */
     ContentViewState saveContentView(ContentView contentView);
@@ -104,7 +104,7 @@ public interface ContentViewService extends Serializable {
      * document.
      *
      * @see #saveContentView(ContentView)
-     * @since 5.4.1
+     * @since 5.4.2
      * @throws ClientException
      */
     ContentView restoreContentView(ContentViewState contentViewState,

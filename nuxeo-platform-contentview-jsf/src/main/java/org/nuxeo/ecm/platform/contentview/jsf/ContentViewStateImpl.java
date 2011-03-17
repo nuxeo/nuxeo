@@ -24,7 +24,7 @@ import org.nuxeo.ecm.core.api.SortInfo;
 /**
  * Default implementation of {@link ContentViewState}
  *
- * @since 5.4.1
+ * @since 5.4.2
  */
 public class ContentViewStateImpl implements ContentViewState {
 

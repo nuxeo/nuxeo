@@ -76,7 +76,7 @@ public final class EventNames {
 
     /**
      * Should be raised before an edited document is saved.
-     * @since 5.4.1
+     * @since 5.4.2
      */
     public static final String BEFORE_DOCUMENT_CHANGED = "beforeDocumentChanged";
 

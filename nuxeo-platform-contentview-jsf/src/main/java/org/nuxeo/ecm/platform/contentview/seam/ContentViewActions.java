@@ -39,7 +39,7 @@ import org.nuxeo.ecm.platform.contentview.jsf.ContentViewService;
  *
  * @author Anahide Tchertchian
  * @since 5.4
- * @since 5.4.1: moved to content-view-jsf module
+ * @since 5.4.2: moved to content-view-jsf module
  */
 @Name("contentViewActions")
 @Scope(CONVERSATION)

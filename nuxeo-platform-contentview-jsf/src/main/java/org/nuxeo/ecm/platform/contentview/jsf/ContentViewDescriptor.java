@@ -207,35 +207,35 @@ public class ContentViewDescriptor {
     }
 
     /**
-     * @since 5.4.1
+     * @since 5.4.2
      */
     public Boolean getShowTitle() {
         return showTitle;
     }
 
     /**
-     * @since 5.4.1
+     * @since 5.4.2
      */
     public Boolean getShowPageSizeSelector() {
         return showPageSizeSelector;
     }
 
     /**
-     * @since 5.4.1
+     * @since 5.4.2
      */
     public Boolean getShowRefreshPage() {
         return showRefreshPage;
     }
 
     /**
-     * @since 5.4.1
+     * @since 5.4.2
      */
     public String getEmptySentence() {
         return emptySentence;
     }
 
     /**
-     * @since 5.4.1
+     * @since 5.4.2
      */
     public Boolean getTranslateEmptySentence() {
         return translateEmptySentence;

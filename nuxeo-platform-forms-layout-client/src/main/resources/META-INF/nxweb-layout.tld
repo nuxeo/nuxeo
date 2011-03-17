@@ -71,12 +71,12 @@
         <li>
           isLikePlainMode(String): returns true if given widget mode should be
           considered as 'plain', for instance when rendering values for CSV export.
-          Available since 5.4.1.
+          Available since 5.4.2.
         </li>
         <li>
           isLikeViewMode(String): returns true if given widget mode should be
           considered as 'view' (old default mode), e.g. non-null mode, and none of
-          edit, pdf, plain modes. Available since 5.4.1.
+          edit, pdf, plain modes. Available since 5.4.2.
         </li>
       </ul>
     </p>
@@ -576,7 +576,7 @@
       <type>java.lang.String</type>
       <description>
         The default layout to be rendered if no layout is found on the document
-        definition. Available since 5.4.1.
+        definition. Available since 5.4.2.
       </description>
     </attribute>
     <attribute>
@@ -586,7 +586,7 @@
       <description>
         Boolean indicating if layouts declared in the 'any' mode on the document
         definition should be used if no layout is found for the wanted mode.
-        Defaults to true. Available since 5.4.1.
+        Defaults to true. Available since 5.4.2.
       </description>
     </attribute>
     <example>

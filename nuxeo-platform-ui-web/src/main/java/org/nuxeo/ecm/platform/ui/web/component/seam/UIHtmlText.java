@@ -35,7 +35,7 @@ import com.lowagie.text.html.simpleparser.StyleSheet;
  * Overrides basic p:html tag to use {@link NuxeoITextImageProvider} to resolve
  * image resources.
  *
- * @since 5.4.1
+ * @since 5.4.2
  */
 public class UIHtmlText extends org.jboss.seam.pdf.ui.UIHtmlText {
 

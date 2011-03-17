@@ -115,7 +115,7 @@ public class TypesTool implements Serializable {
      * This method can be overridden by Subclasses to define a specific
      * Configuration document.
      *
-     * @since 5.4.1
+     * @since 5.4.2
      */
     protected DocumentModel getConfigurationDocument() {
         return navigationContext.getCurrentDocument();
@@ -124,7 +124,7 @@ public class TypesTool implements Serializable {
     /**
      * Method to be overridden by subclasses to filter the type Map.
      *
-     * @since 5.4.1
+     * @since 5.4.2
      */
     protected Map<String, List<Type>> filterTypeMap(
             Map<String, List<Type>> docTypeMap) {

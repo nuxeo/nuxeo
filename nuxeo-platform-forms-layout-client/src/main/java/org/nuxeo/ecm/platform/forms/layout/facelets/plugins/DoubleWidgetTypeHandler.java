@@ -42,7 +42,7 @@ import com.sun.facelets.tag.jsf.ConverterConfig;
  * Double widget.
  *
  * @author Anahide Tchertchian
- * @since 5.4.1
+ * @since 5.4.2
  */
 public class DoubleWidgetTypeHandler extends AbstractWidgetTypeHandler {
 

@@ -614,7 +614,7 @@
 
     <widgetType name="listing_last_contributor">
       <configuration>
-        <sinceVersion>5.4.1</sinceVersion>
+        <sinceVersion>5.4.2</sinceVersion>
         <title>Last contributor</title>
         <description>
           <p>This widget type displays the last contributor name</p>

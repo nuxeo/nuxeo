@@ -69,12 +69,12 @@ public class DocumentLayoutTagHandler extends TagHandler {
     protected final TagAttribute template;
 
     /**
-     * @since 5.4.1
+     * @since 5.4.2
      */
     protected final TagAttribute defaultLayout;
 
     /**
-     * @since 5.4.1
+     * @since 5.4.2
      */
     protected final TagAttribute includeAnyMode;
 

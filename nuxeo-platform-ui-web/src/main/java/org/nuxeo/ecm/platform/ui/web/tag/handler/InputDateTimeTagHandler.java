@@ -26,7 +26,7 @@ import com.sun.facelets.tag.Metadata;
 import com.sun.facelets.tag.jsf.ComponentConfig;
 
 /**
- * @since 5.4.1
+ * @since 5.4.2
  */
 public class InputDateTimeTagHandler extends GenericHtmlComponentHandler {
 

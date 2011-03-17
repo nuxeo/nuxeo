@@ -50,7 +50,7 @@ import org.nuxeo.ecm.platform.contentview.jsf.ContentViewStateImpl;
 /**
  * Exporter/importer in JSON format of a {@link ContentViewState}.
  *
- * @since 5.4.1
+ * @since 5.4.2
  */
 public class JSONContentViewState {
 

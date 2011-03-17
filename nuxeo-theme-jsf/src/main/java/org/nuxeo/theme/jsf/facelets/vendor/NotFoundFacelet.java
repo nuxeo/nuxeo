@@ -34,7 +34,7 @@ import com.sun.facelets.FaceletException;
  * facelet fails to render at some point instead of stopping the rendering and
  * redirecting with a 404 error code.
  *
- * @since 5.4.1
+ * @since 5.4.2
  */
 public class NotFoundFacelet extends Facelet {
 

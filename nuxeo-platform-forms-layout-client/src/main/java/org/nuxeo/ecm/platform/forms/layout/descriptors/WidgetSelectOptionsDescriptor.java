@@ -24,7 +24,7 @@ import org.nuxeo.ecm.platform.forms.layout.api.WidgetSelectOptions;
 
 /**
  * @author Anahide Tchertchian
- * @since 5.4.1
+ * @since 5.4.2
  */
 @XObject("options")
 public class WidgetSelectOptionsDescriptor implements WidgetSelectOptions {

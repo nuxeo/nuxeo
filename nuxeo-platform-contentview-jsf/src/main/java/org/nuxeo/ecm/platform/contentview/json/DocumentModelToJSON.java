@@ -39,7 +39,7 @@ import org.nuxeo.ecm.core.api.model.impl.ScalarProperty;
  * <p>
  * Only non-null properties are exported.
  *
- * @since 5.4.1
+ * @since 5.4.2
  */
 public class DocumentModelToJSON implements PropertyVisitor {
 

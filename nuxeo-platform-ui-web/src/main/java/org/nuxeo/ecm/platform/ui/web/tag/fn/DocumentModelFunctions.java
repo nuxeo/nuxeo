@@ -910,7 +910,7 @@ public final class DocumentModelFunctions implements LiveEditConstants {
      *
      * @param lifeCycleName the Life Cycle name
      * @param currentState the state from which the transitions should start
-     * @since 5.4.1
+     * @since 5.4.2
      */
     public static Collection<String> getAvailableLifeCycleTransitions(
             String lifeCycleName, String currentState)

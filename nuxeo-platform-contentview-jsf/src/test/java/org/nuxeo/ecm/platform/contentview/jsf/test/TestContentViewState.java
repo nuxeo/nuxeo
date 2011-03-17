@@ -41,7 +41,7 @@ import org.nuxeo.ecm.platform.ui.web.jsf.MockFacesContext;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * @since 5.4.1
+ * @since 5.4.2
  */
 public class TestContentViewState extends SQLRepositoryTestCase {
 

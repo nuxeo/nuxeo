@@ -34,7 +34,7 @@ import yarfraw.io.FeedWriter;
  * When this is a value expression, the original component does not decode the
  * value correctly.
  *
- * @since 5.4.1
+ * @since 5.4.2
  */
 public class UIFeed extends org.jboss.seam.rss.ui.UIFeed {
 

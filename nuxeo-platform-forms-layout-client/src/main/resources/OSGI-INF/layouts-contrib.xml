@@ -546,7 +546,7 @@
     <widgetType name="double">
       <configuration>
         <title>Decimal number</title>
-        <sinceVersion>5.4.1</sinceVersion>
+        <sinceVersion>5.4.2</sinceVersion>
         <description>
           <p>
             The double widget displays an input text in create or edit mode,
@@ -1453,7 +1453,7 @@
                 <helpLabels>
                   <label mode="any">
                     Flag indicating that the calendar must show a time choice.
-                    Since 5.4.1, this property is ignored and time is shown
+                    Since 5.4.2, this property is ignored and time is shown
                     depending on the date format.
                   </label>
                 </helpLabels>

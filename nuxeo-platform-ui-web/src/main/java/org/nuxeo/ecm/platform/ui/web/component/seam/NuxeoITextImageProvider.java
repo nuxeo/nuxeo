@@ -36,7 +36,7 @@ import com.lowagie.text.html.simpleparser.ImageProvider;
  * Nuxeo image provider handling base url and authentication propagation when
  * resolving resources on server.
  *
- * @since 5.4.1
+ * @since 5.4.2
  */
 public class NuxeoITextImageProvider implements ImageProvider {
 

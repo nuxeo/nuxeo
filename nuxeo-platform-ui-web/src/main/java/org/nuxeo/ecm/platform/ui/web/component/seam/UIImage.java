@@ -32,7 +32,7 @@ import com.lowagie.text.Image;
 /**
  * Overrides default image to avoid crash when image is not found
  *
- * @since 5.4.1
+ * @since 5.4.2
  */
 public class UIImage extends org.jboss.seam.pdf.ui.UIRectangle {
 

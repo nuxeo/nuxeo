@@ -30,7 +30,7 @@ import org.nuxeo.ecm.core.api.SortInfo;
  * State is restricted to given getters and setters. Some state information is
  * actually taken on the page provider.
  *
- * @since 5.4.1
+ * @since 5.4.2
  */
 public interface ContentViewState extends Serializable {
 

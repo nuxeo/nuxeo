@@ -37,7 +37,7 @@ import org.jboss.seam.excel.ui.command.Command;
  * to be introspected further on, and other children components need to be
  * processed (UIAliasHolder components used in layout rendering for instance).
  *
- * @since 5.4.1
+ * @since 5.4.2
  */
 public class UIColumn extends org.jboss.seam.excel.ui.UIColumn {
 
