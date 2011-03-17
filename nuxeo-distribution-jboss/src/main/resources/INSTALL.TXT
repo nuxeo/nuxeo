@@ -20,7 +20,7 @@ Content of this directory :
 |       |       `-- WEB-INF
 |       |           `-- web.xml (declaration for wss root filter)
 |       |-- deployers
-|       |   `-- nuxeo-jboss-deployer-5.4.0-SNAPSHOT.jar
+|       |   `-- nuxeo-jboss-deployer-5.4.1-SNAPSHOT.jar
 |       `-- lib
 |           |-- (jdbc drivers) 
 |-- templates

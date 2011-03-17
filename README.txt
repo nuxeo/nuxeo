@@ -72,11 +72,11 @@ Meaning "mvn clean install" produces:
   * Nuxeo CAP EAR
     nuxeo-distribution-cap/target/nuxeo.ear.zip
   * Nuxeo CAP resource files (for various backends or deployments) for EAR
-    nuxeo-distribution-cap/target/nuxeo-distribution-cap-5.4.0-SNAPSHOT-*.zip
+    nuxeo-distribution-cap/target/nuxeo-distribution-cap-5.4.1-SNAPSHOT-*.zip
   * Nuxeo DM EAR with default VCS backend 
-    nuxeo-distribution-dm/target/nuxeo-distribution-dm-5.4.0-SNAPSHOT.zip
+    nuxeo-distribution-dm/target/nuxeo-distribution-dm-5.4.1-SNAPSHOT.zip
   * JBoss 4.2.3.GA containing Nuxeo DM with default VCS backend
-    nuxeo-distribution-jboss/target/nuxeo-distribution-jboss-5.4.0-SNAPSHOT-nuxeo-dm.zip
+    nuxeo-distribution-jboss/target/nuxeo-distribution-jboss-5.4.1-SNAPSHOT-nuxeo-dm.zip
 
 Building other alternatives for a product is done with Maven profiles:
   * mvn clean install -P<PRODUCT>,<BACKEND>
@@ -91,8 +91,8 @@ It's widely used by a lot of third-parties (google gwt, json, shindings, ...).
 Think about "classifiers" as "qualifiers" (sources, javadoc, tests, linux, windows, 
 mac, jta, all, ...). For example, the following are two alternatives ("classifiers") 
 for the package ("artifact") named "nuxeo-distribution-tomcat":
-  * nuxeo-distribution-tomcat-5.4.0-SNAPSHOT-nuxeo-dm-jtajca.zip
-  * nuxeo-distribution-tomcat-5.4.0-SNAPSHOT-nuxeo-dm.zip
+  * nuxeo-distribution-tomcat-5.4.1-SNAPSHOT-nuxeo-dm-jtajca.zip
+  * nuxeo-distribution-tomcat-5.4.1-SNAPSHOT-nuxeo-dm.zip
 
 Some profiles are used to choose the product to build. Other profiles are used to
 choose which alternatives (classifiers) of the product will be built. Multiple 
@@ -136,20 +136,20 @@ Default profiles are within asterisks: *foo*
 
   * Module nuxeo-distribution-cap
     o Produced artifacts
-      nuxeo-distribution-cap-5.4.0-SNAPSHOT.pom
-      nuxeo-distribution-cap-5.4.0-SNAPSHOT.zip
+      nuxeo-distribution-cap-5.4.1-SNAPSHOT.pom
+      nuxeo-distribution-cap-5.4.1-SNAPSHOT.zip
     o No available profile
       
   * Module nuxeo-distribution-dm
     o Produced artifacts
-      nuxeo-distribution-dm-5.4.0-SNAPSHOT.pom
-      nuxeo-distribution-dm-5.4.0-SNAPSHOT.zip
+      nuxeo-distribution-dm-5.4.1-SNAPSHOT.pom
+      nuxeo-distribution-dm-5.4.1-SNAPSHOT.zip
     o No available profile
       
   * Module nuxeo-distribution-jboss
     o Produced artifacts
-      nuxeo-distribution-jboss-5.4.0-SNAPSHOT-nuxeo-cap.zip
-      nuxeo-distribution-jboss-5.4.0-SNAPSHOT-nuxeo-dm.zip
+      nuxeo-distribution-jboss-5.4.1-SNAPSHOT-nuxeo-cap.zip
+      nuxeo-distribution-jboss-5.4.1-SNAPSHOT-nuxeo-dm.zip
     o Available profiles
       all-distributions
       *all*
@@ -158,13 +158,13 @@ Default profiles are within asterisks: *foo*
 
   * Module nuxeo-distribution-shell
     o Produced artifacts
-      nuxeo-distribution-shell-5.4.0-SNAPSHOT.zip
+      nuxeo-distribution-shell-5.4.1-SNAPSHOT.zip
     o No available profile
     
   * Module nuxeo-distribution-jetty*
     o Produced artifacts
-      nuxeo-distribution-jetty-5.4.0-SNAPSHOT-nuxeo-dm.zip
-      nuxeo-distribution-jetty-5.4.0-SNAPSHOT-nuxeo-cap.zip
+      nuxeo-distribution-jetty-5.4.1-SNAPSHOT-nuxeo-dm.zip
+      nuxeo-distribution-jetty-5.4.1-SNAPSHOT-nuxeo-cap.zip
     o Available profiles
       all-distributions
       *all*
@@ -180,9 +180,9 @@ Default profiles are within asterisks: *foo*
 
   * Module nuxeo-distribution-tomcat
     o Produced artifacts
-      nuxeo-distribution-tomcat-5.4.0-SNAPSHOT-nuxeo-dm.zip
-      nuxeo-distribution-tomcat-5.4.0-SNAPSHOT-nuxeo-cap.zip
-      nuxeo-distribution-tomcat-5.4.0-SNAPSHOT-coreserver.zip
+      nuxeo-distribution-tomcat-5.4.1-SNAPSHOT-nuxeo-dm.zip
+      nuxeo-distribution-tomcat-5.4.1-SNAPSHOT-nuxeo-cap.zip
+      nuxeo-distribution-tomcat-5.4.1-SNAPSHOT-coreserver.zip
     o Available profiles
       all-distributions
       *all*
@@ -196,14 +196,14 @@ Default profiles are within asterisks: *foo*
 
   * Module nuxeo-distribution-resources
     o Produced artifacts
-      nuxeo-distribution-resources-5.4.0-SNAPSHOT-bin.zip
-      nuxeo-distribution-resources-5.4.0-SNAPSHOT-doc.zip
-      nuxeo-distribution-resources-5.4.0-SNAPSHOT-jetty-base.zip
-      nuxeo-distribution-resources-5.4.0-SNAPSHOT-templates-common.zip
-      nuxeo-distribution-resources-5.4.0-SNAPSHOT-templates-common-dm.zip
-      nuxeo-distribution-resources-5.4.0-SNAPSHOT-templates-jboss.zip
-      nuxeo-distribution-resources-5.4.0-SNAPSHOT-templates-tomcat.zip
-      nuxeo-distribution-resources-5.4.0-SNAPSHOT-templates-tomcat-dm.zip
+      nuxeo-distribution-resources-5.4.1-SNAPSHOT-bin.zip
+      nuxeo-distribution-resources-5.4.1-SNAPSHOT-doc.zip
+      nuxeo-distribution-resources-5.4.1-SNAPSHOT-jetty-base.zip
+      nuxeo-distribution-resources-5.4.1-SNAPSHOT-templates-common.zip
+      nuxeo-distribution-resources-5.4.1-SNAPSHOT-templates-common-dm.zip
+      nuxeo-distribution-resources-5.4.1-SNAPSHOT-templates-jboss.zip
+      nuxeo-distribution-resources-5.4.1-SNAPSHOT-templates-tomcat.zip
+      nuxeo-distribution-resources-5.4.1-SNAPSHOT-templates-tomcat-dm.zip
     o No available profile
 
 
