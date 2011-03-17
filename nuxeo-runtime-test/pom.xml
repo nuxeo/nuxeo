@@ -114,12 +114,6 @@
     </dependency>
 
     <dependency>
-      <groupId>net.sourceforge.cssparser</groupId>
-      <artifactId>cssparser</artifactId>
-      <scope>compile</scope>
-    </dependency>
-
-    <dependency>
       <groupId>org.milyn</groupId>
       <artifactId>milyn-magger</artifactId>
       <scope>compile</scope>
