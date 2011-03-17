@@ -167,7 +167,7 @@ Add to tomacat lib :
  - commons-logging.jar
  - freemarker-2.3.11.jar
  - log4j.jar
- - nuxeo-generic-wss-handler-5.4.0-SNAPSHOT.jar
+ - nuxeo-generic-wss-handler-5.4.1-SNAPSHOT.jar
 
 Update nuxeo webapp :
 ---------------------
