@@ -86,16 +86,6 @@ public class SystemPrincipal implements NuxeoPrincipal {
         return "Nuxeo";
     }
 
-    @Override
-    public String getEmail() {
-        return null;
-    }
-
-    @Override
-    public void setEmail(String email) {
-
-    }
-
     public String getFirstName() {
         return "System";
     }

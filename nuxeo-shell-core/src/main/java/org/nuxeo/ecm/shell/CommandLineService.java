@@ -38,12 +38,15 @@ import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
+import org.osgi.framework.FrameworkEvent;
+import org.osgi.framework.FrameworkListener;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
-public class CommandLineService extends DefaultComponent {
+public class CommandLineService extends DefaultComponent implements
+        FrameworkListener {
 
     private static final Log log = LogFactory.getLog(CommandLineService.class);
 
@@ -64,6 +67,8 @@ public class CommandLineService extends DefaultComponent {
         options = new Hashtable<String, CommandOption>();
         shortcuts = new Hashtable<String, CommandOption>();
         commandContext = new CommandContext(this);
+        context.getRuntimeContext().getBundle().getBundleContext().addFrameworkListener(
+                this);
 
         // register activate script commands
         reload();
@@ -88,6 +93,8 @@ public class CommandLineService extends DefaultComponent {
 
     @Override
     public void deactivate(ComponentContext context) throws Exception {
+        context.getRuntimeContext().getBundle().getBundleContext().removeFrameworkListener(
+                this);
         cmds.clear();
         options.clear();
         shortcuts.clear();
@@ -328,36 +335,37 @@ public class CommandLineService extends DefaultComponent {
         command.run(cmdLine);
     }
 
-    @Override
-    public void applicationStarted(ComponentContext context) throws Exception {
-        Environment env = Environment.getDefault();
-        if (env == null) {
-            log.error("Could not start command line service. This service works only with nxshell launcher");
-            return;
-        }
-        String[] args = env.getCommandLineArguments();
-        int k = -1;
-        // search for the "-exec" option
-        for (int i = 0; i < args.length; i++) {
-            if (args[i].equals("-console")) {
-                k = i + 1;
-                break;
+    public void frameworkEvent(FrameworkEvent event) {
+        if (event.getType() == FrameworkEvent.STARTED) {
+            Environment env = Environment.getDefault();
+            if (env == null) {
+                log.error("Could not start command line service. This service works only with nxshell launcher");
+                return;
             }
-        }
-        if (k == -1) {
-            return; // do not activate the console
-        }
-        final String[] newArgs = new String[args.length - k];
-        if (newArgs.length > 0) {
-            System.arraycopy(args, k, newArgs, 0, newArgs.length);
-        }
-        Runnable task = new Runnable() {
-            public void run() {
-                Main.main(newArgs);
+            String[] args = env.getCommandLineArguments();
+            int k = -1;
+            // search for the "-exec" option
+            for (int i = 0; i < args.length; i++) {
+                if (args[i].equals("-console")) {
+                    k = i + 1;
+                    break;
+                }
             }
-        };
-        StandaloneApplication.setMainTask(task);
-        env.getProperties().put("mainTask", task);
+            if (k == -1) {
+                return; // do not activate the console
+            }
+            final String[] newArgs = new String[args.length - k];
+            if (newArgs.length > 0) {
+                System.arraycopy(args, k, newArgs, 0, newArgs.length);
+            }
+            Runnable task = new Runnable() {
+                public void run() {
+                    Main.main(newArgs);
+                }
+            };
+            StandaloneApplication.setMainTask(task);
+            env.getProperties().put("mainTask", task);
+        }
     }
 
 }
