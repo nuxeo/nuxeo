@@ -69,14 +69,14 @@ public class SortInfo implements Serializable {
     }
 
     /**
-     * @since 5.4.0
+     * @since 5.4.1
      */
     public void setSortColumn(String sortColumn) {
         this.sortColumn = sortColumn;
     }
 
     /**
-     * @since 5.4.0
+     * @since 5.4.1
      */
     public void setSortAscending(boolean sortAscending) {
         this.sortAscending = sortAscending;
@@ -103,7 +103,7 @@ public class SortInfo implements Serializable {
      * The map keys are {@link #SORT_COLUMN_NAME} and
      * {@link #SORT_ASCENDING_NAME}.
      *
-     * @since 5.4.0
+     * @since 5.4.1
      */
     public static Map<String, Serializable> asMap(SortInfo sortInfo) {
         if (sortInfo == null) {
@@ -121,7 +121,7 @@ public class SortInfo implements Serializable {
      * contain both keys {@link #SORT_COLUMN_NAME} and
      * {@link #SORT_ASCENDING_NAME}.
      *
-     * @since 5.4.0
+     * @since 5.4.1
      */
     public static SortInfo asSortInfo(Map<String, Serializable> map) {
         if (map == null) {
