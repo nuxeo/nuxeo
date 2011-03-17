@@ -203,6 +203,16 @@
   </function>
 
   <function>
+    <function-name>javaScriptEscape</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.Functions
+    </function-class>
+    <function-signature>
+      java.lang.String javaScriptEscape(java.lang.String)
+    </function-signature>
+  </function>
+
+  <function>
     <function-name>translate</function-name>
     <function-class>
       org.nuxeo.ecm.platform.ui.web.tag.fn.Functions

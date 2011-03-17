@@ -139,6 +139,19 @@ public final class Functions {
     }
 
     /**
+     * Espaces a given string to be used in a JavaScript function (escaping
+     * single quote characters for instance).
+     *
+     * @since 5.4.1
+     */
+    public static String javaScriptEscape(String data) {
+        if (data != null) {
+            data = data.replace("'", "\\'");
+        }
+        return data;
+    }
+
+    /**
      * Can be used in order to produce something like that "Julien, Alain ,
      * Thierry et Marc-Aurele" where ' , ' and ' et ' is the final one.
      */

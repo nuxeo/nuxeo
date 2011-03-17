@@ -56,6 +56,10 @@
         h:outputText in scripts).
       </li>
       <li>
+        javaScriptEscape(String): returns escaped string for use in
+        JavaScript code (excapes single quote characters for instance).
+      </li>
+      <li>
         printFileSize(String size): same as printFormatedFileSize( size, "SI",
         true)
       </li>

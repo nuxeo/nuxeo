@@ -48,10 +48,8 @@
                 </c:if>
               </span>
             </c:if>
-            <c:set var="helpMessage" value="#{messages[layoutProperty_helpLabel]}" />
-            <c:set var="helpMessageEscaped" value="#{fn:replace(helpMessage, '\'', '\\\\\'')}" />
             <h:graphicImage value="/icons/lightbulb.png"
-              onmouseover="tooltip.show('#{helpMessageEscaped}', 500);"
+              onmouseover="tooltip.show('#{nxu:javaScriptEscape(messages[layoutProperty_helpLabel])}', 500);"
               onmouseout="tooltip.hide();" />
 
             <c:if test="#{not empty layoutProperty_localConfigurationFacet}">
