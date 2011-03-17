@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -15,17 +15,10 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
-import javax.naming.NamingException;
 
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.auth.BasicAWSCredentials;
@@ -35,13 +28,10 @@ import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
 
-
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.file.FileCache;
 import org.nuxeo.common.file.LRUFileCache;
-import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.runtime.api.Framework;
 
 
