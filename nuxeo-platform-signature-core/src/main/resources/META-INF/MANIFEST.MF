@@ -13,7 +13,6 @@ Nuxeo-Require: org.nuxeo.ecm.core,
 Nuxeo-Component: 
  OSGI-INF/schema-contrib.xml,
  OSGI-INF/directory-contrib.xml,
- OSGI-INF/core-types-contrib.xml,
  OSGI-INF/cert-contrib.xml,
  OSGI-INF/cert-service-contrib.xml,
  OSGI-INF/core-types-contrib.xml,

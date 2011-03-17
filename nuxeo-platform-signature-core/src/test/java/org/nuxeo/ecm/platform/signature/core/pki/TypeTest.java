@@ -73,14 +73,15 @@ import com.google.inject.Inject;
 
 /**
  * @author <a href="mailto:ws@nuxeo.com">Wojciech Sulejman</a>
- *
+ * 
  */
 @RunWith(FeaturesRunner.class)
 @Features(PlatformFeature.class)
-@RepositoryConfig(type = BackendType.H2, user = "Administrator",  init = DefaultRepositoryInit.class, cleanup=Granularity.METHOD)
+@RepositoryConfig(type = BackendType.H2, user = "Administrator", init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
 @Deploy( { "org.nuxeo.ecm.core", "org.nuxeo.ecm.core.api",
-        "org.nuxeo.runtime.management", "org.nuxeo.ecm.directory","org.nuxeo.common",
-        "org.nuxeo.ecm.directory.sql", "org.nuxeo.ecm.platform.signature.core",
+        "org.nuxeo.runtime.management", "org.nuxeo.ecm.directory",
+        "org.nuxeo.common", "org.nuxeo.ecm.directory.sql",
+        "org.nuxeo.ecm.platform.signature.core",
         "org.nuxeo.ecm.platform.signature.core.test" })
 public class TypeTest {
 
@@ -106,10 +107,10 @@ public class TypeTest {
 
     @Before
     public void setup() throws Exception {
-        
+
         NamingContextFactory.setAsInitial();
         setUpContextFactory();
-        
+
         KeyStore rootKeystore = certService.getKeyStore(
                 getKeystoreIS(keystorePath), ROOT_KEYSTORE_PASSWORD);
         RootService rootService = new RootService();
@@ -134,7 +135,7 @@ public class TypeTest {
         KeyStore keystore = generateUserKeystore(userID);
         ByteArrayOutputStream byteOS = new ByteArrayOutputStream();
         keystore.store(byteOS, USER_KEYSTORE_PASSWORD.toCharArray());
-        String keystore64Encoded=Base64.encodeBytes(byteOS.toByteArray());
+        String keystore64Encoded = Base64.encodeBytes(byteOS.toByteArray());
         map.put("keystore", keystore64Encoded);
 
         DocumentModel entry = sqlSession.createEntry(map);
@@ -142,12 +143,13 @@ public class TypeTest {
         sqlSession.commit();
 
         // retrieve a persisted entry from the directory
-        DocumentModel entryFromSession=sqlSession.getEntry(userID);
-        String keystore64EncodedFromSession=(String)entryFromSession.getPropertyValue("certdir:keystore");
-        byte[] keystoreBytes=Base64.decode(keystore64EncodedFromSession);
-        ByteArrayInputStream keystoreByteIS = new ByteArrayInputStream(keystoreBytes);
-        keystore.load(keystoreByteIS,USER_KEYSTORE_PASSWORD.toCharArray());
-        AliasWrapper userAlias=new AliasWrapper(userID);
+        DocumentModel entryFromSession = sqlSession.getEntry(userID);
+        String keystore64EncodedFromSession = (String) entryFromSession.getPropertyValue("cert:keystore");
+        byte[] keystoreBytes = Base64.decode(keystore64EncodedFromSession);
+        ByteArrayInputStream keystoreByteIS = new ByteArrayInputStream(
+                keystoreBytes);
+        keystore.load(keystoreByteIS, USER_KEYSTORE_PASSWORD.toCharArray());
+        AliasWrapper userAlias = new AliasWrapper(userID);
 
         // check if you can read an existing alias from the persisted keystore
         assertTrue(keystore.containsAlias(userAlias.getId(AliasType.KEY)));
@@ -200,11 +202,11 @@ public class TypeTest {
     }
 
     KeyStore getKeystore(String password) throws Exception {
-        KeyStore keystore = certService.getKeyStore(getKeystoreIS(keystorePath),
-                password);
+        KeyStore keystore = certService.getKeyStore(
+                getKeystoreIS(keystorePath), password);
         return keystore;
     }
-    
+
     InputStream getKeystoreIS(String keystoreFilePath) throws Exception {
         File keystoreFile = FileUtils.getResourceFileFromContext(keystoreFilePath);
         return new FileInputStream(keystoreFile);
@@ -221,7 +223,6 @@ public class TypeTest {
         return dir;
     }
 
-    
     public static void setUpContextFactory() throws NamingException {
         Context context = new InitialContext();
         DataSource datasource = new SimpleDataSource("jdbc:hsqldb:mem:memid",
@@ -238,8 +239,4 @@ public class TypeTest {
         assertNotNull(datasourceAutocommit);
         context.bind("java:comp/env/jdbc/nxsqldirectory", datasource);
     }
-    
-    
-
-    
 }

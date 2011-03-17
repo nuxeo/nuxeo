@@ -23,7 +23,6 @@ import java.security.Principal;
 import java.security.cert.X509Certificate;
 import java.util.List;
 
-import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 
 import org.apache.commons.logging.Log;
@@ -33,17 +32,19 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.faces.FacesMessages;
+import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.api.facet.VersioningDocument;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.ecm.platform.signature.api.exception.CertException;
 import org.nuxeo.ecm.platform.signature.api.exception.SignException;
 import org.nuxeo.ecm.platform.signature.api.pki.CertService;
@@ -51,12 +52,12 @@ import org.nuxeo.ecm.platform.signature.api.sign.SignatureService;
 import org.nuxeo.ecm.platform.signature.api.user.CUserService;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
-import org.nuxeo.ecm.platform.versioning.api.VersioningManager;
+import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 import org.nuxeo.runtime.api.Framework;
 
 /**
  * Document signing actions
- *
+ * 
  * @author <a href="mailto:ws@nuxeo.com">Wojciech Sulejman</a>
  */
 @Name("signActions")
@@ -79,18 +80,18 @@ public class SignActions implements Serializable {
     @In(create = true)
     protected transient NavigationContext navigationContext;
 
+    @In(create = true)
+    protected ResourcesAccessor resourcesAccessor;
+
     @In(create = true, required = false)
     protected FacesMessages facesMessages;
-
-    @In(create = true)
-    private transient VersioningManager versioningManager;
 
     @In(create = true)
     protected transient UserManager userManager;
 
     /**
      * Signs digitally a PDF blob contained in the current document.
-     *
+     * 
      * @param signingReason
      * @param password
      * @throws SignException
@@ -107,8 +108,9 @@ public class SignActions implements Serializable {
 
         DocumentModel currentDoc = navigationContext.getCurrentDocument();
         if (currentDoc == null) {
-            facesMessages.add(FacesMessage.SEVERITY_ERROR,
-                    "Document could not be signed. Current document missing");
+            facesMessages.add(StatusMessage.Severity.ERROR,
+                    resourcesAccessor.getMessages().get(
+                            "label.sign.document.missing"));
         }
 
         BlobHolder blobHolder = (BlobHolder) currentDoc.getAdapter(BlobHolder.class);
@@ -116,20 +118,16 @@ public class SignActions implements Serializable {
         try {
             blob = blobHolder.getBlob();
             if (blob == null) {
-                facesMessages.add(FacesMessage.SEVERITY_ERROR,
-                        "Your document does not contain any attachments", null);
+                facesMessages.add(StatusMessage.Severity.ERROR,
+                        resourcesAccessor.getMessages().get(
+                                "label.sign.attachments.missing"));
             } else {
 
                 if (!blob.getMimeType().equals("application/pdf")) {
-                    facesMessages.add(FacesMessage.SEVERITY_ERROR,
-                            "The attachment must be a PDF", null);
+                    facesMessages.add(StatusMessage.Severity.ERROR,
+                            resourcesAccessor.getMessages().get(
+                                    "label.sign.pdf.warning"));
                 }
-
-//                String userID = (String) user.getPropertyValue("user:username");
-
-//                KeyStore keystore = cUserService.getUserKeystore(userID,
-//                        password);
-//                UserInfo userInfo = cUserService.getUserInfo(user);
 
                 File signedPdf;
                 signedPdf = signatureService.signPDF(user, password,
@@ -142,11 +140,9 @@ public class SignActions implements Serializable {
                 currentDoc.getAdapter(BlobHolder.class).setBlob(outputBlob);
                 CoreSession session = currentDoc.getCoreSession();
                 if (currentDoc.isVersionable()) {
-                    currentDoc = versioningManager.incrementMinor(currentDoc);
                     currentDoc.putContextData(
-                            org.nuxeo.common.collections.ScopeType.REQUEST,
-                            VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY,
-                            true);
+                            VersioningService.VERSIONING_OPTION,
+                            VersioningOption.MINOR);
                     currentDoc = session.saveDocument(currentDoc);
                 }
                 navigationContext.saveCurrentDocument();
@@ -160,35 +156,38 @@ public class SignActions implements Serializable {
                 Framework.getLocalService(EventService.class).fireEvent(event);
 
                 // and display a signing message
-                facesMessages.add(FacesMessage.SEVERITY_INFO,
+                facesMessages.add(StatusMessage.Severity.INFO,
                         outputBlob.getFilename()
-                                + " has been signed with the following reason "
-                                + signingReason, null);
+                                + " "
+                                + resourcesAccessor.getMessages().get(
+                                        "notification.sign.signed"));
             }
         } catch (CertException e) {
             LOG.info("PDF SIGNING PROBLEM. CERTIFICATE ACCESS PROBLEM" + e);
-            facesMessages.add(
-                    FacesMessage.SEVERITY_ERROR,
-                    "Problem accessing your certificate. Make sure your password is correct.",
-                    e);
+            facesMessages.add(StatusMessage.Severity.ERROR,
+                    resourcesAccessor.getMessages().get(
+                            "notification.sign.certificate.access.problem"));
         } catch (SignException e) {
-            LOG.info("PDF SIGNING PROBLEM:" + e);
-            facesMessages.add(FacesMessage.SEVERITY_ERROR,
-                    "PDF signing problem ", e);
+            LOG.info("PDF signing problem:" + e);
+            facesMessages.add(StatusMessage.Severity.ERROR,
+                    resourcesAccessor.getMessages().get(
+                            "notification.sign.problem"));
         } catch (IOException e) {
             LOG.info("PDF SIGNING PROBLEM:" + e);
-            facesMessages.add(FacesMessage.SEVERITY_ERROR,
-                    "PDF signing problem ", e);
+            facesMessages.add(StatusMessage.Severity.ERROR,
+                    resourcesAccessor.getMessages().get(
+                            "notification.sign.problem"));
         } catch (ClientException ce) {
             LOG.info("PDF SIGNING PROBLEM:" + ce);
-            facesMessages.add(FacesMessage.SEVERITY_ERROR,
-                    "PDF signing problem, see the logs ", ce);
+            facesMessages.add(StatusMessage.Severity.ERROR,
+                    resourcesAccessor.getMessages().get(
+                            "notification.sign.problem"));
         }
     }
 
     /**
      * Checks whether a document was already signed with an X509 certificate.
-     *
+     * 
      * @return
      * @throws SignException
      * @throws ClientException
@@ -198,23 +197,24 @@ public class SignActions implements Serializable {
 
         DocumentModel currentDoc = navigationContext.getCurrentDocument();
         if (currentDoc == null) {
-            facesMessages.add(FacesMessage.SEVERITY_ERROR,
-                    "Current document missing");
+            facesMessages.add(StatusMessage.Severity.ERROR,
+                    resourcesAccessor.getMessages().get(
+                            "label.sign.document.missing"));
         }
 
         BlobHolder blobHolder = (BlobHolder) currentDoc.getAdapter(BlobHolder.class);
         Blob blob = null;
         blob = blobHolder.getBlob();
         if (blob == null) {
-            facesMessages.add(FacesMessage.SEVERITY_ERROR,
-                    "Your document does not contain any attachments", null);
+            facesMessages.add(StatusMessage.Severity.WARN,
+                    "Your document does not contain any attachments");
         } else {
             if (blob.getMimeType() == null) {
-                facesMessages.add(FacesMessage.SEVERITY_INFO,
-                        "Your attachment might not be a PDF", null);
+                facesMessages.add(StatusMessage.Severity.INFO,
+                        resourcesAccessor.getMessages().get("label.sign.document.mime"));
             } else if (!blob.getMimeType().equals("application/pdf")) {
-                facesMessages.add(FacesMessage.SEVERITY_ERROR,
-                        "The attachment must be a PDF", null);
+                facesMessages.add(StatusMessage.Severity.ERROR,
+                        resourcesAccessor.getMessages().get("label.sign.pdf.warning"));
             } else {
                 List<X509Certificate> pdfCertificates;
                 try {
@@ -232,9 +232,8 @@ public class SignActions implements Serializable {
 
     /**
      * Returns a basic textual description of the certificate contained in the
-     * current document. The information has the following format:
-     * "This document was certified by CN=aaa bbb,OU=IT,O=Nuxeo,C=US. The certificate was issued by E=pdfca@nuxeo.com,C=US,ST=MA,L=Burlington,O=Nuxeo,OU=CA,CN=PDFCA. The certificate is valid till Thu Jan 05 09:31:15 EST 2012"
-     *
+     * current document. The information has the following format:"This document was certified by CN=aaa bbb,OU=IT,O=Nuxeo,C=US. The certificate was issued by E=pdfca@nuxeo.com,C=US,ST=MA,L=Burlington,O=Nuxeo,OU=CA,CN=PDFCA. The certificate is valid till Thu Jan 05 09:31:15 EST 2012"
+     * 
      * @return
      * @throws SignException
      * @throws ClientException
@@ -244,20 +243,23 @@ public class SignActions implements Serializable {
 
         DocumentModel currentDoc = navigationContext.getCurrentDocument();
         if (currentDoc == null) {
-            facesMessages.add(FacesMessage.SEVERITY_ERROR,
-                    "Current document missing");
+            facesMessages.add(StatusMessage.Severity.ERROR,
+                    resourcesAccessor.getMessages().get(
+                            "label.sign.document.missing"));
         }
 
         BlobHolder blobHolder = (BlobHolder) currentDoc.getAdapter(BlobHolder.class);
         Blob blob = null;
         blob = blobHolder.getBlob();
         if (blob == null) {
-            facesMessages.add(FacesMessage.SEVERITY_ERROR,
-                    "Your document does not contain any attachments", null);
+            facesMessages.add(StatusMessage.Severity.ERROR,
+                    resourcesAccessor.getMessages().get(
+                            "label.sign.attachments.missing"));
         } else {
             if (!blob.getMimeType().equals("application/pdf")) {
-                facesMessages.add(FacesMessage.SEVERITY_ERROR,
-                        "The attachment must be a PDF", null);
+                facesMessages.add(StatusMessage.Severity.ERROR,
+                        resourcesAccessor.getMessages().get(
+                                "label.sign.pdf.warning"));
             }
             List<X509Certificate> pdfCertificates;
             try {
@@ -271,7 +273,7 @@ public class SignActions implements Serializable {
                         + certificate.getSubjectDN()
                         + ". The certificate was issued by "
                         + certificate.getIssuerDN()
-                        + ". The certificate is valid till "
+                        + ". The certificate will expire on "
                         + certificate.getNotAfter();
             }
         }

@@ -5,11 +5,11 @@
     point="directories">
 
     <directory name="certificate">
-      <schema>certdir</schema>
+      <schema>cert</schema>
       <dataSource>java:/nxsqldirectory</dataSource>
       <cacheTimeout>3600</cacheTimeout>
       <cacheMaxSize>1000</cacheMaxSize>
-      <table>certdir</table>
+      <table>certificate</table>
       <idField>userid</idField>
       <autoincrementIdField>false</autoincrementIdField>
       <createTablePolicy>on_missing_columns</createTablePolicy>

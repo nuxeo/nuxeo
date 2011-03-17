@@ -101,7 +101,7 @@ public class CUserServiceTest {
         // retry
         retrievedCertificate = cUserService.getCertificate(USER_ID);
         assertNotNull("The certificate could not be retrieved from the directory",retrievedCertificate);
-        assertTrue(retrievedCertificate.getPropertyValue("certdir:userid").equals(USER_ID));
+        assertTrue(retrievedCertificate.getPropertyValue("cert:userid").equals(USER_ID));
     }
 
     public DocumentModel getUser() throws Exception {
