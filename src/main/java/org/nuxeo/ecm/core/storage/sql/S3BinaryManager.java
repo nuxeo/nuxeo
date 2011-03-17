@@ -15,14 +15,28 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
+import java.security.PublicKey;
+import java.security.PrivateKey;
+import java.security.KeyPair;
+import java.security.UnrecoverableKeyException;
+
 import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.AmazonS3EncryptionClient;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.ClientConfiguration;
+import com.amazonaws.services.s3.model.EncryptionMaterials;
+import com.amazonaws.services.s3.model.CryptoConfiguration;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.AmazonClientException;
@@ -53,7 +67,12 @@ public class S3BinaryManager extends DefaultBinaryManager {
     public static final String AWS_SECRET_KEY = "nuxeo.s3storage.awssecret";
 
     public static final String CACHE_SIZE_KEY = "nuxeo.s3storage.cachesize";
-    public static final String DEFAULT_CACHE_SIZE = "10M";
+    public static final String DEFAULT_CACHE_SIZE = "100M";
+
+    public static final String KEYSTORE_FILE_KEY = "nuxeo.s3storage.crypt.keystore.file";
+    public static final String KEYSTORE_PASS_KEY = "nuxeo.s3storage.crypt.keystore.password";
+    public static final String PRIVKEY_ALIAS_KEY = "nuxeo.s3storage.crypt.key.alias";
+    public static final String PRIVKEY_PASS_KEY = "nuxeo.s3storage.crypt.key.password";
 
     // Those are probably defined somewhere else, but I didn't see them!
     public static final String PROXY_HOST_KEY = "nuxeo.http.proxy.host";
@@ -64,6 +83,8 @@ public class S3BinaryManager extends DefaultBinaryManager {
     protected String bucketName;
     protected BasicAWSCredentials awsCredentials;
     protected ClientConfiguration clientConfiguration;
+    protected EncryptionMaterials encryptionMaterials;
+    protected CryptoConfiguration cryptoConfiguration;
 
     protected String repositoryName;
     protected FileCache fileCache;
@@ -82,11 +103,18 @@ public class S3BinaryManager extends DefaultBinaryManager {
         String bucketRegion = org.nuxeo.runtime.api.Framework.getProperty(BUCKET_REGION_KEY, DEFAULT_BUCKET_REGION);
         String awsID = org.nuxeo.runtime.api.Framework.getProperty(AWS_ID_KEY, null);
         String awsSecret = org.nuxeo.runtime.api.Framework.getProperty(AWS_SECRET_KEY, null);
+
         String proxyHost = org.nuxeo.runtime.api.Framework.getProperty(PROXY_HOST_KEY, null);
         String proxyPort = org.nuxeo.runtime.api.Framework.getProperty(PROXY_PORT_KEY, null);
         String proxyLogin = org.nuxeo.runtime.api.Framework.getProperty(PROXY_LOGIN_KEY, null);
         String proxyPassword = org.nuxeo.runtime.api.Framework.getProperty(PROXY_PASSWORD_KEY, null);
+
         String cacheSizeStr = org.nuxeo.runtime.api.Framework.getProperty(CACHE_SIZE_KEY, DEFAULT_CACHE_SIZE);
+
+        String keystoreFile = org.nuxeo.runtime.api.Framework.getProperty(KEYSTORE_FILE_KEY, null);
+        String keystorePass = org.nuxeo.runtime.api.Framework.getProperty(KEYSTORE_PASS_KEY, null);
+        String privkeyAlias = org.nuxeo.runtime.api.Framework.getProperty(PRIVKEY_ALIAS_KEY, null);
+        String privkeyPass = org.nuxeo.runtime.api.Framework.getProperty(PRIVKEY_PASS_KEY, null);
 
         if (bucketName == null) {
             throw new RuntimeException("Missing " + BUCKET_NAME_KEY + "in nuxeo.conf");
@@ -116,6 +144,57 @@ public class S3BinaryManager extends DefaultBinaryManager {
             clientConfiguration.setProxyPassword(proxyPassword);
         }
 
+        // Setup encryption
+        encryptionMaterials = null;
+        if (keystoreFile != null) {
+            boolean confok = true;
+            if (keystorePass == null) {
+                log.error("Keystore password missing");
+                confok = false;
+            }
+            if (privkeyAlias == null) {
+                log.error("Key alias missing");
+                confok = false;
+            }
+            if (privkeyPass == null) {
+                log.error("Key password missing");
+                confok = false;
+            }
+            if (!confok) {
+                throw new RuntimeException("S3 Crypto configuration incomplete");
+            }
+            try {
+                // Open keystore
+                File ksFile = new File(keystoreFile);
+                FileInputStream ksStream = new FileInputStream(ksFile);
+                KeyStore keystore = KeyStore.getInstance(KeyStore.getDefaultType());
+                keystore.load(ksStream, keystorePass.toCharArray());
+                ksStream.close();
+                // Get keypair for alias
+                if (!keystore.isKeyEntry(privkeyAlias)) {
+                    throw new RuntimeException("Alias " + privkeyAlias + " is missing or not a key alias");
+                }
+                PrivateKey privKey = (PrivateKey)keystore.getKey(privkeyAlias, privkeyPass.toCharArray());
+                Certificate cert = keystore.getCertificate(privkeyAlias);
+                PublicKey pubKey = cert.getPublicKey();
+                KeyPair keypair = new KeyPair(pubKey, privKey);
+                // Get encryptionMaterials from keypair
+                encryptionMaterials = new EncryptionMaterials(keypair);
+                cryptoConfiguration = new CryptoConfiguration();
+            } catch (IOException e) {
+                throw new RuntimeException("Could not read keystore: " + keystoreFile);
+            } catch (NoSuchAlgorithmException e) {
+                throw new RuntimeException("Could not verify keystore integrity: " + keystoreFile);
+            } catch (CertificateException e) {
+                throw new RuntimeException("Could not read keystore certificates for " + keystoreFile);
+            } catch (KeyStoreException e) {
+                throw new RuntimeException(e);
+            } catch (UnrecoverableKeyException e) {
+                throw new RuntimeException("Wrong password for key alias " + privkeyAlias);
+            }
+        }
+        
+
         // Try to create bucket if it doesn't exist
         AmazonS3Client s3client = getS3Client();
         try {
@@ -141,8 +220,13 @@ public class S3BinaryManager extends DefaultBinaryManager {
     }
 
     protected AmazonS3Client getS3Client() {
-        // TODO: add encryption support
-        return new AmazonS3Client(awsCredentials,clientConfiguration);
+        AmazonS3Client client;
+        if (encryptionMaterials == null) {
+            client = new AmazonS3Client(awsCredentials, clientConfiguration);
+        } else {
+            client = new com.amazonaws.services.s3.AmazonS3EncryptionClient(awsCredentials, encryptionMaterials, clientConfiguration, cryptoConfiguration);
+        }
+        return client;
     }
 
     protected long parseSizeInBytes(String string) {
