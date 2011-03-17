@@ -198,8 +198,6 @@
       <artifact group="org.milyn" name="milyn-commons" />
       <artifact group="org.milyn" name="flute" />
       <artifact group="org.w3c" name="sac" />
-      <!-- NXP-6296: remove later -->
-      <artifact group="net.sourceforge.cssparser" name="cssparser" />
     </artifacts>
   </artifactSet>
 
