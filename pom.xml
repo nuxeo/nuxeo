@@ -7,10 +7,10 @@
   <parent>
     <groupId>org.nuxeo.ecm.platform</groupId>
     <artifactId>nuxeo-features-parent</artifactId>
-    <version>5.4.1-SNAPSHOT</version>
+    <version>5.4.2-SNAPSHOT</version>
   </parent>
 
-  <version>5.4.1-SNAPSHOT</version>
+  <version>5.4.2-SNAPSHOT</version>
   <groupId>org.nuxeo.ecm.platform</groupId>
   <artifactId>nuxeo-platform-document-routing</artifactId>
   <name>Nuxeo Platform Document Routing Addon</name>
@@ -18,7 +18,7 @@
   <description>The parent module for Nuxeo Platform Document Routing Addon</description>
 
   <properties>
-    <routing.version>5.4.1-SNAPSHOT</routing.version>
+    <routing.version>5.4.2-SNAPSHOT</routing.version>
   </properties>
   <modules>
     <module>nuxeo-platform-document-routing-api</module>
