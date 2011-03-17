@@ -100,6 +100,7 @@ public class NuxeoBindingTestCase {
         CallContextImpl context = new CallContextImpl(
                 CallContext.BINDING_LOCAL, repositoryId, objectInfoRequired);
         context.put(CallContext.USERNAME, USERNAME);
+        context.put("useranme", USERNAME); // misspelled in older versions
         context.put(CallContext.PASSWORD, PASSWORD);
         context.put(CallContext.SERVLET_CONTEXT,
                 FakeServletContext.getServletContext());

@@ -593,7 +593,7 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         checkValue(PropertyIds.VERSION_SERIES_ID, NOT_NULL, ob);
         checkValue(PropertyIds.IS_VERSION_SERIES_CHECKED_OUT, Boolean.TRUE, ob);
         checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_ID, id, ob);
-        checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_BY, "system", ob);
+        checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_BY, USERNAME, ob);
         checkValue(PropertyIds.CHECKIN_COMMENT, null, ob);
         String series = ob.getPropertyValue(PropertyIds.VERSION_SERIES_ID);
 
@@ -644,7 +644,7 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         checkValue(PropertyIds.VERSION_SERIES_ID, series, co);
         checkValue(PropertyIds.IS_VERSION_SERIES_CHECKED_OUT, Boolean.TRUE, co);
         checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_ID, coid.getId(), co);
-        checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_BY, "system", co);
+        checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_BY, USERNAME, co);
         checkValue(PropertyIds.CHECKIN_COMMENT, null, co);
     }
 

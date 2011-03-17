@@ -1219,7 +1219,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         checkReturnedValue(PropertyIds.IS_VERSION_SERIES_CHECKED_OUT,
                 Boolean.TRUE);
         checkReturnedValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_ID, NOT_NULL);
-        checkReturnedValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_BY, "system");
+        checkReturnedValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_BY, USERNAME);
         checkReturnedValue(PropertyIds.CHECKIN_COMMENT, null);
         checkReturnedValue(
                 PropertyIds.CONTENT_STREAM_LENGTH,
@@ -1534,7 +1534,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         checkValue(PropertyIds.VERSION_SERIES_ID, NOT_NULL, ob);
         checkValue(PropertyIds.IS_VERSION_SERIES_CHECKED_OUT, Boolean.TRUE, ob);
         checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_ID, id, ob);
-        checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_BY, "system", ob);
+        checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_BY, USERNAME, ob);
         checkValue(PropertyIds.CHECKIN_COMMENT, null, ob);
         String series = (String) getValue(ob, PropertyIds.VERSION_SERIES_ID);
 
@@ -1589,7 +1589,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         checkValue(PropertyIds.VERSION_SERIES_ID, series, co);
         checkValue(PropertyIds.IS_VERSION_SERIES_CHECKED_OUT, Boolean.TRUE, co);
         checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_ID, coid, co);
-        checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_BY, "system", co);
+        checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_BY, USERNAME, co);
         checkValue(PropertyIds.CHECKIN_COMMENT, null, co);
 
         // check in minor -> version 1.1
@@ -1709,7 +1709,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         checkValue(PropertyIds.VERSION_SERIES_ID, NOT_NULL, ob);
         checkValue(PropertyIds.IS_VERSION_SERIES_CHECKED_OUT, Boolean.TRUE, ob);
         checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_ID, id, ob);
-        checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_BY, "system", ob);
+        checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_BY, USERNAME, ob);
         checkValue(PropertyIds.CHECKIN_COMMENT, null, ob);
 
     }
