@@ -46,7 +46,6 @@ import org.nuxeo.runtime.AbstractRuntimeService;
 import org.nuxeo.runtime.Version;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentName;
-import org.nuxeo.runtime.model.RegistrationInfo;
 import org.nuxeo.runtime.model.RuntimeContext;
 import org.nuxeo.runtime.model.impl.ComponentPersistence;
 import org.nuxeo.runtime.model.impl.RegistrationInfoImpl;
@@ -407,37 +406,22 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
         return expandVars(value);
     }
 
-    protected void notifyComponentsOnStarted() throws Exception {
-        for (RegistrationInfo ri : manager.getRegistrations()) {
-            ri.notifyApplicationStarted();
-        }
-    }
-
-    protected void fireApplicationStarted() {
-        try {
-            persistence.loadPersistedComponents();
-        } catch (Exception e) {
-            log.error("Failed to load persisted components", e);
-        }
-        // deploy a fake component that is marking the end of startup
-        // XML components that needs to be deployed at the end need to put a
-        // requirement
-        // on this marker component
-        deployFrameworkStartedComponent();
-        try {
-            notifyComponentsOnStarted();
-        } catch (Exception e) {
-            log.error("Failed to notify components on application started", e);
-        }
-        // print the startup message
-        printStatusMessage();
-    }
-
     /* --------------- FrameworkListener API ------------------ */
 
     public void frameworkEvent(FrameworkEvent event) {
         if (event.getType() == FrameworkEvent.STARTED) {
-            fireApplicationStarted();
+            try {
+                persistence.loadPersistedComponents();
+            } catch (Exception e) {
+                log.error("Failed to load persisted components", e);
+            }
+            // deploy a fake component that is marking the end of startup
+            // XML components that needs to be deployed at the end need to put a
+            // requirement
+            // on this marker component
+            deployFrameworkStartedComponent();
+            // print the startup message
+            printStatusMessage();
         }
     }
 
@@ -508,25 +492,20 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
 
     protected File getEclipseBundleFileUsingReflection(Bundle bundle) {
         try {
-            Object proxy = bundle.getClass().getMethod("getLoaderProxy").invoke(
-                    bundle);
-            Object loader = proxy.getClass().getMethod("getBundleLoader").invoke(
-                    proxy);
-            URL root = (URL) loader.getClass().getMethod("findResource",
-                    String.class).invoke(loader, "/");
+            Object proxy = bundle.getClass().getMethod("getLoaderProxy").invoke(bundle);
+            Object loader = proxy.getClass().getMethod("getBundleLoader").invoke(proxy);
+            URL root = (URL)loader.getClass().getMethod("findResource", String.class).invoke(loader, "/");
             Field field = root.getClass().getDeclaredField("handler");
             field.setAccessible(true);
             Object handler = field.get(root);
-            Field entryField = handler.getClass().getSuperclass().getDeclaredField(
-                    "bundleEntry");
+            Field entryField = handler.getClass().getSuperclass().getDeclaredField("bundleEntry");
             entryField.setAccessible(true);
             Object entry = entryField.get(handler);
             Field fileField = entry.getClass().getDeclaredField("file");
             fileField.setAccessible(true);
-            return (File) fileField.get(entry);
+            return (File)fileField.get(entry);
         } catch (Throwable e) {
-            log.error("Cannot access to eclipse bundle system files of "
-                    + bundle.getSymbolicName());
+            log.error("Cannot access to eclipse bundle system files of " + bundle.getSymbolicName());
             return null;
         }
     }

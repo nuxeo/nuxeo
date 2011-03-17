@@ -28,8 +28,8 @@ import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.Extension;
 
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ *
  */
 public class MyTestComponent implements Component {
 
@@ -54,13 +54,8 @@ public class MyTestComponent implements Component {
     public void unregisterExtension(Extension extension) {
         Object[] contribs = extension.getContributions();
         for (Object contrib : contribs) {
-            log.debug("Un-Registering: "
-                    + ((DummyContribution) contrib).message);
+            log.debug("Un-Registering: " + ((DummyContribution) contrib).message);
         }
     }
 
-    @Override
-    public void applicationStarted(ComponentContext context) throws Exception {
-
-    }
 }

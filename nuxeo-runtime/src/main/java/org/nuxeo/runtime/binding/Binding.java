@@ -13,19 +13,32 @@
  *
  * Contributors:
  *     bstefanescu
+ *
+ * $Id$
  */
-package org.nuxeo.osgi.application;
 
-import java.net.URL;
+package org.nuxeo.runtime.binding;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface MutableClassLoader {
+public interface Binding {
 
-    void addURL(URL url);
+    /**
+     * Gets the object instance. Returns null if the binding is no more valid.
+     *
+     * @return the object instance or null
+     */
+    Object get();
 
-    ClassLoader getClassLoader();
+    /**
+     * Gets the binding key.
+     * The key is used by the service manager to cache bindings and should uniquely
+     * identify the bound service.
+     *
+     * @return the binding key, never returns null
+     */
+    String getKey();
 
 }

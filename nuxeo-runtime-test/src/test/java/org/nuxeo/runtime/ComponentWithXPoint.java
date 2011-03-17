@@ -55,8 +55,7 @@ public class ComponentWithXPoint implements Component {
     public void unregisterExtension(Extension extension) {
         Object[] contribs = extension.getContributions();
         for (Object contrib : contribs) {
-            log.debug("Un-Registering: "
-                    + ((DummyContribution) contrib).message);
+            log.debug("Un-Registering: " + ((DummyContribution) contrib).message);
             this.contribs.add((DummyContribution) contrib);
         }
     }
@@ -65,8 +64,4 @@ public class ComponentWithXPoint implements Component {
         return contribs.toArray(new DummyContribution[contribs.size()]);
     }
 
-    @Override
-    public void applicationStarted(ComponentContext context) throws Exception {
-
-    }
 }

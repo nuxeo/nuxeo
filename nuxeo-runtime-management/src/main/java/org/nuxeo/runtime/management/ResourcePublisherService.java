@@ -20,9 +20,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.Map.Entry;
 
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
@@ -37,18 +37,20 @@ import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkEvent;
+import org.osgi.framework.FrameworkListener;
 
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
- * 
+ *
  */
 public class ResourcePublisherService extends DefaultComponent implements
         ResourcePublisher, ResourcePublisherMBean {
 
     public static final String SERVICES_EXT_KEY = "services";
-
     public static final String FACTORIES_EXT_KEY = "factories";
-
     public static final String SHORTCUTS_EXT_KEY = "shortcuts";
 
     public static final ComponentName NAME = new ComponentName(
@@ -96,7 +98,8 @@ public class ResourcePublisherService extends DefaultComponent implements
 
     protected class FactoriesRegistry {
 
-        protected final Map<Class<? extends ResourceFactory>, ResourceFactory> registry = new HashMap<Class<? extends ResourceFactory>, ResourceFactory>();
+        protected final Map<Class<? extends ResourceFactory>, ResourceFactory> registry
+                = new HashMap<Class<? extends ResourceFactory>, ResourceFactory>();
 
         protected void doRegisterFactory(ResourceFactoryDescriptor descriptor) {
             ResourceFactory factory;
@@ -177,9 +180,8 @@ public class ResourcePublisherService extends DefaultComponent implements
 
         protected final ModelMBeanInfoFactory mbeanInfoFactory = new ModelMBeanInfoFactory();
 
-        protected RequiredModelMBean doBind(MBeanServer server,
-                ObjectName name, Object instance, Class<?> clazz)
-                throws Exception {
+        protected RequiredModelMBean doBind(MBeanServer server, ObjectName name,
+                Object instance, Class<?> clazz) throws Exception {
             RequiredModelMBean mbean = new RequiredModelMBean();
             mbean.setManagedResource(instance, "ObjectReference");
             mbean.setModelMBeanInfo(mbeanInfoFactory.getModelMBeanInfo(clazz));
@@ -368,14 +370,23 @@ public class ResourcePublisherService extends DefaultComponent implements
     }
 
     @Override
-    public void applicationStarted(ComponentContext context) throws Exception {
-        factoriesRegistry.doRegisterResources();
-        doBindResources();
-    }
-
-    @Override
     public void activate(ComponentContext context) throws Exception {
+        final Bundle bundle = context.getRuntimeContext().getBundle();
+        final BundleContext bundleContext = bundle.getBundleContext();
+        if (bundleContext == null) {
+            log.warn("Cannot register framework listener, not correctly initialized");
+            return;
+        }
         serverLocatorService = (ServerLocatorService) Framework.getLocalService(ServerLocator.class);
+        bundleContext.addFrameworkListener(new FrameworkListener() {
+            public void frameworkEvent(FrameworkEvent event) {
+                if (event.getType() != FrameworkEvent.STARTED) {
+                    return;
+                }
+                factoriesRegistry.doRegisterResources();
+                doBindResources();
+            }
+        });
     }
 
     @Override
@@ -399,8 +410,7 @@ public class ResourcePublisherService extends DefaultComponent implements
         resourcesRegistry.doUnbind(resource);
     }
 
-    protected void bindForTest(MBeanServer server, ObjectName name,
-            Object instance, Class<?> clazz) throws Exception {
+    protected void bindForTest(MBeanServer server, ObjectName name, Object instance, Class<?> clazz) throws Exception {
         resourcesRegistry.doBind(server, name, instance, clazz);
     }
 

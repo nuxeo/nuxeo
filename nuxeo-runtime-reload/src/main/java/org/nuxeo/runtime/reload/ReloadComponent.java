@@ -79,28 +79,6 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
                 new Event(RELOAD_TOPIC, "reloadRepositories", this, null));
     }
 
-    /**
-     * Add a JAR to the application classloader - expermiental.
-     * 
-     * @param file
-     * @throws Exception
-     */
-    public void addJar(File file) throws Exception {
-        MutableClassLoaderDelegate mcl = new MutableClassLoaderDelegate(
-                ReloadComponent.class.getClassLoader());
-        mcl.addURL(file.toURI().toURL());
-    }
-
-    /**
-     * Remove a JAR from the application classloader - expermiental.
-     * 
-     * @param file
-     * @throws Exception
-     */
-    public void removeJar(File file) throws Exception {
-        // TODO
-    }
-
     public void deployBundle(File file, boolean reloadResourceClassPath)
             throws Exception {
         // TODO this will remove from classpath other bundles deployed at
@@ -108,11 +86,6 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
         String path = file.getAbsolutePath();
         if (reloadResourceClassPath) {
             reloadResourceClassPath(Collections.singletonList(path));
-        }
-        try {
-            addJar(file);
-        } catch (Throwable t) {
-            log.error("Failed to modify classloader. tried to add: " + file, t);
         }
         Bundle bundle = Framework.getRuntime().getContext().getBundle().getBundleContext().installBundle(
                 path);

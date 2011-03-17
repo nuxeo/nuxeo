@@ -13,19 +13,37 @@
  *
  * Contributors:
  *     bstefanescu
+ *
+ * $Id$
  */
-package org.nuxeo.osgi.application;
 
-import java.net.URL;
+package org.nuxeo.runtime.binding;
+
+import org.nuxeo.runtime.model.ComponentInstance;
+
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface MutableClassLoader {
+public class RuntimeServiceBinding implements Binding {
 
-    void addURL(URL url);
+    protected final ComponentInstance comp;
+    protected final Class<?> serviceClass;
+    protected final String bindingKey;
 
-    ClassLoader getClassLoader();
+    public RuntimeServiceBinding(String bindingKey, ComponentInstance comp, Class<?> serviceClass) {
+        this.comp = comp;
+        this.serviceClass = serviceClass;
+        this.bindingKey = bindingKey;
+    }
+
+    public Object get() {
+        return comp.getAdapter(serviceClass);
+    }
+
+    public String getKey() {
+        return bindingKey;
+    }
 
 }

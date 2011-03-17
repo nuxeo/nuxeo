@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,20 +12,26 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     bstefanescu
+ *     Julien Carsique
+ *
+ * $Id$
  */
-package org.nuxeo.osgi.application;
 
-import java.net.URL;
+package org.nuxeo.runtime.deployment.preprocessor;
 
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author jcarsique
  */
-public interface MutableClassLoader {
+public class ConfigurationException extends Exception {
 
-    void addURL(URL url);
+    private static final long serialVersionUID = 1L;
 
-    ClassLoader getClassLoader();
+    public ConfigurationException(String message, Throwable throwable) {
+        super(message, throwable);
+    }
+
+    public ConfigurationException(Throwable throwable) {
+        super(throwable);
+    }
 
 }

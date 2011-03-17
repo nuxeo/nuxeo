@@ -26,13 +26,15 @@ import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.RegistrationInfo;
 import org.nuxeo.runtime.model.RuntimeContext;
 import org.nuxeo.runtime.model.persistence.fs.FileSystemStorage;
+import org.osgi.framework.FrameworkEvent;
+import org.osgi.framework.FrameworkListener;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public class ContributionPersistenceComponent extends DefaultComponent
-        implements ContributionPersistenceManager {
+        implements ContributionPersistenceManager, FrameworkListener {
 
     private static final Log log = LogFactory.getLog(ContributionPersistenceComponent.class);
 
@@ -51,6 +53,7 @@ public class ContributionPersistenceComponent extends DefaultComponent
         super.activate(context);
         this.ctx = context.getRuntimeContext();
         storage = new FileSystemStorage();
+        ctx.getBundle().getBundleContext().addFrameworkListener(this);
     }
 
     @Override
@@ -141,14 +144,17 @@ public class ContributionPersistenceComponent extends DefaultComponent
         }
     }
 
-    @Override
-    public void applicationStarted(ComponentContext context) throws Exception {
-        if (storage == null) {
-            storage = new FileSystemStorage();
-            try {
-                start();
-            } catch (Exception e) {
-                log.error("Failed to start contribution persistence service", e);
+    public void frameworkEvent(FrameworkEvent event) {
+        if (event.getType() == FrameworkEvent.STARTED) {
+            if (storage == null) {
+                storage = new FileSystemStorage();
+                try {
+                    start();
+                } catch (Exception e) {
+                    log.error(
+                            "Failed to start contribution persistence service",
+                            e);
+                }
             }
         }
     }

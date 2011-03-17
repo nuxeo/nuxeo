@@ -1,8 +1,0 @@
-<?xml version="1.0"?>
-<component name="my.resource">
-
-  <extension target="org.nuxeo.runtime.services.resource.ResourceService" point="resources">
-    <resource name="myres">myres.txt</resource>
-  </extension>
-
-</component>

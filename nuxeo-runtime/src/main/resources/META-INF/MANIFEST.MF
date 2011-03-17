@@ -35,7 +35,6 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Version: 0.0.0.SNAPSHOT
 Eclipse-BuddyPolicy: registered
 Nuxeo-Component: OSGI-INF/EventService.xml,
- OSGI-INF/ResourceService.xml,
  OSGI-INF/RemotingService.xml,
  OSGI-INF/DeploymentService.xml,
  OSGI-INF/StreamingService.xml,

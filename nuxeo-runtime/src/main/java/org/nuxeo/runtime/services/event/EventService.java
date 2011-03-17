@@ -33,8 +33,8 @@ import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.Extension;
 
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ *
  */
 public class EventService implements Component, Adaptable {
 
@@ -45,15 +45,16 @@ public class EventService implements Component, Adaptable {
 
     private final Map<String, ListenerList> topics;
 
-    // private final Map<String, Collection<Event>> pendingEvents;
+//    private final Map<String, Collection<Event>> pendingEvents;
 
     private final Map<String, Object[]> contributions;
 
-    // private Executor threadPool = Executors.newCachedThreadPool();
+    //private Executor threadPool = Executors.newCachedThreadPool();
+
 
     public EventService() {
         topics = new HashMap<String, ListenerList>();
-        // pendingEvents = new HashMap<String, Collection<Event>>();
+ //       pendingEvents = new HashMap<String, Collection<Event>>();
         contributions = new Hashtable<String, Object[]>();
     }
 
@@ -109,7 +110,7 @@ public class EventService implements Component, Adaptable {
     public void sendEvent(Event event) {
         ListenerList list = topics.get(event.getTopic());
         if (list == null) {
-            // enqeueEvent(event);
+            //enqeueEvent(event);
             if (log.isTraceEnabled()) {
                 log.trace("Event sent to topic " + event.getTopic()
                         + ". Ingnoring");
@@ -122,7 +123,7 @@ public class EventService implements Component, Adaptable {
     public void sendCancelableEvent(Event event) {
         ListenerList list = topics.get(event.getTopic());
         if (list == null) {
-            // enqeueEvent(event);
+            //enqeueEvent(event);
             if (log.isTraceEnabled()) {
                 log.trace("Event sent to topic " + event.getTopic()
                         + ". Ingnoring");
@@ -138,12 +139,12 @@ public class EventService implements Component, Adaptable {
             list = new ListenerList();
             topics.put(topic, list);
             // check if any event is pending
-            // Collection<Event> events = pendingEvents.remove(topic);
-            // if (events != null) {
-            // for (Event event : events) {
-            // sendEvent(list, event);
-            // }
-            // }
+//            Collection<Event> events = pendingEvents.remove(topic);
+//            if (events != null) {
+//                for (Event event : events) {
+//                    sendEvent(list, event);
+//                }
+//            }
         }
         list.add(listener);
     }
@@ -178,31 +179,28 @@ public class EventService implements Component, Adaptable {
         }
     }
 
-    // private void enqeueEvent(Event event) {
-    // Collection<Event> events = pendingEvents.get(event.getTopic());
-    // if (events != null) {
-    // events.add(event);
-    // } else {
-    // events = new ArrayList<Event>();
-    // events.add(event);
-    // pendingEvents.put(event.getTopic(), events);
-    // }
-    // }
+//    private void enqeueEvent(Event event) {
+//        Collection<Event> events = pendingEvents.get(event.getTopic());
+//        if (events != null) {
+//            events.add(event);
+//        } else {
+//            events = new ArrayList<Event>();
+//            events.add(event);
+//            pendingEvents.put(event.getTopic(), events);
+//        }
+//    }
 
-    // public void sendAsync(final Event event) {
-    // threadPool.execute(new Runnable() {
-    // public void run() {
-    // sendEvent(event);
-    // }
-    // });
-    // }
+    //    public void sendAsync(final Event event) {
+    //        threadPool.execute(new Runnable() {
+    //            public void run() {
+    //                sendEvent(event);
+    //            }
+    //        });
+    //    }
 
     @SuppressWarnings("unchecked")
     public <T> T getAdapter(Class<T> adapter) {
         return adapter == getClass() ? (T) this : null;
     }
 
-    @Override
-    public void applicationStarted(ComponentContext context) throws Exception {
-    }
 }

@@ -34,7 +34,6 @@ import org.nuxeo.runtime.model.Extension;
 import org.nuxeo.runtime.model.ExtensionPoint;
 import org.nuxeo.runtime.model.Property;
 import org.nuxeo.runtime.model.RegistrationInfo;
-import org.nuxeo.runtime.model.ReloadableComponent;
 import org.nuxeo.runtime.model.RuntimeContext;
 
 /**
@@ -141,26 +140,6 @@ public class ComponentInstanceImpl implements ComponentInstance {
             // ignore this exception since the activate method is not mandatory
         } catch (Exception e) {
             log.error("Failed to deactivate component: "+getName(), e);
-            Framework.handleDevError(e);
-        }
-    }
-
-    @Override
-    public void reload() throws Exception {
-        // activate the implementation instance
-        try {
-            if (instance instanceof ReloadableComponent) {
-                ((ReloadableComponent) instance).reload(this);
-            } else {
-                Method meth = instance.getClass().getDeclaredMethod("reload",
-                        ComponentContext.class);
-                meth.setAccessible(true);
-                meth.invoke(instance, this);
-            }
-        } catch (NoSuchMethodException e) {
-            // ignore this exception since the reload method is not mandatory
-        } catch (Exception e) {
-            log.error("Failed to reload component: "+getName(), e);
             Framework.handleDevError(e);
         }
     }

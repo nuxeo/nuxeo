@@ -35,8 +35,4 @@ public interface ReloadService {
 
     void reloadProperties() throws Exception;
 
-    void addJar(File file) throws Exception;
-
-    void removeJar(File file) throws Exception;
-
 }

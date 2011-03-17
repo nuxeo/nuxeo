@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -48,7 +48,7 @@ public class NuxeoDeployer implements LifecycleListener {
     public void lifecycleEvent(LifecycleEvent event) {
         Lifecycle lf = event.getLifecycle();
         if (lf instanceof ContainerBase) {
-            ContainerBase container = (ContainerBase) lf;
+            ContainerBase container = (ContainerBase)lf;
             handleEvent(container, event);
         }
     }
@@ -61,15 +61,11 @@ public class NuxeoDeployer implements LifecycleListener {
                 File homeDir = resolveHomeDirectory();
                 File bundles = new File(homeDir, "bundles");
                 File lib = new File(homeDir, "lib");
-                File deployerJar = FrameworkBootstrap.findFileStartingWidth(
-                        bundles, "nuxeo-runtime-deploy");
-                File commonJar = FrameworkBootstrap.findFileStartingWidth(
-                        bundles, "nuxeo-common");
-                // File xercesJar =
-                // FrameworkBootstrap.findFileStartingWidth(lib, "xerces");
+                File deployerJar = FrameworkBootstrap.findFileStartingWidth(bundles, "nuxeo-runtime-deploy");
+                File commonJar = FrameworkBootstrap.findFileStartingWidth(bundles, "nuxeo-common");
+                File xercesJar = FrameworkBootstrap.findFileStartingWidth(lib, "xerces");
                 if (deployerJar == null || commonJar == null) {
-                    System.out.println("Deployer and/or common JAR (nuxeo-runtime-deploy* | nuxeo-common*) not found in "
-                            + bundles);
+                    System.out.println("Deployer and/or common JAR (nuxeo-runtime-deploy* | nuxeo-common*) not found in "+bundles);
                     return;
                 }
                 ArrayList<URL> urls = new ArrayList<URL>();
@@ -91,21 +87,16 @@ public class NuxeoDeployer implements LifecycleListener {
                 }
                 urls.add(homeDir.toURI().toURL());
                 urls.add(new File(homeDir, "config").toURI().toURL());
-                URLClassLoader cl = new URLClassLoader(
-                        urls.toArray(new URL[urls.size()]), parentCl);
-                // URLClassLoader cl = new URLClassLoader(new URL[]
-                // {deployerJar.toURI().toURL(),
-                // commonJar.toURI().toURL(),
-                // xercesJar.toURI().toURL(),
-                // new File(homeDir, "config").toURI().toURL() // for log4j
-                // config
-                // }, parentCl);
+                URLClassLoader cl = new URLClassLoader(urls.toArray(new URL[urls.size()]), parentCl);
+//                URLClassLoader cl = new URLClassLoader(new URL[] {deployerJar.toURI().toURL(),
+//                        commonJar.toURI().toURL(),
+//                        xercesJar.toURI().toURL(),
+//                        new File(homeDir, "config").toURI().toURL() // for log4j config
+//                        }, parentCl);
                 System.out.println("# Running Nuxeo Preprocessor ...");
                 Class<?> klass = cl.loadClass("org.nuxeo.runtime.deployment.preprocessor.DeploymentPreprocessor");
                 Method main = klass.getMethod("main", String[].class);
-                main.invoke(
-                        null,
-                        new Object[] { new String[] { homeDir.getAbsolutePath() } });
+                main.invoke(null, new Object[] {new String[] {homeDir.getAbsolutePath()}});
                 System.out.println("# Preprocessing done.");
             }
         } catch (Exception e) {
@@ -118,7 +109,7 @@ public class NuxeoDeployer implements LifecycleListener {
         if (home.startsWith("/")) {
             path = home;
         } else {
-            path = getTomcatHome() + "/" + home;
+            path = getTomcatHome()+"/"+home;
         }
         return new File(path);
     }

@@ -72,12 +72,6 @@ public interface ComponentInstance extends ComponentContext, Extensible, Adaptab
     void destroy() throws Exception;
 
     /**
-     * Reload the component. All the extensions and registries are reloaded.
-     * @throws Exception
-     */
-    void reload() throws Exception;
-
-    /**
      * Gets the list of provided services, or null if no service is provided.
      *
      * @return an array containing the service class names or null if no service is provided

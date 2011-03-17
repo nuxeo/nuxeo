@@ -35,7 +35,6 @@ import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.runtime.ComponentEvent;
 import org.nuxeo.runtime.Version;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.model.Component;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentManager;
 import org.nuxeo.runtime.model.ComponentName;
@@ -244,16 +243,6 @@ public class RegistrationInfoImpl implements RegistrationInfo {
         return documentation;
     }
 
-    /**
-     * Reload the underlying component if reload is supported
-     * @throws Exception
-     */
-    public synchronized void reload() throws Exception {
-        if (component != null) {
-            component.reload();
-        }
-    }
-
     @Override
     public String toString() {
         return "RegistrationInfo: " + name;
@@ -301,15 +290,6 @@ public class RegistrationInfoImpl implements RegistrationInfo {
     public synchronized void restart() throws Exception {
         deactivate();
         activate();
-    }
-
-    public void notifyApplicationStarted() throws Exception {
-        if (component != null) {
-            Object ci = component.getInstance();
-            if (ci instanceof Component) {
-                ((Component) ci).applicationStarted(component);
-            }
-        }
     }
 
     public synchronized void activate() throws Exception {
@@ -406,7 +386,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
                 ComponentEvent.COMPONENT_DEACTIVATED, this));
     }
 
-    public synchronized void resolve() throws Exception {
+    synchronized void resolve() throws Exception {
         if (state != REGISTERED) {
             return;
         }
@@ -421,7 +401,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
         activate();
     }
 
-    public synchronized void unresolve() throws Exception {
+    synchronized void unresolve() throws Exception {
         if (state == REGISTERED || state == UNREGISTERED) {
             return;
         }

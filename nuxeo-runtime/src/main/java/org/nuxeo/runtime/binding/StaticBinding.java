@@ -13,19 +13,40 @@
  *
  * Contributors:
  *     bstefanescu
+ *
+ * $Id$
  */
-package org.nuxeo.osgi.application;
 
-import java.net.URL;
+package org.nuxeo.runtime.binding;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface MutableClassLoader {
+public class StaticBinding implements Binding {
 
-    void addURL(URL url);
+    protected Object obj;
+    protected final String bindingKey;
 
-    ClassLoader getClassLoader();
+    public StaticBinding(String bindingKey) {
+        this(bindingKey, null);
+    }
+
+    public StaticBinding(String bindingKey, Object obj) {
+        this.obj = obj;
+        this.bindingKey = bindingKey;
+    }
+
+    public Object get() {
+        return this.obj;
+    }
+
+    public void set(Object obj) {
+        this.obj = obj;
+    }
+
+    public String getKey() {
+        return bindingKey;
+    }
 
 }

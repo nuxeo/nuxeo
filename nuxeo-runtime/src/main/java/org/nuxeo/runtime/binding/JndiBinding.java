@@ -13,19 +13,40 @@
  *
  * Contributors:
  *     bstefanescu
+ *
+ * $Id$
  */
-package org.nuxeo.osgi.application;
 
-import java.net.URL;
+package org.nuxeo.runtime.binding;
+
+import javax.naming.Context;
+import javax.naming.Name;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-public interface MutableClassLoader {
+public class JndiBinding implements Binding {
 
-    void addURL(URL url);
+    protected final Context ctx;
+    protected final Name name;
+    protected final String bindingKey;
 
-    ClassLoader getClassLoader();
+    public JndiBinding(String bindingKey, Context ctx, Name name) {
+        this.ctx = ctx;
+        this.name = name;
+        this.bindingKey = bindingKey;
+    }
+
+    public Object get() {
+        try {
+            return ctx.lookup(name);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public String getKey() {
+        return bindingKey;
+    }
 
 }

@@ -13,19 +13,29 @@
  *
  * Contributors:
  *     bstefanescu
+ *
+ * $Id$
  */
-package org.nuxeo.osgi.application;
 
-import java.net.URL;
+package org.nuxeo.runtime.binding;
+
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-public interface MutableClassLoader {
+public abstract class AbstractServiceProvider implements ServiceProvider {
 
-    void addURL(URL url);
+    ServiceManager manager;
 
-    ClassLoader getClassLoader();
+    public void setManager(ServiceManager manager) {
+        if (manager != null) {
+            throw new IllegalStateException("The service provider is already bound to a service manager");
+        }
+        this.manager = manager;
+    }
+
+    public ServiceManager getManager() {
+        return manager;
+    }
 
 }
