@@ -2,22 +2,23 @@
 <component name="org.nuxeo.ecm.platform.routing.service">
 
   <documentation>
-    The Document Routing Service allows to create and sart
-    new DocumentRoute instance.
+    The Document Routing Service allows to create and sart new DocumentRoute
+    instance.
   </documentation>
 
   <implementation
     class="org.nuxeo.ecm.platform.routing.core.impl.DocumentRoutingServiceImpl" />
 
   <service>
-    <provide interface="org.nuxeo.ecm.platform.routing.api.DocumentRoutingService" />
+    <provide
+      interface="org.nuxeo.ecm.platform.routing.api.DocumentRoutingService" />
   </service>
 
   <extension-point name="chainsToType">
     <documentation>
-      Use to map an operation chains to a Step document type. If the
-      chains are declared for the same type, only the last one is use.
-      The same chain can be used for different type.
+      Use to map an operation chains to a Step document type. If the chains are
+      declared for the same type, only the last one is use. The same chain can
+      be used for different type.
       <code>
         <mapping
           documentType="The type of the document that extends DocumentRouteStep"
@@ -31,9 +32,8 @@
 
   <extension-point name="persister">
     <documentation>
-      Use to provide a persister. A persister should
-      implement DocumentRoutingPersister. It is responsible to persist
-      instances of route.
+      Use to provide a persister. A persister should implement
+      DocumentRoutingPersister. It is responsible to persist instances of route.
       <code>
         <persister class="org.my.implementation.of.Persister" />
       </code>

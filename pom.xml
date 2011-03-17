@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
@@ -15,7 +16,9 @@
   <artifactId>nuxeo-platform-document-routing</artifactId>
   <name>Nuxeo Platform Document Routing Addon</name>
   <packaging>pom</packaging>
-  <description>The parent module for Nuxeo Platform Document Routing Addon</description>
+  <description>
+    The parent module for Nuxeo Platform Document Routing Addon
+  </description>
 
   <properties>
     <routing.version>5.4.2-SNAPSHOT</routing.version>

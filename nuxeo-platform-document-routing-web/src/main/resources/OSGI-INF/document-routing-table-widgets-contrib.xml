@@ -3,7 +3,7 @@
 <component name="com.nuxeo.document.routing.table.widget">
 
   <require>org.nuxeo.ecm.platform.forms.layouts.webapp.listing</require>
-  
+
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="widgettypes">
 
@@ -13,9 +13,7 @@
         <br />
         It requires the following fields configuration:
         <ul>
-          <li>
-           The step document Id.
-          </li>
+          <li>The step document Id.</li>
         </ul>
       </documentation>
 
@@ -31,21 +29,15 @@
       <documentation>
         This add_step widget displays three different links.
         <br />
-        Add before will add a new step before the selected step.
-        Add in will add a new step at the end of the container.
-        Add after will add a new step after the selected step.
+        Add before will add a new step before the selected step. Add in will add
+        a new step at the end of the container. Add after will add a new step
+        after the selected step.
         <br />
         It requires the following fields configuration:
         <ul>
-          <li>
-           The step document.
-          </li>
-          <li>
-           The step document Id.
-          </li>
-          <li>
-           A Boolean used to render the Add In Button if true.
-          </li>
+          <li>The step document.</li>
+          <li>The step document Id.</li>
+          <li>A Boolean used to render the Add In Button if true.</li>
         </ul>
       </documentation>
 
@@ -64,9 +56,7 @@
         <br />
         It requires the following fields configuration:
         <ul>
-          <li>
-           the documentRouteElement
-          </li>
+          <li>the documentRouteElement</li>
         </ul>
       </documentation>
 
@@ -80,17 +70,12 @@
 
     <widgetType name="listing_document_route_element_type">
       <documentation>
-        This widget type displays the type and the type icon of the
-        document.
+        This widget type displays the type and the type icon of the document.
         <br />
         It requires the following fields configuration:
         <ul>
-          <li>
-           the document type icon
-          </li>
-          <li>
-           the document type
-          </li>
+          <li>the document type icon</li>
+          <li>the document type</li>
         </ul>
       </documentation>
 
@@ -108,12 +93,8 @@
         <br />
         It requires the following fields configuration:
         <ul>
-          <li>
-            the route documuent model
-          </li>
-          <li>
-            the route documuent model id
-          </li>
+          <li>the route documuent model</li>
+          <li>the route documuent model id</li>
         </ul>
       </documentation>
 
@@ -124,18 +105,15 @@
         /widgets/listing/listing_edit_document_route_element_widget_template.xhtml
       </property>
     </widgetType>
-    
-     <widgetType name="listing_no_comments">
+
+    <widgetType name="listing_no_comments">
       <documentation>
         This widget type displays the number of comments
         <br />
         It requires the following fields configuration:
         <ul>
-          <li>
-            the step documuent model
-          </li>
-          <li>
-          </li>
+          <li>the step documuent model</li>
+          <li></li>
         </ul>
       </documentation>
 
@@ -149,19 +127,13 @@
 
     <widgetType name="step_actions">
       <documentation>
-        This widget type displays available step actions for the given doc. 
+        This widget type displays available step actions for the given doc.
         <br />
         It requires the following fields configuration:
         <ul>
-          <li>
-           The step document.
-          </li>
-          <li>
-           The step document Id.
-          </li>
-          <li>
-           A Boolean used to render the Add In Button if true.
-          </li>
+          <li>The step document.</li>
+          <li>The step document Id.</li>
+          <li>A Boolean used to render the Add In Button if true.</li>
         </ul>
       </documentation>
 
@@ -176,8 +148,8 @@
     <widgetType name="listing_route_title_link">
 
       <documentation>
-        Override the default widget to add useful information for selenium.
-        This widget type displays a link to navigate to a document, as well as a
+        Override the default widget to add useful information for selenium. This
+        widget type displays a link to navigate to a document, as well as a
         download link for the document binary content.
         <br />
         It requires the following fields configuration:
@@ -228,9 +200,7 @@
         <br />
         It requires the following fields configuration:
         <ul>
-          <li>
-           The document current lifeCycleState.
-          </li>
+          <li>The document current lifeCycleState.</li>
         </ul>
       </documentation>
 
@@ -242,12 +212,13 @@
       </property>
     </widgetType>
 
-  </extension> 
-  
-   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="widgets">
-    
-     <widget name="dr_listing_document_route_folder_element_type" type="listing_document_route_folder_element_type">
+
+    <widget name="dr_listing_document_route_folder_element_type"
+      type="listing_document_route_folder_element_type">
       <labels>
         <label mode="any">label.document.route.content.header.type</label>
       </labels>
@@ -259,7 +230,8 @@
       </fields>
     </widget>
 
-     <widget name="dr_listing_document_route_element_type" type="listing_document_route_element_type">
+    <widget name="dr_listing_document_route_element_type"
+      type="listing_document_route_element_type">
       <labels>
         <label mode="any">label.document.route.content.header.type</label>
       </labels>
@@ -282,13 +254,14 @@
       </fields>
     </widget>
 
-    <widget name="dr_listing_route_element_state" type="listing_document_route_element_state">
+    <widget name="dr_listing_route_element_state"
+      type="listing_document_route_element_state">
       <translated>true</translated>
       <fields>
         <field>data.document.currentLifeCycleState</field>
       </fields>
     </widget>
-    
+
     <widget name="dr_listing_title_description" type="text">
       <labels>
         <label mode="any">label.content.header.description</label>
@@ -298,17 +271,18 @@
         <field>data.document.dc.description</field>
       </fields>
     </widget>
-    
-     <widget name="dr_listing__edit_document_route_element" type="listing_edit_document_route_element">
-       <labels>
-         <label mode="any">label.document.route.content.header.update</label>
-       </labels>
-       <translated>true</translated>
-       <fields>
-         <field>data.document</field>
-         <field>data.document.id</field>
-       </fields>
-     </widget>
+
+    <widget name="dr_listing__edit_document_route_element"
+      type="listing_edit_document_route_element">
+      <labels>
+        <label mode="any">label.document.route.content.header.update</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.document</field>
+        <field>data.document.id</field>
+      </fields>
+    </widget>
 
     <widget name="dr_listing_add_step" type="add_step">
       <translated>true</translated>
@@ -326,7 +300,7 @@
         <field>data.document.id</field>
       </fields>
     </widget>
-    
+
     <widget name="dr_listing_title" type="text">
       <labels>
         <label mode="any">label.content.header.title</label>
@@ -336,7 +310,7 @@
         <field>data.document.dc.title</field>
       </fields>
     </widget>
-   
+
     <widget name="dr_listing_current_lifecycle" type="text">
       <labels>
         <label mode="any">label.content.header.currentLifecycleState</label>
@@ -346,7 +320,7 @@
         <field>data.document.currentLifeCycleState</field>
       </fields>
     </widget>
-    
+
     <widget name="dr_listing_no_comments" type="listing_no_comments">
       <labels>
         <label mode="any">label.content.header.comments</label>
@@ -365,7 +339,7 @@
         <field>data.document.hasFacet('Folderish')</field>
       </fields>
     </widget>
-    
+
   </extension>
 
-</component>    
+</component>

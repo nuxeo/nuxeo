@@ -3,7 +3,7 @@
   <require>org.nuxeo.ecm.platform.forms.layouts.webapp.summary</require>
   <require>org.nuxeo.ecm.core.CoreExtensions</require>
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
-	     point="layouts">
+    point="layouts">
 
     <!-- a test contribution to check the summary layout of routing -->
     <layout name="note_summary_layout">
@@ -46,19 +46,18 @@
       </widget>
     </layout>
   </extension>
-  
-  <extension target="org.nuxeo.ecm.core.schema.TypeService"
-	     point="doctype">
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
     <doctype name="Note" extends="Document">
-      <schema name="common"/>
-      <schema name="note"/>
-      <schema name="uid"/>
-      <schema name="files"/>
-      <schema name="dublincore"/>
-      <facet name="Routable"/>
-      <facet name="Versionable"/>
-      <facet name="Publishable"/>
-      <facet name="Commentable"/>
+      <schema name="common" />
+      <schema name="note" />
+      <schema name="uid" />
+      <schema name="files" />
+      <schema name="dublincore" />
+      <facet name="Routable" />
+      <facet name="Versionable" />
+      <facet name="Publishable" />
+      <facet name="Commentable" />
     </doctype>
   </extension>
 </component>

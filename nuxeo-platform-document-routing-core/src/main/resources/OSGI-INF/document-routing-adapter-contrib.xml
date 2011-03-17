@@ -1,5 +1,4 @@
-<component name="org.nuxeo.ecm.platform.routing.adapter"
-  version="1.0">
+<component name="org.nuxeo.ecm.platform.routing.adapter" version="1.0">
 
   <extension target="org.nuxeo.ecm.core.api.DocumentAdapterService"
     point="adapters">
@@ -13,4 +12,4 @@
       factory="org.nuxeo.ecm.platform.routing.core.adapter.LockableDocumentAdapterFactory" />
   </extension>
 
-</component>  
+</component>

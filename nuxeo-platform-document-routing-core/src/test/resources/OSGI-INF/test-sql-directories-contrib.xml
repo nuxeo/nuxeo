@@ -61,7 +61,7 @@
           dualReferenceField="groups" />
         <tableReference field="subGroups" directory="groupDirectory"
           table="group2group" targetColumn="childGroupId"
-          sourceColumn="parentGroupId" dataFile="userdata/test-group2group.csv"/>
+          sourceColumn="parentGroupId" dataFile="userdata/test-group2group.csv" />
         <inverseReference field="parentGroups" directory="groupDirectory"
           dualReferenceField="subGroups" />
       </references>

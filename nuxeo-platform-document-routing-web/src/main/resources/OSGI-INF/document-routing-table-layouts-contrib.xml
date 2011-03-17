@@ -4,9 +4,12 @@
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="layouts">
+
     <layout name="document_routing_route_content">
       <templates>
-        <template mode="any">/layouts/layout_route_listing_template.xhtml</template>
+        <template mode="any">
+          /layouts/layout_route_listing_template.xhtml
+        </template>
       </templates>
       <properties mode="any">
         <property name="showListingHeader">true</property>
@@ -48,13 +51,15 @@
             <property name="useFirstWidgetLabelAsColumnHeader">true</property>
           </properties>
           <widget>dr_listing_no_comments</widget>
-        </column>   
+        </column>
       </columns>
     </layout>
-    
+
     <layout name="pdf_document_routing_route_content">
       <templates>
-        <template mode="any">/layouts/pdf_layout_listing_template.xhtml</template>
+        <template mode="any">
+          /layouts/pdf_layout_listing_template.xhtml
+        </template>
       </templates>
       <properties mode="any">
         <property name="showListingHeader">true</property>
@@ -90,9 +95,9 @@
             <property name="useFirstWidgetLabelAsColumnHeader">true</property>
           </properties>
           <widget>dr_listing_no_comments</widget>
-        </column>  
+        </column>
       </columns>
     </layout>
-    
-    </extension>
-</component> 
+
+  </extension>
+</component>
