@@ -215,7 +215,7 @@ public final class Framework {
      * @return the login context
      * @throws LoginException if any error occurs
      *
-     * @since 5.4.1
+     * @since 5.4.2
      */
     public static LoginContext loginAsUser(String username) throws LoginException {
         return getLocalService(LoginAs.class).loginAs(username);

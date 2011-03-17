@@ -55,7 +55,7 @@ public abstract class ServerConfigurator {
     private File tmpDir = null;
 
     /**
-     * @since 5.4.1
+     * @since 5.4.2
      */
     public static final String[] NUXEO_SYSTEM_PROPERTIES = new String[] {
             "nuxeo.conf", "nuxeo.home" };
@@ -115,7 +115,7 @@ public abstract class ServerConfigurator {
 
     /**
      * @return Default data directory path relative to Nuxeo Home
-     * @since 5.4.1
+     * @since 5.4.2
      */
     protected abstract String getDefaultDataDir();
 
@@ -129,7 +129,7 @@ public abstract class ServerConfigurator {
 
     /**
      * @return Data directory
-     * @since 5.4.1
+     * @since 5.4.2
      */
     public File getDataDir() {
         if (dataDir == null) {
@@ -140,7 +140,7 @@ public abstract class ServerConfigurator {
 
     /**
      * @return Log directory
-     * @since 5.4.1
+     * @since 5.4.2
      */
     public File getLogDir() {
         if (logDir == null) {
@@ -151,7 +151,7 @@ public abstract class ServerConfigurator {
 
     /**
      * @param dataDirStr Data directory path to set
-     * @since 5.4.1
+     * @since 5.4.2
      */
     public void setDataDir(String dataDirStr) {
         dataDir = new File(dataDirStr);
@@ -160,7 +160,7 @@ public abstract class ServerConfigurator {
 
     /**
      * @param logDirStr Log directory path to set
-     * @since 5.4.1
+     * @since 5.4.2
      */
     public void setLogDir(String logDirStr) {
         logDir = new File(logDirStr);
@@ -170,7 +170,7 @@ public abstract class ServerConfigurator {
     /**
      * Initialize logs
      *
-     * @since 5.4.1
+     * @since 5.4.2
      */
     public void initLogs() {
         File logFile = getLogConfFile();
@@ -187,7 +187,7 @@ public abstract class ServerConfigurator {
     /**
      * @return Pid directory (usually known as "run directory"); Returns log
      *         directory if not set by configuration.
-     * @since 5.4.1
+     * @since 5.4.2
      */
     public File getPidDir() {
         if (pidDir == null) {
@@ -198,7 +198,7 @@ public abstract class ServerConfigurator {
 
     /**
      * @param pidDirStr Pid directory path to set
-     * @since 5.4.1
+     * @since 5.4.2
      */
     public void setPidDir(String pidDirStr) {
         pidDir = new File(pidDirStr);
@@ -211,7 +211,7 @@ public abstract class ServerConfigurator {
      *
      * @throws ConfigurationException If deprecated paths have been detected
      *
-     * @since 5.4.1
+     * @since 5.4.2
      */
     public void checkPaths() throws ConfigurationException {
         // Check common paths
@@ -219,7 +219,7 @@ public abstract class ServerConfigurator {
 
     /**
      * @return Temporary directory
-     * @since 5.4.1
+     * @since 5.4.2
      */
     public File getTmpDir() {
         if (tmpDir == null) {
@@ -230,13 +230,13 @@ public abstract class ServerConfigurator {
 
     /**
      * @return Default temporary directory path relative to Nuxeo Home
-     * @since 5.4.1
+     * @since 5.4.2
      */
     public abstract String getDefaultTmpDir();
 
     /**
      * @param tmpDirStr Temporary directory path to set
-     * @since 5.4.1
+     * @since 5.4.2
      */
     public void setTmpDir(String tmpDirStr) {
         tmpDir = new File(tmpDirStr);
@@ -247,7 +247,7 @@ public abstract class ServerConfigurator {
      * @see Environment
      * @param key directory system key
      * @param directory absolute or relative directory path
-     * @since 5.4.1
+     * @since 5.4.2
      */
     public void setDirectory(String key, String directory) {
         String absoluteDirectory = setAbsolutePath(key, directory);
@@ -271,7 +271,7 @@ public abstract class ServerConfigurator {
      * @param key Directory system key
      * @param directory absolute or relative directory path
      * @return absolute directory path
-     * @since 5.4.1
+     * @since 5.4.2
      */
     private String setAbsolutePath(String key, String directory) {
         if (!new File(directory).isAbsolute()) {
@@ -285,7 +285,7 @@ public abstract class ServerConfigurator {
      * @see Environment
      * @param key directory system key
      * @return Directory denoted by key
-     * @since 5.4.1
+     * @since 5.4.2
      */
     public File getDirectory(String key) {
         if (Environment.NUXEO_DATA_DIR.equals(key)) {
@@ -320,14 +320,14 @@ public abstract class ServerConfigurator {
 
     /**
      * @return Log4J configuration file
-     * @since 5.4.1
+     * @since 5.4.2
      */
     public abstract File getLogConfFile();
 
     /**
      * Remove locks on file system (dedicated to Lucene locks)
      *
-     * @since 5.4.1
+     * @since 5.4.2
      */
     public void removeExistingLocks() {
         File lockFile = new File(getDataDir(), "h2" + File.separator
@@ -340,30 +340,30 @@ public abstract class ServerConfigurator {
 
     /**
      * @return Nuxeo config directory
-     * @since 5.4.1
+     * @since 5.4.2
      */
     public abstract File getConfigDir();
 
     /**
-     * @since 5.4.1
+     * @since 5.4.2
      */
     public abstract void prepareWizardStart();
 
     /**
-     * @since 5.4.1
+     * @since 5.4.2
      */
 
     public abstract void cleanupPostWizard();
 
     /**
      * @return true if configuration wizard is required before starting Nuxeo
-     * @since 5.4.1
+     * @since 5.4.2
      */
     public abstract boolean isWizardAvailable();
 
     /**
      * @param userConfig Properties to dump into config directory
-     * @since 5.4.1
+     * @since 5.4.2
      */
     public void dumpProperties(Properties userConfig) {
         Properties dumpedProperties = filterSystemProperties(userConfig);
@@ -385,7 +385,7 @@ public abstract class ServerConfigurator {
      *
      * @param properties Properties to be filtered
      * @return copy of given properties filtered out of System properties
-     * @since 5.4.1
+     * @since 5.4.2
      */
     public Properties filterSystemProperties(Properties properties) {
         Properties dumpedProperties = new Properties();

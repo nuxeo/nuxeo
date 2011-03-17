@@ -40,12 +40,12 @@ public class TomcatConfigurator extends ServerConfigurator {
             + "data";
 
     /**
-     * @since 5.4.1
+     * @since 5.4.2
      */
     public static final String DEFAULT_TMP_DIR = "tmp";
 
     /**
-     * @since 5.4.1
+     * @since 5.4.2
      */
     public static final String STARTUP_CLASS = "org.apache.catalina.startup.Bootstrap";
 
@@ -121,7 +121,7 @@ public class TomcatConfigurator extends ServerConfigurator {
     }
 
     /**
-     * @since 5.4.1
+     * @since 5.4.2
      * @return Path to Tomcat configuration of Nuxeo context
      */
     public String getTomcatConfig() {
@@ -131,7 +131,7 @@ public class TomcatConfigurator extends ServerConfigurator {
 
     /**
      * @return Configured context name
-     * @since 5.4.1
+     * @since 5.4.2
      */
     private String getContextName() {
         if (contextName == null) {

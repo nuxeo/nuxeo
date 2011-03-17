@@ -31,17 +31,17 @@ public class JettyConfigurator extends ServerConfigurator {
     public static final String DEFAULT_DATA_DIR = "data";
 
     /**
-     * @since 5.4.1
+     * @since 5.4.2
      */
     public static final String DEFAULT_TMP_DIR = "tmp";
 
     /**
-     * @since 5.4.1
+     * @since 5.4.2
      */
     public static final String LAUNCHER_CLASS = "org.nuxeo.runtime.launcher.Main";
 
     /**
-     * @since 5.4.1
+     * @since 5.4.2
      */
     public static final String STARTUP_CLASS = "org.nuxeo.osgi.application.Main";
 

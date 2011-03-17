@@ -82,7 +82,7 @@ public class NuxeoContainer {
      * @param txconfig the transaction manager configuration
      * @param cmconfig the connection manager configuration
      *
-     * @since 5.4.1
+     * @since 5.4.2
      */
     public static synchronized void install(TransactionManagerConfiguration txconfig,
             ConnectionManagerConfiguration cmconfig) throws NamingException {

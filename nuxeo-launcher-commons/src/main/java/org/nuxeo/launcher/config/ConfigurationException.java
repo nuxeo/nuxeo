@@ -35,7 +35,7 @@ public class ConfigurationException extends Exception {
     }
 
     /**
-     * @since 5.4.1
+     * @since 5.4.2
      * @param message Error message
      */
     public ConfigurationException(String message) {

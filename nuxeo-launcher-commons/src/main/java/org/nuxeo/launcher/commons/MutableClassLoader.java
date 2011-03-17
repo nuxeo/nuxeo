@@ -20,7 +20,7 @@ import java.net.URL;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * @since 5.4.1
+ * @since 5.4.2
  */
 public interface MutableClassLoader {
 

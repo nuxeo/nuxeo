@@ -146,7 +146,7 @@ public interface RuntimeHarness {
      *
      * Framework properties for variable injections
      *
-     * @since 5.4.1
+     * @since 5.4.2
      * @return
      */
     Properties getProperties();
@@ -155,7 +155,7 @@ public interface RuntimeHarness {
      *
      * Runtime context for deployment
      *
-     * @since 5.4.1
+     * @since 5.4.2
      * @return
      */
     RuntimeContext getContext();
@@ -164,7 +164,7 @@ public interface RuntimeHarness {
      *
      * OSGI bridge
      *
-     * @since 5.4.1
+     * @since 5.4.2
      * @return
      */
     OSGiAdapter getOSGiAdapter();

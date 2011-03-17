@@ -204,7 +204,7 @@ public class ConfigurationGenerator {
     /**
      * @see #PARAM_FORCE_GENERATION
      * @return true if configuration will be generated from templates
-     * @since 5.4.1
+     * @since 5.4.2
      */
     public boolean isForceGeneration() {
         return forceGeneration;
@@ -215,7 +215,7 @@ public class ConfigurationGenerator {
     }
 
     /**
-     * @since 5.4.1
+     * @since 5.4.2
      */
     public final ServerConfigurator getServerConfigurator() {
         return serverConfigurator;
@@ -284,7 +284,7 @@ public class ConfigurationGenerator {
      * Change templates using given database template
      *
      * @param dbTemplate new database template
-     * @since 5.4.1
+     * @since 5.4.2
      */
     public void changeDBTemplate(String dbTemplate) {
         changeTemplates(rebuildTemplatesStr(dbTemplate));
@@ -337,7 +337,7 @@ public class ConfigurationGenerator {
     }
 
     /**
-     * @since 5.4.1
+     * @since 5.4.2
      * @param key Directory system key
      * @see Environment
      */
@@ -464,7 +464,7 @@ public class ConfigurationGenerator {
      * {@link #getChangedParametersMap(Map, Map)}
      *
      * @param changedParametersMaps Maps of modified parameters
-     * @since 5.4.1
+     * @since 5.4.2
      * @see #getChangedParameters(Map)
      */
     public void saveFilteredConfiguration(Map<String, String> changedParameters)
@@ -479,7 +479,7 @@ public class ConfigurationGenerator {
      *
      * @param changedParameters parameters to be filtered
      * @return filtered map
-     * @since 5.4.1
+     * @since 5.4.2
      */
     public Map<String, String> getChangedParameters(
             Map<String, String> changedParameters) {
@@ -614,7 +614,7 @@ public class ConfigurationGenerator {
     /**
      * Delegate logs initialization to serverConfigurator instance
      *
-     * @since 5.4.1
+     * @since 5.4.2
      */
     public void initLogs() {
         serverConfigurator.initLogs();
@@ -622,7 +622,7 @@ public class ConfigurationGenerator {
 
     /**
      * @return log directory
-     * @since 5.4.1
+     * @since 5.4.2
      */
     public File getLogDir() {
         return serverConfigurator.getLogDir();
@@ -630,7 +630,7 @@ public class ConfigurationGenerator {
 
     /**
      * @return pid directory
-     * @since 5.4.1
+     * @since 5.4.2
      */
     public File getPidDir() {
         return serverConfigurator.getPidDir();
@@ -638,7 +638,7 @@ public class ConfigurationGenerator {
 
     /**
      * @return Data directory
-     * @since 5.4.1
+     * @since 5.4.2
      */
     public File getDataDir() {
         return serverConfigurator.getDataDir();
@@ -653,7 +653,7 @@ public class ConfigurationGenerator {
      * @throws ConfigurationException If a deprecated directory has been
      *             detected.
      *
-     * @since 5.4.1
+     * @since 5.4.2
      */
     public void verifyInstallation() throws ConfigurationException {
         if (!System.getProperty("java.version").startsWith("1.6")) {
@@ -689,7 +689,7 @@ public class ConfigurationGenerator {
     /**
      * @return Log files produced by Log4J configuration without loading this
      *         configuration instead of current active one.
-     * @since 5.4.1
+     * @since 5.4.2
      */
     public ArrayList<String> getLogFiles() {
         File log4jConfFile = serverConfigurator.getLogConfFile();
@@ -701,7 +701,7 @@ public class ConfigurationGenerator {
      * Check if wizard must and can be ran
      *
      * @return true if configuration wizard is required before starting Nuxeo
-     * @since 5.4.1
+     * @since 5.4.2
      */
     public boolean isWizardRequired() {
         return !"true".equalsIgnoreCase(getUserConfig().getProperty(
@@ -714,7 +714,7 @@ public class ConfigurationGenerator {
      *
      * @param dbTemplate database template to use instead of current one
      * @return new templates string using given dbTemplate
-     * @since 5.4.1
+     * @since 5.4.2
      * @see #extractDatabaseTemplateName()
      * @see {@link #changeDBTemplate(String)}
      * @see {@link #changeTemplates(String)}
@@ -732,7 +732,7 @@ public class ConfigurationGenerator {
 
     /**
      * @return Nuxeo config directory
-     * @since 5.4.1
+     * @since 5.4.2
      */
     public File getConfigDir() {
         return serverConfigurator.getConfigDir();
@@ -741,7 +741,7 @@ public class ConfigurationGenerator {
     /**
      * Ensure the server will start only wizard application, not Nuxeo
      *
-     * @since 5.4.1
+     * @since 5.4.2
      */
     public void prepareWizardStart() {
         serverConfigurator.prepareWizardStart();
@@ -750,7 +750,7 @@ public class ConfigurationGenerator {
     /**
      * Ensure the wizard won't be started and nuxeo is ready for use
      *
-     * @since 5.4.1
+     * @since 5.4.2
      */
     public void cleanupPostWizard() {
         serverConfigurator.cleanupPostWizard();
@@ -764,7 +764,7 @@ public class ConfigurationGenerator {
     }
 
     /**
-     * @since 5.4.1
+     * @since 5.4.2
      * @return true if there's an install in progress
      */
     public boolean isInstallInProgress() {

@@ -1,5 +1,5 @@
 Manifest-Version: 1.0
-Bundle-Version: 5.4.1.qualifier
+Bundle-Version: 5.4.2.qualifier
 Bundle-ManifestVersion: 2
 Bundle-Name: Nuxeo Metrics
 Bundle-SymbolicName: org.nuxeo.runtime.management.metrics;singleton:=true

@@ -38,7 +38,7 @@ import org.apache.log4j.xml.DOMConfigurator;
  * Provides helper methods for working with log4j
  *
  * @author jcarsique
- * @since 5.4.1
+ * @since 5.4.2
  */
 public class Log4JHelper {
     private static final Log log = LogFactory.getLog(Log4JHelper.class);
