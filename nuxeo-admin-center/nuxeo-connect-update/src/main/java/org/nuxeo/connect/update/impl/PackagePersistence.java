@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2011 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -35,7 +35,7 @@ import org.nuxeo.connect.update.task.Task;
 
 /**
  *
- * The file nxserver/data/packages/.packages is storing the sate of all local
+ * The file nxserver/data/packages/.packages is storing the state of all local
  * features
  *
  * Each local package have a corresponding directory in
@@ -223,8 +223,7 @@ public class PackagePersistence {
             throws PackageException {
         File[] list = store.listFiles();
         if (list != null) {
-            List<LocalPackage> pkgs = new ArrayList<LocalPackage>(
-                    list.length);
+            List<LocalPackage> pkgs = new ArrayList<LocalPackage>(list.length);
             for (File file : list) {
                 pkgs.add(new LocalPackageImpl(file, getState(file.getName())));
             }

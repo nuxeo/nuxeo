@@ -111,7 +111,7 @@ public interface NotificationManager {
     /**
      * Gets the list of event names used by notifications.
      *
-     * @since 5.4.1
+     * @since 5.4.2
      */
     Set<String> getNotificationEventNames();
 

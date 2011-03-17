@@ -7,7 +7,7 @@
   <parent>
     <artifactId>nuxeo-features-parent</artifactId>
     <groupId>org.nuxeo.ecm.platform</groupId>
-    <version>5.4.1-SNAPSHOT</version>
+    <version>5.4.2-SNAPSHOT</version>
   </parent>
 
   <artifactId>nuxeo-platform-syndication</artifactId>
@@ -16,7 +16,7 @@
     Nuxeo Enterprise Platform: Syndication Service. This service build
     syndication feeds (RSS &amp; ATOM) on content objects. It defines Interfaces
     so that any content object implementing those interfaces can produce
-    syndication feeds or be included in it. As of Nuxeo 5.4.1, it is deprecated
+    syndication feeds or be included in it. As of Nuxeo 5.4.2, it is deprecated
     since content views already offer RSS and ATOM exports.
   </description>
 
