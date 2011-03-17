@@ -25,7 +25,7 @@ import java.util.regex.Pattern;
  * RegExp based helper to check IP address format
  *
  * @author Tiry (tdelprat@nuxeo.com)
- * @since 5.4.1
+ * @since 5.4.2
  */
 public class IPValidator {
 

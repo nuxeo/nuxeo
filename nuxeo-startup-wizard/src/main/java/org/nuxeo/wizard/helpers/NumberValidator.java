@@ -24,7 +24,7 @@ import java.util.regex.Pattern;
  * Simple RegExp based Number validator
  *
  * @author Tiry (tdelprat@nuxeo.com)
- * @since 5.4.1
+ * @since 5.4.2
  */
 public class NumberValidator {
 

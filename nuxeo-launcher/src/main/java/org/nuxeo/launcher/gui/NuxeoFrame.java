@@ -71,7 +71,7 @@ import org.nuxeo.shell.swing.ConsolePanel;
  * Launcher view for graphical user interface
  *
  * @author jcarsique
- * @since 5.4.1
+ * @since 5.4.2
  * @see NuxeoLauncherGUI
  */
 public class NuxeoFrame extends JFrame {

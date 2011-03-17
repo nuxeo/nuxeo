@@ -30,7 +30,7 @@ import org.nuxeo.launcher.config.JettyConfigurator;
  * Main Nuxeo server thread
  *
  * @author jcarsique
- * @since 5.4.1
+ * @since 5.4.2
  */
 public class NuxeoJettyLauncher extends NuxeoLauncher {
 

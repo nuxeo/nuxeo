@@ -28,7 +28,7 @@ import org.apache.commons.logging.LogFactory;
  * Very basic Navigation handler
  *
  * @author Tiry (tdelprat@nuxeo.com)
- * @since 5.4.1
+ * @since 5.4.2
  */
 public class SimpleNavigationHandler {
 

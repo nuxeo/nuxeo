@@ -33,7 +33,7 @@ import javax.servlet.http.HttpServletRequest;
  * processing calls to the servlet
  *
  * @author Tiry (tdelprat@nuxeo.com)
- * @since 5.4.1
+ * @since 5.4.2
  */
 public class ResourceFilter implements Filter {
 

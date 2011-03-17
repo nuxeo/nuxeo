@@ -34,7 +34,7 @@ import org.nuxeo.wizard.context.ParamCollector;
  * Manages execution of NuxeoCtl
  *
  * @author Tiry (tdelprat@nuxeo.com)
- * @since 5.4.1
+ * @since 5.4.2
  */
 public class ServerController {
 

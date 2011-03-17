@@ -26,7 +26,7 @@ import org.nuxeo.launcher.gui.ColoredTextPane;
 
 /**
  * @author jcarsique
- * @since 5.4.1
+ * @since 5.4.2
  */
 public class LogsHandler implements Observer {
 

@@ -31,7 +31,7 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * @author jcarsique
- * @since 5.4.1
+ * @since 5.4.2
  */
 public class LogsSource extends Observable implements Runnable {
     static final Log log = LogFactory.getLog(LogsSource.class);

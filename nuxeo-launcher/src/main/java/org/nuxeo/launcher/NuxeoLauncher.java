@@ -58,7 +58,7 @@ import org.nuxeo.launcher.gui.NuxeoLauncherGUI;
 
 /**
  * @author jcarsique
- * @since 5.4.1
+ * @since 5.4.2
  */
 public abstract class NuxeoLauncher {
     static final Log log = LogFactory.getLog(NuxeoLauncher.class);

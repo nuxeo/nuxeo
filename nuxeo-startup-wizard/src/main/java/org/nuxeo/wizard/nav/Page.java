@@ -30,7 +30,7 @@ import org.nuxeo.wizard.context.Context;
  * Represents a Page
  *
  * @author Tiry (tdelprat@nuxeo.com)
- * @since 5.4.1
+ * @since 5.4.2
  */
 public class Page {
 

@@ -28,7 +28,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * waiting for non-daemon threads to finish.
  *
  * @author ben
- * @since 5.4.1
+ * @since 5.4.2
  *
  */
 public class DaemonThreadFactory implements ThreadFactory {

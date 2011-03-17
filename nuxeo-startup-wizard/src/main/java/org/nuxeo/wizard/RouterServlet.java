@@ -47,7 +47,7 @@ import org.nuxeo.wizard.nav.SimpleNavigationHandler;
  * Main entry point : find the right handler and start jsp rendering
  *
  * @author Tiry (tdelprat@nuxeo.com)
- * @since 5.4.1
+ * @since 5.4.2
  */
 public class RouterServlet extends HttpServlet {
 

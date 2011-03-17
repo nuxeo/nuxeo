@@ -44,7 +44,7 @@ import org.nuxeo.launcher.gui.logs.LogsSourceThread;
  * Launcher controller for graphical user interface
  *
  * @author jcarsique
- * @since 5.4.1
+ * @since 5.4.2
  * @see NuxeoLauncher
  */
 public class NuxeoLauncherGUI {

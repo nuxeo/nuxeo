@@ -39,7 +39,7 @@ import org.nuxeo.launcher.config.ConfigurationGenerator;
  * Manages all the parameters entered by User to configure his Nuxeo server
  *
  * @author Tiry (tdelprat@nuxeo.com)
- * @since 5.4.1
+ * @since 5.4.2
  */
 public class ParamCollector {
     private static final Log log = LogFactory.getLog(ParamCollector.class);
