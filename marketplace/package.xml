@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<package name="nuxeo-platform-smart-search" version="5.4.1-SNAPSHOT"
+<package name="nuxeo-platform-smart-search" version="5.4.2-SNAPSHOT"
   type="addon">
   <title>Smart Search</title>
   <description>
@@ -10,7 +10,7 @@
   <nuxeo-validation>primary_validation</nuxeo-validation>
   <production-state>testing</production-state>
   <platforms>
-    <platform>dm-5.4.1-SNAPSHOT</platform>
+    <platform>dm-5.4.2-SNAPSHOT</platform>
   </platforms>
   <dependencies></dependencies>
 </package>
