@@ -28,7 +28,6 @@ import org.apache.shindig.gadgets.http.InvalidationHandler;
 import org.apache.shindig.gadgets.parse.ParseModule;
 import org.apache.shindig.gadgets.preload.PreloadModule;
 import org.apache.shindig.gadgets.render.RenderModule;
-import org.apache.shindig.gadgets.rewrite.RewriteModule;
 import org.apache.shindig.gadgets.servlet.HttpRequestHandler;
 import org.apache.shindig.gadgets.templates.TemplateModule;
 
@@ -62,8 +61,7 @@ public class NXGuiceModule extends AbstractModule {
         install(new ParseModule());
         install(new PreloadModule());
         install(new RenderModule());
-        install(new RewriteModule());
-        // install(new NXRewriteModule());
+        install(new NXRewriteModule());
         install(new TemplateModule());
 
         // Handlers for /gadgets/rpc

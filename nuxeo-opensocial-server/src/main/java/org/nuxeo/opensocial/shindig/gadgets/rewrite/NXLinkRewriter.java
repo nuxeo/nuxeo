@@ -37,9 +37,8 @@ public class NXLinkRewriter extends ProxyingLinkRewriter {
 
     @Override
     public String rewrite(String link, Uri context) {
-        link = link.replace("${org.nuxeo.ecm.contextPath}",
-                VirtualHostHelper.getContextPathProperty());
-        return super.rewrite(link, context);
+        return !link.startsWith(VirtualHostHelper.getContextPathProperty()) ? super.rewrite(
+                link, context) : link;
     }
 
 }
