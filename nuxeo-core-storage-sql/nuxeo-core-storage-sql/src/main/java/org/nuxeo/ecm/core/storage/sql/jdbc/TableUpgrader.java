@@ -28,7 +28,7 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 /**
  * Helper to provide SQL migration calls while adding a column.
  *
- * @since 5.4.1
+ * @since 5.4.2
  */
 public class TableUpgrader {
 

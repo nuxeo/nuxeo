@@ -1392,7 +1392,7 @@ public class Model {
                             fieldType, false);
                     ColumnType type = ColumnType.fromField(field);
                     if (type.spec == ColumnSpec.STRING) {
-                        // backward compat with largetext, since 5.4.1
+                        // backward compat with largetext, since 5.4.2
                         for (FieldDescriptor fd : repositoryDescriptor.schemaFields) {
                             if (propertyName.equals(fd.field)
                                     && FIELD_TYPE_LARGETEXT.equals(fd.type)) {

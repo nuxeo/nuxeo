@@ -107,7 +107,7 @@
       If no option is specified, the defaultVersioningRule is used.
       If there is no defaultVersioningRule, we fall back on the service implementation.
       
-      @Since 5.4.1
+      @Since 5.4.2
     </documentation>
 
     <object class="org.nuxeo.ecm.core.versioning.VersioningRuleDescriptor" />

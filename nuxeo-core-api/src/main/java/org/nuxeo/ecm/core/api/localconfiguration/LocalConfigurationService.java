@@ -22,7 +22,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  * Service handling {@code LocalConfiguration} classes.
  *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- * @since 5.4.1
+ * @since 5.4.2
  */
 public interface LocalConfigurationService {
 

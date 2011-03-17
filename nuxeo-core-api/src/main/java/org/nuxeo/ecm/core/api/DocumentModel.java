@@ -199,7 +199,7 @@ public interface DocumentModel extends Serializable {
      *
      * @return the schemas
      *
-     * @since 5.4.1
+     * @since 5.4.2
      */
     String[] getSchemas();
 
@@ -230,7 +230,7 @@ public interface DocumentModel extends Serializable {
      *
      * @return the facets
      *
-     * @since 5.4.1
+     * @since 5.4.2
      */
     Set<String> getFacets();
 
@@ -265,7 +265,7 @@ public interface DocumentModel extends Serializable {
      *         already present
      * @throws DocumentException if the facet does not exist
      *
-     * @since 5.4.1
+     * @since 5.4.2
      */
     boolean addFacet(String facet);
 
@@ -278,7 +278,7 @@ public interface DocumentModel extends Serializable {
      * @return {@code true} if the facet was removed, or {@code false} if it
      *         isn't present or is present on the type or does not exit
      *
-     * @since 5.4.1
+     * @since 5.4.2
      */
     boolean removeFacet(String facet);
 
@@ -325,7 +325,7 @@ public interface DocumentModel extends Serializable {
      *
      * @return the lock key if the document is locked or null otherwise
      *
-     * @deprecated since 5.4.1, use {@link #getLockInfo} instead
+     * @deprecated since 5.4.2, use {@link #getLockInfo} instead
      */
     @Deprecated
     String getLock();
@@ -349,7 +349,7 @@ public interface DocumentModel extends Serializable {
      * @throws ClientException if the document is already locked or other error
      *             occurs
      *
-     * @deprecated since 5.4.1, use {@link #setLock} instead
+     * @deprecated since 5.4.2, use {@link #setLock} instead
      */
     @Deprecated
     void setLock(String key) throws ClientException;
@@ -360,7 +360,7 @@ public interface DocumentModel extends Serializable {
      * @throws ClientException if the document is already locked or other error
      *             occurs
      *
-     * @deprecated since 5.4.1, use {@link #removeLock} instead
+     * @deprecated since 5.4.2, use {@link #removeLock} instead
      */
     @Deprecated
     void unlock() throws ClientException;
@@ -371,7 +371,7 @@ public interface DocumentModel extends Serializable {
      * @return the lock info that was set
      * @throws ClientException if a lock was already set
      *
-     * @since 5.4.1
+     * @since 5.4.2
      */
     Lock setLock() throws ClientException;
 
@@ -384,7 +384,7 @@ public interface DocumentModel extends Serializable {
      * @return the lock info if the document is locked, or {@code null}
      *         otherwise
      *
-     * @since 5.4.1
+     * @since 5.4.2
      */
     Lock getLockInfo() throws ClientException;
 
@@ -400,7 +400,7 @@ public interface DocumentModel extends Serializable {
      *
      * @return the removed lock info, or {@code null} if there was no lock
      *
-     * @since 5.4.1
+     * @since 5.4.2
      */
     Lock removeLock() throws ClientException;
 

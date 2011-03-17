@@ -28,7 +28,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * Descriptor to contribute new versioning rules.
  *
  * @author Laurent Doguin
- * @since 5.4.1
+ * @since 5.4.2
  */
 @XObject("versioningRule")
 public class VersioningRuleDescriptor implements Serializable {

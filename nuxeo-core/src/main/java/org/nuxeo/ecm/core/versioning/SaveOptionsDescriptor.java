@@ -32,7 +32,7 @@ import org.nuxeo.ecm.core.api.VersioningOption;
  * Descriptor to contribute incrementation options.
  *
  * @author Laurent Doguin
- * @since 5.4.1
+ * @since 5.4.2
  */
 @XObject("options")
 public class SaveOptionsDescriptor implements Serializable {

@@ -164,7 +164,7 @@ public class RepositoryDescriptor {
     @XNode("aclOptimizations@enabled")
     public boolean aclOptimizationsEnabled = true;
 
-    /* @since 5.4.1 */
+    /* @since 5.4.2 */
     @XNode("aclOptimizations@readAclMaxSize")
     public int readAclMaxSize = 4096;
 

@@ -28,7 +28,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
  * Default implementation of {@code LocalConfigurationService}.
  *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- * @since 5.4.1
+ * @since 5.4.2
  */
 public class LocalConfigurationServiceImpl extends DefaultComponent implements
         LocalConfigurationService {

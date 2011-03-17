@@ -5,7 +5,7 @@ Manifest-Version: 1.0
 Bundle-Name: org.nuxeo.ecm.core.storage.sql.extensions
 Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Bundle-Version: 5.4.1.qualifier
+Bundle-Version: 5.4.2.qualifier
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.nuxeo.ecm.core.storage.sql.extensions;singleton:=true
 Import-Package: org.apache.commons.logging,

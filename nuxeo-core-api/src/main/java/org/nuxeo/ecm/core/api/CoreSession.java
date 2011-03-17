@@ -83,19 +83,19 @@ public interface CoreSession {
     String IMPORT_LIFECYCLE_STATE = "ecm:lifeCycleState";
 
     /**
-     * @deprecated since 5.4.1, use {@link #IMPORT_LOCK_OWNER} and
+     * @deprecated since 5.4.2, use {@link #IMPORT_LOCK_OWNER} and
      *             {@link #IMPORT_LOCK_CREATED} instead
      */
     @Deprecated
     String IMPORT_LOCK = "ecm:lock";
 
-    /** @since 5.4.1 */
+    /** @since 5.4.2 */
     String IMPORT_LOCK_OWNER = "ecm:lockOwner";
 
     /**
      * Lock creation time as a Calendar object.
      *
-     * @since 5.4.1
+     * @since 5.4.2
      */
     String IMPORT_LOCK_CREATED = "ecm:lockCreated";
 
@@ -508,7 +508,7 @@ public interface CoreSession {
      * This method does not check the permissions on the parent document of this
      * {@code CoreSession}'s {@code Principal}.
      *
-     * @since 5.4.1
+     * @since 5.4.2
      */
     public DocumentRef getParentDocumentRef(DocumentRef docRef)
             throws ClientException;
@@ -884,7 +884,7 @@ public interface CoreSession {
      * <p>
      * For INTERNAL use by the core.
      *
-     * @since 5.4.1
+     * @since 5.4.2
      */
     DataModel getDataModel(DocumentRef docRef, Schema schema)
             throws ClientException;
@@ -1428,7 +1428,7 @@ public interface CoreSession {
      * @return the lock key if the document is locked, null otherwise
      * @throws ClientException
      *
-     * @deprecated since 5.4.1, use {@link #getLockInfo} instead
+     * @deprecated since 5.4.2, use {@link #getLockInfo} instead
      */
     @Deprecated
     String getLock(DocumentRef doc) throws ClientException;
@@ -1443,7 +1443,7 @@ public interface CoreSession {
      * @throws ClientException if a lock is already set or other exception
      *             occurred
      *
-     * @deprecated since 5.4.1, use {@link #setLock(DocumentRef)} instead
+     * @deprecated since 5.4.2, use {@link #setLock(DocumentRef)} instead
      */
     @Deprecated
     void setLock(DocumentRef doc, String key) throws ClientException;
@@ -1459,7 +1459,7 @@ public interface CoreSession {
      * @param docRef the document to unlock
      * @return the lock key that was removed
      *
-     * @deprecated since 5.4.1, use {@link #removeLock} instead
+     * @deprecated since 5.4.2, use {@link #removeLock} instead
      */
     @Deprecated
     String unlock(DocumentRef docRef) throws ClientException;
@@ -1471,7 +1471,7 @@ public interface CoreSession {
      * @return the lock info that was set
      * @throws ClientException if a lock was already set
      *
-     * @since 5.4.1
+     * @since 5.4.2
      */
     Lock setLock(DocumentRef docRef) throws ClientException;
 
@@ -1486,7 +1486,7 @@ public interface CoreSession {
      * @return the lock info if the document is locked, or {@code null}
      *         otherwise
      *
-     * @since 5.4.1
+     * @since 5.4.2
      */
     Lock getLockInfo(DocumentRef docRef) throws ClientException;
 
@@ -1503,7 +1503,7 @@ public interface CoreSession {
      * @param docRef the document to unlock
      * @return the removed lock info, or {@code null} if there was no lock
      *
-     * @since 5.4.1
+     * @since 5.4.2
      */
     Lock removeLock(DocumentRef docRef) throws ClientException;
 
@@ -1778,7 +1778,7 @@ public interface CoreSession {
      * @return the first parent with the given {@code facet} adapted, or
      *         {@code null} if no parent found or the document does not support
      *         the given {@code adapterClass}.
-     * @since 5.4.1
+     * @since 5.4.2
      */
     <T extends DetachedAdapter> T adaptFirstMatchingDocumentWithFacet(DocumentRef docRef, String facet,
             Class<T> adapterClass) throws ClientException;

@@ -28,7 +28,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * Descriptor to contribute default versioning rule for all document types.*
  *
  * @author Laurent Doguin
- * @since 5.4.1
+ * @since 5.4.2
  */
 @XObject("defaultVersioningRule")
 public class DefaultVersioningRuleDescriptor implements Serializable {

@@ -258,7 +258,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     /**
      * Constructor.
      * <p>
-     * The lock parameter is unused since 5.4.1.
+     * The lock parameter is unused since 5.4.2.
      *
      * @param facets the per-instance facets
      */

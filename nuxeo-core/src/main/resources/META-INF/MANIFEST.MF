@@ -19,7 +19,7 @@ Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.nuxeo.ecm.core.api;visibility:=reexport,
  org.nuxeo.ecm.core.event
-Bundle-Version: 5.4.1.qualifier
+Bundle-Version: 5.4.2.qualifier
 Nuxeo-Component: OSGI-INF/CoreService.xml,
   OSGI-INF/RepositoryService.xml,
   OSGI-INF/CoreExtensions.xml,

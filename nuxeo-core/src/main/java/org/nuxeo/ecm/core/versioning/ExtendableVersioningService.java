@@ -23,7 +23,7 @@ import java.util.Map;
  * versioningRules extension point.
  * 
  * @author Laurent Doguin
- * @since 5.4.1
+ * @since 5.4.2
  */
 public interface ExtendableVersioningService extends VersioningService {
 

@@ -235,7 +235,7 @@ public interface Document extends DocumentContainer, PropertyContainer,
      *
      * @return the facets
      *
-     * @since 5.4.1
+     * @since 5.4.2
      */
     Set<String> getAllFacets();
 
@@ -245,7 +245,7 @@ public interface Document extends DocumentContainer, PropertyContainer,
      *
      * @return the facets
      *
-     * @since 5.4.1
+     * @since 5.4.2
      */
     String[] getFacets();
 
@@ -256,7 +256,7 @@ public interface Document extends DocumentContainer, PropertyContainer,
      * @param facet the facet name
      * @return {@code true} if the document has the facet
      *
-     * @since 5.4.1
+     * @since 5.4.2
      */
     boolean hasFacet(String facet);
 
@@ -270,7 +270,7 @@ public interface Document extends DocumentContainer, PropertyContainer,
      *         already present
      * @throws DocumentException if the facet does not exist
      *
-     * @since 5.4.1
+     * @since 5.4.2
      */
     boolean addFacet(String facet) throws DocumentException;
 
@@ -283,7 +283,7 @@ public interface Document extends DocumentContainer, PropertyContainer,
      * @return {@code true} if the facet was removed, or {@code false} if it
      *         isn't present or is present on the type or does not exit
      *
-     * @since 5.4.1
+     * @since 5.4.2
      */
     boolean removeFacet(String facet) throws DocumentException;
 
