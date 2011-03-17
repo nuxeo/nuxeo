@@ -59,12 +59,13 @@ public final class Functions {
     public enum BytePrefix {
 
         SI(1000, new String[] { "", "k", "M", "G", "T", "P", "E", "Z", "Y" },
-                new String[] { "", "kilo", "mega", "giga", "tera", "peta", "exa",
-                        "zetta", "yotta" }), IEC(1024, new String[] { "", "Ki",
-                "Mi", "Gi", "Ti", "Pi", "Ei", "Zi", "Yi" }, new String[] { "",
-                "kibi", "mebi", "gibi", "tebi", "pebi", "exbi", "zebi", "yobi" }), JEDEC(
-                1024, new String[] { "", "K", "M", "G" }, new String[] { "",
-                        "kilo", "mega", "giga" });
+                new String[] { "", "kilo", "mega", "giga", "tera", "peta",
+                        "exa", "zetta", "yotta" }), IEC(1024, new String[] {
+                "", "Ki", "Mi", "Gi", "Ti", "Pi", "Ei", "Zi", "Yi" },
+                new String[] { "", "kibi", "mebi", "gibi", "tebi", "pebi",
+                        "exbi", "zebi", "yobi" }), JEDEC(1024, new String[] {
+                "", "K", "M", "G" },
+                new String[] { "", "kilo", "mega", "giga" });
 
         private final int base;
 
@@ -441,15 +442,17 @@ public final class Functions {
     }
 
     /**
-     * 
-     * @return the big file size limit defined with the property org.nuxeo.big.file.size.limit
+     * @return the big file size limit defined with the property
+     *         org.nuxeo.big.file.size.limit
      */
     public static long getBigFileSizeLimit() {
-        return getFileSize(Framework.getProperty(BIG_FILE_SIZE_LIMIT_PROPERTY, ""));
+        return getFileSize(Framework.getProperty(BIG_FILE_SIZE_LIMIT_PROPERTY,
+                ""));
     }
-    
+
     public static long getFileSize(String value) {
-        Pattern pattern = Pattern.compile("([1-9][0-9]*)([kmgi]*)", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile("([1-9][0-9]*)([kmgi]*)",
+                Pattern.CASE_INSENSITIVE);
         Matcher m = pattern.matcher(value.trim());
         long number;
         String multiplier;
@@ -460,15 +463,14 @@ public final class Functions {
         multiplier = m.group(2);
         return getValueFromMultiplier(multiplier) * number;
     }
-    
+
     /**
-     * 
      * Transform the parameter in entry according to these unit systems:
      * <ul>
-     *   <li> SI prefixes: k/M/G for kilo, mega, giga </li>
-     *   <li> IEC prefixes: Ki/Mi/Gi for kibi, mebi, gibi </li>
+     * <li> SI prefixes: k/M/G for kilo, mega, giga </li>
+     * <li> IEC prefixes: Ki/Mi/Gi for kibi, mebi, gibi </li>
      * </ul>
-     * 
+     *
      * @param m : binary prefix multiplier
      * @return the value of the multiplier as a long
      */
@@ -476,18 +478,18 @@ public final class Functions {
         if ("k".equalsIgnoreCase(m)) {
             return 1L * 1000;
         } else if ("Ki".equalsIgnoreCase(m)) {
-                return 1L << 10;
-        }  else if ("M".equalsIgnoreCase(m)) {
-                return 1L * 1000 * 1000;
-        }  else if ("Mi".equalsIgnoreCase(m)) {
-                return 1L << 20;
-        }  else if ("G".equalsIgnoreCase(m)) {
-                return 1L * 1000 * 1000 * 1000;
-        }  else if ("Gi".equalsIgnoreCase(m)) {
-                return 1L << 30;
+            return 1L << 10;
+        } else if ("M".equalsIgnoreCase(m)) {
+            return 1L * 1000 * 1000;
+        } else if ("Mi".equalsIgnoreCase(m)) {
+            return 1L << 20;
+        } else if ("G".equalsIgnoreCase(m)) {
+            return 1L * 1000 * 1000 * 1000;
+        } else if ("Gi".equalsIgnoreCase(m)) {
+            return 1L << 30;
         } else {
             return 1L;
         }
     }
-    
+
 }
