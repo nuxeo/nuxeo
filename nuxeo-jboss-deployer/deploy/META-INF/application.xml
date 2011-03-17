@@ -7,10 +7,10 @@
   <display-name>Nuxeo EP</display-name>
 
   <module>
-    <ejb>bundles/nuxeo-core-facade-5.4.0-SNAPSHOT.jar</ejb>
+    <ejb>bundles/nuxeo-core-facade-5.4.1-SNAPSHOT.jar</ejb>
   </module>
   <module>
-    <connector>bundles/nuxeo-core-storage-sql-ra-5.4.0-SNAPSHOT.rar</connector>
+    <connector>bundles/nuxeo-core-storage-sql-ra-5.4.1-SNAPSHOT.rar</connector>
   </module>
 
 </application>
