@@ -132,7 +132,7 @@ public class ImportExportActionBean implements Serializable {
     /**
      * Returns the REST URL for export of given document.
      *
-     * @since 5.4.1
+     * @since 5.4.2
      * @param doc the document to export
      * @param exportAsZip a boolean stating if export should be given in ZIP
      *            format. When exporting the tree, ZIP format is forced.
@@ -178,7 +178,7 @@ public class ImportExportActionBean implements Serializable {
     /**
      * Returns the Rest URL for a document export in XML format
      *
-     * @since 5.4.1
+     * @since 5.4.2
      */
     public String getDocumentXMLExportURL() {
         return getExportURL(navigationContext.getCurrentDocument(), false,
@@ -188,7 +188,7 @@ public class ImportExportActionBean implements Serializable {
     /**
      * Returns the Rest URL for a document export in ZIP format
      *
-     * @since 5.4.1
+     * @since 5.4.2
      */
     public String getDocumentZIPExportURL() {
         return getExportURL(navigationContext.getCurrentDocument(), true, false);
@@ -197,7 +197,7 @@ public class ImportExportActionBean implements Serializable {
     /**
      * Returns the Rest URL for a document tree export in ZIP format
      *
-     * @since 5.4.1
+     * @since 5.4.2
      * @return
      */
     public String getDocumentZIPTreeExportURL() {
