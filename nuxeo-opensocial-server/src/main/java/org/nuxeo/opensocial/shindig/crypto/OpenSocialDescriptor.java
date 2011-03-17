@@ -134,7 +134,7 @@ public class OpenSocialDescriptor {
      * Nuxeo listens on all IPs, returns "localhost", otherwise returns the
      * Nuxeo bind address.
      *
-     * @since 5.4.1
+     * @since 5.4.2
      */
     protected String getTrustedHostForNuxeoBindAddress() {
         String nuxeoBindAddress = Framework.getProperty(
