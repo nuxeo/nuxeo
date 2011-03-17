@@ -3,7 +3,6 @@ syntax:glob
 .project
 .settings
 nuxeo-distribution-*/bin
-nuxeo-startup-wizard/bin
 target
 target*
 *~
@@ -29,4 +28,3 @@ syntax: regexp
 nuxeo-distribution-[^/]*/bin
 nuxeo-platform-ear/bin
 nuxeo-embedded-launcher/bin
-nuxeo-launcher/bin

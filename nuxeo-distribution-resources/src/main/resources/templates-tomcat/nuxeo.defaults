@@ -12,7 +12,7 @@ nuxeo.bind.address=0.0.0.0
 
 nuxeo.url=http://localhost:8080/nuxeo/
 
-# Application context path
+# Not customizable with Tomcat
 org.nuxeo.ecm.contextPath=/nuxeo
 
 org.nuxeo.ecm.product.name=Nuxeo DM
@@ -35,7 +35,7 @@ nuxeo.notification.eMailSubjectPrefix=[Nuxeo]
 mail.smtp.host=localhost
 # Mail server port
 mail.smtp.port=25
-mail.smtp.auth=false
+mail.smtp.auth=true
 mail.smtp.username=anonymous
 mail.smtp.password=password
 # The address mail will be from
@@ -65,4 +65,4 @@ repository.clustering.delay=1000
 # If clustering is activated, set repository.binary.store=/path/to/some/shared/folder/for/binaries
 repository.binary.store=
 
-nuxeo.templates.parsing.extensions=xml,properties,nx
+nuxeo.templates.parsing.extensions=xml,properties

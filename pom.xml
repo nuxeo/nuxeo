@@ -18,16 +18,41 @@
     <nuxeo.dm.version>5.4.0.2-SNAPSHOT</nuxeo.dm.version>
     <nuxeo.opencmis.version>5.4.0.2-SNAPSHOT</nuxeo.opencmis.version>
     <nuxeo.distribution.version>5.4.0.2-SNAPSHOT</nuxeo.distribution.version>
+    <nuxeo.windows.version>5.4.0.2-SNAPSHOT</nuxeo.windows.version>
     <nuxeo.addons.version>5.4.0.2-SNAPSHOT</nuxeo.addons.version>
   </properties>
 
   <modules>
-    <module>nuxeo-startup-wizard</module>
-    <module>nuxeo-launcher</module>
     <module>nuxeo-distribution-resources</module>
   </modules>
 
   <profiles>
+    <profile>
+      <!-- Requires mono-build 2.4.x -->
+      <id>xbuild-installed</id>
+      <activation>
+        <file>
+          <exists>/usr/bin/xbuild</exists>
+        </file>
+      </activation>
+      <modules>
+        <module>nuxeo-windows-startup</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>msbuild-installed</id>
+      <activation>
+        <os>
+          <family>windows</family>
+        </os>
+        <file>
+          <exists>C:\Windows\Microsoft.NET\Framework\v3.5\MSBuild.exe</exists>
+        </file>
+      </activation>
+      <modules>
+        <module>nuxeo-windows-startup</module>
+      </modules>
+    </profile>
     <profile>
       <id>shell</id>
       <modules>
@@ -194,10 +219,10 @@
         <classifier>doc</classifier>
       </dependency>
       <dependency>
-        <groupId>org.nuxeo</groupId>
-        <artifactId>nuxeo-launcher</artifactId>
-        <version>${nuxeo.distribution.version}</version>
-        <classifier>jar-with-dependencies</classifier>
+        <groupId>org.nuxeo.ecm.distribution</groupId>
+        <artifactId>nuxeo-windows-startup</artifactId>
+        <version>${nuxeo.windows.version}</version>
+        <type>zip</type>
       </dependency>
 
       <!-- Faceted Search -->
