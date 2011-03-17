@@ -19,11 +19,12 @@ Bundle-Vendor: Nuxeo
 Bundle-Version: 5.4.1.qualifier
 Eclipse-BuddyPolicy: registered
 Bundle-ManifestVersion: 2
-Import-Package: javax.resource,
- javax.transaction.xa,
+Import-Package: javax.naming,
  javax.naming.spi,
- javax.naming,
+ javax.resource,
+ javax.transaction.xa,
  javax.xml.parsers,
+ org.apache.commons.io,
  org.apache.commons.logging,
  org.apache.xml.serialize,
  org.w3c.dom,
