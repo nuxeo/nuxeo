@@ -177,7 +177,7 @@ public class NuxeoObjectData implements ObjectData {
                 if (propertyIds == STAR_FILTER
                         || propertyIds.contains(pd.getId())) {
                     props.add((PropertyData<?>) NuxeoPropertyData.construct(
-                            this, pd));
+                            this, pd, callContext));
                 }
             }
             properties = objectFactory.createPropertiesData(props);

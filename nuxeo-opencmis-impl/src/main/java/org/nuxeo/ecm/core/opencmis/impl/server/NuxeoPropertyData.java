@@ -49,6 +49,7 @@ import org.apache.chemistry.opencmis.commons.exceptions.CmisContentAlreadyExists
 import org.apache.chemistry.opencmis.commons.exceptions.CmisInvalidArgumentException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisStreamNotSupportedException;
+import org.apache.chemistry.opencmis.commons.server.CallContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
@@ -102,7 +103,7 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
      */
     @SuppressWarnings("unchecked")
     public static <U> PropertyData<U> construct(NuxeoObjectData data,
-            PropertyDefinition<U> pd) {
+            PropertyDefinition<U> pd, CallContext callContext) {
         DocumentModel doc = data.doc;
         String name = pd.getId();
         if (PropertyIds.OBJECT_ID.equals(name)) {
@@ -169,7 +170,7 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
                     (PropertyDefinition<Boolean>) pd, doc);
         } else if (PropertyIds.VERSION_SERIES_CHECKED_OUT_BY.equals(name)) {
             return (PropertyData<U>) new NuxeoPropertyDataVersionSeriesCheckedOutBy(
-                    (PropertyDefinition<String>) pd, doc);
+                    (PropertyDefinition<String>) pd, doc, callContext);
         } else if (PropertyIds.VERSION_SERIES_CHECKED_OUT_ID.equals(name)) {
             return (PropertyData<U>) new NuxeoPropertyDataVersionSeriesCheckedOutId(
                     (PropertyDefinition<String>) pd, doc);
@@ -875,9 +876,13 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
     public static class NuxeoPropertyDataVersionSeriesCheckedOutBy extends
             NuxeoPropertyDataBase<String> implements PropertyString {
 
+        protected final CallContext callContext;
+
         protected NuxeoPropertyDataVersionSeriesCheckedOutBy(
-                PropertyDefinition<String> propertyDefinition, DocumentModel doc) {
+                PropertyDefinition<String> propertyDefinition,
+                DocumentModel doc, CallContext callContext) {
             super(propertyDefinition, doc);
+            this.callContext = callContext;
         }
 
         @Override
@@ -888,7 +893,8 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
                 }
                 DocumentModel pwc = doc.getCoreSession().getWorkingCopy(
                         doc.getRef());
-                return pwc == null ? null : "system"; // TODO not implemented
+                // TODO not implemented
+                return pwc == null ? null : callContext.getUsername();
             } catch (ClientException e) {
                 throw new CmisRuntimeException(e.toString(), e);
             }

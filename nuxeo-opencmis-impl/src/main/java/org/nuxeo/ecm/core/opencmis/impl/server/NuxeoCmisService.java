@@ -532,7 +532,7 @@ public class NuxeoCmisService extends AbstractCmisService {
         }
         // TODO avoid constructing property object just to set value
         NuxeoPropertyDataBase<T> np = (NuxeoPropertyDataBase<T>) NuxeoPropertyData.construct(
-                object, pd);
+                object, pd, callContext);
         np.setValue(value);
     }
 
