@@ -36,10 +36,8 @@ import org.osgi.framework.BundleEvent;
 import org.osgi.framework.BundleListener;
 
 /**
- * @deprecated not used
- * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public class BundleAnnotationsLoader implements BundleListener {
 
@@ -52,33 +50,29 @@ public class BundleAnnotationsLoader implements BundleListener {
     }
 
     protected final Map<String, AnnotationLoader> loaders;
-
     protected final Map<String, List<Entry>> pendings;
+
 
     public BundleAnnotationsLoader() {
         loaders = new HashMap<String, AnnotationLoader>();
         pendings = new HashMap<String, List<Entry>>();
     }
 
-    public synchronized void addLoader(String annotationType,
-            AnnotationLoader loader) {
+    public synchronized void addLoader(String annotationType, AnnotationLoader loader) {
         loaders.put(annotationType, loader);
         List<Entry> entries = pendings.remove(annotationType);
         if (entries != null) {
             for (Entry entry : entries) {
                 try {
-                    loader.loadAnnotation(entry.bundle, annotationType,
-                            entry.className, entry.args);
+                    loader.loadAnnotation(entry.bundle, annotationType, entry.className, entry.args);
                 } catch (Exception e) {
-                    log.error("Failed to load annotation: " + annotationType
-                            + "@" + entry.className, e);
+                    log.error("Failed to load annotation: "+annotationType+"@"+entry.className, e);
                 }
             }
         }
     }
 
-    public void loadAnnotationsFromDeployedBundles(Bundle bundle)
-            throws IOException {
+    public void loadAnnotationsFromDeployedBundles(Bundle bundle) throws IOException {
         Bundle[] bundles = bundle.getBundleContext().getBundles();
         for (Bundle b : bundles) {
             loadAnnotations(b);
@@ -90,8 +84,7 @@ public class BundleAnnotationsLoader implements BundleListener {
         if (url != null) {
             InputStream in = url.openStream();
             try {
-                log.info("Loading annotations from bundle: "
-                        + bundle.getSymbolicName());
+                log.info("Loading annotations from bundle: "+bundle.getSymbolicName());
                 for (String line : readLines(in)) {
                     loadAnnotation(bundle, line);
                 }
@@ -104,14 +97,13 @@ public class BundleAnnotationsLoader implements BundleListener {
     protected void loadAnnotation(Bundle bundle, String line) {
         String[] ar = parse(line);
         if (ar.length < 2) {
-            log.error("Invalid annotation entry key '" + line + "' in bundle '"
-                    + bundle.getLocation() + "'.");
+            log.error("Invalid annotation entry key '"+line+"' in bundle '"+bundle.getLocation()+"'.");
             return;
         }
         String className = ar[0];
         String annoType = ar[1];
         if (ar.length > 2) {
-            String[] tmp = new String[ar.length - 2];
+            String[] tmp = new String[ar.length-2];
             System.arraycopy(ar, 2, tmp, 0, tmp.length);
             ar = tmp;
         }
@@ -124,7 +116,7 @@ public class BundleAnnotationsLoader implements BundleListener {
         boolean esc = false;
         StringBuilder buf = new StringBuilder();
         char c = 0;
-        for (int i = 0; i < chars.length; i++) {
+        for (int i=0; i<chars.length; i++) {
             c = chars[i];
             switch (c) {
             case '\\':
@@ -139,7 +131,7 @@ public class BundleAnnotationsLoader implements BundleListener {
                 if (!esc) {
                     list.add(buf.toString());
                     buf.setLength(0);
-                } else {
+                }  else {
                     // System.out.println("escaped | >>> "+buf.toString());
                     buf.append(c);
                     esc = false;
@@ -157,15 +149,13 @@ public class BundleAnnotationsLoader implements BundleListener {
         return list.toArray(new String[list.size()]);
     }
 
-    protected synchronized void loadAnnotation(Bundle bundle,
-            String annotationType, String className, String[] args) {
+    protected synchronized void loadAnnotation(Bundle bundle, String annotationType, String className, String[] args) {
         AnnotationLoader loader = loaders.get(annotationType);
         if (loader != null) {
             try {
                 loader.loadAnnotation(bundle, annotationType, className, args);
             } catch (Exception e) {
-                log.error("Failed to load annotation: " + annotationType + "@"
-                        + className, e);
+                log.error("Failed to load annotation: "+annotationType+"@"+className, e);
             }
         } else { // queue the entry until a loader is registered
             List<Entry> entries = pendings.get(annotationType);
@@ -177,11 +167,10 @@ public class BundleAnnotationsLoader implements BundleListener {
         }
     }
 
+
     static class Entry {
         final Bundle bundle;
-
         final String className;
-
         final String[] args;
 
         Entry(Bundle bundle, String className, String[] args) {
@@ -194,12 +183,12 @@ public class BundleAnnotationsLoader implements BundleListener {
     public void bundleChanged(BundleEvent event) {
         try {
             switch (event.getType()) {
-            case BundleEvent.RESOLVED:
+            case BundleEvent.RESOLVED :
                 loadAnnotations(event.getBundle());
                 break;
-            case BundleEvent.UNRESOLVED:
-                // TODO implement unload
-                // unloadAnnotations(event.getBundle());
+            case BundleEvent.UNRESOLVED :
+                //TODO implement unload
+                //unloadAnnotations(event.getBundle());
                 break;
             }
         } catch (IOException e) {
