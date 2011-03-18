@@ -191,11 +191,21 @@ public class InternalGadgetDescriptor extends BaseGadgetDescriptor implements
     }
 
     public URL getGadgetDefinition() throws MalformedURLException {
-        StringBuilder sb = getUrlPrefix(false);
+        return new URL(getGadgetDefinition(false));
+    }
+
+    protected String getGadgetDefinition(boolean relativeUrl)
+            throws MalformedURLException {
+        StringBuilder sb = getUrlPrefix(relativeUrl);
         sb.append(getMountPoint());
         sb.append(URL_SEPARATOR);
         sb.append(getEntryPoint());
-        return new URL(sb.toString());
+        return sb.toString();
+    }
+
+    @Override
+    public String getPublicGadgetDefinition() throws MalformedURLException {
+        return getGadgetDefinition(true);
     }
 
     @Override

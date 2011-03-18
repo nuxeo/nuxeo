@@ -1,6 +1,7 @@
 package org.nuxeo.opensocial.gadgets.service;
 
 import java.io.Serializable;
+import java.net.MalformedURLException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -80,6 +81,11 @@ public abstract class BaseGadgetDescriptor implements Serializable,
         } else {
             return uri.toString();
         }
+    }
+
+    @Override
+    public String getPublicGadgetDefinition() throws MalformedURLException {
+        return getGadgetDefinition().toString();
     }
 
 }

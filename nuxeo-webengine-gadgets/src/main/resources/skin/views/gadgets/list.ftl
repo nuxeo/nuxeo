@@ -21,6 +21,8 @@
 
       <p class="description">${gadget.description}</p>
 
+      <p class="specUrl"><a href="${gadget.getPublicGadgetDefinition()}">${Context.getMessage('label.gadget.url')}</a></p>
+
       <div style="clear:both"></div>
 
     </div>

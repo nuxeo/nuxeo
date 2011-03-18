@@ -47,6 +47,8 @@ public interface GadgetDeclaration {
 
     URL getGadgetDefinition() throws MalformedURLException;
 
+    String getPublicGadgetDefinition() throws MalformedURLException;
+
     boolean isExternal();
 
     String getDescription();
