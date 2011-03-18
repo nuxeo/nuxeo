@@ -109,4 +109,9 @@ public class JettyConfigurator extends ServerConfigurator {
         return generator.getNuxeoHome();
     }
 
+    @Override
+    public File getServerLibDir() {
+        return getNuxeoLibDir();
+    }
+
 }
