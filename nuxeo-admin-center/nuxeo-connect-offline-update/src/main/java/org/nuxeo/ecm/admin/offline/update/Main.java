@@ -24,6 +24,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.connect.update.LocalPackage;
@@ -74,6 +76,8 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class Main {
 
+    static final Log log = LogFactory.getLog(Main.class);
+
     public static void main(String[] args) throws Exception {
         Main main = null;
         try {
@@ -82,7 +86,7 @@ public class Main {
             main.start();
             main.update();
         } catch (Throwable e) {
-            e.printStackTrace();
+            log.error(e);
             System.exit(2);
         } finally {
             if (main != null) {
@@ -111,7 +115,7 @@ public class Main {
 
     public Main(String[] args) throws Exception {
         if (args.length != 2) {
-            System.err.println("Syntax Error: You must specify the working directory "
+            log.error("Syntax Error: You must specify the working directory "
                     + "and path to upgrade file as arguments of the Main class");
             System.exit(1);
         }
@@ -120,7 +124,7 @@ public class Main {
 
         home = new File(System.getProperty("nuxeo.runtime.home"));
         if (home == null) {
-            System.err.println("Syntax Error: You must specify the runtime home "
+            log.error("Syntax Error: You must specify the runtime home "
                     + "as a System property (\"nuxeo.runtime.home\").");
             System.exit(1);
         }
@@ -133,7 +137,7 @@ public class Main {
         env = initEnvironment();
         packages = readPackages();
         if (packages.isEmpty()) {
-            System.out.println("Syntax Error: No bundles found in " + config);
+            log.error("Syntax Error: No bundles found in " + config);
             System.exit(1);
         }
         targetEnv = createTargetEnvironment();
@@ -199,7 +203,7 @@ public class Main {
     }
 
     public void update() throws Exception {
-        System.out.println("Performing update ...");
+        log.info("Performing update ...");
         Environment env = Environment.getDefault();
         try {
             Environment.setDefault(targetEnv);
@@ -209,7 +213,7 @@ public class Main {
         } finally {
             Environment.setDefault(env);
         }
-        System.out.println("Done.");
+        log.info("Done.");
     }
 
     protected List<String> readPackages() throws IOException {
@@ -229,12 +233,12 @@ public class Main {
         if (pkg == null) {
             throw new IllegalStateException("No package found: " + pkgId);
         }
-        System.out.println("Updating " + pkgId);
+        log.info("Updating " + pkgId);
         Task installTask = pkg.getInstallTask();
         ValidationStatus status = installTask.validate();
 
         if (status.hasErrors()) {
-            System.out.println("Failed to install package " + pkgId + " -> "
+            log.error("Failed to install package " + pkgId + " -> "
                     + status.getErrors());
             System.exit(3);
         }
@@ -244,8 +248,7 @@ public class Main {
             installTask.run(params);
         } catch (Throwable e) {
             installTask.rollback();
-            System.out.println("Install failed for package: " + pkgId);
-            e.printStackTrace();
+            log.error("Install failed for package: " + pkgId, e);
         }
 
     }
