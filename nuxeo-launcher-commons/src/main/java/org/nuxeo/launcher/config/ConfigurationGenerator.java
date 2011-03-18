@@ -792,4 +792,5 @@ public class ConfigurationGenerator {
         return new File(serverConfigurator.getDataDir(),
                 "installAfterRestart.log");
     }
+
 }

@@ -407,4 +407,18 @@ public abstract class ServerConfigurator {
         return dumpedProperties;
     }
 
+    /**
+     * @return Nuxeo's third party libraries directory
+     * @since 5.4.1
+     */
+    public File getNuxeoLibDir() {
+        return new File(getRuntimeHome(), "lib");
+    }
+
+    /**
+     * @return Server's third party libraries directory
+     * @since 5.4.1
+     */
+    public abstract File getServerLibDir();
+
 }

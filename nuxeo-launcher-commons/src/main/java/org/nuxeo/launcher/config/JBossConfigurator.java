@@ -173,4 +173,10 @@ public class JBossConfigurator extends ServerConfigurator {
         return new File(generator.getNuxeoHome(), getEARPath());
     }
 
+    @Override
+    public File getServerLibDir() {
+        return new File(generator.getNuxeoHome(), "common" + File.separator
+                + "lib");
+    }
+
 }
