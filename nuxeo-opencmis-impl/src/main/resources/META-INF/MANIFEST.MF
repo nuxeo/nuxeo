@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Nuxeo ECM Core OpenCMIS Implementation
 Bundle-SymbolicName: org.nuxeo.ecm.core.opencmis.impl;singleton:=true
 Bundle-Vendor: Nuxeo
-Bundle-Version: 5.4.1.qualifier
+Bundle-Version: 5.4.2.qualifier
 Export-Package: org.nuxeo.ecm.core.opencmis.impl.client,
  org.nuxeo.ecm.core.opencmis.impl.server,
  org.nuxeo.ecm.core.opencmis.impl.util
