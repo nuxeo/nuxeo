@@ -160,8 +160,8 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
                     return new JSONArray();
                 }
                 JSONArray jsar = new JSONArray();
-                for (int i = 0; i < ar.length; i++) {
-                    jsar.add(type.encode(ar[i]));
+                for (Object o : ar) {
+                    jsar.add(((ListType) type).getFieldType().encode(o));
                 }
                 return jsar;
             } else {
