@@ -37,8 +37,8 @@ public class PathSegmentServiceDefault implements PathSegmentService {
         if (s.length() > maxSize) {
             s = s.substring(0, maxSize).trim();
         }
-        s = s.replace("/", "-");
-        s = s.replace("\\", "-");
+        s = s.replace('/', '-');
+        s = s.replace('\\', '-');
         if (stupidRegexp.matcher(s).matches()) {
             return IdUtils.generateStringId();
         }
