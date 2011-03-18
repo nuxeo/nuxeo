@@ -717,14 +717,11 @@ public abstract class NuxeoLauncher {
                 "nuxeo-connect-client", "nuxeo-connect-offline-update",
                 "nuxeo-connect-client-wrapper", "nuxeo-runtime-reload" };
         cp = getTempClassPath(tmpDir, cp, baseDir, filenames);
-        // should use dedicated method for getting nxserver/lib/ or
-        // nuxeo.ear/lib/
-        baseDir = new File(configurationGenerator.getRuntimeHome(), "lib");
+        baseDir = configurationGenerator.getServerConfigurator().getNuxeoLibDir();
         filenames = new String[] { "commons-io", "groovy-all", "osgi-core",
                 "xercesImpl" };
         cp = getTempClassPath(tmpDir, cp, baseDir, filenames);
-        // should use dedicated method for getting lib/ or server/default/lib/
-        baseDir = new File(configurationGenerator.getNuxeoHome(), "lib");
+        baseDir = configurationGenerator.getServerConfigurator().getServerLibDir();
         filenames = new String[] { "commons-logging", "log4j" };
         cp = getTempClassPath(tmpDir, cp, baseDir, filenames);
         return cp;
