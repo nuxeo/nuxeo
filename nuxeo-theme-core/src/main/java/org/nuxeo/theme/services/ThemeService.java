@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS <http://nuxeo.com> and others
+ * (C) Copyright 2006-2011 Nuxeo SAS <http://nuxeo.com> and others
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -113,19 +113,25 @@ public class ThemeService extends DefaultComponent implements Reloadable {
 
     @Override
     public void deactivate(ComponentContext ctx) {
-        Manager.getVocabularyManager().clear();
-        Manager.getPerspectiveManager().clear();
-        Manager.getResourceManager().clear();
-        Manager.getThemeManager().clear();
-        Manager.getRelationStorage().clear();
-        Manager.getUidManager().clear();
-        Manager.getTypeRegistry().clear();
+        clear(Manager.getVocabularyManager());
+        clear(Manager.getPerspectiveManager());
+        clear(Manager.getResourceManager());
+        clear(Manager.getThemeManager());
+        clear(Manager.getRelationStorage());
+        clear(Manager.getUidManager());
+        clear(Manager.getTypeRegistry());
         for (Registrable registry : registries.values()) {
             registry.clear();
         }
         registries.clear();
         context = null;
         log.debug("Theme service deactivated");
+    }
+
+    private void clear(Registrable manager) {
+        if (manager != null) {
+            manager.clear();
+        }
     }
 
     @Override
