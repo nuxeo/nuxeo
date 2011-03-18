@@ -12,7 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
+ *     Ian Smith
+ *     Thomas Roger <troger@nuxeo.com>
  */
 
 package org.nuxeo.opensocial.gadgets.service.api;
@@ -31,6 +32,7 @@ import org.apache.shindig.gadgets.spec.GadgetSpec;
  * widely.
  *
  * @author Ian Smith<iansmith@nuxecloud.com>
+ * @author Thomas Roger<troger@nuxeo.com>
  *
  */
 public interface GadgetDeclaration {
@@ -47,6 +49,12 @@ public interface GadgetDeclaration {
 
     URL getGadgetDefinition() throws MalformedURLException;
 
+    /**
+     * Returns the public URL of the gadget spec. That URL can be used to add
+     * the gadget in an other container.
+     *
+     * @since 5.4.2
+     */
     String getPublicGadgetDefinition() throws MalformedURLException;
 
     boolean isExternal();
