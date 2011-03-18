@@ -22,6 +22,6 @@ Import-Package: org.apache.commons.logging,
  org.h2.tools,
  org.h2.util,
  org.h2.value
-Eclipse-RegisterBuddy: org.nuxeo.ecm.core.storage.sql 
+Eclipse-RegisterBuddy: org.nuxeo.ecm.core.storage.sql
 Require-Bundle: org.apache.lucene;bundle-version="2.9.1",
  org.apache.lucene.analysis;bundle-version="2.9.1"
