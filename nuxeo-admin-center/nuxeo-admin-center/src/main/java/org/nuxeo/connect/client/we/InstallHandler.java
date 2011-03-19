@@ -116,11 +116,11 @@ public class InstallHandler extends DefaultObject {
                 throw new ClientException("Can not find package " + pkgId);
             }
 
-            if (InstallAfterRestart.isNeededForPackage(pkg)) {
-                InstallAfterRestart.addPackage(pkg.getId());
-                return getView("installOnRestart").arg(
-                        "pkg", pkg).arg("source", source);
-            }
+//            if (InstallAfterRestart.isNeededForPackage(pkg)) {
+//                InstallAfterRestart.addPackage(pkg.getId());
+//                return getView("installOnRestart").arg(
+//                        "pkg", pkg).arg("source", source);
+//            }
 
             if (pkg.requireTermsAndConditionsAcceptance() && !Boolean.TRUE.equals(acceptedTAC)) {
                 return showTermsAndConditions(pkgId, source, depCheck);

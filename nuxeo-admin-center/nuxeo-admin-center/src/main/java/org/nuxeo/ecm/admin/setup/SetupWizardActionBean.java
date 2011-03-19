@@ -159,6 +159,7 @@ public class SetupWizardActionBean implements Serializable {
     }
 
     private void setParameters() {
+
         userConfig = configGenerator.getUserConfig();
         parameters = new HashMap<String, String>();
         advancedParameters = new TreeMap<String, String>();
