@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -82,7 +82,7 @@ public class SimpleLoginModule implements LoginModule {
         }
         sharedState.put("javax.security.auth.login.name", principal);
         //sharedState.put("javax.security.auth.login.password", login[1]);
-        return false;
+        return true;
     }
 
     @Override
