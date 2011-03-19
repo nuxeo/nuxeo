@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -103,7 +103,7 @@ public class OSGiRuntimeActivator implements BundleActivator {
         PackageAdmin pa = (PackageAdmin)context.getService(pkgAdmin);
         Bundle[] bundles = pa.getBundles(name, null);
         context.ungetService(pkgAdmin);
-        return bundles[0];
+        return bundles == null ? null : bundles[0];
     }
 
     /**
