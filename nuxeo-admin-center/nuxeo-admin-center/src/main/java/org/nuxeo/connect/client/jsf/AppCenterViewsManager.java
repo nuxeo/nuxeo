@@ -101,7 +101,11 @@ public class AppCenterViewsManager implements Serializable {
     public boolean getPlatformFilter() {
         Boolean dofilter = platformFilters.get(currentAdminSubViewId);
         if (dofilter == null) {
-            return false;
+            if ("ConnectAppsUpdates".equals(currentAdminSubViewId)) {
+                return true; // filter on platform by default for updates
+            } else {
+                return false;
+            }
         }
         return dofilter.booleanValue();
     }

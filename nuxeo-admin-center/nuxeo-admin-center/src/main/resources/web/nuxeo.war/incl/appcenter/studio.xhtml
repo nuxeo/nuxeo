@@ -30,8 +30,10 @@
         <div class="studioUpdateActions">
           <table width="100%"><tr>
           <td width="70%">
-          <h:outputText value="#{messages['label.studio.update.lastStatus']}"/>
+            <h:outputText value="#{messages['label.studio.update.lastStatus']}"/>
+          <span style="color:green">
           <h:outputText value="#{appsViews.getStudioInstallationStatus()}" styleClass="boldLabel"/>
+          </span>
           <c:if test="#{connectServerReachable and registredConnectInstance}">
             <a4j:commandButton value="#{messages['admCommand.studio.update']}" actionListener="#{appsViews.installStudioSnapshot()}"  reRender="connectAppListing"/>
             <h:outputText value="#{messages['label.studio.update']}"/>
