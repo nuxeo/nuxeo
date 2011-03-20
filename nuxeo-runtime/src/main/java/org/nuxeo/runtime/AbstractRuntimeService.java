@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -32,7 +32,6 @@ import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.RuntimeContext;
 import org.nuxeo.runtime.model.impl.ComponentManagerImpl;
 import org.nuxeo.runtime.model.impl.DefaultRuntimeContext;
-import org.nuxeo.runtime.services.adapter.AdapterManager;
 import org.osgi.framework.Bundle;
 
 /**
@@ -164,11 +163,6 @@ public abstract class AbstractRuntimeService implements RuntimeService {
     @Override
     public String getDescription() {
         return toString();
-    }
-
-    public AdapterManager getAdapterManager() {
-        // TODO Auto-generated method stub
-        return null;
     }
 
     @Override

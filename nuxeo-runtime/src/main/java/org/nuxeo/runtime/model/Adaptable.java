@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -11,9 +11,6 @@
  *******************************************************************************/
 package org.nuxeo.runtime.model;
 
-import org.nuxeo.runtime.services.adapter.AdaptableObject;
-import org.nuxeo.runtime.services.adapter.AdapterFactory;
-import org.nuxeo.runtime.services.adapter.AdapterManager;
 
 /**
  * An interface for an adaptable object.
