@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2010-2011 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
+ *     tdelprat, jcarsique
  */
 
 package org.nuxeo.ecm.admin;
@@ -61,8 +61,9 @@ public class NuxeoCtlManager {
         } else {
             // WIN
             cmdName = CMD_WIN;
+            paramString = "nogui " + paramString;
         }
-        paramString += System.getProperty("wizard.restart.params","");
+        paramString += System.getProperty("wizard.restart.params", "");
 
         String[] cmd = { "/bin/sh", "-c",
                 new File(path, cmdName).getPath() + " " + paramString };
