@@ -74,6 +74,12 @@ public class ShibbolethAuthenticationServiceImpl extends DefaultComponent
         String redirectURL = VirtualHostHelper.getBaseURL(request);
         if (request.getAttribute(NXAuthConstants.REQUESTED_URL) != null) {
             redirectURL += request.getAttribute(NXAuthConstants.REQUESTED_URL);
+        } else {
+            redirectURL = request.getRequestURL().toString();
+            String queryString = request.getQueryString();
+            if (queryString != null) {
+                redirectURL += "?" + queryString;
+            }
         }
         return redirectURL;
     }
