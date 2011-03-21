@@ -11,4 +11,5 @@ Require-Bundle:  org.nuxeo.ecm.core,
  org.nuxeo.ecm.platform.versioning.api
 Nuxeo-Component: 
  OSGI-INF/layouts-contrib.xml,
+ OSGI-INF/audit-contrib.xml,
  OSGI-INF/actions-contrib.xml

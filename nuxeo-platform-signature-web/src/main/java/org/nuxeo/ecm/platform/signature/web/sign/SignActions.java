@@ -21,7 +21,9 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.security.Principal;
 import java.security.cert.X509Certificate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.faces.context.FacesContext;
 
@@ -39,9 +41,11 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.api.event.DocumentEventCategories;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
+import org.nuxeo.ecm.core.event.EventProducer;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.versioning.VersioningService;
@@ -88,6 +92,12 @@ public class SignActions implements Serializable {
 
     @In(create = true)
     protected transient UserManager userManager;
+
+    public static final String DOCUMENT_SIGNED = "documentSigned";
+
+    public static final String CATEGORY = "Document";
+
+    public static final String DOCUMENT_SIGNED_COMMENT = "PDF signed";
 
     /**
      * Signs digitally a PDF blob contained in the current document.
@@ -155,12 +165,17 @@ public class SignActions implements Serializable {
                 event.setImmediate(true);
                 Framework.getLocalService(EventService.class).fireEvent(event);
 
-                // and display a signing message
+                // display a signing message
                 facesMessages.add(StatusMessage.Severity.INFO,
                         outputBlob.getFilename()
                                 + " "
                                 + resourcesAccessor.getMessages().get(
                                         "notification.sign.signed"));
+
+                // add an entry to the audit log
+                Map<String, Serializable> properties = new HashMap<String, Serializable>();
+                String comment = DOCUMENT_SIGNED_COMMENT;
+                notifyEvent(DOCUMENT_SIGNED, currentDoc, properties, comment);
             }
         } catch (CertException e) {
             LOG.info("PDF SIGNING PROBLEM. CERTIFICATE ACCESS PROBLEM" + e);
@@ -211,10 +226,12 @@ public class SignActions implements Serializable {
         } else {
             if (blob.getMimeType() == null) {
                 facesMessages.add(StatusMessage.Severity.INFO,
-                        resourcesAccessor.getMessages().get("label.sign.document.mime"));
+                        resourcesAccessor.getMessages().get(
+                                "label.sign.document.mime"));
             } else if (!blob.getMimeType().equals("application/pdf")) {
                 facesMessages.add(StatusMessage.Severity.ERROR,
-                        resourcesAccessor.getMessages().get("label.sign.pdf.warning"));
+                        resourcesAccessor.getMessages().get(
+                                "label.sign.pdf.warning"));
             } else {
                 List<X509Certificate> pdfCertificates;
                 try {
@@ -278,5 +295,34 @@ public class SignActions implements Serializable {
             }
         }
         return pdfCertificateInfo;
+    }
+
+    protected EventProducer getEventProducer() throws ClientException {
+        try {
+            return Framework.getService(EventProducer.class);
+        } catch (Exception e) {
+            throw new ClientException(e);
+        }
+    }
+
+    protected void notifyEvent(String eventId, DocumentModel source,
+            Map<String, Serializable> properties, String comment)
+            throws ClientException {
+
+        properties.put(DocumentEventContext.COMMENT_PROPERTY_KEY, comment);
+        properties.put(DocumentEventContext.CATEGORY_PROPERTY_KEY,
+                DocumentEventCategories.EVENT_DOCUMENT_CATEGORY);
+
+        DocumentEventContext eventContext = new DocumentEventContext(
+                source.getCoreSession(),
+                source.getCoreSession().getPrincipal(), source);
+
+        eventContext.setProperties(properties);
+
+        try {
+            getEventProducer().fireEvent(eventContext.newEvent(eventId));
+        } catch (ClientException e) {
+            LOG.error("Error firing an audit event", e);
+        }
     }
 }

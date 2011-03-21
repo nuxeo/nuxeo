@@ -57,9 +57,9 @@ import com.lowagie.text.pdf.PdfSignatureAppearance;
 import com.lowagie.text.pdf.PdfStamper;
 
 /**
- *
+ * 
  * Base implementation for the signature service.
- *
+ * 
  * @author <a href="mailto:ws@nuxeo.com">Wojciech Sulejman</a>
  */
 public class SignatureServiceImpl extends DefaultComponent implements
@@ -98,8 +98,8 @@ public class SignatureServiceImpl extends DefaultComponent implements
             Certificate[] certChain = certificates.toArray(new Certificate[0]);
             sap.setCrypto(keyPair.getPrivate(), certChain, null,
                     PdfSignatureAppearance.SELF_SIGNED);
-            if(null==reason || reason==""){
-                reason=getSigningReason();   
+            if (null == reason || reason == "") {
+                reason = getSigningReason();
             }
             sap.setReason(reason);
             sap.setCertificationLevel(PdfSignatureAppearance.CERTIFIED_NO_CHANGES_ALLOWED);
@@ -108,8 +108,9 @@ public class SignatureServiceImpl extends DefaultComponent implements
             sap.setAcro6Layers(true);
             sap.setRender(PdfSignatureAppearance.SignatureRenderNameAndDescription);
             stp.close();
-            log.debug("Temporary file " + outputFile.getAbsolutePath()
+            log.debug("File " + outputFile.getAbsolutePath()
                     + " created and signed with " + reason);
+
         } catch (UnrecoverableKeyException e) {
             throw new CertException(e);
         } catch (KeyStoreException e) {
@@ -144,7 +145,7 @@ public class SignatureServiceImpl extends DefaultComponent implements
             for (int k = 0; k < signatureNames.size(); ++k) {
                 String signatureName = (String) signatureNames.get(k);
                 PdfPKCS7 pdfPKCS7 = acroFields.verifySignature(signatureName);
-                X509Certificate signingCertificate=pdfPKCS7.getSigningCertificate();
+                X509Certificate signingCertificate = pdfPKCS7.getSigningCertificate();
                 pdfCertificates.add(signingCertificate);
             }
         } catch (IOException e) {
@@ -192,4 +193,5 @@ public class SignatureServiceImpl extends DefaultComponent implements
             String extensionPoint, ComponentInstance contributor) {
         config.remove(contribution);
     }
+
 }
