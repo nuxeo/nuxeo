@@ -63,6 +63,7 @@ public class ServerController {
         } else {
             // WIN
             cmdName = CMD_WIN;
+            paramString = "nogui " + paramString;
         }
         paramString += System.getProperty(
                 ConfigurationGenerator.PARAM_WIZARD_RESTART_PARAMS, "");
