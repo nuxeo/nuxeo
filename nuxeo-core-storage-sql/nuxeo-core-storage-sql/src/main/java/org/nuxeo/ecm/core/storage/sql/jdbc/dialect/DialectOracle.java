@@ -8,6 +8,7 @@
  *
  * Contributors:
  *     Florent Guillaume
+ *     Benoit Delbosc
  */
 
 package org.nuxeo.ecm.core.storage.sql.jdbc.dialect;
@@ -522,7 +523,7 @@ public class DialectOracle extends Dialect {
         List<String> permsList = new LinkedList<String>();
         for (String perm : permissions) {
             permsList.add(String.format(
-                    "  INTO READ_ACL_PERMISSIONS VALUES ('%s')", perm));
+                    "  INTO ACLR_PERMISSION VALUES ('%s')", perm));
         }
         properties.put("readPermissions", StringUtils.join(permsList, "\n"));
         return properties;

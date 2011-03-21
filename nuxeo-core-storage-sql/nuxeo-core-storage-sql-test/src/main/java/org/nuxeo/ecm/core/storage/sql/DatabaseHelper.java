@@ -8,6 +8,7 @@
  *
  * Contributors:
  *     Florent Guillaume
+ *     Benoit Delbosc
  */
 
 package org.nuxeo.ecm.core.storage.sql;
@@ -108,6 +109,10 @@ public abstract class DatabaseHelper {
             String tableName = rs.getString("TABLE_NAME");
             if (tableName.indexOf('$') != -1) {
                 // skip Oracle 10g flashback/fulltext-index tables
+                continue;
+            }
+            if ("ACLR_USER_USERS".equals(tableName)) {
+                // skip nested table that is dropped by the main table
                 continue;
             }
             tableNames.add(tableName);

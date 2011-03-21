@@ -599,7 +599,7 @@ ALTER TABLE hierarchy DISABLE TRIGGER nx_trig_hierarchy_modified;
 CREATE OR REPLACE FUNCTION nx_aclr_modified()
 RETURNS trigger
 AS $$
--- Trigger to update the user_read_alcs
+-- Trigger to update the user read alcs
 DECLARE
   r record;
   rr record;
@@ -692,7 +692,6 @@ AS $$
 -- Rebuild only necessary read acls
 DECLARE
   update_count integer;
-  reset_cache boolean := false;
 BEGIN
   --
   -- 1/ New documents, no new ACL
