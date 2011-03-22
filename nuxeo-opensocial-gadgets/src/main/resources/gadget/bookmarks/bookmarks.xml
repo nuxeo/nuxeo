@@ -21,6 +21,9 @@
   <UserPref name="bookmarks" default_value="" datatype="hidden"/>
   <Content type="html">
     <![CDATA[
+    
+    <link rel="stylesheet" type="text/css" href="/nuxeo/site/skin/gadgets/css/gadget-common.css"/>
+   
     <script type="text/javascript" language="javascript" src="bookmarks.js"></script>
       <script>
 
@@ -113,11 +116,10 @@
           text-decoration: none;
           font-size: 11px;
         }
+        
         .name_a:link, .name_a:visited {
-          text-decoration:none;
-          font-size: 11px;
-          color: black;
         }
+        
       #addText:link, .addText:visited {
           text-decoration:none;
           font-size: 11px;
@@ -227,8 +229,8 @@
         }
       </style>
 
-      <div id="bookmarksDiv"></div>
-      <div id="addBookmarkIcon" style="display:block;">
+      <div class="content"></div>
+      <div class="tools">
 
       </div>
       <div id="addBookmarkForm" style="display: none">

@@ -1,0 +1,40 @@
+body {
+
+  font:normal 11px 'Lucida Grande', Verdana, Arial, sans-serif;
+}
+
+p {
+  margin:5px 0 10px 0;
+}
+
+a:link {
+  color:#0066cc;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+  }
+  
+button {
+  background-color: #4E9AE1;
+  background-image: none;
+  line-height: 100%;
+  padding: 2px 5px;
+  margin:5px 0;
+  -moz-border-radius: 10px;
+  -webkit-border-radius: 10px;
+  border-radius: 10px;
+  color:#fff;
+  border:none;
+}
+    
+.content {
+  padding:10px;
+}  
+
+.tools {
+  background-color: #f7f7f7;
+  padding:10px;
+}
+
