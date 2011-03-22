@@ -280,13 +280,19 @@ public class UISelectItems extends javax.faces.component.UISelectItems {
     }
 
     protected void putIteratorToRequestParam(Object object) {
-        FacesContext.getCurrentInstance().getExternalContext().getRequestMap().put(
-                getVar(), object);
+        String var = getVar();
+        if (var != null) {
+            FacesContext.getCurrentInstance().getExternalContext().getRequestMap().put(
+                    var, object);
+        }
     }
 
     protected void removeIteratorFromRequestParam() {
-        FacesContext.getCurrentInstance().getExternalContext().getRequestMap().remove(
-                getVar());
+        String var = getVar();
+        if (var != null) {
+            FacesContext.getCurrentInstance().getExternalContext().getRequestMap().remove(
+                    var);
+        }
     }
 
     @Override

@@ -23,8 +23,8 @@ import javax.faces.model.SelectItem;
 
 /**
  * EasySelectItem from
- * http://jsf-comp.sourceforge.net/components/easysi/index.html, adapted to work
- * with single select item.
+ * http://jsf-comp.sourceforge.net/components/easysi/index.html, adapted to
+ * work with single select item.
  *
  * @author Cagatay-Mert
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
@@ -81,13 +81,19 @@ public class UISelectItem extends javax.faces.component.UISelectItem {
     }
 
     protected void putIteratorToRequestParam(Object object) {
-        FacesContext.getCurrentInstance().getExternalContext().getRequestMap().put(
-                getVar(), object);
+        String var = getVar();
+        if (var != null) {
+            FacesContext.getCurrentInstance().getExternalContext().getRequestMap().put(
+                    var, object);
+        }
     }
 
     protected void removeIteratorFromRequestParam() {
-        FacesContext.getCurrentInstance().getExternalContext().getRequestMap().remove(
-                getVar());
+        String var = getVar();
+        if (var != null) {
+            FacesContext.getCurrentInstance().getExternalContext().getRequestMap().remove(
+                    var);
+        }
     }
 
     @Override
