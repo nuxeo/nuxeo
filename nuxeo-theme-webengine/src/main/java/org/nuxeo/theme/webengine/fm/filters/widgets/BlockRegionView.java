@@ -28,7 +28,7 @@ public final class BlockRegionView extends AbstractView {
             s.append("<div class=\"nxthemesRegionNotSet\">").append(
                     "No region name is set...").append("</div>");
         } else {
-            s.append("<div>");
+            s.append("<div class=\"themeRegion\">");
             s.append("<@block name=\"").append(region.name).append("\">");
             if ("".equals(region.defaultSrc)) {
                 s.append(region.defaultBody);
