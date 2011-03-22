@@ -259,16 +259,15 @@ log_misc() {
 
 
 get_pgconf() {
-    CONF=$HERE/nuxeo.conf
-    TEMPLATE=`grep "^nuxeo.templates" $CONF | grep postgresql | cut -d= -f2`
+    TEMPLATE=`grep "^nuxeo.templates" $NUXEO_CONF | grep postgresql | cut -d= -f2`
     if [ -z $TEMPLATE ]; then
 	return
     fi
-    DBPORT=`grep "^nuxeo.db.port" $CONF| cut -d= -f2`
-    DBHOST=`grep "^nuxeo.db.host" $CONF | cut -d= -f2`
-    DBNAME=`grep "^nuxeo.db.name" $CONF | cut -d= -f2`
-    DBUSER=`grep "^nuxeo.db.user" $CONF | cut -d= -f2`
-    DBPWD=`grep "^nuxeo.db.password" $CONF | cut -d= -f2`
+    DBPORT=`grep "^nuxeo.db.port" $NUXEO_CONF| cut -d= -f2`
+    DBHOST=`grep "^nuxeo.db.host" $NUXEO_CONF | cut -d= -f2`
+    DBNAME=`grep "^nuxeo.db.name" $NUXEO_CONF | cut -d= -f2`
+    DBUSER=`grep "^nuxeo.db.user" $NUXEO_CONF | cut -d= -f2`
+    DBPWD=`grep "^nuxeo.db.password" $NUXEO_CONF | cut -d= -f2`
     if [ -z $DBHOST ]; then 
 	DBHOST=localhost
     fi
@@ -361,7 +360,7 @@ start() {
     log_misc $LOG_DIR/misc-start.txt
     
     # get a copy of nuxeo.conf
-    grep -Ev '^$|^#' $HERE/nuxeo.conf | sed "s/\(password\=\).*$/\1******/g" > $LOG_DIR/nuxeo-conf.txt
+    grep -Ev '^$|^#' $NUXEO_CONF | sed "s/\(password\=\).*$/\1******/g" > $LOG_DIR/nuxeo-conf.txt
 
     # pg stats
     rm -f $LOG_DIR/pgstat-*.txt
