@@ -20,22 +20,14 @@
  - spaceName: the Space name to use, optional
 </c:if>
 
-  <script type="text/javascript" src="scripts/jquery/jquery.fancybox.pack.js"></script>
+  <link rel="stylesheet" type="text/css" href="${baseURL}opensocial/css/reset-fonts-grids.css" />
+  <link rel="stylesheet" type="text/css" href="${baseURL}opensocial/css/container.css" />
+  <link rel="stylesheet" type="text/css" href="${baseURL}opensocial/css/gadgets.css" />
+  <link rel="stylesheet" type="text/css" href="${baseURL}css/jquery.fancybox.css" />
+
+  <script type="text/javascript" src="#{baseURL}scripts/jquery/jquery.fancybox.pack.js"></script>
+
   <script type="text/javascript">
-    function addStylesheet(stylesheetUrl) {
-      var cssNode = document.createElement('link');
-      cssNode.type = 'text/css';
-      cssNode.rel = 'stylesheet';
-      cssNode.href = stylesheetUrl;
-      cssNode.media = 'screen';
-      document.getElementsByTagName("head")[0].appendChild(cssNode);
-    }
-
-    addStylesheet('#{baseURL}opensocial/css/reset-fonts-grids.css');
-    addStylesheet('#{baseURL}opensocial/css/container.css');
-    addStylesheet('#{baseURL}opensocial/css/gadgets.css');
-    addStylesheet('#{baseURL}css/jquery.fancybox.css');
-
     jQuery(document).ready(function() {
       jQuery("#addGadgetButton").fancybox({
         'width'				: '75%',
