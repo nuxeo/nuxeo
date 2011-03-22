@@ -144,6 +144,7 @@ Acknowledgments
    French: Nuxeo Team
    Galician: Jose Luis de la Rosa
    German: Georges Racinet
+   Greek: Nina Bagouli
    Italian: Mirto Silvio Busico, Samuele Innocenti, Stefane Fermigier
    Japanese: Damien Dupraz
    Polish: Adam Lozy
