@@ -67,8 +67,8 @@ DECLARE
   first boolean := true;
 BEGIN
   WHILE curid IS NOT NULL LOOP
-    FOR r in SELECT acls.grant, acls.permission, acls.users FROM acls WHERE acls.id = curid ORDER BY acls.pos LOOP
-      IF r.permission = ANY(permissions) AND r.users = ANY(users) THEN
+    FOR r in SELECT acls.grant, acls.permission, acls.user FROM acls WHERE acls.id = curid ORDER BY acls.pos LOOP
+      IF r.permission = ANY(permissions) AND r.user = ANY(users) THEN
         RETURN r.grant;
       END IF;
     END LOOP;
@@ -639,7 +639,7 @@ CREATE TRIGGER nx_trig_aclr_modified
 
 
 #IF: ! aclOptimizationsEnabled
-ALTER TABLE aclr DISABLE TRIGGER nx_aclr_modified;
+ALTER TABLE aclr DISABLE TRIGGER nx_trig_aclr_modified;
 
 
 CREATE OR REPLACE FUNCTION nx_rebuild_read_acls()
@@ -775,7 +775,7 @@ LOG.INFO Upgrading to optimized acls
 SELECT * FROM nx_rebuild_read_acls();
 
 #IF: aclOptimizationsEnabled
-LOG.INFO Vacuuming tables used by optmized acls
+LOG.INFO Vacuuming tables used by optimized acls
 
 # Vacuum the read acls tables
 #IF: aclOptimizationsEnabled
