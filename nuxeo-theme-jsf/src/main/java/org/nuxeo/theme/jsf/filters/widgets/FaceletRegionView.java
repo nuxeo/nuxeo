@@ -29,7 +29,8 @@ public final class FaceletRegionView extends AbstractView {
             s.append("<div class=\"nxthemesRegionNotSet\">").append(
                     "No facelet region name is set...").append("</div>");
         } else {
-            s.append("<div xmlns:ui=\"http://java.sun.com/jsf/facelets\">");
+            s.append("<div xmlns:ui=\"http://java.sun.com/jsf/facelets\""
+                    + " class=\"themeRegion\">");
             s.append("<ui:insert name=\"").append(region.name).append("\">");
             if ("".equals(region.defaultSrc)) {
                 s.append(region.defaultBody);
