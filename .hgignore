@@ -16,3 +16,4 @@ target
 *.ipr
 *.iws
 .DS_Store
+addons
