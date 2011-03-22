@@ -1,6 +1,6 @@
-                  Nuxeo platform 5.4.1-SNAPSHOT Release Notes
+                  Nuxeo platform 5.4.2-SNAPSHOT Release Notes
 
-   Welcome to the Nuxeo platform 5.4.1-SNAPSHOT.
+   Welcome to the Nuxeo platform 5.4.2-SNAPSHOT.
 
    You can always download the latest releases of Nuxeo applications based
    on the Nuxeo Enterprise Platform from
@@ -144,6 +144,7 @@ Acknowledgments
    French: Nuxeo Team
    Galician: Jose Luis de la Rosa
    German: Georges Racinet
+   Greek: Nina Bagouli
    Italian: Mirto Silvio Busico, Samuele Innocenti, Stefane Fermigier
    Japanese: Damien Dupraz
    Polish: Adam Lozy
