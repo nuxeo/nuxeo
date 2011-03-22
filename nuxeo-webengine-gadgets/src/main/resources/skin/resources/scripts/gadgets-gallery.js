@@ -28,15 +28,14 @@ function selectCategory(idx, name) {
 }
 
 function doAddGadget(name, url) {
-
     if (typeof(addGadgetHook) == 'function') {
         addGadgetHook(name, url);
     }
 
-    if (typeof(addGadget) == 'function') {
-        addGadget(name, url);
+    if (typeof parent.addGadget == 'function') {
+        parent.addGadget(name, url);
     } else {
         alert("adding Gadget with name=" + name + " and url=" + url
-                + "\n you should define the addGadget(name,url) function !");
+                + "\n you should define the addGadget(name,url) function!");
     }
 }
