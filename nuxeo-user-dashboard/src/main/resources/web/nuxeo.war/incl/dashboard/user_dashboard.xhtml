@@ -4,21 +4,6 @@
      xmlns:f="http://java.sun.com/jsf/core"
      xmlns:nxu="http://nuxeo.org/nxweb/util">
 
-  <script type="text/javascript">
-    function addStylesheet(stylesheetUrl) {
-      var cssNode = document.createElement('link');
-      cssNode.type = 'text/css';
-      cssNode.rel = 'stylesheet';
-      cssNode.href = stylesheetUrl;
-      cssNode.media = 'screen';
-      document.getElementsByTagName("head")[0].appendChild(cssNode);
-    }
-
-    addStylesheet('#{baseURL}opensocial/css/reset-fonts-grids.css');
-    addStylesheet('#{baseURL}opensocial/css/container.css');
-    addStylesheet('#{baseURL}opensocial/css/gadgets.css');
-  </script>
-
   <nxu:set var="repositoryName" value="#{currentDocument.repositoryName}">
   <nxu:set var="spaceProviderName" value="userDashboardSpaceProvider">
 
