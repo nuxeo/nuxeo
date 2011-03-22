@@ -25,6 +25,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLDecoder;
@@ -198,6 +199,25 @@ public class JBossConfiguratorTest {
             log.error(e);
             return null;
         }
+    }
+
+    @Test
+    public void testReplaceBackslashes() throws ConfigurationException,
+            IOException {
+        File windowsConf = getResourceFile("configurator/windows.conf");
+        File newWindowsConf = File.createTempFile("nuxeo", ".conf");
+        FileUtils.copyFile(windowsConf, newWindowsConf);
+        System.setProperty(ConfigurationGenerator.NUXEO_CONF,
+                newWindowsConf.getPath());
+        configGenerator = new ConfigurationGenerator();
+        configGenerator.replaceBackslashes();
+        BufferedReader br = new BufferedReader(new FileReader(newWindowsConf));
+        String generatedProperty = br.readLine();
+        propertyToGenerate = "nuxeo.log.dir=C:/ProgramData/path with space/nuxeo/log";
+        assertEquals(generatedProperty, propertyToGenerate, generatedProperty);
+        generatedProperty = br.readLine();
+        propertyToGenerate = "some.parameter=d\\u00e9connexion-${nuxeo.log.dir}";
+        assertEquals(generatedProperty, propertyToGenerate, generatedProperty);
     }
 
 }

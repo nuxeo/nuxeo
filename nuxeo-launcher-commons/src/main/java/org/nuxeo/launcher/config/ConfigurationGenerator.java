@@ -302,6 +302,10 @@ public class ConfigurationGenerator {
             // Add useful system properties
             userConfig.putAll(System.getProperties());
 
+            // If Windows, replace backslashes in paths
+            if (System.getProperty("os.name").toLowerCase().startsWith("win")) {
+                replaceBackslashes();
+            }
             // Load user configuration
             userConfig.load(new FileInputStream(nuxeoConf));
             onceGeneration = "once".equals(userConfig.getProperty(PARAM_FORCE_GENERATION));
@@ -335,6 +339,56 @@ public class ConfigurationGenerator {
             throw new ConfigurationException("Missing file", e);
         } catch (IOException e) {
             throw new ConfigurationException("Error reading " + nuxeoConf, e);
+        }
+    }
+
+    /**
+     * Read nuxeo.conf, replace backslashes in paths and write new
+     * nuxeo.conf
+     *
+     * @throws ConfigurationException if any error reading or writing
+     *             nuxeo.conf
+     * @since 5.4.1
+     */
+    protected void replaceBackslashes() throws ConfigurationException {
+        StringBuffer sb = new StringBuffer();
+        BufferedReader reader = null;
+        try {
+            reader = new BufferedReader(new FileReader(nuxeoConf));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (line.matches(".*:\\\\.*")) {
+                    line = line.replaceAll("\\\\", "/");
+                }
+                sb.append(line + System.getProperty("line.separator"));
+            }
+            reader.close();
+        } catch (IOException e) {
+            throw new ConfigurationException("Error reading " + nuxeoConf, e);
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    throw new ConfigurationException(e);
+                }
+            }
+        }
+        FileWriter writer = null;
+        try {
+            writer = new FileWriter(nuxeoConf, false);
+            // Copy back file content
+            writer.append(sb.toString());
+        } catch (IOException e) {
+            throw new ConfigurationException("Error writing in " + nuxeoConf, e);
+        } finally {
+            if (writer != null) {
+                try {
+                    writer.close();
+                } catch (IOException e) {
+                    throw new ConfigurationException(e);
+                }
+            }
         }
     }
 
