@@ -56,7 +56,6 @@ public class SelectManyListboxRenderer extends Renderer {
     @Override
     @SuppressWarnings("unchecked")
     public void decode(FacesContext facesContext, UIComponent component) {
-        // String compId = component.getClientId(facesContext);
         SelectManyListboxComponent comp = (SelectManyListboxComponent) component;
         String clientId = comp.getClientId(facesContext);
 
@@ -153,8 +152,6 @@ public class SelectManyListboxRenderer extends Renderer {
             throws IOException {
         String cssStyleClass = comp.getStringProperty("cssStyleClass", null);
         String cssStyle = comp.getStringProperty("cssStyle", null);
-        // the sort of the item is made in the component
-        // String sortCriteria = comp.getStringProperty("ordering", "label");
         String id = comp.getClientId(context);
         Boolean displayIdAndLabel = comp.getDisplayIdAndLabel();
         String display = comp.getDisplay();
@@ -205,7 +202,6 @@ public class SelectManyListboxRenderer extends Renderer {
             newOptions.add(newItem);
         }
 
-        // Collections.sort(newOptions, new SelectItemComparator(sortCriteria));
         Set<String> selectedValuesSet = new HashSet<String>();
         if (selectedValues != null) {
             selectedValuesSet.addAll(Arrays.asList(selectedValues));

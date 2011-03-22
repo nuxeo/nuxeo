@@ -37,7 +37,6 @@ import org.nuxeo.ecm.directory.DirectoryException;
  * Renderer for directory entry.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public class DirectoryEntryOutputRenderer extends Renderer {
 
@@ -59,9 +58,12 @@ public class DirectoryEntryOutputRenderer extends Renderer {
                     "keySeparator");
             String schema;
             try {
-                schema = DirectoryHelper.getDirectoryService().getDirectorySchema(directoryName);
+                schema = DirectoryHelper.getDirectoryService().getDirectorySchema(
+                        directoryName);
             } catch (DirectoryException de) {
-                log.error("Unable to get directory schema for " + directoryName, de);
+                log.error(
+                        "Unable to get directory schema for " + directoryName,
+                        de);
                 schema = keySeparator != null ? "xvocabulary" : "vocabulary";
             }
             if (keySeparator != null && entryId != null) {
@@ -92,9 +94,8 @@ public class DirectoryEntryOutputRenderer extends Renderer {
                 if (Boolean.TRUE.equals(translate)) {
                     label = translate(context, label);
                 }
-                toWrite = display != null ? DirectoryHelper.instance().getOptionValue(
-                        entryId, label, display, displayIdAndLabel, " ")
-                        : label;
+                toWrite = DirectoryHelper.getOptionValue(entryId, label,
+                        display, displayIdAndLabel.booleanValue(), " ");
             }
         }
         if (toWrite == null) {

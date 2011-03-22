@@ -212,8 +212,6 @@ public final class DirectoryHelper {
             String display, boolean displayIdAndLabel,
             String displayIdAndLabelSeparator) {
         StringBuilder displayValue = new StringBuilder();
-
-        //Rux NXP-454: eliminated a NPE source.For details, ask for Anahide
         if (display != null && !"".equals(display)) {
             if (display.equals(displayOptions[0])) {
                 displayValue.append(optionId);
