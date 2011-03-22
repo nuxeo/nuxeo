@@ -241,8 +241,9 @@ public class TableReference extends AbstractReference {
 
         SQLSession session = getSQLSession();
         List<String> ids = new LinkedList<String>();
+        PreparedStatement ps = null;
         try {
-            PreparedStatement ps = session.sqlConnection.prepareStatement(sql);
+            ps = session.sqlConnection.prepareStatement(sql);
             ps.setString(1, filterValue);
 
             ResultSet rs = ps.executeQuery();
@@ -253,7 +254,15 @@ public class TableReference extends AbstractReference {
         } catch (SQLException e) {
             throw new DirectoryException("error fetching reference values: ", e);
         } finally {
-            session.close();
+            try {
+                if (ps != null) {
+                    ps.close();
+                }
+            } catch (SQLException sqle) {
+                throw new DirectoryException(sqle);
+            } finally {
+                session.close();
+            }
         }
     }
 
