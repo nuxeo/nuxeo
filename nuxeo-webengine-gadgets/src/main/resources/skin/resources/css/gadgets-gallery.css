@@ -113,12 +113,12 @@ cursor: pointer;
  #gadgetListContainer .gadget .gadgetThumb {
  float:left;
  padding:0.5em 0.75em 0.5em 0;
- min-height: 60px;
- min-width: 60px;
+ min-height: 64px;
+ min-width: 64px;
  }
 
  #gadgetListContainer .gadget .gadgetThumb img {
- width: 60px;
+ width: 64px;
  }
 
  #gadgetListContainer .gadget h3 {

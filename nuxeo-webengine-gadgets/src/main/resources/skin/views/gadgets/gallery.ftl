@@ -21,13 +21,8 @@
         <div class="categoryList">
           <ul>
             <#list categories as cat>
-            <#if cat == category>
-            <li class="category currentCategory">
-              <a onclick="selectCategory('${cat_index}','${cat}');" id="cat${cat_index}">
-            <#else>
-            <li class="category">
-              <a onclick="selectCategory('${cat_index}','${cat}');" id="cat${cat_index}">
-            </#if>
+            <li class="category<#if cat == category> currentCategory</#if>">
+              <a href="#" category-name="${cat}">
               ${This.getCategoryLabel(cat)}
               </a>
             </li>

@@ -1,41 +1,33 @@
-function getDetails(name) {
-    var targetUrl = galleryBaseUrl + "/" + name + "/getDetails";
-    jQuery.get(targetUrl, function(data) {
-        jQuery('#gadgetDetails').html(data);
+jQuery(document).ready(function() {
+	jQuery(".category a").click(function(e) {
+		function refreshList(name) {
+	    var targetUrl = galleryBaseUrl + "/listGadgets";
+	    if (name != 'all') {
+	        targetUrl += "?cat=" + name;
+	    }
+	    jQuery.get(targetUrl, function(data) {
+	        jQuery('#gadgetListContainer').html(data);
+	    });
+		};
+
+		e.preventDefault();
+    e.stopPropagation();
+		jQuery(".currentCategory").toggleClass('currentCategory');
+		jQuery(this).toggleClass('currentCategory');
+		refreshList(jQuery(this).attr("category-name"));
+  });
+
+  jQuery(".specUrl a").click(function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    parent.window.location = jQuery(this).attr("href");
+  });
+
+  if (typeof parent.addGadget == 'function') {
+    jQuery(".gadget").click(function(e) {
+      var ele = jQuery(this);
+      parent.addGadget(ele.attr("gadget-name"), ele.attr("gadget-spec-url"));
     });
-}
-
-function refreshList(name) {
-    var targetUrl = galleryBaseUrl + "/listGadgets";
-    if (name != 'all') {
-        targetUrl += "?cat=" + name;
-    }
-    jQuery.get(targetUrl, function(data) {
-        jQuery('#gadgetListContainer').html(data);
-    });
-}
-
-function selectGadget(idx, name) {
-    jQuery(".currentGadget").toggleClass('currentGadget');
-    jQuery("#gadget" + idx).toggleClass('currentGadget');
-    getDetails(name);
-}
-
-function selectCategory(idx, name) {
-    jQuery(".currentCategory").toggleClass('currentCategory');
-    jQuery("#cat" + idx).toggleClass('currentCategory');
-    refreshList(name);
-}
-
-function doAddGadget(name, url) {
-    if (typeof(addGadgetHook) == 'function') {
-        addGadgetHook(name, url);
-    }
-
-    if (typeof parent.addGadget == 'function') {
-        parent.addGadget(name, url);
-    } else {
-        alert("adding Gadget with name=" + name + " and url=" + url
-                + "\n you should define the addGadget(name,url) function!");
-    }
-}
+    jQuery(".gadget").css("cursor", "pointer");
+  }
+});
