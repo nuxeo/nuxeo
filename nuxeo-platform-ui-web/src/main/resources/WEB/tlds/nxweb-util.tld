@@ -337,7 +337,7 @@
     </attribute>
     <attribute>
       <name>var</name>
-      <required>true</required>
+      <required>false</required>
       <rtexprvalue>false</rtexprvalue>
       <description>
         Name of the request scope attribute that will be used to set an item
@@ -414,7 +414,7 @@
     </attribute>
     <attribute>
       <name>var</name>
-      <required>true</required>
+      <required>false</required>
       <rtexprvalue>false</rtexprvalue>
       <description>
         Name of the request scope attribute that will be used to set an item
