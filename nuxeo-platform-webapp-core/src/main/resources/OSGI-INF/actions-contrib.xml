@@ -58,13 +58,6 @@
       <filter-id>not_readonly</filter-id>
     </action>
 
-    <action id="themes_manager" link="#{themeEditorAction.startEditor}"
-      label="command.manageThemes" order="40">
-      <category>USER_SERVICES</category>
-      <filter-id>only_for_manager</filter-id>
-      <filter-id>not_readonly</filter-id>
-    </action>
-
     <action id="advanced_search" link="search_form"
       label="command.advancedSearch" order="10">
       <category>SEARCH_ACTIONS</category>
