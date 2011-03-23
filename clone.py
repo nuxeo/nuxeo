@@ -26,5 +26,5 @@ for line in os.popen("mvn -N help:effective-pom"):
         system("hg pull -R %s" % addon)
     else:
         print "Cloning " + addon
-        system("hg clone https://hg.nuxeo.org/addons/%s" % addon)
+        system("hg clone https://hg.nuxeo.org/addons/%s %s" % (addon,addon))
     system("cd %s ; hg up %s" % (addon, branch))
