@@ -1,4 +1,20 @@
 jQuery(document).ready(function() {
+  function addClickListeners() {
+    jQuery(".specUrl a").click(function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      parent.window.location = jQuery(this).attr("href");
+    });
+
+    if (typeof parent.addGadget == 'function') {
+      jQuery(".gadget").click(function() {
+        var ele = jQuery(this);
+        parent.addGadget(ele.attr("gadget-name"), ele.attr("gadget-spec-url"));
+      });
+      jQuery(".gadget").css("cursor", "pointer");
+    }
+  }
+
 	jQuery(".category a").click(function(e) {
 		function refreshList(name) {
 	    var targetUrl = galleryBaseUrl + "/listGadgets";
@@ -7,8 +23,9 @@ jQuery(document).ready(function() {
 	    }
 	    jQuery.get(targetUrl, function(data) {
 	        jQuery('#gadgetListContainer').html(data);
+          addClickListeners();
 	    });
-		};
+		}
 
 		e.preventDefault();
     e.stopPropagation();
@@ -17,17 +34,5 @@ jQuery(document).ready(function() {
 		refreshList(jQuery(this).attr("category-name"));
   });
 
-  jQuery(".specUrl a").click(function(e) {
-    e.preventDefault();
-    e.stopPropagation();
-    parent.window.location = jQuery(this).attr("href");
-  });
-
-  if (typeof parent.addGadget == 'function') {
-    jQuery(".gadget").click(function(e) {
-      var ele = jQuery(this);
-      parent.addGadget(ele.attr("gadget-name"), ele.attr("gadget-spec-url"));
-    });
-    jQuery(".gadget").css("cursor", "pointer");
-  }
+  addClickListeners();
 });
