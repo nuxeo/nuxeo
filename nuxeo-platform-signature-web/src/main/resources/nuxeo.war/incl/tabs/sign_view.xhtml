@@ -12,10 +12,16 @@
   xmlns:nxl="http://nuxeo.org/nxforms/layout"><a4j:outputPanel
   id="signPanel">
 
-
   <div id="facesStatusMessage" class="facesStatusMessage"><h:messages
     globalOnly="true" infoClass="infoFeedback"
     warnClass="warningFeedback" errorClass="errorFeedback" /></div>
+
+  <h:form>
+    <h:commandLink action="#{certActions.downloadRootCertificate}"
+      immediate="true">
+      <h:outputText value="#{messages['command.root.certificate.download']}" />
+    </h:commandLink>
+  </h:form>
 
   <c:if test="#{signActions.isPDFSigned()}">
 
@@ -96,15 +102,13 @@
   </c:if>
 
   <c:if test="#{!certActions.hasCertificate()}">
-        <h:outputText
-          value="#{messages['label.sign.certificate.prompt']}" />
+    <h:outputText value="#{messages['label.sign.certificate.prompt']}" />
     <h:form>
       <h:outputText
         value="#{userManagerActions.setSelectedUser(userManager.getUserModel(currentUser.name))}" />
       <h:commandLink action="#{userManagerActions.viewUser}"
         immediate="true">
-        <h:outputText
-          value="#{messages['label.cert.navigate']}" />
+        <h:outputText value="#{messages['label.cert.navigate']}" />
       </h:commandLink>
     </h:form>
   </c:if>

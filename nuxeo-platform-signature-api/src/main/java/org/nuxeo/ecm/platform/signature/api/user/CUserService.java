@@ -85,11 +85,22 @@ public interface CUserService {
      */
     public DocumentModel getCertificate(String userID) throws ClientException;
 
+    
+    /**
+     * Retrieves the public root certificate.
+     *
+     * @param user
+     * @return certificate document model
+     * @throws ClientException
+     */
+    public byte[] getRootCertificateData() throws ClientException;
+
+    
     /**
      * Checks if the user is present in the certificate directory.
      *
-     * @param user
-     * @return Is the user present in the certificate directory ?
+     * @param userID
+     * @return
      * @throws CertException
      */
     public boolean hasCertificate(String userID) throws CertException,

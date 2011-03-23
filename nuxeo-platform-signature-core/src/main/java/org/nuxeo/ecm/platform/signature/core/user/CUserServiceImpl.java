@@ -33,6 +33,7 @@ import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.signature.api.exception.CertException;
 import org.nuxeo.ecm.platform.signature.api.pki.CertService;
+import org.nuxeo.ecm.platform.signature.api.pki.RootService;
 import org.nuxeo.ecm.platform.signature.api.user.AliasType;
 import org.nuxeo.ecm.platform.signature.api.user.AliasWrapper;
 import org.nuxeo.ecm.platform.signature.api.user.CNField;
@@ -52,6 +53,8 @@ public class CUserServiceImpl implements CUserService {
     private static final Log LOG = LogFactory.getLog(CUserServiceImpl.class);
 
     private static final String CERTIFICATE_DIRECTORY_NAME = "certificate";
+
+    protected RootService rootService;
 
     protected CertService certService;
 
@@ -139,7 +142,6 @@ public class CUserServiceImpl implements CUserService {
         map.put("keystore", keystore64Encoded);
         map.put("certificate", getUserCertInfo(keystore, user));
         map.put("keypassword", userKeyPassword);
-
         try {
             certificate = session.createEntry(map);
             session.commit();
@@ -193,6 +195,13 @@ public class CUserServiceImpl implements CUserService {
         return certificate;
     }
 
+    
+    @Override
+    public byte[] getRootCertificateData() throws ClientException {
+        byte[] certificateData= getRootService().getRootPublicCertificate();
+        return certificateData;
+    }
+    
     @Override
     public boolean hasCertificate(String userID) throws CertException,
             ClientException {
@@ -235,5 +244,18 @@ public class CUserServiceImpl implements CUserService {
             }
         }
         return certService;
+    }
+
+    protected RootService getRootService() throws ClientException {
+        if (rootService == null) {
+            try {
+                rootService = Framework.getService(RootService.class);
+            } catch (Exception e) {
+                String message = "RootService not found";
+                LOG.error(message + " " + e);
+                throw new ClientException(message);
+            }
+        }
+        return rootService;
     }
 }

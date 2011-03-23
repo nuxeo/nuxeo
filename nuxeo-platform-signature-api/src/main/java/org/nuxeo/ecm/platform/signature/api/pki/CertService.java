@@ -24,7 +24,6 @@ import java.security.KeyStore;
 import java.security.cert.X509Certificate;
 
 import org.nuxeo.ecm.platform.signature.api.exception.CertException;
-import org.nuxeo.ecm.platform.signature.api.user.RootService;
 import org.nuxeo.ecm.platform.signature.api.user.UserInfo;
 
 /**

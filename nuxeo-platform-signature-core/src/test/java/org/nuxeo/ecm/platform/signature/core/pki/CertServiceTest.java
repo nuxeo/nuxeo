@@ -40,10 +40,10 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.BackendType;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.signature.api.pki.CertService;
+import org.nuxeo.ecm.platform.signature.api.pki.RootService;
 import org.nuxeo.ecm.platform.signature.api.user.AliasType;
 import org.nuxeo.ecm.platform.signature.api.user.AliasWrapper;
 import org.nuxeo.ecm.platform.signature.api.user.CNField;
-import org.nuxeo.ecm.platform.signature.api.user.RootService;
 import org.nuxeo.ecm.platform.signature.api.user.UserInfo;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -95,7 +95,7 @@ public class CertServiceTest {
     @Before
     public void setup() throws Exception {
         KeyStore rootKeystore=certService.getKeyStore(getKeystoreIS(keystorePath), ROOT_KEYSTORE_PASSWORD);
-        RootService rootService=new RootService();
+        RootService rootService=new RootServiceImpl();
         AliasWrapper alias = new AliasWrapper(ROOT_USER_ID);
         rootService.setRootKeyAlias(alias.getId(AliasType.KEY));
         rootService.setRootCertificateAlias(alias.getId(AliasType.CERT));

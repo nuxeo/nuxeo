@@ -61,13 +61,14 @@ import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.directory.sql.SQLDirectoryProxy;
 import org.nuxeo.ecm.directory.sql.SimpleDataSource;
 import org.nuxeo.ecm.platform.signature.api.pki.CertService;
+import org.nuxeo.ecm.platform.signature.api.pki.RootService;
 import org.nuxeo.ecm.platform.signature.api.sign.SignatureService;
 import org.nuxeo.ecm.platform.signature.api.user.AliasType;
 import org.nuxeo.ecm.platform.signature.api.user.AliasWrapper;
 import org.nuxeo.ecm.platform.signature.api.user.CNField;
 import org.nuxeo.ecm.platform.signature.api.user.CUserService;
-import org.nuxeo.ecm.platform.signature.api.user.RootService;
 import org.nuxeo.ecm.platform.signature.api.user.UserInfo;
+import org.nuxeo.ecm.platform.signature.core.pki.RootServiceImpl;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -94,6 +95,10 @@ public class SignatureServiceTest {
     @Inject
     protected CertService certService;
 
+    @Inject
+    protected CertService rootService;
+
+    
     @Inject
     protected CUserService cUserService;
 
@@ -272,7 +277,7 @@ public class SignatureServiceTest {
     public CertService getCertServiceMock() throws Exception {
         KeyStore rootKeystore = certService.getKeyStore(
                 getKeystoreIS(KEYSTORE_PATH), KEYSTORE_PASSWORD);
-        RootService rootService = new RootService();
+        RootService rootService = new RootServiceImpl();
         AliasWrapper alias = new AliasWrapper(ROOT_USER_ID);
         rootService.setRootKeyAlias(alias.getId(AliasType.KEY));
         rootService.setRootCertificateAlias(alias.getId(AliasType.CERT));

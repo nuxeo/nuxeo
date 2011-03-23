@@ -58,10 +58,10 @@ import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.directory.sql.SQLDirectoryProxy;
 import org.nuxeo.ecm.directory.sql.SimpleDataSource;
 import org.nuxeo.ecm.platform.signature.api.pki.CertService;
+import org.nuxeo.ecm.platform.signature.api.pki.RootService;
 import org.nuxeo.ecm.platform.signature.api.user.AliasType;
 import org.nuxeo.ecm.platform.signature.api.user.AliasWrapper;
 import org.nuxeo.ecm.platform.signature.api.user.CNField;
-import org.nuxeo.ecm.platform.signature.api.user.RootService;
 import org.nuxeo.ecm.platform.signature.api.user.UserInfo;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.runtime.api.Framework;
@@ -113,7 +113,7 @@ public class TypeTest {
 
         KeyStore rootKeystore = certService.getKeyStore(
                 getKeystoreIS(keystorePath), ROOT_KEYSTORE_PASSWORD);
-        RootService rootService = new RootService();
+        RootService rootService = new RootServiceImpl();
         AliasWrapper alias = new AliasWrapper(ROOT_USER_ID);
         rootService.setRootKeyAlias(alias.getId(AliasType.KEY));
         rootService.setRootCertificateAlias(alias.getId(AliasType.CERT));

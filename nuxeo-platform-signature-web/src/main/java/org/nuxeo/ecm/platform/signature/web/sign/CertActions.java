@@ -16,12 +16,15 @@
  */
 package org.nuxeo.ecm.platform.signature.web.sign;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.io.Serializable;
 import java.security.Principal;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.validator.ValidatorException;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -92,6 +95,8 @@ public class CertActions implements Serializable {
     protected transient UserManager userManager;
 
     protected DocumentModel certificate;
+
+    private static final String ROOT_CERTIFICATE_FILE_NAME = "ROOT_CA_.crt";
 
     /**
      * Retrieves a user certificate and returns a certificate's document model
@@ -301,6 +306,26 @@ public class CertActions implements Serializable {
                             "label.cert.user.email.problem"), null);
             LOG.warn(currentUser.getName() + " : " + message.getDetail());
             throw new ValidatorException(message);
+        }
+    }
+
+    public void downloadRootCertificate() throws CertException {
+        try {
+            byte[] rootCertificateData = cUserService.getRootCertificateData();
+            HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
+            response.setContentType("application/octet-stream");
+            response.addHeader("Content-Disposition", "attachment;filename="
+                    + ROOT_CERTIFICATE_FILE_NAME);
+            response.setContentLength(rootCertificateData.length);
+            OutputStream writer = response.getOutputStream();
+            writer.write(rootCertificateData);
+            writer.flush();
+            writer.close();
+            FacesContext.getCurrentInstance().responseComplete();
+        } catch (ClientException e) {
+            throw new CertException(e);
+        } catch (IOException e) {
+            throw new CertException(e);
         }
     }
 }

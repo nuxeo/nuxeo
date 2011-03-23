@@ -1,8 +1,5 @@
 package org.nuxeo.ecm.platform.signature.core.pki;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -23,11 +20,9 @@ import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateParsingException;
 import java.security.cert.X509Certificate;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
-import java.util.List;
 import java.util.Vector;
 
 import org.apache.commons.logging.Log;
@@ -54,13 +49,12 @@ import org.bouncycastle.x509.extension.AuthorityKeyIdentifierStructure;
 import org.bouncycastle.x509.extension.SubjectKeyIdentifierStructure;
 import org.nuxeo.ecm.platform.signature.api.exception.CertException;
 import org.nuxeo.ecm.platform.signature.api.pki.CertService;
+import org.nuxeo.ecm.platform.signature.api.pki.RootService;
 import org.nuxeo.ecm.platform.signature.api.user.AliasType;
 import org.nuxeo.ecm.platform.signature.api.user.AliasWrapper;
 import org.nuxeo.ecm.platform.signature.api.user.CNField;
-import org.nuxeo.ecm.platform.signature.api.user.RootService;
 import org.nuxeo.ecm.platform.signature.api.user.UserInfo;
-import org.nuxeo.runtime.model.ComponentContext;
-import org.nuxeo.runtime.model.ComponentInstance;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
@@ -70,20 +64,15 @@ import org.nuxeo.runtime.model.DefaultComponent;
  * 
  */
 public class CertServiceImpl extends DefaultComponent implements CertService {
-    protected List<CertDescriptor> config;
 
     protected RootService rootService;
 
-    private static final Log log = LogFactory.getLog(CertServiceImpl.class);
+    private static final Log LOG = LogFactory.getLog(CertServiceImpl.class);
 
     public void setRootService(RootService rootService) {
         this.rootService = rootService;
     }
 
-    @Override
-    public void activate(ComponentContext context) throws Exception {
-        config = new ArrayList<CertDescriptor>();
-    }
 
     protected X509Certificate rootCertificate;
 
@@ -143,9 +132,6 @@ public class CertServiceImpl extends DefaultComponent implements CertService {
                 }
             }
 
-            if (null != rootService && rootService.isRootSetup()) {
-                initializeRoot();
-            }
             KeyPair rootKeyPair = getKeyPair(rootService.getRootKeyStore(),
                     rootService.getRootKeyAlias(),
                     rootService.getRootCertificateAlias(),
@@ -166,80 +152,19 @@ public class CertServiceImpl extends DefaultComponent implements CertService {
         } catch (java.security.SignatureException e) {
             throw new CertException(e);
         }
-        log.debug("Certificate generated for subject: "+cert.getSubjectDN());
+        LOG.debug("Certificate generated for subject: "+cert.getSubjectDN());
         return cert;
     }
 
     @Override
     public X509Certificate getRootCertificate() throws CertException {
         if (rootCertificate == null) {
-            initializeRoot();
-            rootCertificate = getCertificate(rootService.getRootKeyStore(),
-                    rootService.getRootCertificateAlias());
+            rootCertificate = getCertificate(getRootService().getRootKeyStore(),
+                    getRootService().getRootCertificateAlias());
         }
         return rootCertificate;
     }
 
-    protected void initializeRoot() throws CertException {
-        if (rootService == null || !rootService.isRootSetup()) {
-            this.rootService = new RootService();
-            for (CertDescriptor certDescriptor : config) {
-                if (certDescriptor.getRootKeystoreFilePath() != null) {
-                    rootService.setRootKeystoreFilePath(certDescriptor.getRootKeystoreFilePath());
-                } else if (rootService.getRootKeyStore() == null) {
-                    throw new CertException("Keystore path is missing");
-                }
-                if (certDescriptor.getRootCertificateAlias() != null) {
-                    rootService.setRootCertificateAlias(certDescriptor.getRootCertificateAlias());
-                } else {
-                    throw new CertException(
-                            "You have to provide root certificate alias");
-                }
-                if (certDescriptor.getRootKeystorePassword() != null) {
-                    rootService.setRootKeystorePassword(certDescriptor.getRootKeystorePassword());
-                } else {
-                    throw new CertException(
-                            "You have to provide root keystore password");
-                }
-                if (certDescriptor.getRootKeyAlias() != null) {
-                    rootService.setRootKeyAlias(certDescriptor.getRootKeyAlias());
-                } else {
-                    throw new CertException(
-                            "You have to provide root key alias");
-                }
-                if (certDescriptor.getRootKeyPassword() != null) {
-                    rootService.setRootKeyPassword(certDescriptor.getRootKeyPassword());
-                } else {
-                    throw new CertException(
-                            "You have to provide root key password");
-                }
-            }
-            InputStream keystoreIS = null;
-            File rootKeystoreFile = null;
-            try {
-                rootKeystoreFile = new File(
-                        rootService.getRootKeystoreFilePath());
-                if (rootKeystoreFile.exists()) {
-                    keystoreIS = new FileInputStream(rootKeystoreFile);
-                } else {// try a temporary resource keystore instead of a
-                        // configurable one
-                    keystoreIS = Thread.currentThread().getContextClassLoader().getResourceAsStream(
-                            rootService.getRootKeystoreFilePath());
-                }
-            } catch (FileNotFoundException e) {
-                // try local path
-                throw new CertException("Certificate not found at"
-                        + rootKeystoreFile.getAbsolutePath());
-            } catch (Exception e) {
-                // try local path
-                throw new CertException("Root certificate problem: "
-                        + rootKeystoreFile.getAbsolutePath());
-            }
-            KeyStore keystore = getKeyStore(keystoreIS,
-                    rootService.getRootKeystorePassword());
-            rootService.setRootKeyStore(keystore);
-        }
-    }
 
     protected Date getCertStartDate() {
         Calendar cal = Calendar.getInstance();
@@ -417,15 +342,17 @@ public class CertServiceImpl extends DefaultComponent implements CertService {
         }
     }
 
-    @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
-        config.add((CertDescriptor) contribution);
-    }
 
-    @Override
-    public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
-        config.remove(contribution);
+    protected RootService getRootService() throws CertException {
+        if (rootService == null) {
+            try {
+                rootService = Framework.getService(RootService.class);
+            } catch (Exception e) {
+                String message = "RootService not found";
+                LOG.error(message + " " + e);
+                throw new CertException(message);
+            }
+        }
+        return rootService;
     }
 }

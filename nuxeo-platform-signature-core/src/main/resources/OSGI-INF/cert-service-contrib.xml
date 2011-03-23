@@ -15,8 +15,4 @@
     <provide interface="org.nuxeo.ecm.platform.signature.api.pki.CertService" />
   </service>
 
-  <extension-point name="certextension">
-    <object class="org.nuxeo.ecm.platform.signature.core.pki.CertDescriptor" />
-  </extension-point>
-
 </component>
