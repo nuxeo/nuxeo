@@ -19,6 +19,10 @@
 
 package org.nuxeo.ecm.webapp.security;
 
+import static org.jboss.seam.ScopeType.APPLICATION;
+import static org.jboss.seam.ScopeType.CONVERSATION;
+import static org.jboss.seam.annotations.Install.FRAMEWORK;
+
 import java.io.Serializable;
 import java.security.Principal;
 import java.util.ArrayList;
@@ -62,10 +66,6 @@ import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.platform.usermanager.exceptions.UserAlreadyExistsException;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 import org.nuxeo.runtime.api.Framework;
-
-import static org.jboss.seam.ScopeType.APPLICATION;
-import static org.jboss.seam.ScopeType.CONVERSATION;
-import static org.jboss.seam.annotations.Install.FRAMEWORK;
 
 /**
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
@@ -171,6 +171,10 @@ public class UserManagerActionsBean implements UserManagerActions {
 
     public void resetUsers() {
         users = null;
+        // FIXME: update only the new letter, added following the creation
+        if (TABBED.equals(userListingMode)) {
+            userCatalog = null;
+        }
     }
 
     protected void updateUserCatalog() throws ClientException {
@@ -336,6 +340,7 @@ public class UserManagerActionsBean implements UserManagerActions {
             newUser = null;
             facesMessages.add(FacesMessage.SEVERITY_INFO,
                     resourcesAccessor.getMessages().get("info.userManager.userCreated"));
+            resetUsers();
             return viewUser();
         } catch (UserAlreadyExistsException e) {
             facesMessages.add(FacesMessage.SEVERITY_ERROR,
@@ -369,6 +374,14 @@ public class UserManagerActionsBean implements UserManagerActions {
     }
 
     public Collection<String> getCatalogLetters() {
+        if (userCatalog == null) {
+            try {
+                updateUserCatalog();
+            } catch (ClientException e) {
+                log.error("Unable to update user catalog", e);
+                return Collections.emptyList();
+            }
+        }
         List<String> list = new ArrayList<String>(userCatalog.keySet());
         Collections.sort(list);
         return list;
