@@ -101,11 +101,18 @@
       <filter-id>only_for_manager</filter-id>
     </action>
 
-    <action id="adm_logout" link="#{loginLogoutAction.logout()}" label="command.logout">
+    <action id="themes_manager" link="#{themeEditorAction.startEditor}"
+      label="command.manageThemes" order="20">
+      <category>NUXEO_ADMIN_USER_SERVICES</category>
+      <filter-id>only_for_manager</filter-id>
+      <filter-id>not_readonly</filter-id>
+    </action>
+
+    <action id="adm_logout" link="#{loginLogoutAction.logout()}" label="command.logout" order="40">
       <category>NUXEO_ADMIN_USER_SERVICES</category>
     </action>
 
-    <action id="adm_exit" link="#{adminViews.exit()}" label="action.admin.exit">
+    <action id="adm_exit" link="#{adminViews.exit()}" label="action.admin.exit" order="60">
       <category>NUXEO_ADMIN_USER_SERVICES</category>
     </action>
 
