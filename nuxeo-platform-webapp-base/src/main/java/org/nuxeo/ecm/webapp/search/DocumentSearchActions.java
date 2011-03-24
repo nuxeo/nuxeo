@@ -132,7 +132,6 @@ public class DocumentSearchActions implements Serializable {
         return SortInfo.asMap(sortInfo);
     }
 
-    @Observer(value = EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED, create = false)
     @BypassInterceptors
     public void resetSearches() {
         simpleSearchKeywords = "";
