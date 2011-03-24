@@ -163,8 +163,9 @@ public class XSDLoader {
             Schema ecmSchema = typeManager.getSchema(name);
             if (ecmSchema != null) {
                 // schema already defined
-                log.warn("Schema " + ns + " is already registered");
+                log.info("Schema " + ns + " is already registered");
                 if (!override) {
+                    log.debug("Schema " + ns + " will not be overridden");
                     return ecmSchema;
                 }
             }
