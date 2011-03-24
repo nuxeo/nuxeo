@@ -136,11 +136,6 @@ public class MetadataCollector {
                     prop = cal;
                 } catch (ParseException e) {
                 }
-            } else if (numPattern.matcher(value).matches()) {
-                try {
-                    prop = Long.parseLong(value);
-                } catch (NumberFormatException e) {
-                }
             }
         }
         return prop;
@@ -193,12 +188,10 @@ public class MetadataCollector {
 
         Map<String, String> stringMap = new HashMap<String, String>();
         Enumeration names = mdProperties.propertyNames();
-
         while (names.hasMoreElements()) {
             String name = (String) names.nextElement();
             stringMap.put(name, mdProperties.getProperty(name));
         }
-
         String contextPath = new Path(propertyFile.getAbsolutePath()).removeLastSegments(
                 1).toString();
         addPropertiesFromStrings(contextPath, stringMap);

@@ -17,6 +17,9 @@
 
 package org.nuxeo.ecm.platform.importer.properties;
 
+import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.io.File;
 import java.io.Serializable;
 import java.util.Arrays;
@@ -39,9 +42,6 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 import com.google.inject.Inject;
-
-import static junit.framework.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
@@ -72,7 +72,7 @@ public class TestMetadataFile {
         String contextPath = new Path(file.getAbsolutePath()).removeLastSegments(
                 1).toString();
         Map<String, Serializable> properties = collector.getProperties(contextPath);
-        assertEquals(7, properties.size());
+        assertEquals(8, properties.size());
         assertEquals("testTitle", properties.get("dc:title"));
         assertEquals("testDescription", properties.get("dc:description"));
         assertEquals("testCoverage", properties.get("dc:coverage"));
@@ -80,8 +80,9 @@ public class TestMetadataFile {
         assertEquals(MetadataFile.DATE_FORMAT.format(calendar.getTime()),
                 MetadataFile.DATE_FORMAT.format(date));
         assertEquals("testIcon", properties.get("common:icon"));
-        assertEquals(0L, properties.get("uid:major_version"));
-        assertEquals(0L, properties.get("uid:minor_version"));
+        assertEquals("0", properties.get("uid:major_version"));
+        assertEquals("0", properties.get("uid:minor_version"));
+        assertEquals("2", properties.get("common:size"));
     }
 
     @Test
@@ -125,9 +126,11 @@ public class TestMetadataFile {
         String contextPath = new Path(file.getAbsolutePath()).removeLastSegments(
                 1).toString();
         Map<String, Serializable> properties = collector.getProperties(contextPath);
-        assertEquals(2, properties.size());
+        assertEquals(3, properties.size());
         assertEquals("testTitle", properties.get("dc:title"));
         assertEquals("testIcon", properties.get("common:icon"));
+        assertEquals("2", properties.get("common:size"));
+        assertEquals(2L, testFile.getPropertyValue("common:size"));
     }
 
     @Test
@@ -135,7 +138,7 @@ public class TestMetadataFile {
         DocumentModel testFile = createTestFile();
 
         MetadataFile mdFile = MetadataFile.createFromProperties(testFile,
-                Arrays.asList(new String[] { "dc:title", "common:icon", "dc:description" }));
+                Arrays.asList(new String[] { "dc:title", "common:icon", "dc:description" , "common:size" }));
 
         File file = File.createTempFile("mdf", null);
         mdFile.writeTo(file);
@@ -146,10 +149,11 @@ public class TestMetadataFile {
         String contextPath = new Path(file.getAbsolutePath()).removeLastSegments(
                 1).toString();
         Map<String, Serializable> properties = collector.getProperties(contextPath);
-        assertEquals(3, properties.size());
+        assertEquals(4, properties.size());
         assertEquals("testTitle", properties.get("dc:title"));
         assertEquals("testIcon", properties.get("common:icon"));
         assertEquals("testDescription", properties.get("dc:description"));
+        assertEquals("2", properties.get("common:size"));
     }
 
     protected DocumentModel createTestFile() throws ClientException {
@@ -160,6 +164,7 @@ public class TestMetadataFile {
         file.setPropertyValue("dc:coverage", "testCoverage");
         file.setPropertyValue("dc:expired", calendar);
         file.setPropertyValue("common:icon", "testIcon");
+        file.setPropertyValue("common:size", "2");
         file = session.createDocument(file);
         assertNotNull(file);
         file = session.saveDocument(file);

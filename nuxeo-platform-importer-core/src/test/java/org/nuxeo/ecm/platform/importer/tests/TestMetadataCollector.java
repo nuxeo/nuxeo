@@ -25,9 +25,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.nuxeo.ecm.platform.importer.properties.MetadataCollector;
-
 import junit.framework.TestCase;
+
+import org.nuxeo.ecm.platform.importer.properties.MetadataCollector;
 
 public class TestMetadataCollector extends TestCase {
 
@@ -69,7 +69,7 @@ public class TestMetadataCollector extends TestCase {
 
         assertEquals("value0", mc.getProperty("/", "str0"));
         assertEquals("value1", mc.getProperty("/", "str"));
-        assertEquals(new Long(1577), mc.getProperty("/", "num"));
+        assertEquals("1577", mc.getProperty("/", "num"));
         assertEquals(
                 2007,
                 ((GregorianCalendar) mc.getProperty("/", "date")).get(Calendar.YEAR));
@@ -81,7 +81,7 @@ public class TestMetadataCollector extends TestCase {
         assertEquals("value0", mc.getProperty("/node21/", "str0"));
         assertEquals("value2", mc.getProperty("/node21/", "str"));
         assertEquals("value22", mc.getProperty("/node21/", "str2"));
-        assertEquals(new Long(2008), mc.getProperty("/node21/", "num"));
+        assertEquals("2008", mc.getProperty("/node21/", "num"));
         assertEquals(2008, ((GregorianCalendar) mc.getProperty("/node21/",
                 "date")).get(Calendar.YEAR));
         assertNull(mc.getProperty("/node21/", "doesnotexist"));
@@ -92,7 +92,7 @@ public class TestMetadataCollector extends TestCase {
         assertEquals("value0", mc.getProperty("/node21", "str0"));
         assertEquals("value2", mc.getProperty("/node21", "str"));
         assertEquals("value22", mc.getProperty("/node21", "str2"));
-        assertEquals(new Long(2008), mc.getProperty("/node21", "num"));
+        assertEquals("2008", mc.getProperty("/node21", "num"));
         assertEquals(2008, ((GregorianCalendar) mc.getProperty("/node21",
                 "date")).get(Calendar.YEAR));
         assertNull(mc.getProperty("/node21", "doesnotexist"));
