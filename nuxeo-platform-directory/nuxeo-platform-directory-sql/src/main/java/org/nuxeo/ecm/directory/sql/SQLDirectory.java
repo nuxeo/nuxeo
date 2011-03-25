@@ -62,7 +62,7 @@ public class SQLDirectory extends AbstractDirectory {
     private DataSource dataSource;
 
     private final SimpleIdGenerator idGenerator;
-
+    
     private List<Session> sessions = new ArrayList<Session>();
 
     private final Table table;
@@ -254,9 +254,6 @@ public class SQLDirectory extends AbstractDirectory {
 
     @Override
     public void shutdown() {
-        if (sessions.isEmpty()) {
-            return;
-        }
         synchronized(sessions) {
             if (sessions.isEmpty()) {
                 return;
