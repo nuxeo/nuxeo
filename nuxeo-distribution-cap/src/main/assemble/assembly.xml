@@ -43,6 +43,7 @@
         </excludes>
       </artifact:set>
     </copy>
+    <touch file="${nuxeo.ear}/bundles/upgrade" />
 
     <!-- Third-party libraries -->
     <antcall target="third-party-libraries" />
