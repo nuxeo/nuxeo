@@ -75,10 +75,6 @@
       breadcrumb=command.user_dashboard
     </page>
 
-    <page view-id="/view_vocabularies.xhtml">
-      breadcrumb=title.vocabularies
-    </page>
-
     <page view-id="/search/search_form.xhtml">
       breadcrumb=command.advancedSearch
     </page>
@@ -222,18 +218,6 @@
     <navigation-case>
       <from-outcome>view_vocabulary</from-outcome>
       <to-view-id>/view_vocabulary.xhtml</to-view-id>
-      <redirect />
-    </navigation-case>
-
-    <navigation-case>
-      <from-outcome>view_directories</from-outcome>
-      <to-view-id>/directory/view_directories.xhtml</to-view-id>
-      <redirect />
-    </navigation-case>
-
-    <navigation-case>
-      <from-outcome>view_directory</from-outcome>
-      <to-view-id>/directory/view_directory.xhtml</to-view-id>
       <redirect />
     </navigation-case>
 
