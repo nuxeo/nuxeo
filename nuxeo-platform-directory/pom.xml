@@ -24,7 +24,6 @@
     <module>nuxeo-platform-directory-facade</module>
     <module>nuxeo-platform-directory-ldap</module>
     <module>nuxeo-platform-directory-multi</module>
-    <module>nuxeo-platform-directory-web</module>
   </modules>
 
   <profiles>
