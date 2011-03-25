@@ -55,6 +55,7 @@
     <module>nuxeo-admin-center</module>
     <module>nuxeo-platform-forms-layout-export</module>
     <module>nuxeo-platform-localconfiguration-web</module>
+    <module>nuxeo-platform-directory-web</module>
   </modules>
 
   <profiles>
@@ -516,6 +517,11 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-localconfiguration-web</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-directory-web</artifactId>
         <version>${nuxeo.features.version}</version>
       </dependency>
       <dependency>
