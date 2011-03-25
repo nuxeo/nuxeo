@@ -157,7 +157,7 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
                     }
                 } else {
                     if (!httpResponse.isCommitted()) {
-                        httpResponse.sendError(HttpServletResponse.SC_FORBIDDEN);
+                        httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED);
                     }
                     return;
                 }
@@ -376,7 +376,7 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
         } else {
 
             log.error("Verifier does not match : can not continue");
-            httpResponse.sendError(HttpServletResponse.SC_FORBIDDEN,
+            httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED,
                     "Verifier is not correct");
             return;
         }
@@ -433,7 +433,7 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
                     // OAuth.Problems.TO_HTTP_CODE.get(OAuth.Problems.SIGNATURE_METHOD_REJECTED);
                     // We need to send a 403 to force client to ask for a new
                     // token in case the Access Token was deleted !!!
-                    int errCode = HttpServletResponse.SC_FORBIDDEN;
+                    int errCode = HttpServletResponse.SC_UNAUTHORIZED;
                     httpResponse.sendError(errCode,
                             "Signed fetch is not allowed");
                     return null;
