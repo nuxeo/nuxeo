@@ -25,6 +25,7 @@ import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Properties;
 
@@ -420,5 +421,35 @@ public abstract class ServerConfigurator {
      * @since 5.4.1
      */
     public abstract File getServerLibDir();
+
+    /**
+     * Used for upgrades: look for a blacklist.txt file and if found, remove
+     * listed packages and bundles.
+     *
+     * @since 5.4.1
+     */
+    public void removeHotfixesAtUpgrade() {
+        File upgrade = new File(getBundlesDir(), "upgrade");
+        if (upgrade.exists()) {
+            File[] packages = getBundlesDir().listFiles(new FilenameFilter() {
+                @Override
+                public boolean accept(File dir, String name) {
+                    return name.contains("5.4.0.1-HF");
+                }
+            });
+            log.info("Upgrade cleanup: removing the following deprecated bundles "
+                    + Arrays.toString(packages));
+            for (File file : packages) {
+                file.delete();
+            }
+            upgrade.delete();
+        }
+    }
+
+    /**
+     * @return Nuxeo bundles directory
+     * @since 5.4.1
+     */
+    public abstract File getBundlesDir();
 
 }

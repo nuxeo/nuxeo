@@ -114,4 +114,9 @@ public class JettyConfigurator extends ServerConfigurator {
         return getNuxeoLibDir();
     }
 
+    @Override
+    public File getBundlesDir() {
+        return new File(generator.getNuxeoHome(), "bundles");
+    }
+
 }

@@ -179,4 +179,10 @@ public class JBossConfigurator extends ServerConfigurator {
                 + "lib");
     }
 
+    @Override
+    public File getBundlesDir() {
+        return new File(generator.getNuxeoHome(), getEARPath() + File.separator
+                + "bundles");
+    }
+
 }

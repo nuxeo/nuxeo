@@ -736,6 +736,7 @@ public class ConfigurationGenerator {
         ifNotExistsAndIsDirectoryThenCreate(getTmpDir());
         serverConfigurator.checkPaths();
         serverConfigurator.removeExistingLocks();
+        serverConfigurator.removeHotfixesAtUpgrade();
     }
 
     /**

@@ -199,4 +199,10 @@ public class TomcatConfigurator extends ServerConfigurator {
     public File getServerLibDir() {
         return new File(generator.getNuxeoHome(), "lib");
     }
+
+    @Override
+    public File getBundlesDir() {
+        return new File(generator.getNuxeoHome(), "nxserver" + File.separator
+                + "bundles");
+    }
 }
