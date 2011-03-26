@@ -520,6 +520,7 @@ public class ConfigurationGenerator {
         // Keep true or once; switch false to once
         setOnceToFalse = false;
         setFalseToOnce = true;
+        // Will change wizardParam value instead of appending it
         wizardParam = changedParameters.remove(PARAM_WIZARD_DONE);
         writeConfiguration(loadConfiguration(), changedParameters);
     }

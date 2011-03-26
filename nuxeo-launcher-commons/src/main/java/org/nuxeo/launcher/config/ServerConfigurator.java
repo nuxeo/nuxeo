@@ -437,8 +437,10 @@ public abstract class ServerConfigurator {
                     return name.contains("5.4.0.1-HF");
                 }
             });
-            log.info("Upgrade cleanup: removing the following deprecated bundles "
-                    + Arrays.toString(packages));
+            if (packages.length > 0) {
+                log.info("Upgrade cleanup: removing the following deprecated bundles "
+                        + Arrays.toString(packages));
+            }
             for (File file : packages) {
                 file.delete();
             }
