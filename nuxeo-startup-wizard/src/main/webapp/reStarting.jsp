@@ -12,7 +12,7 @@
 %>
 
 <script type="text/javascript">
-setTimeout(startPolling, 10000);
+setTimeout(startPolling, 15000);
 function startPolling() {
     var intId = setInterval(function isNuxeoReady() {
         $.get("<%=contextPath%>/login.jsp", function(data, textStatus) {
