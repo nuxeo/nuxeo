@@ -413,7 +413,7 @@ public class RouterServlet extends HttpServlet {
         Context.reset();
         SimpleNavigationHandler.reset();
 
-        // resturn to first page
+        // return to first page
         String target = "/" + req.getContextPath() + "/" + SimpleNavigationHandler.instance().getDefaultPage().getAction();
         if (target.startsWith("//")) {
             target = target.substring(1);

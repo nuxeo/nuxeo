@@ -50,8 +50,6 @@ public class ServerController {
     }
 
     protected static boolean doExec(String path) {
-
-        long t0 = System.currentTimeMillis();
         List<String> output = new ArrayList<String>();
 
         String cmdName = CMD_POSIX;
@@ -78,7 +76,8 @@ public class ServerController {
 
         Process p1;
         try {
-            log.debug("Restart command: " + cmd);
+            log.debug("Restart command: " + cmd[0] + " " + cmd[1] + " "
+                    + cmd[2]);
             p1 = Runtime.getRuntime().exec(cmd);
         } catch (IOException e) {
             log.error("Unable to restart server", e);
@@ -91,6 +90,7 @@ public class ServerController {
             String strLine;
             while ((strLine = stdInput.readLine()) != null) {
                 output.add(strLine);
+                log.debug(strLine);
             }
         } catch (IOException e) {
             log.error("Error while reading output", e);
