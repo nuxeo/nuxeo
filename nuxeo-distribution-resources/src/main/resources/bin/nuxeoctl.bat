@@ -101,12 +101,13 @@ goto END
 REM *****  Look for nuxeo.conf *****
 set ALREADY_SET_NUXEO_CONF=%NUXEO_CONF%
 REM ***** Check registry for nuxeo.conf *****
+if not exist "%NUXEO_HOME%\bin\ProductName.txt" goto SKIP_REGISTRY
 set /p PRODNAME=<"%NUXEO_HOME%\bin\ProductName.txt"
 for /F "skip=2 tokens=2*" %%A in ('REG QUERY "HKEY_LOCAL_MACHINE\Software\%PRODNAME%" /v ConfigFile 2^>nul') do set NUXEO_CONF=%%B
 if not "%NUXEO_CONF%" == "" goto FOUND_NUXEO_CONF
 for /F "skip=2 tokens=2*" %%A in ('REG QUERY "HKEY_LOCAL_MACHINE\Software\Wow6432Node\%PRODNAME%" /v ConfigFile 2^>nul') do set NUXEO_CONF=%%B
 if not "%NUXEO_CONF%" == "" goto FOUND_NUXEO_CONF
-
+:SKIP_REGISTRY
 REM ***** Check environment variable NUXEO_CONF for nuxeo.conf *****
 set NUXEO_CONF=%ALREADY_SET_NUXEO_CONF%
 if not "%NUXEO_CONF%" == "" goto FOUND_NUXEO_CONF
