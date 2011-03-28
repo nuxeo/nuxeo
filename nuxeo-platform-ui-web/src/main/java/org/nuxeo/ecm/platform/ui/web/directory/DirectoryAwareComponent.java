@@ -219,7 +219,7 @@ public abstract class DirectoryAwareComponent extends UIInput {
         if (notDisplayDefaultOption != null) {
             return notDisplayDefaultOption;
         }
-        return getBooleanValue("notDisplauDefaultOption", false);
+        return getBooleanValue("notDisplayDefaultOption", false);
     }
 
     public void setNotDisplayDefaultOption(Boolean notDisplayDefaultOption) {
