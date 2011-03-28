@@ -38,6 +38,7 @@ public class PaginableDocumentModelListImpl extends DocumentModelListImpl implem
     public PaginableDocumentModelListImpl(PageProvider<DocumentModel> provider) {
         super(provider.getCurrentPage());
         this.provider = provider;
+        this.totalSize = provider.getResultsCount();
     }
 
     public PageProvider<DocumentModel> getProvider() {

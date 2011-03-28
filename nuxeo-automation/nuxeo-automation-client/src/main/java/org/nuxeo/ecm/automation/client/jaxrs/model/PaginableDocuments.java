@@ -25,8 +25,9 @@ public class PaginableDocuments extends Documents {
     /**
      * @param size
      */
-    public PaginableDocuments(int size, int pageSize, int pageCount, int pageIndex) {
+    public PaginableDocuments(int size, int totalSize, int pageSize, int pageCount, int pageIndex) {
         super(size);
+        this.totalSize = totalSize;
         this.pageSize = pageSize;
         this.pageCount = pageCount;
         this.pageIndex = pageIndex;
@@ -35,10 +36,15 @@ public class PaginableDocuments extends Documents {
 
     private static final long serialVersionUID = 1L;
     
+    protected int totalSize;
     protected int pageSize;
     protected int pageCount;
     protected int pageIndex;
     
+    public int getTotalSize() {
+        return totalSize;
+    }
+
     public int getPageSize() {
         return pageSize;
     }

@@ -43,7 +43,7 @@ import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.features", "org.nuxeo.ecm.platform.versioning", "org.nuxeo.ecm.platform.query.api" })
+@Deploy({ "org.nuxeo.ecm.platform.query.api", "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.features", "org.nuxeo.ecm.platform.versioning" })
 @LocalDeploy("org.nuxeo.ecm.automation.core:test-providers.xml")
 public class CoreProviderTest {
 
@@ -158,9 +158,6 @@ public class CoreProviderTest {
 
         Map<String, Object> params = new HashMap<String, Object>();
 
-        String providerName ="invisibleMan";
-
-        params.put("providerName", providerName);
         params.put("query", "select * from Document");
         params.put("pageSize", 2);
 
@@ -183,9 +180,6 @@ public class CoreProviderTest {
 
         Map<String, Object> params = new HashMap<String, Object>();
 
-        String providerName ="invisibleMan";
-
-        params.put("providerName", providerName);
         params.put("query", "select * from Document where dc:contributors = ?");
         params.put("pageSize", 2);
         params.put("queryParams", "$currentUser");

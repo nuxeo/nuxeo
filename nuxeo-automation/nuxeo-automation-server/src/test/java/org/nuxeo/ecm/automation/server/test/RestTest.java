@@ -16,6 +16,8 @@
  */
 package org.nuxeo.ecm.automation.server.test;
 
+import static org.hamcrest.Matchers.*;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -483,9 +485,13 @@ public class RestTest {
     @Test public void queriesArePaginable() throws Exception {
         PaginableDocuments docs = (PaginableDocuments)
         session.newRequest(PageProviderOperation.ID).set("query",  "SELECT * from Document").set("pageSize", 2).execute();
-        assertThat(docs.size(), Matchers.is(2));
-        assertThat(docs.getPageCount(), Matchers.greaterThanOrEqualTo(2));
-        assertThat(docs.getPageSize(), Matchers.is(2));
+        final int pageSize = docs.getPageSize();
+        final int pageCount = docs.getPageCount();
+        assertThat(docs.size(), is(2));
+        assertThat(pageSize, is(2));
+        assertThat(pageCount, greaterThanOrEqualTo(1));
+        assertThat(docs.getTotalSize(), greaterThanOrEqualTo((pageCount-1)*pageSize));
+
     }
 
     /**
