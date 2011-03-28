@@ -227,7 +227,7 @@ public class NuxeoFrame extends JFrame {
                 try {
                     Shell.get().main(
                             new String[] { controller.launcher.getURL()
-                                    + "/site/automation" });
+                                    + "site/automation" });
                 } catch (Exception e) {
                     log.error(e);
                 }
@@ -396,10 +396,10 @@ public class NuxeoFrame extends JFrame {
             mainButton.setIcon(startIcon);
         }
         mainButton.setEnabled(true);
-//      if (controller.launcher.isWizardRequired()) {
-//      // disable start button
-//      // TODO look about where enabling start button
-//  }
+        // if (controller.launcher.isWizardRequired()) {
+        // // disable start button
+        // // TODO look about where enabling start button
+        // }
         mainButton.validate();
     }
 

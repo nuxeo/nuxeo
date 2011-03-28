@@ -55,7 +55,7 @@ public class ServerController {
             cmd = new String[] { "cmd", "/C",
                     new File(path, CMD_WIN).getPath(), "nogui", "restartbg" };
             log.debug("Restart command: " + cmd[0] + " " + cmd[1] + " "
-                    + cmd[2] + " " + cmd[3] + "" + cmd[4]);
+                    + cmd[2] + " " + cmd[3] + " " + cmd[4]);
         } else {
             cmd = new String[] { "/bin/sh", "-c",
                     new File(path, CMD_POSIX).getPath() + " restartbg" };
@@ -71,13 +71,18 @@ public class ServerController {
             return false;
         }
 
-        new ThreadedStreamGobbler(p1.getInputStream(), SimpleLog.LOG_LEVEL_INFO).start();
+        new ThreadedStreamGobbler(p1.getInputStream(), SimpleLog.LOG_LEVEL_OFF).start();
         new ThreadedStreamGobbler(p1.getErrorStream(),
                 SimpleLog.LOG_LEVEL_ERROR).start();
         return true;
     }
 
-    public static boolean restart(Context context) {
+    private static boolean restartInProgress = false;
+
+    public static synchronized boolean restart(Context context) {
+        if (restartInProgress) {
+            return false;
+        }
         ParamCollector collector = context.getCollector();
         File nuxeoHome = collector.getConfigurationGenerator().getNuxeoHome();
         final String binPath = new File(nuxeoHome, "bin").getPath();
@@ -85,7 +90,7 @@ public class ServerController {
             @Override
             public void run() {
                 try {
-                    Thread.sleep(5000);
+                    Thread.sleep(3000);
                     doExec(binPath);
                 } catch (InterruptedException e) {
                     log.error("Restart failed", e);
