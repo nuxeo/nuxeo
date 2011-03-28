@@ -60,10 +60,11 @@ public class SpecificAuthChainDescriptor {
 
     public List<Pattern> getUrlPatterns() {
         if (urlPatterns == null) {
-            urlPatterns = new ArrayList<Pattern>();
+            List<Pattern> patterns = new ArrayList<Pattern>();
             for (String url : urls) {
-                urlPatterns.add(Pattern.compile(url));
+                patterns.add(Pattern.compile(url));
             }
+            urlPatterns = patterns;
         }
         return urlPatterns;
     }
