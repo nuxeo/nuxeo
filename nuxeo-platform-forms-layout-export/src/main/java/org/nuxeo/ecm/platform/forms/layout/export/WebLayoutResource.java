@@ -62,7 +62,8 @@ public class WebLayoutResource {
             service = Framework.getService(WebLayoutManager.class);
             widgetTypes = service.getWidgetTypeDefinitions();
             // sort so that order is deterministic
-            Collections.sort(widgetTypes, new WidgetTypeDefinitionComparator(true));
+            Collections.sort(widgetTypes, new WidgetTypeDefinitionComparator(
+                    true));
             widgetTypesByCat = getWidgetTypesByCategory();
         } catch (Exception e) {
             throw WebException.wrap("Failed to initialize WebLayoutManager", e);
@@ -112,7 +113,7 @@ public class WebLayoutResource {
     public Object getWidgetTypeDefinitions(@Context
     HttpServletRequest request, @QueryParam("all")
     Boolean all) {
-        return getWidgetTypeDefinitions(request, null, all);
+        return getWidgetTypeDefinitions(request, null, null, all);
     }
 
     /**
@@ -121,12 +122,16 @@ public class WebLayoutResource {
      * If the category is null, the filter does not check the category. Widget
      * types without a configuration are included if boolean 'all' is set to
      * true.
+     * <p>
+     * If not null, the version parameter will exlude all widget types that did
+     * not exist before this version.
      */
     @GET
     @Path("widgetTypes/{category}")
     public Object getWidgetTypeDefinitions(@Context
     HttpServletRequest request, @PathParam("category")
-    String category, @QueryParam("all")
+    String category, @QueryParam("version")
+    String version, @QueryParam("all")
     Boolean all) {
         // TODO: refactor so that's cached
         WidgetTypeDefinitions res = new WidgetTypeDefinitions();
@@ -134,6 +139,12 @@ public class WebLayoutResource {
             WidgetTypeConfiguration conf = def.getConfiguration();
             if (!Boolean.TRUE.equals(all) && conf == null) {
                 continue;
+            }
+            if (version != null && conf != null) {
+                String confVersion = conf.getSinceVersion();
+                if (confVersion != null && version.compareTo(confVersion) < 0) {
+                    continue;
+                }
             }
             if (category != null) {
                 boolean hasCats = false;
