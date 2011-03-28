@@ -54,7 +54,7 @@ public class NuxeoCtlManager {
             cmd = new String[] { "cmd", "/C",
                     new File(path, CMD_WIN).getPath(), "nogui", "restartbg" };
             log.debug("Restart command: " + cmd[0] + " " + cmd[1] + " "
-                    + cmd[2] + " " + cmd[3] + "" + cmd[4]);
+                    + cmd[2] + " " + cmd[3] + " " + cmd[4]);
         } else {
             cmd = new String[] { "/bin/sh", "-c",
                     new File(path, CMD_POSIX).getPath() + " restartbg" };
@@ -70,13 +70,19 @@ public class NuxeoCtlManager {
             return false;
         }
 
-        new ThreadedStreamGobbler(p1.getInputStream(), SimpleLog.LOG_LEVEL_INFO).start();
+        new ThreadedStreamGobbler(p1.getInputStream(), SimpleLog.LOG_LEVEL_OFF).start();
         new ThreadedStreamGobbler(p1.getErrorStream(),
                 SimpleLog.LOG_LEVEL_ERROR).start();
         return true;
     }
 
-    public static boolean restart() {
+    private static boolean restartInProgress = false;
+
+    public static synchronized boolean restart() {
+        if (restartInProgress) {
+            return false;
+        }
+        restartInProgress = true;
         String nuxeoHome = Framework.getProperty("nuxeo.home");
         final String binPath = new File(nuxeoHome, "bin").getPath();
         new Thread("restart thread") {
@@ -84,7 +90,7 @@ public class NuxeoCtlManager {
             public void run() {
                 try {
                     log.info("Restarting Nuxeo server");
-                    Thread.sleep(2000);
+                    Thread.sleep(3000);
                     doExec(binPath);
                 } catch (InterruptedException e) {
                     log.error("Restart failed", e);
