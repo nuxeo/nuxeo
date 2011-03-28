@@ -110,11 +110,11 @@ function updateDBSettings() {
     </tr>
     <tr>
       <td class="labelCell"><fmt:message key="label.nuxeo.db.user"/></td>
-      <td><input type="text" name="nuxeo.db.user" value="<%=collector.getConfigurationParam("nuxeo.db.user") %>"/></td>
+      <td><input type="text" name="nuxeo.db.user" AUTOCOMPLETE="off" value="<%=collector.getConfigurationParam("nuxeo.db.user") %>"/></td>
     </tr>
     <tr>
       <td class="labelCell"><fmt:message key="label.nuxeo.db.password"/></td>
-      <td><input type="password" name="nuxeo.db.password" value="<%=collector.getConfigurationParam("nuxeo.db.password") %>"/></td>
+      <td><input type="password" name="nuxeo.db.password" AUTOCOMPLETE="off" value="<%=collector.getConfigurationParam("nuxeo.db.password") %>"/></td>
     </tr>
     <tr>
       <td class="labelCell"><fmt:message key="label.nuxeo.db.host"/></td>
