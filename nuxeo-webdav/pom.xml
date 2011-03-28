@@ -12,11 +12,11 @@
   <parent>
     <groupId>org.nuxeo</groupId>
     <artifactId>nuxeo-ecm</artifactId>
-    <version>5.4.1-I20110302_0116</version>
+    <version>5.4.1-I20110302_0116-SNAPSHOT</version>
   </parent>
 
   <properties>
-    <nuxeo.version>5.4.1-I20110302_0116</nuxeo.version>
+    <nuxeo.version>5.4.1-I20110302_0116-SNAPSHOT</nuxeo.version>
     <jersey-version>1.1.5</jersey-version>
   </properties>
 
