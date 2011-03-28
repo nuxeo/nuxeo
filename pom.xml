@@ -33,6 +33,7 @@
     <module>nuxeo-platform-ui-web-test</module>
     <module>nuxeo-platform-ui-web-compat</module>
     <module>nuxeo-platform-forms-layout-client</module>
+    <module>nuxeo-platform-forms-layout-io</module>
     <module>nuxeo-platform-webapp-base</module>
     <module>nuxeo-theme-jsf</module>
     <module>nuxeo-platform-contentview-jsf</module>
@@ -126,6 +127,11 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-forms-layout-api</artifactId>
+        <version>${nuxeo.services.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-forms-layout-io</artifactId>
         <version>${nuxeo.services.version}</version>
       </dependency>
       <dependency>
