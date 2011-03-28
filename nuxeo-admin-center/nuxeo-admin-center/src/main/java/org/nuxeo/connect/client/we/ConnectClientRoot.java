@@ -64,7 +64,6 @@ public class ConnectClientRoot extends ModuleRoot {
     @Path(value = "restartView")
     public Object restartServerView() {
         if (((NuxeoPrincipal)getContext().getPrincipal()).isAdministrator()) {
-            NuxeoCtlManager.restart();
             return getView("serverRestart").arg("nuxeoctl", new NuxeoCtlManager());
         } else {
             return Response.status(401).build();
