@@ -28,7 +28,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
-import org.nuxeo.ecm.platform.forms.layout.export.io.WidgetTypeDefinitionJsonExporter;
+import org.nuxeo.ecm.platform.forms.layout.io.JSONLayoutExporter;
 
 /**
  * @author Anahide Tchertchian
@@ -56,7 +56,7 @@ public class WidgetTypeDefinitionsJsonWriter implements
             Annotation[] arg3, MediaType arg4,
             MultivaluedMap<String, Object> arg5, OutputStream arg6)
             throws IOException, WebApplicationException {
-        WidgetTypeDefinitionJsonExporter.export(arg0, arg6);
+        JSONLayoutExporter.export(arg0, arg6);
     }
 
 }
