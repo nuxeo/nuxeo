@@ -4,6 +4,15 @@
 
   <documentation>@author Bogdan Stefanescu (bs@nuxeo.com)</documentation>
 
+  <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService"
+    point="providers">
+    <coreQueryPageProvider name="PageProviderOperation:Documents">
+      <pattern>
+        SELECT * FROM Document
+      </pattern>
+    </coreQueryPageProvider>
+  </extension>
+  
   <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
     point="operations">
 

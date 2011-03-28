@@ -28,6 +28,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
+import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.query.core.CoreQueryPageProviderDescriptor;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
@@ -52,7 +53,7 @@ public class PageProviderOperation {
     protected CoreSession session;
 
     @Param(name = "providerName", required = false)
-    protected String providerName;
+    protected String providerName = "PageProviderOperation:Documents";
 
     @Param(name = "query", required = false)
     protected String query;
@@ -117,13 +118,13 @@ public class PageProviderOperation {
             targetPageSize = new Long(pageSize);
         }
 
+        PageProviderDefinition ppd = pps.getPageProviderDefinition(providerName);
+        new CoreQueryPageProviderDescriptor();
         if (query!=null) {
-            CoreQueryPageProviderDescriptor desc = new CoreQueryPageProviderDescriptor();
-            desc.setPattern(query);
-            return new PaginableDocumentModelListImpl((PageProvider<DocumentModel>) pps.getPageProvider(providerName, desc, sortInfos, targetPageSize, new Long(page), props, parameters));
-        } else {
-            return new PaginableDocumentModelListImpl((PageProvider<DocumentModel>) pps.getPageProvider(providerName, sortInfos, targetPageSize, new Long(page), props, parameters));
+            ppd.setPattern(query);
         }
+        PageProvider<?> pp = pps.getPageProvider(providerName, ppd, sortInfos, targetPageSize, new Long(page), props, parameters);
+        return new PaginableDocumentModelListImpl((PageProvider<DocumentModel>) pp);
 
     }
 
