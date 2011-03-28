@@ -17,16 +17,13 @@
  */
 package org.nuxeo.wizard.helpers;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.launcher.config.ConfigurationGenerator;
+import org.apache.commons.logging.impl.SimpleLog;
+import org.nuxeo.log4j.ThreadedStreamGobbler;
 import org.nuxeo.wizard.context.Context;
 import org.nuxeo.wizard.context.ParamCollector;
 
@@ -50,53 +47,33 @@ public class ServerController {
     }
 
     protected static boolean doExec(String path) {
-        List<String> output = new ArrayList<String>();
+        // paramString += System.getProperty(
+        // ConfigurationGenerator.PARAM_WIZARD_RESTART_PARAMS, "");
 
-        String cmdName = CMD_POSIX;
-        String paramString = "restart";
-
-        if (!isWindows()) {
-            // POXIX
-            paramString += " 2>&1";
-        } else {
-            // WIN
-            cmdName = CMD_WIN;
-            paramString = "nogui " + paramString;
-        }
-        paramString += System.getProperty(
-                ConfigurationGenerator.PARAM_WIZARD_RESTART_PARAMS, "");
-
-        String[] cmd = { "/bin/sh", "-c",
-                new File(path, cmdName).getPath() + " " + paramString };
-
+        String[] cmd;
         if (isWindows()) {
-            cmd[0] = "cmd";
-            cmd[1] = "/C";
+            cmd = new String[] { "cmd", "/C",
+                    new File(path, CMD_WIN).getPath(), "nogui", "restartbg" };
+            log.debug("Restart command: " + cmd[0] + " " + cmd[1] + " "
+                    + cmd[2] + " " + cmd[3] + "" + cmd[4]);
+        } else {
+            cmd = new String[] { "/bin/sh", "-c",
+                    new File(path, CMD_POSIX).getPath() + " restartbg" };
+            log.debug("Restart command: " + cmd[0] + " " + cmd[1] + " "
+                    + cmd[2]);
         }
 
         Process p1;
         try {
-            log.debug("Restart command: " + cmd[0] + " " + cmd[1] + " "
-                    + cmd[2]);
             p1 = Runtime.getRuntime().exec(cmd);
         } catch (IOException e) {
             log.error("Unable to restart server", e);
             return false;
         }
 
-        BufferedReader stdInput = new BufferedReader(new InputStreamReader(
-                p1.getInputStream()));
-        try {
-            String strLine;
-            while ((strLine = stdInput.readLine()) != null) {
-                output.add(strLine);
-                log.debug(strLine);
-            }
-        } catch (IOException e) {
-            log.error("Error while reading output", e);
-            return false;
-        }
-
+        new ThreadedStreamGobbler(p1.getInputStream(), SimpleLog.LOG_LEVEL_INFO).start();
+        new ThreadedStreamGobbler(p1.getErrorStream(),
+                SimpleLog.LOG_LEVEL_ERROR).start();
         return true;
     }
 
