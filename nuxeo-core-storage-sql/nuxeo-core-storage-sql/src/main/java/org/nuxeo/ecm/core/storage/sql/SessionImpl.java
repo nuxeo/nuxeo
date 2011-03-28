@@ -589,8 +589,7 @@ public class SessionImpl implements Session, XAResource {
 
     public List<Node> getNodesByIds(List<Serializable> ids, boolean prefetch)
             throws StorageException {
-        // get main fragments
-        // TODO ctx: order of fragments
+        // get hier fragments
         List<RowId> hierRowIds = new ArrayList<RowId>(ids.size());
         for (Serializable id : ids) {
             hierRowIds.add(new RowId(model.HIER_TABLE_NAME, id));
@@ -600,64 +599,117 @@ public class SessionImpl implements Session, XAResource {
         // the ids usually come from a query, in which case we don't need to
         // check if they are removed using isDeleted()
 
-        // find what types we have and the associated rows to fetch
-        List<RowId> rowIds = new ArrayList<RowId>();
-        Map<Serializable, FragmentGroup> groups = new HashMap<Serializable, FragmentGroup>(
+        // prepare fragment groups to build nodes
+        Map<Serializable, FragmentGroup> fragmentGroups = new HashMap<Serializable, FragmentGroup>(
                 ids.size());
         for (Fragment fragment : hierFragments) {
             Serializable id = fragment.row.id;
-            // prepare fragment groups
-            groups.put(id, new FragmentGroup((SimpleFragment) fragment,
+            fragmentGroups.put(id, new FragmentGroup((SimpleFragment) fragment,
                     new FragmentsMap()));
+        }
 
-            if (!prefetch) {
-                continue;
+        if (prefetch) {
+            List<RowId> bulkRowIds = new ArrayList<RowId>();
+            Set<Serializable> proxyIds = new HashSet<Serializable>();
+
+            // get rows to prefetch for hier fragments
+            for (Fragment fragment : hierFragments) {
+                findPrefetchedFragments((SimpleFragment) fragment, bulkRowIds,
+                        proxyIds);
             }
 
-            // find type and table names
-            SimpleFragment hierFragment = (SimpleFragment) fragment;
-            String typeName = (String) hierFragment.get(model.MAIN_PRIMARY_TYPE_KEY);
-            Serializable parentId = hierFragment.get(model.HIER_PARENT_KEY);
-            Set<String> tableNames = model.getTypePrefetchedFragments(typeName);
-            if (tableNames == null) {
-                continue; // unknown (obsolete) type
+            // proxies
+
+            // get proxies fragments
+            List<RowId> proxiesRowIds = new ArrayList<RowId>(proxyIds.size());
+            for (Serializable id : proxyIds) {
+                proxiesRowIds.add(new RowId(model.PROXY_TABLE_NAME, id));
             }
-            // add row id for each table name
-            for (String tableName : tableNames) {
-                if (tableName.equals(model.HIER_TABLE_NAME)) {
-                    continue; // already fetched
+            List<Fragment> proxiesFragments = context.getMulti(proxiesRowIds,
+                    true);
+            List<Serializable> targetIds = new ArrayList<Serializable>(
+                    proxyIds.size());
+            for (Fragment fragment : proxiesFragments) {
+                Serializable targetId = ((SimpleFragment) fragment).get(model.PROXY_TARGET_KEY);
+                targetIds.add(targetId);
+            }
+
+            // get hier fragments for proxies' targets
+            targetIds.removeAll(ids); // only those we don't have already
+            hierRowIds = new ArrayList<RowId>(targetIds.size());
+            for (Serializable id : targetIds) {
+                hierRowIds.add(new RowId(model.HIER_TABLE_NAME, id));
+            }
+            hierFragments = context.getMulti(hierRowIds, true);
+            for (Fragment fragment : hierFragments) {
+                findPrefetchedFragments((SimpleFragment) fragment, bulkRowIds,
+                        null);
+            }
+
+            // we have everything to be prefetched
+
+            // fetch all the prefetches in bulk
+            List<Fragment> fragments = context.getMulti(bulkRowIds, true);
+
+            // put each fragment in the map of the proper group
+            for (Fragment fragment : fragments) {
+                FragmentGroup fragmentGroup = fragmentGroups.get(fragment.row.id);
+                if (fragmentGroup != null) {
+                    fragmentGroup.fragments.put(fragment.row.tableName,
+                            fragment);
                 }
-                if (parentId != null
-                        && tableName.equals(model.VERSION_TABLE_NAME)) {
-                    continue; // not a version, don't fetch this table
-                }
-                rowIds.add(new RowId(tableName, id));
             }
         }
 
-        List<Fragment> fragments = context.getMulti(rowIds, true);
-
-        // put fragment in map of proper group
-        for (Fragment fragment : fragments) {
-            // always in groups because id is of a requested row
-            FragmentsMap fragmentsMap = groups.get(fragment.row.id).fragments;
-            fragmentsMap.put(fragment.row.tableName, fragment);
-        }
-
-        // assemble nodes from the groups
+        // assemble nodes from the fragment groups
         List<Node> nodes = new ArrayList<Node>(ids.size());
         for (Serializable id : ids) {
-            FragmentGroup fragmentGroup = groups.get(id);
-            Node node;
-            if (fragmentGroup == null) {
-                node = null; // deleted/absent
-            } else {
-                node = new Node(context, fragmentGroup);
-            }
+            FragmentGroup fragmentGroup = fragmentGroups.get(id);
+            // null if deleted/absent
+            Node node = fragmentGroup == null ? null : new Node(context,
+                    fragmentGroup);
             nodes.add(node);
         }
 
         return nodes;
+    }
+
+    /**
+     * Finds prefetched fragments for a hierarchy fragment, takes note of the
+     * ones that are proxies.
+     */
+    protected void findPrefetchedFragments(SimpleFragment hierFragment,
+            List<RowId> bulkRowIds, Set<Serializable> proxyIds)
+            throws StorageException {
+        Serializable id = hierFragment.row.id;
+
+        // find type
+        String typeName = (String) hierFragment.get(model.MAIN_PRIMARY_TYPE_KEY);
+        if (model.PROXY_TYPE.equals(typeName)) {
+            if (proxyIds != null) {
+                proxyIds.add(id);
+            }
+            return;
+        }
+
+        // find table names
+        Set<String> tableNames = model.getTypePrefetchedFragments(typeName);
+        if (tableNames == null) {
+            return; // unknown (obsolete) type
+        }
+
+        // add row id for each table name
+        Serializable parentId = hierFragment.get(model.HIER_PARENT_KEY);
+        for (String tableName : tableNames) {
+            if (model.HIER_TABLE_NAME.equals(tableName)) {
+                continue; // already fetched
+            }
+            if (parentId != null && model.VERSION_TABLE_NAME.equals(tableName)) {
+                continue; // not a version, don't fetch this table
+                // TODO incorrect if we have filed versions
+            }
+            bulkRowIds.add(new RowId(tableName, id));
+        }
     }
 
     @Override
