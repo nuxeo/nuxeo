@@ -284,7 +284,7 @@ public class UserRegistrationComponent extends DefaultComponent implements
         }
 
         String body = writer.getBuffer().toString();
-        String title = configuration.getSuccessEmailTitle();
+        String title = configuration.getValidationEmailTitle();
         if (!Framework.isTestModeSet()) {
             try {
                 generateMail(emailAdress, title, body );
