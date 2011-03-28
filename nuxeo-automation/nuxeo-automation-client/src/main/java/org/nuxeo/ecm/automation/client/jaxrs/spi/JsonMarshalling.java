@@ -92,10 +92,11 @@ public class JsonMarshalling {
             JSONArray ar = json.getJSONArray("entries");
             int size = ar.size();
             if (json.optBoolean("isPaginable") == true) {
+                int totalSize = json.getInt("totalSize");
                 int pageSize = json.getInt("pageSize");
                 int pageCount = json.getInt("pageCount");
                 int pageIndex = json.getInt("pageIndex");
-                docs = new PaginableDocuments(size, pageSize, pageCount, pageIndex);
+                docs = new PaginableDocuments(size, totalSize, pageSize, pageCount, pageIndex);
             } else {
                 docs = new Documents(size);
             }
