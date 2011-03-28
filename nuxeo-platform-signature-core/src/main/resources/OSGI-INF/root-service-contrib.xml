@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.signature.api.pki.RootService">
+
+ <documentation>
+    The Root Service is used to configure the root of the Certificate Authority
+    used to sign user certificates
+    @version 1.0
+    @author ws@nuxeo.com
+  </documentation>
+
+  <implementation class="org.nuxeo.ecm.platform.signature.core.pki.RootServiceImpl" />
+
+  <service>
+    <provide interface="org.nuxeo.ecm.platform.signature.api.pki.RootService" />
+  </service>
+
+  <extension-point name="rootconfig">
+    <object class="org.nuxeo.ecm.platform.signature.core.pki.RootDescriptor" />
+  </extension-point>
+
+</component>

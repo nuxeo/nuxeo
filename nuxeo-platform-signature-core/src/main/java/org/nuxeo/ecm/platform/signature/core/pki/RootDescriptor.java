@@ -21,20 +21,18 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
- * Provides configuration information for certificate generation services.
- * <p>
- * The path and the password for the root keystore are examples of such information tokens.
+ * Provides configuration information for root certificate generation services.
  * <p>
  * As the root keystore needs to be configurable by the system administrator, this configuration object
- * allows the administrator to enter the root keystore location and access information into fields
- * of an XML file. This information can be used by the certificate authority services for signing user certificates
+ * allows the administrator to store the root keystore location and access information as XML elements.
+ * This information is used by the certificate authority services for signing user certificates
  * and for exposing the root certificate object to the user interface.
  *
  * @author <a href="mailto:ws@nuxeo.com">Wojciech Sulejman</a>
  */
 
 @XObject("configuration")
-public class CertDescriptor {
+public class RootDescriptor {
 
     @XNode("rootKeystoreFilePath")
     protected String rootKeystoreFilePath;
