@@ -835,6 +835,7 @@ public abstract class NuxeoLauncher {
 
     private String getPid() throws IOException {
         pid = processManager.findPid(processRegex);
+        log.debug("regexp: " + processRegex + " pid:" + pid);
         return pid;
     }
 

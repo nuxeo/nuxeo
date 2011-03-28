@@ -113,7 +113,7 @@ set NUXEO_CONF=%ALREADY_SET_NUXEO_CONF%
 if not "%NUXEO_CONF%" == "" goto FOUND_NUXEO_CONF
 
 REM ***** Check working directory, Desktop, NUXEO_HOME for nuxeo.conf *****
-set NUXEO_CONF=nuxeo.conf
+set NUXEO_CONF=%CD%\nuxeo.conf
 if exist %NUXEO_CONF% goto FOUND_NUXEO_CONF
 
 set NUXEO_CONF=%USERPROFILE%\Desktop\nuxeo.conf
