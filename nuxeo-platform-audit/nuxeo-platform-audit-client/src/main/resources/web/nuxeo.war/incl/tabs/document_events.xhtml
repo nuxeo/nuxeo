@@ -46,14 +46,6 @@
         <h:outputText value="#{messages[logEntry.category]}" />
       </h:column>
       <h:column>
-        <f:facet name="header">
-          <h:outputText value="#{messages['label.mail.recipients']}" />
-        </f:facet>
-        <h:outputText>
-          <h:outputText value="#{logEntry.extendedInfos['recipients'].serializableValue}" />
-        </h:outputText>
-      </h:column>
-      <h:column>
       <f:facet name="header">
         <h:outputText value="#{messages['label.workflow.task.directive']}" />
       </f:facet>

@@ -909,9 +909,6 @@ public class JbpmServiceImpl implements JbpmService {
         DocumentEventContext ctx = new DocumentEventContext(session, principal,
                 doc);
         ctx.setProperty("recipients", recipients);
-        // NXP-6440 Bug with Postgres/tomcat
-        ctx.setProperty("recipients_list", StringUtils.join(recipients, ", ")
-                .replaceAll("user:", "").replaceAll("group:", ""));
         ctx.getProperties().put("comment", comment);
         try {
             getEventProducer().fireEvent(ctx.newEvent(name));

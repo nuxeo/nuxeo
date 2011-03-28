@@ -58,11 +58,6 @@ public class SendEventActionHandler extends AbstractJbpmHandlerHelper {
                 DocumentEventContext ctx = new DocumentEventContext(coreSession,
                         principal, documentModel);
                 ctx.setProperty("recipients", getRecipients());
-                // NXP-6440 Bug with Postgres/tomcat
-                ctx.setProperty("recipients_list", StringUtils.join(
-                        getRecipients(), ", ")
-                        .replaceAll("user:", "")
-                        .replaceAll("group:", ""));
                 eventProducer.fireEvent(ctx.newEvent(eventName));
             } finally {
                 closeCoreSession(coreSession);

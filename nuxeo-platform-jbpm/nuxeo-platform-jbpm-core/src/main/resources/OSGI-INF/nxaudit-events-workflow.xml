@@ -35,7 +35,6 @@
 
   <extension point="extendedInfo" target="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService">
      <extendedInfo expression="#{message.properties.dueDate}" key="dueDate" />
-     <extendedInfo expression="#{message.properties.recipients_list}" key="recipients" />
      <extendedInfo expression="#{message.properties.directive}" key="directive" />
   </extension>
 
