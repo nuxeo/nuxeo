@@ -17,6 +17,7 @@
         <description>
           <p>This is a test widget type</p>
         </description>
+        <demo id="test" previewEnabled="true" />
         <confProperties>
           <property name="confProp">foo</property>
           <property name="sortProperty">dc:title</property>

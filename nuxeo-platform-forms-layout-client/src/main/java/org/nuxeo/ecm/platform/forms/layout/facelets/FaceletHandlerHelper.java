@@ -22,6 +22,7 @@ package org.nuxeo.ecm.platform.forms.layout.facelets;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +37,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
+import org.nuxeo.ecm.platform.forms.layout.api.WidgetSelectOption;
+import org.nuxeo.ecm.platform.forms.layout.api.WidgetSelectOptions;
 import org.nuxeo.ecm.platform.ui.web.binding.alias.AliasTagHandler;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
 
@@ -194,7 +197,7 @@ public final class FaceletHandlerHelper {
      * this property value is not kept (cached) in the component on ajax
      * refresh.
      * <p>
-     * Off course property values already representing an expression cannot be
+     * Of course property values already representing an expression cannot be
      * mapped as is because they would need to be resolved twice.
      * <p>
      * Converters and validators cannot be referenced either because components
@@ -279,17 +282,33 @@ public final class FaceletHandlerHelper {
             attrs.add(valueAttr);
         }
         // fill with widget properties
-        Map<String, Serializable> properties = widget.getProperties();
+        List<TagAttribute> propertyAttrs = getTagAttributes(
+                widget.getProperties(), true);
+        if (propertyAttrs != null) {
+            attrs.addAll(propertyAttrs);
+        }
+        return getTagAttributes(attrs);
+    }
+
+    public List<TagAttribute> getTagAttributes(
+            Map<String, Serializable> properties, boolean useReferenceProperties) {
+        List<TagAttribute> attrs = new ArrayList<TagAttribute>();
         if (properties != null) {
             for (Map.Entry<String, Serializable> prop : properties.entrySet()) {
                 TagAttribute attr;
                 String key = prop.getKey();
                 Serializable valueInstance = prop.getValue();
-                if (!shouldCreateReferenceAttribute(key, valueInstance)) {
-                    // FIXME: this will not be updated correctly using ajax
-                    attr = createAttribute(key, (String) valueInstance);
+                if (!shouldCreateReferenceAttribute(key, valueInstance)
+                        || !useReferenceProperties) {
+                    if (valueInstance == null
+                            || valueInstance instanceof String) {
+                        // FIXME: this will not be updated correctly using ajax
+                        attr = createAttribute(key, (String) valueInstance);
+                    } else {
+                        attr = createAttribute(key, valueInstance.toString());
+                    }
                 } else {
-                    // create a reference so that it's an real expression and
+                    // create a reference so that it's a real expression and
                     // it's not kept (cached) in a component value on ajax
                     // refresh
                     attr = createAttribute(key, String.format(
@@ -299,7 +318,59 @@ public final class FaceletHandlerHelper {
                 attrs.add(attr);
             }
         }
+        return attrs;
+    }
+
+    public TagAttributes getTagAttributes(WidgetSelectOption selectOption) {
+        Map<String, Serializable> props = getSelectOptionProperties(selectOption);
+        List<TagAttribute> attrs = getTagAttributes(props, false);
+        if (attrs == null) {
+            attrs = Collections.emptyList();
+        }
         return getTagAttributes(attrs);
+    }
+
+    public Map<String, Serializable> getSelectOptionProperties(
+            WidgetSelectOption selectOption) {
+        Map<String, Serializable> map = new HashMap<String, Serializable>();
+        if (selectOption != null) {
+            Serializable value = selectOption.getValue();
+            if (value != null) {
+                map.put("value", value);
+            }
+            String var = selectOption.getVar();
+            if (var != null) {
+                map.put("var", var);
+            }
+            String itemLabel = selectOption.getItemLabel();
+            if (itemLabel != null) {
+                map.put("itemLabel", itemLabel);
+            }
+            String itemValue = selectOption.getItemValue();
+            if (itemValue != null) {
+                map.put("itemValue", itemValue);
+            }
+            Serializable itemDisabled = selectOption.getItemDisabled();
+            if (itemDisabled != null) {
+                map.put("itemDisabled", itemDisabled);
+            }
+            Serializable itemRendered = selectOption.getItemRendered();
+            if (itemRendered != null) {
+                map.put("itemRendered", itemRendered);
+            }
+            if (selectOption instanceof WidgetSelectOptions) {
+                WidgetSelectOptions selectOptions = (WidgetSelectOptions) selectOption;
+                Boolean caseSensitive = selectOptions.getCaseSensitive();
+                if (caseSensitive != null) {
+                    map.put("caseSensitive", caseSensitive);
+                }
+                String ordering = selectOptions.getOrdering();
+                if (ordering != null) {
+                    map.put("ordering", ordering);
+                }
+            }
+        }
+        return map;
     }
 
     /**

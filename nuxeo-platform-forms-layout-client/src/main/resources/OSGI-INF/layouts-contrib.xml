@@ -26,6 +26,7 @@
             accepted on a &lt;h:outputText /&gt; tag in other modes.
           </p>
         </description>
+        <demo id="textWidget" />
         <supportedModes>
           <mode>edit</mode>
           <mode>view</mode>
@@ -302,6 +303,7 @@
             accepted on a &lt;h:outputText /&gt; tag in other modes.
           </p>
         </description>
+        <demo id="intWidget" />
         <categories>
           <category>document</category>
         </categories>
@@ -559,6 +561,7 @@
             accepted on a &lt;h:outputText /&gt; tag in other modes.
           </p>
         </description>
+        <!--<demo id="doubleWidget" />-->
         <categories>
           <category>document</category>
         </categories>
@@ -814,6 +817,7 @@
             &lt;h:inputSecret /&gt; tag in create or edit mode.
           </p>
         </description>
+        <demo id="secretWidget" />
         <categories>
           <category>document</category>
         </categories>
@@ -1034,6 +1038,7 @@
             accepted on a &lt;h:outputText /&gt; tag in other modes.
           </p>
         </description>
+        <demo id="textareaWidget" />
         <categories>
           <category>document</category>
         </categories>
@@ -1298,6 +1303,7 @@
             The converter will also be given these properties.
           </p>
         </description>
+        <demo id="datetimeWidget" />
         <categories>
           <category>document</category>
         </categories>
@@ -1554,6 +1560,7 @@
             &lt;/widgetType&gt;
           </p>
         </description>
+        <demo id="templateWidget" />
         <categories>
           <category>dev</category>
         </categories>
@@ -1607,6 +1614,7 @@
             accepted on a &lt;nxu:outputFile /&gt; tag in other modes.
           </p>
         </description>
+        <demo id="fileWidget" />
         <categories>
           <category>document</category>
         </categories>
@@ -1738,6 +1746,7 @@
             accepted on a &lt;nxu:outputText /&gt; tag in other modes.
           </p>
         </description>
+        <demo id="htmltextWidget" />
         <categories>
           <category>document</category>
         </categories>
@@ -1920,6 +1929,7 @@
             other modes.
           </p>
         </description>
+        <demo id="selectOneDirectoryWidget" />
         <categories>
           <category>document</category>
         </categories>
@@ -1935,17 +1945,14 @@
           </supportedTypes>
         </fields>
         <properties>
-          <layouts mode="view">
-            <layout name="selectOneDirectory_widget_type_properties_view">
+          <layouts mode="any">
+            <layout name="selectOneDirectory_widget_type_properties_any">
               <rows>
                 <row>
                   <widget>directoryName</widget>
                 </row>
                 <row>
-                  <widget>localize</widget>
-                </row>
-                <row>
-                  <widget>displayIdAndLabel</widget>
+                  <widget>directoryNameDemoPreview</widget>
                 </row>
               </rows>
               <widget name="directoryName" type="selectOneResource">
@@ -1955,13 +1962,43 @@
                 <fields>
                   <field>directoryName</field>
                 </fields>
+                <widgetModes>
+                  <mode value="edit_demo_preview">hidden</mode>
+                </widgetModes>
                 <properties mode="any">
                   <property name="resourceName">vocabularies</property>
                 </properties>
-                <properties widgetMode="edit">
+                <properties widgetMode="any">
                   <property name="required">true</property>
                 </properties>
               </widget>
+              <widget name="directoryNameDemoPreview" type="text">
+                <labels>
+                  <label mode="any">Vocabulary</label>
+                </labels>
+                <fields>
+                  <field>directoryName</field>
+                </fields>
+                <widgetModes>
+                  <mode value="any">hidden</mode>
+                  <mode value="edit_demo_preview">view</mode>
+                </widgetModes>
+                <properties widgetMode="any">
+                  <property name="required">true</property>
+                </properties>
+              </widget>
+            </layout>
+          </layouts>
+          <layouts mode="view">
+            <layout name="selectOneDirectory_widget_type_properties_view">
+              <rows>
+                <row>
+                  <widget>localize</widget>
+                </row>
+                <row>
+                  <widget>displayIdAndLabel</widget>
+                </row>
+              </rows>
               <widget name="localize" type="checkbox">
                 <labels>
                   <label mode="any">Localize</label>
@@ -1969,6 +2006,9 @@
                 <fields>
                   <field>localize</field>
                 </fields>
+                <widgetModes>
+                  <mode value="edit_demo_preview">hidden</mode>
+                </widgetModes>
               </widget>
               <widget name="displayIdAndLabel" type="checkbox">
                 <labels>
@@ -1984,9 +2024,6 @@
             <layout name="selectOneDirectory_widget_type_properties_edit">
               <rows>
                 <row>
-                  <widget>directoryName</widget>
-                </row>
-                <row>
                   <widget>required</widget>
                 </row>
                 <row>
@@ -2002,7 +2039,7 @@
                   <widget>notDisplayDefaultOption</widget>
                 </row>
                 <row>
-                  <widget>sortCriteria</widget>
+                  <widget>ordering</widget>
                 </row>
                 <row>
                   <widget>cssStyle</widget>
@@ -2021,9 +2058,12 @@
                 <properties mode="any">
                   <property name="resourceName">vocabularies</property>
                 </properties>
-                <properties widgetMode="edit">
+                <properties widgetMode="any">
                   <property name="required">true</property>
                 </properties>
+                <widgetModes>
+                  <mode value="edit_demo_preview">hidden</mode>
+                </widgetModes>
               </widget>
               <widget name="localize" type="checkbox">
                 <labels>
@@ -2032,6 +2072,9 @@
                 <fields>
                   <field>localize</field>
                 </fields>
+                <widgetModes>
+                  <mode value="edit_demo_preview">hidden</mode>
+                </widgetModes>
               </widget>
               <widget name="displayIdAndLabel" type="checkbox">
                 <labels>
@@ -2087,12 +2130,12 @@
                   <field>required</field>
                 </fields>
               </widget>
-              <widget name="sortCriteria" type="selectOneListbox">
+              <widget name="ordering" type="selectOneListbox">
                 <labels>
                   <label mode="any">Sort criterion</label>
                 </labels>
                 <fields>
-                  <field>sortCriteria</field>
+                  <field>ordering</field>
                 </fields>
                 <selectOptions>
                   <option itemLabel="Label" itemValue="label" />
@@ -2108,12 +2151,39 @@
       </handler-class>
     </widgetType>
 
+    <widgetType name="selectOneListbox">
+      <configuration>
+        <sinceVersion>5.4.2</sinceVersion>
+        <title>Select One Listbox</title>
+        <description></description>
+        <categories>
+          <category>document</category>
+        </categories>
+        <supportedModes>
+          <mode>edit</mode>
+          <!--  TODO
+            <mode>view</mode>
+          -->
+        </supportedModes>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+          </supportedTypes>
+        </fields>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.SelectOneListboxWidgetTypeHandler
+      </handler-class>
+    </widgetType>
+
     <widgetType name="selectManyDirectory">
       <configuration>
         <title>Multiple vocabulary</title>
         <description>
           <p>
-            The selectOneDirectory widget displays a multi selection of
+            The selectManyDirectory widget displays a multi selection of
             vocabulary entries in create or edit mode, with additional message
             tag for errors, and the directory entries labels in other modes.
           </p>
@@ -2123,6 +2193,7 @@
             &lt;nxd:directoryEntryOutput /&gt; tag in other modes.
           </p>
         </description>
+        <demo id="selectManyDirectoryWidget" />
         <categories>
           <category>document</category>
         </categories>
@@ -2138,17 +2209,14 @@
           </supportedTypes>
         </fields>
         <properties>
-          <layouts mode="view">
-            <layout name="selectManyDirectory_widget_type_properties_view">
+          <layouts mode="any">
+            <layout name="selectManyDirectory_widget_type_properties_any">
               <rows>
                 <row>
                   <widget>directoryName</widget>
                 </row>
                 <row>
-                  <widget>localize</widget>
-                </row>
-                <row>
-                  <widget>displayIdAndLabel</widget>
+                  <widget>directoryNameDemoPreview</widget>
                 </row>
               </rows>
               <widget name="directoryName" type="selectOneResource">
@@ -2158,13 +2226,43 @@
                 <fields>
                   <field>directoryName</field>
                 </fields>
+                <widgetModes>
+                  <mode value="edit_demo_preview">hidden</mode>
+                </widgetModes>
                 <properties mode="any">
                   <property name="resourceName">vocabularies</property>
                 </properties>
-                <properties widgetMode="edit">
+                <properties widgetMode="any">
                   <property name="required">true</property>
                 </properties>
               </widget>
+              <widget name="directoryNameDemoPreview" type="text">
+                <labels>
+                  <label mode="any">Vocabulary</label>
+                </labels>
+                <fields>
+                  <field>directoryName</field>
+                </fields>
+                <widgetModes>
+                  <mode value="any">hidden</mode>
+                  <mode value="edit_demo_preview">view</mode>
+                </widgetModes>
+                <properties widgetMode="any">
+                  <property name="required">true</property>
+                </properties>
+              </widget>
+            </layout>
+          </layouts>
+          <layouts mode="view">
+            <layout name="selectManyDirectory_widget_type_properties_view">
+              <rows>
+                <row>
+                  <widget>localize</widget>
+                </row>
+                <row>
+                  <widget>displayIdAndLabel</widget>
+                </row>
+              </rows>
               <widget name="localize" type="checkbox">
                 <labels>
                   <label mode="any">Localize</label>
@@ -2172,6 +2270,9 @@
                 <fields>
                   <field>localize</field>
                 </fields>
+                <widgetModes>
+                  <mode value="edit_demo_preview">hidden</mode>
+                </widgetModes>
               </widget>
               <widget name="displayIdAndLabel" type="checkbox">
                 <labels>
@@ -2186,9 +2287,6 @@
           <layouts mode="edit">
             <layout name="selectManyDirectory_widget_type_properties_edit">
               <rows>
-                <row>
-                  <widget>directoryName</widget>
-                </row>
                 <row>
                   <widget>required</widget>
                 </row>
@@ -2205,7 +2303,7 @@
                   <widget>notDisplayDefaultOption</widget>
                 </row>
                 <row>
-                  <widget>sortCriteria</widget>
+                  <widget>ordering</widget>
                 </row>
                 <row>
                   <widget>cssStyle</widget>
@@ -2214,20 +2312,6 @@
                   <widget>cssStyleClass</widget>
                 </row>
               </rows>
-              <widget name="directoryName" type="selectOneResource">
-                <labels>
-                  <label mode="any">Vocabulary</label>
-                </labels>
-                <fields>
-                  <field>directoryName</field>
-                </fields>
-                <properties mode="any">
-                  <property name="resourceName">vocabularies</property>
-                </properties>
-                <properties widgetMode="edit">
-                  <property name="required">true</property>
-                </properties>
-              </widget>
               <widget name="localize" type="checkbox">
                 <labels>
                   <label mode="any">Localize</label>
@@ -2235,6 +2319,9 @@
                 <fields>
                   <field>localize</field>
                 </fields>
+                <widgetModes>
+                  <mode value="edit_demo_preview">hidden</mode>
+                </widgetModes>
               </widget>
               <widget name="displayIdAndLabel" type="checkbox">
                 <labels>
@@ -2290,12 +2377,12 @@
                   <field>required</field>
                 </fields>
               </widget>
-              <widget name="sortCriteria" type="selectOneListbox">
+              <widget name="ordering" type="selectOneListbox">
                 <labels>
                   <label mode="any">Sort criterion</label>
                 </labels>
                 <fields>
-                  <field>sortCriteria</field>
+                  <field>ordering</field>
                 </fields>
                 <selectOptions>
                   <option itemLabel="Label" itemValue="label" />
@@ -2318,7 +2405,8 @@
           <p>
             The list widget displays an editable list of items in create or edit
             mode, with additional message tag for errors, and the same list of
-            items in other modes.
+            items in other modes. It is not usable within a list widget (see
+            sublist widget for this feature).
           </p>
           <p>Items are defined using sub wigdets configuration.</p>
           <p>
@@ -2327,6 +2415,7 @@
             iterating over items in other modes.
           </p>
         </description>
+        <demo id="listWidget" />
         <categories>
           <category>document</category>
         </categories>
@@ -2357,6 +2446,50 @@
           </defaultTypes>
         </fields>
         <properties>
+          <layouts mode="any">
+            <layout name="list_widget_type_properties_any">
+              <rows>
+                <row>
+                  <widget>display</widget>
+                </row>
+                <row>
+                  <widget>hideSubLabels</widget>
+                </row>
+              </rows>
+              <widget name="display" type="selectOneListbox">
+                <labels>
+                  <label mode="any">Display</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The display attribute controls the rendering of subwidgets,
+                    either in a table, either inline. Available since 5.4.2.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>display</field>
+                </fields>
+                <selectOptions>
+                  <option itemLabel="Table (default)" itemValue="table" />
+                  <option itemLabel="In line" itemValue="inline" />
+                </selectOptions>
+              </widget>
+              <widget name="hideSubLabels" type="checkbox">
+                <labels>
+                  <label mode="any">Hide subwidgets labels</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    This attribute controls the rendering of subwidgets labels.
+                    Available since 5.4.2.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>hideSubLabels</field>
+                </fields>
+              </widget>
+            </layout>
+          </layouts>
           <layouts mode="edit">
             <layout name="list_widget_type_properties_edit">
               <rows>
@@ -2393,6 +2526,84 @@
       <property name="template">/widgets/list_widget_template.xhtml</property>
     </widgetType>
 
+    <widgetType name="complex">
+      <configuration>
+        <sinceVersion>5.4.2</sinceVersion>
+        <title>Complex</title>
+        <description>
+          <p>
+            The complex widget displays its sub widgets, and is controlling of a
+            map-like. Each of the map items rendering is done through sub
+            widgets configuration.
+          </p>
+        </description>
+        <demo id="complexWidget" />
+        <categories>
+          <category>document</category>
+        </categories>
+        <supportedModes>
+          <mode>edit</mode>
+          <mode>view</mode>
+        </supportedModes>
+        <fields>
+          <list>false</list>
+          <complex>true</complex>
+        </fields>
+        <properties>
+          <layouts mode="any">
+            <layout name="complex_widget_type_properties_any">
+              <rows>
+                <row>
+                  <widget>display</widget>
+                </row>
+                <row>
+                  <widget>hideSubLabels</widget>
+                </row>
+              </rows>
+              <widget name="display" type="selectOneListbox">
+                <labels>
+                  <label mode="any">Display</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The display attribute controls the rendering of subwidgets,
+                    either in a table, either inline. Available since 5.4.2.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>display</field>
+                </fields>
+                <selectOptions>
+                  <option itemLabel="Table (default)" itemValue="table" />
+                  <option itemLabel="In line" itemValue="inline" />
+                </selectOptions>
+              </widget>
+              <widget name="hideSubLabels" type="checkbox">
+                <labels>
+                  <label mode="any">Hide subwidgets labels</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    This attribute controls the rendering of subwidgets labels.
+                    Available since 5.4.2.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>hideSubLabels</field>
+                </fields>
+              </widget>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/complex_widget_template.xhtml
+      </property>
+    </widgetType>
+
     <widgetType name="checkbox">
       <configuration>
         <title>Checkbox</title>
@@ -2407,6 +2618,7 @@
             other modes.
           </p>
         </description>
+        <demo id="checkboxWidget" />
         <categories>
           <category>document</category>
         </categories>
@@ -2628,6 +2840,7 @@
             &lt;h:inputHidden /&gt; tag in create, edit mode, and other modes.
           </p>
         </description>
+        <demo id="hiddenWidget" />
         <categories>
           <category>document</category>
         </categories>
@@ -2758,6 +2971,7 @@
             &lt;nxl:layout /&gt; tag in all modes.
           </p>
         </description>
+        <demo id="layoutWidget" />
         <categories>
           <category>dev</category>
         </categories>
@@ -2767,7 +2981,7 @@
         </supportedModes>
         <properties>
           <layouts mode="any">
-            <layout name="hidden_widget_type_properties_any">
+            <layout name="layout_widget_type_properties_any">
               <rows>
                 <row>
                   <widget>name</widget>

@@ -114,8 +114,15 @@ public class DirectorySelectManyWidgetTypeHandler extends
             // first fill with widget properties
             for (Map.Entry<String, Serializable> property : properties.entrySet()) {
                 if (!"value".equals(property.getKey())) {
-                    TagAttribute attr = helper.createAttribute(
-                            property.getKey(), (String) property.getValue());
+                    Serializable value = property.getValue();
+                    TagAttribute attr = null;
+                    if (value instanceof String) {
+                        attr = helper.createAttribute(property.getKey(),
+                                (String) value);
+                    } else if (value != null) {
+                        attr = helper.createAttribute(property.getKey(),
+                                value.toString());
+                    }
                     if (attr != null) {
                         attrs.add(attr);
                     }

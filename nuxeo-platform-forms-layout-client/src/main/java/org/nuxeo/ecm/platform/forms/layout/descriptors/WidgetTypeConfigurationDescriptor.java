@@ -60,6 +60,12 @@ public class WidgetTypeConfigurationDescriptor implements
     // retrieve HTML tags => introspect DOM on setter
     String description;
 
+    @XNode("demo@id")
+    String demoId;
+
+    @XNode("demo@previewEnabled")
+    boolean demoPreviewEnabled = false;
+
     @XNodeList(value = "supportedModes/mode", type = ArrayList.class, componentType = String.class)
     List<String> supportedModes;
 
@@ -112,6 +118,16 @@ public class WidgetTypeConfigurationDescriptor implements
     @Override
     public String getTitle() {
         return title;
+    }
+
+    @Override
+    public String getDemoId() {
+        return demoId;
+    }
+
+    @Override
+    public boolean isDemoPreviewEnabled() {
+        return demoPreviewEnabled;
     }
 
     @Override

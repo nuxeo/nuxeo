@@ -336,6 +336,7 @@
             </ul>
           </p>
         </description>
+        <demo id="listing_icon_typeWidget" />
         <fields>
           <list>false</list>
           <complex>false</complex>
@@ -390,6 +391,7 @@
             </ul>
           </p>
         </description>
+        <demo id="listing_big_icon_typeWidget" />
         <fields>
           <list>false</list>
           <complex>false</complex>
@@ -445,6 +447,7 @@
             </ul>
           </p>
         </description>
+        <demo id="listing_big_icon_type_linkWidget" />
         <fields>
           <list>false</list>
           <complex>false</complex>
@@ -515,6 +518,7 @@
             </ul>
           </p>
         </description>
+        <demo id="listing_title_linkWidget" />
         <confProperties>
           <property name="sortPropertyName">dc:title</property>
         </confProperties>
@@ -558,6 +562,7 @@
             </ul>
           </p>
         </description>
+        <demo id="listing_lock_iconWidget" />
         <fields>
           <list>false</list>
           <complex>false</complex>
@@ -590,6 +595,7 @@
             </ul>
           </p>
         </description>
+        <demo id="listing_authorWidget" />
         <confProperties>
           <property name="sortPropertyName">dc:creator</property>
         </confProperties>
@@ -625,14 +631,15 @@
             </ul>
           </p>
         </description>
+        <demo id="listing_last_contributorWidget" />
         <confProperties>
-          <property name="sortPropertyName">dc:creator</property>
+          <property name="sortPropertyName">dc:lastContributor</property>
         </confProperties>
         <fields>
           <list>false</list>
           <complex>false</complex>
           <defaultConfiguration>
-            <field>data.dc.creator</field>
+            <field>data.dc.lastContributor</field>
           </defaultConfiguration>
         </fields>
         <categories>
@@ -661,6 +668,7 @@
             </ul>
           </p>
         </description>
+        <demo id="listing_lifecycleWidget" />
         <confProperties>
           <property name="sortPropertyName">ecm:currentLifeCycleState</property>
         </confProperties>
@@ -707,6 +715,7 @@
             </ul>
           </p>
         </description>
+        <demo id="listing_livedit_linkWidget" />
         <fields>
           <list>false</list>
           <complex>false</complex>
@@ -743,6 +752,7 @@
             </ul>
           </p>
         </description>
+        <demo id="listing_versionWidget" />
         <fields>
           <list>false</list>
           <complex>false</complex>
