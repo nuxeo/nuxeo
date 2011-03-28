@@ -34,6 +34,21 @@ public interface WidgetTypeConfiguration extends Serializable {
 
     String getDescription();
 
+    /**
+     * Returns the identifier to be used for the demo, or null if no demo is
+     * available.
+     *
+     * @since 5.4.2
+     */
+    String getDemoId();
+
+    /**
+     * Returns true is the preview is enabled on the demo.
+     *
+     * @since 5.4.2
+     */
+    boolean isDemoPreviewEnabled();
+
     List<String> getCategories();
 
     List<String> getSupportedModes();

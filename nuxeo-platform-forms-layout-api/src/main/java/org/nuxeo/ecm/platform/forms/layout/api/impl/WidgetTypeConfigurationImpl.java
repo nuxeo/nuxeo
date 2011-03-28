@@ -27,6 +27,10 @@ public class WidgetTypeConfigurationImpl implements WidgetTypeConfiguration {
 
     protected String description;
 
+    protected String demoId;
+
+    protected boolean demoPreviewEnabled = false;
+
     protected Map<String, Serializable> properties;
 
     protected List<String> supportedModes;
@@ -53,10 +57,10 @@ public class WidgetTypeConfigurationImpl implements WidgetTypeConfiguration {
     }
 
     public WidgetTypeConfigurationImpl(String sinceVersion, String title,
-            String description, Map<String, Serializable> properties,
-            List<String> supportedModes, boolean acceptingSubWidgets,
-            boolean list, boolean complex, List<String> supportedFieldTypes,
-            List<String> defaultFieldTypes,
+            String description, String demoId, boolean demoPreviewEnabled,
+            Map<String, Serializable> properties, List<String> supportedModes,
+            boolean acceptingSubWidgets, boolean list, boolean complex,
+            List<String> supportedFieldTypes, List<String> defaultFieldTypes,
             List<FieldDefinition> defaultFieldDefinitions,
             List<String> categories,
             Map<String, List<LayoutDefinition>> propertyLayouts) {
@@ -64,6 +68,8 @@ public class WidgetTypeConfigurationImpl implements WidgetTypeConfiguration {
         this.sinceVersion = sinceVersion;
         this.title = title;
         this.description = description;
+        this.demoId = demoId;
+        this.demoPreviewEnabled = demoPreviewEnabled;
         this.properties = properties;
         this.supportedModes = supportedModes;
         this.acceptingSubWidgets = acceptingSubWidgets;
@@ -87,6 +93,16 @@ public class WidgetTypeConfigurationImpl implements WidgetTypeConfiguration {
 
     public String getDescription() {
         return description;
+    }
+
+    @Override
+    public String getDemoId() {
+        return demoId;
+    }
+
+    @Override
+    public boolean isDemoPreviewEnabled() {
+        return demoPreviewEnabled;
     }
 
     @Override
