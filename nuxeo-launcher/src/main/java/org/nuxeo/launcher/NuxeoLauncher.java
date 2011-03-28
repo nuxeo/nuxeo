@@ -26,8 +26,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -55,6 +53,7 @@ import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.launcher.config.Environment;
 import org.nuxeo.launcher.daemon.DaemonThreadFactory;
 import org.nuxeo.launcher.gui.NuxeoLauncherGUI;
+import org.nuxeo.log4j.ThreadedStreamGobbler;
 
 /**
  * @author jcarsique
@@ -190,7 +189,7 @@ public abstract class NuxeoLauncher {
         // pb = pb.redirectErrorStream(true);
         log.debug("Server command: " + pb.command());
         nuxeoProcess = pb.start();
-        logProcessStreams(pb, nuxeoProcess, logProcessOutput);
+        logProcessStreams(nuxeoProcess, logProcessOutput);
         Thread.sleep(1000);
         if (getPid() != null) {
             log.info("Server started with process ID " + pid + ".");
@@ -244,46 +243,7 @@ public abstract class NuxeoLauncher {
         }
     }
 
-    protected class ThreadedStreamGobbler extends Thread {
-        private InputStream is;
-
-        private int logLevel;
-
-        ThreadedStreamGobbler(InputStream is, int logLevel) {
-            this.is = is;
-            this.logLevel = logLevel;
-            this.setDaemon(true);
-        }
-
-        @Override
-        public void run() {
-            BufferedReader br = new BufferedReader(new InputStreamReader(is));
-            String line;
-
-            try {
-                while ((line = br.readLine()) != null) {
-                    switch (logLevel) {
-                    case SimpleLog.LOG_LEVEL_INFO:
-                        log.info(line);
-                        break;
-                    case SimpleLog.LOG_LEVEL_ERROR:
-                        log.error(line);
-                        break;
-                    case SimpleLog.LOG_LEVEL_OFF:
-                    default:
-                        break;
-                    }
-                }
-            } catch (IOException e) {
-                log.error(e);
-            } finally {
-                IOUtils.closeQuietly(br);
-            }
-        }
-    }
-
-    public void logProcessStreams(ProcessBuilder pb, Process process,
-            boolean logProcessOutput) {
+    public void logProcessStreams(Process process, boolean logProcessOutput) {
         new ThreadedStreamGobbler(process.getInputStream(),
                 logProcessOutput ? SimpleLog.LOG_LEVEL_INFO
                         : SimpleLog.LOG_LEVEL_OFF).start();
@@ -699,7 +659,7 @@ public abstract class NuxeoLauncher {
         pb.directory(configurationGenerator.getNuxeoHome());
         log.debug("Install command: " + pb.command());
         Process installProcess = pb.start();
-        logProcessStreams(pb, installProcess, false);
+        logProcessStreams(installProcess, false);
         Thread.sleep(1000);
         installProcess.waitFor();
     }
@@ -819,7 +779,7 @@ public abstract class NuxeoLauncher {
                 log.debug("Server command: " + pb.command());
                 try {
                     Process stopProcess = pb.start();
-                    logProcessStreams(pb, stopProcess, logProcessOutput);
+                    logProcessStreams(stopProcess, logProcessOutput);
                     stopProcess.waitFor();
                     boolean wait = true;
                     while (wait) {
