@@ -74,7 +74,12 @@
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>importFileRichUploadForm:j_id219</td>
+	<td>//input[@value='Upload']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Log out</td>
 	<td></td>
 </tr>
 </tbody></table>

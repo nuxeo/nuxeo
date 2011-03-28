@@ -37,7 +37,7 @@
     <nx:rename from="${stagedir}/nuxeo-*" to="${app.path}" />
     <chmod dir="${app.path}" perm="750" includes="*.sh,bin/*.sh" />
     <!-- Deploy Custom plugins -->
-    <copy todir="${app.path}/server/default/deploy/nuxeo.ear/plugins">
+    <copy todir="${app.path}/nxserver/plugins">
       <artifact:set groupId="org.nuxeo.ecm.platform" artifactId="nuxeo-platform-signature-*"/>
     </copy>
     <copy todir="${app.path}/templates/" overwrite="true">

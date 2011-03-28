@@ -164,7 +164,6 @@ public class SignActions implements Serializable {
                 event.setInline(false);
                 event.setImmediate(true);
                 Framework.getLocalService(EventService.class).fireEvent(event);
-
                 // display a signing message
                 facesMessages.add(StatusMessage.Severity.INFO,
                         outputBlob.getFilename()

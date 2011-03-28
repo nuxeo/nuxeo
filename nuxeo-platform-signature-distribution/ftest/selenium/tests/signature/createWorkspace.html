@@ -11,7 +11,6 @@
 <thead>
 <tr><td rowspan="1" colspan="3">createUsers</td></tr>
 </thead><tbody>
-<!--@Test groups:CreateUsers,introduction|depends:CreateStructure-->
 <tr>
 	<td>setTimeout</td>
 	<td>120000</td>
@@ -64,12 +63,62 @@
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>//input[@value='Create']</td>
+	<td>document_create:button_create</td>
 	<td></td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>link=Log out</td>
+	<td>link=Manage</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>typeKeys</td>
+	<td>//input[@name='add_rights_form:nxl_user_group_suggestion:nxw_selection_suggest']</td>
+	<td>members</td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td>members</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//*[@id='add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>add_rights_form:rights_permission_select</td>
+	<td>label=Write</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>add_rights_form:rights_add_button</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>validate_rights:document_rights_validate_button</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>userServicesForm:userServicesBottomActionsTable:0:userServicesBottomActionLink</td>
 	<td></td>
 </tr>
 </tbody></table>

@@ -12,23 +12,128 @@
 <tr><td rowspan="1" colspan="3">signPDF</td></tr>
 </thead><tbody>
 <tr>
+	<td>setTimeout</td>
+	<td>120000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/nuxeo/logout</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/nuxeo/login.jsp</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>username</td>
+	<td>jdoe</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>password</td>
+	<td>password</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Submit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>You are logged as jdoe</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Link=Workspaces</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>j_id54:j_id59</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=TestWorkspace</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=original.pdf</td>
+	<td></td>
+</tr>
+<tr>
 	<td>clickAndWait</td>
 	<td>link=Signature</td>
 	<td></td>
 </tr>
 <tr>
-	<td>click</td>
-	<td>sign_form:SignPDF</td>
+	<td>verifyTextPresent</td>
+	<td>Go to certificate management</td>
 	<td></td>
 </tr>
 <tr>
-	<td>waitForTextPresent</td>
-	<td>Problem accessing your certificate. Make sure your password is correct.</td>
+	<td>clickAndWait</td>
+	<td>Link=Go to certificate management</td>
 	<td></td>
 </tr>
 <tr>
-	<td>click</td>
-	<td>sign_form:signingReason</td>
+	<td>clickAndWait</td>
+	<td>link=Certificate</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>certificateForm:firstPassword</td>
+	<td>password</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>certificateForm:secondPassword</td>
+	<td>password</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>certificateForm:j_id246</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Your certificate password should be different from your login password</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>certificateForm:firstPassword</td>
+	<td>Certificate</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>certificateForm:secondPassword</td>
+	<td>Certificate</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>certificateForm:j_id246</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>CN=John Doe,</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=original.pdf</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Signature</td>
 	<td></td>
 </tr>
 <tr>
@@ -39,11 +144,21 @@
 <tr>
 	<td>type</td>
 	<td>sign_form:password</td>
-	<td>abcabcabc</td>
+	<td>Certificate</td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
 	<td>sign_form:SignPDF</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>This document was certified by CN</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Log out</td>
 	<td></td>
 </tr>
 </tbody></table>
