@@ -17,7 +17,7 @@
 
   <target name="expand">
     <artifact:nuxeo-expand />
-    <artifact:print output="dependency-tree.log" />
+    <!-- <artifact:print output="dependency-tree.log" /> -->
   </target>
 
   <target name="build" depends="init" description="Build Nuxeo DM">
