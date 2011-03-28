@@ -64,6 +64,7 @@
       <properties widgetMode="edit">
         <property name="styleClass">dataInputText</property>
         <property name="labelOpenPopUp">label.relation.addPath</property>
+        <property name="showAllDomains">true</property>
       </properties>
     </widget>
 
