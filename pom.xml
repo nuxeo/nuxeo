@@ -42,7 +42,6 @@
     <module>nuxeo-platform-categorization/nuxeo-platform-categorization-subjects</module>
     <module>nuxeo-shell</module>
     <module>nuxeo-filesystem-connectors</module>
-    <module>nuxeo-gsa-connector</module>
     <module>nuxeo-opensocial</module>
 
     <!--
