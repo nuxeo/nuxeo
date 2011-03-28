@@ -63,8 +63,8 @@ public class RouterServlet extends HttpServlet {
         String uri = req.getRequestURI();
 
         int idx = uri.indexOf("?");
-        if (idx>0) {
-            uri = uri.substring(0, idx-1);
+        if (idx > 0) {
+            uri = uri.substring(0, idx - 1);
         }
         String action = uri.replace(req.getContextPath() + "/router/", "");
         if (action.startsWith("/")) {
@@ -158,7 +158,8 @@ public class RouterServlet extends HttpServlet {
 
         // compute CB url
         String cbUrl = req.getRequestURL().toString();
-        cbUrl = cbUrl.replace("/router/" + currentPage.getAction(),"/ConnectCallback?cb=yes");
+        cbUrl = cbUrl.replace("/router/" + currentPage.getAction(),
+                "/ConnectCallback?cb=yes");
         cbUrl = URLEncoder.encode(cbUrl, "UTF-8");
 
         req.setAttribute("callBackUrl", cbUrl);
@@ -172,42 +173,42 @@ public class RouterServlet extends HttpServlet {
 
         String token = req.getParameter(CONNECT_TOKEN_KEY);
         String action = req.getParameter("action");
-        String targetNav=null;
+        String targetNav = null;
 
-        if (action==null || action.isEmpty()) {
-            action="skip";
+        if (action == null || action.isEmpty()) {
+            action = "skip";
         }
-        if (action.equals("register") && (token==null || token.isEmpty())) {
+        if (action.equals("register") && (token == null || token.isEmpty())) {
             action = "skip";
         }
 
         if ("register".equals(action)) {
-          // store the registration info
-          Map<String, String> connectMap = new HashMap<String, String>();
-          if (token != null) {
-              String tokenData = new String(Base64.decodeBase64(token));
-              String[] tokenDataLines = tokenData.split("\n");
-              for (String line : tokenDataLines) {
-                  String[] parts = line.split(":");
-                  if (parts.length > 1) {
-                      connectMap.put(parts[0], parts[1]);
-                  }
-              }
-              Context.instance(req).storeConnectMap(connectMap);
-          }
+            // store the registration info
+            Map<String, String> connectMap = new HashMap<String, String>();
+            if (token != null) {
+                String tokenData = new String(Base64.decodeBase64(token));
+                String[] tokenDataLines = tokenData.split("\n");
+                for (String line : tokenDataLines) {
+                    String[] parts = line.split(":");
+                    if (parts.length > 1) {
+                        connectMap.put(parts[0], parts[1]);
+                    }
+                }
+                Context.instance(req).storeConnectMap(connectMap);
+            }
 
-          // deactivate the confirm form
-          SimpleNavigationHandler.instance().deactivatePage("ConnectFinish");
-          // go to the next page
-          targetNav = currentPage.next().getAction();
+            // deactivate the confirm form
+            SimpleNavigationHandler.instance().deactivatePage("ConnectFinish");
+            // go to the next page
+            targetNav = currentPage.next().getAction();
 
         } else if ("skip".equals(action)) {
-          // activate the confirm form
-          SimpleNavigationHandler.instance().activatePage("ConnectFinish");
-          // go to it
-          targetNav = currentPage.next().getAction();
+            // activate the confirm form
+            SimpleNavigationHandler.instance().activatePage("ConnectFinish");
+            // go to it
+            targetNav = currentPage.next().getAction();
         } else if ("prev".equals(action)) {
-          targetNav = currentPage.prev().prev().getAction();
+            targetNav = currentPage.prev().prev().getAction();
         }
 
         String targetUrl = req.getContextPath() + "/" + targetNav;
@@ -215,7 +216,6 @@ public class RouterServlet extends HttpServlet {
         req.setAttribute("targetUrl", targetUrl);
         handleDefaultGET(currentPage, req, resp);
     }
-
 
     public void handleConnectFinishGET(Page currentPage,
             HttpServletRequest req, HttpServletResponse resp)
@@ -330,7 +330,7 @@ public class RouterServlet extends HttpServlet {
         ConfigurationGenerator cg = collector.getConfigurationGenerator();
 
         if (ctx.isConnectRegistrationDone()) {
-            String regTargetPath = cg.getDataDir().getAbsolutePath(); //cg.getRuntimeHome();
+            String regTargetPath = cg.getDataDir().getAbsolutePath(); // cg.getRuntimeHome();
 
             if (!regTargetPath.endsWith("/")) {
                 regTargetPath = regTargetPath + "/";
@@ -386,8 +386,9 @@ public class RouterServlet extends HttpServlet {
         ParamCollector collector = ctx.getCollector();
         String proxyType = collector.getConfigurationParamValue("nuxeo.http.proxy.type");
         if ("none".equals(proxyType)) {
-            collector.addConfigurationParam("nuxeo.http.proxy.type",
-                    null);
+            collector.addConfigurationParam("nuxeo.http.proxy.type", null);
+            collector.addConfigurationParam("nuxeo.http.proxy.login", null);
+            collector.addConfigurationParam("nuxeo.http.proxy.password", null);
         } else {
             if (!NumberValidator.validate(collector.getConfigurationParam("nuxeo.http.proxy.port"))) {
                 ctx.trackError("nuxeo.http.proxy.port",
@@ -395,7 +396,12 @@ public class RouterServlet extends HttpServlet {
             }
             if (collector.getConfigurationParam("nuxeo.http.proxy.host").isEmpty()) {
                 ctx.trackError("nuxeo.http.proxy.port",
-                   "error.nuxeo.http.proxy.emptyHost");
+                        "error.nuxeo.http.proxy.emptyHost");
+            }
+            if ("anonymous".equals(proxyType)) {
+                collector.addConfigurationParam("nuxeo.http.proxy.login", null);
+                collector.addConfigurationParam("nuxeo.http.proxy.password",
+                        null);
             }
         }
 
@@ -414,7 +420,10 @@ public class RouterServlet extends HttpServlet {
         SimpleNavigationHandler.reset();
 
         // return to first page
-        String target = "/" + req.getContextPath() + "/" + SimpleNavigationHandler.instance().getDefaultPage().getAction();
+        String target = "/"
+                + req.getContextPath()
+                + "/"
+                + SimpleNavigationHandler.instance().getDefaultPage().getAction();
         if (target.startsWith("//")) {
             target = target.substring(1);
         }
