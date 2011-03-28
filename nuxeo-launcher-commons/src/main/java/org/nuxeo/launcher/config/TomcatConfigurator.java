@@ -180,18 +180,22 @@ public class TomcatConfigurator extends ServerConfigurator {
     public void cleanupPostWizard() {
         File nuxeoWAR = new File(generator.getNuxeoHome(), "webapps"
                 + File.separator + getContextName());
-        try {
-            FileUtils.deleteDirectory(nuxeoWAR);
-        } catch (IOException e) {
-            log.error("Could not delete " + nuxeoWAR, e);
+        if (nuxeoWAR.exists()) {
+            try {
+                FileUtils.deleteDirectory(nuxeoWAR);
+            } catch (IOException e) {
+                log.error("Could not delete " + nuxeoWAR, e);
+            }
         }
         nuxeoWAR = new File(nuxeoWAR.getPath() + ".war");
-        if (!FileUtils.deleteQuietly(nuxeoWAR)) {
-            log.error("Could not delete " + nuxeoWAR);
-            try {
-                nuxeoWAR.deleteOnExit();
-            } catch (SecurityException e) {
-                log.error("Cannot delete " + nuxeoWAR);
+        if (nuxeoWAR.exists()) {
+            if (!FileUtils.deleteQuietly(nuxeoWAR)) {
+                log.warn("Could not delete " + nuxeoWAR);
+                try {
+                    nuxeoWAR.deleteOnExit();
+                } catch (SecurityException e) {
+                    log.warn("Cannot delete " + nuxeoWAR);
+                }
             }
         }
     }
