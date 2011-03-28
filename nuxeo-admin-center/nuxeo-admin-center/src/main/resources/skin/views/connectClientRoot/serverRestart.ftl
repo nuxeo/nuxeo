@@ -24,7 +24,7 @@ You will be automatically redirected to the login page when Nuxeo server is back
 <script type="text/javascript">
 
 // start polling after 10s to be sure the sever is begun the restart
-setTimeout(startPolling, 10000);
+setTimeout(startPolling, 15000);
 
 // wait / polls until login page is available again
 function startPolling() {
