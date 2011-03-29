@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -22,9 +22,9 @@ import org.nuxeo.ecm.platform.query.api.PageProvider;
  * Wraps a {@link PageProvider} as a {@link DocumentListener}
  *
  * @author Tiry (tdelprat@nuxeo.com)
- *
  */
-public class PaginableDocumentModelListImpl extends DocumentModelListImpl implements PaginableDocumentModelList {
+public class PaginableDocumentModelListImpl extends DocumentModelListImpl
+        implements PaginableDocumentModelList {
 
     private static final long serialVersionUID = 1L;
 

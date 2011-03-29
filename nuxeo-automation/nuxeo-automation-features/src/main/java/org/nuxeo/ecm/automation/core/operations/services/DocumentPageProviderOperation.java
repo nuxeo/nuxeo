@@ -28,8 +28,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
-import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
+import org.nuxeo.ecm.platform.query.core.CoreQueryPageProviderDescriptor;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
 import org.nuxeo.runtime.api.Framework;
 
@@ -39,8 +39,12 @@ import org.nuxeo.runtime.api.Framework;
  * @author Tiry (tdelprat@nuxeo.com)
  * @since 5.4.2
  */
-@Operation(id = PageProviderOperation.ID, category = Constants.CAT_FETCH, label = "PageProvider", description = "Perform a query or a named provider query on the repository. Result is paginated. The query result will become the input for the next operation.")
-public class PageProviderOperation {
+@Operation(id = DocumentPageProviderOperation.ID, category = Constants.CAT_FETCH, label = "PageProvider", description = "Perform "
+        + "a query or a named provider query on the repository. Result is "
+        + "paginated. The query result will become the input for the next "
+        + "operation. If no query or provider name is given, a query returning "
+        + "all the documents that the user has access to will be executed.")
+public class DocumentPageProviderOperation {
 
     public static final String ID = "Document.PageProvider";
 
@@ -52,7 +56,7 @@ public class PageProviderOperation {
     protected CoreSession session;
 
     @Param(name = "providerName", required = false)
-    protected String providerName = "PageProviderOperation:Documents";
+    protected String providerName;
 
     @Param(name = "query", required = false)
     protected String query;
@@ -61,7 +65,7 @@ public class PageProviderOperation {
     protected String lang = "NXQL";
 
     @Param(name = "page", required = false)
-    protected Integer page = 0;
+    protected Integer page = new Integer(0);
 
     @Param(name = "pageSize", required = false)
     protected Integer pageSize;
@@ -117,14 +121,25 @@ public class PageProviderOperation {
             targetPageSize = new Long(pageSize);
         }
 
-        PageProviderDefinition ppd = pps.getPageProviderDefinition(providerName);
-        if (query != null) {
-            ppd.setPattern(query);
+        if (query == null
+                && (providerName == null || providerName.length() == 0)) {
+            // provide a defaut query
+            query = "SELECT * from Document";
         }
-        PageProvider<?> pp = pps.getPageProvider(providerName, ppd, sortInfos,
-                targetPageSize, new Long(page), props, parameters);
-        return new PaginableDocumentModelListImpl(
-                (PageProvider<DocumentModel>) pp);
+
+        if (query != null) {
+            CoreQueryPageProviderDescriptor desc = new CoreQueryPageProviderDescriptor();
+            desc.setPattern(query);
+            return new PaginableDocumentModelListImpl(
+                    (PageProvider<DocumentModel>) pps.getPageProvider("", desc,
+                            sortInfos, targetPageSize, new Long(page), props,
+                            parameters));
+        } else {
+            return new PaginableDocumentModelListImpl(
+                    (PageProvider<DocumentModel>) pps.getPageProvider(
+                            providerName, sortInfos, targetPageSize, new Long(
+                                    page), props, parameters));
+        }
 
     }
 
