@@ -441,7 +441,7 @@ public class GadgetDocument extends DocumentObject {
     @GET
     @Path("html")
     public Object doGetHtml(@Context Request request) throws PropertyException,
-            ClientException {
+            ClientException, IOException {
         EntityTag tag = getEntityTagForDocument(doc);
         Response.ResponseBuilder rb = request.evaluatePreconditions(tag);
         if (rb != null) {
@@ -451,7 +451,7 @@ public class GadgetDocument extends DocumentObject {
         /* If htmlContent is stored in files schema */
         Blob htmlContentBlob = getFileWithSpecificName(HTML_CONTENT);
         if (htmlContentBlob != null)
-            return Response.ok(htmlContentBlob.toString(), MediaType.TEXT_HTML).build();
+            return Response.ok(htmlContentBlob.getString(), MediaType.TEXT_HTML).build();
 
         String htmlContent = (String) doc.getPropertyValue(GADGET_HTML_CONTENT);
         return Response.ok(htmlContent, MediaType.TEXT_HTML).build();
