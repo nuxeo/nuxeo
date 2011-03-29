@@ -12,6 +12,10 @@
   <description>Nuxeo User Center Parent POM</description>
   <packaging>pom</packaging>
 
+  <properties>
+    <nuxeo.user.center.version>5.4.2-SNAPSHOT</nuxeo.user.center.version>
+  </properties>
+
   <modules>
     <module>nuxeo-user-center</module>
     <module>nuxeo-user-dashboard</module>
@@ -26,12 +30,7 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-user-center</artifactId>
-        <version>${nuxeo.features.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-user-dashboard</artifactId>
-        <version>${nuxeo.features.version}</version>
+        <version>${nuxeo.user.center.version}</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.opensocial</groupId>
