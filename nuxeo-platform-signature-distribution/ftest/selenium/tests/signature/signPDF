@@ -147,18 +147,23 @@
 	<td>Certificate</td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
+	<td>click</td>
 	<td>sign_form:SignPDF</td>
 	<td></td>
 </tr>
 <tr>
-	<td>verifyTextPresent</td>
-	<td>This document was certified by CN</td>
+	<td>clickAndWait</td>
+	<td>link=Signature</td>
 	<td></td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
-	<td>link=Log out</td>
+	<td>verifyTextPresent</td>
+	<td>This document is signed</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/nuxeo/logout</td>
 	<td></td>
 </tr>
 </tbody></table>

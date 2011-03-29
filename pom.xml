@@ -11,10 +11,10 @@
  <name>Nuxeo Platform Signature Parent</name>
  <description>Nuxeo Platform Digital Signature Parent</description>
  <packaging>pom</packaging>
- <version>1.0-SNAPSHOT</version>
+ <version>5.4.2-SNAPSHOT</version>
  <properties>
   <nuxeo.platform.version>5.4.2-SNAPSHOT</nuxeo.platform.version>
-  <nuxeo.platform.signature.version>1.0-SNAPSHOT</nuxeo.platform.signature.version>
+  <nuxeo.platform.signature.version>5.4.2-SNAPSHOT</nuxeo.platform.signature.version>
  </properties>
 
  <modules>
