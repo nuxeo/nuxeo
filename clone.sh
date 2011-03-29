@@ -1,6 +1,6 @@
 # This script will check out the needed sources from mercurial.
 
-VERSION=release-5.4.1-I20110302_0116
+VERSION=release-release-5.4.1-I20110302_0116-1
 
 for x in nuxeo-common nuxeo-runtime nuxeo-core \
     nuxeo-services nuxeo-theme nuxeo-webengine nuxeo-jsf \
