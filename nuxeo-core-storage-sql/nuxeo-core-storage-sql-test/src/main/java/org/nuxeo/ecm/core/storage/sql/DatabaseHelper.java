@@ -115,6 +115,10 @@ public abstract class DatabaseHelper {
                 // skip nested table that is dropped by the main table
                 continue;
             }
+            if ("ANCESTORS_ANCESTORS".equals(tableName)) {
+                // skip nested table that is dropped by the main table
+                continue;
+            }
             tableNames.add(tableName);
         }
         // not all databases can cascade on drop
