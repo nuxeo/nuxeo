@@ -28,9 +28,7 @@ import javax.el.VariableMapper;
 import javax.faces.FacesException;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIViewRoot;
-import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
-import javax.faces.render.ResponseStateManager;
 
 import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletException;
@@ -39,7 +37,6 @@ import com.sun.facelets.tag.TagAttribute;
 import com.sun.facelets.tag.TagConfig;
 import com.sun.facelets.tag.TagException;
 import com.sun.facelets.tag.jsf.ComponentSupport;
-import com.sun.faces.renderkit.RenderKitUtils;
 
 /**
  * Tag handler that exposes variables to the variable map. Behaviour is close
@@ -128,8 +125,7 @@ public class AliasTagHandler extends MetaTagHandler {
         // create component
         UIComponent c = ComponentSupport.findChildByTagId(parent, id);
         boolean componentFound = false;
-        if (c != null && !forceCreate
-                && !shouldRecreateOnAjax(ctx.getFacesContext())) {
+        if (c != null && !forceCreate) {
             componentFound = true;
             // mark all children for cleaning
             ComponentSupport.markForDeletion(c);
@@ -176,31 +172,6 @@ public class AliasTagHandler extends MetaTagHandler {
         // been part of the tree or not yet
         parent.getChildren().add(c);
 
-    }
-
-    public boolean isPostback(FacesContext context) {
-        // Get the renderKitId by calling viewHandler.calculateRenderKitId().
-        String renderkitId = context.getApplication().getViewHandler().calculateRenderKitId(
-                context);
-        ResponseStateManager rsm = RenderKitUtils.getResponseStateManager(
-                context, renderkitId);
-        return rsm.isPostback(context);
-
-    }
-
-    public boolean isAjaxRequest(FacesContext context) {
-        ExternalContext eContext = context.getExternalContext();
-        Map<String, String> map = eContext.getRequestParameterMap();
-        return map != null && map.containsKey("AJAXREQUEST");
-    }
-
-    public boolean shouldRecreateOnAjax(FacesContext context) {
-        if (context != null) {
-            if (!isPostback(context) && isAjaxRequest(context)) {
-                return true;
-            }
-        }
-        return false;
     }
 
 }
