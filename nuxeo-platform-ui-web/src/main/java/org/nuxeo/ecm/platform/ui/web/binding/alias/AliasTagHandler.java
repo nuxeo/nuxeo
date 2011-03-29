@@ -28,7 +28,9 @@ import javax.el.VariableMapper;
 import javax.faces.FacesException;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIViewRoot;
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
+import javax.faces.render.ResponseStateManager;
 
 import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletException;
@@ -37,6 +39,7 @@ import com.sun.facelets.tag.TagAttribute;
 import com.sun.facelets.tag.TagConfig;
 import com.sun.facelets.tag.TagException;
 import com.sun.facelets.tag.jsf.ComponentSupport;
+import com.sun.faces.renderkit.RenderKitUtils;
 
 /**
  * Tag handler that exposes variables to the variable map. Behaviour is close
@@ -64,6 +67,8 @@ public class AliasTagHandler extends MetaTagHandler {
 
     protected final TagAttribute id;
 
+    protected final TagAttribute forceCreate;
+
     protected final Map<String, ValueExpression> variables;
 
     public AliasTagHandler(TagConfig config,
@@ -71,6 +76,7 @@ public class AliasTagHandler extends MetaTagHandler {
         super(config);
         id = getAttribute("id");
         cache = getAttribute("cache");
+        forceCreate = getAttribute("forceCreate");
         this.variables = variables;
     }
 
@@ -85,6 +91,10 @@ public class AliasTagHandler extends MetaTagHandler {
         boolean cacheValue = false;
         if (cache != null) {
             cacheValue = cache.getBoolean(ctx);
+        }
+        boolean forceCreateValue = false;
+        if (forceCreate != null) {
+            forceCreateValue = forceCreate.getBoolean(ctx);
         }
         AliasVariableMapper target = new AliasVariableMapper();
         if (variables != null) {
@@ -101,12 +111,12 @@ public class AliasTagHandler extends MetaTagHandler {
             }
         }
 
-        apply(ctx, parent, target);
+        apply(ctx, parent, target, forceCreateValue);
     }
 
     public void apply(FaceletContext ctx, UIComponent parent,
-            AliasVariableMapper alias) throws IOException, FacesException,
-            FaceletException, ELException {
+            AliasVariableMapper alias, boolean forceCreate) throws IOException,
+            FacesException, FaceletException, ELException {
         // our id
         String id = ctx.generateUniqueId(this.tagId);
         alias.setId(id);
@@ -118,7 +128,8 @@ public class AliasTagHandler extends MetaTagHandler {
         // create component
         UIComponent c = ComponentSupport.findChildByTagId(parent, id);
         boolean componentFound = false;
-        if (c != null) {
+        if (c != null && !forceCreate
+                && !shouldRecreateOnAjax(ctx.getFacesContext())) {
             componentFound = true;
             // mark all children for cleaning
             ComponentSupport.markForDeletion(c);
@@ -165,6 +176,31 @@ public class AliasTagHandler extends MetaTagHandler {
         // been part of the tree or not yet
         parent.getChildren().add(c);
 
+    }
+
+    public boolean isPostback(FacesContext context) {
+        // Get the renderKitId by calling viewHandler.calculateRenderKitId().
+        String renderkitId = context.getApplication().getViewHandler().calculateRenderKitId(
+                context);
+        ResponseStateManager rsm = RenderKitUtils.getResponseStateManager(
+                context, renderkitId);
+        return rsm.isPostback(context);
+
+    }
+
+    public boolean isAjaxRequest(FacesContext context) {
+        ExternalContext eContext = context.getExternalContext();
+        Map<String, String> map = eContext.getRequestParameterMap();
+        return map != null && map.containsKey("AJAXREQUEST");
+    }
+
+    public boolean shouldRecreateOnAjax(FacesContext context) {
+        if (context != null) {
+            if (!isPostback(context) && isAjaxRequest(context)) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }

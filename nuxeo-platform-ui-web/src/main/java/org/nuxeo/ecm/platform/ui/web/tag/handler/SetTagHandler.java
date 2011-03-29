@@ -60,10 +60,13 @@ public class SetTagHandler extends AliasTagHandler {
 
     protected final TagAttribute value;
 
+    protected final TagAttribute forceCreate;
+
     public SetTagHandler(TagConfig config) {
         super(config, null);
         var = getRequiredAttribute("var");
         value = getAttribute("value");
+        forceCreate = getAttribute("forceCreate");
     }
 
     public void apply(FaceletContext ctx, UIComponent parent)
@@ -81,6 +84,10 @@ public class SetTagHandler extends AliasTagHandler {
         if (cache != null) {
             cacheValue = cache.getBoolean(ctx);
         }
+        boolean forceCreateValue = false;
+        if (forceCreate != null) {
+            forceCreateValue = forceCreate.getBoolean(ctx);
+        }
         String varStr = var.getValue(ctx);
         ValueExpression ve;
         if (cacheValue) {
@@ -95,7 +102,7 @@ public class SetTagHandler extends AliasTagHandler {
         AliasVariableMapper target = new AliasVariableMapper(id);
         target.setVariable(varStr, ve);
 
-        apply(ctx, parent, target);
+        apply(ctx, parent, target, forceCreateValue);
     }
 
 }
