@@ -207,20 +207,6 @@
       <redirect />
     </navigation-case>
 
-    <!-- deprecated: use view_directories -->
-    <navigation-case>
-      <from-outcome>view_vocabularies</from-outcome>
-      <to-view-id>/view_vocabularies.xhtml</to-view-id>
-      <redirect />
-    </navigation-case>
-
-    <!-- deprecated: use view_directory -->
-    <navigation-case>
-      <from-outcome>view_vocabulary</from-outcome>
-      <to-view-id>/view_vocabulary.xhtml</to-view-id>
-      <redirect />
-    </navigation-case>
-
     <!-- search -->
 
     <navigation-case>
