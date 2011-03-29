@@ -114,13 +114,13 @@ if not "%NUXEO_CONF%" == "" goto FOUND_NUXEO_CONF
 
 REM ***** Check working directory, Desktop, NUXEO_HOME for nuxeo.conf *****
 set NUXEO_CONF=%CD%\nuxeo.conf
-if exist %NUXEO_CONF% goto FOUND_NUXEO_CONF
+if exist "%NUXEO_CONF%" goto FOUND_NUXEO_CONF
 
 set NUXEO_CONF=%USERPROFILE%\Desktop\nuxeo.conf
-if exist %NUXEO_CONF% goto FOUND_NUXEO_CONF
+if exist "%NUXEO_CONF%" goto FOUND_NUXEO_CONF
 
 set NUXEO_CONF=%NUXEO_HOME%\bin\nuxeo.conf
-if exist %NUXEO_CONF% goto FOUND_NUXEO_CONF
+if exist "%NUXEO_CONF%" goto FOUND_NUXEO_CONF
 
 REM ***** All checks failed *****
 echo Could not find nuxeo.conf in the path, the environment or the registry
