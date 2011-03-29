@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -24,8 +24,8 @@ import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationParameters;
+import org.nuxeo.ecm.automation.core.operations.services.DocumentPageProviderOperation;
 import org.nuxeo.ecm.automation.core.operations.services.PaginableDocumentModelListImpl;
-import org.nuxeo.ecm.automation.core.operations.services.PageProviderOperation;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -38,7 +38,9 @@ import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy({ "org.nuxeo.ecm.platform.query.api", "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.features", "org.nuxeo.ecm.platform.versioning" })
+@Deploy( { "org.nuxeo.ecm.platform.query.api", "org.nuxeo.ecm.automation.core",
+        "org.nuxeo.ecm.automation.features",
+        "org.nuxeo.ecm.platform.versioning" })
 @LocalDeploy("org.nuxeo.ecm.automation.core:test-providers.xml")
 public class CoreProviderTest {
 
@@ -64,7 +66,7 @@ public class CoreProviderTest {
 
         DocumentModel ws3 = session.createDocumentModel("/", "ws3", "Workspace");
         ws3.setPropertyValue("dc:title", "WS3");
-        String[] fakeContributors = {session.getPrincipal().getName()};
+        String[] fakeContributors = { session.getPrincipal().getName() };
         ws3.setPropertyValue("dc:contributors", fakeContributors);
         ws3.setPropertyValue("dc:creator", fakeContributors[0]);
         ws3 = session.createDocument(ws3);
@@ -79,29 +81,32 @@ public class CoreProviderTest {
 
         Map<String, Object> params = new HashMap<String, Object>();
 
-        String providerName ="simpleProviderTest1";
+        String providerName = "simpleProviderTest1";
 
         params.put("providerName", providerName);
 
         OperationChain chain = new OperationChain("fakeChain");
-        OperationParameters oparams = new OperationParameters(PageProviderOperation.ID, params);
+        OperationParameters oparams = new OperationParameters(
+                DocumentPageProviderOperation.ID, params);
         chain.add(oparams);
 
-        PaginableDocumentModelListImpl result = (PaginableDocumentModelListImpl) service.run(ctx, chain);
+        PaginableDocumentModelListImpl result = (PaginableDocumentModelListImpl) service.run(
+                ctx, chain);
 
         // test page size
-        assertEquals(2,result.getPageSize());
-        assertEquals(2,result.getNumberOfPages());
+        assertEquals(2, result.getPageSize());
+        assertEquals(2, result.getNumberOfPages());
 
         // change page size
         chain = new OperationChain("fakeChain");
         params.put("pageSize", 4);
-        oparams = new OperationParameters(PageProviderOperation.ID, params);
+        oparams = new OperationParameters(DocumentPageProviderOperation.ID,
+                params);
         chain.add(oparams);
 
         result = (PaginableDocumentModelListImpl) service.run(ctx, chain);
-        assertEquals(4,result.getPageSize());
-        assertEquals(1,result.getNumberOfPages());
+        assertEquals(4, result.getPageSize());
+        assertEquals(1, result.getNumberOfPages());
 
     }
 
@@ -112,37 +117,40 @@ public class CoreProviderTest {
 
         Map<String, Object> params = new HashMap<String, Object>();
 
-        String providerName ="simpleProviderTest2";
+        String providerName = "simpleProviderTest2";
 
         params.put("providerName", providerName);
         params.put("queryParams", "WS1");
 
         OperationChain chain = new OperationChain("fakeChain");
-        OperationParameters oparams = new OperationParameters(PageProviderOperation.ID, params);
+        OperationParameters oparams = new OperationParameters(
+                DocumentPageProviderOperation.ID, params);
         chain.add(oparams);
 
-        PaginableDocumentModelListImpl result = (PaginableDocumentModelListImpl) service.run(ctx, chain);
+        PaginableDocumentModelListImpl result = (PaginableDocumentModelListImpl) service.run(
+                ctx, chain);
 
         // test page size
-        assertEquals(2,result.getPageSize());
-        assertEquals(1,result.getNumberOfPages());
-        assertEquals(1,result.size());
+        assertEquals(2, result.getPageSize());
+        assertEquals(1, result.getNumberOfPages());
+        assertEquals(1, result.size());
 
-        providerName ="simpleProviderTest3";
+        providerName = "simpleProviderTest3";
 
         params.put("providerName", providerName);
         params.put("queryParams", "WS1,WS2");
 
         chain = new OperationChain("fakeChain");
-        oparams = new OperationParameters(PageProviderOperation.ID, params);
+        oparams = new OperationParameters(DocumentPageProviderOperation.ID,
+                params);
         chain.add(oparams);
 
         result = (PaginableDocumentModelListImpl) service.run(ctx, chain);
 
         // test page size
-        assertEquals(2,result.getPageSize());
-        assertEquals(1,result.getNumberOfPages());
-        assertEquals(2,result.size());
+        assertEquals(2, result.getPageSize());
+        assertEquals(1, result.getNumberOfPages());
+        assertEquals(2, result.size());
 
     }
 
@@ -157,14 +165,16 @@ public class CoreProviderTest {
         params.put("pageSize", 2);
 
         OperationChain chain = new OperationChain("fakeChain");
-        OperationParameters oparams = new OperationParameters(PageProviderOperation.ID, params);
+        OperationParameters oparams = new OperationParameters(
+                DocumentPageProviderOperation.ID, params);
         chain.add(oparams);
 
-        PaginableDocumentModelListImpl result = (PaginableDocumentModelListImpl) service.run(ctx, chain);
+        PaginableDocumentModelListImpl result = (PaginableDocumentModelListImpl) service.run(
+                ctx, chain);
 
         // test page size
-        assertEquals(2,result.getPageSize());
-        assertEquals(2,result.getNumberOfPages());
+        assertEquals(2, result.getPageSize());
+        assertEquals(2, result.getNumberOfPages());
 
     }
 
@@ -180,14 +190,16 @@ public class CoreProviderTest {
         params.put("queryParams", "$currentUser");
 
         OperationChain chain = new OperationChain("fakeChain");
-        OperationParameters oparams = new OperationParameters(PageProviderOperation.ID, params);
+        OperationParameters oparams = new OperationParameters(
+                DocumentPageProviderOperation.ID, params);
         chain.add(oparams);
 
-        PaginableDocumentModelListImpl result = (PaginableDocumentModelListImpl) service.run(ctx, chain);
+        PaginableDocumentModelListImpl result = (PaginableDocumentModelListImpl) service.run(
+                ctx, chain);
 
-        assertEquals(1,result.size());
-        assertEquals(2,result.getPageSize());
-        assertEquals(1,result.getNumberOfPages());
+        assertEquals(1, result.size());
+        assertEquals(2, result.getPageSize());
+        assertEquals(1, result.getNumberOfPages());
 
     }
 

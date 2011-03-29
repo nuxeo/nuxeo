@@ -59,7 +59,7 @@ import org.nuxeo.ecm.automation.core.operations.document.FetchDocument;
 import org.nuxeo.ecm.automation.core.operations.document.GetDocumentChildren;
 import org.nuxeo.ecm.automation.core.operations.document.Query;
 import org.nuxeo.ecm.automation.core.operations.document.UpdateDocument;
-import org.nuxeo.ecm.automation.core.operations.services.PageProviderOperation;
+import org.nuxeo.ecm.automation.core.operations.services.DocumentPageProviderOperation;
 import org.nuxeo.ecm.automation.server.AutomationServer;
 import org.nuxeo.ecm.webengine.test.WebEngineFeature;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
@@ -525,7 +525,7 @@ public class RestTest {
     @Test
     public void queriesArePaginable() throws Exception {
         PaginableDocuments docs = (PaginableDocuments)
-        session.newRequest(PageProviderOperation.ID).set("query",  "SELECT * from Document").set("pageSize", 2).execute();
+        session.newRequest(DocumentPageProviderOperation.ID).set("query",  "SELECT * from Document").set("pageSize", 2).execute();
         final int pageSize = docs.getPageSize();
         final int pageCount = docs.getPageCount();
         assertThat(docs.size(), is(2));
