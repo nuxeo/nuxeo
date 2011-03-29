@@ -30,7 +30,6 @@ import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
-import org.nuxeo.ecm.platform.query.core.CoreQueryPageProviderDescriptor;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
 import org.nuxeo.runtime.api.Framework;
 
@@ -119,7 +118,6 @@ public class PageProviderOperation {
         }
 
         PageProviderDefinition ppd = pps.getPageProviderDefinition(providerName);
-        new CoreQueryPageProviderDescriptor();
         if (query != null) {
             ppd.setPattern(query);
         }
