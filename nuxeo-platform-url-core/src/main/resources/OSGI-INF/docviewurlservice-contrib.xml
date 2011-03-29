@@ -18,19 +18,7 @@
 
       The docpath codec uses the document path to resolve the context. Urls are
       of the form http://site/nuxeo/nxpath/demo/path/to/my/doc@view.
-    </documentation>
-    <documentViewCodec name="docid" enabled="true" default="true" prefix="nxdoc"
-      class="org.nuxeo.ecm.platform.url.codec.DocumentIdCodec" />
-    <documentViewCodec name="docpath" enabled="true" default="false"
-      prefix="nxpath"
-      class="org.nuxeo.ecm.platform.url.codec.DocumentPathCodec" />
 
-  </extension>
-
-  <extension
-    target="org.nuxeo.ecm.platform.url.service.DocumentViewCodecService"
-    point="codecs">
-    <documentation>
       The document file codec uses the document uid to resolve the document
       model and extract a file held in its properties. Urls are of the form
       http://site/nuxeo/nxfile/demo/docuid/file:content/mydoc.odt.
@@ -39,6 +27,11 @@
       (nxfile, nxeditfile,...) so that we can define several url patterns,
       performing different actions, but still using the same syntax.
     </documentation>
+    <documentViewCodec name="docid" enabled="true" default="true" prefix="nxdoc"
+      class="org.nuxeo.ecm.platform.url.codec.DocumentIdCodec" />
+    <documentViewCodec name="docpath" enabled="true" default="false"
+      prefix="nxpath"
+      class="org.nuxeo.ecm.platform.url.codec.DocumentPathCodec" />
     <documentViewCodec name="downloadFile" enabled="true" prefix="nxfile"
       class="org.nuxeo.ecm.platform.url.codec.DocumentFileCodec" />
     <documentViewCodec name="editFile" enabled="true" prefix="nxeditfile"
