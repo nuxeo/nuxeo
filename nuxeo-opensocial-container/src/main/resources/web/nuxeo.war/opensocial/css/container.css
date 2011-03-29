@@ -44,7 +44,16 @@ html,body {
     center bottom,
     rgb(231,231,231) 0%,
     rgb(255,255,255) 66%);
+    /* For Internet Explorer 5.5 - 7 */
+   filter:progid:DXImageTransform.Microsoft.Gradient(GradientType=0, StartColorStr='#ffffff', EndColorStr='#e8e8e8');   
+    /* For Internet Explorer 8 */
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#ffffff, endColorstr=#e8e8e8)";    
 }
+
+.opensocial_buttons a:visited {
+  color:#333;
+}
+
 
 .opensocial_buttons a:hover {
   cursor: pointer;
@@ -707,6 +716,16 @@ ul#managerTabs {
     rgb(231,231,231) 0%,
     rgb(255,255,255) 66%);
     background-color: #e7e7e7;
+    /* For Internet Explorer 5.5 - 7 */
+   filter:progid:DXImageTransform.Microsoft.Gradient(GradientType=0, StartColorStr='#ffffff', EndColorStr='#e8e8e8');   
+    /* For Internet Explorer 8 */
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#ffffff, endColorstr=#e8e8e8)";
+}
+
+iframe.gwt-Frame {
+  border-width: 0px;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 

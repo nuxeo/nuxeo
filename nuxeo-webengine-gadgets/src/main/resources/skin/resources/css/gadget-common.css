@@ -1,9 +1,14 @@
+html, body {
+  overflow-x:hidden;
+ }
+
 body {
-  font:normal 11px 'Lucida Grande', Verdana, Arial, sans-serif;
+  font:normal 11px 'Lucida Grande', Verdana, Arial, sans-serif;  
 }
 
-p {
-  margin:5px 0 10px 0;
+p, div, table {
+  margin:0;
+  padding:0;
 }
 
 a:link {
@@ -35,5 +40,10 @@ button {
 .tools {
   background-color: #f7f7f7;
   padding:10px;
+}
+
+#nxDocumentList {
+  width:98%;
+  margin:0 auto;
 }
 

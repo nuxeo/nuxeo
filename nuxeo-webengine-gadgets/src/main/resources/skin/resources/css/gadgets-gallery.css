@@ -109,6 +109,10 @@ cursor: pointer;
    rgb(221,238,255) 1%,
    rgb(255,255,255) 66%);
  }
+ 
+ #gadgetListContainer .gadget:hover {
+ background-color:#C0DCF5;   
+ }
 
  #gadgetListContainer .gadget .gadgetThumb {
  float:left;
