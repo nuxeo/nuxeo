@@ -102,9 +102,9 @@ function requestCompleted(response, nxParams) {
             nxParams.displayMethod(response.data.entries, nxParams);
         }
         // TODO handle the cases for other output types : document, blob, ...
-        else {
-            alert(response.data.entity - type);
-        }
+        //else {
+        //    alert(response.data['entity-type']);
+        //}
     } else if (response.oauthApprovalUrl) {
         var onOpen = function() {
             showOAuthInProgress();
