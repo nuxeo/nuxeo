@@ -155,7 +155,7 @@
    <div id="txtCenter">
    <div id="cacheText" style="display:none;" ></div>
     <form style="text-align:center;" method="post" id="formtxt" enctype="application/x-www-form-urlencoded" action="#">
-    <textarea id="txtareapostit" style="display:block;" name="gadget:htmlContent" cols="30" wrap="hard">
+    <textarea id="txtareapostit" style="display:block;" name="wcopensocial:files/htmlContent" cols="30" wrap="hard">
     </textarea>
     </form>
    </div>

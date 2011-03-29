@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -37,6 +38,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
+import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
@@ -168,6 +170,41 @@ public class GadgetDocument extends DocumentObject {
 
                     } catch (Exception e) {
                         throw WebException.wrap("Failed to attach file", e);
+                    }
+                }
+            }
+        } else {
+            Map<String, String[]> fields = form.getFormFields();
+            for (Entry<String, String[]> entry : fields.entrySet()) {
+                String key = entry.getKey();
+                if (key.startsWith("wcopensocial:files" + "/")) {
+                    String[] strings = key.split("/");
+                    if (strings.length == 2) {
+                        try {
+                            String htmlContent = form.getFormProperty(key);
+                            String filename = strings[1];
+                            Blob file = new StringBlob(htmlContent);
+                            ArrayList<Map<String, Serializable>> files = (ArrayList<Map<String, Serializable>>) doc.getPropertyValue(FILES_FILES);
+                            boolean isUpdated = false;
+                            for (Map<String, Serializable> map : files) {
+                                if (map.containsKey(FILENAME) && filename.equals(map.get(FILENAME))) {
+                                    map.put(FILE, (Serializable) file);
+                                    isUpdated = true;
+                                    break;
+                                }
+                            }
+                            if (!isUpdated) {
+                                Map<String, Serializable> fileMap = new HashMap<String, Serializable>();
+                                fileMap.put(FILE, (Serializable) file);
+                                fileMap.put(FILENAME, filename);
+                                files.add(fileMap);
+                            }
+                            doc.setPropertyValue(FILES_FILES, files);
+                        } catch (PropertyException e) {
+                            throw WebException.wrap(e);
+                        } catch (ClientException e) {
+                            throw WebException.wrap(e);
+                        }
                     }
                 }
             }
