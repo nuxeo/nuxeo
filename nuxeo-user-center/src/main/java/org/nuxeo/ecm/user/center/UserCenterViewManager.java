@@ -33,7 +33,7 @@ import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 
 /**
- * Seam Bean used to manage navigation inside the Admin Center.
+ * Seam Bean used to manage navigation inside the User Center.
  *
  * @author tiry
  */

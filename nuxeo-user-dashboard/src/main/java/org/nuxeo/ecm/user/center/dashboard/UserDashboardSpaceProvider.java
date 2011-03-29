@@ -48,8 +48,8 @@ public class UserDashboardSpaceProvider extends AbstractSpaceProvider {
 
     @Override
     protected Space doGetSpace(CoreSession session,
-            DocumentModel contextDocument, String spaceName, Map<String, String> parameters)
-            throws SpaceException {
+            DocumentModel contextDocument, String spaceName,
+            Map<String, String> parameters) throws SpaceException {
         try {
             return getOrCreateSpace(session, parameters);
         } catch (ClientException e) {
@@ -58,8 +58,8 @@ public class UserDashboardSpaceProvider extends AbstractSpaceProvider {
         }
     }
 
-    protected Space getOrCreateSpace(CoreSession session, Map<String, String> parameters)
-            throws ClientException {
+    protected Space getOrCreateSpace(CoreSession session,
+            Map<String, String> parameters) throws ClientException {
         String userWorkspacePath = getUserPersonalWorkspace(session).getPathAsString();
         DocumentRef spaceRef = new PathRef(userWorkspacePath,
                 USER_DASHBOARD_SPACE_NAME);
@@ -78,7 +78,8 @@ public class UserDashboardSpaceProvider extends AbstractSpaceProvider {
             Space space = model.getAdapter(Space.class);
             initializeLayout(space);
             String userLanguage = parameters.get("userLanguage");
-            Locale locale = userLanguage != null ? new Locale(userLanguage) : null;
+            Locale locale = userLanguage != null ? new Locale(userLanguage)
+                    : null;
             initializeGadgets(space, session, locale);
             session.saveDocument(model);
             session.save();
@@ -102,12 +103,18 @@ public class UserDashboardSpaceProvider extends AbstractSpaceProvider {
                 YUI_ZT_50_50));
     }
 
-    protected void initializeGadgets(Space space, CoreSession session, Locale locale) throws ClientException {
-        WebContentHelper.createOpenSocialGadget(space, session, locale, "userworkspaces", 0, 0, 0);
-        WebContentHelper.createOpenSocialGadget(space, session, locale, "userdocuments", 0, 0, 1);
-        WebContentHelper.createOpenSocialGadget(space, session, locale, "quicksearch", 0, 1, 0);
-        WebContentHelper.createOpenSocialGadget(space, session, locale, "waitingfor", 0, 1, 1);
-        WebContentHelper.createOpenSocialGadget(space, session, locale, "tasks", 0, 1, 2);
+    protected void initializeGadgets(Space space, CoreSession session,
+            Locale locale) throws ClientException {
+        WebContentHelper.createOpenSocialGadget(space, session, locale,
+                "userworkspaces", 0, 0, 0);
+        WebContentHelper.createOpenSocialGadget(space, session, locale,
+                "userdocuments", 0, 0, 1);
+        WebContentHelper.createOpenSocialGadget(space, session, locale,
+                "quicksearch", 0, 1, 0);
+        WebContentHelper.createOpenSocialGadget(space, session, locale,
+                "waitingfor", 0, 1, 1);
+        WebContentHelper.createOpenSocialGadget(space, session, locale,
+                "tasks", 0, 1, 2);
     }
 
     @Override

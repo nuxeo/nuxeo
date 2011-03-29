@@ -16,7 +16,6 @@
 
 package org.nuxeo.ecm.user.center;
 
-
 import static org.jboss.seam.ScopeType.CONVERSATION;
 
 import java.io.Serializable;
@@ -44,12 +43,15 @@ import org.nuxeo.runtime.api.Framework;
 @Scope(CONVERSATION)
 public class AuthorizedApplicationsActions implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+
     @In
     protected NuxeoPrincipal currentUser;
 
     protected DirectoryService directoryService;
 
-    public List<DocumentModel> getAuthorizedApplications() throws ClientException {
+    public List<DocumentModel> getAuthorizedApplications()
+            throws ClientException {
         DirectoryService directoryService = getDirectoryService();
         Session session = directoryService.open(OAuthTokenStoreImpl.DIRECTORY_NAME);
         try {
@@ -67,14 +69,14 @@ public class AuthorizedApplicationsActions implements Serializable {
                 directoryService = Framework.getService(DirectoryService.class);
             }
             return directoryService;
-        } catch(Exception e) {
+        } catch (Exception e) {
             throw new ClientException(e);
         }
     }
 
     protected Map<String, Serializable> getQueryFilter() {
         Map<String, Serializable> filter = new HashMap<String, Serializable>();
-        filter.put("clientToken", 0);
+        filter.put("clientToken", new Integer(0));
         filter.put("nuxeoLogin", currentUser.getName());
         return filter;
     }

@@ -116,8 +116,8 @@ public class OpensocialDashboardNavigationHelper implements
                     }
                 } else if (userAgent != null
                         && userAgent.contains(SAFARI_USERAGENT)) {
-                    // Safari work only when sending MSIE or FF UserAgent to GWT
-                    // and RichFaces
+                    // Safari work only when sending MSIE or FF UserAgent to
+                    // GWT and RichFaces
                     dashBoardViewId = NEW_DASHBARD_VIEWID;
                 } else {
                     dashBoardViewId = NEW_DASHBARD_VIEWID;
