@@ -5,12 +5,12 @@
   <parent>
     <groupId>org.nuxeo.ecm.platform</groupId>
     <artifactId>nuxeo-services-parent</artifactId>
-    <version>5.4.1-I20110302_0116-SNAPSHOT</version>
+    <version>5.4.1-I20110302_0116-1</version>
   </parent>
 
   <groupId>org.nuxeo.ecm.webengine</groupId>
   <artifactId>nuxeo-webengine-parent</artifactId>
-  <version>5.4.1-I20110302_0116-SNAPSHOT</version>
+  <version>5.4.1-I20110302_0116-1</version>
   <packaging>pom</packaging>
   <name>Nuxeo WebEngine</name>
   <description>
@@ -33,9 +33,9 @@
   </profiles>
 
   <properties>
-    <nuxeo.webengine.version>5.4.1-I20110302_0116-SNAPSHOT</nuxeo.webengine.version>
-    <nuxeo.services.version>5.4.1-I20110302_0116-SNAPSHOT</nuxeo.services.version>
-    <nuxeo.theme.version>5.4.1-I20110302_0116-SNAPSHOT</nuxeo.theme.version>
+    <nuxeo.webengine.version>5.4.1-I20110302_0116-1</nuxeo.webengine.version>
+    <nuxeo.services.version>5.4.1-I20110302_0116-1</nuxeo.services.version>
+    <nuxeo.theme.version>5.4.1-I20110302_0116-1</nuxeo.theme.version>
   </properties>
 
   <dependencies>
