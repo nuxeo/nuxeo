@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.platform</groupId>
     <artifactId>nuxeo-webengine-features</artifactId>
-    <version>5.4.1-I20110302_0116-SNAPSHOT</version>
+    <version>5.4.1-I20110302_0116-1</version>
   </parent>
 
   <groupId>org.nuxeo.ecm.webengine</groupId>
@@ -15,7 +15,7 @@
   <description>Core Module to handle blogs.</description>
 
   <properties>
-    <nuxeo.distribution.version>5.4.1-I20110302_0116-SNAPSHOT</nuxeo.distribution.version>
+    <nuxeo.distribution.version>5.4.1-I20110302_0116-1</nuxeo.distribution.version>
   </properties>
 
   <dependencies>
