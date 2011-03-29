@@ -1,4 +1,4 @@
-# (C) Copyright 2008-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
+# (C) Copyright 2008-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
 #
 # All rights reserved. This program and the accompanying materials
 # are made available under the terms of the GNU Lesser General Public License
@@ -29,6 +29,7 @@
 # Conditions used:
 # fulltextEnabled
 # aclOptimizationsEnabled
+# pathOptimizationsEnabled
 
 # Note: CREATE TABLE, INSERT, DELETE must not have a final semicolon...
 # However CREATE TRIGGER for instance MUST have a final semicolon!
@@ -117,6 +118,129 @@ BEGIN
     INSERT INTO cluster_invals (nodeid, id, fragments, kind) VALUES (c.nodeid, i, f, k);
   END LOOP;
 END;
+
+
+# ------------------------------------------------------------
+# -- PATH OPTIMIZATIONS
+
+# ------------------------------------------------------------
+# -- ancestors table
+# -- ancestors field contains the list of parents from root to parent
+#TEST:
+SELECT 1 FROM USER_TABLES WHERE table_name = 'ANCESTORS'
+
+#IF: emptyResult
+CREATE TABLE ANCESTORS (
+  hierarchy_id VARCHAR2(36) NOT NULL,
+  ancestors NX_STRING_TABLE,
+  CONSTRAINT ANCESTORS_HIERARCHY_ID_FK FOREIGN KEY (hierarchy_id) REFERENCES hierarchy (id) ON DELETE CASCADE
+) NESTED TABLE ancestors STORE AS ancestors_ancestors
+
+
+#TEST:
+SELECT 1 FROM USER_INDEXES WHERE index_name = 'ANCESTORS_ANCESTORS_IDX'
+
+#IF: emptyResult
+CREATE INDEX ANCESTORS_ANCESTORS_IDX ON ANCESTORS_ANCESTORS(NESTED_TABLE_ID, COLUMN_VALUE)
+
+
+CREATE OR REPLACE FUNCTION nx_get_ancestors(id VARCHAR2)
+RETURN NX_STRING_TABLE
+IS
+  curid hierarchy.id%TYPE := id;
+  newid hierarchy.id%TYPE;
+  ret NX_STRING_TABLE := NX_STRING_TABLE();
+  first BOOLEAN := TRUE;
+BEGIN
+  WHILE curid IS NOT NULL LOOP
+    BEGIN
+      SELECT parentid INTO newid FROM hierarchy WHERE hierarchy.id = curid;
+    EXCEPTION WHEN NO_DATA_FOUND THEN
+      -- curid not in hierarchy at all
+      newid := NULL;
+    END;
+    IF curid IS NOT NULL AND curid <> id THEN
+      ret.EXTEND;
+      ret(ret.COUNT) := curid;
+    END IF;
+    IF first AND newid IS NULL THEN
+      BEGIN
+        SELECT versionableid INTO newid FROM versions WHERE versions.id = curid;
+      EXCEPTION
+        WHEN NO_DATA_FOUND THEN NULL;
+      END;
+    END IF;
+    first := FALSE;
+    curid := newid;
+  END LOOP;
+  RETURN ret;
+END;
+
+
+CREATE OR REPLACE TRIGGER nx_trig_ancestors_insert
+  AFTER INSERT ON hierarchy
+  FOR EACH ROW
+  WHEN (NEW.isproperty = 0 AND NEW.parentid IS NOT NULL)
+BEGIN
+  INSERT INTO ANCESTORS VALUES(:NEW.id, NULL);
+END;
+
+
+#IF: ! pathOptimizationsEnabled
+ALTER TRIGGER nx_trig_ancestors_insert DISABLE
+
+
+CREATE OR REPLACE TRIGGER nx_trig_ancestors_update
+  AFTER UPDATE ON hierarchy
+  FOR EACH ROW  WHEN (NEW.isproperty = 0 AND NEW.parentid <> OLD.parentid)
+BEGIN
+  UPDATE ancestors SET ancestors = NULL
+    WHERE hierarchy_id IN (SELECT hierarchy_id FROM ancestors a
+                           WHERE :NEW.id MEMBER OF a.ancestors OR  hierarchy_id = :NEW.id);
+END;
+
+
+#IF: ! pathOptimizationsEnabled
+ALTER TRIGGER nx_trig_ancestors_update DISABLE
+
+
+CREATE OR REPLACE TRIGGER nx_trig_ancestors_process
+  AFTER INSERT OR UPDATE ON hierarchy
+  -- statement level is required to be able to read hierarchy table with updated values
+BEGIN
+  UPDATE ancestors SET ancestors=nx_get_ancestors(hierarchy_id)
+    WHERE ancestors IS NULL;
+END;
+
+
+#IF: ! pathOptimizationsEnabled
+ALTER TRIGGER nx_trig_ancestors_process DISABLE
+
+
+CREATE OR REPLACE PROCEDURE nx_init_ancestors
+IS
+BEGIN
+  EXECUTE IMMEDIATE 'TRUNCATE TABLE ancestors';
+  INSERT INTO ancestors
+    SELECT id, nx_get_ancestors(id)
+    FROM (SELECT id FROM hierarchy WHERE isproperty=0);
+END;
+
+
+# Init the ancestors if empty
+#IF: pathOptimizationsEnabled
+#TEST:
+SELECT 1 FROM ancestors WHERE ROWNUM=1
+
+
+#IF: pathOptimizationsEnabled
+#IF: emptyResult
+LOG.INFO Initializing ancestors table for path optimization, please wait...
+
+
+#IF: pathOptimizationsEnabled
+#IF: emptyResult
+{CALL nx_init_ancestors}
 
 
 # ########## Read ACLs ##########

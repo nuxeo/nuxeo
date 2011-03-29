@@ -71,12 +71,18 @@ public class DialectOracle extends Dialect {
 
     protected final String fulltextParameters;
 
+    protected boolean pathOptimizationsEnabled;
+
+
     public DialectOracle(DatabaseMetaData metadata,
             BinaryManager binaryManager,
             RepositoryDescriptor repositoryDescriptor) throws StorageException {
         super(metadata, binaryManager, repositoryDescriptor);
         fulltextParameters = repositoryDescriptor.fulltextAnalyzer == null ? ""
                 : repositoryDescriptor.fulltextAnalyzer;
+        pathOptimizationsEnabled = repositoryDescriptor == null ? false
+                : repositoryDescriptor.pathOptimizationsEnabled;
+
     }
 
     @Override
@@ -417,7 +423,13 @@ public class DialectOracle extends Dialect {
 
     @Override
     public String getInTreeSql(String idColumnName) {
-        return String.format("NX_IN_TREE(%s, ?) = 1", idColumnName);
+        if (pathOptimizationsEnabled) {
+            return String.format(
+                    "EXISTS(SELECT 1 FROM ancestors WHERE hierarchy_id = %s AND ? MEMBER OF ancestors)",
+                    idColumnName);
+        } else {
+            return String.format("NX_IN_TREE(%s, ?) = 1", idColumnName);
+        }
     }
 
     @Override
@@ -520,6 +532,8 @@ public class DialectOracle extends Dialect {
         properties.put("argIdType", "VARCHAR2"); // in function args
         properties.put("aclOptimizationsEnabled",
                 Boolean.valueOf(aclOptimizationsEnabled));
+        properties.put("pathOptimizationsEnabled",
+                Boolean.valueOf(pathOptimizationsEnabled));
         properties.put("fulltextEnabled", Boolean.valueOf(!fulltextDisabled));
         if (!fulltextDisabled) {
             Table ft = database.getTable(model.FULLTEXT_TABLE_NAME);
