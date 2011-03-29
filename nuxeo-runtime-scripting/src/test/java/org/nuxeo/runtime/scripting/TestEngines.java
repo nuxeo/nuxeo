@@ -23,6 +23,8 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -32,6 +34,8 @@ import static org.junit.Assert.assertEquals;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class TestEngines {
+
+    private static final Log log = LogFactory.getLog(TestEngines.class);
 
     private final ScriptEngineManager factory = new ScriptEngineManager();
 
@@ -60,9 +64,13 @@ public class TestEngines {
 
         // JavaScript only knows doubles
         Object sumLiteralValue = engine.eval("1 + 2");
+        // debug for OpenJDK which seems to return 3 instead of 3.0
+        log.warn("DEBUG result class " + sumLiteralValue.getClass() + " toString " + sumLiteralValue);
         assertEquals(3.0, sumLiteralValue);
 
         engine.eval("var x = 1 + 2;");
+        Object value = engine.eval("x");
+        log.warn("DEBUG value class " + value.getClass() + " toString " + value);
         assertEquals(3.0, engine.eval("x"));
         assertEquals(3.0, engine.get("x"));
     }
