@@ -140,7 +140,7 @@ public class RestTest {
               set("properties", "dc:contributors=me,other").execute();
       checkHasCorrectContributors(note);
       
-      PaginableDocuments docs = (PaginableDocuments)session.newRequest(PageProviderOperation.ID).
+      PaginableDocuments docs = (PaginableDocuments)session.newRequest(DocumentPageProviderOperation.ID).
         setHeader("X-NXDocumentProperties", "*").
         set("query",  "SELECT * from Note").
         set("pageSize", 2).execute();
