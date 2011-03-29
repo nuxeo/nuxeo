@@ -82,7 +82,7 @@ public class ParamCollector {
     }
 
     public void addConfigurationParam(String name, String value) {
-        if (value == null && configurationParams.containsKey(name)) {
+        if (value == null) {
             configurationParams.remove(name);
         } else {
             configurationParams.put(name, value);
