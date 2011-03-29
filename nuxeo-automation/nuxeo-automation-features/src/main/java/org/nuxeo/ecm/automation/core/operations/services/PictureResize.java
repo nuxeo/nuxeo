@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -29,12 +29,10 @@ import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.platform.picture.api.adapters.MultiviewPicture;
 
 /**
-*
-* Simple Operation to convert the size of a picture blob
-*
-* @author Tiry (tdelprat@nuxeo.com)
-*
-*/
+ * Simple Operation to convert the size of a picture blob
+ *
+ * @author Tiry (tdelprat@nuxeo.com)
+ */
 @Operation(id = PictureResize.ID, category = Constants.CAT_CONVERSION, label = "Resize a picture", description = "Use conversion servcie to resize a picture contained in a Document or a Blob")
 public class PictureResize {
 
@@ -46,41 +44,39 @@ public class PictureResize {
 
     public static final String ID = "Picture.resize";
 
-    @Param(name = "maxWidth",required=true)
-    protected int maxWidth=0;
+    @Param(name = "maxWidth", required = true)
+    protected int maxWidth = 0;
 
-    @Param(name = "maxHeight",required=true)
-    protected int maxHeigh=0;
+    @Param(name = "maxHeight", required = true)
+    protected int maxHeigh = 0;
 
     @Context
     protected ConversionService service;
 
-
     @OperationMethod
     public Blob run(DocumentModel doc) throws Exception {
 
-        Blob pictureBlob=null;
+        Blob pictureBlob = null;
         MultiviewPicture mvp = doc.getAdapter(MultiviewPicture.class);
-        if (mvp!=null) {
+        if (mvp != null) {
             pictureBlob = (Blob) mvp.getView(mvp.getOrigin()).getContent();
         } else {
             BlobHolder bh = doc.getAdapter(BlobHolder.class);
-            if (bh!=null) {
+            if (bh != null) {
                 pictureBlob = bh.getBlob();
             }
         }
 
-        if (pictureBlob==null) {
-            Blob blob = new StringBlob("Unable to find a picture in the Document");
+        if (pictureBlob == null) {
+            Blob blob = new StringBlob(
+                    "Unable to find a picture in the Document");
             blob.setMimeType("text/plain");
             blob.setFilename(doc.getName() + ".null");
             return blob;
-        }
-        else {
+        } else {
             return run(pictureBlob);
         }
     }
-
 
     @OperationMethod
     public Blob run(Blob blob) throws Exception {
@@ -95,9 +91,10 @@ public class PictureResize {
             return blob;
         }
 
-        BlobHolder result = service.convert(PICTURE_RESIZE_CONVERTER, bh, parameters);
+        BlobHolder result = service.convert(PICTURE_RESIZE_CONVERTER, bh,
+                parameters);
 
-        if (result!=null) {
+        if (result != null) {
             return result.getBlob();
         } else {
             Blob fakeRes = new StringBlob("Converter did not return any result");

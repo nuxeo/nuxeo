@@ -42,10 +42,11 @@ import org.nuxeo.ecm.platform.jbpm.JbpmListFilter;
 import org.nuxeo.ecm.platform.jbpm.JbpmService;
 import org.nuxeo.ecm.platform.jbpm.JbpmService.TaskVariableName;
 
-@Operation(id = GetUserTasks.ID, category = Constants.CAT_SERVICES,
-        label = "Get user tasks", since = "5.4",
-        description = "List tasks assigned to this user or one of its group." +
-         "Task properties are serialized using JSON and returned in a Blob.")
+/**
+ * Returns tasks assigned to current user or one of its groups.
+ */
+@Operation(id = GetUserTasks.ID, category = Constants.CAT_SERVICES, label = "Get user tasks", since = "5.4", description = "List tasks assigned to this user or one of its group."
+        + "Task properties are serialized using JSON and returned in a Blob.")
 public class GetUserTasks {
 
     public static final String ID = "Workflow.GetTask";
@@ -64,7 +65,8 @@ public class GetUserTasks {
     @OperationMethod
     public Blob run() throws Exception {
         NuxeoPrincipal principal = principal();
-        List<TaskInstance> tasks = srv.getCurrentTaskInstances(principal, filter());
+        List<TaskInstance> tasks = srv.getCurrentTaskInstances(principal,
+                filter());
         if (tasks == null) {
             return null;
         }
@@ -77,11 +79,15 @@ public class GetUserTasks {
                 log.warn("Cannot get doc for task " + task.getId(), e);
             }
             if (doc == null) {
-                log.warn(String.format("User '%s' has a task of type '%s' on an " + "unexisting or invisible document", principal.getName(), task.getName()));
+                log.warn(String.format(
+                        "User '%s' has a task of type '%s' on an "
+                                + "unexisting or invisible document",
+                        principal.getName(), task.getName()));
                 continue;
             }
             JSONObject obj = new JSONObject();
-            obj.element("id", task.getId()); // can be one or two (test or suite)
+            obj.element("id", task.getId()); // can be one or two (test or
+            // suite)
             obj.element("docref", doc.getRef().toString());
             obj.element("name", task.getName());
             obj.element("description", task.getDescription());
@@ -93,7 +99,8 @@ public class GetUserTasks {
                 expired = dueDate.before(new Date());
             }
             obj.element("expired", expired);
-            obj.element("directive", task.getVariableLocally(TaskVariableName.directive.name()));
+            obj.element("directive",
+                    task.getVariableLocally(TaskVariableName.directive.name()));
             @SuppressWarnings("unchecked")
             List<Comment> comments = task.getComments();
             String comment = "";
@@ -107,14 +114,17 @@ public class GetUserTasks {
     }
 
     protected NuxeoPrincipal principal() {
-        return (NuxeoPrincipal)ctx.getPrincipal();
+        return (NuxeoPrincipal) ctx.getPrincipal();
     }
 
     protected JbpmListFilter filter() {
         return new JbpmListFilter() {
             private static final long serialVersionUID = 1L;
+
             @Override
-            public <T> ArrayList<T> filter(JbpmContext jbpmContext, DocumentModel document, ArrayList<T> list, NuxeoPrincipal principal) {
+            public <T> ArrayList<T> filter(JbpmContext jbpmContext,
+                    DocumentModel document, ArrayList<T> list,
+                    NuxeoPrincipal principal) {
                 return list;
             }
         };

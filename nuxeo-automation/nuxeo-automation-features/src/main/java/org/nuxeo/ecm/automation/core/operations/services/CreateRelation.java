@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -51,7 +51,7 @@ public class CreateRelation {
     // TODO use a combo box?
     protected String predicate;
 
-    @OperationMethod(collector=DocumentModelCollector.class)
+    @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel run(DocumentModel doc) throws Exception {
         QNameResource subject = getDocumentResource(doc);
         QNameResource obj = getDocumentResource(object);
