@@ -14,7 +14,7 @@ a:link {
 a:hover {
   text-decoration: underline;
   }
-  
+
 button {
   background-color: #4E9AE1;
   background-image: none;
@@ -27,10 +27,10 @@ button {
   color:#fff;
   border:none;
 }
-    
-.content {
+
+#content {
   padding:10px;
-}  
+}
 
 .tools {
   background-color: #f7f7f7;

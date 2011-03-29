@@ -31,14 +31,14 @@
     </internalGadget>
     <internalGadget name="userdocuments">
       <mountPoint>/userdocuments</mountPoint>
-      <directory>documentlists</directory>
+      <directory>userdocuments</directory>
       <entryPoint>userdocuments.xml</entryPoint>
       <category>Nuxeo</category>
       <icon>note_64.png</icon>
     </internalGadget>
     <internalGadget name="usersites">
       <mountPoint>/usersites</mountPoint>
-      <directory>documentlists</directory>
+      <directory>usersites</directory>
       <entryPoint>usersites.xml</entryPoint>
       <category>Nuxeo</category>
       <icon>website_64.png</icon>

@@ -33,6 +33,9 @@
 
   <Content type="html">
   <![CDATA[
+<html>
+  <head>
+  <link rel="stylesheet" type="text/css" href="${specDirectoryUrl}gadget-common.css"/>
   <style type='text/css'>
   #txtareapostit {
     width: 93%;
@@ -46,7 +49,7 @@
     overflow: hidden;
   }
 
-  #frmpostit{
+  #content{
    margin:5px 0 5px 0;
   }
 
@@ -89,15 +92,15 @@
   </style>
    <script type="text/javascript" language="javascript" src="jquery.elastic.js"></script>
   <script type="text/javascript">
-  
+
     var prefs  = new _IG_Prefs(__MODULE_ID__);
     var perm = gadgets.nuxeo.isEditable();
     var timeoutID = null;
-    
+
     gadgets.util.registerOnLoadHandler(function () {
       var idGadget = gadgets.nuxeo.getGadgetId();
       jQuery("#formtxt").attr("action", gadgets.nuxeo.getFormActionUrl(idGadget));
-      
+
       var url = gadgets.nuxeo.getHtmlActionUrl(idGadget);
       jQuery.ajax({
         type : "GET",
@@ -108,7 +111,7 @@
       });
       jQuery("#txtareapostit").keyup(function(){
         clearTimeout(timeoutID);
-        
+
         timeoutID = setTimeout(function () {
      	  jQuery('#formtxt').ajaxSubmit();
    		}, 500);
@@ -119,25 +122,25 @@
       });
     }
   );
-  
+
    function setText(text){
      var style = ["color:",prefs.getString("COLOR_txt"),";font-size:",
      prefs.getString("textSize"),";font-family:", prefs.getString("textFont")+";"];
-     
-    
+
+
      var fontSize = parseInt(jQuery("#txtareapostit").css('font-size'),'10');
-     
+
      if(parseInt(jQuery("#txtareapostit").css('line-height'),10) < parseInt(prefs.getString("textSize").split("px")[0],10)){
      	style.push(["line-height:",prefs.getString("textSize"),";"].join(""))
      }
      jQuery("#txtareapostit").attr("style",style.join("")).show();
-      
+
      if(perm == false) {
      	 jQuery("#formtxt").remove();
      	 var textareaContent = gadgets.util.unescapeString(text).replace(/&/g,'&amp;').replace(/  /g, '&nbsp;')
      	 .replace(/<|>/g, '&gt;').replace(/\n/g, '<br />');
          jQuery("#cacheText").attr("style",style.join("")).html(textareaContent + "&nbsp;")
-         .css("word-wrap","break-word").css("min-height","220px")         
+         .css("word-wrap","break-word").css("min-height","220px")
          .show();
           gadgets.window.adjustHeight();
      } else {
@@ -149,7 +152,9 @@
      }
    }
   </script>
-   <div id="frmpostit">
+  </head>
+  <body>
+   <div id="content">
 
    <div id="txtTop"></div>
    <div id="txtCenter">
@@ -163,6 +168,8 @@
   </div>
 
   <div style="clear:both"></div>
+  </body>
+</html>
     ]]>
   </Content>
 </Module>

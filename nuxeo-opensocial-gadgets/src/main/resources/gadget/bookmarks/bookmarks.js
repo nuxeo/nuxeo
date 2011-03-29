@@ -148,7 +148,7 @@ function createTable() {
     html = html + createRow(i, url, name);
   }
   html = html + "</table>";
-  _gel("bookmarksDiv").innerHTML = html;
+  _gel("content").innerHTML = html;
   gadgets.window.adjustHeight();
 }
 

@@ -15,6 +15,9 @@
   <UserPref name="todolist" default_value="" datatype="hidden" />
   <Content type="html">
     <![CDATA[
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="${specDirectoryUrl}gadget-common.css"/>
     <script type="text/javascript" language="javascript" src="todolist.js"></script>
       <script>
 
@@ -143,12 +146,12 @@
          text-align:right;
         }
 
-        #addItemIcon,#todolistDiv{
+        #addItemIcon,#content{
          padding-left:5px;
          padding-right:5px;
         }
 
-        #todolistDiv{
+        #content{
          padding-bottom:5px;
         }
 
@@ -287,8 +290,10 @@
     }
 
       </style>
-
-      <div id="todolistDiv"></div>
+  </head>
+  <body>
+    <div id="todolistDiv"></div>
+    <div class="tools">
       <div id="addItemIcon" style="display:block;"></div>
       <div id="addItemForm" style="display: none">
         <div id="hideContainer">
@@ -297,42 +302,44 @@
           </a>
         </div>
         <form id="newFormItem" name = "newItemForm" style="margin:0px;">
-            <input type="hidden" id="action" value="">
-             <input type="hidden" id="indexTab" value="">
-            <table cellspacing="5" width="100%">
-              <tr>
-                  <td id="new_bookmark_td" >
-                    <span class="label" id="labelIntitule">Intitulé:</span>
-                  </td>
-                  <td>
-                    <textarea rows="2" style="width:100%;height:33px;font-size: 11px;" id="newNameInput"></textarea>
-                  </td>
-               </tr>
-               <tr>
-                <td id="new_bookmark_td" >
-                    <span class="label" id="labelAttribution">Attribuée&nbsp;à&nbsp;:</span>
+          <input type="hidden" id="action" value="">
+           <input type="hidden" id="indexTab" value="">
+          <table cellspacing="5" width="100%">
+            <tr>
+              <td id="new_bookmark_td" >
+                <span class="label" id="labelIntitule">Intitulé:</span>
+              </td>
+              <td>
+                <textarea rows="2" style="width:100%;height:33px;font-size: 11px;" id="newNameInput"></textarea>
+              </td>
+             </tr>
+             <tr>
+              <td id="new_bookmark_td" >
+                  <span class="label" id="labelAttribution">Attribuée&nbsp;à&nbsp;:</span>
+              </td>
+              <td>
+                  <input id="newOwnerInput" type="text" style="width:100%; font-size: 11px;">
                 </td>
-                <td>
-                    <input id="newOwnerInput" type="text" style="width:100%; font-size: 11px;">
-                  </td>
-               </tr>
-               <tr>
-                <td id="new_bookmark_td" >
-                   <span class="label"  id="labelEcheance">Echéance&nbsp;:</span>
+             </tr>
+             <tr>
+              <td id="new_bookmark_td" >
+                 <span class="label"  id="labelEcheance">Echéance&nbsp;:</span>
+              </td>
+              <td>
+                  <input id="newDeadLineInput" class="date-pick" type="text" style="width:100%; font-size: 11px;">
                 </td>
-                <td>
-                    <input id="newDeadLineInput" class="date-pick" type="text" style="width:100%; font-size: 11px;">
-                  </td>
-               </tr>
-               <tr>
-                 <td colspan="2" align="right">
-                   <a id="valider" href="#" onclick="javascript:addItem(document.newItemForm.newNameInput.value,document.newItemForm.newOwnerInput.value,document.newItemForm.newDeadLineInput.value, false);">Valider</a>
-                </td>
-               </tr>
-            </table>
-          </form>
+             </tr>
+             <tr>
+               <td colspan="2" align="right">
+                 <a id="valider" href="#" onclick="javascript:addItem(document.newItemForm.newNameInput.value,document.newItemForm.newOwnerInput.value,document.newItemForm.newDeadLineInput.value, false);">Valider</a>
+              </td>
+             </tr>
+          </table>
+        </form>
       </div>
-
+    </div>
+  </body>
+</html>
     ]]>
   </Content>
 </Module>

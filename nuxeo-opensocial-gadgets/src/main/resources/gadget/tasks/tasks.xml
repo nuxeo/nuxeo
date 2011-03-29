@@ -9,19 +9,23 @@
   <UserPref name="title" display_name="Title" required="false" default_value="My Tasks"/>
 
   <Content type="html">
-    <![CDATA[
+<![CDATA[
+<html>
+  <head>
     <script>
       var requestBaseUrl='${serverSideBaseUrl}';
     </script>
 
+    <link rel="stylesheet" type="text/css" href="${specDirectoryUrl}gadget-common.css"/>
     <script type="text/javascript" language="javascript" src="tasks.js"></script>
     <link rel="stylesheet" type="text/css" href="tasks.css"/>
-      <div id="nxDocumentList">
-        <div id="nxDocumentListData">
-          <img src="${clientSideBaseUrl}img/standart_waiter.gif">
-        </div>
+  </head>
+  <body>
+    <div id="content">
+      <img src="${clientSideBaseUrl}img/standart_waiter.gif">
     </div>
-
-     ]]>
+  </body>
+</html>
+]]>
   </Content>
 </Module>

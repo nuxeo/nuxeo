@@ -20,6 +20,9 @@
 
   <Content type="html" view="default">
 <![CDATA[
+<html>
+  <head>
+  <link rel="stylesheet" type="text/css" href="${specDirectoryUrl}gadget-common.css"/>
  <style type='text/css'>
  #hide img{
      border:0;
@@ -105,14 +108,16 @@
     launchGadget();
   });
    </script>
+   </head>
+   <body>
    <div id="title-flash"></div>
 
 
-   <div style="text-align:center;margin:auto;">
+   <div id="content" style="text-align:center;margin:auto;">
        <img id="loader" src="/nuxeo/img/standart_waiter.gif"/>
        <div id="flash"></div>
    </div>
-   <div id="perm" style="display:none;">
+   <div id="perm" style="display:none;" class="tools">
      <div id="show">
         <a href="#">Modifier</a>
      </div>
@@ -141,7 +146,8 @@
        </table>
      </div>
    </div>
-
+  </body>
+</html>
   ]]>
   </Content>
 

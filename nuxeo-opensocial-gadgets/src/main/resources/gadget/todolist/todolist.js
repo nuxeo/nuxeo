@@ -144,7 +144,7 @@ function createAddItemButton(){
       if (numToDoList() > 0)
         html = html + "</tbody>";
       html = html + "</table>";
-      _gel("todolistDiv").innerHTML = html;
+      _gel("content").innerHTML = html;
 
       jQuery("#todolistTable").tablesorter(
       {

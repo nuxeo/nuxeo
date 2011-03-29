@@ -27,7 +27,10 @@
 
   <Content type="html" view="default">
   <![CDATA[
+<html>
+<head>
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+  <link rel="stylesheet" type="text/css" href="${specDirectoryUrl}gadget-common.css"/>
   <link rel="stylesheet" type="text/css" href="template.css" title="template" media="screen" />
 
   <style type='text/css'>
@@ -35,40 +38,41 @@
     * {
       font-family: Arial,Verdana;
 	}
-	
+
 	.nicEdit-main{
 	  font-size:11px;
 	}
-	
+
 	#show{
 	  text-align:right;
 	  font-size:11px;
 	}
-	
-    img{
-      border:0;
-    }
 
-    #hide img, #refresh img{
-     padding:5px 5px 0 0;
-    }
+  img{
+    border:0;
+  }
+
+  #hide img, #refresh img{
+   padding:5px 5px 0 0;
+  }
 
 
-    label{
-       font-family:Tahoma, Arial,Verdana;
-       font-weight:bold;
-       padding-left:8px;
-    }
+  label{
+     font-family:Tahoma, Arial,Verdana;
+     font-weight:bold;
+     padding-left:8px;
+  }
 
-    #show a {
-      text-decoration:none;
-        padding-left:20px;
-        background:url(/nuxeo/img/edit.png) no-repeat 0 0;
-        color:#000000;
-        font-weight:bold;
-    }
+  #show a {
+    text-decoration:none;
+      padding-left:20px;
+      background:url(/nuxeo/img/edit.png) no-repeat 0 0;
+      color:#000000;
+      font-weight:bold;
+      height: 16px;
+  }
 
-     #show a:hover {
+   #show a:hover {
     text-decoration:underline;
   }
 
@@ -120,7 +124,9 @@
        launchGadget();
      });
     </script>
-
+  </head>
+  <body>
+  <div id="content">
     <div id="mainContainer">
       <div id="title"></div>
       <div id="pictureContainer">
@@ -130,9 +136,6 @@
           <span id="pictureLegend"></span>
       </div>
       <div style="clear:both"></div>
-    </div>
-    <div id="perm" style="display:none;">
-        <div id="show"><a href="#">Modifier</a></div>
     </div>
 
    <div style="margin:auto;display:none;" id="form">
@@ -191,6 +194,12 @@
        </form>
 
     </div>
+    </div>
+    <div id="perm" style="display:none;" class="tools">
+        <div id="show"><a href="#">Modifier</a></div>
+    </div>
+  </body>
+</html>
 
   ]]>
   </Content>

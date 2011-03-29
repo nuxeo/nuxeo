@@ -84,7 +84,7 @@ function displayTaskList(data) {
 
     htmlContent += tableEnd();
 
-    document.getElementById("nxDocumentListData").innerHTML = htmlContent + "<br/>";
+    document.getElementById("content").innerHTML = htmlContent + "<br/>";
     // no pagination
 
     gadgets.window.adjustHeight();

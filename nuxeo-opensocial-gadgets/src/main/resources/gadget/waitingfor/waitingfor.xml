@@ -10,17 +10,24 @@
 
   <Content type="html">
     <![CDATA[
+<html>
+  <head>
     <script>
       var requestBaseUrl='${serverSideBaseUrl}';
     </script>
     <script type="text/javascript" language="javascript" src="waitingfor.js"></script>
     <link rel="stylesheet" type="text/css" href="waitingfor.css"/>
-      <div id="nxDocumentList">
-        <div id="nxDocumentListData">
-          <img src="${clientSideBaseUrl}img/standart_waiter.gif">
-        </div>
+    <link rel="stylesheet" type="text/css" href="${specDirectoryUrl}gadget-common.css"/>
+    <link rel="stylesheet" type="text/css" href="${specDirectoryUrl}documentlists.css"/>
+  </head>
+  <body>
+    <div id="content">
+      <div id="nxDocumentListData">
+        <img src="${clientSideBaseUrl}img/standart_waiter.gif">
+      </div>
     </div>
-
-     ]]>
+  </body>
+</html>
+]]>
   </Content>
 </Module>

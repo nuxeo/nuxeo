@@ -25,6 +25,7 @@
 <![CDATA[
 <html>
   <head>
+  <link rel="stylesheet" type="text/css" href="${specDirectoryUrl}gadget-common.css"/>
   <style>
   .pageNavigationControls span {
   color:#757575;
@@ -233,7 +234,7 @@
           htmlContent+=mkRow(data[i], i);
       }
       htmlContent += tableEnd();
-      _gel("nxDocumentListData").innerHTML = htmlContent + "<br/>";
+      _gel("content").innerHTML = htmlContent + "<br/>";
 
       // page info
       var pageInfo = jsonObject.summary;
@@ -328,24 +329,23 @@
   gadgets.util.registerOnLoadHandler(doRequest);
   </script>
   </head>
-   <body>
-      <div id="targetDiv"> Contacting Nuxeo Server ...</div>
-      <div id="nxDocumentList">
-        <div class="pageNavigationControls">
+  <body>
+    <div id="nxDocumentList">
+      <div class="pageNavigationControls tools">
         <input type="image" src="${clientSideBaseUrl}icons/action_page_rewind.gif" onclick="firstPage()"/>
         <input type="image" src="${clientSideBaseUrl}icons/action_page_previous.gif" onclick="prevPage()"/>
         <span class="currentPageStatus" id="nxDocumentListPage"></span>
         <input type="image" src="${clientSideBaseUrl}icons/action_page_next.gif" onclick="nextPage()"/>
         <input type="image" src="${clientSideBaseUrl}icons/action_page_fastforward.gif"onclick="lastPage()"/>
-        </div>
-        <div id="nxDocumentListData">
-          <img src="${clientSideBaseUrl}img/standart_waiter.gif">
-        </div>
+      </div>
+      <div id="content">
+        <img src="${clientSideBaseUrl}img/standart_waiter.gif">
+      </div>
     </div>
 
-      <div id="approval" style="display: none">
-        <a href="#" id="nxauth">Click here to authenticate against Nuxeo Server</a>
-      </div>
+    <div id="approval" style="display: none">
+      <a href="#" id="nxauth">Click here to authenticate against Nuxeo Server</a>
+    </div>
 
     <div id="waiting" style="display: none">
       Please click
@@ -353,8 +353,7 @@
       once you've approved access to your data.
     </div>
 
-    <div id="error">
-    </div>
+    <div id="error"></div>
   </body>
 </html>
 ]]>

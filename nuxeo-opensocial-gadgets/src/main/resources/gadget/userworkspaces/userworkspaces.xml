@@ -15,10 +15,9 @@
 <![CDATA[
 <html>
   <head>
-  
-  <link rel="stylesheet" type="text/css" href="/nuxeo/site/skin/gadgets/css/gadget-common.css"/>
-  <link rel="stylesheet" type="text/css" href="/nuxeo/site/skin/gadgets/css/documentlists.css"/>
-  
+  <link rel="stylesheet" type="text/css" href="${specDirectoryUrl}gadget-common.css"/>
+  <link rel="stylesheet" type="text/css" href="${specDirectoryUrl}documentlists.css"/>
+
   <!-- insert JS Context -->
   ${jsContext}
 
@@ -65,15 +64,13 @@
   </script>
   </head>
    <body>
-   
    <div class="tools">
      <#include "context-chooser-ui.ftl"/>
    </div>
-   <div class="content">
+   <div id="content">
      <#include "default-documentlist-layout.ftl"/>
      <#include "default-request-controls.ftl"/>
-   </div>  
-   
+   </div>
   </body>
 </html>
 ]]>

@@ -25,6 +25,7 @@
 <![CDATA[
 <html>
   <head>
+  <link rel="stylesheet" type="text/css" href="${specDirectoryUrl}gadget-common.css"/>
   <link rel="stylesheet" type="text/css" href="${specDirectoryUrl}documentlists.css"/>
   <!-- insert JS Context -->
   ${jsContext}
@@ -105,22 +106,24 @@
   </head>
    <body>
 
-   <div id="searchBox" style="display:none">
-   <table>
-    <tr>
-     <td><input type="text" name="searchPattern" id ="searchPattern"></td>
-     <td><input type="button" value="__MSG_command.search__" onclick="doSearch()"/></td>
-     <td><input type="button" value="__MSG_command.save__" onclick="doSaveSearch()"/></td>
-    </tr>
-   </table>
-   </div>
-   <div id="titleBox" style="display:none">
-   <table>
-    <tr>
-     <td>__MSG_label.searchResultsFor__ <span id="queryText"> </span></td>
-     <td><input type="button" value="__MSG_command.edit__" onclick="doEditSearch()"/></td>
-    </tr>
-   </table>
+   <div class="tools">
+     <div id="searchBox" style="display:none">
+     <table>
+      <tr>
+       <td><input type="text" name="searchPattern" id ="searchPattern"></td>
+       <td><input type="button" value="__MSG_command.search__" onclick="doSearch()"/></td>
+       <td><input type="button" value="__MSG_command.save__" onclick="doSaveSearch()"/></td>
+      </tr>
+     </table>
+     </div>
+     <div id="titleBox" style="display:none">
+     <table>
+      <tr>
+       <td>__MSG_label.searchResultsFor__ <span id="queryText"> </span></td>
+       <td><input type="button" value="__MSG_command.edit__" onclick="doEditSearch()"/></td>
+      </tr>
+     </table>
+     </div>
    </div>
 
    <#include "default-documentlist-layout.ftl"/>
