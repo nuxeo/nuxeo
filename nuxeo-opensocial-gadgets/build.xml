@@ -3,13 +3,12 @@
 
   <!-- From the pom.xml -->
   <property name="name" value="nuxeo-opensocial-gadgets" />
-  <property name="version" value="${version}" />
 
   <!-- Create a build.properties file from build.properties.sample
        if you wish to override the JBoss paths -->
-  <property file="build.properties" />
+  <property file="../build.properties" />
   <property name="jboss.dir" value="/opt/jboss" />
-  <property name="webengine.dir" value="/opt/jetty" />
+  <property name="tomcat.dir" value="/opt/jetty" />
 
   <property name="javac.debug" value="true" />
   <property name="javac.deprecation" value="false" />
@@ -20,7 +19,7 @@
   <property name="nuxeo.ear" value="nuxeo.ear" />
   <property name="mvn.opts" value="" />
   <property name="lm.portal.dir.web.module" value="${lm.portal.dir}/web/modules/org.nuxeo.opensocial.spaces" />
-  <property name="webengine.bundle.dir" value="${webengine.dir}/bundles"/>
+  <property name="webengine.bundle.dir" value="${tomcat.dir}/bundles"/>
 
   <condition property="osfamily-unix">
     <os family="unix" />
@@ -84,12 +83,6 @@
       <arg value="eclipse:eclipse" />
       <arg value="${mvn.opts}" />
     </exec>
-  </target>
-
-  <target name="web" description="Copy resources to module">
-    <copy todir="${lm.portal.dir.web.module}" overwrite="true">
-      <fileset dir="${build.dir}/classes" />
-    </copy>
   </target>
 
 </project>
