@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -23,13 +23,12 @@ import org.nuxeo.ecm.platform.picture.api.adapters.MultiviewPicture;
 /**
  * Simple Operation to extract an image view from a Picture Document.
  * <p>
- * This operation is needed because using the default blob operation
- * is too complicated in the case of the Picture DocumentType.
+ * This operation is needed because using the default blob operation is too
+ * complicated in the case of the Picture DocumentType.
  *
  * @author Tiry (tdelprat@nuxeo.com)
  */
-@Operation(id = GetPictureView.ID, category = Constants.CAT_CONVERSION, label = "Get image view",
-        description = "Get an image from a Picture document.")
+@Operation(id = GetPictureView.ID, category = Constants.CAT_CONVERSION, label = "Get image view", description = "Get an image from a Picture document.")
 public class GetPictureView {
 
     public static final String ID = "Picture.getView";

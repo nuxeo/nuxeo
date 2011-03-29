@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -30,7 +30,6 @@ import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
-import org.nuxeo.ecm.platform.query.core.CoreQueryPageProviderDescriptor;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
 import org.nuxeo.runtime.api.Framework;
 
@@ -38,7 +37,7 @@ import org.nuxeo.runtime.api.Framework;
  * Operation to execute a query or a named provider with support for Pagination
  *
  * @author Tiry (tdelprat@nuxeo.com)
- *
+ * @since 5.4.2
  */
 @Operation(id = PageProviderOperation.ID, category = Constants.CAT_FETCH, label = "PageProvider", description = "Perform a query or a named provider query on the repository. Result is paginated. The query result will become the input for the next operation.")
 public class PageProviderOperation {
@@ -62,7 +61,7 @@ public class PageProviderOperation {
     protected String lang = "NXQL";
 
     @Param(name = "page", required = false)
-    protected Integer page= 0;
+    protected Integer page = 0;
 
     @Param(name = "pageSize", required = false)
     protected Integer pageSize;
@@ -80,12 +79,13 @@ public class PageProviderOperation {
         PageProviderService pps = Framework.getLocalService(PageProviderService.class);
 
         List<SortInfo> sortInfos = new ArrayList<SortInfo>();
-        if (sortInfoAsStringList!=null) {
+        if (sortInfoAsStringList != null) {
             for (String sortInfoDesc : sortInfoAsStringList) {
                 SortInfo sortInfo;
                 if (sortInfoDesc.contains(":")) {
                     String[] parts = sortInfoDesc.split(":");
-                    sortInfo = new SortInfo(parts[0], Boolean.parseBoolean(parts[1]));
+                    sortInfo = new SortInfo(parts[0],
+                            Boolean.parseBoolean(parts[1]));
                 } else {
                     sortInfo = new SortInfo(sortInfoDesc, true);
                 }
@@ -93,38 +93,38 @@ public class PageProviderOperation {
             }
         }
 
-        Object[] parameters= null;
+        Object[] parameters = null;
 
-        if (strParameters!=null && !strParameters.isEmpty()) {
+        if (strParameters != null && !strParameters.isEmpty()) {
             parameters = strParameters.toArray(new String[strParameters.size()]);
             // expand specific parameters
-            for (int idx=0; idx< parameters.length; idx++) {
+            for (int idx = 0; idx < parameters.length; idx++) {
                 String value = (String) parameters[idx];
                 if (value.equals(CURRENT_USERID_PATTERN)) {
-                    parameters[idx]=session.getPrincipal().getName();
-                }else if (value.equals(CURRENT_REPO_PATTERN)) {
-                    parameters[idx]=session.getRepositoryName();
+                    parameters[idx] = session.getPrincipal().getName();
+                } else if (value.equals(CURRENT_REPO_PATTERN)) {
+                    parameters[idx] = session.getRepositoryName();
                 }
             }
         }
 
-
-
-        Map<String , Serializable> props = new HashMap<String, Serializable>();
-        props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
+        Map<String, Serializable> props = new HashMap<String, Serializable>();
+        props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY,
+                (Serializable) session);
 
         Long targetPageSize = null;
-        if (pageSize!=null) {
+        if (pageSize != null) {
             targetPageSize = new Long(pageSize);
         }
 
         PageProviderDefinition ppd = pps.getPageProviderDefinition(providerName);
-        new CoreQueryPageProviderDescriptor();
-        if (query!=null) {
+        if (query != null) {
             ppd.setPattern(query);
         }
-        PageProvider<?> pp = pps.getPageProvider(providerName, ppd, sortInfos, targetPageSize, new Long(page), props, parameters);
-        return new PaginableDocumentModelListImpl((PageProvider<DocumentModel>) pp);
+        PageProvider<?> pp = pps.getPageProvider(providerName, ppd, sortInfos,
+                targetPageSize, new Long(page), props, parameters);
+        return new PaginableDocumentModelListImpl(
+                (PageProvider<DocumentModel>) pp);
 
     }
 
