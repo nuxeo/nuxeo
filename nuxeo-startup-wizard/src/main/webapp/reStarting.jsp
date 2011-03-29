@@ -13,11 +13,17 @@
 
 <script type="text/javascript">
 setTimeout(startPolling, 15000);
+
+//be sure Ajax Requests will timeout quickly
+$.ajaxSetup( {
+  timeout: 8000
+} );
+
 function startPolling() {
     var intId = setInterval(function isNuxeoReady() {
         $.get("<%=contextPath%>/login.jsp", function(data, textStatus) {
             window.location.href='<%=contextPath%>/';
         });
-    }, 2000);
+    }, 10000);
 }
 </script>
