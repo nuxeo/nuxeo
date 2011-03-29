@@ -130,25 +130,22 @@ public class RestTest {
 
     @Test
     public void testMultiValued() throws Exception {
-      Document root = (Document) session.newRequest(FetchDocument.ID).set(
+        Document root = (Document) session.newRequest(FetchDocument.ID).set(
                 "value", "/").execute();
-      Document note = (Document) session.newRequest(CreateDocument.ID).
-              setHeader("X-NXDocumentProperties", "*").
-              setInput(root).
-              set("type", "Note").
-              set("name", "mynote").
-              set("properties", "dc:contributors=me,other").execute();
-      checkHasCorrectContributors(note);
-      
-      PaginableDocuments docs = (PaginableDocuments)session.newRequest(DocumentPageProviderOperation.ID).
-        setHeader("X-NXDocumentProperties", "*").
-        set("query",  "SELECT * from Note").
-        set("pageSize", 2).execute();
- 
-      assertThat(docs, notNullValue());
-      assertThat(docs.size(), is(1));
-      checkHasCorrectContributors(docs.get(0));
-       
+        Document note = (Document) session.newRequest(CreateDocument.ID).setHeader(
+                "X-NXDocumentProperties", "*").setInput(root).set("type",
+                "Note").set("name", "mynote").set("properties",
+                "dc:contributors=me,other").execute();
+        checkHasCorrectContributors(note);
+
+        PaginableDocuments docs = (PaginableDocuments) session.newRequest(
+                DocumentPageProviderOperation.ID).setHeader(
+                "X-NXDocumentProperties", "*").set("query",
+                "SELECT * from Note").set("pageSize", 2).execute();
+
+        assertThat(docs, notNullValue());
+        assertThat(docs.size(), is(1));
+        checkHasCorrectContributors(docs.get(0));
     }
 
     private void checkHasCorrectContributors(Document note) {
