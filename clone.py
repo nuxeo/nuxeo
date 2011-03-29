@@ -2,7 +2,7 @@
 
 import re, os, sys
 
-BRANCH = "5.4.1"
+BRANCH = "release-5.4.1"
 
 if len(sys.argv) == 2:
     branch = sys.argv[1]
