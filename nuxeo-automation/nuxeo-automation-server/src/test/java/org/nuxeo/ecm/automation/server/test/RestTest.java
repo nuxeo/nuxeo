@@ -12,22 +12,16 @@
 package org.nuxeo.ecm.automation.server.test;
 
 import static org.hamcrest.Matchers.*;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import junit.framework.Assert;
 
-import org.hamcrest.Matchers;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -133,6 +127,42 @@ public class RestTest {
             assertEquals(401, e.getStatus());
         }
     }
+
+    @Test
+    public void testMultiValued() throws Exception {
+      Document root = (Document) session.newRequest(FetchDocument.ID).set(
+                "value", "/").execute();
+      Document note = (Document) session.newRequest(CreateDocument.ID).
+              setHeader("X-NXDocumentProperties", "*").
+              setInput(root).
+              set("type", "Note").
+              set("name", "mynote").
+              set("properties", "dc:contributors=me,other").execute();
+      checkHasCorrectContributors(note);
+      
+      PaginableDocuments docs = (PaginableDocuments)session.newRequest(PageProviderOperation.ID).
+        setHeader("X-NXDocumentProperties", "*").
+        set("query",  "SELECT * from Note").
+        set("pageSize", 2).execute();
+ 
+      assertThat(docs, notNullValue());
+      assertThat(docs.size(), is(1));
+      checkHasCorrectContributors(docs.get(0));
+       
+    }
+
+    private void checkHasCorrectContributors(Document note) {
+        assertThat(note, notNullValue());
+          PropertyMap properties = note.getProperties();
+          assertThat(properties, notNullValue());
+          PropertyList contributors = properties.getList("dc:contributors");
+          assertThat(contributors, notNullValue());
+          List<Object> values = contributors.list();
+          assertThat(values, hasItem((Object)"me"));
+          assertThat(values, hasItem((Object)"other"));
+          assertThat(values, hasItem((Object)"Administrator"));
+    }
+    
 
     @Test
     public void testGetCreateUpdateAndRemoveDocument() throws Exception {
