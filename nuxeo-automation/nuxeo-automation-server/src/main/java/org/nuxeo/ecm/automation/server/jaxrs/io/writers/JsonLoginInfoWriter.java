@@ -9,7 +9,7 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.automation.server.jaxrs.io;
+package org.nuxeo.ecm.automation.server.jaxrs.io.writers;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -23,38 +23,41 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
-import org.nuxeo.ecm.automation.server.jaxrs.ExceptionHandler;
+import org.nuxeo.ecm.automation.server.jaxrs.LoginInfo;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @Provider
 @Produces( { "application/json+nxentity", "application/json" })
-public class JsonExceptionWriter implements MessageBodyWriter<ExceptionHandler> {
+public class JsonLoginInfoWriter implements MessageBodyWriter<LoginInfo> {
 
-    public long getSize(ExceptionHandler arg0, Class<?> arg1, Type arg2,
+    public long getSize(LoginInfo arg0, Class<?> arg1, Type arg2,
             Annotation[] arg3, MediaType arg4) {
         return -1;
     }
 
     public boolean isWriteable(Class<?> arg0, Type arg1, Annotation[] arg2,
             MediaType arg3) {
-        return ExceptionHandler.class.isAssignableFrom(arg0);
+        return LoginInfo.class.isAssignableFrom(arg0);
     }
 
-    public void writeTo(ExceptionHandler ee, Class<?> arg1, Type arg2,
-            Annotation[] arg3, MediaType arg4,
-            MultivaluedMap<String, Object> arg5, OutputStream arg6)
+    public void writeTo(LoginInfo login, Class<?> arg1, Type arg2, Annotation[] arg3,
+            MediaType arg4, MultivaluedMap<String, Object> arg5, OutputStream arg6)
             throws IOException, WebApplicationException {
         JSONObject json = new JSONObject();
-        json.element("entity-type", "exception");
-        json.element("type", ee.getType());
-        json.element("status", ee.getStatus());
-        json.element("message", ee.getMessage());
-        json.element("stack", ee.getSerializedStackTrace());
-        arg6.write(json.toString(2).getBytes("UTF-8"));
+        json.element("entity-type", "login");
+        json.element("username", login.getUsername());
+        json.element("isAdministrator", login.isAdministrator());
+        JSONArray g = new JSONArray();
+        for (String group : login.getGroups()) {
+            g.add(group);
+        }
+        json.element("groups", g);
+        arg6.write(json.toString().getBytes("UTF-8"));
     }
 
 }

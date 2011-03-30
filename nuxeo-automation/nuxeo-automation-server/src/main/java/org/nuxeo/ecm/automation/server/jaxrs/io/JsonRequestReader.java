@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.HashMap;
 import java.util.Iterator;
 
 import javax.ws.rs.Consumes;
@@ -27,13 +28,12 @@ import javax.ws.rs.ext.Provider;
 import net.sf.json.JSONObject;
 
 import org.nuxeo.common.utils.FileUtils;
-import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.automation.server.jaxrs.ExecutionRequest;
-import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.DocumentRefList;
-import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.api.impl.DocumentRefListImpl;
+import org.nuxeo.ecm.automation.server.jaxrs.io.resolvers.DateInputResolver;
+import org.nuxeo.ecm.automation.server.jaxrs.io.resolvers.DocumentsInputResolver;
+import org.nuxeo.ecm.automation.server.jaxrs.io.resolvers.DocumentInputResolver;
+import org.nuxeo.ecm.automation.server.jaxrs.io.resolvers.PrimitiveInputResolver;
+import org.nuxeo.ecm.automation.server.jaxrs.io.writers.JsonDocumentListWriter;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -44,6 +44,34 @@ public class JsonRequestReader implements MessageBodyReader<ExecutionRequest> {
 
     public static final MediaType targetMediaType = new MediaType("application", "json+nxrequest");
 
+    protected static final HashMap<String,InputResolver> inputResolvers = 
+            new HashMap<String,InputResolver>();
+    
+    static {
+        addInputResolver(new DocumentInputResolver());
+        addInputResolver(new DocumentsInputResolver());
+        addInputResolver(new DateInputResolver());
+        addInputResolver(new PrimitiveInputResolver());
+    }
+    
+    public static void addInputResolver(InputResolver resolver) {
+        inputResolvers.put(resolver.getType(), resolver);
+    }
+    
+    public static Object resolveInput(String input) {
+        int p = input.indexOf(':');
+        if (p <= 0) {
+            throw new IllegalArgumentException(input + " is not formatted using type:value");
+        }
+        String type = input.substring(0,p);
+        String ref = input.substring(p+1);
+        InputResolver ir = inputResolvers.get(type);
+        if (ir == null) {
+            throw new IllegalArgumentException("no resolver for " + type);            
+        }
+        return ir.getInput(ref);
+    }
+    
     public boolean isReadable(Class<?> arg0, Type arg1, Annotation[] arg2,
             MediaType arg3) {
         return (targetMediaType.equals(arg3) && ExecutionRequest.class.isAssignableFrom(arg0));
@@ -76,17 +104,7 @@ public class JsonRequestReader implements MessageBodyReader<ExecutionRequest> {
 
         Object inObj = null;
         if (input != null) {
-            if (input.startsWith("doc:")) {
-                inObj = docRefFromString(input.substring(4).trim());
-            } else if (input.startsWith("docs:")) {
-                String[] ar = StringUtils.split(input.substring(5).trim(), ',',
-                        true);
-                DocumentRefList list = new DocumentRefListImpl(ar.length);
-                for (String s : ar) {
-                    list.add(docRefFromString(s));
-                }
-                inObj = list;
-            }
+            inObj= resolveInput(input);
         }
         ExecutionRequest req = new ExecutionRequest(inObj);
 
@@ -111,11 +129,5 @@ public class JsonRequestReader implements MessageBodyReader<ExecutionRequest> {
         return req;
     }
 
-    public static DocumentRef docRefFromString(String input) {
-        if (input.startsWith("/")) {
-            return new PathRef(input);
-        } else {
-            return new IdRef(input);
-        }
-    }
+   
 }

@@ -29,6 +29,7 @@ import org.nuxeo.ecm.automation.client.jaxrs.RemoteException;
 import org.nuxeo.ecm.automation.client.jaxrs.model.Blob;
 import org.nuxeo.ecm.automation.client.jaxrs.model.Blobs;
 import org.nuxeo.ecm.automation.client.jaxrs.model.FileBlob;
+import org.nuxeo.ecm.automation.client.jaxrs.spi.marshallers.ExceptionMarshaller;
 import org.nuxeo.ecm.automation.client.jaxrs.util.IOUtils;
 import org.nuxeo.ecm.automation.client.jaxrs.util.InputStreamDataSource;
 
@@ -183,7 +184,7 @@ public class Request extends HashMap<String, String> {
             String content = IOUtils.read(stream);
             RemoteException e = null;
             try {
-                e = JsonMarshalling.readException(content);
+                e = ExceptionMarshaller.readException(content);
             } catch (Throwable t) {
                 throw new RemoteException(status, "ServerError",
                         "Server Error", content);

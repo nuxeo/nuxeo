@@ -16,12 +16,14 @@ import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import junit.framework.Assert;
 
+import org.hamcrest.number.IsCloseTo;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -34,6 +36,7 @@ import org.nuxeo.ecm.automation.client.jaxrs.Session;
 import org.nuxeo.ecm.automation.client.jaxrs.adapters.DocumentService;
 import org.nuxeo.ecm.automation.client.jaxrs.impl.HttpAutomationClient;
 import org.nuxeo.ecm.automation.client.jaxrs.model.Blobs;
+import org.nuxeo.ecm.automation.client.jaxrs.model.DateInput;
 import org.nuxeo.ecm.automation.client.jaxrs.model.DocRef;
 import org.nuxeo.ecm.automation.client.jaxrs.model.DocRefs;
 import org.nuxeo.ecm.automation.client.jaxrs.model.Document;
@@ -41,6 +44,8 @@ import org.nuxeo.ecm.automation.client.jaxrs.model.Documents;
 import org.nuxeo.ecm.automation.client.jaxrs.model.FileBlob;
 import org.nuxeo.ecm.automation.client.jaxrs.model.OperationDocumentation;
 import org.nuxeo.ecm.automation.client.jaxrs.model.PaginableDocuments;
+import org.nuxeo.ecm.automation.client.jaxrs.model.PathRef;
+import org.nuxeo.ecm.automation.client.jaxrs.model.PrimitiveInput;
 import org.nuxeo.ecm.automation.client.jaxrs.model.PropertyList;
 import org.nuxeo.ecm.automation.client.jaxrs.model.PropertyMap;
 import org.nuxeo.ecm.automation.core.operations.blob.AttachBlob;
@@ -606,5 +611,34 @@ public class RestTest {
         assertEquals("a", ar.getString(0));
         assertEquals("b", ar.getString(1));
         assertEquals("c,d", ar.getString(2));
+    }
+    
+    @Test
+    public void testReturnValues() throws Exception {
+        Object r;
+        
+        r = session.newRequest(ReturnOperation.ID).setInput(new PrimitiveInput(Boolean.TRUE)).execute();
+        assertThat((Boolean)r, is(Boolean.TRUE));
+        r = session.newRequest(ReturnOperation.ID).setInput(new PrimitiveInput("hello")).execute();
+        assertThat((String)r, is("hello"));
+        r = session.newRequest(ReturnOperation.ID).setInput(new PrimitiveInput(1)).execute();
+        assertThat((Integer)r, is(1));
+        r = session.newRequest(ReturnOperation.ID).setInput(new PrimitiveInput(1000000000000000000L)).execute();
+        assertThat((Long)r, is(1000000000000000000L));
+        r = session.newRequest(ReturnOperation.ID).setInput(new PrimitiveInput(1.1f)).execute();
+        assertThat((Double)r, IsCloseTo.closeTo(1.1f, 0.1));
+        Date now = new Date();
+        r = session.newRequest(ReturnOperation.ID).setInput(new DateInput(now)).execute();
+        assertThat((Date)r, is(now));
+    }
+    
+    @Test
+    public void testBadAccess() throws Exception {
+        try {
+            session.newRequest(FetchDocument.ID).set("value","/foo").execute();
+        } catch (RemoteException e) {
+            return;
+        }
+        fail("no exception caught");
     }
 }

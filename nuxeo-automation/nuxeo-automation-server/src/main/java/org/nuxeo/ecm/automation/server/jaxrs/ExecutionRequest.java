@@ -22,8 +22,6 @@ import org.nuxeo.ecm.automation.OperationParameters;
 import org.nuxeo.ecm.automation.OperationType;
 import org.nuxeo.ecm.automation.core.scripting.Scripting;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.PathRef;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -75,7 +73,7 @@ public class ExecutionRequest {
             CoreSession session) throws Exception {
         ctx.addRequestCleanupHandler(request);
         ctx.setCoreSession(session);
-        ctx.setInput(decodeInput(session, input));
+        ctx.setInput(input);
         return ctx;
     }
 
@@ -85,23 +83,5 @@ public class ExecutionRequest {
                 params);
         chain.add(oparams);
         return chain;
-    }
-
-    public static Object decodeInput(CoreSession session, Object input)
-            throws Exception {
-        if (input == null) {
-            return null;
-        }
-        if (input instanceof String) {
-            String inputS = input.toString();
-            if (inputS.startsWith("/")) {
-                return session.getDocument(new PathRef(inputS));
-            } else {
-                return session.getDocument(new IdRef(inputS));
-            }
-            // TODO decode documents
-        } else {
-            return input;
-        }
     }
 }

@@ -80,6 +80,8 @@
     point="operations">
     <operation
       class="org.nuxeo.ecm.automation.server.test.ExitOperation" />
-    </extension>
+    <operation
+      class="org.nuxeo.ecm.automation.server.test.ReturnOperation" />
+  </extension>
     
 </component>

@@ -16,15 +16,18 @@ import java.util.Set;
 
 import javax.ws.rs.core.Application;
 
-import org.nuxeo.ecm.automation.server.jaxrs.io.BlobsWriter;
-import org.nuxeo.ecm.automation.server.jaxrs.io.JsonAutomationInfoWriter;
-import org.nuxeo.ecm.automation.server.jaxrs.io.JsonDocumentListWriter;
-import org.nuxeo.ecm.automation.server.jaxrs.io.JsonDocumentWriter;
-import org.nuxeo.ecm.automation.server.jaxrs.io.JsonExceptionWriter;
-import org.nuxeo.ecm.automation.server.jaxrs.io.JsonLoginInfoWriter;
 import org.nuxeo.ecm.automation.server.jaxrs.io.JsonRequestReader;
 import org.nuxeo.ecm.automation.server.jaxrs.io.MultiPartRequestReader;
 import org.nuxeo.ecm.automation.server.jaxrs.io.UrlEncodedFormRequestReader;
+import org.nuxeo.ecm.automation.server.jaxrs.io.writers.BlobsWriter;
+import org.nuxeo.ecm.automation.server.jaxrs.io.writers.JsonAutomationInfoWriter;
+import org.nuxeo.ecm.automation.server.jaxrs.io.writers.JsonBeanWriter;
+import org.nuxeo.ecm.automation.server.jaxrs.io.writers.JsonDateWriter;
+import org.nuxeo.ecm.automation.server.jaxrs.io.writers.JsonDocumentListWriter;
+import org.nuxeo.ecm.automation.server.jaxrs.io.writers.JsonDocumentWriter;
+import org.nuxeo.ecm.automation.server.jaxrs.io.writers.JsonExceptionWriter;
+import org.nuxeo.ecm.automation.server.jaxrs.io.writers.JsonLoginInfoWriter;
+import org.nuxeo.ecm.automation.server.jaxrs.io.writers.JsonPrimitiveWriter;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -52,6 +55,8 @@ public class AutomationModule extends Application {
         result.add(new BlobsWriter());
         result.add(new JsonLoginInfoWriter());
         result.add(new UrlEncodedFormRequestReader());
+        result.add(new JsonPrimitiveWriter());
+        result.add(new JsonDateWriter());
         return result;
     }
 

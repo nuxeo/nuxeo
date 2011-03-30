@@ -9,7 +9,7 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.automation.server.jaxrs.io;
+package org.nuxeo.ecm.automation.server.jaxrs.io.writers;
 
 import java.io.IOException;
 import java.io.OutputStream;
