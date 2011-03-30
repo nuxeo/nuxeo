@@ -40,10 +40,6 @@
     <copy todir="${app.path}/nxserver/plugins">
       <artifact:set groupId="org.nuxeo.ecm.platform" artifactId="nuxeo-platform-signature-*"/>
     </copy>
-    <copy todir="${app.path}/templates/" overwrite="true">
-      <fileset dir="src/main/resources" />
-    </copy>
-    <!--echo file="${app.path}/templates/common/nuxeo.defaults" append="yes" message="${line.separator}#redefine common template to include test contrib${line.separator}nuxeo.template.includes=signature" /--> 
   </target>
 
 </project>
