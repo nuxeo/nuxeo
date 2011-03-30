@@ -60,7 +60,7 @@ public class InstallAfterRestart {
     }
 
     protected static boolean isVindozBox() {
-        return System.getProperty("os.name").toLowerCase().indexOf("win") > 0;
+        return System.getProperty("os.name").toLowerCase().indexOf("win") >= 0;
     }
 
     public static void addPackage(String pkgId) {
