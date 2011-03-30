@@ -22,7 +22,7 @@
     <nuxeo.features.version>5.4.2-SNAPSHOT</nuxeo.features.version>
     <nuxeo.webengine.version>5.4.2-SNAPSHOT</nuxeo.webengine.version>
     <nuxeo.jsf.version>5.4.2-SNAPSHOT</nuxeo.jsf.version>
-    <nuxeo.connect.client.version>1.1</nuxeo.connect.client.version>
+    <nuxeo.connect.client.version>1.2</nuxeo.connect.client.version>
   </properties>
 
   <modules>
