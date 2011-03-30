@@ -72,7 +72,9 @@ import com.google.inject.Inject;
 @Features(WebEngineFeature.class)
 @Jetty(port = 18080)
 @Deploy({ "org.nuxeo.runtime.jtajca", "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.server", "org.nuxeo.ecm.automation.features", "org.nuxeo.ecm.platform.query.api"  })
-@LocalDeploy("org.nuxeo.ecm.automation.server:test-bindings.xml")
+@LocalDeploy({ "org.nuxeo.ecm.automation.server:test-bindings.xml",
+   "org.nuxeo.ecm.automation.server:test-mvalues.xml"
+})
 // @RepositoryConfig(cleanup=Granularity.METHOD)
 public class RestTest {
 
@@ -132,32 +134,50 @@ public class RestTest {
     public void testMultiValued() throws Exception {
         Document root = (Document) session.newRequest(FetchDocument.ID).set(
                 "value", "/").execute();
+
         Document note = (Document) session.newRequest(CreateDocument.ID).setHeader(
-                "X-NXDocumentProperties", "*").setInput(root).set("type",
-                "Note").set("name", "mynote").set("properties",
-                "dc:contributors=me,other").execute();
-        checkHasCorrectContributors(note);
+                "X-NXDocumentProperties", "*").setInput(root).set("type", "MV").set(
+                "name", "pfff").set("properties",
+                "mv:sl=s1,s2\nmv:ss=s1,s2\nmv:bl=true,false\nmv:b=true\n").execute();
+        checkHasCorrectMultiValues(note);
 
         PaginableDocuments docs = (PaginableDocuments) session.newRequest(
                 DocumentPageProviderOperation.ID).setHeader(
-                "X-NXDocumentProperties", "*").set("query",
-                "SELECT * from Note").set("pageSize", 2).execute();
+                "X-NXDocumentProperties", "*").set("query", "SELECT * from MV").set(
+                "pageSize", 2).execute();
 
         assertThat(docs, notNullValue());
         assertThat(docs.size(), is(1));
-        checkHasCorrectContributors(docs.get(0));
+        checkHasCorrectMultiValues(docs.get(0));
     }
 
-    private void checkHasCorrectContributors(Document note) {
+    private void checkHasCorrectMultiValues(Document note) {
         assertThat(note, notNullValue());
-          PropertyMap properties = note.getProperties();
-          assertThat(properties, notNullValue());
-          PropertyList contributors = properties.getList("dc:contributors");
-          assertThat(contributors, notNullValue());
-          List<Object> values = contributors.list();
-          assertThat(values, hasItem((Object)"me"));
-          assertThat(values, hasItem((Object)"other"));
-          assertThat(values, hasItem((Object)"Administrator"));
+        PropertyMap properties = note.getProperties();
+        assertThat(properties, notNullValue());
+
+        PropertyList sl = properties.getList("mv:sl");
+        assertThat(sl, notNullValue());
+        List<Object> slValues = sl.list();
+        assertThat(slValues, hasItem((Object) "s1"));
+        assertThat(slValues, hasItem((Object) "s2"));
+
+        PropertyList ss = properties.getList("mv:ss");
+        assertThat(ss, notNullValue());
+        List<Object> ssValues = ss.list();
+        assertThat(ssValues, hasItem((Object) "s1"));
+        assertThat(ssValues, hasItem((Object) "s2"));
+
+        Boolean b = properties.getBoolean("mv:b");
+        assertThat(b, is(true));
+
+        PropertyList bl = properties.getList("mv:bl");
+        assertThat(bl, notNullValue());
+        List<Object> blValues = bl.list();
+        assertThat(blValues, hasItem((Object) "true"));
+        assertThat(blValues, hasItem((Object) "false"));
+        assertThat(bl.getBoolean(0), is(Boolean.TRUE));
+        assertThat(bl.getBoolean(1), is(Boolean.FALSE));
     }
     
 

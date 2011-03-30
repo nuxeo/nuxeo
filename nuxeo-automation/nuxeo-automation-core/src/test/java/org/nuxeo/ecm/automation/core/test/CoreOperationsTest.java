@@ -11,11 +11,9 @@
  */
 package org.nuxeo.ecm.automation.core.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.hamcrest.Matchers.*;
+
+import static org.junit.Assert.*;
 
 import org.junit.Before;
 import org.junit.Ignore;
@@ -124,6 +122,20 @@ public class CoreOperationsTest {
         service.run(ctx, chain);
         assertEquals(src.getTitle(), ctx.get("script_title"));
     }
+    
+    @Test
+    public void testRunScriptOperation() throws Exception {
+        OperationContext ctx = new OperationContext(session);
+        ctx.setInput(src);
+
+        OperationChain chain = new OperationChain("testChain");
+        chain.add(RunScript.ID).set("script", "This.setPropertyValue(\"dc:title\",\"modified from mvel\");");
+
+        service.run(ctx, chain);
+        String title = src.getProperty("dc:title").getValue(String.class);
+        assertThat(title, is("modified from mvel"));
+    }
+
 
     /*
      * This test is not enabled for now since the operation is disabled until
