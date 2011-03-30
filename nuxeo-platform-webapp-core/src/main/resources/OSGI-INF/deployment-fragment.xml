@@ -71,10 +71,6 @@
       Create new document in #{currentDocument.name}
     </page>
 
-    <page view-id="/user_dashboard.xhtml">
-      breadcrumb=command.user_dashboard
-    </page>
-
     <page view-id="/search/search_form.xhtml">
       breadcrumb=command.advancedSearch
     </page>
@@ -233,17 +229,11 @@
       <redirect />
     </navigation-case>
 
-    <!-- miscellaneaous -->
+    <!-- miscellaneous -->
 
     <navigation-case>
       <from-outcome>clipboard</from-outcome>
       <to-view-id>/incl/clipboard.xhtml</to-view-id>
-      <redirect />
-    </navigation-case>
-
-    <navigation-case>
-      <from-outcome>user_dashboard</from-outcome>
-      <to-view-id>/user_dashboard.xhtml</to-view-id>
       <redirect />
     </navigation-case>
 

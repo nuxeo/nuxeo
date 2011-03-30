@@ -18,6 +18,7 @@
       </section>
       <section>
         <cell>
+          <!-- NXP-6413: keep multiple_domains perspective as BBB -->
           <!-- tree view -->
           <fragment perspectives="default,multiple_domains" type="generic fragment"/>
           <!-- clip board -->
@@ -51,57 +52,6 @@
         </cell>
       </section>
     </page>
-    <page name="user_dashboard">
-      <section>
-        <cell>
-          <!-- logo -->
-          <fragment type="generic fragment"/>
-        </cell>
-        <cell>
-          <!-- user services -->
-          <fragment type="generic fragment"/>
-        </cell>
-        <cell>
-          <!-- includes -->
-          <fragment type="generic fragment"/>
-        </cell>
-      </section>
-      <section>
-        <cell>
-          <!-- breadcrumbs -->
-          <fragment type="generic fragment"/>
-          <!-- domain selection -->
-          <fragment perspectives="multiple_domains" type="generic fragment"/>
-        </cell>
-      </section>
-      <section>
-        <cell>
-          <!-- user tasks -->
-          <fragment type="generic fragment"/>
-          <!-- user processes -->
-          <fragment type="generic fragment"/>
-          <!-- user workspaces -->
-          <fragment type="generic fragment"/>
-          <!-- user sites -->
-          <fragment type="generic fragment"/>
-        </cell>
-        <cell>
-          <!-- user documents -->
-          <fragment type="generic fragment"/>
-          <!-- last documents -->
-          <fragment type="generic fragment"/>
-          <!-- last published document -->
-          <fragment type="generic fragment"/>
-          <fragment type="generic fragment"/>
-        </cell>
-      </section>
-      <section>
-        <cell>
-          <!-- copyrights -->
-          <fragment type="generic fragment"/>
-        </cell>
-      </section>
-    </page>
     <page name="print">
       <section>
         <cell>
@@ -125,7 +75,7 @@
     <defaultBody/>
     <defaultSrc/>
   </properties>
-  <properties element="page[4]/section[1]/cell[1]/fragment[3]">
+  <properties element="page[3]/section[1]/cell[1]/fragment[3]">
     <name>body</name>
     <defaultBody/>
     <defaultSrc/>
@@ -182,75 +132,33 @@
       <width>0%</width>
     </layout>
     <layout element="page[3]">
-      <margin>0</margin>
-      <padding>0</padding>
+      <padding>20px</padding>
     </layout>
     <layout element="page[3]/section[1]">
-      <height>36px</height>
-      <width>100%</width>
-      <overflow>auto</overflow>
-    </layout>
-    <layout element="page[3]/section[1]/cell[1]">
-      <width>18%</width>
-      <text-align>center</text-align>
-    </layout>
-    <layout element="page[3]/section[1]/cell[2]">
-      <width>82%</width>
-      <padding>0px 10px 0px 0px</padding>
-    </layout>
-    <layout element="page[3]/section[1]/cell[3]">
-      <width>0%</width>
-    </layout>
-    <layout element="page[3]/section[2]">
       <width>100%</width>
     </layout>
-    <layout element="page[3]/section[2]/cell[1]"/>
-    <layout element="page[3]/section[3]">
-      <width>100%</width>
-    </layout>
-    <layout element="page[3]/section[3]/cell[1]">
-      <width>50%</width>
-      <padding>20px</padding>
-    </layout>
-    <layout element="page[3]/section[3]/cell[2]">
-      <width>50%</width>
-      <padding>20px</padding>
-    </layout>
-    <layout element="page[3]/section[4]">
-      <width>100%</width>
-    </layout>
-    <layout element="page[3]/section[4]/cell[1]">
-      <width>100%</width>
-      <text-align>right</text-align>
-    </layout>
-    <layout element="page[4]">
-      <padding>20px</padding>
-    </layout>
-    <layout element="page[4]/section[1]">
-      <width>100%</width>
-    </layout>
-    <layout element="page[4]/section[1]/cell[1]"/>
+    <layout element="page[3]/section[1]/cell[1]"/>
     <widget element="">
       <view>theme view</view>
       <icon>${org.nuxeo.ecm.contextPath}/icons/favicon.png</icon>
       <charset>utf-8</charset>
     </widget>
-    <widget element="page[1]|page[2]|page[3]|page[4]">
+    <widget element="page[1]|page[2]|page[3]">
       <view>page frame</view>
     </widget>
-    <widget element="page[1]/section[1]|page[1]/section[2]|page[1]/section[3]|page[2]/section[1]|page[3]/section[1]|page[3]/section[2]|page[3]/section[3]|page[3]/section[4]|page[4]/section[1]">
+    <widget element="page[1]/section[1]|page[1]/section[2]|page[1]/section[3]|page[2]/section[1]|page[3]/section[1]">
       <view>section frame</view>
     </widget>
-    <widget element="page[1]/section[1]/cell[1]|page[1]/section[1]/cell[2]|page[1]/section[1]/cell[3]|page[1]/section[3]/cell[1]|page[2]/section[1]/cell[1]|page[3]/section[1]/cell[1]|page[3]/section[1]/cell[2]|page[3]/section[1]/cell[3]|page[3]/section[2]/cell[1]|page[3]/section[3]/cell[1]|page[3]/section[3]/cell[2]|page[3]/section[4]/cell[1]|page[4]/section[1]/cell[1]">
+    <widget element="page[1]/section[1]/cell[1]|page[1]/section[1]/cell[2]|page[1]/section[1]/cell[3]|page[1]/section[3]/cell[1]|page[2]/section[1]/cell[1]|page[3]/section[1]/cell[1]">
       <view>cell frame</view>
     </widget>
-    <widget element="page[1]/section[1]/cell[1]/fragment[1]|page[3]/section[1]/cell[1]/fragment[1]">
+    <widget element="page[1]/section[1]/cell[1]/fragment[1]">
       <view>Nuxeo DM logo (Galaxy Theme)</view>
     </widget>
-    <widget element="page[1]/section[1]/cell[2]/fragment[1]|page[3]/section[1]/cell[2]/fragment[1]">
+    <widget element="page[1]/section[1]/cell[2]/fragment[1]">
       <view>User services (Galaxy theme)</view>
     </widget>
-    <widget element="page[1]/section[1]/cell[3]/fragment[1]|page[3]/section[1]/cell[3]/fragment[1]">
+    <widget element="page[1]/section[1]/cell[3]/fragment[1]">
       <view>nuxeo5 includes</view>
     </widget>
     <widget element="page[1]/section[2]/cell[1]">
@@ -271,52 +179,21 @@
     <widget element="page[1]/section[2]/cell[2]/fragment[2]|page[2]/section[1]/cell[1]/fragment[1]">
       <view>facelet region</view>
     </widget>
-    <widget element="page[1]/section[3]/cell[1]/fragment[1]|page[3]/section[4]/cell[1]/fragment[1]">
+    <widget element="page[1]/section[3]/cell[1]/fragment[1]">
       <view>Nuxeo DM footer (Galaxy Theme)</view>
     </widget>
     <widget element="page[2]/section[1]/cell[2]/fragment[1]">
       <view>nuxeo5 includes</view>
     </widget>
-    <!-- Page 3 / Section 2 breadcrumb -->
-    <widget element="page[3]/section[2]/cell[1]/fragment[1]">
-      <view>nuxeo5 breadcrumbs</view>
-    </widget>
-    <widget element="page[3]/section[2]/cell[1]/fragment[2]">
-      <view>nuxeo5 dashboard domain selection</view>
-    </widget>
-    <widget element="page[3]/section[3]/cell[1]/fragment[1]">
-      <view>nuxeo5 user tasks</view>
-    </widget>
-    <widget element="page[3]/section[3]/cell[1]/fragment[2]">
-      <view>nuxeo5 user processes</view>
-    </widget>
-    <widget element="page[3]/section[3]/cell[1]/fragment[3]">
-      <view>nuxeo5 user workspaces</view>
-    </widget>
-    <widget element="page[3]/section[3]/cell[2]/fragment[1]">
-      <view>nuxeo5 user documents</view>
-    </widget>
-    <widget element="page[3]/section[3]/cell[2]/fragment[2]">
-      <view>nuxeo5 last documents</view>
-    </widget>
-    <widget element="page[3]/section[3]/cell[2]/fragment[3]">
-      <view>nuxeo5 last published documents</view>
-    </widget>
-    <!-- Page 4 : print page -->
-    <widget element="page[4]/section[1]/cell[1]/fragment[1]">
+    <!-- Page 3 : print page -->
+    <widget element="page[3]/section[1]/cell[1]/fragment[1]">
       <view>nuxeo5 includes</view>
     </widget>
-    <widget element="page[4]/section[1]/cell[1]/fragment[2]">
+    <widget element="page[3]/section[1]/cell[1]/fragment[2]">
       <view>nuxeo5 breadcrumbs</view>
     </widget>
-    <widget element="page[4]/section[1]/cell[1]/fragment[3]">
+    <widget element="page[3]/section[1]/cell[1]/fragment[3]">
       <view>facelet region</view>
-    </widget>
-    <widget element="page[3]/section[3]/cell[2]/fragment[4]">
-      <view>nuxeo5 user sections</view>
-    </widget>
-    <widget element="page[3]/section[3]/cell[1]/fragment[4]">
-      <view>nuxeo5 user sites</view>
     </widget>
     <!-- buttons -->
     <style name="default buttons">
@@ -1701,22 +1578,22 @@
       </selector>
     </style>
     <!-- commmon to both fragments -->
-    <style element="page[4]/section[1]/cell[1]/fragment[2]|page[4]/section[1]/cell[1]/fragment[3]" inherit="common style 2"/>
+    <style element="page[3]/section[1]/cell[1]/fragment[2]|page[3]/section[1]/cell[1]/fragment[3]" inherit="common style 2"/>
     <!-- General -->
-    <style element="page[1]|page[2]|page[3]">
+    <style element="page[1]|page[2]">
       <selector path="img" view="page frame">
         <border>0</border>
       </selector>
     </style>
     <!-- Banner -->
-    <style element="page[1]/section[1]|page[3]/section[1]">
+    <style element="page[1]/section[1]">
       <selector path="" view="section frame">
         <border-bottom preset="topbar (Galaxy borders)"/>
         <background preset="topbar (Galaxy backgrounds)"/>
       </selector>
     </style>
     <!-- Logo -->
-    <style element="page[1]/section[1]/cell[1]/fragment[1]|page[3]/section[1]/cell[1]/fragment[1]">
+    <style element="page[1]/section[1]/cell[1]/fragment[1]">
       <selector path="form" view="Nuxeo DM logo (Galaxy Theme)">
         <margin>0</margin>
         <padding>0</padding>
@@ -1726,7 +1603,7 @@
       </selector>
     </style>
     <!-- user services -->
-    <style element="page[1]/section[1]/cell[2]/fragment[1]|page[3]/section[1]/cell[2]/fragment[1]" inherit="header style" />
+    <style element="page[1]/section[1]/cell[2]/fragment[1]" inherit="header style" />
     <!-- Left side -->
     <style element="page[1]/section[2]">
       <selector path="" view="section frame">
@@ -1747,25 +1624,14 @@
         <border-left preset="whitethin (Galaxy borders)"/>
       </selector>
     </style>
-    <style element="page[3]/section[2]/cell[1]"/>
-    <style element="page[3]/section[2]/cell[1]/fragment[1]" inherit="breadcrumbs style">
-      <selector path="" view="nuxeo5 breadcrumbs">
-        <padding>5px 22px</padding>
-      </selector>
-    </style>
-    <style element="page[3]/section[2]/cell[1]/fragment[2]" inherit="breadcrumbs style">
-      <selector path="" view="nuxeo5 dashboard domain selection">
-        <padding>5px 22px</padding>
-      </selector>
-    </style>
     <style element="page[1]/section[2]/cell[2]/fragment[1]" inherit="breadcrumbs style"/>
     <!-- Footer -->
-    <style element="page[1]/section[3]|page[3]/section[4]">
+    <style element="page[1]/section[3]">
       <selector path="" view="section frame">
         <border-top preset="topbar (Galaxy borders)"/>
       </selector>
     </style>
-    <style element="page[1]/section[3]/cell[1]/fragment[1]|page[3]/section[4]/cell[1]/fragment[1]" inherit="common style 1">
+    <style element="page[1]/section[3]/cell[1]/fragment[1]" inherit="common style 1">
       <selector path="form, p" view="Nuxeo DM footer (Galaxy Theme)">
         <margin>5px 0px 0px 0px</margin>
         <padding>0</padding>
@@ -1807,9 +1673,6 @@
       <selector path="" view="facelet region">
         <padding>7px</padding>
       </selector>
-    </style>
-    <!-- main fragment for user dashboard -->
-    <style element="page[3]/section[3]/cell[1]|page[3]/section[3]/cell[2]" inherit="common style 1">
     </style>
   </formats>
   <presets>

@@ -89,12 +89,6 @@
       <template>incl/breadcrumb.xhtml</template>
     </view>
 
-    <view name="nuxeo5 dashboard domain selection"
-      template-engine="jsf-facelets">
-      <format-type>widget</format-type>
-      <template>incl/dashboard_domain_selection.xhtml</template>
-    </view>
-
     <view name="nuxeo5 tree explorer" template-engine="jsf-facelets">
       <format-type>widget</format-type>
       <template>incl/tree_explorer.xhtml</template>
@@ -122,79 +116,6 @@
       template-engine="jsf-facelets">
       <format-type>widget</format-type>
       <template>incl/footer_galaxy.xhtml</template>
-    </view>
-
-    <view name="nuxeo5 user tasks" template-engine="jsf-facelets">
-      <!-- Fragment to be displayed as part of the dashboard to display the
-        list of tasks of the current user -->
-      <format-type>widget</format-type>
-      <template>incl/dashboard_user_tasks.xhtml</template>
-      <resource>foldable-box.js</resource>
-    </view>
-
-    <view name="nuxeo5 user processes" template-engine="jsf-facelets">
-      <!-- Fragment to be displayed as part of the dashboard to display the
-        list of processes of the current user (i.e : the ones where he is initiator -->
-      <format-type>widget</format-type>
-      <template>incl/dashboard_user_processes.xhtml</template>
-      <resource>foldable-box.js</resource>
-    </view>
-
-    <view name="nuxeo5 user workspaces" template-engine="jsf-facelets">
-      <!-- Fragment to be displayed as part of the dashboard to display the
-        list of tasks of workspaces the current user can see -->
-      <format-type>widget</format-type>
-      <template>incl/dashboard_user_workspaces.xhtml</template>
-      <resource>foldable-box.js</resource>
-    </view>
-
-    <view name="nuxeo5 user sites" template-engine="jsf-facelets">
-      <!-- Fragment to be displayed as part of the dashboard to display the
-        list of sites the current user can see -->
-      <format-type>widget</format-type>
-      <template>incl/dashboard_user_sites.xhtml</template>
-      <resource>foldable-box.js</resource>
-    </view>
-
-    <view name="nuxeo5 user documents" template-engine="jsf-facelets">
-      <!-- Fragment to be displayed as part of the dashboard to display the
-        list of documents the current user has been working on recently -->
-      <format-type>widget</format-type>
-      <template>incl/dashboard_user_documents.xhtml</template>
-      <resource>foldable-box.js</resource>
-    </view>
-
-    <view name="nuxeo5 user deleted documents" template-engine="jsf-facelets">
-      <!-- Fragment to be displayed as part of the dashboard to display the
-        list of documents the current user has been working on recently -->
-      <format-type>widget</format-type>
-      <template>incl/dashboard_user_deleted_documents.xhtml</template>
-      <resource>foldable-box.js</resource>
-    </view>
-
-    <view name="nuxeo5 last documents" template-engine="jsf-facelets">
-      <!-- Fragment to be displayed as part of the dashboard to display the
-        list of documents that have been modified recently -->
-      <format-type>widget</format-type>
-      <template>incl/dashboard_last_documents.xhtml</template>
-      <resource>foldable-box.js</resource>
-    </view>
-
-    <view name="nuxeo5 last published documents"
-      template-engine="jsf-facelets">
-      <!-- Fragment to be displayed as part of the dashboard to display the
-        list of documents that have been published recently -->
-      <format-type>widget</format-type>
-      <template>incl/dashboard_last_published_documents.xhtml</template>
-      <resource>foldable-box.js</resource>
-    </view>
-
-    <view name="nuxeo5 user sections" template-engine="jsf-facelets">
-      <!-- Fragment to be displayed as part of the dashboard to display the
-        list of documents the current user has been working on recently -->
-      <format-type>widget</format-type>
-      <template>incl/dashboard_user_sections.xhtml</template>
-      <resource>foldable-box.js</resource>
     </view>
 
   </extension>
@@ -263,9 +184,6 @@
       <view id="/create_relation_search_document_popup.xhtml">
         <theme>galaxy/popup</theme>
       </view>
-      <view id="/user_dashboard.xhtml">
-        <theme>galaxy/user_dashboard</theme>
-      </view>
       <view id="/view_calendar.xhtml">
         <perspective>view_calendar</perspective>
       </view>
@@ -320,10 +238,6 @@
       <scheme>org.nuxeo.theme.jsf.negotiation.perspective.ViewId</scheme>
       <!-- local perspective (specific to nuxeo5) -->
       <scheme>org.nuxeo.ecm.webapp.theme.negotiation.LocalPerspective</scheme>
-      <!-- multiple domaines perspective (specific to nuxeo5) -->
-      <scheme>
-        org.nuxeo.ecm.webapp.dashboard.MultipleDomainsPerspectiveNegotiator
-      </scheme>
       <scheme>
         org.nuxeo.theme.jsf.negotiation.perspective.DefaultPerspective
       </scheme>

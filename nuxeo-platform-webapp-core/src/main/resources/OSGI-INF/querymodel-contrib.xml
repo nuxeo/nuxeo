@@ -3,107 +3,14 @@
 <component name="org.nuxeo.ecm.webapp.querymodel.DefaultQueryModels">
 
   <documentation>
-    Default QueryModel contributions used to fetch the documents list displayed
-    in the user dashboard page.
+    Default QueryModel contributions used to fetch document lists.
 
-    @author
-    <a href="mailto:og@nuxeo.com">Olivier Grisel</a>
+    @author <a href="mailto:og@nuxeo.com">Olivier Grisel</a>
   </documentation>
-
-
 
   <extension
     target="org.nuxeo.ecm.core.search.api.client.querymodel.QueryModelService"
     point="model">
-
-    <queryModel name="USER_DOMAINS">
-      <pattern>
-        SELECT * FROM Document WHERE ecm:primaryType = 'Domain' AND
-        ecm:mixinType != 'HiddenInNavigation' AND ecm:currentLifeCycleState !=
-        'deleted'
-      </pattern>
-      <sortable value="true" defaultSortColumn="dc:title"
-        defaultSortAscending="true" />
-    </queryModel>
-
-    <queryModel name="DOMAIN_DOCUMENTS">
-      <pattern>
-        SELECT * FROM Document WHERE ecm:path STARTSWITH ? AND NOT ecm:path
-        STARTSWITH ? AND ecm:mixinType != 'Folderish' AND ecm:mixinType !=
-        'HiddenInNavigation' AND ecm:isCheckedInVersion = 0 AND ecm:isProxy = 0
-        AND ecm:currentLifeCycleState != 'deleted'
-      </pattern>
-      <sortable value="true" defaultSortColumn="dc:modified"
-        defaultSortAscending="false" />
-      <max>5</max>
-    </queryModel>
-
-    <queryModel name="DOMAIN_PUBLISHED_DOCUMENTS">
-      <pattern>
-        SELECT * FROM Document WHERE ecm:path STARTSWITH ? AND ecm:mixinType !=
-        'Folderish' AND ecm:mixinType != 'HiddenInNavigation' AND
-        ecm:isCheckedInVersion = 0 AND ecm:isProxy = 1
-      </pattern>
-      <sortable value="true" defaultSortColumn="dc:modified"
-        defaultSortAscending="false" />
-      <max>5</max>
-    </queryModel>
-
-    <queryModel name="USER_DOCUMENTS">
-      <pattern>
-        SELECT * FROM Document WHERE dc:contributors = ? AND ecm:mixinType !=
-        'Folderish' AND ecm:mixinType != 'HiddenInNavigation' AND
-        ecm:isCheckedInVersion = 0 AND ecm:isProxy = 0 AND
-        ecm:currentLifeCycleState != 'deleted' AND ecm:path STARTSWITH ?
-      </pattern>
-      <sortable value="true" defaultSortColumn="dc:modified"
-        defaultSortAscending="false" />
-      <max>5</max>
-    </queryModel>
-
-    <queryModel name="USER_SECTIONS">
-      <pattern>
-        SELECT * FROM Document WHERE ecm:primaryType = 'Section' AND
-        ecm:mixinType != 'HiddenInNavigation' AND ecm:path STARTSWITH ?
-      </pattern>
-      <sortable value="true" defaultSortColumn="dc:title"
-        defaultSortAscending="true" />
-      <max>5</max>
-    </queryModel>
-
-    <queryModel name="USER_DELETED_DOCUMENTS">
-      <pattern>
-        SELECT * FROM Document WHERE dc:contributors = ? AND ecm:mixinType !=
-        'Folderish' AND ecm:mixinType != 'HiddenInNavigation' AND
-        ecm:isCheckedInVersion = 0 AND ecm:isProxy = 0 AND
-        ecm:currentLifeCycleState = 'deleted'
-      </pattern>
-      <sortable value="true" defaultSortColumn="dc:modified"
-        defaultSortAscending="false" />
-      <max>5</max>
-    </queryModel>
-
-    <queryModel name="USER_WORKSPACES">
-      <pattern>
-        SELECT * FROM Workspace WHERE ecm:mixinType != 'HiddenInNavigation' AND
-        ecm:currentLifeCycleState != 'deleted' AND ecm:isProxy = 0 AND ecm:path
-        STARTSWITH ? AND NOT ecm:path STARTSWITH ?
-      </pattern>
-      <sortable value="true" defaultSortColumn="dc:title"
-        defaultSortAscending="true" />
-      <max>5</max>
-    </queryModel>
-
-    <queryModel name="USER_SITES">
-      <pattern>
-        SELECT * FROM Document WHERE ecm:mixinType = 'WebView' AND
-        ecm:currentLifeCycleState != 'deleted' AND webc:isWebContainer = 1 AND
-        ecm:path STARTSWITH ? AND NOT ecm:path STARTSWITH ?
-      </pattern>
-      <sortable value="true" defaultSortColumn="webc:name"
-        defaultSortAscending="true" />
-      <max>5</max>
-    </queryModel>
 
     <queryModel name="CURRENT_DOC_CHILDREN">
       <pattern>
@@ -114,15 +21,6 @@
       <sortable value="true" defaultSortColumn="dc:title"
         defaultSortAscending="true" />
       <max>20</max>
-
-      <!--
-        <whereClause>
-
-        <predicate parameter="ecm:parentId" operator="=">
-        <field schema="browsing_filters" name="query_parentId" />
-        </predicate>
-        </whereClause>
-      -->
     </queryModel>
 
     <queryModel name="CURRENT_DOC_DELETED_CHILDREN">
@@ -134,15 +32,6 @@
       <sortable value="true" defaultSortColumn="dc:title"
         defaultSortAscending="true" />
       <max>20</max>
-
-      <!--
-        <whereClause>
-
-        <predicate parameter="ecm:parentId" operator="=">
-        <field schema="browsing_filters" name="query_parentId" />
-        </predicate>
-        </whereClause>
-      -->
     </queryModel>
 
     <queryModel name="CURRENT_DOC_ORDERED_CHILDREN">
@@ -156,7 +45,7 @@
     </queryModel>
 
     <!-- This query model may be used to list children in the tree navigation
-
+      
       Note the "ecm:isProxy = 0" predicate optimization that is required to
       simplify greatly the request performed by the tree manager when
       browsing on folders with a lot of files when using the Visible SQL Storage.

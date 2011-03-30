@@ -5,16 +5,6 @@
 
     <!-- server actions -->
 
-    <action id="user_dashboard" link="user_dashboard"
-      label="command.user_dashboard" order="10">
-      <category>USER_SERVICES</category>
-      <filter id="user_dashboard_enabled">
-        <rule grant="true">
-          <condition>#{userServicesContext.dashboardEnabled}</condition>
-        </rule>
-      </filter>
-    </action>
-
     <!--
       <action id="logout" link="logout" label="command.logout" order="200">
       <category>USER_SERVICES_BOTTOM</category>

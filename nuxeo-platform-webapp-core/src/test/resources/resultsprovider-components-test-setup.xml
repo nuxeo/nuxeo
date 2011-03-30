@@ -7,7 +7,7 @@
     point="model">
 
     <resultsProvider name="MY_SEARCH" farm="searchActions"/>
-    <resultsProvider name="MY_DOCUMENTS" farm="dashboardsActions"/>
+    <resultsProvider name="MY_DOCUMENTS" farm="queryModelActions"/>
   </extension>
 
 </component>

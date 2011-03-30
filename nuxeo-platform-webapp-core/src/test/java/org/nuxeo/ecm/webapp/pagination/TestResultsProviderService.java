@@ -48,7 +48,7 @@ public class TestResultsProviderService extends NXRuntimeTestCase {
     public void testRegistration() throws Exception {
         assertNotNull(service);
         assertEquals("searchActions", service.getFarmNameFor("MY_SEARCH"));
-        assertEquals("dashboardsActions",
+        assertEquals("queryModelActions",
                 service.getFarmNameFor("MY_DOCUMENTS"));
     }
 
