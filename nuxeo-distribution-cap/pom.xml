@@ -654,6 +654,12 @@
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-user-settings-web</artifactId>
     </dependency>
+    <!-- temporarily use compatibility module -->
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-user-dashboard-compat</artifactId>
+    </dependency>
+
   </dependencies>
 
   <build>

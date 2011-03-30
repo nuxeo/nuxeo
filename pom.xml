@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
@@ -319,13 +320,21 @@
         <artifactId>nuxeo-user-settings-web</artifactId>
         <version>${nuxeo.addons.version}</version>
       </dependency>
+      <!-- temporarily use compatibility module -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-user-dashboard-compat</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
 
     </dependencies>
   </dependencyManagement>
 
   <scm>
     <connection>scm:hg:http://hg.nuxeo.org/nuxeo/nuxeo-distribution</connection>
-    <developerConnection>scm:hg:https://hg.nuxeo.org/nuxeo/nuxeo-distribution</developerConnection>
+    <developerConnection>
+      scm:hg:https://hg.nuxeo.org/nuxeo/nuxeo-distribution
+    </developerConnection>
     <url>http://hg.nuxeo.org/nuxeo/nuxeo-distribution</url>
   </scm>
 
