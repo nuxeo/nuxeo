@@ -138,7 +138,7 @@ public class RestTest {
         Document note = (Document) session.newRequest(CreateDocument.ID).setHeader(
                 "X-NXDocumentProperties", "*").setInput(root).set("type",
                 "MV").set("name", "pfff").set("properties",
-                "mv:sl=s1,s2;ms:ss=s1,s2").execute();
+                "mv:sl=s1,s2\nmv:ss=s1,s2\nmv:bl=true,false\nmv:b=true\n").execute();
         checkHasCorrectMultiValues(note);
 
         PaginableDocuments docs = (PaginableDocuments) session.newRequest(
@@ -164,9 +164,20 @@ public class RestTest {
 
         PropertyList ss = properties.getList("mv:ss");
         assertThat(ss, notNullValue());
-        List<Object> ssValues = sl.list();
+        List<Object> ssValues = ss.list();
         assertThat(ssValues, hasItem((Object) "s1"));
         assertThat(ssValues, hasItem((Object) "s2"));
+        
+        Boolean b = properties.getBoolean("mv:b");
+        assertThat(b, is(true));
+        
+        PropertyList bl = properties.getList("mv:bl");
+        assertThat(bl, notNullValue());
+        List<Object> blValues = bl.list();
+        assertThat(blValues, hasItem((Object)"true"));
+        assertThat(blValues, hasItem((Object)"false"));
+        assertThat(bl.getBoolean(0), is(Boolean.TRUE));
+        assertThat(bl.getBoolean(1), is(Boolean.FALSE));
     }
     
 
@@ -595,5 +606,10 @@ public class RestTest {
         assertEquals("a", ar.getString(0));
         assertEquals("b", ar.getString(1));
         assertEquals("c,d", ar.getString(2));
+    }
+    
+    @Test
+    public void testBooleanProperties() {
+        
     }
 }

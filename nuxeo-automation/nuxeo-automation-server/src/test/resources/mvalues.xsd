@@ -41,5 +41,7 @@
   
   <xs:element name="sl" type="nxs:stringList"/>
   <xs:element name="ss" type="nxs:stringSequence"/>
+  <xs:element name="bl" type="nxs:booleanList"/>
+  <xs:element name="b" type="xs:boolean"/>
 </xs:schema>
 
