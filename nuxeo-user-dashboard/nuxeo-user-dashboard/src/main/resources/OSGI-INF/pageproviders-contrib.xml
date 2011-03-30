@@ -35,6 +35,17 @@
       <pageSize>5</pageSize>
     </coreQueryPageProvider>
 
+    <coreQueryPageProvider name="USER_DOCUMENTS">
+      <pattern>
+        SELECT * FROM Document WHERE dc:contributors = ? AND ecm:mixinType !=
+        'Folderish' AND ecm:mixinType != 'HiddenInNavigation' AND
+        ecm:isCheckedInVersion = 0 AND ecm:isProxy = 0 AND
+        ecm:currentLifeCycleState != 'deleted' AND ecm:path STARTSWITH ?
+      </pattern>
+      <sort column="dc:modified" ascending="true" />
+      <pageSize>5</pageSize>
+    </coreQueryPageProvider>
+
     <coreQueryPageProvider name="USER_SITES">
       <pattern>
         SELECT * FROM Document WHERE ecm:mixinType = 'WebView' AND
