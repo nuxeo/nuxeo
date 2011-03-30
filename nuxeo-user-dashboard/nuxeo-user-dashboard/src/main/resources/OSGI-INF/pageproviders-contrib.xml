@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.user.center.dashboard.pageproviders">
+
+  <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService"
+    point="providers">
+
+    <coreQueryPageProvider name="USER_DOMAINS">
+      <pattern>
+        SELECT * FROM Document WHERE ecm:primaryType = 'Domain' AND
+        ecm:mixinType != 'HiddenInNavigation' AND ecm:currentLifeCycleState !=
+        'deleted'
+      </pattern>
+      <sort column="dc:title" ascending="true" />
+      <pageSize>0</pageSize>
+    </coreQueryPageProvider>
+
+    <coreQueryPageProvider name="DOMAIN_DOCUMENTS">
+      <pattern>
+        SELECT * FROM Document WHERE ecm:path STARTSWITH ? AND NOT ecm:path
+        STARTSWITH ? AND ecm:mixinType != 'Folderish' AND ecm:mixinType !=
+        'HiddenInNavigation' AND ecm:isCheckedInVersion = 0 AND ecm:isProxy = 0
+        AND ecm:currentLifeCycleState != 'deleted'
+      </pattern>
+      <sort column="dc:title" ascending="true" />
+      <pageSize>5</pageSize>
+    </coreQueryPageProvider>
+
+    <coreQueryPageProvider name="DOMAIN_PUBLISHED_DOCUMENTS">
+      <pattern>
+        SELECT * FROM Document WHERE ecm:path STARTSWITH ? AND ecm:mixinType !=
+        'Folderish' AND ecm:mixinType != 'HiddenInNavigation' AND
+        ecm:isCheckedInVersion = 0 AND ecm:isProxy = 1
+      </pattern>
+      <sort column="dc:modified" ascending="true" />
+      <pageSize>5</pageSize>
+    </coreQueryPageProvider>
+
+    <coreQueryPageProvider name="USER_SITES">
+      <pattern>
+        SELECT * FROM Document WHERE ecm:mixinType = 'WebView' AND
+        ecm:currentLifeCycleState != 'deleted' AND webc:isWebContainer = 1 AND
+        ecm:path STARTSWITH ? AND NOT ecm:path STARTSWITH ?
+      </pattern>
+      <sort column="webc:name" ascending="true" />
+      <pageSize>5</pageSize>
+    </coreQueryPageProvider>
+
+    <coreQueryPageProvider name="USER_WORKSPACES">
+      <pattern>
+        SELECT * FROM Workspace WHERE ecm:mixinType != 'HiddenInNavigation' AND
+        ecm:currentLifeCycleState != 'deleted' AND ecm:isProxy = 0 AND ecm:path
+        STARTSWITH ? AND NOT ecm:path STARTSWITH ?
+      </pattern>
+      <sort column="dc:title" ascending="true" />
+      <pageSize>5</pageSize>
+    </coreQueryPageProvider>
+
+    <coreQueryPageProvider name="USER_DELETED_DOCUMENTS">
+      <pattern>
+        SELECT * FROM Document WHERE dc:contributors = ? AND ecm:mixinType !=
+        'Folderish' AND ecm:mixinType != 'HiddenInNavigation' AND
+        ecm:isCheckedInVersion = 0 AND ecm:isProxy = 0 AND
+        ecm:currentLifeCycleState = 'deleted'
+      </pattern>
+      <sort column="dc:modified" ascending="true" />
+      <pageSize>5</pageSize>
+    </coreQueryPageProvider>
+
+  </extension>
+
+</component>

@@ -4,3 +4,4 @@ Bundle-Name: Nuxeo User Center Dashboard
 Bundle-SymbolicName: org.nuxeo.ecm.user.center.dashboard;singleton:=true
 Bundle-Version: 0.0.1
 Bundle-Vendor: Nuxeo
+Nuxeo-Component: OSGI-INF/pageproviders-contrib.xml
