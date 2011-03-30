@@ -134,17 +134,17 @@ public class RestTest {
     public void testMultiValued() throws Exception {
         Document root = (Document) session.newRequest(FetchDocument.ID).set(
                 "value", "/").execute();
-        
+
         Document note = (Document) session.newRequest(CreateDocument.ID).setHeader(
-                "X-NXDocumentProperties", "*").setInput(root).set("type",
-                "MV").set("name", "pfff").set("properties",
+                "X-NXDocumentProperties", "*").setInput(root).set("type", "MV").set(
+                "name", "pfff").set("properties",
                 "mv:sl=s1,s2\nmv:ss=s1,s2\nmv:bl=true,false\nmv:b=true\n").execute();
         checkHasCorrectMultiValues(note);
 
         PaginableDocuments docs = (PaginableDocuments) session.newRequest(
                 DocumentPageProviderOperation.ID).setHeader(
-                "X-NXDocumentProperties", "*").set("query",
-                "SELECT * from MV").set("pageSize", 2).execute();
+                "X-NXDocumentProperties", "*").set("query", "SELECT * from MV").set(
+                "pageSize", 2).execute();
 
         assertThat(docs, notNullValue());
         assertThat(docs.size(), is(1));
@@ -167,15 +167,15 @@ public class RestTest {
         List<Object> ssValues = ss.list();
         assertThat(ssValues, hasItem((Object) "s1"));
         assertThat(ssValues, hasItem((Object) "s2"));
-        
+
         Boolean b = properties.getBoolean("mv:b");
         assertThat(b, is(true));
-        
+
         PropertyList bl = properties.getList("mv:bl");
         assertThat(bl, notNullValue());
         List<Object> blValues = bl.list();
-        assertThat(blValues, hasItem((Object)"true"));
-        assertThat(blValues, hasItem((Object)"false"));
+        assertThat(blValues, hasItem((Object) "true"));
+        assertThat(blValues, hasItem((Object) "false"));
         assertThat(bl.getBoolean(0), is(Boolean.TRUE));
         assertThat(bl.getBoolean(1), is(Boolean.FALSE));
     }
