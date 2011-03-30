@@ -2,6 +2,7 @@
 font:normal 12px Verdana, Arial, sans-serif;
 position:fixed;
 background:#FFFFFF;
+width: 100%;
 }
 
 #gadgetsListContainer h1 {
@@ -25,6 +26,10 @@ margin:100px;
  .gadgetBrowser td {
  padding:0;
  vertical-align: top;
+ }
+ 
+.gadgetBrowser td.gadgetCategories {
+ width:200px;  
  }
 
  .categoryList {
@@ -84,8 +89,7 @@ cursor: pointer;
  font-size: 12px;
  max-height: 320px;
  overflow: auto;
- width: 600px;
-
+ width: 98%;
  }
 
  .categoryList ul li:last-child a {
@@ -109,9 +113,9 @@ cursor: pointer;
    rgb(221,238,255) 1%,
    rgb(255,255,255) 66%);
  }
- 
- #gadgetListContainer .gadget:hover {
- background-color:#C0DCF5;   
+
+ #gadgetListContainer .gadget:hover { 
+ background-color:#C0DCF5;
  }
 
  #gadgetListContainer .gadget .gadgetThumb {

@@ -17,7 +17,7 @@
   <h1>${Context.getMessage('label.gadgets.selection.title')}</h1>
   <table class="gadgetBrowser">
     <tr>
-      <td>
+      <td class="gadgetCategories">
         <div class="categoryList">
           <ul>
             <#list categories as cat>
@@ -30,7 +30,7 @@
           </ul>
         </div>
       </td>
-      <td>
+      <td class="gadgetList">
       <div id="gadgetListContainer">
         <#include "/views/gadgets/list.ftl">
       </div>
