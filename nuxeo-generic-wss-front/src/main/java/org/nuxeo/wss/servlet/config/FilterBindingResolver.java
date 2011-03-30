@@ -58,9 +58,9 @@ public class FilterBindingResolver {
             cacheLock.readLock().unlock();
         }
         if (binding == null) {
-            binding = computeBindingForRequest(uri);
             try {
                 cacheLock.writeLock().lock();
+                binding = computeBindingForRequest(uri);
                 bindingCache.put(uri, binding);
             } finally {
                 cacheLock.writeLock().unlock();
@@ -69,7 +69,7 @@ public class FilterBindingResolver {
         return binding;
     }
 
-    protected static FilterBindingConfig computeBindingForRequest(String uri)
+    protected static synchronized FilterBindingConfig computeBindingForRequest(String uri)
             throws Exception {
         List<FilterBindingConfig> bindings = XmlConfigHandler.getConfigEntries();
         for (FilterBindingConfig binding : bindings) {
