@@ -13,7 +13,7 @@
 </thead><tbody>
 <tr>
 	<td>setTimeout</td>
-	<td>120000</td>
+	<td>60000</td>
 	<td></td>
 </tr>
 <tr>
@@ -98,7 +98,7 @@
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>certificateForm:j_id246</td>
+	<td>//input[@value='Generate Certificate']</td>
 	<td></td>
 </tr>
 <tr>
@@ -118,7 +118,7 @@
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>certificateForm:j_id246</td>
+	<td>//input[@value='Generate Certificate']</td>
 	<td></td>
 </tr>
 <tr>

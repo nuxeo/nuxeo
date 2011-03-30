@@ -78,8 +78,13 @@
 	<td></td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
-	<td>link=Log out</td>
+	<td>verifyTextPresent</td>
+	<td>original.pdf</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/nuxeo/logout</td>
 	<td></td>
 </tr>
 </tbody></table>
