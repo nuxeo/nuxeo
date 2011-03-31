@@ -65,7 +65,7 @@ public class DocumentPageProviderOperation {
     protected String lang = "NXQL";
 
     @Param(name = "page", required = false)
-    protected Integer page = new Integer(0);
+    protected Integer page = 0;
 
     @Param(name = "pageSize", required = false)
     protected Integer pageSize;
@@ -118,7 +118,7 @@ public class DocumentPageProviderOperation {
 
         Long targetPageSize = null;
         if (pageSize != null) {
-            targetPageSize = new Long(pageSize);
+            targetPageSize = (long) pageSize;
         }
 
         if (query == null
@@ -132,13 +132,13 @@ public class DocumentPageProviderOperation {
             desc.setPattern(query);
             return new PaginableDocumentModelListImpl(
                     (PageProvider<DocumentModel>) pps.getPageProvider("", desc,
-                            sortInfos, targetPageSize, new Long(page), props,
+                            sortInfos, targetPageSize, (long) page, props,
                             parameters));
         } else {
             return new PaginableDocumentModelListImpl(
                     (PageProvider<DocumentModel>) pps.getPageProvider(
-                            providerName, sortInfos, targetPageSize, new Long(
-                                    page), props, parameters));
+                            providerName, sortInfos, targetPageSize,
+                            (long) page, props, parameters));
         }
 
     }
