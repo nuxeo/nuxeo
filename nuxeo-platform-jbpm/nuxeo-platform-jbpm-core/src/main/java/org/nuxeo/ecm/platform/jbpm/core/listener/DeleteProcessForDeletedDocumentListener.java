@@ -60,7 +60,7 @@ public class DeleteProcessForDeletedDocumentListener implements EventListener {
                     dm, principal, null);
             for (ProcessInstance process : processes) {
                 getJbpmService().deleteProcessInstance(principal,
-                        new Long(process.getId()));
+                        Long.valueOf(process.getId()));
             }
         }
     }

@@ -476,13 +476,13 @@ public class JbpmServiceImpl implements JbpmService {
                     eagerLoadTaskInstance(ti);
                     result.add(ti);
                 }
-            } else if (!donePi.contains(new Long(pi.getId()))) {
+            } else if (!donePi.contains(Long.valueOf(pi.getId()))) {
                 // process instance hasn't been checked yet
                 String docId = (String) pi.getContextInstance().getVariable(
                         JbpmService.VariableName.documentId.name());
                 String repoId = (String) pi.getContextInstance().getVariable(
                         JbpmService.VariableName.documentRepositoryName.name());
-                Long pid = new Long(pi.getId());
+                Long pid = Long.valueOf(pi.getId());
                 donePi.add(pid);
                 // check if it uses our document, and if so, add it to the list
                 if (docId.equals(dm.getId())
@@ -495,7 +495,7 @@ public class JbpmServiceImpl implements JbpmService {
                 }
             } else {
                 // we have checked this process instance
-                if (useDocument.contains(new Long(pi.getId()))) {
+                if (useDocument.contains(Long.valueOf(pi.getId()))) {
                     // if it uses our document, add it to the list
                     eagerLoadTaskInstance(ti);
                     result.add(ti);

@@ -173,7 +173,7 @@ public class JbpmTaskServiceImpl implements JbpmTaskService {
             // set variable on task directly too
             task.setVariable(JbpmService.TaskVariableName.validated.name(),
                     String.valueOf(isValidated));
-            jbpmService.endTask(new Long(task.getId()), null, taskVariables,
+            jbpmService.endTask(Long.valueOf(task.getId()), null, taskVariables,
                     null, null, principal);
 
             // notify

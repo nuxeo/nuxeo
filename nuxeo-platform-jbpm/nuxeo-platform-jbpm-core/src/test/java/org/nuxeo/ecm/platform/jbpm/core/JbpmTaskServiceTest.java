@@ -197,7 +197,7 @@ public class JbpmTaskServiceTest extends RepositoryOSGITestCase {
         assertEquals(0, tasks.size());
 
         // retrieve the task another way
-        final Long taskId = new Long(task.getId());
+        final Long taskId = Long.valueOf(task.getId());
         task = getTask(taskId);
         assertNotNull(task);
         assertEquals("Test Task Name", task.getName());
@@ -334,7 +334,7 @@ public class JbpmTaskServiceTest extends RepositoryOSGITestCase {
         assertEquals(1, tasks.size());
 
         // retrieve the task another way
-        final Long taskId = new Long(task1.getId());
+        final Long taskId = Long.valueOf(task1.getId());
         task1 = getTask(taskId);
         assertNotNull(task1);
         assertEquals("Test Task Name", task1.getName());

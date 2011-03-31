@@ -170,7 +170,7 @@ public abstract class AbstractJbpmHandlerHelper implements ActionHandler,
     }
 
     protected String getACLName() {
-        Long pid = new Long(executionContext.getProcessInstance().getId());
+        Long pid = Long.valueOf(executionContext.getProcessInstance().getId());
         return getProcessACLName(pid);
     }
 

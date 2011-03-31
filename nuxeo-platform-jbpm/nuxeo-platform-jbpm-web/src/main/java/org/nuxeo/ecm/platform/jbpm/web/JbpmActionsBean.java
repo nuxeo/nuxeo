@@ -171,7 +171,7 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
                 if (pi != null) {
                     // check if user has a current task in this workflow
                     List<TaskInstance> tasks = jbpmService.getTaskInstances(
-                            new Long(currentProcess.getId()), null, null);
+                            Long.valueOf(currentProcess.getId()), null, null);
                     if (tasks != null && !tasks.isEmpty()) {
                         JbpmHelper helper = new JbpmHelper();
                         NuxeoPrincipal pal = currentUser;
@@ -282,9 +282,9 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
             currentTasks = new ArrayList<TaskInstance>();
             ProcessInstance currentProcess = getCurrentProcess();
             if (currentProcess != null) {
-                currentTasks.addAll(jbpmService.getTaskInstances(new Long(
-                        currentProcess.getId()), null, new TaskListFilter(
-                        taskNames)));
+                currentTasks.addAll(jbpmService.getTaskInstances(
+                        Long.valueOf(currentProcess.getId()), null,
+                        new TaskListFilter(taskNames)));
                 Collections.sort(currentTasks, new TaskCreateDateComparator());
             }
         }
@@ -321,7 +321,7 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
 
     public void toggleShowAddVirtualTaskForm(ActionEvent event)
             throws ClientException {
-        showAddVirtualTaskForm = new Boolean(!getShowAddVirtualTaskForm());
+        showAddVirtualTaskForm = Boolean.valueOf(!getShowAddVirtualTaskForm());
     }
 
     public VirtualTaskInstance getNewVirtualTask() {
@@ -371,7 +371,7 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
     }
 
     public String changeVirtualTaskModification() {
-        formInEditMode = new Boolean(!formInEditMode.booleanValue());
+        formInEditMode = Boolean.valueOf(!formInEditMode.booleanValue());
         if (!Boolean.TRUE.equals(formInEditMode)) {
             resetCurrentData();
         }
@@ -490,7 +490,7 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
             ProcessInstance pi = getCurrentProcess();
             if (pi != null) {
                 List<TaskInstance> tasks = jbpmService.getTaskInstances(
-                        new Long(currentProcess.getId()), null,
+                        Long.valueOf(currentProcess.getId()), null,
                         new TaskListFilter(taskName));
                 if (tasks != null && !tasks.isEmpty()) {
                     // take first one found
@@ -528,8 +528,8 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
                     navigationContext.getCurrentDocument());
             transientVariables.put(JbpmService.VariableName.principal.name(),
                     currentUser);
-            jbpmService.endTask(new Long(startTask.getId()), null, null, null,
-                    transientVariables, currentUser);
+            jbpmService.endTask(Long.valueOf(startTask.getId()), null, null,
+                    null, transientVariables, currentUser);
             documentManager.save(); // process invalidations from handlers'
             // sessions
             resetCurrentData();
@@ -550,7 +550,7 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
             Map<String, Serializable> taskVariables = new HashMap<String, Serializable>();
             taskVariables.put(JbpmService.TaskVariableName.validated.name(),
                     Boolean.TRUE);
-            jbpmService.endTask(new Long(taskInstance.getId()), transition,
+            jbpmService.endTask(Long.valueOf(taskInstance.getId()), transition,
                     taskVariables, null, getTransientVariables(), currentUser);
             documentManager.save(); // process invalidations from handlers'
             // sessions
@@ -584,7 +584,7 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
             Map<String, Serializable> taskVariables = new HashMap<String, Serializable>();
             taskVariables.put(JbpmService.TaskVariableName.validated.name(),
                     Boolean.FALSE);
-            jbpmService.endTask(new Long(taskInstance.getId()), transition,
+            jbpmService.endTask(Long.valueOf(taskInstance.getId()), transition,
                     taskVariables, null, getTransientVariables(), currentUser);
             documentManager.save(); // process invalidations from handlers'
             // sessions
@@ -695,7 +695,7 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
         ProcessInstance currentProcess = getCurrentProcess();
         if (currentProcess != null) {
             // remove wf acls
-            Long pid = new Long(currentProcess.getId());
+            Long pid = Long.valueOf(currentProcess.getId());
             DocumentModel currentDoc = navigationContext.getCurrentDocument();
             if (currentDoc != null) {
                 UnrestrictedAbandon runner = new UnrestrictedAbandon(
@@ -726,7 +726,7 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
         ProcessInstance currentProcess = getCurrentProcess();
         if (currentProcess != null && getCanManageProcess()) {
             // remove wf acls
-            Long pid = new Long(currentProcess.getId());
+            Long pid = Long.valueOf(currentProcess.getId());
             DocumentModel currentDoc = navigationContext.getCurrentDocument();
             if (currentDoc != null) {
                 UnrestrictedAbandon runner = new UnrestrictedAbandon(

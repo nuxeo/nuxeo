@@ -114,7 +114,7 @@ public class JbpmServiceTest extends RepositoryOSGITestCase {
         ProcessInstance pd = service.createProcessInstance(administrator,
                 "review_parallel", dm, Collections.singletonMap("participants",
                         (Serializable) participants), null);
-        Long pdId = new Long(pd.getId());
+        Long pdId = Long.valueOf(pd.getId());
         assertNotNull(pd);
         assertEquals(pd.getContextInstance().getVariable(
                 JbpmService.VariableName.initiator.name()),
@@ -161,7 +161,7 @@ public class JbpmServiceTest extends RepositoryOSGITestCase {
         tasks = service.getCurrentTaskInstances(administrator, null);
         assertEquals(0, tasks.size());
 
-        service.deleteProcessInstance(administrator, new Long(pd.getId()));
+        service.deleteProcessInstance(administrator, Long.valueOf(pd.getId()));
         pd = service.getProcessInstance(pdId);
         assertNull(pd);
 
@@ -193,7 +193,7 @@ public class JbpmServiceTest extends RepositoryOSGITestCase {
                         (Serializable) participants), null);
         List<TaskInstance> tasks = service.getTaskInstances(dm, administrator,
                 null);
-        service.endTask(new Long(tasks.get(0).getId()), null, null, null, null,
+        service.endTask(Long.valueOf(tasks.get(0).getId()), null, null, null, null,
                 null);
         // tasks.get(0).end();
         tasks = service.getTaskInstances(dm, administrator, null);
@@ -225,7 +225,7 @@ public class JbpmServiceTest extends RepositoryOSGITestCase {
         // create process instance
         ProcessInstance pi = service.createProcessInstance(administrator,
                 "review_parallel", dm, null, null);
-        Long pid = new Long(pi.getId());
+        Long pid = Long.valueOf(pi.getId());
         // edit
         Map<String, Object> variables = new HashMap<String, Object>();
         variables.put("foo", "bar");

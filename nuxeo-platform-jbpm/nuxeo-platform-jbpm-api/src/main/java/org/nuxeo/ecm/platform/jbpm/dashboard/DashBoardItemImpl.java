@@ -61,7 +61,7 @@ public class DashBoardItemImpl implements DashBoardItem {
     public DashBoardItemImpl(TaskInstance task, DocumentModel document) {
         this.task = task;
         this.document = document;
-        id = new Long(task.getId());
+        id = Long.valueOf(task.getId());
         name = task.getName();
         description = task.getDescription();
         dueDate = task.getDueDate();
