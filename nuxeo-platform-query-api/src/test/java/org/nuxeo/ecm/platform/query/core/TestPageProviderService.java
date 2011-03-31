@@ -17,7 +17,6 @@
 package org.nuxeo.ecm.platform.query.core;
 
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -36,6 +35,7 @@ import org.nuxeo.runtime.api.Framework;
 public class TestPageProviderService extends SQLRepositoryTestCase {
 
     private static final String CURRENT_DOCUMENT_CHILDREN = "CURRENT_DOCUMENT_CHILDREN";
+
     private static final String FOO = "foo";
 
     @Override
@@ -43,7 +43,7 @@ public class TestPageProviderService extends SQLRepositoryTestCase {
         super.setUp();
         openSession();
     }
-    
+
     @Override
     protected void deployRepositoryContrib() throws Exception {
         super.deployRepositoryContrib();
@@ -71,10 +71,12 @@ public class TestPageProviderService extends SQLRepositoryTestCase {
 
         PageProviderDefinition ppd = pps.getPageProviderDefinition(CURRENT_DOCUMENT_CHILDREN);
         ppd.setPattern("SELECT * FROM Document");
-        HashMap<String,Serializable> props = new HashMap<String,Serializable>();
-        props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (AbstractSession)session);
-        PageProvider<?> pp = pps.getPageProvider(CURRENT_DOCUMENT_CHILDREN, ppd, Collections.EMPTY_LIST, 1L, 0L, props);
-        
+        HashMap<String, Serializable> props = new HashMap<String, Serializable>();
+        props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY,
+                (AbstractSession) session);
+        PageProvider<?> pp = pps.getPageProvider(CURRENT_DOCUMENT_CHILDREN,
+                ppd, null, Long.valueOf(1), Long.valueOf(0), props);
+
         assertNotNull(pp);
         List<?> p = pp.getCurrentPage();
         assertNotNull(p);
