@@ -34,7 +34,7 @@
   <script src="${specDirectoryUrl}default-documentlist-display.js"></script>
 
   <script>
-   var prefs = new _IG_Prefs(__MODULE_ID__);
+   var prefs = new gadgets.Prefs();
 
    // configure Automation REST call
    var NXRequestParams={ operationId : 'Document.PageProvider',
@@ -104,7 +104,7 @@
 
   </script>
   </head>
-   <body>
+  <body>
 
    <div class="tools">
      <div id="searchBox" style="display:none">

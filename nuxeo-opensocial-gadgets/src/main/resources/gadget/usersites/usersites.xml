@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Module>
-  <ModulePrefs title="User sites" category="business" render_inline="required" scrolling="false" author="Ian Smith" directory_title="User Sites" author_aboutme="nuxeo" singleton="false">
-      <Require feature="opensocial-0.8" />
-      <Require feature="dynamic-height" />
-      <Require feature="setprefs" />
-      <Require feature="settitle" />
+  <ModulePrefs title="User sites" category="business"  render_inline="required"
+    scrolling="false" author="Thierry Delprat" directory_title="User Sites"
+    author_aboutme="nuxeo" singleton="false"
+    thumbnail="${clientSideBaseUrl}site/gadgets/usersites/documents-thumb.png"
+    screenshot="${clientSideBaseUrl}site/gadgets/usersites/documents.png">
+    <Require feature="setprefs"/>
+    <Require feature="settitle" />
+    <#include "dynamic-translations.ftl"/>
+    <Require feature="dynamic-height" />
+    <#include "default-oauth-prefs.ftl"/>
   </ModulePrefs>
   <UserPref name="title" display_name="Title" required="false" default_value="My Sites"/>
 
@@ -14,28 +19,51 @@
   <head>
     <link rel="stylesheet" type="text/css" href="${specDirectoryUrl}gadget-common.css"/>
     <link rel="stylesheet" type="text/css" href="${specDirectoryUrl}documentlists.css"/>
-    <script>
-       var QM_Name="USER_SITES";
-       var testMode=false;
-       var requestBaseUrl='${serverSideBaseUrl}';
+
+    <!-- insert JS Context -->
+    ${jsContext}
+
+    <script src="${specDirectoryUrl}default-automation-request.js"></script>
+    <script src="${specDirectoryUrl}default-documentlist-display.js"></script>
+    <script src="${specDirectoryUrl}context-management.js"></script>
+    <script type="text/javascript">
+      var prefs = new gadgets.Prefs();
+
+      var requestScope = getTargetContextPath();
+      // configure Automation REST call
+      var NXRequestParams = {
+        operationId: 'Document.PageProvider',
+        operationParams: {
+          providerName: 'USER_SITES',
+          pageSize: 5,
+          queryParams: requestScope + '/, ' + requestScope + '/templates/'
+        },
+        operationContext: {},
+        operationDocumentProperties: "common,dublincore",
+        entityType: 'documents',
+        usePagination: true,
+        displayMethod: displayDocumentList,
+        displayColumns: [
+          {type: 'builtin', field: 'icon'},
+          {type: 'builtin', field: 'titleWithLink', label: '__MSG_label.dublincore.title__'},
+          {type: 'date', field: 'dc:modified', label: '__MSG_label.dublincore.modified__'},
+          {type: 'text', field: 'dc:creator', label: '__MSG_label.dublincore.creator__'}
+        ]
+      };
+
+      // execute automation request onload
+      gadgets.util.registerOnLoadHandler(function() {
+       doAutomationRequest(NXRequestParams);
+      });
     </script>
-    <script type="text/javascript" language="javascript" src="documentlists.js"></script>
   </head>
   <body>
-    <div id="nxDocumentList">
-      <div class="pageNavigationControls tools">
-      <input type="image" src="${clientSideBaseUrl}icons/action_page_rewind.gif" onclick="firstPage()"/>
-      <input type="image" src="${clientSideBaseUrl}icons/action_page_previous.gif" onclick="prevPage()"/>
-      <span class="currentPageStatus" id="nxDocumentListPage"></span>
-      <input type="image" src="${clientSideBaseUrl}icons/action_page_next.gif" onclick="nextPage()"/>
-      <input type="image" src="${clientSideBaseUrl}icons/action_page_fastforward.gif"onclick="lastPage()"/>
-      </div>
-      <div id="content">
-        <img src="${clientSideBaseUrl}img/standart_waiter.gif">
-      </div>
-    </div>
-   </body>
+    <div id="content">
+      <#include "default-documentlist-layout.ftl"/>
+      <#include "default-request-controls.ftl"/>
+     </div>
+  </body>
 </html>
-     ]]>
+]]>
   </Content>
 </Module>

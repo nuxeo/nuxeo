@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Module>
-  <ModulePrefs title="Nuxeo User's workspaces"
-    description="List users workspaces for a given scope"
+  <ModulePrefs title="Last published documents"
+    description="List the last published documents accessible to the user"
     author="tdeprat" author_email="tdelprat@nuxeo.com">
     <Require feature="setprefs"/>
     <#include "dynamic-translations.ftl"/>
@@ -33,9 +33,9 @@
     var NXRequestParams = {
       operationId: 'Document.PageProvider',
       operationParams: {
-        providerName: 'USER_WORKSPACES',
+        providerName: 'DOMAIN_PUBLISHED_DOCUMENTS',
         pageSize: 5,
-        queryParams: requestScope + '/, ' + requestScope + '/templates/'
+        queryParams: requestScope + '/'
       },
       operationContext: {},
       operationDocumentProperties: "common,dublincore",

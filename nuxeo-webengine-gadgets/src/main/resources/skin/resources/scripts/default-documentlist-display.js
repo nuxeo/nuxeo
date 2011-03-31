@@ -24,7 +24,7 @@ function tableStart(jsonObject, nxParams) {
         lastPage(nxParams)
     };
 
-    if (nxParams.usePagination) {
+    if (nxParams.usePagination && maxPage > 1) {
         _gel('nxDocumentListPage').innerHTML = (currentPage + 1) + "/" + maxPage;
     } else {
         console.log("hide nav controls");

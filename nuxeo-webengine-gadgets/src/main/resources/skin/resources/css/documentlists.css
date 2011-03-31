@@ -1,5 +1,5 @@
 
-.pageNavigationControls span {
+#pageNavigationControls span {
 color:#757575;
 font-size:13px;
 font-weight:bold;
@@ -7,7 +7,7 @@ margin:10px 5px;
 vertical-align:top;
 }
 
-.pageNavigationControls {
+#pageNavigationControls {
 border-bottom:1px solid #3399FF;
 margin:0px;
 padding:2px 0px 0px;
@@ -15,7 +15,7 @@ text-align:center;
 margin-bottom: 5px;
 }
 
-.pageNavigationControls input {
+#pageNavigationControls input {
 margin-left:5px;
 }
 

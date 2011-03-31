@@ -24,24 +24,39 @@
     </internalGadget>
     <internalGadget name="userworkspaces">
       <mountPoint>/userworkspaces</mountPoint>
-      <directory>userworkspaces</directory>
       <entryPoint>userworkspaces.xml</entryPoint>
       <category>Nuxeo</category>
       <icon>workspace_64.png</icon>
     </internalGadget>
     <internalGadget name="userdocuments">
       <mountPoint>/userdocuments</mountPoint>
-      <directory>userdocuments</directory>
       <entryPoint>userdocuments.xml</entryPoint>
       <category>Nuxeo</category>
       <icon>note_64.png</icon>
     </internalGadget>
     <internalGadget name="usersites">
       <mountPoint>/usersites</mountPoint>
-      <directory>usersites</directory>
       <entryPoint>usersites.xml</entryPoint>
       <category>Nuxeo</category>
       <icon>website_64.png</icon>
+    </internalGadget>
+    <internalGadget name="lastpublisheddocuments">
+      <mountPoint>/lastpublisheddocuments</mountPoint>
+      <entryPoint>lastpublisheddocuments.xml</entryPoint>
+      <category>Nuxeo</category>
+      <icon>workspace_64.png</icon>
+    </internalGadget>
+    <internalGadget name="lastdocuments">
+      <mountPoint>/lastdocuments</mountPoint>
+      <entryPoint>lastdocuments.xml</entryPoint>
+      <category>Nuxeo</category>
+      <icon>workspace_64.png</icon>
+    </internalGadget>
+    <internalGadget name="userdeleteddocuments">
+      <mountPoint>/userdeleteddocuments</mountPoint>
+      <entryPoint>userdeleteddocuments.xml</entryPoint>
+      <category>Nuxeo</category>
+      <icon>workspace_64.png</icon>
     </internalGadget>
     <internalGadget name="nuxeoworkspaces" disabled="false">
       <mountPoint>/nuxeoworkspaces</mountPoint>
