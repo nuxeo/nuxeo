@@ -83,6 +83,12 @@ public class JbpmServiceTest extends RepositoryOSGITestCase {
         assertNotNull(user1);
     }
 
+    @Override
+    public void tearDown() throws Exception {
+        super.tearDown();
+        JbpmServiceImpl.contexts.set(null);
+    }
+
     public void testTypeFilter() {
         Map<String, List<String>> typeFilters = service.getTypeFilterConfiguration();
         assertEquals(2, typeFilters.size());
@@ -143,8 +149,6 @@ public class JbpmServiceTest extends RepositoryOSGITestCase {
         assertEquals(1, tasks.size());
 
         tasks = service.getCurrentTaskInstances(administrator, null);
-        tasks2 = service.getCurrentTaskInstances(administratorList, null);
-        assertEquals(tasks.size(), tasks.size());
         assertEquals(1, tasks.size());
         final long cancelledTi = tasks.get(0).getId();
         service.executeJbpmOperation(new JbpmOperation() {
@@ -157,7 +161,6 @@ public class JbpmServiceTest extends RepositoryOSGITestCase {
                 return null;
             }
         });
-        // tasks.get(0).cancel();
         tasks = service.getCurrentTaskInstances(administrator, null);
         assertEquals(0, tasks.size());
 
@@ -193,8 +196,8 @@ public class JbpmServiceTest extends RepositoryOSGITestCase {
                         (Serializable) participants), null);
         List<TaskInstance> tasks = service.getTaskInstances(dm, administrator,
                 null);
-        service.endTask(Long.valueOf(tasks.get(0).getId()), null, null, null, null,
-                null);
+        service.endTask(Long.valueOf(tasks.get(0).getId()), null, null, null,
+                null, null);
         // tasks.get(0).end();
         tasks = service.getTaskInstances(dm, administrator, null);
         assertNotNull(tasks);
@@ -247,12 +250,6 @@ public class JbpmServiceTest extends RepositoryOSGITestCase {
         session.saveDocument(doc);
         session.save();
         return doc;
-    }
-
-    @Override
-    public void tearDown() throws Exception {
-        super.tearDown();
-        JbpmServiceImpl.contexts.set(null);
     }
 
 }

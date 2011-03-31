@@ -27,16 +27,16 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 
 /**
- * Dashboard item.
+ * Item holding information about a Document with a task attached to it.
+ * <p>
+ * Aimed at being used in Dashboard fragments.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
 public interface DashBoardItem extends Serializable {
 
     /**
-     * Returns the identifier of the dash board item.
-     * <p>
-     * Workflow task instance right now.
+     * Returns the identifier of the workflow task instance.
      *
      * @since 5.2.M4 uses the long identifier instead of String equivalent
      * @return the identifier of the dash board item.
@@ -53,7 +53,6 @@ public interface DashBoardItem extends Serializable {
     /**
      * Returns the document reference on which the item is bound.
      *
-     * @see org.nuxeo.ecm.platform.workflow.document.api.relation.WorkflowDocumentRelationManager
      * @return a document reference instance
      */
     DocumentRef getDocRef();
