@@ -45,6 +45,7 @@
     <module>nuxeo-opensocial</module>
     <module>nuxeo-user-center</module>
     <module>nuxeo-platform-shibboleth-groups-web</module>
+    <module>nuxeo-platform-user-dashboard-compat</module>
   </modules>
 
   <repositories>
