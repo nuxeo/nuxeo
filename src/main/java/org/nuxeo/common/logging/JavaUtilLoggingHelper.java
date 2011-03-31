@@ -58,7 +58,7 @@ public class JavaUtilLoggingHelper {
      *
      * @since 5.4.2
      */
-    public static synchronized void redirectToApacheCommons(Level thresold) {
+    public static synchronized void redirectToApacheCommons(Level threshold) {
         if (activeHandler != null) {
             return;
         }
@@ -68,11 +68,11 @@ public class JavaUtilLoggingHelper {
                 rootLogger.removeHandler(handler);
             }
             activeHandler = new LogHandler();
-            activeHandler.setLevel(thresold);
+            activeHandler.setLevel(threshold);
             rootLogger.addHandler(activeHandler);
-            rootLogger.setLevel(thresold);
-            log.info("Redirecting java.util.logging to Apache Commons Logging, thresold level is "
-                    + thresold.toString());
+            rootLogger.setLevel(threshold);
+            log.info("Redirecting java.util.logging to Apache Commons Logging, threshold is "
+                    + threshold.toString());
         } catch (Exception e) {
             log.error("Handler setup failed", e);
         }
