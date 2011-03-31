@@ -27,10 +27,6 @@
       </f:facet>
         <h:outputText value="#{logEntry.eventDate}" converter="TimeConverter"/>
       </h:column>
-   <h:column>
-     <f:facet name="header"><h:outputText value="title"/></f:facet>
-      <h:outputText value="#{logEntry.extendedInfos['title']}"/>
-   </h:column>
       <h:column>
         <f:facet name="header">
           <h:outputText value="#{messages['label.username']}" />
