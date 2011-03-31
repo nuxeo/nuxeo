@@ -244,12 +244,16 @@ log_misc() {
     $JAVA_HOME/bin/java -version >> $file 2>&1
     echo "## jps -v" >> $file
     $JAVA_HOME/bin/jps -v >> $file
+    echo "## ps aux | grep java" >> $file
+    ps aux | grep java > $file
     if checkalive; then
 	NXPID=`cat "$PID"`
 	echo "## jmap -v" >> $file
 	$JAVA_HOME/bin/jmap -heap $NXPID >> $file 2> /dev/null
 	echo "## jstat -gc" >> $file
 	$JAVA_HOME/bin/jstat -gc $NXPID >> $file
+	echo "## jstat counter" >> $file
+	$JAVA_HOME/bin/jstat -J-Djstat.showUnsupported=true -snap $NXPID >> $file
 	if [ -e $HERE/twiddle.sh ]; then
 	    echo "## twiddle.sh get 'jboss.system:type=ServerInfo'" >> $file
 	    $HERE/twiddle.sh get "jboss.system:type=ServerInfo" >> $file
