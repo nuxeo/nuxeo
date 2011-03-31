@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.logging.Level;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -49,6 +50,8 @@ public abstract class AbstractRuntimeService implements RuntimeService {
      * is true (JUL will be redirected)
      */
     public static final String REDIRECT_JUL = "org.nuxeo.runtime.redirectJUL";
+
+    public static final String REDIRECT_JUL_THRESHOLD = "org.nuxeo.runtime.redirectJUL.thresold";
 
     private static final Log log = LogFactory.getLog(RuntimeService.class);
 
@@ -105,7 +108,20 @@ public abstract class AbstractRuntimeService implements RuntimeService {
     public synchronized void start() throws Exception {
         if (!isStarted) {
             if (Boolean.parseBoolean(getProperty(REDIRECT_JUL, "true"))) {
-                JavaUtilLoggingHelper.redirectToApacheCommons();
+                String thresoldStr = getProperty(REDIRECT_JUL_THRESHOLD, "INFO").toUpperCase();
+                Level thresold = Level.INFO;
+                if ("FINE".equals(thresoldStr)) {
+                    thresold = Level.FINE;
+                } else if ("ALL".equals(thresoldStr)) {
+                    thresold = Level.ALL;
+                } else if ("OFF".equals(thresoldStr)) {
+                    thresold = Level.OFF;
+                } else if ("WARN".equals(thresoldStr)) {
+                    thresold = Level.WARNING;
+                } else if ("SEVERE".equals(thresoldStr)) {
+                    thresold = Level.SEVERE;
+                }
+                JavaUtilLoggingHelper.redirectToApacheCommons(thresold);
             }
             log.info("Starting Nuxeo Runtime service " + getName()
                     + "; version: " + getVersion());
