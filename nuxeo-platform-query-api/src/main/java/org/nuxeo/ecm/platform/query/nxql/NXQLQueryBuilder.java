@@ -402,14 +402,21 @@ public class NXQLQueryBuilder {
      * @param value
      * @return the serialized statement
      */
-    protected static String serializeFullText(String value) {
+
+    public static final String SPECIAL_CHARACTERS_REGEXP = "[!-/:-@{-}`^~]";
+
+    public static String serializeFullText(String value) {
         String res = "";
+        value = value.replaceAll(SPECIAL_CHARACTERS_REGEXP, " ");
+        value = value.trim();
         String[] tokens = value.split(" ");
         for (int i = 0; i < tokens.length; i++) {
-            if (i != 0) {
-                res += " ";
+            if (tokens[i].length() > 0) {
+                if (i > 0) {
+                    res += " ";
+                }
+                res += "+" + tokens[i];
             }
-            res += "+" + tokens[i];
         }
         return "= " + prepareStringLiteral(res, true, true);
     }
