@@ -38,7 +38,6 @@ import org.jbpm.graph.exe.ProcessInstance;
 import org.jbpm.persistence.db.DbPersistenceServiceFactory;
 import org.jbpm.svc.Services;
 import org.jbpm.taskmgmt.exe.TaskInstance;
-import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -379,8 +378,8 @@ public class JbpmServiceImpl implements JbpmService {
                         "docId", dm.getId()).setParameter("repoId",
                         dm.getRepositoryName()).list();
                 for (ProcessInstance pi : list) {
-                    if (getPermission(pi, JbpmSecurityPolicy.Action.read, dm,
-                            user)) {
+                    if (Boolean.TRUE.equals(getPermission(pi,
+                            JbpmSecurityPolicy.Action.read, dm, user))) {
                         pi.getProcessDefinition();
                         result.add(pi);
                         pi.getContextInstance().getVariables().size();
@@ -477,25 +476,26 @@ public class JbpmServiceImpl implements JbpmService {
                     eagerLoadTaskInstance(ti);
                     result.add(ti);
                 }
-            } else if (!donePi.contains(pi.getId())) {
+            } else if (!donePi.contains(new Long(pi.getId()))) {
                 // process instance hasn't been checked yet
                 String docId = (String) pi.getContextInstance().getVariable(
                         JbpmService.VariableName.documentId.name());
                 String repoId = (String) pi.getContextInstance().getVariable(
                         JbpmService.VariableName.documentRepositoryName.name());
-                donePi.add(pi.getId());
+                Long pid = new Long(pi.getId());
+                donePi.add(pid);
                 // check if it uses our document, and if so, add it to the list
                 if (docId.equals(dm.getId())
                         && repoId.equals(dm.getRepositoryName())) {
-                    useDocument.add(pi.getId());
+                    useDocument.add(pid);
                 }
-                if (useDocument.contains(pi.getId())) {
+                if (useDocument.contains(pid)) {
                     eagerLoadTaskInstance(ti);
                     result.add(ti);
                 }
             } else {
                 // we have checked this process instance
-                if (useDocument.contains(pi.getId())) {
+                if (useDocument.contains(new Long(pi.getId()))) {
                     // if it uses our document, add it to the list
                     eagerLoadTaskInstance(ti);
                     result.add(ti);
@@ -527,7 +527,7 @@ public class JbpmServiceImpl implements JbpmService {
 
             public Serializable run(JbpmContext context)
                     throws NuxeoJbpmException {
-                context.getProcessInstance(processId).end();
+                context.getProcessInstance(processId.longValue()).end();
                 return null;
             }
         });
@@ -547,7 +547,7 @@ public class JbpmServiceImpl implements JbpmService {
                     context.setActorId(NuxeoPrincipal.PREFIX
                             + principal.getName());
                 }
-                TaskInstance ti = context.getTaskInstance(taskInstanceId);
+                TaskInstance ti = context.getTaskInstance(taskInstanceId.longValue());
                 if (taskVariables != null) {
                     for (String k : taskVariables.keySet()) {
                         ti.setVariableLocally(k, taskVariables.get(k));
@@ -615,7 +615,8 @@ public class JbpmServiceImpl implements JbpmService {
                             + principal.getName());
                 }
                 // jbpm code returns an array list.
-                return (Serializable) context.getTaskInstance(taskInstanceId).getAvailableTransitions();
+                return (Serializable) context.getTaskInstance(
+                        taskInstanceId.longValue()).getAvailableTransitions();
             }
 
         });
@@ -628,7 +629,7 @@ public class JbpmServiceImpl implements JbpmService {
 
             public Serializable run(JbpmContext context)
                     throws NuxeoJbpmException {
-                ProcessInstance pi = context.getProcessInstance(processInstanceId);
+                ProcessInstance pi = context.getProcessInstance(processInstanceId.longValue());
                 ;
                 eagerLoadProcessInstances(Collections.singletonList(pi));
                 return pi;
@@ -650,7 +651,7 @@ public class JbpmServiceImpl implements JbpmService {
                             + principal.getName());
                 }
                 Collection<TaskInstance> tis = context.getProcessInstance(
-                        processInstanceId).getTaskMgmtInstance().getTaskInstances();
+                        processInstanceId.longValue()).getTaskMgmtInstance().getTaskInstances();
                 ArrayList<TaskInstance> result = new ArrayList<TaskInstance>();
                 for (TaskInstance ti : tis) {
                     eagerLoadTaskInstance(ti);
@@ -775,7 +776,7 @@ public class JbpmServiceImpl implements JbpmService {
                 if (principal != null) {
                     context.setActorId(principal.getName());
                 }
-                ProcessInstance pi = context.getProcessInstance(processId);
+                ProcessInstance pi = context.getProcessInstance(processId.longValue());
                 Collection<TaskInstance> tis = pi.getTaskMgmtInstance().getTaskInstances();
                 List<TaskInstance> toRemove = new ArrayList<TaskInstance>();
                 for (TaskInstance ti : tis) {

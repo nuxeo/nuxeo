@@ -45,15 +45,12 @@ public class TaskNotificationHandler extends AbstractJbpmHandlerHelper {
 
     private static final String DIRECTIVE_KEY = "directive";
 
-
     @Override
     public void execute(ExecutionContext executionContext) throws Exception {
         this.executionContext = executionContext;
         if (nuxeoHasStarted()) {
-            DocumentModel documentModel = (DocumentModel) getTransientVariable(
-                    JbpmService.VariableName.document.name());
-            NuxeoPrincipal principal = (NuxeoPrincipal) getTransientVariable(
-                    JbpmService.VariableName.principal.name());
+            DocumentModel documentModel = (DocumentModel) getTransientVariable(JbpmService.VariableName.document.name());
+            NuxeoPrincipal principal = (NuxeoPrincipal) getTransientVariable(JbpmService.VariableName.principal.name());
             if (documentModel == null) {
                 return;
             }
@@ -68,11 +65,14 @@ public class TaskNotificationHandler extends AbstractJbpmHandlerHelper {
                 }
                 DocumentEventContext ctx = new DocumentEventContext(
                         coreSession, principal, documentModel);
-                ctx.setProperty(NotificationConstants.RECIPIENTS_KEY, getRecipients());
-                ctx.setProperty(DocumentEventContext.COMMENT_PROPERTY_KEY, getComments());
+                ctx.setProperty(NotificationConstants.RECIPIENTS_KEY,
+                        getRecipients());
+                ctx.setProperty(DocumentEventContext.COMMENT_PROPERTY_KEY,
+                        getComments());
                 ctx.setProperty(DUE_DATE_KEY,
                         executionContext.getTaskInstance().getDueDate());
-                ctx.setProperty(DIRECTIVE_KEY,
+                ctx.setProperty(
+                        DIRECTIVE_KEY,
                         (Serializable) executionContext.getTaskInstance().getVariable(
                                 "directive"));
                 eventProducer.fireEvent(ctx.newEvent(JbpmEventNames.WORKFLOW_TASK_ASSIGNED));
@@ -82,19 +82,19 @@ public class TaskNotificationHandler extends AbstractJbpmHandlerHelper {
         }
     }
 
+    @SuppressWarnings("unchecked")
     protected String getComments() {
         List<Comment> comments = executionContext.getTaskInstance().getComments();
-        return comments == null ? null : comments.get(comments.size() - 1).getMessage();
+        return comments == null ? null
+                : comments.get(comments.size() - 1).getMessage();
     }
 
     protected String[] getRecipients() {
-        VirtualTaskInstance participant = (VirtualTaskInstance) getTransientVariable(
-                JbpmService.VariableName.participant.name());
+        VirtualTaskInstance participant = (VirtualTaskInstance) getTransientVariable(JbpmService.VariableName.participant.name());
         if (participant == null) {
             participant = (VirtualTaskInstance) executionContext.getContextInstance().getVariable(
                     JbpmService.VariableName.participant.name());
         }
-        return participant.getActors().toArray(
-                new String[] {});
+        return participant.getActors().toArray(new String[] {});
     }
 }

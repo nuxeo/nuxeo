@@ -34,12 +34,14 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
+import org.jbpm.graph.exe.ProcessInstance;
+import org.jbpm.taskmgmt.exe.TaskInstance;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.platform.jbpm.JbpmService;
 import org.nuxeo.ecm.platform.jbpm.JbpmEventNames;
+import org.nuxeo.ecm.platform.jbpm.JbpmService;
 import org.nuxeo.ecm.platform.jbpm.dashboard.DashBoardItem;
 import org.nuxeo.ecm.platform.jbpm.dashboard.DashBoardItemImpl;
 import org.nuxeo.ecm.platform.jbpm.dashboard.DocumentProcessItem;
@@ -47,17 +49,12 @@ import org.nuxeo.ecm.platform.jbpm.dashboard.DocumentProcessItemImpl;
 import org.nuxeo.ecm.platform.jbpm.dashboard.WorkflowDashBoard;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 
-import org.jbpm.graph.exe.ProcessInstance;
-import org.jbpm.taskmgmt.exe.TaskInstance;
-
 @Name("workflowDashBoardActions")
 @Scope(ScopeType.CONVERSATION)
 @Install(precedence = Install.FRAMEWORK)
-public class WorkflowDashBoardActions implements Serializable, WorkflowDashBoard {
+public class WorkflowDashBoardActions implements Serializable,
+        WorkflowDashBoard {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 1L;
 
     @In(create = true)
@@ -70,8 +67,7 @@ public class WorkflowDashBoardActions implements Serializable, WorkflowDashBoard
     @In(required = false)
     protected transient Principal currentUser;
 
-    private static final Log log = LogFactory
-            .getLog(WorkflowDashBoardActions.class);
+    private static final Log log = LogFactory.getLog(WorkflowDashBoardActions.class);
 
     public Collection<DashBoardItem> computeDashboardItems()
             throws ClientException {
@@ -88,7 +84,8 @@ public class WorkflowDashBoardActions implements Serializable, WorkflowDashBoard
                         }
                         DocumentModel doc = jbpmService.getDocumentModel(task,
                                 pal);
-                        if (doc != null && !LifeCycleConstants.DELETED_STATE.equals(doc.getCurrentLifeCycleState())) {
+                        if (doc != null
+                                && !LifeCycleConstants.DELETED_STATE.equals(doc.getCurrentLifeCycleState())) {
                             currentUserTasks.add(new DashBoardItemImpl(task,
                                     doc));
                         } else {
@@ -111,9 +108,8 @@ public class WorkflowDashBoardActions implements Serializable, WorkflowDashBoard
         if (currentUserProcesses == null) {
             currentUserProcesses = new ArrayList<DocumentProcessItem>();
             NuxeoPrincipal pal = (NuxeoPrincipal) currentUser;
-            List<ProcessInstance> processes = jbpmService
-                    .getCurrentProcessInstances((NuxeoPrincipal) currentUser,
-                            null);
+            List<ProcessInstance> processes = jbpmService.getCurrentProcessInstances(
+                    (NuxeoPrincipal) currentUser, null);
             if (processes != null) {
                 for (ProcessInstance process : processes) {
                     try {
@@ -122,10 +118,10 @@ public class WorkflowDashBoardActions implements Serializable, WorkflowDashBoard
                         }
                         DocumentModel doc = jbpmService.getDocumentModel(
                                 process, pal);
-                        if (doc != null && !LifeCycleConstants.DELETED_STATE.equals(doc.getCurrentLifeCycleState())) {
-                            currentUserProcesses
-                                    .add(new DocumentProcessItemImpl(process,
-                                            doc));
+                        if (doc != null
+                                && !LifeCycleConstants.DELETED_STATE.equals(doc.getCurrentLifeCycleState())) {
+                            currentUserProcesses.add(new DocumentProcessItemImpl(
+                                    process, doc));
                         } else {
                             log.warn(String.format(
                                     "User '%s' has a process of type '%s' on a "
@@ -141,7 +137,6 @@ public class WorkflowDashBoardActions implements Serializable, WorkflowDashBoard
         }
         return currentUserProcesses;
     }
-
 
     @Observer(value = { JbpmEventNames.WORKFLOW_ENDED,
             JbpmEventNames.WORKFLOW_NEW_STARTED,
@@ -159,7 +154,6 @@ public class WorkflowDashBoardActions implements Serializable, WorkflowDashBoard
     public void invalidateDocumentProcessItems() {
         currentUserProcesses = null;
     }
-
 
     @Observer(value = { JbpmEventNames.WORKFLOW_ENDED,
             JbpmEventNames.WORKFLOW_NEW_STARTED,
@@ -179,7 +173,6 @@ public class WorkflowDashBoardActions implements Serializable, WorkflowDashBoard
     public void invalidateDashboardItems() {
         currentUserTasks = null;
     }
-
 
     public String refreshDashboardItems() {
         currentUserTasks = null;

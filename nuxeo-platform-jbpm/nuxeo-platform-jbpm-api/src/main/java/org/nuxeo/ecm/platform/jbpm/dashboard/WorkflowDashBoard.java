@@ -25,8 +25,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 
 public interface WorkflowDashBoard {
 
-    Collection<DashBoardItem> computeDashboardItems()
-            throws ClientException;
+    Collection<DashBoardItem> computeDashboardItems() throws ClientException;
 
     Collection<DocumentProcessItem> computeDocumentProcessItems()
             throws ClientException;

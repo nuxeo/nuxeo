@@ -6,7 +6,6 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jbpm.graph.exe.ExecutionContext;
-import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -26,12 +25,13 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class SendEventActionHandler extends AbstractJbpmHandlerHelper {
 
+    private static final long serialVersionUID = 1L;
+
     protected static final String INITIATOR = "initiator";
 
     protected static final String PARTICIPANTS = "participants";
 
-    private static final Log log = LogFactory.getLog(
-            AbstractJbpmHandlerHelper.class);
+    private static final Log log = LogFactory.getLog(AbstractJbpmHandlerHelper.class);
 
     protected String eventName;
 
@@ -44,10 +44,8 @@ public class SendEventActionHandler extends AbstractJbpmHandlerHelper {
         assert recipients != null;
 
         if (nuxeoHasStarted()) {
-            DocumentModel documentModel = (DocumentModel) getTransientVariable(
-                    JbpmService.VariableName.document.name());
-            NuxeoPrincipal principal = (NuxeoPrincipal) getTransientVariable(
-                    JbpmService.VariableName.principal.name());
+            DocumentModel documentModel = (DocumentModel) getTransientVariable(JbpmService.VariableName.document.name());
+            NuxeoPrincipal principal = (NuxeoPrincipal) getTransientVariable(JbpmService.VariableName.principal.name());
             if (documentModel == null) {
                 return;
             }
@@ -55,8 +53,8 @@ public class SendEventActionHandler extends AbstractJbpmHandlerHelper {
             CoreSession coreSession = getCoreSession(principal);
             try {
                 EventProducer eventProducer = getEventProducerService();
-                DocumentEventContext ctx = new DocumentEventContext(coreSession,
-                        principal, documentModel);
+                DocumentEventContext ctx = new DocumentEventContext(
+                        coreSession, principal, documentModel);
                 ctx.setProperty("recipients", getRecipients());
                 eventProducer.fireEvent(ctx.newEvent(eventName));
             } finally {
@@ -76,19 +74,18 @@ public class SendEventActionHandler extends AbstractJbpmHandlerHelper {
     protected String[] getRecipients() {
         List<String> recipientsVal = new ArrayList<String>();
         if (recipients.equals(PARTICIPANTS)) {
-            VirtualTaskInstance participant = (VirtualTaskInstance) executionContext
-                .getContextInstance().getVariable(
+            VirtualTaskInstance participant = (VirtualTaskInstance) executionContext.getContextInstance().getVariable(
                     JbpmService.VariableName.participants.name());
             if (participant != null) {
                 recipientsVal.addAll(participant.getActors());
             }
         } else if (recipients.equals(INITIATOR)) {
-            String actorId = (String) executionContext.getContextInstance()
-                    .getVariable(JbpmService.VariableName.initiator.name());
+            String actorId = (String) executionContext.getContextInstance().getVariable(
+                    JbpmService.VariableName.initiator.name());
             recipientsVal.add(actorId);
         } else {
             log.info("Unknown recipient : " + recipients);
         }
-        return recipientsVal.toArray(new String[]{});
+        return recipientsVal.toArray(new String[] {});
     }
 }

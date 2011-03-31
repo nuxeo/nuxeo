@@ -45,7 +45,6 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author arussel
- *
  */
 public class JbpmServiceTest extends RepositoryOSGITestCase {
 
@@ -67,7 +66,8 @@ public class JbpmServiceTest extends RepositoryOSGITestCase {
         deployBundle("org.nuxeo.ecm.platform.usermanager");
         deployBundle("org.nuxeo.ecm.directory.types.contrib");
         deployBundle("org.nuxeo.ecm.directory.sql");
-        deployContrib("org.nuxeo.ecm.platform.jbpm.core.test", "OSGI-INF/jbpmService-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.jbpm.core.test",
+                "OSGI-INF/jbpmService-contrib.xml");
 
         deployBundle(JbpmUTConstants.CORE_BUNDLE_NAME);
         deployBundle(JbpmUTConstants.TESTING_BUNDLE_NAME);
@@ -114,7 +114,7 @@ public class JbpmServiceTest extends RepositoryOSGITestCase {
         ProcessInstance pd = service.createProcessInstance(administrator,
                 "review_parallel", dm, Collections.singletonMap("participants",
                         (Serializable) participants), null);
-        Long pdId = pd.getId();
+        Long pdId = new Long(pd.getId());
         assertNotNull(pd);
         assertEquals(pd.getContextInstance().getVariable(
                 JbpmService.VariableName.initiator.name()),
@@ -148,17 +148,20 @@ public class JbpmServiceTest extends RepositoryOSGITestCase {
         assertEquals(1, tasks.size());
         final long cancelledTi = tasks.get(0).getId();
         service.executeJbpmOperation(new JbpmOperation() {
-            public Serializable run(JbpmContext context) throws NuxeoJbpmException {
+            private static final long serialVersionUID = 1L;
+
+            public Serializable run(JbpmContext context)
+                    throws NuxeoJbpmException {
                 TaskInstance ti = context.getTaskInstance(cancelledTi);
                 ti.cancel();
                 return null;
             }
         });
-        //tasks.get(0).cancel();
+        // tasks.get(0).cancel();
         tasks = service.getCurrentTaskInstances(administrator, null);
         assertEquals(0, tasks.size());
 
-        service.deleteProcessInstance(administrator, pd.getId());
+        service.deleteProcessInstance(administrator, new Long(pd.getId()));
         pd = service.getProcessInstance(pdId);
         assertNull(pd);
 
@@ -190,8 +193,9 @@ public class JbpmServiceTest extends RepositoryOSGITestCase {
                         (Serializable) participants), null);
         List<TaskInstance> tasks = service.getTaskInstances(dm, administrator,
                 null);
-        service.endTask(tasks.get(0).getId(), null, null, null, null, null);
-        //tasks.get(0).end();
+        service.endTask(new Long(tasks.get(0).getId()), null, null, null, null,
+                null);
+        // tasks.get(0).end();
         tasks = service.getTaskInstances(dm, administrator, null);
         assertNotNull(tasks);
         assertEquals(0, tasks.size());
@@ -221,7 +225,7 @@ public class JbpmServiceTest extends RepositoryOSGITestCase {
         // create process instance
         ProcessInstance pi = service.createProcessInstance(administrator,
                 "review_parallel", dm, null, null);
-        Long pid = pi.getId();
+        Long pid = new Long(pi.getId());
         // edit
         Map<String, Object> variables = new HashMap<String, Object>();
         variables.put("foo", "bar");

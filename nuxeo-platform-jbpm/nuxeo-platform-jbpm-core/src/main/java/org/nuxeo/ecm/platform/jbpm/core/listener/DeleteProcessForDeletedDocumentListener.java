@@ -35,7 +35,6 @@ import org.nuxeo.runtime.api.Framework;
  * attached to a document that is being deleted.
  *
  * @author arussel
- *
  */
 public class DeleteProcessForDeletedDocumentListener implements EventListener {
     private JbpmService jbpmService;
@@ -61,7 +60,7 @@ public class DeleteProcessForDeletedDocumentListener implements EventListener {
                     dm, principal, null);
             for (ProcessInstance process : processes) {
                 getJbpmService().deleteProcessInstance(principal,
-                        process.getId());
+                        new Long(process.getId()));
             }
         }
     }

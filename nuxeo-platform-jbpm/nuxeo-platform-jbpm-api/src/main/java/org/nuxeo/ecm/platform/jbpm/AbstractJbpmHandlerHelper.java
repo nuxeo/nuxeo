@@ -44,7 +44,6 @@ import org.nuxeo.runtime.api.Framework;
  * Abstract Class providing helpers methods to manipulates document.
  *
  * @author arussel
- *
  */
 public abstract class AbstractJbpmHandlerHelper implements ActionHandler,
         AssignmentHandler, DecisionHandler, TaskControllerHandler {
@@ -171,7 +170,7 @@ public abstract class AbstractJbpmHandlerHelper implements ActionHandler,
     }
 
     protected String getACLName() {
-        Long pid = executionContext.getProcessInstance().getId();
+        Long pid = new Long(executionContext.getProcessInstance().getId());
         return getProcessACLName(pid);
     }
 

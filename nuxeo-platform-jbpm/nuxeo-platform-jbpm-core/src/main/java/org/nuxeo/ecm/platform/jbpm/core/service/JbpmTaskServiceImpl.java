@@ -173,8 +173,8 @@ public class JbpmTaskServiceImpl implements JbpmTaskService {
             // set variable on task directly too
             task.setVariable(JbpmService.TaskVariableName.validated.name(),
                     String.valueOf(isValidated));
-            jbpmService.endTask(task.getId(), null, taskVariables, null, null,
-                    principal);
+            jbpmService.endTask(new Long(task.getId()), null, taskVariables,
+                    null, null, principal);
 
             // notify
             Map<String, Serializable> eventProperties = new HashMap<String, Serializable>();
@@ -300,9 +300,11 @@ public class JbpmTaskServiceImpl implements JbpmTaskService {
         properties.put(DocumentEventContext.COMMENT_PROPERTY_KEY, comment);
         properties.put(DocumentEventContext.CATEGORY_PROPERTY_KEY, category);
         properties.put(JbpmTaskService.TASK_INSTANCE_EVENT_PROPERTIES_KEY, task);
-        String disableNotif = (String)task.getVariable(JbpmEventNames.DISABLE_NOTIFICATION_SERVICE);
-        if (disableNotif != null && Boolean.valueOf(disableNotif)) {
-            properties.put(JbpmEventNames.DISABLE_NOTIFICATION_SERVICE, Boolean.TRUE);
+        String disableNotif = (String) task.getVariable(JbpmEventNames.DISABLE_NOTIFICATION_SERVICE);
+        if (disableNotif != null
+                && Boolean.TRUE.equals(Boolean.valueOf(disableNotif))) {
+            properties.put(JbpmEventNames.DISABLE_NOTIFICATION_SERVICE,
+                    Boolean.TRUE);
         }
         eventContext.setProperties(properties);
 

@@ -22,14 +22,13 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.faces.application.FacesMessage;
-
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.faces.FacesMessages;
+import org.jboss.seam.international.StatusMessage;
 import org.jbpm.graph.exe.ProcessInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.platform.jbpm.JbpmService;
@@ -91,7 +90,7 @@ public class JbpmTaskListActions implements Serializable {
     public void createTaskList() throws Exception {
 
         if (listName == null || listName.equals("")) {
-            facesMessages.add(FacesMessage.SEVERITY_ERROR,
+            facesMessages.add(StatusMessage.Severity.ERROR,
                     resourcesAccessor.getMessages().get(
                             "label.review.list.chooseaname"));
             return;
@@ -114,13 +113,13 @@ public class JbpmTaskListActions implements Serializable {
         listName = null;
 
         facesMessages.add(
-                FacesMessage.SEVERITY_INFO,
+                StatusMessage.Severity.INFO,
                 resourcesAccessor.getMessages().get("label.review.list.created"));
     }
 
     public void deleteTaskList() throws Exception {
         if (selectedListId == null) {
-            facesMessages.add(FacesMessage.SEVERITY_ERROR,
+            facesMessages.add(StatusMessage.Severity.ERROR,
                     resourcesAccessor.getMessages().get(
                             "label.review.list.notselected"));
             return;
@@ -130,13 +129,13 @@ public class JbpmTaskListActions implements Serializable {
         service.deleteTaskList(documentManager, selectedListId);
 
         facesMessages.add(
-                FacesMessage.SEVERITY_INFO,
+                StatusMessage.Severity.INFO,
                 resourcesAccessor.getMessages().get("label.review.list.deleted"));
     }
 
     public void loadTaskList() throws Exception {
         if (selectedListId == null) {
-            facesMessages.add(FacesMessage.SEVERITY_ERROR,
+            facesMessages.add(StatusMessage.Severity.ERROR,
                     resourcesAccessor.getMessages().get(
                             "label.review.list.notselected"));
             return;
@@ -168,7 +167,7 @@ public class JbpmTaskListActions implements Serializable {
                     JbpmService.VariableName.participants.name(), virtualTasks);
             jbpmService.persistProcessInstance(pi);
 
-            facesMessages.add(FacesMessage.SEVERITY_INFO,
+            facesMessages.add(StatusMessage.Severity.INFO,
                     resourcesAccessor.getMessages().get(
                             "label.review.list.added"));
         }

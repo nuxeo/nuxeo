@@ -106,6 +106,7 @@ public class JbpmTaskServiceTest extends RepositoryOSGITestCase {
         JbpmServiceImpl.contexts.set(null);
     }
 
+    @SuppressWarnings("unchecked")
     public void testSingleTaskWithAccept() throws Exception {
         DocumentModel document = getDocument();
         assertNotNull(document);
@@ -196,7 +197,7 @@ public class JbpmTaskServiceTest extends RepositoryOSGITestCase {
         assertEquals(0, tasks.size());
 
         // retrieve the task another way
-        final Long taskId = task.getId();
+        final Long taskId = new Long(task.getId());
         task = getTask(taskId);
         assertNotNull(task);
         assertEquals("Test Task Name", task.getName());
@@ -240,6 +241,7 @@ public class JbpmTaskServiceTest extends RepositoryOSGITestCase {
                 task.getVariable(JbpmService.TaskVariableName.validated.name()));
     }
 
+    @SuppressWarnings("unchecked")
     public void testMultipleTaskWithReject() throws Exception {
         DocumentModel document = getDocument();
         assertNotNull(document);
@@ -332,7 +334,7 @@ public class JbpmTaskServiceTest extends RepositoryOSGITestCase {
         assertEquals(1, tasks.size());
 
         // retrieve the task another way
-        final Long taskId = task1.getId();
+        final Long taskId = new Long(task1.getId());
         task1 = getTask(taskId);
         assertNotNull(task1);
         assertEquals("Test Task Name", task1.getName());
@@ -459,7 +461,7 @@ public class JbpmTaskServiceTest extends RepositoryOSGITestCase {
 
             public TaskInstance run(JbpmContext context)
                     throws NuxeoJbpmException {
-                TaskInstance task = context.getTaskInstance(taskId);
+                TaskInstance task = context.getTaskInstance(taskId.longValue());
                 eagerLoadTaskInstance(task);
                 return task;
             }
