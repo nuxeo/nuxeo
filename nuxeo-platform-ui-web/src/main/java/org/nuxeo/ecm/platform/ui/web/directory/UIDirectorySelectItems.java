@@ -194,7 +194,9 @@ public class UIDirectorySelectItems extends UISelectItems {
                             putIteratorToRequestParam(entry);
                             SelectItem selectItem = createSelectItem();
                             removeIteratorFromRequestParam();
-                            items.add(selectItem);
+                            if (selectItem != null) {
+                                items.add(selectItem);
+                            }
                         }
                     } catch (DirectoryException e) {
                     }
@@ -214,7 +216,9 @@ public class UIDirectorySelectItems extends UISelectItems {
                                 putIteratorToRequestParam(entry);
                                 SelectItem selectItem = createSelectItem();
                                 removeIteratorFromRequestParam();
-                                items.add(selectItem);
+                                if (selectItem != null) {
+                                    items.add(selectItem);
+                                }
                             }
                         } catch (DirectoryException e) {
                         }
@@ -230,7 +234,9 @@ public class UIDirectorySelectItems extends UISelectItems {
                             putIteratorToRequestParam(entry);
                             SelectItem selectItem = createSelectItem();
                             removeIteratorFromRequestParam();
-                            items.add(selectItem);
+                            if (selectItem != null) {
+                                items.add(selectItem);
+                            }
                         }
                     } catch (DirectoryException e) {
                     }
@@ -243,7 +249,8 @@ public class UIDirectorySelectItems extends UISelectItems {
         String ordering = getOrdering();
         Boolean caseSensitive = getCaseSensitive();
         if (ordering != null && !"".equals(ordering)) {
-            Collections.sort(items, new SelectItemComparator(ordering, caseSensitive));
+            Collections.sort(items, new SelectItemComparator(ordering,
+                    caseSensitive));
         }
         return items.toArray(new SelectItem[] {});
     }
@@ -263,7 +270,9 @@ public class UIDirectorySelectItems extends UISelectItems {
                         putIteratorToRequestParam(entry);
                         SelectItem selectItem = createSelectItem();
                         removeIteratorFromRequestParam();
-                        items.add(selectItem);
+                        if (selectItem != null) {
+                            items.add(selectItem);
+                        }
                     }
                 }
             } catch (ClientException e) {
@@ -275,7 +284,8 @@ public class UIDirectorySelectItems extends UISelectItems {
         String ordering = getOrdering();
         Boolean caseSensitive = getCaseSensitive();
         if (ordering != null && !"".equals(ordering)) {
-            Collections.sort(items, new SelectItemComparator(ordering, caseSensitive));
+            Collections.sort(items, new SelectItemComparator(ordering,
+                    caseSensitive));
         }
         return items.toArray(new SelectItem[] {});
     }
