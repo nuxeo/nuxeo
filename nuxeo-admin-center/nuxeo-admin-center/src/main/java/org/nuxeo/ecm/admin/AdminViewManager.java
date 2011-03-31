@@ -17,8 +17,6 @@
 
 package org.nuxeo.ecm.admin;
 
-import static org.jboss.seam.ScopeType.CONVERSATION;
-
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
@@ -35,6 +33,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
+
+import static org.jboss.seam.ScopeType.CONVERSATION;
 
 /**
  * Seam Bean used to manage navigation inside the Admin Center.
@@ -55,6 +55,8 @@ public class AdminViewManager implements Serializable {
 
     public static final String ADMIN_ACTION_CATEGORY = "NUXEO_ADMIN";
 
+    public static final String VIEW_ADMIN = "view_admin";
+
     @In(create = true, required = false)
     protected WebActions webActions;
 
@@ -62,7 +64,7 @@ public class AdminViewManager implements Serializable {
         currentView=null;
         Contexts.getEventContext().remove("currentView");
         Contexts.getEventContext().remove("currentAdminSubView");
-        return "view_admin";
+        return VIEW_ADMIN;
     }
 
     public String exit() throws ClientException {
@@ -94,13 +96,14 @@ public class AdminViewManager implements Serializable {
         return getCurrentView().getId();
     }
 
-    public void setCurrentViewId(String currentViewId) {
+    public String setCurrentViewId(String currentViewId) {
         for (Action action : getAvailableActions()) {
             if (action.getId().equals(currentViewId)) {
                 currentView = action;
-                return;
+                break;
             }
         }
+        return VIEW_ADMIN;
     }
 
     @Factory(value = "currentAdminSubView", scope = ScopeType.EVENT)
