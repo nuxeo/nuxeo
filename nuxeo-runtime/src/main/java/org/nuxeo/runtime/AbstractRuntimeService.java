@@ -57,7 +57,7 @@ public abstract class AbstractRuntimeService implements RuntimeService {
      */
     public static final String REDIRECT_JUL = "org.nuxeo.runtime.redirectJUL";
 
-    public static final String REDIRECT_JUL_THRESHOLD = "org.nuxeo.runtime.redirectJUL.thresold";
+    public static final String REDIRECT_JUL_THRESHOLD = "org.nuxeo.runtime.redirectJUL.threshold";
 
     private static final Log log = LogFactory.getLog(RuntimeService.class);
 
