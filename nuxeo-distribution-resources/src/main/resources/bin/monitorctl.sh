@@ -204,7 +204,8 @@ checkalive() {
   fi
   MYPID=`cat "$PID"`
   JPS=`jps -v | grep "nuxeo.home=$NUXEO_HOME" | cut -f1 -d" " | grep $MYPID`
-  if [ "x$JPS" = "x" ]; then
+  PS=`ps aux | grep java | grep "nuxeo.home=$NUXEO_HOME" | grep $MYPID`
+  if [ "x$JPS" = "x$PS" ]; then
     return 1
   else
     return 0
@@ -245,7 +246,7 @@ log_misc() {
     echo "## jps -v" >> $file
     $JAVA_HOME/bin/jps -v >> $file
     echo "## ps aux | grep java" >> $file
-    ps aux | grep java > $file
+    ps aux | grep java >> $file
     if checkalive; then
 	NXPID=`cat "$PID"`
 	echo "## jmap -v" >> $file
