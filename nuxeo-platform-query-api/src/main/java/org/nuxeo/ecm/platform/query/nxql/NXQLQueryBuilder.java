@@ -412,7 +412,7 @@ public class NXQLQueryBuilder {
         String[] tokens = value.split(" ");
         for (int i = 0; i < tokens.length; i++) {
             if (tokens[i].length() > 0) {
-                if (i > 0) {
+                if (res.length() > 0) {
                     res += " ";
                 }
                 res += "+" + tokens[i];
