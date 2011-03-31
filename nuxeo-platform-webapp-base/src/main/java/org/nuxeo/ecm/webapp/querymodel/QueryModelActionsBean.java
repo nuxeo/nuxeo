@@ -131,10 +131,14 @@ public class QueryModelActionsBean implements
             throw new SortNotSupportedException();
         }
 
-        PagedDocumentsProvider provider = model.getResultsProvider(
-                documentManager, null, sortInfo);
-        provider.setName(queryModelName);
-        return provider;
+        try {
+            PagedDocumentsProvider provider = model.getResultsProvider(
+                    documentManager, null, sortInfo);
+            provider.setName(queryModelName);
+            return provider;
+        } catch ( ClientException e ) {
+            throw new RuntimeException("fail to retrive documentProvider", e);
+        }
     }
 
     @Observer(EventNames.QUERY_MODEL_CHANGED)
