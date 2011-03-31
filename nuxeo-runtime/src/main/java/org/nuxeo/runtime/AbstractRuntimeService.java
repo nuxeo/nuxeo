@@ -112,20 +112,9 @@ public abstract class AbstractRuntimeService implements RuntimeService {
     public synchronized void start() throws Exception {
         if (!isStarted) {
             if (Boolean.parseBoolean(getProperty(REDIRECT_JUL, "true"))) {
-                String thresoldStr = getProperty(REDIRECT_JUL_THRESHOLD, "INFO").toUpperCase();
-                Level thresold = Level.INFO;
-                if ("FINE".equals(thresoldStr)) {
-                    thresold = Level.FINE;
-                } else if ("ALL".equals(thresoldStr)) {
-                    thresold = Level.ALL;
-                } else if ("OFF".equals(thresoldStr)) {
-                    thresold = Level.OFF;
-                } else if ("WARN".equals(thresoldStr)) {
-                    thresold = Level.WARNING;
-                } else if ("SEVERE".equals(thresoldStr)) {
-                    thresold = Level.SEVERE;
-                }
-                JavaUtilLoggingHelper.redirectToApacheCommons(thresold);
+                Level threshold = Level.parse(getProperty(
+                        REDIRECT_JUL_THRESHOLD, "INFO").toUpperCase());
+                JavaUtilLoggingHelper.redirectToApacheCommons(threshold);
             }
             log.info("Starting Nuxeo Runtime service " + getName()
                     + "; version: " + getVersion());
