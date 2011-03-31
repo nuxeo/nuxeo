@@ -88,6 +88,11 @@ public class ContentTemplateServiceImpl extends DefaultComponent implements
                 String targetType = descriptor.getTargetType();
                 String targetFacet = descriptor.getTargetFacet();
 
+                // merge binding
+                if (descriptor.getAppend()) {
+                    descriptor = mergeFactoryBindingDescriptor(descriptor);
+                }
+
                 // store binding
                 if (null != targetType) {
                     factoryBindings.put(targetType, descriptor);
@@ -130,6 +135,28 @@ public class ContentTemplateServiceImpl extends DefaultComponent implements
                         + descriptor.getFactoryName() + " is not registred");
             }
         }
+    }
+
+    private FactoryBindingDescriptor mergeFactoryBindingDescriptor(
+            FactoryBindingDescriptor newOne) {
+        FactoryBindingDescriptor old = null;
+        if (null != newOne.getTargetType()) {
+            old = factoryBindings.get(newOne.getTargetType());
+        } else {
+            old = factoryBindings.get(newOne.getTargetFacet());
+        }
+
+        if (old != null) {
+            log.info("FactoryBinding " + old.getName() + " is merging with "
+                    + newOne.getName());
+            old.getOptions().putAll(newOne.getOptions());
+            old.getRootAcl().addAll(newOne.getRootAcl());
+            old.getTemplate().addAll(newOne.getTemplate());
+
+            return old;
+        }
+
+        return newOne;
     }
 
     public ContentFactory getFactoryForType(String documentType) {

@@ -47,6 +47,9 @@ public class FactoryBindingDescriptor {
     @XNode("@targetFacet")
     private String targetFacet;
 
+    @XNode("@append")
+    private Boolean append = false;
+
     @XNodeMap(value = "option", key = "@name", type = HashMap.class, componentType = String.class)
     private Map<String, String> options;
 
@@ -85,4 +88,11 @@ public class FactoryBindingDescriptor {
         return rootAcl;
     }
 
+    public Boolean getAppend() {
+        return append;
+    }
+
+    public void setAppend(Boolean append) {
+        this.append = append;
+    }
 }

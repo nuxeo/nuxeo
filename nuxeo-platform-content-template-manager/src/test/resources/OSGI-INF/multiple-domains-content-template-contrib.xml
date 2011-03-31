@@ -22,7 +22,46 @@
     </factoryBinding>
 
     <factoryBinding name="DomainFactory" factoryName="SimpleTemplateFactory" targetType="Domain">
+      <acl>
+        <ace granted="true" permission="Everything" principal="Administrator"/>
+        <ace granted="true" permission="Dream" principal="Danny"/>
+      </acl>
+      <template>
+        <templateItem typeName="Workspace" id="wk1" title="wk1"
+                      description="Workspace1"/>
+        <templateItem typeName="Workspace" id="wk2" title="wk2"
+                      description="Workspace1"/>
+      </template>
+    </factoryBinding>
 
+    <factoryBinding name="DomainFactoryMerge" factoryName="SimpleTemplateFactory" targetType="Domain"
+      append="true">
+      <acl>
+        <ace granted="true" permission="Everything" principal="John"/>
+        <ace granted="true" permission="Dream" principal="Doh"/>
+      </acl>
+      <template>
+        <templateItem typeName="Workspace" id="wk3" title="wk4"
+                      description="Workspace1"/>
+        <templateItem typeName="Folder" id="fd1" title="fd1"
+                      description="Folder1"/>
+      </template>
+    </factoryBinding>
+
+    <factoryBinding name="FolderFactory" factoryName="SimpleTemplateFactory" targetType="Folder">
+      <template>
+        <templateItem typeName="File" id="file1" title="file1"
+                      description="File1"/>
+      </template>
+    </factoryBinding>
+
+    <factoryBinding name="FolderFactoryErase" factoryName="SimpleTemplateFactory" targetType="Folder">
+      <template>
+        <templateItem typeName="File" id="file1" title="file1"
+                      description="File1"/>
+        <templateItem typeName="File" id="file1" title="file1"
+                      description="File1"/>
+      </template>
     </factoryBinding>
 
   </extension>

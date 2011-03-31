@@ -20,6 +20,7 @@ package org.nuxeo.ecm.platform.content.template.tests;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.BackendType;
@@ -56,6 +57,22 @@ public class MultipleDomainsCreationTest {
 
         assertEquals(3,
                 session.getChildren(session.getRootDocument().getRef()).size());
+    }
+
+    @Test
+    public void testMerge() throws Exception {
+        assertNotNull(session);
+        DocumentModel domain = session.getDocument(new PathRef("/domain3"));
+        assertNotNull(domain);
+
+        // DomainFactory should be merged with DomainFactory2
+        assertEquals(4, session.getChildren(domain.getRef()).size());
+        assertEquals(4, session.getACP(domain.getRef()).getACLs()[0].getACEs().length);
+
+        // FolderFactory1 should be overridden by FolderFactory2
+        DocumentModel folder = session.getDocument(new PathRef("/domain3/fd1"));
+        assertNotNull(folder);
+        assertEquals(2, session.getChildren(folder.getRef()).size());
     }
 
 }
