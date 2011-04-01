@@ -11,6 +11,9 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
  *
+ * Contributors:
+ *     Mathieu Guillaume
+ *     Florent Guillaume
  */
 package org.nuxeo.ecm.core.storage.sql;
 
@@ -22,35 +25,38 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.KeyPair;
 import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
-import java.security.cert.CertificateException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.file.FileCache;
 import org.nuxeo.common.file.LRUFileCache;
 import org.nuxeo.common.utils.SizeUtils;
+import org.nuxeo.runtime.api.Framework;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.ClientConfiguration;
 import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.AmazonS3EncryptionClient;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.CryptoConfiguration;
 import com.amazonaws.services.s3.model.EncryptionMaterials;
-import com.amazonaws.services.s3.model.S3Object;
-
+import com.amazonaws.services.s3.model.GetObjectRequest;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.PutObjectResult;
 
 /**
  * A Binary Manager that stores binaries as S3 BLOBs
  * <p>
- * The blob keys is still computed
+ * The BLOBs are cached locally on first access for efficiency.
+ * <p>
+ * Because the BLOB length can be accessed independently of the binary stream,
+ * it is also cached in a simple text file if accessed before the stream.
  */
 public class S3BinaryManager extends DefaultBinaryManager {
 
@@ -59,75 +65,93 @@ public class S3BinaryManager extends DefaultBinaryManager {
     public static final String BUCKET_NAME_KEY = "nuxeo.s3storage.bucket";
 
     public static final String BUCKET_REGION_KEY = "nuxeo.s3storage.region";
+
     public static final String DEFAULT_BUCKET_REGION = null; // US East
 
     public static final String AWS_ID_KEY = "nuxeo.s3storage.awsid";
+
     public static final String AWS_SECRET_KEY = "nuxeo.s3storage.awssecret";
 
     public static final String CACHE_SIZE_KEY = "nuxeo.s3storage.cachesize";
-    public static final String DEFAULT_CACHE_SIZE = "100M";
+
+    public static final String DEFAULT_CACHE_SIZE = "100 MB";
 
     public static final String KEYSTORE_FILE_KEY = "nuxeo.s3storage.crypt.keystore.file";
+
     public static final String KEYSTORE_PASS_KEY = "nuxeo.s3storage.crypt.keystore.password";
+
     public static final String PRIVKEY_ALIAS_KEY = "nuxeo.s3storage.crypt.key.alias";
+
     public static final String PRIVKEY_PASS_KEY = "nuxeo.s3storage.crypt.key.password";
 
-    // Those are probably defined somewhere else, but I didn't see them!
+    // TODO define these constants globally somewhere
     public static final String PROXY_HOST_KEY = "nuxeo.http.proxy.host";
+
     public static final String PROXY_PORT_KEY = "nuxeo.http.proxy.port";
+
     public static final String PROXY_LOGIN_KEY = "nuxeo.http.proxy.login";
+
     public static final String PROXY_PASSWORD_KEY = "nuxeo.http.proxy.password";
 
     protected String bucketName;
+
     protected BasicAWSCredentials awsCredentials;
+
     protected ClientConfiguration clientConfiguration;
+
     protected EncryptionMaterials encryptionMaterials;
+
     protected CryptoConfiguration cryptoConfiguration;
 
     protected String repositoryName;
+
     protected FileCache fileCache;
+
+    protected AmazonS3 amazonS3;
 
     @Override
     public void initialize(RepositoryDescriptor repositoryDescriptor)
             throws IOException {
         repositoryName = repositoryDescriptor.name;
         descriptor = new BinaryManagerDescriptor();
-        descriptor.digest = getDigest();
+        descriptor.digest = "MD5"; // matches ETag computation
         log.info("Repository '" + repositoryDescriptor.name + "' using "
-                + this.getClass().getSimpleName());
+                + getClass().getSimpleName());
 
         // Get settings from the configuration
-        bucketName = org.nuxeo.runtime.api.Framework.getProperty(BUCKET_NAME_KEY, null);
-        String bucketRegion = org.nuxeo.runtime.api.Framework.getProperty(BUCKET_REGION_KEY, DEFAULT_BUCKET_REGION);
-        String awsID = org.nuxeo.runtime.api.Framework.getProperty(AWS_ID_KEY, null);
-        String awsSecret = org.nuxeo.runtime.api.Framework.getProperty(AWS_SECRET_KEY, null);
+        bucketName = Framework.getProperty(BUCKET_NAME_KEY);
+        String bucketRegion = Framework.getProperty(BUCKET_REGION_KEY,
+                DEFAULT_BUCKET_REGION);
+        String awsID = Framework.getProperty(AWS_ID_KEY);
+        String awsSecret = Framework.getProperty(AWS_SECRET_KEY);
 
-        String proxyHost = org.nuxeo.runtime.api.Framework.getProperty(PROXY_HOST_KEY, null);
-        String proxyPort = org.nuxeo.runtime.api.Framework.getProperty(PROXY_PORT_KEY, null);
-        String proxyLogin = org.nuxeo.runtime.api.Framework.getProperty(PROXY_LOGIN_KEY, null);
-        String proxyPassword = org.nuxeo.runtime.api.Framework.getProperty(PROXY_PASSWORD_KEY, null);
+        String proxyHost = Framework.getProperty(PROXY_HOST_KEY);
+        String proxyPort = Framework.getProperty(PROXY_PORT_KEY);
+        String proxyLogin = Framework.getProperty(PROXY_LOGIN_KEY);
+        String proxyPassword = Framework.getProperty(PROXY_PASSWORD_KEY);
 
-        String cacheSizeStr = org.nuxeo.runtime.api.Framework.getProperty(CACHE_SIZE_KEY, DEFAULT_CACHE_SIZE);
+        String cacheSizeStr = Framework.getProperty(CACHE_SIZE_KEY,
+                DEFAULT_CACHE_SIZE);
 
-        String keystoreFile = org.nuxeo.runtime.api.Framework.getProperty(KEYSTORE_FILE_KEY, null);
-        String keystorePass = org.nuxeo.runtime.api.Framework.getProperty(KEYSTORE_PASS_KEY, null);
-        String privkeyAlias = org.nuxeo.runtime.api.Framework.getProperty(PRIVKEY_ALIAS_KEY, null);
-        String privkeyPass = org.nuxeo.runtime.api.Framework.getProperty(PRIVKEY_PASS_KEY, null);
+        String keystoreFile = Framework.getProperty(KEYSTORE_FILE_KEY);
+        String keystorePass = Framework.getProperty(KEYSTORE_PASS_KEY);
+        String privkeyAlias = Framework.getProperty(PRIVKEY_ALIAS_KEY);
+        String privkeyPass = Framework.getProperty(PRIVKEY_PASS_KEY);
 
         if (bucketName == null) {
-            throw new RuntimeException("Missing " + BUCKET_NAME_KEY + "in nuxeo.conf");
+            throw new RuntimeException("Missing conf: " + BUCKET_NAME_KEY);
         }
         if (awsID == null) {
-            throw new RuntimeException("Missing " + AWS_ID_KEY + "in nuxeo.conf");
+            throw new RuntimeException("Missing conf: " + AWS_ID_KEY);
         }
         if (awsSecret == null) {
-            throw new RuntimeException("Missing " + AWS_SECRET_KEY + "in nuxeo.conf");
+            throw new RuntimeException("Missing conf: " + AWS_SECRET_KEY);
         }
 
-        // Setup credentials
+        // set up credentials
         awsCredentials = new BasicAWSCredentials(awsID, awsSecret);
 
-        // Setup client configuration
+        // set up client configuration
         clientConfiguration = new ClientConfiguration();
         if (proxyHost != null) {
             clientConfiguration.setProxyHost(proxyHost);
@@ -142,7 +166,7 @@ public class S3BinaryManager extends DefaultBinaryManager {
             clientConfiguration.setProxyPassword(proxyPassword);
         }
 
-        // Setup encryption
+        // set up encryption
         encryptionMaterials = null;
         if (keystoreFile != null) {
             boolean confok = true;
@@ -170,34 +194,36 @@ public class S3BinaryManager extends DefaultBinaryManager {
                 ksStream.close();
                 // Get keypair for alias
                 if (!keystore.isKeyEntry(privkeyAlias)) {
-                    throw new RuntimeException("Alias " + privkeyAlias + " is missing or not a key alias");
+                    throw new RuntimeException("Alias " + privkeyAlias
+                            + " is missing or not a key alias");
                 }
-                PrivateKey privKey = (PrivateKey)keystore.getKey(privkeyAlias, privkeyPass.toCharArray());
+                PrivateKey privKey = (PrivateKey) keystore.getKey(privkeyAlias,
+                        privkeyPass.toCharArray());
                 Certificate cert = keystore.getCertificate(privkeyAlias);
                 PublicKey pubKey = cert.getPublicKey();
                 KeyPair keypair = new KeyPair(pubKey, privKey);
                 // Get encryptionMaterials from keypair
                 encryptionMaterials = new EncryptionMaterials(keypair);
                 cryptoConfiguration = new CryptoConfiguration();
-            } catch (IOException e) {
-                throw new RuntimeException("Could not read keystore: " + keystoreFile);
-            } catch (NoSuchAlgorithmException e) {
-                throw new RuntimeException("Could not verify keystore integrity: " + keystoreFile);
-            } catch (CertificateException e) {
-                throw new RuntimeException("Could not read keystore certificates for " + keystoreFile);
-            } catch (KeyStoreException e) {
-                throw new RuntimeException(e);
-            } catch (UnrecoverableKeyException e) {
-                throw new RuntimeException("Wrong password for key alias " + privkeyAlias);
+            } catch (Exception e) {
+                throw new RuntimeException("Could not read keystore: "
+                        + keystoreFile + ", alias: " + privkeyAlias, e);
             }
         }
 
         // Try to create bucket if it doesn't exist
-        AmazonS3Client s3client = getS3Client();
+        if (encryptionMaterials == null) {
+            amazonS3 = new AmazonS3Client(awsCredentials, clientConfiguration);
+        } else {
+            amazonS3 = new AmazonS3EncryptionClient(awsCredentials,
+                    encryptionMaterials, clientConfiguration,
+                    cryptoConfiguration);
+        }
         try {
-            if (!s3client.doesBucketExist(bucketName)) {
-                s3client.createBucket(bucketName, bucketRegion);
-                s3client.setBucketAcl(bucketName, CannedAccessControlList.Private);
+            if (!amazonS3.doesBucketExist(bucketName)) {
+                amazonS3.createBucket(bucketName, bucketRegion);
+                amazonS3.setBucketAcl(bucketName,
+                        CannedAccessControlList.Private);
             }
         } catch (AmazonServiceException e) {
             throw new IOException(e);
@@ -216,23 +242,6 @@ public class S3BinaryManager extends DefaultBinaryManager {
                 + cacheSizeStr);
     }
 
-    protected AmazonS3Client getS3Client() {
-        AmazonS3Client client;
-        if (encryptionMaterials == null) {
-            client = new AmazonS3Client(awsCredentials, clientConfiguration);
-        } else {
-            client = new com.amazonaws.services.s3.AmazonS3EncryptionClient(awsCredentials, encryptionMaterials, clientConfiguration, cryptoConfiguration);
-        }
-        return client;
-    }
-
-    /**
-     * Gets the message digest to use to hash binaries.
-     */
-    protected String getDigest() {
-        return DEFAULT_DIGEST;
-    }
-
     @Override
     public Binary getBinary(InputStream in) throws IOException {
         // Write the input stream to a temporary file, while computing a digest
@@ -246,30 +255,33 @@ public class S3BinaryManager extends DefaultBinaryManager {
             out.close();
         }
 
-        // Register the file in the file cache
-        File file = fileCache.putFile(digest, tmp);
-
-        // Store the blob in the S3 bucket
-        AmazonS3Client s3client = getS3Client();
-
-        boolean objectExists = true;
+        // Store the blob in the S3 bucket if not already there
+        String etag;
         try {
-            s3client.getObjectMetadata(bucketName, digest);
-        } catch (AmazonServiceException e) {
-            objectExists = false;
+            ObjectMetadata metadata = amazonS3.getObjectMetadata(bucketName,
+                    digest);
+            etag = metadata.getETag();
         } catch (AmazonClientException e) {
-            objectExists = false;
-        }
-
-        if (!objectExists) {
-            try {
-                s3client.putObject(bucketName, digest, file);
-            } catch (AmazonServiceException e) {
-                throw new IOException(e);
-            } catch (AmazonClientException e) {
+            if (!isMissingKey(e)) {
                 throw new IOException(e);
             }
+            // no data, store the blob
+            try {
+                PutObjectResult result = amazonS3.putObject(bucketName, digest,
+                        tmp);
+                etag = result.getETag();
+            } catch (AmazonClientException ee) {
+                throw new IOException(ee);
+            }
         }
+        // check transfer went ok
+        if (!etag.equals(digest)) {
+            throw new IOException("Invalid ETag in S3, ETag=" + etag
+                    + " digest=" + digest);
+        }
+
+        // Register the file in the file cache if all went well
+        File file = fileCache.putFile(digest, tmp);
 
         return new Binary(file, digest, repositoryName);
     }
@@ -279,21 +291,82 @@ public class S3BinaryManager extends DefaultBinaryManager {
         // Check in the cache
         File file = fileCache.getFile(digest);
         if (file == null) {
-            // Fetch from S3 and store it in the cache
-            AmazonS3Client s3client = getS3Client();
+            return new S3LazyBinary(digest, fileCache, amazonS3, bucketName);
+        } else {
+            return new Binary(file, digest, repositoryName);
+        }
+    }
+
+    /** Used by unit tests only. */
+    protected void removeBinary(String digest) {
+        amazonS3.deleteObject(bucketName, digest);
+    }
+
+    protected static boolean isMissingKey(AmazonClientException e) {
+        if (e instanceof AmazonServiceException) {
+            AmazonServiceException ase = (AmazonServiceException) e;
+            return "NoSuchKey".equals(ase.getErrorCode())
+                    || "Not Found".equals(e.getMessage());
+        }
+        return false;
+    }
+
+    public static class S3LazyBinary extends LazyBinary {
+
+        private static final long serialVersionUID = 1L;
+
+        protected final AmazonS3 amazonS3;
+
+        protected final String bucketName;
+
+        public S3LazyBinary(String digest, FileCache fileCache,
+                AmazonS3 amazonS3, String bucketName) {
+            super(digest, fileCache);
+            this.amazonS3 = amazonS3;
+            this.bucketName = bucketName;
+        }
+
+        @Override
+        protected boolean fetchFile(File tmp) {
             try {
-                S3Object s3object = s3client.getObject(bucketName, digest);
-                file = fileCache.putFile(digest, s3object.getObjectContent());
-            } catch (AmazonServiceException e) {
-                throw new RuntimeException(e);
+                ObjectMetadata metadata = amazonS3.getObject(
+                        new GetObjectRequest(bucketName, digest), tmp);
+                // check ETag
+                String etag = metadata.getETag();
+                if (!etag.equals(digest)) {
+                    log.error("Invalid ETag in S3, ETag=" + etag + " digest="
+                            + digest);
+                    return false;
+                }
+                return true;
             } catch (AmazonClientException e) {
-                throw new RuntimeException(e);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+                if (!isMissingKey(e)) {
+                    log.error("Unknown binary: " + digest, e);
+                }
+                return false;
             }
         }
 
-        return new Binary(file, digest, repositoryName);
+        @Override
+        protected Long fetchLength() {
+            try {
+                ObjectMetadata metadata = amazonS3.getObjectMetadata(
+                        bucketName, digest);
+                // check ETag
+                String etag = metadata.getETag();
+                if (!etag.equals(digest)) {
+                    log.error("Invalid ETag in S3, ETag=" + etag + " digest="
+                            + digest);
+                    return null;
+                }
+                return Long.valueOf(metadata.getContentLength());
+            } catch (AmazonClientException e) {
+                if (!isMissingKey(e)) {
+                    log.error("Unknown binary: " + digest, e);
+                }
+                return null;
+            }
+        }
     }
 
 }
