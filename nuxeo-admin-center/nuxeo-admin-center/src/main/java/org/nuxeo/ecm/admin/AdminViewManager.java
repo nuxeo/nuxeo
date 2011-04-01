@@ -17,6 +17,8 @@
 
 package org.nuxeo.ecm.admin;
 
+import static org.jboss.seam.ScopeType.CONVERSATION;
+
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
@@ -33,8 +35,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
-
-import static org.jboss.seam.ScopeType.CONVERSATION;
 
 /**
  * Seam Bean used to manage navigation inside the Admin Center.
@@ -60,6 +60,11 @@ public class AdminViewManager implements Serializable {
     @In(create = true, required = false)
     protected WebActions webActions;
 
+    @In(create = true, required = false)
+    protected transient NavigationContext navigationContext;
+
+    protected DocumentModel lastVisitedDocument;
+
     public String goHome() {
         currentView=null;
         Contexts.getEventContext().remove("currentView");
@@ -67,14 +72,14 @@ public class AdminViewManager implements Serializable {
         return VIEW_ADMIN;
     }
 
+    public String enter() {
+        lastVisitedDocument = navigationContext.getCurrentDocument();
+        return VIEW_ADMIN;
+    }
+
     public String exit() throws ClientException {
-        NavigationContext navigationContext = (NavigationContext) Contexts.getConversationContext().get(
-                "navigationContext");
-
-        DocumentModel doc = navigationContext.getCurrentDocument();
-
-        if (doc != null) {
-            return navigationContext.navigateToDocument(doc);
+        if (lastVisitedDocument != null) {
+            return navigationContext.navigateToDocument(lastVisitedDocument);
         } else {
             return navigationContext.goHome();
         }
