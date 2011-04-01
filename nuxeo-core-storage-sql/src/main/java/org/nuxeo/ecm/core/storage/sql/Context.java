@@ -384,15 +384,17 @@ public class Context {
                 modifiedInTransaction.add(id);
                 break;
             case MODIFIED:
-                if (isCollection) {
-                    mapper.updateCollectionRows((CollectionFragment) fragment);
-                } else {
-                    mapper.updateSingleRow((SimpleFragment) fragment);
-                }
-                fragment.setPristine();
+            	if (fragment.isDirty()) {
+            		if (isCollection) {
+            			mapper.updateCollectionRows((CollectionFragment) fragment);
+            		} else {
+            			mapper.updateSingleRow((SimpleFragment) fragment);
+            		}
+            		modifiedInTransaction.add(id);
+            	}
+            	fragment.setPristine();
                 // modified map cleared at end of loop
                 pristine.put(id, fragment);
-                modifiedInTransaction.add(id);
                 break;
             case DELETED:
                 // TODO deleting non-hierarchy fragments is done by the database

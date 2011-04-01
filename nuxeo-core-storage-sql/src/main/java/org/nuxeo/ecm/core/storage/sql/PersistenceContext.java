@@ -324,10 +324,12 @@ public class PersistenceContext {
     /**
      * Post-transaction invalidations notification.
      */
-    protected void notifyInvalidations() {
+    protected boolean notifyInvalidations() {
+        boolean done = false;
         for (Context context : contexts.values()) {
-            context.notifyInvalidations();
+            done = context.notifyInvalidations() || done;
         }
+        return done;
     }
 
     /**

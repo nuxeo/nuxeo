@@ -89,4 +89,6 @@ public abstract class CollectionFragment extends Fragment {
                 throws SQLException;
     }
 
+	public abstract void clearDirty();
+
 }

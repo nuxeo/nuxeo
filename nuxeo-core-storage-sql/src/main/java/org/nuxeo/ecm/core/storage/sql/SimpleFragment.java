@@ -192,6 +192,22 @@ public class SimpleFragment extends Fragment {
         }
         return dirty;
     }
+    
+    @Override
+    public boolean isDirty() {
+    	for (int i = 0; i < size; i += 3) {
+            Serializable value = data[i + 1];
+            Serializable oldValue = data[i + 2]; 
+            if (value == null) {
+                if (oldValue != null) {
+                    return true;
+                }
+            } else if (!value.equals(oldValue)) {
+                return true;
+            }    		
+    	}
+    	return false;
+    }
 
     /**
      * Clears the dirty fields.

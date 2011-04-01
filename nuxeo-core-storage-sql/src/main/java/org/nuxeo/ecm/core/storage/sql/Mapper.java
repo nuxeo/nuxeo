@@ -1138,6 +1138,7 @@ public class Mapper {
             throws StorageException {
         deleteFragment(fragment);
         insertCollectionRows(fragment);
+        fragment.clearDirty();
     }
 
     /**

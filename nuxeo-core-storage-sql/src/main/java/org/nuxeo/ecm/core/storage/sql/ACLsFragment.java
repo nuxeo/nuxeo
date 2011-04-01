@@ -119,7 +119,7 @@ public class ACLsFragment extends ArrayFragment {
         public void setToPreparedStatement(List<Column> columns,
                 PreparedStatement ps, Model model,
                 List<Serializable> debugValues) throws SQLException {
-            ACLRow acl = (ACLRow) array[i];
+            ACLRow acl = (ACLRow) data[i];
             int n = 0;
             for (Column column : columns) {
                 n++;

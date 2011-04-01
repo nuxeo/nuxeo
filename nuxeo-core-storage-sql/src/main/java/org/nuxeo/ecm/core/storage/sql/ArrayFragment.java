@@ -38,7 +38,10 @@ public class ArrayFragment extends CollectionFragment {
     private static final long serialVersionUID = 1L;
 
     /** The collection actually holding the data. */
-    protected Serializable[] array;
+    protected Serializable[] data;
+    
+    /** The collection fetched from the database. */
+    protected Serializable[] stored;
 
     /**
      * Constructs an empty {@link ArrayFragment} of the given table with the
@@ -54,33 +57,45 @@ public class ArrayFragment extends CollectionFragment {
             Serializable[] array) {
         super(id, state, context);
         assert array != null; // for now
-        this.array = array;
+        this.stored = array;
+        this.data = stored.clone();
     }
 
     @Override
     protected State refetch() throws StorageException {
         Context context = getContext();
-        array = context.mapper.readCollectionArray(getId(), context);
+        stored = context.mapper.readCollectionArray(getId(), context);
+        data = stored.clone();
         return State.PRISTINE;
     }
 
     @Override
     public void set(Serializable[] value) {
         // no need to call accessed() as we overwrite all
-        array = value.clone();
+    	data = value.clone();
         markModified();
     }
 
     @Override
     public Serializable[] get() throws StorageException {
         accessed();
-        return array.clone();
+        return data.clone();
+    }
+
+    @Override
+    public boolean isDirty() throws StorageException {
+    	return !Arrays.equals(data,stored);
+    }
+    
+    @Override
+    public void clearDirty() {
+    	stored = data.clone();
     }
 
     @Override
     public String toString() {
         return getClass().getSimpleName() + '(' + getTableName() + ", id=" +
-                getId() + ", " + Arrays.asList(array) + ')';
+                getId() + ", " + Arrays.asList(data) + ')';
     }
 
     protected static final CollectionMaker MAKER = new CollectionMaker() {
@@ -144,12 +159,12 @@ public class ArrayFragment extends CollectionFragment {
         }
 
         public boolean hasNext() {
-            return array.length > i + 1;
+            return data.length > i + 1;
         }
 
         public Serializable next() {
             i++;
-            return array[i];
+            return data[i];
         }
 
         public void remove() {
@@ -169,7 +184,7 @@ public class ArrayFragment extends CollectionFragment {
                 } else if (key.equals(model.COLL_TABLE_POS_KEY)) {
                     v = (long) i;
                 } else if (key.equals(model.COLL_TABLE_VALUE_KEY)) {
-                    v = array[i];
+                    v = data[i];
                 } else {
                     throw new AssertionError(key);
                 }

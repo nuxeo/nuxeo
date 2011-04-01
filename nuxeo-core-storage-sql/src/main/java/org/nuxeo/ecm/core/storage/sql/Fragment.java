@@ -18,6 +18,7 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 
@@ -114,9 +115,9 @@ public abstract class Fragment implements Serializable {
         INVALIDATED_DELETED
     }
 
-    private transient State state; // default is DETACHED
+    protected transient State state; // default is DETACHED
 
-    private transient Context context;
+    protected transient Context context;
 
     /**
      * Constructs an empty {@link Fragment} with the given id (which may be a
@@ -179,6 +180,15 @@ public abstract class Fragment implements Serializable {
         return state;
     }
 
+    /**
+     * Indicates if fragment contains data not in synch with
+     * the database.
+     * 
+     * @return
+     * @throws StorageException 
+     */
+    public abstract boolean isDirty() throws StorageException;
+    
     /**
      * Sets the id. This only used at most once to change a temporary id to the
      * persistent one.
