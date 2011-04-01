@@ -31,15 +31,15 @@ public class Binary implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private transient File file;
+    protected final String digest;
 
-    private final String digest;
+    protected final String repoName;
 
-    private final long length;
+    protected transient File file;
 
-    private final String repoName;
+    protected long length;
 
-   public Binary(File file, String digest) {
+    public Binary(File file, String digest) {
         this.file = file;
         this.digest = digest;
         length = file.length();
@@ -51,6 +51,11 @@ public class Binary implements Serializable {
         this.digest = digest;
         length = file.length();
         this.repoName = repoName;
+    }
+
+    protected Binary(String digest) {
+        this.digest = digest;
+        this.repoName = null;
     }
 
     /**
@@ -90,16 +95,18 @@ public class Binary implements Serializable {
         return new FileSource(file);
     }
 
-    private void writeObject(java.io.ObjectOutputStream oos) throws IOException, ClassNotFoundException {
+    private void writeObject(java.io.ObjectOutputStream oos)
+            throws IOException, ClassNotFoundException {
         oos.defaultWriteObject();
         if (repoName == null) {
             oos.writeObject(file);
         }
     }
 
-    private void readObject(java.io.ObjectInputStream ois) throws IOException, ClassNotFoundException {
+    private void readObject(java.io.ObjectInputStream ois) throws IOException,
+            ClassNotFoundException {
         ois.defaultReadObject();
-        file = repoName == null ?  (File)ois.readObject() : fetchData();
+        file = repoName == null ? (File) ois.readObject() : fetchData();
     }
 
     protected File fetchData() {
