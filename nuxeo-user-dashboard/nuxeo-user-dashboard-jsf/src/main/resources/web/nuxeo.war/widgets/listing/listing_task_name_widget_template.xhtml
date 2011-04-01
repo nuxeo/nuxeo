@@ -1,0 +1,21 @@
+<f:subview id="#{widget.id}"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxp="http://nuxeo.org/nxweb/pdf">
+<c:if test="#{nxl:isLikeViewMode(widget.mode)}">
+
+  <c:set var="createdFromCreateTaskOperation"
+    value="#{field.taskInstance.getVariableLocally('createdFromCreateTaskOperation') == 'true'}" />
+  <c:set var="taskNameLabel" value="label.workflow.task.#{field.name}" />
+  <h:outputText rendered="#{createdFromCreateTaskOperation}"
+    value="#{field.name}" />
+  <h:outputText rendered="#{!createdFromCreateTaskOperation}"
+    value="#{messages[taskNameLabel]}" />
+
+</c:if>
+</f:subview>
