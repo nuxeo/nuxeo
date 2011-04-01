@@ -24,7 +24,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -62,7 +61,6 @@ import org.nuxeo.ecm.platform.jbpm.JbpmEventNames;
 import org.nuxeo.ecm.platform.jbpm.JbpmSecurityPolicy;
 import org.nuxeo.ecm.platform.jbpm.JbpmService;
 import org.nuxeo.ecm.platform.jbpm.NuxeoJbpmException;
-import org.nuxeo.ecm.platform.jbpm.TaskCreateDateComparator;
 import org.nuxeo.ecm.platform.jbpm.TaskListFilter;
 import org.nuxeo.ecm.platform.jbpm.VirtualTaskInstance;
 import org.nuxeo.ecm.platform.jbpm.operations.AddCommentOperation;
@@ -285,7 +283,6 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
                 currentTasks.addAll(jbpmService.getTaskInstances(
                         Long.valueOf(currentProcess.getId()), null,
                         new TaskListFilter(taskNames)));
-                Collections.sort(currentTasks, new TaskCreateDateComparator());
             }
         }
         return currentTasks;

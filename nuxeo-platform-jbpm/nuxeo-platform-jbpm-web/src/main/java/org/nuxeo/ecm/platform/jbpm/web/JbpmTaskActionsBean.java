@@ -94,7 +94,6 @@ public class JbpmTaskActionsBean extends DocumentContextBoundActionBean {
                         new TaskVariableFilter(
                                 JbpmTaskService.TaskVariableName.createdFromTaskService.name(),
                                 "true")));
-                Collections.sort(tasks, new TaskCreateDateComparator());
             }
         }
         return tasks;

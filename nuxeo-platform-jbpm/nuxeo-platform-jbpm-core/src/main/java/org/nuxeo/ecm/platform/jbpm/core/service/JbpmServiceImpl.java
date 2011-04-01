@@ -54,6 +54,8 @@ import org.nuxeo.ecm.platform.jbpm.JbpmSecurityPolicy;
 import org.nuxeo.ecm.platform.jbpm.JbpmService;
 import org.nuxeo.ecm.platform.jbpm.NuxeoJbpmException;
 import org.nuxeo.ecm.platform.jbpm.NuxeoJbpmRuntimeException;
+import org.nuxeo.ecm.platform.jbpm.ProcessStartDateComparator;
+import org.nuxeo.ecm.platform.jbpm.TaskCreateDateComparator;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
@@ -157,6 +159,8 @@ public class JbpmServiceImpl implements JbpmService {
         if (filter != null) {
             tis = filter.filter(context, null, tis, currentUser);
         }
+        // sort to ensure deterministic order
+        Collections.sort(tis, new TaskCreateDateComparator());
         return tis;
     }
 
@@ -268,6 +272,8 @@ public class JbpmServiceImpl implements JbpmService {
                 "initiators", actorsName).list();
         initiatorPD.addAll(list);
         eagerLoadProcessInstances(initiatorPD);
+        // sort to ensure deterministic order
+        Collections.sort(list, new ProcessStartDateComparator());
         return initiatorPD;
     }
 
@@ -389,6 +395,8 @@ public class JbpmServiceImpl implements JbpmService {
                     result = jbpmListFilter.filter(context, dm, result, user);
                 }
                 eagerLoadProcessInstances(result);
+                // sort to ensure deterministic order
+                Collections.sort(result, new ProcessStartDateComparator());
                 return result;
             }
 
@@ -426,6 +434,8 @@ public class JbpmServiceImpl implements JbpmService {
                 } else {
                     List<TaskInstance> tis = context.getSession().createQuery(
                             FROM_ORG_JBPM_TASKMGMT_EXE_TASK_INSTANCE_TI_WHERE_TI_END_IS_NULL).list();
+                    // sort to ensure deterministic order
+                    Collections.sort(tis, new TaskCreateDateComparator());
                     tisSet.addAll(tis);
                 }
                 ArrayList<TaskInstance> result = getTaskInstancesForDocument(
@@ -661,6 +671,8 @@ public class JbpmServiceImpl implements JbpmService {
                 if (filter != null) {
                     result = filter.filter(context, null, result, principal);
                 }
+                // sort to ensure deterministic order
+                Collections.sort(result, new TaskCreateDateComparator());
 
                 return result;
             }
@@ -869,6 +881,8 @@ public class JbpmServiceImpl implements JbpmService {
         if (filter != null) {
             tis = filter.filter(context, null, tis, actors);
         }
+        // sort to ensure deterministic order
+        Collections.sort(tis, new TaskCreateDateComparator());
         return tis;
     }
 

@@ -132,13 +132,43 @@ public class JbpmPageProvidersTest extends RepositoryOSGITestCase {
         List<DashBoardItem> tasks = taskProvider.getCurrentPage();
         assertNotNull(tasks);
         assertEquals(2, tasks.size());
-        // can't check tasks: order is not deterministic...
+        // check process task
+        DashBoardItem task = tasks.get(0);
+        assertEquals("choose-participant", task.getName());
+        assertNull(task.getComment());
+        assertNull(task.getDescription());
+        assertNull(task.getDirective());
+        assertEquals(document.getRef(), task.getDocRef());
+        assertEquals(document, task.getDocument());
+        assertNull(task.getDueDate());
+        assertNotNull(task.getStartDate());
+        // check first single task
+        task = tasks.get(1);
+        assertEquals("Test Task Name", task.getName());
+        assertEquals("test comment", task.getComment());
+        assertNull(task.getDescription());
+        assertEquals("test directive", task.getDirective());
+        assertEquals(document.getRef(), task.getDocRef());
+        assertEquals(document, task.getDocument());
+        assertNotNull(task.getDueDate());
+        assertNotNull(task.getStartDate());
         assertFalse(taskProvider.isPreviousPageAvailable());
         assertTrue(taskProvider.isNextPageAvailable());
         taskProvider.nextPage();
         tasks = taskProvider.getCurrentPage();
         assertNotNull(tasks);
         assertEquals(1, tasks.size());
+        // check second single task
+        task = tasks.get(0);
+        assertEquals("Test Task Name 2", task.getName());
+        assertEquals("test comment", task.getComment());
+        assertNull(task.getDescription());
+        assertEquals("test directive", task.getDirective());
+        assertEquals(document.getRef(), task.getDocRef());
+        assertEquals(document, task.getDocument());
+        assertNotNull(task.getDueDate());
+        assertNotNull(task.getStartDate());
+
         assertTrue(taskProvider.isPreviousPageAvailable());
         assertFalse(taskProvider.isNextPageAvailable());
     }
