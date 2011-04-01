@@ -6,7 +6,6 @@
   xmlns:nxh="http://nuxeo.org/nxweb/html"
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:fn="http://java.sun.com/jsp/jstl/functions"
-  xmlns:fmt="http://java.sun.com/jstl/fmt"
   xmlns:nxl="http://nuxeo.org/nxforms/layout">
 
 
@@ -75,15 +74,15 @@
 
   <ui:insert name="buttons" />
 
-  <div class="syndicationContainer">
-    <ui:insert name="syndication_buttons">
+  <ui:insert name="syndication_buttons">
+    <div class="syndicationContainer">
       <c:if test="#{currentDocument.folder}">
         <ui:include src="/incl/syndication_buttons.xhtml">
           <ui:param name="type" value="document" />
         </ui:include>
       </c:if>
-    </ui:insert>
-  </div>
+    </div>
+  </ui:insert>
 
 </h:form>
 </c:if>

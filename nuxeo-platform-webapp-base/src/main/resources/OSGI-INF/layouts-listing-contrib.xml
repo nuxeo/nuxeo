@@ -536,6 +536,31 @@
         <categories>
           <category>listing</category>
         </categories>
+        <properties>
+          <layouts mode="any">
+            <layout name="listing_title_link_widget_type_properties_any">
+              <rows>
+                <row>
+                  <widget>tab</widget>
+                </row>
+              </rows>
+              <widget name="tab" type="text">
+                <labels>
+                  <label mode="any">Tab</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The tab to select when clicking on the link. Available since
+                    5.4.2.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>tab</field>
+                </fields>
+              </widget>
+            </layout>
+          </layouts>
+        </properties>
       </configuration>
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler

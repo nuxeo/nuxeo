@@ -28,7 +28,7 @@
     cache="true">
 
     <c:if test="#{contentView != null}">
-    <a4j:region id="contentViewAjaxRegion_#{contentViewId}">
+    <a4j:region id="contentViewAjaxRegion_#{contentView.name}_#{contentViewId}">
 
       <nxu:set var="provider" value="#{contentView.currentPageProvider}"
         cache="true">
@@ -117,8 +117,8 @@
             </c:if>
           </ui:define>
 
-          <ui:define name="syndication_buttons">
-            <ui:insert name="content_view_syndication_buttons">
+          <ui:insert name="content_view_syndication_buttons">
+            <ui:define name="syndication_buttons">
               <div class="syndicationButton">
                 <div class="syndicationLinks">
                   <nxu:set var="contentViewState" value="#{contentViewRestActions.getContentViewState(contentView)}">
@@ -142,8 +142,8 @@
                   </nxu:set>
                 </div>
               </div>
-            </ui:insert>
-          </ui:define>
+            </ui:define>
+          </ui:insert>
 
         </ui:decorate>
 
