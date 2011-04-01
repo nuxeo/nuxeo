@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -291,6 +291,11 @@ public class NuxeoSession implements Session {
         return getObject(objectId, getDefaultContext());
     }
 
+    @Override
+    public CmisObject getObject(String objectId) {
+        return getObject(objectId, getDefaultContext());
+    }
+
     /** Gets a CMIS object given a Nuxeo {@link DocumentModel}. */
     public CmisObject getObject(DocumentModel doc, OperationContext context) {
         ObjectData data = new NuxeoObjectData(service, doc, context);
@@ -299,14 +304,22 @@ public class NuxeoSession implements Session {
 
     @Override
     public CmisObject getObject(ObjectId objectId, OperationContext context) {
-        if (objectId == null || objectId.getId() == null) {
-            throw new CmisInvalidArgumentException("Missing object or ID");
+        if (objectId == null) {
+            throw new CmisInvalidArgumentException("Missing object ID");
+        }
+        return getObject(objectId.getId(), context);
+    }
+
+    @Override
+    public CmisObject getObject(String objectId, OperationContext context) {
+        if (objectId == null) {
+            throw new CmisInvalidArgumentException("Missing object ID");
         }
         if (context == null) {
             throw new CmisInvalidArgumentException("Missing operation context");
         }
-        NuxeoObjectData data = service.getObject(repositoryId,
-                objectId.getId(), context.getFilterString(),
+        NuxeoObjectData data = service.getObject(repositoryId, objectId,
+                context.getFilterString(),
                 Boolean.valueOf(context.isIncludeAllowableActions()),
                 context.getIncludeRelationships(),
                 context.getRenditionFilterString(),

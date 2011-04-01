@@ -26,8 +26,8 @@
   </modules>
 
   <properties>
-    <chemistry.opencmis.version>0.2.0-incubating</chemistry.opencmis.version>
-    <nuxeo.version>${version}</nuxeo.version>
+    <chemistry.opencmis.version>0.3.0</chemistry.opencmis.version>
+    <nuxeo.version>5.4.2-SNAPSHOT</nuxeo.version>
   </properties>
 
   <dependencyManagement>
@@ -35,17 +35,17 @@
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
         <artifactId>nuxeo-opencmis-bindings</artifactId>
-        <version>${version}</version>
+        <version>${nuxeo.version}</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
         <artifactId>nuxeo-opencmis-impl</artifactId>
-        <version>${version}</version>
+        <version>${nuxeo.version}</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
         <artifactId>nuxeo-opencmis-tests</artifactId>
-        <version>${version}</version>
+        <version>${nuxeo.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.chemistry.opencmis</groupId>
