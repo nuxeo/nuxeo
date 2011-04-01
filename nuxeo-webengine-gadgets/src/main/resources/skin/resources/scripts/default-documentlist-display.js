@@ -1,37 +1,16 @@
 // insert the whole table, as stupid IE can't do a tbody.innerHtml
 function tableStart(jsonObject, nxParams) {
-    var html = "";
-    html += "<table class='dataList'>";
-    html += "  <thead>";
-    html += "    <tr>";
-    for (idx in nxParams.displayColumns) {
-        html += mkColHeader(nxParams.displayColumns[idx]);
-    }
-    html += "    </tr>";
-    html += "  </thead>";
-    html += "  <tbody>";
-
-    _gel('navFirstPage').onclick = function(e) {
-        firstPage(nxParams)
-    };
-    _gel('navPrevPage').onclick = function(e) {
-        prevPage(nxParams)
-    };
-    _gel('navNextPage').onclick = function(e) {
-        nextPage(nxParams)
-    };
-    _gel('navLastPage').onclick = function(e) {
-        lastPage(nxParams)
-    };
-
-    if (nxParams.usePagination && maxPage > 1) {
-        _gel('nxDocumentListPage').innerHTML = (currentPage + 1) + "/" + maxPage;
-    } else {
-        console.log("hide nav controls");
-        _gel('pageNavigationControls').style.display = 'none';
-    }
-
-    return html;
+  var html = "";
+  html += "<table class='dataList'>";
+  html += "  <thead>";
+  html += "    <tr>";
+  for (idx in nxParams.displayColumns) {
+      html += mkColHeader(nxParams.displayColumns[idx]);
+  }
+  html += "    </tr>";
+  html += "  </thead>";
+  html += "  <tbody>";
+  return html;
 }
 
 function mkColHeader(colDef) {
@@ -58,26 +37,49 @@ function tableEnd() {
 }
 
 function displayDocumentList(entries, nxParams) {
-
-    var htmlContent = tableStart(entries, nxParams);
-
+  var htmlContent = '';
+  if (entries.length == 0) {
+    nxParams.noEntryLabel = nxParams.noEntryLabel || 'Nothing to show.';
+    htmlContent = '<p>' + nxParams.noEntryLabel + '</p>';
+  } else {
+    htmlContent = tableStart(entries, nxParams);
     for (var i = 0; i < entries.length; i++) {
         htmlContent += mkRow(entries[i], i, nxParams);
     }
     htmlContent += tableEnd();
-    _gel("nxDocumentListData").innerHTML = htmlContent + "<br/>";
+  }
 
-    _gel("nxDocumentList").style.display = 'block';
+  displayPageNavigationControls(nxParams);
+  _gel("nxDocumentListData").innerHTML = htmlContent + "<br/>";
+  _gel("nxDocumentList").style.display = 'block';
+  gadgets.window.adjustHeight();
+}
 
-    gadgets.window.adjustHeight();
+function displayPageNavigationControls(nxParams) {
+  if (nxParams.usePagination && maxPage > 1) {
+    _gel('nxDocumentListPage').innerHTML = (currentPage + 1) + "/" + maxPage;
+    _gel('navFirstPage').onclick = function(e) {
+      firstPage(nxParams)
+    };
+    _gel('navPrevPage').onclick = function(e) {
+        prevPage(nxParams)
+    };
+    _gel('navNextPage').onclick = function(e) {
+        nextPage(nxParams)
+    };
+    _gel('navLastPage').onclick = function(e) {
+        lastPage(nxParams)
+    };
+  } else {
+    _gel('pageNavigationControls').style.display = 'none';
+  }
 }
 
 function getDateForDisplay(datestr) {
     try {
         var d = new Date(datestr);
-        var result = d.toLocaleDateString() + " "
+        return d.toLocaleDateString() + " "
                 + d.toLocaleTimeString().substring(0, 5);
-        return result;
     } catch (e) {
         return datestr;
     }

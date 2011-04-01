@@ -47,7 +47,8 @@
         {type: 'builtin', field: 'titleWithLink', label: '__MSG_label.dublincore.title__'},
         {type: 'date', field: 'dc:modified', label: '__MSG_label.dublincore.modified__'},
         {type: 'text', field: 'dc:creator', label: '__MSG_label.dublincore.creator__'}
-      ]
+      ],
+      noEntryLabel: '__MSG_label.gadget.no.document__'
     };
 
     // execute automation request onload
