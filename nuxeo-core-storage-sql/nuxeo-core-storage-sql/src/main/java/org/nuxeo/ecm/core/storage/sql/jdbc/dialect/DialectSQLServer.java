@@ -401,4 +401,9 @@ public class DialectSQLServer extends Dialect {
         return false;
     }
 
+    @Override
+    public String getBlobLengthFunction() {
+        return "DATALENGTH";
+    }
+
 }

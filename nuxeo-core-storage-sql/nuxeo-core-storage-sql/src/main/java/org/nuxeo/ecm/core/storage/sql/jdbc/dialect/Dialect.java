@@ -1096,4 +1096,12 @@ public abstract class Dialect {
         return "SELECT 1";
     }
 
+    /**
+     * Gets the SQL function that returns the length of a blob, in bytes.
+     */
+    public String getBlobLengthFunction() {
+        // the SQL-standard function (PostgreSQL, MySQL)
+        return "OCTET_LENGTH";
+    }
+
 }

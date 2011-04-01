@@ -352,4 +352,9 @@ public class DialectH2 extends Dialect {
         return usersSeparator;
     }
 
+    @Override
+    public String getBlobLengthFunction() {
+        return "LENGTH";
+    }
+
 }

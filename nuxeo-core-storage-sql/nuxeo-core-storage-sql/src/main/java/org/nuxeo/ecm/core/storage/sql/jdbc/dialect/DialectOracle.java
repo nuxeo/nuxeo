@@ -576,4 +576,9 @@ public class DialectOracle extends Dialect {
         return "SELECT 1 FROM DUAL";
     }
 
+    @Override
+    public String getBlobLengthFunction() {
+        return "LENGTHB";
+    }
+
 }
