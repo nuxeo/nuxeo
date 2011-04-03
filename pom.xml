@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.platform</groupId>
     <artifactId>nuxeo-features-parent</artifactId>
-    <version>5.4.2-SNAPSHOT</version>
+    <version>5.4.2-I20110404_0115</version>
   </parent>
 
   <artifactId>nuxeo-user-center-parent</artifactId>
@@ -14,7 +14,7 @@
   <packaging>pom</packaging>
 
   <properties>
-    <nuxeo.user.center.version>5.4.2-SNAPSHOT</nuxeo.user.center.version>
+    <nuxeo.user.center.version>5.4.2-I20110404_0115</nuxeo.user.center.version>
   </properties>
 
   <modules>
