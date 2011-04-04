@@ -32,6 +32,7 @@ import org.apache.commons.logging.LogFactory;
  * Commons Logging implementation.
  *
  * @author Florent Guillaume
+ * @author Benoit Delbosc
  */
 public class JavaUtilLoggingHelper {
 
@@ -44,9 +45,20 @@ public class JavaUtilLoggingHelper {
     }
 
     /**
-     * Redirects {@code java.util.logging} to Apache Commons Logging
+     * Redirects {@code java.util.logging} to Apache Commons Logging do not log
+     * below INFO level.
      */
     public static synchronized void redirectToApacheCommons() {
+        redirectToApacheCommons(Level.INFO);
+    }
+
+    /**
+     * Redirects {@code java.util.logging} to Apache Commons Logging do not log
+     * below the threshold level.
+     *
+     * @since 5.4.2
+     */
+    public static synchronized void redirectToApacheCommons(Level thresold) {
         if (activeHandler != null) {
             return;
         }
@@ -55,11 +67,12 @@ public class JavaUtilLoggingHelper {
             for (Handler handler : rootLogger.getHandlers()) {
                 rootLogger.removeHandler(handler);
             }
-            Level minLevel = Level.FINE; // never log below that
             activeHandler = new LogHandler();
-            activeHandler.setLevel(minLevel);
+            activeHandler.setLevel(thresold);
             rootLogger.addHandler(activeHandler);
-            rootLogger.setLevel(minLevel);
+            rootLogger.setLevel(thresold);
+            log.info("Redirecting java.util.logging to Apache Commons Logging, thresold level is "
+                    + thresold.toString());
         } catch (Exception e) {
             log.error("Handler setup failed", e);
         }
@@ -112,6 +125,7 @@ public class JavaUtilLoggingHelper {
             }
 
         }
+
         @Override
         public void publish(LogRecord record) {
             if (holder.get() != null) {
