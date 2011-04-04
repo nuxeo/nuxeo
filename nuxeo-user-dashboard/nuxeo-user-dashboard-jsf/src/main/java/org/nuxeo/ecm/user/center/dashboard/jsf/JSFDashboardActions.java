@@ -41,7 +41,6 @@ import org.nuxeo.ecm.webapp.helpers.EventNames;
 /**
  * Handles JSF dashboard actions.
  *
- * @author Anahide Tchertchian
  * @since 5.4.2
  */
 @Name("jsfDashboardActions")
@@ -52,27 +51,7 @@ public class JSFDashboardActions implements Serializable {
 
     public static final String CONTENT_VIEW_OBSERVER_WORKFLOW_EVENT = "workflowEvent";
 
-    public enum DASHBOARD_CONTENT_VIEWS {
-
-        USER_TASKS, USER_PROCESSES, USER_DOMAINS, USER_DOCUMENTS, USER_DELETED_DOCUMENTS, DOMAIN_DOCUMENTS(
-                true), DOMAIN_PUBLISHED_DOCUMENTS(true), USER_SECTIONS(true), USER_SITES(
-                true), USER_WORKSPACES(true);
-
-        boolean needsDomainContext;
-
-        DASHBOARD_CONTENT_VIEWS() {
-            this.needsDomainContext = false;
-        }
-
-        DASHBOARD_CONTENT_VIEWS(boolean needsDomainContext) {
-            this.needsDomainContext = needsDomainContext;
-        }
-
-        public boolean isContextualToDomain() {
-            return needsDomainContext;
-        }
-
-    }
+    public static final String USER_DOMAINS_CONTENT_VIEW = "USER_DOMAINS";
 
     @In(create = true)
     protected ContentViewActions contentViewActions;
@@ -87,35 +66,35 @@ public class JSFDashboardActions implements Serializable {
 
     protected List<DocumentModel> availableDomains;
 
-    @Factory(value = "domains", scope = ScopeType.EVENT)
+    @Factory(value = "userDomains", scope = ScopeType.EVENT)
     @SuppressWarnings("unchecked")
-    public List<DocumentModel> getDomains() throws ClientException {
+    public List<DocumentModel> getUserDomains() throws ClientException {
         if (documentManager == null) {
             return new ArrayList<DocumentModel>();
         }
         if (availableDomains == null) {
-            ContentView cv = contentViewActions.getContentView(DASHBOARD_CONTENT_VIEWS.USER_DOMAINS.name());
+            ContentView cv = contentViewActions.getContentView(USER_DOMAINS_CONTENT_VIEW);
             availableDomains = (List<DocumentModel>) cv.getPageProvider().getCurrentPage();
         }
         return availableDomains;
     }
 
     public DocumentModel getSelectedDomain() throws ClientException {
-        List<DocumentModel> availableDomains = getDomains();
+        List<DocumentModel> domains = getUserDomains();
         if (selectedDomain == null) {
             // initialize to current domain, or take first domain found
             DocumentModel currentDomain = navigationContext.getCurrentDomain();
             if (currentDomain != null) {
                 selectedDomain = currentDomain;
             } else {
-                if (availableDomains != null && !availableDomains.isEmpty()) {
-                    selectedDomain = availableDomains.get(0);
+                if (domains != null && !domains.isEmpty()) {
+                    selectedDomain = domains.get(0);
                 }
             }
-        } else if (availableDomains != null && !availableDomains.isEmpty()
-                && !availableDomains.contains(selectedDomain)) {
+        } else if (domains != null && !domains.isEmpty()
+                && !domains.contains(selectedDomain)) {
             // reset old domain: it's not available anymore
-            selectedDomain = availableDomains.get(0);
+            selectedDomain = domains.get(0);
         }
         return selectedDomain;
     }
@@ -133,11 +112,6 @@ public class JSFDashboardActions implements Serializable {
         selectedDomain = documentManager.getDocument(new IdRef(selectedDomainId));
     }
 
-    public String submitSelectedDomainChange() {
-        refreshDashboardContentViews();
-        return null;
-    }
-
     public String getSelectedDomainPath() throws ClientException {
         DocumentModel domain = getSelectedDomain();
         if (domain == null) {
@@ -150,19 +124,13 @@ public class JSFDashboardActions implements Serializable {
         return getSelectedDomainPath() + "templates";
     }
 
-    protected void refreshDashboardContentViews() {
-        for (DASHBOARD_CONTENT_VIEWS cv : DASHBOARD_CONTENT_VIEWS.values()) {
-            if (cv.isContextualToDomain()) {
-                contentViewActions.refresh(cv.name());
-            }
-        }
-    }
-
     /**
-     * Refreshes content views that have declared the event "workflowEvent" as
-     * a refresh event, on every kind of workflow/task event.
+     * Refreshes and resets content views that have declared the event
+     * "workflowEvent" as a refresh or reset event, on every kind of
+     * workflow/task event.
      */
-    @Observer(value = { JbpmEventNames.WORKFLOW_ENDED,
+    @Observer(value = {
+            JbpmEventNames.WORKFLOW_ENDED,
             JbpmEventNames.WORKFLOW_NEW_STARTED,
             JbpmEventNames.WORKFLOW_TASK_STOP,
             JbpmEventNames.WORKFLOW_TASK_REJECTED,
@@ -173,35 +141,11 @@ public class JSFDashboardActions implements Serializable {
             JbpmEventNames.WORKFLOW_TASKS_COMPUTED,
             JbpmEventNames.WORKFLOW_ABANDONED,
             JbpmEventNames.WORKFLOW_CANCELED,
-            EventNames.DOMAIN_SELECTION_CHANGED,
             EventNames.DOCUMENT_PUBLICATION_REJECTED,
             EventNames.DOCUMENT_PUBLICATION_APPROVED,
             EventNames.DOCUMENT_PUBLISHED }, create = false)
-    public void refreshOnWorkflowEvent() {
+    public void onWorkflowEvent() {
         contentViewActions.refreshOnSeamEvent(CONTENT_VIEW_OBSERVER_WORKFLOW_EVENT);
-    }
-
-    /**
-     * Resets content views that have declared the event "workflowEvent" as a
-     * reset event, on every kind of workflow/task event.
-     */
-    @Observer(value = { JbpmEventNames.WORKFLOW_ENDED,
-            JbpmEventNames.WORKFLOW_NEW_STARTED,
-            JbpmEventNames.WORKFLOW_TASK_START,
-            JbpmEventNames.WORKFLOW_TASK_STOP,
-            JbpmEventNames.WORKFLOW_TASK_REJECTED,
-            JbpmEventNames.WORKFLOW_USER_ASSIGNMENT_CHANGED,
-            JbpmEventNames.WORKFLOW_TASK_COMPLETED,
-            JbpmEventNames.WORKFLOW_TASK_REMOVED,
-            JbpmEventNames.WORK_ITEMS_LIST_LOADED,
-            JbpmEventNames.WORKFLOW_TASKS_COMPUTED,
-            JbpmEventNames.WORKFLOW_ABANDONED,
-            JbpmEventNames.WORKFLOW_CANCELED,
-            EventNames.DOMAIN_SELECTION_CHANGED,
-            EventNames.DOCUMENT_PUBLICATION_REJECTED,
-            EventNames.DOCUMENT_PUBLICATION_APPROVED,
-            EventNames.DOCUMENT_PUBLISHED }, create = false)
-    public void resetPageProviderOnWorkflowEvent() {
         contentViewActions.resetPageProviderOnSeamEvent(CONTENT_VIEW_OBSERVER_WORKFLOW_EVENT);
     }
 

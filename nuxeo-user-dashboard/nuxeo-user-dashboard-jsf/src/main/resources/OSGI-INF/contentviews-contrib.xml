@@ -89,8 +89,8 @@
         <event>documentChanged</event>
         <event>documentChildrenChanged</event>
       </refresh>
-      <cacheKey>only_one_cache</cacheKey>
-      <cacheSize>1</cacheSize>
+      <cacheKey>#{jsfDashboardActions.selectedDomainPath}</cacheKey>
+      <cacheSize>10</cacheSize>
       <resultLayouts>
         <layout name="dashboard_document_listing" showCSVExport="false"
           showPDFExport="false" />
@@ -111,8 +111,8 @@
         <event>documentChanged</event>
         <event>documentChildrenChanged</event>
       </refresh>
-      <cacheKey>only_one_cache</cacheKey>
-      <cacheSize>1</cacheSize>
+      <cacheKey>#{jsfDashboardActions.selectedDomainPath}</cacheKey>
+      <cacheSize>10</cacheSize>
       <resultLayouts>
         <layout name="dashboard_document_listing" showCSVExport="false"
           showPDFExport="false" />
@@ -134,8 +134,8 @@
         <event>documentChanged</event>
         <event>documentChildrenChanged</event>
       </refresh>
-      <cacheKey>only_one_cache</cacheKey>
-      <cacheSize>1</cacheSize>
+      <cacheKey>#{jsfDashboardActions.selectedDomainPath}</cacheKey>
+      <cacheSize>10</cacheSize>
       <resultLayouts>
         <layout name="dashboard_document_listing" showCSVExport="false"
           showPDFExport="false" />
@@ -156,8 +156,8 @@
         <event>documentChanged</event>
         <event>documentChildrenChanged</event>
       </refresh>
-      <cacheKey>only_one_cache</cacheKey>
-      <cacheSize>1</cacheSize>
+      <cacheKey>#{jsfDashboardActions.selectedDomainPath}</cacheKey>
+      <cacheSize>10</cacheSize>
       <resultLayouts>
         <layout name="dashboard_document_listing" showCSVExport="false"
           showPDFExport="false" />
@@ -181,8 +181,8 @@
         <event>documentChanged</event>
         <event>documentChildrenChanged</event>
       </refresh>
-      <cacheKey>only_one_cache</cacheKey>
-      <cacheSize>1</cacheSize>
+      <cacheKey>#{jsfDashboardActions.selectedDomainPath}</cacheKey>
+      <cacheSize>10</cacheSize>
       <resultLayouts>
         <layout name="dashboard_document_listing" showCSVExport="false"
           showPDFExport="false" />
@@ -206,8 +206,8 @@
         <event>documentChanged</event>
         <event>documentChildrenChanged</event>
       </refresh>
-      <cacheKey>only_one_cache</cacheKey>
-      <cacheSize>1</cacheSize>
+      <cacheKey>#{jsfDashboardActions.selectedDomainPath}</cacheKey>
+      <cacheSize>10</cacheSize>
       <resultLayouts>
         <layout name="dashboard_document_listing" showCSVExport="false"
           showPDFExport="false" />
