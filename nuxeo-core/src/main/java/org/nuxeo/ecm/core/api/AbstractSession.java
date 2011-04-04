@@ -2883,11 +2883,14 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
         if (lock == null) {
             return null;
         }
+        if (lock.getOwner() == null && lock.getCreated() == null) {
+            return null;
+        }
         // return deprecated format, like "someuser:Nov 29, 2010"
-        return lock.getOwner()
-                + ':'
-                + DateFormat.getDateInstance(DateFormat.MEDIUM).format(
+        String lockCreationDate = (lock.getCreated() == null) ? null
+                : DateFormat.getDateInstance(DateFormat.MEDIUM).format(
                         new Date(lock.getCreated().getTimeInMillis()));
+        return lock.getOwner() + ':' + lockCreationDate;
     }
 
     @Override
