@@ -7,7 +7,7 @@
 
   <groupId>org.nuxeo</groupId>
   <artifactId>nuxeo-addons-list</artifactId>
-  <version>5.4.1-SNAPSHOT</version>
+  <version>5.4.1.1-SNAPSHOT</version>
   <name>Nuxeo Addons list</name>
   <packaging>pom</packaging>
   <description>Nuxeo Addons list</description>
@@ -23,6 +23,7 @@
   <modules>
     <module>nuxeo-platform-lang-ext</module>
     <module>nuxeo-chemistry</module>
+    <module>nuxeo-core-binarymanager-sql</module>
     <module>nuxeo-correspondence-marianne</module>
     <module>nuxeo-http-client</module>
     <module>nuxeo-platform-classification</module>
