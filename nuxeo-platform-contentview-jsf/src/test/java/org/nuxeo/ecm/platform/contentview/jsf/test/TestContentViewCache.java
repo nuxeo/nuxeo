@@ -142,9 +142,6 @@ public class TestContentViewCache extends SQLRepositoryTestCase {
         assertTrue(pp.isNextPageAvailable());
         pp.nextPage();
         assertEquals(1, pp.getCurrentPageIndex());
-        assertEquals(-1, pp.getResultsCount());
-        // init results
-        pp.getCurrentPage();
         assertEquals(5, pp.getResultsCount());
         assertEquals("document_listing",
                 contentView.getCurrentResultLayout().getName());
