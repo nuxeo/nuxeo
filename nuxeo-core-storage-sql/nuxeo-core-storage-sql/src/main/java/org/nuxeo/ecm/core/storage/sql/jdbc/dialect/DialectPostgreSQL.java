@@ -696,7 +696,7 @@ public class DialectPostgreSQL extends Dialect {
     }
 
     @Override
-    public boolean connectionClosedByException(Throwable t) {
+    public boolean isConnectionClosedException(Throwable t) {
         while (t.getCause() != null) {
             t = t.getCause();
         }
@@ -711,6 +711,13 @@ public class DialectPostgreSQL extends Dialect {
         String message = t.getMessage();
         if (message != null && message.contains("FATAL:")) {
             return true;
+        }
+        if (t instanceof SQLException) {
+            // org.postgresql.util.PSQLException: This connection has been
+            // closed.
+            if ("08003".equals(((SQLException) t).getSQLState())) {
+                return true;
+            }
         }
         return false;
     }
@@ -761,4 +768,10 @@ public class DialectPostgreSQL extends Dialect {
         }
         return usersSeparator;
     }
+
+    @Override
+    public String getValidationQuery() {
+        return "";
+    }
+
 }

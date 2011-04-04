@@ -568,7 +568,7 @@ public class DialectOracle extends Dialect {
     }
 
     @Override
-    public boolean connectionClosedByException(Throwable t) {
+    public boolean isConnectionClosedException(Throwable t) {
         while (t.getCause() != null) {
             t = t.getCause();
         }
@@ -589,6 +589,11 @@ public class DialectOracle extends Dialect {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public String getValidationQuery() {
+        return "SELECT 1 FROM DUAL";
     }
 
 }

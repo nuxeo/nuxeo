@@ -52,6 +52,11 @@ public class JDBCConnection {
 
     protected XAResource xaresource;
 
+    protected final JDBCConnectionPropagator connectionPropagator;
+
+    /** If there's a chance the connection may be closed. */
+    protected volatile boolean checkConnectionValid;
+
     // for debug
     private static final AtomicLong instanceCounter = new AtomicLong(0);
 
@@ -69,40 +74,22 @@ public class JDBCConnection {
      * @param xadatasource the XA datasource to use to get connections
      */
     public JDBCConnection(Model model, SQLInfo sqlInfo,
-            XADataSource xadatasource) throws StorageException {
+            XADataSource xadatasource,
+            JDBCConnectionPropagator connectionPropagator)
+            throws StorageException {
         this.model = model;
         this.sqlInfo = sqlInfo;
         this.xadatasource = xadatasource;
-        resetConnection();
+        this.connectionPropagator = connectionPropagator;
+        connectionPropagator.addConnection(this);
+        open();
     }
 
     public Identification getIdentification() {
         return new Identification(null, "" + instanceNumber);
     }
 
-    public void close() {
-        if (connection != null) {
-            try {
-                connection.close();
-            } catch (SQLException e) {
-            }
-        }
-        if (xaconnection != null) {
-            try {
-                xaconnection.close();
-            } catch (SQLException e) {
-            }
-        }
-        xaconnection = null;
-        connection = null;
-        xaresource = null;
-    }
-
-    /**
-     * Finds a new connection if the previous ones was broken or timed out.
-     */
-    protected void resetConnection() throws StorageException {
-        close();
+    protected void open() throws StorageException {
         try {
             xaconnection = xadatasource.getXAConnection();
             connection = xaconnection.getConnection();
@@ -112,12 +99,81 @@ public class JDBCConnection {
         }
     }
 
+    public void close() {
+        if (connection != null) {
+            try {
+                connection.close();
+            } catch (Exception e) {
+                // ignore, including UndeclaredThrowableException
+            }
+        }
+        if (xaconnection != null) {
+            try {
+                xaconnection.close();
+            } catch (SQLException e) {
+                // ignore
+            }
+        }
+        xaconnection = null;
+        connection = null;
+        xaresource = null;
+    }
+
+    /**
+     * Opens a new connection if the previous ones was broken or timed out.
+     */
+    protected void resetConnection() throws StorageException {
+        logger.error("Resetting connection");
+        close();
+        open();
+        // we had to reset a connection; notify all the others that they
+        // should check their validity proactively
+        connectionPropagator.checkConnectionValid(this);
+    }
+
+    /**
+     * Checks that the connection is valid, and tries to reset it if not.
+     */
+    protected void checkConnectionValid() throws StorageException {
+        if (checkConnectionValid) {
+            doCheckConnectionValid();
+            // only if there was no exception set the flag to false
+            checkConnectionValid = false;
+        }
+    }
+
+    protected void doCheckConnectionValid() throws StorageException {
+        Statement st = null;
+        try {
+            st = connection.createStatement();
+            st.execute(sqlInfo.dialect.getValidationQuery());
+        } catch (Exception e) {
+            if (sqlInfo.dialect.isConnectionClosedException(e)) {
+                resetConnection();
+            } else {
+                throw new StorageException(e);
+            }
+        } finally {
+            if (st != null) {
+                try {
+                    st.close();
+                } catch (Exception e) {
+                    // ignore
+                }
+            }
+        }
+    }
+
     /**
      * Checks the SQL error we got and determine if the low level connection has
      * to be reset.
+     * <p>
+     * Called with a generic Exception and not just SQLException because the
+     * PostgreSQL JDBC driver sometimes fails to unwrap properly some
+     * InvocationTargetException / UndeclaredThrowableException.
      */
-    protected void checkConnectionReset(SQLException e) throws StorageException {
-        if (sqlInfo.dialect.connectionClosedByException(e)) {
+    protected void checkConnectionReset(Throwable t) throws StorageException {
+        if (sqlInfo.dialect.isConnectionClosedException(t)) {
             resetConnection();
         }
     }
@@ -127,7 +183,7 @@ public class JDBCConnection {
      * to be reset.
      */
     protected void checkConnectionReset(XAException e) {
-        if (sqlInfo.dialect.connectionClosedByException(e)) {
+        if (sqlInfo.dialect.isConnectionClosedException(e)) {
             try {
                 resetConnection();
             } catch (StorageException ee) {

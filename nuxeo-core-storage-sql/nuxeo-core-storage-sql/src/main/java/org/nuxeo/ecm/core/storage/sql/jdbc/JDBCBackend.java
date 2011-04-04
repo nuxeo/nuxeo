@@ -56,7 +56,10 @@ public class JDBCBackend implements RepositoryBackend {
 
     private ClusterNodeHandler clusterNodeHandler;
 
+    private JDBCConnectionPropagator connectionPropagator;
+
     public JDBCBackend() {
+        connectionPropagator = new JDBCConnectionPropagator();
     }
 
     @Override
@@ -173,7 +176,7 @@ public class JDBCBackend implements RepositoryBackend {
     protected JDBCMapper createMapper(Model model, PathResolver pathResolver)
             throws StorageException {
         return new JDBCMapper(model, pathResolver, sqlInfo, xadatasource,
-                clusterNodeHandler);
+                clusterNodeHandler, connectionPropagator);
     }
 
     @Override
