@@ -202,10 +202,11 @@ checkalive() {
   if [ ! -r "$PID" ]; then
     return 1
   fi
-  MYPID=`cat "$PID"`
-  JPS=`jps -v | grep "nuxeo.home=$NUXEO_HOME" | cut -f1 -d" " | grep $MYPID`
-  PS=`ps aux | grep java | grep "nuxeo.home=$NUXEO_HOME" | grep $MYPID`
-  if [ "x$JPS" = "x$PS" ]; then
+  # NXP-6636
+  #MYPID=`cat "$PID"`
+  PID=`jps -v | grep "nuxeo.home=$NUXEO_HOME" | cut -f1 -d" "`
+  #PS=`ps aux | grep java | grep "nuxeo.home=$NUXEO_HOME" | grep $MYPID`
+  if [ "x$PID" = "x" ]; then
     return 1
   else
     return 0
@@ -248,7 +249,9 @@ log_misc() {
     echo "## ps aux | grep java" >> $file
     ps aux | grep java >> $file
     if checkalive; then
-	NXPID=`cat "$PID"`
+	# NXP-6636
+	#NXPID=`cat "$PID"`
+	NXPID=`jps -v | grep "nuxeo.home=$NUXEO_HOME" | cut -f1 -d" "`
 	echo "## jmap -v" >> $file
 	$JAVA_HOME/bin/jmap -heap $NXPID >> $file 2> /dev/null
 	echo "## jstat -gc" >> $file
@@ -464,7 +467,9 @@ case "$1" in
 	else
 	    TAG=`date -u '+%Y%m%d-%H%M%S'`
 	fi   
-	NXPID=`cat "$PID"`
+	# NXP-6636
+	#NXPID=`cat "$PID"`
+	NXPID=`jps -v | grep "nuxeo.home=$NUXEO_HOME" | cut -f1 -d" "`
 	$JAVA_HOME/bin/jmap -dump:format=b,file=$LOG_DIR/heap-$TAG.bin $NXPID
 	echo "You can use the following command to browse the dump:"
 	echo " $JAVA_HOME/bin/jhat -J-mx3g -J-ms3g $LOG_DIR/heap-$TAG.bin"
@@ -473,7 +478,9 @@ case "$1" in
 	if ! checkalive; then
 	    die "No Nuxeo DM running."
 	fi
-	NXPID=`cat "$PID"`
+	# NXP-6636
+	#NXPID=`cat "$PID"`
+	NXPID=`jps -v | grep "nuxeo.home=$NUXEO_HOME" | cut -f1 -d" "`
 	set -x
 	$JAVA_HOME/bin/jps -v | grep $NXPID
 	$JAVA_HOME/bin/jmap -heap $NXPID
@@ -483,7 +490,9 @@ case "$1" in
 	vacuum
 	;;
     heap-histo)
-	NXPID=`cat "$PID"`
+	# NXP-6636
+	#NXPID=`cat "$PID"`
+	NXPID=`jps -v | grep "nuxeo.home=$NUXEO_HOME" | cut -f1 -d" "`
 	$JAVA_HOME/bin/jmap -histo $NXPID
 	;;
     invoke-fgc)
