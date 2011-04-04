@@ -1349,6 +1349,34 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals("Read", acls[0].permission);
     }
 
+    public void testBulkFetchProxies() throws Exception {
+        Session session = repository.getConnection();
+        Node root = session.getRootNode();
+
+        Node node0 = session.addChildNode(root, "n0", null, "TestDoc", false);
+        node0.setSingleProperty("tst:title", "zero");
+        Node node1 = session.addChildNode(root, "n1", null, "TestDoc", false);
+        node1.setSingleProperty("tst:title", "one");
+        Node node2 = session.addChildNode(root, "n2", null, "TestDoc", false);
+        node2.setSingleProperty("tst:title", "two");
+        Node version1 = session.checkIn(node1, "v1", "");
+        Node version2 = session.checkIn(node2, "v2", "");
+        Node proxy1 = session.addProxy(version1.getId(), node1.getId(), root,
+                "proxy1", null);
+        Node proxy2 = session.addProxy(version2.getId(), node2.getId(), root,
+                "proxy2", null);
+        session.save();
+
+        session.close();
+        session = repository.getConnection();
+
+        @SuppressWarnings("unused")
+        List<Node> nodes = session.getNodesByIds(Arrays.asList(node0.getId(),
+                proxy1.getId(), proxy2.getId()));
+
+        // check logs by hand to see that data fragments are bulk fetched
+    }
+
     public void testBulkFetchMany() throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
