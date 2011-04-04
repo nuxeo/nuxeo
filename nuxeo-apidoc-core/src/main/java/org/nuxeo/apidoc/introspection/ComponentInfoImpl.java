@@ -178,22 +178,22 @@ public class ComponentInfoImpl extends BaseNuxeoArtifact implements
         }
 
         try {
+            String xml;
             if (jar.getAbsolutePath().endsWith(".xml")) {
-                return FileUtils.read(new FileInputStream(jar));
-            }
-
-            if (jar.isDirectory()) {
-                File xml = new File(new Path(jar.getAbsolutePath()).append(
+                xml = FileUtils.read(new FileInputStream(jar));
+            } else if (jar.isDirectory()) {
+                File file = new File(new Path(jar.getAbsolutePath()).append(
                         parts[1]).toString());
-                if (!xml.exists()) {
-                    return "Unable to locate file :" + xml.getAbsolutePath();
+                if (!file.exists()) {
+                    return "Unable to locate file :" + file.getAbsolutePath();
                 }
-                return FileUtils.readFile(xml);
+                xml = FileUtils.readFile(file);
             } else {
                 ZipFile jarArchive = new ZipFile(jar);
                 ZipEntry entry = jarArchive.getEntry(parts[1].substring(1));
-                return FileUtils.read(jarArchive.getInputStream(entry));
+                xml = FileUtils.read(jarArchive.getInputStream(entry));
             }
+            return DocumentationHelper.secureXML(xml);
         } catch (Exception e) {
             log.error("Error while getting XML file", e);
             return "";
