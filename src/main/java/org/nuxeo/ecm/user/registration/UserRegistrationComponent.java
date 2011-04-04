@@ -1,3 +1,19 @@
+/*
+ * (C) Copyright 2011 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ * Contributors:
+ * Nuxeo - initial API and implementation
+ */
+
 package org.nuxeo.ecm.user.registration;
 
 import java.io.Serializable;
@@ -130,12 +146,12 @@ public class UserRegistrationComponent extends DefaultComponent implements
             doc.setPropertyValue("dc:title", title);
 
             // store userinfo
-            doc.setPropertyValue("username", userInfo.getLogin());
-            doc.setPropertyValue("password", userInfo.getPassword());
-            doc.setPropertyValue("firstName", userInfo.getFirstName());
-            doc.setPropertyValue("lastName", userInfo.getLastName());
-            doc.setPropertyValue("email", userInfo.getEmail());
-            doc.setPropertyValue("company", userInfo.getCompany());
+            doc.setPropertyValue(UserRegistrationInfo.USERNAME_FIELD, userInfo.getLogin());
+            doc.setPropertyValue(UserRegistrationInfo.PASSWORD_FIELD, userInfo.getPassword());
+            doc.setPropertyValue(UserRegistrationInfo.FIRSTNAME_FIELD, userInfo.getFirstName());
+            doc.setPropertyValue(UserRegistrationInfo.LASTNAME_FIELD, userInfo.getLastName());
+            doc.setPropertyValue(UserRegistrationInfo.EMAIL_FIELD, userInfo.getEmail());
+            doc.setPropertyValue(UserRegistrationInfo.COMPANY_FIELD, userInfo.getCompany());
 
             // validation method
             doc.setPropertyValue("registration:validationMethod",
@@ -269,7 +285,7 @@ public class UserRegistrationComponent extends DefaultComponent implements
 
     protected void sendValidationEmail(Map<String, Serializable> additionnalInfo, DocumentModel registrationDoc) throws ClientException {
 
-        String emailAdress = (String) registrationDoc.getPropertyValue("email");
+        String emailAdress = (String) registrationDoc.getPropertyValue(UserRegistrationInfo.EMAIL_FIELD);
 
         Map<String, Serializable> input = new HashMap<String, Serializable>();
         input.put("registration", registrationDoc);
