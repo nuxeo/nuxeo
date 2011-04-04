@@ -12,7 +12,6 @@
 
 <c:if test="#{currentWidgetType.previewEnabled}">
 
-<a4j:log />
   <div class="tabsBar subtabsBar">
 
     <ul>
@@ -26,37 +25,37 @@
   </div>
   <div style="clear:both"></div>
   <div class="tabsContent">
-
+  
     <c:if test="#{empty layoutDemoCurrentSubTabId}">
 
-      <a4j:region>
-        <table class="dataOutput">
-          <thead>
-            <tr>
-              <th>
-                Properties
-              </th>
-              <th>
-                Preview
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td width="50%" valign="top">
+      <table class="dataOutput">
+        <thead>
+          <tr>
+            <th>
+              Properties
+            </th>
+            <th>
+              Preview
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td width="50%" valign="top">
+              <a4j:region id="layoutDemoViewPreviewRegion">
                 <a4j:form id="layoutDemoViewPreviewForm"
                   ajaxSubmit="true">
-                  <nxl:layout value="#{layoutDemoDocument}"
-                    mode="edit"
-                    name="#{currentWidgetType.demoLayouts[0].name}" />
                   <nxl:layout name="layout_demo_widget_common_settings"
                     mode="edit" value="#{viewPreviewLayoutDef}" />
                   <c:forEach var="layoutDef"
                     items="#{currentWidgetTypeConf.getPropertyLayouts('view', 'any')}">
-                    <nxl:layout definition="#{layoutDef}" mode="edit"
+                    <nxl:layout definition="#{layoutDef}"
+                      mode="edit_demo_preview"
                       value="#{viewPreviewLayoutDef.properties}"
                       template="/layouts/layout_default_template.xhtml" />
                   </c:forEach>
+                  <nxl:layout name="layout_demo_widget_custom_properties"
+                    mode="edit" value="#{viewPreviewLayoutDef}" />
                   <p class="buttonsGadget">
                     <a4j:commandButton value="submit"
                       styleClass="button"
@@ -72,58 +71,71 @@
                     </a4j:status>
                   </p>
                 </a4j:form>
-              </td>
-              <td width="50%" valign="top">
-                <a4j:outputPanel id="layoutDemoViewPreview">
-                  <c:if test="#{layoutDemoActions.showViewPreview}">
-                    <nxl:layout
-                      definition="#{layoutDemoActions.getLayoutDefinition(viewPreviewLayoutDef)}"
-                      value="#{layoutDemoDocument}" mode="view"
-                      template="/layouts/layout_default_template.xhtml" />
+              </a4j:region>
+            </td>
+            <td width="50%" valign="top">
+              <a4j:outputPanel id="layoutDemoViewPreview">
+                <c:if test="#{layoutDemoActions.showViewPreview}">
+                  <c:if test="false">
+                    <c:set var="frameURL"
+                      value="#{baseURL}#{layoutPreviewActions.getPreviewLayoutURL(viewPreviewLayoutDef, 'view', '/layouts/layout_default_template.xhtml')}" />
+                    <iframe style="visibility:hidden;width:100%;"
+                      onload="javascript:this.style.visibility='visible';"
+                      src="#{frameURL}"></iframe>
                   </c:if>
-                </a4j:outputPanel>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </a4j:region>
+                  <c:if test="true">
+                    <h:form id="layoutDemoViewPreviewResultForm"
+                      ajaxSubmit="true">
+                      <nxl:layout
+                        definition="#{layoutPreviewActions.getLayoutDefinition(viewPreviewLayoutDef)}"
+                        value="#{layoutPreviewDocument}" mode="view"
+                        template="/layouts/layout_default_template.xhtml" />
+                    </h:form>
+                  </c:if>
+                </c:if>
+              </a4j:outputPanel>
+            </td>
+          </tr>
+        </tbody>
+      </table>
 
     </c:if>
 
     <c:if test="#{layoutDemoCurrentSubTabId == 'edit_mode'}">
 
-      <a4j:region>
-        <table class="dataOutput">
-          <thead>
-            <tr>
-              <th>
-                Properties
-              </th>
-              <th>
-                Preview
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td width="50%" valign="top">
+      <table class="dataOutput">
+        <thead>
+          <tr>
+            <th>
+              Properties
+            </th>
+            <th>
+              Preview
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td width="50%" valign="top">
+              <a4j:region id="layoutDemoEditPreviewRegion">
                 <a4j:form id="layoutDemoEditPreviewForm"
                   ajaxSubmit="true">
-                  <nxl:layout value="#{layoutDemoDocument}"
-                    mode="edit"
-                    name="#{currentWidgetType.demoLayouts[0].name}" />
                   <nxl:layout name="layout_demo_widget_common_settings"
                     mode="edit" value="#{editPreviewLayoutDef}" />
                   <c:forEach var="layoutDef"
                     items="#{currentWidgetTypeConf.getPropertyLayouts('edit', 'any')}">
-                    <nxl:layout definition="#{layoutDef}" mode="edit"
+                    <nxl:layout definition="#{layoutDef}"
+                      mode="edit_demo_preview"
                       value="#{editPreviewLayoutDef.properties}"
                       template="/layouts/layout_default_template.xhtml" />
                   </c:forEach>
+                  <nxl:layout name="layout_demo_widget_custom_properties"
+                    mode="edit" value="#{editPreviewLayoutDef}" />
                   <p class="buttonsGadget">
                     <a4j:commandButton value="submit"
                       styleClass="button"
                       id="#{demoLayout.name}_edit_form_submitButton"
+                      process="layoutDemoEditPreviewForm"
                       reRender="layoutDemoEditPreviewForm, layoutDemoEditPreview">
                       <nxu:actionListenerMethod
                         value="#{layoutDemoActions.setShowEditPreview(true)}" /> 
@@ -135,21 +147,33 @@
                     </a4j:status>
                   </p>
                 </a4j:form>
-              </td>
-              <td width="50%" valign="top">
-                <a4j:outputPanel id="layoutDemoEditPreview">
-                  <c:if test="#{layoutDemoActions.showEditPreview}">
-                    <nxl:layout
-                      definition="#{layoutDemoActions.getLayoutDefinition(editPreviewLayoutDef)}"
-                      value="#{layoutDemoDocument}" mode="edit"
-                      template="/layouts/layout_default_template.xhtml" />
+              </a4j:region>
+            </td>
+            <td width="50%" valign="top">
+              <a4j:outputPanel id="layoutDemoEditPreview">
+                <c:if test="#{layoutDemoActions.showEditPreview}">
+                  <c:if test="false">
+                    <c:set var="frameURL"
+                      value="#{baseURL}#{layoutPreviewActions.getPreviewLayoutURL(editPreviewLayoutDef, 'edit', '/layouts/layout_default_template.xhtml')}" />
+                    <iframe style="visibility:hidden;width:100%;"
+                      onload="javascript:this.style.visibility='visible';"
+                      src="#{frameURL}"></iframe>
                   </c:if>
-                </a4j:outputPanel>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </a4j:region>
+                  <c:if test="true">
+                    <h:form id="layoutDemoEditPreviewResultForm"
+                      ajaxSubmit="true">
+                      <nxl:layout
+                        definition="#{layoutPreviewActions.getLayoutDefinition(editPreviewLayoutDef)}"
+                        value="#{layoutPreviewDocument}" mode="edit"
+                        template="/layouts/layout_default_template.xhtml" />
+                    </h:form>
+                  </c:if>
+                </c:if>
+              </a4j:outputPanel>
+            </td>
+          </tr>
+        </tbody>
+      </table>
 
     </c:if>
 

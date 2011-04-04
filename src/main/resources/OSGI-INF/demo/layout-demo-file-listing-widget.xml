@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+
+<component
+  name="org.nuxeo.ecm.platform.forms.layoutDemo.fileWidget.listing.contrib">
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+
+    <!-- WARNING: this layout is focused on the widget definition.
+      The layout and column settings are incomplete and show only parts of
+      the standard configuration for a full listing layout configuration. -->
+
+    <layout name="fileWidgetListingLayout">
+      <templates>
+        <template mode="any">
+          /layouts/layout_listing_ajax_template.xhtml
+        </template>
+        <template mode="csv">
+          /layouts/layout_listing_csv_template.xhtml
+        </template>
+        <template mode="pdf">
+          /layouts/layout_listing_pdf_template.xhtml
+        </template>
+      </templates>
+      <properties mode="any">
+        <property name="showListingHeader">true</property>
+        <property name="showRowEvenOddClass">true</property>
+      </properties>
+      <columns>
+        <column name="listing_title">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+          </properties>
+          <widget>demo_listing_title</widget>
+        </column>
+        <column name="listing_widget">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+          </properties>
+          <widget>listing_fileWidget</widget>
+        </column>
+      </columns>
+      <widget name="listing_fileWidget" type="file">
+        <labels>
+          <label mode="any">File listing widget</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>data.lds.fileField</field>
+          <field>data.lds.fileField.filename</field>
+        </fields>
+      </widget>
+    </layout>
+
+  </extension>
+
+</component>

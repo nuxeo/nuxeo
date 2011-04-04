@@ -32,6 +32,9 @@ import org.nuxeo.ecm.platform.url.api.DocumentView;
 import org.nuxeo.ecm.platform.url.service.AbstractDocumentViewCodec;
 
 /**
+ * Provides clean urls without conversation id to handle navigation inside the
+ * layout demo.
+ *
  * @author Anahide Tchertchian
  */
 public class LayoutDemoURLCodec extends AbstractDocumentViewCodec {

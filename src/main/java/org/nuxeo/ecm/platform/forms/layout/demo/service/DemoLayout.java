@@ -22,12 +22,13 @@ import java.io.Serializable;
  * Demo layout information
  *
  * @author Anahide Tchertchian
- *
  */
 public interface DemoLayout extends Serializable {
 
     String getName();
 
     String getSourcePath();
+
+    boolean isListing();
 
 }

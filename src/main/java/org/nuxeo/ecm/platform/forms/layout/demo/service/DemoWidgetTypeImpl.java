@@ -16,7 +16,9 @@
  */
 package org.nuxeo.ecm.platform.forms.layout.demo.service;
 
+import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Default implementation of the widget type demo
@@ -39,10 +41,13 @@ public class DemoWidgetTypeImpl implements DemoWidgetType {
 
     protected List<String> fields;
 
+    protected Map<String, Serializable> defaultProperties;
+
     protected List<DemoLayout> demoLayouts;
 
     public DemoWidgetTypeImpl(String name, String label, String viewId,
             String category, Boolean previewEnabled, List<String> fields,
+            Map<String, Serializable> defaultProperties,
             List<DemoLayout> demoLayouts) {
         super();
         this.name = name;
@@ -51,6 +56,7 @@ public class DemoWidgetTypeImpl implements DemoWidgetType {
         this.category = category;
         this.previewEnabled = previewEnabled;
         this.fields = fields;
+        this.defaultProperties = defaultProperties;
         this.demoLayouts = demoLayouts;
     }
 
@@ -84,6 +90,11 @@ public class DemoWidgetTypeImpl implements DemoWidgetType {
 
     public List<DemoLayout> getDemoLayouts() {
         return demoLayouts;
+    }
+
+    @Override
+    public Map<String, Serializable> getDefaultProperties() {
+        return defaultProperties;
     }
 
     @Override

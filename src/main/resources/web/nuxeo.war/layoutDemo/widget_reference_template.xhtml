@@ -72,7 +72,7 @@
 
   <div>
     <c:forEach var="layoutDef" items="#{currentWidgetTypeConf.getPropertyLayouts('any', null)}">
-      <nxl:layout definition="#{layoutDef}" mode="view"
+      <nxl:layout definition="#{layoutDef}" mode="view_reference"
         value="#{viewPreviewLayoutDef.properties}"
         template="/layoutDemo/layouts/layout_demo_reference_template.xhtml"
         title="Global Properties" />
@@ -81,7 +81,7 @@
 
   <div>
     <c:forEach var="layoutDef" items="#{currentWidgetTypeConf.getPropertyLayouts('view', null)}">
-      <nxl:layout definition="#{layoutDef}" mode="view"
+      <nxl:layout definition="#{layoutDef}" mode="view_reference"
         value="#{viewPreviewLayoutDef.properties}"
         template="/layoutDemo/layouts/layout_demo_reference_template.xhtml"
         title="View Properties" />
@@ -90,7 +90,7 @@
 
   <div>
     <c:forEach var="layoutDef" items="#{currentWidgetTypeConf.getPropertyLayouts('edit', null)}">
-      <nxl:layout definition="#{layoutDef}" mode="view"
+      <nxl:layout definition="#{layoutDef}" mode="view_reference"
         value="#{viewPreviewLayoutDef.properties}"
         template="/layoutDemo/layouts/layout_demo_reference_template.xhtml"
         title="Edit Properties" />

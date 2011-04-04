@@ -54,7 +54,7 @@
                   <label mode="any">String array item</label>
                 </labels>
                 <properties mode="any">
-                  <property name="directoryName">layout_demo_casting</property>
+                  <property name="directoryName">layout_demo_crew</property>
                 </properties>
                 <properties widgetMode="edit">
                   <property name="required">true</property>

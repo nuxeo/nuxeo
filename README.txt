@@ -23,7 +23,7 @@ Add a new widget type
 ---------------------
 
 To add a new widget type to the application, you need to:
-- add a xhtml template in nuxeo.war/layoutDemo/widgets
+- add a xhtml template in nuxeo.war/layoutDemo/demoWidgets
 - declare this template with a view id in OSGI-INF/deployment-fragment.xml
 - provide the widget sample xml configuration in OSGI-INF/demo and
   reference it in the MANIFEST

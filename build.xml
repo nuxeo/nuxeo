@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="nuxeo-platform-forms-layout-demo" default="deploy" basedir=".">
+<project name="nuxeo-platform-forms-layout-demo" default="web-tomcat" basedir=".">
 
   <!-- Create a build.properties file from build.properties.sample
     if you wish to override the JBoss paths -->

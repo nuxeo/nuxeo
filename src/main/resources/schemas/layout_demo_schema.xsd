@@ -6,7 +6,15 @@
 
   <xs:include schemaLocation="core-types.xsd" />
 
-  <xs:element name="stringField" type="xs:string" />
+  <xs:element name="textField" type="xs:string" />
+
+  <xs:element name="textareaField" type="xs:string" />
+
+  <xs:element name="htmlField" type="xs:string" />
+
+  <xs:element name="secretField" type="xs:string" />
+
+  <xs:element name="selectVocabularyField" type="xs:string" />
 
   <xs:element name="dateField" type="xs:date" />
 
@@ -17,6 +25,7 @@
   <xs:element name="fileField" type="nxs:content" />
 
   <xs:element name="stringArrayField" type="nxs:stringArrayType" />
+  <xs:element name="selectMultiVocabularyField" type="nxs:stringArrayType" />
   <xs:simpleType name="stringArrayType">
     <xs:list itemType="xs:string" />
   </xs:simpleType>

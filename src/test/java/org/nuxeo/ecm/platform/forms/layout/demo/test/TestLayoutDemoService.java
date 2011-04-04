@@ -16,7 +16,9 @@
  */
 package org.nuxeo.ecm.platform.forms.layout.demo.test;
 
+import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 import org.nuxeo.ecm.platform.forms.layout.demo.service.DemoLayout;
 import org.nuxeo.ecm.platform.forms.layout.demo.service.DemoWidgetType;
@@ -62,11 +64,19 @@ public class TestLayoutDemoService extends NXRuntimeTestCase {
     public void testRegistration() throws Exception {
         DemoWidgetType textWidget = service.getWidgetType("text");
         assertEquals("text", textWidget.getName());
-        assertEquals("Text widget", textWidget.getLabel());
+        assertEquals("Text", textWidget.getLabel());
         assertEquals("textWidget", textWidget.getViewId());
         assertEquals(LayoutDemoManager.APPLICATION_PATH + "textWidget",
                 textWidget.getUrl());
         assertEquals("standard", textWidget.getCategory());
+        List<String> fields = textWidget.getFields();
+        assertNotNull(fields);
+        assertEquals(1, fields.size());
+        assertEquals("lds:textField", fields.get(0));
+        Map<String, Serializable> defaultProps = textWidget.getDefaultProperties();
+        assertNotNull(defaultProps);
+        assertEquals(1, defaultProps.size());
+        assertEquals("true", defaultProps.get("rendered"));
         List<DemoLayout> demoLayouts = textWidget.getDemoLayouts();
         assertNotNull(demoLayouts);
         assertEquals(1, demoLayouts.size());
@@ -77,7 +87,7 @@ public class TestLayoutDemoService extends NXRuntimeTestCase {
 
         DemoWidgetType textareaWidget = service.getWidgetType("textarea");
         assertEquals("textarea", textareaWidget.getName());
-        assertEquals("Textarea widget", textareaWidget.getLabel());
+        assertEquals("Textarea", textareaWidget.getLabel());
         assertEquals("textareaWidget", textareaWidget.getViewId());
         assertEquals(LayoutDemoManager.APPLICATION_PATH + "textareaWidget",
                 textareaWidget.getUrl());

@@ -66,7 +66,7 @@ public class TestLayoutDemoURLCodec extends TestCase {
     public void testGetDocumentViewFromPostUrl() {
         LayoutDemoURLCodec codec = new LayoutDemoURLCodec();
         codec.setPrefix("applicationPrefix");
-        String url = "applicationPrefix/widgets/stringWidget.faces?tabId=TAB_CONTENT&conversationId=3";
+        String url = "applicationPrefix/demoWidgets/stringWidget.faces?tabId=TAB_CONTENT&conversationId=3";
         DocumentView docView = codec.getDocumentViewFromUrl(url);
 
         assertNull(docView.getViewId());

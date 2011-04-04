@@ -22,10 +22,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.faces.application.FacesMessage;
+import javax.faces.component.UIComponent;
+import javax.faces.context.FacesContext;
+import javax.faces.validator.ValidatorException;
+
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
 import org.nuxeo.ecm.platform.forms.layout.descriptors.FieldDescriptor;
 
 /**
+ * Collects information to generate a layout definition from user information.
+ *
  * @author Anahide Tchertchian
  * @since 5.4
  */
@@ -43,12 +51,18 @@ public class PreviewLayoutDefinition implements Serializable {
 
     protected Boolean translated;
 
+    protected Map<String, Serializable> defaultProperties;
+
     protected Map<String, Serializable> properties;
 
-    public PreviewLayoutDefinition(String widgetType, List<String> fields) {
+    protected List<Map<String, Serializable>> customProperties;
+
+    public PreviewLayoutDefinition(String widgetType, List<String> fields,
+            Map<String, Serializable> defaultProperties) {
         super();
         this.widgetType = widgetType;
         this.fields = fields;
+        this.defaultProperties = defaultProperties;
     }
 
     public String getWidgetType() {
@@ -97,14 +111,110 @@ public class PreviewLayoutDefinition implements Serializable {
     public Map<String, Serializable> getProperties() {
         if (properties == null) {
             properties = new HashMap<String, Serializable>();
-            // rendered by default
-            properties.put("rendered", Boolean.TRUE);
+            // fill with default properties
+            if (defaultProperties != null) {
+                properties.putAll(defaultProperties);
+            }
         }
         return properties;
     }
 
     public void setProperties(Map<String, Serializable> properties) {
         this.properties = properties;
+    }
+
+    public List<Map<String, Serializable>> getCustomProperties() {
+        if (customProperties == null) {
+            customProperties = new ArrayList<Map<String, Serializable>>();
+        }
+        return customProperties;
+    }
+
+    public void setCustomProperties(
+            List<Map<String, Serializable>> customProperties) {
+        this.customProperties = customProperties;
+    }
+
+    public Map<String, Serializable> getWidgetProperties() {
+        Map<String, Serializable> widgetProps = new HashMap<String, Serializable>();
+        Map<String, Serializable> props = getProperties();
+        if (props != null) {
+            widgetProps.putAll(props);
+        }
+        List<Map<String, Serializable>> customProps = getCustomProperties();
+        if (customProps != null) {
+            widgetProps.putAll(convertCustomProperties(customProps));
+        }
+        return cleanUpProperties(widgetProps);
+    }
+
+    /**
+     * Removes empty properties as the JSF component may not accept empty
+     * values for some properties like "converter" or "validator".
+     */
+    protected Map<String, Serializable> cleanUpProperties(
+            Map<String, Serializable> props) {
+        Map<String, Serializable> res = new HashMap<String, Serializable>();
+        if (props != null) {
+            for (Map.Entry<String, Serializable> prop : props.entrySet()) {
+                Serializable value = prop.getValue();
+                if (value == null
+                        || (value instanceof String && StringUtils.isEmpty((String) value))) {
+                    continue;
+                }
+                res.put(prop.getKey(), value);
+            }
+        }
+        return res;
+    }
+
+    public Map<String, Serializable> getNewCustomProperty() {
+        Map<String, Serializable> prop = new HashMap<String, Serializable>();
+        prop.put("key", null);
+        prop.put("value", null);
+        return prop;
+    }
+
+    protected Map<String, Serializable> convertCustomProperties(
+            List<Map<String, Serializable>> listProps)
+            throws ValidatorException {
+        Map<String, Serializable> values = new HashMap<String, Serializable>();
+        if (listProps != null) {
+            for (Map<String, Serializable> entry : listProps) {
+                String key = (String) entry.get("key");
+                Serializable value = entry.get("value");
+                if (key == null || key.trim().length() == 0) {
+                    FacesMessage message = new FacesMessage(
+                            FacesMessage.SEVERITY_ERROR, "Invalid empty key",
+                            null);
+                    throw new ValidatorException(message);
+                }
+                if (values.containsKey(key)) {
+                    FacesMessage message = new FacesMessage(
+                            FacesMessage.SEVERITY_ERROR, String.format(
+                                    "Duplicate key '%s'", key), null);
+                    throw new ValidatorException(message);
+                }
+                values.put(key, value);
+            }
+        }
+        return values;
+    }
+
+    @SuppressWarnings("unchecked")
+    public void validateCustomProperties(FacesContext context,
+            UIComponent component, Object value) {
+        if (value != null && !(value instanceof List)) {
+            FacesMessage message = new FacesMessage(
+                    FacesMessage.SEVERITY_ERROR, "Invalid value: " + value,
+                    null);
+            // also add global message
+            context.addMessage(null, message);
+            throw new ValidatorException(message);
+        }
+        List<Map<String, Serializable>> listValue = (List) value;
+        // will throw an error
+        convertCustomProperties(listValue);
     }
 
 }

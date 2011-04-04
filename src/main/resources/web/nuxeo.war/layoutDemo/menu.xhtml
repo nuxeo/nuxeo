@@ -3,59 +3,25 @@
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:nxu="http://nuxeo.org/nxweb/util">
 
-  <div class="foldableBox">
+  <ui:include src="menu_template.xhtml">
+    <ui:param name="category" value="standard" />
+    <ui:param name="categoryTitle" value="Standard widgets" />
+    <ui:param name="currentWidgetType" value="#{currentWidgetType}" />
+    <ui:param name="widgetTypes" value="#{standardWidgetTypes}" />
+  </ui:include>
 
-    <nxu:set var="standardWidgetsSelected" value="#{currentWidgetType.category == 'standard'}">
-      <h3 class="#{nxu:test(standardWidgetsSelected, 'unfolded', 'folded')}">
-        <a href="#nogo" onclick="return toggleBox(this)">
-          <h:outputText value="Standard widgets" />
-        </a>
-      </h3>
-  
-      <div class="boxBody"
-        style="#{nxu:test(standardWidgetsSelected, '', 'overflow: visible; display: none;')}">
-  
-        <nxu:set var="widgetTypes" value="#{standardWidgetTypes}">
-          <ul class="layoutDemoMenu">
-            <c:forEach var="widgetType" items="#{widgetTypes}">
-              <li class="#{nxu:test(currentWidgetType.name == widgetType.name, 'selected', '')}">
-                <a href="#{baseURL}#{widgetType.url}">#{widgetType.label}</a>
-              </li>
-            </c:forEach>
-          </ul>
-        </nxu:set>
-  
-      </div>
-    </nxu:set>
-    
-  </div>
+  <ui:include src="menu_template.xhtml">
+    <ui:param name="category" value="listing" />
+    <ui:param name="categoryTitle" value="Listing widgets" />
+    <ui:param name="currentWidgetType" value="#{currentWidgetType}" />
+    <ui:param name="widgetTypes" value="#{listingWidgetTypes}" />
+  </ui:include>
 
-  <div class="foldableBox">
-
-    <nxu:set var="customWidgetsSelected" value="#{currentWidgetType.category == 'custom'}">
-      <h3 class="#{nxu:test(customWidgetsSelected, 'unfolded', 'folded')}">
-        <a href="#nogo" onclick="return toggleBox(this)">
-          <h:outputText value="Custom widgets" />
-        </a>
-      </h3>
-  
-      <div class="boxBody"
-        style="#{nxu:test(customWidgetsSelected, '', 'overflow: visible; display: none;')}">
-  
-        <nxu:set var="widgetTypes" value="#{customWidgetTypes}">
-          <ul class="layoutDemoMenu">
-            <c:forEach var="widgetType" items="#{widgetTypes}">
-              <li class="#{nxu:test(currentWidgetType.name == widgetType.name, 'selected', '')}">
-                <a href="#{baseURL}#{widgetType.url}">#{widgetType.label}</a>
-              </li>
-            </c:forEach>
-          </ul>
-        </nxu:set>
-  
-      </div>
-    </nxu:set>
-
-  </div>
-
+  <ui:include src="menu_template.xhtml">
+    <ui:param name="category" value="custom" />
+    <ui:param name="categoryTitle" value="Custom widgets" />
+    <ui:param name="currentWidgetType" value="#{currentWidgetType}" />
+    <ui:param name="widgetTypes" value="#{customWidgetTypes}" />
+  </ui:include>
 
 </div>

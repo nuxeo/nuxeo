@@ -12,7 +12,7 @@
   <ui:define name="content">
   
     <h3>#{currentWidgetType.label}</h3>
-
+    
     <div class="tabsBar">
 
       <ul>
@@ -33,8 +33,26 @@
     <div class="tabsContent">
 
       <c:if test="#{empty layoutDemoCurrentTabId}">
-        <c:forEach var="demoLayout" items="#{currentWidgetType.demoLayouts}" varStatus="demoLayoutStatus">
+
+        <c:if test="#{not empty currentWidgetTypeConf.description}">
+          <div class="foldableBox">        
+            <h3 class="unfolded">
+              <a href="#nogo" onclick="return toggleBox(this)">
+                <h:outputText value="Description" />
+              </a>
+            </h3>
+  
+            <div class="boxBody">
+              <h:outputText value="#{currentWidgetTypeConf.description}"
+                escape="false" styleClass="currentDocumentDescription" />
+            </div>
+          </div>
+        </c:if>
+
+        <c:forEach var="demoLayout" items="#{currentWidgetType.demoLayouts}"
+          varStatus="demoLayoutStatus">
           <ui:include src="/layoutDemo/widget_demo_template.xhtml" />    
+          <br /><br />
         </c:forEach>
       </c:if>
 

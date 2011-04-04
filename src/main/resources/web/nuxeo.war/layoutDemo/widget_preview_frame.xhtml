@@ -1,0 +1,32 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<nxthemes:composition xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxthemes="http://nuxeo.org/nxthemes"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+  <ui:define name="page title">
+    <h:outputText value="Widget Preview" />
+  </ui:define>
+
+  <ui:define name="body">
+
+    <nxu:set var="jsonLayoutDef" value="#{request.getParameter('layoutDefinition')}">
+    <nxu:set var="layoutDef" value="#{layoutPreviewActions.getDecodedLayoutDefinition(jsonLayoutDef)}">
+    <nxu:set var="layoutMode" value="#{request.getParameter('layoutMode')}">
+    <nxu:set var="layoutTemplate" value="#{request.getParameter('layoutTemplate')}">
+      <nxl:layout
+        definition="#{layoutDef}"
+        value="#{layoutPreviewDocument}"
+        mode="#{layoutMode}"
+        template="#{layoutTemplate}" />
+    </nxu:set>
+    </nxu:set>
+    </nxu:set>
+    </nxu:set>
+
+  </ui:define>
+
+</nxthemes:composition>

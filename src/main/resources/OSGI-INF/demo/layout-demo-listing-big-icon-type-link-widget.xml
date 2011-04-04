@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+
+<component
+  name="org.nuxeo.ecm.platform.forms.layoutDemo.listing_big_icon_type_linkWidget.contrib">
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+
+    <!-- WARNING: this layout is focused on the widget definition.
+      The layout and column settings are incomplete and show only parts of
+      the standard configuration for a full listing layout configuration. -->
+
+    <layout name="listing_big_icon_type_linkWidgetLayout">
+      <templates>
+        <template mode="any">
+          /layouts/layout_listing_ajax_template.xhtml
+        </template>
+        <template mode="csv">
+          /layouts/layout_listing_csv_template.xhtml
+        </template>
+        <template mode="pdf">
+          /layouts/layout_listing_pdf_template.xhtml
+        </template>
+      </templates>
+      <properties mode="any">
+        <property name="showListingHeader">true</property>
+        <property name="showRowEvenOddClass">true</property>
+      </properties>
+      <columns>
+        <column name="listing_big_icon_type_link">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+          </properties>
+          <widget>listing_big_icon_type_linkWidget</widget>
+        </column>
+        <column name="listing_title">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+          </properties>
+          <widget>demo_listing_title</widget>
+        </column>
+      </columns>
+      <widget name="listing_big_icon_type_linkWidget"
+        type="listing_big_icon_type_link">
+        <labels>
+          <label mode="any">Big icon and document type with link widget</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>data</field>
+          <field>data.ref</field>
+          <field>data.type</field>
+          <field>data.folder</field>
+        </fields>
+      </widget>
+    </layout>
+
+  </extension>
+
+</component>

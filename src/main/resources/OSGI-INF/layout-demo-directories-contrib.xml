@@ -4,16 +4,16 @@
   <extension target="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory"
     point="directories">
 
-    <directory name="layout_demo_casting">
+    <directory name="layout_demo_crew">
       <schema>vocabulary</schema>
       <dataSource>java:/nxsqldirectory</dataSource>
       <cacheTimeout>3600</cacheTimeout>
       <cacheMaxSize>1000</cacheMaxSize>
-      <table>layout_demo_casting</table>
+      <table>layout_demo_crew</table>
       <idField>id</idField>
       <autoincrementIdField>false</autoincrementIdField>
-      <dataFile>directories/layout_demo_casting.csv</dataFile>
-      <createTablePolicy>on_missing_columns</createTablePolicy>
+      <dataFile>directories/layout_demo_crew.csv</dataFile>
+      <createTablePolicy>always</createTablePolicy>
     </directory>
 
   </extension>

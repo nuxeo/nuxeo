@@ -19,11 +19,13 @@ package org.nuxeo.ecm.platform.forms.layout.demo.descriptors;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.platform.forms.layout.demo.service.DemoLayout;
+import org.nuxeo.ecm.platform.forms.layout.descriptors.PropertiesDescriptor;
 
 /**
  * @author Anahide Tchertchian
@@ -51,6 +53,9 @@ public class DemoWidgetTypeDescriptor implements Serializable {
     @XNodeList(value = "preview/fields/field", type = ArrayList.class, componentType = String.class)
     protected List<String> fields;
 
+    @XNode("preview/defaultProperties")
+    protected PropertiesDescriptor defaultProperties;
+
     @XNodeList(value = "layouts/layout", type = ArrayList.class, componentType = DemoLayoutDescriptor.class)
     protected List<DemoLayoutDescriptor> demoLayouts;
 
@@ -76,6 +81,13 @@ public class DemoWidgetTypeDescriptor implements Serializable {
 
     public List<String> getFields() {
         return fields;
+    }
+
+    public Map<String, Serializable> getDefaultProperties() {
+        if (defaultProperties == null) {
+            return null;
+        }
+        return defaultProperties.getProperties();
     }
 
     public List<DemoLayout> getDemoLayouts() {

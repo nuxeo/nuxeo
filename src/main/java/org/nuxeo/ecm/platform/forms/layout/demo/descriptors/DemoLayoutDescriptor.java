@@ -35,12 +35,19 @@ public class DemoLayoutDescriptor implements DemoLayout {
     @XNode("@src")
     protected String sourcePath;
 
+    @XNode("@isListing")
+    protected boolean listing = false;
+
     public String getName() {
         return name;
     }
 
     public String getSourcePath() {
         return LayoutDemoManager.APPLICATION_PATH + sourcePath;
+    }
+
+    public boolean isListing() {
+        return listing;
     }
 
 }

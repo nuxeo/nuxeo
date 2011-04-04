@@ -15,74 +15,143 @@
       <redirect />
     </navigation-case>
 
+    <navigation-case>
+      <from-outcome>widgetPreviewFrame</from-outcome>
+      <to-view-id>/layoutDemo/widget_preview_frame.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
     <!-- pages mapping -->
     <navigation-case>
       <from-outcome>textWidget</from-outcome>
-      <to-view-id>/layoutDemo/widgets/textWidget.xhtml</to-view-id>
+      <to-view-id>/layoutDemo/demoWidgets/textWidget.xhtml</to-view-id>
       <redirect />
     </navigation-case>
     <navigation-case>
       <from-outcome>textareaWidget</from-outcome>
-      <to-view-id>/layoutDemo/widgets/textareaWidget.xhtml</to-view-id>
+      <to-view-id>/layoutDemo/demoWidgets/textareaWidget.xhtml</to-view-id>
       <redirect />
     </navigation-case>
     <navigation-case>
       <from-outcome>intWidget</from-outcome>
-      <to-view-id>/layoutDemo/widgets/intWidget.xhtml</to-view-id>
+      <to-view-id>/layoutDemo/demoWidgets/intWidget.xhtml</to-view-id>
       <redirect />
     </navigation-case>
     <navigation-case>
       <from-outcome>secretWidget</from-outcome>
-      <to-view-id>/layoutDemo/widgets/secretWidget.xhtml</to-view-id>
+      <to-view-id>/layoutDemo/demoWidgets/secretWidget.xhtml</to-view-id>
       <redirect />
     </navigation-case>
     <navigation-case>
       <from-outcome>datetimeWidget</from-outcome>
-      <to-view-id>/layoutDemo/widgets/datetimeWidget.xhtml</to-view-id>
+      <to-view-id>/layoutDemo/demoWidgets/datetimeWidget.xhtml</to-view-id>
       <redirect />
     </navigation-case>
     <navigation-case>
       <from-outcome>fileWidget</from-outcome>
-      <to-view-id>/layoutDemo/widgets/fileWidget.xhtml</to-view-id>
+      <to-view-id>/layoutDemo/demoWidgets/fileWidget.xhtml</to-view-id>
       <redirect />
     </navigation-case>
     <navigation-case>
       <from-outcome>htmltextWidget</from-outcome>
-      <to-view-id>/layoutDemo/widgets/htmltextWidget.xhtml</to-view-id>
+      <to-view-id>/layoutDemo/demoWidgets/htmltextWidget.xhtml</to-view-id>
       <redirect />
     </navigation-case>
     <navigation-case>
       <from-outcome>selectOneDirectoryWidget</from-outcome>
       <to-view-id>
-        /layoutDemo/widgets/selectOneDirectoryWidget.xhtml
+        /layoutDemo/demoWidgets/selectOneDirectoryWidget.xhtml
       </to-view-id>
       <redirect />
     </navigation-case>
     <navigation-case>
       <from-outcome>selectManyDirectoryWidget</from-outcome>
       <to-view-id>
-        /layoutDemo/widgets/selectManyDirectoryWidget.xhtml
+        /layoutDemo/demoWidgets/selectManyDirectoryWidget.xhtml
       </to-view-id>
       <redirect />
     </navigation-case>
     <navigation-case>
       <from-outcome>listWidget</from-outcome>
-      <to-view-id>/layoutDemo/widgets/listWidget.xhtml</to-view-id>
+      <to-view-id>/layoutDemo/demoWidgets/listWidget.xhtml</to-view-id>
       <redirect />
     </navigation-case>
     <navigation-case>
       <from-outcome>checkboxWidget</from-outcome>
-      <to-view-id>/layoutDemo/widgets/checkboxWidget.xhtml</to-view-id>
+      <to-view-id>/layoutDemo/demoWidgets/checkboxWidget.xhtml</to-view-id>
       <redirect />
     </navigation-case>
     <navigation-case>
       <from-outcome>templateWidget</from-outcome>
-      <to-view-id>/layoutDemo/widgets/templateWidget.xhtml</to-view-id>
+      <to-view-id>/layoutDemo/demoWidgets/templateWidget.xhtml</to-view-id>
       <redirect />
     </navigation-case>
     <navigation-case>
       <from-outcome>complexWidget</from-outcome>
-      <to-view-id>/layoutDemo/widgets/complexWidget.xhtml</to-view-id>
+      <to-view-id>/layoutDemo/demoWidgets/complexWidget.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>listing_authorWidget</from-outcome>
+      <to-view-id>
+        /layoutDemo/demoWidgets/listing_authorWidget.xhtml
+      </to-view-id>
+      <redirect />
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>listing_big_icon_typeWidget</from-outcome>
+      <to-view-id>
+        /layoutDemo/demoWidgets/listing_big_icon_typeWidget.xhtml
+      </to-view-id>
+      <redirect />
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>listing_big_icon_type_linkWidget</from-outcome>
+      <to-view-id>
+        /layoutDemo/demoWidgets/listing_big_icon_type_linkWidget.xhtml
+      </to-view-id>
+      <redirect />
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>listing_icon_typeWidget</from-outcome>
+      <to-view-id>
+        /layoutDemo/demoWidgets/listing_icon_typeWidget.xhtml
+      </to-view-id>
+      <redirect />
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>listing_last_contributorWidget</from-outcome>
+      <to-view-id>
+        /layoutDemo/demoWidgets/listing_last_contributorWidget.xhtml
+      </to-view-id>
+      <redirect />
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>listing_lifecycleWidget</from-outcome>
+      <to-view-id>
+        /layoutDemo/demoWidgets/listing_lifecycleWidget.xhtml
+      </to-view-id>
+      <redirect />
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>listing_lock_iconWidget</from-outcome>
+      <to-view-id>
+        /layoutDemo/demoWidgets/listing_lock_iconWidget.xhtml
+      </to-view-id>
+      <redirect />
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>listing_title_linkWidget</from-outcome>
+      <to-view-id>
+        /layoutDemo/demoWidgets/listing_title_linkWidget.xhtml
+      </to-view-id>
+      <redirect />
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>listing_versionWidget</from-outcome>
+      <to-view-id>
+        /layoutDemo/demoWidgets/listing_versionWidget.xhtml
+      </to-view-id>
       <redirect />
     </navigation-case>
 

@@ -18,6 +18,7 @@ package org.nuxeo.ecm.platform.forms.layout.demo.service;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Anahide Tchertchian
@@ -38,5 +39,8 @@ public interface DemoWidgetType extends Serializable {
 
     List<String> getFields();
 
+    Map<String, Serializable> getDefaultProperties();
+
     List<DemoLayout> getDemoLayouts();
+
 }

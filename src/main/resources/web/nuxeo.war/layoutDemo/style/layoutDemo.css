@@ -2,23 +2,24 @@
   Layout demo specific CSS
 **/
 
-/* Remove default padding from Nuxeo Galaxy Theme
- But nxStylenumber changes each time, so workaround (that impacts header & footer) */
+/* Remove default padding from Nuxeo Galaxy Theme */
 
-body tbody:first-child tr:first-child td:first-child {
+.themeCellFrame {
   border:none;  
 }
 
-body tbody:first-child tr:first-child td:first-child div:first-child {
+.themeRegion {
   padding:0px;  
 }
 
-table {
+.layoutDemoPage {
   border-spacing: 0;
   border-collapse: collapse;
+  width:100%;
+  overflow:hidden;
 }
 
-table td {
+.layoutDemoPage td {
   padding:0px;
 }
 
