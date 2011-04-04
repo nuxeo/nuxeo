@@ -175,6 +175,12 @@ public class CoreQueryDocumentPageProvider extends
     }
 
     @Override
+    protected void pageChanged() {
+        super.pageChanged();
+        currentPageDocuments = null;
+    }
+
+    @Override
     public void refresh() {
         super.refresh();
         query = null;

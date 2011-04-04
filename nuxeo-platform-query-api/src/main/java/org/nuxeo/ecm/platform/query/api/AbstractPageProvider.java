@@ -18,6 +18,7 @@ package org.nuxeo.ecm.platform.query.api;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -89,7 +90,6 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
         if (offset != 0) {
             offset = 0;
             pageChanged();
-            refresh();
         }
     }
 
@@ -134,7 +134,6 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
         long oldOffset = offset;
         offset = page * pageSize;
         pageChanged();
-        refresh();
         List<T> res = getCurrentPage();
         // sanity check in case given page is not present in result provider
         if (page >= getNumberOfPages()) {
@@ -145,7 +144,6 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
                     Long.valueOf(page)));
             offset = oldOffset;
             pageChanged();
-            refresh();
             res = getCurrentPage();
         }
         return res;
@@ -180,17 +178,46 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
         return null;
     }
 
+    protected boolean sortInfoChanged(List<SortInfo> oldSortInfos,
+            List<SortInfo> newSortInfos) {
+        if (oldSortInfos == null && newSortInfos == null) {
+            return false;
+        } else if (oldSortInfos == null) {
+            oldSortInfos = Collections.emptyList();
+        } else if (newSortInfos == null) {
+            newSortInfos = Collections.emptyList();
+        }
+        if (oldSortInfos.size() != newSortInfos.size()) {
+            return true;
+        }
+        for (int i = 0; i < oldSortInfos.size(); i++) {
+            SortInfo oldSort = oldSortInfos.get(i);
+            SortInfo newSort = newSortInfos.get(i);
+            if (oldSort == null && newSort == null) {
+                continue;
+            } else if (oldSort != null || newSort != null) {
+                return true;
+            }
+            if (!oldSort.equals(newSort)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void setSortInfos(List<SortInfo> sortInfo) {
-        this.sortInfos = sortInfo;
-        refresh();
+        if (sortInfoChanged(this.sortInfos, sortInfo)) {
+            this.sortInfos = sortInfo;
+            refresh();
+        }
     }
 
     public void setSortInfo(SortInfo sortInfo) {
-        this.sortInfos = new ArrayList<SortInfo>();
+        List<SortInfo> newSortInfos = new ArrayList<SortInfo>();
         if (sortInfo != null) {
-            this.sortInfos.add(sortInfo);
+            newSortInfos.add(sortInfo);
         }
-        refresh();
+        setSortInfos(newSortInfos);
     }
 
     public void setSortInfo(String sortColumn, boolean sortAscending,
@@ -262,7 +289,6 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
             offset = (int) (getResultsCount() - getResultsCount() % pageSize);
         }
         pageChanged();
-        refresh();
     }
 
     /**
@@ -279,7 +305,6 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
         }
         offset += pageSize;
         pageChanged();
-        refresh();
     }
 
     /**
@@ -297,7 +322,6 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
         if (offset >= pageSize) {
             offset -= pageSize;
             pageChanged();
-            refresh();
         }
     }
 
@@ -496,9 +520,23 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
         return searchDocumentModel;
     }
 
+    protected boolean searchDocumentModelChanged(DocumentModel oldDoc,
+            DocumentModel newDoc) {
+        if (oldDoc == null && newDoc == null) {
+            return false;
+        } else if (oldDoc == null || newDoc == null) {
+            return true;
+        }
+        // do not compare properties and assume it's changed
+        return true;
+    }
+
     public void setSearchDocumentModel(DocumentModel searchDocumentModel) {
+        if (searchDocumentModelChanged(this.searchDocumentModel,
+                searchDocumentModel)) {
+            refresh();
+        }
         this.searchDocumentModel = searchDocumentModel;
-        refresh();
     }
 
     public String getErrorMessage() {

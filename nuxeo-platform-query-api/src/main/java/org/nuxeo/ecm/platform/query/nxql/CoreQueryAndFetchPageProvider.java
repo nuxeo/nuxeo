@@ -175,6 +175,12 @@ public class CoreQueryAndFetchPageProvider extends
     }
 
     @Override
+    protected void pageChanged() {
+        super.pageChanged();
+        currentItems = null;
+    }
+
+    @Override
     public void refresh() {
         super.refresh();
         query = null;
