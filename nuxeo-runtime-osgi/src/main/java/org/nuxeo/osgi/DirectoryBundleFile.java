@@ -1,15 +1,17 @@
 /*
- * (C) Copyright 2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the GNU Lesser General Public License
- * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
@@ -43,8 +45,52 @@ public class DirectoryBundleFile implements BundleFile {
     protected final File file;
     protected final Manifest mf;
 
+    /**
+     * Hack for PDE projects.
+     * This method tests if the target bundle is in a PDE environment and copy the
+     * bundle data to bin directory.
+     * @param file
+     * @return
+     * @throws IOException
+     */
+    static Manifest getManifest(File file) throws IOException {
+        if (file.getPath().endsWith("/bin")) {
+            return copyBundleDataAndGetManifest(file);
+        }
+        return JarUtils.getDirectoryManifest(file);
+    }
+
+    static Manifest copyBundleDataAndGetManifest(File file) throws IOException {
+        File project = file.getParentFile();
+        File[] files = project.listFiles();
+        if (files != null) {
+            for (File f : files) {
+                String name = f.getName();
+                if (!name.equals("bin") && !name.equals("src") && !name.equals("lib")) {
+                    copyFileContent(f, file);
+                }
+            }
+        }
+        return JarUtils.getDirectoryManifest(file);
+    }
+
+    static void copyFileContent(File file, File toDir) throws IOException {
+        if (file.isDirectory()) {
+            toDir = new File(toDir, file.getName());
+            toDir.mkdirs();
+            File[] files = file.listFiles();
+            if (files != null) {
+                for (File f : files) {
+                    copyFileContent(f, toDir);
+                }
+            }
+        } else {
+            FileUtils.copyFile(file, new File(toDir, file.getName()));
+        }
+    }
+
     public DirectoryBundleFile(File file) throws IOException {
-        this(file, JarUtils.getDirectoryManifest(file));
+        this(file, getManifest(file));
     }
 
     public DirectoryBundleFile(File file, Manifest mf) {
@@ -56,7 +102,7 @@ public class DirectoryBundleFile implements BundleFile {
     public Enumeration<URL> findEntries(String name, String pattern,
             boolean recurse) {
         throw new UnsupportedOperationException(
-                "The operation BundleFile.findEntries() is not yet implemented");
+        "The operation BundleFile.findEntries() is not yet implemented");
     }
 
     @Override
@@ -75,7 +121,7 @@ public class DirectoryBundleFile implements BundleFile {
     @Override
     public Enumeration<String> getEntryPaths(String path) {
         throw new UnsupportedOperationException(
-                "The operation BundleFile.geEntryPaths() is not yet implemented");
+        "The operation BundleFile.geEntryPaths() is not yet implemented");
     }
 
     @Override
@@ -123,7 +169,7 @@ public class DirectoryBundleFile implements BundleFile {
 
     @Override
     public Collection<BundleFile> findNestedBundles(File tmpDir)
-            throws IOException {
+    throws IOException {
         List<BundleFile> nested = new ArrayList<BundleFile>();
         File[] files = FileUtils.findFiles(file, "*.jar", true);
         for (File jar : files) {
