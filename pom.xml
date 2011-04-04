@@ -23,6 +23,7 @@
     <module>nuxeo-platform-lang-ext</module>
     <module>nuxeo-chemistry</module>
     <module>nuxeo-correspondence-marianne</module>
+    <module>nuxeo-core-binarymanager-sql</module>
     <module>nuxeo-http-client</module>
     <module>nuxeo-platform-classification</module>
     <module>nuxeo-platform-importer</module>
