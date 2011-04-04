@@ -64,29 +64,33 @@ public class DocumentProcessPageProvider extends
 
     protected List<DocumentProcessItem> userProcesses;
 
+    protected List<DocumentProcessItem> pageProcesses;
+
     @Override
     public List<DocumentProcessItem> getCurrentPage() {
-        List<DocumentProcessItem> currentProcesses = new ArrayList<DocumentProcessItem>();
-        if (userProcesses == null) {
-            getAllProcesses();
-        }
-        if (!hasError()) {
-            resultsCount = userProcesses.size();
-            // post-filter the results "by hand" to handle pagination
-            long pageSize = getMinMaxPageSize();
-            if (pageSize == 0) {
-                currentProcesses.addAll(userProcesses);
-            } else {
-                // handle offset
-                if (offset <= resultsCount) {
-                    for (int i = Long.valueOf(offset).intValue(); i < resultsCount
-                            && i < offset + pageSize; i++) {
-                        currentProcesses.add(userProcesses.get(i));
+        if (pageProcesses == null) {
+            pageProcesses = new ArrayList<DocumentProcessItem>();
+            if (userProcesses == null) {
+                getAllProcesses();
+            }
+            if (!hasError()) {
+                resultsCount = userProcesses.size();
+                // post-filter the results "by hand" to handle pagination
+                long pageSize = getMinMaxPageSize();
+                if (pageSize == 0) {
+                    pageProcesses.addAll(userProcesses);
+                } else {
+                    // handle offset
+                    if (offset <= resultsCount) {
+                        for (int i = Long.valueOf(offset).intValue(); i < resultsCount
+                                && i < offset + pageSize; i++) {
+                            pageProcesses.add(userProcesses.get(i));
+                        }
                     }
                 }
             }
         }
-        return currentProcesses;
+        return pageProcesses;
     }
 
     protected void getAllProcesses() {
@@ -163,9 +167,16 @@ public class DocumentProcessPageProvider extends
     }
 
     @Override
+    protected void pageChanged() {
+        super.pageChanged();
+        pageProcesses = null;
+    }
+
+    @Override
     public void refresh() {
         super.refresh();
         userProcesses = null;
+        pageProcesses = null;
     }
 
 }

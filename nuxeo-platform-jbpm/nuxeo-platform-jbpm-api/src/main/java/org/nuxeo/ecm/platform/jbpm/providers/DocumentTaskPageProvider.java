@@ -64,29 +64,33 @@ public class DocumentTaskPageProvider extends
 
     protected List<DashBoardItem> userTasks;
 
+    protected List<DashBoardItem> pageTasks;
+
     @Override
     public List<DashBoardItem> getCurrentPage() {
-        List<DashBoardItem> currentTasks = new ArrayList<DashBoardItem>();
-        if (userTasks == null) {
-            getAllTasks();
-        }
-        if (!hasError()) {
-            resultsCount = userTasks.size();
-            // post-filter the results "by hand" to handle pagination
-            long pageSize = getMinMaxPageSize();
-            if (pageSize == 0) {
-                currentTasks.addAll(userTasks);
-            } else {
-                // handle offset
-                if (offset <= resultsCount) {
-                    for (int i = Long.valueOf(offset).intValue(); i < resultsCount
-                            && i < offset + pageSize; i++) {
-                        currentTasks.add(userTasks.get(i));
+        if (pageTasks == null) {
+            pageTasks = new ArrayList<DashBoardItem>();
+            if (userTasks == null) {
+                getAllTasks();
+            }
+            if (!hasError()) {
+                resultsCount = userTasks.size();
+                // post-filter the results "by hand" to handle pagination
+                long pageSize = getMinMaxPageSize();
+                if (pageSize == 0) {
+                    pageTasks.addAll(userTasks);
+                } else {
+                    // handle offset
+                    if (offset <= resultsCount) {
+                        for (int i = Long.valueOf(offset).intValue(); i < resultsCount
+                                && i < offset + pageSize; i++) {
+                            pageTasks.add(userTasks.get(i));
+                        }
                     }
                 }
             }
         }
-        return currentTasks;
+        return pageTasks;
     }
 
     protected void getAllTasks() {
@@ -161,9 +165,16 @@ public class DocumentTaskPageProvider extends
     }
 
     @Override
+    protected void pageChanged() {
+        super.pageChanged();
+        pageTasks = null;
+    }
+
+    @Override
     public void refresh() {
         super.refresh();
         userTasks = null;
+        pageTasks = null;
     }
 
 }
