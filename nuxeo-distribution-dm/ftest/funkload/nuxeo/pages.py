@@ -596,7 +596,7 @@ class FolderPage(BasePage):
         table_name = checkbox_id.split(':', 1)[0]
 
         params = [
-            ['AJAXREQUEST', 'contentViewAjaxRegion_0'],
+            ['AJAXREQUEST', 'contentViewAjaxRegion_' + table_name + '_0'],
             [checkbox_id, 'on'],
             ['javax.faces.ViewState', fl.getLastJsfState()],
             [checkbox_ajax_onclick_id, checkbox_ajax_onclick_id],
