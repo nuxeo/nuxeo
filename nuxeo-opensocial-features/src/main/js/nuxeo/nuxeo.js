@@ -76,7 +76,7 @@ gadgets.nuxeo.hasPermission = function(permissionName) {
 
 gadgets.nuxeo.isEditable = function() {
   var permissions = gadgets.util.getUrlParameters().permission;
-  return permissions.indexOf("Write") != -1 || permissions.indexOf("Everything");
+  return permissions.indexOf("Write") != -1 || permissions.indexOf("Everything") != -1;
 };
 
 gadgets.nuxeo.getNXIDPreference = function(name, id) {
