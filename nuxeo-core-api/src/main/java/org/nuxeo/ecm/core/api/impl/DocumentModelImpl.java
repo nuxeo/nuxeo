@@ -729,9 +729,6 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         if (lock == null) {
             return null;
         }
-        if (lock.getOwner() == null && lock.getCreated() == null) {
-            return null;
-        }
         // return deprecated format, like "someuser:Nov 29, 2010"
         String lockCreationDate = (lock.getCreated() == null) ? null
                 : DateFormat.getDateInstance(DateFormat.MEDIUM).format(
