@@ -2157,7 +2157,10 @@
         <title>Select One Listbox</title>
         <description></description>
         <categories>
-          <category>document</category>
+          <!-- don't export it yet -->
+          <!-- 
+            <category>document</category>
+          -->
         </categories>
         <supportedModes>
           <mode>edit</mode>
@@ -2971,7 +2974,6 @@
             &lt;nxl:layout /&gt; tag in all modes.
           </p>
         </description>
-        <demo id="layoutWidget" />
         <categories>
           <category>dev</category>
         </categories>
