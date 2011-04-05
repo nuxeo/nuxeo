@@ -93,11 +93,11 @@ public class PreferencesWidget extends DialogBox implements
         buttonsPanel.setWidth("100%");
 
         cancelButton = new Button(constants.close());
-        cancelButton.addStyleName("preferences-cancel");
+        cancelButton.setStyleName("preferences-cancel");
         buttonsPanel.setWidget(0, 0, cancelButton);
 
         saveButton = new Button(constants.save());
-        saveButton.addStyleName("preferences-save");
+        saveButton.setStyleName("preferences-save");
         buttonsPanel.setWidget(0, 1, saveButton);
 
         layout.add(buttonsPanel);
