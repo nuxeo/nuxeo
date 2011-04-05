@@ -16,7 +16,7 @@ function closePopup() {
 
    <#if status.hasWarnings()>
       <div class="installWarningsTitle">
-         Some warnings where found when checking the package
+         Some warnings were found when checking the package
       </div>
       <ul class="installWarnings">
         <#list status.getWarnings() as warning>
