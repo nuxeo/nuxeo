@@ -79,11 +79,17 @@ public class TestLayoutDemoService extends NXRuntimeTestCase {
         assertEquals("true", defaultProps.get("rendered"));
         List<DemoLayout> demoLayouts = textWidget.getDemoLayouts();
         assertNotNull(demoLayouts);
-        assertEquals(1, demoLayouts.size());
+        assertEquals(2, demoLayouts.size());
         assertEquals("textWidgetLayout", demoLayouts.get(0).getName());
+        assertFalse(demoLayouts.get(0).isListing());
         assertEquals(LayoutDemoManager.APPLICATION_PATH
                 + "sources/OSGI-INF/demo/layout-demo-text-widget.xml",
                 demoLayouts.get(0).getSourcePath());
+        assertEquals("textWidgetListingLayout", demoLayouts.get(1).getName());
+        assertTrue(demoLayouts.get(1).isListing());
+        assertEquals(LayoutDemoManager.APPLICATION_PATH
+                + "sources/OSGI-INF/demo/layout-demo-text-listing-widget.xml",
+                demoLayouts.get(1).getSourcePath());
 
         DemoWidgetType textareaWidget = service.getWidgetType("textarea");
         assertEquals("textarea", textareaWidget.getName());
@@ -94,11 +100,19 @@ public class TestLayoutDemoService extends NXRuntimeTestCase {
         assertEquals("standard", textareaWidget.getCategory());
         demoLayouts = textareaWidget.getDemoLayouts();
         assertNotNull(demoLayouts);
-        assertEquals(1, demoLayouts.size());
+        assertEquals(2, demoLayouts.size());
         assertEquals("textareaWidgetLayout", demoLayouts.get(0).getName());
+        assertFalse(demoLayouts.get(0).isListing());
         assertEquals(LayoutDemoManager.APPLICATION_PATH
                 + "sources/OSGI-INF/demo/layout-demo-textarea-widget.xml",
                 demoLayouts.get(0).getSourcePath());
+        assertEquals("textareaWidgetListingLayout",
+                demoLayouts.get(1).getName());
+        assertTrue(demoLayouts.get(1).isListing());
+        assertEquals(
+                LayoutDemoManager.APPLICATION_PATH
+                        + "sources/OSGI-INF/demo/layout-demo-textarea-listing-widget.xml",
+                demoLayouts.get(1).getSourcePath());
     }
 
     public void testGetWidgetTypeByViewId() throws Exception {
