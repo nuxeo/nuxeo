@@ -149,7 +149,11 @@ public class SignatureServiceImpl extends DefaultComponent implements
                 pdfCertificates.add(signingCertificate);
             }
         } catch (IOException e) {
-            throw new SignException(e);
+            String message="";
+            if(e.getMessage().equals("PDF header signature not found.")){
+                message="PDF seems to be corrupted";
+            }
+            throw new SignException(message,e);
         }
         return pdfCertificates;
     }

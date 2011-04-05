@@ -231,10 +231,12 @@ public class SignActions implements Serializable {
                 facesMessages.add(StatusMessage.Severity.ERROR,
                         resourcesAccessor.getMessages().get(
                                 "label.sign.pdf.warning"));
+            } else if(blob.getLength()==0){
+                facesMessages.add("The file is empty");
             } else {
                 List<X509Certificate> pdfCertificates;
                 try {
-                    pdfCertificates = signatureService.getPDFCertificates(blob.getStream());
+                        pdfCertificates = signatureService.getPDFCertificates(blob.getStream());
                 } catch (IOException e) {
                     throw new SignException(e);
                 }
