@@ -61,6 +61,11 @@ font-size: 13px;
 display:block;
 text-decoration: none;
 color:#333;
+    /* For Internet Explorer 5.5 - 7 */
+   filter:progid:DXImageTransform.Microsoft.Gradient(GradientType=0, StartColorStr='#ffffff', EndColorStr='#e8e8e8');   
+    /* For Internet Explorer 8 */
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#ffffff, endColorstr=#e8e8e8)";  
+
  }
 
  .categoryList .category a:visited {
@@ -87,7 +92,7 @@ cursor: pointer;
  #gadgetListContainer {
  border:1px solid #999;
  font-size: 12px;
- max-height: 320px;
+ max-height: 290px;
  overflow: auto;
  width: 98%;
  }
@@ -112,6 +117,10 @@ cursor: pointer;
    rgb(255,255,255) 0%,
    rgb(221,238,255) 1%,
    rgb(255,255,255) 66%);
+     /* For Internet Explorer 5.5 - 7 */
+   filter:progid:DXImageTransform.Microsoft.Gradient(GradientType=0, StartColorStr='#ffffff', EndColorStr='#ddeeff');   
+    /* For Internet Explorer 8 */
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#ffffff, endColorstr=#ddeeff)";   
  }
 
  #gadgetListContainer .gadget:hover { 

@@ -50,15 +50,15 @@ html,body {
     -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#ffffff, endColorstr=#e8e8e8)";    
 }
 
-.opensocial_buttons a:visited {
+.opensocial_buttons ul li a:link, .opensocial_buttons a:visited {
   color:#333;
 }
-
 
 .opensocial_buttons a:hover {
   cursor: pointer;
   border: 1px inset #ccc;
   text-decoration: none;
+  color:#000; 
 }
 
 #gwtContainer {
@@ -100,7 +100,7 @@ html,body {
 
 .header .title {
   font-weight: bold;
-  padding:0.5em;
+  padding:0.35em 0.5em;
   padding-left:1em;
 }
 
@@ -703,7 +703,8 @@ ul#managerTabs {
 	font-size: 1.4em;
 	min-height: 1.5em;
 	font-weight: bold;*/
-	color:#333;
+	color:#666;
+	text-shadow: 1px 1px 3px #FFFFFF;
 	border-bottom: 1px solid #ccc;
     background-image: -webkit-gradient(
     linear,

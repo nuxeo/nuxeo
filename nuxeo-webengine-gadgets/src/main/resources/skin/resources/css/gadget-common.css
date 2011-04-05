@@ -34,12 +34,12 @@ button {
 }
 
 #content {
-  padding:10px;
+  padding:0.5em;
 }
 
 .tools {
   background-color: #f7f7f7;
-  padding:10px;
+  padding:0.5em;
 }
 
 #nxDocumentList {
