@@ -426,10 +426,16 @@ public class SQLSession implements Session {
                     props.put(Model.LOCK_CREATED_PROP, created);
                 }
             }
-            props.put(Model.LOCK_OWNER_PROP,
-                    properties.get(CoreSession.IMPORT_LOCK_OWNER));
-            props.put(Model.LOCK_CREATED_PROP,
-                    properties.get(CoreSession.IMPORT_LOCK_CREATED));
+
+            Serializable importLockOwnerProp = properties.get(CoreSession.IMPORT_LOCK_OWNER);
+            if (importLockOwnerProp != null) {
+                props.put(Model.LOCK_OWNER_PROP, importLockOwnerProp);
+            }
+            Serializable importLockCreatedProp = properties.get(CoreSession.IMPORT_LOCK_CREATED);
+            if (importLockCreatedProp != null) {
+                props.put(Model.LOCK_CREATED_PROP, importLockCreatedProp);
+            }
+
             props.put(Model.MAIN_MAJOR_VERSION_PROP,
                     properties.get(CoreSession.IMPORT_VERSION_MAJOR));
             props.put(Model.MAIN_MINOR_VERSION_PROP,
