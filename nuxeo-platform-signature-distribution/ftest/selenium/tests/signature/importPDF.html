@@ -53,11 +53,6 @@
 	<td></td>
 </tr>
 <tr>
-	<td>click</td>
-	<td>j_id54:j_id59</td>
-	<td></td>
-</tr>
-<tr>
 	<td>clickAndWait</td>
 	<td>link=TestWorkspace</td>
 	<td></td>
@@ -68,9 +63,24 @@
 	<td></td>
 </tr>
 <tr>
+	<td>retrieveTestFolderPath</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>storeExpression</td>
+	<td>javascript{storedVars.testfolderpath +'/samples/original.pdf';}</td>
+	<td>filepath</td>
+</tr>
+<tr>
+	<td>echo</td>
+	<td>${filepath}</td>
+	<td></td>
+</tr>
+<tr>
 	<td>type</td>
 	<td>importFileRichUploadForm:upload:file</td>
-	<td>/tmp/original.pdf</td>
+	<td>${filepath}</td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
