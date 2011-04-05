@@ -208,7 +208,12 @@ public final class FaceletHandlerHelper {
     public boolean shouldCreateReferenceAttribute(String key, Serializable value) {
         if ((value instanceof String)
                 && (ComponentTagUtils.isValueReference((String) value)
-                        || "converter".equals(key) || "validator".equals(key) || "size".equals(key))) {
+                        || "converter".equals(key) || "validator".equals(key)
+                        // size is mistaken for the properties map size because
+                        // of jboss el resolvers
+                        || "size".equals(key)
+                // richfaces calendar does not resolve EL expressions correctly
+                || "showApplyButton".equals(key))) {
             return false;
         }
         return true;
