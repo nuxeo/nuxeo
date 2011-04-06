@@ -37,12 +37,12 @@
             <ui:decorate template="/incl/foldable_content_view.xhtml">
               <ui:param name="contentViewId" value="USER_TASKS" />
               <ui:param name="contentViewName" value="USER_TASKS" />
-              <ui:param name="hideEmpty" value="true" />
+              <ui:param name="hideEmpty" value="false" />
               <ui:define name="boxBodyStart">
                 <h:outputText value="#{messages['label.workflow.tasks']}"
                   class="infoMessage" />          
               </ui:define>
-              <ui:define name="syndication_buttons" />
+              <ui:define name="content_view_syndication_buttons" />
             </ui:decorate>
           </h:panelGroup>
       
@@ -50,12 +50,12 @@
             <ui:decorate template="/incl/foldable_content_view.xhtml">
               <ui:param name="contentViewId" value="USER_PROCESSES" />
               <ui:param name="contentViewName" value="USER_PROCESSES" />
-              <ui:param name="hideEmpty" value="true" />
+              <ui:param name="hideEmpty" value="false" />
               <ui:define name="boxBodyStart">
                 <h:outputText value="#{messages['label.user.processes']}"
                   class="infoMessage" />
               </ui:define>
-              <ui:define name="syndication_buttons" />
+              <ui:define name="content_view_syndication_buttons" />
             </ui:decorate>
           </h:panelGroup>
       
@@ -64,7 +64,7 @@
               <ui:param name="contentViewId" value="USER_WORKSPACES" />
               <ui:param name="contentViewName" value="USER_WORKSPACES" />
               <ui:param name="hideEmpty" value="true" />
-              <ui:define name="syndication_buttons" />
+              <ui:define name="content_view_syndication_buttons" />
             </ui:decorate>
           </h:panelGroup>
       
@@ -73,7 +73,7 @@
               <ui:param name="contentViewId" value="USER_SECTIONS" />
               <ui:param name="contentViewName" value="USER_SECTIONS" />
               <ui:param name="hideEmpty" value="true" />
-              <ui:define name="syndication_buttons" />
+              <ui:define name="content_view_syndication_buttons" />
             </ui:decorate>
           </h:panelGroup>
           
@@ -85,7 +85,7 @@
               <ui:param name="contentViewId" value="USER_DOCUMENTS" />
               <ui:param name="contentViewName" value="USER_DOCUMENTS" />
               <ui:param name="hideEmpty" value="true" />
-              <ui:define name="syndication_buttons" />
+              <ui:define name="content_view_syndication_buttons" />
             </ui:decorate>
           </h:panelGroup>
       
@@ -94,7 +94,7 @@
               <ui:param name="contentViewId" value="DOMAIN_DOCUMENTS" />
               <ui:param name="contentViewName" value="DOMAIN_DOCUMENTS" />
               <ui:param name="hideEmpty" value="true" />
-              <ui:define name="syndication_buttons" />
+              <ui:define name="content_view_syndication_buttons" />
             </ui:decorate>
           </h:panelGroup>
       
@@ -103,7 +103,7 @@
               <ui:param name="contentViewId" value="DOMAIN_PUBLISHED_DOCUMENTS" />
               <ui:param name="contentViewName" value="DOMAIN_PUBLISHED_DOCUMENTS" />
               <ui:param name="hideEmpty" value="true" />
-              <ui:define name="syndication_buttons" />
+              <ui:define name="content_view_syndication_buttons" />
             </ui:decorate>
           </h:panelGroup>
       
@@ -112,18 +112,21 @@
               <ui:param name="contentViewId" value="USER_SITES" />
               <ui:param name="contentViewName" value="USER_SITES" />
               <ui:param name="hideEmpty" value="true" />
-              <ui:define name="syndication_buttons" />
+              <ui:define name="content_view_syndication_buttons" />
             </ui:decorate>
           </h:panelGroup>
       
-          <h:panelGroup>
-            <ui:decorate template="/incl/foldable_content_view.xhtml">
-              <ui:param name="contentViewId" value="USER_DELETED_DOCUMENTS" />
-              <ui:param name="contentViewName" value="USER_DELETED_DOCUMENTS" />
-              <ui:param name="hideEmpty" value="true" />
-              <ui:define name="syndication_buttons" />
-            </ui:decorate>
-          </h:panelGroup>
+          <c:if test="false">
+            Not shown by default
+            <h:panelGroup>
+              <ui:decorate template="/incl/foldable_content_view.xhtml">
+                <ui:param name="contentViewId" value="USER_DELETED_DOCUMENTS" />
+                <ui:param name="contentViewName" value="USER_DELETED_DOCUMENTS" />
+                <ui:param name="hideEmpty" value="true" />
+                <ui:define name="content_view_syndication_buttons" />
+              </ui:decorate>
+            </h:panelGroup>
+          </c:if>
 
         </td>
       </tr>
