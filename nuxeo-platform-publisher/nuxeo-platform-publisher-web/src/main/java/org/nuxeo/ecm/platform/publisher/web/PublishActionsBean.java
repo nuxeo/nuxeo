@@ -172,20 +172,20 @@ public class PublishActionsBean extends AbstractPublishActions implements
 
         PublishedDocument publishedDocument;
         try {
-            publishedDocument = tree.publish(currentDocument,
-                publicationNode, publicationParameters);
-        } catch(PublisherException e) {
+            publishedDocument = tree.publish(currentDocument, publicationNode,
+                    publicationParameters);
+        } catch (PublisherException e) {
             log.error(e, e);
             facesMessages.add(FacesMessage.SEVERITY_ERROR,
-                resourcesAccessor.getMessages().get(
-                        e.getMessage()));
+                    resourcesAccessor.getMessages().get(e.getMessage()));
             return null;
         }
 
         FacesContext context = FacesContext.getCurrentInstance();
         if (publishedDocument.isPending()) {
             String comment = ComponentUtils.translate(context,
-                    "publishing.waiting", publicationNode.getPath(), tree.getConfigName());
+                    "publishing.waiting", publicationNode.getPath(),
+                    tree.getConfigName());
             // Log event on live version
             notifyEvent(PublishingEvent.documentWaitingPublication.name(),
                     null, comment, null, currentDocument);
@@ -407,8 +407,8 @@ public class PublishActionsBean extends AbstractPublishActions implements
                 context, "publishing.approved.with.comment",
                 publishedDocument.getParentPath(), tree.getConfigName(),
                 publishingComment) : ComponentUtils.translate(context,
-                "publishing.approved.without.comment", publishedDocument.getParentPath(),
-                tree.getConfigName());
+                "publishing.approved.without.comment",
+                publishedDocument.getParentPath(), tree.getConfigName());
 
         ApproverWithoutRestriction approver = new ApproverWithoutRestriction(
                 publishedDocument, comment, documentManager);
@@ -440,16 +440,15 @@ public class PublishActionsBean extends AbstractPublishActions implements
         PublishedDocument publishedDocument = tree.wrapToPublishedDocument(currentDocument);
         tree.validatorRejectPublication(publishedDocument, publishingComment);
 
-
         FacesContext context = FacesContext.getCurrentInstance();
         String comment = publishingComment != null
                 && publishingComment.length() > 0 ? ComponentUtils.translate(
                 context, "publishing.rejected.with.comment",
                 publishedDocument.getParentPath(), tree.getConfigName(),
                 publishingComment) : ComponentUtils.translate(context,
-                "publishing.rejected.without.comment", publishedDocument.getParentPath(),
-                tree.getConfigName());
-       RejectWithoutRestrictionRunner runner = new RejectWithoutRestrictionRunner(
+                "publishing.rejected.without.comment",
+                publishedDocument.getParentPath(), tree.getConfigName());
+        RejectWithoutRestrictionRunner runner = new RejectWithoutRestrictionRunner(
                 documentManager, publishedDocument, comment);
 
         if (documentManager.hasPermission(
@@ -592,10 +591,9 @@ public class PublishActionsBean extends AbstractPublishActions implements
 
     public Set<String> getSectionTypes() {
         if (sectionTypes == null) {
-            sectionTypes = getTypeNamesForFacet("PublishSpace");
+            sectionTypes = getTypeNamesForFacet(FacetNames.PUBLISH_SPACE);
             if (sectionTypes == null) {
                 sectionTypes = new HashSet<String>();
-                sectionTypes.add("Section");
             }
         }
         return sectionTypes;

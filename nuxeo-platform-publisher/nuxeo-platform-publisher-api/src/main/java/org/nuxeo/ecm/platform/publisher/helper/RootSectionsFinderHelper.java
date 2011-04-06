@@ -17,14 +17,15 @@
 
 package org.nuxeo.ecm.platform.publisher.helper;
 
-import org.nuxeo.ecm.core.schema.TypeService;
-import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.runtime.api.Framework;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import java.util.Set;
-import java.util.HashSet;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.schema.FacetNames;
+import org.nuxeo.ecm.core.schema.TypeService;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
@@ -41,16 +42,17 @@ public class RootSectionsFinderHelper {
         // Helper class
     }
 
-    public static RootSectionsFinder getRootSectionsFinder(CoreSession coreSession) {
-        return new RootSectionsFinder(coreSession, getSectionRootTypes(), getSectionTypes());
+    public static RootSectionsFinder getRootSectionsFinder(
+            CoreSession coreSession) {
+        return new RootSectionsFinder(coreSession, getSectionRootTypes(),
+                getSectionTypes());
     }
 
     public static Set<String> getSectionRootTypes() {
         if (sectionRootTypes == null) {
-            sectionRootTypes = getTypeNamesForFacet("MasterPublishSpace");
+            sectionRootTypes = getTypeNamesForFacet(FacetNames.MASTER_PUBLISH_SPACE);
             if (sectionRootTypes == null) {
                 sectionRootTypes = new HashSet<String>();
-                sectionRootTypes.add("SectionRoot");
             }
         }
         return sectionRootTypes;
@@ -67,8 +69,8 @@ public class RootSectionsFinderHelper {
             return null;
         }
 
-        Set<String> publishRoots = schemaService.getTypeManager()
-                .getDocumentTypeNamesForFacet(facetName);
+        Set<String> publishRoots = schemaService.getTypeManager().getDocumentTypeNamesForFacet(
+                facetName);
         if (publishRoots == null || publishRoots.isEmpty()) {
             return null;
         }
@@ -77,10 +79,9 @@ public class RootSectionsFinderHelper {
 
     public static Set<String> getSectionTypes() {
         if (sectionTypes == null) {
-            sectionTypes = getTypeNamesForFacet("PublishSpace");
+            sectionTypes = getTypeNamesForFacet(FacetNames.MASTER_PUBLISH_SPACE);
             if (sectionTypes == null) {
                 sectionTypes = new HashSet<String>();
-                sectionTypes.add("Section");
             }
         }
         return sectionTypes;
