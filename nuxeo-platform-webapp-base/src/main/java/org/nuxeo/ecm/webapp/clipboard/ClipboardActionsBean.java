@@ -59,6 +59,7 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
@@ -484,11 +485,10 @@ public class ClipboardActionsBean extends InputController implements
         }
         Set<String> publishSpaces = null;
         if (schemaManager != null) {
-            publishSpaces = schemaManager.getDocumentTypeNamesForFacet("PublishSpace");
+            publishSpaces = schemaManager.getDocumentTypeNamesForFacet(FacetNames.PUBLISH_SPACE);
         }
         if (publishSpaces == null || publishSpaces.isEmpty()) {
             publishSpaces = new HashSet<String>();
-            publishSpaces.add("Section");
         }
         return publishSpaces.contains(container.getType());
     }
