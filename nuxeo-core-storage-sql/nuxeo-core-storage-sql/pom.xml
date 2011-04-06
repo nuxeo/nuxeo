@@ -128,11 +128,6 @@
       <artifactId>mail</artifactId>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>xml-apis</groupId>
-      <artifactId>xml-apis</artifactId>
-      <scope>test</scope>
-    </dependency>
 
     <!-- needed for database-specific tests <dependency> <groupId>org.apache.derby</groupId>
       <artifactId>derby</artifactId> <scope>test</scope> </dependency> <dependency> <groupId>postgresql</groupId>
