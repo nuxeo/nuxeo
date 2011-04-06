@@ -475,7 +475,13 @@ public class PersistenceContext {
 
         // fetch these fragments in bulk
         List<? extends RowId> rows = mapper.read(todo);
-        res.addAll(getFragmentsFromFetchedRows(rows, allowAbsent));
+        try {
+            res.addAll(getFragmentsFromFetchedRows(rows, allowAbsent));
+        } catch (IllegalStateException e) {
+            log.error("getFromMapper mapper.read " + todo + " from total "
+                    + rowIds);
+            throw e;
+        }
 
         return res;
     }
@@ -517,7 +523,13 @@ public class PersistenceContext {
         }
 
         // fetch missing ones, return union
-        List<Fragment> fetched = getFromMapper(todo, allowAbsent);
+        List<Fragment> fetched;
+        try {
+            fetched = getFromMapper(todo, allowAbsent);
+        } catch (IllegalStateException e) {
+            log.error("getMulti get from mapper from total " + rowIds);
+            throw e;
+        }
         res.addAll(fetched);
         return res;
     }
@@ -545,7 +557,13 @@ public class PersistenceContext {
             throws StorageException {
         List<Fragment> fragments = new ArrayList<Fragment>(rowIds.size());
         for (RowId rowId : rowIds) {
-            Fragment fragment = getFragmentFromFetchedRow(rowId, allowAbsent);
+            Fragment fragment;
+            try {
+                fragment = getFragmentFromFetchedRow(rowId, allowAbsent);
+            } catch (IllegalStateException e) {
+                log.error("getFragmentsFromFetchedRows " + rowIds);
+                throw e;
+            }
             if (fragment != null) {
                 fragments.add(fragment);
             }
@@ -588,7 +606,9 @@ public class PersistenceContext {
                     || state == State.INVALIDATED_MODIFIED
                     || state == State.INVALIDATED_DELETED) {
                 // XXX TODO
-                throw new IllegalStateException(state.toString());
+                log.error("Unexpected fragment state: " + state.toString()
+                        + " for " + rowId);
+                throw new IllegalStateException(rowId.id.toString());
             } else {
                 // keep existing fragment
                 return fragment;
