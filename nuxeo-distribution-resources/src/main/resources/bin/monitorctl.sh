@@ -505,6 +505,26 @@ jmx_invoke
 jmx_close
 EOF
 	;;
+    disable-cm|disable-contention-monitoring)
+	[ -z $JMXSH ] && die "You need to enable JMX and install JMXSH"
+	cat <<EOF |  $JAVA_HOME/bin/java -jar $JMXSH 
+jmx_connect -h localhost -p 1089
+set MBEAN java.lang:type=Threading
+set ATTROP ThreadContentionMonitoringEnabled
+jmx_set false
+jmx_close
+EOF
+	;;
+    enable-cm|enable-contention-monitoring)
+	[ -z $JMXSH ] && die "You need to enable JMX and install JMXSH"
+	cat <<EOF |  $JAVA_HOME/bin/java -jar $JMXSH 
+jmx_connect -h localhost -p 1089
+set MBEAN java.lang:type=Threading
+set ATTROP ThreadContentionMonitoringEnabled
+jmx_set true
+jmx_close
+EOF
+	;;
     help)
 	help
 	;;
