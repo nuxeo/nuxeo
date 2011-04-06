@@ -35,6 +35,7 @@ import org.nuxeo.ecm.automation.client.jaxrs.RemoteException;
 import org.nuxeo.ecm.automation.client.jaxrs.Session;
 import org.nuxeo.ecm.automation.client.jaxrs.adapters.DocumentService;
 import org.nuxeo.ecm.automation.client.jaxrs.impl.HttpAutomationClient;
+import org.nuxeo.ecm.automation.client.jaxrs.model.BeanInput;
 import org.nuxeo.ecm.automation.client.jaxrs.model.Blobs;
 import org.nuxeo.ecm.automation.client.jaxrs.model.DateInput;
 import org.nuxeo.ecm.automation.client.jaxrs.model.DocRef;
@@ -44,10 +45,10 @@ import org.nuxeo.ecm.automation.client.jaxrs.model.Documents;
 import org.nuxeo.ecm.automation.client.jaxrs.model.FileBlob;
 import org.nuxeo.ecm.automation.client.jaxrs.model.OperationDocumentation;
 import org.nuxeo.ecm.automation.client.jaxrs.model.PaginableDocuments;
-import org.nuxeo.ecm.automation.client.jaxrs.model.PathRef;
 import org.nuxeo.ecm.automation.client.jaxrs.model.PrimitiveInput;
 import org.nuxeo.ecm.automation.client.jaxrs.model.PropertyList;
 import org.nuxeo.ecm.automation.client.jaxrs.model.PropertyMap;
+import org.nuxeo.ecm.automation.client.jaxrs.spi.JsonMarshalling;
 import org.nuxeo.ecm.automation.core.operations.blob.AttachBlob;
 import org.nuxeo.ecm.automation.core.operations.blob.CreateZip;
 import org.nuxeo.ecm.automation.core.operations.blob.GetDocumentBlob;
@@ -76,10 +77,12 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features(WebEngineFeature.class)
 @Jetty(port = 18080)
-@Deploy({ "org.nuxeo.runtime.jtajca", "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.server", "org.nuxeo.ecm.automation.features", "org.nuxeo.ecm.platform.query.api"  })
+@Deploy({ "org.nuxeo.runtime.jtajca", "org.nuxeo.ecm.automation.core",
+        "org.nuxeo.ecm.automation.server", "org.nuxeo.ecm.automation.features",
+        "org.nuxeo.ecm.platform.query.api" })
 @LocalDeploy({ "org.nuxeo.ecm.automation.server:test-bindings.xml",
-   "org.nuxeo.ecm.automation.server:test-mvalues.xml"
-})
+        "org.nuxeo.ecm.automation.server:test-marshalling.xml",
+        "org.nuxeo.ecm.automation.server:test-mvalues.xml" })
 // @RepositoryConfig(cleanup=Granularity.METHOD)
 public class RestTest {
 
@@ -100,6 +103,11 @@ public class RestTest {
         return file;
     }
 
+    @BeforeClass
+    public static void setupClientMarshalling() {
+        JsonMarshalling.addMarshaller(new MyObjectClientMarshaller());
+    }
+    
     // ------ Tests comes here --------
 
     @BeforeClass
@@ -184,7 +192,6 @@ public class RestTest {
         assertThat(bl.getBoolean(0), is(Boolean.TRUE));
         assertThat(bl.getBoolean(1), is(Boolean.FALSE));
     }
-    
 
     @Test
     public void testGetCreateUpdateAndRemoveDocument() throws Exception {
@@ -544,12 +551,11 @@ public class RestTest {
         assertEquals(doc.getPath(), note.getPath());
 
         // 2. create a note and exit with rollback
-        doc = (Document) session.newRequest("exitRollback").setInput(
-                root).execute();
+        doc = (Document) session.newRequest("exitRollback").setInput(root).execute();
         assertEquals("/test-exit2", doc.getPath());
         try {
-            note = (Document) session.newRequest(FetchDocument.ID).set(
-                    "value", "/test-exit2").execute();
+            note = (Document) session.newRequest(FetchDocument.ID).set("value",
+                    "/test-exit2").execute();
             fail("document should not exist");
         } catch (RemoteException e) {
             // do nothing
@@ -557,16 +563,15 @@ public class RestTest {
 
         // 3. create a note and exit with error (+rollback)
         try {
-            doc = (Document) session.newRequest("exitError").setInput(
-                root).execute();
+            doc = (Document) session.newRequest("exitError").setInput(root).execute();
             Assert.fail("expected error");
         } catch (RemoteException t) {
             assertTrue(t.getRemoteStackTrace().contains("termination error"));
         }
         // test the note was not created
         try {
-            note = (Document) session.newRequest(FetchDocument.ID).set(
-                    "value", "/test-exit3").execute();
+            note = (Document) session.newRequest(FetchDocument.ID).set("value",
+                    "/test-exit3").execute();
             fail("document should not exist");
         } catch (RemoteException e) {
             // do nothing
@@ -576,16 +581,17 @@ public class RestTest {
 
     @Test
     public void queriesArePaginable() throws Exception {
-        PaginableDocuments docs = (PaginableDocuments)
-        session.newRequest(DocumentPageProviderOperation.ID).set("query",  "SELECT * from Document").set("pageSize", 2).execute();
+        PaginableDocuments docs = (PaginableDocuments) session.newRequest(
+                DocumentPageProviderOperation.ID).set("query",
+                "SELECT * from Document").set("pageSize", 2).execute();
         final int pageSize = docs.getPageSize();
         final int pageCount = docs.getPageCount();
         assertThat(docs.size(), is(2));
         assertThat(pageSize, is(2));
         assertThat(pageCount, greaterThanOrEqualTo(8));
-        assertThat(docs.getTotalSize(), greaterThanOrEqualTo((pageCount-1)*pageSize));
+        assertThat(docs.getTotalSize(), greaterThanOrEqualTo((pageCount - 1)
+                * pageSize));
     }
-
 
     @Test
     public void testSetArrayProperty() throws Exception {
@@ -599,46 +605,60 @@ public class RestTest {
         props.set("dc:title", "My Test Folder");
         props.set("dc:description", "test");
         props.set("dc:subjects", "a,b,c\\,d");
-        Document folder = (Document) session.newRequest(CreateDocument.ID)
-            .setHeader("X-NXDocumentProperties", "*").setInput(
-                root).set("type", "Folder").set("name", "myfolder2").set(
-                "properties", props).execute();
+        Document folder = (Document) session.newRequest(CreateDocument.ID).setHeader(
+                "X-NXDocumentProperties", "*").setInput(root).set("type",
+                "Folder").set("name", "myfolder2").set("properties", props).execute();
 
         assertEquals("My Test Folder", folder.getString("dc:title"));
         assertEquals("test", folder.getString("dc:description"));
-        PropertyList ar = (PropertyList)folder.getProperties().get("dc:subjects");
+        PropertyList ar = (PropertyList) folder.getProperties().get(
+                "dc:subjects");
         assertEquals(3, ar.size());
         assertEquals("a", ar.getString(0));
         assertEquals("b", ar.getString(1));
         assertEquals("c,d", ar.getString(2));
     }
-    
+
     @Test
     public void testReturnValues() throws Exception {
         Object r;
-        
-        r = session.newRequest(ReturnOperation.ID).setInput(new PrimitiveInput(Boolean.TRUE)).execute();
-        assertThat((Boolean)r, is(Boolean.TRUE));
-        r = session.newRequest(ReturnOperation.ID).setInput(new PrimitiveInput("hello")).execute();
-        assertThat((String)r, is("hello"));
-        r = session.newRequest(ReturnOperation.ID).setInput(new PrimitiveInput(1)).execute();
-        assertThat((Integer)r, is(1));
-        r = session.newRequest(ReturnOperation.ID).setInput(new PrimitiveInput(1000000000000000000L)).execute();
-        assertThat((Long)r, is(1000000000000000000L));
-        r = session.newRequest(ReturnOperation.ID).setInput(new PrimitiveInput(1.1f)).execute();
-        assertThat((Double)r, IsCloseTo.closeTo(1.1f, 0.1));
+        r = session.newRequest(ReturnOperation.ID).setInput(
+                new PrimitiveInput<Boolean>(Boolean.TRUE)).execute();
+        assertThat((Boolean) r, is(Boolean.TRUE));
+        r = session.newRequest(ReturnOperation.ID).setInput(
+                new PrimitiveInput<String>("hello")).execute();
+        assertThat((String) r, is("hello"));
+        r = session.newRequest(ReturnOperation.ID).setInput(
+                new PrimitiveInput<Integer>(1)).execute();
+        assertThat((Integer) r, is(1));
+        r = session.newRequest(ReturnOperation.ID).setInput(
+                new PrimitiveInput<Long>(1000000000000000000L)).execute();
+        assertThat((Long) r, is(1000000000000000000L));
+        r = session.newRequest(ReturnOperation.ID).setInput(
+                new PrimitiveInput<Double>(1.1d)).execute();
+        assertThat((Double) r, IsCloseTo.closeTo(1.1d, 0.1));
         Date now = new Date();
         r = session.newRequest(ReturnOperation.ID).setInput(new DateInput(now)).execute();
-        assertThat((Date)r, is(now));
+        assertThat((Date) r, is(now));
     }
-    
+
+    @Test
+    public void testMyObject() throws Exception {
+        MyObject mo = new MyObject();
+        Object r;
+        r = session.newRequest(ReturnOperation.ID).setInput(
+                new BeanInput<MyObject>(MyObject.class, mo)).execute();
+        assertThat((MyObject) r, is(mo));
+    }
+
     @Test
     public void testBadAccess() throws Exception {
         try {
-            session.newRequest(FetchDocument.ID).set("value","/foo").execute();
+            session.newRequest(FetchDocument.ID).set("value", "/foo").execute();
         } catch (RemoteException e) {
             return;
         }
         fail("no exception caught");
     }
+
 }

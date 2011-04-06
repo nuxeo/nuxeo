@@ -22,7 +22,7 @@ import org.nuxeo.ecm.automation.client.jaxrs.spi.JsonMarshaller;
  * @author matic
  * 
  */
-public class DocumentsMarshaller implements JsonMarshaller {
+public class DocumentsMarshaller implements JsonMarshaller<Documents> {
 
     @Override
     public String getType() {
@@ -30,7 +30,17 @@ public class DocumentsMarshaller implements JsonMarshaller {
     }
 
     @Override
-    public Object read(JSONObject json) {
+    public Class<Documents> getJavaType() {
+        return Documents.class;
+    }
+
+    @Override
+    public String getReference(Documents info) {
+        return info.getInputRef();
+    }
+        
+    @Override
+    public Documents read(JSONObject json) {
         Documents docs;
         JSONArray ar = json.getJSONArray("entries");
         int size = ar.size();
@@ -51,4 +61,9 @@ public class DocumentsMarshaller implements JsonMarshaller {
         return docs;
     }
 
+
+    @Override
+    public void write(JSONObject object, Documents value) {
+        throw new UnsupportedOperationException();
+    }
 }

@@ -11,20 +11,22 @@
  */
 package org.nuxeo.ecm.automation.client.jaxrs.model;
 
-import net.sf.json.JSONObject;
 
 
 /**
  * @author matic
  *
  */
-public class PrimitiveInput implements OperationInput {
+public class PrimitiveInput<T> implements OperationInput {
 
-    public PrimitiveInput(Object value) {
+    public PrimitiveInput(T value) {
         this.value = value;
+        this.type= value.getClass().getSimpleName().toLowerCase();
     }
     
-    protected final Object value;
+    protected final T value;
+    
+    protected final String type;
     
     @Override
     public boolean isBinary() {
@@ -33,14 +35,12 @@ public class PrimitiveInput implements OperationInput {
 
     @Override
     public String getInputType() {
-        return "boolean";
+        return type;
     }
 
     @Override
     public String getInputRef() {
-        JSONObject json = new JSONObject();
-        json.put("value",value);
-        return "primitive:"+json.toString(2);
+        return String.format("%s:%s", type, value.toString());
     }
 
 }

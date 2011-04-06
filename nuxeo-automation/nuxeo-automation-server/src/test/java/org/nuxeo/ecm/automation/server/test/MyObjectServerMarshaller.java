@@ -7,17 +7,24 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *     matic
+ *     slacoin
  */
-package org.nuxeo.ecm.automation.server.jaxrs.io;
+package org.nuxeo.ecm.automation.server.test;
+
+import org.nuxeo.ecm.automation.server.jaxrs.io.marshallers.BeanMarshaller;
 
 /**
  * @author matic
  *
  */
-public interface InputResolver<T> {
+public class MyObjectServerMarshaller extends BeanMarshaller<MyObject>{
 
-    String getType();
-    
-    T getInput(String content);
+    public MyObjectServerMarshaller() {
+        super(MyObject.class);
+    }
+
+    @Override
+    public String getType() {
+       return MyObject.TYPE;
+    }
 }

@@ -23,7 +23,7 @@ import org.nuxeo.ecm.automation.client.jaxrs.spi.JsonMarshaller;
  * @author matic
  * 
  */
-public class LoginMarshaller implements JsonMarshaller {
+public class LoginMarshaller implements JsonMarshaller<LoginInfo> {
 
     @Override
     public String getType() {
@@ -31,8 +31,29 @@ public class LoginMarshaller implements JsonMarshaller {
     }
 
     @Override
-    public Object read(JSONObject json) {
+    public Class<LoginInfo> getJavaType() {
+        return LoginInfo.class;
+    }
+    
+    public String getReference(LoginInfo info) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public LoginInfo read(JSONObject json) {
         return readLogin(json);
+    }
+
+
+    @Override
+    public void write(JSONObject object, LoginInfo info) {
+        object.put("username", info.getUsername());
+        object.put("isAdministrator", info.isAdministrator());
+        JSONArray groups = new JSONArray();
+        for (String group:info.getGroups()) {
+            groups.add(group);
+        }
+        object.put("groups", groups);
     }
 
     protected static LoginInfo readLogin(JSONObject json) {

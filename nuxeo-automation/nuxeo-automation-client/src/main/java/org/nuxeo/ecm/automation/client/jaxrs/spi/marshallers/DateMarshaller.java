@@ -11,22 +11,40 @@
  */
 package org.nuxeo.ecm.automation.client.jaxrs.spi.marshallers;
 
+import java.util.Date;
+
 import net.sf.json.JSONObject;
 
 import org.nuxeo.ecm.automation.client.jaxrs.model.DateUtils;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.JsonMarshaller;
 
-public class DateMarshaller implements JsonMarshaller {
+public class DateMarshaller implements JsonMarshaller<Date> {
 
     @Override
     public String getType() {
         return "date";
     }
 
+    @Override 
+    public Class<Date> getJavaType() {
+        return Date.class;
+    }
+
+
     @Override
-    public Object read(JSONObject json) {
-        String value = json.getString("value");
+    public String getReference(Date data) {
+        return DateUtils.formatDate(data);
+    }
+
+    @Override
+    public Date read(JSONObject json) {
+        String value = json.getString("date");
         return DateUtils.parseDate(value);
     }
 
+
+    @Override
+    public void write(JSONObject object, Date date) {
+        object.put("date", DateUtils.formatDate(date));
+    }
 }

@@ -13,7 +13,6 @@ package org.nuxeo.ecm.automation.client.jaxrs.model;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -23,7 +22,6 @@ import java.util.Date;
  * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@SuppressWarnings("deprecation")
 public class DateUtils {
 
     // Utility class.

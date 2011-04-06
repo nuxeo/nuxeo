@@ -17,6 +17,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.nuxeo.ecm.automation.server.jaxrs.io.JsonMarshalling;
+import org.nuxeo.ecm.automation.server.jaxrs.io.JsonRequestReader;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -30,9 +32,13 @@ public class AutomationServerComponent extends DefaultComponent implements
 
     protected static final String XP_BINDINGS = "bindings";
 
+    protected static final String XP_MARSHALLERS = "marshallers";
+    
     protected Map<String, RestBinding> bindings;
 
     protected volatile Map<String, RestBinding> lookup;
+    
+    protected JsonMarshalling marshalling = new JsonMarshalling();
 
     @Override
     public void activate(ComponentContext context) throws Exception {
@@ -51,6 +57,9 @@ public class AutomationServerComponent extends DefaultComponent implements
         if (XP_BINDINGS.equals(extensionPoint)) {
             RestBinding binding = (RestBinding) contribution;
             addBinding(binding);
+        } else if (XP_MARSHALLERS.equals(extensionPoint)) {
+            RestMarshaller marshaller = (RestMarshaller) contribution;
+            marshalling.addMarshaller(marshaller.newInstance());
         }
     }
 
@@ -61,6 +70,9 @@ public class AutomationServerComponent extends DefaultComponent implements
         if (XP_BINDINGS.equals(extensionPoint)) {
             RestBinding binding = (RestBinding) contribution;
             removeBinding(binding);
+        } else if (XP_MARSHALLERS.equals(extensionPoint)) {
+            RestMarshaller marshaller = (RestMarshaller) contribution;
+            marshalling.removeMarshaller(marshaller.clazz);
         }
     }
 
@@ -68,6 +80,9 @@ public class AutomationServerComponent extends DefaultComponent implements
     public <T> T getAdapter(Class<T> adapter) {
         if (AutomationServer.class.isAssignableFrom(adapter)) {
             return adapter.cast(this);
+        }
+        if (JsonMarshalling.class.isAssignableFrom(adapter)) {
+            return adapter.cast(marshalling);
         }
         return null;
     }
@@ -101,7 +116,7 @@ public class AutomationServerComponent extends DefaultComponent implements
         lookup = null;
         return result;
     }
-
+    
     public boolean accept(String name, boolean isChain, HttpServletRequest req) {
         if (isChain) {
             name = "Chain." + name;
@@ -149,4 +164,5 @@ public class AutomationServerComponent extends DefaultComponent implements
         return _lookup;
     }
 
+    
 }

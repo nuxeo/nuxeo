@@ -69,8 +69,8 @@ public class ReturnOperation
     
         
     @OperationMethod()
-    public Double floatValue(Double d) {
-        return d;
+    public Float floatValue(Float f) {
+        return f;
     }
     
     @OperationMethod()
@@ -81,5 +81,10 @@ public class ReturnOperation
     @OperationMethod()
     public String[] strings(String[] a) {
         return a;
+    }
+    
+    @OperationMethod()
+    public MyObject bean(MyObject b) {
+        return b;
     }
 }

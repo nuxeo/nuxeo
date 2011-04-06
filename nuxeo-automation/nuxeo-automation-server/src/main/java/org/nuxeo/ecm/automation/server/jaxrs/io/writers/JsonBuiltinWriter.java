@@ -16,6 +16,7 @@ import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
+import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -23,37 +24,44 @@ import javax.ws.rs.ext.MessageBodyWriter;
 
 import net.sf.json.JSONObject;
 
-public abstract class JsonObjectWriter<T> implements MessageBodyWriter<T>{
+import org.nuxeo.ecm.automation.server.jaxrs.io.JsonMarshalling;
+import org.nuxeo.runtime.api.Framework;
 
-    protected JsonObjectWriter(Class<T> clazz) {
-        this.clazz = clazz;
+@Produces( { "application/json+nxentity", "application/json" })
+public class JsonBuiltinWriter implements MessageBodyWriter<Object>{
+
+    protected static JsonMarshalling marshalling() {
+        return Framework.getLocalService(JsonMarshalling.class);
     }
     
-    protected final Class<T> clazz;
+    
+    public JsonBuiltinWriter() {
+    }
     
     @Override
     public boolean isWriteable(Class<?> clazz, Type genericType,
             Annotation[] annotations, MediaType mediaType) {
-        return this.clazz.isAssignableFrom(clazz);
+        return marshalling().canMarshall(clazz);
     }
 
     @Override
-    public long getSize(T arg0, Class<?> arg1, Type arg2, Annotation[] arg3,
+    public long getSize(Object arg0, Class<?> arg1, Type arg2, Annotation[] arg3,
             MediaType arg4) {
         return -1;
     }
     
+
     @Override
-    public void writeTo(T value, Class<?> clazz, Type type, Annotation[] annotations,
+    public void writeTo(Object value, Class<?> clazz, Type type, Annotation[] annotations,
             MediaType mediatype, MultivaluedMap<String, Object> httpHeaders,
             OutputStream out) throws IOException, WebApplicationException {
         JSONObject json = new JSONObject();
-        json.element("entity-type", type());
-        json.element("value", encode(value));
+        json.element("entity-type", type(clazz));
+        marshalling().write(clazz, json, value);
         out.write(json.toString(2).getBytes("UTF-8"));
     }
-
-    protected abstract Object encode(T value);
     
-    protected abstract String type();
+    public String type(Class<?> clazz) {
+        return clazz.getSimpleName().toLowerCase();
+    }
 }

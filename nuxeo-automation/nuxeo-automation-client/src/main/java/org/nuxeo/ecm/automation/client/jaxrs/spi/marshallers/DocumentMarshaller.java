@@ -29,15 +29,25 @@ import org.nuxeo.ecm.automation.client.jaxrs.spi.JsonMarshaller;
  * @author matic
  * 
  */
-public class DocumentMarshaller implements JsonMarshaller {
+public class DocumentMarshaller implements JsonMarshaller<Document> {
 
     @Override
     public String getType() {
         return "document";
     }
+    
+    @Override
+    public Class<Document> getJavaType() {
+        return Document.class;
+    }
+    
+    @Override
+    public String getReference(Document info) {
+        return info.getInputRef();
+    }
 
     @Override
-    public Object read(JSONObject json) {
+    public Document read(JSONObject json) {
         return readDocument(json);
     }
     
@@ -60,6 +70,12 @@ public class DocumentMarshaller implements JsonMarshaller {
         props.set("dc:title", title);
         props.set("dc:modified", lastModified);
         return new Document(uid, type, path, state, lock, props);
+    }
+    
+
+    @Override
+    public void write(JSONObject object, Document doc) {
+        throw new UnsupportedOperationException();
     }
 
     @SuppressWarnings("unchecked")

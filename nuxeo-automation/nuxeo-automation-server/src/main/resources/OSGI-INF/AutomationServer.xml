@@ -8,6 +8,7 @@
 
   <service>
     <provide interface="org.nuxeo.ecm.automation.server.AutomationServer" />
+    <provide interface="org.nuxeo.ecm.automation.server.jaxrs.io.JsonMarshalling" />
   </service>
 
   <extension-point name="bindings">
@@ -15,4 +16,8 @@
     <object class="org.nuxeo.ecm.automation.server.RestBinding" />
   </extension-point>
 
+  <extension-point name="marshallers">
+    <documentation>Input/Output marshallers</documentation>
+    <object class="org.nuxeo.ecm.automation.server.RestMarshaller" />
+  </extension-point>
 </component>

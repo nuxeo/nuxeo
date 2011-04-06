@@ -20,7 +20,7 @@ import org.nuxeo.ecm.automation.client.jaxrs.spi.JsonMarshaller;
  * @author matic
  * 
  */
-public class ExceptionMarshaller implements JsonMarshaller {
+public class ExceptionMarshaller implements JsonMarshaller<RemoteException> {
 
     @Override
     public String getType() {
@@ -28,8 +28,26 @@ public class ExceptionMarshaller implements JsonMarshaller {
     }
 
     @Override
-    public Object read(JSONObject json) {
+    public Class<RemoteException> getJavaType() {
+        return RemoteException.class;
+    }
+    
+    @Override
+    public String getReference(RemoteException info) {
+        throw new UnsupportedOperationException();
+    }
+    
+    @Override
+    public RemoteException read(JSONObject json) {
         return readException(json);
+    }
+    
+    /* (non-Javadoc)
+     * @see org.nuxeo.ecm.automation.client.jaxrs.spi.JsonMarshaller#write(java.lang.Object)
+     */
+    @Override
+    public void write(JSONObject object, RemoteException value) {
+        throw new UnsupportedOperationException();
     }
 
     public static RemoteException readException(String content) {

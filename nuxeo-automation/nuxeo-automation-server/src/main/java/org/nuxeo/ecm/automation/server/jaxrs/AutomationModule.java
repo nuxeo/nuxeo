@@ -21,13 +21,11 @@ import org.nuxeo.ecm.automation.server.jaxrs.io.MultiPartRequestReader;
 import org.nuxeo.ecm.automation.server.jaxrs.io.UrlEncodedFormRequestReader;
 import org.nuxeo.ecm.automation.server.jaxrs.io.writers.BlobsWriter;
 import org.nuxeo.ecm.automation.server.jaxrs.io.writers.JsonAutomationInfoWriter;
-import org.nuxeo.ecm.automation.server.jaxrs.io.writers.JsonBeanWriter;
-import org.nuxeo.ecm.automation.server.jaxrs.io.writers.JsonDateWriter;
 import org.nuxeo.ecm.automation.server.jaxrs.io.writers.JsonDocumentListWriter;
 import org.nuxeo.ecm.automation.server.jaxrs.io.writers.JsonDocumentWriter;
+import org.nuxeo.ecm.automation.server.jaxrs.io.writers.JsonBuiltinWriter;
 import org.nuxeo.ecm.automation.server.jaxrs.io.writers.JsonExceptionWriter;
 import org.nuxeo.ecm.automation.server.jaxrs.io.writers.JsonLoginInfoWriter;
-import org.nuxeo.ecm.automation.server.jaxrs.io.writers.JsonPrimitiveWriter;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -44,8 +42,10 @@ public class AutomationModule extends Application {
         return result;
     }
 
-    @Override
-    public Set<Object> getSingletons() {
+    protected static final Set<Object> singletons =
+            setupSingletons();
+    
+    protected static Set<Object> setupSingletons() {
         Set<Object> result = new HashSet<Object>();
         result.add(new JsonRequestReader());
         result.add(new JsonExceptionWriter());
@@ -55,9 +55,17 @@ public class AutomationModule extends Application {
         result.add(new BlobsWriter());
         result.add(new JsonLoginInfoWriter());
         result.add(new UrlEncodedFormRequestReader());
-        result.add(new JsonPrimitiveWriter());
-        result.add(new JsonDateWriter());
+        result.add(new JsonBuiltinWriter());
         return result;
+    }
+    
+    public static void addSingleton(Object singleton) {
+        singletons.add(singleton);
+    }
+    
+    @Override
+    public Set<Object> getSingletons() {
+        return singletons;
     }
 
 }

@@ -37,25 +37,44 @@ public class JsonMarshalling {
 	private JsonMarshalling() {
 	}
 
-	protected static final HashMap<String,JsonMarshaller> marshallers = 
-	        new HashMap<String,JsonMarshaller>();
+	protected static final HashMap<String,JsonMarshaller<?>> marshallersByType = 
+	        new HashMap<String,JsonMarshaller<?>>();
+	
+	protected static final HashMap<Class<?>,JsonMarshaller<?>> marshallersByJavaType = 
+	        new HashMap<Class<?>,JsonMarshaller<?>>();
 	
 	static {
-	    addMarshaller(new DateMarshaller());
 	    addMarshaller(new DocumentMarshaller());
 	    addMarshaller(new DocumentsMarshaller());
 	    addMarshaller(new ExceptionMarshaller());
 	    addMarshaller(new LoginMarshaller());
-	    addMarshaller(new PrimitiveMarshaller());
+	    addMarshaller(new DateMarshaller());
+	    addMarshaller(new PrimitiveMarshaller<String>(String.class));
+	    addMarshaller(new PrimitiveMarshaller<Boolean>(Boolean.class));
+	    addMarshaller(new PrimitiveMarshaller<Integer>(Integer.class));
+		addMarshaller(new PrimitiveMarshaller<Long>(Long.class));
+		addMarshaller(new PrimitiveMarshaller<Double>(Double.class));
+
 	}
 	
-	public static void addMarshaller(JsonMarshaller marshaller) {
-	    marshallers.put(marshaller.getType(), marshaller);
+	public static void addMarshaller(JsonMarshaller<?> marshaller) {
+	    marshallersByType.put(marshaller.getType(), marshaller);
+	    marshallersByJavaType.put(marshaller.getJavaType(), marshaller);
 	}
 	
-	protected static JsonMarshaller findEntityMarshaller(JSONObject json) {
+	@SuppressWarnings("unchecked")
+    public static <T> JsonMarshaller<T> getMarshaller(String type) {
+	    return (JsonMarshaller<T>)marshallersByType.get(type);
+	}
+	
+	@SuppressWarnings("unchecked")
+    public static <T> JsonMarshaller<T> getMarshaller(Class<T> clazz) {
+	    return (JsonMarshaller<T>)marshallersByJavaType.get(clazz);
+	}
+
+	protected static JsonMarshaller<?> findMarshaller(JSONObject json) {
 	    String type= json.getString(Constants.KEY_ENTITY_TYPE);
-	    JsonMarshaller js = marshallers.get(type);
+	    JsonMarshaller<?> js = marshallersByType.get(type);
 	    if (js == null) {
 	        throw new IllegalArgumentException("no marshaller for " + type);
 	    }
@@ -101,7 +120,7 @@ public class JsonMarshalling {
             return null;
         }
         JSONObject json = JSONObject.fromObject(content);
-        JsonMarshaller marshaller = findEntityMarshaller(json);
+        JsonMarshaller<?> marshaller = findMarshaller(json);
         return marshaller.read(json);
     }
 

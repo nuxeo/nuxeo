@@ -20,7 +20,7 @@ import org.nuxeo.ecm.core.api.impl.DocumentRefListImpl;
  * @author matic
  * 
  */
-public class DocumentsInputResolver implements InputResolver {
+public class DocumentsInputResolver implements InputResolver<DocumentRefList> {
 
     @Override
     public String getType() {
@@ -28,7 +28,7 @@ public class DocumentsInputResolver implements InputResolver {
     }
 
     @Override
-    public Object getInput(String input) {
+    public DocumentRefList getInput(String input) {
         String[] ar = StringUtils.split(input, ',', true);
         DocumentRefList list = new DocumentRefListImpl(ar.length);
         for (String s : ar) {

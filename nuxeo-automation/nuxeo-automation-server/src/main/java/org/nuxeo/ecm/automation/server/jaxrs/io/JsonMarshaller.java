@@ -7,22 +7,21 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *     matic
+ *     slacoin
  */
-package org.nuxeo.ecm.automation.client.jaxrs.spi;
+package org.nuxeo.ecm.automation.server.jaxrs.io;
 
 import net.sf.json.JSONObject;
 
 /**
- * Plugs in automation client new input/output marshalling logic.
- *
+ * Plugs in automation server new input/output type marshalling logic.
+ * 
  * @author matic
- *
- * @param <T>
  */
 public interface JsonMarshaller<T> {
+
     /**
-     * The type name that appears in serialization 
+     * The type name that appears in json content 
      * 
      * @return
      */
@@ -36,13 +35,20 @@ public interface JsonMarshaller<T> {
     Class<T> getJavaType();
     
     /**
-     * Gets an input reference from the POJO object that
-     * can be fetched server side.
+     * Resolve a reference and returns the POJO object
      * 
      * @param ref
      * @return
      */
-    String getReference(T value);
+    T resolveReference(String ref);
+
+    /**
+     * Returns a server reference to a POJO object
+     * 
+     * @param value
+     * @return
+     */
+    String newReference(T value);
     
     /**
      * Builds and returns a POJO from the JSON object
@@ -50,7 +56,7 @@ public interface JsonMarshaller<T> {
      * @param json
      * @return
      */
-    T read(JSONObject object);
+    T read(JSONObject json);
     
     /**
      * Writes in the JSON object the POJO's data
@@ -58,5 +64,6 @@ public interface JsonMarshaller<T> {
      * @param o
      * @param value
      */
-    void write(JSONObject object, T data);
+    void write(JSONObject o, Object value);
+
 }

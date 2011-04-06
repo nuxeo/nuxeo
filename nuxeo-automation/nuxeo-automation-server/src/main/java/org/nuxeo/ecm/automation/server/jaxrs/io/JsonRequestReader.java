@@ -29,11 +29,10 @@ import net.sf.json.JSONObject;
 
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.server.jaxrs.ExecutionRequest;
-import org.nuxeo.ecm.automation.server.jaxrs.io.resolvers.DateInputResolver;
-import org.nuxeo.ecm.automation.server.jaxrs.io.resolvers.DocumentsInputResolver;
 import org.nuxeo.ecm.automation.server.jaxrs.io.resolvers.DocumentInputResolver;
-import org.nuxeo.ecm.automation.server.jaxrs.io.resolvers.PrimitiveInputResolver;
+import org.nuxeo.ecm.automation.server.jaxrs.io.resolvers.DocumentsInputResolver;
 import org.nuxeo.ecm.automation.server.jaxrs.io.writers.JsonDocumentListWriter;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -44,17 +43,19 @@ public class JsonRequestReader implements MessageBodyReader<ExecutionRequest> {
 
     public static final MediaType targetMediaType = new MediaType("application", "json+nxrequest");
 
-    protected static final HashMap<String,InputResolver> inputResolvers = 
-            new HashMap<String,InputResolver>();
+    protected static JsonMarshalling marshalling() {
+        return Framework.getLocalService(JsonMarshalling.class);
+    }
+    
+    protected static final HashMap<String,InputResolver<?>> inputResolvers = 
+            new HashMap<String,InputResolver<?>>();
     
     static {
         addInputResolver(new DocumentInputResolver());
         addInputResolver(new DocumentsInputResolver());
-        addInputResolver(new DateInputResolver());
-        addInputResolver(new PrimitiveInputResolver());
     }
     
-    public static void addInputResolver(InputResolver resolver) {
+    public static void addInputResolver(InputResolver<?> resolver) {
         inputResolvers.put(resolver.getType(), resolver);
     }
     
@@ -65,11 +66,15 @@ public class JsonRequestReader implements MessageBodyReader<ExecutionRequest> {
         }
         String type = input.substring(0,p);
         String ref = input.substring(p+1);
-        InputResolver ir = inputResolvers.get(type);
-        if (ir == null) {
-            throw new IllegalArgumentException("no resolver for " + type);            
+        InputResolver<?> ir = inputResolvers.get(type);
+        if (ir != null) {
+            return ir.getInput(ref);
         }
-        return ir.getInput(ref);
+        JsonMarshaller<Object> marshaller = marshalling().getMarshaller(type);
+        if (marshaller == null) {
+            throw new IllegalArgumentException("Cannot find resolver for " + type);
+        }
+        return marshaller.resolveReference(ref);
     }
     
     public boolean isReadable(Class<?> arg0, Type arg1, Annotation[] arg2,

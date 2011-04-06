@@ -20,7 +20,7 @@ import org.nuxeo.ecm.core.api.PathRef;
  * @author matic
  *
  */
-public class DocumentInputResolver implements InputResolver {
+public class DocumentInputResolver implements InputResolver<DocumentRef> {
 
     @Override
     public String getType() {
@@ -28,7 +28,7 @@ public class DocumentInputResolver implements InputResolver {
     }
 
     @Override
-    public Object getInput(String content) {
+    public DocumentRef getInput(String content) {
         return docRefFromString(content);
     }
     
