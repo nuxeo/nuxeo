@@ -117,8 +117,8 @@
             </c:if>
           </ui:define>
 
-          <ui:insert name="content_view_syndication_buttons">
-            <ui:define name="syndication_buttons">
+          <ui:define name="syndication_buttons">
+            <ui:insert name="content_view_syndication_buttons">
               <div class="syndicationButton">
                 <div class="syndicationLinks">
                   <nxu:set var="contentViewState" value="#{contentViewRestActions.getContentViewState(contentView)}">
@@ -142,8 +142,8 @@
                   </nxu:set>
                 </div>
               </div>
-            </ui:define>
-          </ui:insert>
+            </ui:insert>
+          </ui:define>
 
         </ui:decorate>
 

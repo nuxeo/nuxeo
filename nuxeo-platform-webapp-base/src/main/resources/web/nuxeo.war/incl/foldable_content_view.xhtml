@@ -67,14 +67,14 @@
             <ui:param name="listName" value="#{contentView.selectionListName}" />
             <ui:param name="layoutName" value="#{contentView.currentResultLayout.name}" />
   
-            <ui:insert name="empty_content_view_label">
-              <ui:define name="empty_folder_label">
+            <ui:define name="empty_folder_label">
+              <ui:insert name="empty_content_view_label">
                 <c:set var="emptySentence"
                   value="#{nxu:test(contentView.translateEmptySentence, messages[contentView.emptySentence], contentView.emptySentence)}" />
                 <h:outputText value="#{nxu:test(empty emptySentence, messages['label.content.emptyFolder'], emptySentence)}"
                   rendered="#{documents.rowCount == 0 and not provider.hasError()}" />
-              </ui:define>
-            </ui:insert>
+              </ui:insert>
+            </ui:define>
           
             <ui:define name="error_message">
               <c:if test="#{provider.hasError()}">
@@ -123,8 +123,8 @@
               </c:if>
             </ui:define>
 
-            <ui:insert name="content_view_syndication_buttons">
-              <ui:define name="syndication_buttons">
+            <ui:define name="syndication_buttons">
+              <ui:insert name="content_view_syndication_buttons">
                 <div class="syndicationButton">
                   <div class="syndicationLinks">
                     <nxu:set var="contentViewState" value="#{contentViewRestActions.getContentViewState(contentView)}">
@@ -148,8 +148,8 @@
                     </nxu:set>
                   </div>
                 </div>
-              </ui:define>
-            </ui:insert>
+              </ui:insert>
+            </ui:define>
 
           </ui:decorate>
 
