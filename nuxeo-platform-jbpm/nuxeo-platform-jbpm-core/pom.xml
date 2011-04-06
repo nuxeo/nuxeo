@@ -12,10 +12,9 @@
 
   <artifactId>nuxeo-platform-jbpm-core</artifactId>
   <name>Nuxeo JPBM Core Service</name>
-  <description>The core functionnalities for the jBPM service.</description>
+  <description>The core functionalities for the jBPM service.</description>
 
   <dependencies>
-
     <dependency>
       <groupId>org.jbpm.jbpm3</groupId>
       <artifactId>jbpm-jpdl</artifactId>
@@ -71,7 +70,6 @@
     </dependency>
 
     <!-- test -->
-
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-content-template-manager</artifactId>
@@ -120,7 +118,6 @@
     <dependency>
       <groupId>net.sf.opencsv</groupId>
       <artifactId>opencsv</artifactId>
-      <version>1.7</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -128,15 +125,9 @@
       <artifactId>hsqldb</artifactId>
       <scope>test</scope>
     </dependency>
-
     <dependency>
       <groupId>dom4j</groupId>
       <artifactId>dom4j</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>xml-apis</groupId>
-      <artifactId>xml-apis</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -149,7 +140,6 @@
       <artifactId>antlr</artifactId>
       <scope>test</scope>
     </dependency>
-
   </dependencies>
 
 </project>
