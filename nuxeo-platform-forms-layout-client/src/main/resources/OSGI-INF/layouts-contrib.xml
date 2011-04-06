@@ -11,6 +11,8 @@
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="widgettypes">
 
+    FIXME: preview enabled stuff
+
     <widgetType name="text">
       <configuration>
         <title>Text</title>
@@ -26,7 +28,7 @@
             accepted on a &lt;h:outputText /&gt; tag in other modes.
           </p>
         </description>
-        <demo id="textWidget" />
+        <demo id="textWidget" previewEnabled="true" />
         <supportedModes>
           <mode>edit</mode>
           <mode>view</mode>
@@ -303,7 +305,7 @@
             accepted on a &lt;h:outputText /&gt; tag in other modes.
           </p>
         </description>
-        <demo id="intWidget" />
+        <demo id="intWidget" previewEnabled="true" />
         <categories>
           <category>document</category>
         </categories>
@@ -817,7 +819,7 @@
             &lt;h:inputSecret /&gt; tag in create or edit mode.
           </p>
         </description>
-        <demo id="secretWidget" />
+        <demo id="secretWidget" previewEnabled="true" />
         <categories>
           <category>document</category>
         </categories>
@@ -1038,7 +1040,7 @@
             accepted on a &lt;h:outputText /&gt; tag in other modes.
           </p>
         </description>
-        <demo id="textareaWidget" />
+        <demo id="textareaWidget" previewEnabled="true" />
         <categories>
           <category>document</category>
         </categories>
@@ -1303,7 +1305,7 @@
             The converter will also be given these properties.
           </p>
         </description>
-        <demo id="datetimeWidget" />
+        <demo id="datetimeWidget" previewEnabled="true" />
         <categories>
           <category>document</category>
         </categories>
@@ -1560,7 +1562,7 @@
             &lt;/widgetType&gt;
           </p>
         </description>
-        <demo id="templateWidget" />
+        <demo id="templateWidget" previewEnabled="false" />
         <categories>
           <category>dev</category>
         </categories>
@@ -1614,7 +1616,7 @@
             accepted on a &lt;nxu:outputFile /&gt; tag in other modes.
           </p>
         </description>
-        <demo id="fileWidget" />
+        <demo id="fileWidget" previewEnabled="true" />
         <categories>
           <category>document</category>
         </categories>
@@ -1746,7 +1748,7 @@
             accepted on a &lt;nxu:outputText /&gt; tag in other modes.
           </p>
         </description>
-        <demo id="htmltextWidget" />
+        <demo id="htmltextWidget" previewEnabled="true" />
         <categories>
           <category>document</category>
         </categories>
@@ -1929,7 +1931,7 @@
             other modes.
           </p>
         </description>
-        <demo id="selectOneDirectoryWidget" />
+        <demo id="selectOneDirectoryWidget" previewEnabled="true" />
         <categories>
           <category>document</category>
         </categories>
@@ -2196,7 +2198,7 @@
             &lt;nxd:directoryEntryOutput /&gt; tag in other modes.
           </p>
         </description>
-        <demo id="selectManyDirectoryWidget" />
+        <demo id="selectManyDirectoryWidget" previewEnabled="true" />
         <categories>
           <category>document</category>
         </categories>
@@ -2418,7 +2420,7 @@
             iterating over items in other modes.
           </p>
         </description>
-        <demo id="listWidget" />
+        <demo id="listWidget" previewEnabled="false" />
         <categories>
           <category>document</category>
         </categories>
@@ -2540,7 +2542,7 @@
             widgets configuration.
           </p>
         </description>
-        <demo id="complexWidget" />
+        <demo id="complexWidget" previewEnabled="false" />
         <categories>
           <category>document</category>
         </categories>
@@ -2621,7 +2623,7 @@
             other modes.
           </p>
         </description>
-        <demo id="checkboxWidget" />
+        <demo id="checkboxWidget" previewEnabled="true" />
         <categories>
           <category>document</category>
         </categories>
@@ -2843,7 +2845,10 @@
             &lt;h:inputHidden /&gt; tag in create, edit mode, and other modes.
           </p>
         </description>
-        <demo id="hiddenWidget" />
+        <!-- demo does not present it (yet?) -->
+        <!-- 
+          <demo id="hiddenWidget" previewEnabled="false"/>
+        -->
         <categories>
           <category>document</category>
         </categories>
