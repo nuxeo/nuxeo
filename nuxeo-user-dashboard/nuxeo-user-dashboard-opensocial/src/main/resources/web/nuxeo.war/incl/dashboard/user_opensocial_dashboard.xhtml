@@ -4,7 +4,7 @@
      xmlns:f="http://java.sun.com/jsf/core"
      xmlns:nxu="http://nuxeo.org/nxweb/util">
 
-  <nxu:set var="repositoryName" value="#{currentDocument.repositoryName}">
+  <nxu:set var="repositoryName" value="#{navigationContext.currentServerLocation.name}">
   <nxu:set var="spaceProviderName" value="userDashboardSpaceProvider">
 
     <ui:decorate template="/incl/opensocial_container_template.xhtml">
