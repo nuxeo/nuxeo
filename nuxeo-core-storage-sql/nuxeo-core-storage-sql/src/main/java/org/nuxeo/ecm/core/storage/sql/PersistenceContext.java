@@ -590,8 +590,7 @@ public class PersistenceContext {
             if (state == State.DELETED) {
                 // row has been deleted in the context, ignore it
                 return null;
-            } else if (state == State.ABSENT
-                    || state == State.INVALIDATED_MODIFIED
+            } else if (state == State.INVALIDATED_MODIFIED
                     || state == State.INVALIDATED_DELETED) {
                 // XXX TODO
                 throw new IllegalStateException(state.toString());
