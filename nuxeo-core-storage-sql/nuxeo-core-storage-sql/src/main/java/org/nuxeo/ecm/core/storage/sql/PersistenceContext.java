@@ -475,13 +475,7 @@ public class PersistenceContext {
 
         // fetch these fragments in bulk
         List<? extends RowId> rows = mapper.read(todo);
-        try {
-            res.addAll(getFragmentsFromFetchedRows(rows, allowAbsent));
-        } catch (IllegalStateException e) {
-            log.error("getFromMapper mapper.read " + todo + " from total "
-                    + rowIds);
-            throw e;
-        }
+        res.addAll(getFragmentsFromFetchedRows(rows, allowAbsent));
 
         return res;
     }
@@ -523,13 +517,7 @@ public class PersistenceContext {
         }
 
         // fetch missing ones, return union
-        List<Fragment> fetched;
-        try {
-            fetched = getFromMapper(todo, allowAbsent);
-        } catch (IllegalStateException e) {
-            log.error("getMulti get from mapper from total " + rowIds);
-            throw e;
-        }
+        List<Fragment> fetched = getFromMapper(todo, allowAbsent);
         res.addAll(fetched);
         return res;
     }
@@ -557,13 +545,7 @@ public class PersistenceContext {
             throws StorageException {
         List<Fragment> fragments = new ArrayList<Fragment>(rowIds.size());
         for (RowId rowId : rowIds) {
-            Fragment fragment;
-            try {
-                fragment = getFragmentFromFetchedRow(rowId, allowAbsent);
-            } catch (IllegalStateException e) {
-                log.error("getFragmentsFromFetchedRows " + rowIds);
-                throw e;
-            }
+            Fragment fragment = getFragmentFromFetchedRow(rowId, allowAbsent);
             if (fragment != null) {
                 fragments.add(fragment);
             }
@@ -606,9 +588,7 @@ public class PersistenceContext {
                     || state == State.INVALIDATED_MODIFIED
                     || state == State.INVALIDATED_DELETED) {
                 // XXX TODO
-                log.error("Unexpected fragment state: " + state.toString()
-                        + " for " + rowId);
-                throw new IllegalStateException(rowId.id.toString());
+                throw new IllegalStateException(state.toString());
             } else {
                 // keep existing fragment
                 return fragment;
