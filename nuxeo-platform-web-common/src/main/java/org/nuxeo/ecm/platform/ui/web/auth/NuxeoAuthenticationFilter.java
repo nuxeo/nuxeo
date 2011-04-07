@@ -679,6 +679,7 @@ public class NuxeoAuthenticationFilter implements Filter {
             for (Cookie cookie : cookies) {
                 if (NXAuthConstants.SSO_INITIAL_URL_REQUEST_KEY.equals(cookie.getName())) {
                     requestedPage = cookie.getValue();
+                    cookie.setPath("/"); // enforce cookie removing
                     cookie.setMaxAge(0);
                 }
             }
