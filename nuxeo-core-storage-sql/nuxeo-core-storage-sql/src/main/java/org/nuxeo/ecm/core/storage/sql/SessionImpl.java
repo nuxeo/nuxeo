@@ -633,7 +633,8 @@ public class SessionImpl implements Session, XAResource {
                 log.error("getNodesByIds ids=" + ids + " first bulkRowIds="
                         + debugFirstBulkRowIds + " proxyIds=" + proxyIds
                         + " first targetIds=" + debugFirstTargetIds
-                        + " targetIds=" + targetIds);
+                        + " targetIds=" + targetIds + " hierFragments="
+                        + hierFragments);
                 throw e;
             }
 
