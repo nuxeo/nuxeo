@@ -175,7 +175,7 @@
     </exec>
   </target>
   <target name="stop-windows" if="osfamily-windows">
-    <exec executable="${nuxeo.home}/nuxeoctl.bat" spawn="false">
+    <exec executable="${nuxeo.home}/bin/nuxeoctl.bat" spawn="false">
       <arg value="nogui" />
       <arg value="stop" />
     </exec>
