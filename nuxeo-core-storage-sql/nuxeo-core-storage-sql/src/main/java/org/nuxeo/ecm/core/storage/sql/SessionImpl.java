@@ -601,8 +601,7 @@ public class SessionImpl implements Session, XAResource {
             }
             List<Fragment> proxiesFragments = context.getMulti(proxiesRowIds,
                     true);
-            List<Serializable> targetIds = new ArrayList<Serializable>(
-                    proxyIds.size());
+            Set<Serializable> targetIds = new HashSet<Serializable>();
             for (Fragment fragment : proxiesFragments) {
                 Serializable targetId = ((SimpleFragment) fragment).get(model.PROXY_TARGET_KEY);
                 targetIds.add(targetId);
