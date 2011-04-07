@@ -591,6 +591,7 @@ public class SessionImpl implements Session, XAResource {
                 findPrefetchedFragments((SimpleFragment) fragment, bulkRowIds,
                         proxyIds);
             }
+            List<RowId> debugFirstBulkRowIds = new ArrayList<RowId>(bulkRowIds);
 
             // proxies
 
@@ -607,6 +608,8 @@ public class SessionImpl implements Session, XAResource {
                 Serializable targetId = ((SimpleFragment) fragment).get(model.PROXY_TARGET_KEY);
                 targetIds.add(targetId);
             }
+            List<Serializable> debugFirstTargetIds = new ArrayList<Serializable>(
+                    targetIds);
 
             // get hier fragments for proxies' targets
             targetIds.removeAll(ids); // only those we don't have already
@@ -623,7 +626,16 @@ public class SessionImpl implements Session, XAResource {
             // we have everything to be prefetched
 
             // fetch all the prefetches in bulk
-            List<Fragment> fragments = context.getMulti(bulkRowIds, true);
+            List<Fragment> fragments;
+            try {
+                fragments = context.getMulti(bulkRowIds, true);
+            } catch (IllegalStateException e) {
+                log.error("getNodesByIds ids=" + ids + " first bulkRowIds="
+                        + debugFirstBulkRowIds + " proxyIds=" + proxyIds
+                        + " first targetIds=" + debugFirstTargetIds
+                        + " targetIds=" + targetIds);
+                throw e;
+            }
 
             // put each fragment in the map of the proper group
             for (Fragment fragment : fragments) {
