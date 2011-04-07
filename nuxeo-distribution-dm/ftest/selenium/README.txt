@@ -13,7 +13,7 @@ Requirements
 Running test suites
 ===================
 
-* Default suite1 + suite2 on localhost
+* Default suites (suite1, suite2, suite-dm, suite-webengine, suite-webengine-website, suite-webengine-tags) on localhost
 
   ./run.sh
 
@@ -44,13 +44,18 @@ files.
 ffprofile/prefs.js holds the base url. It should be used/changed in command
 line option (not useful when using Selenium IDE).
 It also holds the current language (en). When using Selenium IDE, make sure
-english is your default language.
+English is your default language.
 
 user-extensions.js.sample holds the current folder absolute path. It should
 be copied to user-extensions.js and modified accordingly when launching the
 suite via Selenium IDE. Via command line, replacement is done in the run.sh
 script.
 
+Running test suites (bis)
+=========================
+
+Experimental: migration in progress using only Maven instead of Shell script:
+  mvn integration-test [-DnuxeoURL=http://otherURL/] [-Dsuites=...] -P[tomcat|jboss]
 
 Writing tests
 =============
@@ -171,13 +176,13 @@ Generic advice when writing tests
   5. get element with two attributes          :<input type=”text” value=”value”/> -> //input[@type='text' and @value='value']
 
 - sometimes this command will succed:
-	<td>click</td>
-	<td>dashboardDocumentProcessTable:j_id130</td>
-	<td></td>
+  <td>click</td>
+  <td>dashboardDocumentProcessTable:j_id130</td>
+  <td></td>
   when this one will faile:
-	<td>click</td>
-	<td>//input[@id="dashboardDocumentProcessTable:j_id130"]</td>
-	<td></td>
+  <td>click</td>
+  <td>//input[@id="dashboardDocumentProcessTable:j_id130"]</td>
+  <td></td>
 
 - when trying to debug what's happening on the server, it may be useful to
   print out the rendered HTML in the page. The following command can be

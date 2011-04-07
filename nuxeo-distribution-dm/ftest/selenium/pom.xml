@@ -1,19 +1,42 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
+  <parent>
+    <groupId>org.nuxeo.ecm.distribution</groupId>
+    <artifactId>nuxeo-distribution</artifactId>
+    <version>5.4.2-SNAPSHOT</version>
+    <relativePath>../../../pom.xml</relativePath>
+  </parent>
+
   <groupId>org.nuxeo.tool</groupId>
   <artifactId>selenium-utility</artifactId>
-  <version>1.0</version>
+  <version>1.1</version>
   <packaging>pom</packaging>
   <name>Utility POM for running Selenium tests</name>
   <description>
-    This POM allow download of Selenium Server jar file. 
+    This POM allow download of Selenium Server jar file.
     It also provide a plugin for running regular Surefire tests.
   </description>
 
+  <properties>
+    <selenium.version>2.0b1</selenium.version>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.seleniumhq.selenium</groupId>
+      <artifactId>selenium-server</artifactId>
+      <version>${selenium.version}</version>
+      <classifier>standalone</classifier>
+    </dependency>
+  </dependencies>
+
   <build>
     <plugins>
+      <!-- Remove when run.sh will be no more used. -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
@@ -22,92 +45,45 @@
             <artifactItem>
               <groupId>org.seleniumhq.selenium</groupId>
               <artifactId>selenium-server</artifactId>
-              <version>2.0b1</version>
+              <version>${selenium.version}</version>
               <classifier>standalone</classifier>
               <overWrite>true</overWrite>
               <outputDirectory>.</outputDirectory>
               <destFileName>selenium-server.jar</destFileName>
             </artifactItem>
-            <!--
-              We should test org.seleniumhq.selenium.client-drivers:selenium-java-client-driver
-            -->
           </artifactItems>
         </configuration>
       </plugin>
-      <!-- Following plugin works only with Java Selenium tests -->
-      <!--      <plugin>-->
-      <!--        <groupId>org.codehaus.mojo</groupId>-->
-      <!--        <artifactId>selenium-maven-plugin</artifactId>-->
-      <!--        <executions>-->
-      <!--          <execution>-->
-      <!--            <phase>pre-integration-test</phase>-->
-      <!--            <goals>-->
-      <!--              <goal>selenese</goal>-->
-      <!--            </goals>-->
-      <!--            <configuration>-->
-      <!--              <background>true</background>-->
-      <!--              <userExtensions>user-extensions.js</userExtensions>-->
-      <!--              <firefoxProfileTemplate>ffprofile</firefoxProfileTemplate>-->
-<!---->
-      <!--              <browser>*chrome</browser>-->
-      <!--              <startURL>http://localhost:8080/nuxeo/</startURL>-->
-      <!--              <suite>tests/suite1.html</suite>-->
-      <!--              <multiWindow>true</multiWindow>-->
-      <!--              <results>result-suite1.html</results>-->
-      <!--            </configuration>-->
-      <!--          </execution>-->
-      <!--        </executions>-->
-      <!--        <configuration>-->
-      <!--        </configuration>-->
-      <!--      </plugin>-->
+      <plugin>
+        <groupId>org.nuxeo.build</groupId>
+        <artifactId>nuxeo-distribution-tools</artifactId>
+        <executions>
+          <execution>
+            <id>antbuild</id>
+            <phase>integration-test</phase>
+            <configuration>
+              <buildFiles>
+                <buildFile>${basedir}/assembly.xml</buildFile>
+              </buildFiles>
+            </configuration>
+            <goals>
+              <goal>build</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
 
-  <repositories>
-    <repository>
-      <id>public</id>
-      <url>http://maven.nuxeo.org/public</url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
-    <repository>
-      <id>public-snapshot</id>
-      <url>http://maven.nuxeo.org/public-snapshot</url>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
-
-  <pluginRepositories>
-    <pluginRepository>
-      <id>public</id>
-      <url>http://maven.nuxeo.org/public</url>
-      <name>Nuxeo virtual release repository</name>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </pluginRepository>
-    <pluginRepository>
-      <id>public-snapshot</id>
-      <url>http://maven.nuxeo.org/public-snapshot</url>
-      <name>Nuxeo virtual snapshot repository</name>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </pluginRepository>
-  </pluginRepositories>
+  <profiles>
+    <profile>
+      <id>tomcat</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+    </profile>
+    <profile>
+      <id>jboss</id>
+    </profile>
+  </profiles>
 </project>
