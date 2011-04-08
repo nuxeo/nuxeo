@@ -7,10 +7,13 @@
   xmlns:nxp="http://nuxeo.org/nxweb/pdf">
 <c:if test="#{nxl:isLikePlainMode(widget.mode)}">#{nxu:userFullName(field)}</c:if>
 <c:if test="#{nxl:isLikeViewMode(widget.mode)}">
-  <span onmouseover="tooltip.show('#{field}', 150);" onmouseout="tooltip.hide();">
+  <div class="#{widget.id}">
     <h:outputText value="#{nxu:userFullName(field)}"
       alt="#{field}" title="#{field}" />
-  </span>
+  </div>
+  <script>
+    jQuery(".#{widget.id} span").tooltip();
+  </script>
 </c:if>
 <c:if test="#{widget.mode == 'pdf'}">
   <nxp:html>#{nxu:userFullName(field)}</nxp:html>

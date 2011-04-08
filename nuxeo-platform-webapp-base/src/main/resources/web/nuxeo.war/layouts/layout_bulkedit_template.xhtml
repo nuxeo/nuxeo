@@ -38,8 +38,8 @@
                   <c:if test="#{!empty widget.helpLabel}">
                     <h:outputText value=" " />
                     <h:graphicImage value="/icons/lightbulb.png"
-                      onmouseover="tooltip.show('#{nxu:javaScriptEscape(messages[widget.helpLabel])}', 500);"
-                      onmouseout="tooltip.hide();" />
+                      styleClass="layoutHelpLabel"
+                      title="#{messages[widget.helpLabel]}" />
                   </c:if>
                 </c:when>
                 <c:otherwise>
@@ -48,8 +48,8 @@
                   <c:if test="#{!empty widget.helpLabel}">
                     <h:outputText value=" " />
                     <h:graphicImage value="/icons/lightbulb.png"
-                      onmouseover="tooltip.show('#{nxu:javaScriptEscape(widget.helpLabel)}', 500);"
-                      onmouseout="tooltip.hide();" />
+                      styleClass="layoutHelpLabel"
+                      title="#{widget.helpLabel}" />
                   </c:if>
                 </c:otherwise>
               </c:choose>
@@ -65,6 +65,12 @@
 
     </tbody>
   </table>
+
+<script>
+  jQuery(document).ready(function() {
+    jQuery("img.layoutHelpLabel[title]").tooltip({delay:1000, offset: [0, 100], position: 'center center'});
+  });
+</script>
 
 </c:if>
 

@@ -49,8 +49,8 @@
               </span>
             </c:if>
             <h:graphicImage value="/icons/lightbulb.png"
-              onmouseover="tooltip.show('#{nxu:javaScriptEscape(messages[layoutProperty_helpLabel])}', 500);"
-              onmouseout="tooltip.hide();" />
+              styleClass="layoutHelpLabel"
+              title="#{messages[layoutProperty_helpLabel]}" />
 
             <c:if test="#{not empty layoutProperty_localConfigurationFacet}">
               <a4j:commandLink action="#{localConfigurationActions.toggleConfigurationForCurrentDocument(layoutProperty_localConfigurationFacet)}"
@@ -78,5 +78,11 @@
         </div>
       </a4j:form>
     </a4j:outputPanel>
+
+  <script>
+    jQuery(document).ready(function() {
+      jQuery("img.layoutHelpLabel[title]").tooltip({delay:1000, offset: [0, 100], position: 'center center'});
+    });
+  </script>
 
 </f:subview>

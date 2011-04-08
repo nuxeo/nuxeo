@@ -20,8 +20,8 @@
                 <td class="iconColumn" style="vertical-align:top;">
                   <c:if test="#{!empty widget.helpLabel}">
                     <h:graphicImage value="/icons/lightbulb.png"
-                      onmouseover="tooltip.show('#{nxu:javaScriptEscape(messages[widget.helpLabel])}', 500);"
-                      onmouseout="tooltip.hide();" />
+                      styleClass="layoutHelpLabel"
+                      title="#{messages[widget.helpLabel]}" />
                   </c:if>
                 </td>
                 <td class="labelColumn">
@@ -33,8 +33,8 @@
                 <td class="iconColumn" style="vertical-align:top;">
                   <c:if test="#{!empty widget.helpLabel}">
                     <h:graphicImage value="/icons/lightbulb.png"
-                      onmouseover="tooltip.show('#{nxu:javaScriptEscape(widget.helpLabel)}', 500);"
-                      onmouseout="tooltip.hide();" />
+                      styleClass="layoutHelpLabel"
+                      title="#{widget.helpLabel}" />
                   </c:if>
                 </td>
                 <td class="labelColumn">
@@ -52,5 +52,11 @@
 
     </tbody>
   </table>
+
+<script>
+  jQuery(document).ready(function() {
+    jQuery("img.layoutHelpLabel[title]").tooltip({delay:1000, predelay:250, offset: [0, 100], position: 'center center'});
+  });
+</script>
 
 </f:subview>

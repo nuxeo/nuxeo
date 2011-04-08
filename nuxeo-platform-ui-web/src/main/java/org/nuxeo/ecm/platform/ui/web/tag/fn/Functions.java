@@ -139,10 +139,10 @@ public final class Functions {
     }
 
     /**
-     * Espaces a given string to be used in a JavaScript function (escaping
+     * Escapes a given string to be used in a JavaScript function (escaping
      * single quote characters for instance).
      *
-     * @since 5.4.1
+     * @since 5.4.2
      */
     public static String javaScriptEscape(String data) {
         if (data != null) {
