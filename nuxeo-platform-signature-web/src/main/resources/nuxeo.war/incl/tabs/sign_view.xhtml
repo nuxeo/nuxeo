@@ -24,7 +24,6 @@
   </h:form>
 
   <c:if test="#{signActions.isPDFSigned()}">
-
     <table class="dataInput">
       <tbody>
         <tr>
@@ -37,13 +36,10 @@
         </tr>
       </tbody>
     </table>
-
   </c:if>
 
-  <c:if test="#{!signActions.isPDFSigned()}">
-
+  <c:if test="#{ nxd:canModify(currentDocument) and !signActions.isPDFSigned()}">
     <c:if test="#{certActions.hasCertificate()}">
-
       <table class="dataInput">
         <tbody>
           <tr>
@@ -100,7 +96,18 @@
       </a4j:form>
     </c:if>
   </c:if>
-
+  
+    <table class="dataInput">
+          <tbody>
+            <tr>
+              <td class="fieldColumn">
+              <c:if test="#{!nxd:canModify(currentDocument)}">
+                  <h:outputText value="#{messages['label.sign.modify.permission.warning']}" />
+               </c:if>
+              </td>
+              </tr>
+            <tr>
+              <td class="fieldColumn">
   <c:if test="#{!certActions.hasCertificate()}">
     <h:outputText value="#{messages['label.sign.certificate.prompt']}" />
     <h:form>
@@ -112,5 +119,8 @@
       </h:commandLink>
     </h:form>
   </c:if>
-
+</td>
+</tr>
+</tbody>
+</table>
 </a4j:outputPanel></div>
