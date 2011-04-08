@@ -30,9 +30,9 @@
       <f:facet name="header">
         <h:outputText value="#{messages['label.username']}" />
       </f:facet>
-      <span onmouseover="tooltip.show('#{logEntry.principalName}', 150);" onmouseout="tooltip.hide();">
-        <h:outputText value="#{nxu:userFullName(logEntry.principalName)}" />
-      </span>
+      <h:outputText value="#{nxu:userFullName(logEntry.principalName)}"
+        title="#{logEntry.principalName}"
+        styleClass="auditLogUserTooltip" />
     </h:column>
     <h:column>
       <f:facet name="header">
@@ -82,5 +82,11 @@
       <h:outputText value="#{messages[logEntry.docLifeCycle]}" />
     </h:column>
   </h:dataTable>
+
+<script>
+  jQuery(document).ready(function() {
+    jQuery(".auditLogUserTooltip").tooltip({delay:1000, predelay:250});
+  });
+</script>
 
 </div>
