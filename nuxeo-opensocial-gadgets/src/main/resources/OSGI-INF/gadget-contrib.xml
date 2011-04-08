@@ -58,12 +58,7 @@
       <category>Nuxeo</category>
       <icon>workspace_64.png</icon>
     </internalGadget>
-    <internalGadget name="nuxeoworkspaces" disabled="false">
-      <mountPoint>/nuxeoworkspaces</mountPoint>
-      <entryPoint>nuxeoworkspaces.xml</entryPoint>
-      <category>Nuxeo</category>
-      <icon>Nuxeo.png</icon>
-    </internalGadget>
+
 
     <!-- Media -->
     <internalGadget name="photo">
