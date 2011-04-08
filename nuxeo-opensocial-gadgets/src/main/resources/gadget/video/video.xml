@@ -122,7 +122,7 @@
 
       <div id="perm" style="display:none;">
         <div id="show">
-          <a href="#">Modifier</a>
+          <div class="context-edit-button"><a href="#">Modifier</a></div>
         </div>
 
         <div id="form" style="display:none;margin:auto">
