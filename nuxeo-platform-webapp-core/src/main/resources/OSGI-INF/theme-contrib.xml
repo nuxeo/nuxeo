@@ -35,8 +35,10 @@
   </extension>
 
   <extension target="org.nuxeo.theme.services.ThemeService" point="resources">
-    <import src="themes/collections/nuxeo-DM.zip" bank="nuxeo" collection="nuxeo DM" />
-    <import src="themes/collections/Galaxy.zip" bank="nuxeo" collection="Galaxy" />
+    <import src="themes/collections/nuxeo-DM.zip" bank="nuxeo"
+      collection="nuxeo DM" />
+    <import src="themes/collections/Galaxy.zip" bank="nuxeo"
+      collection="Galaxy" />
   </extension>
 
   <!-- fragments -->
@@ -76,6 +78,7 @@
       <!-- include JS for contextual menu -->
       <resource>jquery.js</resource>
       <resource>contextmenu.js</resource>
+      <resource>jquery.tools.tooltip.min.js</resource>
     </view>
 
     <view name="User services (Galaxy theme)" template-engine="jsf-facelets">
@@ -153,6 +156,9 @@
     </resource>
     <resource name="DragAndDrop.js">
       <path>scripts/DragAndDrop.js</path>
+    </resource>
+    <resource name="jquery.tools.tooltip.min.js">
+      <path>scripts/jquery/jquery.tools.tooltip.min.js</path>
     </resource>
   </extension>
 

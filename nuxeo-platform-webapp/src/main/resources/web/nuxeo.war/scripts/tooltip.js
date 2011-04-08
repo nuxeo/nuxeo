@@ -1,3 +1,4 @@
+// deprecated since 5.4.2: use jquery plugin tooltips instead
 var tooltip=function(){
  var id = 'tooltip';
  var top = 3;

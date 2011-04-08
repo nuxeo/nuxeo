@@ -418,6 +418,16 @@
         <padding>5px 5px 5px 23px</padding>
         <display>block</display>
       </selector>
+      <selector path=".tooltip">
+        <color preset="default.text (Galaxy colors)" />
+        <border preset="blue.border (Galaxy borders)" />
+        <background preset="tooltip (Galaxy backgrounds)" />
+        <margin-bottom>5px !important</margin-bottom>
+        <padding>5px 5px 5px 23px !important</padding>
+        <display>none</display>
+        <max-width>20%</max-width>
+        <z-index>1000</z-index>
+      </selector>
       <selector path=".rightsAddManager td">
         <border preset="tabiselected (Galaxy borders)" />
         <background-color preset="white (Galaxy backgrounds)"/>
