@@ -20,10 +20,10 @@ Needed parameters:
       <thead>
         <tr>
           <th>
-            Edit mode
+            #{messages['label.layoutDemo.widgetDemo.editMode']}
           </th>
           <th>
-            View mode
+            #{messages['label.layoutDemo.widgetDemo.viewMode']}
           </th>
         </tr>
       </thead>
@@ -37,7 +37,8 @@ Needed parameters:
                   mode="edit"
                   name="#{demoLayout.name}" />
                 <p class="buttonsGadget">
-                  <h:commandButton value="submit"
+                  <h:commandButton
+                    value="#{messages['label.layoutDemo.widgetDemo.submit']}"
                     styleClass="button"
                     id="#{demoLayout.name}_edit_form_submitButton" />
                 </p>
@@ -50,7 +51,8 @@ Needed parameters:
                   mode="edit"
                   name="#{demoLayout.name}" />
                 <p class="buttonsGadget">
-                  <a4j:commandButton value="submit"
+                  <a4j:commandButton
+                    value="#{messages['label.layoutDemo.widgetDemo.submit']}"
                     styleClass="button"
                     id="#{demoLayout.name}_edit_form_submitButton"
                     reRender="#{demoLayout.name}_view_form, #{demoLayout.name}_edit_form" />
@@ -89,7 +91,7 @@ Needed parameters:
 <c:if test="#{demoLayout.listing}">
 
   <c:if test="#{currentWidgetType.category != 'listing'}">
-    This widget type can also be used in listings:
+    #{messages['label.layoutDemo.widgetDemo.alsoUsedInListings']}
   </c:if>
 
   <a4j:region id="#{demoLayout.name}_region">
@@ -97,7 +99,7 @@ Needed parameters:
       <thead>
         <tr>
           <th>
-            View mode
+            #{messages['label.layoutDemo.widgetDemo.viewMode']}
           </th>
         </tr>
       </thead>

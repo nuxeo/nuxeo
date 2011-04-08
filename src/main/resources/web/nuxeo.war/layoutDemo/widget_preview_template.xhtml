@@ -16,10 +16,14 @@
 
     <ul>
       <li class="#{nxu:test(empty layoutDemoCurrentSubTabId, 'selected', '')}">
-        <a href="#{baseURL}#{currentWidgetType.url}?tabId=preview">View mode</a>
+        <a href="#{baseURL}#{currentWidgetType.url}?tabId=preview">
+          #{messages['label.layoutDemo.widgetDemo.viewMode']}
+        </a>
       </li>
       <li class="#{nxu:test(layoutDemoCurrentSubTabId == 'edit_mode', 'selected', '')}">
-        <a href="#{baseURL}#{currentWidgetType.url}?tabId=preview&amp;subTabId=edit_mode">Edit mode</a>
+        <a href="#{baseURL}#{currentWidgetType.url}?tabId=preview&amp;subTabId=edit_mode">
+          #{messages['label.layoutDemo.widgetDemo.editMode']}
+        </a>
       </li>
     </ul>
   </div>
@@ -32,10 +36,10 @@
         <thead>
           <tr>
             <th>
-              Properties
+              #{messages['label.layoutDemo.widgetPreview.properties']}
             </th>
             <th>
-              Preview
+              #{messages['label.layoutDemo.widgetPreview.preview']}
             </th>
           </tr>
         </thead>
@@ -57,7 +61,8 @@
                   <nxl:layout name="layout_demo_widget_custom_properties"
                     mode="edit" value="#{viewPreviewLayoutDef}" />
                   <p class="buttonsGadget">
-                    <a4j:commandButton value="submit"
+                    <a4j:commandButton
+                      value="#{messages['label.layoutDemo.widgetDemo.submit']}"
                       styleClass="button"
                       id="#{demoLayout.name}_edit_form_submitButton"
                       reRender="layoutDemoViewPreviewForm, layoutDemoViewPreview">
@@ -107,10 +112,10 @@
         <thead>
           <tr>
             <th>
-              Properties
+              #{messages['label.layoutDemo.widgetPreview.properties']}
             </th>
             <th>
-              Preview
+              #{messages['label.layoutDemo.widgetPreview.preview']}
             </th>
           </tr>
         </thead>
@@ -132,7 +137,8 @@
                   <nxl:layout name="layout_demo_widget_custom_properties"
                     mode="edit" value="#{editPreviewLayoutDef}" />
                   <p class="buttonsGadget">
-                    <a4j:commandButton value="submit"
+                    <a4j:commandButton
+                      value="#{messages['label.layoutDemo.widgetDemo.submit']}"
                       styleClass="button"
                       id="#{demoLayout.name}_edit_form_submitButton"
                       process="layoutDemoEditPreviewForm"

@@ -21,30 +21,32 @@
       </rows>
       <widget name="label" type="text">
         <labels>
-          <label mode="any">Label</label>
+          <label mode="any">label.layoutDemo.widgetPreview.label</label>
         </labels>
+        <translated>true</translated>
         <fields>
           <field>label</field>
         </fields>
       </widget>
       <widget name="helpLabel" type="text">
         <labels>
-          <label mode="any">Help label</label>
+          <label mode="any">label.layoutDemo.widgetPreview.helpLabel</label>
         </labels>
+        <translated>true</translated>
         <fields>
           <field>helpLabel</field>
         </fields>
       </widget>
       <widget name="translated" type="checkbox">
         <labels>
-          <label mode="any">Translated</label>
+          <label mode="any">label.layoutDemo.widgetPreview.translated</label>
         </labels>
         <helpLabels>
           <label mode="any">
-            If set to true, the label and help label will be considered as
-            message keys and will be translated
+            label.layoutDemo.widgetPreview.translated.help
           </label>
         </helpLabels>
+        <translated>true</translated>
         <fields>
           <field>translated</field>
         </fields>
@@ -62,9 +64,11 @@
       </rows>
       <widget name="props" type="template">
         <labels>
-          <label mode="any">Custom properties</label>
+          <label mode="any">
+            label.layoutDemo.widgetPreview.customProperties
+          </label>
         </labels>
-        <translated>false</translated>
+        <translated>true</translated>
         <fields>
           <field>customProperties</field>
         </fields>
@@ -93,7 +97,7 @@
                   <field>key</field>
                 </fields>
                 <labels>
-                  <label mode="any">Property key</label>
+                  <label mode="any"></label>
                 </labels>
                 <properties widgetMode="edit">
                   <property name="required">true</property>
@@ -120,9 +124,9 @@
 
     <widget name="demo_listing_title" type="text">
       <labels>
-        <label mode="any">Title</label>
+        <label mode="any">label.title</label>
       </labels>
-      <translated>false</translated>
+      <translated>true</translated>
       <fields>
         <field>data.dc.title</field>
       </fields>
