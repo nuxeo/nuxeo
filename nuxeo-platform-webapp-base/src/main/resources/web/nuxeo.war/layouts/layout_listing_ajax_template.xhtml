@@ -56,41 +56,61 @@
                   <nxu:set var="descIndex"
                     value="#{provider.getSortInfoIndex(layoutColumn.properties.sortPropertyName, false)}"
                     cache="true">
-                    <h:commandLink immediate="true"
-                      action="#{provider.setSortInfo(layoutColumn.properties.sortPropertyName, nxu:test(ascIndex != -1, false, true), true)}"
-                      id="#{layoutColumn.widgets[0].name}_header_sort">
-                      <h:outputText value="#{layoutColumn.widgets[0].label}"
-                        rendered="#{!layoutColumn.widgets[0].translated}" />
-                      <h:outputText value="#{messages[layoutColumn.widgets[0].label]}"
-                        rendered="#{layoutColumn.widgets[0].translated}" />
-                    </h:commandLink>
+                    <span class="contentViewHeaderSortTooltip">
+                      <h:commandLink immediate="true"
+                        action="#{provider.setSortInfo(layoutColumn.properties.sortPropertyName, nxu:test(ascIndex != -1, false, true), true)}"
+                        id="#{layoutColumn.widgets[0].name}_header_sort">
+                        <h:outputText value="#{layoutColumn.widgets[0].label}"
+                          rendered="#{!layoutColumn.widgets[0].translated}" />
+                        <h:outputText value="#{messages[layoutColumn.widgets[0].label]}"
+                          rendered="#{layoutColumn.widgets[0].translated}" />
+                      </h:commandLink>
+                    </span>
+                    <div class="tooltip">
+                      #{messages['contentview.setSort.help']}
+                    </div>
                     <f:verbatim>&amp;nbsp;</f:verbatim>
                     <c:if test="#{ascIndex != -1}">
-                      <h:commandLink immediate="true"
-                        action="#{provider.setSortInfo(layoutColumn.properties.sortPropertyName, false, false)}"
-                        id="#{layoutColumn.widgets[0].name}_header_sort_desc">
-                        <h:graphicImage value="/icons/sort_selected_down.png" />
-                        <c:if test="#{hasSeveralSorts}">
-                          #{ascIndex + 1}
-                        </c:if>
-                      </h:commandLink>
+                      <span class="contentViewHeaderSortTooltip">
+                        <h:commandLink immediate="true"
+                          action="#{provider.setSortInfo(layoutColumn.properties.sortPropertyName, false, false)}"
+                          id="#{layoutColumn.widgets[0].name}_header_sort_desc">
+                          <h:graphicImage value="/icons/sort_selected_down.png" />
+                          <c:if test="#{hasSeveralSorts}">
+                            #{ascIndex + 1}
+                          </c:if>
+                        </h:commandLink>
+                      </span>
+                      <div class="tooltip">
+                        #{messages['contentview.addSort.help']}
+                      </div>
                     </c:if>
                     <c:if test="#{descIndex != -1}">
-                      <h:commandLink immediate="true"
-                        action="#{provider.setSortInfo(layoutColumn.properties.sortPropertyName, true, false)}"
-                        id="#{layoutColumn.widgets[0].name}_header_sort_asc">
-                        <h:graphicImage value="/icons/sort_selected_up.png" />
-                        <c:if test="#{hasSeveralSorts}">
-                          #{descIndex + 1}
-                        </c:if>
-                      </h:commandLink>
+                      <span class="contentViewHeaderSortTooltip">
+                        <h:commandLink immediate="true"
+                          action="#{provider.setSortInfo(layoutColumn.properties.sortPropertyName, true, false)}"
+                          id="#{layoutColumn.widgets[0].name}_header_sort_asc">
+                          <h:graphicImage value="/icons/sort_selected_up.png" />
+                          <c:if test="#{hasSeveralSorts}">
+                            #{descIndex + 1}
+                          </c:if>
+                        </h:commandLink>
+                      </span>
+                      <div class="tooltip">
+                        #{messages['contentview.addSort.help']}
+                      </div>
                     </c:if>
                     <c:if test="#{ascIndex == -1 and descIndex == -1}">
-                      <h:commandLink immediate="true"
-                        action="#{provider.addSortInfo(layoutColumn.properties.sortPropertyName, true)}"
-                        id="#{layoutColumn.widgets[0].name}_header_sort_add">
-                        <h:graphicImage value="/icons/sort_selected_down.png" />
-                      </h:commandLink>
+                      <span class="contentViewHeaderSortTooltip">
+                        <h:commandLink immediate="true"
+                          action="#{provider.addSortInfo(layoutColumn.properties.sortPropertyName, true)}"
+                          id="#{layoutColumn.widgets[0].name}_header_sort_add">
+                          <h:graphicImage value="/icons/sort_selected_down.png" />
+                        </h:commandLink>
+                      </span>
+                      <div class="tooltip">
+                        #{messages['contentview.addSort.help']}
+                      </div>
                     </c:if>
                   </nxu:set>
                   </nxu:set>
@@ -106,18 +126,17 @@
           </c:choose>
         </th>
       </nxl:layoutColumn>
-      <c:if test="#{provider.sortable}">
-        <th>
-          <h:graphicImage value="/icons/lightbulb.png"
-            onmouseover="tooltip.show('#{messages['contentview.sort.help']}', 200, 'topleft');"
-            onmouseout="tooltip.hide();" />
-        </th>
-      </c:if>
     </tr>
   </thead>
 </c:if>
 
 </nxu:set>
+
+<script>
+  jQuery(document).ready(function() {
+    jQuery(".contentViewHeaderSortTooltip").tooltip({delay:1000, predelay:250});
+  });
+</script>
 
 <c:set var="trStyleClass" value="#{nxu:test(layoutListingStatus.index%2 ==0, 'dataRowEven', 'dataRowOdd')}" />
 <tr class="#{nxu:test(layout.properties.showRowEvenOddClass, trStyleClass, '')}">
@@ -131,10 +150,6 @@
       </nxl:layoutColumnWidget>
     </td>
   </nxl:layoutColumn>
-  <c:if test="#{provider.sortable}">
-    <td class="iconColumn">
-    </td>
-  </c:if>
 </tr>
 
 </f:subview>
