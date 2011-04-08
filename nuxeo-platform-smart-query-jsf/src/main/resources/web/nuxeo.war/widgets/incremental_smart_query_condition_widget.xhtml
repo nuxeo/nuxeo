@@ -44,24 +44,30 @@
   
     <a4j:outputPanel id="#{widget.id}_subwidgets">
       <nxl:subWidget>
-        <nxl:widget widget="#{widget}" value="#{value}" />
         <c:if test="#{!empty widget.helpLabel}">
           <c:choose>
             <c:when test="#{widget.translated}">
               <h:graphicImage value="/icons/lightbulb.png"
-                onmouseover="tooltip.show('#{messages[widget.helpLabel]}', 500);"
-                onmouseout="tooltip.hide();" />
+                styleClass="layoutHelpLabel"
+                title="#{messages[widget.helpLabel]}" />
             </c:when>
             <c:otherwise>
               <h:graphicImage value="/icons/lightbulb.png"
-                onmouseover="tooltip.show('#{widget.helpLabel}', 500);"
-                onmouseout="tooltip.hide();" />
+                styleClass="layoutHelpLabel"
+                title="#{widget.helpLabel}" />
             </c:otherwise>
           </c:choose>
         </c:if>
+        <nxl:widget widget="#{widget}" value="#{value}" />
       </nxl:subWidget>
     </a4j:outputPanel>
       
   </c:if>
+
+<script>
+  jQuery(document).ready(function() {
+    jQuery("img.layoutHelpLabel[title]").tooltip({delay:1000, predelay:250});
+  });
+</script>
 
 </f:subview>
