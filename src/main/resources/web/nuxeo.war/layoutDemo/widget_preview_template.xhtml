@@ -29,7 +29,7 @@
   </div>
   <div style="clear:both"></div>
   <div class="tabsContent">
-  
+
     <c:if test="#{empty layoutDemoCurrentSubTabId}">
 
       <table class="dataOutput">
@@ -44,6 +44,13 @@
           </tr>
         </thead>
         <tbody>
+          <tr>
+            <td>
+              <h:outputText value="#{messages['label.layoutDemo.widgetPreview.help']}"
+                class="infoMessage" />
+            </td>
+            <td></td>
+          </tr>
           <tr>
             <td width="50%" valign="top">
               <a4j:region id="layoutDemoViewPreviewRegion">
@@ -65,10 +72,7 @@
                       value="#{messages['label.layoutDemo.widgetDemo.submit']}"
                       styleClass="button"
                       id="#{demoLayout.name}_edit_form_submitButton"
-                      reRender="layoutDemoViewPreviewForm, layoutDemoViewPreview">
-                      <nxu:actionListenerMethod
-                        value="#{layoutDemoActions.setShowViewPreview(true)}" /> 
-                    </a4j:commandButton>
+                      reRender="layoutDemoViewPreviewForm, layoutDemoViewPreview" />
                     <a4j:status>
                       <f:facet name="start">
                         <h:graphicImage value="/img/standart_waiter.gif" />
@@ -80,23 +84,21 @@
             </td>
             <td width="50%" valign="top">
               <a4j:outputPanel id="layoutDemoViewPreview">
-                <c:if test="#{layoutDemoActions.showViewPreview}">
-                  <c:if test="false">
-                    <c:set var="frameURL"
-                      value="#{baseURL}#{layoutPreviewActions.getPreviewLayoutURL(viewPreviewLayoutDef, 'view', '/layouts/layout_default_template.xhtml')}" />
-                    <iframe style="visibility:hidden;width:100%;"
-                      onload="javascript:this.style.visibility='visible';"
-                      src="#{frameURL}"></iframe>
-                  </c:if>
-                  <c:if test="true">
-                    <h:form id="layoutDemoViewPreviewResultForm"
-                      ajaxSubmit="true">
-                      <nxl:layout
-                        definition="#{layoutPreviewActions.getLayoutDefinition(viewPreviewLayoutDef)}"
-                        value="#{layoutPreviewDocument}" mode="view"
-                        template="/layouts/layout_default_template.xhtml" />
-                    </h:form>
-                  </c:if>
+                <c:if test="false">
+                  <c:set var="frameURL"
+                    value="#{baseURL}#{layoutPreviewActions.getPreviewLayoutURL(viewPreviewLayoutDef, 'view', '/layouts/layout_default_template.xhtml')}" />
+                  <iframe style="visibility:hidden;width:100%;"
+                    onload="javascript:this.style.visibility='visible';"
+                    src="#{frameURL}"></iframe>
+                </c:if>
+                <c:if test="true">
+                  <h:form id="layoutDemoViewPreviewResultForm"
+                    ajaxSubmit="true">
+                    <nxl:layout
+                      definition="#{layoutPreviewActions.getLayoutDefinition(viewPreviewLayoutDef)}"
+                      value="#{layoutPreviewDocument}" mode="view"
+                      template="/layouts/layout_default_template.xhtml" />
+                  </h:form>
                 </c:if>
               </a4j:outputPanel>
             </td>
@@ -121,6 +123,13 @@
         </thead>
         <tbody>
           <tr>
+            <td>
+              <h:outputText value="#{messages['label.layoutDemo.widgetPreview.help']}"
+                class="infoMessage" />
+            </td>
+            <td></td>
+          </tr>
+          <tr>
             <td width="50%" valign="top">
               <a4j:region id="layoutDemoEditPreviewRegion">
                 <a4j:form id="layoutDemoEditPreviewForm"
@@ -142,10 +151,7 @@
                       styleClass="button"
                       id="#{demoLayout.name}_edit_form_submitButton"
                       process="layoutDemoEditPreviewForm"
-                      reRender="layoutDemoEditPreviewForm, layoutDemoEditPreview">
-                      <nxu:actionListenerMethod
-                        value="#{layoutDemoActions.setShowEditPreview(true)}" /> 
-                    </a4j:commandButton>
+                      reRender="layoutDemoEditPreviewForm, layoutDemoEditPreview" />
                     <a4j:status>
                       <f:facet name="start">
                         <h:graphicImage value="/img/standart_waiter.gif" />
@@ -157,23 +163,21 @@
             </td>
             <td width="50%" valign="top">
               <a4j:outputPanel id="layoutDemoEditPreview">
-                <c:if test="#{layoutDemoActions.showEditPreview}">
-                  <c:if test="false">
-                    <c:set var="frameURL"
-                      value="#{baseURL}#{layoutPreviewActions.getPreviewLayoutURL(editPreviewLayoutDef, 'edit', '/layouts/layout_default_template.xhtml')}" />
-                    <iframe style="visibility:hidden;width:100%;"
-                      onload="javascript:this.style.visibility='visible';"
-                      src="#{frameURL}"></iframe>
-                  </c:if>
-                  <c:if test="true">
-                    <h:form id="layoutDemoEditPreviewResultForm"
-                      ajaxSubmit="true">
-                      <nxl:layout
-                        definition="#{layoutPreviewActions.getLayoutDefinition(editPreviewLayoutDef)}"
-                        value="#{layoutPreviewDocument}" mode="edit"
-                        template="/layouts/layout_default_template.xhtml" />
-                    </h:form>
-                  </c:if>
+                <c:if test="false">
+                  <c:set var="frameURL"
+                    value="#{baseURL}#{layoutPreviewActions.getPreviewLayoutURL(editPreviewLayoutDef, 'edit', '/layouts/layout_default_template.xhtml')}" />
+                  <iframe style="visibility:hidden;width:100%;"
+                    onload="javascript:this.style.visibility='visible';"
+                    src="#{frameURL}"></iframe>
+                </c:if>
+                <c:if test="true">
+                  <h:form id="layoutDemoEditPreviewResultForm"
+                    ajaxSubmit="true">
+                    <nxl:layout
+                      definition="#{layoutPreviewActions.getLayoutDefinition(editPreviewLayoutDef)}"
+                      value="#{layoutPreviewDocument}" mode="edit"
+                      template="/layouts/layout_default_template.xhtml" />
+                  </h:form>
                 </c:if>
               </a4j:outputPanel>
             </td>

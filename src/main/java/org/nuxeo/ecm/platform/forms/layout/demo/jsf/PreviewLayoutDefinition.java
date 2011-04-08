@@ -143,7 +143,7 @@ public class PreviewLayoutDefinition implements Serializable {
         }
         List<Map<String, Serializable>> customProps = getCustomProperties();
         if (customProps != null) {
-            widgetProps.putAll(convertCustomProperties(customProps));
+            widgetProps.putAll(convertCustomProperties(customProps, true));
         }
         return cleanUpProperties(widgetProps);
     }
@@ -176,7 +176,7 @@ public class PreviewLayoutDefinition implements Serializable {
     }
 
     protected Map<String, Serializable> convertCustomProperties(
-            List<Map<String, Serializable>> listProps)
+            List<Map<String, Serializable>> listProps, boolean ignoreErrors)
             throws ValidatorException {
         Map<String, Serializable> values = new HashMap<String, Serializable>();
         if (listProps != null) {
@@ -184,12 +184,18 @@ public class PreviewLayoutDefinition implements Serializable {
                 String key = (String) entry.get("key");
                 Serializable value = entry.get("value");
                 if (key == null || key.trim().length() == 0) {
+                    if (ignoreErrors) {
+                        continue;
+                    }
                     FacesMessage message = new FacesMessage(
                             FacesMessage.SEVERITY_ERROR, "Invalid empty key",
                             null);
                     throw new ValidatorException(message);
                 }
                 if (values.containsKey(key)) {
+                    if (ignoreErrors) {
+                        continue;
+                    }
                     FacesMessage message = new FacesMessage(
                             FacesMessage.SEVERITY_ERROR, String.format(
                                     "Duplicate key '%s'", key), null);
@@ -214,7 +220,7 @@ public class PreviewLayoutDefinition implements Serializable {
         }
         List<Map<String, Serializable>> listValue = (List) value;
         // will throw an error
-        convertCustomProperties(listValue);
+        convertCustomProperties(listValue, false);
     }
 
 }

@@ -153,20 +153,21 @@ public class LayoutDemoActions implements Serializable {
         this.currentSubTabId = currentSubTabId;
     }
 
-    public Boolean getShowViewPreview() {
-        return showViewPreview;
-    }
-
-    public void setShowViewPreview(Boolean showViewPreview) {
-        this.showViewPreview = showViewPreview;
+    protected PreviewLayoutDefinition createPreviewLayoutDefinition(
+            DemoWidgetType widgetType) {
+        PreviewLayoutDefinition def = new PreviewLayoutDefinition(
+                widgetType.getName(), widgetType.getFields(),
+                widgetType.getDefaultProperties());
+        // set a custom label and help label
+        def.setLabel("My widget label");
+        def.setHelpLabel("My widget help label");
+        return def;
     }
 
     @Factory(value = "viewPreviewLayoutDef", scope = EVENT)
     public PreviewLayoutDefinition getViewPreviewLayoutDefinition() {
         if (viewPreviewLayoutDef == null && currentWidgetType != null) {
-            viewPreviewLayoutDef = new PreviewLayoutDefinition(
-                    currentWidgetType.getName(), currentWidgetType.getFields(),
-                    currentWidgetType.getDefaultProperties());
+            viewPreviewLayoutDef = createPreviewLayoutDefinition(currentWidgetType);
         }
         return viewPreviewLayoutDef;
     }
@@ -174,9 +175,7 @@ public class LayoutDemoActions implements Serializable {
     @Factory(value = "editPreviewLayoutDef", scope = EVENT)
     public PreviewLayoutDefinition getEditPreviewLayoutDefinition() {
         if (editPreviewLayoutDef == null && currentWidgetType != null) {
-            editPreviewLayoutDef = new PreviewLayoutDefinition(
-                    currentWidgetType.getName(), currentWidgetType.getFields(),
-                    currentWidgetType.getDefaultProperties());
+            editPreviewLayoutDef = createPreviewLayoutDefinition(currentWidgetType);
         }
         return editPreviewLayoutDef;
     }
