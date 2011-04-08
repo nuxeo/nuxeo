@@ -40,8 +40,8 @@ import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.platform.importer.factories.DefaultDocumentModelFactory;
 import org.nuxeo.ecm.platform.importer.factories.ImporterDocumentModelFactory;
-import org.nuxeo.ecm.platform.importer.filter.ImportingDocumentFilter;
 import org.nuxeo.ecm.platform.importer.filter.ImporterFilter;
+import org.nuxeo.ecm.platform.importer.filter.ImportingDocumentFilter;
 import org.nuxeo.ecm.platform.importer.listener.ImporterListener;
 import org.nuxeo.ecm.platform.importer.listener.JobHistoryListener;
 import org.nuxeo.ecm.platform.importer.log.ImporterLogger;
@@ -93,6 +93,8 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
     protected List<ImporterListener> listeners = new ArrayList<ImporterListener>();
 
     protected List<ImportingDocumentFilter> importingDocumentFilters = new ArrayList<ImportingDocumentFilter>();
+
+    protected GenericThreadedImportTask rootImportTask;
 
     public static ThreadPoolExecutor getExecutor() {
         return importTP;
@@ -181,11 +183,13 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
         this.listeners.addAll(listeners);
     }
 
-    public void addImportingDocumentFilters(ImportingDocumentFilter... importingDocumentFilters) {
+    public void addImportingDocumentFilters(
+            ImportingDocumentFilter... importingDocumentFilters) {
         addImportingDocumentFilters(Arrays.asList(importingDocumentFilters));
     }
 
-    public void addImportingDocumentFilters(Collection<ImportingDocumentFilter> importingDocumentFilters) {
+    public void addImportingDocumentFilters(
+            Collection<ImportingDocumentFilter> importingDocumentFilters) {
         this.importingDocumentFilters.addAll(importingDocumentFilters);
     }
 
@@ -237,13 +241,28 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
         }
     }
 
+    public void setRootImportTask(GenericThreadedImportTask rootImportTask) {
+        this.rootImportTask = rootImportTask;
+    }
+
     protected GenericThreadedImportTask initRootTask(SourceNode importSource,
             DocumentModel targetContainer, boolean skipRootContainerCreation,
             ImporterLogger log, Integer batchSize, String jobName)
             throws Exception {
-        GenericThreadedImportTask rootImportTask = new GenericThreadedImportTask(
-                null, importSource, targetContainer, skipRootContainerCreation,
-                log, batchSize, getFactory(), getThreadPolicy(), jobName);
+        if (rootImportTask == null) {
+            setRootImportTask(new GenericThreadedImportTask(null, importSource,
+                    targetContainer, skipRootContainerCreation, log, batchSize,
+                    getFactory(), getThreadPolicy(), jobName));
+        } else {
+            rootImportTask.setInputSource(importSource);
+            rootImportTask.setTargetFolder(targetContainer);
+            rootImportTask.setSkipContainerCreation(skipRootContainerCreation);
+            rootImportTask.setRsLogger(log);
+            rootImportTask.setFactory(getFactory());
+            rootImportTask.setThreadPolicy(getThreadPolicy());
+            rootImportTask.setJobName(jobName);
+            rootImportTask.setBatchSize(batchSize);
+        }
         rootImportTask.addListeners(listeners);
         rootImportTask.addImportingDocumentFilters(importingDocumentFilters);
         return rootImportTask;
@@ -258,9 +277,8 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
         importTP = new ThreadPoolExecutor(nbThreads, nbThreads, 500L,
                 TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(100));
 
-        GenericThreadedImportTask rootImportTask = initRootTask(importSource,
-                targetContainer, skipRootContainerCreation, log, batchSize,
-                jobName);
+        initRootTask(importSource, targetContainer, skipRootContainerCreation,
+                log, batchSize, jobName);
 
         rootImportTask.setRootTask();
         long t0 = System.currentTimeMillis();
@@ -334,8 +352,8 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
     }
 
     /**
-     * Creates the target container where the import will be done. Can be
-     * overridden in subclasses.
+     * Creates the target container where the import will // TODO Auto-generated
+     * constructor stub }be done. Can be overridden in subclasses.
      *
      * @return
      * @throws Exception
@@ -388,5 +406,4 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
             listener.afterImport();
         }
     }
-
 }

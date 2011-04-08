@@ -49,7 +49,7 @@ import org.nuxeo.runtime.api.Framework;
  * @author Thierry Delprat
  *
  */
-class GenericThreadedImportTask implements Runnable {
+public class GenericThreadedImportTask implements Runnable {
 
     private static final Log log = LogFactory.getLog(GenericThreadedImportTask.class);
 
@@ -96,13 +96,18 @@ class GenericThreadedImportTask implements Runnable {
 
     protected ImporterLogger rsLogger = null;
 
+    protected GenericThreadedImportTask(CoreSession session){
+        this.session = session;
+        uploadedFiles = 0;
+        taskId = "T" + getNextTaskId();
+    }
+
     public GenericThreadedImportTask(CoreSession session,
             SourceNode rootSource, DocumentModel rootDoc,
             boolean skipContainerCreation, ImporterLogger rsLogger,
             int batchSize, ImporterDocumentModelFactory factory,
             ImporterThreadingPolicy threadPolicy) throws Exception {
         this.rsLogger = rsLogger;
-
         this.session = session;
         this.batchSize = batchSize;
         uploadedFiles = 0;
@@ -365,7 +370,7 @@ class GenericThreadedImportTask implements Runnable {
 
     // This should be done with log4j but I did not find a way to configure it
     // the way I wanted ...
-    private void fslog(String msg, boolean debug) {
+    protected void fslog(String msg, boolean debug) {
         if (debug) {
             rsLogger.debug(msg);
         } else {
@@ -419,6 +424,30 @@ class GenericThreadedImportTask implements Runnable {
         for (ImporterListener listener : listeners) {
             listener.importError();
         }
+    }
+
+    protected void setRootDoc(DocumentModel rootDoc) {
+        this.rootDoc = rootDoc;
+    }
+
+    protected void setRootSource(SourceNode rootSource) {
+        this.rootSource = rootSource;
+    }
+
+    protected void setFactory(ImporterDocumentModelFactory factory) {
+        this.factory = factory;
+    }
+
+    protected void setRsLogger(ImporterLogger rsLogger) {
+        this.rsLogger = rsLogger;
+    }
+
+    protected void setThreadPolicy(ImporterThreadingPolicy threadPolicy) {
+        this.threadPolicy = threadPolicy;
+    }
+
+    protected void setJobName(String jobName) {
+        this.jobName = jobName;
     }
 
 }
