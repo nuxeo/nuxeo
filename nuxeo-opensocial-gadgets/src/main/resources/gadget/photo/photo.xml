@@ -10,6 +10,7 @@
     <Require feature="setprefs"/>
     <Require feature="jquery" />
     <Require feature="form" />
+    <#include "dynamic-translations.ftl"/>
   </ModulePrefs>
   <UserPref name="picTitle" datatype="hidden"/>
   <UserPref name="link" datatype="hidden"/>
@@ -113,7 +114,7 @@
          <span id="pictureLegend"></span>
     </div>
     <div id="perm" style="display:none;">
-    <div id="show"><div class="context-edit-button"><a href="#">Modifier</a></div></div>
+    <div id="show"><div class="context-edit-button"><a href="#">__MSG_label.gadget.edit__</a></div></div>
 
   <div style="display:none;margin:auto" id="form">
   <div id="hideContainer"><a href="#" id="hide" title="fermer"><img src="/nuxeo/img/x.png"></a></div>

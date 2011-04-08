@@ -9,7 +9,8 @@
     <Require feature="setprefs" />
     <Require feature="nuxeo" />
     <Require feature="jquery" />
-     <Require feature="form" />
+    <Require feature="form" />
+    <#include "dynamic-translations.ftl"/>
   </ModulePrefs>
   <UserPref name="vidTitle" datatype="hidden"/>
    <UserPref name="tmp" datatype="hidden"/>
@@ -122,7 +123,7 @@
 
       <div id="perm" style="display:none;">
         <div id="show">
-          <div class="context-edit-button"><a href="#">Modifier</a></div>
+          <div class="context-edit-button"><a href="#">__MSG_label.gadget.edit__</a></div>
         </div>
 
         <div id="form" style="display:none;margin:auto">

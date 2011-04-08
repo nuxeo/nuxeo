@@ -12,6 +12,7 @@
     <Require feature="jquery" />
     <Require feature="form" />
     <Require feature="flash" />
+    <#include "dynamic-translations.ftl"/>
 
   </ModulePrefs>
 
@@ -119,7 +120,7 @@
    </div>
    <div id="perm" style="display:none;" class="tools">
      <div id="show">
-        <div class="context-edit-button"><a href="#">Modifier</a></div>
+        <div class="context-edit-button"><a href="#">__MSG_label.gadget.edit__</a></div>
      </div>
       <div style="display:none;margin:auto" id="form">
 
