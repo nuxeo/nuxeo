@@ -1,4 +1,6 @@
 #!/bin/sh -x
+echo DEPRECATED: see https://github.com/nuxeo/tools-nuxeo-ftest
+
 HERE=$(cd $(dirname $0); pwd -P)
 
 # Load conf file if any

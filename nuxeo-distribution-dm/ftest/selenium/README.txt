@@ -10,7 +10,7 @@ Requirements
 * xvfb for HIDE_FF mode using fake X server
 
 
-Running test suites
+Running test suites (DEPRECATED: see https://github.com/nuxeo/tools-nuxeo-ftest)
 ===================
 
 * Default suites (suite1, suite2, suite-dm, suite-webengine, suite-webengine-website, suite-webengine-tags) on localhost
@@ -51,10 +51,10 @@ be copied to user-extensions.js and modified accordingly when launching the
 suite via Selenium IDE. Via command line, replacement is done in the run.sh
 script.
 
-Running test suites (bis)
-=========================
+Running test suites
+===================
 
-Experimental: migration in progress using only Maven instead of Shell script:
+Using only Maven instead of Shell script:
   mvn integration-test [-DnuxeoURL=http://otherURL/] [-Dsuites=...] -P[tomcat|jboss]
 
 Writing tests

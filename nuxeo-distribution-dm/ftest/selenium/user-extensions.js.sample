@@ -1,3 +1,5 @@
+// DEPRECATED: see https://github.com/nuxeo/tools-nuxeo-ftest
+
 // Absolute path to current folder this path is set at runtime by run.sh
 Selenium.prototype.doRetrieveTestFolderPath = function() {
   storedVars['testfolderpath'] = "/path/to/project-ear/ftest/selenium/data/";
@@ -94,7 +96,7 @@ Selenium.ActiveA4jRequestCount = 0;
 // wait for jquery and/or prototype calls
 Selenium.prototype.doWaitForJSQueries = function(timeout) {
   return Selenium.decorateFunctionWithTimeout(function() {
-  	var testWindow = selenium.browserbot.getCurrentWindow();
+    var testWindow = selenium.browserbot.getCurrentWindow();
     if (testWindow.wrappedJSObject) {
         testWindow = testWindow.wrappedJSObject;
     }

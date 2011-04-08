@@ -36,8 +36,8 @@
 
   <build>
     <plugins>
-      <!-- Remove when run.sh will be no more used. -->
       <plugin>
+        <!-- DEPRECATED, remove when run.sh is no more used. -->
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
         <configuration>
