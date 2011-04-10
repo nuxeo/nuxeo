@@ -56,6 +56,7 @@ public class OpenSocialPresenter extends
         display.setName("open-social-" + model.getData().getId());
         display.asWidget().getElement().setAttribute("frameBorder", "0");
         display.asWidget().getElement().setAttribute("scrolling", "no");
+        display.asWidget().addStyleName(model.getData().getGadgetName());
 
         setLanguage();
         setPermissions();
