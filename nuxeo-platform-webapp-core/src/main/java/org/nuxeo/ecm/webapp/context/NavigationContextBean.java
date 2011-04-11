@@ -258,7 +258,7 @@ public class NavigationContextBean implements NavigationContextLocal,
 
     public DocumentModel getCurrentSuperSpace() throws ClientException {
         if (currentSuperSpace == null && currentDocument != null) {
-            if (currentDocument.hasFacet("SuperSpace")) {
+            if (currentDocument.hasFacet(FacetNames.SUPER_SPACE)) {
                 currentSuperSpace = currentDocument;
             } else if (documentManager != null) {
                 currentSuperSpace = documentManager.getSuperSpace(currentDocument);
