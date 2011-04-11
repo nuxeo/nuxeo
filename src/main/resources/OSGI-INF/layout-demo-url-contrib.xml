@@ -13,6 +13,12 @@
     <documentViewCodec name="layoutDemo" default="false" prefix="layoutDemo"
       class="org.nuxeo.ecm.platform.forms.layout.demo.jsf.LayoutDemoURLCodec" />
 
+    <!-- use a different prefix to be able to use
+      it in a different url pattern -->
+    <documentViewCodec name="layoutDemoPreview" default="false"
+      prefix="layoutDemoPreview"
+      class="org.nuxeo.ecm.platform.forms.layout.demo.jsf.LayoutDemoURLCodec" />
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.ui.web.rest.URLService"
@@ -31,6 +37,16 @@
         <binding name="tabId">#{layoutDemoActions.currentTabId}</binding>
         <binding name="subTabId">#{layoutDemoActions.currentSubTabId}</binding>
       </bindings>
+    </urlPattern>
+
+    <!-- do not make preview urls impact contextual information
+      make it just handle the view -->
+    <urlPattern name="layoutDemoPreview" enabled="true">
+      <defaultURLPolicy>false</defaultURLPolicy>
+      <needBaseURL>true</needBaseURL>
+      <needRedirectFilter>true</needRedirectFilter>
+      <needFilterPreprocessing>true</needFilterPreprocessing>
+      <codecName>layoutDemoPreview</codecName>
     </urlPattern>
 
   </extension>

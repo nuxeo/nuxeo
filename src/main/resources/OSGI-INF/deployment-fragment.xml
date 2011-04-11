@@ -22,18 +22,6 @@
       <redirect />
     </navigation-case>
 
-    <navigation-case>
-      <from-outcome>widgetLocalViewPreviewFrame</from-outcome>
-      <to-view-id>/layoutDemo/widget_local_view_preview_frame.xhtml</to-view-id>
-      <redirect />
-    </navigation-case>
-
-    <navigation-case>
-      <from-outcome>widgetLocalEditPreviewFrame</from-outcome>
-      <to-view-id>/layoutDemo/widget_local_edit_preview_frame.xhtml</to-view-id>
-      <redirect />
-    </navigation-case>
-
     <!-- pages mapping -->
     <navigation-case>
       <from-outcome>textWidget</from-outcome>

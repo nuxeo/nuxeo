@@ -45,6 +45,8 @@ public class LayoutDemoURLCodec extends AbstractDocumentViewCodec {
     // prefix/outcome/in/several/parts/template.faces?requestParams
     public static final String POST_URL_PATTERN = "/([a-zA-Z_0-9\\-\\./]*)?(.faces)(/)?(\\?(.*)?)?";
 
+    public static final String LAYOUT_PREVIEW_FRAME_VIEW_ID = "layoutPreviewFrame";
+
     public static final String DEFAULT_VIEW_ID = "layoutDemoIntroduction";
 
     public String getUrlFromDocumentView(DocumentView docView) {
@@ -137,6 +139,13 @@ public class LayoutDemoURLCodec extends AbstractDocumentViewCodec {
         }
 
         return null;
+    }
+
+    public static boolean isPreview(String viewId) {
+        if (LAYOUT_PREVIEW_FRAME_VIEW_ID.equals(viewId)) {
+            return true;
+        }
+        return false;
     }
 
 }

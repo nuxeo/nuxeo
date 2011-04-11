@@ -87,14 +87,8 @@ public class LayoutDemoActions implements Serializable {
         if (docView != null) {
             String viewId = docView.getViewId();
             if (viewId != null) {
-                if (LayoutPreviewActions.LAYOUT_PREVIEW_FRAME_VIEW_ID.equals(viewId)
-                        || LayoutPreviewActions.LOCAL_VIEW_PREVIEW_FRAME_VIEW_ID.equals(viewId)
-                        || LayoutPreviewActions.LOCAL_EDIT_PREVIEW_FRAME_VIEW_ID.equals(viewId)) {
-                    isPreviewFrame = true;
-                } else {
-                    // try to deduce current widget type
-                    widgetType = layoutDemoManager.getWidgetTypeByViewId(viewId);
-                }
+                // try to deduce current widget type
+                widgetType = layoutDemoManager.getWidgetTypeByViewId(viewId);
             }
         }
 
@@ -113,6 +107,8 @@ public class LayoutDemoActions implements Serializable {
             layoutDemoDocument = null;
             viewPreviewLayoutDef = null;
             editPreviewLayoutDef = null;
+            currentTabId = null;
+            currentSubTabId = null;
         }
         currentWidgetType = newWidgetType;
     }
