@@ -71,8 +71,9 @@
                     <a4j:commandButton
                       value="#{messages['label.layoutDemo.widgetDemo.submit']}"
                       styleClass="button"
-                      id="#{demoLayout.name}_edit_form_submitButton"
-                      reRender="layoutDemoViewPreviewForm, layoutDemoViewPreview" />
+                      id="#{currentWidgetType.name}_edit_form_submitButton"
+                      process="layoutDemoViewPreviewForm"
+                      reRender="layoutDemoViewPreviewFrame" />
                     <a4j:status>
                       <f:facet name="start">
                         <h:graphicImage value="/img/standart_waiter.gif" />
@@ -83,7 +84,13 @@
               </a4j:region>
             </td>
             <td width="50%" valign="top">
-              <a4j:outputPanel id="layoutDemoViewPreview">
+              <a4j:outputPanel id="layoutDemoViewPreviewFrame">
+                <c:if test="false">
+                  <iframe style="visibility:hidden;width:100%;"
+                    onload="javascript:this.style.visibility='visible';"
+                    src="#{baseURL}layoutDemo/widgetLocalViewPreviewFrame"
+                    name="previewFrame" id="previewFrame"></iframe>
+                </c:if>
                 <c:if test="false">
                   <c:set var="frameURL"
                     value="#{baseURL}#{layoutPreviewActions.getPreviewLayoutURL(viewPreviewLayoutDef, 'view', '/layouts/layout_default_template.xhtml')}" />
@@ -92,8 +99,7 @@
                     src="#{frameURL}"></iframe>
                 </c:if>
                 <c:if test="true">
-                  <h:form id="layoutDemoViewPreviewResultForm"
-                    ajaxSubmit="true">
+                  <h:form id="layoutDemoViewPreviewResultForm">
                     <nxl:layout
                       definition="#{layoutPreviewActions.getLayoutDefinition(viewPreviewLayoutDef)}"
                       value="#{layoutPreviewDocument}" mode="view"
@@ -149,9 +155,9 @@
                     <a4j:commandButton
                       value="#{messages['label.layoutDemo.widgetDemo.submit']}"
                       styleClass="button"
-                      id="#{demoLayout.name}_edit_form_submitButton"
+                      id="#{currentWidgetType.name}_edit_form_submitButton"
                       process="layoutDemoEditPreviewForm"
-                      reRender="layoutDemoEditPreviewForm, layoutDemoEditPreview" />
+                      reRender="layoutDemoEditPreviewFrame" />
                     <a4j:status>
                       <f:facet name="start">
                         <h:graphicImage value="/img/standart_waiter.gif" />
@@ -162,7 +168,13 @@
               </a4j:region>
             </td>
             <td width="50%" valign="top">
-              <a4j:outputPanel id="layoutDemoEditPreview">
+              <a4j:outputPanel id="layoutDemoEditPreviewFrame">
+                <c:if test="false">
+                  <iframe style="visibility:hidden;width:100%;"
+                    onload="javascript:this.style.visibility='visible';"
+                    src="#{baseURL}layoutDemo/widgetLocalEditPreviewFrame"
+                    name="previewFrame" id="previewFrame"></iframe>
+                </c:if>
                 <c:if test="false">
                   <c:set var="frameURL"
                     value="#{baseURL}#{layoutPreviewActions.getPreviewLayoutURL(editPreviewLayoutDef, 'edit', '/layouts/layout_default_template.xhtml')}" />
@@ -171,8 +183,7 @@
                     src="#{frameURL}"></iframe>
                 </c:if>
                 <c:if test="true">
-                  <h:form id="layoutDemoEditPreviewResultForm"
-                    ajaxSubmit="true">
+                  <h:form id="layoutDemoEditPreviewResultForm">
                     <nxl:layout
                       definition="#{layoutPreviewActions.getLayoutDefinition(editPreviewLayoutDef)}"
                       value="#{layoutPreviewDocument}" mode="edit"

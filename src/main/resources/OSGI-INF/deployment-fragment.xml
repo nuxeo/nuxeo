@@ -17,8 +17,20 @@
     </navigation-case>
 
     <navigation-case>
-      <from-outcome>widgetPreviewFrame</from-outcome>
-      <to-view-id>/layoutDemo/widget_preview_frame.xhtml</to-view-id>
+      <from-outcome>layoutPreviewFrame</from-outcome>
+      <to-view-id>/layoutDemo/layout_preview_frame.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>widgetLocalViewPreviewFrame</from-outcome>
+      <to-view-id>/layoutDemo/widget_local_view_preview_frame.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>widgetLocalEditPreviewFrame</from-outcome>
+      <to-view-id>/layoutDemo/widget_local_edit_preview_frame.xhtml</to-view-id>
       <redirect />
     </navigation-case>
 
@@ -175,7 +187,7 @@
       to="nuxeo.war/WEB-INF/classes/messages.properties" addNewLine="true" />
     <append from="${bundle.fileName}.tmp/OSGI-INF/l10n/messages_en.properties"
       to="nuxeo.war/WEB-INF/classes/messages_en.properties" addNewLine="true" />
-    <!-- <delete path="${bundle.fileName}.tmp" /> -->
+    <delete path="${bundle.fileName}.tmp" />
 
     <!--  make some extension sources available for demo -->
     <unzip from="${bundle.fileName}" to="/nuxeo.war/layoutDemo/sources/">

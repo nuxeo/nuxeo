@@ -30,6 +30,7 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.impl.LayoutDefinitionImpl;
@@ -48,7 +49,23 @@ public class LayoutPreviewActions {
 
     private static final Log log = LogFactory.getLog(LayoutPreviewActions.class);
 
-    public static final String PREVIEW_FRAME_VIEW_ID = "widgetPreviewFrame";
+    public static final String LAYOUT_PREVIEW_FRAME_VIEW_ID = "layoutPreviewFrame";
+
+    public static final String LOCAL_VIEW_PREVIEW_FRAME_VIEW_ID = "widgetLocalViewPreviewFrame";
+
+    public static final String LOCAL_EDIT_PREVIEW_FRAME_VIEW_ID = "widgetLocalEditPreviewFrame";
+
+    public String getLocalPreviewLayoutURL(String mode, String layoutMode,
+            String layoutTemplate) throws UnsupportedEncodingException,
+            ClientException {
+        Map<String, String> parameters = new HashMap<String, String>();
+        parameters.put("layoutMode", layoutMode);
+        parameters.put("layoutTemplate", layoutTemplate);
+        return URIUtils.addParametersToURIQuery(
+                LayoutDemoManager.APPLICATION_PATH
+                        + (BuiltinModes.EDIT.equals(mode) ? LOCAL_EDIT_PREVIEW_FRAME_VIEW_ID
+                                : LOCAL_VIEW_PREVIEW_FRAME_VIEW_ID), parameters);
+    }
 
     public String getPreviewLayoutURL(PreviewLayoutDefinition previewLayoutDef,
             String layoutMode, String layoutTemplate)
@@ -59,7 +76,7 @@ public class LayoutPreviewActions {
         parameters.put("layoutMode", layoutMode);
         parameters.put("layoutTemplate", layoutTemplate);
         return URIUtils.addParametersToURIQuery(
-                LayoutDemoManager.APPLICATION_PATH + PREVIEW_FRAME_VIEW_ID,
+                LayoutDemoManager.APPLICATION_PATH + LAYOUT_PREVIEW_FRAME_VIEW_ID,
                 parameters);
     }
 

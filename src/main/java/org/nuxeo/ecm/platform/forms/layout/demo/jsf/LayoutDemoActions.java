@@ -63,11 +63,7 @@ public class LayoutDemoActions implements Serializable {
 
     protected String currentSubTabId;
 
-    protected Boolean showViewPreview;
-
     protected PreviewLayoutDefinition viewPreviewLayoutDef;
-
-    protected Boolean showEditPreview;
 
     protected PreviewLayoutDefinition editPreviewLayoutDef;
 
@@ -87,14 +83,25 @@ public class LayoutDemoActions implements Serializable {
             throws ClientException {
 
         DemoWidgetType widgetType = null;
+        boolean isPreviewFrame = false;
         if (docView != null) {
             String viewId = docView.getViewId();
             if (viewId != null) {
-                widgetType = layoutDemoManager.getWidgetTypeByViewId(viewId);
+                if (LayoutPreviewActions.LAYOUT_PREVIEW_FRAME_VIEW_ID.equals(viewId)
+                        || LayoutPreviewActions.LOCAL_VIEW_PREVIEW_FRAME_VIEW_ID.equals(viewId)
+                        || LayoutPreviewActions.LOCAL_EDIT_PREVIEW_FRAME_VIEW_ID.equals(viewId)) {
+                    isPreviewFrame = true;
+                } else {
+                    // try to deduce current widget type
+                    widgetType = layoutDemoManager.getWidgetTypeByViewId(viewId);
+                }
             }
         }
 
-        setCurrentWidgetType(widgetType);
+        if (!isPreviewFrame) {
+            // avoid resetting contextual info when generating preview frame
+            setCurrentWidgetType(widgetType);
+        }
 
         return null;
     }
@@ -104,9 +111,7 @@ public class LayoutDemoActions implements Serializable {
                 && !currentWidgetType.equals(newWidgetType)) {
             // reset demo doc too
             layoutDemoDocument = null;
-            showViewPreview = null;
             viewPreviewLayoutDef = null;
-            showEditPreview = null;
             editPreviewLayoutDef = null;
         }
         currentWidgetType = newWidgetType;
@@ -178,14 +183,6 @@ public class LayoutDemoActions implements Serializable {
             editPreviewLayoutDef = createPreviewLayoutDefinition(currentWidgetType);
         }
         return editPreviewLayoutDef;
-    }
-
-    public Boolean getShowEditPreview() {
-        return showEditPreview;
-    }
-
-    public void setShowEditPreview(Boolean showEditPreview) {
-        this.showEditPreview = showEditPreview;
     }
 
 }
