@@ -99,6 +99,7 @@ import org.nuxeo.ecm.core.query.QueryResult;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery.Transformer;
 import org.nuxeo.ecm.core.repository.RepositoryInitializationHandler;
 import org.nuxeo.ecm.core.schema.DocumentType;
+import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.NXSchema;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.CompositeType;
@@ -3114,7 +3115,7 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
         if (doc == null) {
             throw new ClientException("getSuperSpace: document is null");
         }
-        if (doc.hasFacet("SuperSpace")) {
+        if (doc.hasFacet(FacetNames.SUPER_SPACE)) {
             return doc;
         } else {
 
