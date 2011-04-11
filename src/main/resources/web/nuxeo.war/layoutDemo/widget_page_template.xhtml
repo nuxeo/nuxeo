@@ -59,17 +59,17 @@
 
         <c:forEach var="demoLayout" items="#{currentWidgetType.demoLayouts}"
           varStatus="demoLayoutStatus">
-          <ui:include src="/layoutDemo/widget_demo_template.xhtml" />    
+          <ui:include src="/layoutDemo/widget_demo.xhtml" />    
           <br /><br />
         </c:forEach>
       </c:if>
 
       <c:if test="#{layoutDemoCurrentTabId == 'reference'}">
-        <ui:include src="/layoutDemo/widget_reference_template.xhtml" />
+        <ui:include src="/layoutDemo/widget_reference.xhtml" />
       </c:if>
 
       <c:if test="#{layoutDemoCurrentTabId == 'preview'}">
-        <ui:include src="/layoutDemo/widget_preview_template.xhtml" />
+        <ui:include src="/layoutDemo/widget_preview.xhtml" />
       </c:if>
       
     </div>

@@ -5,53 +5,88 @@
   xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:nxu="http://nuxeo.org/nxweb/util">
-
-<c:if test="#{not currentWidgetType.previewEnabled}">
-  Preview is not enabled for this widget type.
+  
+<c:if test="false">
+  Displays widget preview form and rendering in a given mode.
+  Needed parameters:
+  - widgetPreviewMode
+  - widgetPreviewLayoutDef
 </c:if>
 
 <a4j:log/>
 
-<c:if test="#{currentWidgetType.previewEnabled}">
-
-  <div class="tabsBar subtabsBar">
-
-    <ul>
-      <li class="#{nxu:test(empty layoutDemoCurrentSubTabId, 'selected', '')}">
-        <a href="#{baseURL}#{currentWidgetType.url}?tabId=preview">
-          #{messages['label.layoutDemo.widgetDemo.viewMode']}
-        </a>
-      </li>
-      <li class="#{nxu:test(layoutDemoCurrentSubTabId == 'edit_mode', 'selected', '')}">
-        <a href="#{baseURL}#{currentWidgetType.url}?tabId=preview&amp;subTabId=edit_mode">
-          #{messages['label.layoutDemo.widgetDemo.editMode']}
-        </a>
-      </li>
-    </ul>
-  </div>
-  <div style="clear:both"></div>
-  <div class="tabsContent">
-
-    <c:if test="#{empty layoutDemoCurrentSubTabId}">
-
-      <ui:decorate template="/layoutDemo/widget_preview_mode_template.xhtml">
-        <ui:param name="widgetPreviewMode" value="view" />
-        <ui:param name="widgetPreviewLayoutDef" value="#{viewPreviewLayoutDef}" />
-      </ui:decorate>
-
-    </c:if>
-
-    <c:if test="#{layoutDemoCurrentSubTabId == 'edit_mode'}">
-
-      <ui:decorate template="/layoutDemo/widget_preview_mode_template.xhtml">
-        <ui:param name="widgetPreviewMode" value="edit" />
-        <ui:param name="widgetPreviewLayoutDef" value="#{editPreviewLayoutDef}" />
-      </ui:decorate>
-
-    </c:if>
-
-  </div>
-
-</c:if>
+<table class="dataOutput">
+  <thead>
+    <tr>
+      <th>
+        #{messages['label.layoutDemo.widgetPreview.properties']}
+      </th>
+      <th>
+        #{messages['label.layoutDemo.widgetPreview.preview']}
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>
+        <h:outputText value="#{messages['label.layoutDemo.widgetPreview.help']}"
+          class="infoMessage" />
+      </td>
+      <td></td>
+    </tr>
+    <tr>
+      <td width="50%" valign="top">
+        <a4j:region id="layoutDemoPreviewRegion">
+          <a4j:form id="layoutDemoPreviewForm"
+            ajaxSubmit="true">
+            <nxl:layout name="layout_demo_widget_common_settings"
+              mode="edit" value="#{widgetPreviewLayoutDef}" />
+            <c:forEach var="layoutDef"
+              items="#{currentWidgetTypeConf.getPropertyLayouts(widgetPreviewMode, 'any')}">
+              <nxl:layout definition="#{layoutDef}"
+                mode="edit_demo_preview"
+                value="#{widgetPreviewLayoutDef.properties}"
+                template="/layouts/layout_default_template.xhtml" />
+            </c:forEach>
+            <nxl:layout name="layout_demo_widget_custom_properties"
+              mode="edit" value="#{widgetPreviewLayoutDef}" />
+            <p class="buttonsGadget">
+              <a4j:commandButton
+                value="#{messages['label.layoutDemo.widgetDemo.submit']}"
+                styleClass="button"
+                id="#{currentWidgetType.name}_edit_form_submitButton"
+                process="layoutDemoPreviewForm"
+                reRender="layoutDemoPreviewFrame" />
+              <a4j:status>
+                <f:facet name="start">
+                  <h:graphicImage value="/img/standart_waiter.gif" />
+                </f:facet>
+              </a4j:status>
+            </p>
+          </a4j:form>
+        </a4j:region>
+      </td>
+      <td width="50%" valign="top">
+        <a4j:outputPanel id="layoutDemoPreviewFrame">
+          <c:if test="true">
+            <c:set var="frameURL"
+              value="#{baseURL}#{layoutPreviewActions.getPreviewLayoutURL(widgetPreviewLayoutDef, widgetPreviewMode, '/layouts/layout_default_template.xhtml')}" />
+            <iframe style="visibility:hidden;width:100%;"
+              onload="javascript:this.style.visibility='visible';"
+              src="#{frameURL}"></iframe>
+          </c:if>
+          <c:if test="false">
+            <h:form id="layoutDemoPreviewResultForm">
+              <nxl:layout
+                definition="#{layoutPreviewActions.getLayoutDefinition(widgetPreviewLayoutDef)}"
+                value="#{layoutPreviewDocument}" mode="#{widgetPreviewMode}"
+                template="/layouts/layout_default_template.xhtml" />
+            </h:form>
+          </c:if>
+        </a4j:outputPanel>
+      </td>
+    </tr>
+  </tbody>
+</table>
 
 </div>
