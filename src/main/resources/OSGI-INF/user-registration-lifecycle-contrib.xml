@@ -9,6 +9,9 @@
         <transition name="accept" destinationState="accepted">
           <description>Accept the registration request</description>
         </transition>
+        <transition name="reject" destinationState="rejected">
+          <description>Reject the registration request</description>
+        </transition>
         <transition name="validate" destinationState="validated">
           <description>Validate the registration request</description>
         </transition>
@@ -20,12 +23,16 @@
         <state name="created" description="Default state" initial="true">
           <transitions>
             <transition>accept</transition>
+            <transition>reject</transition>
           </transitions>
         </state>
         <state name="accepted" description="Registration has been accepted">
           <transitions>
             <transition>validate</transition>
           </transitions>
+        </state>
+        <state name="rejected" description="Registration has been rejected">
+          <transitions></transitions>
         </state>
         <state name="validated" description="Registration has been validated">
           <transitions>

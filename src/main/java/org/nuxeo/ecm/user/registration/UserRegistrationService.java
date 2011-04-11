@@ -33,6 +33,7 @@ public interface UserRegistrationService {
     // events fired by the service impl
     public static final String REGISTRATION_SUBMITTED_EVENT = "registrationSubmitted";
     public static final String REGISTRATION_ACCEPTED_EVENT = "registrationAccepted";
+    public static final String REGISTRATION_REJECTED_EVENT = "registrationRejected";
     public static final String REGISTRATION_VALIDATED_EVENT = "registrationValidated";
 
     /**
@@ -50,6 +51,13 @@ public interface UserRegistrationService {
     void acceptRegistrationRequest(String requestId, Map<String, Serializable> additionnalInfo) throws ClientException, UserRegistrationException ;
 
     /**
+     * reject the registration request
+     *
+     * @param requestId
+     */
+    void rejectRegistrationRequest(String requestId, Map<String, Serializable> additionnalInfo) throws ClientException, UserRegistrationException ;
+
+    /**
      * Validate a registration request and generate the target User
      *
      * @param requestId
@@ -64,4 +72,6 @@ public interface UserRegistrationService {
     Map<String, Serializable> validateRegistrationAndSendEmail(String requestId, Map<String, Serializable> additionnalInfo) throws ClientException, UserRegistrationException ;
 
     NuxeoPrincipal createUser(CoreSession session, DocumentModel registrationDoc) throws ClientException, UserRegistrationException;
+
+    UserRegistrationConfiguration getConfiguration();
 }

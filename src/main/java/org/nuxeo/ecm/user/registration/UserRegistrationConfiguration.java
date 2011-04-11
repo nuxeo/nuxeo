@@ -52,6 +52,9 @@ public class UserRegistrationConfiguration {
     @XNode("registrationUserFactory")
     private Class<? extends RegistrationUserFactory> registrationUserFactory;
 
+    @XNode("validationRelUrl")
+    private String validationRelUrl;
+
     public String getRequestDocType() {
         return requestDocType;
     }
@@ -90,6 +93,10 @@ public class UserRegistrationConfiguration {
 
     public Class<? extends RegistrationUserFactory> getRegistrationUserFactory() {
         return registrationUserFactory;
+    }
+
+    public String getValidationRelUrl() {
+        return validationRelUrl;
     }
 
 }

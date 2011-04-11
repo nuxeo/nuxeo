@@ -210,6 +210,32 @@ public class UserRegistrationComponent extends DefaultComponent implements
         }
     }
 
+    protected class RegistrationRejector extends UnrestrictedSessionRunner {
+
+        protected String uuid;
+        protected Map<String, Serializable> additionnalInfo;
+
+        public RegistrationRejector(String registrationUuid, Map<String, Serializable> additionnalInfo) {
+            super(getTargetRepositoryName());
+            this.uuid=registrationUuid;
+            this.additionnalInfo=additionnalInfo;
+        }
+
+        @Override
+        public void run() throws ClientException {
+
+            DocumentModel doc = session.getDocument(new IdRef(uuid));
+
+            doc.setPropertyValue("registration:accepted", false);
+            if (doc.getAllowedStateTransitions().contains("reject")) {
+                doc.followTransition("reject");
+            }
+            doc = session.saveDocument(doc);
+            session.save();
+
+            sendEvent(session, doc, UserRegistrationService.REGISTRATION_REJECTED_EVENT);
+        }
+    }
 
     protected class RegistrationValidator extends UnrestrictedSessionRunner {
 
@@ -354,6 +380,13 @@ public class UserRegistrationComponent extends DefaultComponent implements
 
     }
 
+    public void rejectRegistrationRequest(String requestId, Map<String, Serializable> additionnalInfo) throws ClientException, UserRegistrationException {
+
+        RegistrationRejector rejector = new RegistrationRejector(requestId, additionnalInfo);
+        rejector.runUnrestricted();
+
+    }
+
     public Map<String, Serializable> validateRegistration(String requestId) throws ClientException, UserRegistrationException {
 
         RegistrationValidator validator = new RegistrationValidator(requestId);
@@ -423,6 +456,11 @@ public class UserRegistrationComponent extends DefaultComponent implements
             factory = new DefaultRegistrationUserFactory();
         }
         return factory.createUser(session, registrationDoc);
+    }
+
+    @Override
+    public UserRegistrationConfiguration getConfiguration() {
+        return configuration;
     }
 
 }
