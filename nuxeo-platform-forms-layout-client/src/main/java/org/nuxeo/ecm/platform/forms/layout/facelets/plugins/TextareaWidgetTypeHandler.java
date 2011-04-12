@@ -28,10 +28,7 @@ import org.nuxeo.ecm.platform.forms.layout.api.Widget;
 import org.nuxeo.ecm.platform.forms.layout.api.exceptions.WidgetException;
 import org.nuxeo.ecm.platform.forms.layout.facelets.FaceletHandlerHelper;
 import org.nuxeo.ecm.platform.forms.layout.facelets.LeafFaceletHandler;
-import org.nuxeo.ecm.platform.forms.layout.facelets.TagConfigFactory;
-import org.nuxeo.ecm.platform.forms.layout.facelets.converter.ConvertTextareaHandler;
 import org.nuxeo.ecm.platform.ui.web.component.seam.UIHtmlText;
-import org.nuxeo.ecm.platform.ui.web.converter.TextareaConverter;
 
 import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletHandler;
@@ -40,8 +37,6 @@ import com.sun.facelets.tag.TagAttribute;
 import com.sun.facelets.tag.TagAttributes;
 import com.sun.facelets.tag.TagConfig;
 import com.sun.facelets.tag.jsf.ComponentHandler;
-import com.sun.facelets.tag.jsf.ConvertHandler;
-import com.sun.facelets.tag.jsf.ConverterConfig;
 
 /**
  * Textarea widget.
@@ -52,6 +47,15 @@ import com.sun.facelets.tag.jsf.ConverterConfig;
 public class TextareaWidgetTypeHandler extends AbstractWidgetTypeHandler {
 
     private static final long serialVersionUID = -771626672018944435L;
+
+    // .wrapword{
+    // white-space: -moz-pre-wrap !important; /* Mozilla, since 1999 */
+    // white-space: -pre-wrap; /* Opera 4-6 */
+    // white-space: -o-pre-wrap; /* Opera 7 */
+    // white-space: pre-wrap; /* css-3 */
+    // word-wrap: break-word; /* Internet Explorer 5.5+ */
+    // }
+    public static String WRAP_WORD_STYLE = "white-space: -moz-pre-wrap !important; white-space: -pre-wrap; white-space: -o-pre-wrap; white-space: pre-wrap; word-wrap: break-word;";
 
     @Override
     public FaceletHandler getFaceletHandler(FaceletContext ctx,
@@ -80,17 +84,17 @@ public class TextareaWidgetTypeHandler extends AbstractWidgetTypeHandler {
             FaceletHandler[] handlers = { input, message };
             return new CompositeFaceletHandler(handlers);
         } else {
-            // default on text with nl2br converter for other modes
-            ConverterConfig convertConfig = TagConfigFactory.createConverterConfig(
-                    tagConfig, widget.getTagConfigId(), new TagAttributes(
-                            new TagAttribute[0]), leaf,
-                    TextareaConverter.CONVERTER_ID);
-            TagAttribute escape = helper.createAttribute("escape", "false");
-            attributes = FaceletHandlerHelper.addTagAttribute(attributes,
-                    escape);
-            ConvertHandler convert = new ConvertTextareaHandler(convertConfig);
+            // add styling for end of line characters to be displayed
+            if (!BuiltinWidgetModes.EDIT.equals(mode)
+                    && !BuiltinWidgetModes.isLikePlainMode(mode)
+                    && widget.getProperty("style") == null) {
+                TagAttribute escape = helper.createAttribute("style",
+                        WRAP_WORD_STYLE);
+                attributes = FaceletHandlerHelper.addTagAttribute(attributes,
+                        escape);
+            }
             ComponentHandler output = helper.getHtmlComponentHandler(
-                    widgetTagConfigId, attributes, convert,
+                    widgetTagConfigId, attributes, leaf,
                     HtmlOutputText.COMPONENT_TYPE, null);
             if (BuiltinWidgetModes.PDF.equals(mode)) {
                 // add a surrounding p:html tag handler

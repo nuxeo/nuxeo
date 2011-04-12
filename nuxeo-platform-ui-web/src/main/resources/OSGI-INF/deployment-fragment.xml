@@ -657,12 +657,6 @@
         org.nuxeo.ecm.platform.ui.web.converter.DateTimeConverter
       </converter-class>
     </converter>
-    <converter>
-      <converter-id>TextareaConverter</converter-id>
-      <converter-class>
-        org.nuxeo.ecm.platform.ui.web.converter.TextareaConverter
-      </converter-class>
-    </converter>
   </extension>
 
   <extension target="faces-config#VALIDATOR">
