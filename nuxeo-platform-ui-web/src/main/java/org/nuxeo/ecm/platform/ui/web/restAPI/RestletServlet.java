@@ -133,7 +133,13 @@ public class RestletServlet extends HttpServlet {
             throw e;
         } finally {
             if (tx) {
-                TransactionHelper.commitOrRollbackTransaction();
+                if (TransactionHelper.isTransactionActive()) {
+                    // SeamRestletFilter might have done an early commit to
+                    // avoid race condition on the core session on restlets
+                    // who rely upon the conversation lock to fetch it
+                    // thread-safely
+                    TransactionHelper.commitOrRollbackTransaction();
+                }
             }
         }
     }

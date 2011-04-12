@@ -32,6 +32,7 @@ import org.jboss.seam.core.Manager;
 import org.jboss.seam.servlet.ServletRequestSessionMap;
 import org.jboss.seam.web.ServletContexts;
 import org.nuxeo.ecm.platform.ui.web.util.SeamComponentCallHelper;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 import org.restlet.Filter;
 import org.restlet.Restlet;
 import org.restlet.data.MediaType;
@@ -93,8 +94,16 @@ public class SeamRestletFilter extends Filter {
         if (useConversation && request instanceof HttpRequest) {
             HttpCall httpCall = ((HttpRequest) request).getHttpCall();
             if (httpCall instanceof ServletCall) {
+                if (TransactionHelper.isTransactionActive()) {
+                    // early commit of the transaction before releasing the
+                    // conversation lock to avoid a race condition on concurrent
+                    // access to the same documentManager instance by threads /
+                    // requests sharing the same conversation and triggering
+                    // StorageException "closed connection handle" on the RA
+                    // pool
+                    TransactionHelper.commitOrRollbackTransaction();
+                }
                 HttpServletRequest httpServletRequest = ((ServletCall) httpCall).getRequest();
-
                 // see ContextualHttpServletRequest / SOAPRequestHandler
                 Manager.instance().endRequest(new ServletRequestSessionMap(httpServletRequest));
                 ServletLifecycle.endRequest(httpServletRequest);
