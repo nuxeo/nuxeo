@@ -46,14 +46,17 @@ public abstract class AbstractSelectWidgetTypeHandler extends
         List<FaceletHandler> selectItems = new ArrayList<FaceletHandler>();
         // TODO: maybe check other widget properties to know if a default
         // disabled option should be added for instance
+        String widgetTagConfigId = widget.getTagConfigId();
         if (selectOptions != null && selectOptions.length > 0) {
             for (WidgetSelectOption selectOption : selectOptions) {
                 TagAttributes attrs = helper.getTagAttributes(selectOption);
                 if (selectOption instanceof WidgetSelectOptions) {
-                    selectItems.add(helper.getHtmlComponentHandler(attrs, leaf,
+                    selectItems.add(helper.getHtmlComponentHandler(
+                            widgetTagConfigId, attrs, leaf,
                             UISelectItems.COMPONENT_TYPE, null));
                 } else if (selectOption != null) {
-                    selectItems.add(helper.getHtmlComponentHandler(attrs, leaf,
+                    selectItems.add(helper.getHtmlComponentHandler(
+                            widgetTagConfigId, attrs, leaf,
                             UISelectItem.COMPONENT_TYPE, null));
                 }
             }

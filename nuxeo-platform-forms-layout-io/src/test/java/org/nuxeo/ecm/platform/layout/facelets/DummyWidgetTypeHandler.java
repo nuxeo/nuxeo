@@ -55,17 +55,20 @@ public class DummyWidgetTypeHandler extends AbstractWidgetTypeHandler {
         String originalId = helper.generateUniqueId();
         TagAttributes attributes = helper.getTagAttributes(originalId, widget);
         FaceletHandler leaf = new LeafFaceletHandler();
+        String widgetTagConfigId = widget.getTagConfigId();
         if (BuiltinWidgetModes.VIEW.equals(mode)) {
             ComponentHandler output = helper.getHtmlComponentHandler(
-                    attributes, leaf, HtmlOutputText.COMPONENT_TYPE, null);
-            handlers = new FaceletHandler[]{ output };
+                    widgetTagConfigId, attributes, leaf,
+                    HtmlOutputText.COMPONENT_TYPE, null);
+            handlers = new FaceletHandler[] { output };
         } else if (BuiltinWidgetModes.EDIT.equals(mode)) {
-            ComponentHandler input = helper.getHtmlComponentHandler(attributes,
-                    leaf, HtmlInputText.COMPONENT_TYPE, null);
+            ComponentHandler input = helper.getHtmlComponentHandler(
+                    widgetTagConfigId, attributes, leaf,
+                    HtmlInputText.COMPONENT_TYPE, null);
             String msgId = helper.generateUniqueId(originalId);
-            ComponentHandler message = helper.getMessageComponentHandler(msgId,
-                    originalId, "errorMessage");
-            handlers = new FaceletHandler[]{ input, message };
+            ComponentHandler message = helper.getMessageComponentHandler(
+                    widgetTagConfigId, msgId, originalId, "errorMessage");
+            handlers = new FaceletHandler[] { input, message };
         }
         if (handlers == null) {
             return new LeafFaceletHandler();

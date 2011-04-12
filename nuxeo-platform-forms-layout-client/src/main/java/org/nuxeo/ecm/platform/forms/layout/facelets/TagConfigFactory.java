@@ -45,10 +45,14 @@ public final class TagConfigFactory {
 
         protected final FaceletHandler nextHandler;
 
-        TagConfigWrapper(TagConfig tagConfig, TagAttributes attributes,
-                FaceletHandler nextHandler) {
+        TagConfigWrapper(TagConfig tagConfig, String tagConfigId,
+                TagAttributes attributes, FaceletHandler nextHandler) {
             tag = new Tag(tagConfig.getTag(), attributes);
-            tagId = tagConfig.getTagId();
+            if (tagConfigId == null) {
+                tagId = tagConfig.getTagId();
+            } else {
+                tagId = tagConfig.getTagId() + tagConfigId;
+            }
             this.nextHandler = nextHandler;
         }
 
@@ -72,10 +76,10 @@ public final class TagConfigFactory {
 
         protected final String rendererType;
 
-        ComponentConfigWrapper(TagConfig tagConfig,
+        ComponentConfigWrapper(TagConfig tagConfig, String tagConfigId,
                 TagAttributes attributes, FaceletHandler nextHandler,
                 String componentType, String rendererType) {
-            super(tagConfig, attributes, nextHandler);
+            super(tagConfig, tagConfigId, attributes, nextHandler);
             this.componentType = componentType;
             this.rendererType = rendererType;
         }
@@ -94,10 +98,10 @@ public final class TagConfigFactory {
 
         protected final String converterId;
 
-        ConverterConfigWrapper(TagConfig tagConfig,
+        ConverterConfigWrapper(TagConfig tagConfig, String tagConfigId,
                 TagAttributes attributes, FaceletHandler nextHandler,
                 String converterId) {
-            super(tagConfig, attributes, nextHandler);
+            super(tagConfig, tagConfigId, attributes, nextHandler);
             this.converterId = converterId;
         }
 
@@ -111,10 +115,10 @@ public final class TagConfigFactory {
 
         protected final String validatorId;
 
-        ValidatorConfigWrapper(TagConfig tagConfig,
+        ValidatorConfigWrapper(TagConfig tagConfig, String tagConfigId,
                 TagAttributes attributes, FaceletHandler nextHandler,
                 String validatorId) {
-            super(tagConfig, attributes, nextHandler);
+            super(tagConfig, tagConfigId, attributes, nextHandler);
             this.validatorId = validatorId;
         }
 
@@ -123,30 +127,83 @@ public final class TagConfigFactory {
         }
     }
 
+    /**
+     * @deprecated since 5.4.2, use
+     *             {@link TagConfigFactory#createTagConfig(TagConfig, String, TagAttributes, FaceletHandler)}
+     *             instead.
+     */
+    @Deprecated
     public static TagConfig createTagConfig(TagConfig tagConfig,
             TagAttributes attributes, FaceletHandler nextHandler) {
-        return new TagConfigWrapper(tagConfig, attributes, nextHandler);
+        return createTagConfig(tagConfig, null, attributes, nextHandler);
     }
 
+    public static TagConfig createTagConfig(TagConfig tagConfig,
+            String tagConfigId, TagAttributes attributes,
+            FaceletHandler nextHandler) {
+        return new TagConfigWrapper(tagConfig, tagConfigId, attributes,
+                nextHandler);
+    }
+
+    /**
+     * @deprecated since 5.4.2, use
+     *             {@link TagConfigFactory#createComponentConfig(TagConfig, String, TagAttributes, FaceletHandler, String, String)}
+     *             instead.
+     */
+    @Deprecated
     public static ComponentConfig createComponentConfig(TagConfig tagConfig,
             TagAttributes attributes, FaceletHandler nextHandler,
             String componentType, String rendererType) {
-        return new ComponentConfigWrapper(tagConfig, attributes, nextHandler,
+        return createComponentConfig(tagConfig, null, attributes, nextHandler,
                 componentType, rendererType);
     }
 
+    public static ComponentConfig createComponentConfig(TagConfig tagConfig,
+            String tagConfigId, TagAttributes attributes,
+            FaceletHandler nextHandler, String componentType,
+            String rendererType) {
+        return new ComponentConfigWrapper(tagConfig, tagConfigId, attributes,
+                nextHandler, componentType, rendererType);
+    }
+
+    /**
+     * @deprecated since 5.4.2, use
+     *             {@link TagConfigFactory#createConverterConfig(TagConfig, String, TagAttributes, FaceletHandler, String)}
+     *             instead.
+     */
+    @Deprecated
     public static ConverterConfig createConverterConfig(TagConfig tagConfig,
             TagAttributes attributes, FaceletHandler nextHandler,
             String converterId) {
-        return new ConverterConfigWrapper(tagConfig, attributes, nextHandler,
+        return createConverterConfig(tagConfig, null, attributes, nextHandler,
                 converterId);
     }
 
+    public static ConverterConfig createConverterConfig(TagConfig tagConfig,
+            String tagConfigId, TagAttributes attributes,
+            FaceletHandler nextHandler, String converterId) {
+        return new ConverterConfigWrapper(tagConfig, tagConfigId, attributes,
+                nextHandler, converterId);
+    }
+
+    /**
+     * @deprecated since 5.4.2, use
+     *             {@link TagConfigFactory#createValidatorConfig(TagConfig, String, TagAttributes, FaceletHandler, String)}
+     *             instead.
+     */
+    @Deprecated
     public static ValidatorConfig createValidatorConfig(TagConfig tagConfig,
             TagAttributes attributes, FaceletHandler nextHandler,
             String validatorId) {
-        return new ValidatorConfigWrapper(tagConfig, attributes, nextHandler,
+        return createValidatorConfig(tagConfig, null, attributes, nextHandler,
                 validatorId);
+    }
+
+    public static ValidatorConfig createValidatorConfig(TagConfig tagConfig,
+            String tagConfigId, TagAttributes attributes,
+            FaceletHandler nextHandler, String validatorId) {
+        return new ValidatorConfigWrapper(tagConfig, tagConfigId, attributes,
+                nextHandler, validatorId);
     }
 
 }

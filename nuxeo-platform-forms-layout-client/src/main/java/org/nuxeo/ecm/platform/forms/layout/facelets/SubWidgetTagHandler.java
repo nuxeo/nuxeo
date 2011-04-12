@@ -98,21 +98,28 @@ public class SubWidgetTagHandler extends TagHandler {
             Map<String, ValueExpression> variables = new HashMap<String, ValueExpression>();
             ValueExpression subWidgetVe = ctx.getExpressionFactory().createValueExpression(
                     subWidget, Widget.class);
+            Integer level = null;
+            String tagConfigId = null;
+            if (subWidget != null) {
+                level = subWidget.getLevel();
+                tagConfigId = subWidget.getTagConfigId();
+            }
+
             variables.put(RenderVariables.widgetVariables.widget.name(),
                     subWidgetVe);
             variables.put(String.format("%s_%s",
-                    RenderVariables.widgetVariables.widget.name(),
-                    subWidget.getLevel()), subWidgetVe);
+                    RenderVariables.widgetVariables.widget.name(), level),
+                    subWidgetVe);
             ValueExpression subWidgetIndexVe = ctx.getExpressionFactory().createValueExpression(
                     subWidgetCounter, Integer.class);
             variables.put(RenderVariables.widgetVariables.widgetIndex.name(),
                     subWidgetIndexVe);
             variables.put(String.format("%s_%s",
-                    RenderVariables.widgetVariables.widgetIndex.name(),
-                    subWidget.getLevel()), subWidgetIndexVe);
+                    RenderVariables.widgetVariables.widgetIndex.name(), level),
+                    subWidgetIndexVe);
 
             FaceletHandler handlerWithVars = helper.getAliasTagHandler(
-                    variables, nextHandler);
+                    tagConfigId, variables, nextHandler);
             // apply
             handlerWithVars.apply(ctx, parent);
             subWidgetCounter++;

@@ -34,7 +34,6 @@ import org.nuxeo.ecm.platform.forms.layout.api.Layout;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutRow;
 
 import com.sun.facelets.FaceletContext;
-import com.sun.facelets.FaceletException;
 import com.sun.facelets.FaceletHandler;
 import com.sun.facelets.tag.TagAttribute;
 import com.sun.facelets.tag.TagConfig;
@@ -113,8 +112,8 @@ public class LayoutRowTagHandler extends TagHandler {
                     RenderVariables.columnVariables.layoutColumnIndex.name(),
                     rowIndexVe);
 
-            FaceletHandler handler = helper.getAliasTagHandler(variables,
-                    nextHandler);
+            FaceletHandler handler = helper.getAliasTagHandler(
+                    row.getTagConfigId(), variables, nextHandler);
             handler.apply(ctx, parent);
             rowCounter++;
         }

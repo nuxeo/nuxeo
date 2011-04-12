@@ -153,7 +153,7 @@ public class DocumentLayoutTagHandler extends TagHandler {
                 }
             }
             TagConfig tagConfig = TagConfigFactory.createTagConfig(config,
-                    attributes, leaf);
+                    null, attributes, leaf);
             handlers.add(new LayoutTagHandler(tagConfig));
         }
         CompositeFaceletHandler composite = new CompositeFaceletHandler(

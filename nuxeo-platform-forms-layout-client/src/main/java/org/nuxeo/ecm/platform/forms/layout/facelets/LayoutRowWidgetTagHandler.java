@@ -104,8 +104,10 @@ public class LayoutRowWidgetTagHandler extends TagHandler {
             variables.put(RenderVariables.widgetVariables.widget.name(),
                     widgetVe);
             Integer level = null;
+            String tagConfigId = null;
             if (widget != null) {
                 level = widget.getLevel();
+                tagConfigId = widget.getTagConfigId();
             }
             variables.put(String.format("%s_%s",
                     RenderVariables.widgetVariables.widget.name(), level),
@@ -118,8 +120,8 @@ public class LayoutRowWidgetTagHandler extends TagHandler {
                     RenderVariables.widgetVariables.widgetIndex.name(), level),
                     widgetIndexVe);
 
-            FaceletHandler handler = helper.getAliasTagHandler(variables,
-                    nextHandler);
+            FaceletHandler handler = helper.getAliasTagHandler(tagConfigId,
+                    variables, nextHandler);
 
             // apply
             handler.apply(ctx, parent);

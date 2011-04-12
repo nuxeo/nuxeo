@@ -379,32 +379,68 @@ public final class FaceletHandlerHelper {
     }
 
     /**
+     * @deprecated since 5.4.2, use
+     *             {@link FaceletHandlerHelper#getHtmlComponentHandler(String, TagAttributes, FaceletHandler, String, String)}
+     *             instead.
+     */
+    @Deprecated
+    public ComponentHandler getHtmlComponentHandler(TagAttributes attributes,
+            FaceletHandler nextHandler, String componentType,
+            String rendererType) {
+        return getHtmlComponentHandler(null, attributes, nextHandler,
+                componentType, rendererType);
+    }
+
+    /**
      * Returns an html component handler for this configuration.
      * <p>
      * Next handler cannot be null, use {@link LeafFaceletHandler} if no next
      * handler is needed.
      */
-    public ComponentHandler getHtmlComponentHandler(TagAttributes attributes,
-            FaceletHandler nextHandler, String componentType,
-            String rendererType) {
+    public ComponentHandler getHtmlComponentHandler(String tagConfigId,
+            TagAttributes attributes, FaceletHandler nextHandler,
+            String componentType, String rendererType) {
         ComponentConfig config = TagConfigFactory.createComponentConfig(
-                tagConfig, attributes, nextHandler, componentType, rendererType);
+                tagConfig, tagConfigId, attributes, nextHandler, componentType,
+                rendererType);
         return new HtmlComponentHandler(config);
+    }
+
+    /**
+     * @deprecated since 5.4.2, use
+     *             {@link FaceletHandlerHelper#getErrorComponentHandler(String, String)}
+     *             instead.
+     */
+    @Deprecated
+    public ComponentHandler getErrorComponentHandler(String errorMessage) {
+        return getErrorComponentHandler(null, errorMessage);
     }
 
     /**
      * Component handler that displays an error on interface
      */
-    public ComponentHandler getErrorComponentHandler(String errorMessage) {
+    public ComponentHandler getErrorComponentHandler(String tagConfigId,
+            String errorMessage) {
         FaceletHandler leaf = new LeafFaceletHandler();
         TagAttribute valueAttr = createAttribute("value",
                 "<span style=\"color:red;font-weight:bold;\">ERROR: "
                         + errorMessage + "</span><br />");
         TagAttribute escapeAttr = createAttribute("escape", "false");
-        ComponentHandler output = getHtmlComponentHandler(
+        ComponentHandler output = getHtmlComponentHandler(tagConfigId,
                 FaceletHandlerHelper.getTagAttributes(valueAttr, escapeAttr),
                 leaf, HtmlOutputText.COMPONENT_TYPE, null);
         return output;
+    }
+
+    /**
+     * @deprecated since 5.4.2, use
+     *             {@link FaceletHandlerHelper#getConvertHandler(String, TagAttributes, FaceletHandler, String)}
+     *             instead.
+     */
+    @Deprecated
+    public ConvertHandler getConvertHandler(TagAttributes attributes,
+            FaceletHandler nextHandler, String converterId) {
+        return getConvertHandler(null, attributes, nextHandler, converterId);
     }
 
     /**
@@ -413,11 +449,23 @@ public final class FaceletHandlerHelper {
      * Next handler cannot be null, use {@link LeafFaceletHandler} if no next
      * handler is needed.
      */
-    public ConvertHandler getConvertHandler(TagAttributes attributes,
-            FaceletHandler nextHandler, String converterId) {
+    public ConvertHandler getConvertHandler(String tagConfigId,
+            TagAttributes attributes, FaceletHandler nextHandler,
+            String converterId) {
         ConverterConfig config = TagConfigFactory.createConverterConfig(
-                tagConfig, attributes, nextHandler, converterId);
+                tagConfig, tagConfigId, attributes, nextHandler, converterId);
         return new ConvertHandler(config);
+    }
+
+    /**
+     * @deprecated since 5.4.2, use
+     *             {@link FaceletHandlerHelper#getValidateHandler(String, TagAttributes, FaceletHandler, String)}
+     *             instead.
+     */
+    @Deprecated
+    public ValidateHandler getValidateHandler(TagAttributes attributes,
+            FaceletHandler nextHandler, String validatorId) {
+        return getValidateHandler(null, attributes, nextHandler, validatorId);
     }
 
     /**
@@ -426,11 +474,23 @@ public final class FaceletHandlerHelper {
      * Next handler cannot be null, use {@link LeafFaceletHandler} if no next
      * handler is needed.
      */
-    public ValidateHandler getValidateHandler(TagAttributes attributes,
-            FaceletHandler nextHandler, String validatorId) {
+    public ValidateHandler getValidateHandler(String tagConfigId,
+            TagAttributes attributes, FaceletHandler nextHandler,
+            String validatorId) {
         ValidatorConfig config = TagConfigFactory.createValidatorConfig(
-                tagConfig, attributes, nextHandler, validatorId);
+                tagConfig, tagConfigId, attributes, nextHandler, validatorId);
         return new ValidateHandler(config);
+    }
+
+    /**
+     * @deprecated since 5.4.2, use
+     *             {@link FaceletHandlerHelper#getMessageComponentHandler(String, String, String, String)}
+     *             instead.
+     */
+    @Deprecated
+    public ComponentHandler getMessageComponentHandler(String id, String forId,
+            String styleClass) {
+        return getMessageComponentHandler(null, id, forId, styleClass);
     }
 
     /**
@@ -439,8 +499,8 @@ public final class FaceletHandlerHelper {
      * Uses component type "javax.faces.HtmlMessage" and renderer type
      * "javax.faces.Message".
      */
-    public ComponentHandler getMessageComponentHandler(String id, String forId,
-            String styleClass) {
+    public ComponentHandler getMessageComponentHandler(String tagConfigId,
+            String id, String forId, String styleClass) {
         TagAttribute forAttr = createAttribute("for", forId);
         TagAttribute idAttr = createAttribute("id", id);
         if (styleClass == null) {
@@ -450,18 +510,29 @@ public final class FaceletHandlerHelper {
         TagAttribute styleAttr = createAttribute("styleClass", styleClass);
         TagAttributes attributes = getTagAttributes(forAttr, idAttr, styleAttr);
         ComponentConfig config = TagConfigFactory.createComponentConfig(
-                tagConfig, attributes, new LeafFaceletHandler(),
+                tagConfig, tagConfigId, attributes, new LeafFaceletHandler(),
                 HtmlMessage.COMPONENT_TYPE, null);
         return new ComponentHandler(config);
     }
 
+    /**
+     * @deprecated since 5.4.2, use
+     *             {@link FaceletHandlerHelper#getAliasTagHandler(String, Map, FaceletHandler)}
+     *             instead.
+     */
+    @Deprecated
     public FaceletHandler getAliasTagHandler(
+            Map<String, ValueExpression> variables, FaceletHandler nextHandler) {
+        return getAliasTagHandler(null, variables, nextHandler);
+    }
+
+    public FaceletHandler getAliasTagHandler(String tagConfigId,
             Map<String, ValueExpression> variables, FaceletHandler nextHandler) {
         FaceletHandler currentHandler = nextHandler;
         if (variables != null) {
             // XXX also set id ? cache ?
             TagConfig config = TagConfigFactory.createTagConfig(tagConfig,
-                    getTagAttributes(), nextHandler);
+                    tagConfigId, getTagAttributes(), nextHandler);
             currentHandler = new AliasTagHandler(config, variables);
         }
         return currentHandler;

@@ -65,6 +65,7 @@ public class DateTimeWidgetTypeHandler extends AbstractWidgetTypeHandler {
         String mode = widget.getMode();
         String widgetId = widget.getId();
         String widgetName = widget.getName();
+        String widgetTagConfigId = widget.getTagConfigId();
         TagAttributes attributes;
         if (BuiltinWidgetModes.isLikePlainMode(mode)) {
             // use attributes without id
@@ -75,12 +76,12 @@ public class DateTimeWidgetTypeHandler extends AbstractWidgetTypeHandler {
         FaceletHandler leaf = new LeafFaceletHandler();
         if (BuiltinWidgetModes.EDIT.equals(mode)) {
             ComponentConfig config = TagConfigFactory.createComponentConfig(
-                    tagConfig, attributes, leaf, UICalendar.COMPONENT_TYPE,
-                    null);
+                    tagConfig, widget.getTagConfigId(), attributes, leaf,
+                    UICalendar.COMPONENT_TYPE, null);
             ComponentHandler input = new InputDateTimeTagHandler(config);
             String msgId = helper.generateMessageId(widgetName);
-            ComponentHandler message = helper.getMessageComponentHandler(msgId,
-                    widgetId, null);
+            ComponentHandler message = helper.getMessageComponentHandler(
+                    widgetTagConfigId, msgId, widgetId, null);
             FaceletHandler[] handlers = { input, message };
             return new CompositeFaceletHandler(handlers);
         } else {
@@ -95,15 +96,16 @@ public class DateTimeWidgetTypeHandler extends AbstractWidgetTypeHandler {
                         attributes, timeZone);
             }
             ConverterConfig convertConfig = TagConfigFactory.createConverterConfig(
-                    tagConfig, convertAttributes, leaf,
-                    DateTimeConverter.CONVERTER_ID);
+                    tagConfig, widget.getTagConfigId(), convertAttributes,
+                    leaf, DateTimeConverter.CONVERTER_ID);
             ConvertHandler convert = new ConvertDateTimeHandler(convertConfig);
             ComponentHandler output = helper.getHtmlComponentHandler(
-                    attributes, convert, HtmlOutputText.COMPONENT_TYPE, null);
+                    widgetTagConfigId, attributes, convert,
+                    HtmlOutputText.COMPONENT_TYPE, null);
             if (BuiltinWidgetModes.PDF.equals(mode)) {
                 // add a surrounding p:html tag handler
-                return helper.getHtmlComponentHandler(new TagAttributes(
-                        new TagAttribute[0]), output,
+                return helper.getHtmlComponentHandler(widgetTagConfigId,
+                        new TagAttributes(new TagAttribute[0]), output,
                         UIHtmlText.class.getName(), null);
             } else {
                 return output;

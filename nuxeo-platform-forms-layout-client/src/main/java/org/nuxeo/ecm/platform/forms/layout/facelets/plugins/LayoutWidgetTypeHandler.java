@@ -50,14 +50,16 @@ public class LayoutWidgetTypeHandler extends AbstractWidgetTypeHandler {
         // XXX: take mode on widget ?
         TagAttributes attributes = helper.getTagAttributes(widgetId, widget);
         FaceletHandler leaf = new LeafFaceletHandler();
+        String widgetTagConfigId = widget.getTagConfigId();
         TagConfig layoutTagConfig = TagConfigFactory.createTagConfig(tagConfig,
-                attributes, leaf);
+                widgetTagConfigId, attributes, leaf);
         String mode = widget.getMode();
         FaceletHandler res = new LayoutTagHandler(layoutTagConfig);
         if (BuiltinWidgetModes.PDF.equals(mode)) {
             // add a surrounding p:html tag handler
-            return helper.getHtmlComponentHandler(new TagAttributes(
-                    new TagAttribute[0]), res, UIHtmlText.class.getName(), null);
+            return helper.getHtmlComponentHandler(widgetTagConfigId,
+                    new TagAttributes(new TagAttribute[0]), res,
+                    UIHtmlText.class.getName(), null);
         } else {
             return res;
         }

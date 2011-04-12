@@ -53,6 +53,7 @@ public class HiddenWidgetTypeHandler extends AbstractWidgetTypeHandler {
         String mode = widget.getMode();
         String widgetId = widget.getId();
         String widgetName = widget.getName();
+        String widgetTagConfigId = widget.getTagConfigId();
         TagAttributes attributes;
         if (BuiltinWidgetModes.isLikePlainMode(mode)) {
             // use attributes without id
@@ -62,21 +63,23 @@ public class HiddenWidgetTypeHandler extends AbstractWidgetTypeHandler {
         }
         FaceletHandler leaf = new LeafFaceletHandler();
         if (BuiltinWidgetModes.EDIT.equals(mode)) {
-            ComponentHandler input = helper.getHtmlComponentHandler(attributes,
-                    leaf, HtmlInputHidden.COMPONENT_TYPE, null);
+            ComponentHandler input = helper.getHtmlComponentHandler(
+                    widgetTagConfigId, attributes, leaf,
+                    HtmlInputHidden.COMPONENT_TYPE, null);
             String msgId = helper.generateMessageId(widgetName);
-            ComponentHandler message = helper.getMessageComponentHandler(msgId,
-                    widgetId, null);
+            ComponentHandler message = helper.getMessageComponentHandler(
+                    widgetTagConfigId, msgId, widgetId, null);
             FaceletHandler[] handlers = { input, message };
             return new CompositeFaceletHandler(handlers);
         } else {
             // default on text for other modes
             ComponentHandler output = helper.getHtmlComponentHandler(
-                    attributes, leaf, HtmlInputHidden.COMPONENT_TYPE, null);
+                    widgetTagConfigId, attributes, leaf,
+                    HtmlInputHidden.COMPONENT_TYPE, null);
             if (BuiltinWidgetModes.PDF.equals(mode)) {
                 // add a surrounding p:html tag handler
-                return helper.getHtmlComponentHandler(new TagAttributes(
-                        new TagAttribute[0]), output,
+                return helper.getHtmlComponentHandler(widgetTagConfigId,
+                        new TagAttributes(new TagAttribute[0]), output,
                         UIHtmlText.class.getName(), null);
             } else {
                 return output;

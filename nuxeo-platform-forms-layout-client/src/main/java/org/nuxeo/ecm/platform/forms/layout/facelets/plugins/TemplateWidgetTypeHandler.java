@@ -78,8 +78,10 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
         }
         attributes = FaceletHandlerHelper.addTagAttribute(attributes,
                 templateAttr);
+        String widgetTagConfigId = widget.getTagConfigId();
         TagConfig config = TagConfigFactory.createTagConfig(tagConfig,
-                attributes, getNextHandler(ctx, tagConfig, helper, widget));
+                widgetTagConfigId, attributes, getNextHandler(ctx, tagConfig,
+                        helper, widget, widgetTagConfigId));
         return new DecorateHandler(config);
     }
 
@@ -90,8 +92,8 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
      * field_1, etc.
      */
     protected FaceletHandler getNextHandler(FaceletContext ctx,
-            TagConfig tagConfig, FaceletHandlerHelper helper, Widget widget)
-            throws WidgetException {
+            TagConfig tagConfig, FaceletHandlerHelper helper, Widget widget,
+            String widgetTagConfigId) throws WidgetException {
         FaceletHandler leaf = new LeafFaceletHandler();
         FieldDefinition[] fieldDefs = widget.getFieldDefinitions();
         if (fieldDefs == null) {
@@ -102,10 +104,10 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
         for (Integer i = 0; i < fieldDefs.length; i++) {
             if (i == 0) {
                 paramHandlers.add(getFieldParamHandler(ctx, tagConfig, helper,
-                        leaf, widget, fieldDefs[i], null));
+                        leaf, widget, widgetTagConfigId, fieldDefs[i], null));
             }
             paramHandlers.add(getFieldParamHandler(ctx, tagConfig, helper,
-                    leaf, widget, fieldDefs[i], i));
+                    leaf, widget, widgetTagConfigId, fieldDefs[i], i));
         }
         // expose widget properties too
         for (Map.Entry<String, Serializable> prop : widget.getProperties().entrySet()) {
@@ -126,7 +128,8 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
                         RenderVariables.widgetVariables.widget.name(), key));
             }
             TagConfig config = TagConfigFactory.createTagConfig(tagConfig,
-                    FaceletHandlerHelper.getTagAttributes(name, value), leaf);
+                    widgetTagConfigId, FaceletHandlerHelper.getTagAttributes(
+                            name, value), leaf);
             paramHandlers.add(new ParamHandler(config));
         }
 
@@ -136,8 +139,8 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
 
     protected ParamHandler getFieldParamHandler(FaceletContext ctx,
             TagConfig tagConfig, FaceletHandlerHelper helper,
-            FaceletHandler leaf, Widget widget, FieldDefinition fieldDef,
-            Integer index) {
+            FaceletHandler leaf, Widget widget, String widgetTagConfigId,
+            FieldDefinition fieldDef, Integer index) {
         String computedName;
         if (index == null) {
             computedName = String.format("%s",
@@ -151,7 +154,8 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
                 widget.getValueName(), fieldDef);
         TagAttribute value = helper.createAttribute("value", computedValue);
         TagConfig config = TagConfigFactory.createTagConfig(tagConfig,
-                FaceletHandlerHelper.getTagAttributes(name, value), leaf);
+                widgetTagConfigId, FaceletHandlerHelper.getTagAttributes(name,
+                        value), leaf);
         return new ParamHandler(config);
     }
 

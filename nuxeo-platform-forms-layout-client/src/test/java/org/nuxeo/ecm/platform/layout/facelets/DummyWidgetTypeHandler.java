@@ -51,21 +51,24 @@ public class DummyWidgetTypeHandler extends AbstractWidgetTypeHandler {
             throws WidgetException {
         FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, tagConfig);
         String mode = widget.getMode();
+        String widgetTagConfigId = widget.getTagConfigId();
         FaceletHandler[] handlers = null;
         String originalId = helper.generateUniqueId();
         TagAttributes attributes = helper.getTagAttributes(originalId, widget);
         FaceletHandler leaf = new LeafFaceletHandler();
         if (BuiltinWidgetModes.VIEW.equals(mode)) {
             ComponentHandler output = helper.getHtmlComponentHandler(
-                    attributes, leaf, HtmlOutputText.COMPONENT_TYPE, null);
-            handlers = new FaceletHandler[]{ output };
+                    widgetTagConfigId, attributes, leaf,
+                    HtmlOutputText.COMPONENT_TYPE, null);
+            handlers = new FaceletHandler[] { output };
         } else if (BuiltinWidgetModes.EDIT.equals(mode)) {
-            ComponentHandler input = helper.getHtmlComponentHandler(attributes,
-                    leaf, HtmlInputText.COMPONENT_TYPE, null);
+            ComponentHandler input = helper.getHtmlComponentHandler(
+                    widgetTagConfigId, attributes, leaf,
+                    HtmlInputText.COMPONENT_TYPE, null);
             String msgId = helper.generateUniqueId(originalId);
-            ComponentHandler message = helper.getMessageComponentHandler(msgId,
-                    originalId, "errorMessage");
-            handlers = new FaceletHandler[]{ input, message };
+            ComponentHandler message = helper.getMessageComponentHandler(
+                    widgetTagConfigId, msgId, originalId, "errorMessage");
+            handlers = new FaceletHandler[] { input, message };
         }
         if (handlers == null) {
             return new LeafFaceletHandler();

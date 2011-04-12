@@ -71,6 +71,7 @@ public class DirectorySelectManyWidgetTypeHandler extends
         String mode = widget.getMode();
         String widgetId = widget.getId();
         String widgetName = widget.getName();
+        String widgetTagConfigId = widget.getTagConfigId();
         TagAttributes attributes;
         if (BuiltinWidgetModes.isLikePlainMode(mode)) {
             // use attributes without id
@@ -79,11 +80,12 @@ public class DirectorySelectManyWidgetTypeHandler extends
             attributes = helper.getTagAttributes(widgetId, widget);
         }
         if (BuiltinWidgetModes.EDIT.equals(mode)) {
-            ComponentHandler input = helper.getHtmlComponentHandler(attributes,
-                    leaf, SelectManyListboxComponent.COMPONENT_TYPE, null);
+            ComponentHandler input = helper.getHtmlComponentHandler(
+                    widgetTagConfigId, attributes, leaf,
+                    SelectManyListboxComponent.COMPONENT_TYPE, null);
             String msgId = helper.generateMessageId(widgetName);
-            ComponentHandler message = helper.getMessageComponentHandler(msgId,
-                    widgetId, null);
+            ComponentHandler message = helper.getMessageComponentHandler(
+                    widgetTagConfigId, msgId, widgetId, null);
             FaceletHandler[] handlers = { input, message };
             return new CompositeFaceletHandler(handlers);
         } else {
@@ -134,18 +136,19 @@ public class DirectorySelectManyWidgetTypeHandler extends
             TagAttributes columnAttrs = new TagAttributes(new TagAttribute[0]);
 
             ComponentHandler dirEntry = helper.getHtmlComponentHandler(
-                    dirEntryAttrs, leaf,
+                    widgetTagConfigId, dirEntryAttrs, leaf,
                     DirectoryEntryOutputComponent.COMPONENT_TYPE, null);
             ComponentHandler columnEntry = helper.getHtmlComponentHandler(
-                    columnAttrs, dirEntry, HtmlColumn.COMPONENT_TYPE, null);
+                    widgetTagConfigId, columnAttrs, dirEntry,
+                    HtmlColumn.COMPONENT_TYPE, null);
             ComponentHandler table = helper.getHtmlComponentHandler(
-                    tableAttributes, columnEntry, HtmlDataTable.COMPONENT_TYPE,
-                    null);
+                    widgetTagConfigId, tableAttributes, columnEntry,
+                    HtmlDataTable.COMPONENT_TYPE, null);
 
             if (BuiltinWidgetModes.PDF.equals(mode)) {
                 // add a surrounding p:html tag handler
-                return helper.getHtmlComponentHandler(new TagAttributes(
-                        new TagAttribute[0]), table,
+                return helper.getHtmlComponentHandler(widgetTagConfigId,
+                        new TagAttributes(new TagAttribute[0]), table,
                         UIHtmlText.class.getName(), null);
             } else {
                 return table;

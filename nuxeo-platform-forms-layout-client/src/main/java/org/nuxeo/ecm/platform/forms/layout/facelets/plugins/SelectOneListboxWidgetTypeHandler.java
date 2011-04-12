@@ -51,6 +51,7 @@ public class SelectOneListboxWidgetTypeHandler extends
         String mode = widget.getMode();
         String widgetId = widget.getId();
         String widgetName = widget.getName();
+        String widgetTagConfigId = widget.getTagConfigId();
         TagAttributes attributes;
         if (BuiltinWidgetModes.isLikePlainMode(mode)) {
             // use attributes without id
@@ -61,11 +62,12 @@ public class SelectOneListboxWidgetTypeHandler extends
         if (BuiltinWidgetModes.EDIT.equals(mode)) {
             FaceletHandler optionsHandler = getOptionsFaceletHandler(helper,
                     widget);
-            ComponentHandler input = helper.getHtmlComponentHandler(attributes,
-                    optionsHandler, HtmlSelectOneListbox.COMPONENT_TYPE, null);
+            ComponentHandler input = helper.getHtmlComponentHandler(
+                    widgetTagConfigId, attributes, optionsHandler,
+                    HtmlSelectOneListbox.COMPONENT_TYPE, null);
             String msgId = helper.generateMessageId(widgetName);
-            ComponentHandler message = helper.getMessageComponentHandler(msgId,
-                    widgetId, null);
+            ComponentHandler message = helper.getMessageComponentHandler(
+                    widgetTagConfigId, msgId, widgetId, null);
             FaceletHandler[] handlers = { input, message };
             return new CompositeFaceletHandler(handlers);
         } else {
