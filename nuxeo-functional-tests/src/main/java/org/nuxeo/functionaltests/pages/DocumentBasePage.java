@@ -16,11 +16,13 @@
  */
 package org.nuxeo.functionaltests.pages;
 
+import org.nuxeo.functionaltests.pages.admincenter.AdminCenterBasePage;
 import org.nuxeo.functionaltests.pages.tabs.ManageTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.ContentTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.EditTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.SummaryTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.WorkspaceContentTabSubPage;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -140,6 +142,12 @@ public class DocumentBasePage extends AbstractPage {
             super("The user " + username
                     + " is expected to be connected but isn't");
         }
+    }
+
+
+    public AdminCenterBasePage getAdminCenter() {
+        findElementWithTimeout(By.linkText("Nuxeo Admin Center")).click();
+        return asPage(AdminCenterBasePage.class);
     }
 
 }
