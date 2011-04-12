@@ -33,7 +33,7 @@ import org.nuxeo.ecm.platform.relations.api.util.RelationConstants;
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@Operation(id = CreateRelation.ID, category = Constants.CAT_SERVICES, label = "Create Relation", description = "Create a relation between 2 documents. The subject of the relation will be the input of the operation and the object of the relation will be retrieved from the context using the 'object' field. The 'predicate' field specify the relation predicate. Return back the subject document.")
+@Operation(id = CreateRelation.ID, category = Constants.CAT_SERVICES, label = "Create Relation", description = "Create a relation between 2 documents. The subject of the relation will be the input of the operation and the object of the relation will be retrieved from the context using the 'object' field. The 'predicate' field specify the relation predicate. The 'outgoing' flag indicates the direction of the relation - the default is false which means the relation will go from the input object to the object specified as 'object' parameter. Return back the subject document.")
 public class CreateRelation {
 
     public static final String ID = "Relations.CreateRelation";
@@ -51,13 +51,20 @@ public class CreateRelation {
     // TODO use a combo box?
     protected String predicate;
 
+    @Param(name = "outgoing", required=false, values="false")
+    protected boolean outgoing = false;
+
     @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel run(DocumentModel doc) throws Exception {
         QNameResource subject = getDocumentResource(doc);
         QNameResource obj = getDocumentResource(object);
         Resource predicate = getPredicate();
         ArrayList<Statement> stmts = new ArrayList<Statement>();
-        stmts.add(new StatementImpl(subject, predicate, obj));
+        if (outgoing) {
+            stmts.add(new StatementImpl(obj, predicate, subject));
+        } else {
+            stmts.add(new StatementImpl(subject, predicate, obj));
+        }
         relations.add(RelationConstants.GRAPH_NAME, stmts);
         return doc;
     }
