@@ -23,6 +23,22 @@
           <widget>user_request_username</widget>
         </column>
 
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">userinfo:firstName</property>
+          </properties>
+          <widget>user_request_firstName</widget>
+        </column>
+
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">userinfo:lastName</property>
+          </properties>
+          <widget>user_request_lastName</widget>
+        </column>
+
         <column name="creation_date">
           <properties mode="any">
             <property name="useFirstWidgetLabelAsColumnHeader">true</property>
@@ -81,6 +97,30 @@
       </labels>
       <fields>
          <field>data.userinfo.username</field>
+      </fields>
+      <widgetModes>
+        <mode value="any">view</mode>
+      </widgetModes>
+    </widget>
+
+    <widget name="user_request_firstName" type="text">
+      <labels>
+        <label mode="any">label.userinfo.firstName</label>
+      </labels>
+      <fields>
+         <field>data.userinfo.firstName</field>
+      </fields>
+      <widgetModes>
+        <mode value="any">view</mode>
+      </widgetModes>
+    </widget>
+
+    <widget name="user_request_lastName" type="text">
+      <labels>
+        <label mode="any">label.userinfo.lastName</label>
+      </labels>
+      <fields>
+         <field>data.userinfo.lastName</field>
       </fields>
       <widgetModes>
         <mode value="any">view</mode>
