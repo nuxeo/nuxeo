@@ -64,8 +64,6 @@ public class AliasTagHandler extends MetaTagHandler {
 
     protected final TagAttribute id;
 
-    protected final TagAttribute forceCreate;
-
     protected final Map<String, ValueExpression> variables;
 
     public AliasTagHandler(TagConfig config,
@@ -73,7 +71,6 @@ public class AliasTagHandler extends MetaTagHandler {
         super(config);
         id = getAttribute("id");
         cache = getAttribute("cache");
-        forceCreate = getAttribute("forceCreate");
         this.variables = variables;
     }
 
@@ -88,10 +85,6 @@ public class AliasTagHandler extends MetaTagHandler {
         boolean cacheValue = false;
         if (cache != null) {
             cacheValue = cache.getBoolean(ctx);
-        }
-        boolean forceCreateValue = false;
-        if (forceCreate != null) {
-            forceCreateValue = forceCreate.getBoolean(ctx);
         }
         AliasVariableMapper target = new AliasVariableMapper();
         if (variables != null) {
@@ -108,12 +101,12 @@ public class AliasTagHandler extends MetaTagHandler {
             }
         }
 
-        apply(ctx, parent, target, forceCreateValue);
+        apply(ctx, parent, target);
     }
 
     public void apply(FaceletContext ctx, UIComponent parent,
-            AliasVariableMapper alias, boolean forceCreate) throws IOException,
-            FacesException, FaceletException, ELException {
+            AliasVariableMapper alias) throws IOException, FacesException,
+            FaceletException, ELException {
         // our id
         String id = ctx.generateUniqueId(this.tagId);
         alias.setId(id);
@@ -125,7 +118,7 @@ public class AliasTagHandler extends MetaTagHandler {
         // create component
         UIComponent c = ComponentSupport.findChildByTagId(parent, id);
         boolean componentFound = false;
-        if (c != null && !forceCreate) {
+        if (c != null) {
             componentFound = true;
             // mark all children for cleaning
             ComponentSupport.markForDeletion(c);
