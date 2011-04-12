@@ -37,6 +37,15 @@ public interface Widget extends Serializable {
     String getId();
 
     /**
+     * Returns the unique identifier of this widget to be used in tag
+     * configuration.
+     *
+     * @since 5.4.2
+     * @see {@link Layout#getTagConfigId()}.
+     */
+    String getTagConfigId();
+
+    /**
      * Sets the widget id, unique within the facelet context.
      */
     void setId(String id);

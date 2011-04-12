@@ -107,4 +107,20 @@ public class WidgetSelectOptionsImpl implements WidgetSelectOptions {
         return caseSensitive;
     }
 
+    @Override
+    public String getTagConfigId() {
+        StringBuilder builder = new StringBuilder();
+        builder.append(value).append(";");
+        builder.append(var).append(";");
+        builder.append(itemLabel).append(";");
+        builder.append(itemValue).append(";");
+        builder.append(itemDisabled.toString()).append(";");
+        builder.append(itemRendered.toString()).append(";");
+        builder.append(ordering).append(";");
+        builder.append(caseSensitive).append(";");
+
+        Integer intValue = new Integer(builder.toString().hashCode());
+        return intValue.toString();
+    }
+
 }

@@ -29,13 +29,12 @@ public interface WidgetSelectOptions extends WidgetSelectOption {
     /**
      * Returns a string used for ordering of options.
      * <p>
-     * Sample possible values are
+     * Sample possible values are 'id' and 'label'.
      */
     String getOrdering();
 
     /**
-     *
-     * @return
+     * Returns true if ordering should be case sensitive?
      */
     Boolean getCaseSensitive();
 

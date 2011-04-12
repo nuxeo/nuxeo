@@ -38,6 +38,24 @@ public interface Layout extends Serializable {
     String getId();
 
     /**
+     * Returns the unique identifier of this widget to be used in tag
+     * configuration.
+     * <p>
+     * In JSF, layouts are rendered dynamically and re-use the tag
+     * configuration of the tag rendering them when adding handlers to the
+     * facelet hierarchy. Since this tag identifier is used to perform some
+     * kind of caching on the JSF layer, it needs to change when the layout
+     * definition changes, so that JSF components are not mistaken for another
+     * one.
+     * <p>
+     * This identifier is unique to a given layout definition and always
+     * returns the same result given the same layout definition.
+     *
+     * @since 5.4.2
+     */
+    String getTagConfigId();
+
+    /**
      * Sets the layout id, unique within the facelet context.
      */
     void setId(String id);

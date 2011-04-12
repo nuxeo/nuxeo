@@ -80,4 +80,11 @@ public interface WidgetSelectOption extends Serializable {
      */
     Serializable getItemRendered();
 
+    /**
+     * Returns the unique identifier of this select option to be used in tag
+     * configuration.
+     *
+     * @see {@link Layout#getTagConfigId()}.
+     */
+    String getTagConfigId();
 }

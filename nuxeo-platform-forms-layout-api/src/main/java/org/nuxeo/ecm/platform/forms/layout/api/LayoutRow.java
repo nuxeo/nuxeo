@@ -36,6 +36,15 @@ public interface LayoutRow extends Serializable {
     String getName();
 
     /**
+     * Returns the unique identifier of this widget to be used in tag
+     * configuration.
+     *
+     * @since 5.4.2
+     * @see {@link Layout#getTagConfigId()}.
+     */
+    String getTagConfigId();
+
+    /**
      * Returns true if this row should be considered selected by default
      */
     boolean isSelectedByDefault();

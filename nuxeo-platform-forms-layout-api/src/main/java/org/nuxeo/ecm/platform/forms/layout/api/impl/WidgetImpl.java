@@ -109,6 +109,50 @@ public class WidgetImpl implements Widget {
         return id;
     }
 
+    @Override
+    public String getTagConfigId() {
+        StringBuffer builder = new StringBuffer();
+        builder.append(layoutName).append(";");
+        builder.append(name).append(";");
+        builder.append(mode).append(";");
+        builder.append(type).append(";");
+        if (fields != null) {
+            for (FieldDefinition fieldDef : fields) {
+                builder.append(fieldDef.getPropertyName() + ",");
+            }
+        }
+        builder.append(";");
+        builder.append(helpLabel).append(";");
+        if (subWidgets != null) {
+            for (Widget widget : subWidgets) {
+                if (widget != null) {
+                    builder.append(widget.getTagConfigId()).append(",");
+                }
+            }
+        }
+        builder.append(";");
+        if (properties != null) {
+            builder.append(properties.toString());
+        }
+        builder.append(";");
+        builder.append(label).append(";");
+        builder.append(translated).append(";");
+        builder.append(level).append(";");
+        if (selectOptions != null) {
+            for (WidgetSelectOption option : selectOptions) {
+                if (option != null) {
+                    builder.append(option.getTagConfigId()).append(",");
+                }
+            }
+        }
+        builder.append(";");
+        // valueName and required are generated => no other impact on
+        // definition id
+
+        Integer intValue = new Integer(builder.toString().hashCode());
+        return intValue.toString();
+    }
+
     public void setId(String id) {
         this.id = id;
     }

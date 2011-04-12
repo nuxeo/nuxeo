@@ -102,6 +102,29 @@ public class LayoutImpl implements Layout {
         return id;
     }
 
+    @Override
+    public String getTagConfigId() {
+        StringBuilder builder = new StringBuilder();
+        builder.append(name).append(";");
+        builder.append(mode).append(";");
+        builder.append(template).append(";");
+        if (rows != null) {
+            for (LayoutRow row : rows) {
+                if (row != null) {
+                    builder.append(row.getTagConfigId()).append(",");
+                }
+            }
+        }
+        builder.append(";");
+        if (properties != null) {
+            builder.append(properties.toString());
+        }
+        builder.append(";");
+
+        Integer intValue = new Integer(builder.toString().hashCode());
+        return intValue.toString();
+    }
+
     public void setId(String id) {
         this.id = id;
     }

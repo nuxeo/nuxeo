@@ -74,6 +74,29 @@ public class LayoutRowImpl implements LayoutRow {
         return name;
     }
 
+    @Override
+    public String getTagConfigId() {
+        StringBuffer builder = new StringBuffer();
+        builder.append(name).append(";");
+        builder.append(selectedByDefault).append(";");
+        builder.append(alwaysSelected).append(";");
+        if (widgets != null) {
+            for (Widget widget : widgets) {
+                if (widget != null) {
+                    builder.append(widget.getTagConfigId()).append(",");
+                }
+            }
+        }
+        builder.append(";");
+        if (properties != null) {
+            builder.append(properties.toString());
+        }
+        builder.append(";");
+
+        Integer intValue = new Integer(builder.toString().hashCode());
+        return intValue.toString();
+    }
+
     public boolean isAlwaysSelected() {
         return alwaysSelected;
     }
