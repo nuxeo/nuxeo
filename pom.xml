@@ -2212,7 +2212,7 @@
         </configuration>
       </plugin>
       <plugin>
-        <groupId>org.jvnet.maven.incrementalbuild</groupId>
+        <groupId>net.java.maven-incremental-build</groupId>
         <artifactId>incremental-build-plugin</artifactId>
         <executions>
           <execution>
