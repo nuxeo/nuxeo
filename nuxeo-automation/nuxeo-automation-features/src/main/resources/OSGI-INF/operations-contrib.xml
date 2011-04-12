@@ -21,8 +21,6 @@
       class="org.nuxeo.ecm.automation.core.operations.users.GetDocumentPrincipalEmails" />
     <operation
       class="org.nuxeo.ecm.automation.core.operations.users.GetDocumentUsersAndGroups" />
-    <operation
-      class="org.nuxeo.ecm.automation.core.operations.users.GetEmailsFromGroup" />
 
     <operation
       class="org.nuxeo.ecm.automation.core.operations.notification.SendMail" />
