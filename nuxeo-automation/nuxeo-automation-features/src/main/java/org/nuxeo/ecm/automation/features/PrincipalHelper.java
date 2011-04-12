@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -85,6 +85,45 @@ public class PrincipalHelper {
                 new PrincipalCollector());
     }
 
+
+    public Set<String> getEmailsFromGroup(String groupId, boolean resolveGroups) throws ClientException {
+        EmailCollector collector = new EmailCollector(userManager.getUserSchemaName(),
+                userManager.getUserEmailField());
+        collectObjectsFromGroup(groupId, resolveGroups, collector);
+        return collector.getResult();
+    }
+
+    public Set<NuxeoPrincipal> getPrincipalsFromGroup(String groupId, boolean resolveGroups) throws ClientException {
+        PrincipalCollector collector = new PrincipalCollector();
+        collectObjectsFromGroup(groupId, resolveGroups, collector);
+        return collector.getResult();
+    }
+
+    public Set<String> getUserNamesFromGroup(String groupId, boolean resolveGroups, boolean prefixIds) throws ClientException {
+        IdCollector collector = new IdCollector(prefixIds);
+        collectObjectsFromGroup(groupId, resolveGroups, collector);
+        return collector.getResult();
+    }
+
+    public void collectObjectsFromGroup(String groupId, boolean resolveGroups, Collector<?> collector) throws ClientException {
+        NuxeoGroup group = userManager.getGroup(groupId);
+        if (group == null) {
+            userManager.getPrincipal(groupId);
+        } else {
+            for (String u : group.getMemberUsers()) {
+                NuxeoPrincipal principal = userManager.getPrincipal(u);
+                if (principal != null) {
+                    collector.collect(principal);
+                }
+            }
+            if (resolveGroups) {
+                for (String g : group.getMemberGroups()) {
+                    collectObjectsFromGroup(g, resolveGroups, collector);
+                }
+            }
+        }
+    }
+
     public HashSet<?> collectObjectsMatchingPermission(DocumentModel input,
             String permission, boolean ignoreGroups, boolean resolveGroups,
             Collector<?> collector) throws ClientException {
@@ -154,7 +193,7 @@ public class PrincipalHelper {
         HashSet<T> getResult();
     }
 
-    static class EmailCollector implements Collector<String> {
+    public static class EmailCollector implements Collector<String> {
 
         protected final String userSchemaName;
 

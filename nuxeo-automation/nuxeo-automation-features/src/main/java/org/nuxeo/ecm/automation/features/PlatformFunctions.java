@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -12,6 +12,7 @@
 package org.nuxeo.ecm.automation.features;
 
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.core.scripting.CoreFunctions;
@@ -82,6 +83,25 @@ public class PlatformFunctions extends CoreFunctions {
         return getEmail(userManager.getPrincipal(username),
                 userManager.getUserSchemaName(),
                 userManager.getUserEmailField());
+    }
+
+    public Set<NuxeoPrincipal> getPrincipalsFromGroup(String group) throws Exception {
+        return getPrincipalsFromGroup(group, false);
+    }
+
+    public Set<NuxeoPrincipal> getPrincipalsFromGroup(String group, boolean ignoreGroups) throws Exception {
+        PrincipalHelper ph = new PrincipalHelper(userMgr, null);
+        return ph.getPrincipalsFromGroup(group, !ignoreGroups);
+    }
+
+    public StringList getEmailsFromGroup(String group) throws Exception {
+        return getEmailsFromGroup(group, false);
+    }
+
+    public StringList getEmailsFromGroup(String group, boolean ignoreGroups) throws Exception {
+        PrincipalHelper ph = new PrincipalHelper(userMgr, null);
+        Set<String> emails = ph.getEmailsFromGroup(group, !ignoreGroups);
+        return new StringList(emails);
     }
 
     public StringList getPrincipalEmails(List<NuxeoPrincipal> principals)
