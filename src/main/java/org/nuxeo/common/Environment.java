@@ -22,10 +22,16 @@ package org.nuxeo.common;
 import java.io.File;
 import java.util.Properties;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class Environment {
+
+    private static Log logger = LogFactory.getLog(Environment.class);
 
     /**
      * Constants that identifies possible hosts for the framework.
@@ -126,10 +132,10 @@ public class Environment {
 
     protected String hostAppVersion;
 
-    // Handy parameter to distinguish from (Runtime)home
+    // Handy field to distinguish from (Runtime)home
     private File serverHome = null;
 
-    // Handy parameter to distinguish from (Server)home
+    // Handy field to distinguish from (Server)home
     private File runtimeHome;
 
     public Environment(File home) {
@@ -304,8 +310,8 @@ public class Environment {
     }
 
     /**
-     * Initialization with System properties. Home must be set (it is usually
-     * nuxeo runtime home, not nuxeo home).
+     * Initialization with System properties to avoid issues due to home set
+     * with runtime home instead of server home.
      *
      * @since 5.4.1
      */
@@ -315,22 +321,53 @@ public class Environment {
         String logDir = System.getProperty(NUXEO_LOG_DIR);
         String tmpDir = System.getProperty(NUXEO_TMP_DIR);
 
+        initServerHome();
         initRuntimeHome();
         if (dataDir != null && !dataDir.isEmpty()) {
             setData(new File(dataDir));
         }
-
         if (configDir != null && !configDir.isEmpty()) {
             setConfig(new File(configDir));
         }
-
         if (logDir != null && !logDir.isEmpty()) {
             setLog(new File(logDir));
         }
-
         if (tmpDir != null && !tmpDir.isEmpty()) {
             setTemp(new File(tmpDir));
         }
+    }
+
+    /**
+     * This method always returns the server home (or null if
+     * {@link #NUXEO_HOME_DIR} is not set), whereas {@link #getHome()} may
+     * return runtime home.
+     *
+     * @return Server home
+     */
+    public File getServerHome() {
+        if (serverHome == null) {
+            initServerHome();
+        }
+        return serverHome;
+    }
+
+    private void initServerHome() {
+        String homeDir = System.getProperty("nuxeo.home",
+                System.getProperty(NUXEO_HOME_DIR));
+        if (homeDir != null && !homeDir.isEmpty()) {
+            serverHome = new File(homeDir);
+            logger.debug(this);
+        } else {
+            logger.warn("Could not get nuxeo.home neither " + NUXEO_HOME_DIR
+                    + " system properties, will use " + home);
+            logger.debug(this);
+            serverHome = home;
+        }
+    }
+
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
     }
 
     public void setServerHome(File serverHome) {
