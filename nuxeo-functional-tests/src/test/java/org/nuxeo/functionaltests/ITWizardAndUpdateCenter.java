@@ -39,6 +39,9 @@ import static junit.framework.Assert.assertFalse;
 
 public class ITWizardAndUpdateCenter extends AbstractTest {
 
+    private static final String MARKETPLACE_PACKAGE_ID = "audit-web-access-1.0.0";
+    //private static final String MARKETPLACE_PACKAGE_ID = "easybookmark-1.0.0";
+
     private static final String SMTP_SERVER_HOST = "someSMTPServer.com";
 
     private static final String SMTP_SERVER_PORT = "27";
@@ -53,6 +56,11 @@ public class ITWizardAndUpdateCenter extends AbstractTest {
 
     protected String getTestPassword() {
         return "XXX";
+    }
+
+    private static boolean isWindows() {
+        String osName = System.getProperty("os.name");
+        return osName.toLowerCase().contains("windows");
     }
 
     //@Test
@@ -229,15 +237,22 @@ public class ITWizardAndUpdateCenter extends AbstractTest {
         PackageListingPage packageListing = updateCenterHome.getPackageListingPage();
 
         // Download Package
-        WebElement link = packageListing.download("audit-web-access-1.0.0");
+        WebElement link = packageListing.download(MARKETPLACE_PACKAGE_ID);
         assertNotNull(link);
 
         // Start installation
-        PackageInstallationScreen installScreen = packageListing.getInstallationScreen("audit-web-access-1.0.0");
+        PackageInstallationScreen installScreen = packageListing.getInstallationScreen(MARKETPLACE_PACKAGE_ID);
         assertNotNull(installScreen);
 
         packageListing = installScreen.start();
         assertNotNull(packageListing);
+        WebElement packageLink = packageListing.getPackageLink(MARKETPLACE_PACKAGE_ID);
+        assertNotNull(packageLink);
+        if (isWindows() || true) {
+            assertTrue(packageLink.getText().trim().toLowerCase().startsWith("restart"));
+        } else {
+            assertTrue(packageLink.getText().trim().toLowerCase().startsWith("uninstall"));
+        }
 
         updateCenterHome = packageListing.exit();
         assertNotNull(updateCenterHome);

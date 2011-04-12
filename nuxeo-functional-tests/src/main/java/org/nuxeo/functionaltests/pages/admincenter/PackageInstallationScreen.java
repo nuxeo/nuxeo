@@ -27,23 +27,14 @@ public class PackageInstallationScreen extends AbstractPage {
         super(driver);
     }
 
-    private static boolean isWindows() {
-        String osName = System.getProperty("os.name");
-        return osName.toLowerCase().contains("windows");
-    }
-
     public PackageListingPage start() {
         WebElement start = findElementWithTimeout(By.linkText("Start"));
         if (start != null) {
             start.click();
-            if (isWindows()) {
-                // XXX TODO
-            } else {
-                WebElement finish = findElementWithTimeout(By.linkText("Finish"));
-                if (finish != null) {
-                    finish.click();
-                    return asPage(PackageListingPage.class);
-                }
+            WebElement finish = findElementWithTimeout(By.linkText("Finish"));
+            if (finish != null) {
+                finish.click();
+                return asPage(PackageListingPage.class);
             }
         }
         return null;

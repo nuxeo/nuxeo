@@ -19,6 +19,7 @@ package org.nuxeo.functionaltests.pages.admincenter;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 
 public class UpdateCenterPage extends AdminCenterBasePage {
 
@@ -27,9 +28,13 @@ public class UpdateCenterPage extends AdminCenterBasePage {
     }
 
     public PackageListingPage getPackageListingPage() {
+        System.out.println("Main page : " + driver.getCurrentUrl());
         driver.switchTo().frame(0);
+        System.out.println("Switched to frame " + driver.getCurrentUrl());
+        findElementWithTimeout(By.tagName("body")); // wait for IFrame Body
         PackageListingPage page = asPage(PackageListingPage.class);
-        findElementWithTimeout(By.xpath("//table[@class='packageListing']"));
+        WebElement listing = findElementWithTimeout(By.xpath("//table[@class='packageListing']"));
+        assert(listing!=null);
         return page;
     }
 

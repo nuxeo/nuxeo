@@ -28,21 +28,33 @@ public class PackageListingPage extends AbstractPage {
         super(driver);
     }
 
-    public WebElement getPackageLink(String packageId, String label) {
-        String xpath = "id('row_" + packageId + "')/td[9]/a[text()='" + label
-                + "']";
+    public WebElement getPackageLink(String packageId) {
+        String xpath = "id('row_" + packageId + "')/td[9]/a";
         return findElementWithTimeout(By.xpath(xpath), 20 * 1000);
     }
 
     public WebElement getPackageDownloadLink(String packageId) {
-        return getPackageLink(packageId, " Download ");
+        WebElement link =  getPackageLink(packageId);
+        if (link!=null) {
+            if (link.getText().trim().toLowerCase().startsWith("download")) {
+                return link;
+            }
+        }
+        return null;
     }
 
     public WebElement getPackageInstallLink(String packageId) {
-        return getPackageLink(packageId, " Install ");
+        WebElement link =  getPackageLink(packageId);
+        if (link!=null) {
+            if (link.getText().trim().toLowerCase().startsWith("install")) {
+                return link;
+            }
+        }
+        return null;
     }
 
     public WebElement download(String packageId) {
+        System.out.println(driver.getCurrentUrl());
         WebElement downloadLink = getPackageDownloadLink(packageId);
         if (downloadLink != null) {
             downloadLink.click();
