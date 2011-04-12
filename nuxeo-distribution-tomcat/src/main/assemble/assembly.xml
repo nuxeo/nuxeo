@@ -99,6 +99,10 @@
       <!-- copy jdbc drivers -->
       <artifact:resolveFile key="mysql:mysql-connector-java:5.1.6" />
     </copy>
+    <mkdir dir="${tomcat}/client"/>
+    <copy todir="${tomcat}/client">
+      <artifact:resolveFile key="org.nuxeo.shell:nuxeo-shell" />
+    </copy>
   </target>
 
   <target name="build-nuxeo-cap"

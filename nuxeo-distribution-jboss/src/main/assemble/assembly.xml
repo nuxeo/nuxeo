@@ -107,6 +107,10 @@
     <copy tofile="${jboss}/common/lib/hibernate-core.jar">
       <artifact:resolveFile key="org.hibernate:hibernate-core:3.3.2.GA" />
     </copy>
+    <mkdir dir="${jboss}/client"/>
+    <copy todir="${jboss}/client">
+      <artifact:resolveFile key="org.nuxeo.shell:nuxeo-shell" />
+    </copy>
   </target>
 
   <target name="build-nuxeo-cap"
