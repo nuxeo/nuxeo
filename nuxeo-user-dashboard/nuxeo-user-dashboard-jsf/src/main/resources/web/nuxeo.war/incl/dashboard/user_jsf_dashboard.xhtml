@@ -34,9 +34,10 @@
         <td width="50%">
 
           <h:panelGroup>
-            <ui:decorate template="/incl/foldable_content_view.xhtml">
+            <ui:decorate template="/incl/content_view.xhtml">
               <ui:param name="contentViewId" value="USER_TASKS" />
               <ui:param name="contentViewName" value="USER_TASKS" />
+              <ui:param name="foldable" value="true" />
               <ui:param name="hideEmpty" value="false" />
               <ui:define name="boxBodyStart">
                 <h:outputText value="#{messages['label.workflow.tasks']}"
@@ -47,9 +48,10 @@
           </h:panelGroup>
       
           <h:panelGroup>
-            <ui:decorate template="/incl/foldable_content_view.xhtml">
+            <ui:decorate template="/incl/content_view.xhtml">
               <ui:param name="contentViewId" value="USER_PROCESSES" />
               <ui:param name="contentViewName" value="USER_PROCESSES" />
+              <ui:param name="foldable" value="true" />
               <ui:param name="hideEmpty" value="false" />
               <ui:define name="boxBodyStart">
                 <h:outputText value="#{messages['label.user.processes']}"
@@ -60,18 +62,20 @@
           </h:panelGroup>
       
           <h:panelGroup>
-            <ui:decorate template="/incl/foldable_content_view.xhtml">
+            <ui:decorate template="/incl/content_view.xhtml">
               <ui:param name="contentViewId" value="USER_WORKSPACES" />
               <ui:param name="contentViewName" value="USER_WORKSPACES" />
+              <ui:param name="foldable" value="true" />
               <ui:param name="hideEmpty" value="true" />
               <ui:define name="content_view_syndication_buttons" />
             </ui:decorate>
           </h:panelGroup>
       
           <h:panelGroup>
-            <ui:decorate template="/incl/foldable_content_view.xhtml">
+            <ui:decorate template="/incl/content_view.xhtml">
               <ui:param name="contentViewId" value="USER_SECTIONS" />
               <ui:param name="contentViewName" value="USER_SECTIONS" />
+              <ui:param name="foldable" value="true" />
               <ui:param name="hideEmpty" value="true" />
               <ui:define name="content_view_syndication_buttons" />
             </ui:decorate>
@@ -81,36 +85,40 @@
         <td width="50%">
 
           <h:panelGroup>
-            <ui:decorate template="/incl/foldable_content_view.xhtml">
+            <ui:decorate template="/incl/content_view.xhtml">
               <ui:param name="contentViewId" value="USER_DOCUMENTS" />
               <ui:param name="contentViewName" value="USER_DOCUMENTS" />
+              <ui:param name="foldable" value="true" />
               <ui:param name="hideEmpty" value="true" />
               <ui:define name="content_view_syndication_buttons" />
             </ui:decorate>
           </h:panelGroup>
       
           <h:panelGroup>
-            <ui:decorate template="/incl/foldable_content_view.xhtml">
+            <ui:decorate template="/incl/content_view.xhtml">
               <ui:param name="contentViewId" value="DOMAIN_DOCUMENTS" />
               <ui:param name="contentViewName" value="DOMAIN_DOCUMENTS" />
+              <ui:param name="foldable" value="true" />
               <ui:param name="hideEmpty" value="true" />
               <ui:define name="content_view_syndication_buttons" />
             </ui:decorate>
           </h:panelGroup>
       
           <h:panelGroup>
-            <ui:decorate template="/incl/foldable_content_view.xhtml">
+            <ui:decorate template="/incl/content_view.xhtml">
               <ui:param name="contentViewId" value="DOMAIN_PUBLISHED_DOCUMENTS" />
               <ui:param name="contentViewName" value="DOMAIN_PUBLISHED_DOCUMENTS" />
+              <ui:param name="foldable" value="true" />
               <ui:param name="hideEmpty" value="true" />
               <ui:define name="content_view_syndication_buttons" />
             </ui:decorate>
           </h:panelGroup>
       
           <h:panelGroup>
-            <ui:decorate template="/incl/foldable_content_view.xhtml">
+            <ui:decorate template="/incl/content_view.xhtml">
               <ui:param name="contentViewId" value="USER_SITES" />
               <ui:param name="contentViewName" value="USER_SITES" />
+              <ui:param name="foldable" value="true" />
               <ui:param name="hideEmpty" value="true" />
               <ui:define name="content_view_syndication_buttons" />
             </ui:decorate>
@@ -119,9 +127,10 @@
           <c:if test="false">
             Not shown by default
             <h:panelGroup>
-              <ui:decorate template="/incl/foldable_content_view.xhtml">
+              <ui:decorate template="/incl/content_view.xhtml">
                 <ui:param name="contentViewId" value="USER_DELETED_DOCUMENTS" />
                 <ui:param name="contentViewName" value="USER_DELETED_DOCUMENTS" />
+                <ui:param name="foldable" value="true" />
                 <ui:param name="hideEmpty" value="true" />
                 <ui:define name="content_view_syndication_buttons" />
               </ui:decorate>

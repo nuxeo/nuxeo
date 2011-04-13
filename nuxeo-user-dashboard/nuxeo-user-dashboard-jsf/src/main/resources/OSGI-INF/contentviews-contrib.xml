@@ -15,7 +15,7 @@
         <property name="filterDocumentsFromTrash">true</property>
       </pageProvider>
       <showPageSizeSelector>false</showPageSizeSelector>
-      <showRefreshPage>true</showRefreshPage>
+      <showRefreshCommand>true</showRefreshCommand>
       <useGlobalPageSize>false</useGlobalPageSize>
       <refresh>
         <event>workflowEvent</event>
@@ -38,7 +38,7 @@
         <property name="filterDocumentsFromTrash">true</property>
       </pageProvider>
       <showPageSizeSelector>false</showPageSizeSelector>
-      <showRefreshPage>true</showRefreshPage>
+      <showRefreshCommand>true</showRefreshCommand>
       <useGlobalPageSize>false</useGlobalPageSize>
       <refresh>
         <event>workflowEvent</event>
@@ -58,7 +58,7 @@
         <property name="coreSession">#{documentManager}</property>
       </pageProvider>
       <showPageSizeSelector>false</showPageSizeSelector>
-      <showRefreshPage>true</showRefreshPage>
+      <showRefreshCommand>true</showRefreshCommand>
       <useGlobalPageSize>false</useGlobalPageSize>
       <refresh>
         <event>documentChanged</event>
@@ -83,7 +83,7 @@
         </parameter>
       </pageProvider>
       <showPageSizeSelector>false</showPageSizeSelector>
-      <showRefreshPage>true</showRefreshPage>
+      <showRefreshCommand>true</showRefreshCommand>
       <useGlobalPageSize>false</useGlobalPageSize>
       <refresh>
         <event>documentChanged</event>
@@ -105,7 +105,7 @@
         <parameter>#{jsfDashboardActions.selectedDomainPath}</parameter>
       </pageProvider>
       <showPageSizeSelector>false</showPageSizeSelector>
-      <showRefreshPage>true</showRefreshPage>
+      <showRefreshCommand>true</showRefreshCommand>
       <useGlobalPageSize>false</useGlobalPageSize>
       <refresh>
         <event>documentChanged</event>
@@ -128,7 +128,7 @@
         <parameter>#{jsfDashboardActions.selectedDomainPath}</parameter>
       </pageProvider>
       <showPageSizeSelector>false</showPageSizeSelector>
-      <showRefreshPage>true</showRefreshPage>
+      <showRefreshCommand>true</showRefreshCommand>
       <useGlobalPageSize>false</useGlobalPageSize>
       <refresh>
         <event>documentChanged</event>
@@ -150,7 +150,7 @@
         <parameter>#{jsfDashboardActions.selectedDomainPath}</parameter>
       </pageProvider>
       <showPageSizeSelector>false</showPageSizeSelector>
-      <showRefreshPage>true</showRefreshPage>
+      <showRefreshCommand>true</showRefreshCommand>
       <useGlobalPageSize>false</useGlobalPageSize>
       <refresh>
         <event>documentChanged</event>
@@ -175,7 +175,7 @@
         </parameter>
       </pageProvider>
       <showPageSizeSelector>false</showPageSizeSelector>
-      <showRefreshPage>true</showRefreshPage>
+      <showRefreshCommand>true</showRefreshCommand>
       <useGlobalPageSize>false</useGlobalPageSize>
       <refresh>
         <event>documentChanged</event>
@@ -200,7 +200,7 @@
         </parameter>
       </pageProvider>
       <showPageSizeSelector>false</showPageSizeSelector>
-      <showRefreshPage>true</showRefreshPage>
+      <showRefreshCommand>true</showRefreshCommand>
       <useGlobalPageSize>false</useGlobalPageSize>
       <refresh>
         <event>documentChanged</event>
@@ -222,7 +222,7 @@
         <parameter>#{currentUser.name}</parameter>
       </pageProvider>
       <showPageSizeSelector>false</showPageSizeSelector>
-      <showRefreshPage>true</showRefreshPage>
+      <showRefreshCommand>true</showRefreshCommand>
       <useGlobalPageSize>false</useGlobalPageSize>
       <refresh>
         <event>documentChanged</event>
