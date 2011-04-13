@@ -79,7 +79,7 @@ public class Shell extends ModuleRoot {
                 }
             }
         }
-        return redirect("http://community.nuxeo.com/static/latest-release/shell");
+        return redirect("http://www.nuxeo.org/static/latest-release/nuxeo-shell");
     }
 
 }
