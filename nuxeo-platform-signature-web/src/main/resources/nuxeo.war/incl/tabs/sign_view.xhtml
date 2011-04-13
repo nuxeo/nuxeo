@@ -12,17 +12,33 @@
   xmlns:nxl="http://nuxeo.org/nxforms/layout"><a4j:outputPanel
   id="signPanel">
 
+  <!-- status messages -->
   <div id="facesStatusMessage" class="facesStatusMessage"><h:messages
     globalOnly="true" infoClass="infoFeedback"
     warnClass="warningFeedback" errorClass="errorFeedback" /></div>
 
+  <!-- root certificate info -->
+  <h3 class="summaryTitle"><h:outputText
+    value="#{messages['label.heading.root.certificate']}" /></h3>
   <h:form>
-    <h:commandLink action="#{certActions.downloadRootCertificate}"
-      immediate="true">
-      <h:outputText value="#{messages['command.root.certificate.download']}" />
-    </h:commandLink>
+    <table class="dataInput">
+      <tbody>
+        <tr>
+          <td class="fieldColumn"><h:commandLink
+            action="#{certActions.downloadRootCertificate}"
+            immediate="true">
+            <h:outputText
+              value="#{messages['command.root.certificate.download']}" />
+          </h:commandLink></td>
+        </tr>
+      </tbody>
+    </table>
   </h:form>
 
+  <!-- document is signed -->
+  <!-- document signature info -->
+  <h3 class="summaryTitle"><h:outputText
+    value="#{messages['label.heading.document.signature']}" /></h3>
   <c:if test="#{signActions.isPDFSigned()}">
     <table class="dataInput">
       <tbody>
@@ -38,13 +54,49 @@
     </table>
   </c:if>
 
-  <c:if test="#{ nxd:canModify(currentDocument) and !signActions.isPDFSigned()}">
-    <c:if test="#{certActions.hasCertificate()}">
-      <table class="dataInput">
-        <tbody>
+  <!-- the document is not signed -->
+  <c:if test="#{ !signActions.isPDFSigned()}">
+    <table class="dataInput">
+      <tbody>
+        <tr>
+          <td class="fieldColumn" colspan="2"><h:outputText
+            value="#{messages['label.sign.document.not.signed']}" /></td>
+        </tr>
+        <!-- the user cannot modify documents -->
+        <c:if test="#{!nxd:canModify(currentDocument)}">
+          <tr>
+            <td class="fieldColumn"><h:outputText
+              value="#{messages['label.sign.modify.permission.warning']}" />
+            </td>
+          </tr>
+        </c:if>
+    
+        <!-- the user can modify documents -->
+       <c:if
+          test="#{nxd:canModify(currentDocument)}">
+       <!-- the user does not have a certificate -->
+        <c:if test="#{!certActions.hasCertificate()}">
+          <tr>
+            <td class="fieldColumn"><h:outputText
+              value="#{messages['label.sign.certificate.prompt']}" /></td>
+          </tr>
+          <tr>
+            <td class="fieldColumn"><h:form>
+              <h:outputText
+                value="#{userManagerActions.setSelectedUser(userManager.getUserModel(currentUser.name))}" />
+              <h:commandLink action="edit_certificate"
+                immediate="true">
+                <h:outputText value="#{messages['label.cert.navigate']}" />
+              </h:commandLink>
+            </h:form></td>
+          </tr>
+        </c:if>
+          
+        <c:if
+          test="#{certActions.hasCertificate()}">
           <tr>
             <td class="labelColumn"><h:outputText
-              value="#{messages['label.sign.prompt']}" /></td>
+              value="Signing File" /></td>
             <td class="fieldColumn"><nxh:outputLink
               class="boldLabel"
               value="#{nxd:fileUrl('downloadFile', currentDocument, 'blobholder:0', currentDocumentAsBlobHolder.blob.filename)}">
@@ -57,14 +109,9 @@
                 title="#{label.root.certificate.download}" />
             </nxh:outputLink></td>
           </tr>
-        </tbody>
-      </table>
-
-      <a4j:form id="sign_form" ajaxSingle="true"
-        enctype="multipart/form-data"
-        rendered="#{certActions.hasCertificate()}">
-        <table class="dataInput">
-          <tbody>
+          <a4j:form id="sign_form" ajaxSingle="true"
+            enctype="multipart/form-data"
+            rendered="#{certActions.hasCertificate()}">
             <tr>
               <td class="labelColumn"><h:outputText
                 value="#{messages['label.sign.reason']}" /></td>
@@ -76,12 +123,9 @@
               <td class="labelColumn"><h:outputText
                 value="#{messages['label.sign.password']}" /></td>
               <td class="fieldColumn"><h:inputSecret id="password"
-                value="#{password}" required="true" rendered="true" />
-
-              </td>
+                value="#{password}" required="true" rendered="true" /></td>
             </tr>
             <tr>
-              <td></td>
               <td class="fieldColumn"><a4j:commandButton
                 id="SignPDF" styleClass="button"
                 value="#{messages['label.sign.submit']}"
@@ -91,36 +135,10 @@
                 oncomplete="if (data) { hideWaiter() } else { processFinished() };"
                 reRender="signPanel" /></td>
             </tr>
-          </tbody>
-        </table>
-      </a4j:form>
-    </c:if>
+          </a4j:form>
+        </c:if>
+        </c:if>
+      </tbody>
+    </table>
   </c:if>
-  
-    <table class="dataInput">
-          <tbody>
-            <tr>
-              <td class="fieldColumn">
-              <c:if test="#{!nxd:canModify(currentDocument)}">
-                  <h:outputText value="#{messages['label.sign.modify.permission.warning']}" />
-               </c:if>
-              </td>
-              </tr>
-            <tr>
-              <td class="fieldColumn">
-  <c:if test="#{!certActions.hasCertificate()}">
-    <h:outputText value="#{messages['label.sign.certificate.prompt']}" />
-    <h:form>
-      <h:outputText
-        value="#{userManagerActions.setSelectedUser(userManager.getUserModel(currentUser.name))}" />
-      <h:commandLink action="#{userManagerActions.viewUser}"
-        immediate="true">
-        <h:outputText value="#{messages['label.cert.navigate']}" />
-      </h:commandLink>
-    </h:form>
-  </c:if>
-</td>
-</tr>
-</tbody>
-</table>
 </a4j:outputPanel></div>

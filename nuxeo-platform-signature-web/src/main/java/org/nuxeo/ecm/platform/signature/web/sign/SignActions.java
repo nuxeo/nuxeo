@@ -160,7 +160,7 @@ public class SignActions implements Serializable {
                 // save the digital signing event to the audit log
                 EventContext ctx = new DocumentEventContext(session,
                         session.getPrincipal(), currentDoc);
-                Event event = ctx.newEvent("documentSigned"); // auditable
+                Event event = ctx.newEvent(DOCUMENT_SIGNED); // auditable
                 event.setInline(false);
                 event.setImmediate(true);
                 Framework.getLocalService(EventService.class).fireEvent(event);
