@@ -96,7 +96,7 @@ public abstract class NuxeoLauncher {
 
     private static final int STOP_SECONDS_BEFORE_NEXT_TRY = 2;
 
-    private static final int MAX_WAIT_LOGFILE = 10;
+    private static final int MAX_WAIT_LOGFILE = 20;
 
     private static final String PARAM_NUXEO_URL = "nuxeo.url";
 
@@ -511,7 +511,8 @@ public abstract class NuxeoLauncher {
             try {
                 in = new BufferedReader(new FileReader(logFile));
             } catch (FileNotFoundException e) {
-                log.error(e.getMessage());
+                log.error("Waited for " + MAX_WAIT_LOGFILE + "s but "
+                        + e.getMessage());
                 return false;
             }
             int count = 0;
