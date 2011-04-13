@@ -875,7 +875,7 @@
         <background-color preset="blue.sky (Galaxy backgrounds)"/>
       </selector>
       <selector path=".buttonsGadget">
-        <margin>5px 0px 5px 135px</margin>
+        <margin>5px 0px 5px 40px</margin>
       </selector>
       <selector path=".errorFeedback">
         <font preset="big.default (Galaxy fonts)"/>
