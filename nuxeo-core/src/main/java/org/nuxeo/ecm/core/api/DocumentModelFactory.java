@@ -37,8 +37,10 @@ import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.PrefetchInfo;
+import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Schema;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Bridge between a {@link DocumentModel} and a {@link Document} for creation /
@@ -116,10 +118,6 @@ public class DocumentModelFactory {
         return prefetchMap;
     }
 
-    /**
-     * @deprecated unused
-     */
-    @Deprecated
     public static DocumentModelImpl createDocumentModel(Document doc)
             throws DocumentException {
         DocumentType docType = doc.getType();
@@ -250,6 +248,29 @@ public class DocumentModelFactory {
     }
 
     /**
+     * Returns a document model computed from its type, querying the
+     * {@link SchemaManager} service.
+     * <p>
+     * The created document model is not linked to any core session.
+     *
+     * @since 5.4.2
+     */
+    public static DocumentModelImpl createDocumentModel(String docType) {
+        try {
+            SchemaManager schemaManager = Framework.getService(SchemaManager.class);
+            if (schemaManager == null) {
+                throw new ClientRuntimeException("SchemaManager is null");
+            }
+            DocumentType type = schemaManager.getDocumentType(docType);
+            return createDocumentModel(type);
+        } catch (ClientRuntimeException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ClientRuntimeException(e);
+        }
+    }
+
+    /**
      * Creates a document model for a new document.
      * <p>
      * Initializes the proper data models according to the type info.
@@ -270,10 +291,6 @@ public class DocumentModelFactory {
         return docModel;
     }
 
-    /**
-     * @deprecated unused
-     */
-    @Deprecated
     public static DocumentModelImpl createDocumentModel(DocumentType docType)
             throws DocumentException {
         return createDocumentModel(null, docType);
