@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2011 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,17 +12,20 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     bstefanescu
+ *     bstefanescu, jcarsique
  */
 package org.nuxeo.ecm.webengine.admin;
 
 import java.io.File;
+import java.net.URISyntaxException;
 import java.net.URL;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
@@ -34,6 +37,7 @@ import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
 @Path("/shell")
 @WebObject(type = "Shell")
 public class Shell extends ModuleRoot {
+    private static Log log = LogFactory.getLog(Shell.class);
 
     @GET
     @Produces("text/html;charset=UTF-8")
@@ -58,13 +62,14 @@ public class Shell extends ModuleRoot {
     @GET
     @Path("shell.jar")
     @Produces("application/java-archive")
-    public Object getShellJar() {
+    public Object getShellJar() throws URISyntaxException {
         File file = null;
         try {
             URL url = Class.forName("org.nuxeo.shell.Shell").getProtectionDomain().getCodeSource().getLocation();
             return new File(url.toURI());
-        } catch (Exception e) {
-            file = new File(Environment.getDefault().getHome(), "client");
+        } catch (ClassNotFoundException e) {
+            log.debug(e);
+            file = new File(Environment.getDefault().getServerHome(), "client");
             if (file.isDirectory()) {
                 for (File f : file.listFiles()) {
                     String name = f.getName();
@@ -74,7 +79,7 @@ public class Shell extends ModuleRoot {
                 }
             }
         }
-        return redirect("http://www.nuxeo.com/shell"); // TODO
+        return redirect("http://www.nuxeo.org/static/latest-release/nuxeo-shell");
     }
 
 }
