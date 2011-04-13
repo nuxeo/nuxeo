@@ -14,6 +14,8 @@
 
 package org.nuxeo.ecm.core.api;
 
+import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
+
 import junit.framework.TestCase;
 
 @SuppressWarnings({"EqualsBetweenInconvertibleTypes"})
@@ -69,6 +71,36 @@ public class TestDocumentRef extends TestCase {
         assertFalse(idref.equals(pathref3));
         assertFalse(pathref.equals(idref3));
 
+        // check that we have a consistent behavior when wrapped into document locations
+        DocumentLocation server1IdRefLocation = new DocumentLocationImpl("server1", idref);
+        DocumentLocation server1IdRef2Location = new DocumentLocationImpl("server1", idref2);
+        DocumentLocation server1IdRef3Location = new DocumentLocationImpl("server1", idref3);
+        DocumentLocation server1PathRefLocation = new DocumentLocationImpl("server1", pathref);
+        DocumentLocation server1PathRef2Location = new DocumentLocationImpl("server1", pathref2);
+        DocumentLocation server1PathRef3Location = new DocumentLocationImpl("server1", pathref3);
+        DocumentLocation server2IdRefLocation = new DocumentLocationImpl("server2", idref);
+        DocumentLocation server2PathRefLocation = new DocumentLocationImpl("server2", pathref);
+
+        assertEquals(server1IdRefLocation, server1IdRefLocation);
+        assertEquals(server1IdRefLocation, server1IdRef2Location);
+        assertFalse(server1IdRefLocation.equals(server1IdRef3Location));
+        assertFalse(server1IdRefLocation.equals(server1PathRefLocation));
+        assertFalse(server1IdRefLocation.equals(server1PathRef3Location));
+        assertFalse(server1IdRefLocation.equals(server2IdRefLocation));
+
+        assertEquals(server1PathRefLocation, server1PathRef2Location);
+        assertFalse(server1PathRefLocation.equals(server1PathRef3Location));
+        assertFalse(server1PathRefLocation.equals(server2PathRefLocation));
+
+        // check hashCode consistency
+        assertTrue(server1IdRefLocation.hashCode() == server1IdRef2Location.hashCode());
+        assertTrue(server1IdRefLocation.hashCode() != server2IdRefLocation.hashCode());
+        assertTrue(server1IdRefLocation.hashCode() != server1IdRef3Location.hashCode());
+        assertTrue(server1IdRefLocation.hashCode() != server1PathRef2Location.hashCode());
+
+        assertTrue(server1PathRefLocation.hashCode() == server1PathRef2Location.hashCode());
+        assertTrue(server1PathRefLocation.hashCode() != server1PathRef3Location.hashCode());
+        assertTrue(server1PathRefLocation.hashCode() != server2PathRefLocation.hashCode());
     }
 
     public void testToString() {
