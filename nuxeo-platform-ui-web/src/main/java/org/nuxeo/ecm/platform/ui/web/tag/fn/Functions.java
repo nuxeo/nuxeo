@@ -508,11 +508,12 @@ public final class Functions {
 
     public static boolean hasMessages(String clientId) {
         Iterator<String> it = FacesContext.getCurrentInstance().getClientIdsWithMessages();
-        if (clientId != null) {
+        if (clientId == null) {
             return it.hasNext();
         } else {
             while (it.hasNext()) {
-                if (it.next().startsWith(clientId)) {
+                String id = it.next();
+                if (id != null && id.startsWith(clientId)) {
                     return true;
                 }
             }

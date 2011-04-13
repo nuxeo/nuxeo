@@ -17,7 +17,9 @@ Needed parameters:
 <c:if test="#{contentView.showFilterForm and contentView.searchDocumentModel != null}">
 
   <div class="foldableLightBox">
-    <c:set var="openBox" value="#{nxu:hasMessages('#{contentViewRenderId}_filterForm')}" />
+    <c:set var="filterFormId" value="#{contentViewRenderId}_filterForm" />
+    <nxu:set var="openBox" value="#{nxu:hasMessages(filterFormId)}"
+      cache="true">
     <h3 class="#{nxu:test(openBox, 'unfolded', 'folded')}">
       <a href="#nologo" onclick="return toggleBox(this)">
         <h:outputText value="#{messages['label.contentview.filter.title']}"/>
@@ -39,28 +41,31 @@ Needed parameters:
       </div>
       <div style="clear:both;"/>
     </h3>
+    </nxu:set>
     <div class="boxBody"
       style="#{nxu:test(openBox, '', 'overflow: visible; display: none;')}">
       <a4j:form id="#{contentViewRenderId}_filterForm">
         <nxl:layout name="#{contentView.searchLayout.name}" mode="edit"
           value="#{contentView.searchDocumentModel}" />
-        <a4j:commandButton
-          value="#{messages['label.contentview.filter.filterAction']}"
-          id="#{contentViewRenderId}_filterSubmit"
-          reRender="#{contentViewRenderId}_resultsPanel, #{contentViewRenderId}_resetFilterForm, #{contentViewRenderId}_filterForm"
-          styleClass="button">
-          <nxu:actionListenerMethod
-            value="#{contentView.resetPageProvider()}" /> 
-        </a4j:commandButton>
-        <a4j:commandButton
-          value="#{messages['label.contentview.filter.clearFilterButton']}"
-          id="#{contentViewRenderId}_filterClear"
-          immediate="true" ajaxSingle="true"
-          reRender="#{contentViewRenderId}_resultsPanel, #{contentViewRenderId}_resetFilterForm, #{contentViewRenderId}_filterForm"
-          styleClass="button">
-          <nxu:actionListenerMethod
-            value="#{contentView.resetSearchDocumentModel()}" /> 
-        </a4j:commandButton>
+        <p class="buttonsGadget">
+          <a4j:commandButton
+            value="#{messages['label.contentview.filter.filterAction']}"
+            id="#{contentViewRenderId}_filterSubmit"
+            reRender="#{contentViewRenderId}_resultsPanel, #{contentViewRenderId}_resetFilterForm, #{contentViewRenderId}_filterForm"
+            styleClass="button">
+            <nxu:actionListenerMethod
+              value="#{contentView.resetPageProvider()}" /> 
+          </a4j:commandButton>
+          <a4j:commandButton
+            value="#{messages['label.contentview.filter.clearFilterButton']}"
+            id="#{contentViewRenderId}_filterClear"
+            immediate="true" ajaxSingle="true"
+            reRender="#{contentViewRenderId}_resultsPanel, #{contentViewRenderId}_resetFilterForm, #{contentViewRenderId}_filterForm"
+            styleClass="button">
+            <nxu:actionListenerMethod
+              value="#{contentView.resetSearchDocumentModel()}" /> 
+          </a4j:commandButton>
+        </p>
       </a4j:form>
     </div>
   </div>

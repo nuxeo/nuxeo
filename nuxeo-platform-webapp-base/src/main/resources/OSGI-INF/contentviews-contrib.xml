@@ -13,15 +13,29 @@
 
       <coreQueryPageProvider>
         <property name="coreSession">#{documentManager}</property>
-        <pattern>
-          SELECT * FROM Document WHERE ecm:parentId = ? AND
-          ecm:isCheckedInVersion = 0 AND ecm:mixinType != 'HiddenInNavigation'
-          AND ecm:currentLifeCycleState != 'deleted'
-        </pattern>
+        <whereClause docType="AdvancedSearch">
+          <predicate parameter="ecm:fulltext" operator="FULLTEXT">
+            <field schema="advanced_search" name="fulltext_all" />
+          </predicate>
+          <predicate parameter="dc:title" operator="FULLTEXT">
+            <field schema="advanced_search" name="title" />
+          </predicate>
+          <predicate parameter="dc:modified" operator="BETWEEN">
+            <field schema="advanced_search" name="modified_min" />
+            <field schema="advanced_search" name="modified_max" />
+          </predicate>
+          <fixedPart>
+            ecm:parentId = ? AND ecm:isCheckedInVersion = 0 AND ecm:mixinType !=
+            'HiddenInNavigation' AND ecm:currentLifeCycleState != 'deleted'
+          </fixedPart>
+        </whereClause>
         <parameter>#{currentDocument.id}</parameter>
         <sort column="dc:title" ascending="true" />
         <pageSize>20</pageSize>
       </coreQueryPageProvider>
+
+      <searchLayout name="document_content_filter" />
+      <showFilterForm>true</showFilterForm>
 
       <showPageSizeSelector>true</showPageSizeSelector>
       <useGlobalPageSize>true</useGlobalPageSize>
@@ -57,15 +71,29 @@
 
       <coreQueryPageProvider>
         <property name="coreSession">#{documentManager}</property>
-        <pattern>
-          SELECT * FROM Document WHERE ecm:parentId = ? AND
-          ecm:isCheckedInVersion = 0 AND ecm:mixinType != 'HiddenInNavigation'
-          AND ecm:currentLifeCycleState = 'deleted'
-        </pattern>
+        <whereClause docType="AdvancedSearch">
+          <predicate parameter="ecm:fulltext" operator="FULLTEXT">
+            <field schema="advanced_search" name="fulltext_all" />
+          </predicate>
+          <predicate parameter="dc:title" operator="FULLTEXT">
+            <field schema="advanced_search" name="title" />
+          </predicate>
+          <predicate parameter="dc:modified" operator="BETWEEN">
+            <field schema="advanced_search" name="modified_min" />
+            <field schema="advanced_search" name="modified_max" />
+          </predicate>
+          <fixedPart>
+            ecm:parentId = ? AND ecm:isCheckedInVersion = 0 AND ecm:mixinType !=
+            'HiddenInNavigation' AND ecm:currentLifeCycleState = 'deleted'
+          </fixedPart>
+        </whereClause>
         <parameter>#{currentDocument.id}</parameter>
         <sort column="dc:title" ascending="true" />
         <pageSize>20</pageSize>
       </coreQueryPageProvider>
+
+      <searchLayout name="document_content_filter" />
+      <showFilterForm>true</showFilterForm>
 
       <showPageSizeSelector>true</showPageSizeSelector>
       <useGlobalPageSize>true</useGlobalPageSize>
@@ -101,15 +129,29 @@
 
       <coreQueryPageProvider>
         <property name="coreSession">#{documentManager}</property>
-        <pattern>
-          SELECT * FROM Document WHERE ecm:parentId = ? AND
-          ecm:isCheckedInVersion = 0 AND ecm:mixinType != 'HiddenInNavigation'
-          AND ecm:currentLifeCycleState != 'deleted'
-        </pattern>
+        <whereClause docType="AdvancedSearch">
+          <predicate parameter="ecm:fulltext" operator="FULLTEXT">
+            <field schema="advanced_search" name="fulltext_all" />
+          </predicate>
+          <predicate parameter="dc:title" operator="FULLTEXT">
+            <field schema="advanced_search" name="title" />
+          </predicate>
+          <predicate parameter="dc:modified" operator="BETWEEN">
+            <field schema="advanced_search" name="modified_min" />
+            <field schema="advanced_search" name="modified_max" />
+          </predicate>
+          <fixedPart>
+            ecm:parentId = ? AND ecm:isCheckedInVersion = 0 AND ecm:mixinType !=
+            'HiddenInNavigation' AND ecm:currentLifeCycleState != 'deleted'
+          </fixedPart>
+        </whereClause>
         <parameter>#{currentDocument.id}</parameter>
         <sort column="dc:title" ascending="true" />
         <pageSize>20</pageSize>
       </coreQueryPageProvider>
+
+      <searchLayout name="document_content_filter" />
+      <showFilterForm>true</showFilterForm>
 
       <showPageSizeSelector>true</showPageSizeSelector>
       <useGlobalPageSize>true</useGlobalPageSize>
@@ -145,16 +187,30 @@
 
       <coreQueryPageProvider>
         <property name="coreSession">#{documentManager}</property>
-        <pattern>
-          SELECT * FROM Document WHERE ecm:parentId = ? AND
-          ecm:isCheckedInVersion = 0 AND ecm:mixinType != 'HiddenInNavigation'
-          AND ecm:currentLifeCycleState != 'deleted'
-        </pattern>
+        <whereClause docType="AdvancedSearch">
+          <predicate parameter="ecm:fulltext" operator="FULLTEXT">
+            <field schema="advanced_search" name="fulltext_all" />
+          </predicate>
+          <predicate parameter="dc:title" operator="FULLTEXT">
+            <field schema="advanced_search" name="title" />
+          </predicate>
+          <predicate parameter="dc:modified" operator="BETWEEN">
+            <field schema="advanced_search" name="modified_min" />
+            <field schema="advanced_search" name="modified_max" />
+          </predicate>
+          <fixedPart>
+            ecm:parentId = ? AND ecm:isCheckedInVersion = 0 AND ecm:mixinType !=
+            'HiddenInNavigation' AND ecm:currentLifeCycleState != 'deleted'
+          </fixedPart>
+        </whereClause>
         <parameter>#{currentDocument.id}</parameter>
         <sort column="ecm:pos" ascending="true" />
         <sortable>false</sortable>
         <pageSize>20</pageSize>
       </coreQueryPageProvider>
+
+      <searchLayout name="document_content_filter" />
+      <showFilterForm>true</showFilterForm>
 
       <showPageSizeSelector>true</showPageSizeSelector>
       <useGlobalPageSize>true</useGlobalPageSize>

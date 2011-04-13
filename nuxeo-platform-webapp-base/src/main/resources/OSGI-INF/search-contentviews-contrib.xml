@@ -161,6 +161,7 @@
       </coreQueryPageProvider>
 
       <searchLayout name="advanced_search" />
+      <showFilterForm>true</showFilterForm>
 
       <showPageSizeSelector>true</showPageSizeSelector>
       <useGlobalPageSize>true</useGlobalPageSize>
