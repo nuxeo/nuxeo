@@ -173,6 +173,7 @@
       boolean userIsMemberOf(java.lang.String)
     </function-signature>
   </function>
+
   <function>
     <function-name>userFullName</function-name>
     <function-class>
@@ -238,6 +239,17 @@
     </function-class>
     <function-signature>int getListSize(java.lang.String)</function-signature>
   </function>
+
+  <function>
+    <function-name>hasMessages</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.Functions
+    </function-class>
+    <function-signature>
+      boolean hasMessages(java.lang.String)
+    </function-signature>
+  </function>
+
   <tag>
     <tag-name>methodResult</tag-name>
     <handler-class>

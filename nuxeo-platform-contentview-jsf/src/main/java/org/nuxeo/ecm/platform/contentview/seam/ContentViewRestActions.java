@@ -27,7 +27,6 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentView;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewService;
@@ -49,9 +48,6 @@ public class ContentViewRestActions implements Serializable {
     @In(create = true)
     protected ContentViewService contentViewService;
 
-    @In(create = true, required = true)
-    protected transient CoreSession documentManager;
-
     public String getContentViewState(ContentView contentView)
             throws UnsupportedEncodingException, ClientException {
         ContentViewState state = contentViewService.saveContentView(contentView);
@@ -68,8 +64,7 @@ public class ContentViewRestActions implements Serializable {
         ContentViewState state = null;
         if (jsonContentViewState != null
                 && jsonContentViewState.trim().length() != 0) {
-            state = JSONContentViewState.fromJSON(jsonContentViewState, true,
-                    documentManager);
+            state = JSONContentViewState.fromJSON(jsonContentViewState, true);
         } else if (contentViewName != null) {
             // restore only from name
             state = new ContentViewStateImpl();
@@ -87,7 +82,7 @@ public class ContentViewRestActions implements Serializable {
                 state.setSortInfos(sortInfos);
             }
         }
-        return contentViewService.restoreContentView(state, documentManager);
+        return contentViewService.restoreContentView(state);
     }
 
     public List<SortInfo> getSortInfos(String sortColumn, boolean ascending) {

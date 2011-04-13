@@ -50,10 +50,9 @@ public class TestContentViewService extends NXRuntimeTestCase {
     }
 
     public void testRegistration() throws Exception {
-        assertNull(service.getContentView("foo", null));
+        assertNull(service.getContentView("foo"));
 
-        ContentView contentView = service.getContentView(
-                "CURRENT_DOCUMENT_CHILDREN", null);
+        ContentView contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN");
         assertNotNull(contentView);
         // check content view attributes
         assertEquals("CURRENT_DOCUMENT_CHILDREN", contentView.getName());
@@ -97,21 +96,19 @@ public class TestContentViewService extends NXRuntimeTestCase {
     }
 
     public void testOverride() throws Exception {
-        ContentView contentView = service.getContentView(
-                "CURRENT_DOCUMENT_CHILDREN_FETCH", null);
+        ContentView contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN_FETCH");
         assertNotNull(contentView);
 
         deployContrib("org.nuxeo.ecm.platform.contentview.jsf.test",
                 "test-contentview-override-contrib.xml");
 
         // check content view has been disabled correctly
-        contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN_FETCH",
-                null);
+        contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN_FETCH");
         assertNull(contentView);
 
-        assertNull(service.getContentView("foo", null));
+        assertNull(service.getContentView("foo"));
 
-        contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN", null);
+        contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN");
         assertNotNull(contentView);
         // check content view attributes
         assertEquals("CURRENT_DOCUMENT_CHILDREN", contentView.getName());
@@ -175,8 +172,7 @@ public class TestContentViewService extends NXRuntimeTestCase {
                 orderedNames.get(4));
         assertEquals("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT_REF",
                 orderedNames.get(5));
-        assertEquals("QUERY_WITH_SUBCLAUSE",
-                orderedNames.get(6));
+        assertEquals("QUERY_WITH_SUBCLAUSE", orderedNames.get(6));
 
         // check after override too
         deployContrib("org.nuxeo.ecm.platform.contentview.jsf.test",
@@ -195,8 +191,7 @@ public class TestContentViewService extends NXRuntimeTestCase {
                 orderedNames.get(3));
         assertEquals("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT_REF",
                 orderedNames.get(4));
-        assertEquals("QUERY_WITH_SUBCLAUSE",
-                orderedNames.get(5));
+        assertEquals("QUERY_WITH_SUBCLAUSE", orderedNames.get(5));
 
     }
 

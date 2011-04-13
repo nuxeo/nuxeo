@@ -43,6 +43,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
+import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.lifecycle.LifeCycle;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleException;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleService;
@@ -302,6 +303,17 @@ public final class DocumentModelFunctions implements LiveEditConstants {
             title = ComponentUtils.translate(context, i18nTitle, null);
         }
         return title;
+    }
+
+    public static boolean isDirty(DocumentModel doc) throws ClientException {
+        if (doc != null) {
+            for (DocumentPart part : doc.getParts()) {
+                if (part.isDirty()) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     public static boolean hasPermission(DocumentModel document,

@@ -271,11 +271,22 @@ public interface ContentView extends Serializable {
     boolean getShowPageSizeSelector();
 
     /**
-     * Returns true is the refresh page icon should be displayed.
+     * Returns true is the refresh command should be displayed.
      *
      * @since 5.4.2
      */
-    boolean getShowRefreshPage();
+    boolean getShowRefreshCommand();
+
+    /**
+     * Returns true is the filter form should be displayed.
+     * <p>
+     * Filter form is displayed on top of content view results, using the
+     * search document model and search layout if they have been set on the
+     * content view.
+     *
+     * @since 5.4.2
+     */
+    public boolean getShowFilterForm();
 
     /**
      * Returns the search document model as set on the content view.
@@ -283,6 +294,10 @@ public interface ContentView extends Serializable {
      * If this document is null and a EL binding has been set on the content
      * view description, the document model will be resolved from this binding,
      * and set as the search document model.
+     * <p>
+     * Else, if the content view is using a provider that needs a search
+     * document model, a new one is created and attached to it thanks to the
+     * document type held in the definition.
      */
     DocumentModel getSearchDocumentModel();
 

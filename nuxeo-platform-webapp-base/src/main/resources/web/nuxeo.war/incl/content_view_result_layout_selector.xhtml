@@ -34,17 +34,17 @@ Needed parameters:
     </c:if>
    
     <ul class="layoutViewMode" style="display:inline;">
-     <c:if test="#{contentView.showRefreshPage}">
-       <li>
-         <h:commandLink action="#{contentView.refreshAndRewindPageProvider()}"
+      <c:if test="#{contentView.showRefreshCommand}">
+        <li>
+          <h:commandLink action="#{contentView.refreshAndRewindPageProvider()}"
            id="refreshContentViewLink">
-           <h:graphicImage value="/img/refresh.png"
+            <h:graphicImage value="/img/refresh.png"
              alt="#{messages['label.refresh']}"
              title="#{messages['label.refresh']}"
              id="refreshContentViewImage" />
-         </h:commandLink>
-       </li>
-     </c:if> 
+          </h:commandLink>
+        </li>
+      </c:if> 
       <nxu:set var="contentViewState"
         value="#{contentViewRestActions.getContentViewState(contentView)}">
         <c:if test="#{contentView.currentResultLayout.showCSVExport}">

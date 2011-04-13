@@ -86,6 +86,11 @@
         message with given parameters to be used when formatting the message
         value.
       </li>
+      <li>
+        hasMessages(String): returns true if faces context has messages for
+        client ids starting with given string (if not null). If given String is
+        null, returns true if there are any kind of messages.
+      </li>
     </ul>
     ]]>
   </description>

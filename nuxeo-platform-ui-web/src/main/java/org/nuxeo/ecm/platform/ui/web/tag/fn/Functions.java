@@ -25,6 +25,7 @@ import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -503,6 +504,20 @@ public final class Functions {
         } else {
             return 1L;
         }
+    }
+
+    public static boolean hasMessages(String clientId) {
+        Iterator<String> it = FacesContext.getCurrentInstance().getClientIdsWithMessages();
+        if (clientId != null) {
+            return it.hasNext();
+        } else {
+            while (it.hasNext()) {
+                if (it.next().startsWith(clientId)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
 }

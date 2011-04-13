@@ -41,22 +41,7 @@ public interface ContentViewService extends Serializable {
      * @throws ClientException
      * @deprecated: use {@link #getContentView(String, CoreSession)} instead
      */
-    @Deprecated
     ContentView getContentView(String name) throws ClientException;
-
-    /**
-     * Returns the content view with given name, or null if not found.
-     * <p>
-     * If the content view is using a provider that needs a search document
-     * model, a new one is created and attached to it thanks to the document
-     * type held in the definition and to the core session.
-     *
-     * @param coreSession: a core session, used to initialize the search
-     *            document model
-     * @throws ClientException
-     */
-    ContentView getContentView(String name, CoreSession coreSession)
-            throws ClientException;
 
     /**
      * Returns all the registered content view names, or an empty set if no
@@ -107,7 +92,7 @@ public interface ContentViewService extends Serializable {
      * @since 5.4.2
      * @throws ClientException
      */
-    ContentView restoreContentView(ContentViewState contentViewState,
-            CoreSession coreSession) throws ClientException;
+    ContentView restoreContentView(ContentViewState contentViewState)
+            throws ClientException;
 
 }

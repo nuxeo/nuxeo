@@ -31,7 +31,6 @@ import javax.faces.context.FacesContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
@@ -64,8 +63,7 @@ public class ContentViewServiceImpl extends DefaultComponent implements
     protected final Map<String, Set<String>> contentViewsByFlag = new HashMap<String, Set<String>>();
 
     @Override
-    public ContentView getContentView(String name, CoreSession coreSession)
-            throws ClientException {
+    public ContentView getContentView(String name) throws ClientException {
         ContentViewDescriptor desc = contentViews.get(name);
         if (desc == null) {
             return null;
@@ -90,9 +88,13 @@ public class ContentViewServiceImpl extends DefaultComponent implements
         if (showPageSizeSelector == null) {
             showPageSizeSelector = Boolean.FALSE;
         }
-        Boolean showRefreshPage = desc.getShowRefreshPage();
+        Boolean showRefreshPage = desc.getShowRefreshCommand();
         if (showRefreshPage == null) {
             showRefreshPage = Boolean.TRUE;
+        }
+        Boolean showFilterForm = desc.getShowFilterForm();
+        if (showFilterForm == null) {
+            showFilterForm = Boolean.FALSE;
         }
 
         String[] queryParams = null;
@@ -155,29 +157,9 @@ public class ContentViewServiceImpl extends DefaultComponent implements
                 searchDocumentType, desc.getResultColumnsBinding(),
                 sortInfosBinding, pageSizeBinding, showTitle.booleanValue(),
                 showPageSizeSelector.booleanValue(),
-                showRefreshPage.booleanValue(), desc.getEmptySentence(),
-                translateEmptySentence.booleanValue());
-
-        if (searchDocBinding == null) {
-            // initialize search doc
-            String docType = contentView.getSearchDocumentModelType();
-            if (docType != null) {
-                if (coreSession == null) {
-                    throw new ClientException(String.format(
-                            "Cannot initialize search document on content view "
-                                    + "with name '%s': core session is null",
-                            name));
-                }
-                DocumentModel blankDoc = coreSession.createDocumentModel(docType);
-                contentView.setSearchDocumentModel(blankDoc);
-            }
-        }
-
+                showRefreshPage.booleanValue(), showFilterForm.booleanValue(),
+                desc.getEmptySentence(), translateEmptySentence.booleanValue());
         return contentView;
-    }
-
-    public ContentView getContentView(String name) throws ClientException {
-        return getContentView(name, null);
     }
 
     public Set<String> getContentViewNames() {
@@ -412,9 +394,14 @@ public class ContentViewServiceImpl extends DefaultComponent implements
             oldDesc.showPageSizeSelector = showPageSizeSelector;
         }
 
-        Boolean showRefreshPage = newDesc.getShowRefreshPage();
-        if (showRefreshPage != null) {
-            oldDesc.showRefreshPage = showRefreshPage;
+        Boolean showRefreshCommand = newDesc.getShowRefreshCommand();
+        if (showRefreshCommand != null) {
+            oldDesc.showRefreshCommand = showRefreshCommand;
+        }
+
+        Boolean showFilterForm = newDesc.getShowFilterForm();
+        if (showFilterForm != null) {
+            oldDesc.showFilterForm = showFilterForm;
         }
 
         return oldDesc;
@@ -463,13 +450,13 @@ public class ContentViewServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public ContentView restoreContentView(ContentViewState contentViewState,
-            CoreSession coreSession) throws ClientException {
+    public ContentView restoreContentView(ContentViewState contentViewState)
+            throws ClientException {
         if (contentViewState == null) {
             return null;
         }
         String name = contentViewState.getContentViewName();
-        ContentView cv = getContentView(name, coreSession);
+        ContentView cv = getContentView(name);
         if (cv != null) {
             // save some info directly on content view, they will be needed
             // when re-building the provider

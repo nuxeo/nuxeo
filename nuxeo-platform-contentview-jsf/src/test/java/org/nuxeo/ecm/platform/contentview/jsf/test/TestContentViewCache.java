@@ -124,8 +124,7 @@ public class TestContentViewCache extends SQLRepositoryTestCase {
         ContentViewCache cache = new ContentViewCache();
 
         this.currentDocument = container1;
-        ContentView contentView = service.getContentView(
-                "CURRENT_DOCUMENT_CHILDREN", session);
+        ContentView contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN");
         assertNotNull(contentView);
 
         PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) contentView.getPageProvider();

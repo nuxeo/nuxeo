@@ -27,7 +27,6 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentView;
@@ -49,9 +48,6 @@ public class ContentViewActions implements Serializable {
 
     @In(create = true)
     protected ContentViewService contentViewService;
-
-    @In(create = true, required = true)
-    protected transient CoreSession documentManager;
 
     protected final ContentViewCache cache = new ContentViewCache();
 
@@ -137,7 +133,7 @@ public class ContentViewActions implements Serializable {
             DocumentModel searchDocumentModel) throws ClientException {
         ContentView cView = cache.get(name);
         if (cView == null) {
-            cView = contentViewService.getContentView(name, documentManager);
+            cView = contentViewService.getContentView(name);
             if (cView != null) {
                 cache.add(cView);
             }

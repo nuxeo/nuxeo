@@ -88,6 +88,15 @@
     </function-signature>
   </function>
   <function>
+    <function-name>isDirty</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions
+    </function-class>
+    <function-signature>
+      boolean isDirty(org.nuxeo.ecm.core.api.DocumentModel)
+    </function-signature>
+  </function>
+  <function>
     <function-name>hasPermission</function-name>
     <function-class>
       org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions

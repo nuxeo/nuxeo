@@ -27,6 +27,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelFactory;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.api.model.impl.MapProperty;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
@@ -96,7 +97,9 @@ public class ContentViewImpl implements ContentView {
 
     protected boolean showPageSizeSelector;
 
-    protected boolean showRefreshPage;
+    protected boolean showRefreshCommand;
+
+    protected boolean showFilterForm;
 
     protected Long currentPageSize;
 
@@ -123,8 +126,9 @@ public class ContentViewImpl implements ContentView {
             String[] queryParameters, String searchDocumentModelBinding,
             String searchDocumentModelType, String resultColumnsBinding,
             String sortInfosBinding, String pageSizeBinding, boolean showTitle,
-            boolean showPageSizeSelector, boolean showRefreshPage,
-            String emptySentence, boolean translateEmptySentence) {
+            boolean showPageSizeSelector, boolean showRefreshCommand,
+            boolean showFilterForm, String emptySentence,
+            boolean translateEmptySentence) {
         this.name = name;
         this.title = title;
         this.translateTitle = translateTitle;
@@ -148,7 +152,8 @@ public class ContentViewImpl implements ContentView {
         this.sortInfosBinding = sortInfosBinding;
         this.showTitle = showTitle;
         this.showPageSizeSelector = showPageSizeSelector;
-        this.showRefreshPage = showRefreshPage;
+        this.showRefreshCommand = showRefreshCommand;
+        this.showFilterForm = showFilterForm;
         this.emptySentence = emptySentence;
         this.translateEmptySentence = translateEmptySentence;
     }
@@ -408,8 +413,8 @@ public class ContentViewImpl implements ContentView {
 
     public DocumentModel getSearchDocumentModel() {
         if (searchDocumentModel == null) {
-            // initialize from binding
             if (searchDocumentModelBinding != null) {
+                // initialize from binding
                 FacesContext context = FacesContext.getCurrentInstance();
                 Object value = ComponentTagUtils.resolveElExpression(context,
                         searchDocumentModelBinding);
@@ -419,7 +424,15 @@ public class ContentViewImpl implements ContentView {
                                     + "result is not a DocumentModel: %s",
                             searchDocumentModelBinding, value));
                 } else {
-                    searchDocumentModel = (DocumentModel) value;
+                    setSearchDocumentModel((DocumentModel) value);
+                }
+            }
+            if (searchDocumentModel == null) {
+                // generate a bare document model of given type
+                String docType = getSearchDocumentModelType();
+                if (docType != null) {
+                    DocumentModel bareDoc = DocumentModelFactory.createDocumentModel(docType);
+                    setSearchDocumentModel(bareDoc);
                 }
             }
         }
@@ -604,8 +617,13 @@ public class ContentViewImpl implements ContentView {
     }
 
     @Override
-    public boolean getShowRefreshPage() {
-        return showRefreshPage;
+    public boolean getShowRefreshCommand() {
+        return showRefreshCommand;
+    }
+
+    @Override
+    public boolean getShowFilterForm() {
+        return showFilterForm;
     }
 
     @Override

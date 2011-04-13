@@ -84,6 +84,7 @@
            property list name, the index and the sub property name.</li>
       <li> availableLifeCycleTransitions(String, String): get all the available transition
            to follow with the parameters: lifeCycleName and currentLifeCycleState</li>
+      <li> isDirty(DocumentModel): returns true if document model is dirty.</li>
     </ul>
     ]]>
   </description>

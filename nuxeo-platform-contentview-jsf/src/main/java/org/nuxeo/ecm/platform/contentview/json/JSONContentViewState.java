@@ -39,8 +39,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Base64;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelFactory;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewLayout;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewLayoutImpl;
@@ -136,9 +136,8 @@ public class JSONContentViewState {
      * @throws UnsupportedEncodingException
      */
     @SuppressWarnings("unchecked")
-    public static ContentViewState fromJSON(String json, boolean decode,
-            CoreSession coreSession) throws UnsupportedEncodingException,
-            ClientException {
+    public static ContentViewState fromJSON(String json, boolean decode)
+            throws UnsupportedEncodingException, ClientException {
         if (json == null || json.trim().length() == 0) {
             return null;
         }
@@ -171,7 +170,7 @@ public class JSONContentViewState {
         state.setQueryParameters(queryParams.toArray(new Object[] {}));
 
         JSONObject jsonDoc = jsonObject.getJSONObject("searchDocument");
-        DocumentModel searchDoc = getDocumentModelFromJSON(jsonDoc, coreSession);
+        DocumentModel searchDoc = getDocumentModelFromJSON(jsonDoc);
         state.setSearchDocumentModel(searchDoc);
 
         JSONArray jsonSortInfos = jsonObject.getJSONArray("sortInfos");
@@ -224,13 +223,13 @@ public class JSONContentViewState {
     }
 
     @SuppressWarnings("unchecked")
-    protected static DocumentModel getDocumentModelFromJSON(JSONObject jsonDoc,
-            CoreSession coreSession) throws ClientException {
+    protected static DocumentModel getDocumentModelFromJSON(JSONObject jsonDoc)
+            throws ClientException {
         if (jsonDoc == null || jsonDoc.isNullObject()) {
             return null;
         }
         String docType = jsonDoc.getString("type");
-        DocumentModel doc = coreSession.createDocumentModel(docType);
+        DocumentModel doc = DocumentModelFactory.createDocumentModel(docType);
         JSONObject props = jsonDoc.getJSONObject("properties");
         Iterator<String> keys = props.keys();
         while (keys.hasNext()) {

@@ -108,8 +108,7 @@ public class TestContentViewState extends SQLRepositoryTestCase {
     public void testSaveContentView() throws Exception {
         assertNull(service.saveContentView(null));
 
-        ContentView contentView = service.getContentView(
-                "CURRENT_DOCUMENT_CHILDREN", session);
+        ContentView contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN");
         assertNotNull(contentView);
 
         // test bare state
@@ -169,13 +168,13 @@ public class TestContentViewState extends SQLRepositoryTestCase {
     }
 
     public void testRestoreContentView() throws Exception {
-        assertNull(service.restoreContentView(null, session));
+        assertNull(service.restoreContentView(null));
 
         // dummy state, to test errors
         ContentViewState dummyState = new ContentViewStateImpl();
         dummyState.setContentViewName("DUMMY_TEST_CONTENT_VIEW");
         try {
-            service.restoreContentView(dummyState, session);
+            service.restoreContentView(dummyState);
             fail("Should have raised a client exception");
         } catch (ClientException e) {
             assertEquals(
@@ -198,7 +197,7 @@ public class TestContentViewState extends SQLRepositoryTestCase {
         sortInfos.add(new SortInfo("dc:modified", false));
         state.setSortInfos(sortInfos);
 
-        ContentView contentView = service.restoreContentView(state, session);
+        ContentView contentView = service.restoreContentView(state);
         assertNotNull(contentView);
 
         assertEquals("CURRENT_DOCUMENT_CHILDREN", contentView.getName());
@@ -234,8 +233,7 @@ public class TestContentViewState extends SQLRepositoryTestCase {
     public void testSaveJSONContentView() throws Exception {
         assertNull(service.saveContentView(null));
 
-        ContentView contentView = service.getContentView(
-                "CURRENT_DOCUMENT_CHILDREN", session);
+        ContentView contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN");
         assertNotNull(contentView);
 
         // init provider, result columns and save
@@ -273,18 +271,16 @@ public class TestContentViewState extends SQLRepositoryTestCase {
                 + "\"sortInfos\":[{\"sortColumn\":\"dc:title\",\"sortAscending\":true}],"
                 + "\"resultLayout\":{\"name\":\"document_listing\",\"title\":\"label.document_listing.layout\",\"translateTitle\":true,\"iconPath\":\"/icons/myicon.png\",\"showCSVExport\":true},"
                 + "\"resultColumns\":[\"column_1\"]" + "}";
-        ContentViewState state = JSONContentViewState.fromJSON(json, false,
-                session);
+        ContentViewState state = JSONContentViewState.fromJSON(json, false);
         checkContentViewState(state);
 
         String encodedJson = "H4sIAAAAAAAAAF1Qy07DMBD8lz1bLXD0DSWVqFRK1NcFVZFxlsaSYwd7rRKi%2FjvrpFw4eTyamZ3dEbR3hI5OBq9b1SFIKI673Wp7qMu34viaQfGy3pRMgYBeXXBvflj2JECnENhaMQfyQcBXwjBUKnAMYYgg34EwUt2rLKtNA2cBEVXQbel16pgE6ZK1zPpAa%2Ffps2mcfoW3qXNcp9GSDFmEWfUcNbrGuAtICglvHBkwJksbNfjEgSO4eY%2FmPqO2JlI2CJiDJFj1gXbxX7CwcwTrgnLRKsLDbMiTBBi%2BVaWo5YBlxnHZDfld9FN4bP212J9W3z3XvLf7KzdvM51ET7B%2BhPPtFy6T5JJ%2BAQAA";
-        state = JSONContentViewState.fromJSON(encodedJson, true, session);
+        state = JSONContentViewState.fromJSON(encodedJson, true);
         checkContentViewState(state);
     }
 
     public void testSaveContentViewWithSearchDoc() throws Exception {
-        ContentView contentView = service.getContentView(
-                "CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT", session);
+        ContentView contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT");
         assertNotNull(contentView);
 
         // test bare state
@@ -344,7 +340,7 @@ public class TestContentViewState extends SQLRepositoryTestCase {
         ContentViewService service = Framework.getService(ContentViewService.class);
         assertNotNull(service);
 
-        assertNull(service.restoreContentView(null, session));
+        assertNull(service.restoreContentView(null));
 
         // build state
         ContentViewState state = new ContentViewStateImpl();
@@ -360,7 +356,7 @@ public class TestContentViewState extends SQLRepositoryTestCase {
         state.setSortInfos(sortInfos);
         state.setSearchDocumentModel(searchDocument);
 
-        ContentView contentView = service.restoreContentView(state, session);
+        ContentView contentView = service.restoreContentView(state);
         assertNotNull(contentView);
 
         assertEquals("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT",
@@ -399,8 +395,7 @@ public class TestContentViewState extends SQLRepositoryTestCase {
     public void testSaveJSONContentViewWithSearchDoc() throws Exception {
         assertNull(service.saveContentView(null));
 
-        ContentView contentView = service.getContentView(
-                "CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT", session);
+        ContentView contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT");
         assertNotNull(contentView);
 
         // init provider with search doc, result columns and save
@@ -438,13 +433,12 @@ public class TestContentViewState extends SQLRepositoryTestCase {
                 + "\"sortInfos\":[{\"sortColumn\":\"dc:title\",\"sortAscending\":true}],"
                 + "\"resultLayout\":null," + "\"resultColumns\":[\"column_1\"]"
                 + "}";
-        ContentViewState state = JSONContentViewState.fromJSON(json, false,
-                session);
+        ContentViewState state = JSONContentViewState.fromJSON(json, false);
         checkContentViewStateWithSearchDoc(state);
 
         String encodedJson = "H4sIAAAAAAAAAD2QTU%2FDMAyG%2FwryuYfBMbcpHWqlsU3dBgc0VVFqRkSaFCfRVKr%2BdxwqdnPej8dWJtDeRXTx1eBtp3oEAfLcNJvdqS338vySB1nV25Kl9q0%2BVe1xs25kdXehgEFd8Wh%2BuPtUgE5EzDuwBmJVwHdCGg%2BKmB2RAoj3SwEBFenP0uvUcxbEBHEc8u5nYzETyQ9I0WDIXqdFNNFmfyk%2BfOF489QFmGeGeYq1%2B%2FCZPf29pLepdxy%2FN5fUOmh0nXFXEJESznwJYUg2btXoE9%2FhkrX%2F2gLJUP6jPLaPcJl%2FAbtiVTcxAQAA";
 
-        state = JSONContentViewState.fromJSON(encodedJson, true, session);
+        state = JSONContentViewState.fromJSON(encodedJson, true);
         checkContentViewStateWithSearchDoc(state);
     }
 
