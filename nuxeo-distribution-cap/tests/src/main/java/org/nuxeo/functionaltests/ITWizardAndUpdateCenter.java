@@ -55,7 +55,11 @@ public class ITWizardAndUpdateCenter extends AbstractTest {
     protected static final String CONNECT_PROJECT_SELECTOR = "junit4tester";
 
     protected String getTestPassword() {
-        return "XXX";
+        return "testingwizardregistrationandinstallation";
+    }
+
+    protected String getDistributionName() {
+        return "Nuxeo CAP";
     }
 
     private static boolean isWindows() {
@@ -69,7 +73,7 @@ public class ITWizardAndUpdateCenter extends AbstractTest {
         // **********************
         // welcome
         WizardPage welcomePage = get(NUXEO_URL, WizardPage.class);
-        assertEquals("Welcome to Nuxeo DM", welcomePage.getTitle());
+        assertEquals("Welcome to " + getDistributionName() , welcomePage.getTitle());
 
         // **********************
         // Settings
@@ -81,7 +85,7 @@ public class ITWizardAndUpdateCenter extends AbstractTest {
         welcomePage = settingsPage.previous();
         assertNotNull(welcomePage);
         assertFalse(welcomePage.hasError());
-        assertEquals("Welcome to Nuxeo DM", welcomePage.getTitle());
+        assertEquals("Welcome to " + getDistributionName() , welcomePage.getTitle());
 
         // **********************
         // proxy
@@ -172,8 +176,8 @@ public class ITWizardAndUpdateCenter extends AbstractTest {
                 connectSkip.getTitle2());
 
         // ok, let's register
-        connectWizardPage = connectSkip.nav(WizardPage.class,
-                "Okay, let's register");
+        connectWizardPage = connectSkip.navById(WizardPage.class,
+                "btnRetry");
         connectPage1 = connectWizardPage.getConnectPage(); // enter iframe again
         assertNotNull(connectPage1);
 

@@ -15,8 +15,8 @@
   </p>
 </div>
 <center>
-<input type="button" class="glossyButton" value="<fmt:message key="label.action.retry"/>" onclick="navigateTo('<%=currentPage.prev().getAction()%>');"/>
-<input type="submit" class="glossyButton" value="<fmt:message key="label.action.skip"/>"/>
+<input type="button" id="btnRetry" class="glossyButton" value="<fmt:message key="label.action.retry"/>" onclick="navigateTo('<%=currentPage.prev().getAction()%>');"/>
+<input type="submit" id="btnSkip" class="glossyButton" value="<fmt:message key="label.action.skip"/>"/>
 </center>
 </form>
 

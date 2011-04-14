@@ -20,7 +20,7 @@
 
 
 </div>
-<center><input type="button" class="glossyButton"
+<center><input type="button" class="glossyButton" id="btnNext"
     value="<fmt:message key="label.action.next"/>"
     onclick="navigateTo('<%=currentPage.next().getAction()%>');" /></center>
 

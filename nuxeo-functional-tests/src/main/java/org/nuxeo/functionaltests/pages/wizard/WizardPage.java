@@ -26,9 +26,10 @@ import org.openqa.selenium.WebElement;
 
 public class WizardPage extends AbstractWizardPage {
 
-    protected static final String NEXT_BUTTON_LOCATOR = "//input[@class=\"glossyButton\" and @value=\"Next step\"]";
-
-    protected static final String PREV_BUTTON_LOCATOR = "//input[@class=\"glossyButton\" and @value=\"Previous step\"]";
+//    protected static final String NEXT_BUTTON_LOCATOR = "//input[@class=\"glossyButton\" and @value=\"Next step\"]";
+//    protected static final String PREV_BUTTON_LOCATOR = "//input[@class=\"glossyButton\" and @value=\"Previous step\"]";
+    protected static final String NEXT_BUTTON_LOCATOR = "id('btnNext')";
+    protected static final String PREV_BUTTON_LOCATOR = "id('btnPrev')";
 
     public WizardPage(WebDriver driver) {
         super(driver);

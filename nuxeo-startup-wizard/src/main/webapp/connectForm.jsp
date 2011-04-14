@@ -41,7 +41,7 @@ window.setTimeout(handleFallbackIfNeeded, 25000);
 <p>
 <fmt:message key="label.connectForm.loadError2" />
 </p>
-<input type="button" class="glossyButton" value="<fmt:message key="label.action.next"/>" onclick="navigateTo('<%=currentPage.next().next().getAction()%>');"/>
+<input type="button" id="btnNext" class="glossyButton" value="<fmt:message key="label.action.next"/>" onclick="navigateTo('<%=currentPage.next().next().getAction()%>');"/>
 
 </div>
 
