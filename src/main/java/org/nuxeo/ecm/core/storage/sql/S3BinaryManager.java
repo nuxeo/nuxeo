@@ -17,6 +17,9 @@
  */
 package org.nuxeo.ecm.core.storage.sql;
 
+import static org.apache.commons.lang.StringUtils.isBlank;
+import static org.apache.commons.lang.StringUtils.isNotBlank;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -120,8 +123,10 @@ public class S3BinaryManager extends DefaultBinaryManager {
 
         // Get settings from the configuration
         bucketName = Framework.getProperty(BUCKET_NAME_KEY);
-        String bucketRegion = Framework.getProperty(BUCKET_REGION_KEY,
-                DEFAULT_BUCKET_REGION);
+        String bucketRegion = Framework.getProperty(BUCKET_REGION_KEY);
+        if (isBlank(bucketRegion)) {
+            bucketRegion = DEFAULT_BUCKET_REGION;
+        }
         String awsID = Framework.getProperty(AWS_ID_KEY);
         String awsSecret = Framework.getProperty(AWS_SECRET_KEY);
 
@@ -130,21 +135,23 @@ public class S3BinaryManager extends DefaultBinaryManager {
         String proxyLogin = Framework.getProperty(PROXY_LOGIN_KEY);
         String proxyPassword = Framework.getProperty(PROXY_PASSWORD_KEY);
 
-        String cacheSizeStr = Framework.getProperty(CACHE_SIZE_KEY,
-                DEFAULT_CACHE_SIZE);
+        String cacheSizeStr = Framework.getProperty(CACHE_SIZE_KEY);
+        if (isBlank(cacheSizeStr)) {
+            cacheSizeStr = DEFAULT_CACHE_SIZE;
+        }
 
         String keystoreFile = Framework.getProperty(KEYSTORE_FILE_KEY);
         String keystorePass = Framework.getProperty(KEYSTORE_PASS_KEY);
         String privkeyAlias = Framework.getProperty(PRIVKEY_ALIAS_KEY);
         String privkeyPass = Framework.getProperty(PRIVKEY_PASS_KEY);
 
-        if (bucketName == null) {
+        if (isBlank(bucketName)) {
             throw new RuntimeException("Missing conf: " + BUCKET_NAME_KEY);
         }
-        if (awsID == null) {
+        if (isBlank(awsID)) {
             throw new RuntimeException("Missing conf: " + AWS_ID_KEY);
         }
-        if (awsSecret == null) {
+        if (isBlank(awsSecret)) {
             throw new RuntimeException("Missing conf: " + AWS_SECRET_KEY);
         }
 
@@ -153,32 +160,32 @@ public class S3BinaryManager extends DefaultBinaryManager {
 
         // set up client configuration
         clientConfiguration = new ClientConfiguration();
-        if (proxyHost != null) {
+        if (isNotBlank(proxyHost)) {
             clientConfiguration.setProxyHost(proxyHost);
         }
-        if (proxyPort != null) {
+        if (isNotBlank(proxyPort)) {
             clientConfiguration.setProxyPort(Integer.parseInt(proxyPort));
         }
-        if (proxyLogin != null) {
+        if (isNotBlank(proxyLogin)) {
             clientConfiguration.setProxyUsername(proxyLogin);
         }
-        if (proxyPassword != null) {
+        if (proxyPassword != null) { // could be blank
             clientConfiguration.setProxyPassword(proxyPassword);
         }
 
         // set up encryption
         encryptionMaterials = null;
-        if (keystoreFile != null) {
+        if (isNotBlank(keystoreFile)) {
             boolean confok = true;
-            if (keystorePass == null) {
+            if (keystorePass == null) { // could be blank
                 log.error("Keystore password missing");
                 confok = false;
             }
-            if (privkeyAlias == null) {
+            if (isBlank(privkeyAlias)) {
                 log.error("Key alias missing");
                 confok = false;
             }
-            if (privkeyPass == null) {
+            if (privkeyPass == null) { // could be blank
                 log.error("Key password missing");
                 confok = false;
             }
