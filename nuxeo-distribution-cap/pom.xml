@@ -1,4 +1,6 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
@@ -9,11 +11,15 @@
   </parent>
 
   <artifactId>nuxeo-distribution-cap</artifactId>
-  <packaging>zip</packaging>
+  <packaging>pom</packaging>
   <name>Nuxeo CAP</name>
   <description>
     Nuxeo Content Application Platform EAR.
   </description>
+
+  <modules>
+    <module>tests</module>
+  </modules>
 
   <dependencies>
     <dependency>
@@ -637,11 +643,11 @@
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-user-dashboard</artifactId>
-      </dependency>
+    </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-user-dashboard-jsf</artifactId>
-      </dependency>
+    </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-user-notification</artifactId>
@@ -682,10 +688,17 @@
         <groupId>org.nuxeo.build</groupId>
         <artifactId>nuxeo-distribution-tools</artifactId>
         <configuration>
-          <buildFiles>
-            <buildFile>${basedir}/src/main/assemble/assembly.xml</buildFile>
-          </buildFiles>
+          <buildFile>${basedir}/src/main/assemble/assembly.xml</buildFile>
         </configuration>
+        <executions>
+          <execution>
+            <id>packaging</id>
+            <goals>
+              <goal>build</goal>
+            </goals>
+            <phase>package</phase>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>

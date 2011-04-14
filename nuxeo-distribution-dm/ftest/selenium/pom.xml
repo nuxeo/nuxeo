@@ -61,14 +61,13 @@
           <execution>
             <id>antbuild</id>
             <phase>integration-test</phase>
-            <configuration>
-              <buildFiles>
-                <buildFile>${basedir}/assembly.xml</buildFile>
-              </buildFiles>
-            </configuration>
             <goals>
               <goal>build</goal>
             </goals>
+            <configuration>
+              <buildFile>${basedir}/itests.xml</buildFile>
+              <target>run-selenium-tests</target>
+            </configuration>
           </execution>
         </executions>
       </plugin>

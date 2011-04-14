@@ -1,5 +1,5 @@
 <project name="selenium-tests"
-         default="run-integration-test"
+         default="run-selenium-tests"
          xmlns:nx="urn:nuxeo-build"
          xmlns:artifact="urn:nuxeo-artifact">
   <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
@@ -9,13 +9,13 @@
 
   <property name="suites"
             value="suite1,suite2,suite-dm,suite-webengine,suite-webengine-website,suite-webengine-tags" />
+  <!--  <property name="out.dir" value="${maven.project.build.directory}" /> -->
+  <property name="out.dir" value="target" />
+  <unzip dest="${out.dir}/" overwrite="false">
+    <artifact:resolveFile key="org.nuxeo:nuxeo-ftest:1.1-SNAPSHOT:zip" />
+  </unzip>
+  <import file="${out.dir}/nuxeo-ftest.xml" />
 
-  <target name="run-integration-test">
-    <property name="out.dir" value="${maven.project.build.directory}" />
-    <unzip dest="${out.dir}/">
-      <artifact:resolveFile key="org.nuxeo:nuxeo-ftest:1.0:zip" />
-    </unzip>
-    <ant antfile="${out.dir}/ftest-assembly.xml" target="integration-test" />
-  </target>
+  <target name="run-selenium-tests" depends="run-selenium" />
 
 </project>

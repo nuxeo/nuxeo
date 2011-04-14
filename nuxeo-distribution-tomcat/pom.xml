@@ -1,4 +1,6 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
@@ -13,6 +15,10 @@
   <packaging>pom</packaging>
   <name>Nuxeo Tomcat Build</name>
   <description>Package Nuxeo CAP or DM WAR with Tomcat</description>
+
+  <modules>
+    <module>tests</module>
+  </modules>
 
   <dependencies>
     <dependency>
@@ -93,9 +99,7 @@
         <groupId>org.nuxeo.build</groupId>
         <artifactId>nuxeo-distribution-tools</artifactId>
         <configuration>
-          <buildFiles>
-            <buildFile>${basedir}/src/main/assemble/assembly.xml</buildFile>
-          </buildFiles>
+          <buildFile>${basedir}/src/main/assemble/assembly.xml</buildFile>
         </configuration>
         <executions>
           <execution>

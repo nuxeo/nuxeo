@@ -24,6 +24,7 @@
   </properties>
 
   <modules>
+    <module>nuxeo-functional-tests</module>
     <module>nuxeo-startup-wizard</module>
     <module>nuxeo-launcher</module>
     <module>nuxeo-distribution-resources</module>
@@ -47,6 +48,8 @@
       <!-- Build JBoss distributions -->
       <id>jboss</id>
       <modules>
+        <module>nuxeo-distribution-cap</module>
+        <module>nuxeo-distribution-dm</module>
         <module>nuxeo-distribution-jboss</module>
       </modules>
     </profile>
@@ -54,6 +57,8 @@
       <!-- Build Jetty distributions -->
       <id>jetty</id>
       <modules>
+        <module>nuxeo-distribution-cap</module>
+        <module>nuxeo-distribution-dm</module>
         <module>nuxeo-distribution-base</module>
         <module>nuxeo-distribution-server</module>
         <module>nuxeo-distribution-jetty</module>
@@ -62,6 +67,8 @@
     <profile>
       <id>gf3</id>
       <modules>
+        <module>nuxeo-distribution-cap</module>
+        <module>nuxeo-distribution-dm</module>
         <module>nuxeo-distribution-base</module>
         <module>nuxeo-distribution-server</module>
         <module>nuxeo-distribution-gf3</module>
@@ -70,6 +77,8 @@
     <profile>
       <id>tomcat</id>
       <modules>
+        <module>nuxeo-distribution-cap</module>
+        <module>nuxeo-distribution-dm</module>
         <module>nuxeo-distribution-tomcat</module>
       </modules>
     </profile>
@@ -88,12 +97,6 @@
         <module>nuxeo-distribution-server</module>
         <module>nuxeo-distribution-jetty</module>
         <module>nuxeo-distribution-jetty-base</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>itest</id>
-      <modules>
-        <module>nuxeo-functional-tests</module>
       </modules>
     </profile>
   </profiles>
@@ -137,6 +140,12 @@
         <artifactId>nuxeo-distribution-cap</artifactId>
         <version>${nuxeo.features.version}</version>
         <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.distribution</groupId>
+        <artifactId>nuxeo-distribution-cap-tests</artifactId>
+        <version>${nuxeo.distribution.version}</version>
+        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.distribution</groupId>
@@ -192,6 +201,12 @@
         <artifactId>nuxeo-launcher</artifactId>
         <version>${nuxeo.distribution.version}</version>
         <classifier>jar-with-dependencies</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.distribution</groupId>
+        <artifactId>nuxeo-functional-tests</artifactId>
+        <version>${nuxeo.distribution.version}</version>
+        <scope>test</scope>
       </dependency>
 
       <!-- OpenSocial -->
