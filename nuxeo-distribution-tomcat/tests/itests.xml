@@ -10,7 +10,7 @@
   <property name="out.dir" value="target" />
   <property name="nuxeo.home" value="${out.dir}/tomcat" />
   <unzip dest="${out.dir}/" overwrite="false">
-    <artifact:resolveFile key="org.nuxeo:nuxeo-ftest:1.1-SNAPSHOT:zip" />
+    <artifact:resolveFile key="org.nuxeo:nuxeo-ftest:1.1:zip" />
   </unzip>
   <import file="${out.dir}/nuxeo-ftest.xml" />
 
