@@ -24,6 +24,7 @@ import static org.jboss.seam.annotations.Install.FRAMEWORK;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -79,7 +80,7 @@ public class TreeActionsBean implements TreeActions, Serializable {
     @In(create = true)
     protected transient NavigationContext navigationContext;
 
-    protected List<DocumentTreeNode> tree;
+    protected Map<String, List<DocumentTreeNode>> trees = new HashMap<String, List<DocumentTreeNode>>();
 
     protected String currentDocumentPath;
 
@@ -94,23 +95,39 @@ public class TreeActionsBean implements TreeActions, Serializable {
         return getTreeRoots(false);
     }
 
-    protected List<DocumentTreeNode> getTreeRoots(boolean showRoot) throws ClientException {
-        return getTreeRoots(showRoot, navigationContext.getCurrentDocument());
+    public List<DocumentTreeNode> getTreeRoots(String treeName) throws ClientException {
+        return getTreeRoots(false, treeName);
+    }
+
+    protected List<DocumentTreeNode> getTreeRoots(boolean showRoot, String treeName)
+            throws ClientException {
+        return getTreeRoots(showRoot, navigationContext.getCurrentDocument(), treeName);
+    }
+
+    protected List<DocumentTreeNode> getTreeRoots(boolean showRoot)
+            throws ClientException {
+        return getTreeRoots(showRoot, navigationContext.getCurrentDocument(), DEFAULT_TREE_PLUGIN_NAME);
+    }
+
+    protected List<DocumentTreeNode> getTreeRoots(boolean showRoot,
+            DocumentModel currentDocument) throws ClientException {
+        return getTreeRoots(showRoot, currentDocument, DEFAULT_TREE_PLUGIN_NAME);
     }
 
     /**
      * @since 5.4
      */
-    protected List<DocumentTreeNode> getTreeRoots(boolean showRoot, DocumentModel currentDocument)
+    protected List<DocumentTreeNode> getTreeRoots(boolean showRoot,
+            DocumentModel currentDocument, String treeName)
             throws ClientException {
 
         if (treeInvalidator.needsInvalidation()) {
             reset();
             treeInvalidator.invalidationDone();
         }
-
-        if (tree == null) {
-            tree = new ArrayList<DocumentTreeNode>();
+        List<DocumentTreeNode> currentTree = trees.get(treeName);
+        if (currentTree == null) {
+            currentTree = new ArrayList<DocumentTreeNode>();
             DocumentModel firstAccessibleParent = null;
             if (currentDocument != null) {
 
@@ -144,13 +161,13 @@ public class TreeActionsBean implements TreeActions, Serializable {
                 QueryModel orderableQueryModel = null;
                 try {
                     TreeManager treeManager = Framework.getService(TreeManager.class);
-                    filter = treeManager.getFilter(DEFAULT_TREE_PLUGIN_NAME);
-                    leafFilter = treeManager.getLeafFilter(DEFAULT_TREE_PLUGIN_NAME);
-                    sorter = treeManager.getSorter(DEFAULT_TREE_PLUGIN_NAME);
-                    QueryModelDescriptor queryModelDescriptor = treeManager.getQueryModelDescriptor(DEFAULT_TREE_PLUGIN_NAME);
+                    filter = treeManager.getFilter(treeName);
+                    leafFilter = treeManager.getLeafFilter(treeName);
+                    sorter = treeManager.getSorter(treeName);
+                    QueryModelDescriptor queryModelDescriptor = treeManager.getQueryModelDescriptor(treeName);
                     queryModel = queryModelDescriptor == null ? null
                             : new QueryModel(queryModelDescriptor);
-                    QueryModelDescriptor orderableQueryModelDescriptor = treeManager.getOrderableQueryModelDescriptor(DEFAULT_TREE_PLUGIN_NAME);
+                    QueryModelDescriptor orderableQueryModelDescriptor = treeManager.getOrderableQueryModelDescriptor(treeName);
                     orderableQueryModel = orderableQueryModelDescriptor == null ? null
                             : new QueryModel(orderableQueryModelDescriptor);
                 } catch (Exception e) {
@@ -161,15 +178,16 @@ public class TreeActionsBean implements TreeActions, Serializable {
                 DocumentTreeNode treeRoot = new DocumentTreeNodeImpl(
                         firstAccessibleParent, filter, leafFilter, sorter,
                         queryModel, orderableQueryModel);
-                tree.add(treeRoot);
+                currentTree.add(treeRoot);
                 log.debug("Tree initialized with document: "
                         + firstAccessibleParent.getId());
             } else {
                 log.debug("Could not initialize the navigation tree: no parent"
                         + " found for current document");
             }
+            trees.put(treeName, currentTree);
         }
-        return tree;
+        return trees.get(treeName);
     }
 
     public void changeExpandListener(NodeExpandedEvent event) {
@@ -210,7 +228,8 @@ public class TreeActionsBean implements TreeActions, Serializable {
                 if (currentDocPath != null && nodePath != null
                         && currentDocPath.startsWith(nodePath)) {
                     // additional slower check for strict path prefix
-                    if ((currentDocPath + '/').startsWith(nodePath + '/') || "/".equals(nodePath)) {
+                    if ((currentDocPath + '/').startsWith(nodePath + '/')
+                            || "/".equals(nodePath)) {
                         return true;
                     }
                 }
@@ -225,8 +244,10 @@ public class TreeActionsBean implements TreeActions, Serializable {
         currentDocumentPath = null;
         // reset tree in case an accessible parent is finally found this time
         // for the new current document
-        if (tree != null && tree.isEmpty()) {
-            tree = null;
+        for (List<DocumentTreeNode> tree : trees.values()) {
+            if (tree != null && tree.isEmpty()) {
+                tree = null;
+            }
         }
     }
 
@@ -236,7 +257,7 @@ public class TreeActionsBean implements TreeActions, Serializable {
             EventNames.DOCUMENT_CHILDREN_CHANGED }, create = false)
     @BypassInterceptors
     public void reset() {
-        tree = null;
+        trees.clear();
         resetCurrentDocumentData();
     }
 
