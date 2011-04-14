@@ -496,7 +496,10 @@ public class ThemeService extends DefaultComponent implements Reloadable {
         try {
             url = new URL(src);
         } catch (MalformedURLException e) {
-            url = extensionContext.getResource(src);
+            url = extensionContext.getLocalResource(src);
+            if (url == null) {
+                url = extensionContext.getResource(src);
+            }
         }
 
         if (url != null) {
@@ -616,7 +619,10 @@ public class ThemeService extends DefaultComponent implements Reloadable {
                 String bankName = bankImport.getBankName();
                 String collection = bankImport.getCollection();
                 String srcFilePath = bankImport.getSrcFilePath();
-                URL srcFileUrl = extensionContext.getResource(srcFilePath);
+                URL srcFileUrl = extensionContext.getLocalResource(srcFilePath);
+                if (srcFileUrl == null) {
+                    srcFileUrl = extensionContext.getResource(srcFilePath);
+                }
                 if (srcFileUrl == null) {
                     log.error("Could not import bank resources: " + srcFilePath
                             + " (resource not found)");
