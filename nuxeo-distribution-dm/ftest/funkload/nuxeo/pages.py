@@ -98,8 +98,8 @@ class BasePage:
             description="Login " + user)
         fl.assert_('LoginFailed=true' not in fl.getLastUrl(),
                    'Login failed for %s:%s' % (user, password))
-        fl.assert_(fl.listHref(content_pattern="Log out"),
-                   "No log out link found on the welcome page")
+        fl.assert_("You are logged as " + user in fl.getBody(),
+                    "User login not found on the welcome page")
         fl.current_login = user
         return FolderPage(self.fl)
 
@@ -596,7 +596,7 @@ class FolderPage(BasePage):
         table_name = checkbox_id.split(':', 1)[0]
 
         params = [
-            ['AJAXREQUEST', 'contentViewAjaxRegion_' + table_name + '_0'],
+            ['AJAXREQUEST', 'cv_' + table_name + '_0_region'],
             [checkbox_id, 'on'],
             ['javax.faces.ViewState', fl.getLastJsfState()],
             [checkbox_ajax_onclick_id, checkbox_ajax_onclick_id],
