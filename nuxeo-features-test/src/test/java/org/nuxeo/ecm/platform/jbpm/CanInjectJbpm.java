@@ -16,8 +16,8 @@
  */
 package org.nuxeo.ecm.platform.jbpm;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,7 +37,7 @@ public class CanInjectJbpm {
 
     @Inject
     JbpmService jbpm;
-    
+
     @Test public void isInjected() {
         assertThat(jbpm, notNullValue());
     }
