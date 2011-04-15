@@ -15,5 +15,10 @@
     <documentation>Filters set registry to contribute new filters to an existing servlet</documentation>
     <object class="org.nuxeo.ecm.webengine.jaxrs.servlet.config.FilterSetDescriptor" />
   </extension-point>
+
+  <extension-point name="resources">
+    <documentation>Resource resolvers can be contributed from outside to a servlet using this extension point</documentation>
+    <object class="org.nuxeo.ecm.webengine.jaxrs.servlet.config.ResourcesDescriptor" />
+  </extension-point>
   
 </component>

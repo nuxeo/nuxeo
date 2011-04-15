@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -25,6 +25,8 @@ public class ServletRegistryComponent extends DefaultComponent {
 
     public static final String XP_FILTERS = "filters";
 
+    public static final String XP_RESOURCES = "resources";
+
     protected ServletRegistry registry;
 
     public ServletRegistryComponent() {
@@ -44,22 +46,30 @@ public class ServletRegistryComponent extends DefaultComponent {
     @Override
     public void registerContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+    throws Exception {
         if (XP_SERVLETS.equals(extensionPoint)) {
             registry.addServlet((ServletDescriptor)contribution);
         } else if (XP_FILTERS.equals(extensionPoint)) {
             registry.addFilterSet((FilterSetDescriptor)contribution);
+        } else if (XP_RESOURCES.equals(extensionPoint)) {
+            ResourcesDescriptor rd = (ResourcesDescriptor)contribution;
+            rd.setBundle(contributor.getContext().getBundle());
+            registry.addResources(rd);
         }
     }
 
     @Override
     public void unregisterContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+    throws Exception {
         if (XP_SERVLETS.equals(extensionPoint)) {
             registry.removeServlet((ServletDescriptor)contribution);
         } else if (XP_FILTERS.equals(extensionPoint)) {
             registry.removeFilterSet((FilterSetDescriptor)contribution);
+        } else if (XP_RESOURCES.equals(extensionPoint)) {
+            ResourcesDescriptor rd = (ResourcesDescriptor)contribution;
+            rd.setBundle(contributor.getContext().getBundle());
+            registry.removeResources(rd);
         }
     }
 

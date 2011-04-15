@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -45,6 +45,9 @@ public class ServletDescriptor {
     @XNode("@path")
     protected String path;
 
+    @XNode("resources")
+    protected String resources;
+
     /**
      * Must use hashtable since it extends Dictionary
      */
@@ -87,6 +90,10 @@ public class ServletDescriptor {
 
     public ListenerSetDescriptor getListenerSet() {
         return listeners;
+    }
+
+    public String getResources() {
+        return resources;
     }
 
     public FilterSet[] getFilters() throws Exception {
