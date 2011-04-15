@@ -33,46 +33,12 @@
       <groupId>org.seleniumhq.selenium</groupId>
       <artifactId>selenium-server</artifactId>
     </dependency>
+    <dependency>
+      <groupId>firebug</groupId>
+      <artifactId>firebug</artifactId>
+      <version>1.6.2-fx</version>
+      <type>xpi</type>
+    </dependency>
   </dependencies>
-
-  <build>
-    <resources>
-      <resource>
-        <directory>src/main/resources</directory>
-      </resource>
-      <resource>
-        <directory>target/generated-resources
-        </directory>
-      </resource>
-    </resources>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>copy-firebug-xpi</id>
-            <phase>generate-resources</phase>
-            <goals>
-              <goal>copy</goal>
-            </goals>
-            <configuration>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>firebug</groupId>
-                  <artifactId>firebug</artifactId>
-                  <version>1.6.2-fx</version>
-                  <type>xpi</type>
-                </artifactItem>
-              </artifactItems>
-              <outputDirectory>
-                target/generated-resources
-              </outputDirectory>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
 
 </project>

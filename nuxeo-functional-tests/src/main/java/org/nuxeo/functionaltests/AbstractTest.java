@@ -21,15 +21,17 @@ package org.nuxeo.functionaltests;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.net.URI;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.jar.Attributes;
+import java.util.jar.JarFile;
 
-import org.apache.commons.io.IOUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
@@ -58,6 +60,10 @@ public abstract class AbstractTest {
     private static final String FIREBUG_XPI = "firebug-1.6.2-fx.xpi";
 
     private static final String FIREBUG_VERSION = "1.6.2";
+
+    private static final String FIREBUG_M2 = "firebug/firebug/1.6.2-fx";
+
+    private static final String M2_REPO = "/.m2/repository/";
 
     private static final int LOAD_TIMEOUT_SECONDS = 5;
 
@@ -103,27 +109,89 @@ public abstract class AbstractTest {
         removeFireBug();
     }
 
-    protected static void addFireBug(FirefoxProfile profile) throws Exception {
-        ClassLoader cl = Thread.currentThread().getContextClassLoader();
-        URL xpi_url = cl.getResource(FIREBUG_XPI);
-        File xpi;
-        if (xpi_url.getProtocol().equals("file")) {
-            xpi = new File(xpi_url.getPath());
-        } else {
-            // copy to a file
-            InputStream firebug = cl.getResourceAsStream(FIREBUG_XPI);
-            if (firebug == null) {
-                throw new RuntimeException(FIREBUG_XPI + " resource not found");
+    /**
+     * Introspects the classpath and returns the list of files in it.
+     * @return
+     * @throws Exception
+     */
+    protected static List<String> getClassLoaderFiles() throws Exception {
+        ClassLoader cl = AbstractTest.class.getClassLoader();
+        URL[] urls = null;
+        if (cl instanceof URLClassLoader) {
+            urls = ((URLClassLoader) cl).getURLs();
+        } else if (cl.getClass().getName().equals(
+                "org.apache.tools.ant.AntClassLoader")) {
+            Method method = cl.getClass().getMethod("getClasspath");
+            String cp = (String) method.invoke(cl);
+            String[] paths = cp.split(File.pathSeparator);
+            urls = new URL[paths.length];
+            for (int i = 0; i < paths.length; i++) {
+                urls[i] = new URL("file:" + paths[i]);
             }
-            File tmp = File.createTempFile("nxfirebug", null);
-            tmp.delete();
-            tmp.mkdir();
-            xpi = new File(tmp, FIREBUG_XPI);
-            FileOutputStream out = new FileOutputStream(xpi);
-            IOUtils.copy(firebug, out);
-            firebug.close();
-            out.close();
-            tmp_firebug_xpi = xpi;
+        } else {
+            System.err.println("Unknow classloader type: "
+                    + cl.getClass().getName());
+            return null;
+        }
+        // special case for maven surefire with useManifestOnlyJar
+        if (urls.length == 1) {
+            try {
+                URI uri = urls[0].toURI();
+                if (uri.getScheme().equals("file")
+                        && uri.getPath().contains("surefirebooter")) {
+                    JarFile jar = new JarFile(new File(uri));
+                    try {
+                        String cp = jar.getManifest().getMainAttributes().getValue(
+                                Attributes.Name.CLASS_PATH);
+                        if (cp != null) {
+                            String[] cpe = cp.split(" ");
+                            URL[] newUrls = new URL[cpe.length];
+                            for (int i = 0; i < cpe.length; i++) {
+                                // Don't need to add 'file:' with maven surefire
+                                // >= 2.4.2
+                                String newUrl = cpe[i].startsWith("file:") ? cpe[i]
+                                        : "file:" + cpe[i];
+                                newUrls[i] = new URL(newUrl);
+                            }
+                            urls = newUrls;
+                        }
+                    } finally {
+                        jar.close();
+                    }
+                }
+            } catch (Exception e) {
+                // skip
+            }
+        }
+        // turn into files
+        List<String> files = new ArrayList<String>(urls.length);
+        for (URL url : urls) {
+            files.add(url.toURI().getPath());
+        }
+        return files;
+    }
+
+    protected static void addFireBug(FirefoxProfile profile) throws Exception {
+        File xpi = null;
+        List<String> clf = getClassLoaderFiles();
+        for (String f : clf) {
+            if (f.endsWith("/" + FIREBUG_XPI)) {
+                xpi = new File(f);
+            }
+        }
+        if (xpi == null) {
+            // try to guess the location in the M2 repo
+            for (String f : clf) {
+                if (f.contains(M2_REPO)) {
+                    String m2 = f.substring(0, f.indexOf(M2_REPO) + M2_REPO.length());
+                    xpi = new File(m2 + FIREBUG_M2 + "/" + FIREBUG_XPI);
+                    break;
+                }
+            }
+        }
+        if (xpi == null || !xpi.exists()) {
+            throw new RuntimeException(FIREBUG_XPI
+                    + " not found in classloader or local M2 repository");
         }
         profile.addExtension(xpi);
         // avoid "first run" page
