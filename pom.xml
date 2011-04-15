@@ -28,6 +28,7 @@
     <module>nuxeo-startup-wizard</module>
     <module>nuxeo-launcher</module>
     <module>nuxeo-distribution-resources</module>
+    <module>nuxeo-distribution-cap/tests</module>
   </modules>
 
   <profiles>
