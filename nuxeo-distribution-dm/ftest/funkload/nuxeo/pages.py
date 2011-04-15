@@ -727,6 +727,9 @@ class FolderPage(BasePage):
 
     def viewRandomDocument(self, pattern):
         fl = self.fl
+        # hack to parse only the table listing instead of the broken html page
+        table = extractToken(self.fl.getBody(), '<table class="dataOutput">', '</table')
+        self.fl._response.body = table
         hrefs = fl.listHref(content_pattern=pattern,
                             url_pattern='@view_documents')
         fl.assert_(len(hrefs), "No doc found with pattern: " + pattern)
