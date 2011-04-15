@@ -22,7 +22,6 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
-import org.nuxeo.ecm.webengine.app.WebApplication;
 import org.nuxeo.ecm.webengine.loader.ClassProxy;
 import org.nuxeo.ecm.webengine.loader.StaticClassProxy;
 import org.nuxeo.ecm.webengine.loader.WebLoader;
@@ -91,9 +90,6 @@ public class DefaultTypeLoader {
         }
     }
 
-    /**
-     * New method to load types from the {@link WebApplication} declared types.
-     */
     protected void loadTypes(Class<?>[] types) {
         for (Class<?> type : types) {
             TypeDescriptor td = loadType(type);

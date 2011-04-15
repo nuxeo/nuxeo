@@ -39,7 +39,6 @@ import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.webengine.ResourceBinding;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.WebException;
-import org.nuxeo.ecm.webengine.app.WebApplication;
 import org.nuxeo.ecm.webengine.debug.ModuleTracker;
 import org.nuxeo.ecm.webengine.model.AdapterNotFoundException;
 import org.nuxeo.ecm.webengine.model.AdapterType;

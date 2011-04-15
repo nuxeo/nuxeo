@@ -37,7 +37,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.webengine.ResourceBinding;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.WebException;
-import org.nuxeo.ecm.webengine.app.WebApplication;
+import org.nuxeo.ecm.webengine.app.WebEngineModule;
 import org.nuxeo.ecm.webengine.model.LinkDescriptor;
 import org.nuxeo.ecm.webengine.model.Module;
 import org.nuxeo.ecm.webengine.model.Validator;
@@ -56,7 +56,7 @@ public class ModuleConfiguration implements Cloneable {
      * A web module may have multiple roots
      *
      * @deprecated you should use new module definition - through
-     *             {@link WebApplication}
+     *             {@link WebEngineModule}
      */
     @Deprecated
     @XNode("@path")
@@ -64,7 +64,7 @@ public class ModuleConfiguration implements Cloneable {
 
     /**
      * @deprecated you should use new module definition - through
-     *             {@link WebApplication}
+     *             {@link WebEngineModule}
      */
     @Deprecated
     @XNode("@root-type")
@@ -195,7 +195,7 @@ public class ModuleConfiguration implements Cloneable {
 
     /**
      * @deprecated you should use new module definition - through
-     *             {@link WebApplication}
+     *             {@link WebEngineModule}
      */
     @Deprecated
     public String getPath() {
