@@ -33,6 +33,7 @@ public class WizardPage extends AbstractWizardPage {
 
     public WizardPage(WebDriver driver) {
         super(driver);
+        IFrameHelper.focusOnWizardPage(driver);
     }
 
     public WizardPage next() {

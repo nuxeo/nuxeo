@@ -26,6 +26,7 @@ public class ConnectWizardPage extends AbstractWizardPage {
 
     public ConnectWizardPage(WebDriver driver) {
         super(driver);
+        IFrameHelper.focusOnConnectFrame(driver);
     }
 
     public void exitIframe() {

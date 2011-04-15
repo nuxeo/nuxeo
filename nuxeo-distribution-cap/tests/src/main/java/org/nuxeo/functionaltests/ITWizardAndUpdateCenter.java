@@ -55,7 +55,7 @@ public class ITWizardAndUpdateCenter extends AbstractTest {
     protected static final String CONNECT_PROJECT_SELECTOR = "junit4tester";
 
     protected String getTestPassword() {
-        return "testingwizardregistrationandinstallation";
+        return "XXX";
     }
 
     protected String getDistributionName() {
@@ -212,6 +212,85 @@ public class ITWizardAndUpdateCenter extends AbstractTest {
 
         // Restart
         LoginPage loginPage = summary.restart();
+
+    }
+
+//    @Test
+    public void loopOnIframe() throws Exception {
+
+        // **********************
+        // welcome
+        WizardPage welcomePage = get(NUXEO_URL, WizardPage.class);
+        assertEquals("Welcome to " + getDistributionName() , welcomePage.getTitle());
+
+        // **********************
+        // Settings
+        WizardPage settingsPage = welcomePage.next();
+        assertNotNull(settingsPage);
+
+        assertEquals("General settings", settingsPage.getTitle());
+
+
+        // **********************
+        // proxy
+        WizardPage proxyPage = settingsPage.next();
+        assertNotNull(proxyPage);
+        assertFalse(proxyPage.hasError());
+        assertEquals("HTTP proxy settings", proxyPage.getTitle());
+
+        assertTrue(proxyPage.selectOption("nuxeo.http.proxy.type", "none"));
+
+        // **********************
+        // Database settings
+        WizardPage dbPage = proxyPage.next();
+        assertNotNull(dbPage);
+        assertFalse(dbPage.hasError());
+        assertEquals("Database settings", dbPage.getTitle());
+
+        // **********************
+        // SMTP Settings
+        WizardPage smtpPage = dbPage.next();
+        assertNotNull(smtpPage);
+        assertEquals("SMTP Settings", smtpPage.getTitle());
+        assertTrue(smtpPage.selectOption("mail.smtp.auth", "false"));
+
+        // **********************
+        // Connect Form
+
+        WizardPage connectWizardPage = smtpPage.next(WizardPage.class);
+
+        for (int i = 1; i<20; i++) {
+
+            assertNotNull(connectWizardPage);
+            assertFalse(connectWizardPage.hasError());
+
+            // enter embedded IFrame
+            System.out.println(driver.getCurrentUrl());
+            ConnectWizardPage connectPage1 = connectWizardPage.getConnectPage();
+            System.out.println(driver.getCurrentUrl());
+            assertNotNull(connectPage1);
+            assertEquals("Nuxeo Connect & Nuxeo Studio - Trial Offer",
+                    connectPage1.getTitle());
+
+            // try to validate
+            ConnectWizardPage connectPage2 = connectPage1.next(ConnectWizardPage.class);
+            assertNotNull(connectPage2);
+            assertEquals(
+                    "There were some errors in your form: You must define a login",
+                    connectPage2.getErrorMessage());
+
+            // ok, let's try to skip the screen
+            ConnectWizardPage connectSkip = connectPage1.nav(
+                    ConnectWizardPage.class, "Skip");
+            assertNotNull(connectSkip);
+            assertEquals("You have not registered your instance on Nuxeo Connect.",
+                    connectSkip.getTitle2());
+
+            // ok, let's register
+            connectWizardPage = connectSkip.navById(WizardPage.class,
+                    "btnRetry");
+
+        }
 
     }
 
