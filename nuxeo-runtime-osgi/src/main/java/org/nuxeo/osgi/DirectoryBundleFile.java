@@ -14,14 +14,14 @@
  * limitations under the License.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Bogdan Stefanescu
+ *     Florent Guillaume
  */
 
 package org.nuxeo.osgi;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -32,70 +32,46 @@ import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
 import org.nuxeo.common.utils.FileUtils;
-import org.nuxeo.common.utils.JarUtils;
 import org.nuxeo.common.utils.StringUtils;
 import org.osgi.framework.Constants;
 
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * A {@link BundleFile} that is backed by a filesystem directory, for use in
+ * test settings from Eclipse or maven.
  */
 public class DirectoryBundleFile implements BundleFile {
 
+    public static final String MANIFEST_PATH = "META-INF/MANIFEST.MF";
+
     protected final File file;
+    protected final List<File> files;
     protected final Manifest mf;
 
-    /**
-     * Hack for PDE projects.
-     * This method tests if the target bundle is in a PDE environment and copy the
-     * bundle data to bin directory.
-     * @param file
-     * @return
-     * @throws IOException
-     */
-    static Manifest getManifest(File file) throws IOException {
-        if (file.getPath().endsWith("/bin")) {
-            return copyBundleDataAndGetManifest(file);
-        }
-        return JarUtils.getDirectoryManifest(file);
-    }
-
-    static Manifest copyBundleDataAndGetManifest(File file) throws IOException {
-        File project = file.getParentFile();
-        File[] files = project.listFiles();
-        if (files != null) {
-            for (File f : files) {
-                String name = f.getName();
-                if (!name.equals("bin") && !name.equals("src") && !name.equals("lib")) {
-                    copyFileContent(f, file);
-                }
-            }
-        }
-        return JarUtils.getDirectoryManifest(file);
-    }
-
-    static void copyFileContent(File file, File toDir) throws IOException {
-        if (file.isDirectory()) {
-            toDir = new File(toDir, file.getName());
-            toDir.mkdirs();
-            File[] files = file.listFiles();
-            if (files != null) {
-                for (File f : files) {
-                    copyFileContent(f, toDir);
-                }
-            }
-        } else {
-            FileUtils.copyFile(file, new File(toDir, file.getName()));
-        }
-    }
-
     public DirectoryBundleFile(File file) throws IOException {
-        this(file, getManifest(file));
+        this(file, null);
+        if (mf == null) {
+            throw new IOException("Cannot find " + MANIFEST_PATH + " in "
+                    + file);
+        }
     }
 
     public DirectoryBundleFile(File file, Manifest mf) {
         this.file = file;
-        this.mf = mf;
+        this.files = findFiles(file);
+        this.mf = mf == null ? findManifest() : mf;
+    }
+
+    protected List<File> findFiles(File file)  {
+        List<File> files = new ArrayList<File>(2);
+        files.add(file);
+        if (file.getPath().endsWith("/bin")) {
+            // hack for Eclipse PDE development
+            files.add(file.getParentFile());
+        } else if (file.getPath().endsWith("/target/classes")) {
+            // hack for maven/tycho development
+            files.add(file.getParentFile().getParentFile());
+        }
+        return files;
     }
 
     @Override
@@ -107,12 +83,14 @@ public class DirectoryBundleFile implements BundleFile {
 
     @Override
     public URL getEntry(String name) {
-        File entry = new File(file, name);
-        if (entry.exists()) {
-            try {
-                return entry.toURI().toURL();
-            } catch (Exception e) {
-                return null;
+        for (File file : files) {
+            File entry = new File(file, name);
+            if (entry.exists()) {
+                try {
+                    return entry.toURI().toURL();
+                } catch (Exception e) {
+                    // ignore
+                }
             }
         }
         return null;
@@ -142,6 +120,25 @@ public class DirectoryBundleFile implements BundleFile {
     @Override
     public Manifest getManifest() {
         return mf;
+    }
+
+    protected Manifest findManifest() {
+        for (File file : files) {
+            File entry = new File(file, MANIFEST_PATH);
+            if (entry.exists()) {
+                try {
+                    FileInputStream fis = new FileInputStream(entry);
+                    try {
+                        return new Manifest(fis);
+                    } finally {
+                        fis.close();
+                    }
+                } catch (Exception e) {
+                    // ignore
+                }
+            }
+        }
+        return null;
     }
 
     @Override
