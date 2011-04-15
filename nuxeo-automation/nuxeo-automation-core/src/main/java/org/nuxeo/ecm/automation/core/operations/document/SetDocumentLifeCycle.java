@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -38,7 +38,7 @@ public class SetDocumentLifeCycle {
 
     @OperationMethod(collector=DocumentModelCollector.class)
     public DocumentModel run(DocumentModel doc) throws Exception {
-        doc.followTransition(value);
+        session.followTransition(doc.getRef(), value);
         return session.getDocument(doc.getRef());
     }
 
