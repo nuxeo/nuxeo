@@ -107,6 +107,36 @@ public class OSGiRuntimeActivator implements BundleActivator {
     }
 
     /**
+     * Load a class from another bundle given its reference as <code>bundleSymbolicName:className</code>
+     * If no <code>bundleSymbolicName:</code> prefix is given then a classForName will be done
+     * @param ref
+     * @return
+     */
+    public Class<?> loadClass(String ref) throws Exception {
+        int i = ref.indexOf(':');
+        if (i == -1) {
+            return Class.forName(ref);
+        }
+        return loadClass(ref.substring(0, i), ref.substring(i+1));
+    }
+
+    public Class<?> loadClass(String bundleName, String className) throws Exception {
+        Bundle bundle = getBundle(bundleName);
+        if (bundle == null) {
+            throw new ClassNotFoundException("No bundle found with name: "+bundleName+". Unable to load class "+className);
+        }
+        return bundle.loadClass(className);
+    }
+
+    public Object newInstance(String ref) throws Exception {
+        return loadClass(ref).newInstance();
+    }
+
+    public Object newInstance(String bundleName, String className) throws Exception {
+        return loadClass(bundleName, className).newInstance();
+    }
+
+    /**
      * Gives a chance to derived classes to initialize them before the runtime is
      * started.
      *

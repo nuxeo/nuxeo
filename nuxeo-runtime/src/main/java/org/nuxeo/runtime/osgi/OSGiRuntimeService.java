@@ -20,10 +20,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -142,6 +145,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
         return bundleContext;
     }
 
+    @Override
     public Bundle getBundle(String symbolicName) {
         return bundles.get(symbolicName);
     }
@@ -233,6 +237,42 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
         return (String) bundle.getHeaders().get("Nuxeo-Component");
     }
 
+    @SuppressWarnings("unchecked")
+    protected boolean loadConfigurationFromProvider() throws Exception {
+        //TODO use a OSGi service for this.
+        String ref = bundleContext.getProperty("ecr.configurator");
+        if (ref == null) {
+            return false;
+        }
+        Iterable<URL> provider = (Iterable<URL>)OSGiRuntimeActivator.getInstance().newInstance(ref);
+        Iterator<URL> it = provider.iterator();
+        ArrayList<URL> props = new ArrayList<URL>();
+        ArrayList<URL> xmls = new ArrayList<URL>();
+        while (it.hasNext()) {
+            URL url = it.next();
+            String path = url.getPath();
+            if (path.endsWith("-config.xml")) {
+                xmls.add(url);
+            } else if (path.endsWith(".properties")) {
+                props.add(url);
+            }
+        }
+        Comparator<URL> comp = new Comparator<URL>() {
+            @Override
+            public int compare(URL o1, URL o2) {
+                return o1.getPath().compareTo(o2.getPath());
+            }
+        };
+        Collections.sort(xmls, comp);
+        for (URL url : props) {
+            loadProperties(url);
+        }
+        for (URL url : xmls) {
+            context.deploy(url);
+        }
+        return true;
+    }
+
     protected void loadConfig() throws Exception {
         Environment env = Environment.getDefault();
         if (env != null) {
@@ -253,6 +293,10 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
                 }
             }
             manager.setBlacklist(new HashSet<String>(lines));
+        }
+
+        if (loadConfigurationFromProvider()) {
+            return;
         }
 
         String configDir = bundleContext.getProperty(PROP_CONFIG_DIR);
