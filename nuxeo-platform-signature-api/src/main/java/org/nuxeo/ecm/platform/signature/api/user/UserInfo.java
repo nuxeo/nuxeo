@@ -58,7 +58,11 @@ public class UserInfo {
     public UserInfo(Map<CNField, String> userDNFields) throws CertException {
         verify(userDNFields);
         this.userFields = userDNFields;
-        x500Principal = new X500Principal(getDN(userDNFields));
+        try {
+            x500Principal = new X500Principal(getDN(userDNFields));
+        } catch (Exception e) {
+             throw new CertException("User data might have an incorrect format"+e);
+        }
     }
 
     /**
