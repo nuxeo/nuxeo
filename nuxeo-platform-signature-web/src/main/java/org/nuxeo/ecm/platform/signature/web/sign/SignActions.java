@@ -43,10 +43,7 @@ import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.event.DocumentEventCategories;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
-import org.nuxeo.ecm.core.event.Event;
-import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventProducer;
-import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.ecm.platform.signature.api.exception.CertException;
@@ -157,24 +154,17 @@ public class SignActions implements Serializable {
                 }
                 navigationContext.saveCurrentDocument();
 
-                // save the digital signing event to the audit log
-                EventContext ctx = new DocumentEventContext(session,
-                        session.getPrincipal(), currentDoc);
-                Event event = ctx.newEvent(DOCUMENT_SIGNED); // auditable
-                event.setInline(false);
-                event.setImmediate(true);
-                Framework.getLocalService(EventService.class).fireEvent(event);
+                // write to the audit log
+                Map<String, Serializable> properties = new HashMap<String, Serializable>();
+                String comment = DOCUMENT_SIGNED_COMMENT;
+                notifyEvent(DOCUMENT_SIGNED, currentDoc, properties, comment);
+                
                 // display a signing message
                 facesMessages.add(StatusMessage.Severity.INFO,
                         outputBlob.getFilename()
                                 + " "
                                 + resourcesAccessor.getMessages().get(
                                         "notification.sign.signed"));
-
-                // add an entry to the audit log
-                Map<String, Serializable> properties = new HashMap<String, Serializable>();
-                String comment = DOCUMENT_SIGNED_COMMENT;
-                notifyEvent(DOCUMENT_SIGNED, currentDoc, properties, comment);
             }
         } catch (CertException e) {
             LOG.info("PDF SIGNING PROBLEM. CERTIFICATE ACCESS PROBLEM" + e);
@@ -306,7 +296,8 @@ public class SignActions implements Serializable {
         }
     }
 
-    protected void notifyEvent(String eventId, DocumentModel source,
+
+ protected void notifyEvent(String eventId, DocumentModel source,
             Map<String, Serializable> properties, String comment)
             throws ClientException {
 
@@ -326,4 +317,5 @@ public class SignActions implements Serializable {
             LOG.error("Error firing an audit event", e);
         }
     }
+
 }

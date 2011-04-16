@@ -4,7 +4,7 @@
 		point="actions">
 
 		<action id="sign_view" link="/incl/tabs/sign_view.xhtml"
-			enabled="true" label="Signature" icon="/icons/file.gif" order="9">
+			enabled="true" label="Signature" icon="/icons/file.gif" order="60">
 			<category>VIEW_ACTION_LIST</category>
 			<filter id="signature_filter">
 				<rule grant="true">

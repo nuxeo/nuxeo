@@ -181,7 +181,7 @@ public class CertActions implements Serializable {
             // passed through validations
             areRequirementsMet = true;
         } catch (ValidatorException v) {
-            facesMessages.add(StatusMessage.Severity.INFO,
+            facesMessages.add(StatusMessage.Severity.ERROR,
                     v.getFacesMessage().getDetail());
         }
 
@@ -195,7 +195,7 @@ public class CertActions implements Serializable {
                 LOG.error(e);
                 facesMessages.add(StatusMessage.Severity.ERROR,
                         resourcesAccessor.getMessages().get(
-                                "label.cert.generate.problem"));
+                                "label.cert.generate.problem")+e.getMessage());
             } catch (ClientException e) {
                 LOG.error(e);
                 facesMessages.add(StatusMessage.Severity.ERROR,
@@ -227,7 +227,8 @@ public class CertActions implements Serializable {
                     FacesMessage.SEVERITY_ERROR,
                     resourcesAccessor.getMessages().get(
                             "label.review.added.reviewer"), null);
-            LOG.warn(currentUser.getName() + " : " + message.getDetail());
+            facesMessages.add(StatusMessage.Severity.ERROR, "ABC"
+                    + message.getDetail());
             throw new ValidatorException(message);
         }
 
@@ -236,17 +237,15 @@ public class CertActions implements Serializable {
                     FacesMessage.SEVERITY_ERROR,
                     resourcesAccessor.getMessages().get(
                             "label.cert.password.mismatch"), null);
-            LOG.warn(currentUser.getName() + " : " + message.getDetail());
             throw new ValidatorException(message);
         }
 
-        // at least 8 characters
+        // at least 8 characters    
         if (firstPassword.length() < MINIMUM_PASSWORD_LENGTH) {
             FacesMessage message = new FacesMessage(
                     FacesMessage.SEVERITY_ERROR,
                     resourcesAccessor.getMessages().get(
                             "label.cert.password.too.short"), null);
-            LOG.warn(currentUser.getName() + " : " + message.getDetail());
             throw new ValidatorException(message);
         }
 
@@ -254,15 +253,14 @@ public class CertActions implements Serializable {
 
         /*
          * If the certificate password matches the user login password an
-         * exception is thrown, as those passwords should not be the same.
+         * exception is thrown, as those passwords should not be the same
+         * to increase security and decouple one from another to allow for reuse
          */
         if (PasswordHelper.verifyPassword(firstPassword, hashedUserPassword)) {
-
             FacesMessage message = new FacesMessage(
                     FacesMessage.SEVERITY_ERROR,
                     resourcesAccessor.getMessages().get(
-                            "label.cert.passwordSameAsLogin"), null);
-            LOG.warn(currentUser.getName() + " : " + message.getDetail());
+                            "label.cert.password.is.login.password"), null);
             throw new ValidatorException(message);
         }
     }
@@ -283,7 +281,6 @@ public class CertActions implements Serializable {
                     FacesMessage.SEVERITY_ERROR,
                     resourcesAccessor.getMessages().get(
                             "label.cert.user.firstname.missing"), null);
-            LOG.warn(currentUser.getName() + " : " + message.getDetail());
             throw new ValidatorException(message);
         }
         // last name
@@ -293,7 +290,6 @@ public class CertActions implements Serializable {
                     FacesMessage.SEVERITY_ERROR,
                     resourcesAccessor.getMessages().get(
                             "label.cert.user.lastname.missing"), null);
-            LOG.warn(currentUser.getName() + " : " + message.getDetail());
             throw new ValidatorException(message);
         }
         // email - // a very forgiving check (e.g. accepts _@localhost)
@@ -304,7 +300,6 @@ public class CertActions implements Serializable {
                     FacesMessage.SEVERITY_ERROR,
                     resourcesAccessor.getMessages().get(
                             "label.cert.user.email.problem"), null);
-            LOG.warn(currentUser.getName() + " : " + message.getDetail());
             throw new ValidatorException(message);
         }
     }

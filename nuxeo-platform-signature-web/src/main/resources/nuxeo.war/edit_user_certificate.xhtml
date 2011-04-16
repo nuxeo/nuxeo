@@ -11,29 +11,29 @@
       value="#{messages['label.cert.missing']}"
       rendered="#{certActions.canGenerateCertificate(userManagerActions.selectedUser) and !certActions.hasCertificate()}" />
 
-      <h:form id="certificateForm">
-        <nxl:layout name="cert" mode="edit"
-          value="#{certActions.getCertificate(userManagerActions.selectedUser)}" />
-    <c:if test="#{!certActions.hasCertificate()}">
+    <h:form id="certificateForm">
+      <nxl:layout name="cert" mode="edit"
+        value="#{certActions.getCertificate(userManagerActions.selectedUser)}" />
+
+      <c:if test="#{!certActions.hasCertificate()}">
         <table class="dataInput">
           <tbody>
             <tr>
-
-            <td> <h:outputText value="#{userWorkspacePath}"/></td>
-
+              <td><h:outputText value="#{userWorkspacePath}" /> <h:outputText
+                value="#{messages['label.cert.password.prompt']}" /></td>
+            </tr>
+            <tr>
               <td><h:outputText
                 value="#{messages['label.cert.password.first']}"
-                rendered="#{certActions.canGenerateCertificate(userManagerActions.selectedUser)}"
-                /> <h:inputSecret
-                id="firstPassword" value="#{firstPassword}"
+                rendered="#{certActions.canGenerateCertificate(userManagerActions.selectedUser)}" />
+              <h:inputSecret id="firstPassword" value="#{firstPassword}"
                 required="true"
                 rendered="#{certActions.canGenerateCertificate(userManagerActions.selectedUser)}" />
               <h:outputText
                 value="#{messages['label.cert.password.second']}"
-                rendered="#{certActions.canGenerateCertificate(userManagerActions.selectedUser)}"
-                />
-                <h:inputSecret id="secondPassword" value="#{secondPassword}"
-                required="true"
+                rendered="#{certActions.canGenerateCertificate(userManagerActions.selectedUser)}" />
+              <h:inputSecret id="secondPassword"
+                value="#{secondPassword}" required="true"
                 rendered="#{certActions.canGenerateCertificate(userManagerActions.selectedUser)}" />
               </td>
               <td><h:commandButton type="submit"
@@ -45,7 +45,7 @@
             </tr>
           </tbody>
         </table>
-    </c:if>
-      </h:form>
+      </c:if>
+    </h:form>
   </ui:define>
 </ui:composition></div>

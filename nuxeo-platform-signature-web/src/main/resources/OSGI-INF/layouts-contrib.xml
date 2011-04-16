@@ -8,27 +8,9 @@
       </templates>
       <rows>
         <row>
-          <widget>usernameWidget</widget>
-        </row>
-        <row>
           <widget>certWidget</widget>
         </row>
       </rows>
-      <widget name="usernameWidget" type="text">
-        <labels>
-          <label mode="any">username</label>
-        </labels>
-        <translated>true</translated>
-        <fields>
-          <field schema="cert">userid</field>
-        </fields>
-        <widgetModes>
-          <mode value="any">view</mode>
-        </widgetModes>
-        <properties widgetMode="edit">
-          <property name="required">true</property>
-        </properties>
-      </widget>
       <widget name="certWidget" type="text">
         <labels>
           <label mode="any">Certificate</label>
@@ -40,9 +22,6 @@
         <widgetModes>
           <mode value="any">view</mode>
         </widgetModes>
-        <properties widgetMode="edit">
-          <property name="required">true</property>
-        </properties>
       </widget>
       </layout>
   </extension>
