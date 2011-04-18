@@ -25,9 +25,11 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.jar.Attributes;
@@ -35,12 +37,14 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
-import org.nuxeo.common.utils.FileUtils;
-import org.nuxeo.common.utils.StringUtils;
-import org.osgi.framework.Constants;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.common.utils.StringUtils;
+import org.nuxeo.osgi.util.EntryFilter;
+import org.osgi.framework.Constants;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -52,6 +56,7 @@ public class JarBundleFile implements BundleFile {
 
     protected final JarFile jarFile;
 
+    protected String urlBase;
 
     public JarBundleFile(File file) throws IOException {
         this(new JarFile(file));
@@ -59,13 +64,59 @@ public class JarBundleFile implements BundleFile {
 
     public JarBundleFile(JarFile jarFile) {
         this.jarFile = jarFile;
+        try {
+            urlBase = "jar:" + new File(jarFile.getName()).toURI().toURL() + "!/";
+        } catch (MalformedURLException e) {
+            log.error("Failed to convert bundle location to an URL: "+jarFile.getName()+". Bundle getEntry will not work.", e);
+        }
     }
 
     @Override
     public Enumeration<URL> findEntries(String name, String pattern,
             boolean recurse) {
-        throw new UnsupportedOperationException(
-                "The operation BundleFile.findEntries() was not yet implemented");
+        if (name.startsWith("/")) {
+            name = name.substring(1);
+        }
+        String prefix;
+        if (name.length() == 0) {
+            name = null;
+            prefix = "";
+        } else if (!name.endsWith("/") ){
+            prefix = name+"/";
+        } else {
+            prefix = name;
+        }
+        int len = prefix.length();
+        EntryFilter filter = EntryFilter.newFilter(pattern);
+        Enumeration<JarEntry> entries = jarFile.entries();
+        ArrayList<URL> result = new ArrayList<URL>();
+        try {
+            while (entries.hasMoreElements()) {
+                JarEntry entry = entries.nextElement();
+                if (entry.isDirectory()) {
+                    continue;
+                }
+                String ename = entry.getName();
+                if (name != null && !ename.startsWith(prefix)) {
+                    continue;
+                }
+                int i = ename.lastIndexOf('/');
+                if (!recurse) {
+                    if (i > -1) {
+                        if (ename.indexOf('/', len) > -1) {
+                            continue;
+                        }
+                    }
+                }
+                String n = i > -1 ? ename.substring(i+1) : ename;
+                if (filter.match(n)) {
+                    result.add(getEntryUrl(ename));
+                }
+            }
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+        return Collections.enumeration(result);
     }
 
     @Override
@@ -78,7 +129,7 @@ public class JarBundleFile implements BundleFile {
             name = name.substring(1);
         }
         try {
-            return new URL("jar:" + new File(jarFile.getName()).toURI().toURL() + "!/" + name);
+            return new URL(urlBase + name);
         } catch (Exception e) {
             return null;
         }
@@ -254,6 +305,33 @@ public class JarBundleFile implements BundleFile {
     protected void finalize() throws IOException {
         if (jarFile != null) {
             jarFile.close();
+        }
+    }
+
+    protected final URL getEntryUrl(String name) throws MalformedURLException {
+        return new URL(urlBase + name);
+    }
+
+    static class UrlEntryEnum implements Enumeration<URL> {
+        Enumeration<? extends ZipEntry> e;
+        ZipFile zf;
+        String prefix;
+        UrlEntryEnum(ZipFile zf, Enumeration<? extends ZipEntry> e) throws MalformedURLException {
+            prefix = "jar:" + new File(zf.getName()).toURI().toURL() + "!/";
+            this.e = e;
+        }
+        @Override
+        public boolean hasMoreElements() {
+            return e.hasMoreElements();
+        }
+        @Override
+        public URL nextElement() {
+            try {
+                return new URL(prefix+e.nextElement().getName());
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+                throw new RuntimeException(e);
+            }
         }
     }
 

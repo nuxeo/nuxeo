@@ -21,6 +21,7 @@
 package org.nuxeo.osgi;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
@@ -33,6 +34,9 @@ import java.util.jar.Manifest;
 
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.StringUtils;
+import org.nuxeo.osgi.util.CompoundEnumeration;
+import org.nuxeo.osgi.util.EntryFilter;
+import org.nuxeo.osgi.util.FileIterator;
 import org.osgi.framework.Constants;
 
 /**
@@ -74,11 +78,35 @@ public class DirectoryBundleFile implements BundleFile {
         return files;
     }
 
+    private Enumeration<URL> createEnumeration(File root, final EntryFilter efilter, final boolean recurse) {
+        FileIterator it = new FileIterator(root, new FileFilter() {
+            @Override
+            public boolean accept(File pathname) {
+                if (pathname.isDirectory()) {
+                    return recurse;
+                }
+                return efilter.match(pathname.getName());
+            }
+        });
+        it.setSkipDirs(true);
+        return FileIterator.asUrlEnumeration(it);
+    }
+
+    @SuppressWarnings("unchecked")
     @Override
     public Enumeration<URL> findEntries(String name, String pattern,
             boolean recurse) {
-        throw new UnsupportedOperationException(
-        "The operation BundleFile.findEntries() is not yet implemented");
+        EntryFilter efilter = EntryFilter.newFilter(pattern);
+        if (files.size() == 1) {
+            return createEnumeration(new File(file, name), efilter, recurse);
+        } else {
+            Enumeration<URL>[] enums = new Enumeration[files.size()];
+            int i = 0;
+            for (File f : files) {
+                enums[i++] = createEnumeration(new File(f, name), efilter, recurse);
+            }
+            return new CompoundEnumeration<URL>(enums);
+        }
     }
 
     @Override
@@ -212,6 +240,14 @@ public class DirectoryBundleFile implements BundleFile {
     @Override
     public String toString() {
         return getLocation();
+    }
+
+    public static void main(String[] args) throws Exception {
+        DirectoryBundleFile bf = new DirectoryBundleFile(new File("/Users/bstefanescu/work/org.eclipse.ecr/plugins/org.eclipse.ecr.application/bin"));
+        Enumeration<URL> urls = bf.findEntries("META-INF", "*.txt", false);
+        while (urls.hasMoreElements()) {
+            System.out.println(urls.nextElement());
+        }
     }
 
 }
