@@ -1,3 +1,19 @@
+/*
+ * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Gagnavarslan ehf
+ */
 package org.nuxeo.ecm.platform.wi.backend;
 
 import org.nuxeo.common.utils.Path;
@@ -6,9 +22,6 @@ import org.nuxeo.ecm.core.api.*;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- * @author Organization: Gagnavarslan ehf
- */
 public interface Backend {
 
     String getRootPath();
@@ -45,20 +58,26 @@ public interface Backend {
 
     void removeItem(DocumentRef ref) throws ClientException;
 
-    void renameItem(DocumentModel source, String destinationName) throws ClientException;
-
-    DocumentModel moveItem(DocumentModel source, PathRef targetParentRef) throws ClientException;
-
-    public DocumentModel moveItem(DocumentModel source, DocumentRef targetParentRef, String name)
+    void renameItem(DocumentModel source, String destinationName)
             throws ClientException;
 
-    DocumentModel copyItem(DocumentModel source, PathRef targetParentRef) throws ClientException;
+    DocumentModel moveItem(DocumentModel source, PathRef targetParentRef)
+            throws ClientException;
 
-    DocumentModel createFolder(String parentPath, String name) throws ClientException;
+    public DocumentModel moveItem(DocumentModel source,
+            DocumentRef targetParentRef, String name) throws ClientException;
 
-    DocumentModel createFile(String parentPath, String name, Blob content) throws ClientException;
+    DocumentModel copyItem(DocumentModel source, PathRef targetParentRef)
+            throws ClientException;
 
-    DocumentModel createFile(String parentPath, String name) throws ClientException;
+    DocumentModel createFolder(String parentPath, String name)
+            throws ClientException;
+
+    DocumentModel createFile(String parentPath, String name, Blob content)
+            throws ClientException;
+
+    DocumentModel createFile(String parentPath, String name)
+            throws ClientException;
 
     DocumentModel saveDocument(DocumentModel doc) throws ClientException;
 
@@ -68,7 +87,8 @@ public interface Backend {
 
     boolean exists(String location);
 
-    boolean hasPermission(DocumentRef docRef, String permission) throws ClientException;
+    boolean hasPermission(DocumentRef docRef, String permission)
+            throws ClientException;
 
     String getDisplayName(DocumentModel doc);
 

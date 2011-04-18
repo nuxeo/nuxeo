@@ -1,20 +1,29 @@
+/*
+ * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Thierry Delprat
+ *     Gagnavarslan ehf
+ */
 package org.nuxeo.ecm.platform.wi.backend;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.*;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreInstance;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.transaction.TransactionHelper;
 
-/**
- * Based on org.nuxeo.ecm.platform.wss.backend.AbstractNuxeoCoreBackend
- *
- * @author Organization: Gagnavarslan ehf
- */
 public abstract class AbstractCoreBackend implements Backend {
-
-    private static final Log log = LogFactory.getLog(AbstractCoreBackend.class);
 
     protected CoreSession session;
 
@@ -26,16 +35,18 @@ public abstract class AbstractCoreBackend implements Backend {
         this.session = session;
     }
 
-    /*public void begin() throws ClientException {
-        if (!TransactionHelper.isTransactionActiveOrMarkedRollback()) {
-            TransactionHelper.startTransaction();
-        }
-    }*/
+    /*
+     * public void begin() throws ClientException { if
+     * (!TransactionHelper.isTransactionActiveOrMarkedRollback()) {
+     * TransactionHelper.startTransaction(); } }
+     */
 
+    @Override
     public CoreSession getSession() throws ClientException {
         return getSession(false);
     }
 
+    @Override
     public CoreSession getSession(boolean requiredNew) throws ClientException {
         try {
             if (session == null) {
@@ -51,10 +62,12 @@ public abstract class AbstractCoreBackend implements Backend {
         return session;
     }
 
-    public void setSession(CoreSession session){
+    @Override
+    public void setSession(CoreSession session) {
         this.session = session;
     }
 
+    @Override
     public void destroy() {
         close();
     }
@@ -66,12 +79,13 @@ public abstract class AbstractCoreBackend implements Backend {
         }
     }
 
+    @Override
     public void discardChanges() throws ClientException {
         discardChanges(false);
     }
 
     public void discardChanges(boolean release) throws ClientException {
-        //TransactionHelper.setTransactionRollbackOnly();
+        // TransactionHelper.setTransactionRollbackOnly();
         try {
             if (session != null) {
                 try {
@@ -84,10 +98,11 @@ public abstract class AbstractCoreBackend implements Backend {
                 }
             }
         } finally {
-            //TransactionHelper.commitOrRollbackTransaction();
+            // TransactionHelper.commitOrRollbackTransaction();
         }
     }
 
+    @Override
     public void saveChanges() throws ClientException {
         saveChanges(false);
     }
@@ -105,7 +120,7 @@ public abstract class AbstractCoreBackend implements Backend {
                 }
             }
         } finally {
-            //TransactionHelper.commitOrRollbackTransaction();
+            // TransactionHelper.commitOrRollbackTransaction();
         }
 
     }

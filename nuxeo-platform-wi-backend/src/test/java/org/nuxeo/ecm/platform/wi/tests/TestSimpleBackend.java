@@ -1,3 +1,20 @@
+/*
+ * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Thierry Delprat
+ *     Gagnavarslan ehf
+ */
 package org.nuxeo.ecm.platform.wi.tests;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -17,9 +34,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-/**
- * @author Organization: Gagnavarslan ehf
- */
 public class TestSimpleBackend extends SQLRepositoryTestCase {
 
     public static class WSSListItemSorter implements Comparator<WSSListItem> {
@@ -196,7 +210,7 @@ public class TestSimpleBackend extends SQLRepositoryTestCase {
         String lock = session.getLock(new PathRef(
                 "/default-domain/workspaces/ws1/testMe"));
         assertNotNull(lock);
-        System.out.println("----> lock:" + lock);
+        // System.out.println("----> lock:" + lock);
         assertTrue(lock.startsWith("Administrator:"));
 
         item.uncheckOut("Administrator");
@@ -334,7 +348,7 @@ public class TestSimpleBackend extends SQLRepositoryTestCase {
         //session.save(); // for cache invalidation
         assertTrue(session.exists(new PathRef("/default-domain/workspaces/ws1/testMe")));
 
-        System.out.println("---> item:" + item);
+        // System.out.println("---> item:" + item);
         item.checkOut("titi");
         backend.saveChanges(); // for cache invalidation
         //session.save(); // for cache invalidation

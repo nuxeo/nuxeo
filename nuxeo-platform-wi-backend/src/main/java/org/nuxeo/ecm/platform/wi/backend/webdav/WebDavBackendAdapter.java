@@ -1,3 +1,20 @@
+/*
+ * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Gagnavarslan ehf
+ *     Vitalii Siryi
+ */
 package org.nuxeo.ecm.platform.wi.backend.webdav;
 
 import org.nuxeo.common.utils.Path;
@@ -8,12 +25,6 @@ import org.nuxeo.ecm.webdav.backend.WebDavBackend;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- * Date: 24.02.2011
- * Time: 11:10:21
- *
- * @author Vitalii Siryi
- */
 public class WebDavBackendAdapter implements WebDavBackend {
 
     private Backend backend;
@@ -63,7 +74,8 @@ public class WebDavBackendAdapter implements WebDavBackend {
     }
 
     @Override
-    public DocumentModel resolveLocation(String location) throws ClientException {
+    public DocumentModel resolveLocation(String location)
+            throws ClientException {
         return backend.resolveLocation(location);
     }
 
@@ -78,42 +90,50 @@ public class WebDavBackendAdapter implements WebDavBackend {
     }
 
     @Override
-    public void renameItem(DocumentModel source, String destinationName) throws ClientException {
+    public void renameItem(DocumentModel source, String destinationName)
+            throws ClientException {
         backend.renameItem(source, destinationName);
     }
 
     @Override
-    public DocumentModel moveItem(DocumentModel source, PathRef targetParentRef) throws ClientException {
+    public DocumentModel moveItem(DocumentModel source, PathRef targetParentRef)
+            throws ClientException {
         return backend.moveItem(source, targetParentRef);
     }
 
     @Override
-    public DocumentModel copyItem(DocumentModel source, PathRef targetParentRef) throws ClientException {
+    public DocumentModel copyItem(DocumentModel source, PathRef targetParentRef)
+            throws ClientException {
         return backend.copyItem(source, targetParentRef);
     }
 
     @Override
-    public DocumentModel createFolder(String parentPath, String name) throws ClientException {
+    public DocumentModel createFolder(String parentPath, String name)
+            throws ClientException {
         return backend.createFolder(parentPath, name);
     }
 
     @Override
-    public DocumentModel createFile(String parentPath, String name, Blob content) throws ClientException {
+    public DocumentModel createFile(String parentPath, String name, Blob content)
+            throws ClientException {
         return backend.createFile(parentPath, name, content);
     }
 
     @Override
-    public DocumentModel createFile(String parentPath, String name) throws ClientException {
+    public DocumentModel createFile(String parentPath, String name)
+            throws ClientException {
         return backend.createFile(parentPath, name);
     }
 
     @Override
-    public DocumentModel saveDocument(DocumentModel documentModel) throws ClientException {
+    public DocumentModel saveDocument(DocumentModel documentModel)
+            throws ClientException {
         return backend.saveDocument(documentModel);
     }
 
     @Override
-    public List<DocumentModel> getChildren(DocumentRef ref) throws ClientException {
+    public List<DocumentModel> getChildren(DocumentRef ref)
+            throws ClientException {
         return backend.getChildren(ref);
     }
 
@@ -128,7 +148,8 @@ public class WebDavBackendAdapter implements WebDavBackend {
     }
 
     @Override
-    public boolean hasPermission(DocumentRef documentRef, String s) throws ClientException {
+    public boolean hasPermission(DocumentRef documentRef, String s)
+            throws ClientException {
         return backend.hasPermission(documentRef, s);
     }
 

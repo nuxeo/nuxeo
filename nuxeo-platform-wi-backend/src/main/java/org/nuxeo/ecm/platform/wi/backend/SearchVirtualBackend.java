@@ -1,4 +1,26 @@
+/*
+ * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Thierry Delprat
+ *     Gagnavarslan ehf
+ */
 package org.nuxeo.ecm.platform.wi.backend;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -6,16 +28,7 @@ import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.webdav.backend.WebDavBackend;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-
-/**
- * @author Organization: Gagnavarslan ehf
- */
 public class SearchVirtualBackend extends AbstractVirtualBackend {
 
     private static final Log log = LogFactory.getLog(SearchVirtualBackend.class);
@@ -57,11 +70,9 @@ public class SearchVirtualBackend extends AbstractVirtualBackend {
                         idx = idx + 1;
                     }
 
-                    Backend simpleBackend = new SimpleBackend(
-                            name, head,
+                    Backend simpleBackend = new SimpleBackend(name, head,
                             new Path(this.rootUrl).append(name).toString(),
-                            getSession()
-                    );
+                            getSession());
                     registerBackend(simpleBackend);
                 }
                 return true;
@@ -78,7 +89,7 @@ public class SearchVirtualBackend extends AbstractVirtualBackend {
         for (int i = idx; i >= 0; i--) {
             String other = paths.get(i);
             if (path.contains(other)) {
-                if (new Path(other).segmentCount() == level-1) {
+                if (new Path(other).segmentCount() == level - 1) {
                     return false;
                 }
             }

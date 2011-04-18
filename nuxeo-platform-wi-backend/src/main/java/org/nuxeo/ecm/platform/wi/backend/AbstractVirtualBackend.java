@@ -1,31 +1,55 @@
+/*
+ * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Gagnavarslan ehf
+ */
 package org.nuxeo.ecm.platform.wi.backend;
+
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Path;
-import org.nuxeo.ecm.core.api.*;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.PathRef;
 
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-
-/**
- * @author Organization: Gagnavarslan ehf
- */
 public abstract class AbstractVirtualBackend extends AbstractCoreBackend {
 
     private static final Log log = LogFactory.getLog(AbstractVirtualBackend.class);
 
     protected Map<String, Backend> backendMap;
+
     protected LinkedList<String> orderedBackendNames;
+
     protected String rootUrl;
+
     private String backendDisplayName;
 
-    protected AbstractVirtualBackend(String name, String rootUrl){
+    protected AbstractVirtualBackend(String name, String rootUrl) {
         this(name, rootUrl, null);
     }
 
-    protected AbstractVirtualBackend(String name, String rootUrl, CoreSession session) {
+    protected AbstractVirtualBackend(String name, String rootUrl,
+            CoreSession session) {
         super(session);
         this.backendDisplayName = name;
         this.rootUrl = new Path(rootUrl).append(this.backendDisplayName).toString();
@@ -36,18 +60,22 @@ public abstract class AbstractVirtualBackend extends AbstractCoreBackend {
         return "";
     }
 
+    @Override
     public String getRootUrl() {
         return rootUrl;
     }
 
+    @Override
     public final boolean isVirtual() {
         return true;
     }
 
+    @Override
     public boolean isRoot() {
         return false;
     }
 
+    @Override
     public String getBackendDisplayName() {
         return backendDisplayName;
     }
@@ -55,17 +83,17 @@ public abstract class AbstractVirtualBackend extends AbstractCoreBackend {
     @Override
     public LinkedList<String> getVirtualFolderNames() throws ClientException {
         initIfNeed();
-        if(orderedBackendNames == null){
+        if (orderedBackendNames == null) {
             return new LinkedList<String>();
         }
         return orderedBackendNames;
     }
 
     protected void registerBackend(Backend backend) {
-        if(backendMap == null){
+        if (backendMap == null) {
             backendMap = new ConcurrentHashMap<String, Backend>();
         }
-        if(orderedBackendNames == null){
+        if (orderedBackendNames == null) {
             orderedBackendNames = new LinkedList<String>();
         }
         backendMap.put(backend.getBackendDisplayName(), backend);
@@ -85,11 +113,11 @@ public abstract class AbstractVirtualBackend extends AbstractCoreBackend {
                 log.error("Error during backend initialization", e);
                 return null;
             }
-            if(backendMap == null){
+            if (backendMap == null) {
                 return null;
             }
             Backend backend = backendMap.get(key);
-            if(backend == null){
+            if (backend == null) {
                 return null;
             }
             String location = path.removeFirstSegments(1).toString();
@@ -100,8 +128,8 @@ public abstract class AbstractVirtualBackend extends AbstractCoreBackend {
     @Override
     public void destroy() {
         super.destroy();
-        if(backendMap != null){
-            for(Backend backend : backendMap.values()){
+        if (backendMap != null) {
+            for (Backend backend : backendMap.values()) {
                 backend.destroy();
             }
         }
@@ -135,7 +163,8 @@ public abstract class AbstractVirtualBackend extends AbstractCoreBackend {
     }
 
     @Override
-    public DocumentModel resolveLocation(String location) throws ClientException {
+    public DocumentModel resolveLocation(String location)
+            throws ClientException {
         throw new UnsupportedOperationException();
     }
 
@@ -155,37 +184,44 @@ public abstract class AbstractVirtualBackend extends AbstractCoreBackend {
     }
 
     @Override
-    public void renameItem(DocumentModel source, String destinationName) throws ClientException {
+    public void renameItem(DocumentModel source, String destinationName)
+            throws ClientException {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public DocumentModel moveItem(DocumentModel source, PathRef targetParentRef) throws ClientException {
+    public DocumentModel moveItem(DocumentModel source, PathRef targetParentRef)
+            throws ClientException {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public DocumentModel copyItem(DocumentModel source, PathRef targetParentRef) throws ClientException {
+    public DocumentModel copyItem(DocumentModel source, PathRef targetParentRef)
+            throws ClientException {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public DocumentModel createFolder(String parentPath, String name) throws ClientException {
+    public DocumentModel createFolder(String parentPath, String name)
+            throws ClientException {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public DocumentModel createFile(String parentPath, String name, Blob content) throws ClientException {
+    public DocumentModel createFile(String parentPath, String name, Blob content)
+            throws ClientException {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public DocumentModel createFile(String parentPath, String name) throws ClientException {
+    public DocumentModel createFile(String parentPath, String name)
+            throws ClientException {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public List<DocumentModel> getChildren(DocumentRef ref) throws ClientException {
+    public List<DocumentModel> getChildren(DocumentRef ref)
+            throws ClientException {
         throw new UnsupportedOperationException();
     }
 
@@ -205,7 +241,8 @@ public abstract class AbstractVirtualBackend extends AbstractCoreBackend {
     }
 
     @Override
-    public boolean hasPermission(DocumentRef docRef, String permission) throws ClientException {
+    public boolean hasPermission(DocumentRef docRef, String permission)
+            throws ClientException {
         throw new UnsupportedOperationException();
     }
 
@@ -214,17 +251,19 @@ public abstract class AbstractVirtualBackend extends AbstractCoreBackend {
         throw new UnsupportedOperationException();
     }
 
-    public DocumentModel moveItem(DocumentModel source, DocumentRef targetParentRef, String name) throws ClientException {
+    @Override
+    public DocumentModel moveItem(DocumentModel source,
+            DocumentRef targetParentRef, String name) throws ClientException {
         throw new UnsupportedOperationException();
     }
 
     @Override
     public String getVirtualPath(String path) throws ClientException {
         initIfNeed();
-        for(String backendName : orderedBackendNames){
+        for (String backendName : orderedBackendNames) {
             Backend backend = backendMap.get(backendName);
             String url = backend.getVirtualPath(path);
-            if(StringUtils.isNotEmpty(url)){
+            if (StringUtils.isNotEmpty(url)) {
                 return url;
             }
         }

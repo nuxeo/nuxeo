@@ -1,4 +1,23 @@
+/*
+ * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Thierry Delprat
+ *     Gagnavarslan ehf
+ */
 package org.nuxeo.ecm.platform.wi.backend.wss;
+
+import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -10,11 +29,6 @@ import org.nuxeo.wss.spi.WSSListItem;
 import org.nuxeo.wss.spi.dws.DWSMetaData;
 import org.nuxeo.wss.spi.dws.Site;
 
-import java.util.List;
-
-/**
- * @author Organization: Gagnavarslan ehf
- */
 public class WSSRootBackendAdapter extends WSSBackendAdapter {
 
     public WSSRootBackendAdapter(Backend backend, String virtualRoot) {
@@ -40,7 +54,7 @@ public class WSSRootBackendAdapter extends WSSBackendAdapter {
 
     @Override
     public void begin() throws WSSException {
-        //backend.begin();
+        // backend.begin();
     }
 
     @Override
@@ -54,18 +68,20 @@ public class WSSRootBackendAdapter extends WSSBackendAdapter {
     }
 
     @Override
-    public WSSListItem moveItem(String location, String destination) throws WSSException {
+    public WSSListItem moveItem(String location, String destination)
+            throws WSSException {
         WSSBackend sourceBackend = getBackend(location);
         DocumentModel source = null;
-        if(sourceBackend instanceof WSSBackendAdapter){
-            source = ((WSSBackendAdapter)sourceBackend).getDocument(location);
+        if (sourceBackend instanceof WSSBackendAdapter) {
+            source = ((WSSBackendAdapter) sourceBackend).getDocument(location);
         }
-        if(source == null){
+        if (source == null) {
             throw new WSSException("Can't move document. Source did not found.");
         }
         WSSBackend destinationBackend = getBackend(destination);
-        if(destinationBackend instanceof WSSBackendAdapter){
-            return ((WSSBackendAdapter)destinationBackend).moveItem(source, destination);
+        if (destinationBackend instanceof WSSBackendAdapter) {
+            return ((WSSBackendAdapter) destinationBackend).moveItem(source,
+                    destination);
         } else {
             return sourceBackend.moveItem(location, destination);
         }
@@ -77,17 +93,20 @@ public class WSSRootBackendAdapter extends WSSBackendAdapter {
     }
 
     @Override
-    public WSSListItem createFolder(String parentPath, String name) throws WSSException {
+    public WSSListItem createFolder(String parentPath, String name)
+            throws WSSException {
         return getBackend(parentPath).createFolder(parentPath, name);
     }
 
     @Override
-    public WSSListItem createFileItem(String parentPath, String name) throws WSSException {
+    public WSSListItem createFileItem(String parentPath, String name)
+            throws WSSException {
         return getBackend(parentPath).createFileItem(parentPath, name);
     }
 
     @Override
-    public DWSMetaData getMetaData(String location, WSSRequest wssRequest) throws WSSException {
+    public DWSMetaData getMetaData(String location, WSSRequest wssRequest)
+            throws WSSException {
         return getBackend(location).getMetaData(location, wssRequest);
     }
 
@@ -96,16 +115,16 @@ public class WSSRootBackendAdapter extends WSSBackendAdapter {
         return getBackend(location).getSite(location);
     }
 
-    protected WSSBackend getBackend(String location){
-        if(StringUtils.isEmpty(location)){
+    protected WSSBackend getBackend(String location) {
+        if (StringUtils.isEmpty(location)) {
             return new WSSFakeBackend();
         }
 
         Backend backend = this.backend.getBackend(cleanLocation(location));
-        if(backend == null){
+        if (backend == null) {
             return new WSSFakeBackend();
         }
-        if(backend.isVirtual()){
+        if (backend.isVirtual()) {
             return new WSSVirtualBackendAdapter(backend, virtualRoot);
         }
         return new WSSBackendAdapter(backend, virtualRoot);

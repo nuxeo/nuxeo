@@ -1,46 +1,75 @@
+/*
+ * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Gagnavarslan ehf
+ */
 package org.nuxeo.ecm.platform.wi.backend;
+
+import static org.nuxeo.ecm.webdav.Util.cleanName;
+
+import java.net.URLEncoder;
+import java.security.Principal;
+import java.text.DateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Path;
-import org.nuxeo.ecm.core.api.*;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.LifeCycleConstants;
+import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.ecm.webdav.Util;
-import org.nuxeo.ecm.webdav.backend.WebDavBackend;
 import org.nuxeo.runtime.api.Framework;
 
-import java.net.URLEncoder;
-import java.security.Principal;
-import java.text.DateFormat;
-import java.util.*;
-
-import static org.nuxeo.ecm.webdav.Util.cleanName;
-
-/**
- * @author Organization: Gagnavarslan ehf
- */
 public class SimpleBackend extends AbstractCoreBackend {
 
     private static final Log log = LogFactory.getLog(SimpleBackend.class);
+
     private static final int PATH_CACHE_SIZE = 255;
 
     protected String backendDisplayName;
+
     protected String rootPath;
+
     protected String rootUrl;
+
     protected TrashService trashService;
+
     protected PathCache pathCache;
 
-    protected SimpleBackend(String backendDisplayName, String rootPath, String rootUrl, CoreSession session) {
+    protected SimpleBackend(String backendDisplayName, String rootPath,
+            String rootUrl, CoreSession session) {
         super(session);
         this.backendDisplayName = backendDisplayName;
         this.rootPath = rootPath;
         this.rootUrl = rootUrl;
     }
 
-    protected SimpleBackend(String backendDisplayName, String rootPath, String rootUrl) {
+    protected SimpleBackend(String backendDisplayName, String rootPath,
+            String rootUrl) {
         this(backendDisplayName, rootPath, rootUrl, null);
     }
 
@@ -51,18 +80,22 @@ public class SimpleBackend extends AbstractCoreBackend {
         return pathCache;
     }
 
+    @Override
     public String getRootPath() {
         return rootPath;
     }
 
+    @Override
     public String getRootUrl() {
         return rootUrl;
     }
 
+    @Override
     public String getBackendDisplayName() {
         return backendDisplayName;
     }
 
+    @Override
     public boolean exists(String location) {
         try {
             DocumentModel doc = resolveLocation(location);
@@ -84,31 +117,40 @@ public class SimpleBackend extends AbstractCoreBackend {
         return false;
     }
 
-    public boolean hasPermission(DocumentRef docRef, String permission) throws ClientException {
+    @Override
+    public boolean hasPermission(DocumentRef docRef, String permission)
+            throws ClientException {
         return getSession().hasPermission(docRef, permission);
     }
 
+    @Override
     public DocumentModel saveDocument(DocumentModel doc) throws ClientException {
         return getSession().saveDocument(doc);
     }
 
+    @Override
     public LinkedList<String> getVirtualFolderNames() {
         return new LinkedList<String>();
     }
 
+    @Override
     public final boolean isVirtual() {
         return false;
     }
 
+    @Override
     public boolean isRoot() {
         return false;
     }
 
+    @Override
     public final Backend getBackend(String path) {
         return this;
     }
 
-    public DocumentModel resolveLocation(String location) throws ClientException {
+    @Override
+    public DocumentModel resolveLocation(String location)
+            throws ClientException {
         Path resolvedLocation = parseLocation(location);
 
         DocumentModel doc = null;
@@ -127,7 +169,8 @@ public class SimpleBackend extends AbstractCoreBackend {
 
             // first try with spaces (for create New Folder)
             String folderName = cleanName(filename);
-            DocumentRef folderRef = new PathRef(parentLocation.append(folderName).toString());
+            DocumentRef folderRef = new PathRef(parentLocation.append(
+                    folderName).toString());
             if (exists(folderRef)) {
                 doc = getSession().getDocument(folderRef);
             }
@@ -135,7 +178,8 @@ public class SimpleBackend extends AbstractCoreBackend {
             DocumentModel parentDocument = resolveParent(parentLocation.toString());
             if (parentDocument == null) {
                 log.warn("Unable to find parent for item " + location);
-                throw new ClientException("Unable to find parent for item " + location);
+                throw new ClientException("Unable to find parent for item "
+                        + location);
             }
             List<DocumentModel> children = getChildren(parentDocument.getRef());
             for (DocumentModel child : children) {
@@ -145,10 +189,14 @@ public class SimpleBackend extends AbstractCoreBackend {
                     if (blob != null && filename.equals(blob.getFilename())) {
                         doc = child;
                         break;
-                    } else if (blob != null && URLEncoder.encode(filename).equals(blob.getFilename())) {
+                    } else if (blob != null
+                            && URLEncoder.encode(filename).equals(
+                                    blob.getFilename())) {
                         doc = child;
                         break;
-                    } else if (blob != null && Util.encode(blob.getFilename().getBytes(), "ISO-8859-1").equals(filename)) {
+                    } else if (blob != null
+                            && Util.encode(blob.getFilename().getBytes(),
+                                    "ISO-8859-1").equals(filename)) {
                         doc = child;
                         break;
                     }
@@ -160,7 +208,8 @@ public class SimpleBackend extends AbstractCoreBackend {
         return doc;
     }
 
-    protected DocumentModel resolveParent(String location) throws ClientException {
+    protected DocumentModel resolveParent(String location)
+            throws ClientException {
         DocumentModel doc = null;
         doc = getPathCache().get(location.toString());
         if (doc != null) {
@@ -177,7 +226,8 @@ public class SimpleBackend extends AbstractCoreBackend {
 
             // first try with spaces (for create New Folder)
             String folderName = cleanName(filename);
-            DocumentRef folderRef = new PathRef(parentLocation.append(folderName).toString());
+            DocumentRef folderRef = new PathRef(parentLocation.append(
+                    folderName).toString());
             if (exists(folderRef)) {
                 doc = getSession().getDocument(folderRef);
             }
@@ -186,6 +236,7 @@ public class SimpleBackend extends AbstractCoreBackend {
         return doc;
     }
 
+    @Override
     public Path parseLocation(String location) {
         Path finalLocation = new Path(rootPath);
         Path rootUrlPath = new Path(rootUrl);
@@ -197,6 +248,7 @@ public class SimpleBackend extends AbstractCoreBackend {
         return new Path(parentPath).append(fileName);
     }
 
+    @Override
     public void removeItem(String location) throws ClientException {
         DocumentModel docToRemove = null;
         try {
@@ -210,6 +262,7 @@ public class SimpleBackend extends AbstractCoreBackend {
         removeItem(docToRemove.getRef());
     }
 
+    @Override
     public void removeItem(DocumentRef ref) throws ClientException {
         try {
             DocumentModel doc = getSession().getDocument(ref);
@@ -217,20 +270,25 @@ public class SimpleBackend extends AbstractCoreBackend {
                 getTrashService().trashDocuments(Arrays.asList(doc));
                 getPathCache().remove(doc.getPathAsString());
             } else {
-                log.warn("Can't move document " + ref.toString() + " to trash. Document did not found.");
+                log.warn("Can't move document " + ref.toString()
+                        + " to trash. Document did not found.");
             }
         } catch (Exception e) {
             throw new ClientException("Error while deleting doc " + ref, e);
         }
     }
 
+    @Override
     public boolean isRename(String source, String destination) {
         Path sourcePath = new Path(source);
         Path destinationPath = new Path(destination);
-        return sourcePath.removeLastSegments(1).toString().equals(destinationPath.removeLastSegments(1).toString());
+        return sourcePath.removeLastSegments(1).toString().equals(
+                destinationPath.removeLastSegments(1).toString());
     }
 
-    public void renameItem(DocumentModel source, String destinationName) throws ClientException {
+    @Override
+    public void renameItem(DocumentModel source, String destinationName)
+            throws ClientException {
         if (source.isFolder()) {
             source.setPropertyValue("dc:title", destinationName);
             getSession().saveDocument(source);
@@ -255,20 +313,28 @@ public class SimpleBackend extends AbstractCoreBackend {
             if (!blobUpdated) {
                 source.setPropertyValue("dc:title", destinationName);
                 source = getSession().saveDocument(source);
-                moveItem(source, source.getParentRef(), cleanName(destinationName));
+                moveItem(source, source.getParentRef(),
+                        cleanName(destinationName));
             }
         }
     }
 
-    public DocumentModel moveItem(DocumentModel source, PathRef targetParentRef) throws ClientException {
+    @Override
+    public DocumentModel moveItem(DocumentModel source, PathRef targetParentRef)
+            throws ClientException {
         return moveItem(source, targetParentRef, source.getName());
     }
 
-    public DocumentModel moveItem(DocumentModel source, DocumentRef targetParentRef, String name) throws ClientException {
+    @Override
+    public DocumentModel moveItem(DocumentModel source,
+            DocumentRef targetParentRef, String name) throws ClientException {
         try {
             cleanTrashPath(targetParentRef, name);
-            DocumentModel model = getSession().move(source.getRef(), targetParentRef, name);
-            getPathCache().put(parseLocation(targetParentRef.toString()) + "/" + name, model);
+            DocumentModel model = getSession().move(source.getRef(),
+                    targetParentRef, name);
+            getPathCache().put(
+                    parseLocation(targetParentRef.toString()) + "/" + name,
+                    model);
             getPathCache().remove(source.getPathAsString());
             return model;
         } catch (ClientException e) {
@@ -277,10 +343,15 @@ public class SimpleBackend extends AbstractCoreBackend {
         }
     }
 
-    public DocumentModel copyItem(DocumentModel source, PathRef targetParentRef) throws ClientException {
+    @Override
+    public DocumentModel copyItem(DocumentModel source, PathRef targetParentRef)
+            throws ClientException {
         try {
-            DocumentModel model = getSession().copy(source.getRef(), targetParentRef, source.getName());
-            getPathCache().put(parseLocation(targetParentRef.toString()) + "/" + source.getName(), model);
+            DocumentModel model = getSession().copy(source.getRef(),
+                    targetParentRef, source.getName());
+            getPathCache().put(
+                    parseLocation(targetParentRef.toString()) + "/"
+                            + source.getName(), model);
             return model;
         } catch (ClientException e) {
             discardChanges();
@@ -288,10 +359,13 @@ public class SimpleBackend extends AbstractCoreBackend {
         }
     }
 
-    public DocumentModel createFolder(String parentPath, String name) throws ClientException {
+    @Override
+    public DocumentModel createFolder(String parentPath, String name)
+            throws ClientException {
         DocumentModel parent = resolveLocation(parentPath);
         if (!parent.isFolder()) {
-            throw new ClientException("Can not create a child in a non folderish node");
+            throw new ClientException(
+                    "Can not create a child in a non folderish node");
         }
 
         String targetType = "Folder";
@@ -301,8 +375,8 @@ public class SimpleBackend extends AbstractCoreBackend {
         name = cleanName(name);
         try {
             cleanTrashPath(parent, name);
-            DocumentModel folder = getSession().createDocumentModel(parent.getPathAsString(), name,
-                    targetType);
+            DocumentModel folder = getSession().createDocumentModel(
+                    parent.getPathAsString(), name, targetType);
             folder.setPropertyValue("dc:title", name);
             folder = getSession().createDocument(folder);
             getPathCache().put(parseLocation(parentPath) + "/" + name, folder);
@@ -313,18 +387,21 @@ public class SimpleBackend extends AbstractCoreBackend {
         }
     }
 
-    public DocumentModel createFile(String parentPath, String name, Blob content) throws ClientException {
+    @Override
+    public DocumentModel createFile(String parentPath, String name, Blob content)
+            throws ClientException {
         DocumentModel parent = resolveLocation(parentPath);
         if (!parent.isFolder()) {
-            throw new ClientException("Can not create a child in a non folderish node");
+            throw new ClientException(
+                    "Can not create a child in a non folderish node");
         }
 
         String targetType = "File";
         name = cleanName(name);
         try {
             cleanTrashPath(parent, name);
-            DocumentModel file = getSession().createDocumentModel(parent.getPathAsString(), name,
-                    targetType);
+            DocumentModel file = getSession().createDocumentModel(
+                    parent.getPathAsString(), name, targetType);
             file.setPropertyValue("dc:title", name);
             if (content != null) {
                 file.setProperty("file", "content", content);
@@ -339,10 +416,13 @@ public class SimpleBackend extends AbstractCoreBackend {
         }
     }
 
-    public DocumentModel createFile(String parentPath, String name) throws ClientException {
+    @Override
+    public DocumentModel createFile(String parentPath, String name)
+            throws ClientException {
         return createFile(parentPath, name, null);
     }
 
+    @Override
     public String getDisplayName(DocumentModel doc) {
         if (doc.isFolder()) {
             return doc.getName();
@@ -355,7 +435,9 @@ public class SimpleBackend extends AbstractCoreBackend {
         }
     }
 
-    public List<DocumentModel> getChildren(DocumentRef ref) throws ClientException {
+    @Override
+    public List<DocumentModel> getChildren(DocumentRef ref)
+            throws ClientException {
         List<DocumentModel> result = new ArrayList<DocumentModel>();
         List<DocumentModel> children = getSession(true).getChildren(ref);
         for (DocumentModel child : children) {
@@ -365,7 +447,8 @@ public class SimpleBackend extends AbstractCoreBackend {
                 log.debug("Skipping deleted doc");
             } else if (!child.hasSchema("dublincore")) {
                 log.debug("Skipping doc without dublincore schema");
-            } else if (!child.hasSchema("file") && !child.hasFacet(FacetNames.FOLDERISH)) {
+            } else if (!child.hasSchema("file")
+                    && !child.hasFacet(FacetNames.FOLDERISH)) {
                 log.debug("Skipping doc without file schema");
             } else {
                 result.add(child);
@@ -374,11 +457,13 @@ public class SimpleBackend extends AbstractCoreBackend {
         return result;
     }
 
+    @Override
     public boolean isLocked(DocumentRef ref) throws ClientException {
         String lock = getSession().getLock(ref);
         return StringUtils.isNotEmpty(lock);
     }
 
+    @Override
     public boolean canUnlock(DocumentRef ref) throws ClientException {
         Principal principal = getSession().getPrincipal();
         if (principal == null || StringUtils.isEmpty(principal.getName())) {
@@ -389,19 +474,22 @@ public class SimpleBackend extends AbstractCoreBackend {
         return principal.getName().equals(checkoutUser);
     }
 
+    @Override
     public String lock(DocumentRef ref) throws ClientException {
         Principal principal = getSession().getPrincipal();
         if (principal == null || StringUtils.isEmpty(principal.getName())) {
             log.error("Empty session principal. Error while locking.");
             return "";
         }
-        String lockDate = DateFormat.getDateInstance(DateFormat.MEDIUM).format(new Date());
+        String lockDate = DateFormat.getDateInstance(DateFormat.MEDIUM).format(
+                new Date());
         String lockToken = principal.getName() + ":" + lockDate;
         getSession().setLock(ref, lockToken);
         saveChanges();
         return lockToken;
     }
 
+    @Override
     public boolean unlock(DocumentRef ref) throws ClientException {
         if (!canUnlock(ref)) {
             return false;
@@ -411,6 +499,7 @@ public class SimpleBackend extends AbstractCoreBackend {
         return true;
     }
 
+    @Override
     public String getCheckoutUser(DocumentRef ref) throws ClientException {
         String existingLock = getSession().getLock(ref);
         if (existingLock != null) {
@@ -420,7 +509,8 @@ public class SimpleBackend extends AbstractCoreBackend {
         return null;
     }
 
-    public String getVirtualPath(String path){
+    @Override
+    public String getVirtualPath(String path) {
         if (path.startsWith(this.rootPath)) {
             return rootUrl + path.substring(this.rootPath.length());
         } else {
@@ -443,7 +533,8 @@ public class SimpleBackend extends AbstractCoreBackend {
         return null;
     }
 
-    protected boolean isTrashDocument(DocumentModel model) throws ClientException {
+    protected boolean isTrashDocument(DocumentModel model)
+            throws ClientException {
         if (model == null) {
             return true;
         } else if (LifeCycleConstants.DELETED_STATE.equals(model.getCurrentLifeCycleState())) {
@@ -460,11 +551,14 @@ public class SimpleBackend extends AbstractCoreBackend {
         return trashService;
     }
 
-    private boolean cleanTrashPath(DocumentModel parent, String name) throws ClientException {
+    private boolean cleanTrashPath(DocumentModel parent, String name)
+            throws ClientException {
         Path checkedPath = new Path(parent.getPathAsString()).append(name);
         if (getSession().exists(new PathRef(checkedPath.toString()))) {
-            DocumentModel model = getSession().getDocument(new PathRef(checkedPath.toString()));
-            if(model != null && LifeCycleConstants.DELETED_STATE.equals(model.getCurrentLifeCycleState())){
+            DocumentModel model = getSession().getDocument(
+                    new PathRef(checkedPath.toString()));
+            if (model != null
+                    && LifeCycleConstants.DELETED_STATE.equals(model.getCurrentLifeCycleState())) {
                 name = name + "." + System.currentTimeMillis();
                 getSession().move(model.getRef(), parent.getRef(), name);
                 return true;
@@ -473,7 +567,8 @@ public class SimpleBackend extends AbstractCoreBackend {
         return false;
     }
 
-    private boolean cleanTrashPath(DocumentRef parentRef, String name) throws ClientException {
+    private boolean cleanTrashPath(DocumentRef parentRef, String name)
+            throws ClientException {
         DocumentModel parent = getSession().getDocument(parentRef);
         return cleanTrashPath(parent, name);
     }

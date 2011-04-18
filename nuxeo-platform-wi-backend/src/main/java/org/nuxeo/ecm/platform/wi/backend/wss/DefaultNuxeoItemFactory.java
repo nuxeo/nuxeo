@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,21 +12,18 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
+ *     Thierry Delprat
  */
-
 package org.nuxeo.ecm.platform.wi.backend.wss;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 
-/**
- * @author Organization: Gagnavarslan ehf
- */
 public class DefaultNuxeoItemFactory implements WSSListItemFactory {
 
-    public NuxeoListItem createItem(DocumentModel doc,
-            String corePathPrefix, String urlRoot) {
-        return new NuxeoListItem(doc,corePathPrefix,urlRoot);
+    @Override
+    public NuxeoListItem createItem(DocumentModel doc, String corePathPrefix,
+            String urlRoot) {
+        return new NuxeoListItem(doc, corePathPrefix, urlRoot);
     }
 
 }

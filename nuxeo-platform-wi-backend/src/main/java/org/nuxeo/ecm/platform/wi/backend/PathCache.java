@@ -1,21 +1,40 @@
+/*
+ * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Gagnavarslan ehf
+ */
 package org.nuxeo.ecm.platform.wi.backend;
-
-import org.nuxeo.ecm.core.api.*;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * @author Organization: Gagnavarslan ehf
- */
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.IdRef;
+
 public class PathCache {
 
     private static final long FOLDER_LIFE_TIME = 30 * 60 * 1000;
+
     private static final long FILE_LIFE_TIME = 1 * 60 * 1000;
 
     private int maxSize;
+
     private Map<String, Value> pathToUuidCache = new ConcurrentHashMap<String, Value>();
+
     private CoreSession session;
 
     public PathCache(CoreSession session, int maxSize) {
@@ -30,8 +49,11 @@ public class PathCache {
         if (pathToUuidCache.size() >= maxSize) {
             clean();
         }
-        pathToUuidCache.put(path, new Value(System.currentTimeMillis()
-                + (model.isFolder() ? FOLDER_LIFE_TIME : FILE_LIFE_TIME), model.getId()));
+        pathToUuidCache.put(path,
+                new Value(
+                        System.currentTimeMillis()
+                                + (model.isFolder() ? FOLDER_LIFE_TIME
+                                        : FILE_LIFE_TIME), model.getId()));
     }
 
     public DocumentModel get(String path) {
@@ -49,16 +71,16 @@ public class PathCache {
         try {
             model = session.getDocument(new IdRef(uuid));
         } catch (ClientException e) {
-            //do nothing
+            // do nothing
         }
-        if(model == null){
+        if (model == null) {
             pathToUuidCache.remove(path);
         }
-        
+
         return model;
     }
 
-    public void remove(String path){
+    public void remove(String path) {
         pathToUuidCache.remove(path);
     }
 
@@ -74,6 +96,7 @@ public class PathCache {
 
     private class Value {
         private long expiredTime;
+
         private String value;
 
         private Value(long expiredTime, String value) {
@@ -85,6 +108,7 @@ public class PathCache {
             return expiredTime;
         }
 
+        @SuppressWarnings("unused")
         public void setExpiredTime(long expiredTime) {
             this.expiredTime = expiredTime;
         }
@@ -93,6 +117,7 @@ public class PathCache {
             return value;
         }
 
+        @SuppressWarnings("unused")
         public void setValue(String value) {
             this.value = value;
         }

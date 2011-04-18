@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,20 +12,16 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
+ *     Thierry Delprat
  */
-
 package org.nuxeo.ecm.platform.wi.service;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.nuxeo.ecm.platform.wi.backend.Backend;
 import org.nuxeo.ecm.platform.wi.backend.BackendFactory;
 import org.nuxeo.ecm.platform.wi.filter.WISession;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.wss.servlet.WSSRequest;
-import org.nuxeo.wss.spi.WSSBackend;
-import org.nuxeo.wss.spi.WSSBackendFactory;
-
-import javax.servlet.http.HttpServletRequest;
 
 public class PluggableBackendFactory implements BackendFactory {
 
@@ -33,8 +29,8 @@ public class PluggableBackendFactory implements BackendFactory {
 
     private BackendFactory getBackendFactory() {
         if (factory == null) {
-            WIPluggableBackendManager manager =
-                    (WIPluggableBackendManager) Framework.getRuntime().getComponent(WIPluggableBackendManager.NAME);
+            WIPluggableBackendManager manager = (WIPluggableBackendManager) Framework.getRuntime().getComponent(
+                    WIPluggableBackendManager.NAME);
             factory = manager.getBackendFactory();
         }
         return factory;
