@@ -30,7 +30,7 @@
       </acl>
       <template>
         <templateItem typeName="Domain" id="default-domain" title="Default domain"
-            description="Nuxeo 5 default domain"/>
+            description="Default domain"/>
       </template>
     </factoryBinding>
 
