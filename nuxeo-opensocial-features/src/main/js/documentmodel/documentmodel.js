@@ -13,10 +13,10 @@ var documentloader = documentloader
         headers["Expires", "Fri, 01 Jan 1990 00:00:00 GMT"];
         headers["Pragma", "no-cache"];
         headers["Cache-control"] = "no-cache, must-revalidate";
-        headers["X-NUXEO-INTEGRATED-AUTH"] = readCookie("JSESSIONID");
 
         parameters[gadgets.io.RequestParameters.HEADERS] = headers;
         parameters[gadgets.io.RequestParameters.CONTENT_TYPE] = gadgets.io.ContentType.JSON;
+        parameters[gadgets.io.RequestParameters.AUTHORIZATION] = gadgets.io.AuthorizationType.SIGNED;
         parameters[gadgets.io.RequestParameters.METHOD] = gadgets.io.MethodType.GET;
 
         gadgets.io.makeRequest(url, function(response) {
