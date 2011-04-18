@@ -16,6 +16,8 @@ import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.zip.ZipEntry;
@@ -38,6 +40,7 @@ import org.nuxeo.ecm.automation.client.jaxrs.impl.HttpAutomationClient;
 import org.nuxeo.ecm.automation.client.jaxrs.model.BeanInput;
 import org.nuxeo.ecm.automation.client.jaxrs.model.Blobs;
 import org.nuxeo.ecm.automation.client.jaxrs.model.DateInput;
+import org.nuxeo.ecm.automation.client.jaxrs.model.DateUtils;
 import org.nuxeo.ecm.automation.client.jaxrs.model.DocRef;
 import org.nuxeo.ecm.automation.client.jaxrs.model.DocRefs;
 import org.nuxeo.ecm.automation.client.jaxrs.model.Document;
@@ -272,6 +275,10 @@ public class RestTest {
                 Constants.HEADER_NX_SCHEMAS, "*").set("value",
                 "/docsInput/note2").execute();
         assertEquals("updated", doc.getString("dc:description"));
+       
+        String now = DateUtils.formatDate(new Date());
+        doc = (Document)session.newRequest(UpdateDocument.ID).setHeader(Constants.HEADER_NX_SCHEMAS, "*").setInput(new DocRef("/docsInput/note1")).set("properties", "dc:valid=".concat(now)).execute();
+        assertThat(doc.getDate("dc:valid"), is(DateUtils.parseDate(now)));
     }
 
     /**
@@ -637,7 +644,7 @@ public class RestTest {
         r = session.newRequest(ReturnOperation.ID).setInput(
                 new PrimitiveInput<Double>(1.1d)).execute();
         assertThat((Double) r, IsCloseTo.closeTo(1.1d, 0.1));
-        Date now = new Date();
+        Date now = DateUtils.parseDate(DateUtils.formatDate(new Date(0)));
         r = session.newRequest(ReturnOperation.ID).setInput(new DateInput(now)).execute();
         assertThat((Date) r, is(now));
     }

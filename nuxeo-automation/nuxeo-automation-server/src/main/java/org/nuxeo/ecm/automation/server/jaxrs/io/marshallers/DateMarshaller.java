@@ -39,7 +39,7 @@ public class DateMarshaller implements JsonMarshaller<Date> {
     }
     
     protected SimpleDateFormat newFormat() {
-        return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+        return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssz");
     }
     
     @Override
