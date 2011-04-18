@@ -9,7 +9,7 @@
 
   <documentation>
     The content template manager service provide factories to automatically create Document.
-    The factories are used whenever a document is created using EventListener. 
+    The factories are used whenever a document is created using EventListener.
     @author Thierry Delprat (td@nuxeo.com)
   </documentation>
 
@@ -25,43 +25,42 @@
 
   <extension-point name="factoryBinding">
     <documentation>
-		  Define a new factory binding.
-		  
-		  -factoryBinding 
-		    - name: name of the factory, defining a factory with the same name will override the first to be registred.
-		    - factoryName: the name of the factory defined in the factory extensionPoint.
-		    - targetType: The document Type for wich the factory will be executed.
+      Define a new factory binding.
 
-		  -acl: set rights on document to your users.
-		    -principal: Name of the group/user
-		    -permission: the permission you want to set.
-		    -granted: grant or denied the permission.
+      -factoryBinding
+        - name: name of the factory, defining a factory with the same name will override the first to be registred.
+        - factoryName: the name of the factory defined in the factory extensionPoint.
+        - targetType: The document Type for wich the factory will be executed.
 
-		  -template
-		    - typeName: The Type of the Document you want to create.
-		    - id: The id of the Document you want to create.
-		    - title: The title of the Document you want to create.
-		    - description: The description of the Document you want to create.
-		    - path: additionary path, added to facctoryBinding's targetType DocPath
+      -acl: set rights on document to your users.
+        -principal: Name of the group/user
+        -permission: the permission you want to set.
+        -granted: grant or denied the permission.
 
-		  Example of a factoryBinding Registration:
-		  
-		  <code>  
-		    <factoryBinding name="RootFactory" factoryName="SimpleTemplateFactory" targetType="Root">
-		      <acl>
-		        <ace principal="Administrator" permission="Everything" granted="true"/>
-		        <ace principal="administrators" permission="Everything" granted="true"/>
-		        <ace principal="members" permission="Read" granted="true"/>
-		        <ace principal="members" permission="Version" granted="true"/>
-		      </acl>
-		      <template>
-		        <templateItem typeName="Domain" id="default-domain" title="Default domain"
-		            description="Nuxeo 5 default domain"/>
-		      </template>
-		    </factoryBinding>
-		  </code>
-    
-    
+      -template
+        - typeName: The Type of the Document you want to create.
+        - id: The id of the Document you want to create.
+        - title: The title of the Document you want to create.
+        - description: The description of the Document you want to create.
+        - path: additionary path, added to facctoryBinding's targetType DocPath
+
+      Example of a factoryBinding Registration:
+
+      <code>
+        <factoryBinding name="RootFactory" factoryName="SimpleTemplateFactory" targetType="Root">
+          <acl>
+            <ace principal="Administrator" permission="Everything" granted="true"/>
+            <ace principal="administrators" permission="Everything" granted="true"/>
+            <ace principal="members" permission="Read" granted="true"/>
+            <ace principal="members" permission="Version" granted="true"/>
+          </acl>
+          <template>
+            <templateItem typeName="Domain" id="default-domain" title="Default domain"
+                description="Nuxeo 5 default domain"/>
+          </template>
+        </factoryBinding>
+      </code>
+
       @author Thierry Delprat (td@nuxeo.com)
     </documentation>
 
