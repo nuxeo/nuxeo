@@ -17,6 +17,11 @@
 
 package org.nuxeo.functionaltests;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
+
 import org.junit.Test;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.LoginPage;
@@ -31,11 +36,6 @@ import org.nuxeo.functionaltests.pages.wizard.SummaryWizardPage;
 import org.nuxeo.functionaltests.pages.wizard.WizardPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
-
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
-import static junit.framework.Assert.assertFalse;
 
 public class ITWizardAndUpdateCenter extends AbstractTest {
 
@@ -58,10 +58,6 @@ public class ITWizardAndUpdateCenter extends AbstractTest {
         return "XXX";
     }
 
-    protected String getDistributionName() {
-        return "Nuxeo CAP";
-    }
-
     private static boolean isWindows() {
         String osName = System.getProperty("os.name");
         return osName.toLowerCase().contains("windows");
@@ -73,7 +69,7 @@ public class ITWizardAndUpdateCenter extends AbstractTest {
         // **********************
         // welcome
         WizardPage welcomePage = get(NUXEO_URL, WizardPage.class);
-        assertEquals("Welcome to " + getDistributionName() , welcomePage.getTitle());
+        assertTrue(welcomePage.getTitle().contains("Welcome to "));
 
         // **********************
         // Settings
@@ -85,7 +81,7 @@ public class ITWizardAndUpdateCenter extends AbstractTest {
         welcomePage = settingsPage.previous();
         assertNotNull(welcomePage);
         assertFalse(welcomePage.hasError());
-        assertEquals("Welcome to " + getDistributionName() , welcomePage.getTitle());
+        assertTrue(welcomePage.getTitle().contains("Welcome to "));
 
         // **********************
         // proxy
@@ -221,7 +217,7 @@ public class ITWizardAndUpdateCenter extends AbstractTest {
         // **********************
         // welcome
         WizardPage welcomePage = get(NUXEO_URL, WizardPage.class);
-        assertEquals("Welcome to " + getDistributionName() , welcomePage.getTitle());
+        assertTrue(welcomePage.getTitle().contains("Welcome to "));
 
         // **********************
         // Settings
