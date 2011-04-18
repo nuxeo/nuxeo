@@ -1,7 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 1
-Bundle-Name: Nuxeo digest Login Module extension
-Bundle-SymbolicName: org.nuxeo.ecm.platform.login.digest;singleton:=true
-Bundle-Version: ${eclipseVersion}-r${buildNumber}
-Require-Bundle: org.nuxeo.ecm.platform.login
-Nuxeo-Component: OSGI-INF/digest-authentication-contrib.xml

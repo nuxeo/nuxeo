@@ -20,7 +20,6 @@
     <module>nuxeo-generic-wss-handler</module>
     <module>nuxeo-platform-wss-backend</module>
     <module>nuxeo-webdav</module>
-    <module>nuxeo-platform-login-digest</module>
   </modules>
 
 </project>
