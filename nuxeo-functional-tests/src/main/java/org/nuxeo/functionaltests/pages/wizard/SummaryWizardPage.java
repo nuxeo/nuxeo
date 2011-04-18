@@ -19,6 +19,7 @@ package org.nuxeo.functionaltests.pages.wizard;
 import org.nuxeo.functionaltests.pages.LoginPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 
 public class SummaryWizardPage extends WizardPage {
 
@@ -30,6 +31,14 @@ public class SummaryWizardPage extends WizardPage {
         nav(WizardPage.class, "Start Nuxeo");
         findElementWithTimeout(By.id("username"), 120 * 1000);
         return asPage(LoginPage.class);
+    }
+
+    public String getRegistration() {
+        WebElement el = findElementWithTimeout(By.id("CLID"));
+        if (el!=null) {
+            return el.getText();
+        }
+        return null;
     }
 
 }
