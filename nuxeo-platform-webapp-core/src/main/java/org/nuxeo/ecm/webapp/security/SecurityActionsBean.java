@@ -34,7 +34,6 @@ import javax.annotation.security.PermitAll;
 import javax.ejb.PostActivate;
 import javax.ejb.PrePassivate;
 import javax.ejb.Remove;
-import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 
@@ -48,6 +47,7 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
+import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.common.utils.i18n.Labeler;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -180,7 +180,8 @@ public class SecurityActionsBean extends InputController implements
 
     /**
      * @return update the dataTableModel from the current {@link SecurityData}
-     *         this method is automatically called by rebuildSecurityData method
+     *         this method is automatically called by rebuildSecurityData
+     *         method
      */
     protected UserPermissionsTableModel reconstructTableModel()
             throws ClientException {
@@ -206,12 +207,12 @@ public class SecurityActionsBean extends InputController implements
 
         /*
          * This is a fix for NXP-1122 issue (ghost users in access rights
-         * lists): for the parent document users list and current document users
-         * list are now used the new getters defined in this class, not the ones
-         * defined in SecurityData. The best solution would be to remove de user
-         * from the ACP/ACE entries too at the deletion moment. When this will
-         * be done, the getters from SecurityData will have to be used again
-         * (here and in documents_rights.xhtml)
+         * lists): for the parent document users list and current document
+         * users list are now used the new getters defined in this class, not
+         * the ones defined in SecurityData. The best solution would be to
+         * remove de user from the ACP/ACE entries too at the deletion moment.
+         * When this will be done, the getters from SecurityData will have to
+         * be used again (here and in documents_rights.xhtml)
          */
         // for (String user : securityData.getCurrentDocumentUsers()) {
         for (String user : getCurrentDocumentUsers()) {
@@ -232,8 +233,10 @@ public class SecurityActionsBean extends InputController implements
         List<AbstractTableCell> cells = new ArrayList<AbstractTableCell>();
 
         if (user.equals(SecurityConstants.EVERYONE)) {
-            List<String> deniedPerms = securityData.getCurrentDocDeny().get(user);
-            if (deniedPerms!=null && deniedPerms.contains(SecurityConstants.EVERYTHING)) {
+            List<String> deniedPerms = securityData.getCurrentDocDeny().get(
+                    user);
+            if (deniedPerms != null
+                    && deniedPerms.contains(SecurityConstants.EVERYTHING)) {
                 // remove DENY EveryThing to EveryOne from display list
                 blockRightInheritance = true;
                 return null;
@@ -306,7 +309,8 @@ public class SecurityActionsBean extends InputController implements
 
             // Temporary fix, to avoid forward to default_view.
             // The same page is reloaded after submit.
-            // May use UserAction, with new kind of action (AFTER_EDIT_RIGHTS) ?
+            // May use UserAction, with new kind of action (AFTER_EDIT_RIGHTS)
+            // ?
             return null;
 
         } catch (Throwable t) {
@@ -415,7 +419,7 @@ public class SecurityActionsBean extends InputController implements
         addPermissions();
         updateSecurityOnDocument();
         selectedEntries = null;
-        facesMessages.add(FacesMessage.SEVERITY_INFO,
+        facesMessages.add(StatusMessage.Severity.INFO,
                 resourcesAccessor.getMessages().get("message.updated.rights"));
         return null;
     }
@@ -423,7 +427,7 @@ public class SecurityActionsBean extends InputController implements
     public String saveSecurityUpdates() throws ClientException {
         updateSecurityOnDocument();
         selectedEntries = null;
-        facesMessages.add(FacesMessage.SEVERITY_INFO,
+        facesMessages.add(StatusMessage.Severity.INFO,
                 resourcesAccessor.getMessages().get("message.updated.rights"));
         return null;
     }
@@ -445,7 +449,7 @@ public class SecurityActionsBean extends InputController implements
         removePermission();
 
         if (!checkPermissions()) {
-            facesMessages.add(FacesMessage.SEVERITY_ERROR,
+            facesMessages.add(StatusMessage.Severity.ERROR,
                     resourcesAccessor.getMessages().get(
                             "message.updated.rights"));
             return null;
@@ -460,7 +464,7 @@ public class SecurityActionsBean extends InputController implements
         for (String user : getDataTableModel().getSelectedUsers()) {
             securityData.removeModifiablePrivilege(user);
             if (!checkPermissions()) {
-                facesMessages.add(FacesMessage.SEVERITY_ERROR,
+                facesMessages.add(StatusMessage.Severity.ERROR,
                         resourcesAccessor.getMessages().get(
                                 "message.error.removeRight"));
                 return null;
@@ -474,14 +478,14 @@ public class SecurityActionsBean extends InputController implements
         for (String user : getDataTableModel().getSelectedUsers()) {
             securityData.removeModifiablePrivilege(user);
             if (!checkPermissions()) {
-                facesMessages.add(FacesMessage.SEVERITY_ERROR,
+                facesMessages.add(StatusMessage.Severity.ERROR,
                         resourcesAccessor.getMessages().get(
                                 "message.error.removeRight"));
                 return null;
             }
         }
         updateSecurityOnDocument();
-        facesMessages.add(FacesMessage.SEVERITY_INFO,
+        facesMessages.add(StatusMessage.Severity.INFO,
                 resourcesAccessor.getMessages().get("message.updated.rights"));
         // do not redirect to the default folder view
         return null;

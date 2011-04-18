@@ -32,8 +32,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import javax.faces.application.FacesMessage;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.Component;
@@ -46,7 +44,7 @@ import org.jboss.seam.annotations.Out;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jboss.seam.core.Events;
-import org.jboss.seam.faces.FacesMessages;
+import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -299,16 +297,12 @@ public class DeleteActionsBean extends InputController implements
 
         // User feedback
         if (info.proxies > 0) {
-            FacesMessage message = FacesMessages.createFacesMessage(
-                    FacesMessage.SEVERITY_WARN, "can_not_delete_proxies",
-                    (Object[]) null);
-            facesMessages.add(message);
+            facesMessages.add(StatusMessage.Severity.WARN,
+                    "can_not_delete_proxies");
         }
         Object[] params = { Integer.valueOf(info.docs.size()) };
-        FacesMessage message = FacesMessages.createFacesMessage(
-                FacesMessage.SEVERITY_INFO, "#0 "
-                        + resourcesAccessor.getMessages().get(msgid), params);
-        facesMessages.add(message);
+        facesMessages.add(StatusMessage.Severity.INFO, "#0 "
+                + resourcesAccessor.getMessages().get(msgid), params);
 
         return computeOutcome(DELETE_OUTCOME);
     }
@@ -321,7 +315,8 @@ public class DeleteActionsBean extends InputController implements
             throws ClientException {
         DocumentModelList documents = getCurrentDocumentDeletedChildrenPage();
         List<DocumentModel> selectedDocuments = documentsListsManager.getWorkingList(CURRENT_DOCUMENT_TRASH_SELECTION);
-        SelectDataModel model = new SelectDataModelImpl(CHILDREN_DOCUMENT_LIST, documents, selectedDocuments);
+        SelectDataModel model = new SelectDataModelImpl(CHILDREN_DOCUMENT_LIST,
+                documents, selectedDocuments);
         model.addSelectModelListener(this);
         // XXX AT: see if cache is useful
         // cacheUpdateNotifier.addCacheListener(model);
@@ -355,12 +350,10 @@ public class DeleteActionsBean extends InputController implements
         DocumentModel data = (DocumentModel) event.getRowData();
         if (selection) {
             documentsListsManager.addToWorkingList(
-                    CURRENT_DOCUMENT_TRASH_SELECTION,
-                    data);
+                    CURRENT_DOCUMENT_TRASH_SELECTION, data);
         } else {
             documentsListsManager.removeFromWorkingList(
-                    CURRENT_DOCUMENT_TRASH_SELECTION,
-                    data);
+                    CURRENT_DOCUMENT_TRASH_SELECTION, data);
         }
     }
 

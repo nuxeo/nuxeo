@@ -27,7 +27,6 @@ import java.util.List;
 
 import javax.ejb.PostActivate;
 import javax.ejb.PrePassivate;
-import javax.faces.application.FacesMessage;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -45,6 +44,7 @@ import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.contexts.Context;
 import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
+import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -75,8 +75,8 @@ import org.nuxeo.ecm.webapp.pagination.ResultsProvidersCache;
 import org.nuxeo.ecm.webapp.querymodel.QueryModelActions;
 
 /**
- * Backing bean for search actions. Provides functions to perform a search based
- * on different query types, to retrieve results and handle selections.
+ * Backing bean for search actions. Provides functions to perform a search
+ * based on different query types, to retrieve results and handle selections.
  *
  * @author DM
  * @deprecated use {@link DocumentSearchActions} and content views instead
@@ -124,7 +124,8 @@ public class SearchActionsBean extends InputController implements
     @In(required = false, create = false)
     SearchResultsBean searchResults;
 
-    // need to be required = false since this is accessed also before connecting
+    // need to be required = false since this is accessed also before
+    // connecting
     // to a rep
     @In(create = true, required = false)
     private transient CoreSession documentManager;
@@ -312,7 +313,7 @@ public class SearchActionsBean extends InputController implements
             } else if (searchTypeId == SearchType.KEYWORDS) {
                 if (simpleSearchKeywords == null || simpleSearchKeywords == "") {
                     log.warn("simpleSearchKeywords not given");
-                    facesMessages.add(FacesMessage.SEVERITY_INFO,
+                    facesMessages.add(StatusMessage.Severity.INFO,
                             resourcesAccessor.getMessages().get(
                                     "feedback.search.noKeywords"));
                     return ACTION_PAGE_SEARCH_NO_KEYWORDS;
@@ -321,7 +322,7 @@ public class SearchActionsBean extends InputController implements
                 for (String keyword : keywords) {
                     if (keyword.startsWith("*")) {
                         log.warn("Can't begin search with * character");
-                        facesMessages.add(FacesMessage.SEVERITY_INFO,
+                        facesMessages.add(StatusMessage.Severity.INFO,
                                 resourcesAccessor.getMessages().get(
                                         "feedback.search.star"));
                         return ACTION_PAGE_SEARCH_NO_KEYWORDS;
@@ -378,8 +379,7 @@ public class SearchActionsBean extends InputController implements
 
     public SelectDataModel getResultsSelectModel(String providerName)
             throws ClientException {
-        List<DocumentModel> selectedDocuments = documentsListsManager.getWorkingList(
-                DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
+        List<DocumentModel> selectedDocuments = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
         SelectDataModel model = new SelectDataModelImpl(SEARCH_DOCUMENT_LIST,
                 getResultDocuments(providerName), selectedDocuments);
         model.addSelectModelListener(this);

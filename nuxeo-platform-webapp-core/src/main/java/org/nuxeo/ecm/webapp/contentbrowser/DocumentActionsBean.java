@@ -33,7 +33,6 @@ import javax.annotation.security.PermitAll;
 import javax.ejb.PostActivate;
 import javax.ejb.PrePassivate;
 import javax.ejb.Remove;
-import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -342,7 +341,7 @@ public class DocumentActionsBean extends InputController implements
             documentManager.save();
             // not navigationContext.saveCurrentDocument();
 
-            facesMessages.add(FacesMessage.SEVERITY_INFO,
+            facesMessages.add(StatusMessage.Severity.INFO,
                     resourcesAccessor.getMessages().get("document_modified"),
                     resourcesAccessor.getMessages().get(
                             currentDocument.getType()));

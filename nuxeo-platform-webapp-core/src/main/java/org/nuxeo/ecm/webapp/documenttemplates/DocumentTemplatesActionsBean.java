@@ -29,8 +29,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.faces.application.FacesMessage;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.annotations.Destroy;
@@ -40,6 +38,7 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
+import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -177,8 +176,8 @@ public class DocumentTemplatesActionsBean extends InputController implements
                 throw new ClientException(e);
             }
             String name = pss.generatePathSegment(doc);
-            DocumentModel created = documentManager.copy(new IdRef(selectedTemplateId), currentDocRef,
-                    name);
+            DocumentModel created = documentManager.copy(new IdRef(
+                    selectedTemplateId), currentDocRef, name);
 
             // Update from user input.
             // This part is for now harcoded for Workspace type.
@@ -203,7 +202,7 @@ public class DocumentTemplatesActionsBean extends InputController implements
             selectedTemplateId = "";
 
             logDocumentWithTitle("Created the document: ", created);
-            facesMessages.add(FacesMessage.SEVERITY_INFO,
+            facesMessages.add(StatusMessage.Severity.INFO,
                     resourcesAccessor.getMessages().get("document_saved"),
                     resourcesAccessor.getMessages().get(created.getType()));
             return navigationContext.navigateToDocument(created, "after-create");

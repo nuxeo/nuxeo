@@ -17,10 +17,16 @@
 
 package org.nuxeo.ecm.webapp.contentbrowser;
 
+import static org.jboss.seam.ScopeType.EVENT;
+import static org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION;
+import static org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager.CURRENT_DOCUMENT_SELECTION;
+import static org.nuxeo.ecm.webapp.helpers.EventNames.CONTENT_ROOT_SELECTION_CHANGED;
+import static org.nuxeo.ecm.webapp.helpers.EventNames.DOCUMENT_CHILDREN_CHANGED;
+import static org.nuxeo.ecm.webapp.helpers.EventNames.DOCUMENT_SELECTION_CHANGED;
+import static org.nuxeo.ecm.webapp.helpers.EventNames.DOMAIN_SELECTION_CHANGED;
+
 import java.io.Serializable;
 import java.util.List;
-
-import javax.faces.application.FacesMessage;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -32,6 +38,7 @@ import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
+import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -52,11 +59,6 @@ import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 import org.nuxeo.ecm.webapp.pagination.ResultsProvidersCache;
 import org.nuxeo.runtime.api.Framework;
-
-import static org.jboss.seam.ScopeType.EVENT;
-import static org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION;
-import static org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager.CURRENT_DOCUMENT_SELECTION;
-import static org.nuxeo.ecm.webapp.helpers.EventNames.*;
 
 /**
  * Seam bean used for Orderable documents.
@@ -136,8 +138,8 @@ public class OrderableDocumentActions implements SelectDataModelListener,
         Boolean selection = event.getSelected();
         DocumentModel data = (DocumentModel) event.getRowData();
         if (selection) {
-            documentsListsManager.addToWorkingList(
-                    CURRENT_DOCUMENT_SELECTION, data);
+            documentsListsManager.addToWorkingList(CURRENT_DOCUMENT_SELECTION,
+                    data);
         } else {
             documentsListsManager.removeFromWorkingList(
                     CURRENT_DOCUMENT_SELECTION, data);
@@ -157,8 +159,7 @@ public class OrderableDocumentActions implements SelectDataModelListener,
             return getCanMoveDown(currentDocument,
                     CURRENT_DOCUMENT_SECTION_SELECTION);
         } else {
-            return getCanMoveDown(currentDocument,
-                    CURRENT_DOCUMENT_SELECTION);
+            return getCanMoveDown(currentDocument, CURRENT_DOCUMENT_SELECTION);
         }
     }
 
@@ -186,7 +187,8 @@ public class OrderableDocumentActions implements SelectDataModelListener,
             QueryModelService qmService = Framework.getService(QueryModelService.class);
             QueryModelDescriptor qmd = qmService.getQueryModelDescriptor(CURRENT_DOC_ORDERED_CHILDREN_QM);
             QueryModel qm = new QueryModel(qmd);
-            return qm.getDocuments(documentManager, new Object[] { containerId });
+            return qm.getDocuments(documentManager,
+                    new Object[] { containerId });
         } catch (Exception e) {
             throw new ClientException(e);
         }
@@ -198,11 +200,9 @@ public class OrderableDocumentActions implements SelectDataModelListener,
             return null;
         }
         if (SECTION_TYPE.equals(currentDocument.getType())) {
-            return moveDown(currentDocument,
-                    CURRENT_DOCUMENT_SECTION_SELECTION);
+            return moveDown(currentDocument, CURRENT_DOCUMENT_SECTION_SELECTION);
         } else {
-            return moveDown(currentDocument,
-                    CURRENT_DOCUMENT_SELECTION);
+            return moveDown(currentDocument, CURRENT_DOCUMENT_SELECTION);
         }
     }
 
@@ -242,8 +242,7 @@ public class OrderableDocumentActions implements SelectDataModelListener,
             return getCanMoveUp(currentDocument,
                     CURRENT_DOCUMENT_SECTION_SELECTION);
         } else {
-            return getCanMoveUp(currentDocument,
-                    CURRENT_DOCUMENT_SELECTION);
+            return getCanMoveUp(currentDocument, CURRENT_DOCUMENT_SELECTION);
         }
     }
 
@@ -271,11 +270,9 @@ public class OrderableDocumentActions implements SelectDataModelListener,
             return null;
         }
         if (SECTION_TYPE.equals(currentDocument.getType())) {
-            return moveUp(currentDocument,
-                    CURRENT_DOCUMENT_SECTION_SELECTION);
+            return moveUp(currentDocument, CURRENT_DOCUMENT_SECTION_SELECTION);
         } else {
-            return moveUp(currentDocument,
-                    CURRENT_DOCUMENT_SELECTION);
+            return moveUp(currentDocument, CURRENT_DOCUMENT_SELECTION);
         }
     }
 
@@ -307,8 +304,7 @@ public class OrderableDocumentActions implements SelectDataModelListener,
             return getCanMoveToTop(currentDocument,
                     CURRENT_DOCUMENT_SECTION_SELECTION);
         } else {
-            return getCanMoveToTop(currentDocument,
-                    CURRENT_DOCUMENT_SELECTION);
+            return getCanMoveToTop(currentDocument, CURRENT_DOCUMENT_SELECTION);
         }
     }
 
@@ -338,8 +334,7 @@ public class OrderableDocumentActions implements SelectDataModelListener,
             return moveToTop(currentDocument,
                     CURRENT_DOCUMENT_SECTION_SELECTION);
         } else {
-            return moveToTop(currentDocument,
-                    CURRENT_DOCUMENT_SELECTION);
+            return moveToTop(currentDocument, CURRENT_DOCUMENT_SELECTION);
         }
     }
 
@@ -399,8 +394,7 @@ public class OrderableDocumentActions implements SelectDataModelListener,
             return moveToBottom(currentDocument,
                     CURRENT_DOCUMENT_SECTION_SELECTION);
         } else {
-            return moveToBottom(currentDocument,
-                    CURRENT_DOCUMENT_SELECTION);
+            return moveToBottom(currentDocument, CURRENT_DOCUMENT_SELECTION);
         }
     }
 
@@ -423,14 +417,12 @@ public class OrderableDocumentActions implements SelectDataModelListener,
     }
 
     protected void addFacesMessage(String messageLabel) {
-        FacesMessage message = FacesMessages.createFacesMessage(
-                FacesMessage.SEVERITY_INFO,
+        facesMessages.add(StatusMessage.Severity.INFO,
                 resourcesAccessor.getMessages().get(messageLabel));
-        facesMessages.add(message);
     }
 
-    @Observer(value = {DOCUMENT_SELECTION_CHANGED, DOMAIN_SELECTION_CHANGED,
-            CONTENT_ROOT_SELECTION_CHANGED, DOCUMENT_CHILDREN_CHANGED}, create = false)
+    @Observer(value = { DOCUMENT_SELECTION_CHANGED, DOMAIN_SELECTION_CHANGED,
+            CONTENT_ROOT_SELECTION_CHANGED, DOCUMENT_CHILDREN_CHANGED }, create = false)
     public void invalidateProviderOnDocumentChanged() {
         resultsProvidersCache.invalidate(CURRENT_DOC_ORDERED_CHILDREN_QM);
     }

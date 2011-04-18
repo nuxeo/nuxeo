@@ -31,7 +31,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.ejb.Remove;
-import javax.faces.application.FacesMessage;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -46,6 +45,7 @@ import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jboss.seam.contexts.Context;
 import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.faces.FacesMessages;
+import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -71,7 +71,8 @@ import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 @Scope(ScopeType.EVENT)
 @Install(precedence = FRAMEWORK)
 public class LockActionsBean implements LockActions {
-    // XXX: OG: How a remote calls could possibly work without the seam injected
+    // XXX: OG: How a remote calls could possibly work without the seam
+    // injected
     // components??
 
     private static final long serialVersionUID = -8050964269646803077L;
@@ -104,7 +105,6 @@ public class LockActionsBean implements LockActions {
 
     private Boolean isLiveEditable;
 
-
     public Boolean getCanLockDoc(DocumentModel document) {
         if (canLock == null) {
             if (document == null) {
@@ -122,8 +122,8 @@ public class LockActionsBean implements LockActions {
                             && !document.isVersion();
                 } catch (Exception e) {
                     log.debug("evaluation of document lock "
-                            + document.getName() + " failed ("
-                            + e.getMessage() + ": returning false");
+                            + document.getName() + " failed (" + e.getMessage()
+                            + ": returning false");
                     canLock = false;
                 }
             }
@@ -131,7 +131,7 @@ public class LockActionsBean implements LockActions {
         return canLock;
     }
 
-    @Factory(value="currentDocumentCanBeLocked", scope= ScopeType.EVENT)
+    @Factory(value = "currentDocumentCanBeLocked", scope = ScopeType.EVENT)
     public Boolean getCanLockCurrentDoc() {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         return getCanLockDoc(currentDocument);
@@ -139,7 +139,7 @@ public class LockActionsBean implements LockActions {
 
     protected void resetEventContext() {
         Context evtCtx = Contexts.getEventContext();
-        if (evtCtx!=null) {
+        if (evtCtx != null) {
             evtCtx.remove("currentDocumentCanBeLocked");
             evtCtx.remove("currentDocumentLockDetails");
             evtCtx.remove("currentDocumentCanBeUnlocked");
@@ -161,13 +161,13 @@ public class LockActionsBean implements LockActions {
                                 document.getRef(), EVERYTHING)) ? true
                                 : (userName.getName().equals(
                                         lockDetails.get(LOCKER)) && documentManager.hasPermission(
-                                                document.getRef(), WRITE_PROPERTIES)))
+                                        document.getRef(), WRITE_PROPERTIES)))
                                 && !document.isVersion();
                     }
                 } catch (Exception e) {
                     log.debug("evaluation of document lock "
-                            + document.getName() + " failed ("
-                            + e.getMessage() + ": returning false");
+                            + document.getName() + " failed (" + e.getMessage()
+                            + ": returning false");
                     canUnlock = false;
                 }
             }
@@ -175,7 +175,7 @@ public class LockActionsBean implements LockActions {
         return canUnlock;
     }
 
-    @Factory(value="currentDocumentCanBeUnlocked", scope= ScopeType.EVENT)
+    @Factory(value = "currentDocumentCanBeUnlocked", scope = ScopeType.EVENT)
     public Boolean getCanUnlockCurrentDoc() {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         return getCanUnlockDoc(currentDocument);
@@ -196,7 +196,7 @@ public class LockActionsBean implements LockActions {
             documentManager.save();
             message = "document.lock";
         }
-        facesMessages.add(FacesMessage.SEVERITY_INFO,
+        facesMessages.add(StatusMessage.Severity.INFO,
                 resourcesAccessor.getMessages().get(message));
         resetLockState();
         webActions.resetTabList();
@@ -227,7 +227,6 @@ public class LockActionsBean implements LockActions {
         }
     }
 
-
     public String unlockDocument(DocumentModel document) throws ClientException {
         log.debug("Unlock a document ...");
         resetEventContext();
@@ -246,13 +245,15 @@ public class LockActionsBean implements LockActions {
                         WRITE_PROPERTIES)) {
 
                     try {
-                        // Here administrator should always be able to unlock so
+                        // Here administrator should always be able to unlock
+                        // so
                         // we need to grant him this possibility even if it
                         // doesn't have the write permission.
 
                         new UnrestrictedUnlocker(document.getRef()).runUnrestricted();
 
-                        documentManager.save(); // process invalidations from unrestricted session
+                        documentManager.save(); // process invalidations from
+                                                // unrestricted session
 
                         message = "document.unlock";
                     } catch (Exception e) {
@@ -267,7 +268,7 @@ public class LockActionsBean implements LockActions {
                 message = "document.unlock.not.permitted";
             }
         }
-        facesMessages.add(FacesMessage.SEVERITY_INFO,
+        facesMessages.add(StatusMessage.Severity.INFO,
                 resourcesAccessor.getMessages().get(message));
         resetLockState();
         webActions.resetTabList();
@@ -292,7 +293,7 @@ public class LockActionsBean implements LockActions {
         return lockOrUnlockAction;
     }
 
-    @Factory(value="currentDocumentLockDetails", scope = ScopeType.EVENT)
+    @Factory(value = "currentDocumentLockDetails", scope = ScopeType.EVENT)
     public Map<String, Serializable> getCurrentDocLockDetails()
             throws ClientException {
         Map<String, Serializable> details = null;
@@ -312,16 +313,16 @@ public class LockActionsBean implements LockActions {
             }
             lockDetails.put(LOCKER, lock.getOwner());
             lockDetails.put(LOCK_CREATED, lock.getCreated());
-            lockDetails.put(
-                    LOCK_TIME,
-                    DateFormat.getDateInstance(DateFormat.MEDIUM).format(
-                            new Date(lock.getCreated().getTimeInMillis())));
+            lockDetails.put(LOCK_TIME, DateFormat.getDateInstance(
+                    DateFormat.MEDIUM).format(
+                    new Date(lock.getCreated().getTimeInMillis())));
         }
         return lockDetails;
     }
 
     /**
-     * @deprecated use LiveEditBootstrapHelper.isCurrentDocumentLiveEditable() instead
+     * @deprecated use LiveEditBootstrapHelper.isCurrentDocumentLiveEditable()
+     *             instead
      */
     @Deprecated
     public Boolean isCurrentDocumentLiveEditable() {

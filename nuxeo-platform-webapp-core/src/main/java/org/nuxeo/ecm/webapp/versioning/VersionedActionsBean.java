@@ -21,13 +21,14 @@ package org.nuxeo.ecm.webapp.versioning;
 import static org.jboss.seam.ScopeType.CONVERSATION;
 import static org.jboss.seam.ScopeType.EVENT;
 import static org.jboss.seam.annotations.Install.FRAMEWORK;
-import static org.nuxeo.ecm.webapp.helpers.EventNames.*;
+import static org.nuxeo.ecm.webapp.helpers.EventNames.DOCUMENT_CHANGED;
+import static org.nuxeo.ecm.webapp.helpers.EventNames.DOCUMENT_PUBLISHED;
+import static org.nuxeo.ecm.webapp.helpers.EventNames.DOCUMENT_SELECTION_CHANGED;
+import static org.nuxeo.ecm.webapp.helpers.EventNames.DOCUMENT_SUBMITED_FOR_PUBLICATION;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.faces.application.FacesMessage;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -41,6 +42,7 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jboss.seam.contexts.Context;
 import org.jboss.seam.faces.FacesMessages;
+import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -118,8 +120,8 @@ public class VersionedActionsBean implements VersionedActions, Serializable {
         /**
          * in case the document is a proxy,meaning is the result of a
          * publishing,to have the history of the document from which this proxy
-         * was created,first we have to get to the version that was created when
-         * the document was publish,and to which the proxy document
+         * was created,first we have to get to the version that was created
+         * when the document was publish,and to which the proxy document
          * indicates,and then from that version we have to get to the root
          * document.
          */
@@ -222,7 +224,8 @@ public class VersionedActionsBean implements VersionedActions, Serializable {
      * @since 5.4
      */
     @Override
-    public DocumentModel getSourceDocument(DocumentModel document) throws ClientException {
+    public DocumentModel getSourceDocument(DocumentModel document)
+            throws ClientException {
         return documentManager.getSourceDocument(document.getRef());
     }
 
@@ -261,8 +264,7 @@ public class VersionedActionsBean implements VersionedActions, Serializable {
         documentManager.removeDocument(docVersion.getRef());
         documentManager.save();
         resetVersions();
-        facesMessages.add(
-                FacesMessage.SEVERITY_INFO,
+        facesMessages.add(StatusMessage.Severity.INFO,
                 resourcesAccessor.getMessages().get(
                         "feedback.versioning.versionRemoved"));
         return null;

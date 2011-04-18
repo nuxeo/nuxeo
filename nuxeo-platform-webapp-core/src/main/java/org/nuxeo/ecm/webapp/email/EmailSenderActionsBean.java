@@ -26,7 +26,6 @@ import java.util.List;
 
 import javax.annotation.security.PermitAll;
 import javax.ejb.Remove;
-import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 
 import org.apache.commons.logging.Log;
@@ -36,6 +35,7 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Out;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.faces.Renderer;
+import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DataModel;
@@ -47,7 +47,6 @@ import org.nuxeo.ecm.webapp.security.PrincipalListManager;
 
 /**
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
- *
  */
 @Name("emailSenderAction")
 @Scope(STATELESS)
@@ -112,13 +111,13 @@ public class EmailSenderActionsBean extends InputController implements
 
     public void send() {
         if (mailSubject == null || mailSubject.trim().length() == 0) {
-            facesMessages.add(FacesMessage.SEVERITY_ERROR,
+            facesMessages.add(StatusMessage.Severity.ERROR,
                     resourcesAccessor.getMessages().get(
                             "label.email.subject.empty"));
             return;
         }
         if (principalListManager.getSelectedUserListEmpty()) {
-            facesMessages.add(FacesMessage.SEVERITY_ERROR,
+            facesMessages.add(StatusMessage.Severity.ERROR,
                     resourcesAccessor.getMessages().get(
                             "label.email.nousers.selected"));
         } else {
@@ -148,11 +147,11 @@ public class EmailSenderActionsBean extends InputController implements
                 log.debug("Subject : " + mailSubject);
                 log.debug("Content : " + mailContent);
                 renderer.render("/mail_template.xhtml");
-                facesMessages.add(FacesMessage.SEVERITY_INFO,
+                facesMessages.add(StatusMessage.Severity.INFO,
                         resourcesAccessor.getMessages().get(
                                 "label.email.send.ok"));
             } catch (Exception e) {
-                facesMessages.add(FacesMessage.SEVERITY_ERROR,
+                facesMessages.add(StatusMessage.Severity.ERROR,
                         resourcesAccessor.getMessages().get(
                                 "label.email.send.failed"));
                 log.error("Email sending failed:" + e.getMessage());
