@@ -19,6 +19,7 @@
       <useGlobalPageSize>false</useGlobalPageSize>
       <refresh>
         <event>workflowEvent</event>
+        <event>documentChildrenChanged</event>
       </refresh>
       <cacheKey>only_one_cache</cacheKey>
       <cacheSize>1</cacheSize>
@@ -42,6 +43,7 @@
       <useGlobalPageSize>false</useGlobalPageSize>
       <refresh>
         <event>workflowEvent</event>
+        <event>documentChildrenChanged</event>
       </refresh>
       <cacheKey>only_one_cache</cacheKey>
       <cacheSize>1</cacheSize>
