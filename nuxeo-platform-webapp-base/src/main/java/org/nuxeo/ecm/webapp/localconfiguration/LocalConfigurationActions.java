@@ -16,9 +16,9 @@
 
 package org.nuxeo.ecm.webapp.localconfiguration;
 
-import java.io.Serializable;
+import static org.jboss.seam.ScopeType.CONVERSATION;
 
-import javax.faces.application.FacesMessage;
+import java.io.Serializable;
 
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
@@ -26,14 +26,13 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
+import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
-
-import static org.jboss.seam.ScopeType.CONVERSATION;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
@@ -59,7 +58,8 @@ public class LocalConfigurationActions implements Serializable {
     @In(create = true)
     protected ResourcesAccessor resourcesAccessor;
 
-    public void toggleConfigurationForCurrentDocument(String configurationFacet) throws ClientException {
+    public void toggleConfigurationForCurrentDocument(String configurationFacet)
+            throws ClientException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         if (currentDocument.hasFacet(configurationFacet)) {
             currentDocument.removeFacet(configurationFacet);
@@ -80,8 +80,9 @@ public class LocalConfigurationActions implements Serializable {
 
         Events.instance().raiseEvent(EventNames.LOCAL_CONFIGURATION_CHANGED,
                 navigationContext.getCurrentDocument());
-        facesMessages.add(FacesMessage.SEVERITY_INFO,
-                    resourcesAccessor.getMessages().get(LOCAL_CONFIGURATION_CHANGED_LABEL));
+        facesMessages.add(StatusMessage.Severity.INFO,
+                resourcesAccessor.getMessages().get(
+                        LOCAL_CONFIGURATION_CHANGED_LABEL));
     }
 
 }
