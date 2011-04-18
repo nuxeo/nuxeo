@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -13,8 +13,6 @@ package org.nuxeo.ecm.automation.jsf;
 
 import java.io.Serializable;
 
-import javax.faces.application.FacesMessage;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
@@ -22,6 +20,7 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.faces.FacesMessages;
+import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.InvalidChainException;
 import org.nuxeo.ecm.automation.OperationChain;
@@ -68,13 +67,13 @@ public class OperationActionBean implements Serializable {
             msg = "An error occured while executing the chain '" + chain
                     + "': " + cause.getMessage();
         }
-        facesMessages.add(FacesMessage.SEVERITY_ERROR, msg);
+        facesMessages.add(StatusMessage.Severity.ERROR, msg);
     }
 
     protected void showSuccess(OperationContext ctx, String chain) {
         String msg = (String) ctx.get(AddInfoMessage.ID);
         if (msg != null) {
-            facesMessages.add(FacesMessage.SEVERITY_INFO, msg);
+            facesMessages.add(StatusMessage.Severity.INFO, msg);
         }
     }
 
@@ -88,7 +87,7 @@ public class OperationActionBean implements Serializable {
                 os.run(ctx, (String) chain);
                 showSuccess(ctx, (String) chain);
             } catch (InvalidChainException e) {
-                facesMessages.add(FacesMessage.SEVERITY_ERROR,
+                facesMessages.add(StatusMessage.Severity.ERROR,
                         "Unknown chain: " + chain);
                 return null;
             } catch (Throwable t) {

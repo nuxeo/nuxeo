@@ -19,12 +19,10 @@
 
 package org.nuxeo.ecm.platform.mail.web.actions;
 
-import static org.nuxeo.ecm.platform.mail.web.utils.MailWebConstants.CURRENT_PAGE;
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.MAIL_FOLDER_TYPE;
+import static org.nuxeo.ecm.platform.mail.web.utils.MailWebConstants.CURRENT_PAGE;
 
 import java.io.Serializable;
-
-import javax.faces.application.FacesMessage;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -34,6 +32,7 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.faces.FacesMessages;
+import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -74,7 +73,7 @@ public class MailActionsBean implements Serializable {
             MailCoreHelper.checkMail(mailFolder, documentManager);
         } catch (Exception e) {
             log.debug(e, e);
-            facesMessages.add(FacesMessage.SEVERITY_ERROR,
+            facesMessages.add(StatusMessage.Severity.ERROR,
                     resourcesAccessor.getMessages().get(
                             "feedback.check.mail.error")
                             + e.getMessage());
@@ -82,7 +81,7 @@ public class MailActionsBean implements Serializable {
             return CURRENT_PAGE;
         }
 
-        facesMessages.add(FacesMessage.SEVERITY_INFO,
+        facesMessages.add(StatusMessage.Severity.INFO,
                 resourcesAccessor.getMessages().get(
                         "feedback.check.mail.success"));
 

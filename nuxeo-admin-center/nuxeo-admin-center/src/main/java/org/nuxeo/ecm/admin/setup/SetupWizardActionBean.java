@@ -20,13 +20,15 @@
 
 package org.nuxeo.ecm.admin.setup;
 
+import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_TEMPLATES_NAME;
+import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_TEMPLATE_DBNAME;
+
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
 
-import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.component.ValueHolder;
 import javax.faces.context.FacesContext;
@@ -42,12 +44,10 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.faces.FacesMessages;
+import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 import org.nuxeo.launcher.config.ConfigurationException;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
-
-import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_TEMPLATES_NAME;
-import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_TEMPLATE_DBNAME;
 
 @Scope(ScopeType.SESSION)
 @Name("setupWizardAction")
@@ -61,13 +61,12 @@ public class SetupWizardActionBean implements Serializable {
             "nuxeo.bind.address", "nuxeo.url", "nuxeo.data.dir",
             "nuxeo.log.dir", "org.nuxeo.ecm.product.name",
             "org.nuxeo.ecm.product.version", "nuxeo.conf",
-            PARAM_TEMPLATE_DBNAME, "nuxeo.db.name",
-            "nuxeo.db.user", "nuxeo.db.password", "nuxeo.db.host",
-            "nuxeo.db.port", "nuxeo.db.min-pool-size",
-            "nuxeo.db.min-pool-size", "nuxeo.db.max-pool-size",
-            "nuxeo.vcs.min-pool-size", "nuxeo.vcs.max-pool-size",
-            "nuxeo.notification.eMailSubjectPrefix", "mailservice.user",
-            "mailservice.password", "mail.store.protocol",
+            PARAM_TEMPLATE_DBNAME, "nuxeo.db.name", "nuxeo.db.user",
+            "nuxeo.db.password", "nuxeo.db.host", "nuxeo.db.port",
+            "nuxeo.db.min-pool-size", "nuxeo.db.min-pool-size",
+            "nuxeo.db.max-pool-size", "nuxeo.vcs.min-pool-size",
+            "nuxeo.vcs.max-pool-size", "nuxeo.notification.eMailSubjectPrefix",
+            "mailservice.user", "mailservice.password", "mail.store.protocol",
             "mail.transport.protocol", "mail.pop3.host", "mail.debug",
             "mail.smtp.host", "mail.smtp.port", "mail.smtp.auth",
             "mail.smtp.username", "mail.smtp.password", "mail.from",
@@ -82,7 +81,9 @@ public class SetupWizardActionBean implements Serializable {
     protected Map<String, String> advancedParameters = null;
 
     protected static final String PROXY_NONE = "none";
+
     protected static final String PROXY_ANONYMOUS = "anonymous";
+
     protected static final String PROXY_AUTHENTICATED = "authenticated";
 
     protected String proxyType = PROXY_NONE;
@@ -172,9 +173,9 @@ public class SetupWizardActionBean implements Serializable {
         }
 
         proxyType = PROXY_NONE;
-        if (parameters.get("nuxeo.http.proxy.host")!=null) {
+        if (parameters.get("nuxeo.http.proxy.host") != null) {
             proxyType = PROXY_ANONYMOUS;
-            if (parameters.get("nuxeo.http.proxy.login")!=null) {
+            if (parameters.get("nuxeo.http.proxy.login") != null) {
                 proxyType = PROXY_AUTHENTICATED;
             }
         }
@@ -193,7 +194,7 @@ public class SetupWizardActionBean implements Serializable {
 
     public void save() {
         saveParameters();
-        facesMessages.add(FacesMessage.SEVERITY_INFO,
+        facesMessages.add(StatusMessage.Severity.INFO,
                 resourcesAccessor.getMessages().get("label.parameters.saved"));
         needsRestart = true;
         resetParameters();
@@ -270,6 +271,5 @@ public class SetupWizardActionBean implements Serializable {
     public void setProxyType(String proxyType) {
         this.proxyType = proxyType;
     }
-
 
 }

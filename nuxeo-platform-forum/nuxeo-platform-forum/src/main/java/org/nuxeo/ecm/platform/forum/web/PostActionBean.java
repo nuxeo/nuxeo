@@ -27,7 +27,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.faces.application.FacesMessage;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
@@ -40,6 +39,7 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
+import org.jboss.seam.international.StatusMessage;
 import org.jbpm.graph.exe.ProcessInstance;
 import org.jbpm.taskmgmt.exe.TaskInstance;
 import org.nuxeo.ecm.core.api.Blob;
@@ -166,7 +166,7 @@ public class PostActionBean implements PostAction {
             // start moderation workflow + warn user that post
             // won't be displayed until moderation kicks in
             startModeration(dm);
-            facesMessages.add(FacesMessage.SEVERITY_INFO,
+            facesMessages.add(StatusMessage.Severity.INFO,
                     resourcesAccessor.getMessages().get(
                             "label.comment.waiting_approval"));
         } else {
@@ -210,7 +210,7 @@ public class PostActionBean implements PostAction {
             }
             fetchInvalidationsIfNeeded();
             // NXP-1262 display the message only when about to publish
-            facesMessages.add(FacesMessage.SEVERITY_INFO,
+            facesMessages.add(StatusMessage.Severity.INFO,
                     resourcesAccessor.getMessages().get(
                             "label.comment.added.sucess"));
         }

@@ -24,8 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.faces.application.FacesMessage;
-
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Begin;
 import org.jboss.seam.annotations.Create;
@@ -33,6 +31,7 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.faces.FacesMessages;
+import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelComparator;
@@ -222,7 +221,7 @@ public class DirectoryUIActionsBean implements Serializable {
             Object id = creationDirectoryEntry.getProperty(schema, idField);
             dirSession = dirService.open(dirName);
             if (id instanceof String && dirSession.hasEntry((String) id)) {
-                facesMessages.add(FacesMessage.SEVERITY_ERROR,
+                facesMessages.add(StatusMessage.Severity.ERROR,
                         resourcesAccessor.getMessages().get(
                                 "vocabulary.entry.identifier.already.exists"));
                 return;
@@ -233,7 +232,7 @@ public class DirectoryUIActionsBean implements Serializable {
             // invalidate directory entries list
             currentDirectoryEntries = null;
 
-            facesMessages.add(FacesMessage.SEVERITY_INFO,
+            facesMessages.add(StatusMessage.Severity.INFO,
                     resourcesAccessor.getMessages().get(
                             "vocabulary.entry.added"));
         } catch (DirectoryException e) {
@@ -283,7 +282,7 @@ public class DirectoryUIActionsBean implements Serializable {
             // invalidate directory entries list
             currentDirectoryEntries = null;
 
-            facesMessages.add(FacesMessage.SEVERITY_INFO,
+            facesMessages.add(StatusMessage.Severity.INFO,
                     resourcesAccessor.getMessages().get(
                             "vocabulary.entry.edited"));
         } catch (DirectoryException e) {
@@ -302,7 +301,7 @@ public class DirectoryUIActionsBean implements Serializable {
             for (DirectoryUIDeleteConstraint deleteConstraint : deleteConstraints) {
                 if (!deleteConstraint.canDelete(dirService, entryId)) {
                     facesMessages.add(
-                            FacesMessage.SEVERITY_ERROR,
+                            StatusMessage.Severity.ERROR,
                             resourcesAccessor.getMessages().get(
                                     "feedback.directory.deleteEntry.constraintError"));
                     return;
@@ -315,7 +314,7 @@ public class DirectoryUIActionsBean implements Serializable {
             dirSession.deleteEntry(entryId);
             // invalidate directory entries list
             currentDirectoryEntries = null;
-            facesMessages.add(FacesMessage.SEVERITY_INFO,
+            facesMessages.add(StatusMessage.Severity.INFO,
                     resourcesAccessor.getMessages().get(
                             "vocabulary.entry.deleted"));
         } catch (DirectoryException e) {

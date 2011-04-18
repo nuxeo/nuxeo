@@ -28,7 +28,6 @@ import java.util.Map;
 
 import javax.annotation.security.PermitAll;
 import javax.ejb.Remove;
-import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 
 import org.apache.commons.logging.Log;
@@ -37,6 +36,7 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Out;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -55,13 +55,12 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:npaslaru@nuxeo.com">Narcis Paslaru</a>
- *
  */
 
 @Name("emailNotifSenderAction")
 @Scope(EVENT)
-public class EmailNotificationSenderActionsBean extends InputController implements
-        EmailNotificationSenderActions, Serializable {
+public class EmailNotificationSenderActionsBean extends InputController
+        implements EmailNotificationSenderActions, Serializable {
 
     private static final Log log = LogFactory.getLog(EmailNotificationSenderActionsBean.class);
 
@@ -95,44 +94,43 @@ public class EmailNotificationSenderActionsBean extends InputController implemen
     @Out(required = false)
     private List<NuxeoPrincipal> toEmail;
 
-
-    //@Create
+    // @Create
     public void initialize() {
         log.info("Initializing...");
         log.info("Principal List Manager: " + principalListManager);
     }
 
-    //@Destroy
+    // @Destroy
     @Remove
     @PermitAll
     public void destroy() {
         log.debug("Removing Seam action listener...");
     }
 
-    //@PrePassivate
+    // @PrePassivate
     public void saveState() {
         log.info("PrePassivate");
     }
 
-    //@PostActivate
+    // @PostActivate
     public void readState() {
         log.info("PostActivate");
     }
 
     public String send() {
         if (mailSubject == null || mailSubject.trim().length() == 0) {
-            facesMessages.add(FacesMessage.SEVERITY_ERROR, resourcesAccessor
-                    .getMessages().get("label.email.subject.empty"));
+            facesMessages.add(StatusMessage.Severity.ERROR,
+                    resourcesAccessor.getMessages().get(
+                            "label.email.subject.empty"));
             return null;
         }
-/*        if (mailContent == null || mailContent.trim().length() == 0){
-            facesMessages.add(FacesMessage.SEVERITY_ERROR, resourcesAccessor
-                    .getMessages().get("label.email.content.empty"));
-            return;
-        }
-*/
+        /*
+         * if (mailContent == null || mailContent.trim().length() == 0){
+         * facesMessages.add(FacesMessage.SEVERITY_ERROR, resourcesAccessor
+         * .getMessages().get("label.email.content.empty")); return; }
+         */
         if (principalListManager.getSelectedUserListEmpty()) {
-            facesMessages.add(FacesMessage.SEVERITY_ERROR,
+            facesMessages.add(StatusMessage.Severity.ERROR,
                     resourcesAccessor.getMessages().get(
                             "label.email.nousers.selected"));
             return null;
@@ -141,15 +139,14 @@ public class EmailNotificationSenderActionsBean extends InputController implemen
             try {
                 sendNotificationEvent(user, mailSubject, mailContent);
             } catch (ClientException e) {
-                facesMessages.add(FacesMessage.SEVERITY_ERROR,
+                facesMessages.add(StatusMessage.Severity.ERROR,
                         resourcesAccessor.getMessages().get(
                                 "label.email.send.failed"));
                 return null;
             }
         }
-        facesMessages.add(FacesMessage.SEVERITY_INFO,
-                    resourcesAccessor.getMessages().get(
-                            "label.email.send.ok"));
+        facesMessages.add(StatusMessage.Severity.INFO,
+                resourcesAccessor.getMessages().get("label.email.send.ok"));
 
         // redirect to currentDocument default view
         DocumentModel cDoc = navigationContext.getCurrentDocument();
@@ -174,11 +171,11 @@ public class EmailNotificationSenderActionsBean extends InputController implemen
      * @param theMailContent
      */
     private void sendNotificationEvent(String user, String theMailSubject,
-            String theMailContent) throws ClientException{
+            String theMailContent) throws ClientException {
 
         Map<String, Serializable> options = new HashMap<String, Serializable>();
 
-        //options for confirmation email
+        // options for confirmation email
         String prefix = principalListManager.getPrincipalType(user) == PrincipalListManager.USER_TYPE ? "user:"
                 : "group:";
         String recipient = prefix + user;
@@ -186,11 +183,13 @@ public class EmailNotificationSenderActionsBean extends InputController implemen
                 new String[] { recipient });
         options.put("subject", theMailSubject);
         options.put("content", theMailContent);
-        options.put("category", DocumentEventCategories.EVENT_CLIENT_NOTIF_CATEGORY);
+        options.put("category",
+                DocumentEventCategories.EVENT_CLIENT_NOTIF_CATEGORY);
 
         NuxeoPrincipal currentUser = (NuxeoPrincipal) FacesContext.getCurrentInstance().getExternalContext().getUserPrincipal();
 
-        DocumentEventContext ctx = new DocumentEventContext(documentManager, currentUser, navigationContext.getCurrentDocument());
+        DocumentEventContext ctx = new DocumentEventContext(documentManager,
+                currentUser, navigationContext.getCurrentDocument());
         ctx.setProperties(options);
         Event event = ctx.newEvent(DocumentEventTypes.EMAIL_DOCUMENT_SEND);
 
@@ -217,7 +216,7 @@ public class EmailNotificationSenderActionsBean extends InputController implemen
      * @param mailContent the mailContent to set.
      */
     public void setMailContent(String mailContent) {
-         this.mailContent = mailContent;
+        this.mailContent = mailContent;
     }
 
     /**
@@ -244,7 +243,8 @@ public class EmailNotificationSenderActionsBean extends InputController implemen
     /**
      * @param principalListManager the principalListManager to set.
      */
-    public void setPrincipalListManager(PrincipalListManager principalListManager) {
+    public void setPrincipalListManager(
+            PrincipalListManager principalListManager) {
         this.principalListManager = principalListManager;
     }
 

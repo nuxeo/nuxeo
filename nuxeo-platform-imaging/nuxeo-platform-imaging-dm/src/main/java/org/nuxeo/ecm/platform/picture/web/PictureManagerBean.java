@@ -44,6 +44,7 @@ import org.jboss.seam.annotations.remoting.WebRemote;
 import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
+import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -151,7 +152,7 @@ public class PictureManagerBean implements PictureManager, Serializable {
     }
 
     @SuppressWarnings("unchecked")
-	public String addPicture() throws Exception {
+    public String addPicture() throws Exception {
         PathSegmentService pss = Framework.getService(PathSegmentService.class);
         DocumentModel doc = navigationContext.getChangeableDocument();
 
@@ -183,11 +184,10 @@ public class PictureManagerBean implements PictureManager, Serializable {
             if (!status) {
                 documentManager.cancel();
                 log.info("Picture type unsupported.");
-                FacesMessage message = FacesMessages.createFacesMessage(
-                        FacesMessage.SEVERITY_ERROR,
+                FacesMessages.instance().add(
+                        StatusMessage.Severity.ERROR,
                         resourcesAccessor.getMessages().get(
                                 "label.picture.upload.error"));
-                FacesMessages.instance().add(message);
 
                 return navigationContext.getActionResult(
                         navigationContext.getCurrentDocument(), UserAction.VIEW);

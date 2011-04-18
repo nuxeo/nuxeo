@@ -35,7 +35,6 @@ import java.util.Map;
 import javax.ejb.PostActivate;
 import javax.ejb.PrePassivate;
 import javax.ejb.Remove;
-import javax.faces.application.FacesMessage;
 import javax.faces.event.ActionEvent;
 
 import org.apache.commons.logging.Log;
@@ -49,6 +48,7 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.contexts.Context;
 import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.faces.FacesMessages;
+import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -208,15 +208,15 @@ public class RelationActionsBean extends DocumentContextBoundActionBean
         return infoList;
     }
 
-
     protected void resetEventContext() {
         Context evtCtx = Contexts.getEventContext();
-        if (evtCtx!=null) {
+        if (evtCtx != null) {
             evtCtx.remove("currentDocumentIncomingRelations");
             evtCtx.remove("currentDocumentOutgoingRelations");
         }
     }
-    @Factory(value="currentDocumentIncomingRelations", scope=ScopeType.EVENT)
+
+    @Factory(value = "currentDocumentIncomingRelations", scope = ScopeType.EVENT)
     public List<StatementInfo> getIncomingStatementsInfo()
             throws ClientException {
         if (incomingStatementsInfo != null) {
@@ -244,7 +244,7 @@ public class RelationActionsBean extends DocumentContextBoundActionBean
         return incomingStatementsInfo;
     }
 
-    @Factory(value="currentDocumentOutgoingRelations", scope=ScopeType.EVENT)
+    @Factory(value = "currentDocumentOutgoingRelations", scope = ScopeType.EVENT)
     public List<StatementInfo> getOutgoingStatementsInfo()
             throws ClientException {
         if (outgoingStatementsInfo != null) {
@@ -442,12 +442,12 @@ public class RelationActionsBean extends DocumentContextBoundActionBean
             // make sure statements will be recomputed
             resetStatements();
 
-            facesMessages.add(FacesMessage.SEVERITY_INFO,
+            facesMessages.add(StatusMessage.Severity.INFO,
                     resourcesAccessor.getMessages().get(
                             "label.relation.created"));
             resetCreateFormValues();
         } else {
-            facesMessages.add(FacesMessage.SEVERITY_WARN,
+            facesMessages.add(StatusMessage.Severity.WARN,
                     resourcesAccessor.getMessages().get(
                             "label.relation.already.exists"));
         }
@@ -518,7 +518,7 @@ public class RelationActionsBean extends DocumentContextBoundActionBean
             // make sure statements will be recomputed
             resetStatements();
 
-            facesMessages.add(FacesMessage.SEVERITY_INFO,
+            facesMessages.add(StatusMessage.Severity.INFO,
                     resourcesAccessor.getMessages().get(
                             "label.relation.deleted"));
         }

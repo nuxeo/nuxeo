@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 
 import org.apache.commons.logging.Log;
@@ -45,6 +44,7 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
+import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -176,7 +176,7 @@ public class PublishActionsBean extends AbstractPublishActions implements
                     publicationParameters);
         } catch (PublisherException e) {
             log.error(e, e);
-            facesMessages.add(FacesMessage.SEVERITY_ERROR,
+            facesMessages.add(StatusMessage.Severity.ERROR,
                     resourcesAccessor.getMessages().get(e.getMessage()));
             return null;
         }
@@ -191,7 +191,7 @@ public class PublishActionsBean extends AbstractPublishActions implements
                     null, comment, null, currentDocument);
             Events.instance().raiseEvent(
                     EventNames.DOCUMENT_SUBMITED_FOR_PUBLICATION);
-            facesMessages.add(FacesMessage.SEVERITY_INFO,
+            facesMessages.add(StatusMessage.Severity.INFO,
                     resourcesAccessor.getMessages().get(
                             "document_submitted_for_publication"),
                     resourcesAccessor.getMessages().get(
@@ -206,7 +206,7 @@ public class PublishActionsBean extends AbstractPublishActions implements
             Events.instance().raiseEvent(EventNames.DOCUMENT_PUBLISHED);
             // publish may checkin the document -> change
             Events.instance().raiseEvent(EventNames.DOCUMENT_CHANGED);
-            facesMessages.add(FacesMessage.SEVERITY_INFO,
+            facesMessages.add(StatusMessage.Severity.INFO,
                     resourcesAccessor.getMessages().get("document_published"),
                     resourcesAccessor.getMessages().get(
                             currentDocument.getType()));
@@ -428,7 +428,7 @@ public class PublishActionsBean extends AbstractPublishActions implements
     public String rejectDocument() throws ClientException {
         if (publishingComment == null || "".equals(publishingComment)) {
             facesMessages.addToControl("publishingComment",
-                    FacesMessage.SEVERITY_ERROR,
+                    StatusMessage.Severity.ERROR,
                     resourcesAccessor.getMessages().get(
                             "label.publishing.reject.user.comment.mandatory"));
             return null;
@@ -486,7 +486,7 @@ public class PublishActionsBean extends AbstractPublishActions implements
         Object[] params = { documentModels.size() };
         // remove from the current selection list
         documentsListsManager.resetWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION);
-        facesMessages.add(FacesMessage.SEVERITY_INFO,
+        facesMessages.add(StatusMessage.Severity.INFO,
                 resourcesAccessor.getMessages().get("n_unpublished_docs"),
                 params);
     }
@@ -575,12 +575,12 @@ public class PublishActionsBean extends AbstractPublishActions implements
         }
 
         Object[] params = { nbPublishedDocs };
-        facesMessages.add(FacesMessage.SEVERITY_INFO, "#0 "
+        facesMessages.add(StatusMessage.Severity.INFO, "#0 "
                 + resourcesAccessor.getMessages().get("n_published_docs"),
                 params);
 
         if (nbPublishedDocs < docs2Publish.size()) {
-            facesMessages.add(FacesMessage.SEVERITY_WARN,
+            facesMessages.add(StatusMessage.Severity.WARN,
                     resourcesAccessor.getMessages().get(
                             "selection_contains_non_publishable_docs"));
         }

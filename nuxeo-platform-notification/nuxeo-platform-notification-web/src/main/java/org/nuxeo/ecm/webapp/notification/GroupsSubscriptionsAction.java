@@ -26,7 +26,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 
@@ -36,6 +35,7 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Out;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.faces.FacesMessages;
+import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.common.utils.i18n.Labeler;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -124,13 +124,13 @@ public class GroupsSubscriptionsAction extends InputController implements
         // adding the newly selected subscriptions
         if (!newSubscriptions.isEmpty()) {
             for (String subscription : newSubscriptions) {
-                notificationManager.addSubscription(NotificationConstants.USER_PREFIX
-                        + principal.getName(), subscription, currentDoc, false,
-                        principal, "");
+                notificationManager.addSubscription(
+                        NotificationConstants.USER_PREFIX + principal.getName(),
+                        subscription, currentDoc, false, principal, "");
             }
         }
 
-        facesMessages.add(FacesMessage.SEVERITY_INFO,
+        facesMessages.add(StatusMessage.Severity.INFO,
                 resourcesAccessor.getMessages().get(
                         "label.notifications.registered"));
     }
@@ -275,7 +275,7 @@ public class GroupsSubscriptionsAction extends InputController implements
         }
         // reset
         selectedEntries = null;
-        facesMessages.add(FacesMessage.SEVERITY_INFO,
+        facesMessages.add(StatusMessage.Severity.INFO,
                 resourcesAccessor.getMessages().get(
                         "label.notifications.registered"));
         return null;

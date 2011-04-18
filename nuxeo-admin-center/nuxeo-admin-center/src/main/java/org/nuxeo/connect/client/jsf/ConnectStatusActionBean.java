@@ -29,7 +29,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import javax.faces.application.FacesMessage;
 import javax.faces.model.SelectItem;
 
 import org.apache.commons.logging.Log;
@@ -41,6 +40,7 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.faces.FacesMessages;
+import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.connect.client.status.ConnectStatusHolder;
 import org.nuxeo.connect.client.status.SubscriptionStatusWrapper;
 import org.nuxeo.connect.connector.NuxeoClientInstanceType;
@@ -167,16 +167,18 @@ public class ConnectStatusActionBean implements Serializable {
 
     public void validateLogin() {
         if (login == null || password == null) {
-            facesMessages.add(FacesMessage.SEVERITY_WARN,
-                    resourcesAccessor.getMessages().get("label.empty.loginpassword"));
+            facesMessages.add(StatusMessage.Severity.WARN,
+                    resourcesAccessor.getMessages().get(
+                            "label.empty.loginpassword"));
             loginValidated = false;
             flushEventCache();
             return;
         }
         List<ConnectProject> prjs = getProjectsAvailableForRegistration();
         if (prjs == null || prjs.size() == 0) {
-            facesMessages.add(FacesMessage.SEVERITY_WARN,
-                    resourcesAccessor.getMessages().get("label.bad.loginpassword.or.noproject"));
+            facesMessages.add(StatusMessage.Severity.WARN,
+                    resourcesAccessor.getMessages().get(
+                            "label.bad.loginpassword.or.noproject"));
             loginValidated = false;
             flushEventCache();
             return;
@@ -187,7 +189,7 @@ public class ConnectStatusActionBean implements Serializable {
 
     @Factory(value = "connectServerReachable", scope = ScopeType.EVENT)
     public boolean isConnectServerReachable() {
-       return !ConnectStatusHolder.instance().getStatus().isConnectServerUnreachable();
+        return !ConnectStatusHolder.instance().getStatus().isConnectServerUnreachable();
     }
 
     public String refreshStatus() {
@@ -229,8 +231,9 @@ public class ConnectStatusActionBean implements Serializable {
             return new ArrayList<ConnectProject>();
         }
         try {
-            List<ConnectProject> projects = getService().getAvailableProjectsForRegistration(login,password);
-            if (projects!=null && projects.size()>0) {
+            List<ConnectProject> projects = getService().getAvailableProjectsForRegistration(
+                    login, password);
+            if (projects != null && projects.size() > 0) {
                 Collections.sort(projects, new Comparator<ConnectProject>() {
                     @Override
                     public int compare(ConnectProject o1, ConnectProject o2) {
@@ -246,10 +249,10 @@ public class ConnectStatusActionBean implements Serializable {
     }
 
     public String resetRegister() {
-        login=null;
-        password=null;
+        login = null;
+        password = null;
         loginValidated = false;
-        registredProject=null;
+        registredProject = null;
         instanceDescription = null;
         flushEventCache();
         return null;
@@ -257,11 +260,11 @@ public class ConnectStatusActionBean implements Serializable {
 
     public String register() {
         if (registredProject == null) {
-            facesMessages.add(FacesMessage.SEVERITY_WARN,
-            resourcesAccessor.getMessages().get("label.empty.project"));
+            facesMessages.add(StatusMessage.Severity.WARN,
+                    resourcesAccessor.getMessages().get("label.empty.project"));
             return null;
         }
-        if (instanceDescription==null || instanceDescription.isEmpty()) {
+        if (instanceDescription == null || instanceDescription.isEmpty()) {
             instanceDescription = login + "'s " + instanceType + " instance";
         }
         try {
@@ -270,8 +273,9 @@ public class ConnectStatusActionBean implements Serializable {
                     NuxeoClientInstanceType.fromString(instanceType),
                     instanceDescription);
         } catch (Exception e) {
-            facesMessages.add(FacesMessage.SEVERITY_ERROR,
-                    resourcesAccessor.getMessages().get("label.connect.registrationError"));
+            facesMessages.add(StatusMessage.Severity.ERROR,
+                    resourcesAccessor.getMessages().get(
+                            "label.connect.registrationError"));
             log.error("Error while registring instance", e);
         }
 
@@ -288,11 +292,13 @@ public class ConnectStatusActionBean implements Serializable {
         try {
             getService().localRegisterInstance(CLID, instanceDescription);
         } catch (InvalidCLID e) {
-            facesMessages.add(FacesMessage.SEVERITY_WARN,
-                    resourcesAccessor.getMessages().get("label.connect.wrongCLID"));
+            facesMessages.add(StatusMessage.Severity.WARN,
+                    resourcesAccessor.getMessages().get(
+                            "label.connect.wrongCLID"));
         } catch (IOException e) {
-            facesMessages.add(FacesMessage.SEVERITY_ERROR,
-                    resourcesAccessor.getMessages().get("label.connect.registrationError"));
+            facesMessages.add(StatusMessage.Severity.ERROR,
+                    resourcesAccessor.getMessages().get(
+                            "label.connect.registrationError"));
             log.error("Error while registring instance locally", e);
         }
 
@@ -301,6 +307,7 @@ public class ConnectStatusActionBean implements Serializable {
     }
 
     protected Blob packageToUpload;
+
     protected String packageFileName;
 
     public String getPackageFileName() {
@@ -321,9 +328,9 @@ public class ConnectStatusActionBean implements Serializable {
 
     public void uploadPackage() throws Exception {
 
-        if (packageToUpload==null) {
-            facesMessages.add(FacesMessage.SEVERITY_WARN,
-            "label.connect.nofile");
+        if (packageToUpload == null) {
+            facesMessages.add(StatusMessage.Severity.WARN,
+                    "label.connect.nofile");
             return;
         }
 
@@ -334,15 +341,16 @@ public class ConnectStatusActionBean implements Serializable {
 
         try {
             pus.addPackage(tmpFile);
-        }
-        catch (Exception e) {
-            facesMessages.add(FacesMessage.SEVERITY_ERROR,
-            resourcesAccessor.getMessages().get("label.connect.wrong.package" + ":" + e.getMessage()));
+        } catch (Exception e) {
+            facesMessages.add(StatusMessage.Severity.ERROR,
+                    resourcesAccessor.getMessages().get(
+                            "label.connect.wrong.package" + ":"
+                                    + e.getMessage()));
             return;
         } finally {
             tmpFile.delete();
-            packageFileName=null;
-            packageToUpload=null;
+            packageFileName = null;
+            packageToUpload = null;
         }
     }
 }

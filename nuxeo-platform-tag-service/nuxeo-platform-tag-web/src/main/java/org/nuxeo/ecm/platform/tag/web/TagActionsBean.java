@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import javax.faces.application.FacesMessage;
 import javax.faces.event.ActionEvent;
 
 import org.apache.commons.lang.StringUtils;
@@ -41,6 +40,7 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.faces.FacesMessages;
+import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -157,7 +157,7 @@ public class TagActionsBean implements Serializable {
             // force invalidation
             Contexts.getEventContext().remove("currentDocumentTags");
         }
-        facesMessages.add(FacesMessage.SEVERITY_INFO,
+        facesMessages.add(StatusMessage.Severity.INFO,
                 resourcesAccessor.getMessages().get(messageKey), tagLabel);
         reset();
         return null;
@@ -172,7 +172,7 @@ public class TagActionsBean implements Serializable {
         reset();
         // force invalidation
         Contexts.getEventContext().remove("currentDocumentTags");
-        facesMessages.add(FacesMessage.SEVERITY_INFO,
+        facesMessages.add(StatusMessage.Severity.INFO,
                 resourcesAccessor.getMessages().get("message.remove.tagging"),
                 label);
         return null;
