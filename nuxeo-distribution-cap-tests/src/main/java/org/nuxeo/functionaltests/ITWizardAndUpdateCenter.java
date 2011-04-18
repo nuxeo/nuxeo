@@ -107,12 +107,11 @@ public class ITWizardAndUpdateCenter extends AbstractTest {
         assertFalse(somePage.hasError());
         proxyPage = somePage.previous();
 
-        /*
-         * assertTrue(proxyPage.selectOption("nuxeo.http.proxy.type",
-         * "authenticated")); proxyPage.clearInput("nuxeo.http.proxy.login");
-         * proxyPage.clearInput("nuxeo.http.proxy.password"); proxyPage =
-         * proxyPage.next(); assertTrue(proxyPage.hasError());
-         */
+        assertTrue(proxyPage.selectOption("nuxeo.http.proxy.type","authenticated"));
+        proxyPage.clearInput("nuxeo.http.proxy.login");
+        proxyPage.clearInput("nuxeo.http.proxy.password");
+        proxyPage =proxyPage.next(); assertTrue(proxyPage.hasError());
+
         assertTrue(proxyPage.selectOption("nuxeo.http.proxy.type", "none"));
 
         // **********************
@@ -205,13 +204,14 @@ public class ITWizardAndUpdateCenter extends AbstractTest {
                 "Continue");
         assertNotNull(summary);
         assertEquals("Summary", summary.getTitle());
+        assertNotNull(summary.getRegistration());
 
         // Restart
         LoginPage loginPage = summary.restart();
 
     }
 
-//    @Test
+    //@Test
     public void loopOnIframe() throws Exception {
 
         // **********************
@@ -305,10 +305,13 @@ public class ITWizardAndUpdateCenter extends AbstractTest {
         assertNotNull(connectHome);
         assertEquals("Connect registration OK", connectHome.getConnectStatus());
 
-        // XXX Check setup parameters
+        // Check setup parameters
+        SystemHomePage systemPage = connectHome.getSystemHomePage();
+        String smtpHost = systemPage.getConfig("mail.smtp.host");
+        assertEquals(SMTP_SERVER_HOST, smtpHost);
 
         // Go to Update Center
-        UpdateCenterPage updateCenterHome = connectHome.getUpdateCenterHomePage();
+        UpdateCenterPage updateCenterHome = systemPage.getUpdateCenterHomePage();
         updateCenterHome = updateCenterHome.nav(UpdateCenterPage.class,
                 "Packages from Nuxeo Marketplace");
 
@@ -327,7 +330,7 @@ public class ITWizardAndUpdateCenter extends AbstractTest {
         assertNotNull(packageListing);
         WebElement packageLink = packageListing.getPackageLink(MARKETPLACE_PACKAGE_ID);
         assertNotNull(packageLink);
-        if (isWindows() || true) {
+        if (isWindows()) {
             assertTrue(packageLink.getText().trim().toLowerCase().startsWith("restart"));
         } else {
             assertTrue(packageLink.getText().trim().toLowerCase().startsWith("uninstall"));
