@@ -19,6 +19,9 @@
 
 package org.nuxeo.ecm.webapp.contentbrowser;
 
+import static org.jboss.seam.ScopeType.CONVERSATION;
+import static org.jboss.seam.ScopeType.EVENT;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -46,6 +49,7 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.remoting.WebRemote;
 import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.core.Events;
+import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.common.utils.URIUtils;
@@ -80,14 +84,14 @@ import org.nuxeo.ecm.platform.util.RepositoryLocation;
 import org.nuxeo.ecm.webapp.action.DeleteActions;
 import org.nuxeo.ecm.webapp.base.InputController;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
+import org.nuxeo.ecm.webapp.helpers.EventManager;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.ecm.webapp.pagination.ResultsProvidersCache;
 import org.nuxeo.runtime.api.Framework;
 
-import static org.jboss.seam.ScopeType.CONVERSATION;
-import static org.jboss.seam.ScopeType.EVENT;
-
 /**
+ * Handles creation and edition of a document.
+ *
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
  * @author M.-A. Darche
  */
@@ -192,9 +196,6 @@ public class DocumentActionsBean extends InputController implements
         return typeManager.getType(changeableDocument.getType());
     }
 
-    /**
-     * Returns the edit view of a document.
-     */
     public String editDocument() throws ClientException {
         navigationContext.setChangeableDocument(navigationContext.getCurrentDocument());
         return navigationContext.navigateToDocument(
@@ -235,6 +236,7 @@ public class DocumentActionsBean extends InputController implements
             }
 
             String[] s = fileFieldFullName.split(":");
+            DocumentModel currentDocument = navigationContext.getCurrentDocument();
             Blob blob = (Blob) currentDocument.getProperty(s[0], s[1]);
             String filename = getFileName(currentDocument);
             FacesContext context = FacesContext.getCurrentInstance();
@@ -294,7 +296,8 @@ public class DocumentActionsBean extends InputController implements
     // XXX AT: broken right now
     public String downloadFromList() throws ClientException {
         try {
-            // DocumentModel docMod = getDataTableModel().getSelectedDocModel();
+            // DocumentModel docMod =
+            // getDataTableModel().getSelectedDocModel();
             DocumentModel docMod = null;
             if (docMod == null || fileFieldFullName == null) {
                 return null;
@@ -307,6 +310,7 @@ public class DocumentActionsBean extends InputController implements
                 return null;
             }
 
+            DocumentModel currentDocument = navigationContext.getCurrentDocument();
             String filename = getFileName(currentDocument);
             if (filename == null || "".equals(filename)) {
                 filename = "file";
@@ -329,29 +333,20 @@ public class DocumentActionsBean extends InputController implements
         }
     }
 
-    /**
-     * Updates document considering that current document model holds edited
-     * values.
-     * <p>
-     * Method called from page action.
-     *
-     * @deprecated should update changeableDocument and use updateDocument
-     */
     @Deprecated
-    // TODO: remove (not used)
     public String updateCurrentDocument() throws ClientException {
         try {
+            DocumentModel currentDocument = navigationContext.getCurrentDocument();
             currentDocument = documentManager.saveDocument(currentDocument);
             throwUpdateComments(currentDocument);
             documentManager.save();
             // not navigationContext.saveCurrentDocument();
 
-            facesMessages.add(
-                    FacesMessage.SEVERITY_INFO,
+            facesMessages.add(FacesMessage.SEVERITY_INFO,
                     resourcesAccessor.getMessages().get("document_modified"),
                     resourcesAccessor.getMessages().get(
                             currentDocument.getType()));
-            eventManager.raiseEventsOnDocumentChange(currentDocument);
+            EventManager.raiseEventsOnDocumentChange(currentDocument);
             return navigationContext.navigateToDocument(currentDocument,
                     "after-edit");
         } catch (Throwable t) {
@@ -359,9 +354,6 @@ public class DocumentActionsBean extends InputController implements
         }
     }
 
-    /**
-     * Saves changes hold by the changeableDocument document model.
-     */
     public String updateDocument() throws ClientException {
         try {
             DocumentModel changeableDocument = navigationContext.getChangeableDocument();
@@ -372,12 +364,11 @@ public class DocumentActionsBean extends InputController implements
             documentManager.save();
             // some changes (versioning) happened server-side, fetch new one
             navigationContext.invalidateCurrentDocument();
-            facesMessages.add(
-                    FacesMessage.SEVERITY_INFO,
+            facesMessages.add(StatusMessage.Severity.INFO,
                     resourcesAccessor.getMessages().get("document_modified"),
                     resourcesAccessor.getMessages().get(
                             changeableDocument.getType()));
-            eventManager.raiseEventsOnDocumentChange(changeableDocument);
+            EventManager.raiseEventsOnDocumentChange(changeableDocument);
             return navigationContext.navigateToDocument(changeableDocument,
                     "after-edit");
         } catch (Throwable t) {
@@ -385,9 +376,6 @@ public class DocumentActionsBean extends InputController implements
         }
     }
 
-    /**
-     * Saves changes in current version and then create a new current one.
-     */
     public String updateDocumentAsNewVersion() throws ClientException {
         try {
             DocumentModel changeableDocument = navigationContext.getChangeableDocument();
@@ -397,12 +385,12 @@ public class DocumentActionsBean extends InputController implements
                     Boolean.TRUE);
             changeableDocument = documentManager.saveDocument(changeableDocument);
 
-            facesMessages.add(FacesMessage.SEVERITY_INFO,
+            facesMessages.add(StatusMessage.Severity.INFO,
                     resourcesAccessor.getMessages().get("new_version_created"));
             // then follow the standard pageflow for edited documents
             // return result;
 
-            eventManager.raiseEventsOnDocumentChange(changeableDocument);
+            EventManager.raiseEventsOnDocumentChange(changeableDocument);
             return navigationContext.navigateToDocument(changeableDocument,
                     "after-edit");
         } catch (Throwable t) {
@@ -410,17 +398,11 @@ public class DocumentActionsBean extends InputController implements
         }
     }
 
-    /**
-     * Returns the create view of a document type.
-     */
     public String createDocument() throws ClientException {
         Type docType = typesTool.getSelectedType();
         return createDocument(docType.getId());
     }
 
-    /**
-     * Returns the create view of given document type.
-     */
     public String createDocument(String typeName) throws ClientException {
         Type docType = typeManager.getType(typeName);
         // we cannot use typesTool as intermediary since the DataModel callback
@@ -440,9 +422,6 @@ public class DocumentActionsBean extends InputController implements
         }
     }
 
-    /**
-     * Badly named method that actually creates a document.
-     */
     public String saveDocument() throws ClientException {
         DocumentModel changeableDocument = navigationContext.getChangeableDocument();
         return saveDocument(changeableDocument);
@@ -468,6 +447,7 @@ public class DocumentActionsBean extends InputController implements
             } catch (Exception e) {
                 throw new ClientException(e);
             }
+            DocumentModel currentDocument = navigationContext.getCurrentDocument();
             if (parentDocumentPath == null) {
                 if (currentDocument == null) {
                     // creating item at the root
@@ -484,7 +464,7 @@ public class DocumentActionsBean extends InputController implements
             documentManager.save();
 
             logDocumentWithTitle("Created the document: ", newDocument);
-            facesMessages.add(FacesMessage.SEVERITY_INFO,
+            facesMessages.add(StatusMessage.Severity.INFO,
                     resourcesAccessor.getMessages().get("document_saved"),
                     resourcesAccessor.getMessages().get(newDocument.getType()));
 
@@ -539,12 +519,13 @@ public class DocumentActionsBean extends InputController implements
     // SelectModelListener interface
 
     public void processSelectRowEvent(SelectDataModelRowEvent event) {
-        // could use source to get to the SelectModel and retrieve its name, but
+        // could use source to get to the SelectModel and retrieve its name,
+        // but
         // useless here as only one table is involved.
         // SelectModelRow row = event.getRow();
         Boolean selection = event.getSelected();
         DocumentModel data = (DocumentModel) event.getRowData();
-        if (selection) {
+        if (Boolean.TRUE.equals(selection)) {
             documentsListsManager.addToWorkingList(
                     DocumentsListsManager.CURRENT_DOCUMENT_SELECTION, data);
         } else {
@@ -558,13 +539,6 @@ public class DocumentActionsBean extends InputController implements
         return "ERROR: " + errorMessage;
     }
 
-    /**
-     * Handle row selection event after having ensured that the navigation
-     * context stills points to currentDocumentRef to protect against browsers'
-     * back button errors
-     *
-     * @throws ClientException if currentDocRef is not a valid document
-     */
     @WebRemote
     public String checkCurrentDocAndProcessSelectRow(String docRef,
             String providerName, String listName, Boolean selection,
@@ -599,7 +573,7 @@ public class DocumentActionsBean extends InputController implements
         }
         String lName = (listName == null) ? DocumentsListsManager.CURRENT_DOCUMENT_SELECTION
                 : listName;
-        if (selection) {
+        if (Boolean.TRUE.equals(selection)) {
             documentsListsManager.addToWorkingList(lName, doc);
         } else {
             documentsListsManager.removeFromWorkingList(lName, doc);
@@ -607,13 +581,6 @@ public class DocumentActionsBean extends InputController implements
         return computeSelectionActions(lName);
     }
 
-    /**
-     * Handle complete table selection event after having ensured that the
-     * navigation context stills points to currentDocumentRef to protect against
-     * browsers' back button errors
-     *
-     * @throws ClientException if currentDocRef is not a valid document
-     */
     @WebRemote
     public String checkCurrentDocAndProcessSelectPage(String providerName,
             String listName, Boolean selection, String currentDocRef)
@@ -637,7 +604,7 @@ public class DocumentActionsBean extends InputController implements
         DocumentModelList documents = provider.getCurrentPage();
         String lName = (listName == null) ? DocumentsListsManager.CURRENT_DOCUMENT_SELECTION
                 : listName;
-        if (selection) {
+        if (Boolean.TRUE.equals(selection)) {
             documentsListsManager.addToWorkingList(lName, documents);
         } else {
             documentsListsManager.removeFromWorkingList(lName, documents);
