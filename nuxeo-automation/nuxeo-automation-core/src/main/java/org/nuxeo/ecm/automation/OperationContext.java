@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -13,9 +13,11 @@ package org.nuxeo.ecm.automation;
 
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -48,11 +50,16 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class OperationContext extends HashMap<String, Object> {
+public class OperationContext implements Map<String, Object> {
 
     private static final Log log = LogFactory.getLog(OperationContext.class);
 
     private static final long serialVersionUID = 2944230823597903715L;
+
+    /**
+     * The context variables map
+     */
+    protected Map<String, Object> vars;
 
     /**
      * Whether to save the session at the end of the chain execution. The
@@ -86,15 +93,21 @@ public class OperationContext extends HashMap<String, Object> {
     protected List<String> trace;
 
     public OperationContext() {
-        this(null);
+        this(null, null);
     }
 
     public OperationContext(CoreSession session) {
+        this (session, null);
+    }
+
+    public OperationContext(CoreSession session, Map<String, Object> vars) {
         stacks = new HashMap<String, List<Object>>();
         cleanupHandlers = new ArrayList<CleanupHandler>();
         loginStack = new LoginStack(session);
         trace = new ArrayList<String>();
+        this.vars = vars != null ? vars : new HashMap<String, Object>();
     }
+
 
     public void setCoreSession(CoreSession session) {
         this.loginStack.setSession(session);
@@ -223,4 +236,71 @@ public class OperationContext extends HashMap<String, Object> {
         setCommit(false);
         TransactionHelper.setTransactionRollbackOnly();
     }
+
+    public Map<String, Object> getVars() {
+        return vars;
+    }
+
+    /** the map API */
+
+    @Override
+    public int size() {
+        return vars.size();
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return vars.isEmpty();
+    }
+
+    @Override
+    public boolean containsKey(Object key) {
+        return vars.containsKey(key);
+    }
+
+    @Override
+    public boolean containsValue(Object value) {
+        return vars.containsValue(value);
+    }
+
+    @Override
+    public Object get(Object key) {
+        return vars.get(key);
+    }
+
+    @Override
+    public Object put(String key, Object value) {
+        return vars.put(key, value);
+    }
+
+    @Override
+    public Object remove(Object key) {
+        return vars.remove(key);
+    }
+
+    @Override
+    public void putAll(Map<? extends String, ? extends Object> m) {
+        vars.putAll(m);
+    }
+
+    @Override
+    public void clear() {
+        vars.clear();
+    }
+
+    @Override
+    public Set<String> keySet() {
+        return vars.keySet();
+    }
+
+    @Override
+    public Collection<Object> values() {
+        return vars.values();
+    }
+
+    @Override
+    public Set<java.util.Map.Entry<String, Object>> entrySet() {
+        return vars.entrySet();
+    }
+
 }
