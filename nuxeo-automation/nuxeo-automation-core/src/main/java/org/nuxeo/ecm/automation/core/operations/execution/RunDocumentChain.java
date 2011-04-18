@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -10,6 +10,9 @@
  *     bstefanescu
  */
 package org.nuxeo.ecm.automation.core.operations.execution;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
@@ -41,9 +44,14 @@ public class RunDocumentChain {
     @Param(name = "id")
     protected String chainId;
 
+    @Param(name="isolate", required = false, values = "false")
+    protected boolean isolate = false;
+
+
     @OperationMethod(collector=DocumentModelCollector.class)
     public DocumentModel run(DocumentModel doc) throws Exception {
-        OperationContext subctx = new OperationContext(ctx.getCoreSession());
+        Map<String, Object> vars = isolate ? new HashMap<String, Object>(ctx.getVars()) : ctx.getVars();
+        OperationContext subctx = new OperationContext(ctx.getCoreSession(), vars);
         subctx.setInput(doc);
         return (DocumentModel) service.run(subctx, chainId);
     }
