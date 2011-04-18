@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -34,6 +35,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.jaxrs.ApplicationFactory;
+import org.nuxeo.ecm.webengine.jaxrs.scan.Scanner;
 import org.nuxeo.ecm.webengine.loader.WebLoader;
 import org.nuxeo.ecm.webengine.model.Module;
 import org.nuxeo.ecm.webengine.model.WebObject;
@@ -48,7 +50,10 @@ import org.osgi.framework.Bundle;
  */
 public class WebEngineModule extends Application implements ApplicationFactory {
 
-    private static Log log = LogFactory.getLog(WebEngineModule.class);
+    private final static Log log = LogFactory.getLog(WebEngineModule.class);
+
+    public final static String WEBOBJECT_ANNO = "Lorg/nuxeo/ecm/webengine/model/WebObject;";
+    public final static String WEBADAPTER_ANNO = "Lorg/nuxeo/ecm/webengine/model/WebAdapter;";
 
     protected Bundle bundle;
 
@@ -75,22 +80,54 @@ public class WebEngineModule extends Application implements ApplicationFactory {
             throw new IllegalStateException("No name given for web module in bundle "+bundle.getSymbolicName());
         }
         cfg.directory = moduleDir;
-        initTypes(engine);
-        initRoots(engine);
+        initTypes(bundle, attrs.get("package"), engine);
     }
 
-    private void initTypes(WebEngine engine) throws Exception {
+    private void initTypes(Bundle bundle, String packageBase, WebEngine engine) throws Exception {
         cfg.types = getWebTypes();
         if (cfg.types == null) {
             // try the META-INF/web-types file
             loadMetaTypeFile(engine);
             if (cfg.types == null) {
                 // try scanning the bundle
-                // scan();
+                scan(bundle, packageBase);
                 if (cfg.types == null) {
                     throw new IllegalStateException("No web types defined in web module "+cfg.name+" from bundle "+bundle.getSymbolicName());
                 }
+            } else {
+                initRoots(engine);
             }
+        } else {
+            initRoots(engine);
+        }
+    }
+
+    private void scan(Bundle bundle, String packageBase) throws Exception {
+        if (packageBase == null) {
+            packageBase = "/";
+        }
+        Scanner scanner = new Scanner(bundle, packageBase,
+                Scanner.PATH_ANNO, Scanner.PROVIDER_ANNO, WEBOBJECT_ANNO, WEBADAPTER_ANNO);
+        scanner.scan();
+        Collection<Class<?>> paths = scanner.getCollector(Scanner.PATH_ANNO);
+        Collection<Class<?>> providers = scanner.getCollector(Scanner.PATH_ANNO);
+        cfg.roots = new Class<?>[paths.size()+providers.size()];
+        int i=0;
+        for (Class<?> cl : paths) {
+            cfg.roots[i++] = cl;
+        }
+        for (Class<?> cl : providers) {
+            cfg.roots[i++] = cl;
+        }
+        Collection<Class<?>> objs = scanner.getCollector(WEBOBJECT_ANNO);
+        Collection<Class<?>> adapters = scanner.getCollector(WEBADAPTER_ANNO);
+        cfg.types = new Class<?>[objs.size()+adapters.size()];
+        i=0;
+        for (Class<?> cl : objs) {
+            cfg.types[i++] = cl;
+        }
+        for (Class<?> cl : adapters) {
+            cfg.types[i++] = cl;
         }
     }
 

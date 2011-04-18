@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -9,35 +9,63 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.webengine.jaxrs.annotations;
+package org.nuxeo.ecm.webengine.jaxrs.scan;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
+import org.objectweb.asm.AnnotationVisitor;
+import org.objectweb.asm.Attribute;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.FieldVisitor;
+import org.objectweb.asm.MethodVisitor;
 
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class AnnotationReader {/*implements ClassVisitor {
+public class AnnotationReader implements ClassVisitor {
 
-    protected boolean found = false;
+    protected Set<String> annotations;
 
-    public AnnotationReader(InputStream in) throws IOException {
-        ClassReader reader = new ClassReader(in);
-        reader.accept(this, null, ClassReader.SKIP_DEBUG | ClassReader.SKIP_CODE | ClassReader.SKIP_FRAMES);
-        //reader.accept(this, Attributes.getDefaultAttributes(), ClassReader.SKIP_DEBUG);
+    protected List<String> results;
+
+    protected String cname;
+
+    public AnnotationReader(Set<String> annotations) throws IOException {
+        results = new ArrayList<String>();
+        this.annotations = annotations;
     }
 
+    public String getClassName() {
+        return cname.replace('/', '.');
+    }
+
+    public String getFileName() {
+        return cname;
+    }
+
+    public List<String> getResults() {
+        return results;
+    }
+
+    public boolean hasResults() {
+        return !results.isEmpty();
+    }
 
     @Override
-    public void visit(int arg0, int arg1, String arg2, String arg3,
-            String arg4, String[] arg5) {
+    public void visit(int version, int access, String name, String signature,
+            String superName, String[] interfaces) {
+        cname = name;
     }
 
     @Override
     public AnnotationVisitor visitAnnotation(String arg0, boolean arg1) {
-        if ("Ljavax/ws/rs/Path;".equals(arg0)) {
-            found = true;
+        if (annotations.contains(arg0)) {
+            results.add(arg0);
         }
         return null;
     }
@@ -74,9 +102,4 @@ public class AnnotationReader {/*implements ClassVisitor {
     public void visitSource(String arg0, String arg1) {
     }
 
-
-    public static void main(String[] args) throws Exception {
-        System.out.println(new AnnotationReader(AnnotationReader.class.getResourceAsStream("Test.class")).found);
-    }
-    */
 }
