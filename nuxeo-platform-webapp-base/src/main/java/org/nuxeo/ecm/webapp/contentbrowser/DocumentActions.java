@@ -30,6 +30,7 @@ import org.nuxeo.ecm.platform.types.Type;
 import org.nuxeo.ecm.platform.ui.web.model.SelectDataModel;
 import org.nuxeo.ecm.platform.ui.web.model.SelectDataModelListener;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
+import org.nuxeo.ecm.webapp.action.TypesTool;
 import org.nuxeo.ecm.webapp.base.StatefulBaseLifeCycle;
 
 /**
@@ -47,20 +48,60 @@ public interface DocumentActions extends StatefulBaseLifeCycle,
     @PermitAll
     void destroy();
 
+    /**
+     * Returns the edit view of a document.
+     *
+     * @deprecated since 5.3: edit views are managed through tabs, the edit
+     *             view is not used.
+     */
+    @Deprecated
     String editDocument() throws ClientException;
 
+    /**
+     * Saves changes hold by the changeableDocument document model.
+     */
     String updateDocument() throws ClientException;
 
+    /**
+     * Saves changes in current version and then create a new current one.
+     */
     String updateDocumentAsNewVersion() throws ClientException;
 
+    /**
+     * Updates document considering that current document model holds edited
+     * values.
+     * <p>
+     * Method called from page action.
+     *
+     * @deprecated should update changeableDocument and use updateDocument
+     */
+    @Deprecated
     String updateCurrentDocument() throws ClientException;
 
+    /**
+     * Creates a document with type given by {@link TypesTool} and stores it in
+     * the context as the current changeable document.
+     * <p>
+     * Returns the create view of given document type.
+     */
     String createDocument() throws ClientException;
 
+    /**
+     * Creates a document with given type and stores it in the context as the
+     * current changeable document.
+     * <p>
+     * Returns the create view of given document type.
+     */
     String createDocument(String typeName) throws ClientException;
 
+    /**
+     * Creates the document from the changeableDocument put in request.
+     */
     String saveDocument() throws ClientException;
 
+    /**
+     * Creates the given document.
+     */
     String saveDocument(DocumentModel newDocument) throws ClientException;
 
     @Deprecated
@@ -81,15 +122,25 @@ public interface DocumentActions extends StatefulBaseLifeCycle,
     String downloadFromList() throws ClientException;
 
     /**
-     * @return ecm type for current document, <code>null</code> if current doc
-     *         is null.
+     * @return ecm type for current document, <code>null</code> if current
+     *         doc is null.
      */
     Type getCurrentType();
 
     Type getChangeableDocumentType();
 
+    /**
+     * @deprecated since 5.4: {@link SelectDataModel} usage is now useless
+     *             since content views provide selection wrappers.
+     */
+    @Deprecated
     SelectDataModel getChildrenSelectModel() throws ClientException;
 
+    /**
+     * @deprecated since 5.4: {@link SelectDataModel} usage is now useless
+     *             since content views provide selection wrappers.
+     */
+    @Deprecated
     SelectDataModel getSectionChildrenSelectModel() throws ClientException;
 
     /**
@@ -103,48 +154,85 @@ public interface DocumentActions extends StatefulBaseLifeCycle,
 
     /**
      * Handle complete row selection event after having ensured that the
-     * navigation context stills points to currentDocumentRef to protect against
-     * browsers' back button errors
+     * navigation context stills points to currentDocumentRef to protect
+     * against browsers' back button errors
      *
      * @throws ClientException if currentDocRef is not a valid document
+     * @deprecated since 5.4, use
+     *             {@link DocumentListingActionsBean#checkCurrentDocAndProcessSelectRow(String, String, String, Boolean, String)}
+     *             as selection is now done through ajax
      */
     @WebRemote
+    @Deprecated
     String checkCurrentDocAndProcessSelectRow(String docRef,
             String providerName, String listName, Boolean selection,
             String currentDocRef) throws ClientException;
 
+    /**
+     * @deprecated since 5.4, use
+     *             {@link DocumentListingActionsBean#processSelectRow(String, String, String, Boolean)}
+     *             as selection is now done through ajax
+     */
     @WebRemote
+    @Deprecated
     String processSelectRow(String docRef, String providerName,
             String listName, Boolean selection);
 
     /**
      * Handle complete table selection event after having ensured that the
-     * navigation context stills points to currentDocumentRef to protect against
-     * browsers' back button errors
+     * navigation context stills points to currentDocumentRef to protect
+     * against browsers' back button errors
      *
      * @throws ClientException if currentDocRef is not a valid document
+     * @deprecated since 5.4, use
+     *             {@link DocumentListingActionsBean#checkCurrentDocAndProcessSelectPage(String, String, Boolean, String)}
+     *             as selection is now done through ajax
      */
+    @Deprecated
     @WebRemote
     String checkCurrentDocAndProcessSelectPage(String providerName,
             String listName, Boolean selection, String currentDocRef)
             throws ClientException;
 
+    /**
+     * @deprecated since 5.4, use
+     *             {@link DocumentListingActionsBean#processSelectPage(String, String, Boolean)}
+     *             as selection is now done through ajax
+     */
+    @Deprecated
     @WebRemote
     String processSelectPage(String providerName, String listName,
             Boolean selection);
 
+    /**
+     * Returns the comment to attach to the document
+     *
+     * @deprecated since 5.4: comment can be put directly in the document
+     *             context data using key 'request/comment'.
+     */
+    @Deprecated
     String getComment();
 
+    /**
+     * Sets the comment to attach to a document
+     *
+     * @deprecated since 5.4: comment can be put directly in the document
+     *             context data using key 'request/comment'.
+     */
+    @Deprecated
     void setComment(String comment);
 
     /**
-     * This method is used to test wheter the looged user has enough rights for
-     * the unpublish support.
+     * This method is used to test whether the logged user has enough rights
+     * for the unpublish support.
      *
-     * @return - true if the user can unpublish
-     *         <p> - false otherwise
+     * @return true if the user can unpublish, false otherwise
      * @throws ClientException
      */
     boolean getCanUnpublish();
+
+    String getCurrentDocumentSummaryLayout();
+
+    void followTransition(DocumentModel changedDocument) throws ClientException;
 
 }
