@@ -19,16 +19,20 @@
 
 package org.nuxeo.ecm.webdav.resource;
 
+import net.java.dev.webdav.core.jaxrs.xml.properties.IsCollection;
+import net.java.dev.webdav.core.jaxrs.xml.properties.IsFolder;
+import net.java.dev.webdav.core.jaxrs.xml.properties.IsHidden;
 import net.java.dev.webdav.jaxrs.methods.PROPFIND;
 import net.java.dev.webdav.jaxrs.xml.elements.*;
-import net.java.dev.webdav.jaxrs.xml.properties.CreationDate;
-import net.java.dev.webdav.jaxrs.xml.properties.GetLastModified;
+import net.java.dev.webdav.jaxrs.xml.properties.*;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.webdav.Util;
+import org.nuxeo.ecm.webdav.backend.WebDavBackend;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
@@ -55,8 +59,8 @@ public class FolderResource extends ExistingResource {
 
     private static final Log log = LogFactory.getLog(FolderResource.class);
 
-    public FolderResource(DocumentModel doc, HttpServletRequest request) throws Exception {
-        super(doc, request);
+    public FolderResource(String path, DocumentModel doc, HttpServletRequest request, WebDavBackend backend) throws Exception {
+        super(path, doc, request, backend);
     }
 
     @GET
@@ -64,9 +68,9 @@ public class FolderResource extends ExistingResource {
     public String get() throws ClientException {
         StringBuilder sb = new StringBuilder();
         sb.append("<html><body><p>Folder listing for " + path + ":</p>\n<ul>");
-        List<DocumentModel> children = session.getChildren(doc.getRef());
+        List<DocumentModel> children = backend.getChildren(doc.getRef());
         for (DocumentModel child : children) {
-            String childName = child.getName();
+            String childName = backend.getDisplayName(child);
             // TODO: properly escape.
             sb.append("<li><a href='" + childName + "'>" + childName + "</a></li>\n");
         }
@@ -77,30 +81,53 @@ public class FolderResource extends ExistingResource {
 
     @PROPFIND
     public Response propfind(@Context UriInfo uriInfo,
-            @HeaderParam("depth") String depth) throws Exception {
+            @HeaderParam("depth") String depth
+            ) throws Exception {
+
+        if(depth == null){
+            depth = "1";
+        }
+
         Unmarshaller u = Util.getUnmarshaller();
 
-        PropFind propFind;
-        try {
-            propFind = (PropFind) u.unmarshal(request.getInputStream());
-        } catch (JAXBException e) {
-            log.error(e);
-            // FIXME: check this is the right response code
-            return Response.status(400).build();
+        Prop prop = null;
+        if (request.getInputStream() != null && request.getInputStream().available() > 0) {
+            PropFind propFind;
+            try {
+                propFind = (PropFind) u.unmarshal(request.getInputStream());
+            } catch (JAXBException e) {
+                log.error(e);
+                // FIXME: check this is the right response code
+                return Response.status(400).build();
+            }
+            prop = propFind.getProp();
+            Util.printAsXml(prop);
         }
-        Prop prop = propFind.getProp();
-
-        //Util.printAsXml(prop);
 
         // Get key properties from doc
-        Date lastModified = ((Calendar) doc.getPropertyValue("dc:modified")).getTime();
-        Date creationDate = ((Calendar) doc.getPropertyValue("dc:created")).getTime();
+        Date lastModified = getTimePropertyWrapper(doc, "dc:modified");
+        Date creationDate = getTimePropertyWrapper(doc, "dc:created");
 
         final net.java.dev.webdav.jaxrs.xml.elements.Response response
                 = new net.java.dev.webdav.jaxrs.xml.elements.Response(
-                new HRef(uriInfo.getRequestUri()), null, null, null,
+                new HRef(uriInfo.getRequestUri()),
+                null,
+                null,
+                null,
                 new PropStat(
-                        new Prop(new CreationDate(creationDate), new GetLastModified(lastModified), COLLECTION),
+                        new Prop(
+                                new DisplayName("nuxeo"),
+                                new LockDiscovery(),
+                                new SupportedLock(),
+                                new IsFolder("t"),
+                                new IsCollection(1),
+                                new IsHidden(0),
+                                new GetContentType("application/octet-stream"),
+                                new GetContentLength(0),
+                                new CreationDate(creationDate),
+                                new GetLastModified(lastModified),
+                                COLLECTION
+                        ),
                         new Status(OK)));
 
         if (!doc.isFolder() || depth.equals("0")) {
@@ -111,11 +138,11 @@ public class FolderResource extends ExistingResource {
                 = new ArrayList<net.java.dev.webdav.jaxrs.xml.elements.Response>();
         responses.add(response);
 
-        List<DocumentModel> children = session.getChildren(doc.getRef());
+        List<DocumentModel> children = backend.getChildren(doc.getRef());
         for (DocumentModel child : children) {
-            lastModified = ((Calendar) child.getPropertyValue("dc:modified")).getTime();
-            creationDate = ((Calendar) child.getPropertyValue("dc:created")).getTime();
-            String childName = child.getName();
+            lastModified = getTimePropertyWrapper(child, "dc:modified");
+            creationDate = getTimePropertyWrapper(child, "dc:created"); 
+            String childName = backend.getDisplayName(child);
             PropStatBuilderExt props = new PropStatBuilderExt();
             props.lastModified(lastModified).creationDate(creationDate).displayName(childName).status(OK);
             if (child.isFolder()) {
@@ -127,6 +154,9 @@ public class FolderResource extends ExistingResource {
                 if (blob != null) {
                     size = blob.getLength();
                     mimeType = blob.getMimeType();
+                }
+                if(StringUtils.isEmpty(mimeType) || "???".equals(mimeType) ){
+                    mimeType = "application/octet-stream";
                 }
                 props.isResource(size, mimeType);
             }

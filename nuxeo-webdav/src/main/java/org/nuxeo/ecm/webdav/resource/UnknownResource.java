@@ -26,10 +26,12 @@ import org.nuxeo.ecm.core.api.*;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.webdav.Util;
+import org.nuxeo.ecm.webdav.backend.WebDavBackend;
 import org.nuxeo.runtime.services.streaming.InputStreamSource;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.HEAD;
 import javax.ws.rs.PUT;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
@@ -46,8 +48,11 @@ public class UnknownResource extends AbstractResource {
 
     private static final Log log = LogFactory.getLog(UnknownResource.class);
 
-    public UnknownResource(String path, HttpServletRequest request, CoreSession session) throws Exception {
-        super(path, request, session);
+    protected WebDavBackend backend;
+
+    public UnknownResource(String path, HttpServletRequest request, WebDavBackend backend) throws Exception {
+        super(path, request);
+        this.backend = backend;
     }
 
     /**
@@ -69,18 +74,20 @@ public class UnknownResource extends AbstractResource {
         */
 
         ensureParentExists();
-
         Blob content = new StreamingBlob(new InputStreamSource(request.getInputStream()));
-        content.setMimeType(request.getContentType());
+        if (content.getLength() > 0) {
+            String contentType = request.getContentType();
+            if (contentType == null) {
+                contentType = "application/octet-stream";
+            }
+            content.setMimeType(contentType);
         content.setFilename(name);
+        backend.createFile(parentPath, name, content);
+        } else {
+            backend.createFile(parentPath, name);
+        }
 
-        DocumentModel newdoc = session.createDocumentModel(parentPath, name, "File");
-        newdoc.setPropertyValue("dc:title", name);
-
-        newdoc.getProperty("file:content").setValue(content);
-        session.createDocument(newdoc);
-        session.save();
-
+        backend.saveChanges();
         return Response.created(new URI(request.getRequestURI())).build();
     }
 
@@ -91,16 +98,14 @@ public class UnknownResource extends AbstractResource {
     public Response mkcol() throws Exception {
         ensureParentExists();
 
+        //We really need this?
         InputStreamSource iss = new InputStreamSource(request.getInputStream());
         if (iss.getString().length() > 0) {
             return Response.status(415).build();
         }
 
-        DocumentModel folder = new DocumentModelImpl(parentPath, name, "Folder");
-        folder.setPropertyValue("dc:title", name);
-        session.createDocument(folder);
-        session.save();
-
+        backend.createFolder(parentPath, name);
+        backend.saveChanges();
         return Response.created(new URI(request.getRequestURI())).build();
     }
 
@@ -131,11 +136,15 @@ public class UnknownResource extends AbstractResource {
         return Response.status(404).build();
     }
 
+    @HEAD
+    public Response head() {
+        return Response.status(404).build();
+    }
+
     // Utility
 
     private void ensureParentExists() throws Exception {
-        DocumentRef parentRef = new PathRef(parentPath);
-        if (!session.exists(parentRef)) {
+        if (!backend.exists(parentPath)) {
             throw new WebApplicationException(409);
         }
     }

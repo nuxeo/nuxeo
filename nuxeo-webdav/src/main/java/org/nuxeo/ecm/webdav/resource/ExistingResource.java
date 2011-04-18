@@ -19,20 +19,25 @@
 
 package org.nuxeo.ecm.webdav.resource;
 
+import net.java.dev.webdav.core.jaxrs.xml.properties.Win32CreationTime;
+import net.java.dev.webdav.core.jaxrs.xml.properties.Win32FileAttributes;
+import net.java.dev.webdav.core.jaxrs.xml.properties.Win32LastAccessTime;
+import net.java.dev.webdav.core.jaxrs.xml.properties.Win32LastModifiedTime;
 import net.java.dev.webdav.jaxrs.methods.*;
 import net.java.dev.webdav.jaxrs.xml.elements.*;
 import net.java.dev.webdav.jaxrs.xml.properties.LockDiscovery;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.*;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.webdav.Constants;
 import org.nuxeo.ecm.webdav.Util;
-import org.nuxeo.ecm.webdav.locking.LockManager;
+import org.nuxeo.ecm.webdav.backend.WebDavBackend;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.HEAD;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
@@ -41,6 +46,9 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import java.net.URI;
+import java.util.*;
+
+import static javax.ws.rs.core.Response.Status.OK;
 
 /**
  * An existing resource corresponds to an existing object (folder or file)
@@ -51,50 +59,56 @@ public class ExistingResource extends AbstractResource {
     private static final Log log = LogFactory.getLog(ExistingResource.class);
 
     protected DocumentModel doc;
+    protected WebDavBackend backend;
 
-    protected ExistingResource(DocumentModel doc, HttpServletRequest request) throws Exception {
-        super(doc.getPathAsString(), request, doc.getCoreSession());
+    protected ExistingResource(String path, DocumentModel doc, HttpServletRequest request, WebDavBackend backend) throws Exception {
+        super(path, request);
         this.doc = doc;
-        session = doc.getCoreSession();
+        this.backend = backend;
     }
 
     @DELETE
     public Response delete() throws Exception {
-        if (lockManager.isLocked(path)) {
-            String token = Util.getTokenFromHeaders("if", request);
-            if (!lockManager.canUnlock(path, token)) {
-                return Response.status(423).build();
-            }
+        if (backend.isLocked(doc.getRef()) && !backend.canUnlock(doc.getRef())) {
+            return Response.status(423).build();
         }
 
-        DocumentRef ref = new PathRef(path);
-        session.removeDocument(ref);
-        session.save();
-        session.destroy();
-        return Response.status(204).build();
+        try {
+            backend.removeItem(doc.getRef());
+            backend.saveChanges();
+            return Response.status(204).build();
+        } catch (ClientException e) {
+            log.error("Can't remove item: " + doc.getPathAsString(), e);
+            backend.discardChanges();
+            return Response.status(400).build();
+        }
     }
 
     @COPY
     public Response copy(@HeaderParam("Destination") String dest,
-            @HeaderParam("Overwrite") String overwrite) throws Exception {
+                         @HeaderParam("Overwrite") String overwrite) throws Exception {
         return copyOrMove("COPY", dest, overwrite);
     }
 
     @MOVE
     public Response move(@HeaderParam("Destination") String dest,
-            @HeaderParam("Overwrite") String overwrite) throws Exception {
-        if (lockManager.isLocked(path)) {
-            String token = Util.getTokenFromHeaders("if", request);
-            if (!lockManager.canUnlock(path, token)) {
-                return Response.status(423).build();
-            }
+                         @HeaderParam("Overwrite") String overwrite) throws Exception {
+        if (backend.isLocked(doc.getRef()) && !backend.canUnlock(doc.getRef())) {
+            return Response.status(423).build();
         }
 
         return copyOrMove("MOVE", dest, overwrite);
     }
 
     private Response copyOrMove(String method, @HeaderParam("Destination") String dest,
-            @HeaderParam("Overwrite") String overwrite) throws Exception {
+                                @HeaderParam("Overwrite") String overwrite) throws Exception {
+
+        if (backend.isLocked(doc.getRef()) && !backend.canUnlock(doc.getRef())) {
+            return Response.status(423).build();
+        }
+
+        dest = Util.encode(dest.getBytes(), "ISO-8859-1");
+
         URI destUri = new URI(dest);
         String destPath = destUri.getPath();
         while (destPath.endsWith("/")) {
@@ -103,40 +117,36 @@ public class ExistingResource extends AbstractResource {
 
         destPath = destPath.substring(
                 RootResource.rootPath.length() + Constants.DAV_HOME.length(), destPath.length());
+        destPath = backend.parseLocation(destPath).toString();
         log.info("to " + destPath);
 
-        if (lockManager.isLocked(destPath)) {
-            String token = Util.getTokenFromHeaders("if", request);
-            if (!LockManager.getInstance().canUnlock(path, token)) {
-                return Response.status(423).build();
-            }
-        }
-
-        DocumentRef sourceRef = new PathRef(path);
-        DocumentRef destRef = new PathRef(destPath);
-
-        String destParentPath = Util.getParentPath(destPath);
-        PathRef destParentRef = new PathRef(destParentPath);
-        if (!session.exists(destParentRef)) {
-            return Response.status(409).build();
-        }
+        //DocumentRef destRef = new PathRef(destPath);
 
         // Remove dest if it exists and the Overwrite header is set to "T".
         int status = 201;
-        if (session.exists(destRef)) {
+        if (backend.exists(destPath)) {
             if ("F".equals(overwrite)) {
                 return Response.status(412).build();
             }
-            session.removeDocument(destRef);
+            backend.removeItem(destPath);
             status = 204;
         }
 
-        session.copy(sourceRef, destParentRef, Util.getNameFromPath(destPath));
-        if ("MOVE".equals(method)) {
-            session.removeDocument(sourceRef);
+        if (backend.isRename(doc.getPathAsString(), destPath)) {
+            backend.renameItem(doc, Util.getNameFromPath(destPath));
+        } else {
+            String destParentPath = Util.getParentPath(destPath);
+            PathRef destParentRef = new PathRef(destParentPath);
+            if (!backend.exists(destParentPath)) {
+                return Response.status(409).build();
+            }
+            if ("MOVE".equals(method)) {
+                backend.moveItem(doc, destParentRef);
+            } else {
+                backend.copyItem(doc, destParentRef);
+            }
         }
-        session.save();
-
+        backend.saveChanges();
         return Response.status(status).build();
     }
 
@@ -144,20 +154,48 @@ public class ExistingResource extends AbstractResource {
 
     @PROPPATCH
     public Response proppatch(@Context UriInfo uriInfo) throws Exception {
-        if (lockManager.isLocked(path)) {
+        if (backend.isLocked(doc.getRef()) && !backend.canUnlock(doc.getRef())) {
             return Response.status(423).build();
         }
 
-        JAXBContext jc = Util.getJaxbContext();
+        /*JAXBContext jc = Util.getJaxbContext();
         Unmarshaller u = jc.createUnmarshaller();
         PropertyUpdate propertyUpdate;
         try {
             propertyUpdate = (PropertyUpdate) u.unmarshal(request.getInputStream());
         } catch (JAXBException e) {
             return Response.status(400).build();
-        }
+        }*/
         //Util.printAsXml(propertyUpdate);
-        return Response.ok().build();
+
+        /*List<RemoveOrSet> list = propertyUpdate.list();
+
+        final List<PropStat> propStats = new ArrayList<PropStat>();
+        for (RemoveOrSet set : list) {
+            Prop prop = set.getProp();
+            List<Object> properties = prop.getProperties();
+            for (Object property : properties) {
+                PropStat propStat = new PropStat(new Prop(property), new Status(OK));
+                propStats.add(propStat);
+            }
+        }*/
+
+        //@TODO: patch properties if need.
+
+        //Fake proppatch response
+        final net.java.dev.webdav.jaxrs.xml.elements.Response response
+                = new net.java.dev.webdav.jaxrs.xml.elements.Response(
+                new HRef(uriInfo.getRequestUri()),
+                null,
+                null,
+                null,
+                new PropStat(new Prop(new Win32CreationTime()), new Status(OK)),
+                new PropStat(new Prop(new Win32FileAttributes()), new Status(OK)),
+                new PropStat(new Prop(new Win32LastAccessTime()), new Status(OK)),
+                new PropStat(new Prop(new Win32LastModifiedTime()), new Status(OK))
+        );
+
+        return Response.status(207).entity(new MultiStatus(response)).build();
     }
 
     /**
@@ -166,6 +204,80 @@ public class ExistingResource extends AbstractResource {
     @MKCOL
     public Response mkcol() {
         return Response.status(405).build();
+    }
+
+    @HEAD
+    public Response head() {
+        return Response.status(200).build();
+    }
+
+    @LOCK
+    public Response lock(@Context UriInfo uriInfo) throws Exception {
+        String token = null;
+        Prop prop = null;
+        if (backend.isLocked(doc.getRef())) {
+            if (!backend.canUnlock(doc.getRef())) {
+                return Response.status(423).build();
+            } else {
+                token = backend.getCheckoutUser(doc.getRef());
+                prop = new Prop(new LockDiscovery(new ActiveLock(
+                        LockScope.EXCLUSIVE, LockType.WRITE, Depth.ZERO,
+                        new Owner(token),
+                        new TimeOut(10000L), new LockToken(new HRef("urn:uuid:" + token)),
+                        new LockRoot(new HRef(uriInfo.getRequestUri()))
+                )));
+                return Response.ok().entity(prop)
+                        .header("Lock-Token", "urn:uuid:" + token).build();
+            }
+        }
+
+        token = backend.lock(doc.getRef());
+        if (StringUtils.isEmpty(token)) {
+            return Response.status(400).build();
+        }
+
+        prop = new Prop(new LockDiscovery(new ActiveLock(
+                LockScope.EXCLUSIVE, LockType.WRITE, Depth.ZERO,
+                new Owner(backend.getCheckoutUser(doc.getRef())),
+                new TimeOut(10000L), new LockToken(new HRef("urn:uuid:" + token)),
+                new LockRoot(new HRef(uriInfo.getRequestUri()))
+        )));
+
+        backend.saveChanges();
+        return Response.ok().entity(prop)
+                .header("Lock-Token", "urn:uuid:" + token).build();
+    }
+
+    @UNLOCK
+    public Response unlock() throws Exception {
+        if (backend.isLocked(doc.getRef())) {
+            if (!backend.canUnlock(doc.getRef())) {
+                return Response.status(423).build();
+            } else {
+                backend.unlock(doc.getRef());
+                backend.saveChanges();
+                return Response.status(204).build();
+            }
+        } else {
+            // TODO: return an error
+            return Response.status(204).build();
+        }
+    }
+
+    protected Date getTimePropertyWrapper(DocumentModel doc, String name){
+        Object property;
+        try {
+            property = doc.getPropertyValue(name);
+        } catch (ClientException e) {
+            property = null;
+            log.debug("Can't get property " + name + " from document " + doc.getId());
+        }
+
+        if(property != null){
+            return ((Calendar)property).getTime();
+        } else {
+            return new Date();
+        }
     }
 
 }

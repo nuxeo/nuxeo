@@ -45,7 +45,7 @@ public class AuthorHandler extends AbstractFPRPCHandler implements FPRPCHandler 
 
     @Override
     protected void processCall(FPRPCRequest request, FPRPCResponse fpResponse,
-            int callIndex, WSSBackend backend) throws WSSException {
+                               int callIndex, WSSBackend backend) throws WSSException {
 
         FPRPCCall call = request.getCalls().get(callIndex);
 
@@ -122,12 +122,21 @@ public class AuthorHandler extends AbstractFPRPCHandler implements FPRPCHandler 
             if ("chkoutExclusive".equalsIgnoreCase(call.getParameters().get("get_option"))) {
                 if (doc.canCheckOut(request.getUserName())) {
                     doc.checkOut(request.getUserName());
+                    fpResponse.addRenderingParameter("doc", doc);
+                    fpResponse.setRenderingTemplateName("get-document.ftl");
+                    fpResponse.addBinaryStream(doc.getStream());
+                } else {
+                    if (doc.isCheckOut()) {
+                        fpResponse.sendFPError(request, FPError.AlreadyLocked, getLockErrorMessage(doc));
+                    } else {
+                        fpResponse.sendFPError(request, FPError.AccessDenied, doc.getDisplayName());
+                    }
                 }
+            } else {
+                fpResponse.addRenderingParameter("doc", doc);
+                fpResponse.setRenderingTemplateName("get-document.ftl");
+                fpResponse.addBinaryStream(doc.getStream());
             }
-
-            fpResponse.addRenderingParameter("doc", doc);
-            fpResponse.setRenderingTemplateName("get-document.ftl");
-            fpResponse.addBinaryStream(doc.getStream());
 
         } else if ("put document".equals(call.getMethodName())) {
 
@@ -181,7 +190,7 @@ public class AuthorHandler extends AbstractFPRPCHandler implements FPRPCHandler 
                 fpResponse.setRenderingTemplateName("checkout-document.ftl");
             } else {
                 if (doc.isCheckOut()) {
-                    fpResponse.sendFPError(request, FPError.AlreadyLocked, doc.getDisplayName());
+                    fpResponse.sendFPError(request, FPError.AlreadyLocked, getLockErrorMessage(doc));
                 } else {
                     fpResponse.sendFPError(request, FPError.AccessDenied, doc.getDisplayName());
                 }
@@ -370,6 +379,10 @@ public class AuthorHandler extends AbstractFPRPCHandler implements FPRPCHandler 
             params.put(parts[0], parts[1]);
         }
         return params;
+    }
+
+    protected String getLockErrorMessage(WSSListItem doc){
+        return "The file " + doc.getDisplayName() + " is checked out or locked for editing by " + doc.getCheckoutUser();
     }
 
 }

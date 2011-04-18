@@ -15,13 +15,16 @@
   <packaging>pom</packaging>
 
   <properties>
-    <nuxeo.wss.version>5.4.2-SNAPSHOT</nuxeo.wss.version>
+    <nuxeo.addon.version>5.4.2-SNAPSHOT</nuxeo.addon.version>
+    <jersey.version>1.1.5</jersey.version>
   </properties>
 
   <modules>
     <module>nuxeo-generic-wss-front</module>
     <module>nuxeo-generic-wss-handler</module>
     <module>nuxeo-platform-wss-backend</module>
+    <module>nuxeo-webdav</module>
+    <module>nuxeo-platform-wi-backend</module>
   </modules>
 
   <dependencyManagement>
@@ -29,13 +32,77 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-generic-wss-front</artifactId>
-        <version>${nuxeo.wss.version}</version>
+        <version>${nuxeo.addon.version}</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-generic-wss-handler</artifactId>
-        <version>${nuxeo.wss.version}</version>
+        <version>${nuxeo.addon.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-wss-backend</artifactId>
+        <version>${nuxeo.addon.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-webdav</artifactId>
+        <version>${nuxeo.addon.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-wi-backend</artifactId>
+        <version>${nuxeo.addon.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.sun.jersey</groupId>
+        <artifactId>jersey-server</artifactId>
+        <version>${jersey.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.sun.jersey</groupId>
+        <artifactId>jersey-core</artifactId>
+        <version>${jersey.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>net.java.dev.webdav</groupId>
+        <artifactId>webdav-jaxrs</artifactId>
+        <version>1.1.1</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-all</artifactId>
+        <version>1.8.5</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.hamcrest</groupId>
+        <artifactId>hamcrest-all</artifactId>
+        <version>1.1</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>com.sun.jersey</groupId>
+        <artifactId>jersey-client</artifactId>
+        <version>${jersey.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>com.sun.grizzly</groupId>
+        <artifactId>grizzly-servlet-webserver</artifactId>
+        <version>1.9.18-f</version>
+        <scope>test</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.jackrabbit</groupId>
+        <artifactId>jackrabbit-webdav</artifactId>
+        <version>2.1.1</version>
+        <scope>test</scope>
+      </dependency>
+
     </dependencies>
   </dependencyManagement>
 

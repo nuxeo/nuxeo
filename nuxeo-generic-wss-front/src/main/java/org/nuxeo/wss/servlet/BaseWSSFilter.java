@@ -2,18 +2,14 @@ package org.nuxeo.wss.servlet;
 
 import java.io.IOException;
 
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
+import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.wss.fprpc.FPRPCConts;
 import org.nuxeo.wss.servlet.config.FilterBindingConfig;
 import org.nuxeo.wss.servlet.config.FilterBindingResolver;
 
@@ -25,6 +21,8 @@ public abstract class BaseWSSFilter implements Filter {
 
     protected String rootFilterTarget = null;
 
+    protected String webDavUrl = DEFAULT_WEBDAV_URL;
+
     public static final String ROOT_FILTER_PARAM = "org.nuxeo.wss.rootFilter";
 
     public static final String BACKEND_FACTORY_PARAM = "org.nuxeo.wss.backendFactory";
@@ -33,9 +31,12 @@ public abstract class BaseWSSFilter implements Filter {
 
     public static final String WSSFORWARD_KEY = "WSSForward";
 
+    public static final String DEFAULT_WEBDAV_URL = "/site/dav";
+
+    public static final String NUXEO_ROOT_URL = "/nuxeo";
+
     private static final Log log = LogFactory.getLog(WSSFrontFilter.class);
 
-    @Override
     public void doFilter(ServletRequest request, ServletResponse response,
             FilterChain chain) throws IOException, ServletException {
 
@@ -52,13 +53,14 @@ public abstract class BaseWSSFilter implements Filter {
                 }
             }
 
+            //check WebDAV calls
             try {
-                if ("OPTIONS".equals(httpRequest.getMethod())) {
-                    handleOptionCall(httpRequest, httpResponse);
+                if (isWebDavRequest(httpRequest) && !uri.startsWith(NUXEO_ROOT_URL + webDavUrl)) {
+                    handleWebDavCall(httpRequest, httpResponse);
                     return;
                 }
             } catch (Exception e) {
-                throw new ServletException("Error processing request", e);
+                throw new ServletException("error processing request", e);
             }
 
             // let back filter do the job if any
@@ -131,23 +133,57 @@ public abstract class BaseWSSFilter implements Filter {
         }
     }
 
-    protected void handleOptionCall(HttpServletRequest httpRequest,
-            HttpServletResponse httpResponse) throws Exception {
+    protected void handleWebDavCall(HttpServletRequest httpRequest,
+                                    HttpServletResponse httpResponse) throws Exception {
 
-        WSSStaticResponse response = new WSSStaticResponse(httpResponse);
+        //Wrap 'Destination' header parameter if need. Need for COPY and MOVE WebDAV methods
+        String destination = httpRequest.getHeader("Destination");
+        if (StringUtils.isNotEmpty(destination)) {
+            destination = resolveDestinationPath(destination);
+            HttpServletRequestWrapper httpRequestWrapper = new HttpServletRequestWrapper(httpRequest);
+            httpRequestWrapper.setHeader("destination", destination);
+            httpRequest = httpRequestWrapper;
+        }
 
-        httpResponse.setHeader("MS-Author-Via", "MS-FP/4.0,DAV");
-        httpResponse.setHeader("MicrosoftOfficeWebServer", "5.0_Collab");
-        httpResponse.setHeader("X-MSDAVEXT", "1");
-        httpResponse.setHeader("DocumentManagementServer",
-                "Properties Schema;Source Control;Version History;");
-        httpResponse.setHeader("DAV", "1,2");
-        httpResponse.setHeader("Accept-Ranges", "none");
-        httpResponse.setHeader(
-                "Allow",
-                "GET, POST, OPTIONS, HEAD, MKCOL, PUT, PROPFIND, PROPPATCH, DELETE, MOVE, COPY, GETLIB, LOCK, UNLOCK");
+        //add correct header for WebDAV response
+        httpResponse.setHeader("Server", "Microsoft-IIS/6.0");
+        httpResponse.setHeader("X-Powered-By", "ASP.NET");
+        httpResponse.setHeader("MicrosoftSharePointTeamServices", "12.0.0.6421");
+        httpResponse.setHeader("Content-Type", "text/xml");
+        httpResponse.setHeader("Cache-Control", "no-cache");
+        httpResponse.setHeader("Public-Extension", "http://schemas.microsoft.com/repl-2");
 
-        response.process();
+        //forward request to WebDAV
+        String createdURL = createPathToWebDav(httpRequest.getRequestURI());
+        RequestDispatcher dispatcher = httpRequest.getRequestDispatcher(createdURL);
+        dispatcher.forward(httpRequest, httpResponse);
+    }
+
+    private String createPathToWebDav(String basePath) {
+        if (basePath.contains(NUXEO_ROOT_URL + webDavUrl)) {
+            return basePath;
+        } else {
+            if (basePath.startsWith(NUXEO_ROOT_URL)) {
+                return webDavUrl + basePath.substring(6);
+            } else {
+                return webDavUrl;
+            }
+        }
+    }
+
+    //check WebDAV request. Implemented only for Microsoft WebDAV client.
+    //@TODO: check other WebDAV clients or implement general check
+    private boolean isWebDavRequest(HttpServletRequest request){
+        String ua = request.getHeader("User-Agent");
+        return StringUtils.isNotEmpty(ua) && request.getHeader("User-Agent").contains(FPRPCConts.WEBDAV_USERAGENT);
+    }
+
+    //resolve destination path for WebDAV requests
+    private String resolveDestinationPath(String destination){
+        int index = destination.indexOf(NUXEO_ROOT_URL);
+        String prefix = destination.substring(0, index + 6);
+        String suffix = destination.substring(index + 6);
+        return prefix + webDavUrl + suffix;
     }
 
     protected void handleForwardedCall(HttpServletRequest httpRequest,

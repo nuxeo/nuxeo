@@ -24,18 +24,13 @@ package org.nuxeo.wss.fprpc;
 public class FPRPCConts {
 
     public static String FP_CONTENT_TYPE_HEADER = "X-Vermeer-Content-Type";
-
     public static String VERMEER_CT = "application/x-vermeer-rpc";
-
     public static String VERMEER_ENCODED_CONTENT_TYPE = "application/x-vermeer-urlencoded";
-
     public static String FORM_ENCODED_CONTENT_TYPE = "application/x-www-form-urlencoded";
-
-    public static String CMD_PARAM = "Cmd";
-
-    public static String METHOD_PARAM = "method";
-
+    public static String CMD_PARAM ="Cmd";
+    public static String METHOD_PARAM ="method";
     public static String MSOFFICE_USERAGENT = "Microsoft Office Existence Discovery";
+    public static String WEBDAV_USERAGENT = "Microsoft-WebDAV-MiniRedir";
 
     public String getMETHOD_PARAM() {
         return METHOD_PARAM;

@@ -37,7 +37,13 @@ import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.api.event.CoreEventConstants;
+import org.nuxeo.ecm.core.api.event.DocumentEventCategories;
+import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.event.Event;
+import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.platform.jbpm.JbpmListFilter;
 import org.nuxeo.ecm.platform.jbpm.JbpmService;
@@ -76,6 +82,8 @@ public class SimpleNuxeoBackend extends AbstractNuxeoCoreBackend implements WSSB
     protected String corePathPrefix;
     protected String urlRoot;
 
+    private EventService eventService;
+    
     public SimpleNuxeoBackend(String corePathPrefix, String urlRoot) {
         this.corePathPrefix=corePathPrefix;
         this.urlRoot = urlRoot;
@@ -123,6 +131,10 @@ public class SimpleNuxeoBackend extends AbstractNuxeoCoreBackend implements WSSB
                         break;
                     }
                     else if (blob!=null && URLEncoder.encode(filename).equals(blob.getFilename())) {
+                        doc = child;
+                        break;
+                    }
+                    else if (blob!=null && new String(blob.getFilename().getBytes(), "ISO-8859-1").equals(filename)) {
                         doc = child;
                         break;
                     }
@@ -183,7 +195,6 @@ public class SimpleNuxeoBackend extends AbstractNuxeoCoreBackend implements WSSB
             throw new WSSException("Error while getting children for " + location, e);
         }
     }
-
 
     // called when moving from one backend to an other
     public WSSListItem moveDocument(DocumentModel source, String newLocation) throws WSSException {
@@ -247,6 +258,7 @@ public class SimpleNuxeoBackend extends AbstractNuxeoCoreBackend implements WSSB
                              // XXXX should be done via blob holder !!!
                              if (source.hasSchema("file")) {
                                  source.setProperty("file", "content", blob);
+                                 source.setProperty("file", "filename", dstName);
                              }
                              movedDoc = getCoreSession().saveDocument(source);
                          }
@@ -393,6 +405,7 @@ public class SimpleNuxeoBackend extends AbstractNuxeoCoreBackend implements WSSB
             String parentPath = new Path(location).removeLastSegments(1).toString();
             List<WSSListItem> documents  = listItems(parentPath);
             NuxeoListItem doc = (NuxeoListItem) getItem(location);
+            logDocumentAccess(doc.getDoc());
 
             metadata.setDocuments(documents);
 
@@ -401,7 +414,7 @@ public class SimpleNuxeoBackend extends AbstractNuxeoCoreBackend implements WSSB
 
             List<String> userNames = new ArrayList<String>();
             for (WSSListItem item : documents) {
-                if (!userNames.contains(item.getAuthor())) {
+                if (item.getAuthor() != null && !userNames.contains(item.getAuthor())) {
                     userNames.add(item.getAuthor());
                 }
                 String[] contributors = (String[]) (((NuxeoListItem) item).getDoc().getPropertyValue("dc:contributors"));
@@ -443,6 +456,31 @@ public class SimpleNuxeoBackend extends AbstractNuxeoCoreBackend implements WSSB
         catch (Exception e) {
             throw new WSSException("Error in getMetadata", e);
         }
+    }
+
+    private void logDocumentAccess(DocumentModel dm) throws ClientException {
+        if (dm == null) {
+            return;
+        }
+        DocumentEventContext ctx = new DocumentEventContext(session,
+                session.getPrincipal(), dm);
+        ctx.setProperty(CoreEventConstants.REPOSITORY_NAME, session.getRepositoryName());
+        ctx.setProperty(CoreEventConstants.SESSION_ID, session.getSessionId());
+        ctx.setProperty("category", DocumentEventCategories.EVENT_DOCUMENT_CATEGORY);
+        Event event = ctx.newEvent("documentAccessed");
+        event.setIsCommitEvent(true);
+        getEventService().fireEvent(event);
+    }
+
+    private EventService getEventService() {
+        if (eventService == null) {
+            try {
+                eventService = Framework.getService(EventService.class);
+            } catch (Exception e) {
+                throw new Error("Core Event Service not found");
+            }
+        }
+        return eventService;
     }
 
     protected List<Task> getTasks(DocumentModel doc, List<String> userNames, WSSRequest request) throws Exception {

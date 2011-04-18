@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.webdav;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -34,6 +35,7 @@ import static org.junit.Assert.assertNotNull;
 /**
  * Tests that the runtime starts correctly and we can play with the core.
  */
+@Ignore
 public class RuntimeTest {
 
     @Before

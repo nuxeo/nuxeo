@@ -71,7 +71,7 @@
 <li>vti_sourcecontrolsystem
 <li>SX|lw
 <li>vti_username
-<li>SX|${request.UserName}
+<li>SX|${request.principalName}
 <li>vti_associatemembergroup
 <li>SW|5
 <li>vti_sourcecontrolcookie

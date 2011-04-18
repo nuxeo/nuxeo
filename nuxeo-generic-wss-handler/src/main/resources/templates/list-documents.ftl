@@ -34,7 +34,7 @@
 <li>vti_nexttolasttimemodified
 <li>TR|${item.modifiedTS}
 <li>vti_sourcecontrolmultiuserchkoutby
-<li>VR|${request.userName}
+<li>VR|${item.checkoutUser}
 <li>vti_canmaybeedit
 <li>BX|true
 <li>vti_candeleteversion
@@ -44,7 +44,7 @@
 <li>vti_author
 <li>SR|${request.userName}
 <li>vti_sourcecontrolcheckedoutby
-<li>SR|${request.userName}
+<li>SR|${item.checkoutUser}
 <li>vti_sourcecontroltimecheckedout
 <li>TR|${item.checkoutTS}
 <li>vti_sourcecontrolversion

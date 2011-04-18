@@ -122,9 +122,7 @@ public class WSSFilter extends BaseWSSFilter implements Filter {
             backend.saveChanges();
         }
         catch (Throwable t) {
-            if (backend!=null) {
                 backend.discardChanges();
-            }
             log.error("Error during WSS call processing", t);
             throw new WSSException("Error while processing WSS request", t);
         }
@@ -161,8 +159,6 @@ public class WSSFilter extends BaseWSSFilter implements Filter {
         String factoryName = filterConfig.getInitParameter(BACKEND_FACTORY_PARAM);
         if (factoryName!=null) {
             WSSConfig.instance().setWssBackendFactoryClassName(factoryName);
-            Class factoryKlass = Backend.getFactory().getClass();
-            FreeMarkerRenderer.addLoader(factoryKlass);
         }
     }
 
@@ -170,7 +166,6 @@ public class WSSFilter extends BaseWSSFilter implements Filter {
     protected void initHandlers(FilterConfig filterConfig) {
       simpleGetHandler = new SimpleGetHandler();
       resourcesHandler = new ResourcesHandler();
-
     }
 
 }
