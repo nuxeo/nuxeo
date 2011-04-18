@@ -2,7 +2,7 @@
 
 // Absolute path to current folder this path is set at runtime by run.sh
 Selenium.prototype.doRetrieveTestFolderPath = function() {
-  storedVars['testfolderpath'] = "/path/to/project-ear/ftest/selenium/data/";
+  storedVars['testfolderpath'] = "/Users/troger/code/nuxeo/5.4/nuxeo/nuxeo-distribution/nuxeo-distribution-dm/ftest/selenium/data/";
 };
 
 // helper method to store current year/month/day
@@ -119,11 +119,17 @@ Selenium.prototype.doWaitForOpensocialGadgetsToLoad = function(mandatoryElementI
     if (testWindow.wrappedJSObject) {
       testWindow = testWindow.wrappedJSObject;
     }
+
+    if(testWindow.document.getElementById("gwtContainerDiv") === null) {
+      // there is no OpenSocial container
+      return true;
+    }
+
     var foundOneGadgetFrame = false;
     if (testWindow.frames && testWindow.frames.length && testWindow.frames.length > 0) {
       for (var i = 0; i < testWindow.frames.length; i++) {
         LOG.debug("Selected frame: " + testWindow.frames[i].name);
-        if (testWindow.frames[i].name && testWindow.frames[i].name.match("^gadget")=="gadget") {
+        if (testWindow.frames[i].name && testWindow.frames[i].name.match("^open-social")=="open-social") {
           foundOneGadgetFrame = true;
           selenium.browserbot.selectFrame("index="+i);
           var testFrame = selenium.browserbot.getCurrentWindow();
@@ -161,3 +167,37 @@ Selenium.prototype.doWaitForOpensocialGadgetsToLoad = function(mandatoryElementI
 
   return Selenium.decorateFunctionWithTimeout(framesLoadedPredicate, timeout);
 }
+
+Selenium.prototype.doSelectFrameForOpenSocial = function(gadgetName) {
+  var testWindow = selenium.browserbot.getCurrentWindow();
+    if (testWindow.wrappedJSObject) {
+      testWindow = testWindow.wrappedJSObject;
+    }
+
+ if (testWindow.frames && testWindow.frames.length && testWindow.frames.length > 0) {
+      for (var i = 0; i < testWindow.frames.length; i++) {
+        var frame = testWindow.document.getElementById(testWindow.frames[i].name);
+        if (typeof frame !== 'undefined' && frame !== null) {
+          var styleClass = frame.getAttribute("class");
+          if (styleClass !== null && styleClass.indexOf(gadgetName) != -1) {
+            return selenium.browserbot.selectFrame(testWindow.frames[i].name);
+          }
+        }
+      }
+ }
+ return;
+}
+
+Selenium.prototype.doSafeClickAndWait = function(id) {
+  var testWindow = selenium.browserbot.getCurrentWindow();
+    if (testWindow.wrappedJSObject) {
+      testWindow = testWindow.wrappedJSObject;
+    }
+
+    var ele =  testWindow.document.getElementById(id);
+    if (typeof ele !== 'undefined' && ele !== null) {
+      return selenium.browserbot.clickAndWait(id);
+    }
+ return;
+}
+
