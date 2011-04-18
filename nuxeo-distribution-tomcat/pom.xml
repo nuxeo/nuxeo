@@ -87,12 +87,6 @@
       <id>nuxeo-dm</id>
       <!-- default profile for building Tomcat with only Nuxeo DM -->
     </profile>
-    <profile>
-      <id>itest</id>
-      <modules>
-        <module>tests</module>
-      </modules>
-    </profile>
   </profiles>
 
   <build>

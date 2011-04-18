@@ -28,7 +28,7 @@
     <module>nuxeo-startup-wizard</module>
     <module>nuxeo-launcher</module>
     <module>nuxeo-distribution-resources</module>
-    <module>nuxeo-distribution-cap/tests</module>
+    <module>nuxeo-distribution-cap-tests</module>
   </modules>
 
   <profiles>
@@ -98,6 +98,12 @@
         <module>nuxeo-distribution-server</module>
         <module>nuxeo-distribution-jetty</module>
         <module>nuxeo-distribution-jetty-base</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>itest</id>
+      <modules>
+        <module>nuxeo-distribution-tomcat-tests</module>
       </modules>
     </profile>
   </profiles>
