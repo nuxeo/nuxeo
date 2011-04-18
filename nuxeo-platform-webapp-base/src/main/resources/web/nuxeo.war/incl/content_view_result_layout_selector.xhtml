@@ -4,30 +4,37 @@
   xmlns:nxh="http://nuxeo.org/nxweb/html"
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
   test="#{contentView != null}">
 
 <c:if test="false">
 Needed parameters:
  - contentView: the content view instance, mandatory
- - contentViewId: a marker to generate unique ids
-   when iterating over a list of content views, optional
-   when only one content view is displayed in the page.
+ - contentViewRenderId the unique identifier used in main
+   content view template
 </c:if>
 
+<a4j:region id="#{contentViewRenderId}_contentViewActionsRegion">
+<a4j:outputPanel id="#{contentViewRenderId}_contentViewActionsPanel">
+
 <div class="listingLayoutSelector">
-  <h:form id="contentViewLayoutSelectForm_#{contentViewId}">
+
+  <a4j:form id="contentViewLayoutSelectForm_#{contentViewRenderId}"
+    ajaxSubmit="true">
 
     <c:if test="#{contentView.getResultLayouts().size() > 1}">
       <ul class="layoutViewMode" style="display:inline;">
         <c:forEach var="cvLayout" items="#{contentView.resultLayouts}">
           <li class="#{nxu:test(cvLayout.name == contentView.currentResultLayout.name, 'selected', '')}">
-            <h:commandLink action="#{contentView.setCurrentResultLayout(cvLayout)}">
+            <a4j:commandLink action="#{contentView.setCurrentResultLayout(cvLayout)}"
+              reRender="#{contentViewRenderId}_resultsPanel, #{contentViewRenderId}_contentViewActionsPanel"
+              ajaxSingle="true">
               <c:set var="iconPath"
                 value="#{nxu:test(empty cvLayout.iconPath, '/icons/document_listing_icon.png', cvLayout.iconPath)}" />
               <c:set var="title"
                 value="#{nxu:test(cvLayout.translateTitle, messages[cvLayout.title], cvLayout.title)}" />
               <nxu:graphicImage value="#{iconPath}" title="#{title}" />
-            </h:commandLink>
+            </a4j:commandLink>
           </li>
         </c:forEach>
       </ul>
@@ -36,13 +43,15 @@ Needed parameters:
     <ul class="layoutViewMode" style="display:inline;">
       <c:if test="#{contentView.showRefreshCommand}">
         <li>
-          <h:commandLink action="#{contentView.refreshAndRewindPageProvider()}"
-           id="refreshContentViewLink">
+          <a4j:commandLink action="#{contentView.refreshAndRewindPageProvider()}"
+            id="refreshContentViewLink"
+            reRender="#{contentViewRenderId}_resultsPanel"
+            ajaxSingle="true">
             <h:graphicImage value="/img/refresh.png"
              alt="#{messages['label.refresh']}"
              title="#{messages['label.refresh']}"
              id="refreshContentViewImage" />
-          </h:commandLink>
+          </a4j:commandLink>
         </li>
       </c:if> 
       <nxu:set var="contentViewState"
@@ -93,7 +102,7 @@ Needed parameters:
       </nxu:dataList>
     </nxu:set>
 
-  </h:form>
+  </a4j:form>
 </div>
 
 <c:if test="#{contentView.showPageSizeSelector}">
@@ -106,7 +115,8 @@ Needed parameters:
       <c:set var="pageSizeBinding" value="#{contentView.currentPageSize}" />
     </c:if>
   
-    <h:form id="contentViewGlobalPageSizeFrom_#{contentViewId}">
+    <a4j:form id="contentViewGlobalPageSizeFrom_#{contentViewRenderId}"
+      ajaxSubmit="true">
   
       <p class="contentViewPageSelectorDesc">
         <h:outputText value="#{messages['label.contentview.pageSize']}" />
@@ -124,12 +134,16 @@ Needed parameters:
         <f:selectItem itemValue="50" itemLabel="50" />
       </h:selectOneMenu>
       <div style="display: none;">
-        <h:commandButton value="submit" />
+        <a4j:commandButton value="submit"
+          reRender="#{contentViewRenderId}_resultsPanel" />
       </div>
   
-    </h:form>
+    </a4j:form>
   
   </div>
 </c:if>
+
+</a4j:outputPanel>
+</a4j:region>
 
 </c:if>
