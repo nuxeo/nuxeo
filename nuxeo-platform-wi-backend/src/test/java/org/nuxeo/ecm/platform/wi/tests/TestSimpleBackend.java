@@ -19,6 +19,7 @@ package org.nuxeo.ecm.platform.wi.tests;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
+import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
@@ -37,6 +38,7 @@ import java.util.List;
 public class TestSimpleBackend extends SQLRepositoryTestCase {
 
     public static class WSSListItemSorter implements Comparator<WSSListItem> {
+        @Override
         public int compare(WSSListItem a, WSSListItem b) {
             return a.getName().compareTo(b.getName());
         }
@@ -49,7 +51,8 @@ public class TestSimpleBackend extends SQLRepositoryTestCase {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.api");
         deployBundle("org.nuxeo.ecm.platform.content.template");
-        deployContrib("org.nuxeo.ecm.platform.wss.backend","OSGI-INF/wi-backend-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.wss.backend",
+                "OSGI-INF/wi-backend-contrib.xml");
         openSession();
 
         DocumentModel ws1 = session.createDocumentModel(
@@ -160,14 +163,14 @@ public class TestSimpleBackend extends SQLRepositoryTestCase {
         assertEquals("nuxeo/workspaces/ws1/folder", items.get(1).getSubPath());
         assertEquals("nuxeo/workspaces/ws1/folder",
                 items.get(1).getRelativeSubPath(""));
-        assertEquals("workspaces/ws1/doc1", items.get(0).getRelativeSubPath(
-                "nuxeo"));
+        assertEquals("workspaces/ws1/doc1",
+                items.get(0).getRelativeSubPath("nuxeo"));
         assertEquals("workspaces/ws1/document1.doc",
                 items.get(0).getRelativeFilePath("nuxeo"));
-        assertEquals("workspaces/ws1/folder", items.get(1).getRelativeSubPath(
-                "nuxeo"));
-        assertEquals("workspaces/ws1/folder", items.get(1).getRelativeFilePath(
-                "nuxeo"));
+        assertEquals("workspaces/ws1/folder",
+                items.get(1).getRelativeSubPath("nuxeo"));
+        assertEquals("workspaces/ws1/folder",
+                items.get(1).getRelativeFilePath("nuxeo"));
 
         WSSListItem item = backend.getItem("nuxeo/workspaces/ws1/doc1");
         assertNotNull(item);
@@ -193,30 +196,30 @@ public class TestSimpleBackend extends SQLRepositoryTestCase {
 
         WSSBackend backend = factory.getBackend(null);
         assertNotNull(backend);
-        ((WSSBackendAdapter)backend).setSession(session);
+        ((WSSBackendAdapter) backend).setSession(session);
 
         WSSListItem item = backend.createFileItem("/nuxeo/workspaces/ws1",
                 "testMe");
         assertNotNull(item);
         assertEquals("File", ((NuxeoListItem) item).getDoc().getType());
         backend.saveChanges(); // for cache invalidation
-        //session.save(); // for cache invalidation
+        // session.save(); // for cache invalidation
         assertTrue(session.exists(new PathRef(
                 "/default-domain/workspaces/ws1/testMe")));
 
         item.checkOut("titi");
         backend.saveChanges(); // for cache invalidation
-        //session.save(); // for cache invalidation
-        String lock = session.getLock(new PathRef(
+        // session.save(); // for cache invalidation
+        Lock lock = session.getLockInfo(new PathRef(
                 "/default-domain/workspaces/ws1/testMe"));
         assertNotNull(lock);
         // System.out.println("----> lock:" + lock);
-        assertTrue(lock.startsWith("Administrator:"));
+        assertTrue(lock.getOwner().equals("Administrator:"));
 
         item.uncheckOut("Administrator");
         backend.saveChanges(); // for cache invalidation
-        //session.save(); // for cache invalidation
-        lock = session.getLock(new PathRef(
+        // session.save(); // for cache invalidation
+        lock = session.getLockInfo(new PathRef(
                 "/default-domain/workspaces/ws1/testMe"));
         assertNull(lock);
 
@@ -224,29 +227,33 @@ public class TestSimpleBackend extends SQLRepositoryTestCase {
         assertNotNull(item);
         assertEquals("File", ((NuxeoListItem) item).getDoc().getType());
         assertEquals("nuxeo/workspaces/ws1/testMe2", item.getSubPath());
-        //backend.discardChanges();
-        //session.save(); // for cache invalidation
+        // backend.discardChanges();
+        // session.save(); // for cache invalidation
 
-        //@TODO: fix discard changes
-        /*assertFalse(session.exists(new PathRef(
-                "/default-domain/workspaces/ws1/testMe2")));*/
+        // @TODO: fix discard changes
+        /*
+         * assertFalse(session.exists(new PathRef(
+         * "/default-domain/workspaces/ws1/testMe2")));
+         */
 
         item = backend.moveItem("/nuxeo/workspaces/ws1/testMe",
                 "/nuxeo/workspaces/ws1/testMe3");
         assertNotNull(item);
         assertEquals("nuxeo/workspaces/ws1/testMe3", item.getSubPath());
         backend.saveChanges(); // for cache invalidation
-        //session.save(); // for cache invalidation
+        // session.save(); // for cache invalidation
         assertTrue(session.exists(new PathRef(
                 "/default-domain/workspaces/ws1/testMe3")));
 
         backend.removeItem("/nuxeo/workspaces/ws1/testMe3");
         backend.saveChanges(); // for cache invalidation
-        //session.save(); // for cache invalidation
+        // session.save(); // for cache invalidation
         assertTrue(session.exists(new PathRef(
                 "/default-domain/workspaces/ws1/testMe3")));
-        DocumentModel trashModel = session.getDocument(new PathRef("/default-domain/workspaces/ws1/testMe3"));
-        assertEquals(LifeCycleConstants.DELETED_STATE, trashModel.getCurrentLifeCycleState());
+        DocumentModel trashModel = session.getDocument(new PathRef(
+                "/default-domain/workspaces/ws1/testMe3"));
+        assertEquals(LifeCycleConstants.DELETED_STATE,
+                trashModel.getCurrentLifeCycleState());
     }
 
     public void testSearchBackendBrowse() throws Exception {
@@ -256,7 +263,7 @@ public class TestSimpleBackend extends SQLRepositoryTestCase {
 
         WSSBackend backend = factory.getBackend(null);
         assertNotNull(backend);
-        ((WSSBackendAdapter)backend).setSession(session);
+        ((WSSBackendAdapter) backend).setSession(session);
 
         List<WSSListItem> items = backend.listItems("/nuxeo");
         assertNotNull(items);
@@ -268,10 +275,12 @@ public class TestSimpleBackend extends SQLRepositoryTestCase {
         assertEquals("ws2", items.get(2).getName());
         assertEquals("ws2-1", items.get(3).getName());
 
-        /*assertEquals("isolatedws", items.get(0).getDisplayName());
-        assertEquals("ws1", items.get(1).getDisplayName());
-        assertEquals("isolatedws2", items.get(2).getDisplayName());
-        assertEquals("ws2", items.get(3).getDisplayName());*/
+        /*
+         * assertEquals("isolatedws", items.get(0).getDisplayName());
+         * assertEquals("ws1", items.get(1).getDisplayName());
+         * assertEquals("isolatedws2", items.get(2).getDisplayName());
+         * assertEquals("ws2", items.get(3).getDisplayName());
+         */
 
         assertEquals("nuxeo/isolatedws", items.get(0).getSubPath());
         assertEquals("nuxeo/ws1", items.get(1).getSubPath());
@@ -297,8 +306,8 @@ public class TestSimpleBackend extends SQLRepositoryTestCase {
         assertEquals("nuxeo/ws1/folder", items.get(1).getSubPath());
         assertEquals("nuxeo/ws1/folder", items.get(1).getRelativeSubPath(""));
         assertEquals("ws1/doc1", items.get(0).getRelativeSubPath("nuxeo"));
-        assertEquals("ws1/document1.doc", items.get(0).getRelativeFilePath(
-                "nuxeo"));
+        assertEquals("ws1/document1.doc",
+                items.get(0).getRelativeFilePath("nuxeo"));
         assertEquals("ws1/folder", items.get(1).getRelativeSubPath("nuxeo"));
         assertEquals("ws1/folder", items.get(1).getRelativeFilePath("nuxeo"));
 
@@ -339,60 +348,68 @@ public class TestSimpleBackend extends SQLRepositoryTestCase {
 
         WSSBackend backend = factory.getBackend(null);
         assertNotNull(backend);
-        ((WSSBackendAdapter)backend).setSession(session);
+        ((WSSBackendAdapter) backend).setSession(session);
 
         WSSListItem item = backend.createFileItem("/nuxeo/ws1", "testMe");
         assertNotNull(item);
         assertEquals("File", ((NuxeoListItem) item).getDoc().getType());
         backend.saveChanges(); // for cache invalidation
-        //session.save(); // for cache invalidation
-        assertTrue(session.exists(new PathRef("/default-domain/workspaces/ws1/testMe")));
+        // session.save(); // for cache invalidation
+        assertTrue(session.exists(new PathRef(
+                "/default-domain/workspaces/ws1/testMe")));
 
         // System.out.println("---> item:" + item);
         item.checkOut("titi");
         backend.saveChanges(); // for cache invalidation
-        //session.save(); // for cache invalidation
-        String lock = session.getLock(new PathRef("/default-domain/workspaces/ws1/testMe"));
+        // session.save(); // for cache invalidation
+        Lock lock = session.getLockInfo(new PathRef(
+                "/default-domain/workspaces/ws1/testMe"));
         assertNotNull(lock);
-        assertTrue(lock.startsWith("Administrator:"));
+        assertTrue(lock.getOwner().equals("Administrator:"));
 
         item.uncheckOut("Administrator");
         backend.saveChanges(); // for cache invalidation
-        //session.save(); // for cache invalidation
-        lock = session.getLock(new PathRef("/default-domain/workspaces/ws1/testMe"));
+        // session.save(); // for cache invalidation
+        lock = session.getLockInfo(new PathRef(
+                "/default-domain/workspaces/ws1/testMe"));
         assertNull(lock);
 
         item = backend.createFileItem("/nuxeo/ws1", "testMe2");
         assertNotNull(item);
         assertEquals("File", ((NuxeoListItem) item).getDoc().getType());
         assertEquals("nuxeo/ws1/testMe2", item.getSubPath());
-        //backend.discardChanges();
-        //session.save(); // for cache invalidation
+        // backend.discardChanges();
+        // session.save(); // for cache invalidation
 
-        //@TODO: fix discard changes
-        //assertFalse(session.exists(new PathRef("/default-domain/workspaces/ws1/testMe2")));
+        // @TODO: fix discard changes
+        // assertFalse(session.exists(new
+        // PathRef("/default-domain/workspaces/ws1/testMe2")));
 
         item = backend.moveItem("/nuxeo/ws1/testMe", "/nuxeo/ws1/testMe3");
         assertNotNull(item);
         assertEquals("nuxeo/ws1/testMe3", item.getSubPath());
         backend.saveChanges(); // for cache invalidation
-        //session.save(); // for cache invalidation
-        assertTrue(session.exists(new PathRef("/default-domain/workspaces/ws1/testMe3")));
+        // session.save(); // for cache invalidation
+        assertTrue(session.exists(new PathRef(
+                "/default-domain/workspaces/ws1/testMe3")));
 
         // move across
         item = backend.moveItem("/nuxeo/ws1/testMe3", "/nuxeo/ws2/testMe3");
         assertNotNull(item);
         assertEquals("nuxeo/ws2/testMe3", item.getSubPath());
         backend.saveChanges(); // for cache invalidation
-        //session.save(); // for cache invalidation
+        // session.save(); // for cache invalidation
         assertTrue(session.exists(new PathRef(
                 "/default-domain/workspaces/ws1/folder/ws2/testMe3")));
 
         backend.removeItem("/nuxeo/ws2/testMe3");
         backend.saveChanges(); // for cache invalidation
-        //session.save(); // for cache invalidation
-        assertTrue(session.exists(new PathRef("/default-domain/workspaces/ws1/folder/ws2/testMe3")));
-        DocumentModel trashModel = session.getDocument(new PathRef("/default-domain/workspaces/ws1/folder/ws2/testMe3"));
-        assertEquals(LifeCycleConstants.DELETED_STATE, trashModel.getCurrentLifeCycleState());
+        // session.save(); // for cache invalidation
+        assertTrue(session.exists(new PathRef(
+                "/default-domain/workspaces/ws1/folder/ws2/testMe3")));
+        DocumentModel trashModel = session.getDocument(new PathRef(
+                "/default-domain/workspaces/ws1/folder/ws2/testMe3"));
+        assertEquals(LifeCycleConstants.DELETED_STATE,
+                trashModel.getCurrentLifeCycleState());
     }
 }

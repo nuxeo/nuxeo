@@ -16,22 +16,28 @@
  */
 package org.nuxeo.ecm.platform.wi.filter;
 
+import java.io.IOException;
+import java.security.Principal;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.web.common.requestcontroller.filter.NuxeoRequestControllerFilter;
 import org.nuxeo.ecm.platform.web.common.requestcontroller.filter.RemoteHostGuessExtractor;
 import org.nuxeo.runtime.transaction.TransactionHelper;
-
-import javax.servlet.*;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import java.io.IOException;
-import java.security.Principal;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 public class WIRequestFilter implements Filter {
 
@@ -157,8 +163,9 @@ public class WIRequestFilter implements Filter {
         }
 
         if (locked) {
-            request.setAttribute(SYNCED_REQUEST_FLAG, true);
-            request.setAttribute(SESSION_LOCK_TIME, System.currentTimeMillis());
+            request.setAttribute(SYNCED_REQUEST_FLAG, Boolean.TRUE);
+            request.setAttribute(SESSION_LOCK_TIME,
+                    Long.valueOf(System.currentTimeMillis()));
             if (log.isDebugEnabled()) {
                 log.debug(doFormatLogMessage(request,
                         "Request synced on session"));
@@ -216,7 +223,8 @@ public class WIRequestFilter implements Filter {
     protected String doExecutionRequestLogMessage(HttpServletRequest request) {
         Object lockTime = request.getAttribute(SESSION_LOCK_TIME);
         if (lockTime != null) {
-            long executionTime = System.currentTimeMillis() - (Long) lockTime;
+            long time = ((Long) lockTime).longValue();
+            long executionTime = System.currentTimeMillis() - time;
             return doFormatLogMessage(request, "Execution time:"
                     + executionTime + " ms.");
         } else {

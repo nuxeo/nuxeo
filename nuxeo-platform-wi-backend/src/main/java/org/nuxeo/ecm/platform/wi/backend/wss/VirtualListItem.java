@@ -16,15 +16,14 @@
  */
 package org.nuxeo.ecm.platform.wi.backend.wss;
 
-import org.nuxeo.common.utils.Path;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.wss.WSSException;
-import org.nuxeo.wss.spi.AbstractWSSListItem;
-import org.nuxeo.wss.spi.WSSListItem;
-
 import java.io.InputStream;
 import java.util.Calendar;
 import java.util.Date;
+
+import org.nuxeo.common.utils.Path;
+import org.nuxeo.wss.WSSException;
+import org.nuxeo.wss.spi.AbstractWSSListItem;
+import org.nuxeo.wss.spi.WSSListItem;
 
 public class VirtualListItem extends AbstractWSSListItem implements WSSListItem {
 

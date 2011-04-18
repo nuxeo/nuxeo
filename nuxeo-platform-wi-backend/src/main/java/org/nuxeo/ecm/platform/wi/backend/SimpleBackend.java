@@ -18,16 +18,14 @@ package org.nuxeo.ecm.platform.wi.backend;
 
 import static org.nuxeo.ecm.webdav.Util.cleanName;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.security.Principal;
-import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Path;
@@ -37,6 +35,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
+import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.schema.FacetNames;
@@ -184,21 +183,24 @@ public class SimpleBackend extends AbstractCoreBackend {
             List<DocumentModel> children = getChildren(parentDocument.getRef());
             for (DocumentModel child : children) {
                 BlobHolder bh = child.getAdapter(BlobHolder.class);
-                if (bh != null) {
-                    Blob blob = bh.getBlob();
-                    if (blob != null && filename.equals(blob.getFilename())) {
-                        doc = child;
-                        break;
-                    } else if (blob != null
-                            && URLEncoder.encode(filename).equals(
-                                    blob.getFilename())) {
-                        doc = child;
-                        break;
-                    } else if (blob != null
-                            && Util.encode(blob.getFilename().getBytes(),
-                                    "ISO-8859-1").equals(filename)) {
-                        doc = child;
-                        break;
+                Blob blob;
+                if (bh != null && (blob = bh.getBlob()) != null) {
+                    try {
+                        if (filename.equals(blob.getFilename())) {
+                            doc = child;
+                            break;
+                        } else if (URLEncoder.encode(filename, "UTF-8").equals(
+                                blob.getFilename())) {
+                            doc = child;
+                            break;
+                        } else if (Util.encode(blob.getFilename().getBytes(),
+                                "ISO-8859-1").equals(filename)) {
+                            doc = child;
+                            break;
+                        }
+                    } catch (UnsupportedEncodingException e) {
+                        // cannot happen for UTF-8
+                        throw new RuntimeException(e);
                     }
                 }
 
@@ -459,34 +461,21 @@ public class SimpleBackend extends AbstractCoreBackend {
 
     @Override
     public boolean isLocked(DocumentRef ref) throws ClientException {
-        String lock = getSession().getLock(ref);
-        return StringUtils.isNotEmpty(lock);
+        Lock lock = getSession().getLockInfo(ref);
+        return lock != null;
     }
 
     @Override
     public boolean canUnlock(DocumentRef ref) throws ClientException {
         Principal principal = getSession().getPrincipal();
-        if (principal == null || StringUtils.isEmpty(principal.getName())) {
-            log.error("Empty session principal. Error while canUnlock check.");
-            return false;
-        }
         String checkoutUser = getCheckoutUser(ref);
         return principal.getName().equals(checkoutUser);
     }
 
     @Override
     public String lock(DocumentRef ref) throws ClientException {
-        Principal principal = getSession().getPrincipal();
-        if (principal == null || StringUtils.isEmpty(principal.getName())) {
-            log.error("Empty session principal. Error while locking.");
-            return "";
-        }
-        String lockDate = DateFormat.getDateInstance(DateFormat.MEDIUM).format(
-                new Date());
-        String lockToken = principal.getName() + ":" + lockDate;
-        getSession().setLock(ref, lockToken);
-        saveChanges();
-        return lockToken;
+        Lock lock = getSession().setLock(ref);
+        return lock.getOwner();
     }
 
     @Override
@@ -494,17 +483,15 @@ public class SimpleBackend extends AbstractCoreBackend {
         if (!canUnlock(ref)) {
             return false;
         }
-        getSession().unlock(ref);
-        saveChanges();
+        getSession().removeLock(ref);
         return true;
     }
 
     @Override
     public String getCheckoutUser(DocumentRef ref) throws ClientException {
-        String existingLock = getSession().getLock(ref);
-        if (existingLock != null) {
-            String[] info = existingLock.split(":");
-            return info[0];
+        Lock lock = getSession().getLockInfo(ref);
+        if (lock != null) {
+            return lock.getOwner();
         }
         return null;
     }

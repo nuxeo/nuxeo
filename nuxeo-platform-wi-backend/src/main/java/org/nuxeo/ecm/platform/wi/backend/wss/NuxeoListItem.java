@@ -14,30 +14,27 @@
  * Contributors:
  *     Thierry Delprat
  *     Gagnavarslan ehf
+ *     Florent Guillaume
  */
 package org.nuxeo.ecm.platform.wi.backend.wss;
 
 import java.io.InputStream;
-import java.lang.System;
-import java.text.DateFormat;
-import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.collections.ScopeType;
-import org.nuxeo.common.collections.ScopedMap;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.Lock;
+import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.api.facet.VersioningDocument;
-import org.nuxeo.ecm.platform.versioning.api.VersioningActions;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
+import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.wss.WSSException;
 import org.nuxeo.wss.spi.AbstractWSSListItem;
 import org.nuxeo.wss.spi.WSSListItem;
@@ -69,23 +66,14 @@ public class NuxeoListItem extends AbstractWSSListItem implements WSSListItem {
 
     @Override
     protected Date getCheckoutDate() {
-        String existingLock = null;
+        Lock lock = null;
         try {
-            existingLock = getSession().getLock(doc.getRef());
+            lock = getSession().getLockInfo(doc.getRef());
         } catch (ClientException e) {
             log.error("Unable to get lock", e);
         }
-        if (existingLock != null) {
-            String[] info = existingLock.split(":", 2);
-            if (info.length == 2) {
-                String dateStr = info[1];
-                try {
-                    return DateFormat.getDateTimeInstance(DateFormat.MEDIUM,
-                            DateFormat.MEDIUM).parse(dateStr);
-                } catch (ParseException e) {
-                    log.error("Unable to parse date", e);
-                }
-            }
+        if (lock != null) {
+            return lock.getCreated().getTime();
         }
         return Calendar.getInstance().getTime();
     }
@@ -131,12 +119,9 @@ public class NuxeoListItem extends AbstractWSSListItem implements WSSListItem {
     @Override
     public void checkOut(String userName) throws WSSException {
         try {
-            String lock = getSession().getLock(doc.getRef());
+            Lock lock = getSession().getLockInfo(doc.getRef());
             if (lock == null) {
-                String lockDate = DateFormat.getDateInstance(DateFormat.MEDIUM).format(
-                        new Date());
-                String lockToken = userName + ":" + lockDate;
-                getSession().setLock(doc.getRef(), lockToken);
+                getSession().setLock(doc.getRef());
             } else {
                 if (!userName.equals(getCheckoutUser())) {
                     throw new WSSException(
@@ -150,16 +135,14 @@ public class NuxeoListItem extends AbstractWSSListItem implements WSSListItem {
 
     @Override
     public String getCheckoutUser() {
-
-        String existingLock = null;
+        Lock lock = null;
         try {
-            existingLock = getSession().getLock(doc.getRef());
+            lock = getSession().getLockInfo(doc.getRef());
         } catch (ClientException e) {
-            log.error("Unable to lock", e);
+            log.error("Unable to get lock", e);
         }
-        if (existingLock != null) {
-            String[] info = existingLock.split(":");
-            return info[0];
+        if (lock != null) {
+            return lock.getOwner();
         }
         return null;
     }
@@ -316,12 +299,8 @@ public class NuxeoListItem extends AbstractWSSListItem implements WSSListItem {
                 }
                 doc.setProperty("file", "content", blob);
                 doc.setProperty("file", "filename", fileName);
-                doc.getContextData().putScopedValue(ScopeType.REQUEST,
-                        VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY,
-                        Boolean.TRUE);
-                doc.getContextData().putScopedValue(ScopeType.REQUEST,
-                        VersioningActions.KEY_FOR_INC_OPTION,
-                        VersioningActions.ACTION_INCREMENT_MINOR);
+                doc.putContextData(VersioningService.VERSIONING_OPTION,
+                        VersioningOption.MINOR);
                 doc = getSession().saveDocument(doc);
             } catch (ClientException e) {
                 log.error("Error while setting stream", e);
@@ -336,10 +315,10 @@ public class NuxeoListItem extends AbstractWSSListItem implements WSSListItem {
     @Override
     public void uncheckOut(String userName) throws WSSException {
         try {
-            String lock = getSession().getLock(doc.getRef());
+            Lock lock = getSession().getLockInfo(doc.getRef());
             if (lock != null) {
-                if (userName.equals(getCheckoutUser())) {
-                    getSession().unlock(doc.getRef());
+                if (userName.equals(lock.getOwner())) {
+                    getSession().removeLock(doc.getRef());
                 } else {
                     throw new WSSException("Document is locked by another user");
                 }
