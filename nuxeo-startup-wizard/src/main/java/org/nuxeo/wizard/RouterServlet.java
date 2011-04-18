@@ -156,10 +156,17 @@ public class RouterServlet extends HttpServlet {
     public void handleConnectGET(Page currentPage, HttpServletRequest req,
             HttpServletResponse resp) throws ServletException, IOException {
 
+        Context ctx = Context.instance(req);
+
         // compute CB url
         String cbUrl = req.getRequestURL().toString();
         cbUrl = cbUrl.replace("/router/" + currentPage.getAction(),
                 "/ConnectCallback?cb=yes");
+        // In order to avoid any issue with badly configured reverse proxies
+        // => get url from the client side
+        if (ctx.getBaseUrl()!=null) {
+            cbUrl = ctx.getBaseUrl() + "ConnectCallback?cb=yes";
+        }
         cbUrl = URLEncoder.encode(cbUrl, "UTF-8");
 
         req.setAttribute("callBackUrl", cbUrl);
@@ -379,6 +386,19 @@ public class RouterServlet extends HttpServlet {
         }
     }
 
+    public void handleHomePOST(Page currentPage, HttpServletRequest req,
+            HttpServletResponse resp) throws ServletException, IOException {
+
+        String baseUrl = req.getParameter("baseUrl");
+        if (baseUrl!=null && ! baseUrl.isEmpty()) {
+            if (baseUrl.endsWith("Home")) {
+                baseUrl = baseUrl.substring(0, baseUrl.length()-4);
+                Context.instance(req).setBaseUrl(baseUrl);
+            }
+        }
+        currentPage.next().dispatchToJSP(req, resp, true);
+    }
+
     public void handleProxyPOST(Page currentPage, HttpServletRequest req,
             HttpServletResponse resp) throws ServletException, IOException {
 
@@ -389,6 +409,8 @@ public class RouterServlet extends HttpServlet {
             collector.addConfigurationParam("nuxeo.http.proxy.type", null);
             collector.addConfigurationParam("nuxeo.http.proxy.login", null);
             collector.addConfigurationParam("nuxeo.http.proxy.password", null);
+            collector.addConfigurationParam("nuxeo.http.proxy.host", null);
+            collector.addConfigurationParam("nuxeo.http.proxy.port", null);
         } else {
             if (!NumberValidator.validate(collector.getConfigurationParam("nuxeo.http.proxy.port"))) {
                 ctx.trackError("nuxeo.http.proxy.port",
@@ -402,6 +424,11 @@ public class RouterServlet extends HttpServlet {
                 collector.addConfigurationParam("nuxeo.http.proxy.login", null);
                 collector.addConfigurationParam("nuxeo.http.proxy.password",
                         null);
+            } else {
+                if (collector.getConfigurationParam("nuxeo.http.proxy.login").isEmpty()) {
+                    ctx.trackError("nuxeo.http.proxy.login",
+                            "error.nuxeo.http.proxy.emptyLogin");
+                }
             }
         }
 

@@ -17,7 +17,7 @@ boolean connectOK = ctx.isConnectRegistrationDone();
 <%if (connectOK) {
    Map<String,String> connectMap = ctx.getConnectMap();%>
    <h2> <fmt:message key="label.connectFinish.ok" /> </h2>
-   <div><%=connectMap.get("CLID")%></div>
+   <div id="CLID"><%=connectMap.get("CLID")%></div><br/><br/>
 <%}%>
 
   <table>

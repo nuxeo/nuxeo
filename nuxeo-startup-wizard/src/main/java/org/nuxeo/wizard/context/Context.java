@@ -35,6 +35,8 @@ public class Context {
 
     protected static ParamCollector collector;
 
+    protected static String baseUrl;
+
     protected Map<String, String> errors = new HashMap<String, String>();
 
     protected static Map<String, String> connectMap;
@@ -105,4 +107,11 @@ public class Context {
         return connectMap;
     }
 
+    public void setBaseUrl(String base) {
+        baseUrl = base;
+    }
+
+    public String getBaseUrl() {
+        return baseUrl;
+    }
 }
