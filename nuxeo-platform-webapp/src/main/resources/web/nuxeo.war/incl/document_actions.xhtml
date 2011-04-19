@@ -20,7 +20,8 @@
             value="#{actions}"
             id="documentActionSubviewUpperListTable">
             <nxh:commandLink action="#{action.getLink()}"
-              id="documentActionSubviewUpperListLink">
+              id="documentActionSubviewUpperListLink"
+              immediate="#{action.immediate}">
               <h:graphicImage value="#{action.icon}" />
               <h:outputText value="#{messages[action.label]}" />
             </nxh:commandLink>

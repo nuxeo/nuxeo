@@ -69,7 +69,8 @@
       <div class="clipboardFunctions">
       <nxu:dataList var="cb_action" value="#{clipboardActions.actionsForCurrentList}" >
         <div class="clipboardFunction">
-         <nxh:commandLink action="#{cb_action.getLink()}">
+         <nxh:commandLink action="#{cb_action.getLink()}"
+            immediate="#{cb_action.immediate}">
             <nxu:graphicImage value="#{cb_action.icon}"
               styleClass="smallIcon" />
             <h:outputText value=" #{messages[cb_action.label]}" />

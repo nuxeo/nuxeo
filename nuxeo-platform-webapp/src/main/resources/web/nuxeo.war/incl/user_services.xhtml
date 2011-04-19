@@ -24,7 +24,8 @@
                       id="userServicesActionsTable">
           <h:outputText value=" | " rendered="#{row!=rowCount}"/>
           <nxh:commandLink action="#{action.getLink()}"
-            id="userServicesActionCommandLink">
+            id="userServicesActionCommandLink"
+            immediate="#{action.immediate}">
             <h:outputText value="#{messages[action.label]}" />
           </nxh:commandLink>
         </nxu:dataList>
@@ -45,6 +46,7 @@
   
           <nxh:commandLink action="#{action.getLink()}"
             rendered="#{fn:startsWith(action.link,'#')}"
+            immediate="#{action.immediate}"
             id="userServicesBottomActionCommandLink">
             <h:outputText value="#{messages[action.label]}" />
           </nxh:commandLink>
