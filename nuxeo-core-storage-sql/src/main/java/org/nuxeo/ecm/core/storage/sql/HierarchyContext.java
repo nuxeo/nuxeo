@@ -103,14 +103,16 @@ public class HierarchyContext extends Context {
         return ((Boolean) row.get(model.HIER_CHILD_ISPROPERTY_KEY)).booleanValue();
     }
 
-    protected void addExistingChild(SimpleFragment row, boolean complexProp)
-            throws StorageException {
+    protected void addExistingChild(SimpleFragment row, boolean complexProp,
+            boolean invalidate) throws StorageException {
         Serializable parentId = row.get(model.HIER_PARENT_KEY);
         if (parentId == null) {
             return;
         }
         getChildrenCache(parentId, complexProp).addExisting(row.getId());
-        modifiedParentsInTransaction.add(parentId);
+        if (invalidate) {
+            modifiedParentsInTransaction.add(parentId);
+        }
     }
 
     protected void addCreatedChild(SimpleFragment row, boolean complexProp)
@@ -161,7 +163,7 @@ public class HierarchyContext extends Context {
                 allowAbsent);
         if (fragment != null) {
             // add as a child of its parent
-            addExistingChild(fragment, complexProp(fragment));
+            addExistingChild(fragment, complexProp(fragment), false);
         }
         return fragment;
     }
@@ -186,7 +188,7 @@ public class HierarchyContext extends Context {
                     this);
             if (fragment != null) {
                 // add as know child
-                addExistingChild(fragment, complexProp);
+                addExistingChild(fragment, complexProp, false);
             }
         }
         return fragment;
@@ -313,7 +315,7 @@ public class HierarchyContext extends Context {
         }
         removeChild(hierFragment, complexProp);
         hierFragment.put(model.HIER_PARENT_KEY, parentId);
-        addExistingChild(hierFragment, complexProp);
+        addExistingChild(hierFragment, complexProp, true);
     }
 
     /**
@@ -453,6 +455,7 @@ public class HierarchyContext extends Context {
             }
             modifiedParentsInvalidations.clear();
         }
+        modifiedParentsInTransaction.clear();
     }
 
     @Override
