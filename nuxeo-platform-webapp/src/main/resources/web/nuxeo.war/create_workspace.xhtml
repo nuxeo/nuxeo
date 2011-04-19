@@ -2,11 +2,12 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <nxthemes:composition xmlns="http://www.w3.org/1999/xhtml"
   xmlns:nxthemes="http://nuxeo.org/nxthemes"
-  xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:c="http://java.sun.com/jstl/core">
 
   <ui:define name="page title">
@@ -33,11 +34,17 @@
         </h:selectOneMenu>
       </f:subview>
       <p class="buttonsGadget">
-        <h:commandButton class="button" id="button_create"
-          value="#{messages['command.create']}"
-          action="#{documentTemplatesActions.createDocumentFromTemplate}" />
-        <h:commandButton class="button" value="#{messages['command.cancel']}"
-          action="#{navigationContext.goBack()}" immediate="true" />
+        <nxu:set var="actions"
+          value="#{webActions.getActionsList('CREATE_DOCUMENT_FORM')}"
+          cache="true">
+          <c:forEach var="action" items="#{actions}">
+            <nxh:commandButton action="#{action.getLink()}"
+              immediate="#{action.immediate}"
+              id="create_doc_#{action.id}"
+              value="#{messages[action.label]}"
+              styleClass="button" />
+          </c:forEach>
+        </nxu:set>
       </p>
     </h:form>
     </div>

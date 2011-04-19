@@ -101,13 +101,6 @@
       <filter-id>importFile</filter-id>
     </action>
 
-    <!-- XXX AT: is it really used? -->
-    <action id="deleteChildDocuments" link="deletable.deleteChildDocuments"
-      label="command.deleteDocs" icon="/icons/action_delete.gif">
-      <category>SUBVIEW_LOWER_LIST</category>
-      <filter-id>delete_content</filter-id>
-    </action>
-
     <!--
       tabs are handled by a specific template so links should be paths to
       template to include in the tab content
@@ -164,8 +157,9 @@
       <filter-id>not_folder</filter-id>
     </action>
 
-    <action id="print" link="#{restHelper.doPrint(WebcontainerThemeActions.defaultTheme)}" order="100"
-      label="label.print" icon="/icons/printer.gif">
+    <action id="print"
+      link="#{restHelper.doPrint(WebcontainerThemeActions.defaultTheme)}"
+      order="100" label="label.print" icon="/icons/printer.gif">
       <category>DOCUMENT_UPPER_ACTION_BLANK_TARGET</category>
     </action>
 
@@ -197,10 +191,6 @@
       <category>TAB_MANAGE_sub_tab</category>
       <filter-id>rights</filter-id>
     </action>
-
-
-
-
 
     <action id="TAB_THEME" link="/incl/tabs/document_theme.xhtml" order="60"
       label="action.view.theme" icon="/icons/file.gif">
@@ -557,21 +547,40 @@
     </action>
 
     <!-- Local Configuration -->
-    <action id="TAB_LOCAL_CONFIGURATION" link="/incl/tabs/local_configuration.xhtml" order="70"
+    <action id="TAB_LOCAL_CONFIGURATION"
+      link="/incl/tabs/local_configuration.xhtml" order="70"
       label="action.view.local.configuration" icon="/icons/file.gif">
       <category>TAB_MANAGE_sub_tab</category>
-      <filter id="has_local_configuration_available">
-        <rule grant="false">
-          <condition>
-            #{webActions.getActionsList('LOCAL_CONFIGURATION').isEmpty()}
-          </condition>
-        </rule>
-        <rule grant="true">
-          <permission>Manage everything</permission>
-          <facet>SuperSpace</facet>
-        </rule>
-      </filter>
+      <filter-id>has_local_configuration_available</filter-id>
     </action>
+
+    <!-- actions on document create and edit pages -->
+
+    <action id="CREATE_DOCUMENT" link="#{documentActions.saveDocument}"
+      order="0" label="command.create">
+      <category>CREATE_DOCUMENT_FORM</category>
+      <filter-id>is_not_creating_workspace</filter-id>
+    </action>
+
+    <action id="CREATE_WORKSPACE"
+      link="#{documentTemplatesActions.createDocumentFromTemplate}" order="0"
+      label="command.create">
+      <category>CREATE_DOCUMENT_FORM</category>
+      <filter-id>is_creating_workspace</filter-id>
+    </action>
+
+    <action id="CANCEL_DOCUMENT_CREATION" link="#{navigationContext.goBack()}"
+      order="10" label="command.cancel" immediate="true">
+      <category>CREATE_DOCUMENT_FORM</category>
+    </action>
+
+    <action id="EDIT_CURRENT_DOCUMENT"
+      link="#{documentActions.updateCurrentDocument}" order="0"
+      label="command.save">
+      <category>EDIT_DOCUMENT_FORM</category>
+    </action>
+
+    <!-- end of actions on document create and edit pages -->
 
   </extension>
 
@@ -593,7 +602,9 @@
         <type>Section</type>
         <type>Folder</type>
         <type>OrderedFolder</type>
-        <condition>#{typeManager.getAllowedSubTypes(document.getType(), document).size() > 0}</condition>
+        <condition>
+          #{typeManager.getAllowedSubTypes(document.getType(), document).size() > 0}
+        </condition>
       </rule>
     </filter>
 
@@ -603,7 +614,9 @@
         <facet>Folderish</facet>
         <type>Workspace</type>
         <type>Folder</type>
-        <condition>#{typeManager.getAllowedSubTypes(document.getType(), document).size() > 0}</condition>
+        <condition>
+          #{typeManager.getAllowedSubTypes(document.getType(), document).size() > 0}
+        </condition>
       </rule>
     </filter>
 
@@ -874,6 +887,30 @@
       <rule grant="true">
         <condition>#{orderableDocumentActions.canMoveToBottom}</condition>
         <facet>Orderable</facet>
+      </rule>
+    </filter>
+
+    <filter id="has_local_configuration_available">
+      <rule grant="false">
+        <condition>
+          #{webActions.getActionsList('LOCAL_CONFIGURATION').isEmpty()}
+        </condition>
+      </rule>
+      <rule grant="true">
+        <permission>Manage everything</permission>
+        <facet>SuperSpace</facet>
+      </rule>
+    </filter>
+
+    <filter id="is_creating_workspace">
+      <rule grant="true">
+        <condition>#{changeableDocument.type == 'Workspace'}</condition>
+      </rule>
+    </filter>
+
+    <filter id="is_not_creating_workspace">
+      <rule grant="false">
+        <condition>#{changeableDocument.type == 'Workspace'}</condition>
       </rule>
     </filter>
 
