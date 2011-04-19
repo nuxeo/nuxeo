@@ -25,6 +25,7 @@
           <h:outputText value=" | " rendered="#{row!=rowCount}"/>
 
           <nxh:commandLink action="#{action.getLink()}"
+            immediate="#{action.immediate}"
             id="userServicesBottomActionCommandLink">
             <h:outputText value="#{messages[action.label]}" />
           </nxh:commandLink>
