@@ -193,6 +193,15 @@ public class AppPresenter extends WidgetPresenter<AppPresenter.Display> {
                                                               rpc.register('get_nuxeo_space_id', function() {
                                                               me.@org.nuxeo.opensocial.container.client.presenter.AppPresenter::getNuxeoSpaceId()();
                                                               });
+
+                                                              if (typeof $wnd.gadgets.pubsubrouter !== 'undefined') {
+                                                                  $wnd.gadgets.pubsubrouter.init(
+                                                                      function(id) {
+                                                                          return me.@org.nuxeo.opensocial.container.client.presenter.AppPresenter::getGadgetUrlByGadgetId(Ljava/lang/String;)(id);
+                                                                      }
+                                                                  );
+                                                              }
+
                                                               }-*/;
 
     @SuppressWarnings("unused")
@@ -213,6 +222,16 @@ public class AppPresenter extends WidgetPresenter<AppPresenter.Display> {
         }
 
         model.updateWebContent(webContentId, null);
+    }
+
+    private String getGadgetUrlByGadgetId(String frameId) {
+        try {
+            return ((OpenSocialData) model.getWebContent(getWebContentId(frameId))).getGadgetDef();
+        } catch (ClassCastException e) {
+            eventBus.fireEvent(new SendMessageEvent(
+                    errors.cannotFindWebContent(), Severity.ERROR));
+            return null;
+        }
     }
 
     @SuppressWarnings("unused")
