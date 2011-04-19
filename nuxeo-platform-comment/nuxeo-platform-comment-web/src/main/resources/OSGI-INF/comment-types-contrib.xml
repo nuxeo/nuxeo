@@ -21,12 +21,9 @@
         <type hidden="create">Folder</type>
         <type hidden="create">HiddenFolder</type>
       </subtypes>
-      <layout>
-        <widget jsfcomponent="h:inputText" schemaname="dublincore"
-          fieldname="title" required="true" />
-        <widget jsfcomponent="h:inputTextarea" schemaname="dublincore"
-          fieldname="description" />
-      </layout>
+      <layouts mode="any">
+        <layout>heading</layout>
+      </layouts>
     </type>
 
     <type id="Comment">
