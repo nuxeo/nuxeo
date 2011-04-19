@@ -208,7 +208,7 @@ public class TextTemplate {
         if (processText) {
             String text = IOUtils.toString(is, "UTF-8");
             text = process(text);
-            os.write(text.getBytes());
+            os.write(text.getBytes("UTF-8"));
         } else {
             IOUtils.copy(is, os);
         }
