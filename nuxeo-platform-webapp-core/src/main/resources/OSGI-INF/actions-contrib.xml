@@ -570,7 +570,7 @@
     </action>
 
     <action id="CANCEL_DOCUMENT_CREATION" link="#{navigationContext.goBack()}"
-      order="10" label="command.cancel" immediate="true">
+      order="50" label="command.cancel" immediate="true">
       <category>CREATE_DOCUMENT_FORM</category>
     </action>
 
