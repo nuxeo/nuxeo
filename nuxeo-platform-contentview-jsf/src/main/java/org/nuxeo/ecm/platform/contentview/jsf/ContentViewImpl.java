@@ -247,22 +247,30 @@ public class ContentViewImpl implements ContentView {
             Object... params) throws ClientException {
         // resolve search doc so that it can be used in EL expressions defined
         // in XML configuration
+        boolean setSearchDoc = false;
         DocumentModel finalSearchDocument = null;
         if (searchDocument != null) {
+            setSearchDoc = true;
             finalSearchDocument = searchDocument;
-        } else {
+        } else if (this.searchDocumentModel == null) {
+            setSearchDoc = true;
             if (pageProvider != null) {
                 // try to retrieve it on current page provider
                 finalSearchDocument = pageProvider.getSearchDocumentModel();
             }
             if (finalSearchDocument == null) {
-                // initialize it
+                // initialize it and set it => do not need to set it again
                 finalSearchDocument = getSearchDocumentModel();
+                setSearchDoc = false;
             }
+        } else {
+            finalSearchDocument = this.searchDocumentModel;
         }
-        // set it on content view so that it can be used when resolving EL
-        // expressions
-        setSearchDocumentModel(finalSearchDocument);
+        if (setSearchDoc) {
+            // set it on content view so that it can be used when resolving EL
+            // expressions
+            setSearchDocumentModel(finalSearchDocument);
+        }
 
         // fallback on local parameters if defined in the XML configuration
         if (params == null) {
@@ -303,6 +311,10 @@ public class ContentViewImpl implements ContentView {
                 }
                 pageProvider = service.getPageProvider(getName(), sortInfos,
                         pageSize, currentPage, params);
+                // set search doc on newly created page provider
+                if (finalSearchDocument != null) {
+                    pageProvider.setSearchDocumentModel(finalSearchDocument);
+                }
             } catch (Exception e) {
                 throw new ClientException(e);
             }
@@ -313,11 +325,6 @@ public class ContentViewImpl implements ContentView {
             if (currentPage != null) {
                 pageProvider.setCurrentPage(currentPage.longValue());
             }
-        }
-        // set search doc again as page provider may not have been initialized
-        // when it was first set
-        if (finalSearchDocument != null) {
-            setSearchDocumentModel(finalSearchDocument);
         }
         return pageProvider;
     }
