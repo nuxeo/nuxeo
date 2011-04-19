@@ -143,6 +143,14 @@ public class JBossConfiguratorTest {
         String originalProperty = new BufferedReader(new FileReader(new File(
                 nuxeoHome, "templates/common/config/extension.ignored"))).readLine();
         assertEquals(generatedProperty, originalProperty, generatedProperty);
+
+        // properly manage files containing accents
+        generatedFile = new File(configDir.getParentFile(),
+                "config/file-with-accents.xml");
+        generatedProperty = new BufferedReader(new FileReader(generatedFile)).readLine();
+        originalProperty = new BufferedReader(new FileReader(new File(
+                nuxeoHome, "templates/common/config/file-with-accents.xml"))).readLine();
+        assertEquals(generatedProperty, originalProperty, generatedProperty);
     }
 
     @Test
