@@ -104,6 +104,19 @@ public class TestMimetypeIconUpdater extends SQLRepositoryTestCase {
         assertEquals("application/pdf", mt);
     }
 
+    public void testMimeTypeUpdaterFolderish() throws Exception {
+        // Workspace is folderish and contains the file schema
+        DocumentModel doc = createWorkspace();
+        Blob blob = (Blob) doc.getProperty("file", "content");
+        assertNotNull(blob);
+        String mt = blob.getMimeType();
+        assertNotNull(mt);
+        assertEquals("application/pdf", mt);
+
+        String icon = (String) doc.getProperty("common", "icon");
+        assertNull(icon); // default icon, not overridden by mime type
+    }
+
     protected CoreSession getCoreSession() {
         return session;
     }
@@ -171,6 +184,20 @@ public class TestMimetypeIconUpdater extends SQLRepositoryTestCase {
         getCoreSession().save();
 
         return fileDoc;
+    }
+
+    protected DocumentModel createWorkspace() throws ClientException {
+        DocumentModel doc = getCoreSession().createDocumentModel("/",
+                "testWorkspace", "Workspace");
+        doc.setProperty("dublincore", "title", "TestWorkspace");
+        Blob blob = new StringBlob("SOMEDUMMYDATA", null);
+        blob.setFilename("test.pdf");
+        // blob.setMimeType("application/pdf");
+        doc.setProperty("file", "content", blob);
+        doc = getCoreSession().createDocument(doc);
+        getCoreSession().saveDocument(doc);
+        getCoreSession().save();
+        return doc;
     }
 
 }

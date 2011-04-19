@@ -155,7 +155,7 @@ public class MimetypeIconUpdater implements EventListener {
 
         if (MAIN_BLOB_FIELD.equals(fieldPath) && doc.getProperty(MAIN_BLOB_FIELD).isDirty()) {
             // update the icon field of the document
-            if (blob != null) {
+            if (blob != null && !doc.isFolder()) {
                 MimetypeEntry mimetypeEntry = mimetypeService
                         .getMimetypeEntryByMimeType(blob.getMimeType());
                 updateIconField(mimetypeEntry, doc);
