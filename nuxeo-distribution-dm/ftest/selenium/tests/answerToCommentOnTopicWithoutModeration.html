@@ -10,9 +10,9 @@
 </thead><tbody>
 <!--Insertion de la réponse-->
 <tr>
-        <td>open</td>
-        <td>restAPI/systemLog?token=dolog&amp;level=INFO&amp;message=----- Selenium answerToCommentOnTopicWithoutModeration</td>
-        <td></td>
+  <td>open</td>
+  <td>restAPI/systemLog?token=dolog&amp;level=INFO&amp;message=----- Selenium answerToCommentOnTopicWithoutModeration</td>
+  <td></td>
 </tr>
 <tr>
 	<td>open</td>
@@ -75,13 +75,18 @@
 	<td>60000</td>
 </tr>
 <tr>
-	<td>waitForOpensocialGadgetsToLoad</td>
-	<td>content</td>
-	<td>60000</td>
+	<td>selectFrameForOpenSocial</td>
+	<td>lastdocuments</td>
+	<td></td>
 </tr>
 <tr>
 	<td>verifyTextPresent</td>
 	<td>testTopicWithoutModeration</td>
+	<td></td>
+</tr>
+<tr>
+	<td>selectWindow</td>
+	<td>null</td>
 	<td></td>
 </tr>
 <tr>
@@ -119,6 +124,11 @@
 	<td>waitForOpensocialGadgetsToLoad</td>
 	<td>content</td>
 	<td>60000</td>
+</tr>
+<tr>
+	<td>selectFrameForOpenSocial</td>
+	<td>lastdocuments</td>
+	<td></td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
