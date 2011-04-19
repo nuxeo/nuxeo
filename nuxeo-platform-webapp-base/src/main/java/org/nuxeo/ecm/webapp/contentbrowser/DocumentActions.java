@@ -58,24 +58,20 @@ public interface DocumentActions extends StatefulBaseLifeCycle,
     String editDocument() throws ClientException;
 
     /**
-     * Saves changes hold by the changeableDocument document model.
+     * Saves changes held by the changeableDocument document model.
      */
     String updateDocument() throws ClientException;
 
     /**
-     * Saves changes in current version and then create a new current one.
+     * Saves changes held by the changeableDocument document model in current
+     * version and then create a new current one.
      */
     String updateDocumentAsNewVersion() throws ClientException;
 
     /**
      * Updates document considering that current document model holds edited
      * values.
-     * <p>
-     * Method called from page action.
-     *
-     * @deprecated should update changeableDocument and use updateDocument
      */
-    @Deprecated
     String updateCurrentDocument() throws ClientException;
 
     /**
