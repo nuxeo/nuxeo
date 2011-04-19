@@ -44,6 +44,7 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jboss.seam.contexts.Context;
 import org.jboss.seam.contexts.Contexts;
+import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -56,6 +57,7 @@ import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
+import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 
 /**
@@ -195,6 +197,8 @@ public class LockActionsBean implements LockActions {
             documentManager.setLock(ref);
             documentManager.save();
             message = "document.lock";
+            Events.instance().raiseEvent(EventNames.DOCUMENT_LOCKED, document);
+            Events.instance().raiseEvent(EventNames.DOCUMENT_CHANGED, document);
         }
         facesMessages.add(StatusMessage.Severity.INFO,
                 resourcesAccessor.getMessages().get(message));
@@ -264,6 +268,10 @@ public class LockActionsBean implements LockActions {
                     documentManager.save();
                     message = "document.unlock";
                 }
+                Events.instance().raiseEvent(EventNames.DOCUMENT_UNLOCKED,
+                        document);
+                Events.instance().raiseEvent(EventNames.DOCUMENT_CHANGED,
+                        document);
             } else {
                 message = "document.unlock.not.permitted";
             }
@@ -313,9 +321,10 @@ public class LockActionsBean implements LockActions {
             }
             lockDetails.put(LOCKER, lock.getOwner());
             lockDetails.put(LOCK_CREATED, lock.getCreated());
-            lockDetails.put(LOCK_TIME, DateFormat.getDateInstance(
-                    DateFormat.MEDIUM).format(
-                    new Date(lock.getCreated().getTimeInMillis())));
+            lockDetails.put(
+                    LOCK_TIME,
+                    DateFormat.getDateInstance(DateFormat.MEDIUM).format(
+                            new Date(lock.getCreated().getTimeInMillis())));
         }
         return lockDetails;
     }
