@@ -176,16 +176,10 @@ public class NavigationContextBean implements NavigationContextLocal,
         }
     }
 
-
-
-
     public void setCurrentDocument(DocumentModel documentModel)
             throws ClientException {
 
         if (!checkIfUpdateNeeded(currentDocument, documentModel)) {
-            if (checkIfChangeableResetNeeded()) {
-                setChangeableDocument(null);
-            }
             return;
         }
 
@@ -210,29 +204,6 @@ public class NavigationContextBean implements NavigationContextLocal,
         Contexts.getEventContext().remove("currentDocument");
 
         EventManager.raiseEventsOnDocumentSelected(currentDocument);
-    }
-
-    protected boolean isCreationEntered = false;
-
-    /**
-     * Changeable doc reset is needed when we're leaving from the document creation form
-     * for navigating the parent document itself.
-     * RestHelper is navigating the document when the user ask for creating a document.
-     * The field isCreationEntered is used for tracking that event.
-     *
-     * @return
-     * @throws ClientException
-     */
-    protected boolean checkIfChangeableResetNeeded() throws ClientException {
-        if (changeableDocument == null) {
-            return isCreationEntered = false;
-        }
-
-        if (changeableDocument.getRef() == null) {
-            isCreationEntered = !isCreationEntered;
-            return !isCreationEntered;
-        }
-        return isCreationEntered = false;
     }
 
     @BypassInterceptors
@@ -560,14 +531,8 @@ public class NavigationContextBean implements NavigationContextLocal,
         // XXX flush method is not implemented for Event context :)
         Contexts.getEventContext().set("currentDocument", currentDocument);
 
-        if (currentDocument != null) {
-            changeableDocument = currentDocument;
-            Contexts.getEventContext().set("changeableDocument",
-                    changeableDocument);
-        } else {
-            changeableDocument = currentDocument;
-            Contexts.getEventContext().remove("changeableDocument");
-        }
+        // flush changeableDocument
+        setChangeableDocument(null);
 
         if (currentDocument == null) {
             return;
@@ -678,8 +643,7 @@ public class NavigationContextBean implements NavigationContextLocal,
         }
         if (UserAction.CREATE == action) {
             // the given document is a changeable document
-            changeableDocument = doc;
-            Contexts.getEventContext().set("changeableDocument", doc);
+            setChangeableDocument(doc);
         } else {
             updateDocumentContext(doc);
         }

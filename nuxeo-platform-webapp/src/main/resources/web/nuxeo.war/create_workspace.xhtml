@@ -20,12 +20,7 @@
     </h3>
     <ui:include src="/incl/message_banner.xhtml" />
     <h:form enctype="multipart/form-data" id="document_create">
-      <c:if test="#{!empty documentActions.changeableDocumentType.layout}">
-        <ui:include src="/incl/document_editor.xhtml" />
-      </c:if>
-      <c:if test="#{empty documentActions.changeableDocumentType.layout}">
-        <nxl:documentLayout mode="create" value="#{changeableDocument}" />
-      </c:if>
+      <nxl:documentLayout mode="create" value="#{changeableDocument}" />
       <f:subview rendered="#{! empty availableTemplates}">
         <h4>
           <h:outputText value="#{messages['label.templates.createFrom']}"/>
@@ -39,7 +34,7 @@
       </f:subview>
       <p class="buttonsGadget">
         <h:commandButton class="button" id="button_create"
-	  value="#{messages['command.create']}"
+          value="#{messages['command.create']}"
           action="#{documentTemplatesActions.createDocumentFromTemplate}" />
         <h:commandButton class="button" value="#{messages['command.cancel']}"
           action="#{navigationContext.goBack()}" immediate="true" />
