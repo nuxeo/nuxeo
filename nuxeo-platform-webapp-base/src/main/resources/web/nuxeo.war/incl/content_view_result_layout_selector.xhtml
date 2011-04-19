@@ -97,7 +97,7 @@ Needed parameters:
         id="searchActionsTable">
         <nxh:commandLink action="#{action.getLink()}"
           value="#{messages[action.label]}"
-          immediate="true"
+          immediate="#{action.immediate}"
           id="contentViewExportActionsButton" />
       </nxu:dataList>
     </nxu:set>
