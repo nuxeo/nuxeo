@@ -23,9 +23,9 @@ import org.nuxeo.ecm.automation.server.jaxrs.io.writers.BlobsWriter;
 import org.nuxeo.ecm.automation.server.jaxrs.io.writers.JsonAutomationInfoWriter;
 import org.nuxeo.ecm.automation.server.jaxrs.io.writers.JsonDocumentListWriter;
 import org.nuxeo.ecm.automation.server.jaxrs.io.writers.JsonDocumentWriter;
-import org.nuxeo.ecm.automation.server.jaxrs.io.writers.JsonBuiltinWriter;
 import org.nuxeo.ecm.automation.server.jaxrs.io.writers.JsonExceptionWriter;
 import org.nuxeo.ecm.automation.server.jaxrs.io.writers.JsonLoginInfoWriter;
+import org.nuxeo.ecm.automation.server.jaxrs.io.writers.JsonObjectWriter;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -55,7 +55,7 @@ public class AutomationModule extends Application {
         result.add(new BlobsWriter());
         result.add(new JsonLoginInfoWriter());
         result.add(new UrlEncodedFormRequestReader());
-        result.add(new JsonBuiltinWriter());
+        result.add(new JsonObjectWriter());
         return result;
     }
     
