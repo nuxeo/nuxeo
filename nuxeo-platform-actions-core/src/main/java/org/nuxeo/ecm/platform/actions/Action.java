@@ -67,6 +67,9 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
     @XNode("@help")
     private String help;
 
+    @XNode("@immediate")
+    protected boolean immediate = false;
+
     private boolean available = true;
 
     /**
@@ -89,7 +92,6 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
 
     @XNodeList(value = "filter", type = ActionFilter[].class, componentType = DefaultActionFilter.class)
     private ActionFilter[] filters;
-
 
     public Action() {
     }
@@ -156,8 +158,7 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
     /**
      * Sets the order of the action.
      *
-     * @param order
-     *            order of the action
+     * @param order order of the action
      */
     public void setOrder(int order) {
         this.order = order;
@@ -223,8 +224,7 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
             return false;
         }
         Action otherAction = (Action) other;
-        return id == null ? otherAction.id == null
-                : id.equals(otherAction.id);
+        return id == null ? otherAction.id == null : id.equals(otherAction.id);
     }
 
     @Override
@@ -241,7 +241,7 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
     }
 
     public String getHelp() {
-        if (help == null){
+        if (help == null) {
             return "";
         }
         return help;
@@ -251,13 +251,13 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
         help = title;
     }
 
-    @Override
-    public Action clone() throws CloneNotSupportedException {
-        Action clone = (Action)super.clone();
-
-        return clone;
+    public boolean isImmediate() {
+        return immediate;
     }
 
+    public void setImmediate(boolean immediate) {
+        this.immediate = immediate;
+    }
 
     public void mergeWith(Action newOne) {
         // Icon
@@ -272,7 +272,8 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
         }
 
         // Merge categories without duplicates
-        Set<String> mergedCategories = new HashSet<String>(Arrays.asList(getCategories()));
+        Set<String> mergedCategories = new HashSet<String>(
+                Arrays.asList(getCategories()));
         mergedCategories.addAll(Arrays.asList(newOne.getCategories()));
         setCategories(mergedCategories.toArray(new String[mergedCategories.size()]));
 
@@ -300,9 +301,9 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
             setHelp(tooltip);
         }
 
-        // XXX AT: maybe update param types but it seems a bit critical to do it
-        // without control: a new action should be registered for this kind of
-        // uses cases.
+        // XXX AT: maybe update param types but it seems a bit critical to do
+        // it without control: a new action should be registered for this kind
+        // of uses cases.
 
         // order
         int newOrder = newOne.getOrder();
@@ -321,9 +322,19 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
         setFilterIds(new ArrayList<String>(newFilterIds));
 
         // filters
-        // we are not using filters on merged actions - filterIds were already merged - this is all we need.
+        // we are not using filters on merged actions - filterIds were already
+        // merged - this is all we need.
         setFilters(null);
+
+        if (newOne.isImmediate() != isImmediate()) {
+            setImmediate(newOne.isImmediate());
+        }
     }
 
+    // overriden to be public
+    @Override
+    public Action clone() throws CloneNotSupportedException {
+        return (Action) super.clone();
+    }
 
 }
