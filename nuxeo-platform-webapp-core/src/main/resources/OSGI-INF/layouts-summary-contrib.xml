@@ -30,6 +30,9 @@
         <categories>
           <category>summary</category>
         </categories>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
         <!-- no configurable properties -->
       </configuration>
       <handler-class>
@@ -37,6 +40,77 @@
       </handler-class>
       <property name="template">
         /widgets/summary/actions_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="summary_current_document_custom_actions">
+      <configuration>
+        <sinceVersion>5.4.2</sinceVersion>
+        <title>Custom actions</title>
+        <description>
+          <p>This widgets displays custom actions on the current document.</p>
+          <p>
+            It will display actions in the category given in the 'category'
+            property (defaults to 'DOCUMENT_SUMMARY_CUSTOM_ACTIONS' when not
+            set). The widget label and help label will be displayed above the
+            actions.
+          </p>
+        </description>
+        <categories>
+          <category>summary</category>
+        </categories>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <properties>
+          <layouts mode="any">
+            <layout
+              name="summary_current_document_custom_actions_widget_type_properties_any">
+              <rows>
+                <row>
+                  <widget>category</widget>
+                </row>
+                <row>
+                  <widget>showButtons</widget>
+                </row>
+              </rows>
+              <widget name="category" type="text">
+                <labels>
+                  <label mode="any">Category</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The category of actions to use (defaults to
+                    DOCUMENT_SUMMARY_CUSTOM_ACTIONS when not set)
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>category</field>
+                </fields>
+              </widget>
+              <widget name="showButtons" type="checkbox">
+                <labels>
+                  <label mode="any">Show buttons</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    If set to true, buttons will be displayed instead of the
+                    actions icons. Defaults to false.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>showButtons</field>
+                </fields>
+              </widget>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/summary/custom_actions_widget_template.xhtml
       </property>
     </widgetType>
 
@@ -56,6 +130,9 @@
         <categories>
           <category>summary</category>
         </categories>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
         <!-- no configurable properties -->
       </configuration>
       <handler-class>
@@ -90,6 +167,9 @@
         <categories>
           <category>summary</category>
         </categories>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
         <!-- no configurable properties -->
       </configuration>
       <handler-class>
@@ -117,6 +197,9 @@
         <categories>
           <category>summary</category>
         </categories>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
         <!-- no configurable properties -->
       </configuration>
       <handler-class>
@@ -145,6 +228,9 @@
         <categories>
           <category>summary</category>
         </categories>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
         <!-- no configurable properties -->
       </configuration>
       <handler-class>
@@ -166,6 +252,9 @@
         <categories>
           <category>summary</category>
         </categories>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
         <!-- no configurable properties -->
       </configuration>
       <handler-class>
@@ -187,6 +276,9 @@
         <categories>
           <category>summary</category>
         </categories>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
         <!-- no configurable properties -->
       </configuration>
       <handler-class>
@@ -208,6 +300,9 @@
         <categories>
           <category>summary</category>
         </categories>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
         <!-- no configurable properties -->
       </configuration>
       <handler-class>
@@ -229,6 +324,9 @@
         <categories>
           <category>summary</category>
         </categories>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
         <!-- no configurable properties -->
       </configuration>
       <handler-class>
@@ -262,6 +360,9 @@
         <categories>
           <category>summary</category>
         </categories>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
         <!-- no configurable properties -->
       </configuration>
       <handler-class>
@@ -294,6 +395,9 @@
         <categories>
           <category>summary</category>
         </categories>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
         <!-- no configurable properties -->
       </configuration>
       <handler-class>
@@ -314,6 +418,13 @@
 
     <widget name="summary_current_document_actions"
       type="summary_current_document_actions" />
+
+    <widget name="summary_current_document_custom_actions"
+      type="summary_current_document_custom_actions">
+      <labels>
+        <label mode="any">label.summary.customActions</label>
+      </labels>
+    </widget>
 
     <widget name="summary_current_document_files"
       type="summary_current_document_files" />
@@ -364,6 +475,7 @@
           <widget>summary_current_document_actions</widget>
           <widget>summary_current_document_tagging</widget>
           <widget>summary_current_document_relations</widget>
+          <widget>summary_current_document_custom_actions</widget>
         </row>
         <row>
           <widget>summary_current_document_publications</widget>
@@ -373,7 +485,6 @@
         </row>
       </rows>
     </layout>
-
 
     <layout name="note_summary_layout">
       <templates>
@@ -392,6 +503,7 @@
           <widget>summary_current_document_actions</widget>
           <widget>summary_current_document_tagging</widget>
           <widget>summary_current_document_relations</widget>
+          <widget>summary_current_document_custom_actions</widget>
         </row>
         <row>
           <widget>summary_current_document_publications</widget>

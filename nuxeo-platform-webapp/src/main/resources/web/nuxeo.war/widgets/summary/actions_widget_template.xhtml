@@ -11,7 +11,8 @@
     <c:if test="#{currentDocumentCanBeUnlocked}">
       <h:outputText value=" | " />
       <h:commandLink value="#{messages['command.unlock']}"
-        action="#{lockActions.unlockCurrentDocument}"/>
+        action="#{lockActions.unlockCurrentDocument}"
+        immediate="true" />
     </c:if>
     <div class="lockDetail">
       <h:outputText
@@ -34,7 +35,8 @@
     <c:if test="#{currentDocumentCanBeLocked}" >
       <h:outputText value=" | " />
       <h:commandLink value="#{messages['command.lock']}"
-        action="#{lockActions.lockCurrentDocument}"/>
+        action="#{lockActions.lockCurrentDocument}"
+        immediate="true" />
     </c:if>
   </c:if>
 </div>
@@ -44,7 +46,8 @@
     <h:outputText value="#{messages['label.summary.restoreDeletedDocument']}" />
     <h:outputText value=" | " />
     <h:commandLink value="#{messages['command.undeleteDocs']}"
-      action="#{deleteActions.restoreCurrentDocument}" />
+      action="#{deleteActions.restoreCurrentDocument}"
+      immediate="true" />
   </c:if>
 </div>
 
