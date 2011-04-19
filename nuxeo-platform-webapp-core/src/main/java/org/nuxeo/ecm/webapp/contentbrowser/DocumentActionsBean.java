@@ -332,47 +332,34 @@ public class DocumentActionsBean extends InputController implements
         }
     }
 
-    @Deprecated
-    public String updateCurrentDocument() throws ClientException {
+    protected String updateDocument(DocumentModel doc) throws ClientException {
         try {
-            DocumentModel currentDocument = navigationContext.getCurrentDocument();
-            currentDocument = documentManager.saveDocument(currentDocument);
-            throwUpdateComments(currentDocument);
-            documentManager.save();
-            // not navigationContext.saveCurrentDocument();
-
-            facesMessages.add(StatusMessage.Severity.INFO,
-                    resourcesAccessor.getMessages().get("document_modified"),
-                    resourcesAccessor.getMessages().get(
-                            currentDocument.getType()));
-            EventManager.raiseEventsOnDocumentChange(currentDocument);
-            return navigationContext.navigateToDocument(currentDocument,
-                    "after-edit");
-        } catch (Throwable t) {
-            throw ClientException.wrap(t);
-        }
-    }
-
-    public String updateDocument() throws ClientException {
-        try {
-            DocumentModel changeableDocument = navigationContext.getChangeableDocument();
             Events.instance().raiseEvent(EventNames.BEFORE_DOCUMENT_CHANGED,
-                    changeableDocument);
-            changeableDocument = documentManager.saveDocument(changeableDocument);
-            throwUpdateComments(changeableDocument);
+                    doc);
+            doc = documentManager.saveDocument(doc);
+            throwUpdateComments(doc);
             documentManager.save();
             // some changes (versioning) happened server-side, fetch new one
             navigationContext.invalidateCurrentDocument();
             facesMessages.add(StatusMessage.Severity.INFO,
                     resourcesAccessor.getMessages().get("document_modified"),
-                    resourcesAccessor.getMessages().get(
-                            changeableDocument.getType()));
-            EventManager.raiseEventsOnDocumentChange(changeableDocument);
-            return navigationContext.navigateToDocument(changeableDocument,
-                    "after-edit");
+                    resourcesAccessor.getMessages().get(doc.getType()));
+            EventManager.raiseEventsOnDocumentChange(doc);
+            return navigationContext.navigateToDocument(doc, "after-edit");
         } catch (Throwable t) {
             throw ClientException.wrap(t);
         }
+    }
+
+    @Deprecated
+    public String updateCurrentDocument() throws ClientException {
+        DocumentModel currentDocument = navigationContext.getCurrentDocument();
+        return updateDocument(currentDocument);
+    }
+
+    public String updateDocument() throws ClientException {
+        DocumentModel changeableDocument = navigationContext.getChangeableDocument();
+        return updateDocument(changeableDocument);
     }
 
     public String updateDocumentAsNewVersion() throws ClientException {
@@ -387,8 +374,6 @@ public class DocumentActionsBean extends InputController implements
             facesMessages.add(StatusMessage.Severity.INFO,
                     resourcesAccessor.getMessages().get("new_version_created"));
             // then follow the standard pageflow for edited documents
-            // return result;
-
             EventManager.raiseEventsOnDocumentChange(changeableDocument);
             return navigationContext.navigateToDocument(changeableDocument,
                     "after-edit");

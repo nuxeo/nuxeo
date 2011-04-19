@@ -19,14 +19,7 @@
     </h3>
     <ui:include src="/incl/message_banner.xhtml" />
     <h:form enctype="multipart/form-data" id="document_create">
-      <c:if test="#{!empty documentActions.changeableDocumentType.layout}">
-        <ui:include src="/incl/document_editor.xhtml">
-          <ui:param name="hideVersioningPanel" value="true"/>
-        </ui:include>
-      </c:if>
-      <c:if test="#{empty documentActions.changeableDocumentType.layout}">
-        <nxl:documentLayout mode="create" value="#{changeableDocument}" />
-      </c:if>
+      <nxl:documentLayout mode="create" value="#{changeableDocument}" />
       <p class="buttonsGadget">
         <input type="hidden" name="parentDocumentPath" value="#{currentDocument.pathAsString}" />
         <h:commandButton class="button" value="#{messages['command.create']}"
