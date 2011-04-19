@@ -23,9 +23,9 @@
       </subtypes>
       <layout>
         <widget jsfcomponent="h:inputText" schemaname="dublincore"
-            fieldname="title" required="true"/>
+          fieldname="title" required="true" />
         <widget jsfcomponent="h:inputTextarea" schemaname="dublincore"
-            fieldname="description"/>
+          fieldname="description" />
       </layout>
     </type>
 
@@ -39,9 +39,9 @@
       <create-view>thread_create</create-view>
       <layout>
         <widget jsfcomponent="h:inputText" schemaname="dublincore"
-            fieldname="title" required="true"/>
+          fieldname="title" required="true" />
         <widget jsfcomponent="h:inputTextarea" schemaname="dublincore"
-            fieldname="description"/>
+          fieldname="description" />
       </layout>
     </type>
 
