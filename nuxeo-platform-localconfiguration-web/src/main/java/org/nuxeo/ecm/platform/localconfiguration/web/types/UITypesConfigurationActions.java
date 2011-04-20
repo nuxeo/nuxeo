@@ -21,6 +21,7 @@ import static org.nuxeo.ecm.platform.types.localconfiguration.UITypesConfigurati
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -33,10 +34,13 @@ import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.schema.DocumentType;
+import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.platform.types.Type;
 import org.nuxeo.ecm.platform.types.TypeManager;
 import org.nuxeo.ecm.platform.types.localconfiguration.UITypesConfiguration;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
@@ -65,6 +69,8 @@ public class UITypesConfigurationActions implements Serializable {
 
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
+
+    protected transient SchemaManager schemaManager;
 
     public List<Type> getNotSelectedTypes() throws ClientException {
         DocumentModel currentDoc = navigationContext.getCurrentDocument();
@@ -131,5 +137,32 @@ public class UITypesConfigurationActions implements Serializable {
 
         return types;
     }
+
+    public List<Type> getAllowedTypesWithSchemaFile() throws ClientException {
+        List<Type> types = new ArrayList<Type>();
+        DocumentModel currentDoc = navigationContext.getCurrentDocument();
+        DocumentModel parent = documentManager.getParentDocument(currentDoc.getRef());
+        Collection<Type> allowedTypes = typeManager.findAllAllowedSubTypesFrom( currentDoc.getType(), parent);
+        for (Type type : allowedTypes) {
+            DocumentType documentType = getSchemaManager().getDocumentType(type.getId());
+            if ( documentType != null && documentType.hasSchema("file")) {
+                types.add(type);
+            }
+        }
+        return types;
+    }
+
+
+    protected SchemaManager getSchemaManager() throws ClientException {
+        if ( schemaManager == null ){
+            try {
+                schemaManager = Framework.getService(SchemaManager.class);
+            } catch (Exception e) {
+                throw new ClientException("can NOT obtain schema manager", e);
+            }
+        }
+        return schemaManager;
+    }
+
 
 }

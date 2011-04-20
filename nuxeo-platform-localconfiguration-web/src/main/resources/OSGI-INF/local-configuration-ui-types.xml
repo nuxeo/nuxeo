@@ -26,6 +26,17 @@
       </property>
     </widgetType>
 
+    <widgetType name="default_type">
+      <documentation>
+
+      </documentation>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">/widgets/ui_default_type_widget_template.xhtml
+      </property>
+    </widgetType>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
@@ -51,6 +62,17 @@
       </fields>
     </widget>
 
+    <widget name="default_type" type="default_type">
+      <labels>
+        <label mode="any">label.local.configuration.ui.defaultType</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>uitypesconf:defaultType</field>
+      </fields>
+    </widget>
+
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
@@ -74,6 +96,9 @@
         </row>
         <row>
           <widget>deny_all_types</widget>
+        </row>
+        <row>
+          <widget>default_type</widget>
         </row>
       </rows>
     </layout>
