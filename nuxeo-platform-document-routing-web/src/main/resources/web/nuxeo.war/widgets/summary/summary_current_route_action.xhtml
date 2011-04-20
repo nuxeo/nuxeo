@@ -14,13 +14,13 @@
         action="#{routingActions.validateRouteModel()}" id="validate_route_model"/>
     </c:when>
     <c:when test="#{lifeCycleState eq 'validated'}">
-      <nxl:layout mode="edit" value="#{changeableDocument}"
+      <nxl:layout mode="edit" value="#{currentDocument}"
         name="document_routing_instance" />
       <h:commandButton type="submit" class="button"
         value="#{messages['action.start.document.routing']}" action="#{routingActions.startRoute()}" id="start_route" />
     </c:when>
     <c:otherwise>
-      <nxl:layout mode="view" value="#{changeableDocument}"
+      <nxl:layout mode="view" value="#{currentDocument}"
         name="document_routing_instance" />
     </c:otherwise>
   </c:choose>

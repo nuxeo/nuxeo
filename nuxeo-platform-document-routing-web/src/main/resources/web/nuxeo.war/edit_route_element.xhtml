@@ -13,11 +13,11 @@
     <h3><h:outputText value="#{messages['title.edit']} #{currentType.id}" /></h3>
     <ui:include src="/incl/message_banner.xhtml" />
     <h:form id="edit_step">
-      <c:if test="#{!empty documentActions.changeableDocumentType.layout}">
+      <c:if test="#{!empty currentDocumentType.layout}">
         <ui:include src="/incl/document_editor.xhtml" />
       </c:if>
-      <c:if test="#{empty documentActions.changeableDocumentType.layout}">
-        <nxl:documentLayout mode="edit" value="#{changeableDocument}" />
+      <c:if test="#{empty currentDocumentType.layout}">
+        <nxl:documentLayout mode="edit" value="#{currentDocument}" />
         <ui:include src="/incl/document_versioning.xhtml" />
       </c:if>
       <h:commandButton value="#{messages['command.save']}"

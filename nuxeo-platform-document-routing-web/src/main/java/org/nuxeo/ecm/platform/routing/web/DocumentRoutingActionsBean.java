@@ -159,10 +159,6 @@ public class DocumentRoutingActionsBean implements Serializable {
 
     public String startRoute() throws ClientException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
-        currentDocument.setPropertyValue(
-                DocumentRoutingConstants.ATTACHED_DOCUMENTS_PROPERTY_NAME,
-                navigationContext.getChangeableDocument().getPropertyValue(
-                        DocumentRoutingConstants.ATTACHED_DOCUMENTS_PROPERTY_NAME));
         DocumentRoute currentRoute = currentDocument.getAdapter(DocumentRoute.class);
         getDocumentRoutingService().createNewInstance(currentRoute,
                 currentRoute.getAttachedDocuments(), documentManager);
@@ -500,8 +496,8 @@ public class DocumentRoutingActionsBean implements Serializable {
 
     public String updateRouteElement() throws ClientException {
         boolean alreadyLockedByCurrentUser = false;
-        DocumentModel changeableDocument = navigationContext.getChangeableDocument();
-        DocumentRouteElement docRouteElement = changeableDocument.getAdapter(DocumentRouteElement.class);
+        DocumentModel currentDocument = navigationContext.getCurrentDocument();
+        DocumentRouteElement docRouteElement = currentDocument.getAdapter(DocumentRouteElement.class);
         DocumentRoute route = docRouteElement.getDocumentRoute(documentManager);
         if (getDocumentRoutingService().isLockedByCurrentUser(route,
                 documentManager)) {
@@ -525,8 +521,8 @@ public class DocumentRoutingActionsBean implements Serializable {
         facesMessages.add(FacesMessage.SEVERITY_INFO,
                 resourcesAccessor.getMessages().get("document_modified"),
                 resourcesAccessor.getMessages().get(
-                        changeableDocument.getType()));
-        EventManager.raiseEventsOnDocumentChange(changeableDocument);
+                        currentDocument.getType()));
+        EventManager.raiseEventsOnDocumentChange(currentDocument);
         // Release the lock only when currentUser had locked it before
         // entering this method.
         if (!alreadyLockedByCurrentUser) {
@@ -546,8 +542,8 @@ public class DocumentRoutingActionsBean implements Serializable {
     }
 
     public String goBackToRoute() throws ClientException {
-        DocumentModel changeableDocument = navigationContext.getChangeableDocument();
-        DocumentRouteElement docRouteElement = changeableDocument.getAdapter(DocumentRouteElement.class);
+        DocumentModel currentDocument = navigationContext.getCurrentDocument();
+        DocumentRouteElement docRouteElement = currentDocument.getAdapter(DocumentRouteElement.class);
         return webActions.setCurrentTabAndNavigate(
                 docRouteElement.getDocumentRoute(documentManager).getDocument(),
                 "TAB_DOCUMENT_ROUTE_ELEMENTS");
