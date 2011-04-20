@@ -19,17 +19,24 @@
 
 package org.nuxeo.ecm.platform.ws.session;
 
+import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.platform.api.ws.DocumentLoader;
+import org.nuxeo.ecm.platform.api.ws.DocumentLoaderDescriptor;
+import org.nuxeo.ecm.platform.api.ws.DocumentProperty;
 import org.nuxeo.ecm.platform.api.ws.session.WSRemotingSession;
 import org.nuxeo.ecm.platform.api.ws.session.WSRemotingSessionManager;
 import org.nuxeo.ecm.platform.api.ws.session.impl.WSRemotingSessionImpl;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
 
@@ -40,7 +47,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
  *
  */
 public class WSRemotingSessionManagerImpl extends DefaultComponent implements
-        WSRemotingSessionManager {
+        WSRemotingSessionManager, DocumentLoader {
 
     public static final ComponentName NAME = new ComponentName(
             "org.nuxeo.ecm.platform.ws.session.WSRemotingSessionManagerImpl");
@@ -50,7 +57,9 @@ public class WSRemotingSessionManagerImpl extends DefaultComponent implements
     private static final Map<String, WSRemotingSession> sessions
             = new Hashtable<String, WSRemotingSession>();
 
-
+    protected final HashMap<String,DocumentLoader> loaders =
+            new HashMap<String,DocumentLoader>();
+    
     public void addSession(String sid, WSRemotingSession session) {
         log.debug("Adding a new Web Service remoting session for username="
                 + session.getUsername());
@@ -83,4 +92,35 @@ public class WSRemotingSessionManagerImpl extends DefaultComponent implements
         log.debug("Removing session for username=" + session.getUsername());
     }
 
+    @Override
+    public void registerContribution(Object contribution,
+            String extensionPoint, ComponentInstance contributor)
+            throws Exception {
+        if ("loaders".equals(extensionPoint)) {
+            registerLoader((DocumentLoaderDescriptor)contribution);
+        }
+    }
+
+
+    protected void registerLoader(DocumentLoaderDescriptor desc) {
+        loaders.put(desc.name, desc.instance);
+    }
+
+
+    @Override
+    public void fillProperties(DocumentModel doc,
+            List<DocumentProperty> props, WSRemotingSession rs)
+            throws ClientException {
+        for (DocumentLoader loader:loaders.values()) {
+            loader.fillProperties(doc, props, rs);
+        }
+    }
+    
+    @Override
+    public <T> T getAdapter(Class<T> adapter) {
+        if (DocumentLoader.class.isAssignableFrom(adapter)) {
+            return adapter.cast(this);
+        }
+        return super.getAdapter(adapter);
+    }
 }
