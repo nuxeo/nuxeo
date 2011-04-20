@@ -132,6 +132,13 @@
         <scope>provided</scope>
       </dependency>
       <dependency>
+        <groupId>org.nuxeo</groupId>
+        <artifactId>nuxeo-ftest</artifactId>
+        <version>1.2</version>
+        <type>zip</type>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
         <groupId>xom</groupId>
         <artifactId>xom</artifactId>
         <version>1.1</version>
