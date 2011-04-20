@@ -110,6 +110,8 @@ public class UserDashboardSpaceProvider extends AbstractSpaceProvider {
         WebContentHelper.createOpenSocialGadget(space, session, locale,
                 "userdocuments", 0, 0, 1);
         WebContentHelper.createOpenSocialGadget(space, session, locale,
+                "lastdocuments", 0, 0, 2);
+        WebContentHelper.createOpenSocialGadget(space, session, locale,
                 "quicksearch", 0, 1, 0);
         WebContentHelper.createOpenSocialGadget(space, session, locale,
                 "waitingfor", 0, 1, 1);
