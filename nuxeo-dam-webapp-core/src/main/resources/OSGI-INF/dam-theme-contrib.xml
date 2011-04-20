@@ -53,27 +53,6 @@
       <format-type>widget</format-type>
       <template>incl/includes.xhtml</template>
 
-      <!-- include calendar resources so that they're
-        available on all the pages -->
-      <resource>calendar.js</resource>
-      <resource>calendar-en.js</resource>
-      <resource>calendar-ca.js</resource>
-      <resource>calendar-cn.js</resource>
-      <resource>calendar-cz.js</resource>
-      <resource>calendar-es.js</resource>
-      <resource>calendar-fr.js</resource>
-      <resource>calendar-it.js</resource>
-      <resource>calendar-jp.js</resource>
-      <resource>calendar-nl.js</resource>
-      <resource>calendar-pl.js</resource>
-      <resource>calendar-pt.js</resource>
-      <resource>calendar-ro.js</resource>
-      <resource>calendar-ru.js</resource>
-      <resource>calendar-sv.js</resource>
-      <resource>calendar.css</resource>
-      <resource>calendar-border-radius.css</resource>
-      <resource>calendar-galaxy.css</resource>
-
       <resource>jquery.js</resource>
       <resource>toggle-panel.js</resource>
       <resource>utils.js</resource>
