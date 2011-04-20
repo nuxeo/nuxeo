@@ -672,10 +672,17 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
             throws ClientException {
         try {
             Document srcDoc = resolveReference(src);
-            Document dstDoc = resolveReference(dst);
-            checkPermission(dstDoc, ADD_CHILDREN);
-            checkPermission(srcDoc.getParent(), REMOVE_CHILDREN);
-            checkPermission(srcDoc, REMOVE);
+            Document dstDoc;
+            if (dst == null) {
+                // rename
+                dstDoc = srcDoc.getParent();
+                checkPermission(dstDoc, WRITE_PROPERTIES);
+            } else {
+                dstDoc = resolveReference(dst);
+                checkPermission(dstDoc, ADD_CHILDREN);
+                checkPermission(srcDoc.getParent(), REMOVE_CHILDREN);
+                checkPermission(srcDoc, REMOVE);
+            }
 
             DocumentModel srcDocModel = readModel(srcDoc);
             notifyEvent(DocumentEventTypes.ABOUT_TO_MOVE, srcDocModel, null,
@@ -1865,11 +1872,19 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
             checkPermission(doc, WRITE_PROPERTIES);
 
             Map<String, Serializable> options = getContextMapEventInfo(docModel);
+            options.put(CoreEventConstants.PREVIOUS_DOCUMENT_MODEL,
+                    readModel(doc));
 
             if (!docModel.isImmutable()) {
                 // regular event, last chance to modify docModel
+                String name = docModel.getName();
                 notifyEvent(DocumentEventTypes.BEFORE_DOC_UPDATE, docModel,
                         options, null, null, true, true);
+                // did the event change the name?
+                if (!name.equals(docModel.getName())) {
+                    doc = getSession().move(doc, doc.getParent(),
+                            docModel.getName());
+                }
             }
 
             VersioningOption versioningOption = (VersioningOption) docModel.getContextData(VersioningService.VERSIONING_OPTION);
