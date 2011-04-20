@@ -50,13 +50,13 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @since 5.4.2
  */
-public class DocumentTaskPageProvider extends
+public class UserTaskPageProvider extends
         AbstractPageProvider<DashBoardItem> implements
         PageProvider<DashBoardItem> {
 
     private static final long serialVersionUID = 1L;
 
-    private static final Log log = LogFactory.getLog(DocumentTaskPageProvider.class);
+    private static final Log log = LogFactory.getLog(UserTaskPageProvider.class);
 
     public static final String CORE_SESSION_PROPERTY = "coreSession";
 

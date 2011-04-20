@@ -36,7 +36,7 @@ import org.nuxeo.ecm.platform.jbpm.VirtualTaskInstance;
 import org.nuxeo.ecm.platform.jbpm.core.service.JbpmServiceImpl;
 import org.nuxeo.ecm.platform.jbpm.dashboard.DashBoardItem;
 import org.nuxeo.ecm.platform.jbpm.dashboard.DocumentProcessItem;
-import org.nuxeo.ecm.platform.jbpm.providers.DocumentTaskPageProvider;
+import org.nuxeo.ecm.platform.jbpm.providers.UserTaskPageProvider;
 import org.nuxeo.ecm.platform.jbpm.test.JbpmUTConstants;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
@@ -124,7 +124,7 @@ public class JbpmPageProvidersTest extends RepositoryOSGITestCase {
     @SuppressWarnings("unchecked")
     public void testTaskPageProvider() throws Exception {
         Map<String, Serializable> properties = new HashMap<String, Serializable>();
-        properties.put(DocumentTaskPageProvider.CORE_SESSION_PROPERTY,
+        properties.put(UserTaskPageProvider.CORE_SESSION_PROPERTY,
                 (Serializable) getCoreSession());
         PageProvider<DashBoardItem> taskProvider = (PageProvider<DashBoardItem>) ppService.getPageProvider(
                 "CURRENT_USER_TASKS", null, null, null, properties,
@@ -176,7 +176,7 @@ public class JbpmPageProvidersTest extends RepositoryOSGITestCase {
     @SuppressWarnings("unchecked")
     public void testProcessPageProvider() throws Exception {
         Map<String, Serializable> properties = new HashMap<String, Serializable>();
-        properties.put(DocumentTaskPageProvider.CORE_SESSION_PROPERTY,
+        properties.put(UserTaskPageProvider.CORE_SESSION_PROPERTY,
                 (Serializable) getCoreSession());
         PageProvider<DocumentProcessItem> processProvider = (PageProvider<DocumentProcessItem>) ppService.getPageProvider(
                 "CURRENT_USER_PROCESSES", null, null, null, properties,

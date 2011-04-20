@@ -50,13 +50,13 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @since 5.4.2
  */
-public class DocumentProcessPageProvider extends
+public class UserProcessPageProvider extends
         AbstractPageProvider<DocumentProcessItem> implements
         PageProvider<DocumentProcessItem> {
 
     private static final long serialVersionUID = 1L;
 
-    private static final Log log = LogFactory.getLog(DocumentProcessPageProvider.class);
+    private static final Log log = LogFactory.getLog(UserProcessPageProvider.class);
 
     public static final String CORE_SESSION_PROPERTY = "coreSession";
 
