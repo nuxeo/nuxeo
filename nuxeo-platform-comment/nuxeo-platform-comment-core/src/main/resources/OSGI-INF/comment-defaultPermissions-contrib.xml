@@ -13,19 +13,17 @@
     <permission name="Moderate" />
 
   </extension>
-
+  
   <extension
-    target="org.nuxeo.ecm.platform.defaultPermissions.DefaultPermissionService"
-    point="config">
-    <configuration>
-      <document type="CommentRoot">
-        <principal name="members">
-          <permission isGranted="true">AddChildren</permission>
-          <permission isGranted="true">RemoveChildren
-          </permission>
-        </principal>
-      </document>
-    </configuration>
+      target="org.nuxeo.ecm.platform.content.template.service.ContentTemplateService"
+      point="factoryBinding">
+    <factoryBinding name="CommentRootFactory" factoryName="SimpleTemplateFactory"
+                     targetType="CommentRoot">
+      <acl>
+        <ace granted="true" permission="AddChildren" principal="members"/>
+        <ace granted="true" permission="RemoveChildren" principal="members"/>
+      </acl>
+     </factoryBinding>
   </extension>
 
 </component>
