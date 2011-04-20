@@ -672,7 +672,7 @@ public class DocumentRoutingActionsBean implements Serializable {
             lockRoute(routeModel);
         }
 
-        DocumentModel newDocument = navigationContext.getCurrentDocument();
+        DocumentModel newDocument = navigationContext.getChangeableDocument();
         // Document has already been created if it has an id.
         // This will avoid creation of many documents if user hit create button
         // too many times.
