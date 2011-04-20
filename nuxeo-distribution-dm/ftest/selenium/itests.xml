@@ -12,7 +12,7 @@
   <!--  <property name="out.dir" value="${maven.project.build.directory}" /> -->
   <property name="out.dir" value="target" />
   <unzip dest="${out.dir}/" overwrite="false">
-    <artifact:resolveFile key="org.nuxeo:nuxeo-ftest:1.1:zip" />
+    <artifact:resolveFile key="org.nuxeo:nuxeo-ftest:zip" />
   </unzip>
   <import file="${out.dir}/nuxeo-ftest.xml" />
 
