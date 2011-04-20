@@ -5,12 +5,12 @@
     point="providers">
 
     <genericPageProvider name="USER_TASKS"
-      class="org.nuxeo.ecm.platform.jbpm.providers.DocumentTaskPageProvider">
+      class="org.nuxeo.ecm.platform.jbpm.providers.UserTaskPageProvider">
       <pageSize>5</pageSize>
     </genericPageProvider>
 
     <genericPageProvider name="USER_PROCESSES"
-      class="org.nuxeo.ecm.platform.jbpm.providers.DocumentProcessPageProvider">
+      class="org.nuxeo.ecm.platform.jbpm.providers.UserProcessPageProvider">
       <pageSize>5</pageSize>
     </genericPageProvider>
 

@@ -36,7 +36,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.impl.blob.InputStreamBlob;
 import org.nuxeo.ecm.core.schema.utils.DateParser;
 import org.nuxeo.ecm.platform.jbpm.dashboard.DashBoardItem;
-import org.nuxeo.ecm.platform.jbpm.providers.DocumentProcessPageProvider;
+import org.nuxeo.ecm.platform.jbpm.providers.UserProcessPageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.url.api.DocumentViewCodecManager;
@@ -48,7 +48,7 @@ import org.nuxeo.runtime.api.Framework;
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.4.2
  */
-@Operation(id = DocumentTaskPageProviderOperation.ID, category = Constants.CAT_FETCH, label = "DocumentTaskPageProvider", description = "Returns the tasks waiting for the current user.")
+@Operation(id = DocumentTaskPageProviderOperation.ID, category = Constants.CAT_FETCH, label = "UserTaskPageProvider", description = "Returns the tasks waiting for the current user.")
 public class DocumentTaskPageProviderOperation extends
         AbstractWorkflowOperation {
 
@@ -72,7 +72,7 @@ public class DocumentTaskPageProviderOperation extends
     @OperationMethod
     public Blob run() throws Exception {
         Map<String, Serializable> props = new HashMap<String, Serializable>();
-        props.put(DocumentProcessPageProvider.CORE_SESSION_PROPERTY,
+        props.put(UserProcessPageProvider.CORE_SESSION_PROPERTY,
                 (Serializable) session);
         PageProviderService pps = Framework.getLocalService(PageProviderService.class);
         PageProvider<DashBoardItem> pageProvider = (PageProvider<DashBoardItem>) pps.getPageProvider(
