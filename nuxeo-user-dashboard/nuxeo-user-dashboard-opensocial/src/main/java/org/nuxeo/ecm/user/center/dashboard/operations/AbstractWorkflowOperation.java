@@ -36,6 +36,9 @@ import com.google.common.collect.Maps;
 public class AbstractWorkflowOperation {
 
     protected String getI18nLabel(String label, Locale locale) {
+        if (label == null) {
+            label = "";
+        }
         return I18NUtils.getMessageString("messages", label, null, locale);
     }
 
