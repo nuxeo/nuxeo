@@ -5,5 +5,4 @@ Bundle-SymbolicName: org.nuxeo.ecm.user.center.dashboard.opensocial;singleton:=t
 Bundle-Version: 0.0.1
 Bundle-Vendor: Nuxeo
 Nuxeo-Component: OSGI-INF/actions-contrib.xml,
- OSGI-INF/user-dashboard-space-provider-contrib.xml,
- OSGI-INF/operations-contrib.xml
+ OSGI-INF/user-dashboard-space-provider-contrib.xml
