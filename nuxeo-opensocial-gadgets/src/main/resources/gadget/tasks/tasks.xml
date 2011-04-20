@@ -29,7 +29,7 @@
 
       // configure Automation REST call
       var NXRequestParams = {
-        operationId: 'Document.TaskPageProvider',
+        operationId: 'Workflow.UserTaskPageProvider',
         operationParams: {
           language: prefs.getLang()
         },
