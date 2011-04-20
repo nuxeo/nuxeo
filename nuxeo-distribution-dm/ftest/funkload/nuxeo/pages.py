@@ -483,7 +483,7 @@ class FolderPage(BasePage):
             ['document_create', 'document_create'],
             ['document_create:nxl_heading:nxw_title', title],
             ['document_create:nxl_heading:nxw_description', description],
-            ['document_create:button_create', 'Create'],
+            ['document_create:create_doc_CREATE_WORKSPACE', 'Create'],
             ['document_create_SUBMIT', '1'],
             ['javax.faces.ViewState', fl.getLastJsfState()]],
                 description="Create workspace submit")
@@ -505,7 +505,7 @@ class FolderPage(BasePage):
             ['javax.faces.ViewState', fl.getLastJsfState()],
             ['document_create:nxl_heading:nxw_description', description],
             ['document_create:nxl_heading:nxw_title', title],
-            ['document_create:button_create', 'Create'],
+            ['document_create:create_doc_CREATE_DOCUMENT', 'Create'],
             ['document_create_SUBMIT', '1']],
             description="Create a section submit")
         fl.assert_('Section saved' in fl.getBody())
@@ -528,7 +528,7 @@ class FolderPage(BasePage):
             ['document_create:nxl_heading:nxw_title', title],
             ['document_create:nxl_heading:nxw_description', description],
             #['parentDocumentPath', '/default-domain/workspaces/flnxtest-page-workspace.1237992970017'],
-            ['document_create:button_create', 'Create'],
+            ['document_create:create_doc_CREATE_DOCUMENT', 'Create'],
             ['document_create_SUBMIT', '1'],
             ['javax.faces.ViewState', fl.getLastJsfState()]],
             description="Create folder: Submit")
@@ -554,7 +554,7 @@ class FolderPage(BasePage):
              file_path and 'upload' or 'none'],
             ['document_create:nxl_file:nxw_file:nxw_file_file:upload',
              Upload(file_path or '')],
-            ['document_create:button_create', 'Create'],
+            ['document_create:create_doc_CREATE_DOCUMENT', 'Create'],
             ['document_create_SUBMIT', '1'],
             ['javax.faces.ViewState', fl.getLastJsfState()]],
             description="Create file: Sumbit")

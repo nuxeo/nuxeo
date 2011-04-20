@@ -49,11 +49,11 @@ public class SystemHomePage extends AdminCenterBasePage {
         return asPage(LoginPage.class);
     }
 
-    public boolean setConfig(String name, String value) {
+    public boolean setConfig(String id, String value) {
         if (!SETUP_SUBTAB.equals(getSelectedSubTab())) {
             selectSubTab(SETUP_SUBTAB);
         }
-        WebElement input = findElementWithTimeout(By.xpath("XXX"));
+        WebElement input = findElementWithTimeout(By.xpath("//td[@id='" + id + "']/input"));
         if (input != null) {
             input.sendKeys(value);
             return true;
@@ -61,11 +61,11 @@ public class SystemHomePage extends AdminCenterBasePage {
         return false;
     }
 
-    public String getConfig(String name) {
+    public String getConfig(String id) {
         if (!SETUP_SUBTAB.equals(getSelectedSubTab())) {
             selectSubTab(SETUP_SUBTAB);
         }
-        WebElement input = findElementWithTimeout(By.xpath("XXX"));
+        WebElement input = findElementWithTimeout(By.xpath("//td[@id='" + id + "']/input"));
         if (input != null) {
             return input.getValue();
         }

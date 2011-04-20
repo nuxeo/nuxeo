@@ -22,14 +22,12 @@ import org.openqa.selenium.WebElement;
 
 public class ConnectHomePage extends AdminCenterBasePage {
 
-    public static final String REG_STATUS_XPATH = "id('connectStatusPanel')/table/tbody/tr[1]/td[2]";
-
     public ConnectHomePage(WebDriver driver) {
         super(driver);
     }
 
     public String getConnectStatus() {
-        WebElement status = findElementWithTimeout(By.xpath(REG_STATUS_XPATH));
+        WebElement status = findElementWithTimeout(By.id("contractStatus"));
         return status.getText();
     }
 }

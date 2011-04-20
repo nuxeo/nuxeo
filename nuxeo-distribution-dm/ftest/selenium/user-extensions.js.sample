@@ -188,16 +188,3 @@ Selenium.prototype.doSelectFrameForOpenSocial = function(gadgetName) {
  return;
 }
 
-Selenium.prototype.doSafeClickAndWait = function(id) {
-  var testWindow = selenium.browserbot.getCurrentWindow();
-    if (testWindow.wrappedJSObject) {
-      testWindow = testWindow.wrappedJSObject;
-    }
-
-    var ele =  testWindow.document.getElementById(id);
-    if (typeof ele !== 'undefined' && ele !== null) {
-      return selenium.browserbot.clickAndWait(id);
-    }
- return;
-}
-

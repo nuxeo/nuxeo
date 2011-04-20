@@ -29,7 +29,7 @@ public class PackageListingPage extends AbstractPage {
     }
 
     public WebElement getPackageLink(String packageId) {
-        String xpath = "id('row_" + packageId + "')/td[9]/a";
+        String xpath = "id('row_" + packageId + "')//a[contains(@class ,'button')]";
         return findElementWithTimeout(By.xpath(xpath), 20 * 1000);
     }
 
