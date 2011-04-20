@@ -33,4 +33,8 @@ public class UITypesConfigurationConstants {
 
     public static final String UI_TYPES_CONFIGURATION_DENY_ALL_TYPES_PROPERTY = "uitypesconf:denyAllTypes";
 
+    public static final String UI_TYPES_CONFIGURATION_DEFAULT_TYPE = "uitypesconf:defaultType";
+
+    public static final String UI_TYPES_DEFAULT_TYPE = "File";
+
 }

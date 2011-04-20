@@ -27,10 +27,14 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.localconfiguration.LocalConfigurationService;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.platform.filemanager.utils.FileManagerUtils;
 import org.nuxeo.ecm.platform.types.TypeManager;
+import org.nuxeo.ecm.platform.types.localconfiguration.UITypesConfiguration;
 import org.nuxeo.runtime.api.Framework;
+import static org.nuxeo.ecm.platform.types.localconfiguration.UITypesConfigurationConstants.UI_TYPES_CONFIGURATION_FACET;
 
 /**
  * @author Anahide Tchertchian
@@ -43,7 +47,14 @@ public class DefaultFileImporter extends AbstractFileImporter {
 
     private static final Log log = LogFactory.getLog(DefaultFileImporter.class);
 
-    public String getTypeName() {
+    public String getTypeName(DocumentModel currentDoc) {
+        UITypesConfiguration configuration = getConfiguration(currentDoc);
+        if (configuration != null) {
+            String defaultType = configuration.getDefaultType();
+            if (defaultType != null) {
+                return defaultType;
+            }
+        }
         return TYPE_NAME;
     }
 
@@ -56,7 +67,9 @@ public class DefaultFileImporter extends AbstractFileImporter {
             String path, boolean overwrite, String fullname,
             TypeManager typeService) throws ClientException, IOException {
         path = getNearestContainerPath(documentManager, path);
-        String typeName = getTypeName();
+        PathRef containerRef = new PathRef(path);
+        DocumentModel container = documentManager.getDocument(containerRef);
+        String typeName = getTypeName(container);
 
         doSecurityCheck(documentManager, path, typeName, typeService);
 
@@ -105,6 +118,19 @@ public class DefaultFileImporter extends AbstractFileImporter {
                 + " with icon: " + docModel.getProperty("common", "icon")
                 + " and type: " + typeName);
         return docModel;
+    }
+
+    protected UITypesConfiguration getConfiguration(DocumentModel currentDoc) {
+        UITypesConfiguration configuration = null;
+        try {
+            LocalConfigurationService localConfigurationService = Framework.getService(LocalConfigurationService.class);
+            configuration = localConfigurationService.getConfiguration(
+                    UITypesConfiguration.class, UI_TYPES_CONFIGURATION_FACET,
+                    currentDoc);
+        } catch (Exception e) {
+            log.error(e, e);
+        }
+        return configuration;
     }
 
 }

@@ -16,6 +16,12 @@
 
 package org.nuxeo.ecm.platform.types.localconfiguration;
 
+import static org.nuxeo.ecm.platform.types.localconfiguration.UITypesConfigurationConstants.UI_TYPES_CONFIGURATION_ALLOWED_TYPES_PROPERTY;
+import static org.nuxeo.ecm.platform.types.localconfiguration.UITypesConfigurationConstants.UI_TYPES_CONFIGURATION_DEFAULT_TYPE;
+import static org.nuxeo.ecm.platform.types.localconfiguration.UITypesConfigurationConstants.UI_TYPES_CONFIGURATION_DENIED_TYPES_PROPERTY;
+import static org.nuxeo.ecm.platform.types.localconfiguration.UITypesConfigurationConstants.UI_TYPES_CONFIGURATION_DENY_ALL_TYPES_PROPERTY;
+import static org.nuxeo.ecm.platform.types.localconfiguration.UITypesConfigurationConstants.UI_TYPES_DEFAULT_TYPE;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -24,14 +30,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.platform.types.SubType;
-
-import static org.nuxeo.ecm.platform.types.localconfiguration.UITypesConfigurationConstants.UI_TYPES_CONFIGURATION_ALLOWED_TYPES_PROPERTY;
-import static org.nuxeo.ecm.platform.types.localconfiguration.UITypesConfigurationConstants.UI_TYPES_CONFIGURATION_DENIED_TYPES_PROPERTY;
-import static org.nuxeo.ecm.platform.types.localconfiguration.UITypesConfigurationConstants.UI_TYPES_CONFIGURATION_DENY_ALL_TYPES_PROPERTY;
 
 /**
  * Default implementation of {@code UITypesConfiguration}.
@@ -39,6 +43,8 @@ import static org.nuxeo.ecm.platform.types.localconfiguration.UITypesConfigurati
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  */
 public class UITypesConfigurationAdapter implements UITypesConfiguration {
+
+    private static final Log log = LogFactory.getLog(UITypesConfigurationAdapter.class);
 
     protected DocumentRef documentRef;
 
@@ -50,12 +56,15 @@ public class UITypesConfigurationAdapter implements UITypesConfiguration {
 
     protected boolean canMerge = true;
 
+    protected String defaultType;
+
     public UITypesConfigurationAdapter(DocumentModel doc) {
         documentRef = doc.getRef();
         allowedTypes = getTypesList(doc,
                 UI_TYPES_CONFIGURATION_ALLOWED_TYPES_PROPERTY);
         deniedTypes = getTypesList(doc,
                 UI_TYPES_CONFIGURATION_DENIED_TYPES_PROPERTY);
+        defaultType= getDefaultType(doc);
 
         denyAllTypes = getDenyAllTypesProperty(doc);
         if (denyAllTypes) {
@@ -83,6 +92,16 @@ public class UITypesConfigurationAdapter implements UITypesConfiguration {
         } catch (ClientException e) {
             return false;
         }
+    }
+
+    protected String getDefaultType(DocumentModel doc) {
+        String value = UI_TYPES_DEFAULT_TYPE;
+        try {
+            value = (String) doc.getPropertyValue(UI_TYPES_CONFIGURATION_DEFAULT_TYPE);
+        } catch (ClientException e) {
+            log.debug("cann't get default type for:" + doc.getPathAsString(), e);
+        }
+        return value;
     }
 
     @Override
@@ -155,6 +174,14 @@ public class UITypesConfigurationAdapter implements UITypesConfiguration {
             }
         }
         return filteredAllowedSubTypes;
+    }
+
+    /* (non-Javadoc)
+     * @see org.nuxeo.ecm.platform.types.localconfiguration.UITypesConfiguration#getDefaultType()
+     */
+    @Override
+    public String getDefaultType() {
+        return defaultType;
     }
 
 }
