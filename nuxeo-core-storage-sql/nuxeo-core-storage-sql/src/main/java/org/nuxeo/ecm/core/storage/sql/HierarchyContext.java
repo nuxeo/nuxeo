@@ -396,7 +396,8 @@ public class HierarchyContext {
      */
     public void move(Node source, Serializable parentId, String name)
             throws StorageException {
-        // a save() has already been done by the caller
+        // a save() has already been done by the caller when doing
+        // an actual move (different parents)
         Serializable id = source.getId();
         SimpleFragment hierFragment = source.getHierFragment();
         Serializable oldParentId = hierFragment.get(model.HIER_PARENT_KEY);

@@ -877,7 +877,9 @@ public class SessionImpl implements Session, XAResource {
     public Node move(Node source, Node parent, String name)
             throws StorageException {
         checkLive();
-        flush(); // needed when doing many moves for circular stuff
+        if (!parent.getId().equals(source.getParentId())) {
+            flush(); // needed when doing many moves for circular stuff
+        }
         context.move(source, parent.getId(), name);
         requireReadAclsUpdate();
         return source;

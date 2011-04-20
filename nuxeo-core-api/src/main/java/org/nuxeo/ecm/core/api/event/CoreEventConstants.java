@@ -57,6 +57,13 @@ public final class CoreEventConstants {
 
     public static final String REPLACED_PROXY_IDS = "replacedProxyRefs";
 
+    /**
+     * Passed with beforeDocumentModification and documentModified events to
+     * hold the state that is about to be / has been overwritten by the
+     * saveDocument.
+     */
+    public static final String PREVIOUS_DOCUMENT_MODEL = "previousDocumentModel";
+
     // Constant utility class
     private CoreEventConstants() {
     }

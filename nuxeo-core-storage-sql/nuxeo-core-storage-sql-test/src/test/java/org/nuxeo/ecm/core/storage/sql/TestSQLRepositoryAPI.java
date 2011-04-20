@@ -69,6 +69,7 @@ import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.storage.EventConstants;
+import org.nuxeo.ecm.core.storage.sql.listeners.DummyBeforeModificationListener;
 import org.nuxeo.ecm.core.storage.sql.listeners.DummyTestListener;
 
 /**
@@ -2131,7 +2132,9 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertTrue(session.exists(new PathRef("folder2/file2")));
         assertTrue(session.exists(new PathRef("folder2/" + newName)));
 
-        session.cancel();
+        // move with null dest (rename)
+        DocumentModel newFile3 = session.move(file.getRef(), null, "file3");
+        assertEquals("file3", newFile3.getName());
     }
 
     // TODO: fix this test
@@ -3279,6 +3282,30 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         session.save();
         list = session.query(query);
         assertEquals(0, list.size());
+    }
+
+    /**
+     * Checks that a before document modification event can change the
+     * DocumentModel name and provoke a rename. And that PREVIOUS_DOCUMENT_MODEL
+     * received by the event holds the correct info.
+     */
+    public void testBeforeModificationListenerRename() throws Exception {
+        deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests",
+                "OSGI-INF/test-listener-beforemod-contrib.xml");
+
+        DocumentModel doc = session.createDocumentModel("/", "doc", "File");
+        doc.setProperty("dublincore", "title", "t1");
+        doc = session.createDocument(doc);
+        session.save();
+        assertEquals("t1-rename", doc.getName());
+
+        doc.setProperty("dublincore", "title", "t2");
+        DummyBeforeModificationListener.previousTitle = null;
+        doc = session.saveDocument(doc);
+        session.save();
+        assertEquals("t2-rename", doc.getName());
+        assertEquals("/t2-rename", doc.getPathAsString());
+        assertEquals("t1", DummyBeforeModificationListener.previousTitle);
     }
 
 }
