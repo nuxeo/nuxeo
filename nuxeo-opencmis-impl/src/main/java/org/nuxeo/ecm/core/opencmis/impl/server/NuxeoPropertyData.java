@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -166,6 +166,10 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
         } else if (PropertyIds.VERSION_SERIES_CHECKED_OUT_ID.equals(name)) {
             return (PropertyData<U>) new NuxeoPropertyDataVersionSeriesCheckedOutId(
                     (PropertyDefinition<String>) pd, doc);
+        } else if (NXQL.ECM_ISVERSION.equals(name)) {
+            return (PropertyData<U>) new NuxeoPropertyBooleanDataFixed(
+                    (PropertyDefinition<Boolean>) pd,
+                    Boolean.valueOf(doc.isVersion()));
         } else if (PropertyIds.CHECKIN_COMMENT.equals(name)) {
             return (PropertyData<U>) new NuxeoPropertyDataCheckInComment(
                     (PropertyDefinition<String>) pd, doc);
@@ -202,6 +206,20 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
         } else if (PropertyIds.POLICY_TEXT.equals(name)) {
             return (PropertyData<U>) new NuxeoPropertyStringDataFixed(
                     (PropertyDefinition<String>) pd, null);
+        } else if (NXQL.ECM_MIXINTYPE.equals(name)) {
+            List<String> facets = new ArrayList<String>(doc.getFacets());
+            Collections.sort(facets);
+            return (PropertyData<U>) new NuxeoPropertyIdMultiDataFixed(
+                    (PropertyDefinition<String>) pd, facets);
+        } else if (NXQL.ECM_LIFECYCLESTATE.equals(name)) {
+            String state;
+            try {
+                state = doc.getCurrentLifeCycleState();
+            } catch (ClientException e) {
+                throw new CmisRuntimeException(e.toString(), e);
+            }
+            return (PropertyData<U>) new NuxeoPropertyIdDataFixed(
+                    (PropertyDefinition<String>) pd, state);
         } else {
             boolean readOnly = pd.getUpdatability() != Updatability.READWRITE;
             // TODO WHEN_CHECKED_OUT, ON_CREATE

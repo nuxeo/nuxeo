@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -40,6 +40,7 @@ import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
+import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.Namespace;
@@ -310,6 +311,14 @@ public class NuxeoTypeHelper {
         t.addPropertyDefinition(newPropertyDefinition(PropertyIds.CHANGE_TOKEN,
                 "Change Token", PropertyType.STRING, Cardinality.SINGLE,
                 Updatability.READONLY, false, false, false));
+
+        // Nuxeo system properties
+        t.addPropertyDefinition(newPropertyDefinition(NXQL.ECM_LIFECYCLESTATE,
+                "Lifecycle State", PropertyType.STRING, Cardinality.SINGLE,
+                Updatability.READONLY, false, false, true));
+        t.addPropertyDefinition(newPropertyDefinition(NXQL.ECM_MIXINTYPE,
+                "Facets", PropertyType.STRING, Cardinality.MULTI,
+                Updatability.READONLY, true, false, true));
     }
 
     protected static void addFolderPropertyDefinitions(
@@ -394,6 +403,10 @@ public class NuxeoTypeHelper {
                 PropertyIds.CONTENT_STREAM_ID, "Content Stream ID",
                 PropertyType.ID, Cardinality.SINGLE, Updatability.READONLY,
                 false, false, false));
+        t.addPropertyDefinition(newPropertyDefinition(NXQL.ECM_ISVERSION,
+                "Is Checkedin Version", PropertyType.BOOLEAN, Cardinality.SINGLE,
+                Updatability.READONLY, false, false, true));
+        // TODO: add a new property for the digest of the content stream
     }
 
     protected static PropertyDefinition<?> newPropertyDefinition(String id,

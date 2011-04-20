@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -51,6 +51,7 @@ import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.opencmis.impl.util.TypeManagerImpl;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.query.QueryParseException;
+import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.ModelProperty;
@@ -77,6 +78,8 @@ public class CMISQLQueryMaker implements QueryMaker {
     public static final String TYPE = "CMISQL";
 
     public static final String CMIS_PREFIX = "cmis:";
+
+    public static final String ECM_PREFIX = "ecm:";
 
     public static final String DC_FRAGMENT_NAME = "dublincore";
 
@@ -702,7 +705,7 @@ public class CMISQLQueryMaker implements QueryMaker {
         String qual = col.getTypeQueryName();
         String id = col.getPropertyId();
         Column column;
-        if (id.startsWith(CMIS_PREFIX)) {
+        if (id.startsWith(CMIS_PREFIX) || id.startsWith(NXQL.ECM_PREFIX)) {
             column = getSystemColumn(qual, id);
         } else {
             ModelProperty propertyInfo = model.getPropertyInfo(id);

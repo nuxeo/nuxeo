@@ -80,6 +80,7 @@ import org.apache.chemistry.opencmis.commons.spi.RepositoryService;
 import org.apache.chemistry.opencmis.commons.spi.VersioningService;
 import org.apache.chemistry.opencmis.server.support.query.CalendarHelper;
 import org.apache.commons.lang.StringUtils;
+import org.apache.poi.hssf.record.formula.eval.NameXEval;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -87,6 +88,7 @@ import org.junit.Test;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoRepository;
 import org.nuxeo.ecm.core.opencmis.tests.Helper;
+import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -266,11 +268,17 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         assertNull(type.getParentTypeId());
         assertEquals("cmis:folder", type.getLocalName());
         assertTrue(type.getPropertyDefinitions().containsKey("dc:title"));
+        assertTrue(type.getPropertyDefinitions().containsKey("ecm:currentLifeCycleState"));
+        assertTrue(type.getPropertyDefinitions().containsKey("ecm:mixinType"));
+        assertFalse(type.getPropertyDefinitions().containsKey("ecm:isCheckedInVersion"));
 
         type = repoService.getTypeDefinition(repositoryId, "Folder", null);
         assertEquals(Boolean.TRUE, type.isCreatable());
         assertEquals("cmis:folder", type.getParentTypeId());
         assertEquals("Folder", type.getLocalName());
+        assertTrue(type.getPropertyDefinitions().containsKey("ecm:currentLifeCycleState"));
+        assertTrue(type.getPropertyDefinitions().containsKey("ecm:mixinType"));
+        assertFalse(type.getPropertyDefinitions().containsKey("ecm:isCheckedInVersion"));
 
         type = repoService.getTypeDefinition(repositoryId, "cmis:document",
                 null);
@@ -280,6 +288,9 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         assertTrue(type.getPropertyDefinitions().containsKey("dc:title"));
         assertTrue(type.getPropertyDefinitions().containsKey(
                 "cmis:contentStreamFileName"));
+        assertTrue(type.getPropertyDefinitions().containsKey("ecm:currentLifeCycleState"));
+        assertTrue(type.getPropertyDefinitions().containsKey("ecm:mixinType"));
+        assertTrue(type.getPropertyDefinitions().containsKey("ecm:isCheckedInVersion"));
 
         try {
             // nosuchtype, Document is mapped to cmis:document
@@ -445,6 +456,15 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         data = getObject(id);
         assertEquals(id, data.getId());
         assertEquals("newdoc", getString(data, PropertyIds.NAME));
+        assertEquals(Boolean.TRUE,
+                getValue(data, PropertyIds.IS_LATEST_MAJOR_VERSION));
+        assertEquals(Boolean.FALSE, getValue(data, PropertyIds.IS_IMMUTABLE));
+        assertEquals("File", getString(data, PropertyIds.OBJECT_TYPE_ID));
+        assertEquals(Boolean.FALSE, getValue(data, NXQL.ECM_ISVERSION));
+        assertEquals("project", getValue(data, NXQL.ECM_LIFECYCLESTATE));
+        assertEquals(Arrays.asList("Commentable", "Downloadable",
+                "HasRelatedText", "Publishable", "Versionable"),
+                getValues(data, NXQL.ECM_MIXINTYPE));
 
         // creation of a cmis:document (helps simple clients)
 
@@ -463,6 +483,10 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         ObjectData data = getObject(id);
         assertEquals(id, data.getId());
         assertEquals("newfold", getString(data, PropertyIds.NAME));
+        assertEquals("Folder", getString(data, PropertyIds.OBJECT_TYPE_ID));
+        assertEquals("project", getValue(data, NXQL.ECM_LIFECYCLESTATE));
+        assertEquals(Arrays.asList("Folderish"),
+                getValues(data, NXQL.ECM_MIXINTYPE));
 
         // creation of a cmis:folder (helps simple clients)
 
