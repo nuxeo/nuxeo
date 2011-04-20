@@ -343,12 +343,6 @@
         <artifactId>nuxeo-user-settings-web</artifactId>
         <version>${nuxeo.addons.version}</version>
       </dependency>
-      <!-- temporarily use compatibility module -->
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-user-dashboard-compat</artifactId>
-        <version>${nuxeo.addons.version}</version>
-      </dependency>
       <dependency>
         <groupId>org.nuxeo.shell</groupId>
         <artifactId>nuxeo-shell</artifactId>
