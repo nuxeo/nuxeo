@@ -28,18 +28,21 @@ public class DateUtils {
     private DateUtils() {
     }
 
-    public static final String FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
-
     public static Date parseDate(String date) {
         try {
-            return new SimpleDateFormat(FORMAT).parse(date);
+            if (date.endsWith("Z")) {
+                return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'Z").parse(date+"GMT+00:00");
+            } else {
+                return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssz").parse(date);
+            }
         } catch (ParseException e) {
             throw new IllegalArgumentException("Invalid date value " + date, e);
         }
     }
 
+
     public static String formatDate(Date date) {
-        return new SimpleDateFormat(FORMAT).format(date);
+        return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssz").format(date);
     }
 
     public static void main(String[] args) {

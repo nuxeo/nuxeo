@@ -6,6 +6,7 @@
     value="#{commentManagerActions.getActionsForComment()}">
     <nxu:dataList var="action" value="#{actions}">
       <nxh:commandButton action="#{action.getLink()}"
+        immediate="#{action.immediate}"
         value="#{messages[action.label]}" styleClass="button" />
     </nxu:dataList>
   </nxu:methodResult>

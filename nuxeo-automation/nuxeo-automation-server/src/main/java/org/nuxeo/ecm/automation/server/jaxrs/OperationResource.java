@@ -22,6 +22,8 @@ import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationDocumentation;
 import org.nuxeo.ecm.automation.OperationType;
 import org.nuxeo.ecm.automation.core.doc.JSONExporter;
+import org.nuxeo.ecm.automation.server.jaxrs.io.JsonMarshalling;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -40,15 +42,35 @@ public class OperationResource extends ExecutableResource {
     public Object doGet() {
         OperationDocumentation doc = type.getDocumentation();
         JSONObject json = JSONExporter.toJSON(doc);
-        return Response.ok(json.toString(2)).type("application/json").build();
+        return Response.ok(json).type("application/json").build();
     }
 
     @Override
     public Object execute(ExecutionRequest xreq) throws Exception {
         OperationContext ctx = xreq.createContext(request, getCoreSession());
-        return service.run(ctx, xreq.createChain(type));
+        Object result = service.run(ctx, xreq.createChain(type));
+        if (result == null) {
+            return null;
+        }
+        Class<?> resultClass = result.getClass();
+        JsonMarshalling jm = marshalling();
+        if (!jm.canMarshall(resultClass)) {
+            return result;
+        }
+        JSONObject json = new JSONObject();
+        json.element("entity-type", entityType(resultClass));
+        jm.write(resultClass, json, result);
+        return json;
     }
 
+    protected static String entityType(Class<?> clazz) {
+        return clazz.getSimpleName().toLowerCase();
+    }
+
+    protected static JsonMarshalling marshalling() {
+        return Framework.getLocalService(JsonMarshalling.class);
+    }
+        
     @Override
     public String getId() {
         return type.getId();
