@@ -57,6 +57,7 @@ function displayDocumentList(entries, nxParams) {
 
 function displayPageNavigationControls(nxParams) {
   if (nxParams.usePagination && maxPage > 1) {
+    _gel('pageNavigationControls').style.display = 'block'
     _gel('nxDocumentListPage').innerHTML = (currentPage + 1) + "/" + maxPage;
     _gel('navFirstPage').onclick = function(e) {
       firstPage(nxParams)
