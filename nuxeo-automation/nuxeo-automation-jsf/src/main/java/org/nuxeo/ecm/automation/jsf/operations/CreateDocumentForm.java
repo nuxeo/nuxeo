@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -19,7 +19,7 @@ import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.automation.jsf.OperationHelper;
 
-@Operation(id = CreateDocumentForm.ID, category = Constants.CAT_UI, requires = Constants.SEAM_CONTEXT, label = "Show Create Document Page", description = "Show the document creation form given a type. This is a void operation - the input object is returned back as the oputput")
+@Operation(id = CreateDocumentForm.ID, category = Constants.CAT_UI, requires = Constants.SEAM_CONTEXT, label = "Show Create Document Page", description = "Show the document creation form given a type. This is a void operation: the input object is returned back as the output.")
 public class CreateDocumentForm {
 
     public static final String ID = "Seam.CreateDocumentForm";

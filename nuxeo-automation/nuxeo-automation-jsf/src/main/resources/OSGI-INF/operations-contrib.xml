@@ -14,6 +14,8 @@
       class="org.nuxeo.ecm.automation.jsf.operations.FetchFromWorklist" />
     <operation
       class="org.nuxeo.ecm.automation.jsf.operations.GetCurrentDocument" />
+    <operation
+      class="org.nuxeo.ecm.automation.jsf.operations.GetChangeableDocument" />
     <operation class="org.nuxeo.ecm.automation.jsf.operations.GetCurrentDomain" />
     <operation
       class="org.nuxeo.ecm.automation.jsf.operations.GetCurrentWorkspace" />
@@ -31,7 +33,12 @@
     <operation class="org.nuxeo.ecm.automation.jsf.operations.AddErrorMessage" />
     <operation class="org.nuxeo.ecm.automation.jsf.operations.AddInfoMessage" />
     <operation class="org.nuxeo.ecm.automation.jsf.operations.RefreshUI" />
-    <operation class="org.nuxeo.ecm.automation.jsf.operations.CreateDocumentForm" />
+    <operation
+      class="org.nuxeo.ecm.automation.jsf.operations.CreateDocumentForm" />
+    <operation class="org.nuxeo.ecm.automation.jsf.operations.SetOutcome" />
+    <operation
+      class="org.nuxeo.ecm.automation.jsf.operations.CreateDocumentInUI" />
+    <operation class="org.nuxeo.ecm.automation.jsf.operations.SaveDocumentInUI" />
   </extension>
 
 </component>
