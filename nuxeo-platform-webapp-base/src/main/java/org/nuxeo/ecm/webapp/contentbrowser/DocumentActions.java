@@ -59,7 +59,12 @@ public interface DocumentActions extends StatefulBaseLifeCycle,
 
     /**
      * Saves changes held by the changeableDocument document model.
+     *
+     * @deprecated since 5.4.2, currentDocument should be used in edition
+     *             screens instead of changeableDocument, so
+     *             {@link #updateCurrentDocument()} should be used instead
      */
+    @Deprecated
     String updateDocument() throws ClientException;
 
     /**
