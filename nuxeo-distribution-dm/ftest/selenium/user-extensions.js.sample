@@ -109,8 +109,8 @@ Selenium.prototype.doWaitForJSQueries = function(timeout) {
 
 /**
  * Function that waits for opensocial gadgets to be loaded.
- * Assumes frame name starts with "gadget" and will display a div with id
- * "nxDocumentList".
+ * Assumes frame name starts with "open-social" and will display a div with id
+ * "content".
  * Accepts a mandatory element id with content to check, and timeout.
  */
 Selenium.prototype.doWaitForOpensocialGadgetsToLoad = function(mandatoryElementId, timeout) {
@@ -168,23 +168,29 @@ Selenium.prototype.doWaitForOpensocialGadgetsToLoad = function(mandatoryElementI
   return Selenium.decorateFunctionWithTimeout(framesLoadedPredicate, timeout);
 }
 
-Selenium.prototype.doSelectFrameForOpenSocial = function(gadgetName) {
+/**
+ * Function that selects the frame for a given gadget name.
+ * Assumes frame css classes contains a class which is the gadget name.
+ *
+ * Do not fail if there is no frame for the given gadget name in the page.
+ */
+Selenium.prototype.doSelectOpenSocialGadgetFrame = function(gadgetName) {
   var testWindow = selenium.browserbot.getCurrentWindow();
-    if (testWindow.wrappedJSObject) {
-      testWindow = testWindow.wrappedJSObject;
-    }
+  if (testWindow.wrappedJSObject) {
+    testWindow = testWindow.wrappedJSObject;
+  }
 
- if (testWindow.frames && testWindow.frames.length && testWindow.frames.length > 0) {
-      for (var i = 0; i < testWindow.frames.length; i++) {
-        var frame = testWindow.document.getElementById(testWindow.frames[i].name);
-        if (typeof frame !== 'undefined' && frame !== null) {
-          var styleClass = frame.getAttribute("class");
-          if (styleClass !== null && styleClass.indexOf(gadgetName) != -1) {
-            return selenium.browserbot.selectFrame(testWindow.frames[i].name);
-          }
-        }
-      }
- }
- return;
+  if (testWindow.frames && testWindow.frames.length && testWindow.frames.length > 0) {
+   for (var i = 0; i < testWindow.frames.length; i++) {
+     var frame = testWindow.document.getElementById(testWindow.frames[i].name);
+     if (typeof frame !== 'undefined' && frame !== null) {
+       var styleClass = frame.getAttribute("class");
+       if (styleClass !== null && styleClass.indexOf(gadgetName) != -1) {
+         return selenium.browserbot.selectFrame(testWindow.frames[i].name);
+       }
+     }
+   }
+  }
+  return;
 }
 
