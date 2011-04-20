@@ -214,7 +214,7 @@ public class TestSimpleBackend extends SQLRepositoryTestCase {
                 "/default-domain/workspaces/ws1/testMe"));
         assertNotNull(lock);
         // System.out.println("----> lock:" + lock);
-        assertTrue(lock.getOwner().equals("Administrator:"));
+        assertEquals(lock.getOwner(), "Administrator");
 
         item.uncheckOut("Administrator");
         backend.saveChanges(); // for cache invalidation
@@ -365,7 +365,7 @@ public class TestSimpleBackend extends SQLRepositoryTestCase {
         Lock lock = session.getLockInfo(new PathRef(
                 "/default-domain/workspaces/ws1/testMe"));
         assertNotNull(lock);
-        assertTrue(lock.getOwner().equals("Administrator:"));
+        assertEquals(lock.getOwner(), "Administrator");
 
         item.uncheckOut("Administrator");
         backend.saveChanges(); // for cache invalidation
