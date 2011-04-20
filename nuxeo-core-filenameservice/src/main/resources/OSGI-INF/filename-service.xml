@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.filename.FilenameService">
+
+  <implementation class="org.nuxeo.ecm.core.filename.FilenameServiceComponent" />
+  <documentation>
+    Component defining the implementation to use to manage
+    filenames.
+  </documentation>
+
+  <service>
+    <provide interface="org.nuxeo.ecm.core.api.filename.FilenameService" />
+  </service>
+
+  <extension-point name="filenameService">
+    <documentation>
+      Extension point defining the implementation for the management
+      of filenames. Example:
+
+      <code>
+        <service class="some-class" />
+      </code>
+
+      The provided class must implement
+      org.nuxeo.ecm.core.api.filename.FilenameService
+
+      The default implementation is
+      org.nuxeo.ecm.core.filename.FilenameServiceImpl
+    </documentation>
+
+    <object class="org.nuxeo.ecm.core.api.filename.FilenameServiceDescriptor" />
+
+  </extension-point>
+
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
+    point="listener">
+
+    <documentation>
+      Listener calling the FilenameService when document
+      events occur that would impact the filename, tile or name.
+    </documentation>
+    <listener name="filenameServiceListener" async="false"
+      postCommit="false" priority="300"
+      class="org.nuxeo.ecm.core.filename.FilenameServiceListener">
+      <event>aboutToCreate</event>
+      <event>beforeDocumentModification</event>
+    </listener>
+
+  </extension>
+
+</component>
