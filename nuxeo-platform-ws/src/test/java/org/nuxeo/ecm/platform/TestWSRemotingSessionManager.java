@@ -19,31 +19,40 @@
 
 package org.nuxeo.ecm.platform;
 
+import java.util.Arrays;
+import java.util.Comparator;
+
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.nuxeo.ecm.platform.api.ws.DocumentProperty;
+import org.nuxeo.ecm.platform.api.ws.DocumentSnapshot;
 import org.nuxeo.ecm.platform.api.ws.session.WSRemotingSession;
 import org.nuxeo.ecm.platform.api.ws.session.WSRemotingSessionManager;
 import org.nuxeo.ecm.platform.api.ws.session.WSRemotingSessionServiceDelegate;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.ecm.platform.ws.NuxeoRemotingBean;
 
 /**
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  *
  */
-public class TestWSRemotingSessionManager extends NXRuntimeTestCase {
+public class TestWSRemotingSessionManager extends SQLRepositoryTestCase {
 
     WSRemotingSessionManager service;
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
-
-        deployContrib("org.nuxeo.ecm.platform.tests",
-                "test-nxws_remoting_session_manager-framework.xml");
-        deployContrib("org.nuxeo.ecm.platform.tests",
-                "test-nxws_remoting_session_manager-platform-contrib.xml");
-
         service = WSRemotingSessionServiceDelegate.getRemoteWSRemotingSessionManager();
         assertNotNull(service);
+    }
+    
+    @Override
+    protected void deployRepositoryContrib() throws Exception {
+        super.deployRepositoryContrib();
+        deployBundle("org.nuxeo.ecm.platform.ws");
+        deployContrib("org.nuxeo.ecm.platform.tests",
+                "login-config.xml");
     }
 
     public void testGetSessionWithNullSid() {
@@ -92,4 +101,38 @@ public class TestWSRemotingSessionManager extends NXRuntimeTestCase {
         assertTrue(raises);
     }
 
+
+    public void testSnapshotProperties() throws ClientException {
+        openSession();
+        DocumentModel rootDocument = session.getRootDocument();
+        DocumentModel doc = session.createDocumentModel(
+                rootDocument.getPathAsString(), "youps", "File");
+        doc.setProperty("dublincore", "title", "huum");
+        doc = session.createDocument(doc);
+        session.save();
+        String docid = doc.getId();
+        NuxeoRemotingBean remoting = new NuxeoRemotingBean();
+        String sid = remoting.connect("Administrator", "Administrator");
+        DocumentSnapshot snapshot = remoting.getDocumentSnapshot(sid, docid);
+        DocumentProperty[] props = snapshot.getNoBlobProperties();
+        Comparator<DocumentProperty> propsComparator = new Comparator<DocumentProperty>() {
+
+            @Override
+            public int compare(DocumentProperty o1, DocumentProperty o2) {
+                return o1.getName().compareTo(o2.getName());
+            }
+            
+        };
+        Arrays.sort(props, propsComparator);
+        // check for system properties
+        int lci = Arrays.binarySearch(props, new DocumentProperty("lifeCycleState", null), propsComparator); 
+        assertTrue(lci > 0);
+        assertEquals(props[lci].toString(), "lifeCycleState:project");
+        // check for dublin core properties
+        int tti =  Arrays.binarySearch(props, new DocumentProperty("dc:title", null), propsComparator);
+        assertTrue(tti > 0);
+        assertEquals(props[tti].toString(), "dc:title:huum");
+
+    }
+    
 }

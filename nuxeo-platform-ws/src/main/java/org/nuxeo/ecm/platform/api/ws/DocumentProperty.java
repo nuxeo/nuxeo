@@ -80,4 +80,8 @@ public class DocumentProperty implements Serializable {
         this.value = value;
     }
 
+    @Override
+    public String toString() {
+        return name + ":" + value;
+    }
 }

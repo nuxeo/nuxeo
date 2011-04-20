@@ -5,6 +5,8 @@
   <service>
     <provide
         interface="org.nuxeo.ecm.platform.api.ws.session.WSRemotingSessionManager"/>
+    <provide
+        interface="org.nuxeo.ecm.platform.api.ws.DocumentLoader"/>
   </service>
 
   <documentation>Component which stores remote sessions that can be shared in
@@ -15,5 +17,15 @@
   </documentation>
 
   <implementation class="org.nuxeo.ecm.platform.ws.session.WSRemotingSessionManagerImpl"/>
+
+ <extension-point name="loaders">
+    <object class="org.nuxeo.ecm.platform.api.ws.DocumentLoaderDescriptor"/>
+ </extension-point>
+ 
+ <extension target="org.nuxeo.ecm.platform.ws.session.WSRemotingSessionManagerImpl"
+      point="loaders">
+    <loader name="state" class="org.nuxeo.ecm.platform.ws.DocumentStateLoader"/>
+    <loader name="schema" class="org.nuxeo.ecm.platform.ws.DocumentSchemaLoader" />
+ </extension>
 
 </component>

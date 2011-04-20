@@ -54,6 +54,7 @@ import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.platform.api.ws.DocumentBlob;
 import org.nuxeo.ecm.platform.api.ws.DocumentDescriptor;
+import org.nuxeo.ecm.platform.api.ws.DocumentLoader;
 import org.nuxeo.ecm.platform.api.ws.DocumentProperty;
 import org.nuxeo.ecm.platform.api.ws.DocumentSnapshot;
 import org.nuxeo.ecm.platform.api.ws.NuxeoRemoting;
@@ -252,19 +253,13 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
             WSRemotingSession rs) throws ClientException {
 
         List<DocumentProperty> props = new ArrayList<DocumentProperty>();
-        if (doc != null) {
-            String[] schemas = doc.getSchemas();
-            for (String schema : schemas) {
-                DataModel dm = doc.getDataModel(schema);
-                Map<String, Object> map = dm.getMap();
-                for (Map.Entry<String, Object> entry : map.entrySet()) {
-                    collectNoBlobProperty("", entry.getKey(), entry.getValue(),
-                            props);
-                }
-            }
+        if (doc != null)  {
+            DocumentLoader loader = Framework.getLocalService(DocumentLoader.class);
+            loader.fillProperties(doc, props, rs);
         }
         return props.toArray(new DocumentProperty[props.size()]);
     }
+    
 
     public DocumentDescriptor getCurrentVersion(
             @WebParam(name = "sessionId") String sid,
@@ -398,32 +393,6 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
                 } // TODO: use decode method from field type?
             }
             props.add(new DocumentProperty(prefix + name, strValue));
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    protected void collectNoBlobProperty(String prefix, String name,
-            Object value, List<DocumentProperty> props) throws ClientException {
-        if (value instanceof Map) {
-            Map<String, Object> map = (Map<String, Object>) value;
-            prefix = prefix + name + '/';
-            for (Map.Entry<String, Object> entry : map.entrySet()) {
-                collectNoBlobProperty(prefix, entry.getKey(), entry.getValue(),
-                        props);
-            }
-        } else if (value instanceof List) {
-            prefix = prefix + name + '/';
-            List<Object> list = (List<Object>) value;
-            for (int i = 0, len = list.size(); i < len; i++) {
-                collectNoBlobProperty(prefix, String.valueOf(i), list.get(i),
-                        props);
-            }
-        } else if (!(value instanceof Blob)) {
-            if (value == null) {
-                props.add(new DocumentProperty(prefix + name, null));
-            } else {
-                collectProperty(prefix, name, value, props);
-            }
         }
     }
 
