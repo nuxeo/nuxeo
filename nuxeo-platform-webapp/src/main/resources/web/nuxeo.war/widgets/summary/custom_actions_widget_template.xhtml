@@ -10,7 +10,9 @@
 <nxu:set var="actions"
   value="#{webActions.getActionsList(category)}"
   cache="true">
+
   <c:if test="#{not empty actions}">
+
     <c:choose>
       <c:when test="#{widget.translated}">
         <c:if test="#{!empty widget.label}">
@@ -37,9 +39,10 @@
         </c:if>
       </c:otherwise>
     </c:choose>
+
     <div class="actions_block">
       <c:choose>
-        <c:when test="#{widgetProperty_showButtons}">
+        <c:when test="#{widgetProperty_display == 'buttons'}">
           <nxu:dataList layout="simple"
             var="action" value="#{actions}">
             <nxh:commandButton action="#{action.getLink()}"
@@ -49,7 +52,17 @@
               styleClass="button" />
           </nxu:dataList>
         </c:when>
-        <c:otherwise>
+        <c:when test="#{widgetProperty_display == 'links'}">
+          <nxu:dataList layout="simple"
+            var="action" value="#{actions}">
+            <nxh:commandLink action="#{action.getLink()}"
+              immediate="#{action.immediate}"
+              id="#{widget.id}_#{action.id}"
+              value="#{messages[action.label]}"
+              styleClass="button" />
+          </nxu:dataList>
+        </c:when>
+        <c:when test="#{widgetProperty_display == 'icons'}">
           <nxu:dataList layout="simple"
             var="action" value="#{actions}">
             <nxh:commandLink action="#{action.getLink()}"
@@ -61,10 +74,28 @@
                 styleClass="smallIcon" />
             </nxh:commandLink>
           </nxu:dataList>
+        </c:when>
+        <c:otherwise>
+          <nxu:dataList layout="simple"
+            var="action" value="#{actions}">
+            #{action.id}
+            <nxh:commandLink action="#{action.getLink()}"
+              id="#{widget.id}_#{action.id}"
+              immediate="#{action.immediate}">
+              <h:graphicImage value="#{action.icon}"
+                title="#{messages[action.label]}"
+                alt="#{messages[action.label]}"
+                styleClass="smallIcon"
+                rendered="#{not empty action.icon}" />
+              <h:outputText  value=" #{messages[action.label]}" />
+            </nxh:commandLink>
+          </nxu:dataList>
         </c:otherwise>
       </c:choose>
     </div>
+
   </c:if>
+
 </nxu:set>
 </nxu:set>
 
