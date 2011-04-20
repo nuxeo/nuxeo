@@ -14,37 +14,37 @@
  * Contributors:
  *     Florent Guillaume
  */
-package org.nuxeo.ecm.core.filename;
+package org.nuxeo.ecm.core.filesystem;
 
 import java.util.LinkedList;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
-import org.nuxeo.ecm.core.api.filename.FilenameService;
-import org.nuxeo.ecm.core.api.filename.FilenameServiceDescriptor;
+import org.nuxeo.ecm.core.api.filesystem.FilesystemService;
+import org.nuxeo.ecm.core.api.filesystem.FilesystemServiceDescriptor;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
- * Central component for {@link FilenameService} registration and lookup.
+ * Central component for {@link FilesystemService} registration and lookup.
  */
-public class FilenameServiceComponent extends DefaultComponent {
+public class FilesystemServiceComponent extends DefaultComponent {
 
-    private static final Log log = LogFactory.getLog(FilenameServiceComponent.class);
+    private static final Log log = LogFactory.getLog(FilesystemServiceComponent.class);
 
-    public static final String XP = "filenameService";
+    public static final String XP = "filesystemService";
 
-    protected LinkedList<Class<? extends FilenameService>> contribs;
+    protected LinkedList<Class<? extends FilesystemService>> contribs;
 
-    protected FilenameService service;
+    protected FilesystemService service;
 
     protected boolean recompute;
 
     @Override
     public void activate(ComponentContext context) throws Exception {
-        contribs = new LinkedList<Class<? extends FilenameService>>();
+        contribs = new LinkedList<Class<? extends FilesystemService>>();
         recompute = true;
         service = null;
     }
@@ -63,11 +63,11 @@ public class FilenameServiceComponent extends DefaultComponent {
             log.error("Unknown extension point " + xp);
             return;
         }
-        if (!(contrib instanceof FilenameServiceDescriptor)) {
+        if (!(contrib instanceof FilesystemServiceDescriptor)) {
             log.error("Invalid contribution: " + contrib.getClass().getName());
             return;
         }
-        FilenameServiceDescriptor desc = (FilenameServiceDescriptor) contrib;
+        FilesystemServiceDescriptor desc = (FilesystemServiceDescriptor) contrib;
         Class<?> klass;
         try {
             klass = Class.forName(desc.className);
@@ -75,11 +75,11 @@ public class FilenameServiceComponent extends DefaultComponent {
             log.error("Invalid contribution class: " + desc.className);
             return;
         }
-        if (!FilenameService.class.isAssignableFrom(klass)) {
+        if (!FilesystemService.class.isAssignableFrom(klass)) {
             log.error("Invalid contribution class: " + desc.className);
             return;
         }
-        contribs.add((Class<FilenameService>) klass);
+        contribs.add((Class<FilesystemService>) klass);
         log.info("Registered filename service: " + desc.className);
         recompute = true;
     }
@@ -90,17 +90,17 @@ public class FilenameServiceComponent extends DefaultComponent {
         if (!XP.equals(xp)) {
             return;
         }
-        if (!(contrib instanceof FilenameServiceDescriptor)) {
+        if (!(contrib instanceof FilesystemServiceDescriptor)) {
             return;
         }
-        FilenameServiceDescriptor desc = (FilenameServiceDescriptor) contrib;
+        FilesystemServiceDescriptor desc = (FilesystemServiceDescriptor) contrib;
         Class<?> klass;
         try {
             klass = Class.forName(desc.className);
         } catch (ClassNotFoundException e) {
             return;
         }
-        if (!klass.isAssignableFrom(FilenameService.class)) {
+        if (!klass.isAssignableFrom(FilesystemService.class)) {
             return;
         }
         contribs.remove(klass);
@@ -112,9 +112,9 @@ public class FilenameServiceComponent extends DefaultComponent {
         if (!recompute) {
             return;
         }
-        Class<? extends FilenameService> klass;
+        Class<? extends FilesystemService> klass;
         if (contribs.isEmpty()) {
-            klass = FilenameServiceImpl.class;
+            klass = FilesystemServiceImpl.class;
         } else {
             klass = contribs.getLast();
         }
@@ -131,7 +131,7 @@ public class FilenameServiceComponent extends DefaultComponent {
     @Override
     @SuppressWarnings("unchecked")
     public <T> T getAdapter(Class<T> adapter) {
-        if (adapter.isAssignableFrom(FilenameService.class)) {
+        if (adapter.isAssignableFrom(FilesystemService.class)) {
             recompute();
             return (T) service;
         }

@@ -9,8 +9,8 @@
     <version>5.4.2-SNAPSHOT</version>
   </parent>
 
-  <artifactId>nuxeo-core-filenameservice</artifactId>
-  <name>Nuxeo Core Filename Service</name>
+  <artifactId>nuxeo-core-filesystem</artifactId>
+  <name>Nuxeo Core Filesystem Service</name>
 
   <dependencies>
     <dependency>

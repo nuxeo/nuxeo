@@ -14,7 +14,7 @@
  * Contributors:
  *     Florent Guillaume
  */
-package org.nuxeo.ecm.core.filename;
+package org.nuxeo.ecm.core.filesystem;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -22,7 +22,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
-import org.nuxeo.ecm.core.api.filename.FilenameService;
+import org.nuxeo.ecm.core.api.filesystem.FilesystemService;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
@@ -31,11 +31,11 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * Listener to synchronize title, filename and name.
  * <p>
- * This depends on the configured {@link FilenameService}.
+ * This depends on the configured {@link FilesystemService}.
  */
-public class FilenameServiceListener implements EventListener {
+public class FilesystemServiceListener implements EventListener {
 
-    private static final Log log = LogFactory.getLog(FilenameServiceListener.class);
+    private static final Log log = LogFactory.getLog(FilesystemServiceListener.class);
 
     @Override
     public void handleEvent(Event event) throws ClientException {
@@ -55,14 +55,14 @@ public class FilenameServiceListener implements EventListener {
 
     protected void set(DocumentModel doc, DocumentModel oldDoc)
             throws ClientException {
-        FilenameService service;
+        FilesystemService service;
         try {
-            service = Framework.getService(FilenameService.class);
+            service = Framework.getService(FilesystemService.class);
         } catch (Exception e) {
             service = null;
         }
         if (service == null) {
-            log.error("FilenameService not found");
+            log.error("FilesystemService not found");
             return;
         }
         service.set(doc, oldDoc);

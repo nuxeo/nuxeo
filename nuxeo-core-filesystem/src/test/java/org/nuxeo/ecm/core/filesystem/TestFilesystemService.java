@@ -14,31 +14,32 @@
  * Contributors:
  *     Florent Guillaume
  */
-package org.nuxeo.ecm.core.filename;
+package org.nuxeo.ecm.core.filesystem;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.filename.FilenameService;
+import org.nuxeo.ecm.core.api.filesystem.FilesystemService;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.model.PropertyException;
+import org.nuxeo.ecm.core.filesystem.FilesystemServiceImpl;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.runtime.api.Framework;
 
-public class TestFilenameService extends SQLRepositoryTestCase {
+public class TestFilesystemService extends SQLRepositoryTestCase {
 
-    protected FilenameService service;
+    protected FilesystemService service;
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        deployBundle("org.nuxeo.ecm.core.filenameservice");
-        service = Framework.getService(FilenameService.class);
+        deployBundle("org.nuxeo.ecm.core.filesystem");
+        service = Framework.getService(FilesystemService.class);
         assertNotNull(service);
     }
 
     public void testClean() throws Exception {
-        FilenameServiceImpl s = new FilenameServiceImpl();
+        FilesystemServiceImpl s = new FilesystemServiceImpl();
         assertNull(s.clean("-"));
         assertNull(s.clean("/\\-,?"));
         assertEquals("foo", s.clean("foo"));
@@ -50,7 +51,7 @@ public class TestFilenameService extends SQLRepositoryTestCase {
 
     @SuppressWarnings("static-access")
     public void testGetSuffix() {
-        FilenameServiceImpl s = new FilenameServiceImpl();
+        FilesystemServiceImpl s = new FilesystemServiceImpl();
         assertEquals(".c", s.getSuffix("foo.c"));
         assertEquals(".cc", s.getSuffix("foo.cc"));
         assertEquals(".bar", s.getSuffix("foo.bar"));

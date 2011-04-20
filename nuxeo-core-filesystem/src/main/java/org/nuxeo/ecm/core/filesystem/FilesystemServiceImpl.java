@@ -14,7 +14,7 @@
  * Contributors:
  *     Florent Guillaume
  */
-package org.nuxeo.ecm.core.filename;
+package org.nuxeo.ecm.core.filesystem;
 
 import java.util.List;
 import java.util.regex.Pattern;
@@ -27,16 +27,16 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.api.filename.FilenameService;
+import org.nuxeo.ecm.core.api.filesystem.FilesystemService;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 
 /**
- * Default implementation of the {@link FilenameService}.
+ * Default implementation of the {@link FilesystemService}.
  * <p>
  * Assumes that URL path components correspond to Nuxeo document names.
  */
-public class FilenameServiceImpl implements FilenameService {
+public class FilesystemServiceImpl implements FilesystemService {
 
     @Override
     public String getFilename(DocumentModel doc) throws ClientException {

@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-SymbolicName: org.nuxeo.ecm.core.filenameservice;singleton:=true
-Bundle-Name: Nuxeo Core Filename Service
+Bundle-SymbolicName: org.nuxeo.ecm.core.filesystem;singleton:=true
+Bundle-Name: Nuxeo Core Filesystem Service
 Bundle-Version: 5.4.2.qualifier
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
@@ -9,4 +9,4 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.nuxeo.ecm.core.api;visibility:=reexport,
  org.nuxeo.ecm.core;visibility:=reexport,
  org.nuxeo.ecm.core.event;visibility:=reexport
-Nuxeo-Component: OSGI-INF/filename-service.xml
+Nuxeo-Component: OSGI-INF/filesystem-service.xml

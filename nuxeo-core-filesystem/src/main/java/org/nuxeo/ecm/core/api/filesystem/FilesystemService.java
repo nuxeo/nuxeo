@@ -14,7 +14,7 @@
  * Contributors:
  *     Florent Guillaume
  */
-package org.nuxeo.ecm.core.api.filename;
+package org.nuxeo.ecm.core.api.filesystem;
 
 import java.util.List;
 
@@ -41,7 +41,7 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
  *
  * @since 5.4.1
  */
-public interface FilenameService {
+public interface FilesystemService {
 
     /**
      * Property for the main file blob.

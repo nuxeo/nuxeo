@@ -14,7 +14,7 @@
  * Contributors:
  *     Florent Guillaume
  */
-package org.nuxeo.ecm.core.api.filename;
+package org.nuxeo.ecm.core.api.filesystem;
 
 import java.io.Serializable;
 
@@ -22,7 +22,7 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 @XObject("service")
-public class FilenameServiceDescriptor implements Serializable {
+public class FilesystemServiceDescriptor implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
