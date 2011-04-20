@@ -22,6 +22,7 @@ import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.jsf.OperationHelper;
+import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
  * Creates a document (equivalent to clicking on the 'create' button on a
@@ -32,9 +33,8 @@ import org.nuxeo.ecm.automation.jsf.OperationHelper;
 @Operation(id = CreateDocumentInUI.ID, category = Constants.CAT_UI, requires = Constants.SEAM_CONTEXT, label = "Create Document in UI", description = "Creates a document in UI, "
         + "as if user was hitting the 'Create' button on a the document creation form. "
         + "It assumes that the contextual 'changeableDocument' document from the Seam context has been updated "
-        + "to hold properties defined for creation. It will navigate to the newly created document context, and "
-        + "return its view as outcome. The newly created document can then be retrieved by fetching the current "
-        + "document.")
+        + "to hold properties defined for creation. It will navigate to the newly created document context, "
+        + "set its view as outcome, and return the newly created document.")
 public class CreateDocumentInUI {
 
     public static final String ID = "Seam.CreateDocumentInUI";
@@ -43,8 +43,10 @@ public class CreateDocumentInUI {
     protected OperationContext ctx;
 
     @OperationMethod
-    public String run() throws Exception {
-        return OperationHelper.getDocumentActions().saveDocument();
+    public DocumentModel run() throws Exception {
+        ctx.put(SeamOperation.OUTCOME,
+                OperationHelper.getDocumentActions().saveDocument());
+        return OperationHelper.getNavigationContext().getCurrentDocument();
     }
 
 }

@@ -22,6 +22,7 @@ import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.jsf.OperationHelper;
+import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
  * Saves a document (equivalent to clicking on the 'save' button on a document
@@ -32,8 +33,8 @@ import org.nuxeo.ecm.automation.jsf.OperationHelper;
 @Operation(id = SaveDocumentInUI.ID, category = Constants.CAT_UI, requires = Constants.SEAM_CONTEXT, label = "Save Document in UI", description = "Saves a document in UI, "
         + "as if user was hitting the 'Save' button on a the document edition form. "
         + "It assumes that the contextual 'currentDocument' document from the Seam context has been updated "
-        + "to hold the new properties. It will navigate to the edited document context, and "
-        + "return its view as outcome.")
+        + "to hold the new properties. It will navigate to the edited document context, "
+        + "set its view as outcome, and return it.")
 public class SaveDocumentInUI {
 
     public static final String ID = "Seam.SaveDocumentInUI";
@@ -42,8 +43,10 @@ public class SaveDocumentInUI {
     protected OperationContext ctx;
 
     @OperationMethod
-    public String run() throws Exception {
-        return OperationHelper.getDocumentActions().updateCurrentDocument();
+    public DocumentModel run() throws Exception {
+        ctx.put(SeamOperation.OUTCOME,
+                OperationHelper.getDocumentActions().updateCurrentDocument());
+        return OperationHelper.getNavigationContext().getCurrentDocument();
     }
 
 }
