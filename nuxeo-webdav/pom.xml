@@ -9,7 +9,6 @@
     <version>5.4.2-SNAPSHOT</version>
   </parent>
 
-  <groupId>org.nuxeo.ecm.webdav</groupId>
   <artifactId>nuxeo-webdav</artifactId>
   <name>Nuxeo WebDAV</name>
   <description>JAX-RS based WebDAV interface to Nuxeo</description>

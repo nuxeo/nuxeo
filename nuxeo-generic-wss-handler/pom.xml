@@ -9,7 +9,6 @@
     <version>5.4.2-SNAPSHOT</version>
   </parent>
 
-  <groupId>org.nuxeo.ecm.platform</groupId>
   <artifactId>nuxeo-generic-wss-handler</artifactId>
   <name>Nuxeo Generic WSS bindings</name>
 

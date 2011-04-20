@@ -9,7 +9,6 @@
     <version>5.4.2-SNAPSHOT</version>
   </parent>
 
-  <groupId>org.nuxeo.ecm.platform</groupId>
   <artifactId>nuxeo-filesystem-connectors</artifactId>
   <name>Nuxeo Filesystem Connectors</name>
   <packaging>pom</packaging>
