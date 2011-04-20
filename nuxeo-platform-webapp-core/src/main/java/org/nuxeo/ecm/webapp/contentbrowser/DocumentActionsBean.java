@@ -351,7 +351,6 @@ public class DocumentActionsBean extends InputController implements
         }
     }
 
-    @Deprecated
     public String updateCurrentDocument() throws ClientException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         return updateDocument(currentDocument);
