@@ -15,6 +15,9 @@
 
 package org.nuxeo.ecm.platform.filemanager.service.extension;
 
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.ADD_CHILDREN;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ_PROPERTIES;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,9 +34,6 @@ import org.nuxeo.ecm.platform.filemanager.service.FileManagerService;
 import org.nuxeo.ecm.platform.types.Type;
 import org.nuxeo.ecm.platform.types.TypeManager;
 import org.nuxeo.runtime.api.Framework;
-
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.ADD_CHILDREN;
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ_PROPERTIES;
 
 /**
  * File importer abstract class.
