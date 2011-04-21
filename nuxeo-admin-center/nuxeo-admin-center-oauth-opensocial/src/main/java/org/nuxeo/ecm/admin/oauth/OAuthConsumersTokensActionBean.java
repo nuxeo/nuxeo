@@ -14,6 +14,8 @@ import org.nuxeo.ecm.platform.oauth.tokens.OAuthTokenStoreImpl;
 @Scope(ScopeType.CONVERSATION)
 public class OAuthConsumersTokensActionBean extends DirectoryBasedEditor {
 
+    private static final long serialVersionUID = 1L;
+
     @Override
     protected Map<String, Serializable> getQueryFilter() {
         Map<String, Serializable> filter = new HashMap<String, Serializable>();

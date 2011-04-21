@@ -10,7 +10,10 @@ import org.nuxeo.ecm.platform.oauth.providers.OAuthServiceProviderRegistryImpl;
 @Scope(ScopeType.CONVERSATION)
 public class OAuthServiceProvidersActionBean extends DirectoryBasedEditor {
 
+    private static final long serialVersionUID = 1L;
+
     protected static final String DIRECTORY = OAuthServiceProviderRegistryImpl.DIRECTORY_NAME;
+
     protected static final String SCHEMA = NuxeoOAuthServiceProvider.SCHEMA;
 
     @Override

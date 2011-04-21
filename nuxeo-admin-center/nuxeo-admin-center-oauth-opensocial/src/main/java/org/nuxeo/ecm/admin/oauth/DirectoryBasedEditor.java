@@ -12,16 +12,17 @@ import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.api.Framework;
 
-public abstract class DirectoryBasedEditor {
+public abstract class DirectoryBasedEditor implements Serializable {
 
     protected DocumentModelList entries;
+
     protected DocumentModel editableEntry;
+
     protected DocumentModel creationEntry;
 
     protected abstract String getDirectoryName();
 
     protected abstract String getSchemaName();
-
 
     protected boolean showAddForm = false;
 
@@ -30,18 +31,19 @@ public abstract class DirectoryBasedEditor {
     }
 
     public void toggleShowAddForm() {
-        showAddForm = ! showAddForm;
+        showAddForm = !showAddForm;
     }
 
     public DocumentModel getCreationEntry() throws Exception {
-        if (creationEntry==null) {
-            creationEntry = BaseSession.createEntryModel(null, getSchemaName(), null, null);
+        if (creationEntry == null) {
+            creationEntry = BaseSession.createEntryModel(null, getSchemaName(),
+                    null, null);
         }
         return creationEntry;
     }
 
     public void refresh() {
-        entries=null;
+        entries = null;
     }
 
     public void createEntry() throws Exception {
@@ -71,7 +73,6 @@ public abstract class DirectoryBasedEditor {
     public DocumentModel getEditableEntry() {
         return editableEntry;
     }
-
 
     protected Map<String, Serializable> getQueryFilter() {
         return Collections.emptyMap();
@@ -125,7 +126,7 @@ public abstract class DirectoryBasedEditor {
         Session session = ds.open(getDirectoryName());
         try {
             session.deleteEntry(entryId);
-            if (editableEntry!=null && editableEntry.getId().equals(entryId)) {
+            if (editableEntry != null && editableEntry.getId().equals(entryId)) {
                 editableEntry = null;
             }
             entries = null;
