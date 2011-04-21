@@ -1239,6 +1239,10 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
                 "testfolder1_Title");
         checkReturnedValue(PropertyIds.ALLOWED_CHILD_OBJECT_TYPE_IDS, null,
                 "Folder", "testfolder1_Title");
+        checkReturnedValue(NXQL.ECM_MIXINTYPE, NOT_NULL, "Folder",
+                "testfolder1_Title");
+        checkReturnedValue(NXQL.ECM_LIFECYCLESTATE, NOT_NULL, "Folder",
+                "testfolder1_Title");
 
         // ----- Document -----
 
@@ -1250,6 +1254,10 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         checkReturnedValue(PropertyIds.VERSION_SERIES_ID, NOT_NULL);
         checkReturnedValue(PropertyIds.IS_VERSION_SERIES_CHECKED_OUT,
                 Boolean.TRUE);
+        checkReturnedValue(NXQL.ECM_ISVERSION, Boolean.FALSE);
+        checkReturnedValue(NXQL.ECM_MIXINTYPE, NOT_NULL);
+        checkReturnedValue(NXQL.ECM_LIFECYCLESTATE, NOT_NULL);
+        checkReturnedValue(NuxeoTypeHelper.NX_ECM_DIGEST, NOT_NULL);
         checkReturnedValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_ID, NOT_NULL);
         checkReturnedValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_BY, USERNAME);
         checkReturnedValue(PropertyIds.CHECKIN_COMMENT, null);
