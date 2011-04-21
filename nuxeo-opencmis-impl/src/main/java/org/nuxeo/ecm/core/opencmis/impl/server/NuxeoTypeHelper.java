@@ -102,6 +102,8 @@ public class NuxeoTypeHelper {
 
     public static final String NX_REL_TARGET = "relation:target";
 
+    public static final String NX_ECM_DIGEST = "ecm:contentStreamDigest";
+
     private static final String NAMESPACE = "http://ns.nuxeo.org/cmis/type/";
 
     protected AbstractTypeDefinition t;
@@ -403,10 +405,14 @@ public class NuxeoTypeHelper {
                 PropertyIds.CONTENT_STREAM_ID, "Content Stream ID",
                 PropertyType.ID, Cardinality.SINGLE, Updatability.READONLY,
                 false, false, false));
+        // Nuxeo system properties
+        // TODO: make digest queryable at some point
+        t.addPropertyDefinition(newPropertyDefinition(NX_ECM_DIGEST,
+                "Content Stream Digest", PropertyType.STRING, Cardinality.SINGLE,
+                Updatability.READONLY, false, false, false));
         t.addPropertyDefinition(newPropertyDefinition(NXQL.ECM_ISVERSION,
                 "Is Checkedin Version", PropertyType.BOOLEAN, Cardinality.SINGLE,
                 Updatability.READONLY, false, false, true));
-        // TODO: add a new property for the digest of the content stream
     }
 
     protected static PropertyDefinition<?> newPropertyDefinition(String id,

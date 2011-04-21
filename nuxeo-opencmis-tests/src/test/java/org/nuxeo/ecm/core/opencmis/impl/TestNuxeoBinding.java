@@ -80,13 +80,13 @@ import org.apache.chemistry.opencmis.commons.spi.RepositoryService;
 import org.apache.chemistry.opencmis.commons.spi.VersioningService;
 import org.apache.chemistry.opencmis.server.support.query.CalendarHelper;
 import org.apache.commons.lang.StringUtils;
-import org.apache.poi.hssf.record.formula.eval.NameXEval;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoRepository;
+import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoTypeHelper;
 import org.nuxeo.ecm.core.opencmis.tests.Helper;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.runtime.api.Framework;
@@ -271,6 +271,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         assertTrue(type.getPropertyDefinitions().containsKey("ecm:currentLifeCycleState"));
         assertTrue(type.getPropertyDefinitions().containsKey("ecm:mixinType"));
         assertFalse(type.getPropertyDefinitions().containsKey("ecm:isCheckedInVersion"));
+        assertFalse(type.getPropertyDefinitions().containsKey("ecm:contentStreamDigest"));
 
         type = repoService.getTypeDefinition(repositoryId, "Folder", null);
         assertEquals(Boolean.TRUE, type.isCreatable());
@@ -279,6 +280,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         assertTrue(type.getPropertyDefinitions().containsKey("ecm:currentLifeCycleState"));
         assertTrue(type.getPropertyDefinitions().containsKey("ecm:mixinType"));
         assertFalse(type.getPropertyDefinitions().containsKey("ecm:isCheckedInVersion"));
+        assertFalse(type.getPropertyDefinitions().containsKey("ecm:contentStreamDigest"));
 
         type = repoService.getTypeDefinition(repositoryId, "cmis:document",
                 null);
@@ -291,6 +293,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         assertTrue(type.getPropertyDefinitions().containsKey("ecm:currentLifeCycleState"));
         assertTrue(type.getPropertyDefinitions().containsKey("ecm:mixinType"));
         assertTrue(type.getPropertyDefinitions().containsKey("ecm:isCheckedInVersion"));
+        assertTrue(type.getPropertyDefinitions().containsKey("ecm:contentStreamDigest"));
 
         try {
             // nosuchtype, Document is mapped to cmis:document
@@ -305,6 +308,10 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         assertEquals("cmis:document", type.getParentTypeId());
         assertEquals("Note", type.getLocalName());
         assertTrue(type.getPropertyDefinitions().containsKey("note"));
+        assertTrue(type.getPropertyDefinitions().containsKey("ecm:currentLifeCycleState"));
+        assertTrue(type.getPropertyDefinitions().containsKey("ecm:mixinType"));
+        assertTrue(type.getPropertyDefinitions().containsKey("ecm:isCheckedInVersion"));
+        assertTrue(type.getPropertyDefinitions().containsKey("ecm:contentStreamDigest"));
     }
 
     public List<String> getIds(TypeDefinitionList types) {
@@ -465,6 +472,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         assertEquals(Arrays.asList("Commentable", "Downloadable",
                 "HasRelatedText", "Publishable", "Versionable"),
                 getValues(data, NXQL.ECM_MIXINTYPE));
+        assertEquals(null, getString(data, NuxeoTypeHelper.NX_ECM_DIGEST));
 
         // creation of a cmis:document (helps simple clients)
 
@@ -568,6 +576,8 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         ObjectData data = getObject(id);
         assertEquals(id, data.getId());
         assertEquals("doc1.txt", getString(data, PropertyIds.NAME));
+        assertEquals("bde9eb59c76cb432a0f8d02057a19923",
+                getString(data, NuxeoTypeHelper.NX_ECM_DIGEST));
         cs = objService.getContentStream(repositoryId, id, null, null, null,
                 null);
         assertNotNull(cs);
@@ -613,6 +623,9 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
     @Test
     public void testContentStream() throws Exception {
         ObjectData ob = getObjectByPath("/testfolder1/testfile1");
+        assertEquals("testfile1_Title", getString(ob, PropertyIds.NAME));
+        assertEquals("bde9eb59c76cb432a0f8d02057a19923",
+                getString(ob, NuxeoTypeHelper.NX_ECM_DIGEST));
 
         // get stream
         ContentStream cs = objService.getContentStream(repositoryId,

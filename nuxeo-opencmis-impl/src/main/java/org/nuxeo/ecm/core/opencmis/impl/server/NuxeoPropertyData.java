@@ -56,6 +56,7 @@ import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.schema.types.Type;
+import org.nuxeo.ecm.core.storage.sql.coremodel.SQLBlob;
 
 /**
  * Nuxeo implementation of an object's property, backed by a property of a
@@ -176,6 +177,9 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
         } else if (PropertyIds.CONTENT_STREAM_LENGTH.equals(name)) {
             return (PropertyData<U>) new NuxeoPropertyDataContentStreamLength(
                     (PropertyDefinition<BigInteger>) pd, doc);
+        } else if (NuxeoTypeHelper.NX_ECM_DIGEST.equals(name)) {
+            return (PropertyData<U>) new NuxeoPropertyDataContentStreamDigest(
+                    (PropertyDefinition<String>) pd, doc);
         } else if (PropertyIds.CONTENT_STREAM_MIME_TYPE.equals(name)) {
             return (PropertyData<U>) new NuxeoPropertyDataContentStreamMimeType(
                     (PropertyDefinition<String>) pd, doc);
@@ -627,6 +631,29 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
         public BigInteger getFirstValue() {
             Blob blob = getBlob(doc);
             return blob == null ? null : BigInteger.valueOf(blob.getLength());
+        }
+    }
+
+    /**
+     * Property for ecm:contentStreamDigest.
+     */
+    public static class NuxeoPropertyDataContentStreamDigest extends
+            NuxeoPropertyDataBase<String> implements PropertyString {
+
+        protected NuxeoPropertyDataContentStreamDigest(
+                PropertyDefinition<String> propertyDefinition,
+                DocumentModel doc) {
+            super(propertyDefinition, doc);
+        }
+
+        @Override
+        public String getFirstValue() {
+            Blob blob = getBlob(doc);
+            if (blob instanceof SQLBlob) {
+                SQLBlob sqlBlob = ((SQLBlob) blob);
+                return sqlBlob.getBinary().getDigest();
+            }
+            return null;
         }
     }
 
