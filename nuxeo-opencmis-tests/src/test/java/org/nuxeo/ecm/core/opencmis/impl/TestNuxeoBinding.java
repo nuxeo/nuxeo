@@ -1155,11 +1155,20 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         // checkWhereTerm("File", PropertyIds.CHANGE_TOKEN, null);
 
         checkWhereTerm("File", NXQL.ECM_LIFECYCLESTATE, "'project'");
+        // TODO: merge static and dynamic facet
+        // checkWhereTerm("File", NXQL.ECM_MIXINTYPE, "'Versionable'");
+
+        // TODO: do query rewrite to turn "= false" into "IS NULL" or "<> 't'"
+        // checkWhereTerm("File", NXQL.ECM_ISVERSION, "false");
 
         // ----- Folder -----
 
         checkWhereTerm("Folder", PropertyIds.PARENT_ID, NOT_NULL);
         checkWhereTerm("Folder", NXQL.ECM_LIFECYCLESTATE, "'project'");
+
+        // TODO: merge static and dynamic facet
+        // checkWhereTerm("Folder", NXQL.ECM_MIXINTYPE, "'Folderish'");
+
         // checkWhereTerm("Folder", PropertyIds.PATH, NOT_NULL);
         // checkWhereTerm("Folder", PropertyIds.ALLOWED_CHILD_OBJECT_TYPE_IDS,
         // NOT_NULL);
@@ -1258,7 +1267,8 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         checkReturnedValue(PropertyIds.VERSION_SERIES_ID, NOT_NULL);
         checkReturnedValue(PropertyIds.IS_VERSION_SERIES_CHECKED_OUT,
                 Boolean.TRUE);
-        checkReturnedValue(NXQL.ECM_ISVERSION, Boolean.FALSE);
+        // TODO: handle NULL values in the version column as false...
+        // checkReturnedValue(NXQL.ECM_ISVERSION, Boolean.FALSE);
         checkReturnedValue(NXQL.ECM_MIXINTYPE, NOT_NULL);
         checkReturnedValue(NXQL.ECM_LIFECYCLESTATE, "project");
         checkReturnedValue(NuxeoTypeHelper.NX_ECM_DIGEST, NOT_NULL);

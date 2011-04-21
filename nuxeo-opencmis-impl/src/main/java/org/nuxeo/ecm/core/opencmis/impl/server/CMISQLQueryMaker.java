@@ -755,6 +755,14 @@ public class CMISQLQueryMaker implements QueryMaker {
             return database.getTable(model.VERSION_TABLE_NAME).getColumn(
                     model.VERSION_LABEL_KEY);
         }
+        if (id.equals(NXQL.ECM_ISVERSION)) {
+            return database.getTable(model.HIER_TABLE_NAME).getColumn(
+                    model.MAIN_IS_VERSION_KEY);
+        }
+        if (id.equals(NXQL.ECM_MIXINTYPE)) {
+            return database.getTable(model.HIER_TABLE_NAME).getColumn(
+                    model.MAIN_MIXIN_TYPES_KEY);
+        }
         if (id.equals(NXQL.ECM_LIFECYCLESTATE)) {
             return database.getTable(model.MISC_TABLE_NAME).getColumn(
                     model.MISC_LIFECYCLE_STATE_KEY);
