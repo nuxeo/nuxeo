@@ -19,6 +19,7 @@ package org.nuxeo.ecm.platform.routing.core.impl;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -45,6 +46,7 @@ import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteAlredayLockedEx
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteNotLockedException;
 import org.nuxeo.ecm.platform.routing.core.api.DocumentRoutingEngineService;
 import org.nuxeo.ecm.platform.routing.core.runner.CreateNewRouteInstanceUnrestricted;
+import org.nuxeo.ecm.platform.routing.core.runner.QueryDocumentRoutesForDocumentIdRunner;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -241,6 +243,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
         return null;
     }
 
+    @Override
     public List<DocumentRoute> getDocumentRoutesForAttachedDocument(
             CoreSession session, String attachedDocId) {
         List<DocumentRouteElement.ElementLifeCycleState> states = new ArrayList<DocumentRouteElement.ElementLifeCycleState>();
@@ -250,33 +253,29 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
                 states);
     }
 
+    @Override
     public List<DocumentRoute> getDocumentRoutesForAttachedDocument(
             CoreSession session, String attachedDocId,
             List<DocumentRouteElement.ElementLifeCycleState> states) {
-        DocumentModelList list = null;
-        StringBuilder statesString = new StringBuilder();
-        if (states != null && !states.isEmpty()) {
-            statesString.append(" ecm:currentLifeCycleState IN (");
-            for (DocumentRouteElement.ElementLifeCycleState state : states) {
-                statesString.append("'" + state.name() + "',");
-            }
-            statesString.deleteCharAt(statesString.length() - 1);
-            statesString.append(") AND");
-        }
-        String RELATED_TOUTES_QUERY = String.format(
-                " SELECT * FROM DocumentRoute WHERE " + statesString.toString()
-                        + " docri:participatingDocuments IN ('%s') ",
-                attachedDocId);
+        return getDocumentRoutesForAttachedDocument(session, attachedDocId, states, false);
+    }
+
+    @Override
+    public List<DocumentRoute> getDocumentRoutesForAttachedDocument(
+            CoreSession session, String attachedDocId,
+            List<DocumentRouteElement.ElementLifeCycleState> states, Boolean unrestricted) {
+        QueryDocumentRoutesForDocumentIdRunner runner = new QueryDocumentRoutesForDocumentIdRunner(
+                session, attachedDocId, states);
         try {
-            list = session.query(RELATED_TOUTES_QUERY);
+            if (unrestricted) {
+                runner.runUnrestricted();
+            } else  {
+                runner.run();
+            }
+            return runner.getRoutes();
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         }
-        List<DocumentRoute> routes = new ArrayList<DocumentRoute>();
-        for (DocumentModel model : list) {
-            routes.add(model.getAdapter(DocumentRoute.class));
-        }
-        return routes;
     }
 
     @Override

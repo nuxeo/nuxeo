@@ -23,6 +23,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement.ElementLifeCycleState;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteAlredayLockedException;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteNotLockedException;
 
@@ -161,6 +162,19 @@ public interface DocumentRoutingService {
      */
     List<DocumentRoute> getDocumentRoutesForAttachedDocument(
             CoreSession session, String attachedDocId);
+
+    /**
+     * Return the list of related {@link DocumentRoute} in a state for a given
+     * attached document.
+     *
+     * @param session The session used to query the {@link DocumentRoute}.
+     * @param states the list of states.
+     * @param unrestricted run the query unrestricted if true.
+     * @return A list of available {@link DocumentRoute}
+     */
+    List<DocumentRoute> getDocumentRoutesForAttachedDocument(
+            CoreSession session, String attachedDocId,
+            List<ElementLifeCycleState> states, Boolean unrestricted);
 
     /**
      * if the user can create a route.
