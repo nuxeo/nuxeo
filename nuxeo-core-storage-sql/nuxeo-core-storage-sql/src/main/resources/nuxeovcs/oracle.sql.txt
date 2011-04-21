@@ -703,7 +703,7 @@ BEGIN
   --
   -- 2/ Handles new ACLs, marking read acl with a NULL marker
   UPDATE hierarchy_read_acl SET acl_id = NULL
-    WHERE id IN (SELECT id FROM aclr_modified);
+    WHERE id IN (SELECT DISTINCT(hierarchy_id) FROM aclr_modified);
   DELETE FROM aclr_modified;
   --
   -- 3/ Mark all children with the NULL marker
