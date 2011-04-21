@@ -314,7 +314,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         assertTrue(type.getPropertyDefinitions().containsKey("ecm:contentStreamDigest"));
     }
 
-    public List<String> getIds(TypeDefinitionList types) {
+    public List<String> getTypeIds(TypeDefinitionList types) {
         List<String> ids = new ArrayList<String>();
         for (TypeDefinition type : types.getList()) {
             ids.add(type.getId());
@@ -329,7 +329,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         for (TypeDefinition type : types.getList()) {
             assertNull(type.getPropertyDefinitions());
         }
-        List<String> ids = getIds(types);
+        List<String> ids = getTypeIds(types);
         assertTrue(ids.contains("Folder"));
         assertTrue(ids.contains("Root"));
         assertTrue(ids.contains("Domain"));
@@ -341,7 +341,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         types = repoService.getTypeChildren(repositoryId, "cmis:folder",
                 Boolean.FALSE, BigInteger.valueOf(4), BigInteger.valueOf(2),
                 null);
-        List<String> ids2 = getIds(types);
+        List<String> ids2 = getTypeIds(types);
         assertEquals(4, ids2.size());
         assertFalse(ids2.contains(ids.get(0)));
         assertFalse(ids2.contains(ids.get(1)));
@@ -349,7 +349,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         types = repoService.getTypeChildren(repositoryId, "cmis:folder",
                 Boolean.FALSE, BigInteger.valueOf(12), BigInteger.valueOf(5),
                 null);
-        List<String> ids3 = getIds(types);
+        List<String> ids3 = getTypeIds(types);
         assertEquals(ids.size() - 5, ids3.size());
         assertFalse(ids3.contains(ids.get(0)));
         assertFalse(ids3.contains(ids.get(1)));
@@ -376,7 +376,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
             // dublincore in all types
             assertTrue(pd.keySet().contains("dc:title"));
         }
-        ids = getIds(types);
+        ids = getTypeIds(types);
         assertTrue(ids.contains("File"));
         assertTrue(ids.contains("Note"));
         assertTrue(ids.contains("MyDocType"));
