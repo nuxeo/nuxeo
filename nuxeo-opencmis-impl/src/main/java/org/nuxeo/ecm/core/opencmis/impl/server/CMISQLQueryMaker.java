@@ -111,6 +111,11 @@ public class CMISQLQueryMaker implements QueryMaker {
 
     protected QueryObject query;
 
+    public boolean skipDeleted = true; // do not include trashed documents by
+                                       // default
+
+    protected boolean hasLifeCycleWhereClause = false;
+
     public FulltextMatchInfo fulltextMatchInfo;
 
     /** Map of qualifier -> fragment -> table */
@@ -221,8 +226,7 @@ public class CMISQLQueryMaker implements QueryMaker {
         }
 
         boolean distinct = false; // TODO extension
-        boolean skipHidden = true; // ignore hidden and trashed documents
-        addSystemColumns(addSystemColumns, distinct, skipHidden);
+        addSystemColumns(addSystemColumns, distinct);
 
         /*
          * Find info about fragments needed.
@@ -367,7 +371,7 @@ public class CMISQLQueryMaker implements QueryMaker {
 
             // lifecycle not deleted filter
 
-            if (skipHidden) {
+            if (skipDeleted) {
                 Table misc = getTable(database.getTable(model.MISC_TABLE_NAME),
                         qual);
                 Column lscol = misc.getColumn(model.MISC_LIFECYCLE_STATE_KEY);
@@ -508,8 +512,7 @@ public class CMISQLQueryMaker implements QueryMaker {
     // - we have virtual columns, or
     // - system columns are requested
     // check no added columns would bias the DISTINCT
-    protected void addSystemColumns(boolean addSystemColumns, boolean distinct,
-            boolean skipHidden) {
+    protected void addSystemColumns(boolean addSystemColumns, boolean distinct) {
 
         List<CmisSelector> addedSystemColumns = new ArrayList<CmisSelector>(2);
 
@@ -533,7 +536,7 @@ public class CMISQLQueryMaker implements QueryMaker {
                     addedSystemColumns.add(col);
                 }
             }
-            if (skipHidden) {
+            if (skipDeleted || hasLifeCycleWhereClause ) {
                 // add lifecycle state column
                 Table table = getTable(
                         database.getTable(model.MISC_TABLE_NAME), qual);
@@ -678,6 +681,14 @@ public class CMISQLQueryMaker implements QueryMaker {
         col.setInfo(column);
         String qual = col.getTypeQueryName();
 
+        if (clauseType == WHERE
+                && NXQL.ECM_LIFECYCLESTATE.equals(col.getPropertyId())) {
+            // explicit lifecycle query: do not include the 'deleted' lifecycle
+            // filter
+            skipDeleted = false;
+            hasLifeCycleWhereClause = true;
+        }
+
         // record as a needed fragment
         if (!multi) {
             recordColumnFragment(qual, column);
@@ -743,6 +754,10 @@ public class CMISQLQueryMaker implements QueryMaker {
         if (id.equals(PropertyIds.VERSION_LABEL)) {
             return database.getTable(model.VERSION_TABLE_NAME).getColumn(
                     model.VERSION_LABEL_KEY);
+        }
+        if (id.equals(NXQL.ECM_LIFECYCLESTATE)) {
+            return database.getTable(model.MISC_TABLE_NAME).getColumn(
+                    model.MISC_LIFECYCLE_STATE_KEY);
         }
         if (id.equals(PropertyIds.NAME)) {
             return database.getTable(DC_FRAGMENT_NAME).getColumn(DC_TITLE_KEY);

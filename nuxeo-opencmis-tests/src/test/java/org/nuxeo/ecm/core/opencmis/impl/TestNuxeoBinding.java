@@ -1153,9 +1153,12 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         checkWhereTerm("File", PropertyIds.LAST_MODIFICATION_DATE, NOT_NULL);
         // checkWhereTerm("File", PropertyIds.CHANGE_TOKEN, null);
 
+        checkWhereTerm("File", NXQL.ECM_LIFECYCLESTATE, "'project'");
+
         // ----- Folder -----
 
         checkWhereTerm("Folder", PropertyIds.PARENT_ID, NOT_NULL);
+        checkWhereTerm("Folder", NXQL.ECM_LIFECYCLESTATE, "'project'");
         // checkWhereTerm("Folder", PropertyIds.PATH, NOT_NULL);
         // checkWhereTerm("Folder", PropertyIds.ALLOWED_CHILD_OBJECT_TYPE_IDS,
         // NOT_NULL);
@@ -1241,7 +1244,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
                 "Folder", "testfolder1_Title");
         checkReturnedValue(NXQL.ECM_MIXINTYPE, NOT_NULL, "Folder",
                 "testfolder1_Title");
-        checkReturnedValue(NXQL.ECM_LIFECYCLESTATE, NOT_NULL, "Folder",
+        checkReturnedValue(NXQL.ECM_LIFECYCLESTATE, "project", "Folder",
                 "testfolder1_Title");
 
         // ----- Document -----
@@ -1256,7 +1259,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
                 Boolean.TRUE);
         checkReturnedValue(NXQL.ECM_ISVERSION, Boolean.FALSE);
         checkReturnedValue(NXQL.ECM_MIXINTYPE, NOT_NULL);
-        checkReturnedValue(NXQL.ECM_LIFECYCLESTATE, NOT_NULL);
+        checkReturnedValue(NXQL.ECM_LIFECYCLESTATE, "project");
         checkReturnedValue(NuxeoTypeHelper.NX_ECM_DIGEST, NOT_NULL);
         checkReturnedValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_ID, NOT_NULL);
         checkReturnedValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_BY, USERNAME);
