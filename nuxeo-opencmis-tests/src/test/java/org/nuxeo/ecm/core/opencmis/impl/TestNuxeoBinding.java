@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -1568,6 +1568,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_ID, id, ob);
         checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_BY, USERNAME, ob);
         checkValue(PropertyIds.CHECKIN_COMMENT, null, ob);
+        checkValue(NXQL.ECM_ISVERSION, Boolean.FALSE, ob);
         String series = (String) getValue(ob, PropertyIds.VERSION_SERIES_ID);
 
         // check in major -> version 1.0
@@ -1589,6 +1590,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_ID, null, ver);
         checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_BY, null, ver);
         checkValue(PropertyIds.CHECKIN_COMMENT, "comment", ver);
+        checkValue(NXQL.ECM_ISVERSION, Boolean.TRUE, ver);
 
         // look at the checked in document to verify
         // that CMIS views it as a version
@@ -1604,6 +1606,9 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_ID, null, ci);
         checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_BY, null, ci);
         checkValue(PropertyIds.CHECKIN_COMMENT, "comment", ci);
+
+        //not viewed as a version according to Nuxeo semantics though
+        checkValue(NXQL.ECM_ISVERSION, Boolean.FALSE, ob);
 
         // check out
 
@@ -1623,6 +1628,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_ID, coid, co);
         checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_BY, USERNAME, co);
         checkValue(PropertyIds.CHECKIN_COMMENT, null, co);
+        checkValue(NXQL.ECM_ISVERSION, Boolean.FALSE, co);
 
         // check in minor -> version 1.1
 
@@ -1643,6 +1649,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_ID, null, ver2);
         checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_BY, null, ver2);
         checkValue(PropertyIds.CHECKIN_COMMENT, "comment2", ver2);
+        checkValue(NXQL.ECM_ISVERSION, Boolean.TRUE, ver2);
 
         // check out again (with no content copied holder)
 
@@ -1658,6 +1665,9 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
                 ver2);
         ci = getObject(id);
         checkValue(PropertyIds.IS_LATEST_VERSION, Boolean.TRUE, ci);
+
+        // not viewed as a version according to Nuxeo semantics
+        checkValue(NXQL.ECM_ISVERSION, Boolean.FALSE, ci);
 
         // list all versions
         // TODO check this when no live document exists
