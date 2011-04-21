@@ -38,6 +38,8 @@
     <operation class="org.nuxeo.ecm.automation.jsf.operations.SetOutcome" />
     <operation
       class="org.nuxeo.ecm.automation.jsf.operations.CreateDocumentInUI" />
+    <operation
+      class="org.nuxeo.ecm.automation.jsf.operations.CancelCreateDocumentInUI" />
     <operation class="org.nuxeo.ecm.automation.jsf.operations.SaveDocumentInUI" />
   </extension>
 
