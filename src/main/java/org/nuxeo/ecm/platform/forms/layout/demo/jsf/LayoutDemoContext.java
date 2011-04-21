@@ -132,9 +132,8 @@ public class LayoutDemoContext implements Serializable {
             try {
                 previewDocument = generateBareDemoDocument();
                 previewDocument.setPathInfo("/", "preview");
-                previewDocument = demoCoreSession.createDocument(previewDocument);
                 fillPreviewDocumentProperties(previewDocument, 0);
-                previewDocument = demoCoreSession.saveDocument(previewDocument);
+                previewDocument = demoCoreSession.createDocument(previewDocument);
             } catch (Exception e) {
                 throw new ClientException(e);
             }
@@ -235,9 +234,6 @@ public class LayoutDemoContext implements Serializable {
         if (index <= 1) {
             doc.setPropertyValue("common:icon", "/icons/pdf.png");
         }
-        if (index <= 1) {
-            doc.setLock();
-        }
         return doc;
     }
 
@@ -245,10 +241,13 @@ public class LayoutDemoContext implements Serializable {
             throws ClientException {
         DocumentModel doc = generateBareDemoDocument();
         doc.setPathInfo("/", "demoDoc_" + index);
-        doc = demoCoreSession.createDocument(doc);
         fillListingDocumentProperties(doc, index);
         fillPreviewDocumentProperties(doc, index);
-        doc = demoCoreSession.saveDocument(doc);
+        doc = demoCoreSession.createDocument(doc);
+        // set lock after creation
+        if (index <= 1) {
+            doc.setLock();
+        }
         return doc;
     }
 
