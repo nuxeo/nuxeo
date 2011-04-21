@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.tag;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -31,6 +32,9 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.core.storage.sql.DatabaseOracle;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.nuxeo.ecm.platform.api.ws.DocumentProperty;
+import org.nuxeo.ecm.platform.api.ws.DocumentSnapshot;
+import org.nuxeo.ecm.platform.ws.NuxeoRemotingBean;
 import org.nuxeo.runtime.api.Framework;
 
 public class TestTagService extends SQLRepositoryTestCase {
@@ -44,6 +48,8 @@ public class TestTagService extends SQLRepositoryTestCase {
         super.setUp();
         deployBundle("org.nuxeo.ecm.platform.comment.core");
         deployBundle("org.nuxeo.ecm.platform.tag");
+        deployBundle("org.nuxeo.ecm.platform.ws");
+        deployTestContrib("org.nuxeo.ecm.platform.tag", getClass().getResource("/login-config.xml"));
         openSession();
         tagService = Framework.getLocalService(TagService.class);
     }
@@ -169,7 +175,25 @@ public class TestTagService extends SQLRepositoryTestCase {
         assertEquals(twotags, labels(suggestions));
 
         maybeSleep();
+        
+        // ws loader
+        
+        NuxeoRemotingBean remoting = new NuxeoRemotingBean();
+        String sid = remoting.connect("Administrator", "Administrator");
+        DocumentSnapshot snapshot = remoting.getDocumentSnapshot(sid, file1Id);
+        DocumentProperty[] props = snapshot.getNoBlobProperties();
+        Comparator<DocumentProperty> propsComparator = new Comparator<DocumentProperty>() {
 
+            @Override
+            public int compare(DocumentProperty o1, DocumentProperty o2) {
+                return o1.getName().compareTo(o2.getName());
+            }
+            
+        };
+        Arrays.sort(props, propsComparator);
+        int ti = Arrays.binarySearch(props, new DocumentProperty("tags", null), propsComparator);
+        assertTrue(ti > 0);
+        assertEquals(props[ti].toString(), "tags:othertag,mytag");
         // remove explicit tagging
         tagService.untag(session, file2Id, "mytag", null);
         tags = tagService.getDocumentTags(session, file2Id, null);
