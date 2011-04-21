@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -46,19 +46,19 @@ public class JsonRequestReader implements MessageBodyReader<ExecutionRequest> {
     protected static JsonMarshalling marshalling() {
         return Framework.getLocalService(JsonMarshalling.class);
     }
-    
-    protected static final HashMap<String,InputResolver<?>> inputResolvers = 
+
+    protected static final HashMap<String,InputResolver<?>> inputResolvers =
             new HashMap<String,InputResolver<?>>();
-    
+
     static {
         addInputResolver(new DocumentInputResolver());
         addInputResolver(new DocumentsInputResolver());
     }
-    
+
     public static void addInputResolver(InputResolver<?> resolver) {
         inputResolvers.put(resolver.getType(), resolver);
     }
-    
+
     public static Object resolveInput(String input) {
         int p = input.indexOf(':');
         if (p <= 0) {
@@ -76,10 +76,10 @@ public class JsonRequestReader implements MessageBodyReader<ExecutionRequest> {
         }
         return marshaller.resolveReference(ref);
     }
-    
+
     public boolean isReadable(Class<?> arg0, Type arg1, Annotation[] arg2,
             MediaType arg3) {
-        return (targetMediaType.equals(arg3) && ExecutionRequest.class.isAssignableFrom(arg0));
+        return (targetMediaType.isCompatible(arg3) && ExecutionRequest.class.isAssignableFrom(arg0));
     }
 
     public ExecutionRequest readFrom(Class<ExecutionRequest> arg0, Type arg1,
@@ -134,5 +134,5 @@ public class JsonRequestReader implements MessageBodyReader<ExecutionRequest> {
         return req;
     }
 
-   
+
 }

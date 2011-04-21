@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.automation.server.BatchManager"
+  version="1.0">
+
+  <implementation class="org.nuxeo.ecm.automation.server.jaxrs.batch.BatchManagerComponent" />
+
+  <service>
+    <provide interface="org.nuxeo.ecm.automation.server.jaxrs.batch.BatchManager" />
+  </service>
+
+</component>

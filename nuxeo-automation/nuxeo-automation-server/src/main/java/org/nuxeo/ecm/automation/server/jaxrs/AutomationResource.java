@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -26,6 +26,7 @@ import javax.ws.rs.core.Response;
 
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationType;
+import org.nuxeo.ecm.automation.server.jaxrs.batch.BatchResource;
 import org.nuxeo.ecm.automation.server.jaxrs.debug.DebugResource;
 import org.nuxeo.ecm.automation.server.jaxrs.doc.DocResource;
 import org.nuxeo.ecm.core.api.Blob;
@@ -135,6 +136,11 @@ public class AutomationResource {
                         "Failed to invoke operation: " + oid, e);
             }
         }
+    }
+
+    @Path("batch")
+    public Object getBatchManager() {
+        return new BatchResource();
     }
 
 }
