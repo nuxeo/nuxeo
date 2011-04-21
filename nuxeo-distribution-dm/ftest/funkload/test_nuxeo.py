@@ -120,8 +120,8 @@ class Nuxeo(NuxeoTestCase):
                  .comments()
                  .history())
 
-        p.dashboard()
-        p.getRootWorkspaces()
+        # p.dashboard()
+        # p.getRootWorkspaces()
         # p.dashboardNew()
         p.getRootWorkspaces()
         # p.personalWorkspace()
