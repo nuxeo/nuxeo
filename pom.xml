@@ -21,7 +21,6 @@
   <modules>
     <module>nuxeo-generic-wss-front</module>
     <module>nuxeo-generic-wss-handler</module>
-    <module>nuxeo-platform-wss-backend</module>
     <module>nuxeo-webdav</module>
     <module>nuxeo-platform-wi-backend</module>
   </modules>
@@ -36,11 +35,6 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-generic-wss-handler</artifactId>
-        <version>${nuxeo.addon.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-wss-backend</artifactId>
         <version>${nuxeo.addon.version}</version>
       </dependency>
       <dependency>
