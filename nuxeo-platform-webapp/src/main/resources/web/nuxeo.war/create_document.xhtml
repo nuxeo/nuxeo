@@ -30,6 +30,7 @@
           <c:forEach var="action" items="#{actions}">
             <nxh:commandButton action="#{action.getLink()}"
               immediate="#{action.immediate}"
+              onclick="#{action.confirm}"
               id="create_doc_#{action.id}"
               value="#{messages[action.label]}"
               styleClass="button" />
