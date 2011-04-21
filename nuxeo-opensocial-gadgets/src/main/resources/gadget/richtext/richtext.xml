@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <Module>
-  <ModulePrefs title="Rich text" height="95" scrolling="true"
-    scaling="true" directory_title="Rich text"
-    description="File browser in the ECM system" author="Guillaume CUSNIEUX"
+  <ModulePrefs title="Text Editor" height="95" scrolling="true"
+    scaling="true" directory_title="Text Editor"
+    author="Guillaume CUSNIEUX"
     author_email="gcusnieux@leroymerlin.fr" author_affiliation="Leroy Merlin"
     author_location="Lezennes, France">
     <Require feature="dynamic-height" />

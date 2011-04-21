@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Module>
-  <ModulePrefs title="Nuxeo User documents" category="business"  render_inline="required"
-    scrolling="false" author="Thierry Delprat" directory_title="User Documents"
+  <ModulePrefs title="My documents" category="business"  render_inline="required"
+    scrolling="false" author="Thierry Delprat" directory_title="My Documents"
     author_aboutme="nuxeo" singleton="false"
     thumbnail="${clientSideBaseUrl}site/gadgets/userdocuments/documents-thumb.png"
     screenshot="${clientSideBaseUrl}site/gadgets/userdocuments/documents.png">

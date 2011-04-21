@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Module>
-  <ModulePrefs title="User's deleted documents"
+  <ModulePrefs title="My deleted documents"
     description="List deleted documents where the user is a contributor"
     author="tdeprat" author_email="tdelprat@nuxeo.com">
     <Require feature="setprefs"/>

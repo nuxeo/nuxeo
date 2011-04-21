@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Module>
-  <ModulePrefs title="Nuxeo User's workspaces"
+  <ModulePrefs title="My workspaces"
     description="List users workspaces for a given scope"
     author="tdeprat" author_email="tdelprat@nuxeo.com">
     <Require feature="setprefs"/>
