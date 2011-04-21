@@ -30,7 +30,7 @@ import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
- * @deprecated use ContentView instances in conjunction with
+ * @deprecated since 5.4: use ContentView instances in conjunction with
  *             PageProvider instead.
  */
 @Deprecated
@@ -65,7 +65,8 @@ public class QueryModelService extends DefaultComponent {
             descriptor.initEscaper(contributor.getContext());
         }
 
-        QueryModelDescriptor existing = descriptors.get(descriptor.getName());
+        String name = descriptor.getName();
+        QueryModelDescriptor existing = descriptors.get(name);
         if (existing != null) {
 
             if (descriptor.getMax() == null) {
@@ -107,7 +108,17 @@ public class QueryModelService extends DefaultComponent {
         }
 
         descriptors.put(descriptor.getName(), descriptor);
-        log.debug("registered QueryModelDescriptor: " + descriptor.getName());
+        if (log.isDebugEnabled()) {
+            log.debug("registered QueryModelDescriptor: "
+                    + descriptor.getName());
+        }
+        if (log.isWarnEnabled()) {
+            log.warn(String.format(
+                    "Query models are deprecated as of Nuxeo 5.4 and "
+                            + "will be removed for Nuxeo 5.6: the query "
+                            + "model '%s' should be upgraded to use content views",
+                    name));
+        }
     }
 
     @Override
@@ -116,7 +127,10 @@ public class QueryModelService extends DefaultComponent {
 
         QueryModelDescriptor descriptor = (QueryModelDescriptor) contribution;
         descriptors.remove(descriptor.getName());
-        log.debug("unregistered QueryModelDescriptor: " + descriptor.getName());
+        if (log.isDebugEnabled()) {
+            log.debug("unregistered QueryModelDescriptor: "
+                    + descriptor.getName());
+        }
     }
 
 }
