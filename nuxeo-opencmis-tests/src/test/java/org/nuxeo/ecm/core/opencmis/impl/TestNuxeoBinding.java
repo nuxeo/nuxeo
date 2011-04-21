@@ -84,6 +84,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoRepository;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoTypeHelper;
@@ -1270,6 +1271,60 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         checkReturnedValue(PropertyIds.CONTENT_STREAM_MIME_TYPE, "text/plain");
         checkReturnedValue(PropertyIds.CONTENT_STREAM_FILE_NAME, "testfile.txt");
         checkReturnedValue(PropertyIds.CONTENT_STREAM_ID, null);
+    }
+
+    @Test
+    public void testQueryLifecycle() throws Exception {
+        String statement;
+        ObjectList res;
+
+        statement = "SELECT cmis:name FROM File";
+        res = query(statement);
+        int initiallyQueryableFilesCount = res.getNumItems().intValue();
+
+        // all files are in state 'project'
+        statement = "SELECT cmis:name FROM File WHERE ecm:currentLifeCycleState = 'project'";
+        res = query(statement);
+        assertEquals(initiallyQueryableFilesCount, res.getNumItems().intValue());
+
+        // delete another file:
+        nuxeotc.session.followTransition(new PathRef("/testfolder1/testfile1"),
+                "delete");
+        nuxeotc.session.save();
+
+        // by default 'deleted' files are filtered out
+        statement = "SELECT cmis:name FROM File";
+        res = query(statement);
+        assertEquals(initiallyQueryableFilesCount - 1,
+                res.getNumItems().intValue());
+
+        // but it is nevertheless possible to perform explicit queries on the
+        // lifecycle state
+        statement = "SELECT cmis:name FROM File"
+                + " WHERE ecm:currentLifeCycleState = 'project'";
+        res = query(statement);
+        assertEquals(initiallyQueryableFilesCount - 1,
+                res.getNumItems().intValue());
+
+        statement = "SELECT cmis:name FROM File"
+                + " WHERE ecm:currentLifeCycleState = 'deleted'"
+                + " ORDER BY cmis:name";
+        res = query(statement);
+        assertEquals(2, res.getNumItems().intValue());
+        assertEquals(
+                "testfile1_Title",
+                res.getObjects().get(0).getProperties().getProperties().get(
+                        PropertyIds.NAME).getFirstValue());
+        // file5 was deleted in the setup function of the test case
+        assertEquals(
+                "title5",
+                res.getObjects().get(1).getProperties().getProperties().get(
+                        PropertyIds.NAME).getFirstValue());
+
+        statement = "SELECT cmis:name FROM File"
+                + " WHERE ecm:currentLifeCycleState IN ('project', 'deleted', 'somethingelse')";
+        res = query(statement);
+        assertEquals(initiallyQueryableFilesCount + 1, res.getNumItems().intValue());
     }
 
     @Test
