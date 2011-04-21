@@ -96,8 +96,10 @@ public class TestSetupWizardActionBean {
         parameters = setupWizardActionBean.getParameters();
         advancedParameters = setupWizardActionBean.getAdvancedParameters();
         parameters.put("nuxeo.bind.address", "127.0.0.1");
+        parameters.put(ConfigurationGenerator.PARAM_TEMPLATE_DBNAME, "postgresql");
         advancedParameters.put("test.default.nuxeo.defaults", "false");
         setupWizardActionBean.saveParameters();
+        System.out.println("Generated nuxeoConf: " + nuxeoConf);
         expectedNuxeoConf = FileUtils.getResourceFileFromContext("configurator/nuxeo.conf.expected");
         BufferedReader bfNew = new BufferedReader(new FileReader(nuxeoConf));
         BufferedReader bfExp = new BufferedReader(new FileReader(
