@@ -164,7 +164,7 @@ public class RouterServlet extends HttpServlet {
                 "/ConnectCallback?cb=yes");
         // In order to avoid any issue with badly configured reverse proxies
         // => get url from the client side
-        if (ctx.getBaseUrl()!=null) {
+        if (ctx.getBaseUrl() != null) {
             cbUrl = ctx.getBaseUrl() + "ConnectCallback?cb=yes";
         }
         cbUrl = URLEncoder.encode(cbUrl, "UTF-8");
@@ -255,7 +255,6 @@ public class RouterServlet extends HttpServlet {
         if ("true".equals(req.getParameter("refresh"))) {
             String templateName = collector.getConfigurationParam(ConfigurationGenerator.PARAM_TEMPLATE_DBNAME);
             collector.changeDBTemplate(templateName);
-
             currentPage.dispatchToJSP(req, resp);
             return;
         }
@@ -390,9 +389,9 @@ public class RouterServlet extends HttpServlet {
             HttpServletResponse resp) throws ServletException, IOException {
 
         String baseUrl = req.getParameter("baseUrl");
-        if (baseUrl!=null && ! baseUrl.isEmpty()) {
+        if (baseUrl != null && !baseUrl.isEmpty()) {
             if (baseUrl.endsWith("Home")) {
-                baseUrl = baseUrl.substring(0, baseUrl.length()-4);
+                baseUrl = baseUrl.substring(0, baseUrl.length() - 4);
                 Context.instance(req).setBaseUrl(baseUrl);
             }
         }
