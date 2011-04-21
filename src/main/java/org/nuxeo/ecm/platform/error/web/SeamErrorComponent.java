@@ -19,6 +19,8 @@ package org.nuxeo.ecm.platform.error.web;
 import static org.jboss.seam.ScopeType.CONVERSATION;
 import static org.jboss.seam.ScopeType.EVENT;
 
+import java.io.Serializable;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.annotations.Factory;
@@ -38,7 +40,9 @@ import org.nuxeo.ecm.core.api.DocumentSecurityException;
  */
 @Name("errorSeamComponent")
 @Scope(CONVERSATION)
-public class SeamErrorComponent {
+public class SeamErrorComponent implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private static final Log log = LogFactory.getLog(SeamErrorComponent.class);
 
