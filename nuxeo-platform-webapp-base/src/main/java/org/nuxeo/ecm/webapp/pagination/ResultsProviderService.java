@@ -28,6 +28,10 @@ import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
+/**
+ * @deprecated since 5.4, use content views instead
+ */
+@Deprecated
 public class ResultsProviderService extends DefaultComponent {
 
     public static final String NAME = "org.nuxeo.ecm.webapp.pagination.ResultsProviderService";
@@ -36,7 +40,8 @@ public class ResultsProviderService extends DefaultComponent {
 
     private Map<String, ResultsProviderDescriptor> descriptors;
 
-    public ResultsProviderDescriptor getResultsProviderDescriptor(String descriptorName) {
+    public ResultsProviderDescriptor getResultsProviderDescriptor(
+            String descriptorName) {
         return descriptors.get(descriptorName);
     }
 
@@ -55,9 +60,18 @@ public class ResultsProviderService extends DefaultComponent {
             String extensionPoint, ComponentInstance contributor) {
 
         ResultsProviderDescriptor descriptor = (ResultsProviderDescriptor) contribution;
-        descriptors.put(descriptor.getName(), descriptor);
-        log.debug("registered ResultsProviderDescriptor: "
-                + descriptor.getName());
+        String name = descriptor.getName();
+        descriptors.put(name, descriptor);
+        if (log.isDebugEnabled()) {
+            log.debug("registered ResultsProviderDescriptor: " + name);
+        }
+        if (log.isWarnEnabled()) {
+            log.warn(String.format(
+                    "Result providers are deprecated as of Nuxeo 5.4 and "
+                            + "will be removed for Nuxeo 5.6: the result provider "
+                            + "'%s' should be upgraded to use content views",
+                    name));
+        }
     }
 
     @Override
@@ -66,8 +80,10 @@ public class ResultsProviderService extends DefaultComponent {
 
         ResultsProviderDescriptor descriptor = (ResultsProviderDescriptor) contribution;
         descriptors.remove(descriptor.getName());
-        log.debug("unregistered ResultsProviderDescriptor: "
-                + descriptor.getName());
+        if (log.isDebugEnabled()) {
+            log.debug("unregistered ResultsProviderDescriptor: "
+                    + descriptor.getName());
+        }
     }
 
     public String getFarmNameFor(String providerName) {

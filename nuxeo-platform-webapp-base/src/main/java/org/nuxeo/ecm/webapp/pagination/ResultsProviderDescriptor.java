@@ -24,13 +24,14 @@ import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.platform.ui.web.api.ResultsProviderFarm;
 
 /**
- * Registration unit to bind a {@link} PagedDocumentsProvider name
- * to the {@link ResultsProviderFarm} that's able to build it.
+ * Registration unit to bind a {@link} PagedDocumentsProvider name to the
+ * {@link ResultsProviderFarm} that's able to build it.
  *
  * @author <a href="mailto:gracinet@nuxeo.com">Georges Racinet</a>
- *
+ * @deprecated since 5.4: use content views instead
  */
 @XObject(value = "resultsProvider")
+@Deprecated
 public class ResultsProviderDescriptor {
 
     @XNode("@name")
