@@ -20,7 +20,6 @@
 
 package org.nuxeo.ecm.admin.setup;
 
-import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_TEMPLATES_NAME;
 import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_TEMPLATE_DBNAME;
 
 import java.io.Serializable;
@@ -201,12 +200,7 @@ public class SetupWizardActionBean implements Serializable {
     }
 
     protected void saveParameters() {
-        // Calculates new templates string
-        String currentDB = parameters.get(PARAM_TEMPLATE_DBNAME);
-        advancedParameters.put(PARAM_TEMPLATES_NAME,
-                configGenerator.rebuildTemplatesStr(currentDB));
         Map<String, String> customParameters = new HashMap<String, String>();
-
         // manage httpProxy settings (setting null is not accepted)
         if (!PROXY_AUTHENTICATED.equals(proxyType)) {
             parameters.put("nuxeo.http.proxy.login", "");
