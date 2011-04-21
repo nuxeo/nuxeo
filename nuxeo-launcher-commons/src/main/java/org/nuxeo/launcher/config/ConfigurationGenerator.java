@@ -518,14 +518,20 @@ public class ConfigurationGenerator {
 
     /**
      * Save changed parameters in {@code nuxeo.conf}, filtering parameters with
-     * {@link #getChangedParametersMap(Map, Map)}
+     * {@link #getChangedParametersMap(Map, Map)} and calculating templates if
+     * changedParameters contains a value for {@link #PARAM_TEMPLATE_DBNAME}
      *
-     * @param changedParametersMaps Maps of modified parameters
+     * @param changedParameters Maps of modified parameters
      * @since 5.4.2
      * @see #getChangedParameters(Map)
      */
     public void saveFilteredConfiguration(Map<String, String> changedParameters)
             throws ConfigurationException {
+        String newDbTemplate = changedParameters.remove(PARAM_TEMPLATE_DBNAME);
+        if (newDbTemplate != null) {
+            changedParameters.put(PARAM_TEMPLATES_NAME,
+                    rebuildTemplatesStr(newDbTemplate));
+        }
         saveConfiguration(getChangedParameters(changedParameters));
     }
 
