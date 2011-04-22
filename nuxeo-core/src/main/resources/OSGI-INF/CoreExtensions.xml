@@ -56,6 +56,8 @@
     <facet name="Versionable" /> <!-- used by system -->
     <facet name="Downloadable" />
     <facet name="Publishable" />
+    <facet name="PublishSpace" />
+    <facet name="MasterPublishSpace" />
     <facet name="Commentable" />
     <facet name="WebView" />
     <facet name="SuperSpace" />
