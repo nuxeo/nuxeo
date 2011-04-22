@@ -23,6 +23,8 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.common.utils.Path;
+import org.nuxeo.common.utils.PathFilter;
 import org.nuxeo.common.utils.ZipUtils;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.runtime.api.Framework;
@@ -85,7 +87,21 @@ public class WebEngineModuleFactory {
             }
             // create the module root
             moduleRoot.mkdirs();
-            ZipUtils.unzip(bundleFile, moduleRoot);
+            if (engine.isDevMode()) {
+                ZipUtils.unzip(bundleFile, moduleRoot);
+            } else {
+                // avoid unziping classes
+                ZipUtils.unzip(bundleFile, moduleRoot, new PathFilter() {
+                    @Override
+                    public boolean isExclusive() {
+                        return false;
+                    }
+                    @Override
+                    public boolean accept(Path arg0) {
+                        return !arg0.lastSegment().endsWith(".class");
+                    }
+                });
+            }
             return moduleRoot;
         }
     }
