@@ -8,13 +8,14 @@
       <category>USER_SERVICES</category>
     </action>
 
-    <action id="user_center_non_anonymous_logout" link="logout"
-      label="command.logout">
+    <action id="user_center_non_anonymous_logout"
+      link="#{loginLogoutAction.logout()}" label="command.logout">
       <category>USER_CENTER_USER_SERVICES</category>
       <filter-id>not_anonymous</filter-id>
     </action>
 
-    <action id="user_center_login" link="logout" label="command.login">
+    <action id="user_center_login" link="#{loginLogoutAction.logout()}"
+      label="command.login">
       <category>USER_CENTER_USER_SERVICES</category>
       <filter-id>anonymous</filter-id>
     </action>
