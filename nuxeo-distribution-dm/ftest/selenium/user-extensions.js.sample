@@ -2,7 +2,7 @@
 
 // Absolute path to current folder this path is set at runtime by run.sh
 Selenium.prototype.doRetrieveTestFolderPath = function() {
-  storedVars['testfolderpath'] = "/Users/troger/code/nuxeo/5.4/nuxeo/nuxeo-distribution/nuxeo-distribution-dm/ftest/selenium/data/";
+  storedVars['testfolderpath'] = "/path/to/project-ear/ftest/selenium/data/";
 };
 
 // helper method to store current year/month/day
