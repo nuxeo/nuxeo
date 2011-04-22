@@ -17,7 +17,7 @@ URL=${URL:-http://localhost:8080/nuxeo/}
 (cd $HERE; mvn dependency:copy) || exit 1
 
 # Build command line
-CMD="java -jar selenium-server.jar -port 14440 -timeout 7200 \
+CMD="java -jar selenium-server.jar -port 14440 -timeout 7200 -browserSideLog \
       -htmlSuite "*chrome" $URL "
 if [ ! -z $HIDE_FF ]; then
     # we assume that there is a long running xvfb-run process running and

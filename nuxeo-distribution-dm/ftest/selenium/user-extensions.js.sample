@@ -128,7 +128,7 @@ Selenium.prototype.doWaitForOpensocialGadgetsToLoad = function(mandatoryElementI
     var foundOneGadgetFrame = false;
     if (testWindow.frames && testWindow.frames.length && testWindow.frames.length > 0) {
       for (var i = 0; i < testWindow.frames.length; i++) {
-        LOG.debug("Selected frame: " + testWindow.frames[i].name);
+        LOG.info("Selected frame: " + testWindow.frames[i].name);
         if (testWindow.frames[i].name && testWindow.frames[i].name.match("^open-social")=="open-social") {
           foundOneGadgetFrame = true;
           selenium.browserbot.selectFrame("index="+i);
@@ -155,11 +155,11 @@ Selenium.prototype.doWaitForOpensocialGadgetsToLoad = function(mandatoryElementI
         }
       }
       if (!foundOneGadgetFrame) {
-        LOG.debug("no gadget frames present yet");
+        LOG.info("no gadget frames present yet");
         return false;
       }
     } else {
-      LOG.debug("no frames present yet");
+      LOG.info("no frames present yet");
       return false;
     }
     return true;
@@ -181,16 +181,19 @@ Selenium.prototype.doSelectOpenSocialGadgetFrame = function(gadgetName) {
   }
 
   if (testWindow.frames && testWindow.frames.length && testWindow.frames.length > 0) {
-   for (var i = 0; i < testWindow.frames.length; i++) {
-     var frame = testWindow.document.getElementById(testWindow.frames[i].name);
-     if (typeof frame !== 'undefined' && frame !== null) {
-       var styleClass = frame.getAttribute("class");
-       if (styleClass !== null && styleClass.indexOf(gadgetName) != -1) {
-         return selenium.browserbot.selectFrame(testWindow.frames[i].name);
-       }
-     }
-   }
+    for (var i = 0; i < testWindow.frames.length; i++) {
+      var frame = testWindow.document.getElementById(testWindow.frames[i].name);
+      if (typeof frame !== 'undefined' && frame !== null) {
+        var styleClass = frame.getAttribute("class");
+        if (styleClass !== null && styleClass.indexOf(gadgetName) != -1) {
+          LOG.info("Found frame with name '" + testWindow.frames[i].name +
+                   "' for gadgetName '" + gadgetName + "'");
+          return selenium.browserbot.selectFrame(testWindow.frames[i].name);
+        }
+      }
+    }
   }
+  LOG.info("No frame found for gadget '" + gadgetName + "'");
   return;
 }
 
