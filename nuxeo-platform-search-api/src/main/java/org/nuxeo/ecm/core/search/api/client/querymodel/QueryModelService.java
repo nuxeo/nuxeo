@@ -43,6 +43,13 @@ public class QueryModelService extends DefaultComponent {
     private Map<String, QueryModelDescriptor> descriptors;
 
     public QueryModelDescriptor getQueryModelDescriptor(String descriptorName) {
+        if (log.isWarnEnabled()) {
+            log.warn(String.format(
+                    "Query models are deprecated as of Nuxeo 5.4 and "
+                            + "will be removed for Nuxeo 5.6: the query "
+                            + "model '%s' should be upgraded to use content views",
+                    descriptorName));
+        }
         return descriptors.get(descriptorName);
     }
 
