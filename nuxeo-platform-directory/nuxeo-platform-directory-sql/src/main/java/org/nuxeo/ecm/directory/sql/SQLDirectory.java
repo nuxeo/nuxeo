@@ -62,7 +62,7 @@ public class SQLDirectory extends AbstractDirectory {
     private DataSource dataSource;
 
     private final SimpleIdGenerator idGenerator;
-    
+
     private List<Session> sessions = new ArrayList<Session>();
 
     private final Table table;
@@ -118,8 +118,8 @@ public class SQLDirectory extends AbstractDirectory {
 
                 if (!isReference(fieldName)) {
                     // list of fields that are actually stored in the table of
-                    // the
-                    // current directory and not read from an external reference
+                    // the current directory and not read from an external
+                    // reference
                     storedFieldNames.add(fieldName);
 
                     ColumnType type = ColumnType.fromField(f);
@@ -241,31 +241,30 @@ public class SQLDirectory extends AbstractDirectory {
     }
 
     @Override
-    public Session getSession() throws DirectoryException {
+    public synchronized Session getSession() throws DirectoryException {
         Session session = new SQLSession(this, config, idGenerator,
                 managedSQLSession);
         sessions.add(session);
         return session;
     }
 
-    void removeSession(Session session) {
+    protected synchronized void removeSession(Session session) {
         sessions.remove(session);
     }
 
     @Override
-    public void shutdown() {
-        synchronized(sessions) {
-            if (sessions.isEmpty()) {
-                return;
-            }
-            List<Session> lastSessions = sessions;
-            sessions = new ArrayList<Session>();
-            for (Session session:lastSessions) {
-                try {
-                    session.close();
-                } catch (DirectoryException e) {
-                   log.error("Error during " + this.getName() + " shutdown", e);
-                }
+    public synchronized void shutdown() {
+        if (sessions.isEmpty()) {
+            return;
+        }
+        List<Session> lastSessions = sessions;
+        sessions = new ArrayList<Session>();
+        for (Session session : lastSessions) {
+            try {
+                session.close();
+            } catch (DirectoryException e) {
+                log.error("Error during shutdown of directory '"
+                        + this.getName() + "'", e);
             }
         }
     }

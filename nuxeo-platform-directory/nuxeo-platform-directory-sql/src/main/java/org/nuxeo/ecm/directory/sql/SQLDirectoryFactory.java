@@ -123,9 +123,8 @@ public class SQLDirectoryFactory extends DefaultComponent implements
             try {
                 directory.shutdown();
             } catch (DirectoryException e) {
-                log.error(
-                        "Error shutting down sql directory: " + directoryName,
-                        e);
+                log.error("Error shutting down sql directory with name '"
+                        + directoryName + "'", e);
             }
         }
         directories.clear();
