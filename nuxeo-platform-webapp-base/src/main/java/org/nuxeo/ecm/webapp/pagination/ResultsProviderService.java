@@ -42,6 +42,13 @@ public class ResultsProviderService extends DefaultComponent {
 
     public ResultsProviderDescriptor getResultsProviderDescriptor(
             String descriptorName) {
+        if (log.isWarnEnabled()) {
+            log.warn(String.format(
+                    "Result providers are deprecated as of Nuxeo 5.4 and "
+                            + "will be removed for Nuxeo 5.6: the result provider "
+                            + "'%s' should be upgraded to use content views",
+                    descriptorName));
+        }
         return descriptors.get(descriptorName);
     }
 
@@ -87,6 +94,13 @@ public class ResultsProviderService extends DefaultComponent {
     }
 
     public String getFarmNameFor(String providerName) {
+        if (log.isWarnEnabled()) {
+            log.warn(String.format(
+                    "Result providers are deprecated as of Nuxeo 5.4 and "
+                            + "will be removed for Nuxeo 5.6: the result provider "
+                            + "'%s' should be upgraded to use content views",
+                    providerName));
+        }
         ResultsProviderDescriptor desc = descriptors.get(providerName);
         return desc == null ? null : desc.getFarm();
     }
