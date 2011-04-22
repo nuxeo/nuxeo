@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<xs:schema targetNamespace="http://www.nuxeo.org/ecm/schemas/disgestauth"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="username" type="xs:string"/>
+  <xs:element name="password" type="xs:string"/>
+</xs:schema>
