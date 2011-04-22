@@ -1357,7 +1357,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         res = query(statement);
         assertEquals(initialFileCount + 1, res.getNumItems().intValue());
 
-        // is however possible to fetch only the archived versions using the
+        // it is however possible to fetch only the archived versions using the
         // ecm:isCheckedInVersion system property
         statement = "SELECT cmis:name, ecm:isCheckedInVersion FROM File"
                 + " WHERE ecm:isCheckedInVersion = true ORDER BY cmis:name";
@@ -1389,6 +1389,87 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         assertEquals(initialFileCount, res.getNumItems().intValue());
         checkValue(PropertyIds.NAME, "testfile1_Title", res.getObjects().get(0));
         checkValue(NXQL.ECM_ISVERSION, Boolean.FALSE, res.getObjects().get(0));
+    }
+
+    @Test
+    public void testQueryLatestsVersions() throws Exception {
+        String statement;
+        ObjectList res;
+        ObjectData first;
+
+        // check that there is only one version of the document with title
+        // 'testfile1_Title' (for reference)
+        statement = "SELECT * FROM File WHERE cmis:name = 'testfile1_Title'";
+        res = query(statement);
+        assertEquals(1, res.getNumItems().intValue());
+
+        // checkin testfile1 as an archived version
+        ObjectData ob = getObjectByPath("/testfolder1/testfile1");
+        String id = ob.getId();
+        Holder<String> idHolder = new Holder<String>(id);
+        verService.checkIn(repositoryId, idHolder, Boolean.TRUE, null, null,
+                "this is the comment", null, null, null, null);
+
+        // by default CMISQL queries will return both live documents and
+        // archived versions
+        res = query(statement);
+        assertEquals(2, res.getNumItems().intValue());
+
+        // it is however possible to fetch only the last version using the
+        // cmis:isLatestVersion system property
+        statement = "SELECT cmis:isLatestVersion, ecm:isCheckedInVersion FROM File"
+                + " WHERE cmis:isLatestVersion = true AND cmis:name = 'testfile1_Title'";
+        res = query(statement);
+        assertEquals(1, res.getNumItems().intValue());
+        first = res.getObjects().get(0);
+        checkValue(PropertyIds.IS_LATEST_VERSION, Boolean.TRUE, first);
+        checkValue(NXQL.ECM_ISVERSION, Boolean.TRUE, first);
+
+        // this should be equivalent to
+        statement = "SELECT cmis:isLatestVersion, ecm:isCheckedInVersion FROM File"
+                + " WHERE cmis:isLatestVersion <> false AND cmis:name = 'testfile1_Title'";
+        res = query(statement);
+        assertEquals(1, res.getNumItems().intValue());
+        first = res.getObjects().get(0);
+        checkValue(PropertyIds.IS_LATEST_VERSION, Boolean.TRUE, first);
+        checkValue(NXQL.ECM_ISVERSION, Boolean.TRUE, first);
+
+        // we can check out the last version, edit it and try again:
+        verService.checkOut(repositoryId, idHolder, null, null);
+        ob = getObjectByPath("/testfolder1/testfile1");
+        assertEquals("testfile1_Title", getString(ob, "dc:title"));
+
+        Properties props = createProperties("dc:description", "new description");
+        idHolder = new Holder<String>(ob.getId());
+        objService.updateProperties(repositoryId, idHolder, null, props,
+                null);
+        assertEquals(ob.getId(), idHolder.getValue());
+
+        ob = getObject(ob.getId());
+        assertEquals("new description", getString(ob, "dc:description"));
+
+        // the latest major version is still the archived version, not the
+        // checkouted document
+        statement = "SELECT * FROM File WHERE cmis:isLatestVersion = true"
+                + " AND cmis:name = 'testfile1_Title'";
+        res = query(statement);
+        assertEquals(1, res.getNumItems().intValue());
+        first = res.getObjects().get(0);
+        checkValue(PropertyIds.IS_LATEST_VERSION, Boolean.TRUE, first);
+        checkValue(NXQL.ECM_ISVERSION, Boolean.TRUE, first);
+        checkValue("dc:description", "testfile1_description", first);
+
+        // is also possible to query for versions that are not the latests, in
+        // this case we only get the checkouted document
+        statement = "SELECT * FROM File"
+                + " WHERE cmis:isLatestVersion = false"
+                + " AND cmis:name = 'testfile1_Title'";
+        res = query(statement);
+        assertEquals(1, res.getNumItems().intValue());
+        first = res.getObjects().get(0);
+        checkValue(PropertyIds.IS_LATEST_VERSION, Boolean.FALSE, first);
+        checkValue(NXQL.ECM_ISVERSION, Boolean.FALSE, res.getObjects().get(0));
+        checkValue("dc:description", "new description", first);
     }
 
     @Test
