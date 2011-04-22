@@ -25,17 +25,10 @@
           <h:outputText value=" | " rendered="#{row!=rowCount}"/>
 
           <nxh:commandLink action="#{action.getLink()}"
-            rendered="#{fn:startsWith(action.link,'#')}"
             id="userServicesBottomActionCommandLink"
             immediate="#{action.immediate}">
             <h:outputText value="#{messages[action.label]}" />
           </nxh:commandLink>
-
-          <h:outputLink value="#{baseURL}#{action.link}"
-            rendered="#{!(fn:startsWith(action.link,'#'))}"
-            id="userServicesBottomActionLink">
-            <h:outputText value="#{messages[action.label]}" />
-          </h:outputLink>
 
         </nxu:dataList>
       </nxu:set>
