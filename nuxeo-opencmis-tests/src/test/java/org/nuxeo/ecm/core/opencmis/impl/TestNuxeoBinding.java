@@ -1267,8 +1267,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         checkReturnedValue(PropertyIds.VERSION_SERIES_ID, NOT_NULL);
         checkReturnedValue(PropertyIds.IS_VERSION_SERIES_CHECKED_OUT,
                 Boolean.TRUE);
-        // TODO: handle NULL values in the version column as false...
-        // checkReturnedValue(NXQL.ECM_ISVERSION, Boolean.FALSE);
+        checkReturnedValue(NXQL.ECM_ISVERSION, Boolean.FALSE);
         checkReturnedValue(NXQL.ECM_MIXINTYPE, NOT_NULL);
         checkReturnedValue(NXQL.ECM_LIFECYCLESTATE, "project");
         checkReturnedValue(NuxeoTypeHelper.NX_ECM_DIGEST, NOT_NULL);
@@ -1335,6 +1334,61 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
                 + " WHERE ecm:currentLifeCycleState IN ('project', 'deleted', 'somethingelse')";
         res = query(statement);
         assertEquals(initiallyQueryableFilesCount + 1, res.getNumItems().intValue());
+    }
+
+    @Test
+    public void testQueryVersions() throws Exception {
+        String statement;
+        ObjectList res;
+
+        // count all documents (for reference)
+        statement = "SELECT cmis:name FROM File";
+        res = query(statement);
+        int initialFileCount = res.getNumItems().intValue();
+
+        // checkin testfile1 as an archived version
+        ObjectData ob = getObjectByPath("/testfolder1/testfile1");
+        String id = ob.getId();
+        Holder<String> idHolder = new Holder<String>(id);
+        verService.checkIn(repositoryId, idHolder, Boolean.TRUE, null, null,
+                "this is the comment", null, null, null, null);
+
+        // by default CMISQL queries will return both live documents and archived versions
+        res = query(statement);
+        assertEquals(initialFileCount + 1, res.getNumItems().intValue());
+
+        // is however possible to fetch only the archived versions using the
+        // ecm:isCheckedInVersion system property
+        statement = "SELECT cmis:name, ecm:isCheckedInVersion FROM File"
+                + " WHERE ecm:isCheckedInVersion = true ORDER BY cmis:name";
+        res = query(statement);
+        assertEquals(1, res.getNumItems().intValue());
+        checkValue(PropertyIds.NAME, "testfile1_Title", res.getObjects().get(0));
+        checkValue(NXQL.ECM_ISVERSION, Boolean.TRUE, res.getObjects().get(0));
+
+        // this should be equivalent to
+        statement = "SELECT cmis:name, ecm:isCheckedInVersion FROM File"
+                + " WHERE ecm:isCheckedInVersion <> false ORDER BY cmis:name";
+        res = query(statement);
+        assertEquals(1, res.getNumItems().intValue());
+        checkValue(PropertyIds.NAME, "testfile1_Title", res.getObjects().get(0));
+        checkValue(NXQL.ECM_ISVERSION, Boolean.TRUE, res.getObjects().get(0));
+
+        // conversely one can select only live documents by negating this predicate
+        statement = "SELECT cmis:name, ecm:isCheckedInVersion FROM File" +
+        		" WHERE ecm:isCheckedInVersion = false ORDER BY cmis:name";
+        res = query(statement);
+        assertEquals(initialFileCount, res.getNumItems().intValue());
+        checkValue(PropertyIds.NAME, "testfile1_Title", res.getObjects().get(0));
+        checkValue(NXQL.ECM_ISVERSION, Boolean.FALSE, res.getObjects().get(0));
+
+        // this should be equivalent to
+        statement = "SELECT cmis:name, ecm:isCheckedInVersion  FROM File" +
+        		" WHERE ecm:isCheckedInVersion <> true ORDER BY cmis:name";
+        res = query(statement);
+        assertEquals(initialFileCount, res.getNumItems().intValue());
+        checkValue(PropertyIds.NAME, "testfile1_Title", res.getObjects().get(0));
+        checkValue(NXQL.ECM_ISVERSION, Boolean.FALSE, res.getObjects().get(0));
     }
 
     @Test

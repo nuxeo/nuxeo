@@ -20,10 +20,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.tree.Tree;
@@ -35,6 +37,7 @@ import org.apache.chemistry.opencmis.commons.enums.Cardinality;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.PropertyDecimalDefinitionImpl;
 import org.apache.chemistry.opencmis.server.support.query.AbstractPredicateWalker;
+import org.apache.chemistry.opencmis.server.support.query.CmisQlStrictLexer;
 import org.apache.chemistry.opencmis.server.support.query.CmisQueryWalker;
 import org.apache.chemistry.opencmis.server.support.query.CmisSelector;
 import org.apache.chemistry.opencmis.server.support.query.ColumnReference;
@@ -98,6 +101,18 @@ public class CMISQLQueryMaker implements QueryMaker {
     public static final String REL_SOURCE_KEY = "source";
 
     public static final String REL_TARGET_KEY = "target";
+
+    // list of SQL column where NULL (missing value) should be treated as
+    // Boolean.FALSE
+    public static final Set<String> NULL_IS_FALSE_COLUMNS = new HashSet<String>();
+    static {
+        NULL_IS_FALSE_COLUMNS.add(Model.HIER_TABLE_NAME + " "
+                + Model.MAIN_IS_VERSION_KEY);
+        NULL_IS_FALSE_COLUMNS.add(Model.VERSION_TABLE_NAME + " "
+                + Model.VERSION_IS_LATEST_KEY);
+        NULL_IS_FALSE_COLUMNS.add(Model.VERSION_TABLE_NAME + " "
+                + Model.VERSION_IS_LATEST_MAJOR_KEY);
+    }
 
     protected Database database;
 
@@ -755,13 +770,17 @@ public class CMISQLQueryMaker implements QueryMaker {
             return database.getTable(model.VERSION_TABLE_NAME).getColumn(
                     model.VERSION_LABEL_KEY);
         }
+        if (id.equals(PropertyIds.IS_LATEST_MAJOR_VERSION)) {
+            return database.getTable(model.VERSION_TABLE_NAME).getColumn(
+                    model.VERSION_IS_LATEST_MAJOR_KEY);
+        }
+        if (id.equals(PropertyIds.IS_LATEST_VERSION)) {
+            return database.getTable(model.VERSION_TABLE_NAME).getColumn(
+                    model.VERSION_IS_LATEST_KEY);
+        }
         if (id.equals(NXQL.ECM_ISVERSION)) {
             return database.getTable(model.HIER_TABLE_NAME).getColumn(
                     model.MAIN_IS_VERSION_KEY);
-        }
-        if (id.equals(NXQL.ECM_MIXINTYPE)) {
-            return database.getTable(model.HIER_TABLE_NAME).getColumn(
-                    model.MAIN_MIXIN_TYPES_KEY);
         }
         if (id.equals(NXQL.ECM_LIFECYCLESTATE)) {
             return database.getTable(model.MISC_TABLE_NAME).getColumn(
@@ -872,6 +891,13 @@ public class CMISQLQueryMaker implements QueryMaker {
                     value = BigInteger.valueOf(((Integer) value).intValue());
                 } else if (value instanceof Double) {
                     value = BigDecimal.valueOf(((Double) value).doubleValue());
+                } else if (value == null) {
+                    // special handling of some columns where NULL means FALSE
+                    String column = rc.column.getTable().getRealTable().getKey()
+                            + " " + rc.column.getKey();
+                    if (NULL_IS_FALSE_COLUMNS.contains(column)) {
+                        value = Boolean.FALSE;
+                    }
                 }
                 map.put(rc.key, value);
             }
@@ -1024,6 +1050,15 @@ public class CMISQLQueryMaker implements QueryMaker {
 
         @Override
         public Boolean walkEquals(Tree opNode, Tree leftNode, Tree rightNode) {
+            if (leftNode.getType() == CmisQlStrictLexer.COL
+                    && rightNode.getType() == CmisQlStrictLexer.BOOL_LIT
+                    && !Boolean.valueOf(rightNode.getText())) {
+                // special handling of the " = false" case for column where
+                // NULL means false
+                walkIsNullOrFalse(leftNode);
+                return null;
+            }
+            // normal case
             walkExpr(leftNode);
             whereBuf.append(" = ");
             walkExpr(rightNode);
@@ -1032,10 +1067,40 @@ public class CMISQLQueryMaker implements QueryMaker {
 
         @Override
         public Boolean walkNotEquals(Tree opNode, Tree leftNode, Tree rightNode) {
+            if (leftNode.getType() == CmisQlStrictLexer.COL
+                    && rightNode.getType() == CmisQlStrictLexer.BOOL_LIT
+                    && Boolean.valueOf(rightNode.getText())) {
+                // special handling of the " <> true" case for column where
+                // NULL means false
+                walkIsNullOrFalse(leftNode);
+                return null;
+            }
             walkExpr(leftNode);
             whereBuf.append(" <> ");
             walkExpr(rightNode);
             return null;
+        }
+
+        public Boolean walkIsNullOrFalse(Tree leftNode) {
+            Column c = resolveColumn(leftNode);
+            String columnSpec = c.getTable().getRealTable().getKey()
+                    + " " + c.getKey();
+            if (NULL_IS_FALSE_COLUMNS.contains(columnSpec)) {
+                // treat NULL and FALSE as equivalent
+                whereBuf.append("(");
+                whereBuf.append(c.getFullQuotedName());
+                whereBuf.append(" IS NULL OR ");
+                whereBuf.append(c.getFullQuotedName());
+                whereBuf.append(" = ?)");
+                whereBufParams.add(Boolean.FALSE);
+                return null;
+            } else {
+                // explicit false equality test
+                whereBuf.append(c.getFullQuotedName());
+                whereBuf.append(" = ?");
+                whereBufParams.add(Boolean.FALSE);
+                return null;
+            }
         }
 
         @Override
@@ -1251,16 +1316,19 @@ public class CMISQLQueryMaker implements QueryMaker {
 
         @Override
         public Object walkCol(Tree node) {
-            int token = ((Tree) node).getTokenStartIndex();
+            whereBuf.append(resolveColumn(node).getFullQuotedName());
+            return null;
+        }
+
+        public Column resolveColumn(Tree node) {
+            int token = node.getTokenStartIndex();
             CmisSelector sel = query.getColumnReference(Integer.valueOf(token));
             if (sel instanceof ColumnReference) {
-                Column column = (Column) sel.getInfo();
-                whereBuf.append(column.getFullQuotedName());
+                return (Column) sel.getInfo();
             } else {
                 throw new QueryParseException(
                         "Cannot use column in WHERE clause: " + sel.getName());
             }
-            return null;
         }
     }
 }

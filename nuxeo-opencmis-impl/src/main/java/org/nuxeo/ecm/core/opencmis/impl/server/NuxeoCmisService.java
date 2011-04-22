@@ -1239,6 +1239,7 @@ public class NuxeoCmisService extends AbstractCmisService {
                         id, (List<GregorianCalendar>) value);
             }
         } else if (pd instanceof PropertyBooleanDefinition) {
+            // TODO: make it possible to treat some missing properties (NULL as false)
             if (pd.getCardinality() == Cardinality.SINGLE) {
                 p = (AbstractPropertyData<T>) objectFactory.createPropertyBooleanData(
                         id, (Boolean) value);
