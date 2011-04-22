@@ -93,6 +93,7 @@
           <nxh:commandButton action="#{action.getLink()}"
             value="#{messages[action.label]}"
             id="smartSearchActionsButton_#{status.index}"
+            immediate="#{action.immediate}"
             styleClass="button" />
         </c:forEach>
       </nxu:set>

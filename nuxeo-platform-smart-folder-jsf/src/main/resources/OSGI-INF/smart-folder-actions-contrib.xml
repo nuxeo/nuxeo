@@ -20,7 +20,7 @@
 
     <action id="saveQueryAsSmartFolder"
       link="#{smartNXQLFolderActions.saveQueryAsDocument('SmartFolder')}"
-      order="10" label="command.saveSmartSearch">
+      order="10" label="command.saveSmartSearch" immediate="true">
       <category>SMART_SEARCH_BUTTONS</category>
       <!-- TODO: filter when no personal workspace is available -->
     </action>
