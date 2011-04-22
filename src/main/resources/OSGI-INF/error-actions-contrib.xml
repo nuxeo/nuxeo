@@ -6,7 +6,7 @@
 
     <action id="ERROR_PAGE_DISPLAY" link="error_index"
       label="Go to error page">
-      <category>USER_SERVICES</category>
+      <category>USER_CENTER_USER_SERVICES</category>
     </action>
 
     <action id="CHECKED_ERROR_CREATE_WORKSPACE"
