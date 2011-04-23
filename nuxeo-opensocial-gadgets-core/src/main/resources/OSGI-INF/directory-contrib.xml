@@ -5,7 +5,7 @@
     point="directories">
 
    <!-- has to be matched to the java version of the name in GadgetServiceImpl -->
-    <directory name="external gadget list">
+    <directory name="externalGadgets">
       <schema>externalgadget</schema>
       <dataSource>java:/nxsqldirectory</dataSource>
       <cacheTimeout>3600</cacheTimeout>

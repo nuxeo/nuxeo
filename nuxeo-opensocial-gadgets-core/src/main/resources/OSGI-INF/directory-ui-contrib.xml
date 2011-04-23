@@ -3,7 +3,7 @@
 
   <extension target="org.nuxeo.ecm.directory.ui.DirectoryUIManager"
     point="directories">
-    <directory name="external gadget list" layout="externalGadgetLayout"
+    <directory name="externalGadgets" layout="externalGadgetLayout"
       sortField="label" />
   </extension>
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
@@ -67,7 +67,7 @@
           /widgets/integer_yes_no_widget_template.xhtml
         </property>
       </properties>
-        
+
       </widget>
       <widget name="category" type="text">
         <labels>

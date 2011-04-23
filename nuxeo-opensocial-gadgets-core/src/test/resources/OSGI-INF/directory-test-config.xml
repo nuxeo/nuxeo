@@ -4,10 +4,10 @@
   <extension target="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory"
       point="directories">
 
-    <directory name="external gadget list" remove="true">
+    <directory name="externalGadgets" remove="true">
     </directory>
 
-    <directory name="external gadget list">
+    <directory name="externalGadgets">
       <schema>externalgadget</schema>
       <dbDriver>org.hsqldb.jdbcDriver</dbDriver>
       <dbUrl>jdbc:hsqldb:mem:memid</dbUrl>

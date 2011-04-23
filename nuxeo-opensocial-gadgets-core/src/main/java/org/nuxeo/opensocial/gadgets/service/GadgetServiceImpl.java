@@ -62,7 +62,7 @@ public class GadgetServiceImpl extends DefaultComponent implements
 
     private static final HashMap<String, GadgetDeclaration> internalGadgets = new HashMap<String, GadgetDeclaration>();
 
-    public static final String GADGET_DIRECTORY = "external gadget list";
+    public static final String GADGET_DIRECTORY = "externalGadgets";
 
     private static final Log log = LogFactory.getLog(GadgetServiceImpl.class);
 
