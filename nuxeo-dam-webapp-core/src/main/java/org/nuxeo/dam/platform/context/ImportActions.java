@@ -17,6 +17,8 @@
 
 package org.nuxeo.dam.platform.context;
 
+import static org.jboss.seam.annotations.Install.FRAMEWORK;
+
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -26,6 +28,7 @@ import java.util.List;
 import javax.faces.application.FacesMessage;
 import javax.faces.model.SelectItem;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
@@ -67,7 +70,6 @@ import org.richfaces.event.UploadEvent;
 import org.richfaces.model.UploadItem;
 
 import de.schlichtherle.io.File;
-import static org.jboss.seam.annotations.Install.FRAMEWORK;
 
 @Name("importActions")
 @Scope(ScopeType.CONVERSATION)
@@ -256,7 +258,9 @@ public class ImportActions implements Serializable {
     public void uploadListener(UploadEvent event) throws Exception {
         UploadItem item = event.getUploadItem();
         blob = new FileBlob(item.getFile());
-        blob.setFilename(item.getFileName());
+        // Retrieve only the real filename
+        // IE stores the full path of the file as the filename (ie. Z:\\path\\to\\file)
+        blob.setFilename(FilenameUtils.getName(item.getFileName()));
     }
 
     public void cancel() {
