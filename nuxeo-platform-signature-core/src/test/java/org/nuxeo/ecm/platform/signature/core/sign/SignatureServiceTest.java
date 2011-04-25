@@ -27,6 +27,7 @@ import java.security.KeyStore;
 import java.security.cert.X509Certificate;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -76,6 +77,8 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 import com.google.inject.Inject;
+import com.lowagie.text.pdf.AcroFields;
+import com.lowagie.text.pdf.PdfReader;
 
 /**
  * @author <a href="mailto:ws@nuxeo.com">Wojciech Sulejman</a>
@@ -113,7 +116,7 @@ public class SignatureServiceTest {
      */
     
     // mark this true if you want to keep the signed pdf for manual verification/preview
-    private static final boolean KEEP_SIGNED_PDF = false;
+    private static final boolean KEEP_SIGNED_PDF = true;
 
     private static final String ROOT_KEY_PASSWORD = "abc";
 
@@ -172,7 +175,25 @@ public class SignatureServiceTest {
         File signedFile = signatureService.signPDF(getUser(),
                 USER_KEY_PASSWORD, "test reason", new FileInputStream(
                         origPdfFile));
+
+        File fileSignedTwice = signatureService.signPDF(getUser(),
+                USER_KEY_PASSWORD, "test reason", new FileInputStream(
+                        signedFile));
+
         assertTrue(signedFile.exists());
+        assertTrue(fileSignedTwice.exists());
+        
+        // test presence of multiple signatures
+        PdfReader reader = new PdfReader(fileSignedTwice.getAbsolutePath());
+        AcroFields af = reader.getAcroFields();
+        ArrayList<String> names = af.getSignatureNames();
+        log.debug("Registered signature names:");
+        for(String signatureName:names){
+            log.debug(signatureName);
+        }
+        
+        assertTrue(2==names.size());
+        
         if (KEEP_SIGNED_PDF) {
             log.info("SIGNED PDF: " + signedFile.getAbsolutePath());
         } else {
