@@ -363,7 +363,7 @@ public class NuxeoTypeHelper {
         t.addPropertyDefinition(newPropertyDefinition(
                 PropertyIds.IS_LATEST_MAJOR_VERSION, "Is Latest Major Version",
                 PropertyType.BOOLEAN, Cardinality.SINGLE,
-                Updatability.READONLY, false, false, false));
+                Updatability.READONLY, false, false, true));
         t.addPropertyDefinition(newPropertyDefinition(
                 PropertyIds.VERSION_LABEL, "Version Label",
                 PropertyType.STRING, Cardinality.SINGLE, Updatability.READONLY,

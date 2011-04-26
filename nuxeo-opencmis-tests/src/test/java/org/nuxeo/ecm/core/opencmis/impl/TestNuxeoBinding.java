@@ -1154,12 +1154,12 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         checkWhereTerm("File", PropertyIds.LAST_MODIFICATION_DATE, NOT_NULL);
         // checkWhereTerm("File", PropertyIds.CHANGE_TOKEN, null);
 
+        checkWhereTerm("File", NXQL.ECM_ISVERSION, "false");
         checkWhereTerm("File", NXQL.ECM_LIFECYCLESTATE, "'project'");
-        // TODO: merge static and dynamic facet
-        // checkWhereTerm("File", NXQL.ECM_MIXINTYPE, "'Versionable'");
 
-        // TODO: do query rewrite to turn "= false" into "IS NULL" or "<> 't'"
-        // checkWhereTerm("File", NXQL.ECM_ISVERSION, "false");
+        // TODO: merge static and dynamic facet
+        //checkWhereTerm("File", NXQL.ECM_MIXINTYPE, "'Versionable'");
+
 
         // ----- Folder -----
 
@@ -1176,9 +1176,9 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         // ----- Document -----
 
         // checkWhereTerm("File", PropertyIds.IS_IMMUTABLE, "FALSE");
-        // checkWhereTerm("File", PropertyIds.IS_LATEST_VERSION, "TRUE");
+        checkWhereTerm("File", PropertyIds.IS_LATEST_VERSION, "FALSE");
         // checkWhereTerm("File", PropertyIds.IS_MAJOR_VERSION, "TRUE");
-        // checkWhereTerm("File", PropertyIds.IS_LATEST_MAJOR_VERSION, "FALSE");
+        checkWhereTerm("File", PropertyIds.IS_LATEST_MAJOR_VERSION, "FALSE");
         // checkWhereTerm("File", PropertyIds.VERSION_LABEL, NOT_NULL);
         // checkWhereTerm("File", PropertyIds.VERSION_SERIES_ID, NOT_NULL);
         // checkWhereTerm("File", PropertyIds.VERSION_SERIES_CHECKED_OUT_BY,
