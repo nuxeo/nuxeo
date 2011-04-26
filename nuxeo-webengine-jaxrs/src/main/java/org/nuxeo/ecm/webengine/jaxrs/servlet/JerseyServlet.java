@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -135,17 +135,10 @@ public class JerseyServlet extends ServletContainer {
     }
 
     protected void superService(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        Thread thread = Thread.currentThread();
-        ClassLoader cl = thread.getContextClassLoader();
-        thread.setContextClassLoader(JerseyServlet.class.getClassLoader());
-        try {
-            if (isDirty) {
-                superReload();
-            }
-            super.service(request, response);
-        } finally {
-            thread.setContextClassLoader(cl);
+        if (isDirty) {
+            superReload();
         }
+        super.service(request, response);
     }
 
 }
