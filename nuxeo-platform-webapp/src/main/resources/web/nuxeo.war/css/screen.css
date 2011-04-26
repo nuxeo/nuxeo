@@ -567,7 +567,20 @@ padding:5px 0px 2px 0px;
 }
 
 
- .dropPanel {
+
+
+#dropzone-info-panel {
+  background-color:#DDDDDD;
+  display:none;
+}
+
+.dndControlMessage {
+  display: none;
+  font-size : 9pt;
+  font-family : Arial;
+}
+
+.dropPanel {
   padding: 10px;
   background: #BBBBCC;
   -moz-border-radius: 5px;
@@ -576,7 +589,7 @@ padding:5px 0px 2px 0px;
   height: 250px;
  }
 
- .dropzone {
+.dropzone {
   display: block;
   margin : 4px;
   text-align: center;
@@ -600,33 +613,50 @@ padding:5px 0px 2px 0px;
   cursor : url('../img/plusDrop.gif'), crosshair;
 }
 
- .dropzone-info-block {
+.dropzone-info-block {
   display: block;
-  background-color: white;
-  width: 300px;
-  height: 70px;
+  width: 200px;
+  height: 35px;
   overflow : auto;
   align : center;
   text-align: center;
   margin : 4px;
- }
+}
 
- .dropzone-info-progress {
+.dropzone-info-summary {
+  display: block;
+  width: 200px;
+  height: 35px;
+  overflow : auto;
+  align : center;
+  text-align: center;
+  margin : 4px;
+  font-size : 8pt;
+  font-family : Arial;
+}
+
+.dropzone-info-summary-item {
+  text-align: center;
+  font-size : 8pt;
+  font-family : Arial;
+}
+
+.dropzone-info-progress {
   background-color: orange;
   height: 3px;
   width: 0%;
- }
+}
 
- .dropzone-info-item {
+.dropzone-info-item {
   border : thin solid #999999;
   margin : 2px;
- }
+}
 
- .dropzone-info-name {
-  font-size : 9pt;
+.dropzone-info-name {
+  font-size : 8pt;
   font-family : Arial;
   text-align: center;
- }
+}
 
  .dropzone-bar {
   height: 20px;
@@ -636,4 +666,14 @@ padding:5px 0px 2px 0px;
 
  .dropzone-bar-btn {
   visibility:hidden;
+  float:right;
+ }
+
+ .dndFormPanel{
+    display:none;
+    position:absolute;
+    border:solid 1px black;
+    background-color:rgba(255,255,255,0.8);
+    padding : 25px;
+    margin: 4px;
  }

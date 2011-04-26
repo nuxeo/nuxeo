@@ -1,5 +1,6 @@
 <div xmlns:h="http://java.sun.com/jsf/html"
- xmlns:nxu="http://nuxeo.org/nxweb/util">
+ xmlns:nxu="http://nuxeo.org/nxweb/util"
+ xmlns:ui="http://java.sun.com/jsf/facelets">
 
 <script type="text/javascript" src="#{baseURL}seam/resource/remoting/interface.js?#{SeamRemotingBeanNames}"></script>
 <script type="text/javascript">
@@ -23,16 +24,25 @@
 <script type="text/javascript" src="#{baseURL}scripts/dnd/jquery.client.js" ></script>
 <script type="text/javascript" src="#{baseURL}scripts/dnd/jquery.dnd-file-upload.js" ></script>
 <script type="text/javascript" src="#{baseURL}scripts/dnd/utils.js" ></script>
+<script type="text/javascript" src="#{baseURL}scripts/automation.js" ></script>
 <script type="text/javascript" src="#{baseURL}scripts/dnd/nxdropzone.js" ></script>
 
-<script>console.log("yo4");</script>
+<ui:include src="/incl/dnd/dnd-ui.xhtml" />
+
+<script>
+var ctx = { currentDocument : '#{currentDocument.id}',
+        currentDomain : '#{currentDomain.id}',
+        conversationId : '#{org.jboss.seam.core.manager.currentConversationId}'};
+</script>
 
 <script type="text/javascript">
     jQuery(document).ready(function(){
-     jQuery(".dropzone").nxDropZone({
+      console.log("Yo");
+      jQuery(".dropzone").nxDropZone({
               url : "/nuxeo/site/automation/batch/",
               uploadRateRefreshTime : 500,
-              numConcurrentUploads : 2
+              numConcurrentUploads : 2,
+              dropContext : ctx
             });
    });
 </script>
