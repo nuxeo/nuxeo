@@ -29,12 +29,14 @@ import org.nuxeo.runtime.deployment.preprocessor.install.Command;
 import org.nuxeo.runtime.deployment.preprocessor.install.CommandContext;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class AppendCommand implements Command {
 
     protected final Path src;
+
     protected final Path dst;
+
     protected final boolean addNewLine;
 
     public AppendCommand(Path src, Path dst, boolean addNewLine) {
@@ -54,12 +56,16 @@ public class AppendCommand implements Command {
         File dstFile = new File(baseDir, ctx.expandVars(dst.toString()));
 
         if (!srcFile.exists()) {
-            throw new FileNotFoundException("Could not find the file " + srcFile.getAbsolutePath()
-                    + " to append.");
+            throw new FileNotFoundException("Could not find the file "
+                    + srcFile.getAbsolutePath() + " to append.");
         }
 
         if (!dstFile.isFile()) {
-            dstFile.createNewFile();
+            try {
+                dstFile.createNewFile();
+            } catch (IOException e) {
+                throw new IOException("Could not create " + dstFile, e);
+            }
         }
 
         FileUtils.append(srcFile, dstFile, addNewLine);
@@ -72,8 +78,8 @@ public class AppendCommand implements Command {
 
     @Override
     public String toString(CommandContext ctx) {
-        return "append " + ctx.expandVars(src.toString()) + " > " +
-                ctx.expandVars(dst.toString());
+        return "append " + ctx.expandVars(src.toString()) + " > "
+                + ctx.expandVars(dst.toString());
     }
 
 }
