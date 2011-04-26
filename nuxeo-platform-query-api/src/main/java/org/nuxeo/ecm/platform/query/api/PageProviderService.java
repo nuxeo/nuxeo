@@ -49,6 +49,10 @@ public interface PageProviderService extends Serializable {
      * Useful to share the definition between the page provider service, and
      * the content view service (as content views can reference a named page
      * provider that is already registered instead of redefining it).
+     * <p>
+     * If not null, parameters sortInfos and pageSize will override information
+     * computed in the XML file. If not null, currentPage will override default
+     * current page (0).
      *
      * @since 5.4
      * @param name the name that will be set on the provider.
@@ -67,14 +71,10 @@ public interface PageProviderService extends Serializable {
             throws ClientException;
 
     /**
-     * Returns the page provider computed from the content view with given
-     * name. Its properties are resolved using current {@link FacesContext}
-     * instance if they are EL Expressions.
-     * <p>
-     * If not null, parameters sortInfos and pageSize will override information
-     * computed in the XML file. If not null, currentPage will override default
-     * current page (0).
+     * Returns an instance of page provider with given name.
      *
+     * @see #getPageProvider(String, PageProviderDefinition, List, Long, Long,
+     *      Map, Object...)
      * @throws ClientException
      */
     PageProvider<?> getPageProvider(String name, List<SortInfo> sortInfos,
