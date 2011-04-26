@@ -25,14 +25,15 @@
  body {
   font: normal 11px "Lucida Grande", sans-serif;
   background-repeat: no-repeat;
-  background-position: center -350px;
+  background-position: top left;
   background-color: white;
-  background-image: url(/nuxeo/img/dam_login_1300.jpg);
+  background-image: url(/nuxeo/img/dam_login_1500.jpg);
   color: #343434;
   }
 
 .topBar {
-  background:#4D4D4D url(/nuxeo/img/banner_bground.png) repeat-x scroll left top;
+  background-color: #000;
+  opacity: 0.6;
   width:100%;
   height:30px;
   border:0;
@@ -234,16 +235,16 @@ nxthemes css is not used in login.jsp */
   <!-- Change the background image according to the screen size -->
   <script type="text/javascript">
     var width = window.screen.width;
-    if (width >= 1280 && width < 1300) {
-        document.body.style.backgroundImage = 'url(/nuxeo/img/dam_login_1300.jpg)';
-    } else if (width >= 1300 && width < 1500) {
+    if (width >= 1280 && width < 1500) {
         document.body.style.backgroundImage = 'url(/nuxeo/img/dam_login_1500.jpg)';
-    } else if (width >= 1500 && width < 2000) {
+    } else if (width >= 1500 && width < 1700) {
+        document.body.style.backgroundImage = 'url(/nuxeo/img/dam_login_1700.jpg)';
+    } else if (width >= 1700 && width < 2000) {
         document.body.style.backgroundImage = 'url(/nuxeo/img/dam_login_2000.jpg)';
     } else if (width >= 2000) {
         document.body.style.backgroundImage = 'url(/nuxeo/img/dam_login_2200.jpg)';
     } else {
-        document.body.style.backgroundImage = 'url(/nuxeo/img/dam_login_1300.jpg)';
+        document.body.style.backgroundImage = 'url(/nuxeo/img/dam_login_1500.jpg)';
     }
   </script>
 
