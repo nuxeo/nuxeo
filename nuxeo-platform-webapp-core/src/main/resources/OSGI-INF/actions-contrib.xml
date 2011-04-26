@@ -192,12 +192,6 @@
       <filter-id>rights</filter-id>
     </action>
 
-    <action id="TAB_THEME" link="/incl/tabs/document_theme.xhtml" order="60"
-      label="action.view.theme" icon="/icons/file.gif">
-      <category>TAB_MANAGE_sub_tab</category>
-      <filter-id>canChangeTheme</filter-id>
-    </action>
-
     <!-- Manage the sub tabs -->
 
     <!--  Actions on WorkLists  -->
@@ -812,13 +806,6 @@
     <filter id="only_for_manager">
       <rule grant="true">
         <condition>#{userSession.administrator}</condition>
-      </rule>
-    </filter>
-
-    <filter id="canChangeTheme">
-      <rule grant="true">
-        <permission>Manage everything</permission>
-        <facet>SuperSpace</facet>
       </rule>
     </filter>
 

@@ -112,11 +112,6 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-placeful-theme</artifactId>
-        <version>${nuxeo.services.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-relations-api</artifactId>
         <version>${nuxeo.services.version}</version>
       </dependency>
