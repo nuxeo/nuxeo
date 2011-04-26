@@ -1192,6 +1192,8 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         // checkWhereTerm("File", PropertyIds.CONTENT_STREAM_FILE_NAME,
         // "testfile.txt");
         // checkWhereTerm("File", PropertyIds.CONTENT_STREAM_ID, NOT_NULL);
+        // checkWhereTerm("File", NuxeoTypeHelper.NX_ECM_DIGEST,
+        //        "'bde9eb59c76cb432a0f8d02057a19923'");
     }
 
     protected void checkReturnedValue(String prop, Object expected) {
