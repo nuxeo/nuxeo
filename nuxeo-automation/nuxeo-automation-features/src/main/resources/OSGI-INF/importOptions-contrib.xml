@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.automation.features.upload.contrib">
+
+  <extension target="org.nuxeo.ecm.automation.features.upload.ImportOptionManagerComponent"  point="importOption">
+
+    <importOption name="fmImport" category="ContentView" order="10">
+      <label>Smart Import</label>
+      <description>Smart Import</description>
+      <operationId>FileManager.Import</operationId>
+      <formUrl></formUrl>
+    </importOption>
+    <importOption name="fileImport" category="ContentView" order="20">
+      <label>File Import</label>
+      <operationId>FileManager.FileImport</operationId>
+      <formUrl></formUrl>
+    </importOption>
+    <importOption name="formImport" category="ContentView" order="30">
+      <label>Smart Import with meta-data</label>
+      <operationId>FileManager.MDImport</operationId>
+      <formUrl>XXX</formUrl>
+    </importOption>
+
+    <importOption name="fileImport" category="Content" order="10">
+      <label>File Import</label>
+      <operationId>Blob.Attach</operationId>
+      <formUrl></formUrl>
+    </importOption>
+
+  </extension>
+
+</component>

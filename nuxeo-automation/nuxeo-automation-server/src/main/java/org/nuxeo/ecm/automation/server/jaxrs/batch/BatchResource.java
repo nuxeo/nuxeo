@@ -84,7 +84,7 @@ public class BatchResource {
     }
 
     @POST
-    @Produces("text/html")
+    @Produces("application/json")
     @Path(value = "execute")
     public Object exec(@Context HttpServletRequest request, ExecutionRequest xreq) throws Exception {
 
@@ -111,7 +111,11 @@ public class BatchResource {
                 chain.add(oparams);
                 return as.run(ctx, chain);
             }
-        } finally {
+        }
+        catch (Exception e) {
+            return "{ error:'" + e.getMessage() + "'}";
+        }
+        finally {
             bm.clean(batchId); // XXX should move to a commit hook
         }
     }

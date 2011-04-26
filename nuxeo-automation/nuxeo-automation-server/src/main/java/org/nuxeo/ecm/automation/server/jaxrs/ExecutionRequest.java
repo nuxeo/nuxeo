@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -74,6 +74,7 @@ public class ExecutionRequest {
         ctx.addRequestCleanupHandler(request);
         ctx.setCoreSession(session);
         ctx.setInput(input);
+        ctx.put("request", request);
         return ctx;
     }
 

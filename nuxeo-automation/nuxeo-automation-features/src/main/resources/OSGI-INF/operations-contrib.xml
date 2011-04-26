@@ -30,6 +30,16 @@
 
     <operation
       class="org.nuxeo.ecm.automation.core.operations.services.PictureResize" />
+
+    <operation
+      class="org.nuxeo.ecm.automation.features.upload.GetImportOptions" />
+
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.services.FileManagerImport" />
+
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.services.UserWorkspaceCreateFromBlob" />
+
   </extension>
 
 </component>

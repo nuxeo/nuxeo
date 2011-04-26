@@ -41,6 +41,19 @@
     <operation
       class="org.nuxeo.ecm.automation.jsf.operations.CancelCreateDocumentInUI" />
     <operation class="org.nuxeo.ecm.automation.jsf.operations.SaveDocumentInUI" />
+    <operation class="org.nuxeo.ecm.automation.jsf.operations.InitSeamContext" />
+    <operation class="org.nuxeo.ecm.automation.jsf.operations.DestroySeamContext" />
+  </extension>
+
+ <extension point="chains"
+    target="org.nuxeo.ecm.core.operation.OperationServiceComponent">
+    <chain id="Chain.ImportClipboard">
+      <operation id="Seam.InitContext" />
+      <operation id="UserWorkspace.CreateDocumentFromBlob" />
+      <operation id="Document.Save"/>
+      <operation id="Seam.AddToWorklist"/>
+      <operation id="Seam.DestroyContext" />
+    </chain>
   </extension>
 
 </component>
