@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -40,8 +40,10 @@ import org.apache.chemistry.opencmis.commons.exceptions.CmisInvalidArgumentExcep
 import org.apache.chemistry.opencmis.commons.exceptions.CmisNotSupportedException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoObjectData;
 
 /**
@@ -235,6 +237,21 @@ public class NuxeoFolder extends NuxeoFileableObject implements Folder {
             return null;
         }
         return parents.get(0);
+    }
+
+    @Override
+    public String getParentId() {
+        try {
+            CoreSession coreSession = data.doc.getCoreSession();
+            DocumentModel parent = coreSession.getParentDocument(new IdRef(
+                    getId()));
+            if (parent == null || service.isFilteredOut(parent)) {
+                return null;
+            }
+            return parent.getId();
+        } catch (ClientException e) {
+            throw new CmisRuntimeException(e.toString(), e);
+        }
     }
 
     @Override

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -149,6 +149,11 @@ public class NuxeoTransientFolder extends NuxeoTransientFileableObject
     @Override
     public Folder getFolderParent() {
         return ((NuxeoFolder) object).getFolderParent();
+    }
+
+    @Override
+    public String getParentId() {
+        return ((NuxeoFolder) object).getParentId();
     }
 
     @Override

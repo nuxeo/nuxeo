@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -1317,6 +1317,116 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         statement = String.format(statementPattern, "nosuchid");
         res = query(statement);
         assertEquals(0, res.getNumItems().intValue());
+    }
+
+    @Test
+    public void testQueryInTreeQualifier() throws Exception {
+        ObjectList res;
+        String statement;
+        String statementPattern; // qual is type
+        ObjectData f2 = getObjectByPath("/testfolder2");
+
+        statementPattern = "SELECT cmis:name FROM File" // no alias
+                + " WHERE IN_TREE(File, '%s')"; // qual is type
+        statement = String.format(statementPattern, f2.getId());
+        res = query(statement);
+        assertEquals(1, res.getNumItems().intValue());
+        assertEquals("testfile4_Title",
+                getString(res.getObjects().get(0), PropertyIds.NAME));
+
+        statementPattern = "SELECT cmis:name FROM File f" // alias
+                + " WHERE IN_TREE(f, '%s')"; // qual is alias
+        statement = String.format(statementPattern, f2.getId());
+        res = query(statement);
+        assertEquals(1, res.getNumItems().intValue());
+        assertEquals("testfile4_Title",
+                getString(res.getObjects().get(0), PropertyIds.NAME));
+
+        statementPattern = "SELECT cmis:name FROM File f" // alias
+                + " WHERE IN_TREE(File, '%s')"; // qual is type
+        statement = String.format(statementPattern, f2.getId());
+        res = query(statement);
+        assertEquals(1, res.getNumItems().intValue());
+        assertEquals("testfile4_Title",
+                getString(res.getObjects().get(0), PropertyIds.NAME));
+
+        statementPattern = "SELECT cmis:name FROM File f" // alias
+                + " WHERE IN_TREE('%s')"; // no qual
+        statement = String.format(statementPattern, f2.getId());
+        res = query(statement);
+        assertEquals(1, res.getNumItems().intValue());
+        assertEquals("testfile4_Title",
+                getString(res.getObjects().get(0), PropertyIds.NAME));
+
+        try {
+            statement = "SELECT cmis:name FROM File"
+                    + " WHERE IN_TREE(g, 'abc')"; // invalid qual
+            query(statement);
+            fail("should fail");
+        } catch (CmisRuntimeException e) {
+            assertTrue(e.getMessage().contains(
+                    "g is neither a type query name nor an alias"));
+        }
+
+        try {
+            statement = "SELECT cmis:name FROM File f"
+                    + " WHERE IN_TREE(g, 'abc')"; // invalid qual
+            query(statement);
+            fail("should fail");
+        } catch (CmisRuntimeException e) {
+            assertTrue(e.getMessage().contains(
+                    "g is neither a type query name nor an alias"));
+        }
+    }
+
+    @Test
+    public void testQueryQualifiers() throws Exception {
+        ObjectList res;
+        String statement;
+
+        statement = "SELECT cmis:name FROM File"; // default
+        res = query(statement);
+        assertEquals(3, res.getNumItems().intValue());
+
+        statement = "SELECT File.cmis:name FROM File"; // type qual
+        res = query(statement);
+        assertEquals(3, res.getNumItems().intValue());
+
+        statement = "SELECT File.cmis:name, cmis:name FROM File";
+        res = query(statement);
+        assertEquals(3, res.getNumItems().intValue());
+
+        statement = "SELECT File.cmis:name, cmis:objectTypeId FROM File";
+        res = query(statement);
+        assertEquals(3, res.getNumItems().intValue());
+
+        statement = "SELECT cmis:name FROM File f"; // no qual
+        res = query(statement);
+        assertEquals(3, res.getNumItems().intValue());
+
+        statement = "SELECT f.cmis:name FROM File f"; // alias qual
+        res = query(statement);
+        assertEquals(3, res.getNumItems().intValue());
+
+        statement = "SELECT File.cmis:name FROM File f"; // alias qual
+        res = query(statement);
+        assertEquals(3, res.getNumItems().intValue());
+
+        statement = "SELECT f.cmis:name, cmis:objectTypeId FROM File f";
+        res = query(statement);
+        assertEquals(3, res.getNumItems().intValue());
+
+        statement = "SELECT File.cmis:name, f.cmis:objectId FROM File f";
+        res = query(statement);
+        assertEquals(3, res.getNumItems().intValue());
+
+        statement = "SELECT File.cmis:name, cmis:objectTypeId FROM File f";
+        res = query(statement);
+        assertEquals(3, res.getNumItems().intValue());
+
+        statement = "SELECT File.cmis:name, f.cmis:objectId, cmis:objectTypeId FROM File f";
+        res = query(statement);
+        assertEquals(3, res.getNumItems().intValue());
     }
 
     @SuppressWarnings("unchecked")
