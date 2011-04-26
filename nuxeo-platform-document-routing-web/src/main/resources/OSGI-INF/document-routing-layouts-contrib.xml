@@ -48,8 +48,7 @@
       </properties>
     </widget>
 
-    <!-- FIXME: a global widget with such a name is a conflict waiting to happen -->
-    <widget name="type" type="selectOneDirectory">
+    <widget name="execution_type" type="selectOneDirectory">
       <fields>
         <field>stepf:execution</field>
       </fields>
@@ -111,7 +110,7 @@
       </templates>
       <rows>
         <row>
-          <widget>type</widget>
+          <widget>execution_type</widget>
         </row>
       </rows>
     </layout>
