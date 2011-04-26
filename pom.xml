@@ -68,7 +68,6 @@
     <module>nuxeo-platform-placeful-api</module>
     <module>nuxeo-platform-placeful-core</module>
     <module>nuxeo-platform-placeful-facade</module>
-    <module>nuxeo-platform-placeful-theme</module>
     <module>nuxeo-platform-types-facade</module>
     <module>nuxeo-platform-uidgen-core</module>
     <module>nuxeo-platform-url-facade</module>
@@ -91,7 +90,7 @@
       <module>nuxeo-platform-login-jboss</module> <module>nuxeo-platform-auth-web-jboss</module>
       <module>nuxeo-platform-mimetype-facade</module> <module>nuxeo-platform-placeful-api</module>
       <module>nuxeo-platform-placeful-core</module> <module>nuxeo-platform-placeful-facade</module>
-      <module>nuxeo-platform-placeful-theme</module> <module>nuxeo-platform-types-facade</module>
+      <module>nuxeo-platform-types-facade</module>
       <module>nuxeo-platform-uidgen-core</module> <module>nuxeo-platform-url-facade</module>
       <module>nuxeo-platform-usermanager-facade</module> <module>nuxeo-platform-ws</module>
       <module>nuxeo-platform-htmlsanitizer</module> <module>nuxeo-platform-test</module>
@@ -363,11 +362,6 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-placeful-facade</artifactId>
-        <version>${nuxeo.services.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-placeful-theme</artifactId>
         <version>${nuxeo.services.version}</version>
       </dependency>
       <dependency>
