@@ -14,16 +14,10 @@
     </documentation>
 
     <treeManagerPlugin name="navigation">
-      <excludedFacets>
-        <facet name="HiddenInNavigation" />
-      </excludedFacets>
-      <includedFacets>
-        <facet name="Folderish" />
-      </includedFacets>
-      <leafFilterClass>org.nuxeo.ecm.webapp.tree.BigFolderLeafFilter</leafFilterClass>
-      <sortPropertyPath>dc:title</sortPropertyPath>
-      <queryModel>TREE_CHILDREN</queryModel>
-      <orderableQueryModel>TREE_ORDERED_CHILDREN</orderableQueryModel>
+      <leafFilterClass>
+        org.nuxeo.ecm.webapp.tree.BigFolderLeafFilter
+      </leafFilterClass>
+      <pageProvider>TREE_CHILDREN</pageProvider>
     </treeManagerPlugin>
 
   </extension>

@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.webapp.tree;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -44,6 +45,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
  *
  * @author Anahide Tchertchian
  */
+// TODO: refactor to use only one registry
 public class TreeManagerImpl extends DefaultComponent implements TreeManager {
 
     private static final long serialVersionUID = 1L;
@@ -60,8 +62,18 @@ public class TreeManagerImpl extends DefaultComponent implements TreeManager {
 
     protected Map<String, Sorter> sorters;
 
+    protected Map<String, String> pageProviderNames;
+
+    /**
+     * @deprecated use {@link #pageProviderNames}
+     */
+    @Deprecated
     protected Map<String, String> queryModelNames;
 
+    /**
+     * @deprecated use {@link #pageProviderNames}
+     */
+    @Deprecated
     protected Map<String, String> orderableQueryModelNames;
 
     @SuppressWarnings("unchecked")
@@ -79,6 +91,7 @@ public class TreeManagerImpl extends DefaultComponent implements TreeManager {
         filters = new HashMap<String, Filter>();
         leafFilters = new HashMap<String, Filter>();
         sorters = new HashMap<String, Sorter>();
+        pageProviderNames = new HashMap<String, String>();
         queryModelNames = new HashMap<String, String>();
         orderableQueryModelNames = new HashMap<String, String>();
     }
@@ -88,6 +101,7 @@ public class TreeManagerImpl extends DefaultComponent implements TreeManager {
         filters = null;
         leafFilters = null;
         sorters = null;
+        pageProviderNames = null;
         queryModelNames = null;
         orderableQueryModelNames = null;
         super.deactivate(context);
@@ -124,6 +138,16 @@ public class TreeManagerImpl extends DefaultComponent implements TreeManager {
             }
             log.info("Registering sorter for plugin " + name);
             sorters.put(name, buildSorter(plugin));
+
+            // page provider
+            if (pageProviderNames.containsKey(name)) {
+                // FIXME handle merge?
+                log.info("Overriding page provider for plugin " + name);
+                pageProviderNames.remove(name);
+            }
+            log.info("Registering page provider for plugin " + name);
+            pageProviderNames.put(name, plugin.getPageProvider());
+
             // query model
             if (queryModelNames.containsKey(name)) {
                 // FIXME handle merge?
@@ -166,6 +190,11 @@ public class TreeManagerImpl extends DefaultComponent implements TreeManager {
                 log.info("Unregistering sorter for plugin " + name);
                 sorters.remove(name);
             }
+            // page provider
+            if (pageProviderNames.containsKey(name)) {
+                log.info("Unregistering page provider for plugin " + name);
+                pageProviderNames.remove(name);
+            }
             // query model
             if (queryModelNames.containsKey(name)) {
                 log.info("Unregistering query model for plugin " + name);
@@ -183,8 +212,17 @@ public class TreeManagerImpl extends DefaultComponent implements TreeManager {
     protected Filter buildFilter(TreeManagerPluginDescriptor plugin) {
         Filter filter = null;
 
+        List<String> includedFacets = plugin.getIncludedFacets();
+        List<String> excludedFacets = plugin.getExcludedFacets();
+        List<String> excludedTypes = plugin.getExcludedTypes();
+
         String filterClass = plugin.getFilterClassName();
         if (filterClass == null || "".equals(filterClass)) {
+            if ((includedFacets == null || includedFacets.isEmpty())
+                    && (excludedFacets == null || excludedFacets.isEmpty())
+                    && (excludedTypes == null || excludedTypes.isEmpty())) {
+                return null;
+            }
             // built-in filter
             filter = new DefaultDocumentTreeFilter();
         } else {
@@ -207,9 +245,9 @@ public class TreeManagerImpl extends DefaultComponent implements TreeManager {
         // setup config when possible
         if (filter instanceof DocumentTreeFilter) {
             DocumentTreeFilter treeFilter = (DocumentTreeFilter) filter;
-            treeFilter.setIncludedFacets(plugin.getIncludedFacets());
-            treeFilter.setExcludedFacets(plugin.getExcludedFacets());
-            treeFilter.setExcludedTypes(plugin.getExcludedTypes());
+            treeFilter.setIncludedFacets(includedFacets);
+            treeFilter.setExcludedFacets(excludedFacets);
+            treeFilter.setExcludedTypes(excludedTypes);
         }
 
         return filter;
@@ -238,8 +276,13 @@ public class TreeManagerImpl extends DefaultComponent implements TreeManager {
     protected Sorter buildSorter(TreeManagerPluginDescriptor plugin) {
         Sorter sorter = null;
 
+        String sortPropertyPath = plugin.getSortPropertyPath();
+
         String sorterClass = plugin.getSorterClassName();
         if (sorterClass == null || "".equals(sorterClass)) {
+            if (sortPropertyPath == null || "".equals(sortPropertyPath)) {
+                return null;
+            }
             // built-in sorter
             sorter = new DefaultDocumentTreeSorter();
         } else {
@@ -262,7 +305,7 @@ public class TreeManagerImpl extends DefaultComponent implements TreeManager {
         // setup config when possible
         if (sorter instanceof DocumentTreeSorter) {
             DocumentTreeSorter treeSorter = (DocumentTreeSorter) sorter;
-            treeSorter.setSortPropertyPath(plugin.getSortPropertyPath());
+            treeSorter.setSortPropertyPath(sortPropertyPath);
         }
 
         return sorter;
@@ -298,6 +341,11 @@ public class TreeManagerImpl extends DefaultComponent implements TreeManager {
     public QueryModelDescriptor getOrderableQueryModelDescriptor(
             String pluginName) {
         return buildQueryModelDescriptor(orderableQueryModelNames.get(pluginName));
+    }
+
+    @Override
+    public String getPageProviderName(String pluginName) {
+        return pageProviderNames.get(pluginName);
     }
 
 }

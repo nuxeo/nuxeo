@@ -28,7 +28,8 @@ import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
- * Plugin holding filter and sort configuration information for a document tree.
+ * Plugin holding filter and sort configuration information for a document
+ * tree.
  *
  * @author Florent BONNET
  * @author Anahide Tchertchian
@@ -50,9 +51,23 @@ public class TreeManagerPluginDescriptor implements Serializable {
     @XNode("sorterClass")
     protected String sorterClassName;
 
+    /**
+     * @since 5.4.2
+     */
+    @XNode("pageProvider")
+    protected String pageProvider;
+
+    /**
+     * @deprecated since 5.4.2: use pageProvider instead
+     */
+    @Deprecated
     @XNode("queryModel")
     protected String queryModelName;
 
+    /**
+     * @deprecated since 5.4.2: use pageProvider instead
+     */
+    @Deprecated
     @XNode("orderableQueryModel")
     protected String orderableQueryModelName;
 
@@ -108,4 +123,7 @@ public class TreeManagerPluginDescriptor implements Serializable {
         return sortPropertyPath;
     }
 
+    public String getPageProvider() {
+        return pageProvider;
+    }
 }

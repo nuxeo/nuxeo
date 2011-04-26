@@ -95,18 +95,21 @@ public class TreeActionsBean implements TreeActions, Serializable {
         return getTreeRoots(false);
     }
 
-    public List<DocumentTreeNode> getTreeRoots(String treeName) throws ClientException {
+    public List<DocumentTreeNode> getTreeRoots(String treeName)
+            throws ClientException {
         return getTreeRoots(false, treeName);
     }
 
-    protected List<DocumentTreeNode> getTreeRoots(boolean showRoot, String treeName)
-            throws ClientException {
-        return getTreeRoots(showRoot, navigationContext.getCurrentDocument(), treeName);
+    protected List<DocumentTreeNode> getTreeRoots(boolean showRoot,
+            String treeName) throws ClientException {
+        return getTreeRoots(showRoot, navigationContext.getCurrentDocument(),
+                treeName);
     }
 
     protected List<DocumentTreeNode> getTreeRoots(boolean showRoot)
             throws ClientException {
-        return getTreeRoots(showRoot, navigationContext.getCurrentDocument(), DEFAULT_TREE_PLUGIN_NAME);
+        return getTreeRoots(showRoot, navigationContext.getCurrentDocument(),
+                DEFAULT_TREE_PLUGIN_NAME);
     }
 
     protected List<DocumentTreeNode> getTreeRoots(boolean showRoot,
@@ -157,6 +160,7 @@ public class TreeActionsBean implements TreeActions, Serializable {
                 Filter filter = null;
                 Filter leafFilter = null;
                 Sorter sorter = null;
+                String pageProvider = null;
                 QueryModel queryModel = null;
                 QueryModel orderableQueryModel = null;
                 try {
@@ -164,6 +168,7 @@ public class TreeActionsBean implements TreeActions, Serializable {
                     filter = treeManager.getFilter(treeName);
                     leafFilter = treeManager.getLeafFilter(treeName);
                     sorter = treeManager.getSorter(treeName);
+                    pageProvider = treeManager.getPageProviderName(treeName);
                     QueryModelDescriptor queryModelDescriptor = treeManager.getQueryModelDescriptor(treeName);
                     queryModel = queryModelDescriptor == null ? null
                             : new QueryModel(queryModelDescriptor);
@@ -171,13 +176,22 @@ public class TreeActionsBean implements TreeActions, Serializable {
                     orderableQueryModel = orderableQueryModelDescriptor == null ? null
                             : new QueryModel(orderableQueryModelDescriptor);
                 } catch (Exception e) {
-                    log.error(
-                            "Could not fetch filter, sorter or node type for tree ",
-                            e);
+                    log.error("Could not fetch filter or sorter for tree ", e);
                 }
-                DocumentTreeNode treeRoot = new DocumentTreeNodeImpl(
-                        firstAccessibleParent, filter, leafFilter, sorter,
-                        queryModel, orderableQueryModel);
+
+                DocumentTreeNode treeRoot = null;
+                if (pageProvider == null) {
+                    // compatibility code
+                    treeRoot = new DocumentTreeNodeImpl(
+                            documentManager.getSessionId(),
+                            firstAccessibleParent, filter, leafFilter, sorter,
+                            queryModel, orderableQueryModel);
+                } else {
+                    treeRoot = new DocumentTreeNodeImpl(
+                            documentManager.getSessionId(),
+                            firstAccessibleParent, filter, leafFilter, sorter,
+                            pageProvider);
+                }
                 currentTree.add(treeRoot);
                 log.debug("Tree initialized with document: "
                         + firstAccessibleParent.getId());
