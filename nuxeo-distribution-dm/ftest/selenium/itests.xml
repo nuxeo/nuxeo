@@ -9,8 +9,7 @@
 
   <property name="suites"
             value="suite1,suite2,suite-dm,suite-webengine,suite-webengine-website,suite-webengine-tags" />
-  <!--  <property name="out.dir" value="${maven.project.build.directory}" /> -->
-  <property name="out.dir" value="target" />
+  <property name="out.dir" value="${maven.project.build.directory}" />
   <unzip dest="${out.dir}/" overwrite="false">
     <artifact:resolveFile key="org.nuxeo:nuxeo-ftest::zip" />
   </unzip>
