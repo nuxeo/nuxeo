@@ -48,6 +48,7 @@
       </properties>
     </widget>
 
+    <!-- FIXME: a global widget with such a name is a conflict waiting to happen -->
     <widget name="type" type="selectOneDirectory">
       <fields>
         <field>stepf:execution</field>
