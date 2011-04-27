@@ -45,7 +45,7 @@ public class SystemHomePage extends AdminCenterBasePage {
         } else {
             return null;
         }
-        findElementWithTimeout(By.id("username"), 120 * 1000);
+        findElementWithTimeout(By.id("username"), 180 * 1000);
         return asPage(LoginPage.class);
     }
 
