@@ -46,9 +46,9 @@ public abstract class AbstractCoreBackend implements Backend {
         return getSession(false);
     }
 
-    @Override
-    public CoreSession getSession(boolean requiredNew) throws ClientException {
+    public CoreSession getSession(boolean synchronize) throws ClientException {
         try {
+
             if (session == null) {
                 RepositoryManager rm;
                 rm = Framework.getService(RepositoryManager.class);
@@ -56,8 +56,12 @@ public abstract class AbstractCoreBackend implements Backend {
             } else {
                 session.save();
             }
+
         } catch (Exception e) {
             throw new ClientException("Error while getting session", e);
+        }
+        if (synchronize) {
+            session.save();
         }
         return session;
     }

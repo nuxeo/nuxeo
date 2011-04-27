@@ -81,14 +81,19 @@ public class PathCache {
     }
 
     public void remove(String path) {
-        pathToUuidCache.remove(path);
+        Map<String, Value> cacheCopy = new HashMap<String, Value>(pathToUuidCache);
+        for(String key : cacheCopy.keySet()){
+            if(key.startsWith(path)){
+                pathToUuidCache.remove(key);
+            }
+        }
     }
 
     private int clean() {
         Map<String, Value> tmpMap = new HashMap<String, Value>(pathToUuidCache);
         for (String key : tmpMap.keySet()) {
             if ((pathToUuidCache.get(key).getExpiredTime()) < System.currentTimeMillis()) {
-                pathToUuidCache.remove(key);
+                remove(key);
             }
         }
         return pathToUuidCache.size();

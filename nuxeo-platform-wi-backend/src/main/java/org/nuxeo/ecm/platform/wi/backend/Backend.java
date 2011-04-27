@@ -58,28 +58,22 @@ public interface Backend {
 
     void removeItem(DocumentRef ref) throws ClientException;
 
-    void renameItem(DocumentModel source, String destinationName)
+    void renameItem(DocumentModel source, String destinationName) throws ClientException;
+
+    DocumentModel moveItem(DocumentModel source, PathRef targetParentRef) throws ClientException;
+
+    DocumentModel moveItem(DocumentModel source, DocumentRef targetParentRef, String name)
             throws ClientException;
 
-    DocumentModel moveItem(DocumentModel source, PathRef targetParentRef)
-            throws ClientException;
+    DocumentModel updateDocument(DocumentModel doc, String name, Blob content) throws ClientException;
 
-    public DocumentModel moveItem(DocumentModel source,
-            DocumentRef targetParentRef, String name) throws ClientException;
+    DocumentModel copyItem(DocumentModel source, PathRef targetParentRef) throws ClientException;
 
-    DocumentModel copyItem(DocumentModel source, PathRef targetParentRef)
-            throws ClientException;
+    DocumentModel createFolder(String parentPath, String name) throws ClientException;
 
-    DocumentModel createFolder(String parentPath, String name)
-            throws ClientException;
+    DocumentModel createFile(String parentPath, String name, Blob content) throws ClientException;
 
-    DocumentModel createFile(String parentPath, String name, Blob content)
-            throws ClientException;
-
-    DocumentModel createFile(String parentPath, String name)
-            throws ClientException;
-
-    DocumentModel saveDocument(DocumentModel doc) throws ClientException;
+    DocumentModel createFile(String parentPath, String name) throws ClientException;
 
     List<DocumentModel> getChildren(DocumentRef ref) throws ClientException;
 
@@ -87,8 +81,7 @@ public interface Backend {
 
     boolean exists(String location);
 
-    boolean hasPermission(DocumentRef docRef, String permission)
-            throws ClientException;
+    boolean hasPermission(DocumentRef docRef, String permission) throws ClientException;
 
     String getDisplayName(DocumentModel doc);
 

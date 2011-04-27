@@ -58,12 +58,12 @@
         </filter-mapping>
     </extension>
 
-    <!--<install>
-      &lt;!&ndash;  unzip the war template &ndash;&gt;
+    <install>
+      <!-- unzip the war template -->
       <unzip from="${bundle.fileName}" to="/" prefix="tomcatvalve">
         <include>tomcatvalve/nuxeo.war/**</include>
-      </unzip>
-    </install>-->
+            </unzip>
+    </install>
 
 </fragment>
 

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xs:schema 
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    targetNamespace="http://core2.is/schemas/1.0/digest_auth" >
+        
+    <xs:element name="usr" type="xs:string"/>
+    <xs:element name="ha1" type="xs:string"/>
+
+</xs:schema>

@@ -97,10 +97,7 @@ public class FileResource extends ExistingResource {
             content.setMimeType(contentType);
         content.setFilename(name);
 
-        doc.getProperty("file:content").setValue(content);
-            doc.getProperty("file:filename").setValue(name);
-            backend.saveDocument(doc);
-        backend.saveChanges();
+            backend.updateDocument(doc, name, content);
         return Response.created(new URI(URLEncoder.encode(path, "UTF8"))).build();
         } catch (Exception e) {
             log.error("Error during PUT method execution", e);

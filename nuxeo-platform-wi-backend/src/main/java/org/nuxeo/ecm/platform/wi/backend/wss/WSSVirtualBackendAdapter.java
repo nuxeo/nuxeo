@@ -20,10 +20,12 @@ package org.nuxeo.ecm.platform.wi.backend.wss;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.wi.backend.Backend;
 import org.nuxeo.wss.WSSException;
 import org.nuxeo.wss.servlet.WSSRequest;
+import org.nuxeo.wss.spi.WSSBackend;
 import org.nuxeo.wss.spi.WSSListItem;
 import org.nuxeo.wss.spi.dws.DWSMetaData;
 import org.nuxeo.wss.spi.dws.DWSMetaDataImpl;
@@ -40,24 +42,18 @@ public class WSSVirtualBackendAdapter extends WSSBackendAdapter {
     }
 
     @Override
+    public boolean exists(String location) {
+        return getBackend(location).exists(location);
+    }
+
+    @Override
     public WSSListItem getItem(String location) throws WSSException {
-        throw new WSSException("Operation not supported");
+        return getBackend(location).getItem(location);
     }
 
     @Override
     public List<WSSListItem> listItems(String location) throws WSSException {
-        try {
-            List<WSSListItem> result = new ArrayList<WSSListItem>();
-            List<String> folders = backend.getVirtualFolderNames();
-            for (String folder : folders) {
-                WSSListItem item = new VirtualListItem(folder, corePathPrefix,
-                        urlRoot);
-                result.add(item);
-            }
-            return result;
-        } catch (ClientException e) {
-            throw new WSSException("Error while getting children" + location, e);
-        }
+        return getBackend(location).listItems(location);
     }
 
     @Override
@@ -76,37 +72,48 @@ public class WSSVirtualBackendAdapter extends WSSBackendAdapter {
     }
 
     @Override
-    public WSSListItem moveItem(String location, String destination)
-            throws WSSException {
-        throw new WSSException("Operation not supported");
+    public WSSListItem moveItem(String location, String destination) throws WSSException {
+        return getBackend(location).moveItem(location, destination);
     }
 
     @Override
     public void removeItem(String location) throws WSSException {
-        throw new WSSException("Operation not supported");
+        getBackend(location).removeItem(location);
     }
 
     @Override
-    public WSSListItem createFolder(String parentPath, String name)
-            throws WSSException {
-        throw new WSSException("Operation not supported");
+    public WSSListItem createFolder(String parentPath, String name) throws WSSException {
+        return getBackend(parentPath).createFolder(parentPath, name);
     }
 
     @Override
-    public WSSListItem createFileItem(String parentPath, String name)
-            throws WSSException {
-        throw new WSSException("Operation not supported");
+    public WSSListItem createFileItem(String parentPath, String name) throws WSSException {
+        return getBackend(parentPath).createFileItem(parentPath, name);
     }
 
     @Override
-    public DWSMetaData getMetaData(String location, WSSRequest wssRequest)
-            throws WSSException {
-        return new DWSMetaDataImpl();
+    public DWSMetaData getMetaData(String location, WSSRequest wssRequest) throws WSSException {
+        return getBackend(location).getMetaData(location, wssRequest);
     }
 
     @Override
     public Site getSite(String location) throws WSSException {
-        return new SiteImpl(urlRoot);
+        return getBackend(location).getSite(location);
     }
 
+    protected WSSBackend getBackend(String location){
+        if(StringUtils.isEmpty(location)){
+            return new WSSFakeBackend();
+    }
+
+        Backend backend = this.backend.getBackend(cleanLocation(location));
+        if(backend == null){
+            return new WSSFakeBackend();
+        }
+        //if(backend.isVirtual()){
+            //return new WSSFakeBackend();
+
+        //}
+        return new WSSBackendAdapter(backend, virtualRoot);
+    }
 }

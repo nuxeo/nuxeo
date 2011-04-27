@@ -45,7 +45,7 @@ public interface WebDavBackend {
 
     DocumentModel createFile(String parentPath, String name) throws ClientException;
 
-    DocumentModel saveDocument(DocumentModel doc) throws ClientException;
+    DocumentModel updateDocument(DocumentModel doc, String name, Blob content) throws ClientException;
 
     List<DocumentModel> getChildren(DocumentRef ref) throws ClientException;
 

@@ -126,9 +126,8 @@ public class WebDavBackendAdapter implements WebDavBackend {
     }
 
     @Override
-    public DocumentModel saveDocument(DocumentModel documentModel)
-            throws ClientException {
-        return backend.saveDocument(documentModel);
+    public DocumentModel updateDocument(DocumentModel documentModel, String s, Blob blob) throws ClientException {
+        return backend.updateDocument(documentModel, s, blob);
     }
 
     @Override

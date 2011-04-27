@@ -51,8 +51,7 @@ public class TestSimpleBackend extends SQLRepositoryTestCase {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.api");
         deployBundle("org.nuxeo.ecm.platform.content.template");
-        deployContrib("org.nuxeo.ecm.platform.wss.backend",
-                "OSGI-INF/wi-backend-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.wi.backend","OSGI-INF/wi-backend-contrib.xml");
         openSession();
 
         DocumentModel ws1 = session.createDocumentModel(
@@ -213,7 +212,6 @@ public class TestSimpleBackend extends SQLRepositoryTestCase {
         Lock lock = session.getLockInfo(new PathRef(
                 "/default-domain/workspaces/ws1/testMe"));
         assertNotNull(lock);
-        // System.out.println("----> lock:" + lock);
         assertEquals(lock.getOwner(), "Administrator");
 
         item.uncheckOut("Administrator");
@@ -270,17 +268,11 @@ public class TestSimpleBackend extends SQLRepositoryTestCase {
         assertEquals(4, items.size());
 
         Collections.sort(items, wssListItemSorter);
+
         assertEquals("isolatedws", items.get(0).getName());
         assertEquals("ws1", items.get(1).getName());
         assertEquals("ws2", items.get(2).getName());
         assertEquals("ws2-1", items.get(3).getName());
-
-        /*
-         * assertEquals("isolatedws", items.get(0).getDisplayName());
-         * assertEquals("ws1", items.get(1).getDisplayName());
-         * assertEquals("isolatedws2", items.get(2).getDisplayName());
-         * assertEquals("ws2", items.get(3).getDisplayName());
-         */
 
         assertEquals("nuxeo/isolatedws", items.get(0).getSubPath());
         assertEquals("nuxeo/ws1", items.get(1).getSubPath());
@@ -355,10 +347,10 @@ public class TestSimpleBackend extends SQLRepositoryTestCase {
         assertEquals("File", ((NuxeoListItem) item).getDoc().getType());
         backend.saveChanges(); // for cache invalidation
         // session.save(); // for cache invalidation
-        assertTrue(session.exists(new PathRef(
+        assertNotNull("Item must exists",  backend.getItem("/nuxeo/ws1/testMe"));
+        assertTrue("Document must exists",  session.exists(new PathRef(
                 "/default-domain/workspaces/ws1/testMe")));
 
-        // System.out.println("---> item:" + item);
         item.checkOut("titi");
         backend.saveChanges(); // for cache invalidation
         // session.save(); // for cache invalidation

@@ -19,14 +19,22 @@
 package org.nuxeo.ecm.platform.wi.backend;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.DocumentModel;
+
+import java.util.List;
 
 public class SearchRootBackend extends SearchVirtualBackend {
+
+    private static final Log log = LogFactory.getLog(SearchRootBackend.class);
 
     private static final String QUERY = "select * from Workspace where ecm:mixinType != 'HiddenInNavigation' "
             + "AND  ecm:currentLifeCycleState != 'deleted' AND ecm:isProxy = 0 order by ecm:path";
 
     public SearchRootBackend() {
-        super("", "", QUERY);
+        super("", "", QUERY, new SimpleRealBackendFactory());
     }
 
     @Override

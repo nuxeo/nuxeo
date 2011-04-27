@@ -17,10 +17,13 @@
  */
 package org.nuxeo.ecm.platform.wi.backend.wss;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.*;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.platform.wi.backend.Backend;
+import org.nuxeo.ecm.platform.wi.backend.VirtualBackend;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.wss.WSSException;
 import org.nuxeo.wss.servlet.WSSFilter;
@@ -35,6 +38,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class WSSBackendAdapter extends AbstractWSSBackend {
+
+    private static final Log log = LogFactory.getLog(WSSBackendAdapter.class);
 
     protected String corePathPrefix;
 
@@ -78,15 +83,17 @@ public class WSSBackendAdapter extends AbstractWSSBackend {
         location = cleanLocation(location);
         List<WSSListItem> result = new ArrayList<WSSListItem>();
         try {
-            DocumentModel doc = backend.resolveLocation(location);
-            if (doc == null) {
-                throw new WSSException("Unable to find item " + location);
+            if (backend.isVirtual()) {
+                List<String> backendNames = ((VirtualBackend) backend).getOrderedBackendNames();
+                for(String name : backendNames){
+                    result.add(createItem(name));
             }
-
-            List<DocumentModel> children = backend.getChildren(doc.getRef());
+            } else {
+                List<DocumentModel> children = backend.getChildren(location);
             for (DocumentModel model : children) {
                 NuxeoListItem item = createItem(model);
                 result.add(item);
+            }
             }
         } catch (ClientException e) {
             throw new WSSException("Error while getting children for "
@@ -283,6 +290,10 @@ public class WSSBackendAdapter extends AbstractWSSBackend {
 
     private NuxeoListItem createItem(DocumentModel model) {
         return getItemFactory().createItem(model, corePathPrefix, urlRoot);
+    }
+
+    private VirtualListItem createItem(String name) {
+        return new VirtualListItem(name, corePathPrefix, urlRoot);
     }
 
     private WSSListItemFactory getItemFactory() {

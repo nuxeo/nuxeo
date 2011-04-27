@@ -16,9 +16,7 @@
  */
 package org.nuxeo.ecm.platform.wi.backend;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang.StringUtils;
@@ -32,7 +30,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
 
-public abstract class AbstractVirtualBackend extends AbstractCoreBackend {
+public abstract class AbstractVirtualBackend extends AbstractCoreBackend
+        implements VirtualBackend {
 
     private static final Log log = LogFactory.getLog(AbstractVirtualBackend.class);
 
@@ -44,15 +43,66 @@ public abstract class AbstractVirtualBackend extends AbstractCoreBackend {
 
     private String backendDisplayName;
 
-    protected AbstractVirtualBackend(String name, String rootUrl) {
-        this(name, rootUrl, null);
-    }
+    private RealBackendFactory realBackendFactory;
 
     protected AbstractVirtualBackend(String name, String rootUrl,
-            CoreSession session) {
+                                     RealBackendFactory realBackendFactory) {
+        this(name, rootUrl, null, realBackendFactory);
+    }
+
+    protected AbstractVirtualBackend(String name, String rootUrl, CoreSession session,
+                                     RealBackendFactory realBackendFactory) {
         super(session);
         this.backendDisplayName = name;
         this.rootUrl = new Path(rootUrl).append(this.backendDisplayName).toString();
+        this.realBackendFactory = realBackendFactory;
+    }
+
+    protected void registerSimpleBackends(List<DocumentModel> docs)
+            throws ClientException {
+        List<String> paths = new ArrayList<String>();
+        for (DocumentModel doc : docs) {
+            paths.add(doc.getPathAsString());
+        }
+
+        List<String> heads = new ArrayList<String>();
+        for (int idx = 0; idx < paths.size(); idx++) {
+            String path = paths.get(idx);
+            if (isHead(path, paths, idx)) {
+                heads.add(path);
+            }
+        }
+
+        for (String head : heads) {
+            String headName = new Path(head).lastSegment();
+            String name = headName;
+            int idx = 1;
+            while (backendMap.containsKey(name)) {
+                name = headName + "-" + idx;
+                idx = idx + 1;
+            }
+
+            Backend backend = realBackendFactory.createBackend(name, head,
+                    new Path(this.rootUrl).append(name).toString(),
+                    getSession()
+            );
+
+            registerBackend(backend);
+        }
+    }
+
+    private boolean isHead(String path, List<String> paths, int idx) {
+        int level = new Path(path).segmentCount();
+
+        for (int i = idx; i >= 0; i--) {
+            String other = paths.get(i);
+            if (path.contains(other)) {
+                if (new Path(other).segmentCount() == level - 1) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     @Override
@@ -135,7 +185,21 @@ public abstract class AbstractVirtualBackend extends AbstractCoreBackend {
         }
     }
 
-    protected abstract boolean initIfNeed() throws ClientException;
+    protected boolean initIfNeed() throws ClientException {
+        if (backendMap == null || orderedBackendNames == null) {
+            backendMap = new HashMap<String, Backend>();
+            orderedBackendNames = new LinkedList<String>();
+            try {
+                init();
+                return true;
+            } catch (Exception e) {
+                log.error("Execute during virtual backend initialization. Backend name:" + getBackendDisplayName(), e);
+            }
+        }
+        return false;
+    }
+
+    protected abstract void init() throws Exception;
 
     @Override
     public boolean isLocked(DocumentRef ref) throws ClientException {
@@ -247,7 +311,7 @@ public abstract class AbstractVirtualBackend extends AbstractCoreBackend {
     }
 
     @Override
-    public DocumentModel saveDocument(DocumentModel doc) throws ClientException {
+    public DocumentModel updateDocument(DocumentModel doc, String name, Blob content) throws ClientException {
         throw new UnsupportedOperationException();
     }
 
@@ -269,4 +333,10 @@ public abstract class AbstractVirtualBackend extends AbstractCoreBackend {
         }
         return null;
     }
+
+    public LinkedList<String> getOrderedBackendNames() throws ClientException {
+        initIfNeed();
+        return orderedBackendNames;
+    }
+
 }

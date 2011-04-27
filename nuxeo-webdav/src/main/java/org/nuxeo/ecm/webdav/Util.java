@@ -51,33 +51,7 @@ import java.io.Writer;
  */
 public class Util {
 
-    // Utility class.
-    private Util() {
-    }
-
-    public static CoreSession getSession(HttpServletRequest request) throws Exception {
-        UserSession userSession = UserSession.getCurrentSession(request);
-        if (userSession != null) {
-            return userSession.getCoreSession();
-        } else {
-            //return getSession();
-            return null;
-        }
-    }
-
-    /**
-     * Gets a core session directly from the RepositoryManager.
-     * Used for the test server.
-     */
-    public static CoreSession getSession() throws Exception {
-        RepositoryManager rm = Framework.getService(RepositoryManager.class);
-        Repository repo = rm.getDefaultRepository();
-        CoreSession session = repo.open();
-        return session;
-    }
-
     // utility methods related to JAXB marshalling
-
     public static JAXBContext getJaxbContext() throws JAXBException {
         return JAXBContext.newInstance(new Class<?>[] {
                 ActiveLock.class, AllProp.class, CannotModifyProtectedProperty.class, Collection.class,
@@ -124,7 +98,7 @@ public class Util {
         if (!path.startsWith("/")) {
             path = "/" + path;
         }
-        return cleanName(path);
+        return path;
     }
 
     public static String getNameFromPath(String path) {
@@ -143,24 +117,6 @@ public class Util {
         int tokenEnd = token.indexOf(">");
         token = token.substring(0, tokenEnd);
         return token;
-    }
-
-    public static String cleanName(String name) {
-        // XXX
-        String s = name.replaceAll(" ", "-");
-        /*s = s.replaceAll("[????]", "e");
-        s = s.replaceAll("[??]", "u");
-        s = s.replaceAll("[??]", "i");
-        s = s.replaceAll("[??]", "a");
-        s = s.replaceAll("?", "o");
-        s = s.replaceAll("?", "c");
-        s = s.replaceAll("[????]", "E");
-        s = s.replaceAll("[??]", "U");
-        s = s.replaceAll("[??]", "I");
-        s = s.replaceAll("[??]", "A");
-        s = s.replaceAll("?", "O");
-        s = s.replaceAll("?", "C");*/
-        return s;
     }
 
     public static String encode(byte[] bytes, String encoding) throws ClientException {
