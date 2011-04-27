@@ -5,9 +5,15 @@
 
   <extension target="org.nuxeo.ecm.automation.features.upload.ImportOptionManagerComponent"  point="importOption">
 
-    <importOption name="clipboardImport" category="Clipboard" order="10">
+    <importOption name="clipboardImport" category="Clipboard_CLIPBOARD" order="10">
       <label>Import in personal workspace and add to clipboard</label>
       <operationId>Chain.ImportClipboard</operationId>
+      <formUrl></formUrl>
+    </importOption>
+
+    <importOption name="clipboardImport" category="Clipboard_DEFAULT" order="10">
+      <label>Import in personal workspace and add to clipboard</label>
+      <operationId>Chain.ImportWorklist</operationId>
       <formUrl></formUrl>
     </importOption>
 

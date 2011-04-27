@@ -20,9 +20,15 @@
       <formUrl>XXX</formUrl>
     </importOption>
 
-    <importOption name="fileImport" category="Content" order="10">
-      <label>File Import</label>
-      <operationId>Blob.Attach</operationId>
+    <importOption name="attach" category="mainBlob" order="10">
+      <label>Attach</label>
+      <operationId>BlobHolder.Attach</operationId>
+      <formUrl></formUrl>
+    </importOption>
+
+    <importOption name="attachFiles" category="otherBlobs" order="10">
+      <label>Attach</label>
+      <operationId>Chain.AttachFiles</operationId>
       <formUrl></formUrl>
     </importOption>
 

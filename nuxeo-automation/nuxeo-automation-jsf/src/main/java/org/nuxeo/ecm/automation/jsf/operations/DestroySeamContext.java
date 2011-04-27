@@ -2,6 +2,7 @@ package org.nuxeo.ecm.automation.jsf.operations;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.contexts.ServletLifecycle;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.Constants;
@@ -32,7 +33,7 @@ public class DestroySeamContext {
 
         if (conversationId!=null) {
             //CoreSession seamDocumentManager = (CoreSession) Contexts.getConversationContext().get("seamDocumentManager");
-            //Contexts.getConversationContext().set("documentManager", seamDocumentManager);
+            Contexts.getEventContext().remove("documentManager");
             //Manager.instance().endConversation(true);
         }
         ServletLifecycle.endRequest(request);

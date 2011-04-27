@@ -47,11 +47,18 @@
 
  <extension point="chains"
     target="org.nuxeo.ecm.core.operation.OperationServiceComponent">
-    <chain id="Chain.ImportClipboard">
+    <chain id="Chain.ImportWorklist">
       <operation id="Seam.InitContext" />
       <operation id="UserWorkspace.CreateDocumentFromBlob" />
       <operation id="Document.Save"/>
       <operation id="Seam.AddToWorklist"/>
+      <operation id="Seam.DestroyContext" />
+    </chain>
+    <chain id="Chain.ImportClipboard">
+      <operation id="Seam.InitContext" />
+      <operation id="UserWorkspace.CreateDocumentFromBlob" />
+      <operation id="Document.Save"/>
+      <operation id="Seam.AddToClipboard"/>
       <operation id="Seam.DestroyContext" />
     </chain>
   </extension>
