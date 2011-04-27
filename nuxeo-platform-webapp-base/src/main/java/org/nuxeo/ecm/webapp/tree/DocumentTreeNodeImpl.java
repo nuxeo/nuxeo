@@ -67,8 +67,6 @@ public class DocumentTreeNodeImpl implements DocumentTreeNode {
 
     protected final Sorter sorter;
 
-    protected PageProvider<DocumentModel> pageProvider;
-
     protected final String pageProviderName;
 
     protected ContentView orderableContentView;
@@ -143,12 +141,13 @@ public class DocumentTreeNodeImpl implements DocumentTreeNode {
     }
 
     /**
-     * @deprecated since 5.4.2: use constructor with a session id.
+     * This constructor assumes that a valid session id is held by the document
+     * model.
      */
-    @Deprecated
     public DocumentTreeNodeImpl(DocumentModel document, Filter filter,
             Sorter sorter) {
-        this(null, document, filter, null, sorter, (String) null);
+        this(document.getSessionId(), document, filter, null, sorter,
+                (String) null);
     }
 
     public DocumentTreeNodeImpl(String sessionId, DocumentModel document,
