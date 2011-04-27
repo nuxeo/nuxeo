@@ -18,6 +18,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -344,7 +345,10 @@ public class CMISQLQueryMaker implements QueryMaker {
 
             String tableMainId = table.getColumn(Model.MAIN_KEY).getFullQuotedName();
 
-            for (Table t : allTables.get(qual).values()) {
+            Map<String, Table> qualTables = allTables.get(qual);
+            Collection<Table> tablesToJoin = qualTables != null ? qualTables.values()
+                    : new ArrayList<Table>();
+            for (Table t : tablesToJoin) {
                 if (t.getKey().equals(table.getKey())) {
                     // this one was the first, already done
                     continue;
@@ -485,7 +489,6 @@ public class CMISQLQueryMaker implements QueryMaker {
 
         List<String> selectWhat = new ArrayList<String>();
         List<Serializable> selectParams = new ArrayList<Serializable>(1);
-
         for (SqlColumn rc : realColumns) {
             selectWhat.add(rc.sql);
         }
@@ -673,6 +676,15 @@ public class CMISQLQueryMaker implements QueryMaker {
             } else {
                 virtualColumns.put(key, col);
                 virtualColumnNames.add(key);
+                if (realColumns.isEmpty()) {
+                    // add the cmis:objectId that is required for the virtual
+                    // columns
+                    ColumnReference idColumn = new ColumnReference(qual,
+                            PropertyIds.OBJECT_ID);
+                    TypeDefinition type = getTypeForQualifier(qual);
+                    idColumn.setTypeDefinition(PropertyIds.OBJECT_ID, type);
+                    recordSelectSelector(idColumn);
+                }
             }
             if (typeInfo != null) {
                 typeInfo.put(key, pd);
