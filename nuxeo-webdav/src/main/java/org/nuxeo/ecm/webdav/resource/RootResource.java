@@ -57,7 +57,7 @@ public class RootResource {
     private HttpServletRequest request;
 
     public RootResource(@Context HttpServletRequest request,
-                        @Context CloseableService closeableService) throws Exception {
+            @Context CloseableService closeableService) throws Exception {
         log.debug(request.getMethod() + " " + request.getRequestURI());
 
         this.request = request;
@@ -73,32 +73,33 @@ public class RootResource {
     @Produces("text/html")
     public Object getRoot() throws Exception {
         Object resource = findResource("");
-        if(resource instanceof FolderResource){
-            return ((FolderResource)resource).get();
+        if (resource instanceof FolderResource) {
+            return ((FolderResource) resource).get();
         } else {
-        return ((VirtualFolderResource) findResource("")).get();
-    }
+            return ((VirtualFolderResource) findResource("")).get();
+        }
     }
 
     @OPTIONS
     public Object getRootOptions() throws Exception {
         Object resource = findResource("");
-        if(resource instanceof FolderResource){
-            return ((FolderResource)resource).options();
+        if (resource instanceof FolderResource) {
+            return ((FolderResource) resource).options();
         } else {
-        return ((VirtualFolderResource) findResource("")).options();
-    }
+            return ((VirtualFolderResource) findResource("")).options();
+        }
     }
 
     @PROPFIND
     public Object getRootPropfind(@Context UriInfo uriInfo,
             @HeaderParam("depth") String depth) throws Exception {
         Object resource = findResource("");
-        if(resource instanceof FolderResource){
-            return ((FolderResource)resource).propfind(uriInfo, depth);
+        if (resource instanceof FolderResource) {
+            return ((FolderResource) resource).propfind(uriInfo, depth);
         } else {
-        return ((VirtualFolderResource) findResource("")).propfind(uriInfo, depth);
-    }
+            return ((VirtualFolderResource) findResource("")).propfind(uriInfo,
+                    depth);
+        }
     }
 
     @Path("{path:.+}")
@@ -107,12 +108,13 @@ public class RootResource {
 
         WebDavBackend backend = Backend.get(path, request);
 
-        if(backend == null){
+        if (backend == null) {
             return Response.status(409).build();
         }
 
-        if(backend.isVirtual()){
-            return new VirtualFolderResource(path, request, backend.getVirtualFolderNames());
+        if (backend.isVirtual()) {
+            return new VirtualFolderResource(path, request,
+                    backend.getVirtualFolderNames());
         }
 
         DocumentModel doc = null;
@@ -120,7 +122,8 @@ public class RootResource {
             doc = backend.resolveLocation(path);
 
         } catch (Exception e) {
-            log.error("Error during resolving path: " + path + " Message:" + e.getMessage());
+            log.error("Error during resolving path: " + path + " Message:"
+                    + e.getMessage());
             return Response.status(409).build();
         }
 
@@ -134,7 +137,8 @@ public class RootResource {
         }
 
         if (doc.isFolder()) {
-            return new FolderResource(getDocumentPath(doc), doc, request, backend);
+            return new FolderResource(getDocumentPath(doc), doc, request,
+                    backend);
         } else {
             return new FileResource(getDocumentPath(doc), doc, request, backend);
         }
