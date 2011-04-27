@@ -106,7 +106,7 @@
 
             <ui:define name="error_message">
               <c:if test="#{provider.hasError()}">
-                #{provider.errorMessage}
+                #{messages[provider.errorMessage]}
               </c:if>
             </ui:define>
 
