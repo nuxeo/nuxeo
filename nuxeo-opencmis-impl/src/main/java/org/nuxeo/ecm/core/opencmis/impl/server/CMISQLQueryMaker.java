@@ -58,7 +58,6 @@ import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.opencmis.impl.util.TypeManagerImpl;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.query.QueryParseException;
-import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Model;
@@ -87,7 +86,7 @@ public class CMISQLQueryMaker implements QueryMaker {
 
     public static final String CMIS_PREFIX = "cmis:";
 
-    public static final String ECM_PREFIX = "ecm:";
+    public static final String NX_PREFIX = "nuxeo:";
 
     public static final String DC_FRAGMENT_NAME = "dublincore";
 
@@ -116,12 +115,11 @@ public class CMISQLQueryMaker implements QueryMaker {
 
     /**
      * These mixins never match an instance mixin when used in a clause
-     * ecm:mixinType = 'foo'
+     * nuxeo:secondaryObjectTypeIds = 'foo'
      */
     protected static final Set<String> MIXINS_NOT_PER_INSTANCE = new HashSet<String>(
             Arrays.asList(FacetNames.FOLDERISH, FacetNames.HIDDEN_IN_NAVIGATION));
 
-    
     protected Database database;
 
     protected Dialect dialect;
@@ -722,7 +720,7 @@ public class CMISQLQueryMaker implements QueryMaker {
 
         // fetch column and associate it to the selector
         Column column = getColumn(col);
-        if (!NXQL.ECM_MIXINTYPE.equals(col.getPropertyId()) && column == null) {
+        if (!NuxeoTypeHelper.NX_FACETS.equals(col.getPropertyId()) && column == null) {
             throw new QueryParseException("Cannot use column in " + clauseType
                     + " clause: " + col.getPropertyQueryName());
         }
@@ -730,14 +728,14 @@ public class CMISQLQueryMaker implements QueryMaker {
         String qual = canonicalQualifier.get(col.getQualifier());
 
         if (clauseType == WHERE
-                && NXQL.ECM_LIFECYCLESTATE.equals(col.getPropertyId())) {
+                && NuxeoTypeHelper.NX_LIFECYCLE_STATE.equals(col.getPropertyId())) {
             // explicit lifecycle query: do not include the 'deleted' lifecycle
             // filter
             skipDeleted = false;
             hasLifeCycleWhereClause = true;
         }
         if (clauseType == WHERE
-                && NXQL.ECM_MIXINTYPE.equals(col.getPropertyId())) {
+                && NuxeoTypeHelper.NX_FACETS.equals(col.getPropertyId())) {
             hasMixinTypeWhereClause = true;
         }
         // record as a needed fragment
@@ -810,7 +808,7 @@ public class CMISQLQueryMaker implements QueryMaker {
         String qual = canonicalQualifier.get(col.getQualifier());
         String id = col.getPropertyId();
         Column column;
-        if (id.startsWith(CMIS_PREFIX) || id.startsWith(NXQL.ECM_PREFIX)) {
+        if (id.startsWith(CMIS_PREFIX) || id.startsWith(NX_PREFIX)) {
             column = getSystemColumn(qual, id);
         } else {
             ModelProperty propertyInfo = model.getPropertyInfo(id);
@@ -857,11 +855,11 @@ public class CMISQLQueryMaker implements QueryMaker {
             return database.getTable(model.VERSION_TABLE_NAME).getColumn(
                     model.VERSION_IS_LATEST_KEY);
         }
-        if (id.equals(NXQL.ECM_ISVERSION)) {
+        if (id.equals(NuxeoTypeHelper.NX_ISVERSION)) {
             return database.getTable(model.HIER_TABLE_NAME).getColumn(
                     model.MAIN_IS_VERSION_KEY);
         }
-        if (id.equals(NXQL.ECM_LIFECYCLESTATE)) {
+        if (id.equals(NuxeoTypeHelper.NX_LIFECYCLE_STATE)) {
             return database.getTable(model.MISC_TABLE_NAME).getColumn(
                     model.MISC_LIFECYCLE_STATE_KEY);
         }
@@ -1121,8 +1119,8 @@ public class CMISQLQueryMaker implements QueryMaker {
 
         @Override
         public Boolean walkEquals(Tree opNode, Tree leftNode, Tree rightNode) {
-            if (NXQL.ECM_MIXINTYPE.equals(leftNode.getText())) {
-                walkMixins(opNode, leftNode, rightNode);
+            if (NuxeoTypeHelper.NX_FACETS.equals(leftNode.getText())) {
+                walkFacets(opNode, leftNode, rightNode);
                 return null;
             }
             if (leftNode.getType() == CmisQlStrictLexer.COL
@@ -1231,8 +1229,8 @@ public class CMISQLQueryMaker implements QueryMaker {
 
         @Override
         public Boolean walkInAny(Tree opNode, Tree colNode, Tree listNode) {
-            if (NXQL.ECM_MIXINTYPE.equals(resolveColumnReference(colNode).getName())) {
-                walkMixins(opNode, colNode, listNode);
+            if (NuxeoTypeHelper.NX_FACETS.equals(resolveColumnReference(colNode).getName())) {
+                walkFacets(opNode, colNode, listNode);
                 return null;
             }
             walkAny(colNode, "IN", listNode);
@@ -1241,8 +1239,8 @@ public class CMISQLQueryMaker implements QueryMaker {
 
         @Override
         public Boolean walkNotInAny(Tree opNode, Tree colNode, Tree listNode) {
-            if (NXQL.ECM_MIXINTYPE.equals(resolveColumnReference(colNode).getName())) {
-                walkMixins(opNode, colNode, listNode);
+            if (NuxeoTypeHelper.NX_FACETS.equals(resolveColumnReference(colNode).getName())) {
+                walkFacets(opNode, colNode, listNode);
                 return null;
             }
             walkAny(colNode, "NOT IN", listNode);
@@ -1251,8 +1249,8 @@ public class CMISQLQueryMaker implements QueryMaker {
 
         @Override
         public Boolean walkEqAny(Tree opNode, Tree literalNode, Tree colNode) {
-            if (NXQL.ECM_MIXINTYPE.equals(resolveColumnReference(colNode).getName())) {
-                walkMixins(opNode, colNode, literalNode);
+            if (NuxeoTypeHelper.NX_FACETS.equals(resolveColumnReference(colNode).getName())) {
+                walkFacets(opNode, colNode, literalNode);
                 return null;
             }
             // note that argument order is reversed
@@ -1425,7 +1423,7 @@ public class CMISQLQueryMaker implements QueryMaker {
             return (Column) resolveColumnReference(node).getInfo();
         }
 
-        protected void walkMixins(Tree opNode, Tree colNodel, Tree literalNode) {
+        protected void walkFacets(Tree opNode, Tree colNodel, Tree literalNode) {
             boolean include;
             Set<String> mixins;
 
@@ -1433,7 +1431,7 @@ public class CMISQLQueryMaker implements QueryMaker {
             if (opType ==  CmisQlStrictLexer.EQ_ANY) {
                 include = true;
                 if (literalNode.getType() != CmisQlStrictLexer.STRING_LIT) {
-                    throw new QueryMakerException(NXQL.ECM_MIXINTYPE
+                    throw new QueryMakerException(NuxeoTypeHelper.NX_FACETS
                             + " = requires literal string as right argument");
                 }
                 String value = super.walkString(literalNode).toString();
@@ -1446,7 +1444,7 @@ public class CMISQLQueryMaker implements QueryMaker {
                     mixins.add(super.walkString(literalNode.getChild(i)).toString());
                 }
             } else {
-                throw new QueryMakerException(NXQL.ECM_MIXINTYPE
+                throw new QueryMakerException(NuxeoTypeHelper.NX_FACETS
                         + " unsupported operator: " + opNode.getText());
             }
 

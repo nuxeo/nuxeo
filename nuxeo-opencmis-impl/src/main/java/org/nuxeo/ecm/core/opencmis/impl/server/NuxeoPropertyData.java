@@ -167,7 +167,7 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
         } else if (PropertyIds.VERSION_SERIES_CHECKED_OUT_ID.equals(name)) {
             return (PropertyData<U>) new NuxeoPropertyDataVersionSeriesCheckedOutId(
                     (PropertyDefinition<String>) pd, doc);
-        } else if (NXQL.ECM_ISVERSION.equals(name)) {
+        } else if (NuxeoTypeHelper.NX_ISVERSION.equals(name)) {
             return (PropertyData<U>) new NuxeoPropertyBooleanDataFixed(
                     (PropertyDefinition<Boolean>) pd,
                     Boolean.valueOf(doc.isVersion()));
@@ -177,7 +177,7 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
         } else if (PropertyIds.CONTENT_STREAM_LENGTH.equals(name)) {
             return (PropertyData<U>) new NuxeoPropertyDataContentStreamLength(
                     (PropertyDefinition<BigInteger>) pd, doc);
-        } else if (NuxeoTypeHelper.NX_ECM_DIGEST.equals(name)) {
+        } else if (NuxeoTypeHelper.NX_DIGEST.equals(name)) {
             return (PropertyData<U>) new NuxeoPropertyDataContentStreamDigest(
                     (PropertyDefinition<String>) pd, doc);
         } else if (PropertyIds.CONTENT_STREAM_MIME_TYPE.equals(name)) {
@@ -210,12 +210,12 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
         } else if (PropertyIds.POLICY_TEXT.equals(name)) {
             return (PropertyData<U>) new NuxeoPropertyStringDataFixed(
                     (PropertyDefinition<String>) pd, null);
-        } else if (NXQL.ECM_MIXINTYPE.equals(name)) {
+        } else if (NuxeoTypeHelper.NX_FACETS.equals(name)) {
             List<String> facets = new ArrayList<String>(doc.getFacets());
             Collections.sort(facets);
             return (PropertyData<U>) new NuxeoPropertyIdMultiDataFixed(
                     (PropertyDefinition<String>) pd, facets);
-        } else if (NXQL.ECM_LIFECYCLESTATE.equals(name)) {
+        } else if (NuxeoTypeHelper.NX_LIFECYCLE_STATE.equals(name)) {
             String state;
             try {
                 state = doc.getCurrentLifeCycleState();
@@ -635,7 +635,7 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
     }
 
     /**
-     * Property for ecm:contentStreamDigest.
+     * Property for nuxeo:contentStreamDigest.
      */
     public static class NuxeoPropertyDataContentStreamDigest extends
             NuxeoPropertyDataBase<String> implements PropertyString {

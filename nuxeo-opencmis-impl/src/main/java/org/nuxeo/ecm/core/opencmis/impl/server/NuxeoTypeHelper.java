@@ -40,7 +40,6 @@ import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
-import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.Namespace;
@@ -102,7 +101,13 @@ public class NuxeoTypeHelper {
 
     public static final String NX_REL_TARGET = "relation:target";
 
-    public static final String NX_ECM_DIGEST = "ecm:contentStreamDigest";
+    public static final String NX_DIGEST = "nuxeo:contentStreamDigest";
+
+    public static final String NX_ISVERSION = "nuxeo:isVersion";
+
+    public static final String NX_FACETS = "nuxeo:secondaryObjectTypeIds";
+
+    public static final String NX_LIFECYCLE_STATE = "nuxeo:lifecycleState";
 
     private static final String NAMESPACE = "http://ns.nuxeo.org/cmis/type/";
 
@@ -315,10 +320,10 @@ public class NuxeoTypeHelper {
                 Updatability.READONLY, false, false, false));
 
         // Nuxeo system properties
-        t.addPropertyDefinition(newPropertyDefinition(NXQL.ECM_LIFECYCLESTATE,
+        t.addPropertyDefinition(newPropertyDefinition(NX_LIFECYCLE_STATE,
                 "Lifecycle State", PropertyType.STRING, Cardinality.SINGLE,
                 Updatability.READONLY, false, false, true));
-        t.addPropertyDefinition(newPropertyDefinition(NXQL.ECM_MIXINTYPE,
+        t.addPropertyDefinition(newPropertyDefinition(NX_FACETS,
                 "Facets", PropertyType.STRING, Cardinality.MULTI,
                 Updatability.READONLY, true, false, true));
     }
@@ -407,10 +412,10 @@ public class NuxeoTypeHelper {
                 false, false, false));
         // Nuxeo system properties
         // TODO: make digest queryable at some point
-        t.addPropertyDefinition(newPropertyDefinition(NX_ECM_DIGEST,
+        t.addPropertyDefinition(newPropertyDefinition(NX_DIGEST,
                 "Content Stream Digest", PropertyType.STRING, Cardinality.SINGLE,
                 Updatability.READONLY, false, false, false));
-        t.addPropertyDefinition(newPropertyDefinition(NXQL.ECM_ISVERSION,
+        t.addPropertyDefinition(newPropertyDefinition(NX_ISVERSION,
                 "Is Checkedin Version", PropertyType.BOOLEAN, Cardinality.SINGLE,
                 Updatability.READONLY, false, false, true));
     }

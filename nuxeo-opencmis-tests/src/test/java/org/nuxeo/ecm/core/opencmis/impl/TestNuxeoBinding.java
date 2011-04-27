@@ -90,7 +90,6 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoRepository;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoTypeHelper;
 import org.nuxeo.ecm.core.opencmis.tests.Helper;
-import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -270,19 +269,19 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         assertNull(type.getParentTypeId());
         assertEquals("cmis:folder", type.getLocalName());
         assertTrue(type.getPropertyDefinitions().containsKey("dc:title"));
-        assertTrue(type.getPropertyDefinitions().containsKey("ecm:currentLifeCycleState"));
-        assertTrue(type.getPropertyDefinitions().containsKey("ecm:mixinType"));
-        assertFalse(type.getPropertyDefinitions().containsKey("ecm:isCheckedInVersion"));
-        assertFalse(type.getPropertyDefinitions().containsKey("ecm:contentStreamDigest"));
+        assertTrue(type.getPropertyDefinitions().containsKey("nuxeo:lifecycleState"));
+        assertTrue(type.getPropertyDefinitions().containsKey("nuxeo:secondaryObjectTypeIds"));
+        assertFalse(type.getPropertyDefinitions().containsKey("nuxeo:isVersion"));
+        assertFalse(type.getPropertyDefinitions().containsKey("nuxeo:contentStreamDigest"));
 
         type = repoService.getTypeDefinition(repositoryId, "Folder", null);
         assertEquals(Boolean.TRUE, type.isCreatable());
         assertEquals("cmis:folder", type.getParentTypeId());
         assertEquals("Folder", type.getLocalName());
-        assertTrue(type.getPropertyDefinitions().containsKey("ecm:currentLifeCycleState"));
-        assertTrue(type.getPropertyDefinitions().containsKey("ecm:mixinType"));
-        assertFalse(type.getPropertyDefinitions().containsKey("ecm:isCheckedInVersion"));
-        assertFalse(type.getPropertyDefinitions().containsKey("ecm:contentStreamDigest"));
+        assertTrue(type.getPropertyDefinitions().containsKey("nuxeo:lifecycleState"));
+        assertTrue(type.getPropertyDefinitions().containsKey("nuxeo:secondaryObjectTypeIds"));
+        assertFalse(type.getPropertyDefinitions().containsKey("nuxeo:isVersion"));
+        assertFalse(type.getPropertyDefinitions().containsKey("nuxeo:contentStreamDigest"));
 
         type = repoService.getTypeDefinition(repositoryId, "cmis:document",
                 null);
@@ -292,10 +291,10 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         assertTrue(type.getPropertyDefinitions().containsKey("dc:title"));
         assertTrue(type.getPropertyDefinitions().containsKey(
                 "cmis:contentStreamFileName"));
-        assertTrue(type.getPropertyDefinitions().containsKey("ecm:currentLifeCycleState"));
-        assertTrue(type.getPropertyDefinitions().containsKey("ecm:mixinType"));
-        assertTrue(type.getPropertyDefinitions().containsKey("ecm:isCheckedInVersion"));
-        assertTrue(type.getPropertyDefinitions().containsKey("ecm:contentStreamDigest"));
+        assertTrue(type.getPropertyDefinitions().containsKey("nuxeo:lifecycleState"));
+        assertTrue(type.getPropertyDefinitions().containsKey("nuxeo:secondaryObjectTypeIds"));
+        assertTrue(type.getPropertyDefinitions().containsKey("nuxeo:isVersion"));
+        assertTrue(type.getPropertyDefinitions().containsKey("nuxeo:contentStreamDigest"));
 
         try {
             // nosuchtype, Document is mapped to cmis:document
@@ -310,10 +309,10 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         assertEquals("cmis:document", type.getParentTypeId());
         assertEquals("Note", type.getLocalName());
         assertTrue(type.getPropertyDefinitions().containsKey("note"));
-        assertTrue(type.getPropertyDefinitions().containsKey("ecm:currentLifeCycleState"));
-        assertTrue(type.getPropertyDefinitions().containsKey("ecm:mixinType"));
-        assertTrue(type.getPropertyDefinitions().containsKey("ecm:isCheckedInVersion"));
-        assertTrue(type.getPropertyDefinitions().containsKey("ecm:contentStreamDigest"));
+        assertTrue(type.getPropertyDefinitions().containsKey("nuxeo:lifecycleState"));
+        assertTrue(type.getPropertyDefinitions().containsKey("nuxeo:secondaryObjectTypeIds"));
+        assertTrue(type.getPropertyDefinitions().containsKey("nuxeo:isVersion"));
+        assertTrue(type.getPropertyDefinitions().containsKey("nuxeo:contentStreamDigest"));
     }
 
     public List<String> getTypeIds(TypeDefinitionList types) {
@@ -469,12 +468,12 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
                 getValue(data, PropertyIds.IS_LATEST_MAJOR_VERSION));
         assertEquals(Boolean.FALSE, getValue(data, PropertyIds.IS_IMMUTABLE));
         assertEquals("File", getString(data, PropertyIds.OBJECT_TYPE_ID));
-        assertEquals(Boolean.FALSE, getValue(data, NXQL.ECM_ISVERSION));
-        assertEquals("project", getValue(data, NXQL.ECM_LIFECYCLESTATE));
+        assertEquals(Boolean.FALSE, getValue(data, NuxeoTypeHelper.NX_ISVERSION));
+        assertEquals("project", getValue(data, NuxeoTypeHelper.NX_LIFECYCLE_STATE));
         assertEquals(Arrays.asList("Commentable", "Downloadable",
                 "HasRelatedText", "Publishable", "Versionable"),
-                getValues(data, NXQL.ECM_MIXINTYPE));
-        assertEquals(null, getString(data, NuxeoTypeHelper.NX_ECM_DIGEST));
+                getValues(data, NuxeoTypeHelper.NX_FACETS));
+        assertEquals(null, getString(data, NuxeoTypeHelper.NX_DIGEST));
 
         // creation of a cmis:document (helps simple clients)
 
@@ -494,9 +493,9 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         assertEquals(id, data.getId());
         assertEquals("newfold", getString(data, PropertyIds.NAME));
         assertEquals("Folder", getString(data, PropertyIds.OBJECT_TYPE_ID));
-        assertEquals("project", getValue(data, NXQL.ECM_LIFECYCLESTATE));
+        assertEquals("project", getValue(data, NuxeoTypeHelper.NX_LIFECYCLE_STATE));
         assertEquals(Arrays.asList("Folderish"),
-                getValues(data, NXQL.ECM_MIXINTYPE));
+                getValues(data, NuxeoTypeHelper.NX_FACETS));
 
         // creation of a cmis:folder (helps simple clients)
 
@@ -579,7 +578,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         assertEquals(id, data.getId());
         assertEquals("doc1.txt", getString(data, PropertyIds.NAME));
         assertEquals("bde9eb59c76cb432a0f8d02057a19923",
-                getString(data, NuxeoTypeHelper.NX_ECM_DIGEST));
+                getString(data, NuxeoTypeHelper.NX_DIGEST));
         cs = objService.getContentStream(repositoryId, id, null, null, null,
                 null);
         assertNotNull(cs);
@@ -627,7 +626,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         ObjectData ob = getObjectByPath("/testfolder1/testfile1");
         assertEquals("testfile1_Title", getString(ob, PropertyIds.NAME));
         assertEquals("bde9eb59c76cb432a0f8d02057a19923",
-                getString(ob, NuxeoTypeHelper.NX_ECM_DIGEST));
+                getString(ob, NuxeoTypeHelper.NX_DIGEST));
 
         // get stream
         ContentStream cs = objService.getContentStream(repositoryId,
@@ -1155,13 +1154,13 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         checkWhereTerm("File", PropertyIds.LAST_MODIFICATION_DATE, NOT_NULL);
         // checkWhereTerm("File", PropertyIds.CHANGE_TOKEN, null);
 
-        checkWhereTerm("File", NXQL.ECM_ISVERSION, "false");
-        checkWhereTerm("File", NXQL.ECM_LIFECYCLESTATE, "'project'");
+        checkWhereTerm("File", NuxeoTypeHelper.NX_ISVERSION, "false");
+        checkWhereTerm("File", NuxeoTypeHelper.NX_LIFECYCLE_STATE, "'project'");
 
         // ----- Folder -----
 
         checkWhereTerm("Folder", PropertyIds.PARENT_ID, NOT_NULL);
-        checkWhereTerm("Folder", NXQL.ECM_LIFECYCLESTATE, "'project'");
+        checkWhereTerm("Folder", NuxeoTypeHelper.NX_LIFECYCLE_STATE, "'project'");
 
         // checkWhereTerm("Folder", PropertyIds.PATH, NOT_NULL);
         // checkWhereTerm("Folder", PropertyIds.ALLOWED_CHILD_OBJECT_TYPE_IDS,
@@ -1248,9 +1247,9 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
                 "testfolder1_Title");
         checkReturnedValue(PropertyIds.ALLOWED_CHILD_OBJECT_TYPE_IDS, null,
                 "Folder", "testfolder1_Title");
-        checkReturnedValue(NXQL.ECM_MIXINTYPE, NOT_NULL, "Folder",
+        checkReturnedValue(NuxeoTypeHelper.NX_FACETS, NOT_NULL, "Folder",
                 "testfolder1_Title");
-        checkReturnedValue(NXQL.ECM_LIFECYCLESTATE, "project", "Folder",
+        checkReturnedValue(NuxeoTypeHelper.NX_LIFECYCLE_STATE, "project", "Folder",
                 "testfolder1_Title");
 
         // ----- Document -----
@@ -1263,10 +1262,10 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         checkReturnedValue(PropertyIds.VERSION_SERIES_ID, NOT_NULL);
         checkReturnedValue(PropertyIds.IS_VERSION_SERIES_CHECKED_OUT,
                 Boolean.TRUE);
-        checkReturnedValue(NXQL.ECM_ISVERSION, Boolean.FALSE);
-        checkReturnedValue(NXQL.ECM_MIXINTYPE, NOT_NULL);
-        checkReturnedValue(NXQL.ECM_LIFECYCLESTATE, "project");
-        checkReturnedValue(NuxeoTypeHelper.NX_ECM_DIGEST, NOT_NULL);
+        checkReturnedValue(NuxeoTypeHelper.NX_ISVERSION, Boolean.FALSE);
+        checkReturnedValue(NuxeoTypeHelper.NX_FACETS, NOT_NULL);
+        checkReturnedValue(NuxeoTypeHelper.NX_LIFECYCLE_STATE, "project");
+        checkReturnedValue(NuxeoTypeHelper.NX_DIGEST, NOT_NULL);
         checkReturnedValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_ID, NOT_NULL);
         checkReturnedValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_BY, USERNAME);
         checkReturnedValue(PropertyIds.CHECKIN_COMMENT, null);
@@ -1288,7 +1287,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         int initiallyQueryableFilesCount = res.getNumItems().intValue();
 
         // all files are in state 'project'
-        statement = "SELECT cmis:name FROM File WHERE ecm:currentLifeCycleState = 'project'";
+        statement = "SELECT cmis:name FROM File WHERE nuxeo:lifecycleState = 'project'";
         res = query(statement);
         assertEquals(initiallyQueryableFilesCount, res.getNumItems().intValue());
 
@@ -1306,13 +1305,13 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         // but it is nevertheless possible to perform explicit queries on the
         // lifecycle state
         statement = "SELECT cmis:name FROM File"
-                + " WHERE ecm:currentLifeCycleState = 'project'";
+                + " WHERE nuxeo:lifecycleState = 'project'";
         res = query(statement);
         assertEquals(initiallyQueryableFilesCount - 1,
                 res.getNumItems().intValue());
 
         statement = "SELECT cmis:name FROM File"
-                + " WHERE ecm:currentLifeCycleState = 'deleted'"
+                + " WHERE nuxeo:lifecycleState = 'deleted'"
                 + " ORDER BY cmis:name";
         res = query(statement);
         assertEquals(2, res.getNumItems().intValue());
@@ -1327,7 +1326,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
                         PropertyIds.NAME).getFirstValue());
 
         statement = "SELECT cmis:name FROM File"
-                + " WHERE ecm:currentLifeCycleState IN ('project', 'deleted', 'somethingelse')";
+                + " WHERE nuxeo:lifecycleState IN ('project', 'deleted', 'somethingelse')";
         res = query(statement);
         assertEquals(initiallyQueryableFilesCount + 1, res.getNumItems().intValue());
     }
@@ -1354,37 +1353,37 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         assertEquals(initialFileCount + 1, res.getNumItems().intValue());
 
         // it is however possible to fetch only the archived versions using the
-        // ecm:isCheckedInVersion system property
-        statement = "SELECT cmis:name, ecm:isCheckedInVersion FROM File"
-                + " WHERE ecm:isCheckedInVersion = true ORDER BY cmis:name";
+        // nuxeo:isVersion system property
+        statement = "SELECT cmis:name, nuxeo:isVersion FROM File"
+                + " WHERE nuxeo:isVersion = true ORDER BY cmis:name";
         res = query(statement);
         assertEquals(1, res.getNumItems().intValue());
         checkValue(PropertyIds.NAME, "testfile1_Title", res.getObjects().get(0));
-        checkValue(NXQL.ECM_ISVERSION, Boolean.TRUE, res.getObjects().get(0));
+        checkValue(NuxeoTypeHelper.NX_ISVERSION, Boolean.TRUE, res.getObjects().get(0));
 
         // this should be equivalent to
-        statement = "SELECT cmis:name, ecm:isCheckedInVersion FROM File"
-                + " WHERE ecm:isCheckedInVersion <> false ORDER BY cmis:name";
+        statement = "SELECT cmis:name, nuxeo:isVersion FROM File"
+                + " WHERE nuxeo:isVersion <> false ORDER BY cmis:name";
         res = query(statement);
         assertEquals(1, res.getNumItems().intValue());
         checkValue(PropertyIds.NAME, "testfile1_Title", res.getObjects().get(0));
-        checkValue(NXQL.ECM_ISVERSION, Boolean.TRUE, res.getObjects().get(0));
+        checkValue(NuxeoTypeHelper.NX_ISVERSION, Boolean.TRUE, res.getObjects().get(0));
 
         // conversely one can select only live documents by negating this predicate
-        statement = "SELECT cmis:name, ecm:isCheckedInVersion FROM File" +
-        		" WHERE ecm:isCheckedInVersion = false ORDER BY cmis:name";
+        statement = "SELECT cmis:name, nuxeo:isVersion FROM File" +
+        		" WHERE nuxeo:isVersion = false ORDER BY cmis:name";
         res = query(statement);
         assertEquals(initialFileCount, res.getNumItems().intValue());
         checkValue(PropertyIds.NAME, "testfile1_Title", res.getObjects().get(0));
-        checkValue(NXQL.ECM_ISVERSION, Boolean.FALSE, res.getObjects().get(0));
+        checkValue(NuxeoTypeHelper.NX_ISVERSION, Boolean.FALSE, res.getObjects().get(0));
 
         // this should be equivalent to
-        statement = "SELECT cmis:name, ecm:isCheckedInVersion  FROM File" +
-        		" WHERE ecm:isCheckedInVersion <> true ORDER BY cmis:name";
+        statement = "SELECT cmis:name, nuxeo:isVersion  FROM File" +
+        		" WHERE nuxeo:isVersion <> true ORDER BY cmis:name";
         res = query(statement);
         assertEquals(initialFileCount, res.getNumItems().intValue());
         checkValue(PropertyIds.NAME, "testfile1_Title", res.getObjects().get(0));
-        checkValue(NXQL.ECM_ISVERSION, Boolean.FALSE, res.getObjects().get(0));
+        checkValue(NuxeoTypeHelper.NX_ISVERSION, Boolean.FALSE, res.getObjects().get(0));
     }
 
     @Test
@@ -1413,22 +1412,22 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
 
         // it is however possible to fetch only the last version using the
         // cmis:isLatestVersion system property
-        statement = "SELECT cmis:isLatestVersion, ecm:isCheckedInVersion FROM File"
+        statement = "SELECT cmis:isLatestVersion, nuxeo:isVersion FROM File"
                 + " WHERE cmis:isLatestVersion = true AND cmis:name = 'testfile1_Title'";
         res = query(statement);
         assertEquals(1, res.getNumItems().intValue());
         first = res.getObjects().get(0);
         checkValue(PropertyIds.IS_LATEST_VERSION, Boolean.TRUE, first);
-        checkValue(NXQL.ECM_ISVERSION, Boolean.TRUE, first);
+        checkValue(NuxeoTypeHelper.NX_ISVERSION, Boolean.TRUE, first);
 
         // this should be equivalent to
-        statement = "SELECT cmis:isLatestVersion, ecm:isCheckedInVersion FROM File"
+        statement = "SELECT cmis:isLatestVersion, nuxeo:isVersion FROM File"
                 + " WHERE cmis:isLatestVersion <> false AND cmis:name = 'testfile1_Title'";
         res = query(statement);
         assertEquals(1, res.getNumItems().intValue());
         first = res.getObjects().get(0);
         checkValue(PropertyIds.IS_LATEST_VERSION, Boolean.TRUE, first);
-        checkValue(NXQL.ECM_ISVERSION, Boolean.TRUE, first);
+        checkValue(NuxeoTypeHelper.NX_ISVERSION, Boolean.TRUE, first);
 
         // we can check out the last version, edit it and try again:
         verService.checkOut(repositoryId, idHolder, null, null);
@@ -1452,7 +1451,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         assertEquals(1, res.getNumItems().intValue());
         first = res.getObjects().get(0);
         checkValue(PropertyIds.IS_LATEST_VERSION, Boolean.TRUE, first);
-        checkValue(NXQL.ECM_ISVERSION, Boolean.TRUE, first);
+        checkValue(NuxeoTypeHelper.NX_ISVERSION, Boolean.TRUE, first);
         checkValue("dc:description", "testfile1_description", first);
 
         // is also possible to query for versions that are not the latests, in
@@ -1464,7 +1463,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         assertEquals(1, res.getNumItems().intValue());
         first = res.getObjects().get(0);
         checkValue(PropertyIds.IS_LATEST_VERSION, Boolean.FALSE, first);
-        checkValue(NXQL.ECM_ISVERSION, Boolean.FALSE, res.getObjects().get(0));
+        checkValue(NuxeoTypeHelper.NX_ISVERSION, Boolean.FALSE, res.getObjects().get(0));
         checkValue("dc:description", "new description", first);
     }
 
@@ -1517,53 +1516,53 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         nuxeotc.session.save();
 
         // ... = ANY ...
-        statement = "SELECT ecm:mixinType FROM File WHERE 'Versionable' = ANY ecm:mixinType";
+        statement = "SELECT nuxeo:secondaryObjectTypeIds FROM File WHERE 'Versionable' = ANY nuxeo:secondaryObjectTypeIds";
         res = query(statement);
         assertEquals(3, res.getNumItems().intValue());
-        statement = "SELECT ecm:mixinType FROM File WHERE 'Downloadable' = ANY ecm:mixinType";
+        statement = "SELECT nuxeo:secondaryObjectTypeIds FROM File WHERE 'Downloadable' = ANY nuxeo:secondaryObjectTypeIds";
         res = query(statement);
         assertEquals(3, res.getNumItems().intValue());
-        statement = "SELECT ecm:mixinType FROM File WHERE 'CustomFacetWithoutSchema' = ANY ecm:mixinType";
+        statement = "SELECT nuxeo:secondaryObjectTypeIds FROM File WHERE 'CustomFacetWithoutSchema' = ANY nuxeo:secondaryObjectTypeIds";
         res = query(statement);
         assertEquals(1, res.getNumItems().intValue());
-        checkValue(NXQL.ECM_MIXINTYPE, Arrays.asList("Commentable",
+        checkValue(NuxeoTypeHelper.NX_FACETS, Arrays.asList("Commentable",
                 "CustomFacetWithoutSchema", "Downloadable", "HasRelatedText",
                 "Publishable", "Versionable"), res.getObjects().get(0));
-        statement = "SELECT * FROM File WHERE 'CustomFacetWithMySchema2' = ANY ecm:mixinType";
+        statement = "SELECT * FROM File WHERE 'CustomFacetWithMySchema2' = ANY nuxeo:secondaryObjectTypeIds";
         res = query(statement);
         assertEquals(1, res.getNumItems().intValue());
 
         // ANY ... IN ...
-        statement = "SELECT ecm:mixinType FROM File WHERE ANY ecm:mixinType IN ('Versionable')";
+        statement = "SELECT nuxeo:secondaryObjectTypeIds FROM File WHERE ANY nuxeo:secondaryObjectTypeIds IN ('Versionable')";
         res = query(statement);
         assertEquals(3, res.getNumItems().intValue());
-        statement = "SELECT ecm:mixinType FROM File WHERE ANY ecm:mixinType IN ('CustomFacetWithMySchema2')";
+        statement = "SELECT nuxeo:secondaryObjectTypeIds FROM File WHERE ANY nuxeo:secondaryObjectTypeIds IN ('CustomFacetWithMySchema2')";
         res = query(statement);
         assertEquals(1, res.getNumItems().intValue());
-        checkValue(NXQL.ECM_MIXINTYPE, Arrays.asList("Commentable",
+        checkValue(NuxeoTypeHelper.NX_FACETS, Arrays.asList("Commentable",
                 "CustomFacetWithMySchema2", "Downloadable", "HasRelatedText",
                 "Publishable", "Versionable"), res.getObjects().get(0));
-        statement = "SELECT ecm:mixinType FROM File WHERE ANY ecm:mixinType IN ('CustomFacetWithoutSchema', 'CustomFacetWithMySchema2')";
+        statement = "SELECT nuxeo:secondaryObjectTypeIds FROM File WHERE ANY nuxeo:secondaryObjectTypeIds IN ('CustomFacetWithoutSchema', 'CustomFacetWithMySchema2')";
         res = query(statement);
         assertEquals(2, res.getNumItems().intValue());
-        statement = "SELECT ecm:mixinType FROM File WHERE ANY ecm:mixinType IN ('Versionable', 'CustomFacetWithoutSchema')";
+        statement = "SELECT nuxeo:secondaryObjectTypeIds FROM File WHERE ANY nuxeo:secondaryObjectTypeIds IN ('Versionable', 'CustomFacetWithoutSchema')";
         res = query(statement);
         assertEquals(3, res.getNumItems().intValue());
 
         // ANY ... NOT IN ...
-        statement = "SELECT ecm:mixinType FROM File WHERE ANY ecm:mixinType NOT IN ('Versionable')";
+        statement = "SELECT nuxeo:secondaryObjectTypeIds FROM File WHERE ANY nuxeo:secondaryObjectTypeIds NOT IN ('Versionable')";
         res = query(statement);
         assertEquals(0, res.getNumItems().intValue());
-        statement = "SELECT ecm:mixinType FROM File WHERE ANY ecm:mixinType NOT IN ('CustomFacetWithoutSchema')";
+        statement = "SELECT nuxeo:secondaryObjectTypeIds FROM File WHERE ANY nuxeo:secondaryObjectTypeIds NOT IN ('CustomFacetWithoutSchema')";
         res = query(statement);
         assertEquals(2, res.getNumItems().intValue());
-        statement = "SELECT ecm:mixinType FROM File WHERE ANY ecm:mixinType NOT IN ('CustomFacetWithoutSchema', 'CustomFacetWithMySchema2')";
+        statement = "SELECT nuxeo:secondaryObjectTypeIds FROM File WHERE ANY nuxeo:secondaryObjectTypeIds NOT IN ('CustomFacetWithoutSchema', 'CustomFacetWithMySchema2')";
         res = query(statement);
         assertEquals(1, res.getNumItems().intValue());
-        checkValue(NXQL.ECM_MIXINTYPE,
+        checkValue(NuxeoTypeHelper.NX_FACETS,
                 Arrays.asList("Commentable", "Downloadable", "HasRelatedText",
                         "Publishable", "Versionable"), res.getObjects().get(0));
-        statement = "SELECT ecm:mixinType FROM File WHERE ANY ecm:mixinType NOT IN ('Versionable', 'CustomFacetWithoutSchema')";
+        statement = "SELECT nuxeo:secondaryObjectTypeIds FROM File WHERE ANY nuxeo:secondaryObjectTypeIds NOT IN ('Versionable', 'CustomFacetWithoutSchema')";
         res = query(statement);
         assertEquals(0, res.getNumItems().intValue());
     }
@@ -1952,7 +1951,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_ID, id, ob);
         checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_BY, USERNAME, ob);
         checkValue(PropertyIds.CHECKIN_COMMENT, null, ob);
-        checkValue(NXQL.ECM_ISVERSION, Boolean.FALSE, ob);
+        checkValue(NuxeoTypeHelper.NX_ISVERSION, Boolean.FALSE, ob);
         String series = (String) getValue(ob, PropertyIds.VERSION_SERIES_ID);
 
         // check in major -> version 1.0
@@ -1974,7 +1973,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_ID, null, ver);
         checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_BY, null, ver);
         checkValue(PropertyIds.CHECKIN_COMMENT, "comment", ver);
-        checkValue(NXQL.ECM_ISVERSION, Boolean.TRUE, ver);
+        checkValue(NuxeoTypeHelper.NX_ISVERSION, Boolean.TRUE, ver);
 
         // look at the checked in document to verify
         // that CMIS views it as a version
@@ -1992,7 +1991,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         checkValue(PropertyIds.CHECKIN_COMMENT, "comment", ci);
 
         //not viewed as a version according to Nuxeo semantics though
-        checkValue(NXQL.ECM_ISVERSION, Boolean.FALSE, ob);
+        checkValue(NuxeoTypeHelper.NX_ISVERSION, Boolean.FALSE, ob);
 
         // check out
 
@@ -2012,7 +2011,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_ID, coid, co);
         checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_BY, USERNAME, co);
         checkValue(PropertyIds.CHECKIN_COMMENT, null, co);
-        checkValue(NXQL.ECM_ISVERSION, Boolean.FALSE, co);
+        checkValue(NuxeoTypeHelper.NX_ISVERSION, Boolean.FALSE, co);
 
         // check in minor -> version 1.1
 
@@ -2033,7 +2032,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_ID, null, ver2);
         checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_BY, null, ver2);
         checkValue(PropertyIds.CHECKIN_COMMENT, "comment2", ver2);
-        checkValue(NXQL.ECM_ISVERSION, Boolean.TRUE, ver2);
+        checkValue(NuxeoTypeHelper.NX_ISVERSION, Boolean.TRUE, ver2);
 
         // check out again (with no content copied holder)
 
@@ -2051,7 +2050,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         checkValue(PropertyIds.IS_LATEST_VERSION, Boolean.TRUE, ci);
 
         // not viewed as a version according to Nuxeo semantics
-        checkValue(NXQL.ECM_ISVERSION, Boolean.FALSE, ci);
+        checkValue(NuxeoTypeHelper.NX_ISVERSION, Boolean.FALSE, ci);
 
         // list all versions
         // TODO check this when no live document exists
