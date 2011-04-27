@@ -128,8 +128,9 @@ public class Gadgeti18n {
         PropertyResourceBundle descriptor = new HierarchicalResourceBundle(
                 dynDescriptor);
 
+        ClassLoader cl = Thread.currentThread().getContextClassLoader();
         for (Locale locale : getSupportedLangs()) {
-            ResourceBundle bundle = ResourceBundle.getBundle("messages", locale);
+            ResourceBundle bundle = ResourceBundle.getBundle("messages", locale, cl);
 
             File messageFile = getDynamicFile(gadget,
                     "messages_" + locale.toString() + ".xml");
