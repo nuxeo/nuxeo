@@ -75,26 +75,26 @@
       </ui:insert>
 
       <div class="#{nxu:test(foldable, 'boxBody', '')}">
-  
+
         <ui:insert name="boxBodyStart" />
-  
+
         <ui:insert name="content_view_selector">
           <ui:include src="/incl/content_view_result_layout_selector.xhtml" />
           <div style="clear:both;" />
         </ui:insert>
-    
+
         <ui:insert name="content_view_search_layout">
           <ui:include src="/incl/content_view_search_layout.xhtml" />
           <div style="clear:both;" />
         </ui:insert>
-  
+
         <a4j:outputPanel id="#{contentViewRenderId}_resultsPanel">
           <ui:decorate template="/incl/documents_layout_table.xhtml">
             <ui:param name="providerId" value="#{contentViewId}" />
             <ui:param name="documents" value="#{provider.currentSelectPage}" />
             <ui:param name="listName" value="#{contentView.selectionListName}" />
             <ui:param name="layoutName" value="#{contentView.currentResultLayout.name}" />
-    
+
             <ui:define name="empty_folder_label">
               <ui:insert name="empty_content_view_label">
                 <c:set var="emptySentence"
@@ -103,13 +103,13 @@
                   rendered="#{documents.rowCount == 0 and not provider.hasError()}" />
               </ui:insert>
             </ui:define>
-          
+
             <ui:define name="error_message">
               <c:if test="#{provider.hasError()}">
                 #{provider.errorMessage}
               </c:if>
             </ui:define>
-    
+
             <ui:define name="buttons">
               <c:if test="#{documents.rowCount != 0}">
                 <a4j:outputPanel id="ajax_selection_buttons" ajaxRendered="false">
@@ -153,7 +153,7 @@
                 </a4j:outputPanel>
               </c:if>
             </ui:define>
-    
+
             <ui:define name="syndication_buttons">
               <ui:insert name="content_view_syndication_buttons">
                 <div class="syndicationButton">
@@ -182,13 +182,13 @@
                 <div style="clear:both;" />
               </ui:insert>
             </ui:define>
-    
+
           </ui:decorate>
-    
+
         </a4j:outputPanel>
-    
+
         <ui:insert name="boxBodyEnd" />
-  
+
       </div>
     </div>
 
