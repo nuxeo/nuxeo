@@ -677,3 +677,10 @@ padding:5px 0px 2px 0px;
     padding : 25px;
     margin: 4px;
  }
+
+ #dndContinueButton {
+  display:none;
+  cursor:hand;
+  padding:5px;
+  background-color:rgba(255,255,255,0.6);
+ }

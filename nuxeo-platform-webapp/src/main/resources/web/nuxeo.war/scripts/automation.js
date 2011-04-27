@@ -8,6 +8,11 @@ function AutomationWrapper(operationId,opts) {
     return this;
   }
 
+  AutomationWrapper.prototype.addParameters = function(params){
+    jQuery.extend(this.opts.automationParams.params,params);
+      return this;
+    }
+
   AutomationWrapper.prototype.context = function(name, value){
     this.opts.automationParams.context[name]=value;
     return this;
@@ -74,9 +79,10 @@ function AutomationWrapper(operationId,opts) {
             }
         },
         success: function(data, status,xhr) {
-          console.log("Executed OK");
+          console.log("Executed OK : " + status);
           if (status=="success") {
-            successCB(JSON.parse(data),status,xhr);
+            console.log("call Success CB");
+            successCB(data,status,xhr);
           } else {
               if (failureCB) {
                   failureCB(xhr,status,"No Data");

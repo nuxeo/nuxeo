@@ -94,7 +94,6 @@ function DropZoneUIHandler(idx, dropZoneId, options,targetSelectedCB) {
       return this.batchId;
   }
 
-
   DropZoneUIHandler.prototype.batchFinished = function(batchId) {
     jQuery("#dndMsgUploadInProgress").css("display","none");
     jQuery("#dndMsgUploadCompleted").css("display","block");
@@ -102,6 +101,18 @@ function DropZoneUIHandler(idx, dropZoneId, options,targetSelectedCB) {
     jQuery("#dropzone-bar-btn").attr("value","Continue");
     var o=this; // deRef object !
     jQuery("#dropzone-bar-btn").bind("click",function(event) {o.selectOperation(batchId, o.dropZoneId, o.url)});
+
+    var continueButton = jQuery("#dndContinueButton");
+    continueButton.css("position","absolute");
+    continueButton.css("display","block");
+    continueButton.css("z-index","5000");
+    var zone = jQuery("#" + this.dropZoneId);
+    var btnPosition =zone.position();
+    btnPosition.top = btnPosition.top + zone.height()/2 - continueButton.height()/2;
+    btnPosition.left = btnPosition.left + zone.width()/2 - continueButton.width()/2;
+    console.log(btnPosition);
+    continueButton.css(btnPosition);
+    continueButton.bind("click",function(event) {continueButton.css("display","none");o.selectOperation(batchId, o.dropZoneId, o.url)});
   }
 
   DropZoneUIHandler.prototype.updateForm  = function (event, value) {
@@ -136,6 +147,8 @@ function DropZoneUIHandler(idx, dropZoneId, options,targetSelectedCB) {
       if (this.operationsDef.length==1 && this.operationsDef[0].formUrl=='') {
         // XXX start operation right now
       console.log("Only one operation");
+      this.executeBatch(this.operationsDef[0].operationId,{});
+      return;
       }
     }
 
@@ -172,25 +185,35 @@ function DropZoneUIHandler(idx, dropZoneId, options,targetSelectedCB) {
 
     buttonForm.bind("click", function(event) {
         var formParams = {};
-        // XXX
+        // gather form params
+        // XXX not used for now
         jQuery("#dndSubForm>div>:input").each(function(index,element) {
            formParams[element.name] = escape(element.value);
         });
+        // execute automation batch call
         var operationId = jQuery("#operationIdSelector").val();
-        console.log("exec form on operation " + operationId + ", batchId=" + o.batchId);
-        var batchExec=jQuery().automation(operationId);
-        console.log(o.ctx);
-        batchExec.setContext(o.ctx);
-        console.log(batchExec);
-        batchExec.batchExecute(o.batchId,
-            function(data, status,xhr) {
-                console.log("Executed OK");
-            },
-            function(xhr,status,e) {
-                console.log("Error while executing batch");
-            }
-        );
+        o.executeBatch(operationId,formParams);
     });
+  }
+
+  DropZoneUIHandler.prototype.executeBatch = function(operationId, params) {
+      console.log("exec form on operation " + operationId + ", batchId=" + this.batchId);
+      var batchExec=jQuery().automation(operationId);
+      console.log(this.ctx);
+      batchExec.setContext(this.ctx);
+      batchExec.addParameters(params);
+      console.log(batchExec);
+      batchExec.batchExecute(this.batchId,
+          function(data, status,xhr) {
+              console.log("Import operation executed OK");
+              console.log(window.location.href);
+              window.location.href=window.location.href;
+              console.log("refresh-done");
+          },
+          function(xhr,status,e) {
+              console.log("Error while executing batch");
+          }
+      );
   }
 
   DropZoneUIHandler.prototype.removeDropPanel = function(dropId, batchId) {
