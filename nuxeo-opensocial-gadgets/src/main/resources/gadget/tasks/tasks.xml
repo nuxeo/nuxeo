@@ -31,7 +31,8 @@
       var NXRequestParams = {
         operationId: 'Workflow.UserTaskPageProvider',
         operationParams: {
-          language: prefs.getLang()
+          language: prefs.getLang(),
+          pageSize: 5
         },
         operationContext: {},
         usePagination: true,

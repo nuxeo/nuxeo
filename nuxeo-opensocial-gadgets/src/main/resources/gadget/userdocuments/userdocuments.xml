@@ -34,7 +34,7 @@
       var NXRequestParams = {
         operationId: 'Document.PageProvider',
         operationParams: {
-          providerName: 'USER_DOCUMENTS',
+          providerName: 'user_documents',
           pageSize: 5,
           queryParams: '$currentUser,' + requestScope + '/'
         },
