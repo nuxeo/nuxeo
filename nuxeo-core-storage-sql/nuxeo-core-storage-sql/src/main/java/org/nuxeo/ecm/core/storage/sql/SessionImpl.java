@@ -15,6 +15,7 @@ package org.nuxeo.ecm.core.storage.sql;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.ConcurrentModificationException;
@@ -760,6 +761,7 @@ public class SessionImpl implements Session, XAResource {
         if (path == null) {
             throw new IllegalArgumentException("Illegal null path");
         }
+        path = Normalizer.normalize(path, Normalizer.Form.NFKC);
         int i;
         if (path.startsWith("/")) {
             node = getRootNode();
@@ -803,8 +805,11 @@ public class SessionImpl implements Session, XAResource {
             Long pos, String typeName, boolean complexProp)
             throws StorageException {
         checkLive();
-        if (name == null || name.contains("/") || name.equals(".")
-                || name.equals("..")) {
+        if (name == null) {
+            throw new IllegalArgumentException("Illegal null name");
+        }
+        name = Normalizer.normalize(name, Normalizer.Form.NFKC);
+        if (name.contains("/") || name.equals(".") || name.equals("..")) {
             throw new IllegalArgumentException("Illegal name: " + name);
         }
         if (!model.isType(typeName)) {
