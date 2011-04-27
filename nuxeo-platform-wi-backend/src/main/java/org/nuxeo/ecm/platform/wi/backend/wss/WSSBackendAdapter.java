@@ -89,7 +89,11 @@ public class WSSBackendAdapter extends AbstractWSSBackend {
                     result.add(createItem(name));
             }
             } else {
-                List<DocumentModel> children = backend.getChildren(location);
+                DocumentModel parent = backend.resolveLocation(location);
+                if(parent == null){
+                    throw new WSSException("Parent document with location " + location + " not found");
+                }
+                List<DocumentModel> children = backend.getChildren(parent.getRef());
             for (DocumentModel model : children) {
                 NuxeoListItem item = createItem(model);
                 result.add(item);
