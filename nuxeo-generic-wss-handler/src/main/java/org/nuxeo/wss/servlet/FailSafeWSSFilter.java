@@ -1,3 +1,19 @@
+/*
+ * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Thierry Delprat
+ */
 package org.nuxeo.wss.servlet;
 
 import java.io.IOException;
@@ -14,9 +30,6 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * {@link WSSFilter} wrapper to avoid breaking the EAR if the front filter is not in the classpath
- *
- * @author tiry
- *
  */
 public class FailSafeWSSFilter implements Filter {
 
@@ -26,7 +39,7 @@ public class FailSafeWSSFilter implements Filter {
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
         try {
-            Class<?> testklass = Class.forName("org.nuxeo.wss.servlet.BaseWSSFilter");
+            Class.forName("org.nuxeo.wss.servlet.BaseWSSFilter");
             Class<?> filterklass = Class.forName("org.nuxeo.wss.servlet.WSSFilter");
             wssFilter = (Filter) filterklass.newInstance();
             wssFilter.init(filterConfig);

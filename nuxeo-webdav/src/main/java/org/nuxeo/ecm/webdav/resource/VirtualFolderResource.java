@@ -1,32 +1,74 @@
+/*
+ * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Gagnavarslan ehf
+ */
 package org.nuxeo.ecm.webdav.resource;
-
-import net.java.dev.webdav.core.jaxrs.xml.properties.IsCollection;
-import net.java.dev.webdav.core.jaxrs.xml.properties.IsFolder;
-import net.java.dev.webdav.core.jaxrs.xml.properties.IsHidden;
-import net.java.dev.webdav.jaxrs.methods.*;
-import net.java.dev.webdav.jaxrs.xml.elements.*;
-import net.java.dev.webdav.jaxrs.xml.properties.*;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
-import java.net.URI;
-import java.util.*;
 
 import static javax.ws.rs.core.Response.Status.OK;
 import static net.java.dev.webdav.jaxrs.xml.properties.ResourceType.COLLECTION;
 
-/**
- * @author Organization: Gagnavarslan ehf
- */
-public class VirtualFolderResource extends AbstractResource {
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
-    private static final Log log = LogFactory.getLog(VirtualFolderResource.class);
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.HEAD;
+import javax.ws.rs.HeaderParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+
+import net.java.dev.webdav.core.jaxrs.xml.properties.IsCollection;
+import net.java.dev.webdav.core.jaxrs.xml.properties.IsFolder;
+import net.java.dev.webdav.core.jaxrs.xml.properties.IsHidden;
+import net.java.dev.webdav.jaxrs.methods.COPY;
+import net.java.dev.webdav.jaxrs.methods.LOCK;
+import net.java.dev.webdav.jaxrs.methods.MKCOL;
+import net.java.dev.webdav.jaxrs.methods.MOVE;
+import net.java.dev.webdav.jaxrs.methods.PROPFIND;
+import net.java.dev.webdav.jaxrs.methods.PROPPATCH;
+import net.java.dev.webdav.jaxrs.methods.UNLOCK;
+import net.java.dev.webdav.jaxrs.xml.elements.ActiveLock;
+import net.java.dev.webdav.jaxrs.xml.elements.Depth;
+import net.java.dev.webdav.jaxrs.xml.elements.HRef;
+import net.java.dev.webdav.jaxrs.xml.elements.LockRoot;
+import net.java.dev.webdav.jaxrs.xml.elements.LockScope;
+import net.java.dev.webdav.jaxrs.xml.elements.LockToken;
+import net.java.dev.webdav.jaxrs.xml.elements.LockType;
+import net.java.dev.webdav.jaxrs.xml.elements.MultiStatus;
+import net.java.dev.webdav.jaxrs.xml.elements.Owner;
+import net.java.dev.webdav.jaxrs.xml.elements.Prop;
+import net.java.dev.webdav.jaxrs.xml.elements.PropStat;
+import net.java.dev.webdav.jaxrs.xml.elements.Status;
+import net.java.dev.webdav.jaxrs.xml.elements.TimeOut;
+import net.java.dev.webdav.jaxrs.xml.properties.CreationDate;
+import net.java.dev.webdav.jaxrs.xml.properties.DisplayName;
+import net.java.dev.webdav.jaxrs.xml.properties.GetContentLength;
+import net.java.dev.webdav.jaxrs.xml.properties.GetContentType;
+import net.java.dev.webdav.jaxrs.xml.properties.GetLastModified;
+import net.java.dev.webdav.jaxrs.xml.properties.LockDiscovery;
+import net.java.dev.webdav.jaxrs.xml.properties.SupportedLock;
+
+import org.nuxeo.ecm.core.api.ClientException;
+
+public class VirtualFolderResource extends AbstractResource {
 
     private LinkedList<String> rootFolderNames;
 
@@ -60,6 +102,7 @@ public class VirtualFolderResource extends AbstractResource {
         Date lastModified = new Date();
         Date creationDate = new Date();
 
+        @SuppressWarnings("deprecation")
         final net.java.dev.webdav.jaxrs.xml.elements.Response response
                 = new net.java.dev.webdav.jaxrs.xml.elements.Response(
                 new HRef(uriInfo.getRequestUri()),
@@ -72,8 +115,8 @@ public class VirtualFolderResource extends AbstractResource {
                                 new LockDiscovery(),
                                 new SupportedLock(),
                                 new IsFolder("t"),
-                                new IsCollection(1),
-                                new IsHidden(0),
+                                new IsCollection(Integer.valueOf(1)),
+                                new IsHidden(Integer.valueOf(0)),
                                 new GetContentType("application/octet-stream"),
                                 new GetContentLength(0),
                                 new CreationDate(creationDate),

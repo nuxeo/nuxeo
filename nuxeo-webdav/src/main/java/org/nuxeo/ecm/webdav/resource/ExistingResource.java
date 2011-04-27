@@ -19,21 +19,11 @@
 
 package org.nuxeo.ecm.webdav.resource;
 
-import net.java.dev.webdav.core.jaxrs.xml.properties.Win32CreationTime;
-import net.java.dev.webdav.core.jaxrs.xml.properties.Win32FileAttributes;
-import net.java.dev.webdav.core.jaxrs.xml.properties.Win32LastAccessTime;
-import net.java.dev.webdav.core.jaxrs.xml.properties.Win32LastModifiedTime;
-import net.java.dev.webdav.jaxrs.methods.*;
-import net.java.dev.webdav.jaxrs.xml.elements.*;
-import net.java.dev.webdav.jaxrs.xml.properties.LockDiscovery;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.*;
-import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.webdav.Constants;
-import org.nuxeo.ecm.webdav.Util;
-import org.nuxeo.ecm.webdav.backend.WebDavBackend;
+import static javax.ws.rs.core.Response.Status.OK;
+
+import java.net.URI;
+import java.util.Calendar;
+import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.DELETE;
@@ -42,13 +32,41 @@ import javax.ws.rs.HeaderParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-import java.net.URI;
-import java.util.*;
 
-import static javax.ws.rs.core.Response.Status.OK;
+import net.java.dev.webdav.core.jaxrs.xml.properties.Win32CreationTime;
+import net.java.dev.webdav.core.jaxrs.xml.properties.Win32FileAttributes;
+import net.java.dev.webdav.core.jaxrs.xml.properties.Win32LastAccessTime;
+import net.java.dev.webdav.core.jaxrs.xml.properties.Win32LastModifiedTime;
+import net.java.dev.webdav.jaxrs.methods.COPY;
+import net.java.dev.webdav.jaxrs.methods.LOCK;
+import net.java.dev.webdav.jaxrs.methods.MKCOL;
+import net.java.dev.webdav.jaxrs.methods.MOVE;
+import net.java.dev.webdav.jaxrs.methods.PROPPATCH;
+import net.java.dev.webdav.jaxrs.methods.UNLOCK;
+import net.java.dev.webdav.jaxrs.xml.elements.ActiveLock;
+import net.java.dev.webdav.jaxrs.xml.elements.Depth;
+import net.java.dev.webdav.jaxrs.xml.elements.HRef;
+import net.java.dev.webdav.jaxrs.xml.elements.LockRoot;
+import net.java.dev.webdav.jaxrs.xml.elements.LockScope;
+import net.java.dev.webdav.jaxrs.xml.elements.LockToken;
+import net.java.dev.webdav.jaxrs.xml.elements.LockType;
+import net.java.dev.webdav.jaxrs.xml.elements.MultiStatus;
+import net.java.dev.webdav.jaxrs.xml.elements.Owner;
+import net.java.dev.webdav.jaxrs.xml.elements.Prop;
+import net.java.dev.webdav.jaxrs.xml.elements.PropStat;
+import net.java.dev.webdav.jaxrs.xml.elements.Status;
+import net.java.dev.webdav.jaxrs.xml.elements.TimeOut;
+import net.java.dev.webdav.jaxrs.xml.properties.LockDiscovery;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.webdav.Constants;
+import org.nuxeo.ecm.webdav.Util;
+import org.nuxeo.ecm.webdav.backend.WebDavBackend;
 
 /**
  * An existing resource corresponds to an existing object (folder or file)
@@ -183,6 +201,7 @@ public class ExistingResource extends AbstractResource {
         //@TODO: patch properties if need.
 
         //Fake proppatch response
+        @SuppressWarnings("deprecation")
         final net.java.dev.webdav.jaxrs.xml.elements.Response response
                 = new net.java.dev.webdav.jaxrs.xml.elements.Response(
                 new HRef(uriInfo.getRequestUri()),

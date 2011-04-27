@@ -1,9 +1,3 @@
-package org.nuxeo.ecm.platform.wi.backend;
-
-import org.nuxeo.ecm.core.api.ClientException;
-
-import java.util.LinkedList;
-
 /*
  * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
@@ -20,6 +14,12 @@ import java.util.LinkedList;
  * Contributors:
  *     Gagnavarslan ehf
  */
+package org.nuxeo.ecm.platform.wi.backend;
+
+import org.nuxeo.ecm.core.api.ClientException;
+
+import java.util.LinkedList;
+
 public interface VirtualBackend extends Backend {
 
     LinkedList<String> getOrderedBackendNames() throws ClientException;
