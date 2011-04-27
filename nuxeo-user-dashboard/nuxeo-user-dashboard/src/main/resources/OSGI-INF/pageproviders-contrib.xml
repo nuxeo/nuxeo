@@ -4,17 +4,7 @@
   <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService"
     point="providers">
 
-    <genericPageProvider name="USER_TASKS"
-      class="org.nuxeo.ecm.platform.jbpm.providers.UserTaskPageProvider">
-      <pageSize>5</pageSize>
-    </genericPageProvider>
-
-    <genericPageProvider name="USER_PROCESSES"
-      class="org.nuxeo.ecm.platform.jbpm.providers.UserProcessPageProvider">
-      <pageSize>5</pageSize>
-    </genericPageProvider>
-
-    <coreQueryPageProvider name="USER_DOMAINS">
+    <coreQueryPageProvider name="user_domains">
       <pattern>
         SELECT * FROM Document WHERE ecm:primaryType = 'Domain' AND
         ecm:mixinType != 'HiddenInNavigation' AND ecm:currentLifeCycleState !=
@@ -24,7 +14,7 @@
       <pageSize>0</pageSize>
     </coreQueryPageProvider>
 
-    <coreQueryPageProvider name="DOMAIN_DOCUMENTS">
+    <coreQueryPageProvider name="domain_documents">
       <pattern>
         SELECT * FROM Document WHERE ecm:path STARTSWITH ? AND NOT ecm:path
         STARTSWITH ? AND ecm:mixinType != 'Folderish' AND ecm:mixinType !=
@@ -35,7 +25,7 @@
       <pageSize>5</pageSize>
     </coreQueryPageProvider>
 
-    <coreQueryPageProvider name="DOMAIN_PUBLISHED_DOCUMENTS">
+    <coreQueryPageProvider name="domain_published_documents">
       <pattern>
         SELECT * FROM Document WHERE ecm:path STARTSWITH ? AND ecm:mixinType !=
         'Folderish' AND ecm:mixinType != 'HiddenInNavigation' AND
@@ -45,7 +35,7 @@
       <pageSize>5</pageSize>
     </coreQueryPageProvider>
 
-    <coreQueryPageProvider name="USER_DOCUMENTS">
+    <coreQueryPageProvider name="user_documents">
       <pattern>
         SELECT * FROM Document WHERE dc:contributors = ? AND ecm:mixinType !=
         'Folderish' AND ecm:mixinType != 'HiddenInNavigation' AND
@@ -56,7 +46,7 @@
       <pageSize>5</pageSize>
     </coreQueryPageProvider>
 
-    <coreQueryPageProvider name="USER_SECTIONS">
+    <coreQueryPageProvider name="user_sections">
       <pattern>
         SELECT * FROM Document WHERE ecm:primaryType = 'Section' AND
         ecm:mixinType != 'HiddenInNavigation' AND ecm:path STARTSWITH ?
@@ -65,7 +55,7 @@
       <pageSize>5</pageSize>
     </coreQueryPageProvider>
 
-    <coreQueryPageProvider name="USER_SITES">
+    <coreQueryPageProvider name="user_sites">
       <pattern>
         SELECT * FROM Document WHERE ecm:mixinType = 'WebView' AND
         ecm:currentLifeCycleState != 'deleted' AND webc:isWebContainer = 1 AND
@@ -75,7 +65,7 @@
       <pageSize>5</pageSize>
     </coreQueryPageProvider>
 
-    <coreQueryPageProvider name="USER_WORKSPACES">
+    <coreQueryPageProvider name="user_workspaces">
       <pattern>
         SELECT * FROM Workspace WHERE ecm:mixinType != 'HiddenInNavigation' AND
         ecm:currentLifeCycleState != 'deleted' AND ecm:isProxy = 0 AND ecm:path
@@ -85,7 +75,7 @@
       <pageSize>5</pageSize>
     </coreQueryPageProvider>
 
-    <coreQueryPageProvider name="USER_DELETED_DOCUMENTS">
+    <coreQueryPageProvider name="user_deleted_documents">
       <pattern>
         SELECT * FROM Document WHERE dc:contributors = ? AND ecm:mixinType !=
         'Folderish' AND ecm:mixinType != 'HiddenInNavigation' AND
