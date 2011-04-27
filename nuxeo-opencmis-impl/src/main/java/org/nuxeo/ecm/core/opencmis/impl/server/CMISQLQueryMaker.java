@@ -21,11 +21,13 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.tree.Tree;
@@ -55,6 +57,7 @@ import org.nuxeo.ecm.core.opencmis.impl.util.TypeManagerImpl;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
+import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.ModelProperty;
@@ -104,16 +107,19 @@ public class CMISQLQueryMaker implements QueryMaker {
 
     // list of SQL column where NULL (missing value) should be treated as
     // Boolean.FALSE
-    public static final Set<String> NULL_IS_FALSE_COLUMNS = new HashSet<String>();
-    static {
-        NULL_IS_FALSE_COLUMNS.add(Model.HIER_TABLE_NAME + " "
-                + Model.MAIN_IS_VERSION_KEY);
-        NULL_IS_FALSE_COLUMNS.add(Model.VERSION_TABLE_NAME + " "
-                + Model.VERSION_IS_LATEST_KEY);
-        NULL_IS_FALSE_COLUMNS.add(Model.VERSION_TABLE_NAME + " "
-                + Model.VERSION_IS_LATEST_MAJOR_KEY);
-    }
+    public static final Set<String> NULL_IS_FALSE_COLUMNS = new HashSet<String>(
+            Arrays.asList(Model.HIER_TABLE_NAME + " " + Model.MAIN_IS_VERSION_KEY,
+                    Model.VERSION_TABLE_NAME + " " + Model.VERSION_IS_LATEST_KEY,
+                    Model.VERSION_TABLE_NAME + " " + Model.VERSION_IS_LATEST_MAJOR_KEY));
 
+    /**
+     * These mixins never match an instance mixin when used in a clause
+     * ecm:mixinType = 'foo'
+     */
+    protected static final Set<String> MIXINS_NOT_PER_INSTANCE = new HashSet<String>(
+            Arrays.asList(FacetNames.FOLDERISH, FacetNames.HIDDEN_IN_NAVIGATION));
+
+    
     protected Database database;
 
     protected Dialect dialect;
@@ -130,6 +136,8 @@ public class CMISQLQueryMaker implements QueryMaker {
                                        // default
 
     protected boolean hasLifeCycleWhereClause = false;
+
+    protected boolean hasMixinTypeWhereClause = false;
 
     public FulltextMatchInfo fulltextMatchInfo;
 
@@ -551,11 +559,17 @@ public class CMISQLQueryMaker implements QueryMaker {
                     addedSystemColumns.add(col);
                 }
             }
-            if (skipDeleted || hasLifeCycleWhereClause ) {
+            if (skipDeleted || hasLifeCycleWhereClause) {
                 // add lifecycle state column
                 Table table = getTable(
                         database.getTable(model.MISC_TABLE_NAME), qual);
                 Column column = table.getColumn(model.MISC_LIFECYCLE_STATE_KEY);
+                recordColumnFragment(qual, column);
+            }
+            if (hasMixinTypeWhereClause ) {
+                Table table = getTable(
+                        database.getTable(model.HIER_TABLE_NAME), qual);
+                Column column = table.getColumn(model.MAIN_MIXIN_TYPES_KEY);
                 recordColumnFragment(qual, column);
             }
         }
@@ -689,7 +703,7 @@ public class CMISQLQueryMaker implements QueryMaker {
 
         // fetch column and associate it to the selector
         Column column = getColumn(col);
-        if (column == null) {
+        if (!NXQL.ECM_MIXINTYPE.equals(col.getPropertyId()) && column == null) {
             throw new QueryParseException("Cannot use column in " + clauseType
                     + " clause: " + col.getPropertyQueryName());
         }
@@ -703,7 +717,10 @@ public class CMISQLQueryMaker implements QueryMaker {
             skipDeleted = false;
             hasLifeCycleWhereClause = true;
         }
-
+        if (clauseType == WHERE
+                && NXQL.ECM_MIXINTYPE.equals(col.getPropertyId())) {
+            hasMixinTypeWhereClause = true;
+        }
         // record as a needed fragment
         if (!multi) {
             recordColumnFragment(qual, column);
@@ -1050,6 +1067,10 @@ public class CMISQLQueryMaker implements QueryMaker {
 
         @Override
         public Boolean walkEquals(Tree opNode, Tree leftNode, Tree rightNode) {
+            if (NXQL.ECM_MIXINTYPE.equals(leftNode.getText())) {
+                walkMixins(opNode, leftNode, rightNode);
+                return null;
+            }
             if (leftNode.getType() == CmisQlStrictLexer.COL
                     && rightNode.getType() == CmisQlStrictLexer.BOOL_LIT
                     && !Boolean.valueOf(rightNode.getText())) {
@@ -1156,18 +1177,30 @@ public class CMISQLQueryMaker implements QueryMaker {
 
         @Override
         public Boolean walkInAny(Tree opNode, Tree colNode, Tree listNode) {
+            if (NXQL.ECM_MIXINTYPE.equals(resolveColumnReference(colNode).getName())) {
+                walkMixins(opNode, colNode, listNode);
+                return null;
+            }
             walkAny(colNode, "IN", listNode);
             return null;
         }
 
         @Override
         public Boolean walkNotInAny(Tree opNode, Tree colNode, Tree listNode) {
+            if (NXQL.ECM_MIXINTYPE.equals(resolveColumnReference(colNode).getName())) {
+                walkMixins(opNode, colNode, listNode);
+                return null;
+            }
             walkAny(colNode, "NOT IN", listNode);
             return null;
         }
 
         @Override
         public Boolean walkEqAny(Tree opNode, Tree literalNode, Tree colNode) {
+            if (NXQL.ECM_MIXINTYPE.equals(resolveColumnReference(colNode).getName())) {
+                walkMixins(opNode, colNode, literalNode);
+                return null;
+            }
             // note that argument order is reversed
             walkAny(colNode, "=", literalNode);
             return null;
@@ -1320,14 +1353,120 @@ public class CMISQLQueryMaker implements QueryMaker {
             return null;
         }
 
-        public Column resolveColumn(Tree node) {
+        public ColumnReference resolveColumnReference(Tree node) {
             int token = node.getTokenStartIndex();
             CmisSelector sel = query.getColumnReference(Integer.valueOf(token));
             if (sel instanceof ColumnReference) {
-                return (Column) sel.getInfo();
+                return (ColumnReference) sel;
             } else {
                 throw new QueryParseException(
                         "Cannot use column in WHERE clause: " + sel.getName());
+            }
+        }
+
+        public Column resolveColumn(Tree node) {
+            return (Column) resolveColumnReference(node).getInfo();
+        }
+
+        protected void walkMixins(Tree opNode, Tree colNodel, Tree literalNode) {
+            boolean include;
+            Set<String> mixins;
+
+            int opType = opNode.getType();
+            if (opType ==  CmisQlStrictLexer.EQ_ANY) {
+                include = true;
+                if (literalNode.getType() != CmisQlStrictLexer.STRING_LIT) {
+                    throw new QueryMakerException(NXQL.ECM_MIXINTYPE
+                            + " = requires literal string as right argument");
+                }
+                String value = super.walkString(literalNode).toString();
+                mixins = Collections.singleton(value);
+            } else if (opType == CmisQlStrictLexer.IN_ANY
+                    || opType == CmisQlStrictLexer.NOT_IN_ANY) {
+                include = opType == CmisQlStrictLexer.IN_ANY;
+                mixins = new TreeSet<String>();
+                for (int i = 0; i < literalNode.getChildCount(); i++) {
+                    mixins.add(super.walkString(literalNode.getChild(i)).toString());
+                }
+            } else {
+                throw new QueryMakerException(NXQL.ECM_MIXINTYPE
+                        + " unsupported operator: " + opNode.getText());
+            }
+
+            /*
+             * Primary types - static mixins
+             */
+            Set<String> types;
+            if (include) {
+                types = new HashSet<String>();
+                for (String mixin : mixins) {
+                    types.addAll(model.getMixinDocumentTypes(mixin));
+                }
+            } else {
+                types = new HashSet<String>(model.getDocumentTypes());
+                for (String mixin : mixins) {
+                    types.removeAll(model.getMixinDocumentTypes(mixin));
+                }
+            }
+
+            /*
+             * Instance mixins
+             */
+            Set<String> instanceMixins = new HashSet<String>();
+            for (String mixin : mixins) {
+                if (!MIXINS_NOT_PER_INSTANCE.contains(mixin)) {
+                    instanceMixins.add(mixin);
+                }
+            }
+
+            /*
+             * SQL generation
+             */
+            if (!types.isEmpty()) {
+                Column col = hierTable.getColumn(Model.MAIN_PRIMARY_TYPE_KEY);
+                whereBuf.append(col.getFullQuotedName());
+                whereBuf.append(" IN ");
+                whereBuf.append('(');
+                for (Iterator<String> it = types.iterator(); it.hasNext();) {
+                    whereBuf.append('?');
+                    whereBufParams.add(it.next());
+                    if (it.hasNext()) {
+                        whereBuf.append(", ");
+                    }
+                }
+                whereBuf.append(')');
+
+                if (!instanceMixins.isEmpty()) {
+                    whereBuf.append(include ? " OR " : " AND ");
+                }
+            }
+
+            if (!instanceMixins.isEmpty()) {
+                whereBuf.append('(');
+                Column mixinsColumn = hierTable.getColumn(Model.MAIN_MIXIN_TYPES_KEY);
+                String[] returnParam = new String[1];
+                for (Iterator<String> it = instanceMixins.iterator(); it.hasNext();) {
+                    String mixin = it.next();
+                    String sql = dialect.getMatchMixinType(mixinsColumn, mixin,
+                            include, returnParam);
+                    whereBuf.append(sql);
+                    if (returnParam[0] != null) {
+                        whereBufParams.add(returnParam[0]);
+                    }
+                    if (it.hasNext()) {
+                        whereBuf.append(include ? " OR " : " AND ");
+                    }
+                }
+                if (!include) {
+                    whereBuf.append(" OR ");
+                    whereBuf.append(mixinsColumn.getFullQuotedName());
+                    whereBuf.append(" IS NULL");
+                }
+                whereBuf.append(')');
+            }
+
+            if (types.isEmpty() && instanceMixins.isEmpty()) {
+                whereBuf.append(include ? "0=1" : "0=0");
             }
         }
     }

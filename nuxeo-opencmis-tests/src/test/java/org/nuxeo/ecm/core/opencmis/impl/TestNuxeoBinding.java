@@ -84,6 +84,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoRepository;
@@ -1157,17 +1158,10 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         checkWhereTerm("File", NXQL.ECM_ISVERSION, "false");
         checkWhereTerm("File", NXQL.ECM_LIFECYCLESTATE, "'project'");
 
-        // TODO: merge static and dynamic facet
-        //checkWhereTerm("File", NXQL.ECM_MIXINTYPE, "'Versionable'");
-
-
         // ----- Folder -----
 
         checkWhereTerm("Folder", PropertyIds.PARENT_ID, NOT_NULL);
         checkWhereTerm("Folder", NXQL.ECM_LIFECYCLESTATE, "'project'");
-
-        // TODO: merge static and dynamic facet
-        // checkWhereTerm("Folder", NXQL.ECM_MIXINTYPE, "'Folderish'");
 
         // checkWhereTerm("Folder", PropertyIds.PATH, NOT_NULL);
         // checkWhereTerm("Folder", PropertyIds.ALLOWED_CHILD_OBJECT_TYPE_IDS,
@@ -1503,6 +1497,68 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         res = query(statement);
         assertEquals(1, res.getNumItems().intValue());
         statement = "SELECT cmis:name FROM File WHERE ANY dc:contributors NOT IN ('pete', 'bob')";
+        res = query(statement);
+        assertEquals(0, res.getNumItems().intValue());
+    }
+
+    @Test
+    public void testQueryMixinTypes() throws Exception {
+        String statement;
+        ObjectList res;
+
+        // add some instance facets on 2 documents
+        DocumentModel doc1 = nuxeotc.session.getDocument(new PathRef("/testfolder1/testfile1"));
+        assertTrue(doc1.addFacet("CustomFacetWithoutSchema"));
+        nuxeotc.session.saveDocument(doc1);
+        DocumentModel doc2 = nuxeotc.session.getDocument(new PathRef("/testfolder1/testfile2"));
+        assertTrue(doc2.addFacet("CustomFacetWithMySchema2"));
+        doc2.setPropertyValue("my2:long", 12);
+        nuxeotc.session.saveDocument(doc2);
+        nuxeotc.session.save();
+
+        // ... = ANY ...
+        statement = "SELECT * FROM File WHERE 'Versionable' = ANY ecm:mixinType";
+        res = query(statement);
+        assertEquals(3, res.getNumItems().intValue());
+        statement = "SELECT * FROM File WHERE 'Downloadable' = ANY ecm:mixinType";
+        res = query(statement);
+        assertEquals(3, res.getNumItems().intValue());
+        // statement =
+        // "SELECT ecm:mixinType FROM File WHERE 'CustomFacetWithoutSchema' = ANY ecm:mixinType";
+        // res = query(statement);
+        // assertEquals(1, res.getNumItems().intValue());
+        // checkValue(NXQL.ECM_MIXINTYPE, Arrays.asList("Versionable"),
+        // res.getObjects().get(0));
+
+        statement = "SELECT * FROM File WHERE 'CustomFacetWithMySchema2' = ANY ecm:mixinType";
+        res = query(statement);
+        assertEquals(1, res.getNumItems().intValue());
+
+        // ANY ... IN ...
+        statement = "SELECT * FROM File WHERE ANY ecm:mixinType IN ('Versionable')";
+        res = query(statement);
+        assertEquals(3, res.getNumItems().intValue());
+        statement = "SELECT * FROM File WHERE ANY ecm:mixinType IN ('CustomFacetWithoutSchema')";
+        res = query(statement);
+        assertEquals(1, res.getNumItems().intValue());
+        statement = "SELECT * FROM File WHERE ANY ecm:mixinType IN ('CustomFacetWithoutSchema', 'CustomFacetWithMySchema2')";
+        res = query(statement);
+        assertEquals(2, res.getNumItems().intValue());
+        statement = "SELECT * FROM File WHERE ANY ecm:mixinType IN ('Versionable', 'CustomFacetWithoutSchema')";
+        res = query(statement);
+        assertEquals(3, res.getNumItems().intValue());
+
+        // ANY ... NOT IN ...
+        statement = "SELECT * FROM File WHERE ANY ecm:mixinType NOT IN ('Versionable')";
+        res = query(statement);
+        assertEquals(0, res.getNumItems().intValue());
+        statement = "SELECT * FROM File WHERE ANY ecm:mixinType NOT IN ('CustomFacetWithoutSchema')";
+        res = query(statement);
+        assertEquals(2, res.getNumItems().intValue());
+        statement = "SELECT * FROM File WHERE ANY ecm:mixinType NOT IN ('CustomFacetWithoutSchema', 'CustomFacetWithMySchema2')";
+        res = query(statement);
+        assertEquals(1, res.getNumItems().intValue());
+        statement = "SELECT * FROM File WHERE ANY ecm:mixinType NOT IN ('Versionable', 'CustomFacetWithoutSchema')";
         res = query(statement);
         assertEquals(0, res.getNumItems().intValue());
     }
