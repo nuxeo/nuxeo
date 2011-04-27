@@ -16,7 +16,11 @@
  */
 package org.nuxeo.ecm.platform.wi.backend;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang.StringUtils;
@@ -46,12 +50,12 @@ public abstract class AbstractVirtualBackend extends AbstractCoreBackend
     private RealBackendFactory realBackendFactory;
 
     protected AbstractVirtualBackend(String name, String rootUrl,
-                                     RealBackendFactory realBackendFactory) {
+            RealBackendFactory realBackendFactory) {
         this(name, rootUrl, null, realBackendFactory);
     }
 
-    protected AbstractVirtualBackend(String name, String rootUrl, CoreSession session,
-                                     RealBackendFactory realBackendFactory) {
+    protected AbstractVirtualBackend(String name, String rootUrl,
+            CoreSession session, RealBackendFactory realBackendFactory) {
         super(session);
         this.backendDisplayName = name;
         this.rootUrl = new Path(rootUrl).append(this.backendDisplayName).toString();
@@ -84,8 +88,7 @@ public abstract class AbstractVirtualBackend extends AbstractCoreBackend
 
             Backend backend = realBackendFactory.createBackend(name, head,
                     new Path(this.rootUrl).append(name).toString(),
-                    getSession()
-            );
+                    getSession());
 
             registerBackend(backend);
         }
@@ -193,7 +196,9 @@ public abstract class AbstractVirtualBackend extends AbstractCoreBackend
                 init();
                 return true;
             } catch (Exception e) {
-                log.error("Execute during virtual backend initialization. Backend name:" + getBackendDisplayName(), e);
+                log.error(
+                        "Execute during virtual backend initialization. Backend name:"
+                                + getBackendDisplayName(), e);
             }
         }
         return false;
@@ -311,7 +316,8 @@ public abstract class AbstractVirtualBackend extends AbstractCoreBackend
     }
 
     @Override
-    public DocumentModel updateDocument(DocumentModel doc, String name, Blob content) throws ClientException {
+    public DocumentModel updateDocument(DocumentModel doc, String name,
+            Blob content) throws ClientException {
         throw new UnsupportedOperationException();
     }
 
@@ -334,6 +340,7 @@ public abstract class AbstractVirtualBackend extends AbstractCoreBackend
         return null;
     }
 
+    @Override
     public LinkedList<String> getOrderedBackendNames() throws ClientException {
         initIfNeed();
         return orderedBackendNames;

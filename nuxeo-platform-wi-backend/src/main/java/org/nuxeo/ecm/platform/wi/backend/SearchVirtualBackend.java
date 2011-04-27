@@ -17,29 +17,23 @@
  */
 package org.nuxeo.ecm.platform.wi.backend;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-
-import java.util.List;
 
 public class SearchVirtualBackend extends AbstractVirtualBackend {
 
-    private static final Log log = LogFactory.getLog(SearchVirtualBackend.class);
-
     private String query;
 
-    public SearchVirtualBackend(String name, String rootUrl, String query, RealBackendFactory realBackendFactory) {
+    public SearchVirtualBackend(String name, String rootUrl, String query,
+            RealBackendFactory realBackendFactory) {
         super(name, rootUrl, realBackendFactory);
         this.query = query;
     }
 
     @Override
     protected void init() throws ClientException {
-                DocumentModelList docs = getSession().query(query);
+        DocumentModelList docs = getSession().query(query);
         registerSimpleBackends(docs);
-                }
+    }
 
 }

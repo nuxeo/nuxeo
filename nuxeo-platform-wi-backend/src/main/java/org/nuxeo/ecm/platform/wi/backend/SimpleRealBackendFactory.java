@@ -20,10 +20,12 @@ import org.nuxeo.ecm.core.api.CoreSession;
 
 public class SimpleRealBackendFactory implements RealBackendFactory {
 
+    @Override
     public Backend createBackend(String backendDisplayName, String rootPath, String rootUrl) {
         return new SimpleBackend(backendDisplayName, rootPath, rootUrl);
     }
 
+    @Override
     public Backend createBackend(String backendDisplayName, String rootPath, String rootUrl, CoreSession session) {
         return new SimpleBackend(backendDisplayName, rootPath, rootUrl, session);
     }

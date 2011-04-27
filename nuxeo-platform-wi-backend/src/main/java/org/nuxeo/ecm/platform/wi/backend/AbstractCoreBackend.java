@@ -46,6 +46,7 @@ public abstract class AbstractCoreBackend implements Backend {
         return getSession(false);
     }
 
+    @Override
     public CoreSession getSession(boolean synchronize) throws ClientException {
         try {
 

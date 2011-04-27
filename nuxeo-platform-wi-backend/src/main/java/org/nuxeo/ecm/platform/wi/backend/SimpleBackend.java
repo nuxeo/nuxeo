@@ -36,6 +36,7 @@ import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.ecm.webdav.Util;
 import org.nuxeo.runtime.api.Framework;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.security.Principal;
 import java.util.ArrayList;
@@ -122,7 +123,9 @@ public class SimpleBackend extends AbstractCoreBackend {
         return getSession().hasPermission(docRef, permission);
     }
 
-    public DocumentModel updateDocument(DocumentModel doc, String name, Blob content) throws ClientException {
+    @Override
+    public DocumentModel updateDocument(DocumentModel doc, String name,
+            Blob content) throws ClientException {
         doc.getProperty("file:content").setValue(content);
         doc.getProperty("file:filename").setValue(name);
         getSession().saveDocument(doc);
@@ -174,46 +177,55 @@ public class SimpleBackend extends AbstractCoreBackend {
             }
 
             if (doc == null) {
-            String filename = resolvedLocation.lastSegment();
-            Path parentLocation = resolvedLocation.removeLastSegments(1);
+                String filename = resolvedLocation.lastSegment();
+                Path parentLocation = resolvedLocation.removeLastSegments(1);
 
-            // first try with spaces (for create New Folder)
+                // first try with spaces (for create New Folder)
                 String folderName = filename;
-                DocumentRef folderRef = new PathRef(parentLocation.append(folderName).toString());
-            if (exists(folderRef)) {
-                doc = getSession().getDocument(folderRef);
-            }
-            // look for a child
-            DocumentModel parentDocument = resolveParent(parentLocation.toString());
-            if (parentDocument == null) {
-                log.warn("Unable to find parent for item " + location);
-                throw new ClientException("Unable to find parent for item "
-                        + location);
-            }
-            List<DocumentModel> children = getChildren(parentDocument.getRef());
-            for (DocumentModel child : children) {
-                BlobHolder bh = child.getAdapter(BlobHolder.class);
+                DocumentRef folderRef = new PathRef(parentLocation.append(
+                        folderName).toString());
+                if (exists(folderRef)) {
+                    doc = getSession().getDocument(folderRef);
+                }
+                // look for a child
+                DocumentModel parentDocument = resolveParent(parentLocation.toString());
+                if (parentDocument == null) {
+                    log.warn("Unable to find parent for item " + location);
+                    throw new ClientException("Unable to find parent for item "
+                            + location);
+                }
+                List<DocumentModel> children = getChildren(parentDocument.getRef());
+                for (DocumentModel child : children) {
+                    BlobHolder bh = child.getAdapter(BlobHolder.class);
                     if (bh != null) {
                         Blob blob = bh.getBlob();
                         if (blob != null) {
-                        if (filename.equals(blob.getFilename())) {
-                            doc = child;
-                            break;
-                            } else if (urlEncode(filename).equals(blob.getFilename())) {
-                            doc = child;
-                            break;
-                            } else if (URLEncoder.encode(filename).equals(blob.getFilename())) {
-                                doc = child;
-                                break;
-                            } else if (Util.encode(blob.getFilename().getBytes(), "ISO-8859-1").equals(filename)) {
-                            doc = child;
-                            break;
+                            try {
+                                String blobFilename = blob.getFilename();
+                                if (filename.equals(blobFilename)) {
+                                    doc = child;
+                                    break;
+                                } else if (urlEncode(filename).equals(
+                                        blobFilename)) {
+                                    doc = child;
+                                    break;
+                                } else if (URLEncoder.encode(filename, "UTF-8").equals(
+                                        blobFilename)) {
+                                    doc = child;
+                                    break;
+                                } else if (Util.encode(blobFilename.getBytes(),
+                                        "ISO-8859-1").equals(filename)) {
+                                    doc = child;
+                                    break;
+                                }
+                            } catch (UnsupportedEncodingException e) {
+                                // cannot happen for UTF-8
+                                throw new RuntimeException(e);
+                            }
                         }
                     }
                 }
-
             }
-        }
         }
         getPathCache().put(resolvedLocation.toString(), doc);
         return doc;
@@ -228,7 +240,8 @@ public class SimpleBackend extends AbstractCoreBackend {
         }
     }
 
-    protected DocumentModel resolveParent(String location) throws ClientException {
+    protected DocumentModel resolveParent(String location)
+            throws ClientException {
         DocumentModel doc = null;
         doc = getPathCache().get(location.toString());
         if (doc != null) {
@@ -245,7 +258,8 @@ public class SimpleBackend extends AbstractCoreBackend {
 
             // first try with spaces (for create New Folder)
             String folderName = filename;
-            DocumentRef folderRef = new PathRef(parentLocation.append(folderName).toString());
+            DocumentRef folderRef = new PathRef(parentLocation.append(
+                    folderName).toString());
             if (exists(folderRef)) {
                 doc = getSession().getDocument(folderRef);
             }
@@ -389,7 +403,7 @@ public class SimpleBackend extends AbstractCoreBackend {
         if ("WorkspaceRoot".equals(parent.getType())) {
             targetType = "Workspace";
         }
-        //name = cleanName(name);
+        // name = cleanName(name);
         try {
             cleanTrashPath(parent, name);
             DocumentModel folder = getSession().createDocumentModel(
@@ -414,7 +428,7 @@ public class SimpleBackend extends AbstractCoreBackend {
         }
 
         String targetType = "File";
-        //name = cleanName(name);
+        // name = cleanName(name);
         try {
             cleanTrashPath(parent, name);
             DocumentModel file = getSession().createDocumentModel(

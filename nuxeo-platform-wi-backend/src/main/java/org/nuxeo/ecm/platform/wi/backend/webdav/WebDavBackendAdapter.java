@@ -18,7 +18,11 @@
 package org.nuxeo.ecm.platform.wi.backend.webdav;
 
 import org.nuxeo.common.utils.Path;
-import org.nuxeo.ecm.core.api.*;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.platform.wi.backend.Backend;
 import org.nuxeo.ecm.webdav.backend.WebDavBackend;
 

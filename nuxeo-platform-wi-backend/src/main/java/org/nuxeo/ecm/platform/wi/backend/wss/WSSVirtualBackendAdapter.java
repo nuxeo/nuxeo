@@ -17,23 +17,20 @@
  */
 package org.nuxeo.ecm.platform.wi.backend.wss;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.wi.backend.Backend;
 import org.nuxeo.wss.WSSException;
 import org.nuxeo.wss.servlet.WSSRequest;
 import org.nuxeo.wss.spi.WSSBackend;
 import org.nuxeo.wss.spi.WSSListItem;
 import org.nuxeo.wss.spi.dws.DWSMetaData;
-import org.nuxeo.wss.spi.dws.DWSMetaDataImpl;
 import org.nuxeo.wss.spi.dws.Site;
-import org.nuxeo.wss.spi.dws.SiteImpl;
 
 public class WSSVirtualBackendAdapter extends WSSBackendAdapter {
 
+    @SuppressWarnings("unused")
     private String urlRoot;
 
     public WSSVirtualBackendAdapter(Backend backend, String virtualRoot) {

@@ -17,10 +17,17 @@
  */
 package org.nuxeo.ecm.platform.wi.backend.wss;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.nuxeo.common.utils.Path;
-import org.nuxeo.ecm.core.api.*;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.platform.wi.backend.Backend;
 import org.nuxeo.ecm.platform.wi.backend.VirtualBackend;
@@ -30,16 +37,14 @@ import org.nuxeo.wss.servlet.WSSFilter;
 import org.nuxeo.wss.servlet.WSSRequest;
 import org.nuxeo.wss.spi.AbstractWSSBackend;
 import org.nuxeo.wss.spi.WSSListItem;
-import org.nuxeo.wss.spi.dws.*;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.List;
+import org.nuxeo.wss.spi.dws.DWSMetaData;
+import org.nuxeo.wss.spi.dws.DWSMetaDataImpl;
+import org.nuxeo.wss.spi.dws.Site;
+import org.nuxeo.wss.spi.dws.SiteImpl;
+import org.nuxeo.wss.spi.dws.User;
+import org.nuxeo.wss.spi.dws.UserImpl;
 
 public class WSSBackendAdapter extends AbstractWSSBackend {
-
-    private static final Log log = LogFactory.getLog(WSSBackendAdapter.class);
 
     protected String corePathPrefix;
 
