@@ -436,4 +436,12 @@ public class NuxeoSession implements Session {
         throw new CmisNotSupportedException();
     }
 
+    @Override
+    public void removeObjectFromCache(ObjectId objectId) {
+    }
+
+    @Override
+    public void removeObjectFromCache(String objectId) {
+    }
+
 }

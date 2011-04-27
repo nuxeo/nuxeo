@@ -26,7 +26,7 @@
   </modules>
 
   <properties>
-    <chemistry.opencmis.version>0.3.0</chemistry.opencmis.version>
+    <chemistry.opencmis.version>0.4.0-r1096750</chemistry.opencmis.version>
     <nuxeo.version>5.4.2-SNAPSHOT</nuxeo.version>
   </properties>
 

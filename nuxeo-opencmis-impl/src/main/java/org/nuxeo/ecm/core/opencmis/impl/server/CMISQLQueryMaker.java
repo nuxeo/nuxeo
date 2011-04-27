@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.tree.Tree;
@@ -128,18 +129,24 @@ public class CMISQLQueryMaker implements QueryMaker {
 
     protected Table hierTable;
 
+    public boolean skipDeleted = true;
+
+
     // ----- filled during walks of the clauses -----
 
     protected QueryObject query;
 
-    public boolean skipDeleted = true; // do not include trashed documents by
-                                       // default
+    protected FulltextMatchInfo fulltextMatchInfo;
 
     protected boolean hasLifeCycleWhereClause = false;
 
     protected boolean hasMixinTypeWhereClause = false;
 
-    public FulltextMatchInfo fulltextMatchInfo;
+    /** Qualifier to type. */
+    protected Map<String, String> qualifierToType = new HashMap<String, String>();
+
+    /** Qualifier to canonical qualifier (correlation name). */
+    protected Map<String, String> canonicalQualifier = new HashMap<String, String>();
 
     /** Map of qualifier -> fragment -> table */
     protected Map<String, Map<String, Table>> allTables = new HashMap<String, Map<String, Table>>();
@@ -154,10 +161,10 @@ public class CMISQLQueryMaker implements QueryMaker {
     protected Map<String, ColumnReference> virtualColumns = new HashMap<String, ColumnReference>();
 
     /** Type info returned to caller. */
-    Map<String, PropertyDefinition<?>> typeInfo;
+    protected Map<String, PropertyDefinition<?>> typeInfo;
 
     /** used for diagnostic when using DISTINCT */
-    List<String> virtualColumnNames = new LinkedList<String>();
+    protected List<String> virtualColumnNames = new LinkedList<String>();
 
     /**
      * Column corresponding to a returned value computed from an actual SQL
@@ -234,6 +241,8 @@ public class CMISQLQueryMaker implements QueryMaker {
             throw new QueryParseException(e.getMessage(), e);
         }
 
+        resolveQualifiers();
+
         // now resolve column selectors to actual database columns
         for (CmisSelector sel : query.getSelectReferences()) {
             recordSelectSelector(sel);
@@ -278,13 +287,10 @@ public class CMISQLQueryMaker implements QueryMaker {
                 alias = join.alias;
             }
 
-            String typeQueryName = query.getTypeQueryName(alias);
-            String qual = alias;
-            if (qual.equals(typeQueryName)) {
-                qual = null;
-            }
-            Table qualHierTable;
-            qualHierTable = getTable(hierTable, qual);
+
+            String typeQueryName = qualifierToType.get(alias);
+            String qual = canonicalQualifier.get(alias);
+            Table qualHierTable = getTable(hierTable, qual);
 
             // table this join is about
             Table table;
@@ -296,7 +302,8 @@ public class CMISQLQueryMaker implements QueryMaker {
                 table = null;
                 for (ColumnReference col : Arrays.asList(join.onLeft,
                         join.onRight)) {
-                    if (alias.equals(col.getTypeQueryName())) {
+                    if (alias.equals(col.getQualifier())) {
+                        // TODO match with canonical qualifier instead?
                         table = ((Column) col.getInfo()).getTable();
                         break;
                     }
@@ -638,7 +645,7 @@ public class CMISQLQueryMaker implements QueryMaker {
             }
         } else { // sel instanceof ColumnReference
             ColumnReference col = (ColumnReference) sel;
-            String qual = col.getTypeQueryName();
+            String qual = canonicalQualifier.get(col.getQualifier());
 
             if (col.getPropertyQueryName().equals("*")) {
                 TypeDefinition type = getTypeForQualifier(qual);
@@ -708,7 +715,7 @@ public class CMISQLQueryMaker implements QueryMaker {
                     + " clause: " + col.getPropertyQueryName());
         }
         col.setInfo(column);
-        String qual = col.getTypeQueryName();
+        String qual = canonicalQualifier.get(col.getQualifier());
 
         if (clauseType == WHERE
                 && NXQL.ECM_LIFECYCLESTATE.equals(col.getPropertyId())) {
@@ -742,10 +749,53 @@ public class CMISQLQueryMaker implements QueryMaker {
     }
 
     /**
+     * Finds what qualifiers are allowed and to what correlation name they are
+     * mapped.
+     */
+    protected void resolveQualifiers() {
+        Map<String, String> types = query.getTypes();
+        Map<String, AtomicInteger> typeCount = new HashMap<String, AtomicInteger>();
+        for (Entry<String, String> en : types.entrySet()) {
+            String qual = en.getKey();
+            String typeQueryName = en.getValue();
+            qualifierToType.put(qual, typeQueryName);
+            // if an alias, use as its own correlation name
+            canonicalQualifier.put(qual, qual);
+            // also use alias as correlation name for this type
+            // (ambiguous types removed later)
+            canonicalQualifier.put(typeQueryName, qual);
+            // count type use
+            if (!typeCount.containsKey(typeQueryName)) {
+                typeCount.put(typeQueryName, new AtomicInteger(0));
+            }
+            typeCount.get(typeQueryName).incrementAndGet();
+        }
+        for (Entry<String, AtomicInteger> en : typeCount.entrySet()) {
+            String typeQueryName = en.getKey();
+            if (en.getValue().get() == 1) {
+                // for types used once, allow direct type reference
+                qualifierToType.put(typeQueryName, typeQueryName);
+            } else {
+                // ambiguous type, not legal as qualifier
+                canonicalQualifier.remove(typeQueryName);
+            }
+        }
+        // if only one type, allow omitted qualifier (null)
+        if (types.size() == 1) {
+            String typeQueryName = types.values().iterator().next();
+            qualifierToType.put(null, typeQueryName);
+            // correlation name is actually null for all qualifiers
+            for (String qual : qualifierToType.keySet()) {
+                canonicalQualifier.put(qual, null);
+            }
+        }
+    }
+
+    /**
      * Finds a database column from a CMIS reference.
      */
     protected Column getColumn(ColumnReference col) {
-        String qual = col.getTypeQueryName();
+        String qual = canonicalQualifier.get(col.getQualifier());
         String id = col.getPropertyId();
         Column column;
         if (id.startsWith(CMIS_PREFIX) || id.startsWith(NXQL.ECM_PREFIX)) {
@@ -837,8 +887,7 @@ public class CMISQLQueryMaker implements QueryMaker {
         if (alias != null) {
             return alias;
         }
-        return getPropertyKey(col.getTypeQueryName(),
-                col.getPropertyQueryName());
+        return getPropertyKey(col.getQualifier(), col.getPropertyQueryName());
     }
 
     protected static String getPropertyKey(String qual, String id) {
@@ -849,15 +898,8 @@ public class CMISQLQueryMaker implements QueryMaker {
     }
 
     protected TypeDefinition getTypeForQualifier(String qual) {
-        if (qual == null) {
-            for (Entry<String, String> en : query.getTypes().entrySet()) {
-                if (en.getKey().equals(en.getValue())) {
-                    qual = en.getValue();
-                    break;
-                }
-            }
-        }
-        return query.getTypeDefinitionFromQueryName(query.getTypeQueryName(qual));
+        String typeQueryName = qualifierToType.get(qual);
+        return query.getTypeDefinitionFromQueryName(typeQueryName);
     }
 
     protected Table getTable(Table table, String qual) {
@@ -925,7 +967,7 @@ public class CMISQLQueryMaker implements QueryMaker {
             for (Entry<String, ColumnReference> vc : virtualColumns.entrySet()) {
                 String key = vc.getKey();
                 ColumnReference col = vc.getValue();
-                String qual = col.getTypeQueryName();
+                String qual = col.getQualifier();
                 if (datas == null) {
                     datas = new HashMap<String, NuxeoObjectData>(2);
                 }
@@ -1216,7 +1258,7 @@ public class CMISQLQueryMaker implements QueryMaker {
                         + col.getPropertyQueryName());
             }
             Column column = (Column) col.getInfo();
-            String qual = col.getTypeQueryName();
+            String qual = col.getQualifier();
             Column hierMainColumn = getTable(hierTable, qual).getColumn(
                     model.MAIN_KEY);
             Column multiMainColumn = column.getTable().getColumn(model.MAIN_KEY);
@@ -1281,6 +1323,7 @@ public class CMISQLQueryMaker implements QueryMaker {
         @Override
         public Boolean walkInFolder(Tree opNode, Tree qualNode, Tree paramNode) {
             String qual = qualNode == null ? null : qualNode.getText();
+            qual = canonicalQualifier.get(qual);
             // this is from the hierarchy table which is always present
             Column column = getSystemColumn(qual, PropertyIds.PARENT_ID);
             whereBuf.append(column.getFullQuotedName());
@@ -1293,6 +1336,8 @@ public class CMISQLQueryMaker implements QueryMaker {
         @Override
         public Boolean walkInTree(Tree opNode, Tree qualNode, Tree paramNode) {
             String qual = qualNode == null ? null : qualNode.getText();
+            qual = canonicalQualifier.get(qual);
+            // this is from the hierarchy table which is always present
             Column column = getSystemColumn(qual, PropertyIds.OBJECT_ID);
             String sql = dialect.getInTreeSql(column.getFullQuotedName());
             String id = (String) super.walkString(paramNode);
