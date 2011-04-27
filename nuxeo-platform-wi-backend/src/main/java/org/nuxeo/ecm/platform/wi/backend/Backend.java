@@ -37,7 +37,7 @@ public interface Backend {
 
     void setSession(CoreSession session);
 
-    CoreSession getSession(boolean requiredNew) throws ClientException;
+    CoreSession getSession(boolean synchronize) throws ClientException;
 
     String getBackendDisplayName();
 
