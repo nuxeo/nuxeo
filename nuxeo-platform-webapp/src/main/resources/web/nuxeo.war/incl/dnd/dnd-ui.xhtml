@@ -15,9 +15,16 @@
           </div>
         </td>
         <td>
-          <span id="dndMsgUploadInProgress" class="dndControlMessage">Upload in progress</span>
+          <span id="dndMsgUploadInProgress" class="dndControlMessage">
+          <nxu:graphicImage value="/img/big_loading.gif"
+          style="vertical-align:middle"/>
+          Upload in progress</span>
           <span id="dndMsgUploadCompleted" class="dndControlMessage">Upload completed, click Continue</span>
-          <span id="dropzone-bar-msg" class="dropzone-bar-msg"></span>
+        </td>
+        <td>
+           <span id="dropzone-bar-msg" class="dropzone-bar-msg"></span>
+        </td>
+        <td>
           <input id="dropzone-bar-btn" class="dropzone-bar-btn" type="button" value="Continue"></input>
         </td>
       </tr>
@@ -47,10 +54,16 @@
   </div>
 
   <div id="dndContinueButton">
+     <span id="dndContinueButtonNext">
      <nxu:graphicImage value="/img/ImportContinue.png"
       style="vertical-align:middle"
       alt="#{messages['import.continue']}"
       title="#{messages['import.continue']}"/>
+     </span>
+     <span id="dndContinueButtonWait" style="display:none">
+       <nxu:graphicImage value="/img/big_loading.gif"
+          style="vertical-align:middle"/>
+     </span>
   </div>
 
 </div>

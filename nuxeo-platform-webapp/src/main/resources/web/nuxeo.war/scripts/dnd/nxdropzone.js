@@ -60,30 +60,31 @@ function DropZoneUIHandler(idx, dropZoneId, options,targetSelectedCB) {
       dive.html( getReadableSpeedString(KBperSecond) );
   }
 
-  DropZoneUIHandler.prototype.buildUI = function () {
+  DropZoneUIHandler.prototype.selectTargetZone = function () {
       var dzone = jQuery("#"+this.dropZoneId); // XXX
       dzone.addClass("dropzoneTarget");
-      this.targetSelectedCB();
-/*      var panel = jQuery("<div></div>");
-      panel.addClass("dropPanel");
-      panel.attr("id", "dropPanel-" + this.idx);
+      this.targetSelectedCB(this.dropZoneId);
+  }
 
-      dzone.before(panel);
-      panel.append(dzone);*/
-    }
-
+  DropZoneUIHandler.prototype.fetchOptions = function(){
+      var handler=this; // deRef object !
+      var context = jQuery("#" + this.dropZoneId).attr("context");
+      // Fetch the import options
+      var getOptions = jQuery().automation('ImportOptions.GET');
+      getOptions.addParameter("category",context);
+      getOptions.execute(function(data, textStatus,xhr) {handler.operationsDef=data;});
+  }
 
   DropZoneUIHandler.prototype.batchStarted = function(){
       if (this.batchId==null) {
-        this.buildUI(this.dropZoneId);
+        // select the target DropZone
+        this.selectTargetZone();
+        // generate a batchId
         this.batchId = "batch-" + new Date().getTime();
-        var o=this; // deRef object !
-        var context = jQuery("#" + this.dropZoneId).attr("context");
-        // Fetch the import options
-        var getOptions = jQuery().automation('ImportOptions.GET');
-        getOptions.addParameter("category",context);
-        getOptions.execute(function(data, textStatus,xhr) {o.operationsDef=data;});
+        // fetc import options
+        this.fetchOptions();
       }
+      // Add the status bar on top of body
       var panel=jQuery("#dropzone-info-panel").remove();
       jQuery("body").prepend(panel);
       panel.css("display","block");
@@ -91,17 +92,23 @@ function DropZoneUIHandler(idx, dropZoneId, options,targetSelectedCB) {
       jQuery("#dndMsgUploadCompleted").css("display","none");
       jQuery("#dropzone-bar-msg").html("...");
       jQuery("#dropzone-bar-btn").css("visibility","hidden");
+
       return this.batchId;
   }
 
   DropZoneUIHandler.prototype.batchFinished = function(batchId) {
+    this.showContinue(batchId);
+  }
+
+  DropZoneUIHandler.prototype.showContinue = function(batchId) {
+    // Show the continue button in bar
     jQuery("#dndMsgUploadInProgress").css("display","none");
     jQuery("#dndMsgUploadCompleted").css("display","block");
-    jQuery("#dropzone-bar-btn").css("visibility","visible");
-    jQuery("#dropzone-bar-btn").attr("value","Continue");
-    var o=this; // deRef object !
-    jQuery("#dropzone-bar-btn").bind("click",function(event) {o.selectOperation(batchId, o.dropZoneId, o.url)});
+    var continueButtonInBar =jQuery("#dropzone-bar-btn");
+    continueButtonInBar.css("visibility","visible");
+    continueButtonInBar.attr("value","Continue");
 
+    // Show the continue button at center of dropzone
     var continueButton = jQuery("#dndContinueButton");
     continueButton.css("position","absolute");
     continueButton.css("display","block");
@@ -110,13 +117,20 @@ function DropZoneUIHandler(idx, dropZoneId, options,targetSelectedCB) {
     var btnPosition =zone.position();
     btnPosition.top = btnPosition.top + zone.height()/2 - continueButton.height()/2;
     btnPosition.left = btnPosition.left + zone.width()/2 - continueButton.width()/2;
-    console.log(btnPosition);
+    log(btnPosition);
     continueButton.css(btnPosition);
-    continueButton.bind("click",function(event) {continueButton.css("display","none");o.selectOperation(batchId, o.dropZoneId, o.url)});
+
+    // bind click
+    var handler=this; // deRef object !
+    continueButtonInBar.unbind();
+    continueButtonInBar.bind("click",function(event) {handler.selectOperation(batchId, handler.dropZoneId, handler.url)});
+    continueButton.unbind();
+    continueButton.bind("click",function(event) {continueButton.css("display","none");handler.selectOperation(batchId, handler.dropZoneId, handler.url)});
+
   }
 
   DropZoneUIHandler.prototype.updateForm  = function (event, value) {
-    console.log("updateForm : " + value);
+    log("updateForm : " + value);
     for (i=0; i< this.operationsDef.length; i++) {
       if(this.operationsDef[i].operationId==value) {
        var desc = jQuery("<div></div>");
@@ -140,20 +154,20 @@ function DropZoneUIHandler(idx, dropZoneId, options,targetSelectedCB) {
   DropZoneUIHandler.prototype.selectOperation  = function (batchId, dropId, url) {
 
     var o=this; // deRef object !
-    console.log(this.operationsDef);
+    log(this.operationsDef);
     if (this.operationsDef==null) {
-      console.log("No OpDEf found !!!");
+      log("No OpDEf found !!!");
     } else {
       if (this.operationsDef.length==1 && this.operationsDef[0].formUrl=='') {
         // XXX start operation right now
-      console.log("Only one operation");
+      log("Only one operation");
       this.executeBatch(this.operationsDef[0].operationId,{});
       return;
       }
     }
 
     // Build the form
-    console.log("build form");
+    log("build form");
     var panel = jQuery("#dndFormPanel");
 
     // update the file list
@@ -175,14 +189,14 @@ function DropZoneUIHandler(idx, dropZoneId, options,targetSelectedCB) {
       optionEntry.text(this.operationsDef[i].label);
       selector.append(optionEntry);
     }
+    selector.unbind();
     selector.bind("change", function(event) {o.updateForm(event, selector.val())});
     var buttonForm = jQuery("#dndFormSubmitButton");
 
     panel.css("display","block");
     this.updateForm(null,this.operationsDef[0].operationId);
 
-    jQuery("#dropzone-info-panel").css("display","none");
-
+    buttonForm.unbind();
     buttonForm.bind("click", function(event) {
         var formParams = {};
         // gather form params
@@ -197,21 +211,31 @@ function DropZoneUIHandler(idx, dropZoneId, options,targetSelectedCB) {
   }
 
   DropZoneUIHandler.prototype.executeBatch = function(operationId, params) {
-      console.log("exec form on operation " + operationId + ", batchId=" + this.batchId);
+      log("exec operation " + operationId + ", batchId=" + this.batchId);
+
+      // hide the top panel
+      jQuery("#dropzone-info-panel").css("display","none");
+
+      // change the continue button to a loging anim
+      var continueButton = jQuery("#dndContinueButton");
+      continueButton.unbind();
+      jQuery("#dndContinueButtonNext").css("display","none");
+      jQuery("#dndContinueButtonWait").css("display","block");
+      continueButton.css("display","block")
+
       var batchExec=jQuery().automation(operationId);
-      console.log(this.ctx);
+      log(this.ctx);
       batchExec.setContext(this.ctx);
       batchExec.addParameters(params);
-      console.log(batchExec);
+      log(batchExec);
       batchExec.batchExecute(this.batchId,
           function(data, status,xhr) {
-              console.log("Import operation executed OK");
-              console.log(window.location.href);
+              log("Import operation executed OK");
               window.location.href=window.location.href;
-              console.log("refresh-done");
+              log("refresh-done");
           },
           function(xhr,status,e) {
-              console.log("Error while executing batch");
+              log("Error while executing batch");
           }
       );
   }
@@ -244,21 +268,28 @@ var targetSelected=false;
      this.each(function(){
        var dropId = jQuery(this).attr("id");
        ids.push(dropId);
-       console.log("Init handler for " + dropId)
+       log("Init handler for " + dropId)
        // create UI handler
-       var uiHandler = new DropZoneUIHandler(NxDropZoneHandlerIdx++, dropId, options, function(){targetSelected=true;});
+       var uiHandler = new DropZoneUIHandler(NxDropZoneHandlerIdx++, dropId, options, function(targetId) {
+                                                 targetSelected=true;
+                                                 jQuery.each(ids, function (idx,id) {
+                                                   if (id!=targetId) {
+                                                     jQuery("#"+id).unbind();
+                                                   }
+                                                   jQuery("#"+id).unbind('dragleave');
+                                                 });
+       });
        // copy optionMap
        var instanceOptions = jQuery.extend({},options);
        // register callback Handler
        instanceOptions.handler = uiHandler;
        jQuery("#" + dropId).dropzone(instanceOptions);
-       console.log("Init " + dropId + " done!")
+       log("Init " + dropId + " done!")
      })
 
       // bind events on body to show the drop box
       document.body.ondragover = function(event) {highlightDropZones(event)};
       document.body.ondragleave = function(event) {removeHighlights(event)};
-
      };
 
      function highlightDropZones(event) {
@@ -282,11 +313,11 @@ var targetSelected=false;
               });
               highLightOn = true;
                } else {
-                 //console.log("no data");
-                 //console.log(dt);
+                 //log("no data");
+                 //log(dt);
                }
           } else {
-              //console.log("No dataTransfer");
+              //log("No dataTransfer");
           }
       };
 
@@ -294,7 +325,7 @@ var targetSelected=false;
           if (!highLightOn || targetSelected ) {
               return;
           }
-          //console.log(event);
+          //log(event);
           jQuery.each(ids, function (idx,id) {
             jQuery("#"+id).removeClass("dropzoneHL");
 //          if(!event.relatedTarget || event.relatedTarget.id!=id) {
