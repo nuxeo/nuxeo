@@ -11,7 +11,7 @@
         <facet name="Folderish" />
       </includedFacets>
       <sortPropertyPath>dc:title</sortPropertyPath>
-      <pageProvider>TREE_CHILDREN</pageProvider>
+      <pageProvider>tree_children</pageProvider>
     </treeManagerPlugin>
 
   </extension>

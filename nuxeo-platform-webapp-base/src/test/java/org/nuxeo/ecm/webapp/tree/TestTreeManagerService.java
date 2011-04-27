@@ -55,7 +55,7 @@ public class TestTreeManagerService extends RepositoryOSGITestCase {
 
     public void testDefaultContribs() {
         String filterName = "navigation";
-        assertEquals("TREE_CHILDREN",
+        assertEquals("tree_children",
                 treeManager.getPageProviderName(filterName));
         assertNull(treeManager.getFilter(filterName));
         assertNotNull(treeManager.getLeafFilter(filterName));
@@ -66,7 +66,7 @@ public class TestTreeManagerService extends RepositoryOSGITestCase {
         deployContrib(Thread.currentThread().getContextClassLoader().getResource(
                 "test-nxtreemanager-contrib.xml"));
         String filterName = "navigation";
-        assertEquals("TREE_CHILDREN",
+        assertEquals("tree_children",
                 treeManager.getPageProviderName(filterName));
         assertNotNull(treeManager.getFilter(filterName));
         assertNull(treeManager.getLeafFilter(filterName));
