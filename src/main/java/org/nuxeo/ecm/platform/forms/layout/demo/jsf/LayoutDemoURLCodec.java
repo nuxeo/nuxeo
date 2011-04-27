@@ -39,8 +39,21 @@ import org.nuxeo.ecm.platform.url.service.AbstractDocumentViewCodec;
  */
 public class LayoutDemoURLCodec extends AbstractDocumentViewCodec {
 
-    // prefix/view_id?requestParams
-    public static final String GET_URL_PATTERN = "/([a-zA-Z_0-9\\-\\.]*)?(/)?(\\?(.*)?)?";
+    // prefix/view_id/(tab/subtab)?requestParams
+
+    public static final String GET_URL_PATTERN = "/" // slash
+            + "([a-zA-Z_0-9\\-\\.]*)?" // view id (group 1)
+            + "(/([a-zA-Z_0-9\\-]*))?" // tab id (group 3) (optional)
+            + "(/([a-zA-Z_0-9\\-]*))?" // sub tab id (group 4) (optional)
+            + "(/)?" // final slash (optional)
+            + "(\\?(.*)?)?"; // query (group 8) (optional)
+
+    public static final String URL_PATTERN = "/" // slash
+            + "([\\w\\.]+)" // server name (group 1)
+            + "(?:/(.*))?" // path (group 2) (optional)
+            + "@([\\w\\-\\.]+)" // view id (group 3)
+            + "/?" // final slash (optional)
+            + "(?:\\?(.*)?)?"; // query (group 4) (optional)
 
     // prefix/outcome/in/several/parts/template.faces?requestParams
     public static final String POST_URL_PATTERN = "/([a-zA-Z_0-9\\-\\./]*)?(.faces)(/)?(\\?(.*)?)?";
@@ -60,13 +73,21 @@ public class LayoutDemoURLCodec extends AbstractDocumentViewCodec {
             } else {
                 items.add(DEFAULT_VIEW_ID);
             }
-            String uri = StringUtils.join(items, "/");
-            Map<String, String> params = new HashMap<String, String>();
             Map<String, String> docViewParams = docView.getParameters();
+            Map<String, String> params = new HashMap<String, String>();
             if (docViewParams != null) {
                 params.putAll(docViewParams);
                 params.remove("conversationId");
+                if (params.containsKey("tabId")) {
+                    items.add(params.get("tabId"));
+                    params.remove("tabId");
+                    if (params.containsKey("subTabId")) {
+                        items.add(params.get("subTabId"));
+                        params.remove("subTabId");
+                    }
+                }
             }
+            String uri = StringUtils.join(items, "/");
             return URIUtils.addParametersToURIQuery(uri, params);
         }
         return null;
@@ -76,7 +97,8 @@ public class LayoutDemoURLCodec extends AbstractDocumentViewCodec {
      * Extracts view id and parameters, for both get and post methods
      */
     public DocumentView getDocumentViewFromUrl(String url) {
-        Pattern pattern = Pattern.compile(getPrefix() + GET_URL_PATTERN);
+        // try POST pattern
+        Pattern pattern = Pattern.compile(getPrefix() + POST_URL_PATTERN);
         Matcher m = pattern.matcher(url);
         if (m.matches()) {
             if (m.groupCount() >= 1) {
@@ -84,40 +106,7 @@ public class LayoutDemoURLCodec extends AbstractDocumentViewCodec {
                 // for debug
                 // for (int i = 1; i < m.groupCount() + 1; i++) {
                 // System.err.println(i + ": " + m.group(i));
-                // }
-
-                String viewId = m.group(1);
-                if (viewId == null || "".equals(viewId)) {
-                    viewId = DEFAULT_VIEW_ID;
-                }
-
-                // get other parameters
-
-                Map<String, String> params = null;
-                if (m.groupCount() > 3) {
-                    String query = m.group(4);
-                    params = URIUtils.getRequestParameters(query);
-                    if (params != null) {
-                        params.remove("conversationId");
-                    }
-                }
-
-                final DocumentLocation docLoc = new DocumentLocationImpl(null,
-                        null);
-
-                return new DocumentViewImpl(docLoc, viewId, params);
-            }
-        }
-        // try post
-        pattern = Pattern.compile(getPrefix() + POST_URL_PATTERN);
-        m = pattern.matcher(url);
-        if (m.matches()) {
-            if (m.groupCount() >= 1) {
-
-                // for debug
-                // for (int i = 1; i < m.groupCount() + 1; i++) {
-                // System.err.println(i + ": " + m.group(i));
-                // }
+                //                }
 
                 // get other parameters
 
@@ -135,6 +124,51 @@ public class LayoutDemoURLCodec extends AbstractDocumentViewCodec {
                         null);
 
                 return new DocumentViewImpl(docLoc, null, params);
+            }
+        }
+        // try GET pattern
+        pattern = Pattern.compile(getPrefix() + GET_URL_PATTERN);
+        m = pattern.matcher(url);
+        if (m.matches()) {
+            if (m.groupCount() >= 1) {
+
+                // for debug
+                // for (int i = 1; i < m.groupCount() + 1; i++) {
+                // System.err.println(i + ": " + m.group(i));
+                //                }
+
+                String viewId = m.group(1);
+                if (viewId == null || "".equals(viewId)) {
+                    viewId = DEFAULT_VIEW_ID;
+                }
+
+                Map<String, String> params = new HashMap<String, String>();
+
+                String tabId = m.group(3);
+                if (tabId != null && !"".equals(tabId)) {
+                    params.put("tabId", tabId);
+                }
+
+                String subTabId = m.group(5);
+                if (subTabId != null && !"".equals(subTabId)) {
+                    params.put("subTabId", subTabId);
+                }
+
+                // get other parameters
+
+                if (m.groupCount() > 3) {
+                    String query = m.group(8);
+                    Map<String, String> queryParams = URIUtils.getRequestParameters(query);
+                    if (queryParams != null) {
+                        queryParams.remove("conversationId");
+                        params.putAll(queryParams);
+                    }
+                }
+
+                final DocumentLocation docLoc = new DocumentLocationImpl(null,
+                        null);
+
+                return new DocumentViewImpl(docLoc, viewId, params);
             }
         }
 

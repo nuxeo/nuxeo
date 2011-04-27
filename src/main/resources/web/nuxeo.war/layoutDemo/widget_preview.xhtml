@@ -18,12 +18,12 @@
 
     <ul>
       <li class="#{nxu:test(empty layoutDemoCurrentSubTabId, 'selected', '')}">
-        <a href="#{baseURL}#{currentWidgetType.url}?tabId=preview">
+        <a href="#{baseURL}#{currentWidgetType.url}/preview">
           #{messages['label.layoutDemo.widgetDemo.viewMode']}
         </a>
       </li>
       <li class="#{nxu:test(layoutDemoCurrentSubTabId == 'edit_mode', 'selected', '')}">
-        <a href="#{baseURL}#{currentWidgetType.url}?tabId=preview&amp;subTabId=edit_mode">
+        <a href="#{baseURL}#{currentWidgetType.url}/preview/edit_mode">
           #{messages['label.layoutDemo.widgetDemo.editMode']}
         </a>
       </li>

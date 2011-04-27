@@ -23,13 +23,13 @@
           </a>
         </li>
         <li class="#{nxu:test(layoutDemoCurrentTabId == 'reference', 'selected', '')}">
-          <a href="#{baseURL}#{currentWidgetType.url}?tabId=reference">
+          <a href="#{baseURL}#{currentWidgetType.url}/reference">
             #{messages['label.layoutDemo.widgetDemo.reference']}
           </a>
         </li>
         <c:if test="#{currentWidgetType.previewEnabled}">
           <li class="#{nxu:test(layoutDemoCurrentTabId == 'preview', 'selected', '')}">
-            <a href="#{baseURL}#{currentWidgetType.url}?tabId=preview">
+            <a href="#{baseURL}#{currentWidgetType.url}/preview">
               #{messages['label.layoutDemo.widgetDemo.preview']}
             </a>
           </li>
