@@ -117,6 +117,7 @@ public class ContentViewServiceImpl extends DefaultComponent implements
                     refQueryParams = refDesc.getQueryParameters();
                 } else if (def instanceof GenericPageProviderDescriptor) {
                     genDesc = (GenericPageProviderDescriptor) def;
+                    refQueryParams = refDesc.getQueryParameters();
                 }
             } catch (Exception e) {
                 throw new ClientException(e);
