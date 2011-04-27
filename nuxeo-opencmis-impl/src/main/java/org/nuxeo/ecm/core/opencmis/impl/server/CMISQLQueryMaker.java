@@ -220,10 +220,9 @@ public class CMISQLQueryMaker implements QueryMaker {
         hierTable = database.getTable(Model.HIER_TABLE_NAME);
 
         query = new QueryObject(typeManager);
-        QueryUtil queryUtil = new QueryUtil();
         CmisQueryWalker walker = null;
         try {
-            walker = queryUtil.getWalker(statement);
+            walker = QueryUtil.getWalker(statement);
             walker.query(query, new AnalyzingWalker());
         } catch (RecognitionException e) {
             String msg;
