@@ -49,18 +49,20 @@ import org.nuxeo.runtime.api.Framework;
  * @since 5.4.2
  */
 @Operation(id = UserTaskPageProviderOperation.ID, category = Constants.CAT_SERVICES, label = "UserTaskPageProvider", description = "Returns the tasks waiting for the current user.")
-public class UserTaskPageProviderOperation extends
-        AbstractWorkflowOperation {
+public class UserTaskPageProviderOperation extends AbstractWorkflowOperation {
 
     public static final String ID = "Workflow.UserTaskPageProvider";
 
-    public static final String USER_TASKS_PAGE_PROVIDER = "USER_TASKS";
+    public static final String USER_TASKS_PAGE_PROVIDER = "user_tasks";
 
     @Param(name = "language", required = false)
     protected String language;
 
     @Param(name = "page", required = false)
     protected Integer page = 0;
+
+    @Param(name = "pageSize", required = false)
+    protected Integer pageSize;
 
     @Context
     protected CoreSession session;
@@ -75,8 +77,14 @@ public class UserTaskPageProviderOperation extends
         props.put(UserProcessPageProvider.CORE_SESSION_PROPERTY,
                 (Serializable) session);
         PageProviderService pps = Framework.getLocalService(PageProviderService.class);
+
+        Long targetPageSize = null;
+        if (pageSize != null) {
+            targetPageSize = (long) pageSize;
+        }
         PageProvider<DashBoardItem> pageProvider = (PageProvider<DashBoardItem>) pps.getPageProvider(
-                USER_TASKS_PAGE_PROVIDER, null, null, (long) page, props);
+                USER_TASKS_PAGE_PROVIDER, null, (long) targetPageSize,
+                (long) page, props);
 
         Locale locale = language != null && !language.isEmpty() ? new Locale(
                 language) : Locale.ENGLISH;
@@ -90,18 +98,17 @@ public class UserTaskPageProviderOperation extends
             obj.put("taskName",
                     createdFromCreateTaskOperation ? dashBoardItem.getName()
                             : getI18nTaskName(dashBoardItem.getName(), locale));
-            obj.put("directive",
-                    getI18nLabel(dashBoardItem.getDirective(), locale));
+            obj.put("directive", getI18nLabel(dashBoardItem.getDirective(),
+                    locale));
             obj.put("comment", dashBoardItem.getComment());
             Date dueDate = dashBoardItem.getDueDate();
             obj.put("dueDate",
                     dueDate != null ? DateParser.formatW3CDateTime(dueDate)
                             : "");
             obj.put("documentTitle", dashBoardItem.getDocument().getTitle());
-            obj.put("documentLink",
-                    getDocumentLink(documentViewCodecManager,
-                            dashBoardItem.getDocument(),
-                            !createdFromCreateTaskOperation));
+            obj.put("documentLink", getDocumentLink(documentViewCodecManager,
+                    dashBoardItem.getDocument(),
+                    !createdFromCreateTaskOperation));
             Date startDate = dashBoardItem.getStartDate();
             obj.put("startDate",
                     startDate != null ? DateParser.formatW3CDateTime(startDate)

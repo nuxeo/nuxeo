@@ -49,18 +49,20 @@ import org.nuxeo.runtime.api.Framework;
  * @since 5.4.2
  */
 @Operation(id = UserProcessPageProviderOperation.ID, category = Constants.CAT_SERVICES, label = "UserProcessPageProvider", description = "Returns the current user's processes.")
-public class UserProcessPageProviderOperation extends
-        AbstractWorkflowOperation {
+public class UserProcessPageProviderOperation extends AbstractWorkflowOperation {
 
     public static final String ID = "Workflow.UserProcessPageProvider";
 
-    public static final String USER_PROCESSES_PAGE_PROVIDER = "USER_PROCESSES";
+    public static final String USER_PROCESSES_PAGE_PROVIDER = "user_processes";
 
     @Param(name = "language", required = false)
     protected String language;
 
     @Param(name = "page", required = false)
     protected Integer page = 0;
+
+    @Param(name = "pageSize", required = false)
+    protected Integer pageSize;
 
     @Context
     protected CoreSession session;
@@ -75,8 +77,14 @@ public class UserProcessPageProviderOperation extends
         props.put(UserProcessPageProvider.CORE_SESSION_PROPERTY,
                 (Serializable) session);
         PageProviderService pps = Framework.getLocalService(PageProviderService.class);
+
+        Long targetPageSize = null;
+        if (pageSize != null) {
+            targetPageSize = (long) pageSize;
+        }
         PageProvider<DocumentProcessItem> pageProvider = (PageProvider<DocumentProcessItem>) pps.getPageProvider(
-                USER_PROCESSES_PAGE_PROVIDER, null, null, (long) page, props);
+                USER_PROCESSES_PAGE_PROVIDER, null, (long) targetPageSize,
+                (long) page, props);
 
         Locale locale = language != null && !language.isEmpty() ? new Locale(
                 language) : Locale.ENGLISH;
@@ -84,13 +92,11 @@ public class UserProcessPageProviderOperation extends
         JSONArray processes = new JSONArray();
         for (DocumentProcessItem process : pageProvider.getCurrentPage()) {
             JSONObject obj = new JSONObject();
-            obj.put("processInstanceName",
-                    getI18nProcessInstanceName(
-                            process.getProcessInstanceName(), locale));
+            obj.put("processInstanceName", getI18nProcessInstanceName(
+                    process.getProcessInstanceName(), locale));
             obj.put("documentTitle", process.getDocumentModel().getTitle());
-            obj.put("documentLink",
-                    getDocumentLink(documentViewCodecManager,
-                            process.getDocumentModel(), true));
+            obj.put("documentLink", getDocumentLink(documentViewCodecManager,
+                    process.getDocumentModel(), true));
             Date startDate = process.getProcessInstanceStartDate();
             obj.put("startDate",
                     startDate != null ? DateParser.formatW3CDateTime(startDate)

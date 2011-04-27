@@ -127,7 +127,7 @@ public class JbpmPageProvidersTest extends RepositoryOSGITestCase {
         properties.put(UserTaskPageProvider.CORE_SESSION_PROPERTY,
                 (Serializable) getCoreSession());
         PageProvider<DashBoardItem> taskProvider = (PageProvider<DashBoardItem>) ppService.getPageProvider(
-                "CURRENT_USER_TASKS", null, null, null, properties,
+                "current_user_tasks", null, null, null, properties,
                 (Object[]) null);
         List<DashBoardItem> tasks = taskProvider.getCurrentPage();
         assertNotNull(tasks);
@@ -179,7 +179,7 @@ public class JbpmPageProvidersTest extends RepositoryOSGITestCase {
         properties.put(UserTaskPageProvider.CORE_SESSION_PROPERTY,
                 (Serializable) getCoreSession());
         PageProvider<DocumentProcessItem> processProvider = (PageProvider<DocumentProcessItem>) ppService.getPageProvider(
-                "CURRENT_USER_PROCESSES", null, null, null, properties,
+                "current_user_processes", null, null, null, properties,
                 (Object[]) null);
         List<DocumentProcessItem> processes = processProvider.getCurrentPage();
         assertNotNull(processes);
