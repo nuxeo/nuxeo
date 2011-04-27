@@ -17,7 +17,7 @@
       <leafFilterClass>
         org.nuxeo.ecm.webapp.tree.BigFolderLeafFilter
       </leafFilterClass>
-      <pageProvider>TREE_CHILDREN</pageProvider>
+      <pageProvider>tree_children</pageProvider>
     </treeManagerPlugin>
 
   </extension>

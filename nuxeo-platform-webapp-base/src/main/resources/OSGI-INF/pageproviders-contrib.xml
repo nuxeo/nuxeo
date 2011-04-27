@@ -6,7 +6,7 @@
     point="providers">
 
     <documentation>
-      The page provider 'TREE_CHILDREN' is used to list children in the tree
+      The page provider 'tree_children' is used to list children in the tree
       navigation.
 
       Note the "ecm:isProxy = 0" predicate optimization that is required to
@@ -14,7 +14,7 @@
       on folders with a lot of files when using the Visible SQL Storage.
     </documentation>
 
-    <coreQueryPageProvider name="TREE_CHILDREN">
+    <coreQueryPageProvider name="tree_children">
       <pattern>
         SELECT * FROM Document WHERE ecm:parentId = ? AND ecm:isProxy = 0 AND
         ecm:mixinType = 'Folderish' AND ecm:mixinType != 'HiddenInNavigation'
