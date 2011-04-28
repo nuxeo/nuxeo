@@ -5,4 +5,4 @@ Bundle-SymbolicName: org.nuxeo.ecm.automation.jsf;singleton:=true
 Bundle-Version: 1.0.0
 Require-Bundle: org.nuxeo.ecm.platform.ui
 Nuxeo-Component: OSGI-INF/operations-contrib.xml,
- OSGI-INF/importOptions-contrib.xml
+ OSGI-INF/importOptions-actions-contrib.xml

@@ -120,4 +120,13 @@ public class BatchResource {
         }
     }
 
+    @GET
+    @Produces("text/html")
+    @Path(value = "drop/{batchId}")
+    public String dropBatch(@PathParam("batchId") String batchId) throws Exception {
+        BatchManager bm = Framework.getLocalService(BatchManager.class);
+        bm.clean(batchId);
+        return "Batch droped";
+    }
+
 }

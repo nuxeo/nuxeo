@@ -2,12 +2,12 @@ package org.nuxeo.ecm.automation.core.operations.services;
 
 import java.util.List;
 import java.util.Locale;
-import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
+import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.Constants;
@@ -22,7 +22,6 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.actions.ActionContext;
-import org.nuxeo.ecm.platform.actions.ActionService;
 import org.nuxeo.ecm.platform.actions.ejb.ActionManager;
 
 @Operation(id = GetActions.ID, category = Constants.CAT_SERVICES, label = "List available actions", description = "Retrieve list of available actions for a given category. Action context is built based on the Operation context (currentDocument will be fetched from Context if not provided as input). If this operation is executed in a chain that initialized the Seam context, it will be used for Action context")
@@ -70,9 +69,18 @@ public class GetActions {
         } else {
             actionContext.setCurrentDocument(getCurrentDocumentFromContext());
         }
-
         actionContext.putAll(ctx);
         return actionContext;
+    }
+
+    protected Locale getLocale() {
+        if (lang==null) {
+            lang= (String) ctx.get("lang");
+        }
+        if (lang==null) {
+            lang="en";
+        }
+        return new Locale(lang);
     }
 
     protected ResourceBundle getTranslationBundle() {
@@ -84,8 +92,16 @@ public class GetActions {
         }
     }
 
+    protected String translate(String key) {
+        if(key==null) {
+            return "";
+        }
+        return I18NUtils.getMessageString("messages", key, new Object[0], getLocale());
+    }
+
     @OperationMethod
     public Blob run() throws Exception {
+
         return run(null);
     }
 
@@ -95,8 +111,6 @@ public class GetActions {
         ActionContext actionContext = getActionContext(currentDocument);
         List<Action> actions = actionService.getActions(category, actionContext);
 
-        ResourceBundle messages = getTranslationBundle();
-
         JSONArray rows = new JSONArray();
         for (Action action : actions) {
             JSONObject obj = new JSONObject();
@@ -105,19 +119,9 @@ public class GetActions {
             obj.element("link", action.getLink());
             obj.element("icon", action.getIcon());
 
-            String label = null;
-            try {
-                label = messages.getString(action.getLabel());
-            } catch (MissingResourceException e) {
-                label = action.getLabel();
-            }
+            String label = translate(action.getLabel());
             obj.element("label", label);
-            String help = null;
-            try {
-                help = messages.getString(action.getHelp());
-            } catch (MissingResourceException e) {
-                help = action.getHelp();
-            }
+            String help = translate(action.getHelp());
             obj.element("help", help);
             rows.add(obj);
         }

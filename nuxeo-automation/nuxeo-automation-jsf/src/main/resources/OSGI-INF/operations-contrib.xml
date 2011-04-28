@@ -64,7 +64,7 @@
       <operation id="Seam.AddToClipboard"/>
       <operation id="Seam.DestroyContext" />
     </chain>
-    <chain id="GetActions">
+    <chain id="SeamActions.GET">
       <operation id="Seam.RunOperation">
         <param type="string" name="id">Actions.GET</param>
       </operation>
