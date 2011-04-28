@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.webengine.forms;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -87,6 +88,14 @@ public class FormData implements FormInstance {
         }
     }
 
+    protected String getString(FileItem item) {
+        try {
+            return item.getString(request.getCharacterEncoding());
+        } catch (UnsupportedEncodingException e) {
+            return item.getString();
+        }
+    }
+
     protected boolean getIsMultipartContent() {
         String method = request.getMethod().toLowerCase();
         if (!"post".equals(method) && !"put".equals(method)) {
@@ -120,7 +129,7 @@ public class FormData implements FormInstance {
             List<FileItem> list = entry.getValue();
             String[] ar = new String[list.size()];
             for (int i=0; i<ar.length; i++) {
-                ar[i] = list.get(i).getString();
+                ar[i] = getString(list.get(i));
             }
             result.put(entry.getKey(), ar);
         }
@@ -230,7 +239,7 @@ public class FormData implements FormInstance {
 
     public String getMultiPartFormProperty(String key) {
         FileItem item = getFileItem(key);
-        return item == null ? null : item.getString();
+        return item == null ? null : getString(item);
     }
 
     public String[] getMultiPartFormListProperty(String key) {
@@ -239,7 +248,7 @@ public class FormData implements FormInstance {
         if (list != null) {
             ar = new String[list.size()];
             for (int i=0,len=list.size(); i<len; i++) {
-                ar[i] = list.get(i).getString();
+                ar[i] = getString(list.get(i));
             }
         }
         return ar;
@@ -263,9 +272,9 @@ public class FormData implements FormInstance {
             FileItem item0 = list.get(0);
             if (item0.isFormField()) {
                 ar = new String[list.size()];
-                ar[0] = item0.getString();
+                ar[0] = getString(item0);
                 for (int i=1,len=list.size(); i<len; i++) {
-                    ar[i] = list.get(i).getString();
+                    ar[i] = getString(list.get(i));
                 }
             } else {
                 ar = new Blob[list.size()];
@@ -280,7 +289,7 @@ public class FormData implements FormInstance {
 
     public final Object getFileItemValue(FileItem item) {
         if (item.isFormField()) {
-            return item.getString();
+            return getString(item);
         } else {
             return getBlob(item);
         }
