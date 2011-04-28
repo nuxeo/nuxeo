@@ -62,6 +62,7 @@ import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.EventServiceImpl;
 import org.nuxeo.ecm.core.schema.FacetNames;
+import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.storage.EventConstants;
 import org.nuxeo.ecm.core.storage.sql.listeners.DummyBeforeModificationListener;
 import org.nuxeo.ecm.core.storage.sql.listeners.DummyTestListener;
@@ -3493,6 +3494,39 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals("t2-rename", doc.getName());
         assertEquals("/t2-rename", doc.getPathAsString());
         assertEquals("t1", DummyBeforeModificationListener.previousTitle);
+    }
+
+    public void testObsoleteType() throws Throwable {
+        DocumentRef rootRef = session.getRootDocument().getRef();
+        DocumentModel doc = session.createDocumentModel("/", "doc", "MyDocType");
+        doc = session.createDocument(doc);
+        DocumentRef docRef = new IdRef(doc.getId());
+        session.save();
+        assertEquals(1, session.getChildren(rootRef).size());
+        assertNotNull(session.getDocument(docRef));
+        assertNotNull(session.getChild(rootRef, "doc"));
+        closeSession();
+        openSession();
+
+        // remove MyDocType from known types
+        SchemaManager schemaManager = Framework.getService(SchemaManager.class);
+        schemaManager.unregisterDocumentType("MyDocType");
+
+        assertEquals(0, session.getChildren(rootRef).size());
+        try {
+            session.getDocument(docRef);
+            fail("shouldn't be able to get doc with obsolete type");
+        } catch (ClientException e) {
+            assertTrue(e.getMessage(),
+                    e.getMessage().contains("Failed to get document"));
+        }
+        try {
+            session.getChild(rootRef, "doc");
+            fail("shouldn't be able to get doc with obsolete type");
+        } catch (ClientException e) {
+            assertTrue(e.getMessage(),
+                    e.getMessage().contains("Failed to get child doc"));
+        }
     }
 
 }
