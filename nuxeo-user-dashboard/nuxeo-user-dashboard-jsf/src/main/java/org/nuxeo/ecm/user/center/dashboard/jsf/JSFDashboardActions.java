@@ -51,7 +51,7 @@ public class JSFDashboardActions implements Serializable {
 
     public static final String CONTENT_VIEW_OBSERVER_WORKFLOW_EVENT = "workflowEvent";
 
-    public static final String USER_DOMAINS_CONTENT_VIEW = "USER_DOMAINS";
+    public static final String USER_DOMAINS_CONTENT_VIEW = "user_domains";
 
     @In(create = true)
     protected ContentViewActions contentViewActions;
