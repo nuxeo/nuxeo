@@ -258,11 +258,11 @@ public class JSONContentViewState {
         if (jsonCvLayout == null || jsonCvLayout.isNullObject()) {
             return null;
         }
-        String name = jsonCvLayout.getString("name");
-        String title = jsonCvLayout.getString("title");
-        boolean translateTitle = jsonCvLayout.getBoolean("translateTitle");
-        String iconPath = jsonCvLayout.getString("iconPath");
-        boolean showCSVExport = jsonCvLayout.getBoolean("showCSVExport");
+        String name = jsonCvLayout.optString("name", null);
+        String title = jsonCvLayout.optString("title", null);
+        boolean translateTitle = jsonCvLayout.optBoolean("translateTitle");
+        String iconPath = jsonCvLayout.optString("iconPath", null);
+        boolean showCSVExport = jsonCvLayout.optBoolean("showCSVExport");
         return new ContentViewLayoutImpl(name, title, translateTitle, iconPath,
                 showCSVExport);
     }
