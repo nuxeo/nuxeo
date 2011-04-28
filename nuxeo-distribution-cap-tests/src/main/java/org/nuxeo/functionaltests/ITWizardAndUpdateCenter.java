@@ -54,6 +54,8 @@ public class ITWizardAndUpdateCenter extends AbstractTest {
 
     protected static final String CONNECT_PROJECT_SELECTOR = "junit4tester";
 
+    public static final String CONNECT_FORM_TITLE = "Enable Nuxeo Connect & Nuxeo Studio for your  installation";
+
     protected String getTestPassword() {
         return "XXX";
     }
@@ -153,7 +155,7 @@ public class ITWizardAndUpdateCenter extends AbstractTest {
         ConnectWizardPage connectPage1 = connectWizardPage.getConnectPage();
         System.out.println(driver.getCurrentUrl());
         assertNotNull(connectPage1);
-        assertEquals("Nuxeo Connect & Nuxeo Studio - Trial Offer",
+        assertEquals(CONNECT_FORM_TITLE,
                 connectPage1.getTitle());
 
         // try to validate
@@ -265,7 +267,7 @@ public class ITWizardAndUpdateCenter extends AbstractTest {
             ConnectWizardPage connectPage1 = connectWizardPage.getConnectPage();
             System.out.println(driver.getCurrentUrl());
             assertNotNull(connectPage1);
-            assertEquals("Nuxeo Connect & Nuxeo Studio - Trial Offer",
+            assertEquals(CONNECT_FORM_TITLE,
                     connectPage1.getTitle());
 
             // try to validate
