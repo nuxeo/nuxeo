@@ -14,6 +14,7 @@ function DropZoneUIHandler(idx, dropZoneId, options,targetSelectedCB) {
   this.operationsDef=null;
   this.uploadedFiles = new Array();
   this.targetSelectedCB = targetSelectedCB;
+  this.cancelled=false;
 
   DropZoneUIHandler.prototype.uploadStarted = function(fileIndex, file){
       this.nxUploadStarted++;
@@ -67,12 +68,51 @@ function DropZoneUIHandler(idx, dropZoneId, options,targetSelectedCB) {
   }
 
   DropZoneUIHandler.prototype.fetchOptions = function(){
+      log("Fetching options");
       var handler=this; // deRef object !
       var context = jQuery("#" + this.dropZoneId).attr("context");
       // Fetch the import options
-      var getOptions = jQuery().automation('ImportOptions.GET');
+      var getOptions;
+      if (this.ctx.conversationId) {
+        getOptions = jQuery().automation('Chain.SeamActions.GET');
+      } else {
+        getOptions = jQuery().automation('Actions.GET');
+      }
       getOptions.addParameter("category",context);
-      getOptions.execute(function(data, textStatus,xhr) {handler.operationsDef=data;});
+      getOptions.setContext(this.ctx);
+      getOptions.execute(function(data, textStatus,xhr) {
+                            handler.operationsDef=data;
+                            if (data.length==0) {
+                              handler.canNotUpload(false);
+                              }
+                          },
+                          function(xhr, status, e) {
+                              handler.canNotUpload(true);
+                          });
+  }
+
+  DropZoneUIHandler.prototype.canNotUpload = function(isError) {
+    this.cancelUpload();
+    if (isError) {
+      alert("Upload can be continue because of an error");
+    } else {
+      alert("You can not upload here (may be insufisant rights)");
+    }
+  }
+
+  DropZoneUIHandler.prototype.cancelUpload = function() {
+    this.cancelled=true;
+    jQuery("#dndContinueButton").css("display","none");
+    jQuery("#dropzone-info-panel").css("display","none");
+    var dzone = jQuery("#"+this.dropZoneId);
+    dzone.removeClass("dropzoneTarget");
+
+    var targetUrl = this.url + 'drop/' + this.batchId;
+    jQuery.ajax({
+        type: 'GET',
+        contentType : 'application/json+nxrequest',
+        url: targetUrl,
+        timeout: 10000});
   }
 
   DropZoneUIHandler.prototype.batchStarted = function(){
@@ -97,7 +137,9 @@ function DropZoneUIHandler(idx, dropZoneId, options,targetSelectedCB) {
   }
 
   DropZoneUIHandler.prototype.batchFinished = function(batchId) {
-    this.showContinue(batchId);
+    if (!this.cancelled) {
+      this.showContinue(batchId);
+    }
   }
 
   DropZoneUIHandler.prototype.showContinue = function(batchId) {
@@ -132,9 +174,9 @@ function DropZoneUIHandler(idx, dropZoneId, options,targetSelectedCB) {
   DropZoneUIHandler.prototype.updateForm  = function (event, value) {
     log("updateForm : " + value);
     for (i=0; i< this.operationsDef.length; i++) {
-      if(this.operationsDef[i].operationId==value) {
+      if(this.operationsDef[i].id==value) {
        var desc = jQuery("<div></div>");
-       desc.html(this.operationsDef[i].description + "<br/>");
+       desc.html(this.operationsDef[i].help + "<br/>");
        jQuery("#dndSubForm").html(desc);
         break;
       }
@@ -153,15 +195,17 @@ function DropZoneUIHandler(idx, dropZoneId, options,targetSelectedCB) {
 
   DropZoneUIHandler.prototype.selectOperation  = function (batchId, dropId, url) {
 
+    jQuery("#dropzone-info-panel").css("display","none");
+
     var o=this; // deRef object !
     log(this.operationsDef);
     if (this.operationsDef==null) {
       log("No OpDEf found !!!");
     } else {
-      if (this.operationsDef.length==1 && this.operationsDef[0].formUrl=='') {
+      if (this.operationsDef.length==1 && this.operationsDef[0].link=='') {
         // XXX start operation right now
       log("Only one operation");
-      this.executeBatch(this.operationsDef[0].operationId,{});
+      this.executeBatch(this.operationsDef[0].id,{});
       return;
       }
     }
@@ -185,7 +229,7 @@ function DropZoneUIHandler(idx, dropZoneId, options,targetSelectedCB) {
     selector.html("");
     for (i=0; i< this.operationsDef.length; i++) {
       var optionEntry = jQuery("<option></option>")
-      optionEntry.attr("value",this.operationsDef[i].operationId);
+      optionEntry.attr("value",this.operationsDef[i].id);
       optionEntry.text(this.operationsDef[i].label);
       selector.append(optionEntry);
     }
@@ -194,7 +238,7 @@ function DropZoneUIHandler(idx, dropZoneId, options,targetSelectedCB) {
     var buttonForm = jQuery("#dndFormSubmitButton");
 
     panel.css("display","block");
-    this.updateForm(null,this.operationsDef[0].operationId);
+    this.updateForm(null,this.operationsDef[0].id);
 
     buttonForm.unbind();
     buttonForm.bind("click", function(event) {

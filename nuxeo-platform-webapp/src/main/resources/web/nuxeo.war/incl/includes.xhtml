@@ -32,12 +32,12 @@
 <script>
 var ctx = { currentDocument : '#{currentDocument.id}',
         currentDomain : '#{currentDomain.id}',
-        conversationId : '#{org.jboss.seam.core.manager.currentConversationId}'};
+        conversationId : '#{org.jboss.seam.core.manager.currentConversationId}',
+        lang : '#{localeSelector.localeString}'};
 </script>
 
 <script type="text/javascript">
     jQuery(document).ready(function(){
-      console.log("Yo");
       jQuery(".dropzone").nxDropZone({
               url : "/nuxeo/site/automation/batch/",
               uploadRateRefreshTime : 500,
