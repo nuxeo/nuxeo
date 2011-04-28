@@ -33,7 +33,7 @@
     } else {
       dropzone.addEventListener("drop", function(event) { drop(event,opts);}, true);
       var jQueryDropzone = jQuery("#" + id);
-      jQueryDropzone.bind("dragenter",  function(event) {dragenter(event,id);});
+      jQueryDropzone.bind("dragenter",  function(event) {dragenter(event,opts,id);});
       jQueryDropzone.bind("dragover", dragover);
       jQueryDropzone.bind("dragleave",  function(event) { dragleave(event,id);});
     }
@@ -49,6 +49,8 @@
     directUpload : true,
     // update upload speed every second
     uploadRateRefreshTime : 1000,
+    // time to enable extended mode
+    extendedModeTimeout : 2000,
 
     handler : {
       // invoked when new files are dropped
@@ -62,19 +64,34 @@
       // invoked when the upload speed of given file has changed
       fileUploadSpeedUpdated : function(fileIndex, file,KBperSecond) {},
       // invoked when all files have been uploaded
-      batchFinished : function(batchId) {}
+      batchFinished : function(batchId) {},
+      // invoked to enable Extended mode
+      enableExtendedMode : function(id) {console.log('Enable extended mode for zone ' + id )}
    }
   };
 
-  function dragenter(event,id) {
-    jQuery("#"+id).addClass("dropzoneTarget");
+  function dragenter(event,opts,id) {
+    var zone =jQuery("#"+id);
+    zone.addClass("dropzoneTarget");
     event.stopPropagation();
     event.preventDefault();
+
+    var dragoverTimer = zone.data("dragoverTimer");
+    if (!dragoverTimer) {
+      dragoverTimer = window.setTimeout(function() {opts.handler.enableExtendedMode(id);}, opts.extendedModeTimeout);
+      zone.data("dragoverTimer", dragoverTimer);
+    }
     return false;
   }
 
   function dragleave(event,id) {
-     jQuery("#"+id).removeClass("dropzoneTarget");
+     var zone =jQuery("#"+id);
+     zone.removeClass("dropzoneTarget");
+     var dragoverTimer = zone.data("dragoverTimer");
+     if (dragoverTimer) {
+       window.clearTimeout(dragoverTimer);
+       zone.removeData("dragoverTimer");
+     }
      return false;
   }
 

@@ -15,6 +15,7 @@ function DropZoneUIHandler(idx, dropZoneId, options,targetSelectedCB) {
   this.uploadedFiles = new Array();
   this.targetSelectedCB = targetSelectedCB;
   this.cancelled=false;
+  this.extendedMode=false;
 
   DropZoneUIHandler.prototype.uploadStarted = function(fileIndex, file){
       this.nxUploadStarted++;
@@ -138,7 +139,11 @@ function DropZoneUIHandler(idx, dropZoneId, options,targetSelectedCB) {
 
   DropZoneUIHandler.prototype.batchFinished = function(batchId) {
     if (!this.cancelled) {
-      this.showContinue(batchId);
+      if (this.extendedMode) {
+        this.showContinue(batchId);
+      } else {
+        this.selectOperation(this.batchId, this.dropZoneId, this.url);
+      }
     }
   }
 
@@ -202,10 +207,8 @@ function DropZoneUIHandler(idx, dropZoneId, options,targetSelectedCB) {
     if (this.operationsDef==null) {
       log("No OpDEf found !!!");
     } else {
-      if (this.operationsDef.length==1 && this.operationsDef[0].link=='') {
-        // XXX start operation right now
-      log("Only one operation");
-      this.executeBatch(this.operationsDef[0].id,{});
+      if ((this.extendedMode==false || this.operationsDef.length==1) && this.operationsDef[0].link=='') {
+        this.executeBatch(this.operationsDef[0].id,{});
       return;
       }
     }
@@ -282,6 +285,11 @@ function DropZoneUIHandler(idx, dropZoneId, options,targetSelectedCB) {
               log("Error while executing batch");
           }
       );
+  }
+
+  DropZoneUIHandler.prototype.enableExtendedMode = function(dropId) {
+    this.extendedMode=true;
+    jQuery("#"+dropId).css("border-color","red");
   }
 
   DropZoneUIHandler.prototype.removeDropPanel = function(dropId, batchId) {
