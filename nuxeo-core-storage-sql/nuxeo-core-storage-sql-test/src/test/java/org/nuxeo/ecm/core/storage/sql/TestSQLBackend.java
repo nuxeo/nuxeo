@@ -1875,12 +1875,15 @@ public class TestSQLBackend extends SQLBackendTestCase {
         Node node = session.addChildNode(root, "foo", null, "TestDoc", false);
         node.addMixinType("Aged");
         node.setSimpleProperty("age:age", "123");
+        node.setCollectionProperty("age:nicknames", new String[] { "bar", "gee" });
         session.save();
 
         // copy the doc
         Node copy = session.copy(node, root, "foo2");
         SimpleProperty p = copy.getSimpleProperty("age:age");
         assertEquals("123", p.getValue());
+        CollectionProperty p2 = copy.getCollectionProperty("age:nicknames");
+        assertEquals(Arrays.asList("bar", "gee"), Arrays.asList(p2.getValue()));
     }
 
     public void testMixinFulltext() throws Exception {
