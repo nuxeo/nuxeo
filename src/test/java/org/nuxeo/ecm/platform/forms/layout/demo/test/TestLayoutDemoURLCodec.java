@@ -88,6 +88,10 @@ public class TestLayoutDemoURLCodec extends TestCase {
         String url = "applicationPrefix/img/icon.png";
         DocumentView docView = codec.getDocumentViewFromUrl(url);
         assertNull(docView);
+
+        url = "layoutDemo/sources/OSGI-INF/demo/layout-demo-text-widget.xml";
+        docView = codec.getDocumentViewFromUrl(url);
+        assertNull(docView);
     }
 
     public void testGetDocumentViewFromPostUrl() {
