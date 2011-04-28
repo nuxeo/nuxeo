@@ -17,6 +17,12 @@
     </navigation-case>
 
     <navigation-case>
+      <from-outcome>layoutDemoAbout</from-outcome>
+      <to-view-id>/layoutDemo/about.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+    <navigation-case>
       <from-outcome>layoutPreviewFrame</from-outcome>
       <to-view-id>/layoutDemo/layout_preview_frame.xhtml</to-view-id>
       <redirect />
