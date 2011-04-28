@@ -19,4 +19,19 @@
 
   </extension>
 
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+   <action id="exportViewPDFExport"
+      link=""
+      order="10" label="label.import.and.add.to.clipboard">
+      <category>Clipboard_CLIPBOARD</category>
+      <parameters>
+        <parameter name="operationId">Chain.ImportClipboard</parameter>
+        <parameter name="description">Import in personal workspace and add to clipboard</parameter>
+      </parameters>
+    </action>
+
+  </extension>
+
 </component>

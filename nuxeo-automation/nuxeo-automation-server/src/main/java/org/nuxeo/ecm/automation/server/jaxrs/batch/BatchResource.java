@@ -104,7 +104,7 @@ public class BatchResource {
 
         try {
             if (operationId.startsWith("Chain.")) {
-                return as.run(ctx, operationId);
+                return as.run(ctx, operationId.substring(6));
             } else {
                 OperationChain chain = new OperationChain("operation");
                 OperationParameters oparams = new OperationParameters(operationId,params);

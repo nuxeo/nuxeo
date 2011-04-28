@@ -43,11 +43,14 @@
     <operation
       class="org.nuxeo.ecm.automation.core.operations.services.BlobHolderAttach" />
 
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.services.GetActions" />
+
   </extension>
 
   <extension point="chains"
     target="org.nuxeo.ecm.core.operation.OperationServiceComponent">
-    <chain id="Chain.AttachFiles">
+    <chain id="AttachFiles">
       <operation id="BlobHolder.Attach">
         <param type="boolean" name="useMainBlob">false</param>
       </operation>

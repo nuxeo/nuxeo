@@ -41,25 +41,33 @@
     <operation
       class="org.nuxeo.ecm.automation.jsf.operations.CancelCreateDocumentInUI" />
     <operation class="org.nuxeo.ecm.automation.jsf.operations.SaveDocumentInUI" />
-    <operation class="org.nuxeo.ecm.automation.jsf.operations.InitSeamContext" />
-    <operation class="org.nuxeo.ecm.automation.jsf.operations.DestroySeamContext" />
+
+    <operation class="org.nuxeo.ecm.automation.seam.operations.InitSeamContext" />
+    <operation class="org.nuxeo.ecm.automation.seam.operations.DestroySeamContext" />
+    <operation class="org.nuxeo.ecm.automation.seam.operations.RunOperationInSeam" />
+
   </extension>
 
  <extension point="chains"
     target="org.nuxeo.ecm.core.operation.OperationServiceComponent">
-    <chain id="Chain.ImportWorklist">
+    <chain id="ImportWorklist">
       <operation id="Seam.InitContext" />
       <operation id="UserWorkspace.CreateDocumentFromBlob" />
       <operation id="Document.Save"/>
       <operation id="Seam.AddToWorklist"/>
       <operation id="Seam.DestroyContext" />
     </chain>
-    <chain id="Chain.ImportClipboard">
+    <chain id="ImportClipboard">
       <operation id="Seam.InitContext" />
       <operation id="UserWorkspace.CreateDocumentFromBlob" />
       <operation id="Document.Save"/>
       <operation id="Seam.AddToClipboard"/>
       <operation id="Seam.DestroyContext" />
+    </chain>
+    <chain id="GetActions">
+      <operation id="Seam.RunOperation">
+        <param type="string" name="id">Actions.GET</param>
+      </operation>
     </chain>
   </extension>
 
