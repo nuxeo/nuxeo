@@ -59,7 +59,7 @@ public class UserTaskPageProviderOperation extends AbstractWorkflowOperation {
     protected String language;
 
     @Param(name = "page", required = false)
-    protected Integer page = 0;
+    protected Integer page;
 
     @Param(name = "pageSize", required = false)
     protected Integer pageSize;
@@ -78,13 +78,17 @@ public class UserTaskPageProviderOperation extends AbstractWorkflowOperation {
                 (Serializable) session);
         PageProviderService pps = Framework.getLocalService(PageProviderService.class);
 
+        Long targetPage = null;
+        if (page != null) {
+            targetPage = Long.valueOf(page.longValue());
+        }
         Long targetPageSize = null;
         if (pageSize != null) {
-            targetPageSize = (long) pageSize;
+            targetPageSize = Long.valueOf(pageSize.longValue());
         }
         PageProvider<DashBoardItem> pageProvider = (PageProvider<DashBoardItem>) pps.getPageProvider(
-                USER_TASKS_PAGE_PROVIDER, null, (long) targetPageSize,
-                (long) page, props);
+                USER_TASKS_PAGE_PROVIDER, null, targetPageSize, targetPage,
+                props);
 
         Locale locale = language != null && !language.isEmpty() ? new Locale(
                 language) : Locale.ENGLISH;
@@ -117,11 +121,11 @@ public class UserTaskPageProviderOperation extends AbstractWorkflowOperation {
         }
 
         JSONObject json = new JSONObject();
-        json.put("isPaginable", true);
-        json.put("totalSize", pageProvider.getResultsCount());
-        json.put("pageIndex", pageProvider.getCurrentPageIndex());
-        json.put("pageSize", pageProvider.getPageSize());
-        json.put("pageCount", pageProvider.getNumberOfPages());
+        json.put("isPaginable", Boolean.TRUE);
+        json.put("totalSize", Long.valueOf(pageProvider.getResultsCount()));
+        json.put("pageIndex", Long.valueOf(pageProvider.getCurrentPageIndex()));
+        json.put("pageSize", Long.valueOf(pageProvider.getPageSize()));
+        json.put("pageCount", Long.valueOf(pageProvider.getNumberOfPages()));
 
         json.put("entries", processes);
         return new InputStreamBlob(new ByteArrayInputStream(
