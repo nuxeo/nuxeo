@@ -18,7 +18,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -137,9 +136,9 @@ public class CMISQLQueryMaker implements QueryMaker {
 
     protected FulltextMatchInfo fulltextMatchInfo;
 
-    protected boolean hasLifeCycleWhereClause = false;
+    protected Set<String> lifecycleWhereClauseQualifiers = new HashSet<String>();
 
-    protected boolean hasMixinTypeWhereClause = false;
+    protected Set<String> mixinTypeWhereClauseQualifiers = new HashSet<String>();
 
     /** Qualifier to type. */
     protected Map<String, String> qualifierToType = new HashMap<String, String>();
@@ -149,6 +148,9 @@ public class CMISQLQueryMaker implements QueryMaker {
 
     /** Map of qualifier -> fragment -> table */
     protected Map<String, Map<String, Table>> allTables = new HashMap<String, Map<String, Table>>();
+
+    /** All qualifiers used (includes virtual columns) */
+    protected Set<String> allQualifiers = new HashSet<String>();
 
     /** The columns we'll actually request from the database. */
     protected List<SqlColumn> realColumns = new LinkedList<SqlColumn>();
@@ -342,10 +344,7 @@ public class CMISQLQueryMaker implements QueryMaker {
 
             String tableMainId = table.getColumn(Model.MAIN_KEY).getFullQuotedName();
 
-            Map<String, Table> qualTables = allTables.get(qual);
-            Collection<Table> tablesToJoin = qualTables != null ? qualTables.values()
-                    : new ArrayList<Table>();
-            for (Table t : tablesToJoin) {
+            for (Table t : allTables.get(qual).values()) {
                 if (t.getKey().equals(table.getKey())) {
                     // this one was the first, already done
                     continue;
@@ -542,11 +541,12 @@ public class CMISQLQueryMaker implements QueryMaker {
     // - we have virtual columns, or
     // - system columns are requested
     // check no added columns would bias the DISTINCT
+    // after this method, allTables also contain hier table for virtual columns
     protected void addSystemColumns(boolean addSystemColumns, boolean distinct) {
 
         List<CmisSelector> addedSystemColumns = new ArrayList<CmisSelector>(2);
 
-        for (String qual : allTables.keySet()) {
+        for (String qual : allQualifiers) {
             TypeDefinition type = getTypeForQualifier(qual);
 
             // additional references to cmis:objectId and cmis:objectTypeId
@@ -566,18 +566,14 @@ public class CMISQLQueryMaker implements QueryMaker {
                     addedSystemColumns.add(col);
                 }
             }
-            if (skipDeleted || hasLifeCycleWhereClause) {
+            if (skipDeleted || lifecycleWhereClauseQualifiers.contains(qual)) {
                 // add lifecycle state column
                 Table table = getTable(
                         database.getTable(model.MISC_TABLE_NAME), qual);
-                Column column = table.getColumn(model.MISC_LIFECYCLE_STATE_KEY);
-                recordColumnFragment(qual, column);
+                recordFragment(qual, table);
             }
-            if (hasMixinTypeWhereClause ) {
-                Table table = getTable(
-                        database.getTable(model.HIER_TABLE_NAME), qual);
-                Column column = table.getColumn(model.MAIN_MIXIN_TYPES_KEY);
-                recordColumnFragment(qual, column);
+            if (mixinTypeWhereClauseQualifiers.contains(qual)) {
+                recordFragment(qual, getTable(hierTable, qual));
             }
         }
 
@@ -604,13 +600,8 @@ public class CMISQLQueryMaker implements QueryMaker {
         }
 
         // per qualifier, include hier in fragments
-        for (String qual : allTables.keySet()) {
-            Table table = getTable(hierTable, qual);
-            String fragment = table.getKey();
-            Map<String, Table> tablesByFragment = allTables.get(qual);
-            if (!tablesByFragment.containsKey(fragment)) {
-                tablesByFragment.put(fragment, table);
-            }
+        for (String qual : allQualifiers) {
+            recordFragment(qual, getTable(hierTable, qual));
         }
     }
 
@@ -673,15 +664,7 @@ public class CMISQLQueryMaker implements QueryMaker {
             } else {
                 virtualColumns.put(key, col);
                 virtualColumnNames.add(key);
-                if (realColumns.isEmpty()) {
-                    // add the cmis:objectId that is required for the virtual
-                    // columns
-                    ColumnReference idColumn = new ColumnReference(qual,
-                            PropertyIds.OBJECT_ID);
-                    TypeDefinition type = getTypeForQualifier(qual);
-                    idColumn.setTypeDefinition(PropertyIds.OBJECT_ID, type);
-                    recordSelectSelector(idColumn);
-                }
+                allQualifiers.add(qual);
             }
             if (typeInfo != null) {
                 typeInfo.put(key, pd);
@@ -731,11 +714,11 @@ public class CMISQLQueryMaker implements QueryMaker {
             // explicit lifecycle query: do not include the 'deleted' lifecycle
             // filter
             skipDeleted = false;
-            hasLifeCycleWhereClause = true;
+            lifecycleWhereClauseQualifiers.add(qual);
         }
         if (clauseType == WHERE
                 && NuxeoTypeHelper.NX_FACETS.equals(col.getPropertyId())) {
-            hasMixinTypeWhereClause = true;
+            mixinTypeWhereClauseQualifiers.add(qual);
         }
         // record as a needed fragment
         if (!multi) {
@@ -747,14 +730,20 @@ public class CMISQLQueryMaker implements QueryMaker {
      * Records a database column's fragment (to know what to join).
      */
     protected void recordColumnFragment(String qual, Column column) {
-        Table table = column.getTable();
+        recordFragment(qual, column.getTable());
+    }
+
+    /**
+     * Records a database table and qualifier (to know what to join).
+     */
+    protected void recordFragment(String qual, Table table) {
         String fragment = table.getKey();
         Map<String, Table> tablesByFragment = allTables.get(qual);
         if (tablesByFragment == null) {
-            tablesByFragment = new HashMap<String, Table>();
-            allTables.put(qual, tablesByFragment);
+            allTables.put(qual, tablesByFragment = new HashMap<String, Table>());
         }
         tablesByFragment.put(fragment, table);
+        allQualifiers.add(qual);
     }
 
     /**
@@ -1124,7 +1113,7 @@ public class CMISQLQueryMaker implements QueryMaker {
             }
             if (leftNode.getType() == CmisQlStrictLexer.COL
                     && rightNode.getType() == CmisQlStrictLexer.BOOL_LIT
-                    && !Boolean.valueOf(rightNode.getText())) {
+                    && !Boolean.parseBoolean(rightNode.getText())) {
                 // special handling of the " = false" case for column where
                 // NULL means false
                 walkIsNullOrFalse(leftNode);
@@ -1141,7 +1130,7 @@ public class CMISQLQueryMaker implements QueryMaker {
         public Boolean walkNotEquals(Tree opNode, Tree leftNode, Tree rightNode) {
             if (leftNode.getType() == CmisQlStrictLexer.COL
                     && rightNode.getType() == CmisQlStrictLexer.BOOL_LIT
-                    && Boolean.valueOf(rightNode.getText())) {
+                    && Boolean.parseBoolean(rightNode.getText())) {
                 // special handling of the " <> true" case for column where
                 // NULL means false
                 walkIsNullOrFalse(leftNode);
@@ -1153,25 +1142,23 @@ public class CMISQLQueryMaker implements QueryMaker {
             return null;
         }
 
-        public Boolean walkIsNullOrFalse(Tree leftNode) {
+        protected void walkIsNullOrFalse(Tree leftNode) {
             Column c = resolveColumn(leftNode);
             String columnSpec = c.getTable().getRealTable().getKey()
                     + " " + c.getKey();
             if (NULL_IS_FALSE_COLUMNS.contains(columnSpec)) {
                 // treat NULL and FALSE as equivalent
                 whereBuf.append("(");
-                whereBuf.append(c.getFullQuotedName());
+                walkExpr(leftNode);
                 whereBuf.append(" IS NULL OR ");
-                whereBuf.append(c.getFullQuotedName());
+                walkExpr(leftNode);
                 whereBuf.append(" = ?)");
                 whereBufParams.add(Boolean.FALSE);
-                return null;
             } else {
                 // explicit false equality test
-                whereBuf.append(c.getFullQuotedName());
+                walkExpr(leftNode);
                 whereBuf.append(" = ?");
                 whereBufParams.add(Boolean.FALSE);
-                return null;
             }
         }
 
