@@ -5,4 +5,5 @@ Bundle-SymbolicName: org.nuxeo.ecm.platform.localconfiguration.web;singleton:=tr
 Bundle-Vendor: Nuxeo
 Bundle-Version: 1.0.0
 Nuxeo-Component: OSGI-INF/local-configuration-ui-types.xml,
- OSGI-INF/local-configuration-theme.xml
+ OSGI-INF/local-configuration-theme.xml,
+ OSGI-INF/local-configuration-search.xml
