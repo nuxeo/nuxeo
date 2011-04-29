@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.webengine.jaxrs.Activator;
-import org.nuxeo.ecm.webengine.jaxrs.Utils.ClassRef;
 import org.nuxeo.ecm.webengine.jaxrs.servlet.ServletHolder;
 import org.osgi.framework.Bundle;
 import org.osgi.service.http.HttpService;
@@ -150,6 +149,12 @@ public class ServletRegistry {
         servlets.remove(descriptor);
         contexts.remove(descriptor.path);
         if (service != null) {
+            // destroy first the listeners if any was initialized
+            ListenerSetDescriptor lsd = descriptor.getListenerSet();
+            if (lsd != null) {
+                lsd.destroy();
+            }
+            // unregister the servlet
             service.unregister(descriptor.path);
         }
     }
@@ -201,8 +206,8 @@ public class ServletRegistry {
 
     private void installServlet(ServletDescriptor sd) throws Exception {
         if (service != null) {
-            ClassRef ref = sd.getClassRef();
-            BundleHttpContext ctx = new BundleHttpContext(ref.bundle(), sd.resources);
+            //ClassRef ref = sd.getClassRef();
+            BundleHttpContext ctx = new BundleHttpContext(sd.bundle, sd.resources);
             List<ResourcesDescriptor> rd = resources.get(sd.path);
             // register resources contributed so far
             if (rd != null) {

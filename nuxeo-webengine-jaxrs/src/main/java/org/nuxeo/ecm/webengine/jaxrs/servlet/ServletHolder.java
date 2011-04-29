@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -63,6 +63,7 @@ public class ServletHolder extends HttpServlet {
             chain = new RequestChain(descriptor.getServlet(), descriptor.getFilters());
             ListenerSetDescriptor listeners = descriptor.getListenerSet();
             if (listeners != null) {
+                // initialize listeners if not already initialized
                 listeners.init(config);
             }
             super.init(config);
@@ -81,18 +82,20 @@ public class ServletHolder extends HttpServlet {
             chain.destroy();
             chain = null;
         }
-        ListenerSetDescriptor lsd = descriptor.getListenerSet();
-        if (lsd != null) {
-            if (lsd.destroy(getServletConfig())) {
-                lsd = null;
-            }
-        }
     }
 
     @Override
     protected void service(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        chain.execute(request, response);
+    throws ServletException, IOException {
+        Thread t = Thread.currentThread();
+        ClassLoader cl = t.getContextClassLoader();
+        try {
+            // use servlet class loader as the context class loader
+            t.setContextClassLoader(chain.servlet.getClass().getClassLoader());
+            chain.execute(request, response);
+        } finally {
+            t.setContextClassLoader(cl);
+        }
     }
 
 

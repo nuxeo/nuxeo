@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -18,7 +18,7 @@ import java.util.Set;
 
 import javax.ws.rs.core.Application;
 
-import org.nuxeo.ecm.webengine.jaxrs.views.ViewMessageBodyWriter;
+import org.nuxeo.ecm.webengine.jaxrs.views.TemplateViewMessageBodyWriter;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -62,7 +62,7 @@ public class CompositeApplication extends Application {
     @Override
     public Set<Object> getSingletons() {
         HashSet<Object> result = new HashSet<Object>();
-        result.add(new ViewMessageBodyWriter());
+        result.add(new TemplateViewMessageBodyWriter());
         for (Application app : getApplications()) {
             result.addAll(app.getSingletons());
         }

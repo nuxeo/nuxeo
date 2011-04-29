@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -32,16 +32,15 @@ public class ListenerSetDescriptor {
 
     private ServletContextListener[] listeners;
 
-    private int cnt = 0;
+    private ServletContextEvent event;
 
     public synchronized boolean isInitialized() {
-        return cnt > 0;
+        return event != null;
     }
 
     public synchronized void init(ServletConfig config) throws Exception {
-        cnt++;
-        if (cnt == 1) { // first init
-            ServletContextEvent event = new ServletContextEvent(config.getServletContext());
+        if (event == null && !listenerDescriptors.isEmpty()) {
+            event = new ServletContextEvent(config.getServletContext());
             listeners = new ServletContextListener[listenerDescriptors.size()];
             for (int i=0; i<listeners.length; i++) {
                 ListenerDescriptor ld = listenerDescriptors.get(i);
@@ -51,19 +50,15 @@ public class ListenerSetDescriptor {
         }
     }
 
-    public synchronized boolean destroy(ServletConfig config) {
-        if (cnt <= 0) { // should never happen
-            return false;
-        }
-        cnt--;
-        if (cnt == 0) {
+    public synchronized boolean destroy() {
+        if (event != null) {
             if (listeners != null) {
                 try {
-                    ServletContextEvent event = new ServletContextEvent(config.getServletContext());
                     for (ServletContextListener listener : listeners) {
                         listener.contextDestroyed(event);
                     }
                 } finally {
+                    event = null;
                     listeners = null;
                 }
                 return true;

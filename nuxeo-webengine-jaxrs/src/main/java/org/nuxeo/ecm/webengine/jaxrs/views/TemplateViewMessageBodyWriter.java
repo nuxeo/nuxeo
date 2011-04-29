@@ -27,34 +27,33 @@ import javax.ws.rs.ext.Provider;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.platform.rendering.api.View;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @Provider
 @Produces("*/*")
-public class ViewMessageBodyWriter implements MessageBodyWriter<View> {
+public class TemplateViewMessageBodyWriter implements MessageBodyWriter<TemplateView> {
 
-    private static final Log log = LogFactory.getLog(ViewMessageBodyWriter.class);
+    private static final Log log = LogFactory.getLog(TemplateViewMessageBodyWriter.class);
 
     //@ResourceContext private HttpServletRequest request;
 
     @Override
-    public void writeTo(View t, Class<?> type, Type genericType,
+    public void writeTo(TemplateView t, Class<?> type, Type genericType,
             Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream) throws IOException {
         try {
             t.render(entityStream);
         } catch (Throwable e) {
-            log.error("Failed to render view: "+t, e);
-            throw new IOException("Failed to render view: "+t, e);
+            log.error("Failed to render view: "+t.getUrl(), e);
+            throw new IOException("Failed to render view: "+t.getUrl(), e);
         }
     }
 
     @Override
-    public long getSize(View arg0, Class<?> arg1, Type arg2,
+    public long getSize(TemplateView arg0, Class<?> arg1, Type arg2,
             Annotation[] arg3, MediaType arg4) {
         return -1;
     }
@@ -62,7 +61,7 @@ public class ViewMessageBodyWriter implements MessageBodyWriter<View> {
     @Override
     public boolean isWriteable(Class<?> arg0, Type type, Annotation[] arg2,
             MediaType arg3) {
-        return View.class.isAssignableFrom(arg0);
+        return TemplateView.class.isAssignableFrom(arg0);
     }
 
 }

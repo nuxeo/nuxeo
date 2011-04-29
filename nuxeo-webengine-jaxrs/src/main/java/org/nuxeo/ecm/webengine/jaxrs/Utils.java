@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -140,10 +140,16 @@ public class Utils {
      * @throws Exception
      */
     public static ClassRef getClassRef(String classRef) throws ClassNotFoundException, BundleNotFoundException {
+        return getClassRef(classRef, null);
+    }
+
+    public static ClassRef getClassRef(String classRef, Bundle bundle) throws ClassNotFoundException, BundleNotFoundException {
         int i = classRef.indexOf(':');
         if (i == -1) {
             // use the current bundle class loader
-            Bundle bundle = Activator.getInstance().getContext().getBundle();
+            if (bundle == null) {
+                bundle = Activator.getInstance().getContext().getBundle();
+            }
             return new ClassRef(bundle, bundle.loadClass(classRef.trim()));
         } else {
             String bundleId = classRef.substring(0, i).trim();

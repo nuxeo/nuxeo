@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -36,7 +36,6 @@ public class ApplicationProxy extends Application {
 
     protected volatile Application delegate;
 
-
     public ApplicationProxy(Bundle bundle, String className, Map<String,String> attrs) {
         this.bundle = bundle;
         this.className = className;
@@ -49,6 +48,10 @@ public class ApplicationProxy extends Application {
 
     public Bundle getBundle() {
         return bundle;
+    }
+
+    public Map<String, String> getAttrs() {
+        return attrs;
     }
 
     public void reset() {
