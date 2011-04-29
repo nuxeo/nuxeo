@@ -7,7 +7,7 @@
 
    <h:selectOneMenu value="#{field}" id="#{widget.id}" >
        <nxu:selectItems
-       		value="#{contentViewService.contentViewNames}"
+       		value="#{contentViewService.contentViewNames('ADVANCED_SEARCH')}"
             var="viewStr"
             itemValue="#{viewStr}"
             itemLabel="#{messages[viewStr]}" />
