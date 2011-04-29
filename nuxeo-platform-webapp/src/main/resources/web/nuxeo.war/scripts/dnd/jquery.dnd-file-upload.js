@@ -16,8 +16,6 @@
     var id = this.attr("id");
     var dropzone = document.getElementById(id);
 
-    //console.log("adding dnd-file-upload functionalities to element with id: " + id);
-
     if (window.$.client.browser == "Safari" && window.$.client.os == "Windows") {
       var fileInput = jQuery("<input>");
       fileInput.attr( {
@@ -33,9 +31,9 @@
     } else {
       dropzone.addEventListener("drop", function(event) { drop(event,opts);}, true);
       var jQueryDropzone = jQuery("#" + id);
-      jQueryDropzone.bind("dragenter",  function(event) {dragenter(event,opts,id);});
+      jQueryDropzone.bind("dragenter",  function(event) {dragenter(event,jQueryDropzone, opts);});
       jQueryDropzone.bind("dragover", dragover);
-      jQueryDropzone.bind("dragleave",  function(event) { dragleave(event,id);});
+      //jQueryDropzone.bind("dragleave",  function(event) { dragleave(event,id);});
     }
 
     return this;
@@ -50,7 +48,7 @@
     // update upload speed every second
     uploadRateRefreshTime : 1000,
     // time to enable extended mode
-    extendedModeTimeout : 2000,
+    extendedModeTimeout : 2500,
 
     handler : {
       // invoked when new files are dropped
@@ -70,8 +68,8 @@
    }
   };
 
-  function dragenter(event,opts,id) {
-    var zone =jQuery("#"+id);
+  function dragenter(event,zone,opts) {
+    var id = zone.attr('id');
     zone.addClass("dropzoneTarget");
     event.stopPropagation();
     event.preventDefault();
@@ -81,6 +79,7 @@
       dragoverTimer = window.setTimeout(function() {opts.handler.enableExtendedMode(id);}, opts.extendedModeTimeout);
       zone.data("dragoverTimer", dragoverTimer);
     }
+    applyOverlay(zone,opts);
     return false;
   }
 
@@ -115,6 +114,43 @@
     }
     return false;
   }
+
+  function applyOverlay(zone,opts) {
+      zone.addClass("dropzoneTarget");
+      if (window.$.client.browser=="Firefox") {
+        // overlay does break drop event catching in FF 3.6 !!!
+        zone.bind("dragleave",  function(event) {removeOverlay(event, null, zone, opts);});
+      } else {
+        var overlay = jQuery("<div></div>");
+        overlay.css("position","absolute");
+        overlay.css(zone.position());
+        overlay.width(zone.width()+2);
+        overlay.height(zone.height()+2);
+        overlay.addClass("dropzoneTargetOverlay");
+        overlay.css("backgroundColor",'rgba(200,220,250,0.3)');
+        zone.append(overlay);
+        overlay.bind("dragleave",  function(event) { console.log("drag leave overlay"); removeOverlay(event, overlay, zone, opts);});
+        zone.unbind("dragenter");
+        console.log("overlay applied");
+      }
+   }
+
+
+  function removeOverlay(event,overlay,zone,opts) {
+       zone.removeClass("dropzoneTarget");
+       if (overlay!=null) {
+         overlay.unbind();
+         overlay.css("display","none");
+         overlay.remove();
+         window.setTimeout(function(){zone.bind("dragenter",  function(event) {dragenter(event,zone,opts);});},100);
+       }
+       var dragoverTimer = zone.data("dragoverTimer");
+       if (dragoverTimer) {
+         window.clearTimeout(dragoverTimer);
+         zone.removeData("dragoverTimer");
+       }
+       return false;
+   }
 
   function log(logMsg) {
       //console && console.log(logMsg);

@@ -16,6 +16,8 @@ function DropZoneUIHandler(idx, dropZoneId, options,targetSelectedCB) {
   this.targetSelectedCB = targetSelectedCB;
   this.cancelled=false;
   this.extendedMode=false;
+  this.executionPending=false;
+
 
   DropZoneUIHandler.prototype.uploadStarted = function(fileIndex, file){
       this.nxUploadStarted++;
@@ -85,7 +87,12 @@ function DropZoneUIHandler(idx, dropZoneId, options,targetSelectedCB) {
                             handler.operationsDef=data;
                             if (data.length==0) {
                               handler.canNotUpload(false);
-                              }
+                            };
+                            if(handler.executionPending) {
+                              // execution was waiting for the op definitions
+                              handler.executionPending=false;
+                              handler.selectOperation(handler.batchId, handler.dropZoneId,handler.url);
+                            }
                           },
                           function(xhr, status, e) {
                               handler.canNotUpload(true);
@@ -205,6 +212,7 @@ function DropZoneUIHandler(idx, dropZoneId, options,targetSelectedCB) {
     var o=this; // deRef object !
     log(this.operationsDef);
     if (this.operationsDef==null) {
+      this.executionPending=true;
       log("No OpDEf found !!!");
     } else {
       if ((this.extendedMode==false || this.operationsDef.length==1) && this.operationsDef[0].link=='') {
@@ -262,6 +270,7 @@ function DropZoneUIHandler(idx, dropZoneId, options,targetSelectedCB) {
 
       // hide the top panel
       jQuery("#dropzone-info-panel").css("display","none");
+      jQuery("#dndFormPanel").css("display","none");
 
       // change the continue button to a loging anim
       var continueButton = jQuery("#dndContinueButton");
@@ -377,7 +386,6 @@ var targetSelected=false;
           if (!highLightOn || targetSelected ) {
               return;
           }
-          //log(event);
           jQuery.each(ids, function (idx,id) {
             jQuery("#"+id).removeClass("dropzoneHL");
 //          if(!event.relatedTarget || event.relatedTarget.id!=id) {
