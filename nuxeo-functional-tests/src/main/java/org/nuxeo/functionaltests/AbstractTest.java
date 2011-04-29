@@ -35,8 +35,8 @@ import java.util.jar.JarFile;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
-import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedException;
 import org.nuxeo.functionaltests.pages.LoginPage;
+import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedException;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.NotFoundException;
@@ -111,6 +111,7 @@ public abstract class AbstractTest {
 
     /**
      * Introspects the classpath and returns the list of files in it.
+     *
      * @return
      * @throws Exception
      */
@@ -147,8 +148,8 @@ public abstract class AbstractTest {
                             String[] cpe = cp.split(" ");
                             URL[] newUrls = new URL[cpe.length];
                             for (int i = 0; i < cpe.length; i++) {
-                                // Don't need to add 'file:' with maven surefire
-                                // >= 2.4.2
+                                // Don't need to add 'file:' with maven
+                                // surefire >= 2.4.2
                                 String newUrl = cpe[i].startsWith("file:") ? cpe[i]
                                         : "file:" + cpe[i];
                                 newUrls[i] = new URL(newUrl);
@@ -183,7 +184,8 @@ public abstract class AbstractTest {
             // try to guess the location in the M2 repo
             for (String f : clf) {
                 if (f.contains(M2_REPO)) {
-                    String m2 = f.substring(0, f.indexOf(M2_REPO) + M2_REPO.length());
+                    String m2 = f.substring(0, f.indexOf(M2_REPO)
+                            + M2_REPO.length());
                     xpi = new File(m2 + FIREBUG_M2 + "/" + FIREBUG_XPI);
                     break;
                 }
@@ -215,7 +217,8 @@ public abstract class AbstractTest {
         T page = instantiatePage(driver, pageClassToProxy);
         PageFactory.initElements(new VariableElementLocatorFactory(driver,
                 AJAX_TIMEOUT_SECONDS), page);
-        // check all required WebElements on the page and wait for their loading
+        // check all required WebElements on the page and wait for their
+        // loading
         List<String> fieldNames = new ArrayList<String>();
         List<WrapsElement> elements = new ArrayList<WrapsElement>();
         for (Field field : pageClassToProxy.getDeclaredFields()) {
@@ -308,8 +311,8 @@ public abstract class AbstractTest {
                 // ignore
             }
         }
-        throw new NoSuchElementException("Couldn't find element after timeout",
-                lastException);
+        throw new NoSuchElementException(String.format(
+                "Couldn't find element '%s' after timeout", by), lastException);
     }
 
     /**
