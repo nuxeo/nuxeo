@@ -61,6 +61,16 @@ public abstract class AbstractWizardPage extends AbstractPage {
         return asPage(wizardPageClass);
     }
 
+    public <T extends AbstractPage> T navByLink(Class<T> wizardPageClass,
+            String linkLabel) {
+        WebElement link = findElementWithTimeout(By.linkText(linkLabel));
+        if (link == null) {
+            return null;
+        }
+        link.click();
+        return asPage(wizardPageClass);
+    }
+
     public <T extends AbstractPage> T navById(Class<T> wizardPageClass,
             String buttonId) {
         WebElement button = findElementWithTimeout(By.id(buttonId));
@@ -70,7 +80,6 @@ public abstract class AbstractWizardPage extends AbstractPage {
         button.click();
         return asPage(wizardPageClass);
     }
-
 
     protected WebElement findNavButton(String label) {
         return findElementWithTimeout(By.xpath(BUTTON_LOCATOR.replace("LABEL",

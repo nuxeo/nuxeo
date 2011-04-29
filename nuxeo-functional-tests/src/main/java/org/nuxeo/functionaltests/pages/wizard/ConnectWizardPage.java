@@ -43,7 +43,7 @@ public class ConnectWizardPage extends AbstractWizardPage {
 
     @Override
     protected String getNextButtonLocator() {
-        return BUTTON_LOCATOR.replace("LABEL", "Validate");
+        return BUTTON_LOCATOR.replace("LABEL", "Validate & register");
     }
 
     @Override

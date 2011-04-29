@@ -166,8 +166,8 @@ public class ITWizardAndUpdateCenter extends AbstractTest {
                 connectPage2.getErrorMessage());
 
         // ok, let's try to skip the screen
-        ConnectWizardPage connectSkip = connectPage1.nav(
-                ConnectWizardPage.class, "Skip");
+        ConnectWizardPage connectSkip = connectPage1.navByLink(
+                ConnectWizardPage.class, "Or Skip and don't register");
         assertNotNull(connectSkip);
         assertEquals("You have not registered your instance on Nuxeo Connect.",
                 connectSkip.getTitle2());
@@ -180,7 +180,7 @@ public class ITWizardAndUpdateCenter extends AbstractTest {
 
         // Register with a existing account
         System.out.println(driver.getCurrentUrl());
-        ConnectWizardPage connectSignIn = connectPage1.getLink("I already have a connect account");
+        ConnectWizardPage connectSignIn = connectPage1.getLink("click here");
         System.out.println(driver.getCurrentUrl());
         assertEquals("Pre-Register your new Nuxeo instance",
                 connectSignIn.getTitle());
