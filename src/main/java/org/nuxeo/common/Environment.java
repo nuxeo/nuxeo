@@ -22,6 +22,7 @@
 package org.nuxeo.common;
 
 import java.io.File;
+import java.net.URL;
 import java.util.Properties;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -128,6 +129,8 @@ public class Environment {
     protected String hostAppName;
 
     protected String hostAppVersion;
+
+    protected Iterable<URL> configProvider;
 
     // Temporary parameter to distinguish from (Runtime)home
     private File serverHome = null;
@@ -349,6 +352,14 @@ public class Environment {
             logger.debug(this);
             serverHome = home;
         }
+    }
+
+    public void setConfigurationProvider(Iterable<URL> configProvider) {
+        this.configProvider = configProvider;
+    }
+
+    public Iterable<URL> getConfigurationProvider() {
+        return this.configProvider;
     }
 
     @Override
