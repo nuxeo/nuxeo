@@ -20,6 +20,7 @@ Nuxeo-Component: OSGI-INF/nxtreemanager-framework.xml,
  OSGI-INF/contentviews-contrib.xml,
  OSGI-INF/pageproviders-contrib.xml,
  OSGI-INF/search-layouts-contrib.xml,
- OSGI-INF/search-contentviews-contrib.xml
+ OSGI-INF/search-contentviews-contrib.xml,
+ OSGI-INF/search-local-configuration-contrib.xml
 Require-Bundle: org.nuxeo.ecm.platform.ui,
  org.nuxeo.ecm.platform.types.api
