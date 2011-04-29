@@ -39,7 +39,6 @@ public interface ContentViewService extends Serializable {
      * Returns the content view with given name, or null if not found.
      *
      * @throws ClientException
-     * @deprecated: use {@link #getContentView(String, CoreSession)} instead
      */
     ContentView getContentView(String name) throws ClientException;
 
