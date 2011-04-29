@@ -23,17 +23,9 @@ import org.nuxeo.ecm.core.api.adapter.DocumentAdapterFactory;
 
 /**
  * @author <a href="mailto:ei@nuxeo.com">Eugen Ionica</a>
- *
  */
 public class SearchLocalConfigurationFactory implements DocumentAdapterFactory {
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.nuxeo.ecm.core.api.adapter.DocumentAdapterFactory#getAdapter(org.
-     * nuxeo.ecm.core.api.DocumentModel, java.lang.Class)
-     */
     public Object getAdapter(DocumentModel doc, Class<?> itf) {
         if (doc.hasFacet(SEARCH_LOCAL_CONFIGURATION_FACET)) {
             return new SearchLocalConfigurationAdapter(doc);

@@ -23,6 +23,8 @@ import static org.nuxeo.ecm.webapp.localconfiguration.search.RepositoryInit.PATH
 import static org.nuxeo.ecm.webapp.localconfiguration.search.SearchLocalConfigurationConstants.FIELD_ADVANCED_SEARCH_VIEW;
 import static org.nuxeo.ecm.webapp.localconfiguration.search.SearchLocalConfigurationConstants.SEARCH_LOCAL_CONFIGURATION_FACET;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -52,6 +54,8 @@ import com.google.inject.Inject;
 @Deploy({ "org.nuxeo.ecm.webapp.base" })
 @LocalDeploy("org.nuxeo.ecm.webapp.base:test-search-local-configuration.xml")
 public class TestSearchLocalConfiguration {
+
+    private static final Log log = LogFactory.getLog(TestSearchLocalConfiguration.class);
 
     @Inject
     protected CoreSession session;

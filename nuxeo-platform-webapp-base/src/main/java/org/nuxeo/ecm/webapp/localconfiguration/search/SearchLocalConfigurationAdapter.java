@@ -28,6 +28,8 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 /**
  * @author <a href="mailto:ei@nuxeo.com">Eugen Ionica</a>
  *
+ *
+ *
  */
 public class SearchLocalConfigurationAdapter implements
         SearchLocalConfiguration {
@@ -46,37 +48,16 @@ public class SearchLocalConfigurationAdapter implements
         return doc.getRef();
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.nuxeo.ecm.core.api.localconfiguration.LocalConfiguration#canMerge()
-     */
     @Override
     public boolean canMerge() {
-        // TODO Auto-generated method stub
         return false;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.nuxeo.ecm.core.api.localconfiguration.LocalConfiguration#merge(java
-     * .lang.Object)
-     */
     @Override
     public SearchLocalConfiguration merge(SearchLocalConfiguration other) {
-        // TODO Auto-generated method stub
         return null;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.nuxeo.ecm.webapp.localconfiguration.AdvancedSearchConfiguration#
-     * getAdvancedSearchView()
-     */
     @Override
     public String getAdvancedSearchView() {
         String value = DEFAULT_ADVANCED_SEARCH_VIEW;
