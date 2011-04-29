@@ -17,6 +17,7 @@
 
 package org.nuxeo.webengine.sites.utils;
 
+import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -25,7 +26,6 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.Filter;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants;
-import org.nuxeo.ecm.webengine.util.URLEncoderHelper;
 
 /**
  * Collection of the queries used in the sites module. It gathers all in one
@@ -58,7 +58,7 @@ public class SiteQueriesCollection {
                 try {
                     String webcUrl = (String) docModel.getPropertyValue("webc:url");
                     if ( webcUrl != null ) {
-                        String encodedUrl = URLEncoderHelper.encodeSegment(url);
+                        String encodedUrl = URIUtils.quoteURIPathComponent(url, false);
                         return webcUrl.equals(encodedUrl);
                     }
                     return false;

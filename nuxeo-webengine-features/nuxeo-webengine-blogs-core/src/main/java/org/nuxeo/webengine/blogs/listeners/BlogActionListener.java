@@ -15,13 +15,13 @@
  */
 package org.nuxeo.webengine.blogs.listeners;
 
+import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
-import org.nuxeo.ecm.webengine.util.URLEncoderHelper;
 import org.nuxeo.webengine.blogs.utils.BlogConstants;
 import org.nuxeo.webengine.sites.utils.SiteConstants;
 
@@ -65,7 +65,7 @@ public class BlogActionListener implements EventListener {
                         Boolean.TRUE);
                 // Set Blog url field
                 String url = doc.getName();
-                url = URLEncoderHelper.encodeSegment(url);
+                url = URIUtils.quoteURIPathComponent(url, false);
                 doc.setPropertyValue(SiteConstants.WEBCONTAINER_URL, url);
                 doc.setPropertyValue(SiteConstants.WEBSITE_SCHEMA_THEME,
                         "blogs");

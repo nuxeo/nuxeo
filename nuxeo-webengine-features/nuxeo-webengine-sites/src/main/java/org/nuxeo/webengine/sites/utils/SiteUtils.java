@@ -17,8 +17,6 @@
 package org.nuxeo.webengine.sites.utils;
 
 import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -33,7 +31,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang.StringUtils;
-import org.nuxeo.common.utils.Path;
+import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -46,7 +44,6 @@ import org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.WebContext;
-import org.nuxeo.ecm.webengine.util.URLEncoderHelper;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.webengine.sites.JsonAdapter;
 
@@ -162,12 +159,8 @@ public class SiteUtils {
         } else {
             path.append(segment).append('/');
         }
-        Path relativePath = JsonAdapter.getRelativePath(ws, documentModel);
-        for ( int i = 0 ; i < relativePath.segmentCount() ; i++) {
-            segment = relativePath.segment(i);
-            segment = URLEncoderHelper.encodeSegment(segment);
-            path.append(segment).append("/");
-        }
+        path.append(URIUtils.quoteURIPathComponent(JsonAdapter.getRelativePath(ws,
+                documentModel).toString(), false));
         return path.toString();
     }
 

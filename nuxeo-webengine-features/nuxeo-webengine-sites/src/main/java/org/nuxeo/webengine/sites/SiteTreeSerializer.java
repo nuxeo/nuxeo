@@ -19,13 +19,12 @@
 
 package org.nuxeo.webengine.sites;
 
-import org.nuxeo.common.utils.Path;
+import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.ui.tree.JSonTreeSerializer;
 import org.nuxeo.ecm.webengine.ui.tree.TreeItem;
-import org.nuxeo.ecm.webengine.util.URLEncoderHelper;
 import org.nuxeo.webengine.sites.utils.SiteConstants;
 import org.nuxeo.webengine.sites.utils.SiteUtils;
 
@@ -41,12 +40,8 @@ public class SiteTreeSerializer extends JSonTreeSerializer {
             sb.append('/').append(SiteUtils.getString(doc,
                     SiteConstants.WEBCONTAINER_URL, ""));
         }
-        Path itemPath = item.getPath();
-        for ( int i = 0 ; i < itemPath.segmentCount() ; i++) {
-            String segment = itemPath.segment(i);
-            segment = URLEncoderHelper.encodeSegment(segment);
-            sb.append("/").append(segment);
-        }
+        sb.append(URIUtils.quoteURIPathComponent(item.getPath().toString(),
+                false));
         return sb.toString();
     }
 
