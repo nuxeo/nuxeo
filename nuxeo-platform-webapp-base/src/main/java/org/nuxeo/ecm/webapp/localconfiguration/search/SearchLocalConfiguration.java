@@ -26,6 +26,9 @@ import org.nuxeo.ecm.core.api.localconfiguration.LocalConfiguration;
  */
 public interface SearchLocalConfiguration extends LocalConfiguration<SearchLocalConfiguration>{
 
+    /**
+     * @return name of the content view used in advanced search page
+     */
     String getAdvancedSearchView();
 
 }

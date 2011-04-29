@@ -85,7 +85,7 @@ public class TestSearchLocalConfiguration {
                     SearchLocalConfiguration.class,
                     SEARCH_LOCAL_CONFIGURATION_FACET, doc);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.warn("failed to get configuration", e);
         }
         return configuration;
     }
