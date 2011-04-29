@@ -237,14 +237,12 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
         return (String) bundle.getHeaders().get("Nuxeo-Component");
     }
 
-    @SuppressWarnings("unchecked")
     protected boolean loadConfigurationFromProvider() throws Exception {
         //TODO use a OSGi service for this.
-        String ref = bundleContext.getProperty("ecr.configurator");
-        if (ref == null) {
+        Iterable<URL> provider = Environment.getDefault().getConfigurationProvider();
+        if (provider == null) {
             return false;
         }
-        Iterable<URL> provider = (Iterable<URL>)OSGiRuntimeActivator.getInstance().newInstance(ref);
         Iterator<URL> it = provider.iterator();
         ArrayList<URL> props = new ArrayList<URL>();
         ArrayList<URL> xmls = new ArrayList<URL>();
