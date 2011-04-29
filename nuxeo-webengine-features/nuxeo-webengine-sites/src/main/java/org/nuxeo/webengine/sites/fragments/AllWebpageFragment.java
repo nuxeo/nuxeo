@@ -20,6 +20,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.WebContext;
+import org.nuxeo.ecm.webengine.util.URLEncoderHelper;
 import org.nuxeo.theme.fragments.AbstractFragment;
 import org.nuxeo.theme.models.Model;
 import org.nuxeo.theme.models.ModelException;
@@ -56,8 +57,7 @@ public class AllWebpageFragment extends AbstractFragment {
                     if (!webPage.getCurrentLifeCycleState().equals(
                             SiteConstants.DELETED)) {
                         String name = SiteUtils.getString(webPage, "dc:title");
-                        String path = JsonAdapter.getRelativePath(documentModel,
-                                webPage).toString();
+                        String path = URLEncoderHelper.encodeSegment(webPage.getName());
                         WebpageModel webpageModel = new WebpageModel(name, path);
                         model.addItem(webpageModel);
                     }
