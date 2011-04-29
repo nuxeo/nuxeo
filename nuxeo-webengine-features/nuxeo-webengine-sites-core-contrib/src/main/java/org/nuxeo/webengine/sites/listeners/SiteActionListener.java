@@ -17,12 +17,16 @@
  */
 package org.nuxeo.webengine.sites.listeners;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.ecm.webengine.util.URLEncoderHelper;
 
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.ABOUT_TO_CREATE;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BEFORE_DOC_UPDATE;
@@ -42,10 +46,6 @@ public class SiteActionListener implements EventListener {
     public void handleEvent(Event event) throws ClientException {
         String eventId = event.getName();
 
-        if (!(ABOUT_TO_CREATE.equals(eventId) || BEFORE_DOC_UPDATE.equals(eventId))) {
-            return;
-        }
-
         DocumentEventContext docCtx;
         if (event.getContext() instanceof DocumentEventContext) {
             docCtx = (DocumentEventContext) event.getContext();
@@ -60,6 +60,7 @@ public class SiteActionListener implements EventListener {
 
         if (ABOUT_TO_CREATE.equals(eventId)) {
             String url = doc.getName();
+            url = URLEncoderHelper.encodeSegment(url);
             String documentWithSameURLQuery = "SELECT * FROM DOCUMENT where "
                     + WEBCONTAINER_URL + " STARTSWITH \"" + url
                     + "\"";

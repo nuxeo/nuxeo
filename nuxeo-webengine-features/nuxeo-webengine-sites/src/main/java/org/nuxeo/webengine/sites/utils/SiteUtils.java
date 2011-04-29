@@ -17,6 +17,8 @@
 package org.nuxeo.webengine.sites.utils;
 
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -31,6 +33,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang.StringUtils;
+import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -43,6 +46,7 @@ import org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.WebContext;
+import org.nuxeo.ecm.webengine.util.URLEncoderHelper;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.webengine.sites.JsonAdapter;
 
@@ -147,16 +151,23 @@ public class SiteUtils {
             DocumentModel documentModel) {
         StringBuilder path = new StringBuilder(getWebContainersPath()).append('/');
 
+        String segment = ws.getPath().segment(ws.getPath().segmentCount() - 1);
+//        segment = URLEncode(segment);
         if (ws.hasSchema(SiteConstants.WEBCONTAINER_SCHEMA)) {
             try {
                 path.append(ws.getPropertyValue(SiteConstants.WEBCONTAINER_URL)).append("/");
             } catch (Exception e) {
-                path.append(ws.getPath().segment(ws.getPath().segmentCount() - 1)).append('/');
+                path.append(segment).append('/');
             }
         } else {
-            path.append(ws.getPath().segment(ws.getPath().segmentCount() - 1)).append('/');
+            path.append(segment).append('/');
         }
-        path.append(JsonAdapter.getRelativePath(ws, documentModel));
+        Path relativePath = JsonAdapter.getRelativePath(ws, documentModel);
+        for ( int i = 0 ; i < relativePath.segmentCount() ; i++) {
+            segment = relativePath.segment(i);
+            segment = URLEncoderHelper.encodeSegment(segment);
+            path.append(segment).append("/");
+        }
         return path.toString();
     }
 

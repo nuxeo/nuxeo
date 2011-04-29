@@ -255,7 +255,8 @@ public abstract class AbstractSiteDocumentObject extends DocumentObject {
                     getWebPageDocumentType());
             DocumentModel parentWebSite = getParentWebSite(session);
             String path = SiteUtils.getPagePath(parentWebSite, createdDocument);
-            return redirect(URIUtils.quoteURIPathComponent(path, false));
+            return redirect(path.toString());
+            //return redirect(URIUtils.quoteURIPathComponent(path, false));
         } catch (Exception e) {
             throw WebException.wrap(e);
         }
@@ -274,8 +275,7 @@ public abstract class AbstractSiteDocumentObject extends DocumentObject {
             StringBuilder path = new StringBuilder(
                     SiteUtils.getWebContainersPath()).append("/");
             path.append(SiteUtils.getString(parentWebSite, WEBCONTAINER_URL));
-            return redirect(URIUtils.quoteURIPathComponent(path.toString(),
-                    false));
+            return redirect(path.toString());
         } catch (Exception e) {
             throw WebException.wrap(e);
         }
@@ -309,8 +309,7 @@ public abstract class AbstractSiteDocumentObject extends DocumentObject {
             }
             session.save();
 
-            return redirect(URIUtils.quoteURIPathComponent(
-                    SiteUtils.getPagePath(webContainer, webContainer), false));
+            return redirect( SiteUtils.getPagePath(webContainer, webContainer));
         } catch (Exception e) {
             throw WebException.wrap(e);
         }

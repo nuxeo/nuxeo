@@ -20,6 +20,10 @@
      <artifactId>nuxeo-core-api</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.nuxeo.ecm.webengine</groupId>
+      <artifactId>nuxeo-webengine-core</artifactId>
+    </dependency>
+    <dependency>
      <groupId>org.nuxeo.ecm.core</groupId>
      <artifactId>nuxeo-core</artifactId>
     </dependency>
@@ -29,7 +33,7 @@
     </dependency>
     <dependency>
       <groupId>org.wikimodel</groupId>
-      <artifactId>wem</artifactId>    
+      <artifactId>wem</artifactId>
     </dependency>
     <dependency>
         <groupId>commons-lang</groupId>
