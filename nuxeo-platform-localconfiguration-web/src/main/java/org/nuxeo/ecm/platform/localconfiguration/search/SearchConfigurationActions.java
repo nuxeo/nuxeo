@@ -67,7 +67,7 @@ public class SearchConfigurationActions implements Serializable {
                 return configuration.getAdvancedSearchView();
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.debug("failed to get search configuration for " + currentDoc.getPathAsString(), e);
         }
         return SearchLocalConfigurationConstants.DEFAULT_ADVANCED_SEARCH_VIEW;
 
