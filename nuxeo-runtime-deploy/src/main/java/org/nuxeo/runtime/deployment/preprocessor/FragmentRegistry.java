@@ -25,6 +25,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.collections.DependencyTree;
 
 /**
@@ -33,10 +35,19 @@ import org.nuxeo.common.collections.DependencyTree;
 public class FragmentRegistry extends
         DependencyTree<String, FragmentDescriptor> {
 
+    private static final Log log = LogFactory.getLog(FragmentRegistry.class);
+
     // this is needed to handle requiredBy dependencies
     protected final Map<String, FragmentDescriptor> fragments = new HashMap<String, FragmentDescriptor>();
 
     public void add(FragmentDescriptor fragment) {
+        if (fragments.containsKey(fragment.name)) {
+            FragmentDescriptor existing = fragments.get(fragment.name);
+            log.error(String.format(
+                    "Overriding fragment with name '%s' and path '%s' "
+                            + "that is already present with path '%s'",
+                    fragment.name, fragment.filePath, existing.filePath));
+        }
         fragments.put(fragment.name, fragment);
     }
 

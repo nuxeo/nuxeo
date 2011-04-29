@@ -157,10 +157,10 @@ public class DeploymentPreprocessor {
         }
         // register the fragment if any was found
         if (fd != null) {
-            cd.fragments.add(fd);
             fd.fileName = fileName;
             fd.filePath = getRelativeChildPath(cd.directory.getAbsolutePath(),
                     file.getAbsolutePath());
+            cd.fragments.add(fd);
             if (fd.templates != null) {
                 for (TemplateDescriptor td : fd.templates.values()) {
                     td.baseDir = file;
