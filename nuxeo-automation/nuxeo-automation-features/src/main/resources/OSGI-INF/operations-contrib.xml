@@ -52,6 +52,13 @@
         <param type="boolean" name="useMainBlob">false</param>
       </operation>
     </chain>
+    <chain id="FileManager.ImportWithMetaData">
+      <operation id="FileManager.Import">
+      </operation>
+      <operation id="Document.Update">
+        <param type="properties" name="properties">expr:Context.get("docMetaData")</param>
+      </operation>
+    </chain>
   </extension>
 
 </component>
