@@ -25,6 +25,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Provider;
 
+import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 
 import org.nuxeo.common.utils.FileUtils;
@@ -117,8 +118,13 @@ public class JsonRequestReader implements MessageBodyReader<ExecutionRequest> {
             Iterator<String> it = jsonParams.keys();
             while (it.hasNext()) {
                 String key = it.next();
-                String value = jsonParams.getString(key);
-                req.setParam(key, value);
+                JSONObject object = jsonParams.optJSONObject(key);
+                if (object!=null) {
+                    req.setParam(key, object);
+                }else {
+                    String value = jsonParams.getString(key);
+                    req.setParam(key, value);
+                }
             }
         }
 
@@ -126,8 +132,13 @@ public class JsonRequestReader implements MessageBodyReader<ExecutionRequest> {
             Iterator<String> it = jsonContext.keys();
             while (it.hasNext()) {
                 String key = it.next();
-                String value = jsonContext.getString(key);
-                req.setContextParam(key, value);
+                JSONObject object = jsonContext.optJSONObject(key);
+                if (object!=null) {
+                    req.setContextParam(key, object);
+                } else {
+                    String value = jsonContext.getString(key);
+                    req.setContextParam(key, value);
+                }
             }
         }
 

@@ -36,7 +36,8 @@ public class ChainResource extends ExecutableResource {
     @Override
     public Object execute(ExecutionRequest xreq) throws Exception {
         OperationContext ctx = xreq.createContext(request, getCoreSession());
-        ctx.put("caller_params", xreq.getParams()); // XXX Should do better !!!
+        // Copy params in the Chain context
+        ctx.putAll(xreq.getParams());
         return service.run(ctx, chainId);
     }
 

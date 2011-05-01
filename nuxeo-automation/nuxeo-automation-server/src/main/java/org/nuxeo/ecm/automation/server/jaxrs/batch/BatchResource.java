@@ -2,7 +2,6 @@ package org.nuxeo.ecm.automation.server.jaxrs.batch;
 
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -24,6 +23,8 @@ import org.nuxeo.ecm.automation.core.util.BlobList;
 import org.nuxeo.ecm.automation.server.jaxrs.ExecutionRequest;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.webengine.jaxrs.context.RequestCleanupHandler;
+import org.nuxeo.ecm.webengine.jaxrs.context.RequestContext;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 import org.nuxeo.ecm.webengine.jaxrs.views.TemplateView;
 import org.nuxeo.ecm.webengine.jaxrs.views.View;
@@ -31,8 +32,7 @@ import org.nuxeo.runtime.api.Framework;
 
 public class BatchResource {
 
-    //@Context
-    //protected HttpServletRequest request;
+    private static final String REQUEST_BATCH_ID = "batchId";
 
     public CoreSession getCoreSession(HttpServletRequest request) {
         return SessionFactory.getSession(request);
@@ -60,7 +60,7 @@ public class BatchResource {
     @GET
     @Produces("text/html")
     @Path(value = "chooseOperation/{batchId}")
-    public View getOperationChoice(@PathParam("batchId") String batchId, @QueryParam("context") String context) throws Exception {
+    public View getOperationChoice(@PathParam(REQUEST_BATCH_ID) String batchId, @QueryParam("context") String context) throws Exception {
 
         List<OperationDocumentation> operations = new ArrayList<OperationDocumentation>();
 
@@ -89,9 +89,9 @@ public class BatchResource {
     public Object exec(@Context HttpServletRequest request, ExecutionRequest xreq) throws Exception {
 
         Map<String, Object> params = xreq.getParams();
-        String batchId = (String)params.get("batchId");
+        String batchId = (String)params.get(REQUEST_BATCH_ID);
         String operationId = (String)params.get("operationId");
-        params.remove("batchId");
+        params.remove(REQUEST_BATCH_ID);
         params.remove("operationId");
 
         BatchManager bm = Framework.getLocalService(BatchManager.class);
@@ -102,8 +102,23 @@ public class BatchResource {
         OperationContext ctx = xreq.createContext(request, getCoreSession(request));
         AutomationService as = Framework.getLocalService(AutomationService.class);
 
+        request.setAttribute(REQUEST_BATCH_ID, batchId);
+
+        // register commit hook for cleanup
+        RequestContext.getActiveContext(request).addRequestCleanupHandler(
+                new RequestCleanupHandler() {
+                    @Override
+                    public void cleanup(HttpServletRequest req) {
+                        String bid = (String) req.getAttribute(REQUEST_BATCH_ID);
+                        BatchManager bm = Framework.getLocalService(BatchManager.class);
+                        bm.clean(bid);
+                    }
+
+                });
         try {
             if (operationId.startsWith("Chain.")) {
+                // Copy params in the Chain context
+                ctx.putAll(xreq.getParams());
                 return as.run(ctx, operationId.substring(6));
             } else {
                 OperationChain chain = new OperationChain("operation");
@@ -115,15 +130,12 @@ public class BatchResource {
         catch (Exception e) {
             return "{ error:'" + e.getMessage() + "'}";
         }
-        finally {
-            bm.clean(batchId); // XXX should move to a commit hook
-        }
     }
 
     @GET
     @Produces("text/html")
     @Path(value = "drop/{batchId}")
-    public String dropBatch(@PathParam("batchId") String batchId) throws Exception {
+    public String dropBatch(@PathParam(REQUEST_BATCH_ID) String batchId) throws Exception {
         BatchManager bm = Framework.getLocalService(BatchManager.class);
         bm.clean(batchId);
         return "Batch droped";
