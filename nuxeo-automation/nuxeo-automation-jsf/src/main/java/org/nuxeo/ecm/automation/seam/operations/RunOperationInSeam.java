@@ -46,18 +46,12 @@ public class RunOperationInSeam {
                 return service.run(subctx, chainId.substring(6));
             } else {
                 OperationChain chain = new OperationChain("operation");
-                Map<String, Object> caller_params = (Map<String, Object>) vars.remove("caller_params");
-                if (caller_params!=null) {
-                    vars.putAll(caller_params);
-                }
                 OperationParameters oparams = new OperationParameters(chainId,vars);
                 chain.add(oparams);
-
                 return service.run(subctx, chain);
             }
         } finally {
             SeamOperationFilter.handleAfterRun(ctx, conversationId);
         }
-
     }
 }

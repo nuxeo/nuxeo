@@ -28,15 +28,15 @@
       <category>ContentView</category>
       <filter-id>create</filter-id>
    </action>
-   <action id="FileManager.FileImport"
+   <action id="FileManager.Import"
       link=""
       order="20" label="label.smart.import.file"
       help="desc.smart.import.file">
       <category>ContentView</category>
       <filter-id>create</filter-id>
    </action>
-   <action id="FileManager.MDImport"
-      link=""
+   <action id="Chain.FileManager.ImportWithMetaData"
+      link="/nuxeo/dndFormCollector.faces?schema=dc&#038;layout=dublincore"
       order="30" label="label.smart.import.with.md"
       help="desc.smart.import.with.md">
       <category>ContentView</category>
