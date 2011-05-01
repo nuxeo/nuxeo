@@ -590,8 +590,6 @@ padding:5px 0px 2px 0px;
 .dropzone {
   display: block;
   margin : 4px;
-  text-align: center;
-  vertical-align: middle;
   font-size : 16pt;
   font-family : Arial;
  }
