@@ -1,0 +1,17 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+
+<h:form>
+      <nxl:layout name="#{dndFormActions.getLayout()}" mode="create"
+        value="#{dataCollector}" />
+
+      <h:commandButton action="#{dndFormActions.save()}"></h:commandButton>
+</h:form>
+
+</div>
