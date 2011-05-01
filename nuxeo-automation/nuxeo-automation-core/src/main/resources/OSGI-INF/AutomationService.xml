@@ -78,6 +78,10 @@
       class="org.nuxeo.ecm.automation.core.impl.adapters.StringToProperties"
       accept="java.lang.String"
       produce="org.nuxeo.ecm.automation.core.util.Properties" />
+    <adapter
+      class="org.nuxeo.ecm.automation.core.impl.adapters.JSONObjectToProperties"
+      accept="net.sf.json.JSONObject"
+      produce="org.nuxeo.ecm.automation.core.util.Properties" />
     <adapter class="org.nuxeo.ecm.automation.core.impl.adapters.StringToURL"
       accept="java.lang.String" produce="java.net.URL" />
     <adapter class="org.nuxeo.ecm.automation.core.impl.adapters.StringToDate"
