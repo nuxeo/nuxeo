@@ -29,7 +29,7 @@
     </dependency>
     <dependency>
       <groupId>org.wikimodel</groupId>
-      <artifactId>wem</artifactId>    
+      <artifactId>wem</artifactId>
     </dependency>
     <dependency>
         <groupId>commons-lang</groupId>

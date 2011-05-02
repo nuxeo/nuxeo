@@ -15,6 +15,7 @@
  */
 package org.nuxeo.webengine.blogs.listeners;
 
+import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
@@ -38,10 +39,6 @@ public class BlogActionListener implements EventListener {
      */
     public void handleEvent(Event event) throws ClientException {
         String eventId = event.getName();
-
-        if (!(DocumentEventTypes.ABOUT_TO_CREATE.equals(eventId) || DocumentEventTypes.BEFORE_DOC_UPDATE.equals(eventId))) {
-            return;
-        }
 
         DocumentEventContext docCtx;
         if (event.getContext() instanceof DocumentEventContext) {
@@ -67,8 +64,9 @@ public class BlogActionListener implements EventListener {
                 doc.setPropertyValue(SiteConstants.WEBCONTAINER_ISWEBCONTAINER,
                         Boolean.TRUE);
                 // Set Blog url field
-                doc.setPropertyValue(SiteConstants.WEBCONTAINER_URL,
-                        doc.getName());
+                String url = doc.getName();
+                url = URIUtils.quoteURIPathComponent(url, false);
+                doc.setPropertyValue(SiteConstants.WEBCONTAINER_URL, url);
                 doc.setPropertyValue(SiteConstants.WEBSITE_SCHEMA_THEME,
                         "blogs");
                 doc.setPropertyValue(SiteConstants.WEBSITE_THEMEPAGE, "site");

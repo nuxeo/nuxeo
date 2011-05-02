@@ -18,7 +18,6 @@
       <schema name="dublincore"/>
       <schema name="uid"/>
       <schema name="files"/>
-      <facet name="Indexable" />
       <facet name="Commentable" />
     </doctype>
 

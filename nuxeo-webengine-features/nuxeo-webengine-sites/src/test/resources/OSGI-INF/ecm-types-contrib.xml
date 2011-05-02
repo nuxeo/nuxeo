@@ -2,10 +2,7 @@
 
 <component name="org.nuxeo.ecm.webengine.sites.ecm.types">
 
-  <require>org.nuxeo.ecm.platform.types.TypeService</require>
-
-  <extension target="org.nuxeo.ecm.platform.types.TypeService"
-    point="types">
+  <extension target="org.nuxeo.ecm.platform.types.TypeService" point="types">
 
     <type id="Comment">
       <icon>/icons/forum_post.gif</icon>
@@ -13,9 +10,8 @@
       <bigIcon>/icons/forum_100.gif</bigIcon>
       <description>Comment.description</description>
       <category>WebObject</category>
-
     </type>
-    
+
     <type id="WebPage">
       <label>Web Page</label>
       <icon>/icons/webpage.png</icon>
@@ -47,7 +43,7 @@
         <layout>heading</layout>
         <layout>contextualLink</layout>
       </layouts>
-    </type>    
+    </type>
 
     <type id="Workspace">
       <subtypes>

@@ -65,7 +65,7 @@ public class DocumentPageProviderOperation {
     protected String lang = "NXQL";
 
     @Param(name = "page", required = false)
-    protected Integer page = 0;
+    protected Integer page;
 
     @Param(name = "pageSize", required = false)
     protected Integer pageSize;
@@ -116,29 +116,32 @@ public class DocumentPageProviderOperation {
         props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY,
                 (Serializable) session);
 
-        Long targetPageSize = null;
-        if (pageSize != null) {
-            targetPageSize = (long) pageSize;
-        }
-
         if (query == null
                 && (providerName == null || providerName.length() == 0)) {
             // provide a defaut query
             query = "SELECT * from Document";
         }
 
+        Long targetPage = null;
+        if (page != null) {
+            targetPage = Long.valueOf(page.longValue());
+        }
+        Long targetPageSize = null;
+        if (pageSize != null) {
+            targetPageSize = Long.valueOf(pageSize.longValue());
+        }
         if (query != null) {
             CoreQueryPageProviderDescriptor desc = new CoreQueryPageProviderDescriptor();
             desc.setPattern(query);
             return new PaginableDocumentModelListImpl(
                     (PageProvider<DocumentModel>) pps.getPageProvider("", desc,
-                            sortInfos, targetPageSize, (long) page, props,
+                            sortInfos, targetPageSize, targetPage, props,
                             parameters));
         } else {
             return new PaginableDocumentModelListImpl(
                     (PageProvider<DocumentModel>) pps.getPageProvider(
                             providerName, sortInfos, targetPageSize,
-                            (long) page, props, parameters));
+                            targetPage, props, parameters));
         }
 
     }

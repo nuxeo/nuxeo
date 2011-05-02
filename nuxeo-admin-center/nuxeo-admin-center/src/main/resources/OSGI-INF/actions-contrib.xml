@@ -3,14 +3,14 @@
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="actions">
 
-    <action id="AdminMain" link="#{adminViews.enter()}" label="action.admin.center"
-      order="30">
+    <action id="AdminMain" link="#{adminViews.enter()}"
+      label="action.admin.center" order="30">
       <category>USER_SERVICES</category>
       <filter-id>only_for_manager</filter-id>
     </action>
 
-    <action id="SystemInfo" link="view_admin-fragment.xhtml" label="admcommand.systeminfo"
-      order="10">
+    <action id="SystemInfo" link="view_admin-fragment.xhtml"
+      label="admcommand.systeminfo" order="10">
       <category>NUXEO_ADMIN</category>
       <filter-id>only_for_manager</filter-id>
     </action>
@@ -27,8 +27,8 @@
       <filter-id>only_for_manager</filter-id>
     </action>
 
-    <action id="Setup" link="/incl/sysinfo/setup.xhtml" label="tab.sysinfo.setup"
-      order="40">
+    <action id="Setup" link="/incl/sysinfo/setup.xhtml"
+      label="tab.sysinfo.setup" order="40">
       <category>NUXEO_ADMIN_SystemInfo</category>
       <filter-id>only_for_manager</filter-id>
     </action>
@@ -104,9 +104,16 @@
       <filter-id>not_readonly</filter-id>
     </action>
 
-    <action id="adm_logout" link="#{loginLogoutAction.logout()}"
-      label="command.logout" order="40">
+    <action id="admin_center_non_anonymous_logout"
+      link="#{loginLogoutAction.logout()}" label="command.logout">
       <category>NUXEO_ADMIN_USER_SERVICES</category>
+      <filter-id>not_anonymous</filter-id>
+    </action>
+
+    <action id="admin_center_login" link="#{loginLogoutAction.logout()}"
+      label="command.login">
+      <category>NUXEO_ADMIN_USER_SERVICES</category>
+      <filter-id>anonymous</filter-id>
     </action>
 
     <action id="adm_exit" link="#{adminViews.exit()}" label="action.admin.exit"

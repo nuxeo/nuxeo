@@ -10,7 +10,7 @@ public class ExternalGadgetsActionBean extends DirectoryBasedEditor {
 
     private static final long serialVersionUID = 1L;
 
-    protected static final String DIRECTORY = "external gadget list";
+    protected static final String DIRECTORY = "externalGadgets";
 
     protected static final String SCHEMA = "externalgadget";
 

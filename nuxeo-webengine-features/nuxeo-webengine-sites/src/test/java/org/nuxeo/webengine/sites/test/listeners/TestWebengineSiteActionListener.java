@@ -20,6 +20,7 @@ package org.nuxeo.webengine.sites.test.listeners;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.common.utils.IdUtils;
+import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.webengine.sites.utils.SiteConstants;
@@ -72,7 +73,7 @@ public class TestWebengineSiteActionListener extends SQLRepositoryTestCase {
                 documentTitle.equals(siteName));
         //url contains the name
         assertTrue("URL not valid for web container: " + siteUrl,
-                documentName.equals(siteUrl));
+                siteUrl.equals(URIUtils.quoteURIPathComponent(documentName, false)));
     }
 
     public void testSiteActionListenerWebSite() throws Exception {
@@ -100,7 +101,7 @@ public class TestWebengineSiteActionListener extends SQLRepositoryTestCase {
                 documentTitle.equals(siteName));
         //url contains the name
         assertTrue("URL not valid for web container: " + siteUrl,
-                documentName.equals(siteUrl));
+                siteUrl.equals(URIUtils.quoteURIPathComponent(documentName, false)));
     }
 
 }

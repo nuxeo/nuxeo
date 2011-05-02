@@ -19,7 +19,6 @@
   </properties>
 
   <dependencies>
-     
       <dependency>
         <groupId>org.nuxeo.ecm.webengine</groupId>
         <artifactId>nuxeo-webengine-blogs-api</artifactId>

@@ -31,6 +31,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang.StringUtils;
+import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -147,16 +148,19 @@ public class SiteUtils {
             DocumentModel documentModel) {
         StringBuilder path = new StringBuilder(getWebContainersPath()).append('/');
 
+        String segment = ws.getPath().segment(ws.getPath().segmentCount() - 1);
+//        segment = URLEncode(segment);
         if (ws.hasSchema(SiteConstants.WEBCONTAINER_SCHEMA)) {
             try {
                 path.append(ws.getPropertyValue(SiteConstants.WEBCONTAINER_URL)).append("/");
             } catch (Exception e) {
-                path.append(ws.getPath().segment(ws.getPath().segmentCount() - 1)).append('/');
+                path.append(segment).append('/');
             }
         } else {
-            path.append(ws.getPath().segment(ws.getPath().segmentCount() - 1)).append('/');
+            path.append(segment).append('/');
         }
-        path.append(JsonAdapter.getRelativePath(ws, documentModel));
+        path.append(URIUtils.quoteURIPathComponent(JsonAdapter.getRelativePath(ws,
+                documentModel).toString(), false));
         return path.toString();
     }
 
