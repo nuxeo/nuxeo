@@ -50,6 +50,9 @@ public class ContentViewHeader implements Serializable {
     }
 
     public String getTitle() {
+        if (title == null || title.trim().isEmpty()) {
+            return name;
+        }
         return title;
     }
 
