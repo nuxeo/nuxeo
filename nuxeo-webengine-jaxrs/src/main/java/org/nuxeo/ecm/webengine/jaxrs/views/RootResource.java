@@ -11,8 +11,6 @@
  */
 package org.nuxeo.ecm.webengine.jaxrs.views;
 
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 
@@ -23,17 +21,8 @@ import javax.ws.rs.core.UriInfo;
 public class RootResource extends BundleResource {
 
     public RootResource() {
-        super (new ResourceContext());
-    }
-
-    @Context
-    public void setRequest(HttpServletRequest request) {
-        this.context.request = request;
-    }
-
-    @Context
-    public void setServletContext(ServletContext servletContext) {
-        this.context.servletContext = servletContext;
+        super (ResourceContext.getContext());
+        context.pushBundleFor(this);
     }
 
     @Context

@@ -12,13 +12,15 @@
 package org.nuxeo.ecm.webengine.jaxrs.views;
 
 import java.net.URI;
+import java.net.URL;
 import java.security.Principal;
+import java.util.LinkedList;
 
-import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.UriInfo;
 
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.webengine.jaxrs.ApplicationHost;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
 import org.osgi.framework.Bundle;
@@ -32,43 +34,76 @@ import org.osgi.framework.Bundle;
  */
 public class ResourceContext {
 
-    protected ServletContext servletContext;
+    private static ThreadLocal<ResourceContext> perThreadContext = new ThreadLocal<ResourceContext>();
+
+    public final static void setContext(ResourceContext context) {
+        perThreadContext.set(context);
+    }
+
+    public final static ResourceContext getContext() {
+        return perThreadContext.get();
+    }
+
+    public final static void destroyContext() {
+        perThreadContext.remove();
+    }
+
+    /**
+     * The JAX-RS application providing the resources.
+     */
+    protected ApplicationHost app;
 
     protected HttpServletRequest request;
 
     protected UriInfo uriInfo;
 
-    private Bundle bundle;
+    private LinkedList<Bundle> bundleStack;
 
     private RenderingEngine rendering;
 
     private CoreSession session;
 
+
     protected ResourceContext() {
     }
 
-    public ResourceContext(ServletContext servletContext, HttpServletRequest request, UriInfo uriInfo) {
-        this.servletContext = servletContext;
-        this.request = request;
+    public ResourceContext(ApplicationHost app, RenderingEngine rendering) {
+        //TODO rendering in app
+        this.app = app;
+        this.rendering = rendering;
+        this.bundleStack = new LinkedList<Bundle>();
+        //this.bundleStack.add(app.getBundle());
+    }
+
+    public final LinkedList<Bundle> getBundleStack() {
+        return bundleStack;
+    }
+
+    public void setUriInfo(UriInfo uriInfo) {
         this.uriInfo = uriInfo;
     }
 
+    public void setRequest(HttpServletRequest request) {
+        this.request = request;
+    }
+
+    public void setRendering(RenderingEngine rendering) {
+        this.rendering = rendering;
+    }
+
     public final Bundle getBundle() {
-        if (bundle == null) {
-            bundle = (Bundle)servletContext.getAttribute(Bundle.class.getName());
-        }
-        return bundle;
+        return bundleStack.isEmpty() ? null : bundleStack.get(bundleStack.size()-1);
     }
 
     public final RenderingEngine getRenderingEngine() {
-        if (rendering == null) {
-            rendering = (RenderingEngine)servletContext.getAttribute(RenderingEngine.class.getName());
-            String baseUrl = getBaseUri().toString();
-            if (baseUrl.endsWith("/")) {
-                baseUrl = baseUrl.substring(0, baseUrl.length()-1);
-            }
-            rendering.setSharedVariable("baseUrl", baseUrl);
-        }
+        //        if (rendering == null) {
+        //            rendering = (RenderingEngine)servletContext.getAttribute(RenderingEngine.class.getName());
+        //            String baseUrl = getBaseUri().toString();
+        //            if (baseUrl.endsWith("/")) {
+        //                baseUrl = baseUrl.substring(0, baseUrl.length()-1);
+        //            }
+        //            rendering.setSharedVariable("baseUrl", baseUrl);
+        //        }
         return rendering;
     }
 
@@ -84,9 +119,6 @@ public class ResourceContext {
         return uriInfo;
     }
 
-    public ServletContext getServletContext() {
-        return servletContext;
-    }
 
     public CoreSession getSession() {
         if (session == null) {
@@ -97,6 +129,38 @@ public class ResourceContext {
 
     public URI getBaseUri() {
         return uriInfo.getBaseUri();
+    }
+
+    public void pushBundleFor(Object obj) {
+        Bundle b = getResourceBundle(obj);
+        if (b != null) {
+            pushBundle(b);
+        }
+    }
+
+    public void pushBundle(Bundle bundle) {
+        for (Bundle b : bundleStack) {
+            if (b == bundle) {
+                // already present
+                return;
+            }
+        }
+        bundleStack.add(bundle);
+    }
+
+    protected Bundle getResourceBundle(Object res) {
+        //return FrameworkUtil.getBundle(res.getClass());
+        return app.getBundle(res.getClass());
+    }
+
+    public URL findEntry(String path) {
+        for (int i=bundleStack.size()-1; i>=0; i--) {
+            URL url = bundleStack.get(i).getEntry(path);
+            if (url != null) {
+                return url;
+            }
+        }
+        return null;
     }
 
 }

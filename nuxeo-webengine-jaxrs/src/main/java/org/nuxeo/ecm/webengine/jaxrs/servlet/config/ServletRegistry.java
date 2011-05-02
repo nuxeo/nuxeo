@@ -159,6 +159,11 @@ public class ServletRegistry {
         }
     }
 
+    public synchronized void reloadServlet(ServletDescriptor descriptor) throws Exception {
+        removeServlet(descriptor);
+        addServlet(descriptor);
+    }
+
     public synchronized void addFilterSet(FilterSetDescriptor filter) {
         filters.add(filter);
     }

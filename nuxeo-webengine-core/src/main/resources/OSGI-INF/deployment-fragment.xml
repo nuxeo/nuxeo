@@ -34,7 +34,7 @@
 
   <servlet>
     <servlet-name>Nuxeo WebEngine Servlet</servlet-name>
-    <servlet-class>org.nuxeo.ecm.webengine.jaxrs.servlet.JerseyServlet</servlet-class>    
+    <servlet-class>org.nuxeo.ecm.webengine.app.jersey.WebEngineServlet</servlet-class>    
 	<!-- servlet-class>org.nuxeo.ecm.webengine.app.jersey.ReloadingJerseyServlet</servlet-class>
     <init-param>
       <param-name>javax.ws.rs.Application</param-name>

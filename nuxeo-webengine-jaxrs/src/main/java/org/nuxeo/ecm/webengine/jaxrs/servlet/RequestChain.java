@@ -27,7 +27,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.nuxeo.ecm.webengine.jaxrs.servlet.config.ServletDescriptor;
 import org.nuxeo.ecm.webengine.jaxrs.servlet.mapping.Path;
-import org.osgi.framework.Bundle;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -63,6 +62,9 @@ public class RequestChain {
     public void init(ServletDescriptor sd, ServletConfig config) throws ServletException {
         for (FilterSet filterSet : filters) {
             filterSet.init(config);
+        }
+        if (servlet instanceof ManagedServlet) {
+            ((ManagedServlet)servlet).setDescriptor(sd);
         }
         servlet.init(new ServletConfigAdapter(sd, config));
     }
@@ -129,7 +131,6 @@ public class RequestChain {
         public ServletConfigAdapter(ServletDescriptor sd, ServletConfig config) {
             this.config = config;
             this.sd = sd;
-            config.getServletContext().setAttribute(Bundle.class.getName(), sd.getBundle());
         }
         @Override
         public String getInitParameter(String key) {

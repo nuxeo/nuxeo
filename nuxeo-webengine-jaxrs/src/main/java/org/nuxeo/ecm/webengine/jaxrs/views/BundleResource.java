@@ -56,7 +56,14 @@ public class BundleResource {
     }
 
     public final View getView(String path) {
-        return context.getRenderingEngine().getView(path, this);
+        String basePath = context.getUriInfo().getBaseUri().toString();
+        if (basePath.endsWith("/")) {
+            basePath = basePath.substring(0, basePath.length() -1);
+        }
+        // we need to prefix with bundle name to avoid template cache collisions (in freemarker for ex.)
+        //path=getBundle().getSymbolicName() + ":/" + path;
+        return context.getRenderingEngine().getView(path, this)
+        .arg("baseUrl", basePath);
     }
 
     public final HttpServletRequest getRequest() {

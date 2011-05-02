@@ -36,6 +36,8 @@ public class ServletHolder extends HttpServlet {
 
     protected ServletDescriptor descriptor;
 
+    protected volatile boolean initDone = false;
+
     protected String getName(ServletConfig config) {
         String name = config.getInitParameter(ServletRegistry.SERVLET_NAME);
         if (name == null) {
@@ -67,7 +69,7 @@ public class ServletHolder extends HttpServlet {
                 listeners.init(config);
             }
             super.init(config);
-            chain.init(descriptor, config);
+            //lazy chain.init(descriptor, config);
         } catch (ServletException e) {
             throw e;
         } catch (Exception e) {
@@ -78,6 +80,7 @@ public class ServletHolder extends HttpServlet {
     @Override
     public void destroy() {
         super.destroy();
+        initDone = false;
         if (chain != null) {
             chain.destroy();
             chain = null;
@@ -90,6 +93,9 @@ public class ServletHolder extends HttpServlet {
         Thread t = Thread.currentThread();
         ClassLoader cl = t.getContextClassLoader();
         try {
+            if (!initDone) {
+                lazyInit();
+            }
             // use servlet class loader as the context class loader
             t.setContextClassLoader(chain.servlet.getClass().getClassLoader());
             chain.execute(request, response);
@@ -98,5 +104,13 @@ public class ServletHolder extends HttpServlet {
         }
     }
 
+
+    protected synchronized void lazyInit() throws ServletException {
+        try {
+            chain.init(descriptor, getServletConfig());
+        } finally {
+            initDone = true;
+        }
+    }
 
 }
