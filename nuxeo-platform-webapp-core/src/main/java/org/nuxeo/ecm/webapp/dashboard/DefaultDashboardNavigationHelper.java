@@ -28,7 +28,7 @@ import org.jboss.seam.annotations.Scope;
 public class DefaultDashboardNavigationHelper implements
         DashboardNavigationHelper {
 
-    public static final String DASHBOARD_VIEW = "user_dashboard";
+    public static final String DASHBOARD_VIEW = "user_center";
 
     public String navigateToDashboard() {
         return DASHBOARD_VIEW;

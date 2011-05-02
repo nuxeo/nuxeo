@@ -232,7 +232,7 @@
       <scheme>org.nuxeo.theme.jsf.negotiation.theme.CookieValue</scheme>
       <scheme>org.nuxeo.theme.jsf.negotiation.theme.ViewId</scheme>
       <!-- local theme (specific to nuxeo5) -->
-      <scheme>org.nuxeo.ecm.webapp.theme.negotiation.LocalTheme</scheme>
+      <scheme>org.nuxeo.ecm.platform.localconfiguration.theme.negociation.LocalTheme</scheme>
       <scheme>org.nuxeo.theme.jsf.negotiation.theme.DefaultTheme</scheme>
     </negotiation>
 
@@ -243,7 +243,7 @@
       <scheme>org.nuxeo.theme.jsf.negotiation.perspective.CookieValue</scheme>
       <scheme>org.nuxeo.theme.jsf.negotiation.perspective.ViewId</scheme>
       <!-- local perspective (specific to nuxeo5) -->
-      <scheme>org.nuxeo.ecm.webapp.theme.negotiation.LocalPerspective</scheme>
+      <scheme>org.nuxeo.ecm.platform.localconfiguration.theme.negociation.LocalPerspective</scheme>
       <scheme>
         org.nuxeo.theme.jsf.negotiation.perspective.DefaultPerspective
       </scheme>

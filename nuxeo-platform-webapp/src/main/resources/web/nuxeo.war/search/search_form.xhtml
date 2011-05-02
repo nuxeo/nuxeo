@@ -21,7 +21,7 @@
   <h:form id="searchForm">
 
     <nxu:set var="contentView"
-      value="#{contentViewActions.getContentViewWithProvider('advanced_search')}"
+      value="#{contentViewActions.getContentViewWithProvider(searchConfigurationActions.advancedSearchView)}"
       cache="true">
 
       <div class="foldableBox">
@@ -81,10 +81,10 @@
           action="search_results_advanced" class="button"
           id="searchButton">
           <nxu:actionListenerMethod
-            value="#{contentViewActions.resetPageProvider('advanced_search')}" /> 
+            value="#{contentViewActions.resetPageProvider(searchConfigurationActions.advancedSearchView)}" />
         </h:commandButton>
         <h:commandButton value="#{messages['command.clearSearch']}"
-          action="#{contentViewActions.reset('advanced_search')}"
+          action="#{contentViewActions.reset(searchConfigurationActions.advancedSearchView)}"
           immediate="true"
           styleClass="button"
           id="clearSearchButton" />
