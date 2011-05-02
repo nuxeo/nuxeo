@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.nuxeo.ecm.platform.contentview.jsf.ContentView;
+import org.nuxeo.ecm.platform.contentview.jsf.ContentViewHeader;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewLayout;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewService;
 import org.nuxeo.runtime.api.Framework;
@@ -93,6 +94,15 @@ public class TestContentViewService extends NXRuntimeTestCase {
         assertEquals("foo", flags.get(0));
         assertEquals("bar", flags.get(1));
 
+        // headers
+        ContentViewHeader header = service.getContentViewHeader("foo");
+        assertNull(header);
+        header = service.getContentViewHeader("CURRENT_DOCUMENT_CHILDREN");
+        assertNotNull(header);
+        assertEquals("CURRENT_DOCUMENT_CHILDREN", header.getName());
+        assertEquals("current document children", header.getTitle());
+        assertEquals("/icons/document_listing_icon.png", header.getIconPath());
+        assertFalse(header.isTranslateTitle());
     }
 
     public void testOverride() throws Exception {
@@ -155,6 +165,15 @@ public class TestContentViewService extends NXRuntimeTestCase {
         assertEquals(1, flags.size());
         assertEquals("foo2", flags.get(0));
 
+        // headers
+        ContentViewHeader header = service.getContentViewHeader("foo");
+        assertNull(header);
+        header = service.getContentViewHeader("CURRENT_DOCUMENT_CHILDREN");
+        assertNotNull(header);
+        assertEquals("CURRENT_DOCUMENT_CHILDREN", header.getName());
+        assertEquals("current document children overriden", header.getTitle());
+        assertEquals("/icons/document_listing_icon.png", header.getIconPath());
+        assertFalse(header.isTranslateTitle());
     }
 
     public void testGetContentViewNames() throws Exception {
@@ -192,7 +211,33 @@ public class TestContentViewService extends NXRuntimeTestCase {
         assertEquals("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT_REF",
                 orderedNames.get(4));
         assertEquals("QUERY_WITH_SUBCLAUSE", orderedNames.get(5));
+    }
 
+    public void testGetContentViewHeaders() throws Exception {
+        Set<ContentViewHeader> headers = service.getContentViewHeaders();
+        assertNotNull(headers);
+        assertEquals(7, headers.size());
+        List<ContentViewHeader> sortedHeaders = new ArrayList<ContentViewHeader>();
+        sortedHeaders.addAll(headers);
+        Collections.sort(sortedHeaders);
+        assertEquals("CURRENT_DOCUMENT_CHILDREN",
+                sortedHeaders.get(0).getName());
+        assertEquals("current document children",
+                sortedHeaders.get(0).getTitle());
+        assertEquals("/icons/document_listing_icon.png",
+                sortedHeaders.get(0).getIconPath());
+        assertFalse(sortedHeaders.get(0).isTranslateTitle());
+        assertEquals("CURRENT_DOCUMENT_CHILDREN_FETCH",
+                sortedHeaders.get(1).getName());
+        assertEquals("CURRENT_DOCUMENT_CHILDREN_FETCH_REF",
+                sortedHeaders.get(2).getName());
+        assertEquals("CURRENT_DOCUMENT_CHILDREN_REF",
+                sortedHeaders.get(3).getName());
+        assertEquals("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT",
+                sortedHeaders.get(4).getName());
+        assertEquals("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT_REF",
+                sortedHeaders.get(5).getName());
+        assertEquals("QUERY_WITH_SUBCLAUSE", sortedHeaders.get(6).getName());
     }
 
     public void testGetContentViewByFlag() throws Exception {
@@ -241,6 +286,41 @@ public class TestContentViewService extends NXRuntimeTestCase {
         names = service.getContentViewNames("not_set");
         assertNotNull(names);
         assertEquals(0, names.size());
+    }
+
+    public void testGetContentViewHeadersByFlag() throws Exception {
+        Set<ContentViewHeader> headers = service.getContentViewHeaders("foo");
+        assertNotNull(headers);
+        assertEquals(2, headers.size());
+        List<ContentViewHeader> sortedHeaders = new ArrayList<ContentViewHeader>();
+        sortedHeaders.addAll(headers);
+        Collections.sort(sortedHeaders);
+        assertEquals("CURRENT_DOCUMENT_CHILDREN",
+                sortedHeaders.get(0).getName());
+        assertEquals("current document children",
+                sortedHeaders.get(0).getTitle());
+        assertEquals("/icons/document_listing_icon.png",
+                sortedHeaders.get(0).getIconPath());
+        assertFalse(sortedHeaders.get(0).isTranslateTitle());
+        assertEquals("CURRENT_DOCUMENT_CHILDREN_FETCH",
+                sortedHeaders.get(1).getName());
+
+        headers = service.getContentViewHeaders("foo2");
+        assertNotNull(headers);
+        assertEquals(0, headers.size());
+
+        headers = service.getContentViewHeaders("bar");
+        assertNotNull(headers);
+        assertEquals(1, headers.size());
+        sortedHeaders.clear();
+        sortedHeaders.addAll(headers);
+        Collections.sort(sortedHeaders);
+        assertEquals("CURRENT_DOCUMENT_CHILDREN",
+                sortedHeaders.get(0).getName());
+
+        headers = service.getContentViewHeaders("not_set");
+        assertNotNull(headers);
+        assertEquals(0, headers.size());
     }
 
 }

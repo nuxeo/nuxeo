@@ -81,6 +81,18 @@ public final class EventNames {
     public static final String BEFORE_DOCUMENT_CHANGED = "beforeDocumentChanged";
 
     /**
+     * Fired after a document is locked, the document is passed as argument.
+     * @since 5.4.2
+     */
+    public static final String DOCUMENT_LOCKED = "documentLocked";
+
+    /**
+     * Fired after a document is unlocked, the document is passed as argument.
+     * @since 5.4.2
+     */
+    public static final String DOCUMENT_UNLOCKED = "documentUnlocked";
+
+    /**
      * Should be raised when a document is edited.
      */
     public static final String DOCUMENT_CHANGED = "documentChanged";

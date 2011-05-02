@@ -48,14 +48,29 @@ public interface TreeManager extends Serializable {
     Sorter getSorter(String pluginName);
 
     /**
-     * Returns the query model descriptor to use for given plugin name.
+     * Returns the page provider name for given plugin name.
+     *
+     * @since 5.4.2
      */
+    String getPageProviderName(String pluginName);
+
+    /**
+     * Returns the query model descriptor to use for given plugin name.
+     *
+     * @deprecated since 5.4.2, use {@link #getPageProviderName(String)}
+     *             instead
+     */
+    @Deprecated
     QueryModelDescriptor getQueryModelDescriptor(String pluginName);
 
     /**
-     * Returns the query model descriptor to use for given plugin name
-     * on an Orderable DocumentModel.
+     * Returns the query model descriptor to use for given plugin name on an
+     * Orderable DocumentModel.
+     *
+     * @deprecated since 5.4.2, use {@link #getPageProviderName(String)}
+     *             instead
      */
+    @Deprecated
     QueryModelDescriptor getOrderableQueryModelDescriptor(String pluginName);
 
 }

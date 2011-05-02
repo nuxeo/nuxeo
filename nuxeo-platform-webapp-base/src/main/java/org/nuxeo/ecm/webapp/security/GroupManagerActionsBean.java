@@ -45,6 +45,7 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.datamodel.DataModel;
 import org.jboss.seam.annotations.datamodel.DataModelSelection;
 import org.jboss.seam.faces.FacesMessages;
+import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -111,15 +112,19 @@ public class GroupManagerActionsBean implements GroupManagerActions {
             searchOverflow = false;
             try {
                 String groupListingMode = getGroupListingMode();
-                if (ALL.equals(groupListingMode) || "*".equals(getTrimmedSearchString())) {
+                if (ALL.equals(groupListingMode)
+                        || "*".equals(getTrimmedSearchString())) {
                     groups = userManager.searchGroups(
                             Collections.<String, Serializable> emptyMap(), null);
                 } else if (!StringUtils.isEmpty(getTrimmedSearchString())) {
                     Map<String, Serializable> filter = new HashMap<String, Serializable>();
-                    // XXX: search only on id, better conf should be set in user
+                    // XXX: search only on id, better conf should be set in
+                    // user
                     // manager interface
-                    filter.put(userManager.getGroupIdField(), getTrimmedSearchString());
-                    // parameters must be serializable so copy keySet to HashSet
+                    filter.put(userManager.getGroupIdField(),
+                            getTrimmedSearchString());
+                    // parameters must be serializable so copy keySet to
+                    // HashSet
                     groups = userManager.searchGroups(filter,
                             new HashSet<String>(filter.keySet()));
                 }
@@ -175,7 +180,8 @@ public class GroupManagerActionsBean implements GroupManagerActions {
     }
 
     public boolean isSelectedGroupReadOnly() {
-        Serializable virtualFlag = selectedGroup.getContextData().getScopedValue("virtual");
+        Serializable virtualFlag = selectedGroup.getContextData().getScopedValue(
+                "virtual");
         return virtualFlag != null && virtualFlag.equals(true);
     }
 
@@ -232,14 +238,15 @@ public class GroupManagerActionsBean implements GroupManagerActions {
             newGroup = null;
             // reset so that group list is computed again
             resetGroups();
-            facesMessages.add(FacesMessage.SEVERITY_INFO,
-                    resourcesAccessor.getMessages().get("info.groupManager.groupCreated"));
+            facesMessages.add(StatusMessage.Severity.INFO,
+                    resourcesAccessor.getMessages().get(
+                            "info.groupManager.groupCreated"));
             return viewGroup(selectedGroup, false);
         } catch (GroupAlreadyExistsException e) {
             String message = resourcesAccessor.getMessages().get(
                     "error.groupManager.groupAlreadyExists");
             facesMessages.addToControl("groupName",
-                    FacesMessage.SEVERITY_ERROR, message);
+                    StatusMessage.Severity.ERROR, message);
             return null;
         }
     }
@@ -263,11 +270,13 @@ public class GroupManagerActionsBean implements GroupManagerActions {
     }
 
     public boolean getAllowDeleteGroup() throws ClientException {
-        return getCanEditGroups() && !BaseSession.isReadOnlyEntry(selectedGroup);
+        return getCanEditGroups()
+                && !BaseSession.isReadOnlyEntry(selectedGroup);
     }
 
     public boolean getAllowEditGroup() throws ClientException {
-        return getCanEditGroups() && !BaseSession.isReadOnlyEntry(selectedGroup);
+        return getCanEditGroups()
+                && !BaseSession.isReadOnlyEntry(selectedGroup);
     }
 
     public String getSearchString() {
@@ -300,9 +309,7 @@ public class GroupManagerActionsBean implements GroupManagerActions {
         return searchOverflow;
     }
 
-    /*
-     * ----- Methods for AJAX calls, do not return anything to avoid redirect -----
-     */
+    // Methods for AJAX calls, do not return anything to avoid redirect
 
     public void setSelectedGroup(DocumentModel group) throws ClientException {
         selectedGroup = refreshGroup(group.getId());

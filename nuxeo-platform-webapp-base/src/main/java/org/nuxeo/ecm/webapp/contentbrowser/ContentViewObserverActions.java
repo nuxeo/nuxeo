@@ -43,27 +43,23 @@ public class ContentViewObserverActions implements Serializable {
     protected ContentViewActions contentViewActions;
 
     /**
-     * Refreshes content views that have declared event
-     * {@link EventNames#DOCUMENT_CHILDREN_CHANGED} or
-     * {@link EventNames#DOCUMENT_CHANGED} as a refresh event.
+     * Refreshes and resets content views that have declared event
+     * {@link EventNames#DOCUMENT_CHANGED} as a refresh/reset event.
      */
-    @Observer(value = { EventNames.DOCUMENT_CHILDREN_CHANGED,
-            EventNames.DOCUMENT_CHANGED })
-    public void refreshOnDocumentChildrenChanged() {
-        contentViewActions.refreshOnSeamEvent(EventNames.DOCUMENT_CHILDREN_CHANGED);
+    @Observer(value = { EventNames.DOCUMENT_CHANGED })
+    public void onDocumentChanged() {
         contentViewActions.refreshOnSeamEvent(EventNames.DOCUMENT_CHANGED);
+        contentViewActions.resetPageProviderOnSeamEvent(EventNames.DOCUMENT_CHANGED);
     }
 
     /**
-     * Resets page providers for content views that have declared event
-     * {@link EventNames#DOCUMENT_CHILDREN_CHANGED} or
-     * {@link EventNames#DOCUMENT_CHANGED} as a reset event.
+     * Refreshes and resets content views that have declared event
+     * {@link EventNames#DOCUMENT_CHILDREN_CHANGED} as a refresh/reset event.
      */
-    @Observer(value = { EventNames.DOCUMENT_CHILDREN_CHANGED,
-            EventNames.DOCUMENT_CHANGED })
-    public void resetPageProviderOnDocumentChildrenChanged() {
+    @Observer(value = { EventNames.DOCUMENT_CHILDREN_CHANGED })
+    public void onDocumentChildrenChanged() {
+        contentViewActions.refreshOnSeamEvent(EventNames.DOCUMENT_CHILDREN_CHANGED);
         contentViewActions.resetPageProviderOnSeamEvent(EventNames.DOCUMENT_CHILDREN_CHANGED);
-        contentViewActions.resetPageProviderOnSeamEvent(EventNames.DOCUMENT_CHANGED);
     }
 
 }

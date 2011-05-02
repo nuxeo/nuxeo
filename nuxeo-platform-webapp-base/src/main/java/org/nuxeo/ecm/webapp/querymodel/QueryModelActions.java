@@ -19,9 +19,10 @@
 
 package org.nuxeo.ecm.webapp.querymodel;
 
-import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.search.api.client.querymodel.QueryModel;
+import org.nuxeo.ecm.platform.contentview.seam.ContentViewActions;
 import org.nuxeo.ecm.platform.ui.web.api.ResultsProviderFarm;
 
 /**
@@ -38,7 +39,9 @@ import org.nuxeo.ecm.platform.ui.web.api.ResultsProviderFarm;
  * QueryModel instance.
  *
  * @author Olivier Grisel (ogrisel@nuxeo.com)
+ * @deprecated since 5.4: use {@link ContentViewActions} instead
  */
+@Deprecated
 public interface QueryModelActions extends ResultsProviderFarm {
 
     boolean isInitialized();

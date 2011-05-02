@@ -70,7 +70,8 @@
               <c:forEach var="action" items="#{exportCommandActions}">
                 <nxh:commandLink action="#{action.getLink()}"
                   title="#{messages[action.label]}"
-                  alt="#{messages[action.label]}">
+                  alt="#{messages[action.label]}"
+                  immediate="#{action.immediate}">
                   <h:graphicImage value="#{action.icon}" />
                   <h:outputText value=" #{messages[action.label]}" />
                 </nxh:commandLink>

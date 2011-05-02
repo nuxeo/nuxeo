@@ -71,15 +71,16 @@ public class HtmlEditorRenderer extends HtmlBasicInputRenderer {
 
         String editorSelector = editorComp.getEditorSelector();
 
+        // declare variables for tinyMCE init
         writer.startElement("script", editorComp);
         writer.writeAttribute("type", "text/javascript", null);
-        writer.writeText(String.format("var lang = \"%s\";",
+        writer.writeText(String.format("var lang = \"%s\";\n",
                 locale.getLanguage()), null);
-        writer.writeText(String.format("var editorSelector = \"%s\";",
+        writer.writeText(String.format("var editorSelector = \"%s\";\n",
                 editorSelector), null);
-        writer.writeText(String.format("var width = \"%s\";",
+        writer.writeText(String.format("var width = \"%s\";\n",
                 editorComp.getWidth()), null);
-        writer.writeText(String.format("var height = \"%s\";",
+        writer.writeText(String.format("var height = \"%s\";\n",
                 editorComp.getHeight()), null);
 
         // plugins registration
@@ -90,14 +91,14 @@ public class HtmlEditorRenderer extends HtmlBasicInputRenderer {
                     pluginService.getFormattedPluginsNames());
             toolbarPluginsOptions = pluginService.getToolbarsButtons();
         }
-        writer.writeText(String.format("var plugins = \"%s\";",
+        writer.writeText(String.format("var plugins = \"%s\";\n",
                 pluginsOptions.get("plugins")), null);
         writer.writeText(generateToolbarOptions(toolbarPluginsOptions), null);
         writer.endElement("script");
 
+        // init tinyMCE
         writer.startElement("script", editorComp);
         writer.writeAttribute("type", "text/javascript", null);
-
         writer.writeAttribute("src", "tiny_mce/tiny_mce_init.js", null);
         writer.write(" ");
         writer.endElement("script");
@@ -111,7 +112,6 @@ public class HtmlEditorRenderer extends HtmlBasicInputRenderer {
             writer.writeAttribute("class", editorSelector + ",disableMCEInit",
                     null);
         } else {
-
             writer.writeAttribute("class", editorSelector, null);
         }
         writer.writeAttribute("rows", editorComp.getRows(), null);
@@ -150,10 +150,10 @@ public class HtmlEditorRenderer extends HtmlBasicInputRenderer {
 
     protected static String generateToolbarOptions(Map<String, String> options) {
         StringBuilder res = new StringBuilder();
-        res.append("var toolbarOptions = new Array();");
+        res.append("var toolbarOptions = new Array();\n");
         for (Map.Entry<String, String> option : options.entrySet()) {
             res.append("toolbarOptions['" + option.getKey() + "'] = '"
-                    + option.getValue() + "';");
+                    + option.getValue() + "';\n");
         }
         return res.toString();
     }

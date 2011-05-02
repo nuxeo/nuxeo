@@ -41,23 +41,27 @@ import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.search.api.client.querymodel.QueryModel;
 import org.nuxeo.ecm.core.search.api.client.querymodel.QueryModelService;
 import org.nuxeo.ecm.core.search.api.client.querymodel.descriptor.QueryModelDescriptor;
+import org.nuxeo.ecm.platform.contentview.seam.ContentViewActions;
 import org.nuxeo.ecm.platform.ui.web.api.SortNotSupportedException;
 import org.nuxeo.ecm.platform.ui.web.pagination.ResultsProviderFarmUserException;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.ecm.webapp.pagination.ResultsProvidersCache;
 import org.nuxeo.runtime.api.Framework;
 
+/**
+ * @deprecated since 5.4: use {@link ContentViewActions} instead
+ */
 @Scope(CONVERSATION)
 @Name("queryModelActions")
-public class QueryModelActionsBean implements
-        QueryModelActions, Serializable {
+@Deprecated
+public class QueryModelActionsBean implements QueryModelActions, Serializable {
 
     private static final long serialVersionUID = 7861380986688336804L;
 
     private static final Log log = LogFactory.getLog(QueryModelActionsBean.class);
 
-    // need to be required = false since this is accessed also before connecting
-    // to a rep
+    // need to be required = false since this is accessed also before
+    // connecting to a rep
     @In(create = true, required = false)
     transient CoreSession documentManager;
 
@@ -78,8 +82,8 @@ public class QueryModelActionsBean implements
         }
         QueryModel model = queryModels.get(queryModelName);
         if (model == null) {
-            // because documentManager is not required for injection we check it
-            // before usage to avoid later NPE
+            // because documentManager is not required for injection we check
+            // it before usage to avoid later NPE
             if (documentManager == null) {
                 throw new ClientException("Cannot create QueryModel for '"
                         + queryModelName + "'. DocumentManager is null.");

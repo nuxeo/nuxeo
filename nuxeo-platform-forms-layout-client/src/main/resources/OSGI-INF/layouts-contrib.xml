@@ -11,8 +11,6 @@
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="widgettypes">
 
-    FIXME: preview enabled stuff
-
     <widgetType name="text">
       <configuration>
         <title>Text</title>

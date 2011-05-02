@@ -35,7 +35,6 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.ejb.Remove;
-import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 
@@ -49,8 +48,8 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.remoting.WebRemote;
 import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.core.Events;
-import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.LocaleSelector;
+import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -155,7 +154,7 @@ public class ClipboardActionsBean extends InputController implements
         if (!documentsListsManager.isWorkingListEmpty(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION)) {
             List<DocumentModel> docsList = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
             Object[] params = { docsList.size() };
-            facesMessages.add(FacesMessage.SEVERITY_INFO, "#0 "
+            facesMessages.add(StatusMessage.Severity.INFO, "#0 "
                     + resourcesAccessor.getMessages().get("n_copied_docs"),
                     params);
             documentsListsManager.addToWorkingList(
@@ -176,11 +175,9 @@ public class ClipboardActionsBean extends InputController implements
         documentsListsManager.addToWorkingList(DocumentsListsManager.CLIPBOARD,
                 doc);
         Object[] params = { 1 };
-        FacesMessage message = FacesMessages.createFacesMessage(
-                FacesMessage.SEVERITY_INFO, "#0 "
-                        + resourcesAccessor.getMessages().get("n_copied_docs"),
-                params);
-        facesMessages.add(message);
+        facesMessages.add(StatusMessage.Severity.INFO, "#0 "
+                + resourcesAccessor.getMessages().get("n_copied_docs"), params);
+
         autoSelectCurrentList(DocumentsListsManager.CLIPBOARD);
     }
 
@@ -189,13 +186,9 @@ public class ClipboardActionsBean extends InputController implements
         if (!documentsListsManager.isWorkingListEmpty(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION)) {
             List<DocumentModel> docsList = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
             Object[] params = { docsList.size() };
-
-            FacesMessage message = FacesMessages.createFacesMessage(
-                    FacesMessage.SEVERITY_INFO, "#0 "
-                            + resourcesAccessor.getMessages().get(
-                                    "n_copied_docs"), params);
-
-            facesMessages.add(message);
+            facesMessages.add(StatusMessage.Severity.INFO, "#0 "
+                    + resourcesAccessor.getMessages().get("n_copied_docs"),
+                    params);
 
             documentsListsManager.addToWorkingList(
                     DocumentsListsManager.CLIPBOARD, docsList);
@@ -218,7 +211,7 @@ public class ClipboardActionsBean extends InputController implements
         canEditSelectedDocs = null;
         if (null != docsList) {
             Object[] params = { docsList.size() };
-            facesMessages.add(FacesMessage.SEVERITY_INFO, "#0 "
+            facesMessages.add(StatusMessage.Severity.INFO, "#0 "
                     + resourcesAccessor.getMessages().get(
                             "n_added_to_worklist_docs"), params);
 
@@ -238,7 +231,7 @@ public class ClipboardActionsBean extends InputController implements
     public void copySelection(List<DocumentModel> copiedDocs) {
         if (null != copiedDocs) {
             Object[] params = { copiedDocs.size() };
-            facesMessages.add(FacesMessage.SEVERITY_INFO, "#0 "
+            facesMessages.add(StatusMessage.Severity.INFO, "#0 "
                     + resourcesAccessor.getMessages().get("n_copied_docs"),
                     params);
 
@@ -290,7 +283,7 @@ public class ClipboardActionsBean extends InputController implements
                     getParent(currentDocument), docPaste);
 
             Object[] params = { newDocs.size() };
-            facesMessages.add(FacesMessage.SEVERITY_INFO, "#0 "
+            facesMessages.add(StatusMessage.Severity.INFO, "#0 "
                     + resourcesAccessor.getMessages().get("n_pasted_docs"),
                     params);
 
@@ -314,7 +307,7 @@ public class ClipboardActionsBean extends InputController implements
                     targetDoc, docPaste);
 
             Object[] params = { newDocs.size() };
-            facesMessages.add(FacesMessage.SEVERITY_INFO, "#0 "
+            facesMessages.add(StatusMessage.Severity.INFO, "#0 "
                     + resourcesAccessor.getMessages().get("n_pasted_docs"),
                     params);
 
@@ -370,7 +363,7 @@ public class ClipboardActionsBean extends InputController implements
         documentsListsManager.resetWorkingList(listName);
 
         Object[] params = { newDocs.size() };
-        facesMessages.add(FacesMessage.SEVERITY_INFO, "#0 "
+        facesMessages.add(StatusMessage.Severity.INFO, "#0 "
                 + resourcesAccessor.getMessages().get("n_moved_docs"), params);
 
         EventManager.raiseEventsOnDocumentSelected(targetDoc);

@@ -19,14 +19,11 @@
 
 package org.nuxeo.ecm.webapp.tree;
 
-import org.nuxeo.ecm.core.api.Filter;
-import org.nuxeo.ecm.core.api.Sorter;
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
 import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author Anahide Tchertchian
- *
  */
 public class TestTreeManagerService extends RepositoryOSGITestCase {
 
@@ -35,8 +32,6 @@ public class TestTreeManagerService extends RepositoryOSGITestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-
-        // openRepository();
 
         // deploy needed bundles
         deployContrib("org.nuxeo.ecm.webapp.base",
@@ -59,14 +54,23 @@ public class TestTreeManagerService extends RepositoryOSGITestCase {
     }
 
     public void testDefaultContribs() {
-        Filter filter = treeManager.getFilter("navigation");
-        assertNotNull(filter);
+        String filterName = "navigation";
+        assertEquals("tree_children",
+                treeManager.getPageProviderName(filterName));
+        assertNull(treeManager.getFilter(filterName));
+        assertNotNull(treeManager.getLeafFilter(filterName));
+        assertNull(treeManager.getSorter(filterName));
+    }
 
-        Filter filter2 = treeManager.getLeafFilter("navigation");
-        assertNotNull(filter2);
-
-        Sorter sorter = treeManager.getSorter("navigation");
-        assertNotNull(sorter);
+    public void testOverride() {
+        deployContrib(Thread.currentThread().getContextClassLoader().getResource(
+                "test-nxtreemanager-contrib.xml"));
+        String filterName = "navigation";
+        assertEquals("tree_children",
+                treeManager.getPageProviderName(filterName));
+        assertNotNull(treeManager.getFilter(filterName));
+        assertNull(treeManager.getLeafFilter(filterName));
+        assertNotNull(treeManager.getSorter(filterName));
     }
 
 }

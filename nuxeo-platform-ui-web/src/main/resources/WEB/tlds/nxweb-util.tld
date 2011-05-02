@@ -104,7 +104,7 @@
       <p>
         Facelet tag handler that exposes the result of a method binding as a
         variable. Note that this tag is <b>deprecated</b> since Seam 2.0 handles
-        method resolution natively.
+        method resolution natively. The tag nxu:set can be used instead.
       </p>
       <p>
         This is helpful to avoid having to define a getter on a class to get

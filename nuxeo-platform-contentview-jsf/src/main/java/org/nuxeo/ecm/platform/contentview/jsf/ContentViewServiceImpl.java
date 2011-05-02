@@ -117,6 +117,7 @@ public class ContentViewServiceImpl extends DefaultComponent implements
                     refQueryParams = refDesc.getQueryParameters();
                 } else if (def instanceof GenericPageProviderDescriptor) {
                     genDesc = (GenericPageProviderDescriptor) def;
+                    refQueryParams = refDesc.getQueryParameters();
                 }
             } catch (Exception e) {
                 throw new ClientException(e);
@@ -162,8 +163,32 @@ public class ContentViewServiceImpl extends DefaultComponent implements
         return contentView;
     }
 
+    protected ContentViewHeader getContentViewHeader(ContentViewDescriptor desc) {
+        return new ContentViewHeader(desc.getName(), desc.getTitle(),
+                Boolean.TRUE.equals(desc.getTranslateTitle()),
+                desc.getIconPath());
+    }
+
+    @Override
+    public ContentViewHeader getContentViewHeader(String name) {
+        ContentViewDescriptor desc = contentViews.get(name);
+        if (desc == null) {
+            return null;
+        }
+        return getContentViewHeader(desc);
+    }
+
     public Set<String> getContentViewNames() {
         return Collections.unmodifiableSet(contentViews.keySet());
+    }
+
+    @Override
+    public Set<ContentViewHeader> getContentViewHeaders() {
+        Set<ContentViewHeader> res = new HashSet<ContentViewHeader>();
+        for (ContentViewDescriptor desc : contentViews.values()) {
+            res.add(getContentViewHeader(desc));
+        }
+        return Collections.unmodifiableSet(res);
     }
 
     public Set<String> getContentViewNames(String flag) {
@@ -173,6 +198,19 @@ public class ContentViewServiceImpl extends DefaultComponent implements
             res.addAll(items);
         }
         return res;
+    }
+
+    @Override
+    public Set<ContentViewHeader> getContentViewHeaders(String flag) {
+        Set<String> cvs = getContentViewNames(flag);
+        Set<ContentViewHeader> res = new HashSet<ContentViewHeader>();
+        for (String cv : cvs) {
+            ContentViewHeader header = getContentViewHeader(cv);
+            if (header != null) {
+                res.add(header);
+            }
+        }
+        return Collections.unmodifiableSet(res);
     }
 
     public PageProvider<?> getPageProvider(String name,

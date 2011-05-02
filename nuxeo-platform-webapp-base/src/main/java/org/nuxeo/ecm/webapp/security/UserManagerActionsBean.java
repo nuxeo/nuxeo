@@ -51,6 +51,7 @@ import org.jboss.seam.annotations.datamodel.DataModel;
 import org.jboss.seam.annotations.datamodel.DataModelSelection;
 import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.faces.FacesMessages;
+import org.jboss.seam.international.StatusMessage;
 import org.jboss.seam.web.Session;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -69,7 +70,6 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
- *
  */
 @Name("userManagerActions")
 @Scope(CONVERSATION)
@@ -103,7 +103,7 @@ public class UserManagerActionsBean implements UserManagerActions {
     /**
      * Current viewable users (on the selected letter tab)
      */
-    @DataModel(value="userList")
+    @DataModel(value = "userList")
     protected DocumentModelList users;
 
     @DataModelSelection("userList")
@@ -322,7 +322,7 @@ public class UserManagerActionsBean implements UserManagerActions {
 
         String message = resourcesAccessor.getMessages().get(
                 "label.userManager.password.changed");
-        facesMessages.add(FacesMessage.SEVERITY_INFO, message);
+        facesMessages.add(StatusMessage.Severity.INFO, message);
 
         if (selectedUser.getId().equals(currentUser.getName())) {
             // If user changed HIS password, reset session
@@ -338,12 +338,13 @@ public class UserManagerActionsBean implements UserManagerActions {
         try {
             selectedUser = userManager.createUser(newUser);
             newUser = null;
-            facesMessages.add(FacesMessage.SEVERITY_INFO,
-                    resourcesAccessor.getMessages().get("info.userManager.userCreated"));
+            facesMessages.add(StatusMessage.Severity.INFO,
+                    resourcesAccessor.getMessages().get(
+                            "info.userManager.userCreated"));
             resetUsers();
             return viewUser();
         } catch (UserAlreadyExistsException e) {
-            facesMessages.add(FacesMessage.SEVERITY_ERROR,
+            facesMessages.add(StatusMessage.Severity.ERROR,
                     resourcesAccessor.getMessages().get(
                             "error.userManager.userAlreadyExists"));
             return null;
@@ -430,11 +431,13 @@ public class UserManagerActionsBean implements UserManagerActions {
     }
 
     public boolean getAllowEditUser() throws ClientException {
-        return getCanEditUsers(true) && !BaseSession.isReadOnlyEntry(selectedUser);
+        return getCanEditUsers(true)
+                && !BaseSession.isReadOnlyEntry(selectedUser);
     }
 
     public boolean getAllowChangePassword() throws ClientException {
-        return getCanEditUsers(true) && !BaseSession.isReadOnlyEntry(selectedUser);
+        return getCanEditUsers(true)
+                && !BaseSession.isReadOnlyEntry(selectedUser);
     }
 
     public boolean getAllowCreateUser() throws ClientException {
@@ -442,7 +445,8 @@ public class UserManagerActionsBean implements UserManagerActions {
     }
 
     public boolean getAllowDeleteUser() throws ClientException {
-        return getCanEditUsers(false) && !BaseSession.isReadOnlyEntry(selectedUser);
+        return getCanEditUsers(false)
+                && !BaseSession.isReadOnlyEntry(selectedUser);
     }
 
     public String clearSearch() throws ClientException {
@@ -487,7 +491,8 @@ public class UserManagerActionsBean implements UserManagerActions {
         return viewUsers();
     }
 
-    protected static Map<String, Serializable> mkSerializableMap(Map<String, Object> map) {
+    protected static Map<String, Serializable> mkSerializableMap(
+            Map<String, Object> map) {
         Map<String, Serializable> serializableMap = null;
         if (map != null) {
             serializableMap = new HashMap<String, Serializable>();
@@ -500,7 +505,8 @@ public class UserManagerActionsBean implements UserManagerActions {
 
     @Factory(value = "notReadOnly", scope = APPLICATION)
     public boolean isNotReadOnly() {
-        return !"true".equals(Framework.getProperty("org.nuxeo.ecm.webapp.readonly.mode", "false"));
+        return !"true".equals(Framework.getProperty(
+                "org.nuxeo.ecm.webapp.readonly.mode", "false"));
     }
 
     public List<String> getUserVirtualGroups(String userId) throws Exception {
@@ -513,9 +519,7 @@ public class UserManagerActionsBean implements UserManagerActions {
         return null;
     }
 
-    /*
-     * ----- Methods for AJAX calls, do not return anything to avoid redirect -----
-     */
+    // Methods for AJAX calls, do not return anything to avoid redirect
 
     public void setSelectedUser(DocumentModel user) throws ClientException {
         selectedUser = refreshUser(user.getId());

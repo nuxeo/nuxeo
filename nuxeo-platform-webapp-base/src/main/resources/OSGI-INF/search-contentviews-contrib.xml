@@ -190,6 +190,9 @@
 
       <selectionList>CURRENT_SELECTION</selectionList>
       <actions category="CURRENT_SELECTION_LIST" />
+      <flags>
+        <flag>ADVANCED_SEARCH</flag>
+      </flags>
 
     </contentView>
 
