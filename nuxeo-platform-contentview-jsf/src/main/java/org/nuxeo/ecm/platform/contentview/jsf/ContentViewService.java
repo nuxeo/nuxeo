@@ -43,16 +43,35 @@ public interface ContentViewService extends Serializable {
     ContentView getContentView(String name) throws ClientException;
 
     /**
+     * Returns the content view header, or null if not found.
+     */
+    ContentViewHeader getContentViewHeader(String name);
+
+    /**
      * Returns all the registered content view names, or an empty set if no
      * content view is registered.
      */
     Set<String> getContentViewNames();
 
     /**
+     * Returns all the registered content view headers, or an empty set if no
+     * content view is registered.
+     */
+    Set<ContentViewHeader> getContentViewHeaders();
+
+    /**
      * Returns all the registered content view names with given flag declared
      * on their definition
      */
     Set<String> getContentViewNames(String flag);
+
+    /**
+     * Returns all the registered content view headers with given flag declared
+     * on their definition
+     *
+     * @since 5.4.2
+     */
+    Set<ContentViewHeader> getContentViewHeaders(String flag);
 
     /**
      * Returns the page provider computed from the content view with given

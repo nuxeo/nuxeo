@@ -25,7 +25,8 @@ import java.io.Serializable;
  * @author Anahide Tchertchian
  * @since 5.4
  */
-public class ContentViewHeader implements Serializable {
+public class ContentViewHeader implements Serializable,
+        Comparable<ContentViewHeader> {
 
     private static final long serialVersionUID = 1L;
 
@@ -49,6 +50,9 @@ public class ContentViewHeader implements Serializable {
         return name;
     }
 
+    /**
+     * Returns the title or the name if title is empty.
+     */
     public String getTitle() {
         if (title == null || title.trim().isEmpty()) {
             return name;
@@ -62,6 +66,25 @@ public class ContentViewHeader implements Serializable {
 
     public String getIconPath() {
         return iconPath;
+    }
+
+    @Override
+    public int compareTo(ContentViewHeader o) {
+        if (o == null) {
+            return 1;
+        }
+        String name1 = name;
+        String name2 = o.name;
+        if (name1 == null && name2 == null) {
+            return 0;
+        }
+        if (name1 == null) {
+            return -1;
+        }
+        if (name2 == null) {
+            return 1;
+        }
+        return name1.compareTo(name2);
     }
 
     @Override

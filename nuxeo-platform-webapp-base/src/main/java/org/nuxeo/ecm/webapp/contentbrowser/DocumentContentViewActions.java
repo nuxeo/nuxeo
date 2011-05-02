@@ -33,9 +33,8 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.platform.contentview.jsf.ContentView;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewHeader;
-import org.nuxeo.ecm.platform.contentview.seam.ContentViewActions;
+import org.nuxeo.ecm.platform.contentview.jsf.ContentViewService;
 import org.nuxeo.ecm.platform.types.adapter.TypeInfo;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
@@ -56,7 +55,7 @@ public class DocumentContentViewActions implements Serializable {
     protected transient NavigationContext navigationContext;
 
     @In(create = true)
-    protected transient ContentViewActions contentViewActions;
+    protected ContentViewService contentViewService;
 
     /**
      * Map caching content views defined on a given document type
@@ -90,11 +89,9 @@ public class DocumentContentViewActions implements Serializable {
                 String[] cvNames = cvNameByCat.getValue();
                 if (cvNames != null) {
                     for (String cvName : cvNames) {
-                        ContentView cv = contentViewActions.getContentView(cvName);
-                        if (cv != null) {
-                            headers.add(new ContentViewHeader(cvName,
-                                    cv.getTitle(), cv.getTranslateTitle(),
-                                    cv.getIconPath()));
+                        ContentViewHeader header = contentViewService.getContentViewHeader(cvName);
+                        if (header != null) {
+                            headers.add(header);
                         }
                     }
                 }
