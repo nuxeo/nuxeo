@@ -144,7 +144,7 @@ public class DigestAuthenticator implements NuxeoAuthenticationPlugin {
         Map<String, String> map = new HashMap<String, String>();
         for (String item : array) {
             item = StringUtils.remove(item, QUOTE);
-            String[] parts = item.split(EQUAL_SEPARATOR, 1);
+            String[] parts = item.split(EQUAL_SEPARATOR, 2);
             if (parts == null) {
                 continue;
             }
