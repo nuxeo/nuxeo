@@ -18,18 +18,41 @@ package org.nuxeo.theme.localconfiguration;
 
 import org.nuxeo.ecm.core.api.localconfiguration.LocalConfiguration;
 
+/**
+ * Local configuration class to handle configuration of theme.
+ *
+ * @author <a href="mailto:qlamerand@nuxeo.com">Quentin Lamerand</a>
+ */
 public interface LocalThemeConfig extends LocalConfiguration<LocalThemeConfig> {
 
+    /**
+     * Returns the configured theme.
+     */
     String getTheme();
 
+    /**
+     * Returns the configured page for the selected theme.
+     */
     String getPage();
 
+    /**
+     * Returns the configured perspective used in the {@code LocalPerspective} negociation scheme.
+     */
     String getPerspective();
 
+    /**
+     * Returns the configured engine.
+     */
     String getEngine();
 
+    /**
+     * Returns the configured mode.
+     */
     String getMode();
 
+    /**
+     * Returns the page path used in the {@code LocalTheme} negociation scheme
+     */
     String computePagePath();
 
 }

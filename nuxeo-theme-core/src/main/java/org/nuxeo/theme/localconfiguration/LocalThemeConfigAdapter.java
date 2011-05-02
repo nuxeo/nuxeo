@@ -20,6 +20,11 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 
+/**
+ * Default implementation of {@code LocalThemeConfig}.
+ *
+ * @author <a href="mailto:qlamerand@nuxeo.com">Quentin Lamerand</a>
+ */
 public class LocalThemeConfigAdapter implements LocalThemeConfig {
 
     protected DocumentRef documentRef;
