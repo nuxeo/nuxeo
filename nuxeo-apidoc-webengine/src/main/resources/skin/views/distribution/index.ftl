@@ -65,10 +65,10 @@ Here are the currently available distributions:
   <td>${distrib.creationDate?datetime}</td>
   <td>&nbsp;</td>
   <td>
-    <a href="${Root.path}/${distrib.key}/"> Explore </a>
+    <p class="explore"><a href="${Root.path}/${distrib.key}/"> Explore </a></p>
   </td>
   <td>
-    <A href="${Root.path}/download/${distrib.key}">Export</A> as zip.
+    <p class="explore export"><A href="${Root.path}/download/${distrib.key}">Export</A> as zip.</p>
   </td>
 </tr>
 </#list>

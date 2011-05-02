@@ -525,15 +525,15 @@ li.bundles, li.bundle, li.component, li.service, li.extension, li.contribution {
 
 /* Welcome buttton in column */
 
-p.explore a {
+p.explore {
   background-color: #4E9AE1;
   line-height: 100%;
-  padding: 10px 15px;
+  padding: 0.5em;
   margin:5px 0;
   -moz-border-radius: 15px;
   -webkit-border-radius: 15px;
-  display: block;
-  color:#fff;
+  border:1px solid #4E9AE1;
+  text-align: center;
 }
 
 p.explored {
@@ -547,6 +547,10 @@ p.explored {
   border: 1px solid #666;
 }
 
+p.explore a {
+  color:#fff;
+}
+
 p.explore a:visited, p.welcome a:hover {
   color: white;
 }
@@ -555,10 +559,18 @@ p.explore a:visited, p.welcome a:hover {
   margin: 0;
 }
 
-.distributions p.explore a {
-  margin: 0px;
-  float:right;  
+p.export {
+  background-color: white;
 }
+
+p.export a {
+  color: #0066CC;
+}
+
+p.export a:hover {
+  color: #0066CC;
+}
+
 
 /* Nav left */
 
