@@ -1,4 +1,7 @@
-// base script taken from XXX
+//********************************************************
+// JQuery wrapper to manage File upload via Drag and Drop
+//
+// Base code comes from https://github.com/pangratz/dnd-file-upload/network
 
 (function($) {
 
@@ -129,12 +132,11 @@
         overlay.addClass("dropzoneTargetOverlay");
         overlay.css("backgroundColor",'rgba(200,220,250,0.3)');
         zone.append(overlay);
-        overlay.bind("dragleave",  function(event) { console.log("drag leave overlay"); removeOverlay(event, overlay, zone, opts);});
+        overlay.bind("dragleave",  function(event) { removeOverlay(event, overlay, zone, opts);});
         zone.unbind("dragenter");
-        console.log("overlay applied");
+        //console.log("overlay applied");
       }
    }
-
 
   function removeOverlay(event,overlay,zone,opts) {
        zone.removeClass("dropzoneTarget");
@@ -180,10 +182,12 @@
       xhr.open(opts.method, opts.url + "upload");
       xhr.setRequestHeader("Cache-Control", "no-cache");
       xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
-      xhr.setRequestHeader("X-File-Name", file.fileName);
+      xhr.setRequestHeader("X-File-Name", encodeURIComponent(file.fileName));
       xhr.setRequestHeader("X-File-Size", file.fileSize);
+      xhr.setRequestHeader("X-File-Type", file.type);
       xhr.setRequestHeader("X-Batch-Id", batchId);
       xhr.setRequestHeader("X-File-Idx", uploadIdx);
+
       xhr.setRequestHeader("Content-Type", "multipart/form-data");
       xhr.send(file);
 
