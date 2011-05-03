@@ -1,6 +1,7 @@
 package org.nuxeo.ecm.automation.server.jaxrs.batch;
 
 import java.io.InputStream;
+import java.net.URLDecoder;
 import java.util.List;
 import java.util.Map;
 
@@ -40,14 +41,16 @@ public class BatchResource {
         String fileName = request.getHeader("X-File-Name");
         String fileSize = request.getHeader("X-File-Size");
         String batchId = request.getHeader("X-Batch-Id");
+        String mimeType = request.getHeader("X-File-Type");
         String idx = request.getHeader("X-File-Idx");
 
+        fileName = URLDecoder.decode(fileName,"UTF-8");
         InputStream is = request.getInputStream();
 
         System.out.println(" uploaded " + fileName + " (" + fileSize + "b)");
 
         BatchManager bm = Framework.getLocalService(BatchManager.class);
-        bm.addStream(batchId, idx, is, fileName, null); // XXX Mime Type
+        bm.addStream(batchId, idx, is, fileName, mimeType);
         return "uploaded";
     }
 
