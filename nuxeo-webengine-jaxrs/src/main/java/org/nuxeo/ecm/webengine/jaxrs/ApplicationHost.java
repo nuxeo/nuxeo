@@ -15,13 +15,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Application;
 
+import org.nuxeo.ecm.webengine.jaxrs.servlet.config.ResourceExtension;
+import org.nuxeo.ecm.webengine.jaxrs.views.BundleResource;
 import org.nuxeo.ecm.webengine.jaxrs.views.TemplateViewMessageBodyWriter;
 import org.nuxeo.ecm.webengine.jaxrs.views.ViewMessageBodyWriter;
+import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
 import org.osgi.framework.Bundle;
 
 /**
@@ -38,6 +42,13 @@ public class ApplicationHost extends Application {
 
     protected List<Reloadable> listeners;
 
+    protected RenderingEngine rendering;
+
+    /**
+     * Sub-Resources extensions
+     */
+    protected Map<String, ResourceExtension> extensions;
+
 
     /**
      * Root resource classes to owner bundles.
@@ -52,6 +63,51 @@ public class ApplicationHost extends Application {
         apps = new ArrayList<ApplicationFragment>();
         class2Bundles = new HashMap<Class<?>, Bundle>();
         listeners = new ArrayList<Reloadable>();
+        extensions = new HashMap<String, ResourceExtension>();
+    }
+
+    public BundleResource getExtension(BundleResource target, String segment) {
+        ResourceExtension xt = getExtension(target.getClass().getName()+"#"+segment);
+        if (xt != null) {
+            BundleResource res = target.getResource(xt.getResourceClass());
+            if (res != null && res.accept(target)) {
+                res.getContext().pushBundle(xt.getBundle());
+                return res;
+            }
+        }
+        return null;
+    }
+
+    public RenderingEngine getRendering() {
+        return rendering;
+    }
+
+    public void setRendering(RenderingEngine rendering) {
+        this.rendering = rendering;
+    }
+
+    public synchronized void addExtension(ResourceExtension xt) throws Exception {
+        extensions.put(xt.getId(), xt);
+        class2Bundles.put(xt.getResourceClass(), xt.getBundle());
+        if (rendering != null) {
+            rendering.flushCache();
+        }
+    }
+
+    public synchronized void removeExtension(ResourceExtension xt) throws Exception {
+        extensions.remove(xt.getId());
+        class2Bundles.remove(xt.getResourceClass());
+        if (rendering != null) {
+            rendering.flushCache();
+        }
+    }
+
+    public synchronized ResourceExtension getExtension(String id) {
+        return extensions.get(id);
+    }
+
+    public synchronized ResourceExtension[] getExtensions(ResourceExtension xt) {
+        return extensions.values().toArray(new ResourceExtension[extensions.size()]);
     }
 
     public String getName() {
@@ -82,9 +138,13 @@ public class ApplicationHost extends Application {
         for (ApplicationFragment fragment : apps) {
             fragment.reload();
         }
+        //TODO this will not work with extension subresources - find a fix
         class2Bundles = new HashMap<Class<?>, Bundle>();
         for (Reloadable listener : listeners) {
             listener.reload();
+        }
+        if (rendering != null) {
+            rendering.flushCache();
         }
     }
 

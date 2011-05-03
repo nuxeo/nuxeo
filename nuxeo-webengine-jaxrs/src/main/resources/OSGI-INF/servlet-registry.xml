@@ -20,5 +20,10 @@
     <documentation>Resource resolvers can be contributed from outside to a servlet using this extension point</documentation>
     <object class="org.nuxeo.ecm.webengine.jaxrs.servlet.config.ResourcesDescriptor" />
   </extension-point>
+
+  <extension-point name="subresources">
+    <documentation>Sub-resources that can be injected into the given application</documentation>
+    <object class="org.nuxeo.ecm.webengine.jaxrs.servlet.config.ResourceExtension" />
+  </extension-point>
   
 </component>

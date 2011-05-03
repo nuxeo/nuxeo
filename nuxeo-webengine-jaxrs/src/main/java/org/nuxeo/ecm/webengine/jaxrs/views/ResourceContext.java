@@ -59,20 +59,21 @@ public class ResourceContext {
 
     private LinkedList<Bundle> bundleStack;
 
-    private RenderingEngine rendering;
-
     private CoreSession session;
 
 
     protected ResourceContext() {
     }
 
-    public ResourceContext(ApplicationHost app, RenderingEngine rendering) {
+    public ResourceContext(ApplicationHost app) {
         //TODO rendering in app
         this.app = app;
-        this.rendering = rendering;
         this.bundleStack = new LinkedList<Bundle>();
         //this.bundleStack.add(app.getBundle());
+    }
+
+    public ApplicationHost getApplication() {
+        return app;
     }
 
     public final LinkedList<Bundle> getBundleStack() {
@@ -87,24 +88,12 @@ public class ResourceContext {
         this.request = request;
     }
 
-    public void setRendering(RenderingEngine rendering) {
-        this.rendering = rendering;
-    }
-
     public final Bundle getBundle() {
         return bundleStack.isEmpty() ? null : bundleStack.get(bundleStack.size()-1);
     }
 
     public final RenderingEngine getRenderingEngine() {
-        //        if (rendering == null) {
-        //            rendering = (RenderingEngine)servletContext.getAttribute(RenderingEngine.class.getName());
-        //            String baseUrl = getBaseUri().toString();
-        //            if (baseUrl.endsWith("/")) {
-        //                baseUrl = baseUrl.substring(0, baseUrl.length()-1);
-        //            }
-        //            rendering.setSharedVariable("baseUrl", baseUrl);
-        //        }
-        return rendering;
+        return app.getRendering();
     }
 
     public HttpServletRequest getRequest() {
@@ -153,7 +142,22 @@ public class ResourceContext {
         return app.getBundle(res.getClass());
     }
 
+
+    /**
+     * The prefix used to reference templates in template source locators
+     * @return
+     */
+    public String getViewRoot() {
+        return bundleStack.isEmpty() ? "" : "view:"+bundleStack.get(bundleStack.size()-1).getBundleId()+":/";
+    }
+
     public URL findEntry(String path) {
+        if (path.startsWith("view:")) {
+            int p = path.indexOf(":/");
+            if (p > -1) {
+                path = path.substring(p+2);
+            }
+        }
         for (int i=bundleStack.size()-1; i>=0; i--) {
             URL url = bundleStack.get(i).getEntry(path);
             if (url != null) {

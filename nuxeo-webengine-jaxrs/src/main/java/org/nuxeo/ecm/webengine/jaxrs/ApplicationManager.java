@@ -49,6 +49,7 @@ public class ApplicationManager implements BundleTrackerCustomizer {
 
     protected Map<String, ApplicationHost> apps;
 
+
     public ApplicationManager() {
     }
 

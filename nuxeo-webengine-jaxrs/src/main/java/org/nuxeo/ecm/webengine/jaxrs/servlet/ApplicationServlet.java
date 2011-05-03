@@ -49,7 +49,6 @@ public class ApplicationServlet extends HttpServlet implements ManagedServlet, R
 
     private static final long serialVersionUID = 1L;
 
-
     protected volatile boolean isDirty = false;
 
     protected Bundle bundle;
@@ -57,8 +56,6 @@ public class ApplicationServlet extends HttpServlet implements ManagedServlet, R
     protected ApplicationHost app;
 
     protected ServletContainer container;
-
-    protected RenderingEngine rendering;
 
     protected String resourcesPrefix;
 
@@ -83,7 +80,7 @@ public class ApplicationServlet extends HttpServlet implements ManagedServlet, R
         container = new ServletContainer(app);
 
         initContainer(config);
-        initRendering(config);
+        app.setRendering(initRendering(config));
 
         app.addReloadListener(this);
     }
@@ -93,7 +90,6 @@ public class ApplicationServlet extends HttpServlet implements ManagedServlet, R
         destroyContainer();
         destroyRendering();
         container = null;
-        rendering = null;
         app = null;
         bundle = null;
         resourcesPrefix = null;
@@ -105,7 +101,7 @@ public class ApplicationServlet extends HttpServlet implements ManagedServlet, R
     }
 
     public RenderingEngine getRenderingEngine() {
-        return rendering;
+        return app.getRendering();
     }
 
     public Bundle getBundle() {
@@ -139,7 +135,7 @@ public class ApplicationServlet extends HttpServlet implements ManagedServlet, R
             // from the input stream - see WebComponent.isEntityPresent.
             request.getParameterMap();
         }
-        ResourceContext ctx = new ResourceContext(app, rendering);
+        ResourceContext ctx = new ResourceContext(app);
         ctx.setRequest(request);
         ResourceContext.setContext(ctx);
         request.setAttribute(ResourceContext.class.getName(), ctx);
@@ -178,7 +174,8 @@ public class ApplicationServlet extends HttpServlet implements ManagedServlet, R
         }
     }
 
-    protected void initRendering(ServletConfig config) throws ServletException {
+    protected RenderingEngine initRendering(ServletConfig config) throws ServletException {
+        RenderingEngine rendering;
         try {
             String v = config.getInitParameter(RenderingEngine.class.getName());
             if (v != null) {
@@ -188,6 +185,7 @@ public class ApplicationServlet extends HttpServlet implements ManagedServlet, R
                 ((FreemarkerEngine)rendering).getConfiguration().setClassicCompatible(false);
             }
             rendering.setResourceLocator(this);
+            return rendering;
         } catch (Exception e) {
             throw new ServletException(e);
         }
@@ -246,12 +244,7 @@ public class ApplicationServlet extends HttpServlet implements ManagedServlet, R
 
     @Override
     public URL getResourceURL(String key) {
-        ResourceContext context = ResourceContext.getContext();
-        int p = key.indexOf(":/");
-        if (p > -1) {
-            key = key.substring(p+1);
-        }
-        return context.findEntry(key);
+        return ResourceContext.getContext().findEntry(key);
     }
 
 }

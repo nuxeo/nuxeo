@@ -15,6 +15,8 @@ import java.net.URI;
 import java.security.Principal;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.UriInfo;
 
@@ -29,13 +31,15 @@ import org.osgi.framework.Bundle;
  */
 public class BundleResource {
 
+    public final static String VIEW_ROOT = "VROOT";
+
     protected ResourceContext context;
 
     public BundleResource() {
     }
 
     public BundleResource(ResourceContext context) {
-        this.context = context;
+        setContext(context);
     }
 
     public BundleResource setContext(ResourceContext context) {
@@ -63,7 +67,7 @@ public class BundleResource {
         // we need to prefix with bundle name to avoid template cache collisions (in freemarker for ex.)
         //path=getBundle().getSymbolicName() + ":/" + path;
         return context.getRenderingEngine().getView(path, this)
-        .arg("baseUrl", basePath);
+        .arg("baseUrl", basePath).arg(VIEW_ROOT, context.getViewRoot());
     }
 
     public final HttpServletRequest getRequest() {
@@ -96,14 +100,25 @@ public class BundleResource {
         }
     }
 
-    //    @Path("{any}")
-    //    public Object dispatch(@PathParam("any") String segment) {
-    //        ResourceFactory rf = ResourceManager.get(getClass(), segment);
-    //        Object o = rf.newResource(this);
-    //        if (o != null) {
-    //            return o;
-    //        }
-    //        throw new WebApplicationException(404);
-    //    }
+    @Path("{any}")
+    public Object dispatch(@PathParam("any") String segment) {
+        BundleResource res = context.getApplication().getExtension(this, segment);
+        if (res != null) {
+            return res;
+        }
+        throw new WebApplicationException(404);
+    }
+
+    /**
+     * This method is only for contributed sub-resources. It will be ignored for root resources.
+     *
+     * Extension resources may override this method to dynamically accept or reject
+     * to be installed as a sub-resource of the target resource
+     * @param target
+     * @return
+     */
+    public boolean accept(BundleResource target) {
+        return true;
+    }
 
 }
