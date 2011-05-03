@@ -63,7 +63,6 @@ public class ActionService extends ReloadableComponent implements ActionManager 
     }
 
 
-
     public ActionRegistry getActionRegistry() {
         return actionReg;
     }
@@ -153,7 +152,7 @@ public class ActionService extends ReloadableComponent implements ActionManager 
         List<String> filterIds = action.getFilterIds();
         if (filterIds != null && !filterIds.isEmpty()) {
             ActionFilter[] filters = new ActionFilter[filterIds.size()];
-            for (int i=0; i<filters.length; i++) {
+            for (int i = 0; i < filters.length; i++) {
                 String filterId = filterIds.get(i);
                 filters[i] = filterReg.getFilter(filterId);
             }
@@ -178,7 +177,7 @@ public class ActionService extends ReloadableComponent implements ActionManager 
             String extensionPoint, ComponentInstance contributor)
             throws Exception {
         if ("actions".equals(extensionPoint)) {
-            unregisterActionExtension(((Action)contribution).getId());
+            unregisterActionExtension(((Action) contribution).getId());
         } else if ("filters".equals(extensionPoint)) {
             unregisterFilterExtension(contribution);
         }
@@ -199,18 +198,25 @@ public class ActionService extends ReloadableComponent implements ActionManager 
             }
         } else {
             filter = (ActionFilter) contrib;
-            if (filterReg.getFilter(filter.getId()) != null) {
+            String filterId = filter.getId();
+            if (filterReg.getFilter(filterId) != null) {
                 DefaultActionFilter newFilter = (DefaultActionFilter) filter;
-                DefaultActionFilter oldFilter = (DefaultActionFilter) filterReg.getFilter(filter.getId());
-
+                DefaultActionFilter oldFilter = (DefaultActionFilter) filterReg.getFilter(filterId);
                 if (newFilter.getAppend()) {
                     List<FilterRule> mergedRules = new ArrayList<FilterRule>();
-
                     mergedRules.addAll(Arrays.asList(oldFilter.getRules()));
                     mergedRules.addAll(Arrays.asList(newFilter.getRules()));
-                    oldFilter.setRules(mergedRules.toArray(new FilterRule[mergedRules.size()]));
+                    try {
+                        DefaultActionFilter mergedFilter = oldFilter.clone();
+                        mergedFilter.setRules(mergedRules.toArray(new FilterRule[mergedRules.size()]));
+                        filterReg.removeFilter(filterId);
+                        filterReg.addFilter(mergedFilter);
+                    } catch (CloneNotSupportedException e) {
+                        // cannot happen
+                        throw new Error(e);
+                    }
                 } else {
-                    filterReg.removeFilter(filter.getId());
+                    filterReg.removeFilter(filterId);
                     filterReg.addFilter(filter);
                 }
             } else {
@@ -232,7 +238,7 @@ public class ActionService extends ReloadableComponent implements ActionManager 
         for (Extension xt : extensions) {
             for (Object o : xt.getContributions()) {
                 if (o instanceof Action) {
-                    Action a = (Action)o;
+                    Action a = (Action) o;
                     if (id.equals(a.getId())) {
                         actions.add(a);
                     }
@@ -266,7 +272,8 @@ public class ActionService extends ReloadableComponent implements ActionManager 
 
         // Register action's filter ids.
         List<String> filterIds = new ArrayList<String>();
-        // now register embedded filters to filter registry and update the filterIds list
+        // now register embedded filters to filter registry and update the
+        // filterIds list
         if (filters != null) {
             // register filters and save corresponding filter ids
             for (ActionFilter filter : filters) {
@@ -276,8 +283,8 @@ public class ActionService extends ReloadableComponent implements ActionManager 
             }
             // XXX: Remove filters from action as it was just temporary,
             // filters are now in their own registry.
-            // XXX: let the filters as is - required to be able to reload the component
-            //action.setFilters(null);
+            // XXX: let the filters as is - required to be able to reload the
+            // component action.setFilters(null);
         }
 
         List<String> actionFilterIds = action.getFilterIds();
@@ -295,7 +302,6 @@ public class ActionService extends ReloadableComponent implements ActionManager 
         actionReg.addAction(action);
     }
 
-
     /**
      * Merges two actions. Used when registering an existing action to overload
      * its configuration or add items to its properties.
@@ -310,7 +316,8 @@ public class ActionService extends ReloadableComponent implements ActionManager 
      */
     protected static Action mergeActions(Action existingOne, Action newOne) {
         try {
-            // need to clone the action to avoid altering the one contributed to the extension point
+            // need to clone the action to avoid altering the one contributed
+            // to the extension point
             // otherwise the component reload will not work correctly
             Action clone = existingOne.clone();
             clone.mergeWith(newOne);

@@ -41,7 +41,7 @@ import org.nuxeo.runtime.expression.JexlExpression;
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
 @XObject("filter")
-public class DefaultActionFilter implements ActionFilter {
+public class DefaultActionFilter implements ActionFilter, Cloneable {
 
     private static final long serialVersionUID = 8885038533939001747L;
 
@@ -327,6 +327,12 @@ public class DefaultActionFilter implements ActionFilter {
 
     public void setAppend(boolean append) {
         this.append = append;
+    }
+
+    // overriden to be public
+    @Override
+    public DefaultActionFilter clone() throws CloneNotSupportedException {
+        return (DefaultActionFilter) super.clone();
     }
 
 }
