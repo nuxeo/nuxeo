@@ -18,14 +18,14 @@
           <span id="dndMsgUploadInProgress" class="dndControlMessage">
           <nxu:graphicImage value="/img/big_loading.gif"
           style="vertical-align:middle"/>
-          Upload in progress</span>
-          <span id="dndMsgUploadCompleted" class="dndControlMessage">Upload completed, click Continue</span>
+          <h:outputText value="#{messages['label.dnd.upload.inprogress']}"/></span>
+          <span id="dndMsgUploadCompleted" class="dndControlMessage"><h:outputText value="#{messages['label.dnd.upload.ok.continue']}"/></span>
         </td>
         <td>
            <span id="dropzone-bar-msg" class="dropzone-bar-msg"></span>
         </td>
         <td>
-          <input id="dropzone-bar-btn" class="dropzone-bar-btn" type="button" value="Continue"></input>
+          <input id="dropzone-bar-btn" class="dropzone-bar-btn" type="button" value="#{messages['command.continue']}"></input>
         </td>
       </tr>
     </table>
@@ -35,8 +35,8 @@
   <div id="dndFormPanel" class="dndFormPanel">
     <table width="100%">
       <tr>
-        <th> Uploaded Files </th>
-        <th> Choose import operation </th>
+        <th> <h:outputText value="#{messages['label.dnd.uploaded.files']}"/> </th>
+        <th> <h:outputText value="#{messages['label.dnd.choose.operation']}"/> </th>
       </tr>
       <tr>
         <td><div id="uploadedFileList"></div>
@@ -45,7 +45,7 @@
           <form name="operationForm">
             <select id="operationIdSelector" name="operationId"></select>
             <div id="dndSubForm"></div>
-            <input id="dndFormSubmitButton" type="button" value="Import"/>
+            <input id="dndFormSubmitButton" type="button" value="#{messages['import.continue']}"/>
           </form>
         </td>
       </tr>
