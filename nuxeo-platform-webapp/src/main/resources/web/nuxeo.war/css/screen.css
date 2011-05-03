@@ -602,10 +602,10 @@ padding:5px 0px 2px 0px;
 }
 
 .dropzoneTarget {
-  border-style: solid;
+  border-style: ridge;
   background-color: #EEEEEE;
-  border-width: 2px;
-  border-color: blue;
+  border-width: 3px;
+  border-color: #888899;
   cursor : url('../img/plusDrop.gif'), crosshair;
 }
 
@@ -672,6 +672,8 @@ padding:5px 0px 2px 0px;
     background-color:rgba(255,255,255,0.8);
     padding : 25px;
     margin: 4px;
+    font-size : 9pt;
+    font-family : Arial;
  }
 
  #dndContinueButton {
@@ -679,4 +681,15 @@ padding:5px 0px 2px 0px;
   cursor:hand;
   padding:5px;
   background-color:rgba(255,255,255,0.6);
+ }
+
+ .uploadedFileList {
+  font-size : 11pt;
+  font-family : Arial;
+ }
+
+ #operationForm {
+   border-style:solid;
+   border-color:#444444;
+   border-width: 0px 0px 0px 2px;
  }
