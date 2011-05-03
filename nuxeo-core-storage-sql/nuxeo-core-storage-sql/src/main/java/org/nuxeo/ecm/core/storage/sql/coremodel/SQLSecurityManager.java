@@ -86,7 +86,12 @@ public class SQLSecurityManager implements SecurityManager {
             if (doc.getParent() == null) {
                 return acp;
             }
-            ACL acl = getInheritedACLs(doc);
+            // get inherited acls only if no blocking inheritance ACE exists in the top level acp.
+            ACL acl = null;
+            if (acp == null || acp.getAccess(SecurityConstants.EVERYONE,
+                    SecurityConstants.EVERYTHING) != Access.DENY) {
+                acl = getInheritedACLs(doc);
+            }
             if (acp == null) {
                 if (acl == null) {
                     return null;
