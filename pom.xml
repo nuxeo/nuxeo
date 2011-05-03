@@ -42,6 +42,7 @@
     <module>nuxeo-platform-categorization/nuxeo-platform-categorization-language</module>
     <module>nuxeo-platform-categorization/nuxeo-platform-categorization-coverage</module>
     <module>nuxeo-platform-categorization/nuxeo-platform-categorization-subjects</module>
+    <module>nuxeo-platform-user-registration</module>
     <module>nuxeo-shell</module>
     <module>nuxeo-filesystem-connectors</module>
     <module>nuxeo-opensocial</module>
