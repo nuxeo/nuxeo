@@ -186,4 +186,9 @@ public class FreemarkerEngine implements RenderingEngine {
         }
     }
 
+    @Override
+    public void flushCache() {
+        cfg.clearTemplateCache();
+    }
+
 }

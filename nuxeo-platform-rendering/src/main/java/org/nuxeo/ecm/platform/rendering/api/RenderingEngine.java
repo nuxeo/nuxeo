@@ -45,4 +45,6 @@ public interface RenderingEngine {
 
     public View getView(String path, Object object);
 
+    public void flushCache();
+
 }
