@@ -191,14 +191,17 @@ function DropZoneUIHandler(idx, dropZoneId, options,targetSelectedCB) {
        desc.html(this.operationsDef[i].help + "<br/>");
        jQuery("#dndSubForm").html(desc);
        if (this.operationsDef[i].link!='') {
+         jQuery("#dndFormSubmitButton").css("display","none");
          var iframe = jQuery("<iframe></iframe>");
-         iframe.attr("width", "100%");
-         iframe.attr("height", "450px");
+         iframe.attr("width", "330px");
+         iframe.attr("height", "400px");
          iframe.attr("frameborder", "0");
          iframe.attr("src", this.operationsDef[i].link);
          desc.append(iframe);
          var handler = this;
          window.dndFormFunctionCB=function(fData) {handler.executeBatch(value, fData);};
+       } else {
+         jQuery("#dndFormSubmitButton").css("display","block");
        }
         break;
       }
@@ -212,6 +215,13 @@ function DropZoneUIHandler(idx, dropZoneId, options,targetSelectedCB) {
     }
     panelPosition.top = panelPosition.top + body.height()/2 - panel.height()/2;
     panelPosition.left = panelPosition.left + body.width()/2 - panel.width()/2;
+    if (panelPosition.top<10) {
+      panelPosition.top=10;
+    }
+    if (panelPosition.left<10) {
+      panelPosition.left=10;
+    }
+
     panel.css(panelPosition);
   }
 
