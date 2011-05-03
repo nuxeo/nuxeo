@@ -69,6 +69,26 @@
         <param type="string" name="id">Actions.GET</param>
       </operation>
     </chain>
+
+    <chain id="FileManager.ImportWithMetaDataInSeam">
+      <operation id="FileManager.Import">
+      </operation>
+      <operation id="Document.Update">
+        <param type="properties" name="properties">expr:Context.get("docMetaData")</param>
+      </operation>
+      <operation id="Seam.RunOperation">
+        <param type="string" name="id">Seam.Refresh</param>
+      </operation>
+    </chain>
+
+    <chain id="FileManager.ImportInSeam">
+      <operation id="FileManager.Import">
+      </operation>
+      <operation id="Seam.RunOperation">
+        <param type="string" name="id">Seam.Refresh</param>
+      </operation>
+    </chain>
+
   </extension>
 
 </component>

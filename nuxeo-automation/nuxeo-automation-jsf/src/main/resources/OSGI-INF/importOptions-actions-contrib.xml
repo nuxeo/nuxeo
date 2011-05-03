@@ -21,21 +21,14 @@
       <filter-id>not_anonymous</filter-id>
    </action>
 
-   <action id="FileManager.Import"
+   <action id="Chain.FileManager.ImportInSeam"
       link=""
       order="10" label="label.smart.import"
-      help="desc.smart.import">
-      <category>ContentView</category>
-      <filter-id>create</filter-id>
-   </action>
-   <action id="FileManager.Import"
-      link=""
-      order="20" label="label.smart.import.file"
       help="desc.smart.import.file">
       <category>ContentView</category>
       <filter-id>create</filter-id>
    </action>
-   <action id="Chain.FileManager.ImportWithMetaData"
+   <action id="Chain.FileManager.ImportWithMetaDataInSeam"
       link="/nuxeo/dndFormCollector.faces?schema=dc&#038;layout=dndEdit"
       order="30" label="label.smart.import.with.md"
       help="desc.smart.import.with.md">
