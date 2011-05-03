@@ -105,7 +105,7 @@ public class AggregatedJSProvider extends HttpServlet {
         StringBuffer buf = new StringBuffer();
         for (String script : scripts) {
 
-            script = new Path(script).lastSegment(); // be sure to remove any
+            script = script.replaceAll("\\.\\./", ""); // be sure to remove any ../
                                                         // ../
             Path scriptPath = dirPath.append(script);
             File scriptFile = new File(scriptPath.toString());
