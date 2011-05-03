@@ -339,6 +339,43 @@ public class UIEditableList extends UIInput implements NamingContainer {
     }
 
     /**
+     * Returns the value exposed in request map for the model name.
+     * <p>
+     * This is useful for restoring this value in the request map.
+     *
+     * @since 5.4.2
+     */
+    protected final Object saveRequestMapModelValue() {
+        String modelName = getModel();
+        if (modelName != null) {
+            FacesContext context = getFacesContext();
+            Map<String, Object> requestMap = context.getExternalContext().getRequestMap();
+            if (requestMap.containsKey(modelName)) {
+                return requestMap.get(modelName);
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Restores the given value in the request map for the model name.
+     *
+     * @since 5.4.2
+     */
+    protected final void restoreRequestMapModelValue(Object value) {
+        String modelName = getModel();
+        if (modelName != null) {
+            FacesContext context = getFacesContext();
+            Map<String, Object> requestMap = context.getExternalContext().getRequestMap();
+            if (value == null) {
+                requestMap.remove(modelName);
+            } else {
+                requestMap.put(modelName, value);
+            }
+        }
+    }
+
+    /**
      * Prepares this component for a change in the rowData.
      * <p>
      * This method should be called right before the rowData changes. It saves
@@ -848,10 +885,15 @@ public class UIEditableList extends UIInput implements NamingContainer {
         if (event instanceof EditableModelRowEvent) {
             EditableModelRowEvent rowEvent = (EditableModelRowEvent) event;
             Integer old = getRowKey();
-            setRowKey(rowEvent.getKey());
-            FacesEvent wrapped = rowEvent.getEvent();
-            wrapped.getComponent().broadcast(wrapped);
-            setRowKey(old);
+            Object requestMapValue = saveRequestMapModelValue();
+            try {
+                setRowKey(rowEvent.getKey());
+                FacesEvent wrapped = rowEvent.getEvent();
+                wrapped.getComponent().broadcast(wrapped);
+                setRowKey(old);
+            } finally {
+                restoreRequestMapModelValue(requestMapValue);
+            }
         } else {
             super.broadcast(event);
         }
@@ -982,6 +1024,7 @@ public class UIEditableList extends UIInput implements NamingContainer {
         List<UIComponent> stamps = getChildren();
         int oldIndex = getRowIndex();
         int end = getRowCount();
+        Object requestMapValue = saveRequestMapModelValue();
         try {
             int first = 0;
             for (int i = first; i < end; i++) {
@@ -1005,6 +1048,7 @@ public class UIEditableList extends UIInput implements NamingContainer {
             exception = e;
         } finally {
             setRowIndex(oldIndex);
+            restoreRequestMapModelValue(requestMapValue);
         }
         if (exception != null) {
             if (exception instanceof RuntimeException) {
@@ -1070,6 +1114,7 @@ public class UIEditableList extends UIInput implements NamingContainer {
         int oldIndex = getRowIndex();
         int end = getRowCount();
         boolean found = false;
+        Object requestMapValue = saveRequestMapModelValue();
         try {
             int first = 0;
             for (int i = first; i < end; i++) {
@@ -1087,6 +1132,7 @@ public class UIEditableList extends UIInput implements NamingContainer {
             exception = e;
         } finally {
             setRowIndex(oldIndex);
+            restoreRequestMapModelValue(requestMapValue);
         }
         if (exception != null) {
             if (exception instanceof RuntimeException) {
