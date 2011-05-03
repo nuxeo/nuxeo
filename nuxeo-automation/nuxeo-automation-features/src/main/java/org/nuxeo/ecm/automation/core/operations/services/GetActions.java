@@ -19,6 +19,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.actions.ActionContext;
@@ -83,15 +84,6 @@ public class GetActions {
         return new Locale(lang);
     }
 
-    protected ResourceBundle getTranslationBundle() {
-        if (lang!=null) {
-            Locale locale = new Locale(lang);
-            return ResourceBundle.getBundle("messages",locale);
-        } else {
-            return ResourceBundle.getBundle("messages");
-        }
-    }
-
     protected String translate(String key) {
         if(key==null) {
             return "";
@@ -125,7 +117,7 @@ public class GetActions {
             obj.element("help", help);
             rows.add(obj);
         }
-        return new StringBlob(rows.toString(), "application/json");
+        return new ByteArrayBlob(rows.toString().getBytes("UTF-8"),"application/json");
     }
 
 }
