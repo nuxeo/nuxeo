@@ -20,19 +20,16 @@
  <span id="js-label.documents.confirmDeleteDocumentsForever"> <h:outputText value="#{messages['label.documents.confirmDeleteDocumentsForever']}" /></span>
  <span id="js-label.review.confirmDeleteTask"> <h:outputText value="#{messages['label.review.confirmDeleteTask']}" /></span>
 </div>
-<script type="text/javascript" src="#{baseURL}js/?scripts=confirmAlerts.js|DragAndDrop.js|tableSelections.js|customSeamRemotingWaiter.js|custom-javascript.js|default-contextmenu-actions.js|custom-contextmenu-actions.js|tooltip.js"></script>
+<script type="text/javascript" src="#{baseURL}js/?scripts=confirmAlerts.js|DragAndDrop.js|customSeamRemotingWaiter.js|custom-javascript.js|default-contextmenu-actions.js|custom-contextmenu-actions.js|tooltip.js"></script>
 
 <c:if test="#{useHtml5DragAndDrop}">
 
-<script type="text/javascript" src="#{baseURL}scripts/dnd/jquery.client.js" ></script>
-<script type="text/javascript" src="#{baseURL}scripts/dnd/jquery.dnd-file-upload.js" ></script>
-<script type="text/javascript" src="#{baseURL}scripts/dnd/utils.js" ></script>
-<script type="text/javascript" src="#{baseURL}scripts/automation.js" ></script>
-<script type="text/javascript" src="#{baseURL}scripts/dnd/nxdropzone.js" ></script>
+<script type="text/javascript" src="#{baseURL}js/?scripts=dnd/jquery.client.js|dnd/jquery.dnd-file-upload.js|automation.js|dnd/nxdropzone.js"></script>
 
 <ui:include src="/incl/dnd/dnd-ui.xhtml" />
 
 <script>
+var baseURL='#{baseURL}';
 var ctx = { currentDocument : '#{currentDocument.id}',
         currentDomain : '#{currentDomain.id}',
         conversationId : '#{org.jboss.seam.core.manager.currentConversationId}',
