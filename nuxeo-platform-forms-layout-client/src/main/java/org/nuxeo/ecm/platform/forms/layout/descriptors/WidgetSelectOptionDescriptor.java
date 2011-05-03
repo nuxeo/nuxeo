@@ -80,14 +80,8 @@ public class WidgetSelectOptionDescriptor implements WidgetSelectOption {
         builder.append(var).append(";");
         builder.append(itemLabel).append(";");
         builder.append(itemValue).append(";");
-        if (itemDisabled != null) {
-            builder.append(itemDisabled);
-        }
-        builder.append(";");
-        if (itemRendered != null) {
-            builder.append(itemRendered);
-        }
-        builder.append(";");
+        builder.append(itemDisabled).append(";");
+        builder.append(itemRendered).append(";");
 
         Integer intValue = builder.toString().hashCode();
         return intValue.toString();

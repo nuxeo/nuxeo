@@ -94,12 +94,12 @@ public class WidgetSelectOptionsDescriptor implements WidgetSelectOptions {
         builder.append(var).append(";");
         builder.append(itemLabel).append(";");
         builder.append(itemValue).append(";");
-        builder.append(itemDisabled.toString()).append(";");
-        builder.append(itemRendered.toString()).append(";");
+        builder.append(itemDisabled).append(";");
+        builder.append(itemRendered).append(";");
         builder.append(ordering).append(";");
         builder.append(caseSensitive).append(";");
 
-        Integer intValue = new Integer(builder.toString().hashCode());
+        Integer intValue = builder.toString().hashCode();
         return intValue.toString();
     }
 
