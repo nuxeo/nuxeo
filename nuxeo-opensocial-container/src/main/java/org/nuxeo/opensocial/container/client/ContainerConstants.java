@@ -53,4 +53,6 @@ public interface ContainerConstants extends Constants {
     String createdBy();
 
     String folderSelection();
+
+    String cantDeleteLastZoneError();
 }

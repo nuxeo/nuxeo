@@ -385,7 +385,14 @@ public class ContainerBuilderPresenter extends
                             String template = (String) properties.get("template");
 
                             if (cellIndex == 0) {
-                                model.deleteZone(zoneIndex);
+                                if (model.getLayout().getContent().getComponents().size() > 1) {
+                                    model.deleteZone(zoneIndex);
+                                } else {
+                                    eventBus.fireEvent(new SendMessageEvent(
+                                            constants.cantDeleteLastZoneError(),
+                                            Severity.ERROR));
+                                }
+
                             } else if (cellIndex == 1) {
                                 if (!model.updateZoneTemplate(zoneIndex,
                                         YUITemplate.valueOf(template))) {
