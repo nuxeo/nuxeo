@@ -40,6 +40,7 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Out;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -48,13 +49,10 @@ import org.nuxeo.ecm.platform.actions.ActionContext;
 import org.nuxeo.ecm.platform.actions.ejb.ActionManager;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
-import org.jboss.seam.annotations.intercept.BypassInterceptors;
 
 /**
- * Web actions bean that manages actions.
- * <p>
- * Implements specific behavior to handle special mechanism of the documents
- * tabbed content.
+ * Component that handles actions retrieval as well as current tab(s)
+ * selection.
  *
  * @author Eugen Ionica
  * @author Anahide Tchertchian
@@ -144,19 +142,13 @@ public class WebActionsBean implements WebActionsLocal, Serializable {
         return actionContextProvider.createActionContext();
     }
 
-    @Deprecated
-    public List<Action> getSubViewActionsList() {
-        return getActionsList("SUBVIEW_UPPER_LIST");
-    }
-
     @Observer(value = { EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED,
             EventNames.LOCATION_SELECTION_CHANGED }, create = false)
     @BypassInterceptors
     public void resetTabList() {
         tabsActionsList = null;
-        currentTabAction = null;
         subTabsActionsList = null;
-        currentSubTabAction = null;
+        resetCurrentTab();
     }
 
     public void resetCurrentTab() {
@@ -167,7 +159,7 @@ public class WebActionsBean implements WebActionsLocal, Serializable {
     @Factory(value = "tabsActionsList", scope = EVENT)
     public List<Action> getTabsList() {
         if (tabsActionsList == null) {
-            tabsActionsList = getActionsList("VIEW_ACTION_LIST");
+            tabsActionsList = getActionsList(DEFAULT_TABS_CATEGORY);
             currentTabAction = getDefaultTab();
         }
         return tabsActionsList;
@@ -178,20 +170,12 @@ public class WebActionsBean implements WebActionsLocal, Serializable {
         if (subTabsActionsList == null) {
             String currentTabId = getCurrentTabId();
             if (currentTabId != null) {
-                String category = currentTabId + "_sub_tab";
+                String category = currentTabId + SUBTAB_CATEGORY_SUFFIX;
                 subTabsActionsList = getActionsList(category);
                 currentSubTabAction = getDefaultSubTab();
             }
         }
         return subTabsActionsList;
-    }
-
-    public void setTabsList(List<Action> tabsList) {
-        tabsActionsList = tabsList;
-    }
-
-    public void setSubTabsList(List<Action> tabsList) {
-        subTabsActionsList = tabsList;
     }
 
     protected Action getDefaultTab() {
@@ -238,11 +222,6 @@ public class WebActionsBean implements WebActionsLocal, Serializable {
 
     public void setCurrentSubTabAction(Action tabAction) {
         currentSubTabAction = tabAction;
-    }
-
-    @Deprecated
-    public void setCurrentTabAction(String currentTabActionId) {
-        setCurrentTabId(currentTabActionId);
     }
 
     public String getCurrentTabId() {
@@ -319,20 +298,38 @@ public class WebActionsBean implements WebActionsLocal, Serializable {
         return viewId;
     }
 
+    @Deprecated
+    public List<Action> getSubViewActionsList() {
+        return getActionsList("SUBVIEW_UPPER_LIST");
+    }
+
+    @Deprecated
     public void selectTabAction() {
         // if (tabAction != null) {
         // setCurrentTabAction(tabAction);
         // }
     }
 
-    /**
-     * @deprecated Unused
-     */
     @Deprecated
     public String getCurrentLifeCycleState() throws ClientException {
         // only user of documentManager in this bean, look it up by hand
         CoreSession documentManager = (CoreSession) Component.getInstance("documentManager");
         return documentManager.getCurrentLifeCycleState(navigationContext.getCurrentDocument().getRef());
+    }
+
+    @Deprecated
+    public void setTabsList(List<Action> tabsList) {
+        tabsActionsList = tabsList;
+    }
+
+    @Deprecated
+    public void setSubTabsList(List<Action> tabsList) {
+        subTabsActionsList = tabsList;
+    }
+
+    @Deprecated
+    public void setCurrentTabAction(String currentTabActionId) {
+        setCurrentTabId(currentTabActionId);
     }
 
 }
