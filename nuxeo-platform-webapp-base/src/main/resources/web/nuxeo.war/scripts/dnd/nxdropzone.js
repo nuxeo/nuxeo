@@ -1,4 +1,9 @@
-// global helper functcions
+// ********************************************************
+// Provides a JQuery wrapper to initialize Drop zones
+// JQuery dropzone object is linked to a UIControler object
+// that manages dialog
+
+// some helper functcions
 
 function log(msg) {
   if (window.console) {
@@ -218,6 +223,21 @@ function DropZoneUIHandler(idx, dropZoneId, options,targetSelectedCB) {
     }
   }
 
+  DropZoneUIHandler.prototype.positionContinueButton = function(batchId) {
+      // Show the continue button at center of dropzone
+      var continueButton = jQuery("#dndContinueButton");
+      continueButton.css("position","absolute");
+      continueButton.css("display","block");
+      continueButton.css("z-index","5000");
+      var zone = jQuery("#" + this.dropZoneId);
+      var btnPosition =zone.position();
+      btnPosition.top = btnPosition.top + zone.height()/2 - continueButton.height()/2;
+      btnPosition.left = btnPosition.left + zone.width()/2 - continueButton.width()/2;
+      continueButton.css(btnPosition);
+      return continueButton
+  }
+
+
   DropZoneUIHandler.prototype.showContinue = function(batchId) {
     // Show the continue button in bar
     jQuery("#dndMsgUploadInProgress").css("display","none");
@@ -227,16 +247,7 @@ function DropZoneUIHandler(idx, dropZoneId, options,targetSelectedCB) {
     continueButtonInBar.attr("value","Continue");
 
     // Show the continue button at center of dropzone
-    var continueButton = jQuery("#dndContinueButton");
-    continueButton.css("position","absolute");
-    continueButton.css("display","block");
-    continueButton.css("z-index","5000");
-    var zone = jQuery("#" + this.dropZoneId);
-    var btnPosition =zone.position();
-    btnPosition.top = btnPosition.top + zone.height()/2 - continueButton.height()/2;
-    btnPosition.left = btnPosition.left + zone.width()/2 - continueButton.width()/2;
-    log(btnPosition);
-    continueButton.css(btnPosition);
+    var continueButton = this.positionContinueButton();
 
     // bind click
     var handler=this; // deRef object !
@@ -350,8 +361,8 @@ function DropZoneUIHandler(idx, dropZoneId, options,targetSelectedCB) {
       jQuery("#dropzone-info-panel").css("display","none");
       jQuery("#dndFormPanel").css("display","none");
 
-      // change the continue button to a loging anim
-      var continueButton = jQuery("#dndContinueButton");
+      // change the continue button to a loading anim
+      var continueButton = this.positionContinueButton();
       continueButton.unbind();
       jQuery("#dndContinueButtonNext").css("display","none");
       jQuery("#dndContinueButtonWait").css("display","block");

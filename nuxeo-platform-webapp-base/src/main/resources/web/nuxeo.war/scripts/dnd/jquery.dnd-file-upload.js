@@ -2,10 +2,11 @@
 // JQuery wrapper to manage File upload via Drag and Drop
 //
 // Base code comes from https://github.com/pangratz/dnd-file-upload/network
+//
 
 (function($) {
 
-  var uploadInProgress=false;
+  var sendingRequestsInProgress=false;
   var uploadStack = new Array();
   var uploadIdx=0;
   var nbUploadInprogress=0;
@@ -45,7 +46,7 @@
   $.fn.dropzone.defaults = {
     url : "",
     method : "POST",
-    numConcurrentUploads : 3,
+    numConcurrentUploads : 5,
     // define if upload should be triggered directly
     directUpload : true,
     // update upload speed every second
@@ -112,7 +113,7 @@
     for ( var i = 0; i < files.length; i++) {
       uploadStack.push(files[i]);
     }
-    if (opts.directUpload && !uploadInProgress) {
+    if (opts.directUpload && !sendingRequestsInProgress) {
       uploadFiles(opts);
     }
     return false;
@@ -160,14 +161,14 @@
 
   function uploadFiles(opts) {
     var batchId = opts.handler.batchStarted();
-    uploadInProgress=true;
+    sendingRequestsInProgress=true;
 
     while (uploadStack.length>0) {
       var file = uploadStack.shift();
       // create a new xhr object
       var xhr = new XMLHttpRequest();
       var upload = xhr.upload;
-      upload.fileIndex = uploadIdx;
+      upload.fileIndex = uploadIdx+0;
       upload.fileObj = file;
       upload.downloadStartTime = new Date().getTime();
       upload.currentStart = upload.downloadStartTime;
@@ -179,6 +180,9 @@
       upload.addEventListener("progress", function(event) {progress(event,opts)}, false);
       upload.addEventListener("load", function(event) {load(event,opts)}, false);
 
+      // propagate callback
+      upload.uploadFiles = uploadFiles;
+
       xhr.open(opts.method, opts.url + "upload");
       xhr.setRequestHeader("Cache-Control", "no-cache");
       xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
@@ -189,13 +193,18 @@
       xhr.setRequestHeader("X-File-Idx", uploadIdx);
 
       xhr.setRequestHeader("Content-Type", "multipart/form-data");
-      xhr.send(file);
-
-      opts.handler.uploadStarted(uploadIdx, file);
       uploadIdx++;
       nbUploadInprogress++;
+      xhr.send(file);
+      opts.handler.uploadStarted(uploadIdx, file);
+
+      if (nbUploadInprogress>=opts.numConcurrentUploads) {
+        sendingRequestsInProgress=false;
+        log("pausing upload");
+        return;
+      }
     }
-    uploadInProgress=false;
+    sendingRequestsInProgress=false;
   }
 
   function load(event, opts) {
@@ -205,7 +214,12 @@
     opts.handler.uploadFinished(event.target.fileIndex, event.target.fileObj, timeDiff);
     log("finished loading of file " + event.target.fileIndex);
     nbUploadInprogress--;
-    if (nbUploadInprogress==0) {
+    if (!sendingRequestsInProgress && uploadStack.length>0) {
+      // restart upload
+      log("restart upload");
+      event.target.uploadFiles(opts)
+    }
+    else if (nbUploadInprogress==0) {
       opts.handler.batchFinished(event.target.batchId);
     }
   }
