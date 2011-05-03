@@ -49,6 +49,7 @@
     <module>nuxeo-platform-shibboleth-groups-web</module>
     <module>nuxeo-platform-user-dashboard-compat</module>
     <module>nuxeo-platform-rendition</module>
+    <module>nuxeo-platform-user-registration</module>
   </modules>
 
   <repositories>
