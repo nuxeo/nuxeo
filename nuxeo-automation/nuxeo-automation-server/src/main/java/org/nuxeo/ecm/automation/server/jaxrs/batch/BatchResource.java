@@ -1,3 +1,20 @@
+/*
+ * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Nuxeo - initial API and implementation
+ *
+ */
 package org.nuxeo.ecm.automation.server.jaxrs.batch;
 
 import java.io.InputStream;
@@ -26,6 +43,12 @@ import org.nuxeo.ecm.webengine.jaxrs.context.RequestContext;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 import org.nuxeo.runtime.api.Framework;
 
+/**
+ * Exposes {@link Batch} as a JAX-RS resource
+ *
+ * @author Tiry (tdelprat@nuxeo.com)
+ *
+ */
 public class BatchResource {
 
     private static final String REQUEST_BATCH_ID = "batchId";
@@ -44,7 +67,7 @@ public class BatchResource {
         String mimeType = request.getHeader("X-File-Type");
         String idx = request.getHeader("X-File-Idx");
 
-        fileName = URLDecoder.decode(fileName,"UTF-8");
+        fileName = URLDecoder.decode(fileName, "UTF-8");
         InputStream is = request.getInputStream();
 
         System.out.println(" uploaded " + fileName + " (" + fileSize + "b)");
@@ -54,16 +77,15 @@ public class BatchResource {
         return "uploaded";
     }
 
-
-
     @POST
     @Produces("application/json")
     @Path(value = "execute")
-    public Object exec(@Context HttpServletRequest request, ExecutionRequest xreq) throws Exception {
+    public Object exec(@Context HttpServletRequest request,
+            ExecutionRequest xreq) throws Exception {
 
         Map<String, Object> params = xreq.getParams();
-        String batchId = (String)params.get(REQUEST_BATCH_ID);
-        String operationId = (String)params.get("operationId");
+        String batchId = (String) params.get(REQUEST_BATCH_ID);
+        String operationId = (String) params.get("operationId");
         params.remove(REQUEST_BATCH_ID);
         params.remove("operationId");
 
@@ -72,7 +94,8 @@ public class BatchResource {
         List<Blob> blobs = bm.getBlobs(batchId);
         xreq.setInput(new BlobList(blobs));
 
-        OperationContext ctx = xreq.createContext(request, getCoreSession(request));
+        OperationContext ctx = xreq.createContext(request,
+                getCoreSession(request));
         AutomationService as = Framework.getLocalService(AutomationService.class);
 
         request.setAttribute(REQUEST_BATCH_ID, batchId);
@@ -95,12 +118,12 @@ public class BatchResource {
                 return as.run(ctx, operationId.substring(6));
             } else {
                 OperationChain chain = new OperationChain("operation");
-                OperationParameters oparams = new OperationParameters(operationId,params);
+                OperationParameters oparams = new OperationParameters(
+                        operationId, params);
                 chain.add(oparams);
                 return as.run(ctx, chain);
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             return "{ error:'" + e.getMessage() + "'}";
         }
     }
@@ -108,7 +131,8 @@ public class BatchResource {
     @GET
     @Produces("text/html")
     @Path(value = "drop/{batchId}")
-    public String dropBatch(@PathParam(REQUEST_BATCH_ID) String batchId) throws Exception {
+    public String dropBatch(@PathParam(REQUEST_BATCH_ID) String batchId)
+            throws Exception {
         BatchManager bm = Framework.getLocalService(BatchManager.class);
         bm.clean(batchId);
         return "Batch droped";

@@ -1,8 +1,25 @@
+/*
+ * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Nuxeo - initial API and implementation
+ *
+ */
+
 package org.nuxeo.ecm.automation.core.operations.services;
 
 import java.util.List;
 import java.util.Locale;
-import java.util.ResourceBundle;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -20,11 +37,16 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.actions.ActionContext;
 import org.nuxeo.ecm.platform.actions.ejb.ActionManager;
 
+/**
+ * Queries {@link ActionManager} for available actions in the given context
+ *
+ * @author Tiry (tdelprat@nuxeo.com)
+ *
+ */
 @Operation(id = GetActions.ID, category = Constants.CAT_SERVICES, label = "List available actions", description = "Retrieve list of available actions for a given category. Action context is built based on the Operation context (currentDocument will be fetched from Context if not provided as input). If this operation is executed in a chain that initialized the Seam context, it will be used for Action context")
 public class GetActions {
 
@@ -75,20 +97,21 @@ public class GetActions {
     }
 
     protected Locale getLocale() {
-        if (lang==null) {
-            lang= (String) ctx.get("lang");
+        if (lang == null) {
+            lang = (String) ctx.get("lang");
         }
-        if (lang==null) {
-            lang="en";
+        if (lang == null) {
+            lang = "en";
         }
         return new Locale(lang);
     }
 
     protected String translate(String key) {
-        if(key==null) {
+        if (key == null) {
             return "";
         }
-        return I18NUtils.getMessageString("messages", key, new Object[0], getLocale());
+        return I18NUtils.getMessageString("messages", key, new Object[0],
+                getLocale());
     }
 
     @OperationMethod
@@ -117,7 +140,8 @@ public class GetActions {
             obj.element("help", help);
             rows.add(obj);
         }
-        return new ByteArrayBlob(rows.toString().getBytes("UTF-8"),"application/json");
+        return new ByteArrayBlob(rows.toString().getBytes("UTF-8"),
+                "application/json");
     }
 
 }

@@ -1,3 +1,20 @@
+/*
+ * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Nuxeo - initial API and implementation
+ *
+ */
 package org.nuxeo.ecm.automation.server.jaxrs.batch;
 
 import java.io.File;
@@ -16,6 +33,9 @@ import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 
 /**
  *
+ * Batch Object to encapsulate all data related to a batch, especially the
+ * temporary files used for Blobs
+ *
  * @author Tiry (tdelprat@nuxeo.com)
  * @since 5.4.2
  */
@@ -28,7 +48,7 @@ public class Batch {
     protected final String baseDir;
 
     public Batch(String id) {
-        this.id=id;
+        this.id = id;
         baseDir = new Path(System.getProperty("java.io.tmpdir")).append(id).toString();
         new File(baseDir).mkdirs();
     }
@@ -37,12 +57,13 @@ public class Batch {
         uploadedBlob.put(idx, blob);
     }
 
-    public void addStream(String idx, InputStream is, String name, String mime) throws IOException {
+    public void addStream(String idx, InputStream is, String name, String mime)
+            throws IOException {
 
-        File tmp = new File(baseDir + name);
+        File tmp = new File(new Path(baseDir).append(name).toString());
         FileUtils.copyToFile(is, tmp);
         FileBlob blob = new FileBlob(tmp);
-        if (mime!=null) {
+        if (mime != null) {
             blob.setMimeType(mime);
         } else {
             blob.setMimeType("application/octetstream");
