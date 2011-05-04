@@ -1,3 +1,20 @@
+/*
+ * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Nuxeo - initial API and implementation
+ *
+ */
 package org.nuxeo.ecm.webapp.dnd;
 
 import java.io.IOException;
@@ -20,15 +37,23 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.nuxeo.ecm.core.schema.utils.DateParser;
 
+/**
+ * Seam action bean that is used to handle the meta-data form for the Drag&Drop
+ * feature
+ *
+ * @author Tiry (tdelprat@nuxeo.com)
+ *
+ */
 @Name("dndFormActions")
 @Scope(ScopeType.PAGE)
 public class DndFormActionBean implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    protected Map<String, Map<String, Serializable>> metadataCollector ;
+    protected Map<String, Map<String, Serializable>> metadataCollector;
 
     protected String currentSchema;
+
     protected String currentLayout;
 
     @RequestParameter
@@ -38,24 +63,25 @@ public class DndFormActionBean implements Serializable {
     protected String layout;
 
     public String getSchema() {
-        if (schema!=null && !schema.isEmpty()) {
+        if (schema != null && !schema.isEmpty()) {
             currentSchema = schema;
         }
         return currentSchema;
     }
 
     public String getLayout() {
-        if (layout!=null && !layout.isEmpty()) {
+        if (layout != null && !layout.isEmpty()) {
             currentLayout = layout;
         }
         return currentLayout;
     }
 
-    @Factory(value="dataCollector", scope=ScopeType.PAGE)
+    @Factory(value = "dataCollector", scope = ScopeType.PAGE)
     public Map<String, Map<String, Serializable>> getCollector() {
-        if (metadataCollector==null) {
+        if (metadataCollector == null) {
             metadataCollector = new HashMap<String, Map<String, Serializable>>();
-            metadataCollector.put(getSchema(), new HashMap<String, Serializable>());
+            metadataCollector.put(getSchema(),
+                    new HashMap<String, Serializable>());
         }
         return metadataCollector;
     }
@@ -63,7 +89,8 @@ public class DndFormActionBean implements Serializable {
     public String save() throws JSONException {
         System.out.println("Saving DataCollector");
         for (String key : metadataCollector.keySet()) {
-            System.out.println(key + " => " + metadataCollector.get(key).toString());
+            System.out.println(key + " => "
+                    + metadataCollector.get(key).toString());
         }
         sendHtmlJSONResponse();
         return null;
@@ -97,11 +124,11 @@ public class DndFormActionBean implements Serializable {
             for (String field : metadataCollector.get(key).keySet()) {
                 Object data = metadataCollector.get(key).get(field);
                 if (data instanceof Date) {
-                    data = DateParser.formatW3CDateTime((Date)data);
+                    data = DateParser.formatW3CDateTime((Date) data);
                 } else if (data instanceof Calendar) {
-                    data = DateParser.formatW3CDateTime(((Calendar)data).getTime());
+                    data = DateParser.formatW3CDateTime(((Calendar) data).getTime());
                 }
-                formData.put(key+":"+field, data);
+                formData.put(key + ":" + field, data);
             }
         }
         jsonObject.put("docMetaData", formData);

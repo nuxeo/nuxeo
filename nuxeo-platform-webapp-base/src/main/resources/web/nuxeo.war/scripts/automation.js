@@ -35,35 +35,37 @@ function AutomationWrapper(operationId,opts) {
           if (failureCB) {
               failureCB(xhr,status,"No Data");
             } else {
-              console.log("Failed to execute");
-              console.log("Error, Status =" + status);
+              log("Failed to execute");
+              log("Error, Status =" + status);
             }
         },
         success: function(data, status,xhr) {
-          console.log("Executed OK");
+          log("Executed OK");
           if (status=="success") {
             successCB(data,status,xhr);
           } else {
             if (failureCB) {
               failureCB(xhr,status,"No Data");
             } else {
-              console.log("Error, Status =" + status);
+              log("Error, Status =" + status);
             }
           }
         }
       })
   }
 
-  AutomationWrapper.prototype.batchExecute = function(batchId, successCB, failureCB){
+  AutomationWrapper.prototype.log = function (msg) {
+    if (window.console) {
+        //console.log(msg);
+      }
+  }
 
-    console.log("batchExec");
+  AutomationWrapper.prototype.batchExecute = function(batchId, successCB, failureCB){
 
     this.addParameter("operationId", this.operationId);
     this.addParameter("batchId", batchId);
-    console.log(opts);
 
     var targetUrl = this.opts.url + '/batch/execute';
-    console.log(targetUrl);
     jQuery.ajax({
         type: 'POST',
         contentType : 'application/json+nxrequest',
@@ -71,23 +73,22 @@ function AutomationWrapper(operationId,opts) {
         url: targetUrl,
         timeout: 10000,
         error: function(xhr, status, e) {
-          console.log("Failed to execute");
+          log("Failed to execute");
           if (failureCB) {
               failureCB(xhr,status,"No Data");
             } else {
-              console.log("Error, Status =" + status);
+              log("Error, Status =" + status);
             }
         },
         success: function(data, status,xhr) {
-          console.log("Executed OK : " + status);
+          log("Executed OK : " + status);
           if (status=="success") {
-            console.log("call Success CB");
             successCB(data,status,xhr);
           } else {
               if (failureCB) {
                   failureCB(xhr,status,"No Data");
                 } else {
-                  console.log("Error, Status =" + status);
+                  log("Error, Status =" + status);
                 }
           }
         }
