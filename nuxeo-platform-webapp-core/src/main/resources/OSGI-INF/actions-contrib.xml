@@ -21,17 +21,6 @@
       <filter-id>anonymous</filter-id>
     </action>
 
-    <action id="user_manager" link="#{userManagerActions.viewUsers}"
-      label="command.manageMembers" order="20">
-      <category>USER_SERVICES</category>
-      <filter id="user_manager">
-        <rule grant="true">
-          <condition>#{userServicesContext.userManagerEnabled}</condition>
-        </rule>
-      </filter>
-      <filter-id>not_readonly</filter-id>
-    </action>
-
     <action id="advanced_search" link="search_form"
       label="command.advancedSearch" order="10">
       <category>SEARCH_ACTIONS</category>
