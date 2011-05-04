@@ -5,16 +5,23 @@
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:nxh="http://nuxeo.org/nxweb/html">
 
+  <c:set var="canHaveMainBlob" value="#{!empty currentDocumentAsBlobHolder}" />
   <c:set var="hasMainBlob" value="#{!empty currentDocumentAsBlobHolder.blob}" />
   <c:set var="hasOtherBlobs" value="#{currentDocument.hasSchema('files') and !empty currentDocument.files.files}" />
 
-  <c:if test="#{hasMainBlob || hasOtherBlobs}">
+  <c:if test="#{hasMainBlob || hasOtherBlobs} || canHaveMainBlob ">
     <h3 class="summaryTitle">
       <h:outputText value="#{messages['action.view.content']}" />
     </h3>
   </c:if>
 
+  <c:if test="#{!hasMainBlob and canHaveMainBlob}">
+    <div class="dropzone" context="mainBlob" id="mainBlobDropZone">
+       DROP HERE !!!
+    </div>
+  </c:if>
   <c:if test="#{hasMainBlob}">
+    <div class="dropzone" context="mainBlob" id="mainBlobDropZone">
     <table>
       <tbody>
         <tr>
@@ -61,9 +68,11 @@
         </tr>
       </tbody>
     </table>
+    </div>
   </c:if>
 
   <c:if test="#{hasOtherBlobs}">
+  <div class="dropzone" context="otherBlobs" id="otherBlobsDropZone">
     <table>
       <tbody>
         <nxu:inputList value="#{currentDocument.files.files}"  id="files_input" model="model">
@@ -101,6 +110,7 @@
         </nxu:inputList>
       </tbody>
     </table>
+  </div>
   </c:if>
 
 </div>

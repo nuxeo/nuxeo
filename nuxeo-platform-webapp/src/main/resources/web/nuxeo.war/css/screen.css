@@ -421,7 +421,7 @@ div.schedule-compact-default td.inactive-day td.header, div.schedule-compact-def
 /* End hide from IE5-mac */
 
 
-/* Righ click context menu classes 
+/* Righ click context menu classes
    (some css properties not friend with xml theme file) */
 
 #contextMenu {
@@ -557,11 +557,139 @@ padding:5px 0px 2px 0px;
 }
 
 #tooltipContent {
-  display:block; 
-  padding:2px 12px 3px 7px; 
-  margin-left:5px; 
-  background:#FFFFAA; 
+  display:block;
+  padding:2px 12px 3px 7px;
+  margin-left:5px;
+  background:#FFFFAA;
   color:#000000;
   border: 1px #333333;
   border-style:solid;
 }
+
+
+#dropzone-info-panel {
+  background-color:beige;
+  display:none;
+}
+
+.dndControlMessage {
+  display: none;
+  font-size : 9pt;
+  font-family : Arial;
+}
+
+.dropPanel {
+  padding: 10px;
+  background: #BBBBCC;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+  height: 250px;
+ }
+
+.dropzone {
+  display: block;
+  margin : 4px;
+  font-size : 16pt;
+  font-family : Arial;
+ }
+
+.dropzoneHL {
+  border-style: dashed;
+  background-color: #F0F0F0;
+  border-width: 2px;
+  border-color: #CCCCCC;
+}
+
+.dropzoneTarget {
+  border-style: ridge;
+  background-color: #EEEEEE;
+  border-width: 3px;
+  border-color: #888899;
+  cursor : url('../img/plusDrop.gif'), crosshair;
+}
+
+.dropzone-info-block {
+  display: block;
+  width: 200px;
+  height: 35px;
+  overflow : auto;
+  align : center;
+  text-align: center;
+  margin : 4px;
+}
+
+.dropzone-info-summary {
+  display: block;
+  width: 200px;
+  height: 35px;
+  overflow : auto;
+  align : center;
+  text-align: center;
+  margin : 4px;
+  font-size : 8pt;
+  font-family : Arial;
+}
+
+.dropzone-info-summary-item {
+  text-align: center;
+  font-size : 8pt;
+  font-family : Arial;
+}
+
+.dropzone-info-progress {
+  background-color: orange;
+  height: 3px;
+  width: 0%;
+}
+
+.dropzone-info-item {
+  border : thin solid #999999;
+  margin : 2px;
+}
+
+.dropzone-info-name {
+  font-size : 8pt;
+  font-family : Arial;
+  text-align: center;
+}
+
+ .dropzone-bar {
+  height: 20px;
+  font-size : 9pt;
+  font-family : Arial;
+ }
+
+ .dropzone-bar-btn {
+  visibility:hidden;
+  float:right;
+ }
+
+ .dndFormPanel{
+    display:none;
+    position:absolute;
+    border:solid 1px black;
+    background-color:rgba(255,255,255,0.8);
+    padding : 25px;
+    margin: 4px;
+    font-size : 9pt;
+    font-family : Arial;
+ }
+
+ #dndContinueButton {
+  display:none;
+  cursor:hand;
+  padding:5px;
+  background-color:rgba(255,255,255,0.6);
+ }
+
+ .uploadedFileList {
+  font-size : 11pt;
+  font-family : Arial;
+ }
+
+ #operationForm {
+   border-style:solid;
+   border-color:#444444;
+   border-width: 0px 0px 0px 2px;
+ }

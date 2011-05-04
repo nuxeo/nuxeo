@@ -40,10 +40,10 @@
       </c:if>
     </div>
   </h:form>
-      
+
   <h:form id="userServicesForm">
     <div class="searchService">
-  
+
       <nxu:set var="actions"
         value="#{webActions.getActionsList('SEARCH_LINKS')}"
         cache="true">
@@ -116,13 +116,13 @@
     </div>
 
   </h:form>
-  
+
     <c:if test="#{adminMessageActivated}">
     <div style="text-align: center; padding: 5px 5px 5px 25px; border: 1px solid rgb(170, 187, 255); background: url('icons/info.gif') no-repeat 3px center #fff; font: normal 12px Arial,sans-serif; margin:3px;">
          <h:outputText value="#{adminMessage}"/>
     </div>
   </c:if>
-  
+
 </ui:insert>
 
 </div>

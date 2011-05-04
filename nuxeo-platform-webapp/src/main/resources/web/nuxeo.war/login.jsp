@@ -104,7 +104,7 @@ H2 {
   color:red;
   font-size:12px;
  }
- 
+
 .warnMessage, .infoMessage {
   margin:0 0 10px;
 }
