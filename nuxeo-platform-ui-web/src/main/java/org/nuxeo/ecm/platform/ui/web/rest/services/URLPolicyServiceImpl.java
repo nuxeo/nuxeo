@@ -339,7 +339,7 @@ public class URLPolicyServiceImpl implements URLPolicyService {
                     } catch (Exception e) {
                         log.error(String.format(
                                 "Could not apply request parameter %s "
-                                        + "to expression %s", value, expr));
+                                        + "to expression %s", value, expr), e);
                     }
                 }
             }
@@ -412,7 +412,7 @@ public class URLPolicyServiceImpl implements URLPolicyService {
                         } catch (Exception e) {
                             log.error(String.format(
                                     "Could not get parameter %s from expression %s",
-                                    paramName, expr));
+                                    paramName, expr), e);
                         }
                     }
                 }

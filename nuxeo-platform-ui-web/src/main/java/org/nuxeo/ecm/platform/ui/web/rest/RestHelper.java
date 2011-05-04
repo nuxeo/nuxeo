@@ -69,14 +69,14 @@ public class RestHelper implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @In(create = true)
-    transient NavigationContext navigationContext;
+    protected transient NavigationContext navigationContext;
 
     @In(create = true)
-    transient WebActions webActions;
+    protected transient WebActions webActions;
 
-    private DocumentView docView;
+    protected DocumentView docView;
 
-    private String baseURL = "";
+    protected String baseURL = "";
 
     /**
      * Sets current server location (core repository) and core document as
@@ -114,8 +114,6 @@ public class RestHelper implements Serializable {
         DocumentView docView = null;
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         if (currentDocument != null) {
-            // XXX AT: i dont get why currentServerLocation is null while
-            // currentDocument is not..
             DocumentLocation docLoc = new DocumentLocationImpl(currentDocument);
             TypeInfo typeInfo = currentDocument.getAdapter(TypeInfo.class);
             Map<String, String> params = new HashMap<String, String>();
