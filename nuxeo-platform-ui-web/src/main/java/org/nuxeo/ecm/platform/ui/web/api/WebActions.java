@@ -94,47 +94,77 @@ public interface WebActions {
 
     /**
      * Returns the current action for category {@link #DEFAULT_TABS_CATEGORY}
+     *
+     * @deprecated since 5.4.2: use {@link #getCurrentTabAction(String)}
+     *             instead
      */
+    @Deprecated
     Action getCurrentTabAction();
 
     /**
      * Sets the current action for category {@link #DEFAULT_TABS_CATEGORY}
+     *
+     * @deprecated since 5.4.2: use
+     *             {@link #setCurrentTabAction(String, Action)} instead
      */
+    @Deprecated
     void setCurrentTabAction(Action tabAction);
 
     /**
      * Returns the current sub tab for a category computed from the current tab
      * action id and the suffix {@link #SUBTAB_CATEGORY_SUFFIX}.
+     *
+     * @deprecated since 5.4.2: use {@link #getCurrentTabAction(String)}
+     *             instead
      */
+    @Deprecated
     Action getCurrentSubTabAction();
 
     /**
      * Sets the current sub tab for a category computed from the current tab
      * action id and the suffix {@link #SUBTAB_CATEGORY_SUFFIX}.
+     *
+     * @deprecated since 5.4.2: use
+     *             {@link #setCurrentTabAction(String, Action)} instead
      */
+    @Deprecated
     void setCurrentSubTabAction(Action tabAction);
 
     /**
      * Returns the current action id for category
      * {@link #DEFAULT_TABS_CATEGORY}
+     *
+     * @deprecated since 5.4.2: use {@link #getCurrentTabId(String)} instead
      */
+    @Deprecated
     String getCurrentTabId();
 
     /**
      * Sets the current action id for category {@link #DEFAULT_TABS_CATEGORY}
+     *
+     * @deprecated since 5.4.2: use {@link #setCurrentTabId(String, String)}
+     *             instead
      */
+    @Deprecated
     void setCurrentTabId(String tabId);
 
     /**
      * Returns the current sub tab id for a category computed from the current
      * tab action id and the suffix {@link #SUBTAB_CATEGORY_SUFFIX}.
+     *
+     * @deprecated since 5.4.2: use {@link #getCurrentTabId(String)} instead
      */
+    @Deprecated
     String getCurrentSubTabId();
 
     /**
      * Sets the current sub tab id for a category computed from the current tab
      * action id and the suffix {@link #SUBTAB_CATEGORY_SUFFIX}.
+     *
+     * @deprecated since 5.4.2: use {@link #setCurrentTabId(String, String)}
+     *             instead
      */
+    @Deprecated
     void setCurrentSubTabId(String tabId);
 
     /**
@@ -144,13 +174,77 @@ public interface WebActions {
     void resetTabList();
 
     /**
-     * Resets current tab information (includes sub tab information).
+     * Resets current tab information (includes sub tab information) for
+     * category {@link #DEFAULT_TABS_CATEGORY}.
      */
     void resetCurrentTab();
 
     /**
+     * Returns the current action for given category.
+     */
+    Action getCurrentTabAction(String category);
+
+    /**
+     * Sets the current action for given category, with additional sub tabs.
+     * <p>
+     * If given action is null, it resets the current action for this category.
+     */
+    void setCurrentTabAction(String category, Action tabAction,
+            String... subTabIds);
+
+    /**
+     * Returns the current action id for given category
+     */
+    String getCurrentTabId(String category);
+
+    /**
+     * Sets the current action for given category, with additional sub tabs.
+     */
+    void setCurrentTabId(String category, String tabId, String... subTabIds);
+
+    /**
+     * Returns current tab ids as a string, encoded as is:
+     * CATEGORY_1:ACTION_ID_1,CATEGORY_2:ACTION_ID_2,...
+     *
+     * @since 5.4.2
+     */
+    String getCurrentTabIds();
+
+    /**
+     * Sets current tab ids as a String, splitting on commas ',' and parsing
+     * each action information as is:
+     * CATEGORY:ACTION_ID[:OPTIONAL_SUB_ACTION_ID[:OPTIONAL_SUB_ACTION_ID]...]
+     * <p>
+     * If category is omitted or empty, the category
+     * {@link #DEFAULT_TABS_CATEGORY} will be used (if there is no subtab
+     * information).
+     * <p>
+     * The resulting string looks like:
+     * CATEGORY_1:ACTION_ID_1,CATEGORY_2:ACTION_ID_2_SUB_ACTION_ID_2,...
+     *
+     * @since 5.4.2
+     */
+    void setCurrentTabIds(String tabIds);
+
+    /**
+     * Resets all current tabs information.
+     *
+     * @since 5.4.2
+     */
+    void resetCurrentTabs();
+
+    /**
+     * Resets current tabs for given category, taking subtabs into account by
+     * resetting actions in categories computed from reset actions id with
+     * suffix {@link #SUBTAB_CATEGORY_SUFFIX}.
+     */
+    void resetCurrentTabs(String category);
+
+    /**
      * Calls {@link #setCurrentTabAndNavigate(DocumentModel, String)} for the
      * current document.
+     * <p>
+     * Given action should hold the category {@link #DEFAULT_TABS_CATEGORY}
      *
      * @see NavigationContext#getCurrentDocument()
      */
@@ -159,6 +253,8 @@ public interface WebActions {
     /**
      * Navigate to the given document and opens the view page of the given
      * document selecting the given tab.
+     * <p>
+     * Given action should hold the category {@link #DEFAULT_TABS_CATEGORY}
      *
      * @param document to document which will be shown in the view page
      * @param currentTabActionId the tab that will be selected in the view page

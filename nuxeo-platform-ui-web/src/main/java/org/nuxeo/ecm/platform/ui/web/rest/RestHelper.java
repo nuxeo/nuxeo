@@ -117,11 +117,11 @@ public class RestHelper implements Serializable {
             DocumentLocation docLoc = new DocumentLocationImpl(currentDocument);
             TypeInfo typeInfo = currentDocument.getAdapter(TypeInfo.class);
             Map<String, String> params = new HashMap<String, String>();
-            params.put("tabId", webActions.getCurrentTabId());
-            params.put("subTabId", webActions.getCurrentSubTabId());
             if (currentDocument.isVersion()) {
                 params.put("version", "true");
             }
+            // additional params will be set according to the url pattern,
+            // calling getters on bindings.
             docView = new DocumentViewImpl(docLoc, typeInfo.getDefaultView(),
                     params);
         }

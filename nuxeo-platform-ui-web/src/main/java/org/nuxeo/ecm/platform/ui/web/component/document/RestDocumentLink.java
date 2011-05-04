@@ -29,6 +29,7 @@ import javax.faces.FacesException;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIParameter;
 import javax.faces.component.html.HtmlOutputLink;
+import javax.faces.context.FacesContext;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -63,6 +64,11 @@ public class RestDocumentLink extends HtmlOutputLink {
 
     protected String subTab;
 
+    /**
+     * @since 5.4.2
+     */
+    protected String tabs;
+
     protected Boolean addTabInfo;
 
     protected String pattern;
@@ -93,17 +99,34 @@ public class RestDocumentLink extends HtmlOutputLink {
         Map<String, String> params = new LinkedHashMap<String, String>();
         String tabValue = getTab();
         String subTabValue = getSubTab();
-        if (tabValue != null) {
-            params.put("tabId", tabValue);
+        String tabValues = getTabs();
+        if (tabValues == null) {
+            tabValues = "";
+        }
+        if (tabValue != null && !tabValue.isEmpty()) {
+            if (!tabValues.isEmpty()) {
+                tabValues += ",";
+            }
+            tabValues += ":" + tabValue;
+            // params.put("tabId", tabValue); // BBB
             if (subTabValue != null) {
-                params.put("subTabId", subTabValue);
+                tabValues += ":" + subTabValue;
+                // params.put("subTabId", subTabValue); // BBB
             }
         } else {
             if (Boolean.TRUE.equals(getAddTabInfo())) {
                 // reset tab info, resetting the tab will reset the sub tab
-                params.put("tabId", WebActions.NULL_TAB_ID);
+                if (!tabValues.isEmpty()) {
+                    tabValues += ",";
+                }
+                tabValues += ":" + WebActions.NULL_TAB_ID;
+                // params.put("tabId", WebActions.NULL_TAB_ID); // BBB
             }
         }
+        if (!tabValues.isEmpty()) {
+            params.put("tabIds", tabValues);
+        }
+
         // add parameters from f:param sub tags
         Param[] paramTags = getParamList();
         for (Param param : paramTags) {
@@ -120,7 +143,7 @@ public class RestDocumentLink extends HtmlOutputLink {
         Boolean nc = getNewConversation();
 
         return DocumentModelFunctions.documentUrl(pattern, doc, viewId, params,
-                nc != null ? nc : false);
+                nc != null ? nc.booleanValue() : false);
     }
 
     protected Param[] getParamList() {
@@ -222,7 +245,7 @@ public class RestDocumentLink extends HtmlOutputLink {
         ValueExpression ve = getValueExpression("newConversation");
         if (ve != null) {
             try {
-                return !Boolean.FALSE.equals(ve.getValue(getFacesContext().getELContext()));
+                return Boolean.valueOf(!Boolean.FALSE.equals(ve.getValue(getFacesContext().getELContext())));
             } catch (ELException e) {
                 throw new FacesException(e);
             }
@@ -303,7 +326,7 @@ public class RestDocumentLink extends HtmlOutputLink {
         ValueExpression ve = getValueExpression("addTabInfo");
         if (ve != null) {
             try {
-                return !Boolean.FALSE.equals(ve.getValue(getFacesContext().getELContext()));
+                return Boolean.valueOf(!Boolean.FALSE.equals(ve.getValue(getFacesContext().getELContext())));
             } catch (ELException e) {
                 throw new FacesException(e);
             }
@@ -317,4 +340,47 @@ public class RestDocumentLink extends HtmlOutputLink {
         this.addTabInfo = addTabInfo;
     }
 
+    public String getTabs() {
+        if (tabs != null) {
+            return tabs;
+        }
+        ValueExpression ve = getValueExpression("tabs");
+        if (ve != null) {
+            try {
+                return (String) ve.getValue(getFacesContext().getELContext());
+            } catch (ELException e) {
+                throw new FacesException(e);
+            }
+        } else {
+            return null;
+        }
+    }
+
+    public void setTabs(String tabs) {
+        this.tabs = tabs;
+    }
+
+    // state holder
+
+    @Override
+    public Object saveState(FacesContext context) {
+        return new Object[] { super.saveState(context), document,
+                documentIdRef, view, tab, subTab, tabs, addTabInfo, pattern,
+                newConversation };
+    }
+
+    @Override
+    public void restoreState(FacesContext context, Object state) {
+        Object[] values = (Object[]) state;
+        super.restoreState(context, values[0]);
+        document = (DocumentModel) values[1];
+        documentIdRef = (DocumentRef) values[2];
+        view = (String) values[3];
+        tab = (String) values[4];
+        subTab = (String) values[5];
+        tabs = (String) values[6];
+        addTabInfo = (Boolean) values[7];
+        pattern = (String) values[8];
+        newConversation = (Boolean) values[9];
+    }
 }
