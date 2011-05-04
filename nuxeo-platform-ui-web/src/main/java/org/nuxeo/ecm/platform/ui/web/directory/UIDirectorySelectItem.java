@@ -74,7 +74,7 @@ public class UIDirectorySelectItem extends UISelectItem {
         Session directorySession = null;
         if (dirName != null) {
             try {
-                DirectoryService service= DirectoryHelper.getDirectoryService();
+                DirectoryService service = DirectoryHelper.getDirectoryService();
                 directorySession = service.open(dirName);
             } catch (Exception e) {
                 log.error(String.format("Error when retrieving directory %s",
@@ -106,25 +106,30 @@ public class UIDirectorySelectItem extends UISelectItem {
         if (value instanceof SelectItem) {
             item = (SelectItem) value;
         } else if (value instanceof String) {
-            String entryId = (String) value;
-            putIteratorToRequestParam(value);
-            Session directorySession = getDirectorySession();
-            if (directorySession != null) {
-                try {
-                    DocumentModel entry = directorySession.getEntry(entryId);
-                    if (entry != null) {
-                        putIteratorToRequestParam(entry);
-                        item = createSelectItem();
-                        removeIteratorFromRequestParam();
+            Object varValue = saveRequestMapVarValue();
+            try {
+                String entryId = (String) value;
+                putIteratorToRequestParam(value);
+                Session directorySession = getDirectorySession();
+                if (directorySession != null) {
+                    try {
+                        DocumentModel entry = directorySession.getEntry(entryId);
+                        if (entry != null) {
+                            putIteratorToRequestParam(entry);
+                            item = createSelectItem();
+                            removeIteratorFromRequestParam();
+                        }
+                    } catch (DirectoryException e) {
                     }
-                } catch (DirectoryException e) {
+                } else {
+                    log.error("No session provided for directory, returning empty selection");
                 }
-            } else {
-                log.error("No session provided for directory, returning empty selection");
-            }
-            closeDirectorySession(directorySession);
+                closeDirectorySession(directorySession);
 
-            removeIteratorFromRequestParam();
+                removeIteratorFromRequestParam();
+            } finally {
+                restoreRequestMapVarValue(varValue);
+            }
         }
         return item;
     }

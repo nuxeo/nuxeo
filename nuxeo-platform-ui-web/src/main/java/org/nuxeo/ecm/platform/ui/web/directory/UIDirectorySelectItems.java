@@ -179,39 +179,59 @@ public class UIDirectorySelectItems extends UISelectItems {
         if (value instanceof SelectItem[]) {
             return (SelectItem[]) value;
         }
-        // build select items
-        List<SelectItem> items = new ArrayList<SelectItem>();
-        Session directorySession = getDirectorySession();
-        if (directorySession != null) {
-            if (value instanceof ListDataModel) {
-                ListDataModel ldm = (ListDataModel) value;
-                List<String> entryIds = (List) ldm.getWrappedData();
-                DocumentModel entry = null;
-                for (String entryId : entryIds) {
-                    try {
-                        entry = directorySession.getEntry(entryId);
-                        if (entry != null) {
-                            putIteratorToRequestParam(entry);
-                            SelectItem selectItem = createSelectItem();
-                            removeIteratorFromRequestParam();
-                            if (selectItem != null) {
-                                items.add(selectItem);
+        Object varValue = saveRequestMapVarValue();
+        try {
+            // build select items
+            List<SelectItem> items = new ArrayList<SelectItem>();
+            Session directorySession = getDirectorySession();
+            if (directorySession != null) {
+                if (value instanceof ListDataModel) {
+                    ListDataModel ldm = (ListDataModel) value;
+                    List<String> entryIds = (List) ldm.getWrappedData();
+                    DocumentModel entry = null;
+                    for (String entryId : entryIds) {
+                        try {
+                            entry = directorySession.getEntry(entryId);
+                            if (entry != null) {
+                                putIteratorToRequestParam(entry);
+                                SelectItem selectItem = createSelectItem();
+                                removeIteratorFromRequestParam();
+                                if (selectItem != null) {
+                                    items.add(selectItem);
+                                }
+                            }
+                        } catch (DirectoryException e) {
+                        }
+                    }
+                } else if (value instanceof Collection) {
+                    Collection<Object> collection = (Collection<Object>) value;
+                    DocumentModel entry;
+                    for (Object currentItem : collection) {
+                        if (currentItem instanceof SelectItemGroup) {
+                            SelectItemGroup itemGroup = (SelectItemGroup) currentItem;
+                            SelectItem[] itemsFromGroup = itemGroup.getSelectItems();
+                            items.addAll(Arrays.asList(itemsFromGroup));
+                        } else if (currentItem instanceof String) {
+                            try {
+                                entry = directorySession.getEntry((String) currentItem);
+                                if (entry != null) {
+                                    putIteratorToRequestParam(entry);
+                                    SelectItem selectItem = createSelectItem();
+                                    removeIteratorFromRequestParam();
+                                    if (selectItem != null) {
+                                        items.add(selectItem);
+                                    }
+                                }
+                            } catch (DirectoryException e) {
                             }
                         }
-                    } catch (DirectoryException e) {
                     }
-                }
-            } else if (value instanceof Collection) {
-                Collection<Object> collection = (Collection<Object>) value;
-                DocumentModel entry;
-                for (Object currentItem : collection) {
-                    if (currentItem instanceof SelectItemGroup) {
-                        SelectItemGroup itemGroup = (SelectItemGroup) currentItem;
-                        SelectItem[] itemsFromGroup = itemGroup.getSelectItems();
-                        items.addAll(Arrays.asList(itemsFromGroup));
-                    } else if (currentItem instanceof String) {
+                } else if (value instanceof String[]) {
+                    String[] entryIds = (String[]) value;
+                    DocumentModel entry = null;
+                    for (String entryId : entryIds) {
                         try {
-                            entry = directorySession.getEntry((String) currentItem);
+                            entry = directorySession.getEntry(entryId);
                             if (entry != null) {
                                 putIteratorToRequestParam(entry);
                                 SelectItem selectItem = createSelectItem();
@@ -224,12 +244,35 @@ public class UIDirectorySelectItems extends UISelectItems {
                         }
                     }
                 }
-            } else if (value instanceof String[]) {
-                String[] entryIds = (String[]) value;
-                DocumentModel entry = null;
-                for (String entryId : entryIds) {
-                    try {
-                        entry = directorySession.getEntry(entryId);
+            } else {
+                log.error("No session provided for directory, returning empty selection");
+            }
+            closeDirectorySession(directorySession);
+            String ordering = getOrdering();
+            Boolean caseSensitive = getCaseSensitive();
+            if (ordering != null && !"".equals(ordering)) {
+                Collections.sort(items, new SelectItemComparator(ordering,
+                        caseSensitive));
+            }
+            return items.toArray(new SelectItem[] {});
+        } finally {
+            restoreRequestMapVarValue(varValue);
+        }
+    }
+
+    protected SelectItem[] createAllSelectItems() {
+        Object varValue = saveRequestMapVarValue();
+        try {
+            List<SelectItem> items = new ArrayList<SelectItem>();
+            Session directorySession = getDirectorySession();
+            if (directorySession != null) {
+                try {
+                    Map<String, Serializable> filter = new HashMap<String, Serializable>();
+                    if (!getDisplayObsoleteEntries()) {
+                        filter.put("obsolete", 0);
+                    }
+                    DocumentModelList entries = directorySession.query(filter);
+                    for (DocumentModel entry : entries) {
                         if (entry != null) {
                             putIteratorToRequestParam(entry);
                             SelectItem selectItem = createSelectItem();
@@ -238,56 +281,24 @@ public class UIDirectorySelectItems extends UISelectItems {
                                 items.add(selectItem);
                             }
                         }
-                    } catch (DirectoryException e) {
                     }
+                } catch (ClientException e) {
+                    log.error(e, e);
                 }
+            } else {
+                log.error("No session provided for directory, returning empty selection");
             }
-        } else {
-            log.error("No session provided for directory, returning empty selection");
-        }
-        closeDirectorySession(directorySession);
-        String ordering = getOrdering();
-        Boolean caseSensitive = getCaseSensitive();
-        if (ordering != null && !"".equals(ordering)) {
-            Collections.sort(items, new SelectItemComparator(ordering,
-                    caseSensitive));
-        }
-        return items.toArray(new SelectItem[] {});
-    }
-
-    protected SelectItem[] createAllSelectItems() {
-        List<SelectItem> items = new ArrayList<SelectItem>();
-        Session directorySession = getDirectorySession();
-        if (directorySession != null) {
-            try {
-                Map<String, Serializable> filter = new HashMap<String, Serializable>();
-                if (!getDisplayObsoleteEntries()) {
-                    filter.put("obsolete", 0);
-                }
-                DocumentModelList entries = directorySession.query(filter);
-                for (DocumentModel entry : entries) {
-                    if (entry != null) {
-                        putIteratorToRequestParam(entry);
-                        SelectItem selectItem = createSelectItem();
-                        removeIteratorFromRequestParam();
-                        if (selectItem != null) {
-                            items.add(selectItem);
-                        }
-                    }
-                }
-            } catch (ClientException e) {
+            closeDirectorySession(directorySession);
+            String ordering = getOrdering();
+            Boolean caseSensitive = getCaseSensitive();
+            if (ordering != null && !"".equals(ordering)) {
+                Collections.sort(items, new SelectItemComparator(ordering,
+                        caseSensitive));
             }
-        } else {
-            log.error("No session provided for directory, returning empty selection");
+            return items.toArray(new SelectItem[] {});
+        } finally {
+            restoreRequestMapVarValue(varValue);
         }
-        closeDirectorySession(directorySession);
-        String ordering = getOrdering();
-        Boolean caseSensitive = getCaseSensitive();
-        if (ordering != null && !"".equals(ordering)) {
-            Collections.sort(items, new SelectItemComparator(ordering,
-                    caseSensitive));
-        }
-        return items.toArray(new SelectItem[] {});
     }
 
     @Override

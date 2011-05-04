@@ -198,72 +198,113 @@ public class UISelectItems extends javax.faces.component.UISelectItems {
         return createSelectItems(value);
     }
 
+    /**
+     * Returns the value exposed in request map for the var name.
+     * <p>
+     * This is useful for restoring this value in the request map.
+     *
+     * @since 5.4.2
+     */
+    protected final Object saveRequestMapVarValue() {
+        String varName = getVar();
+        if (varName != null) {
+            FacesContext context = getFacesContext();
+            Map<String, Object> requestMap = context.getExternalContext().getRequestMap();
+            if (requestMap.containsKey(varName)) {
+                return requestMap.get(varName);
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Restores the given value in the request map for the var name.
+     *
+     * @since 5.4.2
+     */
+    protected final void restoreRequestMapVarValue(Object value) {
+        String varName = getVar();
+        if (varName != null) {
+            FacesContext context = getFacesContext();
+            Map<String, Object> requestMap = context.getExternalContext().getRequestMap();
+            if (value == null) {
+                requestMap.remove(varName);
+            } else {
+                requestMap.put(varName, value);
+            }
+        }
+    }
+
     @SuppressWarnings("unchecked")
     protected SelectItem[] createSelectItems(Object value) {
-        List items = new ArrayList();
+        Object varValue = saveRequestMapVarValue();
+        try {
+            List items = new ArrayList();
+            if (value instanceof ListDataModel) {
+                ListDataModel ldm = (ListDataModel) value;
+                value = ldm.getWrappedData();
+            }
 
-        if (value instanceof ListDataModel) {
-            ListDataModel ldm = (ListDataModel) value;
-            value = ldm.getWrappedData();
-        }
-
-        if (value instanceof SelectItem[]) {
-            return (SelectItem[]) value;
-        } else if (value instanceof Object[]) {
-            Object[] array = (Object[]) value;
-            for (Object currentItem : array) {
-                if (currentItem instanceof SelectItemGroup) {
-                    SelectItemGroup itemGroup = (SelectItemGroup) currentItem;
-                    SelectItem[] itemsFromGroup = itemGroup.getSelectItems();
-                    items.addAll(Arrays.asList(itemsFromGroup));
-                } else {
-                    putIteratorToRequestParam(currentItem);
+            if (value instanceof SelectItem[]) {
+                return (SelectItem[]) value;
+            } else if (value instanceof Object[]) {
+                Object[] array = (Object[]) value;
+                for (Object currentItem : array) {
+                    if (currentItem instanceof SelectItemGroup) {
+                        SelectItemGroup itemGroup = (SelectItemGroup) currentItem;
+                        SelectItem[] itemsFromGroup = itemGroup.getSelectItems();
+                        items.addAll(Arrays.asList(itemsFromGroup));
+                    } else {
+                        putIteratorToRequestParam(currentItem);
+                        SelectItem selectItem = createSelectItem();
+                        removeIteratorFromRequestParam();
+                        if (selectItem != null) {
+                            items.add(selectItem);
+                        }
+                    }
+                }
+            } else if (value instanceof Collection) {
+                Collection collection = (Collection) value;
+                for (Object currentItem : collection) {
+                    if (currentItem instanceof SelectItemGroup) {
+                        SelectItemGroup itemGroup = (SelectItemGroup) currentItem;
+                        SelectItem[] itemsFromGroup = itemGroup.getSelectItems();
+                        items.addAll(Arrays.asList(itemsFromGroup));
+                    } else {
+                        putIteratorToRequestParam(currentItem);
+                        SelectItem selectItem = createSelectItem();
+                        removeIteratorFromRequestParam();
+                        if (selectItem != null) {
+                            items.add(selectItem);
+                        }
+                    }
+                }
+            } else if (value instanceof Map) {
+                Map map = (Map) value;
+                for (Object obj : map.entrySet()) {
+                    Entry currentItem = (Entry) obj;
+                    putIteratorToRequestParam(currentItem.getValue());
                     SelectItem selectItem = createSelectItem();
                     removeIteratorFromRequestParam();
                     if (selectItem != null) {
                         items.add(selectItem);
                     }
                 }
+            } else if (value != null) {
+                log.warn("Could not map values to select items, value is not supported: "
+                        + value);
             }
-        } else if (value instanceof Collection) {
-            Collection collection = (Collection) value;
-            for (Object currentItem : collection) {
-                if (currentItem instanceof SelectItemGroup) {
-                    SelectItemGroup itemGroup = (SelectItemGroup) currentItem;
-                    SelectItem[] itemsFromGroup = itemGroup.getSelectItems();
-                    items.addAll(Arrays.asList(itemsFromGroup));
-                } else {
-                    putIteratorToRequestParam(currentItem);
-                    SelectItem selectItem = createSelectItem();
-                    removeIteratorFromRequestParam();
-                    if (selectItem != null) {
-                        items.add(selectItem);
-                    }
-                }
-            }
-        } else if (value instanceof Map) {
-            Map map = (Map) value;
-            for (Object obj : map.entrySet()) {
-                Entry currentItem = (Entry) obj;
-                putIteratorToRequestParam(currentItem.getValue());
-                SelectItem selectItem = createSelectItem();
-                removeIteratorFromRequestParam();
-                if (selectItem != null) {
-                    items.add(selectItem);
-                }
-            }
-        } else if (value != null) {
-            log.warn("Could not map values to select items, value is not supported: "
-                    + value);
-        }
 
-        String ordering = getOrdering();
-        Boolean caseSensitive = getCaseSensitive();
-        if (ordering != null && !"".equals(ordering)) {
-            Collections.sort(items, new SelectItemComparator(ordering,
-                    caseSensitive));
+            String ordering = getOrdering();
+            Boolean caseSensitive = getCaseSensitive();
+            if (ordering != null && !"".equals(ordering)) {
+                Collections.sort(items, new SelectItemComparator(ordering,
+                        caseSensitive));
+            }
+            return (SelectItem[]) items.toArray(new SelectItem[0]);
+        } finally {
+            restoreRequestMapVarValue(varValue);
         }
-        return (SelectItem[]) items.toArray(new SelectItem[0]);
     }
 
     protected SelectItem createSelectItem() {

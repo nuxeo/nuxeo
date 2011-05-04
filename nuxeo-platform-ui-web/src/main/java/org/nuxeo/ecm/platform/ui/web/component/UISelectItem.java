@@ -15,6 +15,8 @@
  */
 package org.nuxeo.ecm.platform.ui.web.component;
 
+import java.util.Map;
+
 import javax.el.ELException;
 import javax.el.ValueExpression;
 import javax.faces.FacesException;
@@ -61,15 +63,57 @@ public class UISelectItem extends javax.faces.component.UISelectItem {
         return createSelectItem(value);
     }
 
+    /**
+     * Returns the value exposed in request map for the var name.
+     * <p>
+     * This is useful for restoring this value in the request map.
+     *
+     * @since 5.4.2
+     */
+    protected final Object saveRequestMapVarValue() {
+        String varName = getVar();
+        if (varName != null) {
+            FacesContext context = getFacesContext();
+            Map<String, Object> requestMap = context.getExternalContext().getRequestMap();
+            if (requestMap.containsKey(varName)) {
+                return requestMap.get(varName);
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Restores the given value in the request map for the var name.
+     *
+     * @since 5.4.2
+     */
+    protected final void restoreRequestMapVarValue(Object value) {
+        String varName = getVar();
+        if (varName != null) {
+            FacesContext context = getFacesContext();
+            Map<String, Object> requestMap = context.getExternalContext().getRequestMap();
+            if (value == null) {
+                requestMap.remove(varName);
+            } else {
+                requestMap.put(varName, value);
+            }
+        }
+    }
+
     protected SelectItem createSelectItem(Object value) {
         SelectItem item = null;
 
         if (value instanceof SelectItem) {
             item = (SelectItem) value;
         } else {
-            putIteratorToRequestParam(value);
-            item = createSelectItem();
-            removeIteratorFromRequestParam();
+            Object varValue = saveRequestMapVarValue();
+            try {
+                putIteratorToRequestParam(value);
+                item = createSelectItem();
+                removeIteratorFromRequestParam();
+            } finally {
+                restoreRequestMapVarValue(varValue);
+            }
         }
         return item;
     }
