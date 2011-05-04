@@ -9,3 +9,4 @@ target
 *~
 *.orig
 .DS_Store
+nuxeo-webdav/data/

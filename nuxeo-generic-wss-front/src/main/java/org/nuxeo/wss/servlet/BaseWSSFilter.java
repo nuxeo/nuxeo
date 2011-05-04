@@ -205,8 +205,8 @@ public abstract class BaseWSSFilter implements Filter {
     private boolean isWebDavRequest(HttpServletRequest request) {
         String ua = request.getHeader("User-Agent");
         return StringUtils.isNotEmpty(ua)
-                && request.getHeader("User-Agent").contains(
-                        FPRPCConts.WEBDAV_USERAGENT);
+                && (ua.contains(FPRPCConts.WEBDAV_USERAGENT)
+                        || ua.contains(FPRPCConts.LITMUS_USERAGENT) || ua.contains(FPRPCConts.NAUTILUS_USERAGENT));
     }
 
     // resolve destination path for WebDAV requests
