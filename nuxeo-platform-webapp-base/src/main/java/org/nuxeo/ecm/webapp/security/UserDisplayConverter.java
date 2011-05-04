@@ -90,15 +90,16 @@ public class UserDisplayConverter implements Converter {
                     context, component, "lastNameField", null);
             String schema = (String) ComponentUtils.getAttributeOrExpressionValue(
                     context, component, "userSchema", null);
-            if (schema != null && firstName != null && lastName != null) {
+
+            if (schema != null) {
                 try {
                     DocumentModel doc = DirectoryFunctions.getDirectoryEntry(
                             directory, username);
                     if (doc != null) {
-                        String firstNameValue = (String) doc.getProperty(
-                                schema, firstName);
-                        String lastNameValue = (String) doc.getProperty(schema,
-                                lastName);
+                        String firstNameValue = firstName != null ? (String) doc.getProperty(
+                                schema, firstName) : null;
+                        String lastNameValue = lastName != null ? (String) doc.getProperty(
+                                schema, lastName) : null;
                         return Functions.userDisplayName(username,
                                 firstNameValue, lastNameValue);
                     }
