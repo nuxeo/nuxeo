@@ -30,6 +30,35 @@
 
     <operation
       class="org.nuxeo.ecm.automation.core.operations.services.PictureResize" />
+
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.services.FileManagerImport" />
+
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.services.UserWorkspaceCreateFromBlob" />
+
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.services.BlobHolderAttach" />
+
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.services.GetActions" />
+
+  </extension>
+
+  <extension point="chains"
+    target="org.nuxeo.ecm.core.operation.OperationServiceComponent">
+    <chain id="AttachFiles">
+      <operation id="BlobHolder.Attach">
+        <param type="boolean" name="useMainBlob">false</param>
+      </operation>
+    </chain>
+    <chain id="FileManager.ImportWithMetaData">
+      <operation id="FileManager.Import">
+      </operation>
+      <operation id="Document.Update">
+        <param type="properties" name="properties">expr:Context.get("docMetaData")</param>
+      </operation>
+    </chain>
   </extension>
 
 </component>

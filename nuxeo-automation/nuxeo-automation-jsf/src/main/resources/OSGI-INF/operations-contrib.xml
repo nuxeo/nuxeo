@@ -41,6 +41,54 @@
     <operation
       class="org.nuxeo.ecm.automation.jsf.operations.CancelCreateDocumentInUI" />
     <operation class="org.nuxeo.ecm.automation.jsf.operations.SaveDocumentInUI" />
+
+    <operation class="org.nuxeo.ecm.automation.seam.operations.InitSeamContext" />
+    <operation class="org.nuxeo.ecm.automation.seam.operations.DestroySeamContext" />
+    <operation class="org.nuxeo.ecm.automation.seam.operations.RunOperationInSeam" />
+
+  </extension>
+
+ <extension point="chains"
+    target="org.nuxeo.ecm.core.operation.OperationServiceComponent">
+    <chain id="ImportWorklist">
+      <operation id="Seam.InitContext" />
+      <operation id="UserWorkspace.CreateDocumentFromBlob" />
+      <operation id="Document.Save"/>
+      <operation id="Seam.AddToWorklist"/>
+      <operation id="Seam.DestroyContext" />
+    </chain>
+    <chain id="ImportClipboard">
+      <operation id="Seam.InitContext" />
+      <operation id="UserWorkspace.CreateDocumentFromBlob" />
+      <operation id="Document.Save"/>
+      <operation id="Seam.AddToClipboard"/>
+      <operation id="Seam.DestroyContext" />
+    </chain>
+    <chain id="SeamActions.GET">
+      <operation id="Seam.RunOperation">
+        <param type="string" name="id">Actions.GET</param>
+      </operation>
+    </chain>
+
+    <chain id="FileManager.ImportWithMetaDataInSeam">
+      <operation id="FileManager.Import">
+      </operation>
+      <operation id="Document.Update">
+        <param type="properties" name="properties">expr:Context.get("docMetaData")</param>
+      </operation>
+      <operation id="Seam.RunOperation">
+        <param type="string" name="id">Seam.Refresh</param>
+      </operation>
+    </chain>
+
+    <chain id="FileManager.ImportInSeam">
+      <operation id="FileManager.Import">
+      </operation>
+      <operation id="Seam.RunOperation">
+        <param type="string" name="id">Seam.Refresh</param>
+      </operation>
+    </chain>
+
   </extension>
 
 </component>

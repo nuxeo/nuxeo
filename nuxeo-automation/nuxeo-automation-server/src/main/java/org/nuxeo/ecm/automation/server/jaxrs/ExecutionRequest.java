@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -15,6 +15,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+
+import net.sf.json.JSONObject;
 
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
@@ -48,8 +50,16 @@ public class ExecutionRequest {
         return input;
     }
 
+    public void setContextParam(String key, JSONObject value) {
+        ctx.put(key, value);
+    }
+
     public void setContextParam(String key, String value) {
         ctx.put(key, value);
+    }
+
+    public void setParam(String key, JSONObject jsonObject) {
+        params.put(key, jsonObject);
     }
 
     public void setParam(String key, String value) {
@@ -74,6 +84,7 @@ public class ExecutionRequest {
         ctx.addRequestCleanupHandler(request);
         ctx.setCoreSession(session);
         ctx.setInput(input);
+        ctx.put("request", request);
         return ctx;
     }
 

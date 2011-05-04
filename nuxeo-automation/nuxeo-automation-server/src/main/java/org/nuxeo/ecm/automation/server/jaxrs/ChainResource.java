@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -36,6 +36,8 @@ public class ChainResource extends ExecutableResource {
     @Override
     public Object execute(ExecutionRequest xreq) throws Exception {
         OperationContext ctx = xreq.createContext(request, getCoreSession());
+        // Copy params in the Chain context
+        ctx.putAll(xreq.getParams());
         return service.run(ctx, chainId);
     }
 
