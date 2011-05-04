@@ -38,10 +38,11 @@
   <link rel="stylesheet" type="text/css" href="${specDirectoryUrl}gadget-common.css"/>
   <style type='text/css'>
   #txtareapostit {
-    width: 93%;
+    padding: 2px 0;
+    width: 97%;
     height:220px;
     color: black;
-    border: 0px solid white;
+    border: none;
     background-color:#fef8bc;
     line-height:14px;
     margin:auto;
@@ -67,28 +68,16 @@
   }
 
   #txtCenter {
-    background-image: url(note_center.png);
-    background-repeat: repeat-y ;
-    width:294px;
+    width:93%;
+    max-width:254px;
     margin:auto;
+    background-color:#FEF8BC;
+	border: 1px solid #ddd;
+	-moz-box-shadow: 0px 2px 5px #888; /* Firefox 3.6 and earlier */
+	-webkit-box-shadow: 0px 2px 5px #888; /* Safari */
+	box-shadow: 0px 2px 5px #888;
   }
 
-  #txtTop{
-   width:294px;
-   height:5px;
-   font-size:0px;
-   background-image: url(note_top.png);
-   background-repeat: no-repeat ;
-   margin:auto;
-  }
-
-  #txtBottom{
-   width:294px;
-   height:14px;
-   background-image: url(note_bottom.png);
-   background-repeat: no-repeat ;
-   margin:auto;
-  }
   </style>
    <script type="text/javascript" language="javascript" src="jquery.elastic.js"></script>
   <script type="text/javascript">
@@ -156,7 +145,6 @@
   <body>
    <div id="content">
 
-   <div id="txtTop"></div>
    <div id="txtCenter">
    <div id="cacheText" style="display:none;" ></div>
     <form style="text-align:center;" method="post" id="formtxt" enctype="application/x-www-form-urlencoded" action="#">
@@ -164,7 +152,6 @@
     </textarea>
     </form>
    </div>
-   <div id="txtBottom"></div>
   </div>
 
   <div style="clear:both"></div>
