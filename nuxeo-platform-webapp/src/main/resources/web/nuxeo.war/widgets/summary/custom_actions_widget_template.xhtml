@@ -78,7 +78,6 @@
         <c:otherwise>
           <nxu:dataList layout="simple"
             var="action" value="#{actions}">
-            #{action.id}
             <nxh:commandLink action="#{action.getLink()}"
               id="#{widget.id}_#{action.id}"
               immediate="#{action.immediate}">
