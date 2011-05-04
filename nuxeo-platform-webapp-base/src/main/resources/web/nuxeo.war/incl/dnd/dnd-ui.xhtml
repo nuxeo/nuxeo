@@ -1,0 +1,68 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+ xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+  <!-- Information panel for DnD import -->
+  <div id="dropzone-info-panel">
+    <table width="100%">
+      <tr>
+        <td>
+          <div class="dropzone-info-block" id="dropzone-info-block">
+            <div class="dropzone-info" id="dropzone-info"></div>
+          </div>
+        </td>
+        <td>
+          <div class="dropzone-info-summary" id="dropzone-info-summary">
+          </div>
+        </td>
+        <td>
+          <span id="dndMsgUploadInProgress" class="dndControlMessage">
+          <nxu:graphicImage value="/img/big_loading.gif"
+          style="vertical-align:middle"/>
+          <h:outputText value="#{messages['label.dnd.upload.inprogress']}"/></span>
+          <span id="dndMsgUploadCompleted" class="dndControlMessage"><h:outputText value="#{messages['label.dnd.upload.ok.continue']}"/></span>
+        </td>
+        <td>
+           <span id="dropzone-bar-msg" class="dropzone-bar-msg"></span>
+        </td>
+        <td>
+          <input id="dropzone-bar-btn" class="dropzone-bar-btn" type="button" value="#{messages['command.continue']}"></input>
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- Form used to choose import operation -->
+  <div id="dndFormPanel" class="dndFormPanel">
+    <table width="100%">
+      <tr>
+        <th> <h:outputText value="#{messages['label.dnd.uploaded.files']}"/> </th>
+        <th> <h:outputText value="#{messages['label.dnd.choose.operation']}"/> </th>
+      </tr>
+      <tr>
+        <td><div id="uploadedFileList"></div>
+        </td>
+        <td>
+          <form name="operationForm">
+            <select id="operationIdSelector" name="operationId"></select>
+            <div id="dndSubForm"></div>
+            <input id="dndFormSubmitButton" type="button" value="#{messages['import.continue']}"/>
+          </form>
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <div id="dndContinueButton">
+     <span id="dndContinueButtonNext">
+     <nxu:graphicImage value="/img/ImportContinue.png"
+      style="vertical-align:middle"
+      alt="#{messages['import.continue']}"
+      title="#{messages['import.continue']}"/>
+     </span>
+     <span id="dndContinueButtonWait" style="display:none">
+       <nxu:graphicImage value="/img/big_loading.gif"
+          style="vertical-align:middle"/>
+     </span>
+  </div>
+
+</div>
