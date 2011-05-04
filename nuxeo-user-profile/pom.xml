@@ -18,6 +18,12 @@
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-webapp-base</artifactId>
     </dependency>
+    <!-- temporary add dependency -->
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-users-management-compat</artifactId>
+      <version>${nuxeo.features.version}</version>
+    </dependency>
   </dependencies>
 
 </project>
