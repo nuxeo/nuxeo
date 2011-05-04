@@ -13,26 +13,9 @@
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
-    point="widgettypes">
-
-    <widgetType name="select_advanced_search_view">
-      <documentation>
-
-      </documentation>
-      <handler-class>
-        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
-      </handler-class>
-      <property name="template">/widgets/select_advanced_search_view_widget_template.xhtml
-      </property>
-    </widgetType>
-
-  </extension>
-
-  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="widgets">
 
-
-    <widget name="select_advanced_search_view" type="select_advanced_search_view">
+    <widget name="select_advanced_search_view" type="selectOneListbox">
       <labels>
         <label mode="any">label.local.configuration.advancedSearchView</label>
       </labels>
@@ -40,8 +23,12 @@
       <fields>
         <field>searchLocalConfiguration:advancedSearchView</field>
       </fields>
+      <selectOptions>
+        <options value="#{contentViewService.getContentViewHeaders('ADVANCED_SEARCH')}"
+          var="contentViewHeader" itemValue="#{header.name}"
+          itemLabel="#{contentViewHeader.translateTitle ? messages[contentViewHeader.title] : contentViewHeader.title}" />
+      </selectOptions>
     </widget>
-
 
   </extension>
 
