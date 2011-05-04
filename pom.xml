@@ -348,6 +348,12 @@
         <artifactId>nuxeo-shell</artifactId>
         <version>${nuxeo.addons.version}</version>
       </dependency>
+
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-users-management-compat</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
