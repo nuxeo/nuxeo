@@ -34,11 +34,11 @@
         </f:facet>
 
         <h:commandLink value="#{nxu:userFullName(user)}" immediate="true"
-          action="#{userManagerActions.viewUser(user)}"
+          action="#{userManagementActions.viewUser(user)}"
           rendered="#{principalType=='USER_TYPE'}">
         </h:commandLink>
         <h:commandLink value="#{user}" immediate="true"
-          action="#{groupManagerActions.viewGroup(user)}"
+          action="#{groupManagementActions.viewGroup(user)}"
           rendered="#{principalType!='USER_TYPE'}">
         </h:commandLink>
 
@@ -124,13 +124,13 @@
           <h:commandLink
             value="#{nxu:userFullName(securityActions.dataTableModel.currentCellDisplayedValue)}"
             immediate="true"
-            action="#{userManagerActions.viewUser(securityActions.dataTableModel.currentCellDisplayedValue)}"
+            action="#{userManagementActions.viewUser(securityActions.dataTableModel.currentCellDisplayedValue)}"
             rendered="#{securityActions.dataTableModel.currentUserType=='USER_TYPE'}">
           </h:commandLink>
           <h:commandLink
             value="#{securityActions.dataTableModel.currentCellDisplayedValue}"
             immediate="true"
-            action="#{groupManagerActions.viewGroup(securityActions.dataTableModel.currentCellDisplayedValue)}"
+            action="#{groupManagementActions.viewGroup(securityActions.dataTableModel.currentCellDisplayedValue)}"
             rendered="#{securityActions.dataTableModel.currentUserType!='USER_TYPE'}">
           </h:commandLink>
         </f:subview>
