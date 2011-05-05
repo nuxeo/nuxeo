@@ -18,6 +18,7 @@
     <![CDATA[
 <html>
   <head>
+  <link rel="stylesheet" type="text/css" href="${specDirectoryUrl}gadget-common.css"/>
     <style type='text/css'>
       *{
        font-family:Trebuchet, Arial,Verdana;
@@ -122,41 +123,39 @@
       <div id="video"></div>
 
       <div id="perm" style="display:none;">
-        <div id="show">
-          <div class="context-edit-button"><a href="#">__MSG_label.gadget.edit__</a></div>
-        </div>
-
         <div id="form" style="display:none;margin:auto">
           <form style="text-align:center;" method="post" id="formUpload" enctype="application/x-www-form-urlencoded" action="#">
-          <div id="hideContainer"><a href="#" id="hide" title="fermer"><img src="/nuxeo/img/x.png"></a></div>
-          <table style="width:100%" id="formVideo">
-            <tr>
-              <td style="width:30%">
-                <label>Titre</label>
-              </td>
-              <td style="width:70%">
-                <input type="text" name="title" id="title-field" value="">
-              </td>
-            </tr>
-            <tr>
-              <td style="width:30%">
-                <label>Balise Video</label>
-              </td>
-              <td style="width:70%">
-                 <textarea id="baliseVideo" name="gadget:htmlContent"></textarea>
-              </td>
-            </tr>
-            <tr>
-            <td style="width:30%"></td>
-            <td style="width:70%">
-                <a href="#" id="valid" >Valider</a>
-            </td>
-          </tr>
-          </table>
-
+            <div id="hideContainer"><a href="#" id="hide" title="fermer"><img src="/nuxeo/img/x.png"></a></div>
+            <table style="width:100%" id="formVideo">
+              <tr>
+                <td style="width:30%">
+                  <label>Titre</label>
+                </td>
+                <td style="width:70%">
+                  <input type="text" name="title" id="title-field" value="">
+                </td>
+              </tr>
+              <tr>
+                <td style="width:30%">
+                  <label>Balise Video</label>
+                </td>
+                <td style="width:70%">
+                   <textarea id="baliseVideo" name="gadget:htmlContent"></textarea>
+                </td>
+              </tr>
+              <tr>
+                <td style="width:30%"></td>
+                <td style="width:70%">
+                    <a href="#" id="valid" >Valider</a>
+                </td>
+              </tr>
+            </table>
+          </form>
         </div>
-        </form>
       </div>
+    </div>
+    <div class="tools" id="show">
+      <div class="context-edit-button"><a href="#">__MSG_label.gadget.edit__</a></div>
     </div>
   </body>
 </html>
