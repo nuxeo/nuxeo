@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -56,6 +57,10 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class DownloadServlet extends HttpServlet {
 
+    private static final String NXDOWNLOADINFO_PREFIX = "nxdownloadinfo";
+
+    private static final String NXBIGFILE_PREFIX = "nxbigfile";
+
     protected static final int BUFFER_SIZE = 1024 * 512;
 
     protected static final int MIN_BUFFER_SIZE = 1024 * 64;
@@ -85,33 +90,47 @@ public class DownloadServlet extends HttpServlet {
             requestURI = req.getRequestURI();
         }
 
-        if (requestURI.contains("/nxbigfile/")) {
+        if (requestURI.contains("/" + NXBIGFILE_PREFIX + "/")) {
             handleDownloadSingleDocument(req, resp, requestURI);
-        }
-        if (requestURI.contains("/nxbigzipfile/")) {
+        } else if (requestURI.contains("/" + NXDOWNLOADINFO_PREFIX + "/")) {
+            handleGetDownloadInfo(req, resp, requestURI);
+        } else if (requestURI.contains("/nxbigzipfile/")) {
             // handle the download for a big zip created in the tmp directory;
             // the name of this zip is sent in the request
             handleDownloadTemporaryZip(req, resp, requestURI);
         }
     }
 
-    private void handleDownloadSingleDocument(HttpServletRequest req,
-            HttpServletResponse resp, String requestURI) throws
-            ServletException {
+    private Blob resolveBlob(HttpServletRequest req, HttpServletResponse resp,
+            String requestURI) throws ServletException {
+
         String filePath = requestURI.replace(
-                VirtualHostHelper.getContextPath(req) + "/nxbigfile/", "");
+                VirtualHostHelper.getContextPath(req) + "/" + NXBIGFILE_PREFIX
+                        + "/", "");
         String[] pathParts = filePath.split("/");
 
         String repoName = pathParts[0];
         String docId = pathParts[1];
-        String fieldPath = pathParts[2];
-        String fileName = pathParts[3];
 
-        String completePath = filePath.split(docId)[1];
-        int idx = completePath.lastIndexOf('/');
-        if (idx > 0) {
-            fieldPath = completePath.substring(0, idx);
-            fileName = completePath.substring(idx + 1);
+        String fieldPath = "blobholder:0";
+        if (pathParts.length > 2) {
+            fieldPath = pathParts[2];
+        }
+
+        String fileName = null;
+        if (pathParts.length > 3) {
+            fileName = pathParts[3];
+        }
+
+        // alternate decoding
+        String[] alternatePath = filePath.split(docId);
+        if (alternatePath.length > 1) {
+            String completePath = alternatePath[1];
+            int idx = completePath.lastIndexOf('/');
+            if (idx > 0) {
+                fieldPath = completePath.substring(1, idx);
+                fileName = completePath.substring(idx + 1);
+            }
         }
 
         CoreSession session = null;
@@ -119,17 +138,17 @@ public class DownloadServlet extends HttpServlet {
             session = getCoreSession(repoName);
 
             DocumentModel doc = session.getDocument(new IdRef(docId));
-            Blob blob;
+            Blob blob = null;
             if (fieldPath != null) {
                 // Hack for Flash Url wich doesn't support ':' char
                 fieldPath = fieldPath.replace(';', ':');
                 // BlobHolder urls
-                if (fieldPath.startsWith("/blobholder")) {
+                if (fieldPath.startsWith("blobholder")) {
                     BlobHolder bh = doc.getAdapter(BlobHolder.class);
                     if (bh == null) {
-                        return;
+                        return null;
                     }
-                    String bhPath = fieldPath.replace("/blobholder:", "");
+                    String bhPath = fieldPath.replace("blobholder:", "");
                     if ("".equals(bhPath) || "0".equals(bhPath)) {
                         blob = bh.getBlob();
                     } else {
@@ -145,16 +164,65 @@ public class DownloadServlet extends HttpServlet {
                                 doc, fieldPath);
                     }
                 }
-            } else {
-                return;
             }
-            downloadBlob(req, resp, blob, fileName);
+
+            if (fileName != null && !fileName.isEmpty()) {
+                blob.setFilename(fileName);
+            }
+            return blob;
         } catch (Exception e) {
             throw new ServletException(e);
         } finally {
             if (session != null) {
                 CoreInstance.getInstance().close(session);
             }
+        }
+    }
+
+    private void handleGetDownloadInfo(HttpServletRequest req,
+            HttpServletResponse resp, String requestURI)
+            throws ServletException {
+
+        String downloadUrl = requestURI.replace(NXDOWNLOADINFO_PREFIX,
+                NXBIGFILE_PREFIX);
+        Blob blob = resolveBlob(req, resp, downloadUrl);
+        if (blob == null) {
+            try {
+                resp.sendError(HttpServletResponse.SC_NO_CONTENT,
+                        "No Blob found");
+                return;
+            } catch (IOException e) {
+                throw new ServletException(e);
+            }
+        }
+        StringBuffer sb = new StringBuffer();
+
+        resp.setContentType("text/plain");
+        try {
+            sb.append(blob.getMimeType());
+            sb.append(":");
+            sb.append(URLEncoder.encode(blob.getFilename(), "UTF-8"));
+            sb.append(":");
+            sb.append(VirtualHostHelper.getServerURL(req));
+            sb.append(downloadUrl.substring(1));
+            resp.getWriter().write(sb.toString());
+        } catch (Exception e) {
+            throw new ServletException(e);
+        }
+    }
+
+    private void handleDownloadSingleDocument(HttpServletRequest req,
+            HttpServletResponse resp, String requestURI)
+            throws ServletException {
+
+        Blob blob = resolveBlob(req, resp, requestURI);
+        if (blob == null) {
+            return;
+        }
+        try {
+            downloadBlob(req, resp, blob, null);
+        } catch (IOException e) {
+            throw new ServletException(e);
         }
     }
 
