@@ -6,7 +6,7 @@
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:rich="http://richfaces.org/rich">
 
-  <nxu:methodResult name="vgroups" value="#{userManagerActions.getUserVirtualGroups(field_0)}">
+  <nxu:methodResult name="vgroups" value="#{userManagementActions.getUserVirtualGroups(field_0)}">
     <h:dataTable value="#{vgroups}"
       var="item" rendered="#{not empty vgroups}">
       <h:column>

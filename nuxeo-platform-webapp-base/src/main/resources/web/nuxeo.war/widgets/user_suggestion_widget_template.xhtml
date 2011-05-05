@@ -10,6 +10,13 @@
   <c:set var="userSchema" value="#{userManager.userSchemaName}" />
 
   <c:if test="#{widget.mode != 'edit'}">
+    <c:set var="firstLabelField" value="#{nxu:test(!empty widgetProperties_firstLabelField, widgetProperties_firstLabelField, 'firstName')}" />
+    <c:set var="entrySecondLabel" value="#{nxu:test(!empty widgetProperties_entrySecondLabel, widgetProperties_entrySecondLabel, 'lastName')}" />
+    <c:set var="hideFirstLabel" value="#{nxu:test(!empty widgetProperties_hideFirstLabel, widgetProperties_hideFirstLabel, false)}" />
+    <c:set var="hideSecondLabel" value="#{nxu:test(!empty widgetProperties_hideSecondLabel, widgetProperties_hideSecondLabel, false)}" />
+
+    <c:set var="hideVirtualGroups" value="#{nxu:test(!empty widget.properties.hideVirtualGroups, widget.properties.hideVirtualGroups, false)}" />
+
 
     <h:dataTable value="#{field_0}"
       var="item" rendered="#{not empty field_0}">
@@ -17,12 +24,26 @@
         <nxu:methodResult name="info" value="#{userSuggestionActions.getUserInfo(item)}">
           <f:subview rendered="#{info.type == 'USER_TYPE'}">
             <h:graphicImage value="/icons/user.gif" alt="user.gif" />
-            <h:commandLink value="#{nxu:userDisplayName(info.id, info.entry[userSchema].firstName, info.entry[userSchema].lastName)}" action="#{userManagerActions.viewUser(info.id)}"/>
+            <c:choose>
+              <c:when test="#{hideFirstLabel and hideSecondLabel}">
+                <c:set var="userDisplayName" value="#{nxu:userDisplayName(info.id, null, null)}" />
+              </c:when>
+              <c:when test="#{!hideFirstLabel and hideSecondLabel}">
+                <c:set var="userDisplayName" value="#{nxu:userDisplayName(info.id, info.entry[userSchema][firstLabelField], null)}" />
+              </c:when>
+              <c:when test="#{hideFirstLabel and !hideSecondLabel}">
+                <c:set var="userDisplayName" value="#{nxu:userDisplayName(info.id, info.entry[userSchema][entrySecondLabel], null)}" />
+              </c:when>
+              <c:when test="#{!hideFirstLabel and !hideSecondLabel}">
+                <c:set var="userDisplayName" value="#{nxu:userDisplayName(info.id, info.entry[userSchema][firstLabelField], info.entry[userSchema][entrySecondLabel])}" />
+              </c:when>
+            </c:choose>
+            <h:commandLink value="#{userDisplayName}" action="#{userManagementActions.viewUser(info.id)}"/>
           </f:subview>
           <f:subview rendered="#{info.type == 'GROUP_TYPE'}">
             <h:graphicImage value="/icons/group.gif" alt="group.gif" />
             <h:commandLink value="#{info.id}"
-                action="#{groupManagerActions.viewGroup(info.id)}" />
+                action="#{groupManagementActions.viewGroup(info.id)}" />
           </f:subview>
           <f:subview rendered="#{empty info.type}">
             <h:outputText value="#{item}" />

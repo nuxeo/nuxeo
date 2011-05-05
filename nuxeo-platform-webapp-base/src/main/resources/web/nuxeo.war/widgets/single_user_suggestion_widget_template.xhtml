@@ -3,24 +3,77 @@
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
-  xmlns:nxdir="http://nuxeo.org/nxdirectory"
-  xmlns:corresp="http://com.nuxeo.projects.correspondence/"
-  xmlns:rich="http://richfaces.org/rich"
-  xmlns:nxl="http://nuxeo.org/nxforms/layout">
-  
+  xmlns:rich="http://richfaces.org/rich">
+
 <c:set var="userSchema" value="#{userManager.userSchemaName}" />
-  
+
 <c:if test="#{widget.mode != 'edit'}">
 
-  <h:outputText value="#{field_0}"
-    converter="#{userSuggestionActions.userConverter}">
-    <f:attribute name="prefixed" value="false" />
-    <f:attribute name="userDirectory" value="#{userManager.userDirectoryName}" />
-    <f:attribute name="userSchema" value="#{userManager.userSchemaName}" />
-    <f:attribute name="firstNameField" value="firstName" />
-    <f:attribute name="lastNameField" value="lastName" />
-  </h:outputText>
+  <c:set var="searchType"
+    value="#{nxu:test(!empty widget.properties.userSuggestionSearchType, widget.properties.userSuggestionSearchType, '')}" />
+  <c:set var="firstLabelField"
+    value="#{nxu:test(!empty widgetProperty_firstLabelField, widgetProperty_firstLabelField, 'firstName')}" />
+  <c:set var="secondLabelField"
+    value="#{nxu:test(!empty widgetProperty_secondLabelField, widgetProperty_secondLabelField, 'lastName')}" />
+  <c:set var="hideFirstLabel"
+    value="#{nxu:test(!empty widgetProperty_hideFirstLabel, widgetProperty_hideFirstLabel, false)}" />
+  <c:set var="hideSecondLabel"
+    value="#{nxu:test(!empty widgetProperty_hideSecondLabel, widgetProperty_hideSecondLabel, false)}" />
+  <c:set var="displayAction"
+    value="#{nxu:test(!empty widgetProperty_displayAction, widgetProperty_displayAction, 'nothing')}" />
 
+  <c:set var="userDirectory" value="#{userManager.userDirectoryName}" />
+  <c:set var="userSchema" value="#{userManager.userSchemaName}" />
+  <c:set var="firstNameField" value="#{nxu:test(hideFirstLabel, null, firstLabelField)}" />
+  <c:set var="lastNameField" value="#{nxu:test(hideSecondLabel, null, entrySecondLabel)}" />
+
+  <f:subview rendered="#{displayAction == 'nothing' and searchType == 'USER_TYPE'}">
+    <h:outputText value="#{field_0}"
+      converter="#{userSuggestionActions.userConverter}">
+      <f:attribute name="prefixed" value="false" />
+      <f:attribute name="userDirectory" value="#{userDirectory}" />
+      <f:attribute name="userSchema" value="#{userSchema}" />
+      <f:attribute name="firstNameField" value="#{firstNameField}" />
+      <f:attribute name="lastNameField" value="#{lastNameField}" />
+    </h:outputText>
+  </f:subview>
+  <f:subview rendered="#{displayAction == 'nothing' and searchType == 'GROUP_TYPE'}">
+    <h:outputText value="#{field_0}"/>
+  </f:subview>
+  <f:subview rendered="#{displayAction == 'view' and searchType == 'USER_TYPE'}">
+    <h:commandLink action="#{userManagementActions.viewUser(field_0)}">
+      <h:outputText value="#{field_0}"
+        converter="#{userSuggestionActions.userConverter}">
+        <f:attribute name="prefixed" value="false" />
+        <f:attribute name="userDirectory" value="#{userDirectory}" />
+        <f:attribute name="userSchema" value="#{userSchema}" />
+        <f:attribute name="firstNameField" value="#{firstNameField}" />
+        <f:attribute name="lastNameField" value="#{lastNameField}" />
+      </h:outputText>
+    </h:commandLink>
+  </f:subview>
+  <f:subview rendered="#{displayAction == 'view' and searchType == 'GROUP_TYPE'}">
+    <h:commandLink action="#{groupManagementActions.viewGroup(field_0)}">
+      <h:outputText value="#{field_0}" />
+    </h:commandLink>
+  </f:subview>
+  <f:subview rendered="#{displayAction == 'edit' and searchType == 'USER_TYPE'}">
+    <a4j:commandLink action="#{userManagementActions.setSelectedUser(field_0)}" actionListener="#{userManagementActions.toggleShowUserOrGroup}" reRender="usersPanel">
+      <h:outputText value="#{field_0}"
+        converter="#{userSuggestionActions.userConverter}">
+        <f:attribute name="prefixed" value="false" />
+        <f:attribute name="userDirectory" value="#{userDirectory}" />
+        <f:attribute name="userSchema" value="#{userSchema}" />
+        <f:attribute name="firstNameField" value="#{firstNameField}" />
+        <f:attribute name="lastNameField" value="#{lastNameField}" />
+      </h:outputText>
+    </a4j:commandLink>
+  </f:subview>
+  <f:subview rendered="#{displayAction == 'edit' and searchType == 'GROUP_TYPE'}">
+    <a4j:commandLink action="#{groupManagementActions.setSelectedGroup(field_0)}" actionListener="#{groupManagementActions.toggleShowUserOrGroup}" reRender="groupsPanel">
+      <h:outputText value="#{field_0}" />
+    </a4j:commandLink>
+  </f:subview>
 </c:if>
 
 <c:if test="#{widget.mode == 'edit'}">
@@ -67,7 +120,7 @@
             id="#{widget.id}_listRegion_select">
             <f:setPropertyActionListener value="#{result.id}"
               target="#{suggestionActions.selectedValue}" />
-            <nxu:actionListenerMethod value="#{suggestionActions.addSingleBoundSelection}" /> 
+            <nxu:actionListenerMethod value="#{suggestionActions.addSingleBoundSelection}" />
             <f:param name="suggestionSelectionOutputId"
               value="#{widget.id}_selectionOutput" />
             <f:param name="suggestionSelectionHiddenId"
