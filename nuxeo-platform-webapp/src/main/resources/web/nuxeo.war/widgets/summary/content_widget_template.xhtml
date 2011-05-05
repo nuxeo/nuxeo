@@ -28,11 +28,13 @@
           <td class="labelColumn">
             <h:outputText value="#{messages['label.summary.download.file']}" />
           </td>
-          <td class="fieldColumn">
+          <td class="fieldColumn" docRef="#{currentDocument.id}">
+            <div class="dropout" downloadUrl="#{nxd:fileUrl('downloadFile', currentDocument, 'blobholder:0', currentDocumentAsBlobHolder.blob.filename)}" fileName="#{currentDocumentAsBlobHolder.blob.filename}" mimetype="#{currentDocumentAsBlobHolder.blob.mimeType}">
             <nxh:graphicImage value="#{nxd:fileIconPath(currentDocumentAsBlobHolder.blob)}"
               rendered="#{! empty nxd:fileIconPath(currentDocumentAsBlobHolder.blob)}" />
             <h:outputText value="#{currentDocumentAsBlobHolder.blob.filename}"/>
             <h:outputText value=" (#{nxu:printFileSize(currentDocumentAsBlobHolder.blob.length)})"/>
+            </div>
           </td>
           <td class="actionsColumn">
             <nxu:methodResult name="editable"

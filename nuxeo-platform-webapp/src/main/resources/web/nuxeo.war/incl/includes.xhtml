@@ -24,26 +24,35 @@
 
 <c:if test="#{useHtml5DragAndDrop}">
 
-<script type="text/javascript" src="#{baseURL}js/?scripts=dnd/jquery.client.js|dnd/jquery.dnd-file-upload.js|automation.js|dnd/nxdropzone.js"></script>
+<script type="text/javascript" src="#{baseURL}js/?scripts=dnd/jquery.client.js|dnd/jquery.dnd-file-upload.js|automation.js|dnd/nxdropzone.js|dnd/nxdropout.js"></script>
 
 <ui:include src="/incl/dnd/dnd-ui.xhtml" />
 
 <script>
 var baseURL='#{baseURL}';
 var ctx = { currentDocument : '#{currentDocument.id}',
+        <c:if test="#{currentDomain!=null}">
         currentDomain : '#{currentDomain.id}',
+        </c:if>
+        <c:if test="#{currentWorkspace!=null}">
+        currentWorkspace : '#{currentWorkspace.id}',
+        </c:if>
         conversationId : '#{org.jboss.seam.core.manager.currentConversationId}',
-        lang : '#{localeSelector.localeString}'};
+        lang : '#{localeSelector.localeString}',
+        repository : '#{currentDocument.repositoryName}'};
 </script>
 
 <script type="text/javascript">
     jQuery(document).ready(function(){
+      // init Browser DnD import
       jQuery(".dropzone").nxDropZone({
               url : "/nuxeo/site/automation/batch/",
               uploadRateRefreshTime : 500,
               numConcurrentUploads : 2,
               dropContext : ctx
             });
+      // init Browser Drag out support (Chrome only);
+      jQuery(".dropout").dropout(baseURL,ctx.repository);
    });
 </script>
 </c:if>
