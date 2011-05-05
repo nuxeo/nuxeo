@@ -27,9 +27,7 @@
 
         <specificAuthenticationChain name="WebDAV">
             <headers>
-                <header name="User-Agent">Microsoft-WebDAV-MiniRedir.*</header>
-                <header name="User-Agent">litmus.*</header>
-                <header name="User-Agent">gvfs.*</header>
+                <header name="User-Agent">(Microsoft-WebDAV-MiniRedir|litmus|gvfs|davfs).*</header>
             </headers>
 
             <allowedPlugins>
