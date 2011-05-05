@@ -37,6 +37,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
+import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
 import org.nuxeo.runtime.api.Framework;
 
@@ -56,6 +57,9 @@ public class ExternalLinkManager implements Serializable {
     protected String packageId;
 
     protected DownloadablePackage pkg;
+
+    @In(create = true, required = false)
+    protected WebActions webActions;
 
     @In(create = true, required = false)
     protected AdminViewManager adminViews;
@@ -114,13 +118,10 @@ public class ExternalLinkManager implements Serializable {
 
     public String confirm() throws Exception {
         initMinimalContext();
-
-        adminViews.setCurrentViewId("ConnectApps");
-        adminViews.setCurrentSubViewId("ConnectAppsRemote");
-
+        webActions.setCurrentTabId(AdminViewManager.ADMIN_ACTION_CATEGORY,
+                "ConnectApps", "ConnectAppsRemote");
         adminViews.addExternalPackageDownloadRequest(pkg.getId());
-
-        return "view_admin";
+        return AdminViewManager.VIEW_ADMIN;
     }
 
 }

@@ -17,25 +17,25 @@
 
     <action id="HostInfo" link="/incl/sysinfo/hostInfo.xhtml"
       label="tab.sysinfo.host" order="20">
-      <category>NUXEO_ADMIN_SystemInfo</category>
+      <category>SystemInfo_sub_tab</category>
       <filter-id>only_for_manager</filter-id>
     </action>
 
     <action id="NuxeoInfo" link="/incl/sysinfo/nuxeoInfo.xhtml"
       label="tab.sysinfo.nuxeo" order="30">
-      <category>NUXEO_ADMIN_SystemInfo</category>
+      <category>SystemInfo_sub_tab</category>
       <filter-id>only_for_manager</filter-id>
     </action>
 
     <action id="Setup" link="/incl/sysinfo/setup.xhtml"
       label="tab.sysinfo.setup" order="40">
-      <category>NUXEO_ADMIN_SystemInfo</category>
+      <category>SystemInfo_sub_tab</category>
       <filter-id>only_for_manager</filter-id>
     </action>
 
     <action id="ReposInfo" link="/incl/sysinfo/reposInfo.xhtml"
       label="tab.sysinfo.reposInfo" order="50">
-      <category>NUXEO_ADMIN_SystemInfo</category>
+      <category>SystemInfo_sub_tab</category>
       <filter-id>only_for_manager</filter-id>
     </action>
 
@@ -45,7 +45,7 @@
 
     <action id="UserActivity" link="/incl/sysinfo/usersActivity.xhtml"
       label="tab.sysinfo.usersActivity" order="60">
-      <category>NUXEO_ADMIN_SystemInfo</category>
+      <category>SystemInfo_sub_tab</category>
       <filter-id>only_for_manager</filter-id>
     </action>
 
@@ -57,13 +57,13 @@
 
     <action id="ConnectClientStatus" link="/incl/connect/connectStatus.xhtml"
       label="tab.nuxeoconnect.status" order="20">
-      <category>NUXEO_ADMIN_ConnectClient</category>
+      <category>ConnectClient_sub_tab</category>
       <filter-id>only_for_manager</filter-id>
     </action>
 
     <action id="ConnectClientTickets" link="/incl/connect/connectTickets.xhtml"
       label="tab.nuxeoconnect.tickets" order="30">
-      <category>NUXEO_ADMIN_ConnectClient</category>
+      <category>ConnectClient_sub_tab</category>
       <filter-id>only_for_manager</filter-id>
     </action>
 
@@ -75,25 +75,25 @@
 
     <action id="ConnectAppsUpdates" link="/incl/appcenter/connectUpdates.xhtml"
       label="tab.appstore.updates" order="20">
-      <category>NUXEO_ADMIN_ConnectApps</category>
+      <category>ConnectApps_sub_tab</category>
       <filter-id>only_for_manager</filter-id>
     </action>
 
     <action id="ConnectAppsStudio" link="/incl/appcenter/studio.xhtml"
       label="tab.appstore.studio" order="30">
-      <category>NUXEO_ADMIN_ConnectApps</category>
+      <category>ConnectApps_sub_tab</category>
       <filter-id>only_for_manager</filter-id>
     </action>
 
     <action id="ConnectAppsRemote" link="/incl/appcenter/connectRemote.xhtml"
       label="tab.appstore.remote" order="40">
-      <category>NUXEO_ADMIN_ConnectApps</category>
+      <category>ConnectApps_sub_tab</category>
       <filter-id>only_for_manager</filter-id>
     </action>
 
     <action id="ConnectAppsLocal" link="/incl/appcenter/connectLocal.xhtml"
       label="tab.appstore.local" order="50">
-      <category>NUXEO_ADMIN_ConnectApps</category>
+      <category>ConnectApps_sub_tab</category>
       <filter-id>only_for_manager</filter-id>
     </action>
 

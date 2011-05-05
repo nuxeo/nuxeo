@@ -20,9 +20,7 @@ package org.nuxeo.ecm.admin;
 import static org.jboss.seam.ScopeType.CONVERSATION;
 
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Factory;
@@ -34,6 +32,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
+import org.nuxeo.ecm.platform.ui.web.api.TabActionsSelection;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 
 /**
@@ -46,10 +45,6 @@ import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 public class AdminViewManager implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
-    protected Action currentView;
-
-    protected final Map<String, Action> currentSubViews = new HashMap<String, Action>();
 
     protected String externalPackageDownloadRequest;
 
@@ -66,7 +61,7 @@ public class AdminViewManager implements Serializable {
     protected DocumentModel lastVisitedDocument;
 
     public String goHome() {
-        currentView=null;
+        webActions.resetCurrentTabs(ADMIN_ACTION_CATEGORY);
         Contexts.getEventContext().remove("currentView");
         Contexts.getEventContext().remove("currentAdminSubView");
         return VIEW_ADMIN;
@@ -87,14 +82,11 @@ public class AdminViewManager implements Serializable {
 
     @Factory(value = "currentAdminView", scope = ScopeType.EVENT)
     public Action getCurrentView() {
-        if (currentView == null) {
-            currentView = getAvailableActions().get(0);
-        }
-        return currentView;
+        return webActions.getCurrentTabAction(ADMIN_ACTION_CATEGORY);
     }
 
     public void setCurrentView(Action currentView) {
-        this.currentView = currentView;
+        webActions.setCurrentTabAction(ADMIN_ACTION_CATEGORY, currentView);
     }
 
     public String getCurrentViewId() {
@@ -102,26 +94,17 @@ public class AdminViewManager implements Serializable {
     }
 
     public String setCurrentViewId(String currentViewId) {
-        for (Action action : getAvailableActions()) {
-            if (action.getId().equals(currentViewId)) {
-                currentView = action;
-                break;
-            }
-        }
+        webActions.setCurrentTabId(ADMIN_ACTION_CATEGORY, currentViewId);
         return VIEW_ADMIN;
     }
 
     @Factory(value = "currentAdminSubView", scope = ScopeType.EVENT)
     public Action getCurrentSubView() {
-        if (currentSubViews.get(getCurrentViewId()) == null) {
-            currentSubViews.put(getCurrentViewId(),
-                    getAvailableSubActions().get(0));
-        }
-        return currentSubViews.get(getCurrentViewId());
+        return webActions.getCurrentSubTabAction(getCurrentViewId());
     }
 
     public void setCurrentSubView(Action currentSubView) {
-        currentSubViews.put(getCurrentViewId(), currentSubView);
+        webActions.setCurrentTabAction(TabActionsSelection.getSubTabCategory(getCurrentViewId()), currentSubView);
     }
 
     @Factory(value = "currentAdminSubViewId", scope = ScopeType.EVENT)
@@ -130,12 +113,7 @@ public class AdminViewManager implements Serializable {
     }
 
     public void setCurrentSubViewId(String currentSubViewId) {
-        for (Action action : getAvailableSubActions()) {
-            if (action.getId().equals(currentSubViewId)) {
-                setCurrentSubView(action);
-                return;
-            }
-        }
+        webActions.setCurrentTabId(TabActionsSelection.getSubTabCategory(getCurrentViewId()), currentSubViewId);
     }
 
     public List<Action> getAvailableActions() {
@@ -143,8 +121,7 @@ public class AdminViewManager implements Serializable {
     }
 
     public List<Action> getAvailableSubActions() {
-        return webActions.getActionsList(ADMIN_ACTION_CATEGORY + "_"
-                + getCurrentViewId());
+        return webActions.getActionsList(TabActionsSelection.getSubTabCategory(getCurrentViewId()));
     }
 
     public boolean hasExternalPackageDownloadRequest() {
