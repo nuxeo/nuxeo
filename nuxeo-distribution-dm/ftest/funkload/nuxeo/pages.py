@@ -169,7 +169,7 @@ class BasePage:
         fl = self.fl
         self.memberManagement()
 
-        fl.post(fl.server_url + '/view_users.faces', params=[
+        fl.post(fl.server_url + '/userscompat/view_users.faces', params=[
             ['createUserActionsForm:createUserButton', 'createUserActionsForm:createUserButton'],
             ['javax.faces.ViewState', fl.getLastJsfState()],
             ['createUserActionsForm_SUBMIT', '1']],
@@ -177,7 +177,7 @@ class BasePage:
 
         jsfState = fl.getLastJsfState()
 
-        fl.post(fl.server_url + '/create_user.faces', params=[
+        fl.post(fl.server_url + '/userscompat/create_user.faces', params=[
             ['AJAXREQUEST', 'createUser:nxl_user:nxw_groups_ajax_region'],
             ['createUser:nxl_user:nxw_username', username],
             ['createUser:nxl_user:nxw_firstname', firstname],
@@ -199,7 +199,7 @@ class BasePage:
             ['AJAX:EVENTS_COUNT', '1']],
             description="Create user search group")
 
-        fl.post(fl.server_url + '/create_user.faces', params=[
+        fl.post(fl.server_url + '/userscompat/create_user.faces', params=[
             ['AJAXREQUEST', 'createUser:nxl_user:nxw_groups_ajax_region'],
             ['createUser:nxl_user:nxw_username', username],
             ['createUser:nxl_user:nxw_firstname', firstname],
@@ -218,7 +218,7 @@ class BasePage:
             ['suggestionInputSelectorId', 'nxw_groups_suggest']],
             description="Create user select group")
 
-        fl.post(fl.server_url + "/create_user.faces", params=[
+        fl.post(fl.server_url + "/userscompat/create_user.faces", params=[
             ['createUser:nxl_user:nxw_username', username],
             ['createUser:nxl_user:nxw_firstname', firstname],
             ['createUser:nxl_user:nxw_lastname', lastname],
