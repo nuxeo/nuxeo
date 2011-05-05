@@ -21,3 +21,4 @@ Import-Package: org.apache.commons.logging,
  org.nuxeo.ecm.directory;api=split,
  org.nuxeo.runtime.api
 Bundle-SymbolicName: org.nuxeo.ecm.platform.usermanager.api
+Nuxeo-Component: OSGI-INF/pageproviders-contrib.xml
