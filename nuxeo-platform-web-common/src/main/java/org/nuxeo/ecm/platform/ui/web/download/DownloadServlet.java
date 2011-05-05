@@ -235,11 +235,13 @@ public class DownloadServlet extends HttpServlet {
         String tmpFileName = pathParts[0];
         File tmpZip = new File(System.getProperty("java.io.tmpdir") + "/"
                 + tmpFileName);
+        FileBlob zipBlob = new FileBlob(tmpZip);
         try {
-            FileBlob zipBlob = new FileBlob(tmpZip);
             downloadBlob(req, resp, zipBlob, "clipboard.zip");
         } catch (Exception e) {
             throw new ServletException(e);
+        } finally {
+            tmpZip.delete();
         }
     }
 }
