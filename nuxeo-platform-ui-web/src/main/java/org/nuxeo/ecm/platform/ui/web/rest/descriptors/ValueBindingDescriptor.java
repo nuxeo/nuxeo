@@ -31,10 +31,27 @@ import org.nuxeo.common.xmap.annotation.XObject;
 public class ValueBindingDescriptor {
 
     @XNode("@name")
-    private String name;
+    protected String name;
 
     @XNode("")
-    private String expression;
+    protected String expression;
+
+    /**
+     * If set to false, the binding will not be called to get the value (and
+     * use it to preserve it in the redirect URL after a POST)
+     *
+     * @since 5.4.2
+     */
+    @XNode("@callGetter")
+    protected boolean callGetter = true;
+
+    /**
+     * If set to false, the binding will not be called to set the value
+     *
+     * @since 5.4.2
+     */
+    @XNode("@callSetter")
+    protected boolean callSetter = true;
 
     public String getExpression() {
         return expression;
@@ -42,6 +59,14 @@ public class ValueBindingDescriptor {
 
     public String getName() {
         return name;
+    }
+
+    public boolean getCallGetter() {
+        return callGetter;
+    }
+
+    public boolean getCallSetter() {
+        return callSetter;
     }
 
 }

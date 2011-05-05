@@ -320,6 +320,9 @@ public class URLPolicyServiceImpl implements URLPolicyService {
         ValueBindingDescriptor[] bindings = pattern.getValueBindings();
         if (bindings != null) {
             for (ValueBindingDescriptor binding : bindings) {
+                if (!binding.getCallSetter()) {
+                    continue;
+                }
                 String paramName = binding.getName();
                 // try doc view parameters
                 Object value = null;
@@ -390,6 +393,9 @@ public class URLPolicyServiceImpl implements URLPolicyService {
                 ValueBindingDescriptor[] bindings = patternDesc.getValueBindings();
                 if (bindings != null) {
                     for (ValueBindingDescriptor binding : bindings) {
+                        if (!binding.getCallGetter()) {
+                            continue;
+                        }
                         String paramName = binding.getName();
                         String expr = binding.getExpression();
                         try {
