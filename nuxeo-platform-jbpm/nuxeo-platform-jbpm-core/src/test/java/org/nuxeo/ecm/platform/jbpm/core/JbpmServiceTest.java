@@ -205,6 +205,11 @@ public class JbpmServiceTest extends RepositoryOSGITestCase {
 
         tasks = service.getTaskInstances(dm, user1, null);
         assertEquals(2, tasks.size());
+        List<String> transitions = service.getAvailableTransitions(tasks.get(0).getId(), user1);
+        for(String t : transitions) {
+            assertNotNull(t);
+        }
+        assertNotNull(transitions);
     }
 
     public void testTaskManagement() throws Exception {

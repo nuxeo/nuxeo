@@ -34,6 +34,7 @@ import org.jbpm.JbpmContext;
 import org.jbpm.context.exe.ContextInstance;
 import org.jbpm.db.GraphSession;
 import org.jbpm.graph.def.ProcessDefinition;
+import org.jbpm.graph.def.Transition;
 import org.jbpm.graph.exe.ProcessInstance;
 import org.jbpm.persistence.db.DbPersistenceServiceFactory;
 import org.jbpm.svc.Services;
@@ -625,8 +626,13 @@ public class JbpmServiceImpl implements JbpmService {
                             + principal.getName());
                 }
                 // jbpm code returns an array list.
-                return (Serializable) context.getTaskInstance(
+                List<Transition> transitions = (List<Transition>) context.getTaskInstance(
                         taskInstanceId.longValue()).getAvailableTransitions();
+                List<String> result = new ArrayList<String>();
+                for (Transition transition : transitions) {
+                    result.add(transition.getName());
+                }
+                return (Serializable) result;
             }
 
         });
