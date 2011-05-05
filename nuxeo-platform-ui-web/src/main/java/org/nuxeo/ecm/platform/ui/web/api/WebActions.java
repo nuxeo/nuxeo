@@ -185,12 +185,18 @@ public interface WebActions {
     Action getCurrentTabAction(String category);
 
     /**
-     * Sets the current action for given category, with additional sub tabs.
+     * Returns the current sub tab action for given parent action, computing
+     * the category from parent action id with suffix
+     * {@link #SUBTAB_CATEGORY_SUFFIX}.
+     */
+    Action getCurrentSubTabAction(String parentActionId);
+
+    /**
+     * Sets the current action for given category.
      * <p>
      * If given action is null, it resets the current action for this category.
      */
-    void setCurrentTabAction(String category, Action tabAction,
-            String... subTabIds);
+    void setCurrentTabAction(String category, Action tabAction);
 
     /**
      * Returns the current action id for given category

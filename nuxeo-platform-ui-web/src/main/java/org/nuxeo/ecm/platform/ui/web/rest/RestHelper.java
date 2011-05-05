@@ -40,6 +40,7 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.core.Manager;
+import org.jboss.seam.international.LocaleSelector;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -77,6 +78,9 @@ public class RestHelper implements Serializable {
     protected DocumentView docView;
 
     protected String baseURL = "";
+
+    @In(create = true)
+    protected transient LocaleSelector localeSelector;
 
     /**
      * Sets current server location (core repository) and core document as
@@ -285,7 +289,30 @@ public class RestHelper implements Serializable {
         response.sendRedirect(url);
         response.flushBuffer();
         getHttpServletRequest().setAttribute(
-                NXAuthConstants.DISABLE_REDIRECT_REQUEST_KEY, true);
+                NXAuthConstants.DISABLE_REDIRECT_REQUEST_KEY, Boolean.TRUE);
         FacesContext.getCurrentInstance().responseComplete();
     }
+
+    /**
+     * Returns the locale string.
+     * <p>
+     * Useful for url pattern bindings.
+     *
+     * @since 5.4.2
+     */
+    public String getLocaleString() {
+        return localeSelector.getLocaleString();
+    }
+
+    /**
+     * Sets the locale string if given string is not null and not empty.
+     * <p>
+     * Useful for url pattern bindings.
+     */
+    public void setLocaleString(String localeString) {
+        if (localeString != null && !localeString.trim().isEmpty()) {
+            localeSelector.setLocaleString(localeString);
+        }
+    }
+
 }

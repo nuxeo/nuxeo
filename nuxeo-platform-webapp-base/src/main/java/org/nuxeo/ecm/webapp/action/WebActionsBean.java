@@ -24,9 +24,7 @@ import static org.jboss.seam.ScopeType.EVENT;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.ejb.PostActivate;
 import javax.ejb.PrePassivate;
@@ -49,6 +47,8 @@ import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.actions.ActionContext;
 import org.nuxeo.ecm.platform.actions.ejb.ActionManager;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
+import org.nuxeo.ecm.platform.ui.web.api.TabActionsSelection;
+import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 
 /**
@@ -84,11 +84,7 @@ public class WebActionsBean implements WebActionsLocal, Serializable {
 
     protected List<Action> subTabsActionsList;
 
-    /**
-     * Map of current tab actions, with category as key and corresponding
-     * action as value.
-     */
-    protected Map<String, Action> currentTabActions = new HashMap<String, Action>();
+    protected TabActionsSelection currentTabActions = new TabActionsSelection();
 
     public void initialize() {
         log.debug("Initializing...");
@@ -182,64 +178,29 @@ public class WebActionsBean implements WebActionsLocal, Serializable {
 
     }
 
-    protected String getSubTabCategory(String parentActionId) {
-        if (parentActionId == null) {
-            return null;
-        }
-        return parentActionId + SUBTAB_CATEGORY_SUFFIX;
-    }
-
     @Override
     public Action getCurrentTabAction(String category) {
-        if (currentTabActions.containsKey(category)) {
-            return currentTabActions.get(category);
+        Action action = currentTabActions.getCurrentTabAction(category);
+        if (action == null) {
+            // return default action
+            action = getDefaultTab(category);
         }
-        // return default action
-        return getDefaultTab(category);
+        return action;
     }
 
     @Override
-    public void setCurrentTabAction(String category, Action tabAction,
-            String... subTabIds) {
-        if (category == null) {
-            return;
+    public void setCurrentTabAction(String category, Action tabAction) {
+        currentTabActions.setCurrentTabAction(category, tabAction);
+        // additional cleanup of this cache
+        if (WebActions.DEFAULT_TABS_CATEGORY.equals(category)) {
+            subTabsCategory = null;
+            subTabsActionsList = null;
         }
-        if (tabAction != null) {
-            String[] actionCategories = tabAction.getCategories();
-            if (actionCategories != null) {
-                boolean categoryFound = false;
-                for (String actionCategory : actionCategories) {
-                    if (category.equals(actionCategory)) {
-                        categoryFound = true;
-                        currentTabActions.put(category, tabAction);
-                        // additional cleanup of possible subtabs
-                        resetCurrentTabs(getSubTabCategory(tabAction.getIcon()));
-                        // additional cleanup of this cache
-                        if (category.equals(DEFAULT_TABS_CATEGORY)) {
-                            subTabsCategory = null;
-                            subTabsActionsList = null;
-                        }
-                        break;
-                    }
-                }
-                if (!categoryFound) {
-                    log.error(String.format(
-                            "Cannot set current action '%s' for category"
-                                    + " '%s' as this action does not "
-                                    + "hold the given category.",
-                            tabAction.getId(), category));
-                } else if (subTabIds != null && subTabIds.length > 0) {
-                    String newTabId = subTabIds[0];
-                    String[] newSubTabsIds = new String[subTabIds.length - 1];
-                    System.arraycopy(subTabIds, 1, newSubTabsIds, 0,
-                            subTabIds.length - 1);
-                    setCurrentTabId(getSubTabCategory(tabAction.getId()),
-                            newTabId, newSubTabsIds);
-                }
-            }
-        } else {
-            resetCurrentTabs(category);
-        }
+    }
+
+    @Override
+    public Action getCurrentSubTabAction(String parentActionId) {
+        return getCurrentTabAction(TabActionsSelection.getSubTabCategory(parentActionId));
     }
 
     @Override
@@ -254,100 +215,29 @@ public class WebActionsBean implements WebActionsLocal, Serializable {
     @Override
     public void setCurrentTabId(String category, String tabId,
             String... subTabIds) {
-        boolean set = false;
-        if (tabId != null && !NULL_TAB_ID.equals(tabId)) {
-            ActionContext context = createActionContext();
-            if (actionManager.isEnabled(tabId, context)) {
-                Action action = actionManager.getAction(tabId);
-                setCurrentTabAction(category, action, subTabIds);
-                set = true;
-            } else {
-                if (actionManager.getAction(tabId) != null) {
-                    log.error(String.format(
-                            "Cannot set current tab with id '%s': "
-                                    + "action does not exist.", tabId));
-                } else {
-                    log.error(String.format(
-                            "Cannot set current tab with id '%s': "
-                                    + "action is not enabled.", tabId));
-                }
-            }
-        }
-        if (!set && (tabId == null || NULL_TAB_ID.equals(tabId))) {
-            // reset it
-            setCurrentTabAction(category, (Action) null);
-        }
-    }
-
-    protected String encodeAction(Action action, String category) {
-        if (action == null) {
-            return null;
-        }
-        return String.format("%s:%s", category, action.getId());
+        currentTabActions.setCurrentTabId(actionManager, createActionContext(),
+                category, tabId, subTabIds);
     }
 
     @Override
     public String getCurrentTabIds() {
-        StringBuffer builder = new StringBuffer();
-        boolean first = true;
-        for (Map.Entry<String, Action> currentTabAction : currentTabActions.entrySet()) {
-            String encodedAction = encodeAction(currentTabAction.getValue(),
-                    currentTabAction.getKey());
-            if (encodedAction != null) {
-                if (!first) {
-                    builder.append(",");
-                }
-                first = false;
-                builder.append(encodedAction);
-            }
-        }
-        return builder.toString();
+        return currentTabActions.getCurrentTabIds();
     }
 
     @Override
     public void setCurrentTabIds(String tabIds) {
-        if (tabIds == null) {
-            return;
-        }
-        String[] encodedActions = tabIds.split(",");
-        if (encodedActions != null && encodedActions.length != 0) {
-            for (String encodedAction : encodedActions) {
-                String[] actionInfo = encodedAction.trim().split(":");
-                if (actionInfo != null && actionInfo.length == 1) {
-                    String actionId = actionInfo[0];
-                    setCurrentTabId(DEFAULT_TABS_CATEGORY, actionId);
-                } else if (actionInfo != null && actionInfo.length > 1) {
-                    String category = actionInfo[0];
-                    String actionId = actionInfo[1];
-                    String[] subTabsIds = new String[actionInfo.length - 2];
-                    System.arraycopy(actionInfo, 2, subTabsIds, 0,
-                            actionInfo.length - 2);
-                    if (category == null || category.isEmpty()) {
-                        category = DEFAULT_TABS_CATEGORY;
-                    }
-                    setCurrentTabId(category, actionId, subTabsIds);
-                } else {
-                    log.error("Cannot set current tab from given encoded action: "
-                            + encodedAction);
-                }
-            }
-        }
+        currentTabActions.setCurrentTabIds(actionManager,
+                createActionContext(), tabIds);
     }
 
     @Override
     public void resetCurrentTabs() {
-        currentTabActions.clear();
+        currentTabActions.resetCurrentTabs();
     }
 
     @Override
     public void resetCurrentTabs(String category) {
-        if (currentTabActions.containsKey(category)) {
-            Action action = currentTabActions.get(category);
-            currentTabActions.remove(category);
-            if (action != null) {
-                resetCurrentTabs(getSubTabCategory(action.getId()));
-            }
-        }
+        currentTabActions.resetCurrentTabs(category);
     }
 
     // tabs management specific to the DEFAULT_TABS_CATEGORY
@@ -379,7 +269,7 @@ public class WebActionsBean implements WebActionsLocal, Serializable {
         if (subTabsActionsList == null) {
             String currentTabId = getCurrentTabId();
             if (currentTabId != null) {
-                subTabsCategory = getSubTabCategory(currentTabId);
+                subTabsCategory = TabActionsSelection.getSubTabCategory(currentTabId);
                 subTabsActionsList = getActionsList(subTabsCategory);
             }
         }
@@ -402,7 +292,7 @@ public class WebActionsBean implements WebActionsLocal, Serializable {
     public Action getCurrentSubTabAction() {
         Action action = getCurrentTabAction();
         if (action != null) {
-            return getCurrentTabAction(getSubTabCategory(action.getId()));
+            return getCurrentTabAction(TabActionsSelection.getSubTabCategory(action.getId()));
         }
         return null;
     }
@@ -455,7 +345,9 @@ public class WebActionsBean implements WebActionsLocal, Serializable {
     public void setCurrentSubTabId(String tabId) {
         Action action = getCurrentTabAction();
         if (action != null) {
-            setCurrentTabId(getSubTabCategory(action.getId()), tabId);
+            setCurrentTabId(
+                    TabActionsSelection.getSubTabCategory(action.getId()),
+                    tabId);
         }
     }
 

@@ -182,6 +182,31 @@
       </description>
     </attribute>
     <attribute>
+      <name>tabsIds</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>
+        The list of tab ids to select as current tab actions. List is encoded as
+        a String separated by the comma ',' character, and each each action
+        information looks like:
+        CATEGORY:ACTION_ID[:OPTIONAL_SUB_ACTION_ID[:OPTIONAL_SUB_ACTION_ID]...]
+        <p>
+          If category is omitted or empty, the category {@link
+          #DEFAULT_TABS_CATEGORY} will be used (if there is no subtab
+          information).
+        </p>
+        <p>
+          If no action id is given, the corresponding category is reset (for
+          instance using 'CATEGORY:').
+        </p>
+        <p>If the action information is '*:', all categories will be reset.</p>
+        <p>
+          The resulting string looks like:
+          CATEGORY_1:ACTION_ID_1,CATEGORY_2:ACTION_ID_2_SUB_ACTION_ID_2,...
+        </p>
+      </description>
+    </attribute>
+    <attribute>
       <name>pattern</name>
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>

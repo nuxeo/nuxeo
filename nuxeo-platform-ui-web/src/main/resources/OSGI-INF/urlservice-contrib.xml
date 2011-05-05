@@ -11,7 +11,7 @@
 
     <documentation>
       Basic url pattern using the doc id codec: it places the application in the
-      document context described by the url and sets a current tab.
+      document context described by the url and sets current tabs.
 
       Additional url pattern using the doc path codec.
     </documentation>
@@ -28,9 +28,16 @@
         #{restHelper.newDocumentView}
       </newDocumentViewBinding>
       <bindings>
-        <binding name="tabId">#{webActions.currentTabId}</binding>
-        <binding name="subTabId">#{webActions.currentSubTabId}</binding>
+        <binding name="tabId" callGetter="false">
+          #{webActions.currentTabId}
+        </binding>
+        <binding name="subTabId" callGetter="false">
+          #{webActions.currentSubTabId}
+        </binding>
         <binding name="tabIds">#{webActions.currentTabIds}</binding>
+        <binding name="language" callGetter="false">
+          #{restHelper.localeString}
+        </binding>
       </bindings>
     </urlPattern>
 
@@ -46,9 +53,16 @@
         #{restHelper.newDocumentView}
       </newDocumentViewBinding>
       <bindings>
-        <binding name="tabId">#{webActions.currentTabId}</binding>
-        <binding name="subTabId">#{webActions.currentSubTabId}</binding>
+        <binding name="tabId" callGetter="false">
+          #{webActions.currentTabId}
+        </binding>
+        <binding name="subTabId" callGetter="false">
+          #{webActions.currentSubTabId}
+        </binding>
         <binding name="tabIds">#{webActions.currentTabIds}</binding>
+        <binding name="language" callGetter="false">
+          #{restHelper.localeString}
+        </binding>
       </bindings>
     </urlPattern>
 
