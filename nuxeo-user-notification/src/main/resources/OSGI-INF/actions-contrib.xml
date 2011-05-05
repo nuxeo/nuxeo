@@ -8,11 +8,6 @@
       <category>USER_CENTER</category>
     </action>
 
-    <!-- <action id="NotificationView" link="/incl/profile/user_profile.xhtml" label="user.center.notification.tab.view"
-      order="10">
-      <category>USER_CENTER_Notification</category>
-    </action> -->
-
   </extension>
 
 </component>

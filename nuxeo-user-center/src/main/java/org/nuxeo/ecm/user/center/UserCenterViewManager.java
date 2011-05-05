@@ -20,9 +20,7 @@ package org.nuxeo.ecm.user.center;
 import static org.jboss.seam.ScopeType.CONVERSATION;
 
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Factory;
@@ -30,6 +28,7 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.platform.actions.Action;
+import org.nuxeo.ecm.platform.ui.web.api.TabActionsSelection;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 
 /**
@@ -43,10 +42,6 @@ public class UserCenterViewManager implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    protected Action currentView;
-
-    protected Map<String, Action> currentSubViews = new HashMap<String, Action>();
-
     public static final String USER_CENTER_ACTION_CATEGORY = "USER_CENTER";
 
     @In(create = true, required = false)
@@ -54,17 +49,11 @@ public class UserCenterViewManager implements Serializable {
 
     @Factory(value = "currentUserCenterView", scope = ScopeType.EVENT)
     public Action getCurrentView() {
-        if (currentView == null) {
-            List<Action> availableActions = getAvailableActions();
-            if (!availableActions.isEmpty()) {
-                currentView = availableActions.get(0);
-            }
-        }
-        return currentView;
+        return webActions.getCurrentTabAction(USER_CENTER_ACTION_CATEGORY);
     }
 
     public void setCurrentView(Action currentView) {
-        this.currentView = currentView;
+        webActions.setCurrentTabAction(USER_CENTER_ACTION_CATEGORY, currentView);
     }
 
     public String getCurrentViewId() {
@@ -72,28 +61,18 @@ public class UserCenterViewManager implements Serializable {
     }
 
     public void setCurrentViewId(String currentViewId) {
-        for (Action action : getAvailableActions()) {
-            if (action.getId().equals(currentViewId)) {
-                currentView = action;
-                return;
-            }
-        }
+        webActions.setCurrentTabId(USER_CENTER_ACTION_CATEGORY, currentViewId);
     }
 
     @Factory(value = "currentUserCenterSubView", scope = ScopeType.EVENT)
     public Action getCurrentSubView() {
-        if (currentSubViews.get(getCurrentViewId()) == null) {
-            List<Action> availableSubActions = getAvailableSubActions();
-            if (!availableSubActions.isEmpty()) {
-                currentSubViews.put(getCurrentViewId(),
-                        availableSubActions.get(0));
-            }
-        }
-        return currentSubViews.get(getCurrentViewId());
+        return webActions.getCurrentSubTabAction(getCurrentViewId());
     }
 
     public void setCurrentSubView(Action currentSubView) {
-        currentSubViews.put(getCurrentViewId(), currentSubView);
+        webActions.setCurrentTabAction(
+                TabActionsSelection.getSubTabCategory(getCurrentViewId()),
+                currentSubView);
     }
 
     @Factory(value = "currentUserCenterSubViewId", scope = ScopeType.EVENT)
@@ -102,12 +81,9 @@ public class UserCenterViewManager implements Serializable {
     }
 
     public void setCurrentSubViewId(String currentSubViewId) {
-        for (Action action : getAvailableSubActions()) {
-            if (action.getId().equals(currentSubViewId)) {
-                setCurrentSubView(action);
-                return;
-            }
-        }
+        webActions.setCurrentTabId(
+                TabActionsSelection.getSubTabCategory(getCurrentViewId()),
+                currentSubViewId);
     }
 
     public List<Action> getAvailableActions() {
@@ -115,8 +91,7 @@ public class UserCenterViewManager implements Serializable {
     }
 
     public List<Action> getAvailableSubActions() {
-        return webActions.getActionsList(USER_CENTER_ACTION_CATEGORY + "_"
-                + getCurrentViewId());
+        return webActions.getActionsList(TabActionsSelection.getSubTabCategory(getCurrentViewId()));
     }
 
     public String navigateTo(Action action) {

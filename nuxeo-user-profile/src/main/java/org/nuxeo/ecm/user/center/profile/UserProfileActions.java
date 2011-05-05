@@ -8,7 +8,7 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.webapp.security.UserManagerActionsBean;
+import org.nuxeo.ecm.webapp.security.UserManagementActions;
 
 @Name("userProfileActions")
 @Scope(ScopeType.CONVERSATION)
@@ -23,7 +23,7 @@ public class UserProfileActions implements Serializable {
     public static final String PROFILE_EDIT_PASSWORD_MODE = "editPassword";
 
     @In(create = true)
-    protected transient UserManagerActionsBean userManagerActions;
+    protected transient UserManagementActions userManagementActions;
 
     @In(create = true)
     protected NuxeoPrincipal currentUser;
@@ -31,12 +31,12 @@ public class UserProfileActions implements Serializable {
     protected String mode = PROFILE_VIEW_MODE;
 
     public void updateUser() throws ClientException {
-        userManagerActions.updateUser();
+        userManagementActions.updateUser();
         mode = PROFILE_VIEW_MODE;
     }
 
     public String getMode() throws ClientException {
-        userManagerActions.setSelectedUser(currentUser.getModel());
+        userManagementActions.setSelectedUser(currentUser.getName());
         return mode;
     }
 
