@@ -104,7 +104,9 @@ public class AdminViewManager implements Serializable {
     }
 
     public void setCurrentSubView(Action currentSubView) {
-        webActions.setCurrentTabAction(TabActionsSelection.getSubTabCategory(getCurrentViewId()), currentSubView);
+        webActions.setCurrentTabAction(
+                TabActionsSelection.getSubTabCategory(getCurrentViewId()),
+                currentSubView);
     }
 
     @Factory(value = "currentAdminSubViewId", scope = ScopeType.EVENT)
@@ -113,7 +115,9 @@ public class AdminViewManager implements Serializable {
     }
 
     public void setCurrentSubViewId(String currentSubViewId) {
-        webActions.setCurrentTabId(TabActionsSelection.getSubTabCategory(getCurrentViewId()), currentSubViewId);
+        webActions.setCurrentTabId(
+                TabActionsSelection.getSubTabCategory(getCurrentViewId()),
+                currentSubViewId);
     }
 
     public List<Action> getAvailableActions() {
