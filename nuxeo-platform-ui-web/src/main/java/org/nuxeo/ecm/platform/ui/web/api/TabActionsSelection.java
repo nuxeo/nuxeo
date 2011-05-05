@@ -124,13 +124,13 @@ public class TabActionsSelection implements Serializable {
                 set = true;
             } else {
                 if (actionManager.getAction(tabId) != null) {
-                    log.error(String.format(
+                    log.warn(String.format(
                             "Cannot set current tab with id '%s': "
-                                    + "action does not exist.", tabId));
+                                    + "action is not enabled.", tabId));
                 } else {
                     log.error(String.format(
                             "Cannot set current tab with id '%s': "
-                                    + "action is not enabled.", tabId));
+                                    + "action does not exist.", tabId));
                 }
             }
         }
