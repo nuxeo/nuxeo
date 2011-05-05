@@ -37,7 +37,6 @@
       var jQueryDropzone = jQuery("#" + id);
       jQueryDropzone.bind("dragenter",  function(event) {dragenter(event,jQueryDropzone, opts);});
       jQueryDropzone.bind("dragover", dragover);
-      //jQueryDropzone.bind("dragleave",  function(event) { dragleave(event,id);});
     }
 
     return this;
@@ -73,7 +72,10 @@
   };
 
   function dragenter(event,zone,opts) {
+
     var id = zone.attr('id');
+
+    log("dragenter on zone " + id);
     zone.addClass("dropzoneTarget");
     event.stopPropagation();
     event.preventDefault();
@@ -105,6 +107,7 @@
   }
 
   function drop(event, opts) {
+
     var dt = event.dataTransfer;
     var files = dt.files;
 
@@ -113,13 +116,14 @@
     for ( var i = 0; i < files.length; i++) {
       uploadStack.push(files[i]);
     }
-    if (opts.directUpload && !sendingRequestsInProgress) {
+    if (opts.directUpload && !sendingRequestsInProgress && uploadStack.length>0) {
       uploadFiles(opts);
     }
     return false;
   }
 
   function applyOverlay(zone,opts) {
+      log("apply Overlay on zone " + zone.attr("id"));
       zone.addClass("dropzoneTarget");
       if (window.$.client.browser=="Firefox") {
         // overlay does break drop event catching in FF 3.6 !!!
@@ -135,7 +139,7 @@
         zone.append(overlay);
         overlay.bind("dragleave",  function(event) { removeOverlay(event, overlay, zone, opts);});
         zone.unbind("dragenter");
-        //console.log("overlay applied");
+        log("overlay applied");
       }
    }
 

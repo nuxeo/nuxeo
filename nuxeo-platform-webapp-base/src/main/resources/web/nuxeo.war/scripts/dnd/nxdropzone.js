@@ -404,50 +404,38 @@ function DropZoneUIHandler(idx, dropZoneId, options,targetSelectedCB) {
 
 
 // ******************************
-// JQuery binding
+// Global vars (may be stored in JQuery data on the body ?
 
-var NxDropZoneHandlerIdx=0;
-var ids = new Array();
-var highLightOn=false;
-var targetSelected=false;
+var NXDropZone = {
+      handlerIdx : 0,
+      highLightOn : false ,
+      targetSelected : false,
+      initDone : false
+  };
+
+
+// ******************************
+// JQuery binding
 
 (function($) {
 
    $.fn.nxDropZone = function ( options ) {
 
+     var ids = new Array();
      this.each(function(){
        var dropId = jQuery(this).attr("id");
        ids.push(dropId);
-       log("Init handler for " + dropId)
-       // create UI handler
-       var uiHandler = new DropZoneUIHandler(NxDropZoneHandlerIdx++, dropId, options, function(targetId) {
-                                                 targetSelected=true;
-                                                 jQuery.each(ids, function (idx,id) {
-                                                   if (id!=targetId) {
-                                                     jQuery("#"+id).unbind();
-                                                   }
-                                                   jQuery("#"+id).unbind('dragleave');
-                                                 });
-       });
-       // copy optionMap
-       var instanceOptions = jQuery.extend({},options);
-       // register callback Handler
-       instanceOptions.handler = uiHandler;
-       jQuery("#" + dropId).dropzone(instanceOptions);
-       log("Init " + dropId + " done!")
-     })
+       // only get the ids
+       // real underlying object will be initialized when needed
+       // to avoid any clash with other DnD features ...
+     });
 
       // bind events on body to show the drop box
-      document.body.ondragover = function(event) {highlightDropZones(event)};
-      document.body.ondragleave = function(event) {removeHighlights(event)};
+      document.body.ondragover = function(event) {highlightDropZones(event, ids, options)};
+      document.body.ondragleave = function(event) {removeHighlights(event, ids)};
      };
 
-     function highlightDropZones(event) {
-
-         if (highLightOn || targetSelected ) {
-           return;
-         }
-
+     function isFileDndEvent(event) {
           var dt = event.dataTransfer;
           if (!dt && event.originalEvent) {
             // JQuery event wrapper
@@ -455,34 +443,57 @@ var targetSelected=false;
           }
           if (dt) {
             if ("Files"==dt.types // chrome
-              || dt.types.length==0
-              || "application/x-moz-file"== dt.types[0] // firefox
-            ) {
-              jQuery.each(ids, function (idx,id) {
-                jQuery("#"+id).addClass("dropzoneHL");
-              });
-              highLightOn = true;
-               } else {
-                 //log("no data");
-                 //log(dt);
-               }
-          } else {
-              //log("No dataTransfer");
+              || (dt.types!=null && dt.types.length!=null
+              && "application/x-moz-file"== dt.types[0]) // firefox
+            ){
+              return true;
+             }
           }
+          return false;
+     };
+
+     function highlightDropZones(event,ids, options) {
+
+         if (NXDropZone.highLightOn || NXDropZone.targetSelected ) {
+           return;
+         }
+
+         if (isFileDndEvent(event)) {
+           jQuery.each(ids, function (idx,id) {
+
+             if (!NXDropZone.initDone) {
+                 var uiHandler = new DropZoneUIHandler(NXDropZone.handlerIdx++, id, options, function(targetId) {
+                   NXDropZone.targetSelected=true;
+                     jQuery.each(ids, function (idx,id) {
+                       if (id!=targetId) {
+                         jQuery("#"+id).unbind();
+                       }
+                       jQuery("#"+id).unbind('dragleave');
+                     });
+                 });
+                 // copy optionMap
+                 var instanceOptions = jQuery.extend({},options);
+                 // register callback Handler
+                 instanceOptions.handler = uiHandler;
+                 log("Init Drop zone " + id);
+                 jQuery("#" + id).dropzone(instanceOptions);
+             };
+
+             jQuery("#"+id).addClass("dropzoneHL");
+            });
+           NXDropZone.initDone=true;
+           NXDropZone.highLightOn = true;
+         }
       };
 
-      function removeHighlights(event) {
-          if (!highLightOn || targetSelected ) {
+      function removeHighlights(event, ids) {
+          if (!NXDropZone.highLightOn || NXDropZone.targetSelected ) {
               return;
           }
           jQuery.each(ids, function (idx,id) {
             jQuery("#"+id).removeClass("dropzoneHL");
-//          if(!event.relatedTarget || event.relatedTarget.id!=id) {
-//            jQuery("#"+id).removeClass("dropzoneHL")
-//          }
           });
-          highLightOn = false;
-
+          NXDropZone.highLightOn = false;
       }
 
  })(jQuery);
