@@ -44,6 +44,8 @@ public class UserCenterViewManager implements Serializable {
 
     public static final String USER_CENTER_ACTION_CATEGORY = "USER_CENTER";
 
+    public static final String VIEW_HOME = "view_home";
+
     @In(create = true, required = false)
     protected WebActions webActions;
 
@@ -96,7 +98,7 @@ public class UserCenterViewManager implements Serializable {
 
     public String navigateTo(Action action) {
         setCurrentView(action);
-        return "user_center";
+        return VIEW_HOME;
     }
 
 }
