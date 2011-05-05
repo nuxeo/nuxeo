@@ -17,7 +17,7 @@
                   value="#{messages['label.userManager.editUser']}"
                   action="#{userProfileActions.setMode('edit')}"
                   styleClass="button"
-                  rendered="#{userProfileActions.mode == 'view' and userManagerActions.allowEditUser and notReadOnly}"
+                  rendered="#{userProfileActions.mode == 'view' and userManagementActions.allowEditUser and notReadOnly}"
                   reRender="profilePanel" />
                 <a4j:commandButton
                   value="#{messages['command.cancel']}"
@@ -32,7 +32,7 @@
                     value="#{messages['command.change.password']}"
                     action="#{userProfileActions.setMode('editPassword')}"
                     styleClass="button"
-                    rendered="#{userProfileActions.mode == 'view' and userManagerActions.allowEditUser and notReadOnly}"
+                    rendered="#{userProfileActions.mode == 'view' and userManagementActions.allowEditUser and notReadOnly}"
                     reRender="profilePanel" />
               </td>
             </tr>
@@ -41,11 +41,11 @@
       </a4j:form>
 
       <a4j:form id="viewUser" rendered="#{userProfileActions.mode == 'view'}">
-        <nxl:layout name="user" mode="view" value="#{userManagerActions.selectedUser}" />
+        <nxl:layout name="user" mode="view" value="#{userManagementActions.selectedUser}" />
       </a4j:form>
 
-      <a4j:form id="editUser" rendered="#{userProfileActions.mode == 'edit' and userManagerActions.allowEditUser and notReadOnly}">
-        <nxl:layout name="user" mode="edit" value="#{userManagerActions.selectedUser}" />
+      <a4j:form id="editUser" rendered="#{userProfileActions.mode == 'edit' and userManagementActions.allowEditUser and notReadOnly}">
+        <nxl:layout name="user" mode="edit" value="#{userManagementActions.selectedUser}" />
         <table class="dataInput">
           <tbody>
             <tr>
@@ -62,8 +62,8 @@
         </table>
       </a4j:form>
 
-      <h:form id="editUserPassword" rendered="#{userProfileActions.mode == 'editPassword' and userManagerActions.allowEditUser and notReadOnly}">
-        <nxl:layout name="user" mode="editPassword" value="#{userManagerActions.selectedUser}" />
+      <h:form id="editUserPassword" rendered="#{userProfileActions.mode == 'editPassword' and userManagementActions.allowEditUser and notReadOnly}">
+        <nxl:layout name="user" mode="editPassword" value="#{userManagementActions.selectedUser}" />
         <table class="dataInput">
           <tbody>
             <tr>
@@ -71,7 +71,7 @@
               <td class="labelColumn">
                 <h:commandButton
                   value="#{messages['command.save']}"
-                  action="#{userManagerActions.changePassword}"
+                  action="#{userManagementActions.changePassword}"
                   styleClass="button" />
               </td>
               <td class="fieldColumn"></td>
