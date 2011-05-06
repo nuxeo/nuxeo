@@ -21,11 +21,12 @@ import static org.nuxeo.ecm.platform.types.localconfiguration.UITypesConfigurati
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
@@ -138,18 +139,16 @@ public class UITypesConfigurationActions implements Serializable {
         return types;
     }
 
-    public List<Type> getAllowedTypesWithSchemaFile() throws ClientException {
-        List<Type> types = new ArrayList<Type>();
-        DocumentModel currentDoc = navigationContext.getCurrentDocument();
-        DocumentModel parent = documentManager.getParentDocument(currentDoc.getRef());
-        Collection<Type> allowedTypes = typeManager.findAllAllowedSubTypesFrom( currentDoc.getType(), parent);
-        for (Type type : allowedTypes) {
-            DocumentType documentType = getSchemaManager().getDocumentType(type.getId());
+    public Set<Type> getTypesWithSchemaFile() throws ClientException {
+        Set<Type> types = new HashSet<Type>();
+
+        for (String type : getAllowedTypes(navigationContext.getCurrentDocument())) {
+            DocumentType documentType = getSchemaManager().getDocumentType(type);
             if ( documentType != null && documentType.hasSchema("file")) {
-                types.add(type);
+                types.add(typeManager.getType(type));
             }
         }
-        return types;
+        return Collections.unmodifiableSet(types);
     }
 
 
