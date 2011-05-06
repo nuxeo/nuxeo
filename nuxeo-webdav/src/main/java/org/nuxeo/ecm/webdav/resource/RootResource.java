@@ -29,6 +29,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.WebApplicationException;
 
 import net.java.dev.webdav.jaxrs.methods.PROPFIND;
 
@@ -124,7 +125,7 @@ public class RootResource {
         } catch (Exception e) {
             log.error("Error during resolving path: " + path + " Message:"
                     + e.getMessage());
-            return Response.status(409).build();
+            throw new WebApplicationException(409);
         }
 
         if (doc == null) {
