@@ -3,7 +3,7 @@
   <ModulePrefs title="My documents" category="business"  render_inline="required"
     scrolling="false" author="Thierry Delprat" directory_title="My Documents"
     author_aboutme="nuxeo" singleton="false"
-    thumbnail="${clientSideBaseUrl}site/gadgets/userdocuments/documents-thumb.png"
+    thumbnail="${clientSideBaseUrl}site/gadgets/userdocuments/note_64.png"
     screenshot="${clientSideBaseUrl}site/gadgets/userdocuments/documents.png">
     <Require feature="setprefs"/>
     <Require feature="settitle" />

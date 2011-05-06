@@ -2,7 +2,10 @@
 <Module>
   <ModulePrefs title="My workspaces"
     description="List users workspaces for a given scope"
-    author="tdeprat" author_email="tdelprat@nuxeo.com">
+    author="tdeprat" author_email="tdelprat@nuxeo.com"
+    	thumbnail="${clientSideBaseUrl}site/gadgets/userworkspaces/user_workspace.png"
+    	screenshot="${clientSideBaseUrl}site/gadgets/userworkspaces/screenshot.png">
+    >
     <Require feature="setprefs"/>
     <#include "dynamic-translations.ftl"/>
     <Require feature="dynamic-height" />

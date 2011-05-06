@@ -2,7 +2,10 @@
 <Module>
   <ModulePrefs title="My pending requests" category="business"
     render_inline="required" scrolling="false" author="Thomas Roger"
-    author_aboutme="nuxeo" singleton="false">
+    author_aboutme="nuxeo" singleton="false"
+    thumbnail="${clientSideBaseUrl}site/gadgets/waitingfor/waiting_for.png"
+    screenshot="${clientSideBaseUrl}site/gadgets/waitingfor/screenshot.png"
+    >
       <Require feature="settitle" />
       <Require feature="setprefs"/>
       <#include "dynamic-translations.ftl"/>

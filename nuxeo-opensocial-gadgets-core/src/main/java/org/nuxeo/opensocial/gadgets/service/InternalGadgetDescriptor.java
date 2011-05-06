@@ -227,6 +227,6 @@ public class InternalGadgetDescriptor extends BaseGadgetDescriptor implements
         if (thumb == null || "".equals(thumb.trim())) {
             return getIconUrl();
         }
-        return null;
+        return thumb;
     }
 }

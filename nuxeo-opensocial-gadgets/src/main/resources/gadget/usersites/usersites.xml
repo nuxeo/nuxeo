@@ -3,8 +3,8 @@
   <ModulePrefs title="My sites" category="business"  render_inline="required"
     scrolling="false" author="Thierry Delprat" directory_title="My sites"
     author_aboutme="nuxeo" singleton="false"
-    thumbnail="${clientSideBaseUrl}site/gadgets/usersites/documents-thumb.png"
-    screenshot="${clientSideBaseUrl}site/gadgets/usersites/documents.png">
+    thumbnail="${clientSideBaseUrl}site/gadgets/usersites/user_sites.png"
+    screenshot="${clientSideBaseUrl}site/gadgets/usersites/screenshot.png">
     <Require feature="setprefs"/>
     <Require feature="settitle" />
     <#include "dynamic-translations.ftl"/>

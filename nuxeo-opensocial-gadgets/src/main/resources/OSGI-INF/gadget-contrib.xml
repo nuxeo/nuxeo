@@ -14,19 +14,19 @@
       <mountPoint>/tasks</mountPoint>
       <entryPoint>tasks.xml</entryPoint>
       <category>Nuxeo</category>
-      <icon>tasks.png</icon>
+      <icon>my_tasks.png</icon>
     </internalGadget>
     <internalGadget name="waitingfor">
       <mountPoint>/waitingfor</mountPoint>
       <entryPoint>waitingfor.xml</entryPoint>
       <category>Nuxeo</category>
-      <icon>tasks.png</icon>
+      <icon>waiting_for.png</icon>
     </internalGadget>
     <internalGadget name="userworkspaces">
       <mountPoint>/userworkspaces</mountPoint>
       <entryPoint>userworkspaces.xml</entryPoint>
       <category>Nuxeo</category>
-      <icon>workspace_64.png</icon>
+      <icon>user_workspace.png</icon>
     </internalGadget>
     <internalGadget name="userdocuments">
       <mountPoint>/userdocuments</mountPoint>
@@ -38,25 +38,25 @@
       <mountPoint>/usersites</mountPoint>
       <entryPoint>usersites.xml</entryPoint>
       <category>Nuxeo</category>
-      <icon>website_64.png</icon>
+      <icon>user_sites.png</icon>
     </internalGadget>
     <internalGadget name="lastpublisheddocuments">
       <mountPoint>/lastpublisheddocuments</mountPoint>
       <entryPoint>lastpublisheddocuments.xml</entryPoint>
       <category>Nuxeo</category>
-      <icon>workspace_64.png</icon>
+      <icon>last_published_document.png</icon>
     </internalGadget>
     <internalGadget name="lastdocuments">
       <mountPoint>/lastdocuments</mountPoint>
       <entryPoint>lastdocuments.xml</entryPoint>
       <category>Nuxeo</category>
-      <icon>workspace_64.png</icon>
+      <icon>last_document.png</icon>
     </internalGadget>
     <internalGadget name="userdeleteddocuments">
       <mountPoint>/userdeleteddocuments</mountPoint>
       <entryPoint>userdeleteddocuments.xml</entryPoint>
       <category>Nuxeo</category>
-      <icon>workspace_64.png</icon>
+      <icon>user_deleted_documents.png</icon>
     </internalGadget>
 
 
