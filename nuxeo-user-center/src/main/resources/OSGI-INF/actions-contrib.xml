@@ -25,6 +25,23 @@
       <category>USER_CENTER_USER_SERVICES</category>
     </action>
 
+    <!-- Users and Groups directory -->
+    <action id="UsersGroupsDirectory" link="user_center_fragment.xhtml"
+      label="user.center.directory" order="60">
+      <category>USER_CENTER</category>
+      <filter-id>not_readonly</filter-id>
+    </action>
+    <action id="UsersDirectory" link="users/view_users.xhtml"
+      label="label.userManager.users" order="10">
+      <category>UsersGroupsDirectory_sub_tab</category>
+      <filter-id>not_readonly</filter-id>
+    </action>
+    <action id="GroupsDirectory" link="users/view_groups.xhtml"
+      label="label.groupManager.groups" order="20">
+      <category>UsersGroupsDirectory_sub_tab</category>
+      <filter-id>not_readonly</filter-id>
+    </action>
+
   </extension>
 
 </component>
