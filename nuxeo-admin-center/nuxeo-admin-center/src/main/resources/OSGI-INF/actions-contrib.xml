@@ -97,6 +97,26 @@
       <filter-id>only_for_manager</filter-id>
     </action>
 
+    <!-- Users and Groups management -->
+    <action id="UsersGroupsManager" link="view_admin-fragment.xhtml"
+      label="command.manageMembers" order="45">
+      <category>NUXEO_ADMIN</category>
+      <filter-id>user_manager</filter-id>
+      <filter-id>not_readonly</filter-id>
+    </action>
+    <action id="UsersManager" link="users/view_users.xhtml"
+      label="label.userManager.users" order="10">
+      <category>UsersGroupsManager_sub_tab</category>
+      <filter-id>user_manager</filter-id>
+      <filter-id>not_readonly</filter-id>
+    </action>
+    <action id="GroupsManager" link="users/view_groups.xhtml"
+      label="label.groupManager.groups" order="20">
+      <category>UsersGroupsManager_sub_tab</category>
+      <filter-id>user_manager</filter-id>
+      <filter-id>not_readonly</filter-id>
+    </action>
+
     <action id="themes_manager" link="#{themeEditorAction.startEditor}"
       label="command.manageThemes" order="20">
       <category>NUXEO_ADMIN_USER_SERVICES</category>
@@ -120,6 +140,23 @@
       order="60">
       <category>NUXEO_ADMIN_USER_SERVICES</category>
     </action>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="filters">
+
+    <filter id="seamHotReloadIsEnabled">
+      <rule grant="true">
+        <condition>#{seamHotReloadIsEnabled}</condition>
+      </rule>
+    </filter>
+
+    <filter id="user_manager">
+      <rule grant="true">
+        <condition>#{userServicesContext.userManagerEnabled}</condition>
+      </rule>
+    </filter>
 
   </extension>
 
