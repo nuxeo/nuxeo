@@ -29,11 +29,14 @@
             <h:outputText value="#{messages['label.summary.download.file']}" />
           </td>
           <td class="fieldColumn" docRef="#{currentDocument.id}">
-            <div class="dropout" downloadUrl="#{nxd:fileUrl('downloadFile', currentDocument, 'blobholder:0', currentDocumentAsBlobHolder.blob.filename)}" fileName="#{currentDocumentAsBlobHolder.blob.filename}" mimetype="#{currentDocumentAsBlobHolder.blob.mimeType}">
-            <nxh:graphicImage value="#{nxd:fileIconPath(currentDocumentAsBlobHolder.blob)}"
-              rendered="#{! empty nxd:fileIconPath(currentDocumentAsBlobHolder.blob)}" />
-            <h:outputText value="#{currentDocumentAsBlobHolder.blob.filename}"/>
-            <h:outputText value=" (#{nxu:printFileSize(currentDocumentAsBlobHolder.blob.length)})"/>
+            <div class="dropout"
+              downloadUrl="#{nxd:fileUrl('downloadFile', currentDocument, 'blobholder:0', currentDocumentAsBlobHolder.blob.filename)}"
+              fileName="#{currentDocumentAsBlobHolder.blob.filename}"
+              mimetype="#{currentDocumentAsBlobHolder.blob.mimeType}">
+              <nxh:graphicImage value="#{nxd:fileIconPath(currentDocumentAsBlobHolder.blob)}"
+                rendered="#{! empty nxd:fileIconPath(currentDocumentAsBlobHolder.blob)}" />
+              <h:outputText value="#{currentDocumentAsBlobHolder.blob.filename}"/>
+              <h:outputText value=" (#{nxu:printFileSize(currentDocumentAsBlobHolder.blob.length)})"/>
             </div>
           </td>
           <td class="actionsColumn">
@@ -98,14 +101,18 @@
                     <f:param name="fileFieldFullName"
                       value="#{nxd:propertyPath('files:files', model.rowIndex, 'file')}" />
                     <f:param name="filename" value="#{currentDocument.files.files[model.rowIndex].filename}" />
-                    <nxh:graphicImage value="/icons/pdf.png"  title="#{messages['label.document.generatePdf']}" alt="#{messages['label.document.generatePdf']}"/>
+                    <nxh:graphicImage value="/icons/pdf.png"
+                      title="#{messages['label.document.generatePdf']}"
+                      alt="#{messages['label.document.generatePdf']}"/>
                   </h:commandLink>
                 </h:panelGroup>
               </nxu:methodResult>
               <nxh:outputLink
                 value="#{nxd:complexFileUrl('downloadFile', currentDocument, 'files:files', model.rowIndex, 'file', currentDocument.files.files[model.rowIndex].filename)}">
-                <nxh:graphicImage value="/icons/download.png" style="vertical-align:middle"
-                   title="#{messages['label.document.download']}" alt="#{messages['label.document.download']}"/>
+                <nxh:graphicImage value="/icons/download.png"
+                  style="vertical-align:middle"
+                  title="#{messages['label.document.download']}"
+                  alt="#{messages['label.document.download']}"/>
               </nxh:outputLink>
             </td>
           </tr>
