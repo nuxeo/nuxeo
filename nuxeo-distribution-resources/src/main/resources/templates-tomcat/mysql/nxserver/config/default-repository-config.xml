@@ -31,7 +31,7 @@
           </fulltext>
         </indexing>
 
-        <xaDataSource>com.mysql.jdbc.jdbc2.optional.MysqlXADataSource</xaDataSource>
+        <xa-datasource>com.mysql.jdbc.jdbc2.optional.MysqlXADataSource</xa-datasource>
         <property name="URL">jdbc:mysql://${nuxeo.db.host}:${nuxeo.db.port}/${nuxeo.db.name}?relaxAutoCommit=true</property>
         <property name="User">${nuxeo.db.user}</property>
         <property name="Password">${nuxeo.db.password}</property>
