@@ -291,7 +291,7 @@ public class UserManagementActions extends AbstractUserGroupManagement implement
         setSelectedUser(userName);
         showUserOrGroup = true;
         webActions.setCurrentTabIds("NUXEO_ADMIN:UsersGroupsManager:UsersManager");
-        return VIEW_ADMIN;
+        return VIEW_HOME;
     }
 
     protected void fireSeamEvent(String eventName) {
