@@ -28,7 +28,7 @@ import org.openqa.selenium.support.FindBy;
  * Nuxeo User and Groups Base page.
  */
 public class UsersGroupsBasePage extends AbstractPage {
-    @FindBy(xpath = "/html/body/table[2]/tbody/tr/td[2]/div[2]//div[@class=\"tabsBar\"]/form/ul/li[@class=\"selected\"]/a")
+    @FindBy(xpath = "//div[@class=\"tabsBar\"]/form/ul/li[@class=\"selected\"]/a[text()=\"Users\" or text()=\"Groups\"]")
     public WebElement selectedTab;
 
     @Required
