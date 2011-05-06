@@ -21,8 +21,10 @@
   <UserPref name="bookmarks" default_value="" datatype="hidden"/>
   <Content type="html">
     <![CDATA[
+    <html>
+    <head>
 
-    <link rel="stylesheet" type="text/css" href="/nuxeo/site/skin/gadgets/css/gadget-common.css"/>
+    <link rel="stylesheet" type="text/css" href="${specDirectoryUrl}gadget-common.css"/>
 
     <script type="text/javascript" language="javascript" src="bookmarks.js"></script>
       <script>
@@ -75,7 +77,7 @@
 
         a.deleteLink{
          display:block;
-         background-image:url(x.png);
+         background-image:url(/nuxeo/img/x.png);
          background-repeat:no-repeat;
          width:16px;
          height:16px;
@@ -91,7 +93,7 @@
 
         a.newWindowLink{
          display:block;
-         background-image:url(newWindow.png);
+         background-image:url(/nuxeo/img/newWindow.png);
          background-repeat:no-repeat;
          width:13px;
          height:13px;
@@ -171,7 +173,6 @@
           background-image:url(bookmark_add.jpg);
           background-repeat:no-repeat;
           padding-left:20px;
-          font-weight:bold;
           display:inline-block;
           height:16px;
           text-decoration:none;
@@ -224,6 +225,8 @@
         padding:5px 5px 0 0;
         }
       </style>
+      </head>
+      <body>
 
       <div id="content"></div>
       <div id="addBookmarkIcon" class="tools">
@@ -263,6 +266,8 @@
             </table>
           </form>
       </div>
+      </body>
+      </html>
     ]]>
   </Content>
 </Module>

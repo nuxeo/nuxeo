@@ -67,9 +67,8 @@
     text-decoration:none;
       padding-left:20px;
       background:url(/nuxeo/img/edit.png) no-repeat 0 0;
-      color:#000000;
-      font-weight:bold;
       height: 16px;
+      display: inline-block;
   }
 
    #show a:hover {

@@ -94,7 +94,7 @@
 
         a.deleteLink{
          display:block;
-         background-image:url(x.gif);
+         background-image:url(/nuxeo/img/x.gif);
          background-repeat:no-repeat;
          width:16px;
          height:16px;
@@ -102,7 +102,7 @@
 
         a.editLink{
         display:block;
-         background-image:url(editFolder.gif);
+         background-image:url(/nuxeo/img/editFolder.gif);
          background-repeat:no-repeat;
          width:16px;
          height:16px;
@@ -111,7 +111,7 @@
 
         a.newWindowLink{
          display:block;
-         background-image:url(newWindow.gif);
+         background-image:url(/nuxeo/img/newWindow.gif);
          background-repeat:no-repeat;
          width:13px;
          height:13px;
@@ -142,7 +142,6 @@
         }
 
         #addItemIcon{
-         height:25px
          text-align:right;
         }
 
@@ -153,7 +152,6 @@
 
       #addItemIcon{
        text-align:right;
-       height:25px;
       }
 
         #name_input, #newNameInput, #newDeadLineInput {
@@ -186,14 +184,11 @@
 
         .addItem{
          display:inline-block;
-        font-weight:bold;
-        height:16px;
         text-decoration:none;
-        color:#000000;
-        background-image:url("bookmark_add.jpg");
+        background-image:url(bookmark_add.jpg);
         background-repeat:no-repeat;
         padding-left:20px;
-        font-size:11px;
+        height: 16px;
         }
 
         .option {
@@ -252,10 +247,10 @@
         }
 
         #todolistTable thead tr .headerSortUp {
-         background-image: url(asc.gif);
+         background-image: url(/nuxeo/img/asc.gif);
         }
         #todolistTable thead tr .headerSortDown {
-         background-image: url(desc.gif);
+         background-image: url(/nuxeo/img/desc.gif);
         }
         #todolistTable thead tr .headerSortDown, #todolistTable thead tr .headerSortUp {
         /*background-color: #8dbdd8;*/
