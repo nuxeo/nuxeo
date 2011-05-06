@@ -29,26 +29,6 @@
       <category>DOCUMENT_EXPORT_VIEW_COMMAND_ACTION</category>
     </action>
 
-    <!-- Users and Groups management -->
-    <action id="UsersGroupsManager" link="view_admin-fragment.xhtml"
-      label="command.manageMembers" order="45">
-      <category>NUXEO_ADMIN</category>
-      <filter-id>user_manager</filter-id>
-      <filter-id>not_readonly</filter-id>
-    </action>
-    <action id="UsersManager" link="users/view_users.xhtml"
-      label="label.userManager.users" order="10">
-      <category>UsersGroupsManager_sub_tab</category>
-      <filter-id>user_manager</filter-id>
-      <filter-id>not_readonly</filter-id>
-    </action>
-    <action id="GroupsManager" link="users/view_groups.xhtml"
-      label="label.groupManager.groups" order="20">
-      <category>UsersGroupsManager_sub_tab</category>
-      <filter-id>user_manager</filter-id>
-      <filter-id>not_readonly</filter-id>
-    </action>
-
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
@@ -57,12 +37,6 @@
     <filter id="seamHotReloadIsEnabled">
       <rule grant="true">
         <condition>#{seamHotReloadIsEnabled}</condition>
-      </rule>
-    </filter>
-
-    <filter id="user_manager">
-      <rule grant="true">
-        <condition>#{userServicesContext.userManagerEnabled}</condition>
       </rule>
     </filter>
 
