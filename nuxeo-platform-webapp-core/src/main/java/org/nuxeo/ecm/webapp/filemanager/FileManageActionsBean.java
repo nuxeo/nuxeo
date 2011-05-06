@@ -609,7 +609,8 @@ public class FileManageActionsBean extends InputController implements
                 return addFile(stream, getFileName());
             } catch (Exception e) {
                 // NXP-3570 : temporary solution before real fix
-                log.error(e, e);
+                log.warn(e.getMessage());
+                log.debug(e.getMessage(), e);
                 facesMessages.add(StatusMessage.Severity.ERROR,
                         resourcesAccessor.getMessages().get(
                                 "fileImporter.error.unsupportedFile"));
