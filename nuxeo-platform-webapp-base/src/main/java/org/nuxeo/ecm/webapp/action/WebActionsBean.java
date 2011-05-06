@@ -193,8 +193,7 @@ public class WebActionsBean implements WebActionsLocal, Serializable {
         currentTabActions.setCurrentTabAction(category, tabAction);
         // additional cleanup of this cache
         if (WebActions.DEFAULT_TABS_CATEGORY.equals(category)) {
-            subTabsCategory = null;
-            subTabsActionsList = null;
+            resetSubTabs();
         }
     }
 
@@ -217,6 +216,10 @@ public class WebActionsBean implements WebActionsLocal, Serializable {
             String... subTabIds) {
         currentTabActions.setCurrentTabId(actionManager, createActionContext(),
                 category, tabId, subTabIds);
+        // additional cleanup of this cache
+        if (WebActions.DEFAULT_TABS_CATEGORY.equals(category)) {
+            resetSubTabs();
+        }
     }
 
     @Override
@@ -228,6 +231,8 @@ public class WebActionsBean implements WebActionsLocal, Serializable {
     public void setCurrentTabIds(String tabIds) {
         currentTabActions.setCurrentTabIds(actionManager,
                 createActionContext(), tabIds);
+        // reset subtabs just in case
+        resetSubTabs();
     }
 
     @Override
@@ -246,13 +251,17 @@ public class WebActionsBean implements WebActionsLocal, Serializable {
         resetCurrentTabs(DEFAULT_TABS_CATEGORY);
     }
 
+    protected void resetSubTabs() {
+        subTabsCategory = null;
+        subTabsActionsList = null;
+    }
+
     @Observer(value = { EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED,
             EventNames.LOCATION_SELECTION_CHANGED }, create = false)
     @BypassInterceptors
     public void resetTabList() {
         tabsActionsList = null;
-        subTabsCategory = null;
-        subTabsActionsList = null;
+        resetSubTabs();
         resetCurrentTab();
     }
 
