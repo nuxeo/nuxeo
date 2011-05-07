@@ -74,6 +74,12 @@ public final class Framework {
      */
     protected static SharedResourceLoader resourceLoader;
 
+    /**
+     * Whether or not services should be exported as OSGI services. This is
+     * controlled by the ${ecr.osgi.services} property. The default is false.
+     */
+    protected static Boolean isOSGiServiceSupported;
+
     // Utility class.
     private Framework() {
     }
@@ -379,6 +385,14 @@ public final class Framework {
             }
         }
         return result.toString();
+    }
+
+    public static boolean isOSGiServiceSupported() {
+        if (isOSGiServiceSupported == null) {
+            isOSGiServiceSupported = Boolean.valueOf(getProperty(
+                    "ecr.osgi.services", "false"));
+        }
+        return isOSGiServiceSupported;
     }
 
     public static boolean isDevModeSet() {

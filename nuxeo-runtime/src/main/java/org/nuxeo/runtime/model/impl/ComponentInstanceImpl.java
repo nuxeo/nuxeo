@@ -15,6 +15,8 @@
 package org.nuxeo.runtime.model.impl;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
@@ -31,6 +33,9 @@ import org.nuxeo.runtime.model.Property;
 import org.nuxeo.runtime.model.RegistrationInfo;
 import org.nuxeo.runtime.model.ReloadableComponent;
 import org.nuxeo.runtime.model.RuntimeContext;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.ServiceFactory;
+import org.osgi.framework.ServiceRegistration;
 
 /**
  * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -43,6 +48,8 @@ public class ComponentInstanceImpl implements ComponentInstance {
     protected Object instance;
     protected RegistrationInfoImpl ri;
 
+    protected List<OSGiServiceFactory> factories;
+
     public ComponentInstanceImpl(RegistrationInfoImpl ri) throws Exception {
         this.ri = ri;
         if (ri.implementation == null) {
@@ -52,7 +59,7 @@ public class ComponentInstanceImpl implements ComponentInstance {
         } else {
             // TODO: load class only once when creating the registration info
             instance = this.ri.context.loadClass(this.ri.implementation)
-                    .newInstance();
+            .newInstance();
         }
     }
 
@@ -91,6 +98,7 @@ public class ComponentInstanceImpl implements ComponentInstance {
         deactivate();
         instance = null;
         ri = null;
+        factories = null;
     }
 
     @Override
@@ -116,6 +124,7 @@ public class ComponentInstanceImpl implements ComponentInstance {
                 meth.setAccessible(true);
                 meth.invoke(instance, this);
             }
+            registerServices();
         } catch (NoSuchMethodException e) {
             // ignore this exception since the activate method is not mandatory
         } catch (Exception e) {
@@ -129,6 +138,7 @@ public class ComponentInstanceImpl implements ComponentInstance {
     public void deactivate() throws Exception {
         // activate the implementation instance
         try {
+            unregisterServices();
             if (instance instanceof Component) {
                 ((Component) instance).deactivate(this);
             } else {
@@ -169,7 +179,7 @@ public class ComponentInstanceImpl implements ComponentInstance {
     // TODO: cache info about implementation to avoid computing it each time
     @Override
     public void registerExtension(Extension extension)
-            throws Exception {
+    throws Exception {
         // if this the target extension point is extending another extension point from another component
         // then delegate the registration to the that component component
         ExtensionPoint xp = ri.getExtensionPoint(extension.getExtensionPoint());
@@ -210,7 +220,7 @@ public class ComponentInstanceImpl implements ComponentInstance {
     // TODO: cache info about implementation to avoid computing it each time
     @Override
     public void unregisterExtension(Extension extension)
-            throws Exception {
+    throws Exception {
         // activate the implementation instance
         if (instance instanceof Component) {
             ((Component) instance).unregisterExtension(extension);
@@ -276,12 +286,76 @@ public class ComponentInstanceImpl implements ComponentInstance {
         return ri.getProvidedServiceNames();
     }
 
+    /**
+     * Register provided services as OSGi services
+     */
+    public void registerServices() throws Exception {
+        if (!Framework.isOSGiServiceSupported()) {
+            return;
+        }
+        String[] names = getProvidedServiceNames();
+        if (names != null && names.length > 0) {
+            factories = new ArrayList<ComponentInstanceImpl.OSGiServiceFactory>();
+            for (String className : names) {
+                OSGiServiceFactory factory = new OSGiServiceFactory(className);
+                factory.register();
+                factories.add(factory);
+            }
+        }
+    }
+
+    public void unregisterServices() throws Exception {
+        //TODO the reload method is not reloading services. do we want this?
+        if (factories != null) {
+            for (OSGiServiceFactory factory : factories) {
+                factory.unregister();
+            }
+            factories = null;
+        }
+    }
+
     @Override
     public String toString() {
         if (ri == null) {
             return super.toString();
         }
         return ri.toString();
+    }
+
+
+    protected class OSGiServiceFactory implements ServiceFactory {
+        protected Class<?> clazz;
+        protected ServiceRegistration reg;
+
+        public OSGiServiceFactory(String className) throws Exception {
+            this (ri.getContext().getBundle(), className);
+        }
+
+        public OSGiServiceFactory(Bundle bundle, String className) throws Exception {
+            clazz = ri.getContext().getBundle().loadClass(className);
+        }
+
+        @Override
+        public Object getService(Bundle bundle, ServiceRegistration registration) {
+            return getAdapter(clazz);
+        }
+
+        @Override
+        public void ungetService(Bundle bundle,
+                ServiceRegistration registration, Object service) {
+            // do nothing
+        }
+
+        public void register() {
+            reg = ri.getContext().getBundle().getBundleContext().registerService(clazz.getName(), this, null);
+        }
+
+        public void unregister() {
+            if (reg != null) {
+                reg.unregister();
+            }
+            reg = null;
+        }
     }
 
 }
