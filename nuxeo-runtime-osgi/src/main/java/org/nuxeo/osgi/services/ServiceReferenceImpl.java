@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.osgi.framework.Bundle;
+import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceReference;
 
 /**
@@ -36,11 +37,16 @@ public class ServiceReferenceImpl implements ServiceReference {
 
     protected Bundle bundle;
     protected Object service;
+    protected ServiceFactory factory;
     protected Map<String,Object> props;
 
     public ServiceReferenceImpl(Bundle bundle, Object service) {
         this.bundle = bundle;
-        this.service = service;
+        if (service instanceof ServiceFactory) {
+            factory = (ServiceFactory)service;
+        } else {
+            this.service = service;
+        }
     }
 
     @Override
@@ -66,6 +72,9 @@ public class ServiceReferenceImpl implements ServiceReference {
 
     @Override
     public boolean isAssignableTo(Bundle bundle, String className) {
+        if (service == null) {
+            return true;
+        }
         try {
             return service.getClass() == bundle.loadClass(className);
         } catch (Exception e) {
@@ -79,7 +88,7 @@ public class ServiceReferenceImpl implements ServiceReference {
     }
 
     public Object getService() {
-        return service;
+        return service == null ? factory.getService(bundle, null) : service;
     }
 
     public synchronized void setProperties(Dictionary<String,?> dict) {
