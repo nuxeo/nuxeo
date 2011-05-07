@@ -18,15 +18,14 @@ package org.nuxeo.ecm.platform.localconfiguration.web.types;
 
 import static org.jboss.seam.ScopeType.CONVERSATION;
 import static org.nuxeo.ecm.platform.types.localconfiguration.UITypesConfigurationConstants.UI_TYPES_CONFIGURATION_FACET;
+import static org.nuxeo.ecm.platform.types.localconfiguration.UITypesConfigurationConstants.UI_TYPES_DEFAULT_NEEDED_SCHEMA;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
@@ -139,16 +138,17 @@ public class UITypesConfigurationActions implements Serializable {
         return types;
     }
 
-    public Set<Type> getTypesWithSchemaFile() throws ClientException {
-        Set<Type> types = new HashSet<Type>();
+    public List<Type> getTypesWithSchemaFile() throws ClientException {
+        List<Type> types = new ArrayList<Type>();
 
         for (String type : getAllowedTypes(navigationContext.getCurrentDocument())) {
             DocumentType documentType = getSchemaManager().getDocumentType(type);
-            if ( documentType != null && documentType.hasSchema("file")) {
+            if ( documentType != null && documentType.hasSchema(UI_TYPES_DEFAULT_NEEDED_SCHEMA)) {
                 types.add(typeManager.getType(type));
             }
         }
-        return Collections.unmodifiableSet(types);
+        Collections.sort(types, TYPE_ALPHABETICAL_ORDER);
+        return Collections.unmodifiableList(types);
     }
 
 
