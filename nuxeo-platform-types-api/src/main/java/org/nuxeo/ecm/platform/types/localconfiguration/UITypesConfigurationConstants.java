@@ -37,4 +37,6 @@ public class UITypesConfigurationConstants {
 
     public static final String UI_TYPES_DEFAULT_TYPE = "File";
 
+    public static final String UI_TYPES_DEFAULT_NEEDED_SCHEMA = "file";
+
 }
