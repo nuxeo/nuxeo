@@ -1,15 +1,16 @@
-// Seam 1.0.1 GA
+// Copied from Seam 2.1.0.SP1
 
 // Init base-level objects
 var Seam = new Object();
 Seam.Remoting = new Object();
 Seam.Component = new Object();
+Seam.pageContext = new Object();
 
 // Components registered here
 Seam.Component.components = new Array();
 Seam.Component.instances = new Array();
 
-// Nuxeo specific
+//Nuxeo specific
 Seam.Remoting.contextPath = '/nuxeo';
 
 Seam.Component.newInstance = function(name)
@@ -86,9 +87,22 @@ Seam.Component.getMetadata = function(obj)
   return null;
 }
 
+Seam.Remoting.extractEncodedSessionId = function(url)
+{
+  var sessionId = null;
+  if (url.indexOf(';jsessionid=') >= 0)
+  {
+    var qpos = url.indexOf('?');
+    sessionId = url.substring(url.indexOf(';jsessionid=') + 12, qpos >= 0 ? qpos : url.length);
+  }
+  return sessionId;
+}
+
 Seam.Remoting.PATH_EXECUTE = "/execute";
 Seam.Remoting.PATH_SUBSCRIPTION = "/subscription";
 Seam.Remoting.PATH_POLL = "/poll";
+
+Seam.Remoting.encodedSessionId = Seam.Remoting.extractEncodedSessionId(window.location.href);
 
 // Type declarations will live in this namespace
 Seam.Remoting.type = new Object();
@@ -127,6 +141,19 @@ Seam.Remoting.log = function(msg)
   {
     msg = msg.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
     Seam.Remoting.debugWindow.document.write("<pre>" + (new Date()) + ": " + msg + "</pre><br/>");
+  }
+}
+
+Seam.Remoting.createNamespace = function(namespace)
+{
+  var parts = namespace.split(".");
+  var base = Seam.Remoting.type;
+
+  for(var i = 0; i < parts.length; i++)
+  {
+    if (typeof base[parts[i]] == "undefined")
+      base[parts[i]] = new Object();
+    base = base[parts[i]];
   }
 }
 
@@ -426,6 +453,24 @@ Seam.Remoting.serializeType = function(obj, refs)
 
 Seam.Remoting.__callId = 0;
 
+// eval() disabled until security issues resolved.
+
+//Seam.Remoting.eval = function(expression, callback)
+//{
+//  var callId = "" + Seam.Remoting.__callId++;
+//  var data = "<eval expr=\"";
+//  data += expression;
+//  data += "\" id=\"";
+//  data += callId;
+//  data += "\"/>";
+//  var call = {data: data, id: callId, callback: callback};
+
+//  var envelope = Seam.Remoting.createEnvelope(Seam.Remoting.createHeader(), data);
+//  Seam.Remoting.pendingCalls.put(call.id, call);
+
+//  call.asyncReq = Seam.Remoting.sendAjaxRequest(envelope, Seam.Remoting.PATH_EXECUTE, Seam.Remoting.processResponse, false);
+//}
+
 Seam.Remoting.createCall = function(component, methodName, params, callback)
 {
   var callId = "" + Seam.Remoting.__callId++;
@@ -547,7 +592,14 @@ Seam.Remoting.cancelCall = function(callId)
   var call = Seam.Remoting.pendingCalls.get(callId);
   Seam.Remoting.pendingCalls.remove(callId);
   if (call && call.asyncReq)
+  {
+    if (Seam.Remoting.pendingCalls.isEmpty())
+      Seam.Remoting.hideLoadingMessage();
+    window.setTimeout(function() {
+      call.asyncReq.onreadystatechange = function() {};
+    }, 0);
     call.asyncReq.abort();
+  }
 }
 
 Seam.Remoting.execute = function(component, methodName, params, callback)
@@ -587,8 +639,20 @@ Seam.Remoting.sendAjaxRequest = function(envelope, path, callback, silent)
   else
     asyncReq = new ActiveXObject("Microsoft.XMLHTTP");
 
-  asyncReq.onreadystatechange = function() {Seam.Remoting.requestCallback(asyncReq, callback); }
-  asyncReq.open("POST", Seam.Remoting.contextPath + "/seam/resource/remoting" + path, true);
+  var rcb = Seam.Remoting.requestCallback;
+
+  window.setTimeout(function() {
+    asyncReq.onreadystatechange = function() {
+    if (rcb) rcb(asyncReq, callback);
+    }
+  }, 0);
+
+  if (Seam.Remoting.encodedSessionId)
+  {
+    path += ';jsessionid=' + Seam.Remoting.encodedSessionId;
+  }
+
+  asyncReq.open("POST", Seam.Remoting.resourcePath + path, true);
   asyncReq.send(envelope);
   return asyncReq;
 }
@@ -602,14 +666,45 @@ Seam.Remoting.requestCallback = function(req, callback)
 {
   if (req.readyState == 4)
   {
-    Seam.Remoting.hideLoadingMessage();
+    var inScope = typeof(Seam) == "undefined" ? false : true;
+
+    if (inScope) Seam.Remoting.hideLoadingMessage();
+
+    window.setTimeout(function() {
+      req.onreadystatechange = function() {};
+    }, 0);
 
     if (req.status == 200)
     {
-      Seam.Remoting.log("Response packet:\n" + req.responseText);
+      if (inScope) Seam.Remoting.log("Response packet:\n" + req.responseText);
 
       if (callback)
-        callback(req.responseXML);
+      {
+        // The following code deals with a Firefox security issue.  It reparses the XML
+        // response if accessing the documentElement throws an exception
+        try
+        {
+          req.responseXML.documentElement;
+          callback(req.responseXML);
+        }
+        catch (ex)
+        {
+           try
+           {
+             // Try it the IE way first...
+             var doc = new ActiveXObject("Microsoft.XMLDOM");
+             doc.async = "false";
+             doc.loadXML(req.responseText);
+             callback(doc);
+           }
+           catch (e)
+           {
+             // If that fails, use standards
+             var parser = new DOMParser();
+             callback(parser.parseFromString(req.responseText, "text/xml"));
+           }
+        }
+      }
     }
     else
       alert("There was an error processing your request.  Error code: " + req.status);
@@ -620,15 +715,22 @@ Seam.Remoting.processResponse = function(doc)
 {
   var headerNode;
   var bodyNode;
+
+  var inScope = typeof(Seam) == "undefined" ? false : true;
+  if (!inScope) return;
+
   var context = new Seam.Remoting.__Context;
 
-  for (var i = 0; i < doc.documentElement.childNodes.length; i++)
+  if (doc.documentElement)
   {
-    var node = doc.documentElement.childNodes.item(i);
-    if (node.tagName == "header")
-      headerNode = node;
-    else if (node.tagName == "body")
-      bodyNode = node;
+    for (var i = 0; i < doc.documentElement.childNodes.length; i++)
+    {
+      var node = doc.documentElement.childNodes.item(i);
+      if (node.tagName == "header")
+        headerNode = node;
+      else if (node.tagName == "body")
+        bodyNode = node;
+    }
   }
 
   if (headerNode)
@@ -643,7 +745,7 @@ Seam.Remoting.processResponse = function(doc)
         break;
       }
     }
-    if (contextNode)
+    if (contextNode && context)
     {
       Seam.Remoting.unmarshalContext(contextNode, context);
       if (context.getConversationId() && Seam.Remoting.getContext().getConversationId() == null)
@@ -689,7 +791,7 @@ Seam.Remoting.processResult = function(result, context)
 
     var value = Seam.Remoting.unmarshalValue(valueNode.firstChild, refs);
 
-    call.callback(value, context);
+    call.callback(value, context, callId);
   }
 }
 
@@ -808,9 +910,9 @@ Seam.Remoting.unmarshalValue = function(element, refs)
 Seam.Remoting.deserializeDate = function(val)
 {
   var dte = new Date();
-  dte.setFullYear(parseInt(val.substring(0,4), 10));
-  dte.setMonth(parseInt(val.substring(4,6), 10) - 1);
-  dte.setDate(parseInt(val.substring(6,8), 10));
+  dte.setFullYear(parseInt(val.substring(0,4), 10),
+                  parseInt(val.substring(4,6), 10) - 1,
+                  parseInt(val.substring(6,8), 10));
   dte.setHours(parseInt(val.substring(8,10), 10));
   dte.setMinutes(parseInt(val.substring(10,12), 10));
   dte.setSeconds(parseInt(val.substring(12,14), 10));
@@ -852,7 +954,8 @@ Seam.Remoting.displayLoadingMessage = function()
 
 Seam.Remoting.hideLoadingMessage = function()
 {
-  Seam.Remoting.loadingMsgDiv.style.visibility = 'hidden';
+  if (Seam.Remoting.loadingMsgDiv)
+    Seam.Remoting.loadingMsgDiv.style.visibility = 'hidden';
 }
 
 /* Messaging API */
@@ -969,6 +1072,8 @@ Seam.Remoting.pollCallback = function(doc)
     var node = body.childNodes.item(i);
     if (node.tagName == "messages")
       Seam.Remoting.processMessages(node);
+    else if (node.tagName == "errors")
+      Seam.Remoting.processPollErrors(node);
   }
 
   Seam.Remoting.pollTimeoutFunction = setTimeout("Seam.Remoting.poll()", Math.max(Seam.Remoting.pollInterval * 1000, 1000));
@@ -1019,6 +1124,36 @@ Seam.Remoting.processMessages = function(messages)
 
         callback(Seam.Remoting.createMessage(messageType, value));
       }
+    }
+  }
+}
+
+Seam.Remoting.processErrors = function(errors)
+{
+  var token = errors.getAttribute("token");
+
+  // Unsubscribe to the topic
+  for (var i = 0; i < Seam.Remoting.subscriptionRegistry.length; i++)
+  {
+    if (Seam.Remoting.subscriptionRegistry[i].token == token)
+    {
+      Seam.Remoting.subscriptionRegistry.splice(i, 1);
+      break;
+    }
+  }
+
+  for (var i = 0; i < errors.childNodes.length; i++)
+  {
+    if (errors.childNodes.item(i).tagName == "error")
+    {
+      var errorNode = errors.childNodes.item(i);
+      var code = errorNode.getAttribute("code");
+      var message = errorNode.firstChild.nodeValue;
+
+      if (Seam.Remoting.onPollError)
+        Seam.Remoting.onPollError(code, message);
+      else
+        alert("A polling error occurred: " + code + " " + message);
     }
   }
 }
