@@ -28,7 +28,7 @@ Needed parameters:
           <li class="#{nxu:test(cvLayout.name == contentView.currentResultLayout.name, 'selected', '')}">
             <a4j:commandLink action="#{contentView.setCurrentResultLayout(cvLayout)}"
               reRender="#{contentViewRenderId}_resultsPanel, #{contentViewRenderId}_contentViewActionsPanel"
-              ajaxSingle="true">
+              ajaxSingle="true" oncomplete="initNXDrapAndDropOnPage(jQuery('#' + '#{contentViewRenderId}_panel'));">
               <c:set var="iconPath"
                 value="#{nxu:test(empty cvLayout.iconPath, '/icons/document_listing_icon.png', cvLayout.iconPath)}" />
               <c:set var="title"
@@ -39,13 +39,14 @@ Needed parameters:
         </c:forEach>
       </ul>
     </c:if>
-   
+
     <ul class="layoutViewMode" style="display:inline;">
       <c:if test="#{contentView.showRefreshCommand}">
         <li>
           <a4j:commandLink action="#{contentView.refreshAndRewindPageProvider()}"
             id="refreshContentViewLink"
             reRender="#{contentViewRenderId}_resultsPanel"
+            oncomplete="initNXDrapAndDropOnPage(jQuery('#' + '#{contentViewRenderId}_panel'));"
             ajaxSingle="true">
             <h:graphicImage value="/img/refresh.png"
              alt="#{messages['label.refresh']}"
@@ -53,7 +54,7 @@ Needed parameters:
              id="refreshContentViewImage" />
           </a4j:commandLink>
         </li>
-      </c:if> 
+      </c:if>
       <nxu:set var="contentViewState"
         value="#{contentViewRestActions.getContentViewState(contentView)}">
         <c:if test="#{contentView.currentResultLayout.showCSVExport}">
@@ -107,17 +108,17 @@ Needed parameters:
 
 <c:if test="#{contentView.showPageSizeSelector}">
   <div class="listingLayoutSelector">
-  
+
     <c:if test="#{contentView.useGlobalPageSize}">
       <c:set var="pageSizeBinding" value="#{contentViewActions.currentGlobalPageSize}" />
     </c:if>
     <c:if test="#{not contentView.useGlobalPageSize}">
       <c:set var="pageSizeBinding" value="#{contentView.currentPageSize}" />
     </c:if>
-  
+
     <a4j:form id="contentViewGlobalPageSizeFrom_#{contentViewRenderId}"
       ajaxSubmit="true">
-  
+
       <p class="contentViewPageSelectorDesc">
         <h:outputText value="#{messages['label.contentview.pageSize']}" />
       </p>
@@ -135,11 +136,12 @@ Needed parameters:
       </h:selectOneMenu>
       <div style="display: none;">
         <a4j:commandButton value="submit"
-          reRender="#{contentViewRenderId}_resultsPanel" />
+          reRender="#{contentViewRenderId}_resultsPanel"
+          oncomplete="initNXDrapAndDropOnPage(jQuery('#' + '#{contentViewRenderId}_panel'));" />
       </div>
-  
+
     </a4j:form>
-  
+
   </div>
 </c:if>
 

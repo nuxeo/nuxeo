@@ -5,9 +5,6 @@
    $.fn.dropout = function ( baseUrl , repo ) {
       for (i=0; i< this.length; i++) {
           var target = $(this[i]);
-
-          //target.css("backgroundColor", "yellow");
-
           var id = target.attr("id");
           var docRef = target.attr("docRef");
           if (docRef==null) {
@@ -21,7 +18,7 @@
               //console.log("no download info found!!!");
             }
           } else {
-            var url = baseUrl + "nxdownloadinfo/" + repo + /" + docRef;
+            var url = baseUrl + "nxdownloadinfo/" + repo + "/" + docRef;
             target.attr("draggable", "true");
             target.bind("dragstart", getDownloadInfoFetcher(url));
           }
