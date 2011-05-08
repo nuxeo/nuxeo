@@ -12,6 +12,7 @@
     // set the conversation id before doing any call
     Seam.Remoting.getContext().setConversationId(currentConversationId);
     Seam.Remoting.contextPath = '#{contextPath}';
+    Seam.Remoting.resourcePath='#{contextPath}/seam/resource/remoting';
 </script>
 
 <div style="display:none">
@@ -25,6 +26,8 @@
 <c:if test="#{useHtml5DragAndDrop}">
 
 <script type="text/javascript" src="#{baseURL}js/?scripts=dnd/jquery.client.js|dnd/jquery.dnd-file-upload.js|automation.js|dnd/nxdropzone.js|dnd/nxdropout.js"></script>
+
+<script type="text/javascript" src="#{baseURL}scripts/dnd/nxinternaldnd.js"/>
 
 <ui:include src="/incl/dnd/dnd-ui.xhtml" />
 
@@ -40,9 +43,15 @@ var ctx = { currentDocument : '#{currentDocument.id}',
         conversationId : '#{org.jboss.seam.core.manager.currentConversationId}',
         lang : '#{localeSelector.localeString}',
         repository : '#{currentDocument.repositoryName}'};
-</script>
 
-<script type="text/javascript">
+    function initNXDrapAndDropOnPage(scope) {
+      // init Browser Drag out support (Chrome only);
+        jQuery(".dropout",scope).dropout(baseURL,ctx.repository);
+        // initernal DnD
+        jQuery(".nxDraggable",scope).nxInitDraggables();
+        jQuery(".nxDropTarget",scope).nxInitDropTargets();
+    }
+
     jQuery(document).ready(function(){
       // init Browser DnD import
       jQuery(".dropzone").nxDropZone({
@@ -51,9 +60,9 @@ var ctx = { currentDocument : '#{currentDocument.id}',
               numConcurrentUploads : 2,
               dropContext : ctx
             });
-      // init Browser Drag out support (Chrome only);
-      jQuery(".dropout").dropout(baseURL,ctx.repository);
-   });
+      // init Dropout and Internal DnD
+      initNXDrapAndDropOnPage(null);
+      });
 </script>
 </c:if>
 
