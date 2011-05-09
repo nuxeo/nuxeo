@@ -2,7 +2,7 @@
  xmlns:nxu="http://nuxeo.org/nxweb/util">
 
   <!-- Information panel for DnD import -->
-  <div id="dropzone-info-panel">
+  <div id="dropzone-info-panel" style="display:none;">
     <table width="100%">
       <tr>
         <td>
@@ -32,7 +32,7 @@
   </div>
 
   <!-- Form used to choose import operation -->
-  <div id="dndFormPanel" class="dndFormPanel">
+  <div id="dndFormPanel" class="dndFormPanel" style="display:none;">
     <table width="100%">
       <tr>
         <th> <h:outputText value="#{messages['label.dnd.uploaded.files']}"/> </th>
@@ -52,7 +52,7 @@
     </table>
   </div>
 
-  <div id="dndContinueButton">
+  <div id="dndContinueButton" style="display:none;">
      <span id="dndContinueButtonNext">
      <nxu:graphicImage value="/img/ImportContinue.png"
       style="vertical-align:middle"
