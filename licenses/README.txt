@@ -1,4 +1,4 @@
-These files (LGPL.txt, CDDL.txt, MIT-LICENSE.txt) are the license mentionned in
+These files (LGPL.txt, CDDL.txt, MIT-LICENSE.txt) are the license mentioned in
 the source headers.
 
 Most of the code in the Nuxeo EP project is copyright Nuxeo SA and
