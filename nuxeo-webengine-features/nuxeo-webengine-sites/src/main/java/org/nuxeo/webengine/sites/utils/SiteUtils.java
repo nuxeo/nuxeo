@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2009 Nuxeo SA (http://nuxeo.com/) and contributors.
+² * (C) Copyright 2009 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -31,14 +31,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang.StringUtils;
-import org.nuxeo.common.utils.IdUtils;
+import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.model.Property;
-import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants;
@@ -149,16 +148,19 @@ public class SiteUtils {
             DocumentModel documentModel) {
         StringBuilder path = new StringBuilder(getWebContainersPath()).append('/');
 
+        String segment = ws.getPath().segment(ws.getPath().segmentCount() - 1);
         if (ws.hasSchema(SiteConstants.WEBCONTAINER_SCHEMA)) {
             try {
-                path.append(ws.getPropertyValue(SiteConstants.WEBCONTAINER_URL)).append("/");
+                path.append(segment).append('/');
             } catch (Exception e) {
-                path.append(ws.getPath().segment(ws.getPath().segmentCount() - 1)).append('/');
+                path.append(segment).append('/');
             }
         } else {
             path.append(ws.getPath().segment(ws.getPath().segmentCount() - 1)).append('/');
         }
-        path.append(JsonAdapter.getRelativePath(ws, documentModel));
+        path.append(URIUtils.quoteURIPathComponent(
+                JsonAdapter.getRelativePath(ws, documentModel).toString(),
+                false));
         return path.toString();
     }
 

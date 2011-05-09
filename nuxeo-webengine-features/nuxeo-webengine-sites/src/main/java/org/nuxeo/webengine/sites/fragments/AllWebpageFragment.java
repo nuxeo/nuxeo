@@ -16,6 +16,7 @@
  */
 package org.nuxeo.webengine.sites.fragments;
 
+import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.webengine.WebEngine;
@@ -23,7 +24,6 @@ import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.theme.fragments.AbstractFragment;
 import org.nuxeo.theme.models.Model;
 import org.nuxeo.theme.models.ModelException;
-import org.nuxeo.webengine.sites.JsonAdapter;
 import org.nuxeo.webengine.sites.models.WebpageListModel;
 import org.nuxeo.webengine.sites.models.WebpageModel;
 import org.nuxeo.webengine.sites.utils.SiteConstants;
@@ -56,8 +56,7 @@ public class AllWebpageFragment extends AbstractFragment {
                     if (!webPage.getCurrentLifeCycleState().equals(
                             SiteConstants.DELETED)) {
                         String name = SiteUtils.getString(webPage, "dc:title");
-                        String path = JsonAdapter.getRelativePath(documentModel,
-                                webPage).toString();
+                        String path = URIUtils.quoteURIPathComponent(webPage.getName(), false);
                         WebpageModel webpageModel = new WebpageModel(name, path);
                         model.addItem(webpageModel);
                     }

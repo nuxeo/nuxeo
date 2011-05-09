@@ -5,8 +5,8 @@
   <ul>  
     <#list nxthemesInfo.model.items as item>
       <div class="allWebPagesResume">
-        <div class="documentInfo"><a href="${This.path}/${item.path}"> ${item.name?xml} </a> 
-         <a href="${This.path}/${item.path}/@delete"> remove</a></div>
+        <div class="documentInfo"><a href="${This.path}/${item.path}"> ${item.name?xml} </a>
+        <a href="${This.path}/${item.path}?url/@delete"> remove</a></div>
         <div style="clear:both;"></div> 
       </div>
     </#list>

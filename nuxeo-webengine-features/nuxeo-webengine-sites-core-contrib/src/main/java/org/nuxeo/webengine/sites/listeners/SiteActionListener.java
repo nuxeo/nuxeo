@@ -17,6 +17,7 @@
  */
 package org.nuxeo.webengine.sites.listeners;
 
+import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -40,10 +41,6 @@ public class SiteActionListener implements EventListener {
     public void handleEvent(Event event) throws ClientException {
         String eventId = event.getName();
 
-        if (!(DocumentEventTypes.ABOUT_TO_CREATE.equals(eventId) || DocumentEventTypes.BEFORE_DOC_UPDATE.equals(eventId))) {
-            return;
-        }
-
         DocumentEventContext docCtx;
         if (event.getContext() instanceof DocumentEventContext) {
             docCtx = (DocumentEventContext) event.getContext();
@@ -59,6 +56,7 @@ public class SiteActionListener implements EventListener {
         if (DocumentEventTypes.ABOUT_TO_CREATE.equals(eventId)) {
 
             String url = doc.getName();
+            url = URIUtils.quoteURIPathComponent(url, false);
             int sameName = 0;
             String documentWithSameURLQuery = "SELECT * FROM DOCUMENT where "
                     + SiteConstants.WEBCONTAINER_URL + " STARTSWITH \"" + url
