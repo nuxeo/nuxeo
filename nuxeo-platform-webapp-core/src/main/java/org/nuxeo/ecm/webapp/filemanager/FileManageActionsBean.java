@@ -608,7 +608,6 @@ public class FileManageActionsBean extends InputController implements
                 stream = new FileInputStream(fileUploadHolder.getTempFile());
                 return addFile(stream, getFileName());
             } catch (Exception e) {
-                // NXP-3570 : temporary solution before real fix
                 log.warn(e.getMessage());
                 log.debug(e.getMessage(), e);
                 facesMessages.add(StatusMessage.Severity.ERROR,
