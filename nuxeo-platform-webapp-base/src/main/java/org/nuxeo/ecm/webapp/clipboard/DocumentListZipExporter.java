@@ -46,8 +46,7 @@ public class DocumentListZipExporter {
         summary.put(new IdRef("0").toString(), summaryRoot);
 
         File tmpFile = File.createTempFile("NX-BigZipFile-", ".zip");
-        tmpFile.deleteOnExit();
-        Framework.trackFile(tmpFile, this);
+        tmpFile.deleteOnExit(); // file is deleted after being downloaded in DownloadServlet
         FileOutputStream fout = new FileOutputStream(tmpFile);
         ZipOutputStream out = new ZipOutputStream(fout);
         out.setMethod(ZipOutputStream.DEFLATED);
