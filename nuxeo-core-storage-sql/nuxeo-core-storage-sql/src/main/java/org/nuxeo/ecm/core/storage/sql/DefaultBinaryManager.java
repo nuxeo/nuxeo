@@ -151,28 +151,31 @@ public class DefaultBinaryManager implements BinaryManager {
          * digest.
          */
         File tmp = File.createTempFile("create_", ".tmp", tmpDir);
-        tmp.deleteOnExit();
-        String digest;
-        OutputStream out = new FileOutputStream(tmp);
         try {
-            digest = storeAndDigest(in, out);
+            String digest;
+            OutputStream out = new FileOutputStream(tmp);
+            try {
+                digest = storeAndDigest(in, out);
+            } finally {
+                in.close();
+                out.close();
+            }
+            /*
+             * Move the tmp file to its destination.
+             */
+            File file = getFileForDigest(digest, true);
+            tmp.renameTo(file); // atomic move, fails if already there
+            if (!file.exists()) {
+                throw new IOException("Could not create file: " + file);
+            }
+            /*
+             * Now we can build the Binary.
+             */
+            return getBinaryScrambler().getUnscrambledBinary(file, digest,
+                    repositoryName);
         } finally {
-            in.close();
-            out.close();
+            tmp.delete(); // fails if the move was successful
         }
-        /*
-         * Move the tmp file to its destination.
-         */
-        File file = getFileForDigest(digest, true);
-        tmp.renameTo(file); // atomic move, fails if already there
-        tmp.delete(); // fails if the move was successful
-        if (!file.exists()) {
-            throw new IOException("Could not create file: " + file);
-        }
-        /*
-         * Now we can build the Binary.
-         */
-        return getBinaryScrambler().getUnscrambledBinary(file, digest, repositoryName);
     }
 
     @Override
