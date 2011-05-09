@@ -150,7 +150,6 @@ public class HTMLPresenter extends WidgetPresenter<HTMLPresenter.Display> {
 
     @Override
     protected void onBind() {
-        registerImageClick();
         if (model.hasPermission(PermissionsConstants.EVERYTHING)) {
             registerSaveEvent();
             registerModifyEvent();
