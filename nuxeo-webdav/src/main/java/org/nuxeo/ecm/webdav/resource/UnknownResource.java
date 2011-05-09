@@ -12,32 +12,29 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Stefane Fermigier
  */
-
 package org.nuxeo.ecm.webdav.resource;
 
-import net.java.dev.webdav.jaxrs.methods.*;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.*;
-import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
-import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
-import org.nuxeo.ecm.webdav.Util;
-import org.nuxeo.ecm.webdav.backend.WebDavBackend;
-import org.nuxeo.runtime.services.streaming.InputStreamSource;
+import java.net.URI;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.HEAD;
 import javax.ws.rs.PUT;
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
-import java.net.URI;
+
+import net.java.dev.webdav.jaxrs.methods.COPY;
+import net.java.dev.webdav.jaxrs.methods.MKCOL;
+import net.java.dev.webdav.jaxrs.methods.MOVE;
+import net.java.dev.webdav.jaxrs.methods.PROPFIND;
+import net.java.dev.webdav.jaxrs.methods.PROPPATCH;
+
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
+import org.nuxeo.ecm.webdav.backend.WebDavBackend;
+import org.nuxeo.runtime.services.streaming.InputStreamSource;
 
 /**
  * Resource for an unknown (ie non-existing) object.
@@ -46,7 +43,7 @@ import java.net.URI;
  */
 public class UnknownResource extends AbstractResource {
 
-    private static final Log log = LogFactory.getLog(UnknownResource.class);
+    private static final String DS_STORE = ".DS_Store";
 
     protected WebDavBackend backend;
 
@@ -61,17 +58,12 @@ public class UnknownResource extends AbstractResource {
     @PUT
     public Response put() throws Exception {
 
-        // Special case: ignore magic MacOS files.
-        // Actually, we shouldn't do this. This breaks drag'n'drop of files downloaded from the
-        // Internet (Finder fails with error "Unable to quarantine" in the logs).
-        // TODO: find a better way.
-        /*
-        if (name.startsWith("._")) {
-            Util.endTransaction();
-            // Not sure if it's the right error code.
-            throw new WebApplicationException(409);
+        // Special case: ignore some Mac OS X files.
+        // ._ files cannot easily be skipped as the Finder requires them on creation
+        // We only forbid .DS_Store creation for now.
+        if (DS_STORE.equals(name)) {
+            throw new WebApplicationException(Response.Status.CONFLICT);
         }
-        */
 
         ensureParentExists();
         Blob content = new StreamingBlob(new InputStreamSource(request.getInputStream()));
@@ -114,39 +106,39 @@ public class UnknownResource extends AbstractResource {
 
     @DELETE
     public Response delete() {
-        return Response.status(404).build();
+        throw new WebApplicationException(Response.Status.NOT_FOUND);
     }
 
     @COPY
     public Response copy() {
-        return Response.status(404).build();
+        throw new WebApplicationException(Response.Status.NOT_FOUND);
     }
 
     @MOVE
     public Response move() {
-        return Response.status(404).build();
+        throw new WebApplicationException(Response.Status.NOT_FOUND);
     }
 
     @PROPFIND
     public Response propfind() {
-        return Response.status(404).build();
+        throw new WebApplicationException(Response.Status.NOT_FOUND);
     }
 
     @PROPPATCH
     public Response proppatch() {
-        return Response.status(404).build();
+        throw new WebApplicationException(Response.Status.NOT_FOUND);
     }
 
     @HEAD
     public Response head() {
-        return Response.status(404).build();
+        throw new WebApplicationException(Response.Status.NOT_FOUND);
     }
 
     // Utility
 
     private void ensureParentExists() throws Exception {
         if (!backend.exists(parentPath)) {
-            throw new WebApplicationException(409);
+            throw new WebApplicationException(Response.Status.CONFLICT);
         }
     }
 

@@ -110,7 +110,7 @@ public class RootResource {
         WebDavBackend backend = Backend.get(path, request);
 
         if (backend == null) {
-            return Response.status(409).build();
+            throw new WebApplicationException(Response.Status.CONFLICT);
         }
 
         if (backend.isVirtual()) {
@@ -121,11 +121,10 @@ public class RootResource {
         DocumentModel doc = null;
         try {
             doc = backend.resolveLocation(path);
-
         } catch (Exception e) {
             log.error("Error during resolving path: " + path + " Message:"
                     + e.getMessage());
-            throw new WebApplicationException(409);
+            throw new WebApplicationException(Response.Status.CONFLICT);
         }
 
         if (doc == null) {
@@ -134,7 +133,7 @@ public class RootResource {
 
         // Send 401 error if not authorised to read.
         if (!backend.hasPermission(doc.getRef(), SecurityConstants.READ)) {
-            return Response.status(401);
+            throw new WebApplicationException(Response.Status.UNAUTHORIZED);
         }
 
         if (doc.isFolder()) {
