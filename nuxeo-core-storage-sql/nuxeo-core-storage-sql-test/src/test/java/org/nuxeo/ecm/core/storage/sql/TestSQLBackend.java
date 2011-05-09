@@ -1869,6 +1869,21 @@ public class TestSQLBackend extends SQLBackendTestCase {
         session.save();
     }
 
+    public void testMixinWithSamePropertyName() throws Exception {
+        Session session = repository.getConnection();
+        Node root = session.getRootNode();
+        Node node = session.addChildNode(root, "foo", null, "TestDoc", false);
+        node.setSimpleProperty("tst:title", "bar");
+        session.save();
+
+        node.addMixinType("Aged");
+        node.setSimpleProperty("age:title", "gee");
+        session.save();
+
+        assertEquals("bar", node.getSimpleProperty("tst:title").getValue());
+        assertEquals("gee", node.getSimpleProperty("age:title").getValue());
+    }
+
     public void testMixinCopy() throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();

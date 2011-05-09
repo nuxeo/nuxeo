@@ -2023,6 +2023,26 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals("123", doc.getPropertyValue("age:age"));
     }
 
+    public void testFacetWithSamePropertyName() throws Exception {
+        DocumentModel doc = new DocumentModelImpl("/", "foo", "File");
+        doc.setPropertyValue("dc:title", "bar");
+        doc = session.createDocument(doc);
+        session.save();
+
+        doc.addFacet("Aged");
+        doc.setPropertyValue("age:title", "gee");
+        doc = session.saveDocument(doc);
+        session.save();
+
+        assertEquals("bar", doc.getPropertyValue("dc:title"));
+        assertEquals("gee", doc.getPropertyValue("age:title"));
+
+        // refetch
+        doc = session.getDocument(doc.getRef());
+        assertEquals("bar", doc.getPropertyValue("dc:title"));
+        assertEquals("gee", doc.getPropertyValue("age:title"));
+    }
+
     public void testFacetCopy() throws Exception {
         DocumentModel doc = new DocumentModelImpl("/", "foo", "File");
         doc.addFacet("Aged");
