@@ -33,6 +33,7 @@ public class FPRPCConts {
     public static String WEBDAV_USERAGENT = "Microsoft-WebDAV-MiniRedir";
     public static String LITMUS_USERAGENT = "litmus";
     public static String NAUTILUS_USERAGENT = "gvfs";
+    public static String FINDER_USERAGENT = "WebDAV";
 
     public String getMETHOD_PARAM() {
         return METHOD_PARAM;
