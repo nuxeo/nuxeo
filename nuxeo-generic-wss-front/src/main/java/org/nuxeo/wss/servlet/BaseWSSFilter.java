@@ -58,6 +58,8 @@ public abstract class BaseWSSFilter implements Filter {
 
     public static final String NUXEO_ROOT_URL = "/nuxeo";
 
+    public static final int NUXEO_ROOT_URL_LEN = NUXEO_ROOT_URL.length();
+
     private static final Log log = LogFactory.getLog(WSSFrontFilter.class);
 
     @Override
@@ -174,13 +176,16 @@ public abstract class BaseWSSFilter implements Filter {
         }
 
         // add correct header for WebDAV response
-        httpResponse.setHeader("Server", "Microsoft-IIS/6.0");
-        httpResponse.setHeader("X-Powered-By", "ASP.NET");
-        httpResponse.setHeader("MicrosoftSharePointTeamServices", "12.0.0.6421");
-        httpResponse.setHeader("Content-Type", "text/xml");
-        httpResponse.setHeader("Cache-Control", "no-cache");
-        httpResponse.setHeader("Public-Extension",
-                "http://schemas.microsoft.com/repl-2");
+        if (isMSWebDavRequest(httpRequest)) {
+            httpResponse.setHeader("Server", "Microsoft-IIS/6.0");
+            httpResponse.setHeader("X-Powered-By", "ASP.NET");
+            httpResponse.setHeader("MicrosoftSharePointTeamServices",
+                    "12.0.0.6421");
+            httpResponse.setHeader("Content-Type", "text/xml");
+            httpResponse.setHeader("Cache-Control", "no-cache");
+            httpResponse.setHeader("Public-Extension",
+                    "http://schemas.microsoft.com/repl-2");
+        }
 
         // forward request to WebDAV
         String createdURL = createPathToWebDav(httpRequest.getRequestURI());
@@ -193,28 +198,32 @@ public abstract class BaseWSSFilter implements Filter {
             return basePath;
         } else {
             if (basePath.startsWith(NUXEO_ROOT_URL)) {
-                return webDavUrl + basePath.substring(6);
+                return webDavUrl + basePath.substring(NUXEO_ROOT_URL_LEN);
             } else {
                 return webDavUrl;
             }
         }
     }
 
-    // check WebDAV request. Implemented only for Microsoft WebDAV client.
-    // @TODO: check other WebDAV clients or implement general check
     private boolean isWebDavRequest(HttpServletRequest request) {
         String ua = request.getHeader("User-Agent");
         return StringUtils.isNotEmpty(ua)
-                && (ua.contains(FPRPCConts.WEBDAV_USERAGENT)
-                        || ua.contains(FPRPCConts.LITMUS_USERAGENT)
-                        || ua.contains(FPRPCConts.NAUTILUS_USERAGENT) || ua.contains(FPRPCConts.FINDER_USERAGENT));
+                && (ua.contains(FPRPCConts.MS_WEBDAV_USERAGENT) //
+                        || ua.contains(FPRPCConts.LITMUS_USERAGENT) //
+                        || ua.contains(FPRPCConts.NAUTILUS_USERAGENT) //
+                || ua.contains(FPRPCConts.MAC_FINDER_USERAGENT));
+    }
+
+    private boolean isMSWebDavRequest(HttpServletRequest request) {
+        String ua = request.getHeader("User-Agent");
+        return ua != null && ua.contains(FPRPCConts.MS_WEBDAV_USERAGENT);
     }
 
     // resolve destination path for WebDAV requests
     private String resolveDestinationPath(String destination) {
         int index = destination.indexOf(NUXEO_ROOT_URL);
-        String prefix = destination.substring(0, index + 6);
-        String suffix = destination.substring(index + 6);
+        String prefix = destination.substring(0, index + NUXEO_ROOT_URL_LEN);
+        String suffix = destination.substring(index + NUXEO_ROOT_URL_LEN);
         return prefix + webDavUrl + suffix;
     }
 
