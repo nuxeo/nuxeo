@@ -178,6 +178,7 @@ public class LazyBlob extends DefaultStreamBlob implements Serializable {
                 file = new File(TMP_DIR, Long.toHexString(RANDOM.nextLong()));
                 file.deleteOnExit();
                 src.copyTo(file); // persist the content
+                Framework.trackFile(file, this);
                 in = new FileInputStream(file);
             } catch (IOException e) {
                 throw e;
