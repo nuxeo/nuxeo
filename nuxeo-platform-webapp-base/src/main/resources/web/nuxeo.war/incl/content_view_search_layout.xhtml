@@ -33,9 +33,10 @@ Needed parameters:
             ajaxSingle="true"
             rendered="#{nxd:isDirty(contentView.searchDocumentModel)}"
             reRender="#{contentViewRenderId}_resultsPanel, #{contentViewRenderId}_resetFilterForm, #{contentViewRenderId}_filterForm"
+            oncomplete="initNXDrapAndDropOnPage(jQuery('#' + '#{contentViewRenderId}_panel'));"
             styleClass="button warningLink">
             <nxu:actionListenerMethod
-              value="#{contentView.resetSearchDocumentModel()}" /> 
+              value="#{contentView.resetSearchDocumentModel()}" />
           </a4j:commandLink>
         </a4j:form>
       </div>
@@ -52,18 +53,20 @@ Needed parameters:
             value="#{messages['label.contentview.filter.filterAction']}"
             id="#{contentViewRenderId}_filterSubmit"
             reRender="#{contentViewRenderId}_resultsPanel, #{contentViewRenderId}_resetFilterForm, #{contentViewRenderId}_filterForm"
+            oncomplete="initNXDrapAndDropOnPage(jQuery('#' + '#{contentViewRenderId}_panel'));"
             styleClass="button">
             <nxu:actionListenerMethod
-              value="#{contentView.resetPageProvider()}" /> 
+              value="#{contentView.resetPageProvider()}" />
           </a4j:commandButton>
           <a4j:commandButton
             value="#{messages['label.contentview.filter.clearFilterButton']}"
             id="#{contentViewRenderId}_filterClear"
             immediate="true" ajaxSingle="true"
             reRender="#{contentViewRenderId}_resultsPanel, #{contentViewRenderId}_resetFilterForm, #{contentViewRenderId}_filterForm"
+            oncomplete="initNXDrapAndDropOnPage(jQuery('#' + '#{contentViewRenderId}_panel'));"
             styleClass="button">
             <nxu:actionListenerMethod
-              value="#{contentView.resetSearchDocumentModel()}" /> 
+              value="#{contentView.resetSearchDocumentModel()}" />
           </a4j:commandButton>
         </p>
       </a4j:form>
