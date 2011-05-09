@@ -25,9 +25,7 @@
 
 <c:if test="#{useHtml5DragAndDrop}">
 
-<script type="text/javascript" src="#{baseURL}js/?scripts=dnd/jquery.client.js|dnd/jquery.dnd-file-upload.js|automation.js|dnd/nxdropzone.js|dnd/nxdropout.js"></script>
-
-<script type="text/javascript" src="#{baseURL}scripts/dnd/nxinternaldnd.js"/>
+<script type="text/javascript" src="#{baseURL}js/?scripts=dnd/jquery.client.js|dnd/jquery.dnd-file-upload.js|automation.js|dnd/nxdropzone.js|dnd/nxdropout.js|dnd/nxinternaldnd.js"></script>
 
 <ui:include src="/incl/dnd/dnd-ui.xhtml" />
 
@@ -57,7 +55,7 @@ var ctx = { currentDocument : '#{currentDocument.id}',
       jQuery(".dropzone").nxDropZone({
               url : "/nuxeo/site/automation/batch/",
               uploadRateRefreshTime : 500,
-              numConcurrentUploads : 2,
+              numConcurrentUploads : 3,
               dropContext : ctx
             });
       // init Dropout and Internal DnD
