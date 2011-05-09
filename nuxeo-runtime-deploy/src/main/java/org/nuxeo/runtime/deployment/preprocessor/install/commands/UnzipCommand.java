@@ -67,6 +67,11 @@ public class UnzipCommand implements Command {
         if (!srcFile.exists()) {
             throw new FileNotFoundException("Could not find the file " + srcFile.getAbsolutePath() + " to unzip.");
         }
+        
+        if (srcFile.isDirectory()) {
+        	new CopyCommand(src, dst, filter).exec(ctx);
+        	return;
+        }
 
         if (dstFile.isFile()) {
             throw new IllegalArgumentException("When unziping the destination file must be a directory: "
