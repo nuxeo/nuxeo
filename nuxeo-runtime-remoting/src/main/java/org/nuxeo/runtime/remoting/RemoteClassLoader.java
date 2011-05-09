@@ -76,6 +76,13 @@ public class RemoteClassLoader extends ClassLoader {
     }
 
     @Override
+    /**
+     * Not used at this time. The current implementation  is not deleting
+     * the temporary files until the JVM exit.
+     * 
+     * @Deprecated
+     * @Since 5.4.2
+     */
     protected URL findResource(String name) {
         URL resource;
         try {
