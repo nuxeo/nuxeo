@@ -150,6 +150,10 @@ public class HTMLPresenter extends WidgetPresenter<HTMLPresenter.Display> {
 
     @Override
     protected void onBind() {
+        String url = model.getData().getHtmlPictureLink();
+        if (url != null && !url.isEmpty()) {
+            registerImageClick();
+        }
         if (model.hasPermission(PermissionsConstants.EVERYTHING)) {
             registerSaveEvent();
             registerModifyEvent();
