@@ -46,6 +46,8 @@ case "`uname`" in
   #Linux) linux=true;;
 esac
 
+## Empty $GREP_OPTIONS to prevent some undesirable behaviors
+GREP_OPTIONS=""
 
 ## Setup the JVM (find JAVA_HOME if undefined; use JAVA if defined)
 while read line; do
