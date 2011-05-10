@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.usermanager;
 
 import java.io.Serializable;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -1325,12 +1326,8 @@ public class UserManagerImpl implements UserManager {
     }
 
     @Override
-    public boolean authenticate(String name, String password) {
-        try {
-            return checkUsernamePassword(name, password);
-        } catch (ClientException e) {
-            throw new ClientRuntimeException("Username / password authentication failed", e);
-        }
+    public Principal authenticate(String name, String password) throws ClientException {
+        return checkUsernamePassword(name, password) ? getPrincipal(name) : null;
     }
 
 }

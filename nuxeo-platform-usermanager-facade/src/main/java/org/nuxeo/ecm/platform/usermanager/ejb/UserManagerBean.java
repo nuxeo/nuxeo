@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.usermanager.ejb;
 
 import java.io.Serializable;
+import java.security.Principal;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -560,8 +561,14 @@ public class UserManagerBean implements UserManagerLocal {
     }
 
     @Override
-    public boolean authenticate(String name, String password) {
-        return getUserManager().authenticate(name, password);
+    public Principal authenticate(String name, String password) throws ClientException {
+        try {
+            return getUserManager().authenticate(name, password);
+        } catch (ClientException e) {
+            throw e;
+        } catch (Throwable t) {
+            throw new ClientException(t);
+        }
     }
 
 }
