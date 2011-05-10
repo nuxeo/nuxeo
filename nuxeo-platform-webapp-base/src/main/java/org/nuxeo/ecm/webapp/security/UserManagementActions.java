@@ -290,7 +290,7 @@ public class UserManagementActions extends AbstractUserGroupManagement implement
     public String viewUser(String userName) throws ClientException {
         setSelectedUser(userName);
         showUserOrGroup = true;
-        webActions.setCurrentTabIds("NUXEO_ADMIN:UsersGroupsManager:UsersManager");
+        webActions.setCurrentTabIds("USER_CENTER:UsersGroupsHome:UsersHome");
         return VIEW_HOME;
     }
 

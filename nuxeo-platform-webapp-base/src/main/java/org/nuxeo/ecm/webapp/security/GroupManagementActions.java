@@ -190,7 +190,7 @@ public class GroupManagementActions extends AbstractUserGroupManagement implemen
     public String viewGroup(String groupName) throws ClientException {
         setSelectedGroup(groupName);
         showUserOrGroup = true;
-        webActions.setCurrentTabIds("NUXEO_ADMIN:UsersGroupsManager:GroupsManager");
+        webActions.setCurrentTabIds("USER_CENTER:UsersGroupsHome:GroupsHome");
         return VIEW_HOME;
     }
 
