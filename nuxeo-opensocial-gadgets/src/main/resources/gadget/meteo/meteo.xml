@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <Module>
-<ModulePrefs title="Pr&#233;vision meteo: wofrance.fr"
+<ModulePrefs title="Meteo"
  height="95" scrolling="false" scaling="false"
 directory_title="Pr&#233;vision meteo: wofrance.fr"
 title_url="http://www.wofrance.fr/"

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Module>
-  <ModulePrefs title="Todo list" category="tools"
+  <ModulePrefs title="Todo List" category="tools"
     render_inline="required" scrolling="false" author="" directory_title="ToDo List"
     singleton="false">
     <Require feature="opensocial-0.8" />

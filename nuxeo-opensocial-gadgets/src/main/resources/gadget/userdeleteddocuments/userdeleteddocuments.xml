@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Module>
-  <ModulePrefs title="My deleted documents"
+  <ModulePrefs title="My Deleted Documents"
     description="List deleted documents where the user is a contributor"
     author="tdeprat" author_email="tdelprat@nuxeo.com"
     thumbnail="${clientSideBaseUrl}site/gadgets/userdeleteddocuments/user_deleted_documents.png"

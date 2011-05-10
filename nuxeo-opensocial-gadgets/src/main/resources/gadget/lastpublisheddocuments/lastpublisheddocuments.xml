@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Module>
-  <ModulePrefs title="Last published documents"
+  <ModulePrefs title="Last Published Documents"
     description="List the last published documents accessible to the user"
     author="tdeprat" author_email="tdelprat@nuxeo.com"
     thumbnail="${clientSideBaseUrl}site/gadgets/lastpublisheddocuments/last_published_document.png"

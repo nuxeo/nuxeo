@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <Module>
-  <ModulePrefs title="Postit" description="Write your note here!" author="sergiosicari" author_email="sergiosicari+coolgadget@gmail.com" screenshot="http://www.fileden.com/files/2006/12/4/465575/Others/screenshot.png" author_location="Augusta(SR), Italy" author_affiliation="Google Inc." category="tools" height="263" scaling="false">
+  <ModulePrefs title="Note" description="Write your note here!" author="sergiosicari" author_email="sergiosicari+coolgadget@gmail.com" screenshot="http://www.fileden.com/files/2006/12/4/465575/Others/screenshot.png" author_location="Augusta(SR), Italy" author_affiliation="Google Inc." category="tools" height="263" scaling="false">
   <Require feature="nuxeo" />
   <Require feature="form" />
   <Require feature="jquery" />

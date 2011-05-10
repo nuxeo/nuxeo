@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Module>
-  <ModulePrefs title="bookmarks" category="tools" render_inline="required" scrolling="false" author="Joshua Kent" directory_title="Enhanced Bookmarks" author_aboutme="My name is Joshua Kent I am a student at MTSU and full time web application developer for Princeton University." singleton="false">
+  <ModulePrefs title="Bookmarks" category="tools" render_inline="required" scrolling="false" author="Joshua Kent" directory_title="Enhanced Bookmarks" author_aboutme="My name is Joshua Kent I am a student at MTSU and full time web application developer for Princeton University." singleton="false">
       <Require feature="opensocial-0.8" />
       <Require feature="dynamic-height" />
       <Require feature="setprefs" />
