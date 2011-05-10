@@ -442,13 +442,8 @@ var NXDropZone = {
             // JQuery event wrapper
             dt = event.originalEvent.dataTransfer;
           }
-          if (dt) {
-            if ("Files"==dt.types // chrome
-              || (dt.types!=null && dt.types.length!=null
-              && "application/x-moz-file"== dt.types[0]) // firefox
-            ){
-              return true;
-             }
+          if (dt && dt.types != null && dt.types.length != null && dt.types.indexOf("Files") > -1) {
+            return true;
           }
           return false;
      };
