@@ -1,0 +1,49 @@
+<f:subview xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  id="#{widget.id}">
+
+    <a4j:region renderRegionOnly="true" id="#{widget.id}_region">
+      <a4j:outputPanel ajaxRendered="true">
+        <nxu:inputList value="#{field}" id="#{widget.id}_input" model="model"
+          template="#{nxd:propertyDefaultValue(widget.fieldDefinitions[0].propertyName)}"
+          required="#{widget.required}" diff="#{widget.properties['diff']}">
+
+          <h:panelGrid columns="3">
+            <a4j:commandLink immediate="true"
+              actionListener="#{editableListBean.performAction}"
+              id="#{widget.id}_delete" reRender="#{widget.id}_input"
+              bypassUpdates="true">
+              <h:graphicImage value="/icons/action_delete.gif" />
+              <f:param name="for" value="#{widget.id}_input" />
+              <f:param name="index" value="#{model.rowIndex}" />
+              <f:param name="type" value="remove" />
+            </a4j:commandLink>
+
+            <h:selectOneMenu value="#{model.rowData.docType}">
+              <f:selectItems
+                value="#{contentViewConfigurationActions.availableDocTypes}" />
+            </h:selectOneMenu>
+
+            <h:selectOneMenu value="#{model.rowData.contentView}">
+              <f:selectItems
+                value="#{contentViewConfigurationActions.availableContentViews}" />
+            </h:selectOneMenu>
+          </h:panelGrid>
+
+        </nxu:inputList>
+        <h:message styleClass="errorMessage" for="#{widget.id}_input"
+          id="#{widget.id}_message" />
+      </a4j:outputPanel>
+
+      <a4j:commandLink immediate="true"
+        actionListener="#{editableListBean.performAction}" id="#{widget.id}_add">
+        <f:param name="for" value="#{widget.id}_input" />
+        <f:param name="type" value="add" />
+        <h:graphicImage value="/icons/action_add.gif" />
+        <h:outputText value="#{messages['command.add']}" />
+      </a4j:commandLink>
+
+    </a4j:region>
+</f:subview>
