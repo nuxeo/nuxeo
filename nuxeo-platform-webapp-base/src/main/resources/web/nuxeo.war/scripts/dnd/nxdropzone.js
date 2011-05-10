@@ -343,6 +343,7 @@ function DropZoneUIHandler(idx, dropZoneId, options,targetSelectedCB) {
     selector.bind("change", function(event) {o.updateForm(event, selector.val())});
     var buttonForm = jQuery("#dndFormSubmitButton");
 
+    panel.css("z-index","5000");
     panel.css("display","block");
     this.updateForm(null,this.operationsDef[0].id);
 
