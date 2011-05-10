@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -105,13 +105,13 @@ public class NuxeoCmisAuthHandler extends AuthHandler implements LoginProvider {
     public LoginContext login(String username, String password) {
         try {
             // check identity against UserManager
-            if (!getAuthenticator().authenticate(username, password)) {
+            if (!getAuthenticator().checkUsernamePassword(username, password)) {
                 throw new RuntimeException("Authentication failed for user '"
                         + username + "'");
             }
             // login to Nuxeo framework
             return Framework.login(username, password);
-        } catch (LoginException e) {
+        } catch (Exception e) {
             throw new RuntimeException("Login failed for user '" + username
                     + "'", e);
         }
