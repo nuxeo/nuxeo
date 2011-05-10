@@ -4,7 +4,7 @@
   xmlns:nxd="http://nuxeo.org/nxweb/document">
   <h:form>
     <nxu:dataList layout="unorderedList" var="tab" value="#{tabsActionsList}"
-      itemStyleClass="#{nxu:test(webActions.currentTabAction == tab, 'selected', '')}">
+      itemStyleClass="#{nxu:test(webActions.currentTabId == tab.id, 'selected', '')}">
       <nxd:restDocumentLink document="#{currentDocument}" tab="#{tab.id}">
         <h:outputText value="#{messages[tab.label]}" />
       </nxd:restDocumentLink>

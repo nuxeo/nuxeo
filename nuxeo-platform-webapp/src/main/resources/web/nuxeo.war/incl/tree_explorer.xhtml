@@ -40,16 +40,12 @@
                   highlightedClass="treeNodeHighlightedClass"
                   selectedClass="treeNodeSelectedClass"
                    oncomplete="jQuery('span.popupTarget').contextMenu('popupMenu');">
-                  <div id="docRefTarget:#{node.document.id}">
+                  <div id="nodeRefTarget:#{node.document.id}" class="nxDropTarget">
                     <span class="popupTarget" docRef="#{node.document.ref}">
                       <nxd:restDocumentLink document="#{node.document}"
                         styleClass="treeLink">
                         <h:outputText value="#{nxd:titleOrId(node.document)}" />
                       </nxd:restDocumentLink>
-                      <script type="text/javascript">
-                        <h:outputText rendered="#{node.document.folder}"
-                          value="Droppables.add('docRefTarget:#{node.document.id}', {accept:'cell', onDrop:function(element){moveElement(element,'docRef:#{node.document.id}')}, hoverclass:'dropInto'});"/>
-                      </script>
                     </span>
                   </div>
                 </rich:treeNode>

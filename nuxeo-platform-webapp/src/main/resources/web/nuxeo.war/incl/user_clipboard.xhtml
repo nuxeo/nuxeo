@@ -40,7 +40,7 @@
 
       <nxu:dataList var="copiedDocument"
         value="#{clipboardActions.currentSelectedList}">
-        <div id="docRef:#{copiedDocument.ref}" class="cell">
+        <div id="docClipboardRef:#{copiedDocument.ref}" class="cell nxDraggable">
           <span class="clipboardRemoveItem">
            <h:commandLink
               actionListener="#{clipboardActions.removeWorkListItem(copiedDocument.ref)}"
@@ -54,9 +54,6 @@
           <h:outputText
           value="#{nxd:titleOrId(copiedDocument)}" />
           </nxd:restDocumentLink></div>
-        <script type="text/javascript">
-              <h:outputText value="new Draggable('docRef:#{copiedDocument.ref}', {revert:true});"/>
-        </script>
       </nxu:dataList>
 
       <div class="clipboardEmptyMessage">

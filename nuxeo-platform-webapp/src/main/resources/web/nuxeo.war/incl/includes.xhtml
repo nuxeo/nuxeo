@@ -12,6 +12,7 @@
     // set the conversation id before doing any call
     Seam.Remoting.getContext().setConversationId(currentConversationId);
     Seam.Remoting.contextPath = '#{contextPath}';
+    Seam.Remoting.resourcePath='#{contextPath}/seam/resource/remoting';
 </script>
 
 <div style="display:none">
@@ -24,27 +25,42 @@
 
 <c:if test="#{useHtml5DragAndDrop}">
 
-<script type="text/javascript" src="#{baseURL}js/?scripts=dnd/jquery.client.js|dnd/jquery.dnd-file-upload.js|automation.js|dnd/nxdropzone.js"></script>
+<script type="text/javascript" src="#{baseURL}js/?scripts=dnd/jquery.client.js|dnd/jquery.dnd-file-upload.js|automation.js|dnd/nxdropzone.js|dnd/nxdropout.js|dnd/nxinternaldnd.js"></script>
 
 <ui:include src="/incl/dnd/dnd-ui.xhtml" />
 
 <script>
 var baseURL='#{baseURL}';
 var ctx = { currentDocument : '#{currentDocument.id}',
+        <c:if test="#{currentDomain!=null}">
         currentDomain : '#{currentDomain.id}',
+        </c:if>
+        <c:if test="#{currentWorkspace!=null}">
+        currentWorkspace : '#{currentWorkspace.id}',
+        </c:if>
         conversationId : '#{org.jboss.seam.core.manager.currentConversationId}',
-        lang : '#{localeSelector.localeString}'};
-</script>
+        lang : '#{localeSelector.localeString}',
+        repository : '#{currentDocument.repositoryName}'};
 
-<script type="text/javascript">
+    function initNXDrapAndDropOnPage(scope) {
+      // init Browser Drag out support (Chrome only);
+        jQuery(".dropout",scope).dropout(baseURL,ctx.repository);
+        // initernal DnD
+        jQuery(".nxDraggable",scope).nxInitDraggables();
+        jQuery(".nxDropTarget",scope).nxInitDropTargets();
+    }
+
     jQuery(document).ready(function(){
+      // init Browser DnD import
       jQuery(".dropzone").nxDropZone({
               url : "/nuxeo/site/automation/batch/",
               uploadRateRefreshTime : 500,
-              numConcurrentUploads : 2,
+              numConcurrentUploads : 3,
               dropContext : ctx
             });
-   });
+      // init Dropout and Internal DnD
+      initNXDrapAndDropOnPage(null);
+      });
 </script>
 </c:if>
 

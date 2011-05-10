@@ -32,6 +32,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
@@ -608,8 +609,8 @@ public class FileManageActionsBean extends InputController implements
                 stream = new FileInputStream(fileUploadHolder.getTempFile());
                 return addFile(stream, getFileName());
             } catch (Exception e) {
-                // NXP-3570 : temporary solution before real fix
-                log.error(e, e);
+                log.warn(e.getMessage());
+                log.debug(e.getMessage(), e);
                 facesMessages.add(StatusMessage.Severity.ERROR,
                         resourcesAccessor.getMessages().get(
                                 "fileImporter.error.unsupportedFile"));
@@ -705,6 +706,9 @@ public class FileManageActionsBean extends InputController implements
     public String removeUploadedFile(String fileName) throws ClientException {
         UploadItem fileToDelete = null;
 
+        // Retrieve only the real filename
+        // IE stores the full path of the file as the filename (ie. Z:\\path\\to\\file)
+        fileName = FilenameUtils.getName(fileName);
         for (UploadItem file : getUploadedFiles()) {
             String uploadedFileName = file.getFileName();
             if (fileName.equals(uploadedFileName)) {

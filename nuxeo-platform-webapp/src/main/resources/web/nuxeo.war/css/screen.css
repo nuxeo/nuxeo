@@ -670,8 +670,8 @@ padding:5px 0px 2px 0px;
     position:absolute;
     border:solid 1px black;
     background-color:rgba(255,255,255,0.8);
-    padding : 25px;
-    margin: 4px;
+    padding : 15px 15px 2px 15px;
+    margin: 2px;
     font-size : 9pt;
     font-family : Arial;
  }
