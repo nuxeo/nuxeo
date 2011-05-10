@@ -55,12 +55,12 @@
             <c:if test="#{not empty layoutProperty_localConfigurationFacet}">
               <a4j:commandLink action="#{localConfigurationActions.toggleConfigurationForCurrentDocument(layoutProperty_localConfigurationFacet)}"
                 immediate="true" reRender="local_configuration_#{layout.id}_panel" rendered="#{not hasLocalConfigurationFacet}"
-                styleClass="action">
+                styleClass="action" id="#{layout.id}_enable">
                 <h:outputText value="#{messages['label.local.configuration.enable']}"/>
               </a4j:commandLink>
               <a4j:commandLink action="#{localConfigurationActions.toggleConfigurationForCurrentDocument(layoutProperty_localConfigurationFacet)}"
                 immediate="true" reRender="local_configuration_#{layout.id}_panel" rendered="#{hasLocalConfigurationFacet}"
-                styleClass="action">
+                styleClass="action" id="#{layout.id}_disable">
                 <h:outputText value="#{messages['label.local.configuration.disable']}"/>
               </a4j:commandLink>
             </c:if>
@@ -70,7 +70,7 @@
           <div class="boxBody" >
             <ui:include src="#{layoutTemplateToInclude}" />
             <a4j:commandButton value="#{messages['command.save']}"
-              styleClass="button"
+              styleClass="button" id="#{layout.id}_save"
               action="#{localConfigurationActions.saveLocalConfiguration}"
               reRender="local_configuration_#{layout.id}_form,facesStatusMessagePanel"/>
           </div>
