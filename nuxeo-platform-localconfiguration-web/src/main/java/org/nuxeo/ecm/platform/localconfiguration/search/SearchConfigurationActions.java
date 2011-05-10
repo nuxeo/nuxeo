@@ -29,6 +29,7 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.localconfiguration.LocalConfiguration;
 import org.nuxeo.ecm.core.api.localconfiguration.LocalConfigurationService;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.webapp.localconfiguration.search.SearchLocalConfiguration;
@@ -63,7 +64,7 @@ public class SearchConfigurationActions implements Serializable {
             configuration = localConfigurationService.getConfiguration(
                     SearchLocalConfiguration.class,
                     SEARCH_LOCAL_CONFIGURATION_FACET, currentDoc);
-            if (configuration != null) {
+            if (isLocalConfigurationExistsAndSearchViewAvailable(configuration)) {
                 return configuration.getAdvancedSearchView();
             }
         } catch (Exception e) {
@@ -73,4 +74,7 @@ public class SearchConfigurationActions implements Serializable {
 
     }
 
+    protected boolean isLocalConfigurationExistsAndSearchViewAvailable(SearchLocalConfiguration configuration){
+        return configuration !=null && configuration.getAdvancedSearchView() != null;
+    }
 }
