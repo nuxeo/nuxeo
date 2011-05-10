@@ -21,12 +21,12 @@
               <f:param name="type" value="remove" />
             </a4j:commandLink>
 
-            <h:selectOneMenu value="#{model.rowData.docType}">
+            <h:selectOneMenu id="#{widget.id}_docType" value="#{model.rowData.docType}">
               <f:selectItems
                 value="#{contentViewConfigurationActions.availableDocTypes}" />
             </h:selectOneMenu>
 
-            <h:selectOneMenu value="#{model.rowData.contentView}">
+            <h:selectOneMenu id="#{widget.id}_contentView" value="#{model.rowData.contentView}">
               <f:selectItems
                 value="#{contentViewConfigurationActions.availableContentViews}" />
             </h:selectOneMenu>
