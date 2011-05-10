@@ -3,7 +3,7 @@
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="actions">
 
-    <action id="UserCenterMain" link="user_center" label="action.user.center"
+    <action id="UserCenterMain" link="view_home" label="action.user.center"
       order="5">
       <category>USER_SERVICES</category>
     </action>
@@ -23,6 +23,23 @@
     <action id="userCenterExit" link="#{adminViews.exit()}"
       label="action.user.center.exit">
       <category>USER_CENTER_USER_SERVICES</category>
+    </action>
+
+    <!-- Users and Groups directory -->
+    <action id="UsersGroupsHome" link="user_center_fragment.xhtml"
+      label="command.manageMembers" order="60">
+      <category>USER_CENTER</category>
+      <filter-id>not_readonly</filter-id>
+    </action>
+    <action id="UsersHome" link="users/view_users.xhtml"
+      label="label.userManager.users" order="10">
+      <category>UsersGroupsDirectory_sub_tab</category>
+      <filter-id>not_readonly</filter-id>
+    </action>
+    <action id="GroupsHome" link="users/view_groups.xhtml"
+      label="label.groupManager.groups" order="20">
+      <category>UsersGroupsDirectory_sub_tab</category>
+      <filter-id>not_readonly</filter-id>
     </action>
 
   </extension>

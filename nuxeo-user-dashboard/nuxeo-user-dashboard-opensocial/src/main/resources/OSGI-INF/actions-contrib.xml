@@ -14,7 +14,7 @@
     <action id="DashboardMain" link="/incl/dashboard/user_opensocial_dashboard.xhtml"
       label=""
       order="10">
-      <category>USER_CENTER_Dashboard</category>
+      <category>Dashboard_sub_tab</category>
     </action>
 
   </extension>

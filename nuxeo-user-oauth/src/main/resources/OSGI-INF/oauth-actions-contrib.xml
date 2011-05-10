@@ -13,7 +13,7 @@
     <action id="AuthorizedApplicationMain" link="/incl/oauth/authorized_applications.xhtml"
       label=""
       order="10">
-      <category>USER_CENTER_AuthorizedApplication</category>
+      <category>AuthorizedApplication_sub_tab</category>
     </action>
 
   </extension>

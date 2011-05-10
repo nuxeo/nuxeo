@@ -10,7 +10,7 @@
 
     <action id="ProfileView" link="/incl/profile/user_profile.xhtml" label="user.center.profile.tab.view"
       order="10">
-      <category>USER_CENTER_Profile</category>
+      <category>Profile_sub_tab</category>
     </action>
 
   </extension>
