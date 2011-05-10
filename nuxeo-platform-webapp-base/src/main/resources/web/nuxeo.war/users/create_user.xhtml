@@ -24,7 +24,7 @@
               value="#{messages['command.save']}"
               action="#{userManagementActions.createUser}"
               styleClass="button"
-              reRender="usersPanel">
+              reRender="usersPanel,facesStatusMessagePanel">
               <nxu:actionListenerMethod value="#{editableListBean.resetAllListsCachedModels}" />
             </a4j:commandButton>
             <a4j:commandButton

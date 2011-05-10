@@ -23,7 +23,7 @@
               value="#{messages['command.save']}"
               action="#{groupManagementActions.createGroup}"
               styleClass="button"
-              reRender="groupsPanel">
+              reRender="groupsPanel,facesStatusMessagePanel">
               <nxu:actionListenerMethod value="#{editableListBean.resetAllListsCachedModels}" />
             </a4j:commandButton>
             <a4j:commandButton
