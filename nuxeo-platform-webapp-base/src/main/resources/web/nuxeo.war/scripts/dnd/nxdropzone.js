@@ -442,8 +442,14 @@ var NXDropZone = {
             // JQuery event wrapper
             dt = event.originalEvent.dataTransfer;
           }
-          if (dt && dt.types != null && dt.types.length != null && dt.types.indexOf("Files") > -1) {
-            return true;
+          if (dt && dt.types != null && dt.types.length != null) {
+            if (dt.types.indexOf && dt.types.indexOf("Files") > -1) {
+              return true;
+            }
+            if (dt.types.contains && dt.types.contains("Files")) {
+              // in Firefox 4 dt.types is a DOMStringList
+              return true;
+            }
           }
           return false;
      };
