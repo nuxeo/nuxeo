@@ -152,8 +152,9 @@ public class HTMLPresenter extends WidgetPresenter<HTMLPresenter.Display> {
     protected void onBind() {
         String url = model.getData().getHtmlPictureLink();
         if (url != null && !url.isEmpty()) {
-            registerImageClick();
+            display.getHtmlPicture().addStyleName("clickable");
         }
+        registerImageClick();
         if (model.hasPermission(PermissionsConstants.EVERYTHING)) {
             registerSaveEvent();
             registerModifyEvent();
@@ -242,6 +243,11 @@ public class HTMLPresenter extends WidgetPresenter<HTMLPresenter.Display> {
                             link = HTTP_PREFIX + link;
                         }
                         data.setHtmlPictureLink(link);
+                        if (link != null && !link.isEmpty()) {
+                            display.getHtmlPicture().addStyleName("clickable");
+                        } else {
+                            display.getHtmlPicture().removeStyleName("clickable");
+                        }
                         data.setTemplate(display.getTemplateListBox().getValue());
 
                         eventBus.fireEvent(new UpdateWebContentEvent(

@@ -33,3 +33,7 @@
 .NativeRichTextGadget .previewPicture {
 	width: 50%;
 }
+
+.NativeRichTextGadget .clickable {
+	cursor: pointer;
+}
