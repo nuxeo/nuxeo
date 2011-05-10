@@ -50,28 +50,63 @@
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>link=Users &amp; groups</td>
+	<td>Link=Nuxeo Admin Center</td>
 	<td></td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
+	<td>link=Users &amp; groups</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
 	<td>link=Groups</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
 	<td></td>
 </tr>
 <!--Recherche du groupe à supprimer-->
 <tr>
 	<td>type</td>
-	<td>//input[@id=&quot;searchForm:searchText&quot;]</td>
+	<td>//input[@id='groupsListingView:searchForm:searchText']</td>
 	<td>Suppr</td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
-	<td>//input[@id=&quot;searchForm:searchButton&quot;]</td>
+	<td>watchA4jRequests</td>
+	<td></td>
 	<td></td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
+	<td>click</td>
+	<td>//input[@value='Search']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
 	<td>link=Suppr</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
 	<td></td>
 </tr>
 <tr>
@@ -90,17 +125,37 @@
 	<td></td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
 	<td>link=Back to the list</td>
 	<td></td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
 	<td>link=Suppr</td>
 	<td></td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
 	<td>link=Delete</td>
 	<td></td>
 </tr>
@@ -110,9 +165,9 @@
 	<td></td>
 </tr>
 <tr>
-	<td>verifyTextPresent</td>
+	<td>waitForTextPresent</td>
 	<td>No group matching the entered criteria</td>
-	<td></td>
+	<td>10000</td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
@@ -161,7 +216,6 @@
 	<td>link=Log out</td>
 	<td></td>
 </tr>
-
 </tbody></table>
 </body>
 </html>

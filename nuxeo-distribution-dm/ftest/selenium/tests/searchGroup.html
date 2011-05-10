@@ -48,27 +48,62 @@
 </tr>
 <tr>
 	<td>clickAndWait</td>
+	<td>link=Home</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
 	<td>link=Users &amp; groups</td>
 	<td></td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
 	<td>link=Groups</td>
 	<td></td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
-	<td>//input[@id=&quot;searchForm:clearButton&quot;]</td>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//input[@id='groupsListingView:searchForm:clearButton']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
 	<td></td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//input[@id=&quot;searchForm:searchText&quot;]</td>
+	<td>//input[@id='groupsListingView:searchForm:searchText']</td>
 	<td>j</td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
-	<td>//input[@id=&quot;searchForm:searchButton&quot;]</td>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//input[@value='Search']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
 	<td></td>
 </tr>
 <tr>
@@ -78,18 +113,38 @@
 </tr>
 <!--Réinitialisation de la recherche-->
 <tr>
-	<td>clickAndWait</td>
-	<td>//input[@id=&quot;searchForm:clearButton&quot;]</td>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//input[@id='groupsListingView:searchForm:clearButton']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
 	<td></td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//input[@id=&quot;searchForm:searchText&quot;]</td>
+	<td>//input[@id='groupsListingView:searchForm:searchText']</td>
 	<td>thing</td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
-	<td>//input[@id=&quot;searchForm:searchButton&quot;]</td>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//input[@value='Search']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
 	<td></td>
 </tr>
 <tr>
@@ -102,7 +157,6 @@
 	<td>link=Log out</td>
 	<td></td>
 </tr>
-
 </tbody></table>
 </body>
 </html>

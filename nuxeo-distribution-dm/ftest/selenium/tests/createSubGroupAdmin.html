@@ -49,123 +49,193 @@
 </tr>
 <tr>
 	<td>clickAndWait</td>
+	<td>Link=Nuxeo Admin Center</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
 	<td>Link=Users &amp; groups</td>
 	<td></td>
 </tr>
 <!--Creation utilisateur susan-->
 <tr>
-	<td>clickAndWait</td>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
 	<td>link=Create a new user</td>
 	<td></td>
 </tr>
 <tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
 	<td>type</td>
-	<td>//input[@id='createUser:nxl_user:nxw_username']</td>
+	<td>//input[@id='createUserView:createUser:nxl_user:nxw_username']</td>
 	<td>susan</td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//input[@id='createUser:nxl_user:nxw_firstname']</td>
+	<td>//input[@id='createUserView:createUser:nxl_user:nxw_firstname']</td>
 	<td>Susan</td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//input[@id='createUser:nxl_user:nxw_lastname']</td>
+	<td>//input[@id='createUserView:createUser:nxl_user:nxw_lastname']</td>
 	<td>Myers</td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//input[@id='createUser:nxl_user:nxw_company']</td>
+	<td>//input[@id='createUserView:createUser:nxl_user:nxw_company']</td>
 	<td>Nuxeo</td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//input[@id='createUser:nxl_user:nxw_email']</td>
+	<td>//input[@id='createUserView:createUser:nxl_user:nxw_email']</td>
 	<td>sg+susan@nuxeo.com</td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//input[@id='createUser:nxl_user:nxw_firstPassword']</td>
+	<td>//input[@id='createUserView:createUser:nxl_user:nxw_firstPassword']</td>
 	<td>susan1</td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//input[@id='createUser:nxl_user:nxw_secondPassword']</td>
+	<td>//input[@id='createUserView:createUser:nxl_user:nxw_secondPassword']</td>
 	<td>susan1</td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
 	<td>//input[@value='Save']</td>
 	<td></td>
 </tr>
 <tr>
-	<td>verifyElementPresent</td>
-	<td>link=Edit</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyElementPresent</td>
-	<td>link=Change password</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyElementPresent</td>
-	<td>link=Delete</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyTextPresent</td>
-	<td>Myers</td>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
 	<td></td>
 </tr>
 <!--creation d'un groupe Sous-members-->
 <tr>
-	<td>clickAndWait</td>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
 	<td>link=Groups</td>
 	<td></td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
 	<td>link=Create a new group</td>
 	<td></td>
 </tr>
 <tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
 	<td>type</td>
-	<td>//input[@id='createGroup:nxl_group:nxw_groupname']</td>
+	<td>//input[@id='createGroupView:createGroup:nxl_group:nxw_groupname']</td>
 	<td>sub-admins</td>
 </tr>
 <tr>
 	<td>typeKeys</td>
-	<td>//input[@name='createGroup:nxl_group:nxw_members_suggest']</td>
+	<td>//input[@name='createGroupView:createGroup:nxl_group:nxw_members_suggest']</td>
 	<td>sus</td>
 </tr>
 <tr>
 	<td>waitForCondition</td>
-	<td>selenium.browserbot.getCurrentWindow().document.getElementById('createGroup:nxl_group:nxw_members_suggestionBox').style.display != 'none'</td>
+	<td>selenium.browserbot.getCurrentWindow().document.getElementById('createGroupView:createGroup:nxl_group:nxw_members_suggestionBox').style.display != 'none'</td>
 	<td>10000</td>
 </tr>
 <tr>
 	<td>verifyText</td>
-	<td>//*[@id='createGroup:nxl_group:nxw_members_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td>//*[@id='createGroupView:createGroup:nxl_group:nxw_members_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
 	<td>Susan Myers</td>
 </tr>
 <tr>
 	<td>click</td>
-	<td>//*[@id='createGroup:nxl_group:nxw_members_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td>//*[@id='createGroupView:createGroup:nxl_group:nxw_members_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
 	<td></td>
 </tr>
 <!-- wait for table to appear -->
 <tr>
 	<td>waitForCondition</td>
-	<td>selenium.browserbot.getCurrentWindow().document.getElementById('createGroup:nxl_group:nxw_members_list:0:nxw_members_listItem') != null</td>
+	<td>selenium.browserbot.getCurrentWindow().document.getElementById('createGroupView:createGroup:nxl_group:nxw_members_list:0:nxw_members_listItem') != null</td>
 	<td>10000</td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
 	<td>//input[@value='Save']</td>
 	<td></td>
 </tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
 <!--Verification de la redirection sur la fiche du groupe-->
+<tr>
+	<td>type</td>
+	<td>//input[@id='groupsListingView:searchForm:searchText']</td>
+	<td>sub-admins</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//input[@value='Search']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=sub-admins</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
 <tr>
 	<td>verifyTextPresent</td>
 	<td>sub-admins</td>
@@ -186,61 +256,111 @@
 	<td>link=Edit</td>
 	<td></td>
 </tr>
-<!--Ajout de sous-members comme sous-groupe de Members-->
+<!--Ajout de sub-admi comme sous-groupe de administrators -->
 <tr>
-	<td>clickAndWait</td>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
 	<td>link=Back to the list</td>
 	<td></td>
 </tr>
 <tr>
-	<td>type</td>
-	<td>//input[@id='searchForm:searchText']</td>
-	<td>admi</td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>//input[@id='searchForm:searchButton']</td>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
 	<td></td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
+	<td>type</td>
+	<td>//input[@id='groupsListingView:searchForm:searchText']</td>
+	<td>admi</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//input[@value='Search']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
 	<td>link=administrators</td>
 	<td></td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
 	<td>link=Edit</td>
 	<td></td>
 </tr>
 <tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
 	<td>typeKeys</td>
-	<td>//input[@name='editGroup:nxl_group:nxw_subgroups_suggest']</td>
+	<td>//input[@name='viewGroupView:editGroup:nxl_group_2:nxw_subgroups_2_suggest']</td>
 	<td>sub</td>
 </tr>
 <tr>
 	<td>waitForCondition</td>
-	<td>selenium.browserbot.getCurrentWindow().document.getElementById('editGroup:nxl_group:nxw_subgroups_suggestionBox').style.display != 'none'</td>
+	<td>selenium.browserbot.getCurrentWindow().document.getElementById('viewGroupView:editGroup:nxl_group_2:nxw_subgroups_2_suggestionBox').style.display != 'none'</td>
 	<td>10000</td>
 </tr>
 <tr>
 	<td>verifyText</td>
-	<td>//*[@id='editGroup:nxl_group:nxw_subgroups_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td>//*[@id='viewGroupView:editGroup:nxl_group_2:nxw_subgroups_2_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
 	<td>sub-admins</td>
 </tr>
 <tr>
 	<td>click</td>
-	<td>//*[@id='editGroup:nxl_group:nxw_subgroups_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td>//*[@id='viewGroupView:editGroup:nxl_group_2:nxw_subgroups_2_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
 	<td></td>
 </tr>
 <!-- wait for table to appear -->
 <tr>
 	<td>waitForCondition</td>
-	<td>selenium.browserbot.getCurrentWindow().document.getElementById('editGroup:nxl_group:nxw_subgroups_list:0:nxw_subgroups_listItem') != null</td>
+	<td>selenium.browserbot.getCurrentWindow().document.getElementById('viewGroupView:editGroup:nxl_group_2:nxw_subgroups_2_list:0:nxw_subgroups_2_listItem') != null</td>
 	<td>10000</td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
 	<td>//input[@value='Save']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
 	<td></td>
 </tr>
 <!--Verification de la redirection sur la fiche du groupe-->
@@ -271,23 +391,48 @@
 	<td></td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
 	<td>link=Users</td>
 	<td></td>
 </tr>
 <tr>
-	<td>type</td>
-	<td>//input[@id='searchForm:searchText']</td>
-	<td>susan</td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>//input[@id='searchForm:searchButton']</td>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
 	<td></td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
+	<td>type</td>
+	<td>//input[@id='usersListingView:searchForm:searchText']</td>
+	<td>susan</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//input[@value='Search']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
 	<td>link=susan</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
 	<td></td>
 </tr>
 <tr>
@@ -353,6 +498,11 @@
 </tr>
 <tr>
 	<td>clickAndWait</td>
+	<td>link=Nuxeo Admin Center</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
 	<td>link=Users &amp; groups</td>
 	<td></td>
 </tr>
@@ -362,8 +512,18 @@
 	<td></td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
 	<td>link=Create a new user</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
 	<td></td>
 </tr>
 <tr>
@@ -372,8 +532,18 @@
 	<td></td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
 	<td>link=Groups</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
 	<td></td>
 </tr>
 <tr>
@@ -382,13 +552,28 @@
 	<td></td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
 	<td>link=Create a new group</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
 	<td></td>
 </tr>
 <tr>
 	<td>verifyTextPresent</td>
 	<td>New group</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Exit admin center</td>
 	<td></td>
 </tr>
 <tr>
@@ -611,7 +796,6 @@
 	<td>link=Log out</td>
 	<td></td>
 </tr>
-
 </tbody></table>
 </body>
 </html>

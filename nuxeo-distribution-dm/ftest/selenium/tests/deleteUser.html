@@ -49,63 +49,88 @@
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>link=Users &amp; groups</td>
+	<td>Link=Nuxeo Admin Center</td>
 	<td></td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
+	<td>Link=Users &amp; groups</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
 	<td>link=Create a new user</td>
 	<td></td>
 </tr>
 <tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
 	<td>type</td>
-	<td>//input[@id='createUser:nxl_user:nxw_username']</td>
+	<td>//input[@id='createUserView:createUser:nxl_user:nxw_username']</td>
 	<td>carlos</td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//input[@id='createUser:nxl_user:nxw_email']</td>
+	<td>//input[@id='createUserView:createUser:nxl_user:nxw_email']</td>
 	<td>sg+carlos@nuxeo.com</td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//input[@id='createUser:nxl_user:nxw_firstPassword']</td>
+	<td>//input[@id='createUserView:createUser:nxl_user:nxw_firstPassword']</td>
 	<td>carlos1</td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//input[@id='createUser:nxl_user:nxw_secondPassword']</td>
+	<td>//input[@id='createUserView:createUser:nxl_user:nxw_secondPassword']</td>
 	<td>carlos1</td>
 </tr>
 <tr>
 	<td>typeKeys</td>
-	<td>//input[@name='createUser:nxl_user:nxw_groups_suggest']</td>
+	<td>//input[@name='createUserView:createUser:nxl_user:nxw_groups_suggest']</td>
 	<td>members</td>
 </tr>
 <tr>
 	<td>waitForCondition</td>
-	<td>selenium.browserbot.getCurrentWindow().document.getElementById('createUser:nxl_user:nxw_groups_suggestionBox').style.display != 'none'</td>
+	<td>selenium.browserbot.getCurrentWindow().document.getElementById('createUserView:createUser:nxl_user:nxw_groups_suggestionBox').style.display != 'none'</td>
 	<td>10000</td>
 </tr>
 <tr>
 	<td>verifyText</td>
-	<td>//*[@id='createUser:nxl_user:nxw_groups_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td>//*[@id='createUserView:createUser:nxl_user:nxw_groups_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
 	<td>members</td>
 </tr>
 <tr>
 	<td>click</td>
-	<td>//*[@id='createUser:nxl_user:nxw_groups_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td>//*[@id='createUserView:createUser:nxl_user:nxw_groups_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
 	<td></td>
 </tr>
 <!-- wait for table to appear -->
 <tr>
 	<td>waitForCondition</td>
-	<td>selenium.browserbot.getCurrentWindow().document.getElementById('createUser:nxl_user:nxw_groups_list:0:nxw_groups_listItem') != null</td>
+	<td>selenium.browserbot.getCurrentWindow().document.getElementById('createUserView:createUser:nxl_user:nxw_groups_list:0:nxw_groups_listItem') != null</td>
 	<td>10000</td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
 	<td>//input[@value='Save']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
 	<td></td>
 </tr>
 <tr>
@@ -136,22 +161,47 @@
 </tr>
 <tr>
 	<td>clickAndWait</td>
+	<td>Link=Home</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
 	<td>link=Users &amp; groups</td>
 	<td></td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//input[@id='searchForm:searchText']</td>
+	<td>//input[@id='usersListingView:searchForm:searchText']</td>
 	<td>carlos</td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
-	<td>//input[@id='searchForm:searchButton']</td>
+	<td>watchA4jRequests</td>
+	<td></td>
 	<td></td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
+	<td>click</td>
+	<td>//input[@value='Search']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
 	<td>link=carlos</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
 	<td></td>
 </tr>
 <tr>
@@ -187,26 +237,51 @@
 </tr>
 <tr>
 	<td>clickAndWait</td>
+	<td>Link=Nuxeo Admin Center</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
 	<td>link=Users &amp; groups</td>
 	<td></td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//input[@id='searchForm:searchText']</td>
+	<td>//input[@id='usersListingView:searchForm:searchText']</td>
 	<td>carlos</td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
-	<td>//input[@id='searchForm:searchButton']</td>
+	<td>watchA4jRequests</td>
+	<td></td>
 	<td></td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
+	<td>click</td>
+	<td>//input[@value='Search']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
 	<td>link=carlos</td>
 	<td></td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
 	<td>link=Delete</td>
 	<td></td>
 </tr>
@@ -216,11 +291,15 @@
 	<td></td>
 </tr>
 <tr>
+	<td>waitForTextPresent</td>
+	<td>No user matching the entered criteria</td>
+	<td>10000</td>
+</tr>
+<tr>
 	<td>clickAndWait</td>
 	<td>link=Log out</td>
 	<td></td>
 </tr>
-
 </tbody></table>
 </body>
 </html>

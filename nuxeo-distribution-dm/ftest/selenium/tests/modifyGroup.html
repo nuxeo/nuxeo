@@ -50,64 +50,120 @@
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>link=Users &amp; groups</td>
+	<td>Link=Nuxeo Admin Center</td>
 	<td></td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
+	<td>link=Users &amp; groups</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
 	<td>link=Groups</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
 	<td></td>
 </tr>
 <!--Recherdhe du groupe à modifier-->
 <tr>
 	<td>type</td>
-	<td>//input[@id='searchForm:searchText']</td>
+	<td>//input[@id='groupsListingView:searchForm:searchText']</td>
 	<td>Johns</td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
-	<td>//input[@id='searchForm:searchButton']</td>
+	<td>watchA4jRequests</td>
+	<td></td>
 	<td></td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
+	<td>click</td>
+	<td>//input[@value='Search']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
 	<td>link=Johns</td>
 	<td></td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
 	<td>link=Edit</td>
 	<td></td>
 </tr>
 <tr>
-	<td>verifyText</td>
-	<td>//*[@id='editGroup:nxl_group:nxw_members_list:0:nxw_members_listItem']</td>
-	<td>Bree Van de Kaamp</td>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
 </tr>
 <tr>
+	<td>verifyText</td>
+	<td>//*[@id='viewGroupView:editGroup:nxl_group_2:nxw_members_2_list:0:nxw_members_2_listItem']</td>
+	<td>Bree Van de Kaamp</td>
+</tr>
+
+<tr>
 	<td>click</td>
-	<td>editGroup:nxl_group:nxw_members_list:0:nxw_members_delete</td>
+	<td>viewGroupView:editGroup:nxl_group_2:nxw_members_2_list:0:nxw_members_2_delete</td>
 	<td></td>
 </tr>
 <!-- wait for table item to disappear -->
 <tr>
 	<td>waitForCondition</td>
-	<td>selenium.browserbot.getCurrentWindow().document.getElementById('editGroup:nxl_group:nxw_members_list:2:nxw_members_listItem') == null</td>
+	<td>selenium.browserbot.getCurrentWindow().document.getElementById('viewGroupView:editGroup:nxl_group_2:nxw_members_2_list:2:nxw_members_2_listItem') == null</td>
 	<td>10000</td>
 </tr>
 <tr>
 	<td>verifyText</td>
-	<td>//*[@id='editGroup:nxl_group:nxw_members_list:0:nxw_members_listItem']</td>
+	<td>//*[@id='viewGroupView:editGroup:nxl_group_2:nxw_members_2_list:0:nxw_members_2_listItem']</td>
 	<td>John Doe</td>
 </tr>
 <tr>
 	<td>verifyText</td>
-	<td>//*[@id='editGroup:nxl_group:nxw_members_list:1:nxw_members_listItem']</td>
+	<td>//*[@id='viewGroupView:editGroup:nxl_group_2:nxw_members_2_list:1:nxw_members_2_listItem']</td>
 	<td>John Smith</td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
 	<td>//input[@value='Save']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
 	<td></td>
 </tr>
 <tr>
@@ -162,7 +218,6 @@
 	<td>link=Log out</td>
 	<td></td>
 </tr>
-
 </tbody></table>
 </body>
 </html>
