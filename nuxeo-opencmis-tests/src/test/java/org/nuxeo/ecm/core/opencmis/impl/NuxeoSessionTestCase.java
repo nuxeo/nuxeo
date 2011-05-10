@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -12,6 +12,7 @@
 package org.nuxeo.ecm.core.opencmis.impl;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.Arrays;
@@ -44,6 +45,7 @@ import org.apache.chemistry.opencmis.commons.enums.VersioningState;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisConstraintException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundException;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.ContentStreamImpl;
+import org.apache.commons.io.IOUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
@@ -641,6 +643,37 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_ID, coid.getId(), co);
         checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_BY, USERNAME, co);
         checkValue(PropertyIds.CHECKIN_COMMENT, null, co);
+    }
+
+    public void testCheckInWithChanges() throws Exception {
+        CmisObject ob = session.getObjectByPath("/testfolder1/testfile1");
+
+        // check in with data
+        Map<String, Serializable> props = new HashMap<String, Serializable>();
+        props.put("dc:title", "newtitle");
+        byte[] bytes = "foo-bar".getBytes("UTF-8");
+        ByteArrayInputStream in = new ByteArrayInputStream(bytes);
+        ContentStream cs = session.getObjectFactory().createContentStream(
+                "test.pdf", bytes.length, "application/pdf", in);
+
+        ObjectId vid = ((Document) ob).checkIn(true, props, cs, "comment");
+
+        CmisObject ver = session.getObject(vid);
+        checkValue(PropertyIds.IS_LATEST_VERSION, Boolean.TRUE, ver);
+        checkValue(PropertyIds.VERSION_LABEL, "1.0", ver);
+        checkValue(PropertyIds.CHECKIN_COMMENT, "comment", ver);
+
+        // check changes applied
+        checkValue("dc:title", "newtitle", ver);
+        ContentStream cs2 = ((Document) ver).getContentStream();
+        assertEquals("application/pdf", cs2.getMimeType());
+        if (!isAtomPub) {
+            assertEquals(bytes.length, cs2.getLength());
+            assertEquals("test.pdf", cs2.getFileName());
+        }
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        IOUtils.copy(cs2.getStream(), os);
+        assertEquals("foo-bar", os.toString("UTF-8"));
     }
 
     public void testUserWorkspace() throws ClientException {

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -1564,6 +1564,13 @@ public class NuxeoCmisService extends AbstractCmisService {
 
         NuxeoObjectData object = new NuxeoObjectData(this, doc);
         updateProperties(object, null, properties, false);
+        if (contentStream != null) {
+            try {
+                NuxeoPropertyData.setContentStream(doc, contentStream, true);
+            } catch (IOException e) {
+                throw new CmisRuntimeException(e.toString(), e);
+            }
+        }
         try {
             coreSession.saveDocument(doc);
             DocumentRef ver = doc.checkIn(option, checkinComment);
@@ -1586,6 +1593,13 @@ public class NuxeoCmisService extends AbstractCmisService {
         }
         NuxeoObjectData object = new NuxeoObjectData(this, doc);
         updateProperties(object, null, properties, type, false);
+        if (contentStream != null) {
+            try {
+                NuxeoPropertyData.setContentStream(doc, contentStream, true);
+            } catch (IOException e) {
+                throw new CmisRuntimeException(e.toString(), e);
+            }
+        }
         try {
             coreSession.saveDocument(doc);
             DocumentRef ver = doc.checkIn(option, checkinComment);

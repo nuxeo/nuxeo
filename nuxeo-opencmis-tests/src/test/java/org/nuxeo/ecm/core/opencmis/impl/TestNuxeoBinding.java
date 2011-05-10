@@ -19,6 +19,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -79,6 +81,7 @@ import org.apache.chemistry.opencmis.commons.spi.ObjectService;
 import org.apache.chemistry.opencmis.commons.spi.RepositoryService;
 import org.apache.chemistry.opencmis.commons.spi.VersioningService;
 import org.apache.chemistry.opencmis.server.support.query.CalendarHelper;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.junit.After;
 import org.junit.Before;
@@ -1371,7 +1374,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
 
         // conversely one can select only live documents by negating this predicate
         statement = "SELECT cmis:name, nuxeo:isVersion FROM File" +
-        		" WHERE nuxeo:isVersion = false ORDER BY cmis:name";
+                " WHERE nuxeo:isVersion = false ORDER BY cmis:name";
         res = query(statement);
         assertEquals(initialFileCount, res.getNumItems().intValue());
         checkValue(PropertyIds.NAME, "testfile1_Title", res.getObjects().get(0));
@@ -1379,7 +1382,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
 
         // this should be equivalent to
         statement = "SELECT cmis:name, nuxeo:isVersion  FROM File" +
-        		" WHERE nuxeo:isVersion <> true ORDER BY cmis:name";
+                " WHERE nuxeo:isVersion <> true ORDER BY cmis:name";
         res = query(statement);
         assertEquals(initialFileCount, res.getNumItems().intValue());
         checkValue(PropertyIds.NAME, "testfile1_Title", res.getObjects().get(0));
@@ -2078,6 +2081,41 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
                 id, null, major, null, null);
         assertEquals(ver2.getId(),
                 p.getProperties().get(PropertyIds.OBJECT_ID).getFirstValue());
+    }
+
+    @Test
+    public void testCheckInWithChanges() throws Exception {
+        ObjectData ob = getObjectByPath("/testfolder1/testfile1");
+        String id = ob.getId();
+
+        // check in with data
+        Properties props = createProperties("dc:title", "newtitle");
+        byte[] bytes = "foo-bar".getBytes("UTF-8");
+        ByteArrayInputStream in = new ByteArrayInputStream(bytes);
+        ContentStream cs = new ContentStreamImpl("test.pdf",
+                BigInteger.valueOf(bytes.length), "application/pdf", in);
+
+        Holder<String> idHolder = new Holder<String>(id);
+        verService.checkIn(repositoryId, idHolder, Boolean.TRUE, props, cs,
+                "comment", null, null, null, null);
+
+        String vid = idHolder.getValue();
+        ObjectData ver = getObject(vid);
+
+        checkValue(PropertyIds.IS_LATEST_VERSION, Boolean.TRUE, ver);
+        checkValue(PropertyIds.VERSION_LABEL, "1.0", ver);
+        checkValue(PropertyIds.CHECKIN_COMMENT, "comment", ver);
+
+        // check changes applied
+        checkValue("dc:title", "newtitle", ver);
+        ContentStream cs2 = objService.getContentStream(repositoryId,
+                ver.getId(), null, null, null, null);
+        assertEquals("application/pdf", cs2.getMimeType());
+        assertEquals(bytes.length, cs2.getLength());
+        assertEquals("test.pdf", cs2.getFileName());
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        IOUtils.copy(cs2.getStream(), os);
+        assertEquals("foo-bar", os.toString("UTF-8"));
     }
 
     @Test
