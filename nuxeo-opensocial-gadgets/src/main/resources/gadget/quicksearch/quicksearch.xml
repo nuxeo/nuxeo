@@ -43,7 +43,8 @@
      operationDocumentProperties : "common,dublincore",                    // schema that must be fetched from resulting documents
      entityType : 'documents',                                             // result type : only document is supported for now
      usePagination : true,                                                 // manage pagination or not
-     displayMethod : displayDocumentList                                  // js method used to display the result
+     displayMethod : displayDocumentList,                                  // js method used to display the result
+     noEntryLabel: '__MSG_label.gadget.no.document__'
    };
 
    function doSearch() {
@@ -100,7 +101,14 @@
    }
 
    // auto-adjust gadget height
-   gadgets.util.registerOnLoadHandler(function() {loadSearch(); gadgets.window.adjustHeight();} );
+   gadgets.util.registerOnLoadHandler(function() {
+     _gel("nxDocumentListData").innerHTML = '<p>__MSG_label.gadget.quicksearch.description__</p>';
+     _gel("nxDocumentList").style.display = 'block';
+     _gel('pageNavigationControls').style.display = 'none'
+
+     loadSearch();
+     gadgets.window.adjustHeight();
+   });
 
   </script>
   </head>
