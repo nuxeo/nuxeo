@@ -18,6 +18,7 @@
 package org.nuxeo.ecm.platform.login.mockedServices;
 
 import java.io.Serializable;
+import java.security.Principal;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -285,7 +286,7 @@ public class MockUserManager implements UserManager {
     }
 
     @Override
-    public boolean authenticate(String name, String password) {
+    public Principal authenticate(String name, String password) {
         throw new UnsupportedOperationException();
     }
 
