@@ -103,8 +103,8 @@ fi
 if ! [[ "x$JAVA_OPTS" =~ -server ]]; then
   # Enable -server if we have HotSpot
   if [[ x`"$JAVA" -version 2>&1` =~ HotSpot ]]; then
-    # MacOS does not support -server flag
-    if [ $darwin = false ]; then
+    "$JAVA" -server -version >/dev/null 2>&1
+    if [ $? -eq 0 ]; then
       JAVA_OPTS="-server $JAVA_OPTS"
     fi
   fi
@@ -126,6 +126,13 @@ if [ $cygwin = false ]; then
   else
     warn "Could not get system maximum file descriptor limit (got $MAX_FD_LIMIT)"
   fi
+fi
+
+# For Cygwin, ensure paths are in UNIX format before anything is touched
+if [ "$cygwin" = "true" ]; then
+  [ -n "$JAVA_HOME" ] && JAVA_HOME=`cygpath -am "$JAVA_HOME"`
+  [ -n "$NUXEO_HOME" ] && NUXEO_HOME=`cygpath -am "$NUXEO_HOME"`
+  [ -n "$NUXEO_CONF" ] && NUXEO_CONF=`cygpath -am "$NUXEO_CONF"`
 fi
 
 ## Launcher
