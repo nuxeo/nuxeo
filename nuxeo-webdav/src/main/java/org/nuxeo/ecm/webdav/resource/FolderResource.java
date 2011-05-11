@@ -102,7 +102,7 @@ public class FolderResource extends ExistingResource {
                 return Response.status(400).build();
             }
             prop = propFind.getProp();
-            Util.printAsXml(prop);
+            // Util.printAsXml(prop);
         }
 
         // Get key properties from doc
