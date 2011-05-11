@@ -186,20 +186,6 @@
               <!--excludeTransistive>true</excludeTransistive -->
 
               <artifactItems>
-                <!-- only if you need to deploy Jersey -->
-                <artifactItem>
-                  <groupId>com.sun.jersey</groupId>
-                  <artifactId>jersey-server</artifactId>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>com.sun.jersey</groupId>
-                  <artifactId>jersey-core</artifactId>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>asm</groupId>
-                  <artifactId>asm</artifactId>
-                  <version>3.1</version>
-                </artifactItem>
 
                 <!-- for WebDAV -->
                 <artifactItem>
