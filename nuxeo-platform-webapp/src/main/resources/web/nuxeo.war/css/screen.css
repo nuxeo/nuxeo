@@ -566,16 +566,22 @@ padding:5px 0px 2px 0px;
   border-style:solid;
 }
 
-
+/* HTML5 Drag and Drop styles */
 #dropzone-info-panel {
-  background-color:beige;
   display:none;
+}
+
+#dropzone-info-panel td {
+  vertical-align: top;
 }
 
 .dndControlMessage {
   display: none;
-  font-size : 9pt;
-  font-family : Arial;
+}
+
+.loadingComplete {
+  background: transparent url(/nuxeo/icons/checked.gif) no-repeat left center;
+  padding: 0 0 0 18px;
 }
 
 .dropPanel {
@@ -590,74 +596,48 @@ padding:5px 0px 2px 0px;
 .dropzone {
   display: block;
   margin : 4px;
-  font-size : 16pt;
-  font-family : Arial;
  }
 
 .dropzoneHL {
-  border-style: dashed;
+  border: 2px dashed #ccc;
   background-color: #F0F0F0;
-  border-width: 2px;
-  border-color: #CCCCCC;
 }
 
 .dropzoneTarget {
-  border-style: ridge;
-  background-color: #EEEEEE;
-  border-width: 3px;
-  border-color: #888899;
-  cursor : url('../img/plusDrop.gif'), crosshair;
+   border:2px solid #92cdff;
 }
 
 .dropzone-info-block {
   display: block;
-  width: 200px;
-  height: 35px;
-  overflow : auto;
-  align : center;
-  text-align: center;
-  margin : 4px;
+  margin: 5px 0 0 0;
+  text-align: center
 }
 
 .dropzone-info-summary {
   display: block;
-  width: 200px;
-  height: 35px;
-  overflow : auto;
-  align : center;
-  text-align: center;
-  margin : 4px;
-  font-size : 8pt;
-  font-family : Arial;
+  margin : 7px 10px 20px 50px;
 }
 
 .dropzone-info-summary-item {
-  text-align: center;
-  font-size : 8pt;
-  font-family : Arial;
 }
 
 .dropzone-info-progress {
-  background-color: orange;
+  background-color: #7ebbff;
   height: 3px;
   width: 0%;
 }
 
 .dropzone-info-item {
-  border : thin solid #999999;
-  margin : 2px;
+  border : 1px solid #999;
+  margin : 0 2px 10px 0;
 }
 
 .dropzone-info-name {
-  font-size : 8pt;
-  font-family : Arial;
   text-align: center;
 }
 
  .dropzone-bar {
   height: 20px;
-  font-size : 9pt;
-  font-family : Arial;
  }
 
  .dropzone-bar-btn {
@@ -665,27 +645,74 @@ padding:5px 0px 2px 0px;
   float:right;
  }
 
+ .dropzone-bar-msg {
+   display: block;
+  padding-top: 7px;
+ }
+
  .dndFormPanel{
     display:none;
     position:absolute;
-    border:solid 1px black;
-    background-color:rgba(255,255,255,0.8);
-    padding : 15px 15px 2px 15px;
-    margin: 2px;
-    font-size : 9pt;
-    font-family : Arial;
+    border:solid 1px #adadad;
+    background-color:white;
+    padding : 25px;
+    margin: 4px;
+    z-index: 5000;
+    font: normal 11px Lucida Grande, Helvetica, sans-serif;
+ }
+
+ .dndProgressPanel{
+    display:none;
+    border:solid 1px #adadad;
+    background-color:white;
+    padding : 5px 25px 5px 25px;
+    margin: 0px;
+    font: normal 11px Lucida Grande, Helvetica, sans-serif;
+ }
+
+ .dndFormPanel th {
+   text-align: left;
+   padding-bottom: 10px;
+   font-size: 115%;
+ }
+
+ .dndFormPanel td {
+   vertical-align: top;
+   padding: 0 35px 10px 0;
+ }
+
+ .dndFormPanel input {
+   margin: 10px 0px;
+ }
+
+ .dndFormPanel .alignRight {
+   text-align: right;
+ }
+
+ .dndFormPanel body {
+   margin: 0;
  }
 
  #dndContinueButton {
   display:none;
   cursor:hand;
   padding:5px;
-  background-color:rgba(255,255,255,0.6);
  }
 
  .uploadedFileList {
   font-size : 11pt;
-  font-family : Arial;
+ }
+
+ .importOperationForm iframe {
+   margin: 25px 0 0;
+ }
+
+ .importOperationForm .dataInput {
+   margin: 0 0 15px;
+ }
+
+ .importOperationForm .dataInput input {
+   margin: 20px 0 0 0;
  }
 
  #operationForm {
