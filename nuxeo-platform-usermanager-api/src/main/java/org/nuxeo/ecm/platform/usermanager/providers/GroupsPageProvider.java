@@ -26,6 +26,7 @@ import org.nuxeo.runtime.api.Framework;
  * be filled with a the listing mode to use.
  *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
+ * @since 5.4.2
  */
 public class GroupsPageProvider extends
         AbstractPageProvider<DocumentModel> implements
