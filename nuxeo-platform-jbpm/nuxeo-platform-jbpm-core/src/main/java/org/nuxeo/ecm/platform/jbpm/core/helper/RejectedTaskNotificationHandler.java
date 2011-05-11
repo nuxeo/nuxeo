@@ -20,10 +20,10 @@ import java.util.List;
 
 /**
  * @author arussel
- *
  */
-@SuppressWarnings("serial")
 public class RejectedTaskNotificationHandler extends TaskNotificationHandler {
+
+    private static final long serialVersionUID = 1L;
 
     @SuppressWarnings("unchecked")
     @Override
