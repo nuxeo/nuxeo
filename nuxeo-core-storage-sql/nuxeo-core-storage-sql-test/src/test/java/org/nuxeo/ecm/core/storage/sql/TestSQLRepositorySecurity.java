@@ -50,10 +50,7 @@ import org.nuxeo.ecm.core.api.security.UserEntry;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.api.security.impl.UserEntryImpl;
-import org.nuxeo.ecm.core.security.SecurityCache;
 import org.nuxeo.ecm.core.security.SecurityService;
-
-import com.sun.org.apache.xerces.internal.parsers.SecurityConfiguration;
 
 /**
  * @author Florent Guillaume
