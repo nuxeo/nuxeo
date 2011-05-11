@@ -125,7 +125,8 @@ public class Main {
         home = new File(System.getProperty("nuxeo.runtime.home"));
         if (home == null) {
             log.error("Syntax Error: You must specify the runtime home "
-                    + "as a System property (\"nuxeo.runtime.home\").");
+                    + "as a System property (\""
+                    + Environment.NUXEO_RUNTIME_HOME + "\").");
             System.exit(1);
         }
         if (!wd.isDirectory()) {
