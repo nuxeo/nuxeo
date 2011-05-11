@@ -82,9 +82,26 @@ function displayPageNavigationControls(nxParams) {
   }
 }
 
+function parseISODate(datestr) {
+    var m = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2}(?:\.\d*)?)(?:([\+-])(\d{2})\:(\d{2}))?Z?$/.exec(datestr);
+    if (m) {
+        // TODO ms
+        var t = Date.UTC(+m[1], +m[2] - 1, +m[3], +m[4], +m[5], +m[6]);
+        if (m[7]) {
+            var tz = m[8] * 3600 + m[9] * 60;
+            if (m[7] == '-') {
+                tz = -tz;
+            }
+            t -= tz * 1000;
+        }
+        return new Date(t);
+    }
+    return datestr;
+}
+
 function getDateForDisplay(datestr) {
     try {
-        var d = new Date(datestr);
+        var d = parseISODate(datestr);
         return d.toLocaleDateString() + " "
                 + d.toLocaleTimeString().substring(0, 5);
     } catch (e) {
