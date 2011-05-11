@@ -107,6 +107,7 @@ public class GroupManagementActions extends AbstractUserGroupManagement implemen
                     resourcesAccessor.getMessages().get(
                             "info.groupManager.groupCreated"));
             showCreateForm = false;
+            showUserOrGroup = true;
             fireSeamEvent(GROUPS_LISTING_CHANGED);
         } catch (GroupAlreadyExistsException e) {
             String message = resourcesAccessor.getMessages().get(

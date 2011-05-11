@@ -168,6 +168,7 @@ public class UserManagementActions extends AbstractUserGroupManagement implement
                     resourcesAccessor.getMessages().get(
                             "info.userManager.userCreated"));
             showCreateForm = false;
+            showUserOrGroup = true;
             fireSeamEvent(USERS_LISTING_CHANGED);
         } catch (UserAlreadyExistsException e) {
             facesMessages.add(
