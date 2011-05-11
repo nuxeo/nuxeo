@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -7,9 +7,9 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id: LogEntryImpl.java 30195 2008-02-14 21:53:04Z tdelprat $
+ *     Julien Anguenot
+ *     Thierry Delprat
+ *     Florent Guillaume
  */
 
 package org.nuxeo.ecm.platform.audit.api;
@@ -22,8 +22,6 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 
 /**
  * Log entry.
- *
- * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
 public interface LogEntry extends Serializable {
 
@@ -131,6 +129,15 @@ public interface LogEntry extends Serializable {
     String getDocLifeCycle();
 
     void setDocLifeCycle(String docLifeCycle);
+
+    /**
+     * Returns the repository id related to the log entry.
+     *
+     * @return the repository id
+     */
+    String getRepositoryId();
+
+    void setRepositoryId(String repositoryId);
 
     Map<String, ExtendedInfo> getExtendedInfos();
 
