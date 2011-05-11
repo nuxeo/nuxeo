@@ -89,7 +89,7 @@
       <view>Nuxeo DM logo (Galaxy User Center Theme)</view>
     </widget>
     <widget element="page[1]/section[1]/cell[2]/fragment[1]">
-      <view>User services (Galaxy User Center Theme)</view>
+      <view>Nuxeo header</view>
     </widget>
     <widget element="page[1]/section[1]/cell[3]/fragment[1]">
       <view>nuxeo5 includes</view>
@@ -98,7 +98,7 @@
       <view>facelet region</view>
     </widget>
     <widget element="page[1]/section[3]/cell[1]/fragment[1]">
-      <view>Nuxeo DM footer (Galaxy User Center Theme)</view>
+      <view>Nuxeo footer</view>
     </widget>
     <!-- buttons -->
     <style name="default buttons">
@@ -1269,7 +1269,7 @@
       </selector>
     </style>
     <style element="page[1]/section[3]/cell[1]/fragment[1]" inherit="header and footer style">
-      <selector path="" view="Nuxeo DM footer (Galaxy User Center Theme)">
+      <selector path="" view="Nuxeo footer">
         <font preset="small (Galaxy User Center fonts)"/>
         <color preset="header.text (Galaxy User Center colors)" />
         <padding>5px 15px 5px 5px</padding>

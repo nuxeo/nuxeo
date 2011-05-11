@@ -3,9 +3,8 @@
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="actions">
 
-    <action id="UserCenterMain" link="view_home" label="action.user.center"
-      order="5">
-      <category>USER_SERVICES</category>
+    <action id="home" link="view_home" label="label.main.tab.home" order="20">
+      <category>MAIN_TABS</category>
     </action>
 
     <action id="user_center_non_anonymous_logout"
