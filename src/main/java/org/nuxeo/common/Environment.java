@@ -39,6 +39,11 @@ public class Environment {
 
     public static final String NUXEO_HOME_DIR = "nuxeo.home.dir";
 
+    /**
+     * @since 5.4.2
+     */
+    public static final String NUXEO_RUNTIME_HOME = "nuxeo.runtime.home";
+
     public static final String NUXEO_DATA_DIR = "nuxeo.data.dir";
 
     public static final String NUXEO_LOG_DIR = "nuxeo.log.dir";
@@ -121,6 +126,12 @@ public class Environment {
 
     protected String hostAppVersion;
 
+    // Handy parameter to distinguish from (Runtime)home
+    private File serverHome = null;
+
+    // Handy parameter to distinguish from (Server)home
+    private File runtimeHome;
+
     public Environment(File home) {
         this(home, null);
     }
@@ -179,7 +190,7 @@ public class Environment {
 
     public void setTemp(File temp) {
         this.temp = temp;
-        this.properties.put(NUXEO_TMP_DIR, temp.getAbsolutePath());
+        properties.put(NUXEO_TMP_DIR, temp.getAbsolutePath());
     }
 
     public File getConfig() {
@@ -191,6 +202,7 @@ public class Environment {
 
     public void setConfig(File config) {
         this.config = config;
+        properties.put(NUXEO_CONFIG_DIR, config.getAbsolutePath());
     }
 
     public File getLog() {
@@ -202,7 +214,7 @@ public class Environment {
 
     public void setLog(File log) {
         this.log = log;
-        this.properties.put(NUXEO_LOG_DIR, log.getAbsolutePath());
+        properties.put(NUXEO_LOG_DIR, log.getAbsolutePath());
     }
 
     public File getData() {
@@ -214,7 +226,7 @@ public class Environment {
 
     public void setData(File data) {
         this.data = data;
-        this.properties.put(NUXEO_DATA_DIR, data.getAbsolutePath());
+        properties.put(NUXEO_DATA_DIR, data.getAbsolutePath());
     }
 
     public File getWeb() {
@@ -226,6 +238,19 @@ public class Environment {
 
     public void setWeb(File web) {
         this.web = web;
+        properties.put(NUXEO_WEB_DIR, web.getAbsolutePath());
+    }
+
+    public File getRuntimeHome() {
+        if (runtimeHome == null) {
+            initRuntimeHome();
+        }
+        return runtimeHome;
+    }
+
+    public void setRuntimeHome(File runtimeHome) {
+        this.runtimeHome = runtimeHome;
+        properties.put(NUXEO_RUNTIME_HOME, runtimeHome.getAbsolutePath());
     }
 
     public String[] getCommandLineArguments() {
@@ -254,7 +279,7 @@ public class Environment {
     }
 
     public void loadProperties(Properties properties) {
-        this.properties.putAll(properties);
+        properties.putAll(properties);
     }
 
     public boolean isJBoss() {
@@ -269,6 +294,15 @@ public class Environment {
         return TOMCAT_HOST.equals(hostAppName);
     }
 
+    private void initRuntimeHome() {
+        String runtimeDir = System.getProperty(NUXEO_RUNTIME_HOME);
+        if (runtimeDir != null && !runtimeDir.isEmpty()) {
+            runtimeHome = new File(runtimeDir);
+        } else {
+            runtimeHome = home;
+        }
+    }
+
     /**
      * Initialization with System properties. Home must be set (it is usually
      * nuxeo runtime home, not nuxeo home).
@@ -281,6 +315,7 @@ public class Environment {
         String logDir = System.getProperty(NUXEO_LOG_DIR);
         String tmpDir = System.getProperty(NUXEO_TMP_DIR);
 
+        initRuntimeHome();
         if (dataDir != null && !dataDir.isEmpty()) {
             setData(new File(dataDir));
         }
@@ -296,6 +331,11 @@ public class Environment {
         if (tmpDir != null && !tmpDir.isEmpty()) {
             setTemp(new File(tmpDir));
         }
+    }
+
+    public void setServerHome(File serverHome) {
+        this.serverHome = serverHome;
+        properties.put(NUXEO_HOME_DIR, serverHome.getAbsolutePath());
     }
 
 }
