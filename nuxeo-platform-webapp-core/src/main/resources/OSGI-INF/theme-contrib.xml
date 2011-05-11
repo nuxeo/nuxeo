@@ -85,6 +85,14 @@
       <format-type>widget</format-type>
       <template>incl/user_services_galaxy.xhtml</template>
       <resource>screen.css</resource>
+      <resource>header.css</resource>
+    </view>
+
+    <view name="Nuxeo header" template-engine="jsf-facelets">
+      <format-type>widget</format-type>
+      <template>incl/nuxeo_header.xhtml</template>
+      <resource>screen.css</resource>
+      <resource>nuxeo_header.css</resource>
     </view>
 
     <view name="nuxeo5 breadcrumbs" template-engine="jsf-facelets">
@@ -115,10 +123,10 @@
       <resource>dragdrop.js</resource>
     </view>
 
-    <view name="Nuxeo DM footer (Galaxy Theme)"
+    <view name="Nuxeo footer"
       template-engine="jsf-facelets">
       <format-type>widget</format-type>
-      <template>incl/footer_galaxy.xhtml</template>
+      <template>incl/nuxeo_footer.xhtml</template>
     </view>
 
   </extension>
@@ -129,6 +137,10 @@
 
     <resource name="screen.css">
       <path>css/screen.css</path>
+    </resource>
+
+    <resource name="nuxeo_header.css">
+      <path>css/nuxeo_header.css</path>
     </resource>
 
     <resource name="foldable-box.js">
