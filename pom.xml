@@ -14,7 +14,7 @@
   <packaging>pom</packaging>
 
   <properties>
-    <nuxeo.addon.version>5.4.2-SNAPSHOT</nuxeo.addon.version>
+    <nuxeo.wss.version>5.4.2-SNAPSHOT</nuxeo.wss.version>
     <jersey.version>1.1.5</jersey.version>
   </properties>
 
@@ -30,22 +30,22 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-generic-wss-front</artifactId>
-        <version>${nuxeo.addon.version}</version>
+        <version>${nuxeo.wss.version}</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-generic-wss-handler</artifactId>
-        <version>${nuxeo.addon.version}</version>
+        <version>${nuxeo.wss.version}</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-webdav</artifactId>
-        <version>${nuxeo.addon.version}</version>
+        <version>${nuxeo.wss.version}</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-wi-backend</artifactId>
-        <version>${nuxeo.addon.version}</version>
+        <version>${nuxeo.wss.version}</version>
       </dependency>
 
       <dependency>
