@@ -13,6 +13,20 @@
 
 package org.nuxeo.ecm.core.storage.sql;
 
+import static org.nuxeo.ecm.core.api.security.Access.DENY;
+import static org.nuxeo.ecm.core.api.security.Access.GRANT;
+import static org.nuxeo.ecm.core.api.security.Access.UNKNOWN;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.ADD_CHILDREN;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.BROWSE;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.EVERYONE;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.EVERYTHING;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.REMOVE;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.REMOVE_CHILDREN;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_PROPERTIES;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_SECURITY;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -26,20 +40,17 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
+import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.UserEntry;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.api.security.impl.UserEntryImpl;
 import org.nuxeo.ecm.core.security.SecurityService;
-
-import static org.nuxeo.ecm.core.api.security.Access.DENY;
-import static org.nuxeo.ecm.core.api.security.Access.GRANT;
-import static org.nuxeo.ecm.core.api.security.Access.UNKNOWN;
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.*;
 
 /**
  * @author Florent Guillaume
@@ -325,6 +336,43 @@ public class TestSQLRepositorySecurity extends SQLRepositoryTestCase {
                 + testSession.getPrincipal().getName() + " is empty:",
                 ws2ParentsUnderTest.isEmpty());
         closeSession(testSession);
+    }
+
+    public void testACPInheritance() throws Exception {
+        DocumentModel root = new DocumentModelImpl("/", "testACPInheritance",
+                "Folder");
+        root = session.createDocument(root);
+        DocumentModel doc = new DocumentModelImpl("/testACPInheritance", "folder", "Folder");
+        doc = session.createDocument(doc);
+
+        ACP rootAcp = root.getACP();
+        ACL localACL = rootAcp.getOrCreateACL();
+        localACL.add(new ACE("joe_reader", READ, true));
+        root.setACP(rootAcp, true);
+
+        ACP acp = doc.getACP();
+        localACL = acp.getOrCreateACL();
+        localACL.add(new ACE("joe_contributor", WRITE, true));
+        doc.setACP(acp, true);
+
+        session.save();
+
+        doc = session.getDocument(new PathRef("/testACPInheritance/folder"));
+        acp = doc.getACP();
+        ACL acl = acp.getACL(ACL.INHERITED_ACL);
+
+        assertEquals("joe_reader", acl.getACEs()[0].getUsername());
+
+        // block inheritance
+        acp.getOrCreateACL().add(new ACE(SecurityConstants.EVERYONE, SecurityConstants.EVERYTHING, false));
+        doc.setACP(acp, true);
+        session.save();
+
+        // now the inherited acl should be null
+        doc = session.getDocument(new PathRef("/testACPInheritance/folder"));
+        acp = doc.getACP();
+        acl = acp.getACL(ACL.INHERITED_ACL);
+        assertNull(acl);
     }
 
     // copied from TestAPI in nuxeo-core-facade
