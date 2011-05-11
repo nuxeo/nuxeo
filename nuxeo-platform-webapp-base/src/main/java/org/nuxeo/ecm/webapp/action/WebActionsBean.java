@@ -286,18 +286,15 @@ public class WebActionsBean implements WebActionsLocal, Serializable {
     }
 
     @Factory(value = "currentTabAction", scope = EVENT)
-    @Deprecated
     public Action getCurrentTabAction() {
         return getCurrentTabAction(DEFAULT_TABS_CATEGORY);
     }
 
-    @Deprecated
     public void setCurrentTabAction(Action currentTabAction) {
         setCurrentTabAction(DEFAULT_TABS_CATEGORY, currentTabAction);
     }
 
     @Factory(value = "currentSubTabAction", scope = EVENT)
-    @Deprecated
     public Action getCurrentSubTabAction() {
         Action action = getCurrentTabAction();
         if (action != null) {
@@ -306,7 +303,6 @@ public class WebActionsBean implements WebActionsLocal, Serializable {
         return null;
     }
 
-    @Deprecated
     public void setCurrentSubTabAction(Action tabAction) {
         if (tabAction != null) {
             String[] categories = tabAction.getCategories();
@@ -327,7 +323,6 @@ public class WebActionsBean implements WebActionsLocal, Serializable {
         }
     }
 
-    @Deprecated
     public String getCurrentTabId() {
         Action currentTab = getCurrentTabAction();
         if (currentTab != null) {
@@ -336,12 +331,10 @@ public class WebActionsBean implements WebActionsLocal, Serializable {
         return null;
     }
 
-    @Deprecated
     public void setCurrentTabId(String tabId) {
         setCurrentTabId(DEFAULT_TABS_CATEGORY, tabId);
     }
 
-    @Deprecated
     public String getCurrentSubTabId() {
         Action currentSubTab = getCurrentSubTabAction();
         if (currentSubTab != null) {
@@ -350,7 +343,6 @@ public class WebActionsBean implements WebActionsLocal, Serializable {
         return null;
     }
 
-    @Deprecated
     public void setCurrentSubTabId(String tabId) {
         Action action = getCurrentTabAction();
         if (action != null) {
