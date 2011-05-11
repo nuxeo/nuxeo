@@ -160,6 +160,10 @@ public class UserManagementActions extends AbstractUserGroupManagement implement
     }
 
     public void createUser() throws ClientException {
+        createUser(false);
+    }
+
+    public void createUser(boolean createAnotherUser) throws ClientException {
         try {
             selectedUser = userManager.createUser(newUser);
             newUser = null;
@@ -167,8 +171,12 @@ public class UserManagementActions extends AbstractUserGroupManagement implement
                     StatusMessage.Severity.INFO,
                     resourcesAccessor.getMessages().get(
                             "info.userManager.userCreated"));
-            showCreateForm = false;
-            showUserOrGroup = true;
+            if (createAnotherUser) {
+                showCreateForm = true;
+            } else {
+                showCreateForm = false;
+                showUserOrGroup = true;
+            }
             fireSeamEvent(USERS_LISTING_CHANGED);
         } catch (UserAlreadyExistsException e) {
             facesMessages.add(

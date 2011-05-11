@@ -99,6 +99,10 @@ public class GroupManagementActions extends AbstractUserGroupManagement implemen
     }
 
     public void createGroup() throws ClientException {
+        createGroup(false);
+    }
+
+    public void createGroup(boolean createAnotherGroup) throws ClientException {
         try {
             selectedGroup = userManager.createGroup(newGroup);
             newGroup = null;
@@ -106,8 +110,12 @@ public class GroupManagementActions extends AbstractUserGroupManagement implemen
                     StatusMessage.Severity.INFO,
                     resourcesAccessor.getMessages().get(
                             "info.groupManager.groupCreated"));
-            showCreateForm = false;
-            showUserOrGroup = true;
+            if (createAnotherGroup) {
+                showCreateForm = true;
+            } else {
+                showCreateForm = false;
+                showUserOrGroup = true;
+            }
             fireSeamEvent(GROUPS_LISTING_CHANGED);
         } catch (GroupAlreadyExistsException e) {
             String message = resourcesAccessor.getMessages().get(

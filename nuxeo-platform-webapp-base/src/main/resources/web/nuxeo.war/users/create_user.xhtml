@@ -20,7 +20,15 @@
         <tr>
           <td>
             <a4j:commandButton
-              id="button_create"
+              id="button_save_and_create"
+              value="#{messages['command.saveAndCreate']}"
+              action="#{userManagementActions.createUser(true)}"
+              styleClass="button"
+              reRender="usersPanel,facesStatusMessagePanel">
+              <nxu:actionListenerMethod value="#{editableListBean.resetAllListsCachedModels}" />
+            </a4j:commandButton>
+            <a4j:commandButton
+              id="button_save"
               value="#{messages['command.save']}"
               action="#{userManagementActions.createUser}"
               styleClass="button"

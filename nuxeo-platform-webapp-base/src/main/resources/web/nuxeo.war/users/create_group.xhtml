@@ -20,6 +20,15 @@
         <tr>
           <td>
             <a4j:commandButton
+              id="button_save_and_create"
+              value="#{messages['command.saveAndCreate']}"
+              action="#{groupManagementActions.createGroup(true)}"
+              styleClass="button"
+              reRender="groupsPanel,facesStatusMessagePanel">
+              <nxu:actionListenerMethod value="#{editableListBean.resetAllListsCachedModels}" />
+            </a4j:commandButton>
+            <a4j:commandButton
+              id="button_save"
               value="#{messages['command.save']}"
               action="#{groupManagementActions.createGroup}"
               styleClass="button"
