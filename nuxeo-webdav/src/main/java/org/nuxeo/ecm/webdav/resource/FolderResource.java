@@ -92,7 +92,7 @@ public class FolderResource extends ExistingResource {
         Unmarshaller u = Util.getUnmarshaller();
 
         Prop prop = null;
-        if (request.getInputStream() != null && request.getInputStream().available() > 0) {
+        if (request.getInputStream() != null && request.getContentLength() > 0) {
             PropFind propFind;
             try {
                 propFind = (PropFind) u.unmarshal(request.getInputStream());
@@ -142,7 +142,7 @@ public class FolderResource extends ExistingResource {
         List<DocumentModel> children = backend.getChildren(doc.getRef());
         for (DocumentModel child : children) {
             lastModified = getTimePropertyWrapper(child, "dc:modified");
-            creationDate = getTimePropertyWrapper(child, "dc:created"); 
+            creationDate = getTimePropertyWrapper(child, "dc:created");
             String childName = URIUtil.encodePath(backend.getDisplayName(child));
             PropStatBuilderExt props = new PropStatBuilderExt();
             props.lastModified(lastModified).creationDate(creationDate).displayName(childName).status(OK);

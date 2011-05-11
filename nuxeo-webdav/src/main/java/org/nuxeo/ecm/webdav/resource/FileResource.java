@@ -110,7 +110,7 @@ public class FileResource extends ExistingResource {
 
         Unmarshaller u = Util.getUnmarshaller();
 
-        if (request.getInputStream() != null && request.getInputStream().available() > 0) {
+        if (request.getInputStream() != null && request.getContentLength() > 0) {
             PropFind propFind;
             try {
                 propFind = (PropFind) u.unmarshal(request.getInputStream());
