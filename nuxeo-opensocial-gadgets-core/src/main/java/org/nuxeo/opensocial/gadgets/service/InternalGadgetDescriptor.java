@@ -33,7 +33,7 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.opensocial.gadgets.service.api.GadgetDeclaration;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.opensocial.helper.OpenSocialGadgetHelper;import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
 import org.osgi.framework.Bundle;
@@ -154,20 +154,7 @@ public class InternalGadgetDescriptor extends BaseGadgetDescriptor implements
 
     public StringBuilder getUrlPrefix(boolean relativeUrl) {
         StringBuilder sb = new StringBuilder();
-        boolean gadgetsEmbeddedServer = Boolean.valueOf(Framework.getProperty(
-                OPENSOCIAL_GADGETS_EMBEDDED_SERVER, "true"));
-        if (gadgetsEmbeddedServer) {
-            if (!relativeUrl) {
-                sb.append(Framework.getProperty(NUXEO_LOOPBACK_URL));
-            } else {
-                sb.append(VirtualHostHelper.getContextPathProperty());
-            }
-        } else {
-            sb.append(HTTP);
-            sb.append(Framework.getProperty(OPENSOCIAL_GADGETS_HOST));
-            sb.append(HTTP_SEPARATOR);
-            sb.append(Framework.getProperty(OPENSOCIAL_GADGETS_PORT));
-        }
+        sb.append(OpenSocialGadgetHelper.getGadgetsBaseUrl(relativeUrl));
         sb.append(Framework.getProperty(OPENSOCIAL_GADGETS_PATH));
         return sb;
     }

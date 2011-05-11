@@ -20,10 +20,6 @@ package org.nuxeo.opensocial.container.server.webcontent.gadgets.opensocial;
 import static org.nuxeo.ecm.spaces.api.Constants.WC_OPEN_SOCIAL_GADGET_DEF_URL_PROPERTY;
 import static org.nuxeo.ecm.spaces.api.Constants.WC_OPEN_SOCIAL_GADGET_NAME;
 import static org.nuxeo.ecm.spaces.api.Constants.WC_OPEN_SOCIAL_USER_PREFS_PROPERTY;
-import static org.nuxeo.launcher.config.Environment.NUXEO_LOOPBACK_URL;
-import static org.nuxeo.launcher.config.Environment.OPENSOCIAL_GADGETS_EMBEDDED_SERVER;
-import static org.nuxeo.launcher.config.Environment.OPENSOCIAL_GADGETS_HOST;
-import static org.nuxeo.launcher.config.Environment.OPENSOCIAL_GADGETS_PORT;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -43,11 +39,11 @@ import org.apache.shindig.gadgets.spec.UserPref;
 import org.apache.shindig.gadgets.spec.UserPref.EnumValuePair;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.opensocial.container.server.utils.UrlBuilder;
 import org.nuxeo.opensocial.container.server.webcontent.abs.AbstractWebContentAdapter;
 import org.nuxeo.opensocial.container.shared.webcontent.OpenSocialData;
 import org.nuxeo.opensocial.container.shared.webcontent.enume.DataType;
+import org.nuxeo.opensocial.helper.OpenSocialGadgetHelper;
 import org.nuxeo.opensocial.service.api.OpenSocialService;
 import org.nuxeo.runtime.api.Framework;
 
@@ -58,10 +54,6 @@ public class OpenSocialAdapter extends
         AbstractWebContentAdapter<OpenSocialData> {
 
     private static final Log log = LogFactory.getLog(OpenSocialAdapter.class);
-
-    public static final String HTTP = "http://";
-
-    public static final String HTTP_SEPARATOR = ":";
 
     public static final String SEPARATOR = "/";
 
@@ -82,7 +74,7 @@ public class OpenSocialAdapter extends
     public void feedFrom(OpenSocialData data) throws ClientException {
         super.setMetadataFrom(data);
 
-        String gadgetDefUrl = computeGadgetDefUrlBeforeSave(data.getGadgetDef());
+        String gadgetDefUrl = OpenSocialGadgetHelper.computeGadgetDefUrlBeforeSave(data.getGadgetDef());
 
         setGadgetDefUrl(gadgetDefUrl);
         setGadgetName(data.getGadgetName());
@@ -114,37 +106,9 @@ public class OpenSocialAdapter extends
         setFrameUrlFor(data);
     }
 
-    protected String computeGadgetDefUrlBeforeSave(String gadgetDef) {
-        String urlToCheck = getBaseUrl(false);
-        if (gadgetDef.contains(urlToCheck)) {
-            gadgetDef = gadgetDef.split(urlToCheck)[1];
-        }
-        return gadgetDef;
-    }
-
     private void setFrameUrlFor(OpenSocialData data) throws ClientException {
-        data.setFrameUrl(UrlBuilder.buildShindigUrl(data, getBaseUrl(true)
-                + SEPARATOR));
-    }
-
-    protected String getBaseUrl(boolean relativeUrl) {
-        boolean gadgetsEmbeddedServer = Boolean.valueOf(Framework.getProperty(
-                OPENSOCIAL_GADGETS_EMBEDDED_SERVER, "true"));
-        StringBuilder sb = new StringBuilder();
-        if (gadgetsEmbeddedServer) {
-            if (!relativeUrl) {
-                sb.append(Framework.getProperty(NUXEO_LOOPBACK_URL));
-            } else {
-                sb.append(VirtualHostHelper.getContextPathProperty());
-            }
-        } else {
-            sb.append(HTTP);
-            sb.append(Framework.getProperty(OPENSOCIAL_GADGETS_HOST));
-            sb.append(HTTP_SEPARATOR);
-            sb.append(Framework.getProperty(OPENSOCIAL_GADGETS_PORT));
-            sb.append(VirtualHostHelper.getContextPathProperty());
-        }
-        return sb.toString();
+        data.setFrameUrl(UrlBuilder.buildShindigUrl(data,
+                OpenSocialGadgetHelper.getGadgetsBaseUrl(true) + SEPARATOR));
     }
 
     @SuppressWarnings("unchecked")
@@ -152,7 +116,7 @@ public class OpenSocialAdapter extends
         OpenSocialData data = new OpenSocialData();
         super.getMetadataFor(data);
 
-        String gadgetDefUrl = computeGadgetDefUrlAfterLoad((String) doc.getPropertyValue(WC_OPEN_SOCIAL_GADGET_DEF_URL_PROPERTY));
+        String gadgetDefUrl = OpenSocialGadgetHelper.computeGadgetDefUrlAfterLoad((String) doc.getPropertyValue(WC_OPEN_SOCIAL_GADGET_DEF_URL_PROPERTY));
         data.setGadgetDef(gadgetDefUrl);
 
         data.setGadgetName((String) doc.getPropertyValue(WC_OPEN_SOCIAL_GADGET_NAME));
@@ -208,13 +172,6 @@ public class OpenSocialAdapter extends
         setFrameUrlFor(data);
 
         return data;
-    }
-
-    protected String computeGadgetDefUrlAfterLoad(String gadgetDefUrl) {
-        if (!gadgetDefUrl.contains("://")) {
-            gadgetDefUrl = getBaseUrl(false) + gadgetDefUrl;
-        }
-        return gadgetDefUrl;
     }
 
     private GadgetSpec getGadgetSpec(OpenSocialData data) {

@@ -32,14 +32,20 @@ import org.nuxeo.opensocial.container.shared.layout.api.YUIComponent;
 import org.nuxeo.opensocial.container.shared.layout.api.YUILayout;
 import org.nuxeo.opensocial.gadgets.service.api.GadgetDeclaration;
 import org.nuxeo.opensocial.gadgets.service.api.GadgetService;
+import org.nuxeo.opensocial.helper.OpenSocialGadgetHelper;
 import org.nuxeo.runtime.api.Framework;
 
 /**
  * Helper class to easily create Gadgets.
  *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
+ * @since 5.4.2
  */
 public class WebContentHelper {
+
+    private WebContentHelper() {
+        // Helper class
+    }
 
     public static void createOpenSocialGadget(Space space, CoreSession session,
             Locale currentLocale, String gadgetName, int zoneIndex,
@@ -52,7 +58,7 @@ public class WebContentHelper {
                 unitDoc.getPathAsString(), gadgetName,
                 OPEN_SOCIAL_GADGET_DOCUMENT_TYPE);
         OpenSocialAdapter os = (OpenSocialAdapter) docGadget.getAdapter(WebContentAdapter.class);
-        os.setGadgetDefUrl(getGadgetDefUrlFor(gadgetName));
+        os.setGadgetDefUrl(OpenSocialGadgetHelper.computeGadgetDefUrlBeforeSave(getGadgetDefUrlFor(gadgetName)));
         os.setGadgetName(gadgetName);
         os.setPosition(position);
 
