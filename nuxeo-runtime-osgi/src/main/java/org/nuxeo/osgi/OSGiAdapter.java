@@ -28,6 +28,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.Environment;
 import org.nuxeo.common.collections.ListenerList;
 import org.nuxeo.osgi.services.PackageAdminImpl;
 import org.osgi.framework.Bundle;
@@ -42,10 +43,9 @@ import org.osgi.framework.ServiceListener;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.packageadmin.PackageAdmin;
 
-
 /**
  *
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 public class OSGiAdapter {
@@ -53,15 +53,21 @@ public class OSGiAdapter {
     private static final Log log = LogFactory.getLog(OSGiAdapter.class);
 
     protected final File workingDir;
+
     protected final File dataDir;
+
     protected File idTableFile;
+
     protected BundleIdGenerator bundleIds;
 
     protected ListenerList frameworkListeners;
+
     protected ListenerList bundleListeners;
+
     protected ListenerList serviceListeners;
 
     protected Map<String, Bundle> bundles;
+
     protected Map<String, ServiceRegistration> services;
 
     protected BundleRegistry registry;
@@ -70,9 +76,10 @@ public class OSGiAdapter {
 
     protected SystemBundle systemBundle;
 
-
     public OSGiAdapter(File workingDir) {
-        this(workingDir, new File(workingDir, "data"), new Properties());
+        this(workingDir, new File(System.getProperty(
+                Environment.NUXEO_DATA_DIR, workingDir + File.separator
+                        + "data")), new Properties());
     }
 
     public OSGiAdapter(File workingDir, File dataDir, Properties properties) {
@@ -84,7 +91,7 @@ public class OSGiAdapter {
         initialize(properties);
     }
 
-    public void removeService(String  clazz) {
+    public void removeService(String clazz) {
         services.remove(clazz);
     }
 
@@ -102,7 +109,8 @@ public class OSGiAdapter {
         properties.put(Constants.FRAMEWORK_VERSION, "1.0.0");
     }
 
-    public void setSystemBundle(SystemBundle systemBundle) throws BundleException {
+    public void setSystemBundle(SystemBundle systemBundle)
+            throws BundleException {
         if (this.systemBundle != null) {
             throw new IllegalStateException("Cannot set system bundle");
         }
@@ -110,7 +118,8 @@ public class OSGiAdapter {
         registry.addBundleAlias("system.bundle", systemBundle.getSymbolicName());
         this.systemBundle = systemBundle;
 
-        systemBundle.getBundleContext().registerService(PackageAdmin.class.getName(), new PackageAdminImpl(this), null);
+        systemBundle.getBundleContext().registerService(
+                PackageAdmin.class.getName(), new PackageAdminImpl(this), null);
     }
 
     public BundleRegistry getRegistry() {
@@ -196,7 +205,8 @@ public class OSGiAdapter {
 
     public void addServiceListener(ServiceListener listener, String filter) {
         // TODO?
-        throw new UnsupportedOperationException("This method is not implemented");
+        throw new UnsupportedOperationException(
+                "This method is not implemented");
     }
 
     public void removeServiceListener(ServiceListener listener) {
@@ -212,13 +222,15 @@ public class OSGiAdapter {
     }
 
     public void fireFrameworkEvent(FrameworkEvent event) {
-        log.debug("Firing FrameworkEvent on " + frameworkListeners.size() + " listeners");
+        log.debug("Firing FrameworkEvent on " + frameworkListeners.size()
+                + " listeners");
         Object[] listeners = frameworkListeners.getListeners();
         for (Object listener : listeners) {
             log.debug("Start execution of " + listener.getClass() + " listener");
             try {
                 ((FrameworkListener) listener).frameworkEvent(event);
-                log.debug("End execution of " + listener.getClass()+ " listener");
+                log.debug("End execution of " + listener.getClass()
+                        + " listener");
             } catch (Throwable t) {
                 log.error("Error during Framework Listener execution : "
                         + listener.getClass(), t);

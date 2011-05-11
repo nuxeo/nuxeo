@@ -50,17 +50,11 @@ public class FrameworkLoader {
 
     public static final String HOST_VERSION = "org.nuxeo.app.host.version";
 
-    public static final String HOME_DIR = "org.nuxeo.app.home";
-
-    public static final String LOG_DIR = "org.nuxeo.app.log";
-
-    public static final String DATA_DIR = "org.nuxeo.app.data";
-
+    /**
+     * @deprecated prefer use of {@link Environment#NUXEO_TMP_DIR}
+     */
+    @Deprecated
     public static final String TMP_DIR = "org.nuxeo.app.tmp";
-
-    public static final String WEB_DIR = "org.nuxeo.app.web";
-
-    public static final String CONFIG_DIR = "org.nuxeo.app.config";
 
     public static final String LIBS = "org.nuxeo.app.libs"; // class path
 
@@ -75,18 +69,6 @@ public class FrameworkLoader {
     public static final String FLUSH_CACHE = "org.nuxeo.app.flushCache";
 
     public static final String ARGS = "org.nuxeo.app.args";
-
-    public static final String NUXEO_HOME_DIR = "nuxeo.home.dir";
-
-    public static final String NUXEO_DATA_DIR = "nuxeo.data.dir";
-
-    public static final String NUXEO_LOG_DIR = "nuxeo.log.dir";
-
-    public static final String NUXEO_TMP_DIR = "nuxeo.tmp.dir";
-
-    public static final String NUXEO_CONFIG_DIR = "nuxeo.config.dir";
-
-    public static final String NUXEO_WEB_DIR = "nuxeo.web.dir";
 
     private static final Log log = LogFactory.getLog(FrameworkLoader.class);
 
@@ -157,10 +139,8 @@ public class FrameworkLoader {
     }
 
     private static void doInitialize(Map<String, Object> hostEnv) {
-        System.setProperty(HOME_DIR, home.getAbsolutePath()); // make sure this
-        // property was
-        // correctly
-        // initialized
+        // make sure this property was correctly initialized
+        System.setProperty(Environment.HOME_DIR, home.getAbsolutePath());
         boolean doPreprocessing = true;
         String v = (String) hostEnv.get(PREPROCESSING);
         if (v != null) {
@@ -222,7 +202,7 @@ public class FrameworkLoader {
     }
 
     protected static void loadSystemProperties() {
-        System.setProperty("org.nuxeo.app.home", home.getAbsolutePath());
+        System.setProperty(Environment.HOME_DIR, home.getAbsolutePath());
         File file = new File(home, "system.properties");
         if (!file.isFile()) {
             return;
@@ -269,7 +249,8 @@ public class FrameworkLoader {
     protected static Environment createEnvironment(File home,
             Map<String, Object> hostEnv) {
         Properties sysprops = System.getProperties();
-        sysprops.setProperty(NUXEO_HOME_DIR, home.getAbsolutePath());
+        sysprops.setProperty(Environment.NUXEO_RUNTIME_HOME,
+                home.getAbsolutePath());
 
         Environment env = new Environment(home);
         String v = (String) hostEnv.get(HOST_NAME);
@@ -279,41 +260,45 @@ public class FrameworkLoader {
             env.setHostApplicationVersion((String) hostEnv.get(HOST_VERSION));
         }
 
-        v = getEnvProperty(NUXEO_DATA_DIR, hostEnv, sysprops, true);
+        v = getEnvProperty(Environment.NUXEO_DATA_DIR, hostEnv, sysprops, true);
         if (v != null) {
             env.setData(new File(v));
         } else {
-            sysprops.setProperty(NUXEO_DATA_DIR,
+            sysprops.setProperty(Environment.NUXEO_DATA_DIR,
                     env.getData().getAbsolutePath());
         }
 
-        v = getEnvProperty(NUXEO_LOG_DIR, hostEnv, sysprops, true);
+        v = getEnvProperty(Environment.NUXEO_LOG_DIR, hostEnv, sysprops, true);
         if (v != null) {
             env.setLog(new File(v));
         } else {
-            sysprops.setProperty(NUXEO_LOG_DIR, env.getLog().getAbsolutePath());
+            sysprops.setProperty(Environment.NUXEO_LOG_DIR,
+                    env.getLog().getAbsolutePath());
         }
 
-        v = getEnvProperty(NUXEO_TMP_DIR, hostEnv, sysprops, true);
+        v = getEnvProperty(Environment.NUXEO_TMP_DIR, hostEnv, sysprops, true);
         if (v != null) {
             env.setTemp(new File(v));
         } else {
-            sysprops.setProperty(NUXEO_TMP_DIR, env.getTemp().getAbsolutePath());
+            sysprops.setProperty(Environment.NUXEO_TMP_DIR,
+                    env.getTemp().getAbsolutePath());
         }
 
-        v = getEnvProperty(NUXEO_CONFIG_DIR, hostEnv, sysprops, true);
+        v = getEnvProperty(Environment.NUXEO_CONFIG_DIR, hostEnv, sysprops,
+                true);
         if (v != null) {
             env.setConfig(new File(v));
         } else {
-            sysprops.setProperty(NUXEO_CONFIG_DIR,
+            sysprops.setProperty(Environment.NUXEO_CONFIG_DIR,
                     env.getConfig().getAbsolutePath());
         }
 
-        v = getEnvProperty(NUXEO_WEB_DIR, hostEnv, sysprops, true);
+        v = getEnvProperty(Environment.NUXEO_WEB_DIR, hostEnv, sysprops, true);
         if (v != null) {
             env.setWeb(new File(v));
         } else {
-            sysprops.setProperty(NUXEO_WEB_DIR, env.getWeb().getAbsolutePath());
+            sysprops.setProperty(Environment.NUXEO_WEB_DIR,
+                    env.getWeb().getAbsolutePath());
         }
 
         v = (String) hostEnv.get(ARGS);
@@ -338,7 +323,8 @@ public class FrameworkLoader {
         StringBuilder msg = new StringBuilder(hr);
         msg.append("= Starting Nuxeo Framework" + newline);
         msg.append(hr);
-        msg.append("  * Home Directory = " + home + newline);
+        msg.append("  * Server home = " + env.getServerHome() + newline);
+        msg.append("  * Runtime home = " + env.getRuntimeHome() + newline);
         msg.append("  * Data Directory = " + env.getData() + newline);
         msg.append("  * Log Directory = " + env.getLog() + newline);
         msg.append("  * Configuration Directory = " + env.getConfig() + newline);
