@@ -616,7 +616,6 @@
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-storage-sql-ra</artifactId>
-      <type>rar</type>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>

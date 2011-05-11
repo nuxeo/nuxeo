@@ -276,6 +276,7 @@
     <!-- remove libraries already provided by JBoss or unneeded -->
     <delete>
       <fileset dir="${distribution.dir}/server/default/deploy/nuxeo.ear/bundles">
+        <include name="nuxeo-core-storage-sql-ra-*.jar" />
         <include name="nuxeo-runtime-jetty-*" />
         <include name="nuxeo-runtime-jtajca*" />
         <include name="nuxeo-platform-login-default*" />
