@@ -22,6 +22,8 @@ package org.nuxeo.ecm.platform.audit.ws;
 import java.io.Serializable;
 import java.util.Date;
 
+import org.nuxeo.ecm.platform.audit.api.LogEntry;
+
 public class EventDescriptor implements Serializable {
 
     private static final long serialVersionUID = 987698679871L;
@@ -31,16 +33,31 @@ public class EventDescriptor implements Serializable {
     private  String docPath;
     private  String docUUID;
     private  String lifeCycle;
+    private String repoId;
 
     public EventDescriptor() {
     }
 
-    public EventDescriptor(String eventId, Date eventDate, String docPath, String docUUID, String lifeCycle) {
+    public EventDescriptor(LogEntry logEntry) {
+        this.eventDate = logEntry.getEventDate().toString();
+        this.eventId = logEntry.getEventId();
+        this.docPath = logEntry.getDocPath();
+        this.docUUID = logEntry.getDocUUID();
+        this.lifeCycle = logEntry.getDocLifeCycle();
+        this.repoId = logEntry.getRepositoryId();
+    }
+
+    /**
+     * @deprecated since 5.4.2, use the other constructor
+     */
+    @Deprecated
+    public EventDescriptor(String eventId, Date eventDate, String docPath,
+            String docUUID, String lifeCycle) {
         this.eventDate = eventDate.toString();
         this.eventId = eventId;
         this.docPath = docPath;
         this.docUUID = docUUID;
-        this.lifeCycle=lifeCycle;
+        this.lifeCycle = lifeCycle;
     }
 
     public String getEventId() {
@@ -81,6 +98,14 @@ public class EventDescriptor implements Serializable {
 
     public void setLifeCycle(String lifeCycle) {
         this.lifeCycle = lifeCycle;
+    }
+
+    public String getRepositoryId() {
+        return repoId;
+    }
+
+    public void setRepositoryId(String repoId) {
+        this.repoId = repoId;
     }
 
 }

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,9 +12,9 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id: LogEntryImpl.java 30195 2008-02-14 21:53:04Z tdelprat $
+ *     Julien Anguenot
+ *     Thierry Delprat
+ *     Florent Guillaume
  */
 
 package org.nuxeo.ecm.platform.audit.impl;
@@ -45,9 +45,7 @@ import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 
 /**
- * Log entry.
- *
- * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
+ * Log entry implementation.
  */
 @Entity(name = "LogEntry")
 @NamedQueries( {
@@ -90,6 +88,8 @@ public class LogEntryImpl implements LogEntry {
     private String comment;
 
     private String docLifeCycle;
+
+    private String repositoryId;
 
     private Map<String, ExtendedInfoImpl> extendedInfos = new HashMap<String, ExtendedInfoImpl>();
 
@@ -255,6 +255,22 @@ public class LogEntryImpl implements LogEntry {
 
     public void setDocLifeCycle(String docLifeCycle) {
         this.docLifeCycle = docLifeCycle;
+    }
+
+    /**
+     * Returns the repository id related to the log entry.
+     *
+     * @return the repository id
+     */
+    @Override
+    @Column(name = "LOG_REPO_ID")
+    public String getRepositoryId() {
+        return repositoryId;
+    }
+
+    @Override
+    public void setRepositoryId(String repositoryId) {
+        this.repositoryId = repositoryId;
     }
 
 //    public Map<String, ExtendedInfoImpl> getExtendedInfosImpl() {

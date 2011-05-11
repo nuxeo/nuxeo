@@ -74,6 +74,7 @@ public class AuditQuery {
             obj.element("docType", entry.getDocType());
             obj.element("docPath", entry.getDocPath());
             obj.element("docLifeCycle", entry.getDocLifeCycle());
+            obj.element("repoId", entry.getRepositoryId());
             obj.element("comment", entry.getComment());
             // Map<String, ExtendedInfo> info = entry.getExtendedInfos();
             // if (info != null) {

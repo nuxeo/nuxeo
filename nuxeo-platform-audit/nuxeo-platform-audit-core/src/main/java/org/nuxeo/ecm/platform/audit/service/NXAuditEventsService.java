@@ -354,6 +354,7 @@ public class NXAuditEventsService extends DefaultComponent implements
         entry.setDocPath(doc.getPathAsString());
         entry.setDocType(doc.getType());
         entry.setDocUUID(doc.getId());
+        entry.setRepositoryId(doc.getRepositoryName());
         entry.setPrincipalName(SecurityConstants.SYSTEM_USERNAME);
         entry.setCategory("eventDocumentCategory");
         entry.setEventId(DocumentEventTypes.DOCUMENT_CREATED);
@@ -769,6 +770,7 @@ public class NXAuditEventsService extends DefaultComponent implements
             entry.setDocUUID(document.getId());
             entry.setDocPath(document.getPathAsString());
             entry.setDocType(document.getType());
+            entry.setRepositoryId(document.getRepositoryName());
         } else {
             log.warn("received event " + eventName + " with null document");
         }

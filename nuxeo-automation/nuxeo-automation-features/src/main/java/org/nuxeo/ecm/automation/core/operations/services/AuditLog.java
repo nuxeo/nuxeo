@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -83,6 +83,7 @@ public class AuditLog {
         entry.setComment(comment);
         entry.setPrincipalName(principal);
         entry.setDocType(doc.getType());
+        entry.setRepositoryId(doc.getRepositoryName());
         try {
             entry.setDocLifeCycle(doc.getCurrentLifeCycleState());
         } catch (Exception e) {
