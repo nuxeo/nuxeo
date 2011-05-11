@@ -63,26 +63,51 @@
 </tr>
 <tr>
 	<td>clickAndWait</td>
+	<td>Link=Nuxeo Admin Center</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
 	<td>Link=Users &amp; groups</td>
 	<td></td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>searchForm:searchText</td>
+	<td>//input[@id='usersListingView:searchForm:searchText']</td>
 	<td>restricted</td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
-	<td>searchForm:searchButton</td>
+	<td>watchA4jRequests</td>
+	<td></td>
 	<td></td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
+	<td>click</td>
+	<td>//input[@value='Search']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
 	<td>link=restrictedUser</td>
 	<td></td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
 	<td>link=Delete</td>
 	<td></td>
 </tr>
@@ -92,9 +117,9 @@
 	<td></td>
 </tr>
 <tr>
-	<td>verifyTextPresent</td>
+	<td>waitForTextPresent</td>
 	<td>No user matching the entered criteria</td>
-	<td></td>
+	<td>10000</td>
 </tr>
 <tr>
 	<td>open</td>

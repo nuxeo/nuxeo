@@ -63,57 +63,77 @@
 </tr>
 <tr>
 	<td>clickAndWait</td>
+	<td>Link=Nuxeo Admin Center</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
 	<td>Link=Users &amp; groups</td>
 	<td></td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
 	<td>link=Create a new user</td>
 	<td></td>
 </tr>
 <tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
 	<td>type</td>
-	<td>//input[@id='createUser:nxl_user:nxw_username']</td>
+	<td>//input[@id='createUserView:createUser:nxl_user:nxw_username']</td>
 	<td>restrictedUser</td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//input[@id='createUser:nxl_user:nxw_firstname']</td>
+	<td>//input[@id='createUserView:createUser:nxl_user:nxw_firstname']</td>
 	<td>Restricted</td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//input[@id='createUser:nxl_user:nxw_lastname']</td>
+	<td>//input[@id='createUserView:createUser:nxl_user:nxw_lastname']</td>
 	<td>User</td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//input[@id='createUser:nxl_user:nxw_company']</td>
+	<td>//input[@id='createUserView:createUser:nxl_user:nxw_company']</td>
 	<td>Nuxeo</td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//input[@id='createUser:nxl_user:nxw_firstPassword']</td>
+	<td>//input[@id='createUserView:createUser:nxl_user:nxw_firstPassword']</td>
 	<td>test</td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//input[@id='createUser:nxl_user:nxw_secondPassword']</td>
+	<td>//input[@id='createUserView:createUser:nxl_user:nxw_secondPassword']</td>
 	<td>test</td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//input[@id='createUser:nxl_user:nxw_email']</td>
+	<td>//input[@id='createUserView:createUser:nxl_user:nxw_email']</td>
 	<td>selenium+test@nuxeo.com</td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
 	<td>//input[@value='Save']</td>
 	<td></td>
 </tr>
 <tr>
-	<td>verifyTextPresent</td>
-	<td>Restricted</td>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
 	<td></td>
 </tr>
 <tr>
