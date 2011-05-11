@@ -19,6 +19,7 @@ package org.nuxeo.wss.fprpc;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.security.Principal;
 import java.util.ArrayList;
@@ -29,6 +30,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
+import org.nuxeo.wss.WSSConfig;
 import org.nuxeo.wss.fprpc.exceptions.MalformedFPRPCRequest;
 import org.nuxeo.wss.servlet.WSSRequest;
 import org.xml.sax.InputSource;
@@ -40,6 +43,8 @@ import org.xml.sax.XMLReader;
  * @author Thierry Delprat
  */
 public class FPRPCRequest extends WSSRequest {
+
+    private String windowsEncoding = System.getProperty(WSSConfig.DEFAULT_ENCODING);
 
     public static final int FPRPC_GET_REQUEST = 0;
     public static final int FPRPC_POST_REQUEST = 1;
@@ -158,6 +163,7 @@ public class FPRPCRequest extends WSSRequest {
         while (pNames.hasMoreElements()) {
             String key = pNames.nextElement().trim();
             String value = httpRequest.getParameter(key).trim();
+            value = decodeParameterValue(value);
             parameters.put(key, value);
         }
         return parameters;
@@ -256,6 +262,19 @@ public class FPRPCRequest extends WSSRequest {
             }
         }
         return sb.toString();
+    }
+
+    protected String decodeParameterValue(String path) {
+        String encoding = windowsEncoding;
+        if (StringUtils.isEmpty(encoding)) {
+            encoding = "ISO-8859-1";
+        }
+        try {
+            path = new String(path.getBytes(encoding), "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            //nothing
+        }
+        return path;
     }
 
 }

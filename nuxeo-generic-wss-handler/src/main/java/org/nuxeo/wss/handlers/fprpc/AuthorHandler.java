@@ -94,16 +94,6 @@ public class AuthorHandler extends AbstractFPRPCHandler implements FPRPCHandler 
 
         } else if ("get document".equals(call.getMethodName())) {
             String location = call.getParameters().get("document_name");
-            String windowsEncoding = System.getProperty(WSSConfig.DEFAULT_ENCODING);
-            if (StringUtils.isEmpty(windowsEncoding)
-                    || windowsEncoding.startsWith("ISO-8859")) {
-                try {
-
-                    location = new String(location.getBytes("ISO-8859-15"),
-                            "UTF-8");
-                } catch (UnsupportedEncodingException e1) {
-                }
-            }
             location = WSSUrlMapper.getUrlWithSitePath(request, location);
 
             WSSListItem doc = backend.getItem(location);
@@ -249,8 +239,7 @@ public class AuthorHandler extends AbstractFPRPCHandler implements FPRPCHandler 
                 return;
             }
 
-            WSSListItem doc = backend.getItem(location);
-            doc = backend.moveItem(location, newLocation);
+            WSSListItem doc = backend.moveItem(location, newLocation);
             fpResponse.addRenderingParameter("doc", doc);
             fpResponse.addRenderingParameter("oldUrl", location);
             fpResponse.addRenderingParameter("newUrl", location);
@@ -319,7 +308,6 @@ public class AuthorHandler extends AbstractFPRPCHandler implements FPRPCHandler 
             }
 
             for (String location : urls) {
-
                 if (location.startsWith("http")) {// MSO 2K7 only !!!
                     location = WSSUrlMapper.getLocationFromFullUrl(request, location);
                 }
@@ -381,8 +369,10 @@ public class AuthorHandler extends AbstractFPRPCHandler implements FPRPCHandler 
         return params;
     }
 
-    protected String getLockErrorMessage(WSSListItem doc){
-        return "The file " + doc.getDisplayName() + " is checked out or locked for editing by " + doc.getCheckoutUser();
+    protected String getLockErrorMessage(WSSListItem doc) {
+        return "The file " + doc.getDisplayName()
+                + " is checked out or locked for editing by "
+                + doc.getCheckoutUser();
     }
 
 }
