@@ -226,7 +226,38 @@ public class InternalGadgetDescriptor extends BaseGadgetDescriptor implements
         String thumb = super.getThumbnail();
         if (thumb == null || "".equals(thumb.trim())) {
             return getIconUrl();
+        } else {
+            thumb = rewriteURL(thumb);
         }
         return thumb;
     }
+
+    /**
+     * Rewrite the URL to remove the private IP from it and keep a relative URL.
+     * <p>
+     * Shindig always prepend the beginning of the Spec URL if it gets a
+     * relative URL for Thumbnail or Screenshot in the gadget spec, but we need
+     * a relative URL.
+     *
+     */
+    protected String rewriteURL(String url) {
+        if (url != null) {
+            String loopbackURL = Framework.getProperty(NUXEO_LOOPBACK_URL);
+            if (url.startsWith(loopbackURL)) {
+                url = url.replaceFirst(loopbackURL,
+                        VirtualHostHelper.getContextPathProperty());
+            }
+        }
+        return url;
+    }
+
+    @Override
+    public String getScreenshot() {
+        String screenshot = super.getScreenshot();
+        if (screenshot != null) {
+            screenshot = rewriteURL(screenshot);
+        }
+        return screenshot;
+    }
+
 }
