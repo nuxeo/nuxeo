@@ -1043,16 +1043,17 @@ public class NuxeoCmisService extends AbstractCmisService {
             if (max < 0) {
                 max = DEFAULT_CHANGE_LOG_SIZE;
             }
-            // TODO XXX repositoryId as well
             Map<String, Object> params = new HashMap<String, Object>();
             String query = "FROM LogEntry log" //
                     + " WHERE log.eventDate >= :minDate" //
                     + "   AND log.eventId IN (:evCreated, :evModified, :evRemoved)" //
+                    + "   AND log.repositoryId = :repoId" //
                     + " ORDER BY log.eventDate";
             params.put("minDate", new Date(minDate));
             params.put("evCreated", DocumentEventTypes.DOCUMENT_CREATED);
             params.put("evModified", DocumentEventTypes.DOCUMENT_UPDATED);
             params.put("evRemoved", DocumentEventTypes.DOCUMENT_REMOVED);
+            params.put("repoId", repositoryId);
             List<?> entries = reader.nativeQuery(query, params, 1, max + 1);
             ObjectListImpl ol = new ObjectListImpl();
             boolean hasMoreItems = entries.size() > max;
