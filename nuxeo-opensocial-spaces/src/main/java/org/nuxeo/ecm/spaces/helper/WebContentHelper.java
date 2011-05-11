@@ -41,13 +41,16 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class WebContentHelper {
 
-    public static void createOpenSocialGadget(Space space, CoreSession session, Locale currentLocale, String gadgetName,
-            int zoneIndex, int unitIndex, int position) throws ClientException {
-        String id = getUnitId(space.getLayout()
-                .getLayout(), zoneIndex, unitIndex);
+    public static void createOpenSocialGadget(Space space, CoreSession session,
+            Locale currentLocale, String gadgetName, int zoneIndex,
+            int unitIndex, int position) throws ClientException {
+        String id = getUnitId(space.getLayout().getLayout(), zoneIndex,
+                unitIndex);
         DocumentModel unitDoc = session.getDocument(new IdRef(id));
 
-        DocumentModel docGadget = session.createDocumentModel(unitDoc.getPathAsString(), gadgetName, OPEN_SOCIAL_GADGET_DOCUMENT_TYPE);
+        DocumentModel docGadget = session.createDocumentModel(
+                unitDoc.getPathAsString(), gadgetName,
+                OPEN_SOCIAL_GADGET_DOCUMENT_TYPE);
         OpenSocialAdapter os = (OpenSocialAdapter) docGadget.getAdapter(WebContentAdapter.class);
         os.setGadgetDefUrl(getGadgetDefUrlFor(gadgetName));
         os.setGadgetName(gadgetName);
@@ -59,21 +62,19 @@ public class WebContentHelper {
 
     }
 
-    private static void setTitle(OpenSocialAdapter os, String gadgetName, Locale locale) throws ClientException {
+    private static void setTitle(OpenSocialAdapter os, String gadgetName,
+            Locale locale) throws ClientException {
         os.setTitle(GadgetI18nHelper.getI18nGadgetTitle(gadgetName, locale));
     }
 
     private static String getUnitId(YUILayout layout, int zoneIndex,
             int unitIndex) {
-        YUIComponent zone = layout.getContent()
-                .getComponents()
-                .get(zoneIndex);
-        YUIComponent unit = zone.getComponents()
-                .get(unitIndex);
+        YUIComponent zone = layout.getContent().getComponents().get(zoneIndex);
+        YUIComponent unit = zone.getComponents().get(unitIndex);
         return unit.getId();
     }
 
-    private static String getGadgetDefUrlFor(String name)  {
+    private static String getGadgetDefUrlFor(String name) {
         GadgetService gs;
         try {
             gs = Framework.getService(GadgetService.class);
@@ -82,11 +83,9 @@ public class WebContentHelper {
         }
 
         for (GadgetDeclaration gadgetDef : gs.getGadgetList()) {
-            if (gadgetDef.getName()
-                    .equals(name)) {
+            if (gadgetDef.getName().equals(name)) {
                 try {
-                    return gadgetDef.getGadgetDefinition()
-                            .toString();
+                    return gadgetDef.getGadgetDefinition().toString();
                 } catch (MalformedURLException e) {
                     return null;
                 }
