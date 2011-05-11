@@ -13,13 +13,13 @@ package org.nuxeo.ecm.webengine.jaxrs;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-@SuppressWarnings("serial")
 public class BundleNotFoundException extends Exception {
 
+    private static final long serialVersionUID = 1L;
+
     public BundleNotFoundException(String bundleName) {
-        super ("No bundle named '"+bundleName+"' was found.");
+        super("No bundle named '" + bundleName + "' was found.");
     }
 
 }
