@@ -198,10 +198,10 @@
       xhr.setRequestHeader("X-File-Idx", uploadIdx);
 
       xhr.setRequestHeader("Content-Type", "multipart/form-data");
-      uploadIdx++;
       nbUploadInprogress++;
       xhr.send(file);
       opts.handler.uploadStarted(uploadIdx, file);
+      uploadIdx++;
 
       if (nbUploadInprogress>=opts.numConcurrentUploads) {
         sendingRequestsInProgress=false;
@@ -234,7 +234,7 @@
       var percentage = Math.round((event.loaded * 100) / event.total);
       if (event.target.currentProgress != percentage) {
 
-        // log(this.fileIndex + " --> " + percentage + "%");
+        log(event.target.fileIndex + " --> " + percentage + "%");
 
         event.target.currentProgress = percentage;
         opts.handler.fileUploadProgressUpdated(event.target.fileIndex, event.target.fileObj, event.target.currentProgress);

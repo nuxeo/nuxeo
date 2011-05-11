@@ -2,7 +2,7 @@
  xmlns:nxu="http://nuxeo.org/nxweb/util">
 
   <!-- Information panel for DnD import -->
-  <div id="dropzone-info-panel" style="display:none;">
+  <div id="dropzone-info-panel" class="dndProgressPanel" style="display:none;">
     <table width="100%">
       <tr>
         <td>
@@ -11,20 +11,20 @@
           </div>
         </td>
         <td>
-          <div class="dropzone-info-summary" id="dropzone-info-summary">
+           <span id="dropzone-bar-msg" class="dropzone-bar-msg"></span>
+        </td>
+        <td style="display: none;">
+          <div class="dropzone-info-summary" id="dropzone-info-summary" style="display: none;">
           </div>
         </td>
         <td>
           <span id="dndMsgUploadInProgress" class="dndControlMessage">
           <nxu:graphicImage value="/img/big_loading.gif"
-          style="vertical-align:middle"/>
+          style="vertical-align:middle" width="20px"/>
           <h:outputText value="#{messages['label.dnd.upload.inprogress']}"/></span>
-          <span id="dndMsgUploadCompleted" class="dndControlMessage"><h:outputText value="#{messages['label.dnd.upload.ok.continue']}"/></span>
+          <span id="dndMsgUploadCompleted" class="dndControlMessage loadingComplete"><h:outputText value="#{messages['label.dnd.upload.ok.continue']}"/></span>
         </td>
-        <td>
-           <span id="dropzone-bar-msg" class="dropzone-bar-msg"></span>
-        </td>
-        <td>
+        <td class="alignRight">
           <input id="dropzone-bar-btn" class="dropzone-bar-btn" type="button" value="#{messages['command.continue']}"></input>
         </td>
       </tr>
@@ -42,7 +42,7 @@
         <td><div id="uploadedFileList"></div>
         </td>
         <td>
-          <form name="operationForm">
+          <form name="operationForm" class="importOperationForm">
             <select id="operationIdSelector" name="operationId"></select>
             <div id="dndSubForm"></div>
             <input id="dndFormSubmitButton" type="button" value="#{messages['import.continue']}"/>

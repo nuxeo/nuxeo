@@ -129,7 +129,7 @@ function DropZoneUIHandler(idx, dropZoneId, options,targetSelectedCB) {
   };
 
   DropZoneUIHandler.prototype.fileUploadSpeedUpdated = function(fileIndex, file, KBperSecond){
-      var dive = jQuery("#dropzone-speed-" + this.idx + "-" + fileIndex);
+    var dive = jQuery("#dropzone-speed-" + this.idx + "-" + fileIndex);
       dive.html( getReadableSpeedString(KBperSecond) );
   }
 
@@ -203,7 +203,7 @@ function DropZoneUIHandler(idx, dropZoneId, options,targetSelectedCB) {
       }
       // Add the status bar on top of body
       var panel=jQuery("#dropzone-info-panel").remove();
-      jQuery("body").prepend(panel);
+      jQuery("body").append(panel);
       panel.css("display","block");
       jQuery("#dndMsgUploadInProgress").css("display","block");
       jQuery("#dndMsgUploadCompleted").css("display","none");
@@ -388,7 +388,7 @@ function DropZoneUIHandler(idx, dropZoneId, options,targetSelectedCB) {
 
   DropZoneUIHandler.prototype.enableExtendedMode = function(dropId) {
     this.extendedMode=true;
-    jQuery("#"+dropId).css("border-color","red");
+    jQuery("#"+dropId).css("border","2px solid #54d920");
   }
 
   DropZoneUIHandler.prototype.removeDropPanel = function(dropId, batchId) {
