@@ -70,7 +70,7 @@ public class TestWebengineSiteActionListener extends SQLRepositoryTestCase {
         assertFalse("No title in document?", StringUtils.isBlank(documentTitle));
         //name contains the title
         assertTrue("Name not valid for web container: " + siteName,
-                siteUrl.equals(URIUtils.quoteURIPathComponent(documentName, false)));
+                documentTitle.equals(siteName));
         //url contains the name
         assertTrue("URL not valid for web container: " + siteUrl,
                 siteUrl.equals(URIUtils.quoteURIPathComponent(documentName, false)));
@@ -101,7 +101,8 @@ public class TestWebengineSiteActionListener extends SQLRepositoryTestCase {
                 documentTitle.equals(siteName));
         //url contains the name
         assertTrue("URL not valid for web container: " + siteUrl,
-                documentName.equals(siteUrl));
+                siteUrl.equals(URIUtils.quoteURIPathComponent(documentName, false)));
+
     }
 
 }
