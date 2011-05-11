@@ -24,19 +24,6 @@
       <template>incl/logo_DM_galaxy_admin.xhtml</template>
     </view>
 
-    <view name="User services (Galaxy Admin Theme)"
-      template-engine="jsf-facelets">
-      <format-type>widget</format-type>
-      <template>incl/user_services_galaxy_admin.xhtml</template>
-      <resource>screen.css</resource>
-    </view>
-
-    <view name="Nuxeo DM footer (Galaxy Admin Theme)"
-      template-engine="jsf-facelets">
-      <format-type>widget</format-type>
-      <template>incl/footer_galaxy_admin.xhtml</template>
-    </view>
-
   </extension>
 
   <!-- application settings -->

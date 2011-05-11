@@ -3,10 +3,8 @@
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="actions">
 
-    <action id="AdminMain" link="#{adminViews.enter()}"
-      label="action.admin.center" order="30">
-      <category>USER_SERVICES</category>
-      <filter-id>only_for_manager</filter-id>
+    <action id="admin" link="view_admin" label="label.main.tab.administration" order="30">
+      <category>MAIN_TABS</category>
     </action>
 
     <action id="SystemInfo" link="view_admin-fragment.xhtml"
