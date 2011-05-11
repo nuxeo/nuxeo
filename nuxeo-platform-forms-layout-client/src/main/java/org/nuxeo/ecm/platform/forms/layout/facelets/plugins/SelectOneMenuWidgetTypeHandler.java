@@ -16,7 +16,7 @@
  */
 package org.nuxeo.ecm.platform.forms.layout.facelets.plugins;
 
-import javax.faces.component.html.HtmlSelectOneListbox;
+import javax.faces.component.html.HtmlSelectOneMenu;
 
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinWidgetModes;
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
@@ -31,14 +31,14 @@ import com.sun.facelets.tag.TagConfig;
 import com.sun.facelets.tag.jsf.ComponentHandler;
 
 /**
- * Displays a select one listbox in edit mode, taking into account select options
+ * Displays a select one menu in edit mode, taking into account select options
  * declared on the widget.
  * <p>
  * Only edit mode is implemented for now.
  *
  * @since 5.4.2
  */
-public class SelectOneListboxWidgetTypeHandler extends
+public class SelectOneMenuWidgetTypeHandler extends
         AbstractSelectWidgetTypeHandler {
 
     private static final long serialVersionUID = 1L;
@@ -64,7 +64,7 @@ public class SelectOneListboxWidgetTypeHandler extends
                     widget);
             ComponentHandler input = helper.getHtmlComponentHandler(
                     widgetTagConfigId, attributes, optionsHandler,
-                    HtmlSelectOneListbox.COMPONENT_TYPE, null);
+                    HtmlSelectOneMenu.COMPONENT_TYPE, null);
             String msgId = helper.generateMessageId(widgetName);
             ComponentHandler message = helper.getMessageComponentHandler(
                     widgetTagConfigId, msgId, widgetId, null);
