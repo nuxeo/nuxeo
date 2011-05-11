@@ -8,6 +8,10 @@
       <pattern>${org.nuxeo.ecm.contextPath}/seam/resource/remoting/execute.*</pattern>
     </filterConfig>
 
+    <filterConfig name="SeamRemotingInterface" cached="true" cacheTime="3600">
+     <pattern>${org.nuxeo.ecm.contextPath}/seam/resource/remoting/interface.js.*</pattern>
+    </filterConfig>
+
   </extension>
 
 </component>

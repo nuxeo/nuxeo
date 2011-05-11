@@ -16,6 +16,10 @@
     <openUrl name="SystemLogRestlet">
       <grantPattern>${org.nuxeo.ecm.contextPath}/restAPI/systemLog</grantPattern>
     </openUrl>
+    <openUrl name="SeamRemotingInterfaceResources">
+      <grantPattern>${org.nuxeo.ecm.contextPath}/seam/resource/remoting/interface.js.*</grantPattern>
+    </openUrl>
+
   </extension>
 
 </component>
