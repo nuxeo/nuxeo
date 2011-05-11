@@ -135,36 +135,37 @@ public class ExistingResource extends AbstractResource {
         while (destPath.endsWith("/")) {
             destPath = destPath.substring(0, destPath.length() - 1);
         }
-
         destPath = destPath.substring(RootResource.rootPath.length()
                 + Constants.DAV_HOME.length(), destPath.length());
+        String davDestPath = destPath;
         destPath = backend.parseLocation(destPath).toString();
         log.info("to " + destPath);
 
-        // DocumentRef destRef = new PathRef(destPath);
-
         // Remove dest if it exists and the Overwrite header is set to "T".
         int status = 201;
-        if (backend.exists(destPath)) {
+        if (backend.exists(davDestPath)) {
             if ("F".equals(overwrite)) {
                 return Response.status(412).build();
             }
-            backend.removeItem(destPath);
+            backend.removeItem(davDestPath);
             status = 204;
         }
 
-        if (backend.isRename(doc.getPathAsString(), destPath)) {
-            backend.renameItem(doc, Util.getNameFromPath(destPath));
-        } else {
-            String destParentPath = Util.getParentPath(destPath);
-            PathRef destParentRef = new PathRef(destParentPath);
-            if (!backend.exists(destParentPath)) {
-                return Response.status(409).build();
-            }
-            if ("MOVE".equals(method)) {
-                backend.moveItem(doc, destParentRef);
+        // Check if parent exists
+        String destParentPath = Util.getParentPath(destPath);
+        PathRef destParentRef = new PathRef(destParentPath);
+        if (!backend.exists(Util.getParentPath(davDestPath))) {
+            return Response.status(409).build();
+        }
+
+        if ("COPY".equals(method)) {
+            DocumentModel destDoc = backend.copyItem(doc, destParentRef);
+            backend.renameItem(destDoc, Util.getNameFromPath(destPath));
+        } else if ("MOVE".equals(method)) {
+            if (backend.isRename(doc.getPathAsString(), destPath)) {
+                backend.renameItem(doc, Util.getNameFromPath(destPath));
             } else {
-                backend.copyItem(doc, destParentRef);
+                backend.moveItem(doc, destParentRef);
             }
         }
         backend.saveChanges();
