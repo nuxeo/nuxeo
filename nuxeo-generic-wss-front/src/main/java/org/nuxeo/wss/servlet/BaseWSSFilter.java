@@ -189,7 +189,7 @@ public abstract class BaseWSSFilter implements Filter {
 
         // forward request to WebDAV
         String createdURL = createPathToWebDav(httpRequest.getRequestURI());
-        RequestDispatcher dispatcher = httpRequest.getRequestDispatcher(createdURL);
+        RequestDispatcher dispatcher = ctx.getRequestDispatcher(createdURL);
         dispatcher.forward(httpRequest, httpResponse);
     }
 
@@ -208,10 +208,8 @@ public abstract class BaseWSSFilter implements Filter {
     private boolean isWebDavRequest(HttpServletRequest request) {
         String ua = request.getHeader("User-Agent");
         return StringUtils.isNotEmpty(ua)
-                && (ua.contains(FPRPCConts.MS_WEBDAV_USERAGENT) //
-                        || ua.contains(FPRPCConts.LITMUS_USERAGENT) //
-                        || ua.contains(FPRPCConts.NAUTILUS_USERAGENT) //
-                || ua.contains(FPRPCConts.MAC_FINDER_USERAGENT));
+                && (ua.contains(FPRPCConts.MS_WEBDAV_USERAGENT));
+        // || ua.contains(FPRPCConts.MAC_FINDER_USERAGENT));
     }
 
     private boolean isMSWebDavRequest(HttpServletRequest request) {

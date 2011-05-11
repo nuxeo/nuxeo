@@ -31,9 +31,7 @@ public class FPRPCConts {
     public static String METHOD_PARAM ="method";
     public static String MSOFFICE_USERAGENT = "Microsoft Office Existence Discovery";
     public static String MS_WEBDAV_USERAGENT = "Microsoft-WebDAV-MiniRedir";
-    public static String LITMUS_USERAGENT = "litmus";
-    public static String NAUTILUS_USERAGENT = "gvfs";
-    public static String MAC_FINDER_USERAGENT = "WebDAV";
+    // public static String MAC_FINDER_USERAGENT = "WebDAV";
 
     public String getMETHOD_PARAM() {
         return METHOD_PARAM;
