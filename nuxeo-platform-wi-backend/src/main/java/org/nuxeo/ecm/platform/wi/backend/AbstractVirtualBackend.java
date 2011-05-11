@@ -346,4 +346,7 @@ public abstract class AbstractVirtualBackend extends AbstractCoreBackend
         return orderedBackendNames;
     }
 
+    protected RealBackendFactory getRealBackendFactory() {
+        return realBackendFactory;
+    }
 }

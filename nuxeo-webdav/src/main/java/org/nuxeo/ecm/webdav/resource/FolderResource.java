@@ -25,6 +25,7 @@ import net.java.dev.webdav.core.jaxrs.xml.properties.IsHidden;
 import net.java.dev.webdav.jaxrs.methods.PROPFIND;
 import net.java.dev.webdav.jaxrs.xml.elements.*;
 import net.java.dev.webdav.jaxrs.xml.properties.*;
+import org.apache.commons.httpclient.util.URIUtil;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -142,7 +143,7 @@ public class FolderResource extends ExistingResource {
         for (DocumentModel child : children) {
             lastModified = getTimePropertyWrapper(child, "dc:modified");
             creationDate = getTimePropertyWrapper(child, "dc:created"); 
-            String childName = backend.getDisplayName(child);
+            String childName = URIUtil.encodePath(backend.getDisplayName(child));
             PropStatBuilderExt props = new PropStatBuilderExt();
             props.lastModified(lastModified).creationDate(creationDate).displayName(childName).status(OK);
             if (child.isFolder()) {
