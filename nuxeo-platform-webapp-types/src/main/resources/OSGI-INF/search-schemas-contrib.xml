@@ -6,6 +6,7 @@
     <doctype name="search_results" extends="Document">
       <schema name="dublincore"/>
       <schema name="common"/>
+      <facet name="HiddenInNavigation" />
     </doctype>
 
   </extension>
