@@ -69,17 +69,19 @@ import org.nuxeo.ecm.webdav.Util;
 import org.nuxeo.ecm.webdav.backend.WebDavBackend;
 
 /**
- * An existing resource corresponds to an existing object (folder or file)
- * in the repository.
+ * An existing resource corresponds to an existing object (folder or file) in
+ * the repository.
  */
 public class ExistingResource extends AbstractResource {
 
     private static final Log log = LogFactory.getLog(ExistingResource.class);
 
     protected DocumentModel doc;
+
     protected WebDavBackend backend;
 
-    protected ExistingResource(String path, DocumentModel doc, HttpServletRequest request, WebDavBackend backend) throws Exception {
+    protected ExistingResource(String path, DocumentModel doc,
+            HttpServletRequest request, WebDavBackend backend) throws Exception {
         super(path, request);
         this.doc = doc;
         this.backend = backend;
@@ -104,13 +106,13 @@ public class ExistingResource extends AbstractResource {
 
     @COPY
     public Response copy(@HeaderParam("Destination") String dest,
-                         @HeaderParam("Overwrite") String overwrite) throws Exception {
+            @HeaderParam("Overwrite") String overwrite) throws Exception {
         return copyOrMove("COPY", dest, overwrite);
     }
 
     @MOVE
     public Response move(@HeaderParam("Destination") String dest,
-                         @HeaderParam("Overwrite") String overwrite) throws Exception {
+            @HeaderParam("Overwrite") String overwrite) throws Exception {
         if (backend.isLocked(doc.getRef()) && !backend.canUnlock(doc.getRef())) {
             return Response.status(423).build();
         }
@@ -118,8 +120,9 @@ public class ExistingResource extends AbstractResource {
         return copyOrMove("MOVE", dest, overwrite);
     }
 
-    private Response copyOrMove(String method, @HeaderParam("Destination") String dest,
-                                @HeaderParam("Overwrite") String overwrite) throws Exception {
+    private Response copyOrMove(String method,
+            @HeaderParam("Destination") String dest,
+            @HeaderParam("Overwrite") String overwrite) throws Exception {
 
         if (backend.isLocked(doc.getRef()) && !backend.canUnlock(doc.getRef())) {
             return Response.status(423).build();
@@ -132,36 +135,37 @@ public class ExistingResource extends AbstractResource {
         while (destPath.endsWith("/")) {
             destPath = destPath.substring(0, destPath.length() - 1);
         }
-
-        destPath = destPath.substring(
-                RootResource.rootPath.length() + Constants.DAV_HOME.length(), destPath.length());
+        destPath = destPath.substring(RootResource.rootPath.length()
+                + Constants.DAV_HOME.length(), destPath.length());
+        String davDestPath = destPath;
         destPath = backend.parseLocation(destPath).toString();
         log.info("to " + destPath);
 
-        //DocumentRef destRef = new PathRef(destPath);
-
         // Remove dest if it exists and the Overwrite header is set to "T".
         int status = 201;
-        if (backend.exists(destPath)) {
+        if (backend.exists(davDestPath)) {
             if ("F".equals(overwrite)) {
                 return Response.status(412).build();
             }
-            backend.removeItem(destPath);
+            backend.removeItem(davDestPath);
             status = 204;
         }
 
-        if (backend.isRename(doc.getPathAsString(), destPath)) {
-            backend.renameItem(doc, Util.getNameFromPath(destPath));
-        } else {
-            String destParentPath = Util.getParentPath(destPath);
-            PathRef destParentRef = new PathRef(destParentPath);
-            if (!backend.exists(destParentPath)) {
-                return Response.status(409).build();
-            }
-            if ("MOVE".equals(method)) {
-                backend.moveItem(doc, destParentRef);
+        // Check if parent exists
+        String destParentPath = Util.getParentPath(destPath);
+        PathRef destParentRef = new PathRef(destParentPath);
+        if (!backend.exists(Util.getParentPath(davDestPath))) {
+            return Response.status(409).build();
+        }
+
+        if ("COPY".equals(method)) {
+            DocumentModel destDoc = backend.copyItem(doc, destParentRef);
+            backend.renameItem(destDoc, Util.getNameFromPath(destPath));
+        } else if ("MOVE".equals(method)) {
+            if (backend.isRename(doc.getPathAsString(), destPath)) {
+                backend.renameItem(doc, Util.getNameFromPath(destPath));
             } else {
-                backend.copyItem(doc, destParentRef);
+                backend.moveItem(doc, destParentRef);
             }
         }
         backend.saveChanges();
@@ -176,43 +180,38 @@ public class ExistingResource extends AbstractResource {
             return Response.status(423).build();
         }
 
-        /*JAXBContext jc = Util.getJaxbContext();
-        Unmarshaller u = jc.createUnmarshaller();
-        PropertyUpdate propertyUpdate;
-        try {
-            propertyUpdate = (PropertyUpdate) u.unmarshal(request.getInputStream());
-        } catch (JAXBException e) {
-            return Response.status(400).build();
-        }*/
-        //Util.printAsXml(propertyUpdate);
+        /*
+         * JAXBContext jc = Util.getJaxbContext(); Unmarshaller u =
+         * jc.createUnmarshaller(); PropertyUpdate propertyUpdate; try {
+         * propertyUpdate = (PropertyUpdate)
+         * u.unmarshal(request.getInputStream()); } catch (JAXBException e) {
+         * return Response.status(400).build(); }
+         */
+        // Util.printAsXml(propertyUpdate);
+        /*
+         * List<RemoveOrSet> list = propertyUpdate.list();
+         *
+         * final List<PropStat> propStats = new ArrayList<PropStat>(); for
+         * (RemoveOrSet set : list) { Prop prop = set.getProp(); List<Object>
+         * properties = prop.getProperties(); for (Object property : properties)
+         * { PropStat propStat = new PropStat(new Prop(property), new
+         * Status(OK)); propStats.add(propStat); } }
+         */
 
-        /*List<RemoveOrSet> list = propertyUpdate.list();
-
-        final List<PropStat> propStats = new ArrayList<PropStat>();
-        for (RemoveOrSet set : list) {
-            Prop prop = set.getProp();
-            List<Object> properties = prop.getProperties();
-            for (Object property : properties) {
-                PropStat propStat = new PropStat(new Prop(property), new Status(OK));
-                propStats.add(propStat);
-            }
-        }*/
-
-        //@TODO: patch properties if need.
-
-        //Fake proppatch response
+        // @TODO: patch properties if need.
+        // Fake proppatch response
         @SuppressWarnings("deprecation")
-        final net.java.dev.webdav.jaxrs.xml.elements.Response response
-                = new net.java.dev.webdav.jaxrs.xml.elements.Response(
+        final net.java.dev.webdav.jaxrs.xml.elements.Response response = new net.java.dev.webdav.jaxrs.xml.elements.Response(
                 new HRef(uriInfo.getRequestUri()),
                 null,
                 null,
                 null,
                 new PropStat(new Prop(new Win32CreationTime()), new Status(OK)),
-                new PropStat(new Prop(new Win32FileAttributes()), new Status(OK)),
-                new PropStat(new Prop(new Win32LastAccessTime()), new Status(OK)),
-                new PropStat(new Prop(new Win32LastModifiedTime()), new Status(OK))
-        );
+                new PropStat(new Prop(new Win32FileAttributes()),
+                        new Status(OK)), new PropStat(new Prop(
+                        new Win32LastAccessTime()), new Status(OK)),
+                new PropStat(new Prop(new Win32LastModifiedTime()), new Status(
+                        OK)));
 
         return Response.status(207).entity(new MultiStatus(response)).build();
     }
@@ -241,12 +240,11 @@ public class ExistingResource extends AbstractResource {
                 token = backend.getCheckoutUser(doc.getRef());
                 prop = new Prop(new LockDiscovery(new ActiveLock(
                         LockScope.EXCLUSIVE, LockType.WRITE, Depth.ZERO,
-                        new Owner(token),
-                        new TimeOut(10000L), new LockToken(new HRef("urn:uuid:" + token)),
-                        new LockRoot(new HRef(uriInfo.getRequestUri()))
-                )));
-                return Response.ok().entity(prop)
-                        .header("Lock-Token", "urn:uuid:" + token).build();
+                        new Owner(token), new TimeOut(10000L), new LockToken(
+                                new HRef("urn:uuid:" + token)), new LockRoot(
+                                new HRef(uriInfo.getRequestUri())))));
+                return Response.ok().entity(prop).header("Lock-Token",
+                        "urn:uuid:" + token).build();
             }
         }
 
@@ -255,16 +253,15 @@ public class ExistingResource extends AbstractResource {
             return Response.status(400).build();
         }
 
-        prop = new Prop(new LockDiscovery(new ActiveLock(
-                LockScope.EXCLUSIVE, LockType.WRITE, Depth.ZERO,
-                new Owner(backend.getCheckoutUser(doc.getRef())),
-                new TimeOut(10000L), new LockToken(new HRef("urn:uuid:" + token)),
-                new LockRoot(new HRef(uriInfo.getRequestUri()))
-        )));
+        prop = new Prop(new LockDiscovery(new ActiveLock(LockScope.EXCLUSIVE,
+                LockType.WRITE, Depth.ZERO, new Owner(
+                        backend.getCheckoutUser(doc.getRef())), new TimeOut(
+                        10000L), new LockToken(new HRef("urn:uuid:" + token)),
+                new LockRoot(new HRef(uriInfo.getRequestUri())))));
 
         backend.saveChanges();
-        return Response.ok().entity(prop)
-                .header("Lock-Token", "urn:uuid:" + token).build();
+        return Response.ok().entity(prop).header("Lock-Token",
+                "urn:uuid:" + token).build();
     }
 
     @UNLOCK
@@ -283,17 +280,18 @@ public class ExistingResource extends AbstractResource {
         }
     }
 
-    protected Date getTimePropertyWrapper(DocumentModel doc, String name){
+    protected Date getTimePropertyWrapper(DocumentModel doc, String name) {
         Object property;
         try {
             property = doc.getPropertyValue(name);
         } catch (ClientException e) {
             property = null;
-            log.debug("Can't get property " + name + " from document " + doc.getId());
+            log.debug("Can't get property " + name + " from document "
+                    + doc.getId());
         }
 
-        if(property != null){
-            return ((Calendar)property).getTime();
+        if (property != null) {
+            return ((Calendar) property).getTime();
         } else {
             return new Date();
         }
