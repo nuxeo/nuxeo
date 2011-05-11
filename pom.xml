@@ -2567,11 +2567,6 @@
           <artifactId>maven-war-plugin</artifactId>
           <version>2.1.1</version>
         </plugin>
-        <plugin>
-          <groupId>com.springsource.bundlor</groupId>
-          <artifactId>com.springsource.bundlor.maven</artifactId>
-          <version>1.0.0.RELEASE</version>
-        </plugin>
       </plugins>
     </pluginManagement>
   </build>
@@ -2648,38 +2643,6 @@
               <osgideps>true</osgideps>
               <notests>true</notests>
               <osgify>false</osgify>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-
-    <profile>
-      <id>tycho</id>
-      <properties>
-        <tycho-version>0.9.0</tycho-version>
-      </properties>
-      <repositories>
-        <repository>
-          <id>ganymede</id>
-          <layout>p2</layout>
-          <url>http://download.eclipse.org/releases/ganymede</url>
-        </repository>
-      </repositories>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.sonatype.tycho</groupId>
-            <artifactId>tycho-maven-plugin</artifactId>
-            <version>${tycho-version}</version>
-            <extensions>true</extensions>
-          </plugin>
-          <plugin>
-            <groupId>org.sonatype.tycho</groupId>
-            <artifactId>target-platform-configuration</artifactId>
-            <version>${tycho-version}</version>
-            <configuration>
-              <resolver>p2</resolver>
             </configuration>
           </plugin>
         </plugins>
