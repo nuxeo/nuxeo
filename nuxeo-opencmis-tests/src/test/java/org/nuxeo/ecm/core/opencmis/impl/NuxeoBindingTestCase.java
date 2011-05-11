@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -73,6 +73,10 @@ public class NuxeoBindingTestCase {
         nuxeotc.deployBundle("org.nuxeo.ecm.directory.types.contrib");
         nuxeotc.deployBundle("org.nuxeo.ecm.platform.login");
         nuxeotc.deployBundle("org.nuxeo.ecm.platform.web.common");
+
+        // types
+        nuxeotc.deployContrib("org.nuxeo.ecm.core.opencmis.tests.tests",
+                "OSGI-INF/types-contrib.xml");
 
         nuxeotc.openSession();
 

@@ -316,6 +316,14 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         assertTrue(type.getPropertyDefinitions().containsKey("nuxeo:secondaryObjectTypeIds"));
         assertTrue(type.getPropertyDefinitions().containsKey("nuxeo:isVersion"));
         assertTrue(type.getPropertyDefinitions().containsKey("nuxeo:contentStreamDigest"));
+
+        type = repoService.getTypeDefinition(repositoryId, "MyForum", null);
+        assertEquals(BaseTypeId.CMIS_FOLDER, type.getBaseTypeId());
+        assertEquals("cmis:folder", type.getParentTypeId());
+
+        type = repoService.getTypeDefinition(repositoryId, "MyForum2", null);
+        assertEquals(BaseTypeId.CMIS_FOLDER, type.getBaseTypeId());
+        assertEquals("cmis:folder", type.getParentTypeId());
     }
 
     public List<String> getTypeIds(TypeDefinitionList types) {
@@ -370,6 +378,9 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
             // dublincore in all types
             assertTrue(pd.keySet().contains("dc:title"));
         }
+        ids = getTypeIds(types);
+        assertTrue(ids.contains("MyForum"));
+        assertTrue(ids.contains("MyForum2"));
 
         types = repoService.getTypeChildren(repositoryId,
                 BaseTypeId.CMIS_DOCUMENT.value(), Boolean.TRUE, null, null,

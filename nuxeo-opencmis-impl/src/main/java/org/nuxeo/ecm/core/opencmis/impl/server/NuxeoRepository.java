@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -129,9 +129,16 @@ public class NuxeoRepository {
         DocumentType dt = schemaManager.getDocumentType(name);
         String parentTypeId = NuxeoTypeHelper.getParentTypeId(dt);
         if (parentTypeId != null) {
-            if (typeManager.getTypeById(parentTypeId) == null) {
+            TypeDefinitionContainer parentType = typeManager.getTypeById(parentTypeId);
+            if (parentType == null) {
                 // if parent was ignored, reparent under cmis:document
                 parentTypeId = BaseTypeId.CMIS_DOCUMENT.value();
+            } else {
+                if (parentType.getTypeDefinition().getBaseTypeId() != BaseTypeId.CMIS_FOLDER
+                        && dt.isFolder()) {
+                    // reparent Folderish but child of Document under cmis:folder
+                    parentTypeId = BaseTypeId.CMIS_FOLDER.value();
+                }
             }
             typeManager.addTypeDefinition(NuxeoTypeHelper.construct(dt,
                     parentTypeId));
