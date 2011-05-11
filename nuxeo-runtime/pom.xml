@@ -1,7 +1,5 @@
 <?xml version="1.0"?>
-<project
-  xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
@@ -39,7 +37,6 @@
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
     </dependency>
-
     <dependency>
       <groupId>xerces</groupId>
       <artifactId>xercesImpl</artifactId>
@@ -55,37 +52,4 @@
     </resources>
   </build>
 
-  <profiles>
-    <profile>
-      <id>bundlor</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>com.springsource.bundlor</groupId>
-            <artifactId>com.springsource.bundlor.maven</artifactId>
-            <executions>
-              <execution>
-                <id>bundlor</id>
-                <goals>
-                  <goal>bundlor</goal>
-                </goals>
-              </execution>
-            </executions>
-            <configuration>
-              <manifestTemplate>
-                Bundle-ManifestVersion: 2
-                Bundle-Name: ${project.name}
-                Bundle-Version: ${bundle.version}
-                Export-Template: org.nuxeo.*;version="${bundle.version}"
-                Import-Template: javax.transaction.*;version=1.1, javax.resource.*.*;version=2.0, org.nuxeo.*;version="${bundle.version}"
-                Import-Package: javax.transaction;version=1.1
-              </manifestTemplate>
-              <manifestTemplatePath>${basedir}/src/main/resources/META-INF/MANIFEST.MF</manifestTemplatePath>
-              <outputPath>${basedir}</outputPath>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-  </profiles>
 </project>
