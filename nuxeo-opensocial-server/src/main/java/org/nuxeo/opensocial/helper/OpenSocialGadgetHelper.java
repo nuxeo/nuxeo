@@ -41,6 +41,10 @@ public class OpenSocialGadgetHelper {
     }
 
     public static String getGadgetsBaseUrl(boolean relativeUrl) {
+        return getGadgetsBaseUrl(relativeUrl, true);
+    }
+
+    public static String getGadgetsBaseUrl(boolean relativeUrl, boolean addContextPath) {
         boolean gadgetsEmbeddedServer = Boolean.valueOf(Framework.getProperty(
                 OPENSOCIAL_GADGETS_EMBEDDED_SERVER, "true"));
         StringBuilder sb = new StringBuilder();
@@ -55,7 +59,9 @@ public class OpenSocialGadgetHelper {
             sb.append(Framework.getProperty(OPENSOCIAL_GADGETS_HOST));
             sb.append(HTTP_SEPARATOR);
             sb.append(Framework.getProperty(OPENSOCIAL_GADGETS_PORT));
-            sb.append(VirtualHostHelper.getContextPathProperty());
+            if (addContextPath) {
+                sb.append(VirtualHostHelper.getContextPathProperty());
+            }
         }
         return sb.toString();
     }
