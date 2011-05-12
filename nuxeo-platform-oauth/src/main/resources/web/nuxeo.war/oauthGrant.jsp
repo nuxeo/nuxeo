@@ -224,9 +224,9 @@ if (oauthInfo==null) {
 
 <form action="oauth/authorize" method="POST">
 
-<h1>The application <%=oauthInfo.getConsumerKey()%> is requesting access to your Nuxeo data</h1>
+<h1><fmt:message bundle="${messages}" key="label.oauth.consumer.application" /> <%=oauthInfo.getConsumerKey()%> <fmt:message bundle="${messages}" key="label.oauth.consumer.accessRequest" /></h1>
 
-<h2>Do you want to grant access ? </h2>
+<h2><fmt:message bundle="${messages}" key="label.oauth.consumer.grantQuestion" /> </h2>
 
 <br/>
 <input name="oauth_token" type="hidden" value="<%=oauthInfo.getToken()%>"></input>
@@ -253,7 +253,7 @@ if (oauthInfo==null) {
       <fmt:message bundle="${messages}" key="label.oauth.1w" />
     </option>
     <option value="43200" >
-      <fmt:message bundle="${messages}" key="label.oauth.1m" />
+      <fmt:message bundle="${messages}" key="label.oauth.1mth" />
     </option>
 </select>
 </td>
