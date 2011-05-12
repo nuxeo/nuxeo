@@ -48,11 +48,14 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
+import org.nuxeo.ecm.core.storage.sql.management.RepositoryStatus;
 import org.nuxeo.ecm.platform.audit.api.AuditReader;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
 import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.ecm.platform.web.common.session.NuxeoHttpSessionMonitor;
+import org.nuxeo.ecm.platform.web.common.session.SessionInfo;
 
 /**
  * Seam Bean to export System info.
@@ -64,12 +67,6 @@ import org.nuxeo.runtime.api.Framework;
 public class SystemInfoManager implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
-    protected String selectedTimeRange;
-
-    protected int currentAuditPage = 1;
-
-    protected static int pageSize = 25;
 
     protected List<Repository> repositories;
 
@@ -144,10 +141,10 @@ public class SystemInfoManager implements Serializable {
         long uts = ut / 1000;
 
         StringBuffer sb = new StringBuffer("Nuxeo Server UpTime : ");
-        long nbDays = uts / (24*3600);
-        if (nbDays>0) {
+        long nbDays = uts / (24 * 3600);
+        if (nbDays > 0) {
             sb.append(nbDays + " days, ");
-            uts = uts % (24*3600);
+            uts = uts % (24 * 3600);
         }
         long nbHours = uts / 3600;
         sb.append(nbHours + " h ");
@@ -198,6 +195,11 @@ public class SystemInfoManager implements Serializable {
 
     public int getOpenSessionNumber() {
         return CoreInstance.getInstance().getSessions().length;
+    }
+
+    public int getActiveSessionNumber() {
+        RepositoryStatus status = new RepositoryStatus();
+        return status.getActiveSessionsCount();
     }
 
     // *********************************
@@ -265,66 +267,6 @@ public class SystemInfoManager implements Serializable {
         return sb.toString();
     }
 
-    // *********************************
-    // Audit Management
-
-    public List<SelectItem> getTimeRanges() {
-        List<SelectItem> ranges = new ArrayList<SelectItem>();
-
-        for (int i = 1; i < 13; i++) {
-            ranges.add(new SelectItem(i + "h", "label.timerange." + i + "h"));
-        }
-        for (int i = 1; i < 8; i++) {
-            ranges.add(new SelectItem(i * 24 + "h", "label.timerange." + i
-                    + "d"));
-        }
-        for (int i = 2; i < 6; i++) {
-            ranges.add(new SelectItem(24 * 7 * i + "h", "label.timerange."
-                    + i + "w"));
-        }
-        return ranges;
-    }
-
-    public String getSelectedTimeRange() {
-        if (selectedTimeRange == null) {
-            selectedTimeRange = "1h";
-        }
-        return selectedTimeRange;
-    }
-
-    public void setSelectedTimeRange(String dateRange) {
-        selectedTimeRange = dateRange;
-        currentAuditPage = 1;
-        Contexts.getEventContext().remove("userLoginEvents");
-    }
-
-    public int getCurrentAuditPage() {
-        return currentAuditPage;
-    }
-
-    public void nextPage() {
-        currentAuditPage += 1;
-        Contexts.getEventContext().remove("userLoginEvents");
-    }
-
-    public void prevPage() {
-        currentAuditPage -= 1;
-        if (currentAuditPage <= 0) {
-            currentAuditPage = 1;
-        }
-        Contexts.getEventContext().remove("userLoginEvents");
-    }
-
-    @Factory(value = "userLoginEvents", scope = ScopeType.EVENT)
-    public List<LogEntry> getLoginInfo() throws Exception {
-        String[] events = { "loginSuccess", "loginFailed", "logout" };
-
-        AuditReader reader = Framework.getService(AuditReader.class);
-
-        return reader.queryLogsByPage(events, selectedTimeRange,
-                "NuxeoAuthentication", null, currentAuditPage, pageSize);
-    }
-
     public String restartServer() {
         FacesContext context = FacesContext.getCurrentInstance();
         HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
@@ -338,4 +280,5 @@ public class SystemInfoManager implements Serializable {
         }
         return null;
     }
+
 }
