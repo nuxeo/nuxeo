@@ -216,27 +216,8 @@
         <cursor>default</cursor>
       </selector>
     </style>
-    <style name="header style" inherit="default buttons">
-      <selector path=".searchService, .userActions">
-        <font preset="small (Galaxy fonts)"/>
-        <color preset="header.text (Galaxy colors)" />
-        <line-height>185%</line-height>
-      </selector>
-      <selector path=".searchService">
-        <vertical-align>middle</vertical-align>
-        <float>right</float>
-        <padding>2px 2px 0px 0px</padding>
-      </selector>
-      <selector path=".userActions">
-        <padding-top>11px</padding-top>
-      </selector>
-      <selector path=".directoryFilter, .searchField">
-        <border preset="dataInput (Galaxy borders)" />
-        <background preset="search (Galaxy backgrounds)"/>
-        <margin>0 5px 10px 0</margin>
-        <padding>3px 3px 3px 20px</padding>
-        <font-size>11px</font-size>
-      </selector>
+    <!-- header and footer style custom for Admin View -->
+    <style name="header and footer style" inherit="default buttons">
       <selector path="a, a:link, a:visited">
         <text-decoration>none</text-decoration>
       </selector>
@@ -251,17 +232,124 @@
         <margin-right>2px</margin-right>
         <vertical-align>middle</vertical-align>
       </selector>
-      <selector path=".advancedSearchLink">
-        <margin>0 2px 0 0</margin>
-        <padding>0</padding>
-        <line-height>1%</line-height>
-      </selector>
-      <selector path=".userServices .button">
-        <margin-right>4px</margin-right>
-      </selector>
       <selector path="form">
         <margin>0</margin>
         <padding>0</padding>
+      </selector>
+      <selector path=".userActions">
+        <font preset="small (Galaxy fonts)"/>
+        <color preset="header.text (Galaxy colors)" />
+        <line-height>185%</line-height>
+        <padding>6px 10px 0px</padding>
+        <text-align>right</text-align>
+        <float>right</float>
+      </selector>
+      <selector path=".searchService">
+        <float>right</float>
+        <padding-top>8px</padding-top>
+        <font preset="small (Galaxy fonts)"/>
+      </selector>
+      <selector path=".userServicesBlock">
+        <float>left</float>
+        <padding-top>10px</padding-top>
+      </selector>
+      <selector path=".userSearchBlock">
+        <float>right</float>
+      </selector>
+      <selector path=".searchService input.button">
+        <margin>0 5px</margin>
+      </selector>
+      <selector path=".mainTabs">
+        <font preset="default (Galaxy fonts)"/>
+        <line-height>normal</line-height>
+        <height>28px</height>
+        <float>left</float>
+      </selector>
+      <selector path=".mainTabs ul">
+        <margin>0</margin>
+        <padding>0</padding>
+      </selector>
+      <selector path=".mainTabs li">
+        <background-color>#207594</background-color>
+        <display>inline</display>
+        <float>left</float>
+        <height>28px</height>
+        <margin>0 5px</margin>
+      </selector>
+      <selector path=".mainTabs a, .mainTabs a:visited">
+        <color>#D7E3F1</color>
+        <display>inline-block</display>
+        <font-size>12px</font-size>
+        <padding>4px 11px</padding>
+        <text-decoration>none</text-decoration>
+      </selector>
+      <selector path=".mainTabs li:hover">
+      </selector>
+      <selector path=".mainTabs a:hover">
+        <color>#fff</color>
+      </selector>
+      <selector path=".mainTabs li.selected">
+        <background>none #fff</background>
+        <border-radius>2px 2px 0 0</border-radius>
+      </selector>
+      <selector path=".mainTabs li.selected a, .mainTabs li.selected a:hover, .mainTabs li.selected a:visited">
+        <color>#000000</color>
+        <font-weight>bold</font-weight>
+        <text-decoration>none</text-decoration>
+      </selector>
+      <selector path=".mainTabs li a:hover">
+        <text-decoration>none</text-decoration>
+      </selector>
+      <selector path=".footerBlock">
+        <margin>0</margin>
+        <line-height>1.25em</line-height>
+        <padding>0</padding>
+        <font preset="small (Galaxy fonts)"/>
+      </selector>
+      <selector path=".footerBlock div">
+        <margin>0</margin>
+        <line-height>1.25em</line-height>
+        <padding>0</padding>
+        <font preset="small (Galaxy fonts)"/>
+      </selector>
+      <selector path=".footerBlock form, .footerBlock p">
+        <margin>5px 0px 0px 0px</margin>
+        <padding>0</padding>
+      </selector>
+      <selector path=".nuxLinks">
+        <float>right</float>
+        <padding-left>20px</padding-left>
+      </selector>
+      <selector path=".nuxLinks a">
+        <vertical-align>middle</vertical-align>
+      </selector>
+      <selector path=".copyrights">
+        <float>right</float>
+        <padding>2px 20px 0 0</padding>
+        <color>#9a9a9a</color>
+      </selector>
+      <selector path="a.twitt">
+        <background>transparent url(/nuxeo/icons/icones-metanav.png) no-repeat left top</background>
+        <height>16px</height>
+        <width>16px</width>
+        <display>inline-block</display>
+        <margin>0px 5px</margin>
+      </selector>
+      <selector path="a.twitt:hover">
+        <background-position>left bottom</background-position>
+      </selector>
+      <selector path="a.linkedin">
+        <background>transparent url(/nuxeo/icons/icones-metanav.png) no-repeat -16px top</background>
+        <height>16px</height>
+        <width>16px</width>
+        <display>inline-block</display>
+        <margin>0px 5px</margin>
+      </selector>
+      <selector path="a.linkedin:hover">
+        <background-position>-16px bottom</background-position>
+      </selector>
+      <selector path=".clear">
+        <clear>both</clear>
       </selector>
     </style>
     <style name="breadcrumbs style">
@@ -1681,7 +1769,7 @@
       </selector>
     </style>
     <!-- user services -->
-    <style element="page[1]/section[1]/cell[2]/fragment[1]" inherit="header style" />
+    <style element="page[1]/section[1]/cell[2]/fragment[1]" inherit="header and footer style" />
     <!-- Left side -->
     <style element="page[1]/section[2]">
       <selector path="" view="section frame">
@@ -1704,46 +1792,17 @@
     </style>
     <style element="page[1]/section[2]/cell[2]/fragment[1]" inherit="breadcrumbs style"/>
     <!-- Footer -->
-    <style element="page[1]/section[3]">
+    <style element="page[1]/section[3]"> 
       <selector path="" view="section frame">
-        <border-top preset="topbar (Galaxy borders)"/>
+        <border-top preset="footer (Galaxy borders)"/>
+        <background preset="footer (Galaxy backgrounds)"/>
       </selector>
     </style>
-    <style element="page[1]/section[3]/cell[1]/fragment[1]" inherit="common style 1">
-      <selector path="form, p" view="Nuxeo footer">
-        <margin>5px 0px 0px 0px</margin>
-        <padding>0</padding>
-      </selector>
+    <style element="page[1]/section[3]/cell[1]/fragment[1]" inherit="header and footer style">
       <selector path="" view="Nuxeo footer">
         <font preset="small (Galaxy fonts)"/>
-        <color preset="footer.text (Galaxy colors)" />
-        <padding>5px 15px 5px 5px</padding>
-      </selector>
-      <selector path="div" view="Nuxeo footer">
-        <margin>0</margin>
-        <line-height>1.25em</line-height>
-        <padding>0</padding>
-        <font preset="small (Galaxy fonts)"/>
-      </selector>
-      <selector path="a" view="Nuxeo footer">
-        <color preset="link (Galaxy colors)" />
-        <text-decoration>none</text-decoration>
-      </selector>
-      <selector path="a:visited" view="Nuxeo footer">
-        <color preset="link.visited (Galaxy colors)" />
-      </selector>
-      <selector path="a:active" view="Nuxeo footer">
-        <color preset="link (Galaxy colors)" />
-      </selector>
-      <selector path="a:hover" view="Nuxeo footer">
-        <color preset="link.hover (Galaxy colors)" />
-        <text-decoration>underline</text-decoration>
-      </selector>
-      <selector path="select.langSelect" view="Nuxeo footer">
-        <margin>9px 5px 0px 5px</margin>
-      </selector>
-      <selector path="input.button" view="Nuxeo footer">
-        <margin>5px 0px 5px 10px</margin>
+        <color preset="header.text (Galaxy colors)" />
+        <padding>15px</padding>
       </selector>
     </style>
     <!-- main fragment for default page & popup -->
