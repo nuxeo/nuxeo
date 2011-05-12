@@ -158,22 +158,34 @@ html,body {
 	color: black;
 	text-align: center;
 	margin-bottom: 10px;
-	background-color: #FFFFFF;
+	background-color: #fff;
 	background-repeat: repeat;
 	border: 4px dashed #badb46;
-	-moz-box-shadow: 0 2px 8px #444444 inset;
+	-moz-box-shadow: 0 2px 8px #444 inset;
 	-moz-border-radius: 10px 10px 10px 10px;
 	opacity: 0.7;
 	margin-bottom: 0.5em;
 	margin-top: 0.5em;
 }
 
+.messageWidget {
+  position: fixed;
+}
 .messenger {
-	margin: auto;
-	font-size: 16px;
-	font-weight: bold;
-	color: white;
-	border: 1px dashed black
+	margin: 0;
+	padding: 3px 10px 5px 12px;
+	font:normal 13px "Lucida Grande", Helvetica, sans-serif;
+	color: #000;
+	float: right;
+	border: 1px solid #00509b;
+	background-color: #e6f9ff !important;
+	-moz-border-radius:0px 0px 0px 8px;
+	-webkit-border-radius:0px 0px 0px 8px;
+	border-radius:0px 0px 0px 8px;
+	/* IE 8 */
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=80)";
+  /* all browsers */
+  opacity: 0.8;
 }
 
 /* Builder is the Layout menu that override GWT CSS */
@@ -552,7 +564,7 @@ ul#directlinks {
 
 /* Manager de la page */
 #manager {
-	background-color: #CCC;
+	background-color: #ccc;
 	-moz-box-shadow: inset 0px 2px 8px #444;
 	-webkit-box-shadow: inset 0px 2px 8px #444;
 	padding: 0.5em 0.5em 0.5em 0.5em;

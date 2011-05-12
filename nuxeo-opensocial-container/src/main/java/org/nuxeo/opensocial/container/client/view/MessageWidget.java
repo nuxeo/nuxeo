@@ -25,13 +25,12 @@ public class MessageWidget extends Composite implements
 
     public MessageWidget() {
         panel = new AbsolutePanel();
+        panel.setStyleName("messageWidget");
         panel.getElement().getStyle().setPosition(Position.FIXED);
         panel.setWidth(Window.getClientWidth() + "px");
 
         innerPanel = new AbsolutePanel();
         innerPanel.setStyleName("messenger");
-        innerPanel.setWidth("400px");
-        innerPanel.getElement().getStyle().setOpacity(0.80);
         panel.add(innerPanel);
 
         message = new Label("");
