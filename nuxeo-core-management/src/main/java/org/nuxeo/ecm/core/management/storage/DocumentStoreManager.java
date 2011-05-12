@@ -35,11 +35,15 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class DocumentStoreManager extends RepositoryInitializationHandler {
 
+    public static final String MANAGEMENT_ROOT_TYPE = "ManagementRoot";
+
     public static final String MANAGEMENT_ROOT_NAME = "management";
+
+    public static final String MANAGEMENT_ROOT_PATH = "/" + MANAGEMENT_ROOT_NAME;
 
     public static PathRef newPath(String... components) {
         StringBuilder sb = new StringBuilder();
-        sb.append("/management");
+        sb.append(MANAGEMENT_ROOT_PATH);
         for (String component : components) {
             sb.append("/").append(component);
         }
@@ -102,8 +106,8 @@ public class DocumentStoreManager extends RepositoryInitializationHandler {
 
     protected DocumentModel createRootlet(CoreSession session)
             throws ClientException {
-        DocumentModel rootlet = session.createDocumentModel("/", "management",
-                "ManagementRoot");
+        DocumentModel rootlet = session.createDocumentModel("/", MANAGEMENT_ROOT_NAME,
+                MANAGEMENT_ROOT_TYPE);
         rootlet = session.createDocument(rootlet);
 
         ACP acp = rootlet.getACP();
@@ -126,10 +130,10 @@ public class DocumentStoreManager extends RepositoryInitializationHandler {
     protected DocumentRef setupRootlet(CoreSession session)
             throws ClientException {
         DocumentModel rootlet;
-        if (!session.exists(new PathRef("/management"))) {
+        if (!session.exists(new PathRef(MANAGEMENT_ROOT_PATH))) {
             rootlet = createRootlet(session);
         } else {
-            rootlet = session.getDocument(new PathRef("/management"));
+            rootlet = session.getDocument(new PathRef(MANAGEMENT_ROOT_PATH));
         }
         return rootlet.getRef();
     }
