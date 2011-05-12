@@ -123,13 +123,6 @@
     </style>
     <!-- header and footer style custom for Admin View -->
     <style name="header and footer style" inherit="default buttons">
-      <selector path=".userActions">
-        <font preset="small (Galaxy User Center fonts)"/>
-        <color preset="header.text (Galaxy User Center colors)" />
-        <line-height>185%</line-height>
-        <padding-top>11px</padding-top>
-        <text-align>right</text-align>
-      </selector>
       <selector path="a, a:link, a:visited">
         <text-decoration>none</text-decoration>
       </selector>
@@ -148,6 +141,64 @@
         <margin>0</margin>
         <padding>0</padding>
       </selector>
+      <selector path=".userActions">
+        <font preset="small (Galaxy User Center fonts)"/>
+        <color preset="header.text (Galaxy User Center colors)" />
+        <line-height>185%</line-height>
+        <padding>6px 10px 0px</padding>
+        <text-align>right</text-align>
+        <float>right</float>
+      </selector>
+      <selector path=".searchService">
+        <float>right</float>
+        <padding-top>8px</padding-top>
+        <font preset="small (Galaxy User Center fonts)"/>
+      </selector>
+      <selector path=".userServicesBlock">
+        <float>left</float>
+        <padding-top>10px</padding-top>
+      </selector>
+      <selector path=".userSearchBlock">
+        <float>right</float>
+      </selector>
+      <selector path=".searchService input.button">
+        <margin>0 5px</margin>
+      </selector>
+      <selector path=".mainTabs">
+        <font preset="default (Galaxy User Center fonts)"/>
+        <line-height>normal</line-height>
+        <height>28px</height>
+        <float>left</float>
+      </selector>
+      <selector path=".mainTabs ul">
+        <margin>0</margin>
+        <padding>0</padding>
+      </selector>
+      <selector path=".mainTabs li">
+        <background-color>#207594</background-color>
+        <display>inline</display>
+        <float>left</float>
+        <height>28px</height>
+        <margin>0 5px</margin>
+      </selector>
+      <selector path=".mainTabs a, .mainTabs a:hover, .mainTabs a:visited">
+        <color>#D7E3F1</color>
+        <display>inline-block</display>
+        <font-size>12px</font-size>
+        <padding>4px 11px</padding>
+        <text-decoration>none</text-decoration>
+      </selector>
+      <selector path=".mainTabs li.selected">
+        <background-color>#fff</background-color>
+      </selector>
+      <selector path=".mainTabs li.selected a, .mainTabs li.selected a:hover, .mainTabs li.selected a:visited">
+        <color>#000000</color>
+        <font-weight>bold</font-weight>
+        <text-decoration>none</text-decoration>
+      </selector>
+      <selector path=".mainTabs li a:hover">
+        <text-decoration>none</text-decoration>
+      </selector>
       <selector path=".footerBlock">
         <margin>0</margin>
         <line-height>1.25em</line-height>
@@ -163,6 +214,41 @@
       <selector path=".footerBlock form, .footerBlock p">
         <margin>5px 0px 0px 0px</margin>
         <padding>0</padding>
+      </selector>
+      <selector path=".nuxLinks">
+        <float>right</float>
+        <padding-left>20px</padding-left>
+      </selector>
+      <selector path=".nuxLinks a">
+        <vertical-align>middle</vertical-align>
+      </selector>
+      <selector path=".copyrights">
+        <float>right</float>
+        <padding>2px 20px 0 0</padding>
+        <color>#9a9a9a</color>
+      </selector>
+      <selector path="a.twitt">
+        <background>transparent url(/nuxeo/icons/icones-metanav.png) no-repeat left top</background>
+        <height>16px</height>
+        <width>16px</width>
+        <display>inline-block</display>
+        <margin>0px 5px</margin>
+      </selector>
+      <selector path="a.twitt:hover">
+        <background-position>left bottom</background-position>
+      </selector>
+      <selector path="a.linkedin">
+        <background>transparent url(/nuxeo/icons/icones-metanav.png) no-repeat -16px top</background>
+        <height>16px</height>
+        <width>16px</width>
+        <display>inline-block</display>
+        <margin>0px 5px</margin>
+      </selector>
+      <selector path="a.linkedin:hover">
+        <background-position>-16px bottom</background-position>
+      </selector>
+      <selector path=".clear">
+        <clear>both</clear>
       </selector>
     </style>
     <style inherit="default buttons" name="default tabs">
@@ -1237,7 +1323,6 @@
     <!-- Banner -->
     <style element="page[1]/section[1]">
       <selector path="" view="section frame">
-        <border-bottom preset="topbar (Galaxy User Center borders)"/>
         <background preset="topbar (Galaxy User Center backgrounds)"/>
       </selector>
     </style>
@@ -1264,16 +1349,17 @@
     <!-- Footer -->
     <style element="page[1]/section[3]">
       <selector path="" view="section frame">
-        <border-top preset="topbar (Galaxy User Center borders)"/>
-        <background preset="topbar (Galaxy User Center backgrounds)"/>
+        <border-top preset="footer (Galaxy User Center borders)"/>
+        <background preset="footer (Galaxy User Center backgrounds)"/>
       </selector>
     </style>
     <style element="page[1]/section[3]/cell[1]/fragment[1]" inherit="header and footer style">
       <selector path="" view="Nuxeo footer">
-        <font preset="small (Galaxy User Center fonts)"/>
-        <color preset="header.text (Galaxy User Center colors)" />
-        <padding>5px 15px 5px 5px</padding>
-      </selector>
+         <font preset="small (Galaxy User Center fonts)"/>
+         <color preset="header.text (Galaxy User Center colors)" />
+         <padding>15px</padding>
+       </selector>
+
     </style>
     <!-- main fragment for default page & popup -->
     <style element="page[1]/section[2]/cell[1]/fragment[1]" inherit="common style 1" />
