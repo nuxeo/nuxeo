@@ -50,8 +50,9 @@ public class DocumentRoutingTestCase extends SQLRepositoryTestCase {
     public static final String ROUTE1 = "route1";
 
     @Override
-    protected void deployRepositoryContrib() throws Exception {
-        super.deployRepositoryContrib();
+    public void setUp() throws Exception {
+        super.setUp();
+
         // deploy and test content template
         deployBundle("org.nuxeo.ecm.platform.content.template");
         deployBundle("org.nuxeo.ecm.automation.core");
@@ -64,11 +65,7 @@ public class DocumentRoutingTestCase extends SQLRepositoryTestCase {
         deployContrib(TEST_BUNDLE, "OSGI-INF/test-sql-directories-contrib.xml");
         deployBundle(TestConstants.CORE_BUNDLE);
         CounterListener.resetCouner();
-    }
 
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
         openSession();
         DocumentModel root = session.getRootDocument();
         ContentTemplateService ctService = Framework.getService(ContentTemplateService.class);
