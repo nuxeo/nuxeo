@@ -51,6 +51,10 @@
 
   <extension target="web#AUTH-FILTER">
 
+    <listener>
+      <listener-class>org.nuxeo.ecm.platform.web.common.session.NuxeoSessionListener</listener-class>
+    </listener>
+
     <filter>
       <display-name>Nuxeo Request Controller Filter</display-name>
       <filter-name>NuxeoRequestController</filter-name>

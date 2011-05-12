@@ -42,6 +42,7 @@ import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPropagat
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationSessionManager;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoCallbackHandlerFactory;
 import org.nuxeo.ecm.platform.ui.web.auth.plugins.DefaultSessionManager;
+import org.nuxeo.ecm.platform.web.common.session.NuxeoHttpSessionMonitor;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.runtime.api.login.LoginAs;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -429,6 +430,9 @@ public class PluggableAuthenticationService extends DefaultComponent {
 
     public void onAuthenticatedSessionCreated(ServletRequest request,
             HttpSession session, CachableUserIdentificationInfo cachebleUserInfo) {
+
+        NuxeoHttpSessionMonitor.instance().associatedUser(session, cachebleUserInfo.getPrincipal().getName());
+
         if (!sessionManagers.isEmpty()) {
             for (String smName : sessionManagers.keySet()) {
                 NuxeoAuthenticationSessionManager sm = sessionManagers

@@ -65,6 +65,7 @@ import org.nuxeo.ecm.platform.ui.web.auth.service.NuxeoAuthFilterChain;
 import org.nuxeo.ecm.platform.ui.web.auth.service.OpenUrlDescriptor;
 import org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.ecm.platform.web.common.session.NuxeoHttpSessionMonitor;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -391,6 +392,8 @@ public class NuxeoAuthenticationFilter implements Filter {
             if (cachableUserIdent != null
                     && cachableUserIdent.getUserInfo() != null) {
                 log.debug("userIdent found in cache, get the Principal from it without reloggin");
+
+                NuxeoHttpSessionMonitor.instance().updateEntry(httpRequest);
 
                 principal = cachableUserIdent.getPrincipal();
                 log.debug("Principal = " + principal.getName());
