@@ -37,20 +37,21 @@ public class DocumentStoreManager extends RepositoryInitializationHandler {
 
     public static final String MANAGEMENT_ROOT_NAME = "management";
 
-    public static PathRef newPath(String ...components) {
+    public static PathRef newPath(String... components) {
         StringBuilder sb = new StringBuilder();
         sb.append("/management");
-        for (String component:components) {
+        for (String component : components) {
             sb.append("/").append(component);
         }
         return new PathRef(sb.toString());
-     }
+    }
 
     protected final Map<String, DocumentStoreHandlerDescriptor> handlers = new HashMap<String, DocumentStoreHandlerDescriptor>();
 
     public void registerHandler(DocumentStoreHandlerDescriptor desc) {
         if (desc.handler == null) {
-            throw new Error("Class wasn't resolved or new instance failed, check logs");
+            throw new Error(
+                    "Class wasn't resolved or new instance failed, check logs");
         }
         handlers.put(desc.id, desc);
     }
@@ -64,13 +65,15 @@ public class DocumentStoreManager extends RepositoryInitializationHandler {
 
     protected String defaultRepositoryName;
 
-    protected boolean mgmtInitialized ;
-    protected boolean defaultInitialized ;
+    protected boolean mgmtInitialized;
+
+    protected boolean defaultInitialized;
 
     protected DocumentRef rootletRef;
 
     @Override
-    public void doInitializeRepository(CoreSession session) throws ClientException {
+    public void doInitializeRepository(CoreSession session)
+            throws ClientException {
         if (defaultRepositoryName == null) {
             RepositoryManager mgr = Framework.getLocalService(RepositoryManager.class);
             defaultRepositoryName = mgr.getDefaultRepository().getName();
@@ -83,7 +86,7 @@ public class DocumentStoreManager extends RepositoryInitializationHandler {
         if (repositoryName.equals(DocumentStoreSessionRunner.repositoryName)) {
             mgmtInitialized = true;
             rootletRef = setupRootlet(session);
-            for (DocumentStoreHandlerDescriptor desc:handlers.values()) {
+            for (DocumentStoreHandlerDescriptor desc : handlers.values()) {
                 desc.handler.onStorageInitialization(session, rootletRef);
             }
         }
@@ -97,8 +100,10 @@ public class DocumentStoreManager extends RepositoryInitializationHandler {
         }
     }
 
-    protected DocumentModel createRootlet(CoreSession session) throws ClientException {
-        DocumentModel rootlet = session.createDocumentModel("/", "management", "ManagementRoot");
+    protected DocumentModel createRootlet(CoreSession session)
+            throws ClientException {
+        DocumentModel rootlet = session.createDocumentModel("/", "management",
+                "ManagementRoot");
         rootlet = session.createDocument(rootlet);
 
         ACP acp = rootlet.getACP();
@@ -109,7 +114,8 @@ public class DocumentStoreManager extends RepositoryInitializationHandler {
         }
 
         acl.add(new ACE(config.groupName, SecurityConstants.EVERYTHING, true));
-        acl.add(new ACE(SecurityConstants.EVERYONE, SecurityConstants.EVERYTHING, false));
+        acl.add(new ACE(SecurityConstants.EVERYONE,
+                SecurityConstants.EVERYTHING, false));
         rootlet.setACP(acp, true);
 
         session.save();
@@ -117,14 +123,15 @@ public class DocumentStoreManager extends RepositoryInitializationHandler {
         return rootlet;
     }
 
-    protected DocumentRef setupRootlet(CoreSession session) throws ClientException {
+    protected DocumentRef setupRootlet(CoreSession session)
+            throws ClientException {
         DocumentModel rootlet;
-           if (!session.exists(new PathRef("/management"))) {
-               rootlet = createRootlet(session);
-           } else {
-                rootlet = session.getDocument(new PathRef("/management"));
-            }
-           return rootlet.getRef();
+        if (!session.exists(new PathRef("/management"))) {
+            rootlet = createRootlet(session);
+        } else {
+            rootlet = session.getDocument(new PathRef("/management"));
+        }
+        return rootlet.getRef();
     }
 
 }
