@@ -20,8 +20,10 @@
 package org.nuxeo.ecm.admin.repo;
 
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.nuxeo.ecm.core.api.DocumentRef;
 
@@ -48,7 +50,7 @@ public class RepoStat {
         this.repoName = repoName;
         this.includeBlob = includeBlob;
         pool = new ThreadPoolExecutor(nbThreads, nbThreads, 500L,
-                TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(100));
+                TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(100),new DaemonThreadFactory());
     }
 
     public void exec(StatsTask task) {
@@ -73,4 +75,31 @@ public class RepoStat {
         return pool.getActiveCount() > 0;
     }
 
+    protected static class DaemonThreadFactory implements ThreadFactory {
+
+        private final ThreadGroup group;
+
+        private final String namePrefix;
+
+        private static final AtomicInteger poolNumber = new AtomicInteger();
+
+        private final AtomicInteger threadNumber = new AtomicInteger();
+
+        public DaemonThreadFactory() {
+            SecurityManager s = System.getSecurityManager();
+            group = (s != null) ? s.getThreadGroup()
+                    : Thread.currentThread().getThreadGroup();
+            namePrefix = "RepoStatThread-" + poolNumber.incrementAndGet() + '-';
+        }
+
+        @Override
+        public Thread newThread(Runnable r) {
+            String name = namePrefix + threadNumber.incrementAndGet();
+            Thread t = new Thread(group, r, name);
+            t.setDaemon(true);
+            t.setPriority(Thread.NORM_PRIORITY);
+            return t;
+        }
+
+    }
 }
