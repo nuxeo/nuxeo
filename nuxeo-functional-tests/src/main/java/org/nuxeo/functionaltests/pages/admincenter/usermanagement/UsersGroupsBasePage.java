@@ -14,12 +14,12 @@
  * Contributors:
  *     Benoit Delbosc
  */
-package org.nuxeo.functionaltests.pages;
+package org.nuxeo.functionaltests.pages.admincenter.usermanagement;
 
 import static org.junit.Assert.assertNotNull;
 
 import org.nuxeo.functionaltests.Required;
-import org.nuxeo.functionaltests.pages.tabs.UsersTabSubPage;
+import org.nuxeo.functionaltests.pages.AbstractPage;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;

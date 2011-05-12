@@ -14,22 +14,38 @@
  * Contributors:
  *     Benoit Delbosc
  */
-package org.nuxeo.functionaltests.pages;
+package org.nuxeo.functionaltests.pages.admincenter.usermanagement;
 
 import org.nuxeo.functionaltests.Required;
-import org.nuxeo.functionaltests.pages.tabs.UsersTabSubPage;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
-/**
- * Nuxeo User and Groups page.
- */
-public class UsersGroupsPage extends UsersGroupsBasePage {
+public class UserChangePasswordFormPage extends UsersGroupsBasePage {
 
-    public UsersGroupsPage(WebDriver driver) {
+    @Required
+    @FindBy(id = "editUser:nxl_user:nxw_firstPassword")
+    WebElement firstPasswordInput;
+
+    @Required
+    @FindBy(id = "editUser:nxl_user:nxw_secondPassword")
+    WebElement secondPasswordInput;
+
+    @Required
+    @FindBy(xpath = "//form[@id=\"editUser\"]//input[@value=\"Save\"]")
+    WebElement saveButton;
+
+    public UserChangePasswordFormPage(WebDriver driver) {
         super(driver);
     }
 
+    public UserViewTabSubPage changePassword(String password) {
+        firstPasswordInput.clear();
+        firstPasswordInput.sendKeys(password);
+        secondPasswordInput.clear();
+        secondPasswordInput.sendKeys(password);
+        saveButton.click();
+        return asPage(UserViewTabSubPage.class);
+    }
 
 }

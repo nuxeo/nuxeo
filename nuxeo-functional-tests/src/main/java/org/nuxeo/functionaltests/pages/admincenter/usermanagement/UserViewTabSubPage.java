@@ -14,13 +14,10 @@
  * Contributors:
  *     Benoit Delbosc
  */
-package org.nuxeo.functionaltests.pages.tabs;
+package org.nuxeo.functionaltests.pages.admincenter.usermanagement;
 
 import static org.junit.Assert.assertEquals;
 
-import org.nuxeo.functionaltests.pages.UsersGroupsBasePage;
-import org.nuxeo.functionaltests.pages.forms.UserChangePasswordFormPage;
-import org.nuxeo.functionaltests.pages.forms.UserEditFormPage;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;

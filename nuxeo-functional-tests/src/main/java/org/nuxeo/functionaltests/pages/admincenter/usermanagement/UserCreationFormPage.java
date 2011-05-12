@@ -15,10 +15,9 @@
  *     Sun Seng David TAN
  *     Florent Guillaume
  */
-package org.nuxeo.functionaltests.pages.forms;
+package org.nuxeo.functionaltests.pages.admincenter.usermanagement;
 
 import org.nuxeo.functionaltests.Required;
-import org.nuxeo.functionaltests.pages.UsersGroupsBasePage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
