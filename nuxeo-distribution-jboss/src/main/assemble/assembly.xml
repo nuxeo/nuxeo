@@ -72,6 +72,11 @@
     <copy todir="${jboss}">
       <fileset dir="src/main/resources" />
     </copy>
+    <unzip dest="${jboss}">
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${nuxeo.distribution.version}:zip"
+                            classifier="root" />
+    </unzip>
+    <chmod dir="${jboss}" perm="ug+x" includes="*.command" />
     <unzip dest="${jboss}/bin">
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${nuxeo.distribution.version}:zip"
                             classifier="bin" />

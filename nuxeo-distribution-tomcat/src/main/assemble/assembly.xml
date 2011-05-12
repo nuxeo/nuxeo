@@ -60,6 +60,11 @@
     <copy todir="${tomcat}">
       <fileset dir="src/main/resources" />
     </copy>
+    <unzip dest="${tomcat}">
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${nuxeo.distribution.version}:zip"
+                            classifier="root" />
+    </unzip>
+    <chmod dir="${tomcat}" perm="ug+x" includes="*.command" />
     <unzip dest="${tomcat}/bin">
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${nuxeo.distribution.version}:zip"
                             classifier="bin" />

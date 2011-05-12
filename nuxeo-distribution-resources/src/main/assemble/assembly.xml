@@ -31,6 +31,9 @@
       <param name="distribution" value="bin" />
     </antcall>
     <antcall target="build-resources">
+      <param name="distribution" value="root" />
+    </antcall>
+    <antcall target="build-resources">
       <param name="distribution" value="jetty-base" />
     </antcall>
     <antcall target="build-resources">
