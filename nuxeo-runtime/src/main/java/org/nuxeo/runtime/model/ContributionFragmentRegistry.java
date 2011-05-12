@@ -34,12 +34,11 @@ import java.util.Map;
  *       public String getContributionId(MyContribution contrib) {
  *          return contrib.getId();
  *       }
- *       public void contributionUpdated(String id, MyContribution contrib) {
- *          if (contrib == null) {
- *              registry.remove(id);
- *          } else {
- *              registry.put(id, contrib);
- *          }
+ *       public void contributionUpdated(String id, MyContribution contrib, MyContribution origContrib) {
+ *           registry.put(id, contrib);
+ *       }
+ *       public void contributionRemoved(String id, MyContribution origContrib) {
+ *           registry.remove(id);
  *       }
  *       public MyContribution clone(MyContribution contrib) {
  *          MyContribution clone = new MyContribution(contrib.getId());
@@ -69,15 +68,36 @@ public abstract class ContributionFragmentRegistry<T> {
     public abstract String getContributionId(T contrib);
 
     /**
-     * Add, update or remove the a contribution.
+     * Add or update a contribution.
      * <p>
      * If the contribution doesn't yet exists then it will be added, otherwise the value will be updated.
      * If the given value is null the existing contribution must be removed
+     * <p>
+     * The second parameter is the actual contribution value which should be stored (updated).
+     * This usually represent a clone of the original contribution or a merge of multiple contribution fragments.
+     * Modifications on this object at application level will be lost on next {@link #contributionUpdated(String, Object, Object)}
+     * call on the same object id.
+     * The last parameter is the original contribution object which was either cloned or merged.
+     * You should never modify this object at application level. Because it will be used each time a subsequent
+     * merge is done.
+     * Also you should not store this object. Usually you will never need to touch this object.
+     *
+     * @param id - the id of the contribution that need to be updated
+     * @param contrib the updated contribution object that
+     * @param origContrib - the original contribution fragment that triggered the update.
+     */
+    public abstract void contributionUpdated(String id, T contrib, T origContrib);
+
+    /**
+     * All the fragments in the contribution was removed. Contribution must be unregistered.
+     * <p>
+     * The first parameter is the contribution ID that should be remove and the second parameter
+     * the original contribution fragment that as unregistered causing the contribution to be removed.
      *
      * @param id
-     * @param contrib
+     * @param origContrib
      */
-    public abstract void contributionUpdated(String id, T contrib);
+    public abstract void contributionRemoved(String id, T origContrib);
 
     /**
      * CLone the given contribution object
@@ -103,7 +123,7 @@ public abstract class ContributionFragmentRegistry<T> {
     public synchronized void addContribution(T contrib) {
         String id = getContributionId(contrib);
         FragmentList<T> head = addFragment(id, contrib);
-        contributionUpdated(id, head.merge(this));
+        contributionUpdated(id, head.merge(this), contrib);
     }
 
     /**
@@ -116,13 +136,19 @@ public abstract class ContributionFragmentRegistry<T> {
         String id = getContributionId(contrib);
         FragmentList<T> head = removeFragment(id, contrib);
         if (head != null) {
-            contributionUpdated(id, head.merge(this));
+            T result = head.merge(this);
+            if (result != null) {
+                contributionUpdated(id, result, contrib);
+            } else {
+                contributionRemoved(id, contrib);
+            }
         }
     }
 
     /**
      * Get a merged contribution directly from the internal registry - and
-     * not passing by the implementation registry.
+     * avoid passing by the implementation registry.
+     * Note that this operation will invoke a merge of existing fragments if needed.
      * @param id
      * @return
      */

@@ -59,12 +59,12 @@ public class ContributionFragmentTest extends TestCase {
         @Override
         public void contributionUpdated(
                 String id,
-                MyContrib contrib) {
-            if (contrib == null) {
-                registry.remove(id);
-            } else {
-                registry.put(id, contrib);
-            }
+                MyContrib contrib, MyContrib origContrib) {
+            registry.put(id, contrib);
+        }
+        @Override
+        public void contributionRemoved(String id, MyContrib origContrib) {
+            registry.remove(id);
         }
         @Override
         public MyContrib clone(MyContrib object) {
