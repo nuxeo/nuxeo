@@ -164,43 +164,4 @@
     </repository>
   </repositories>
 
-  <build>
-    <plugins>
-
-      <!--plugin> <artifactId>maven-surefire-plugin</artifactId> <configuration>
-        <excludes> <exclude>**/LitmusTest.class</exclude> </excludes> </configuration>
-        </plugin -->
-
-      <!-- TODO This is bad and need cleanup: no embedded libraries. -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>copy</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>copy</goal>
-            </goals>
-            <configuration>
-              <!--excludeTransistive>true</excludeTransistive -->
-
-              <artifactItems>
-
-                <!-- for WebDAV -->
-                <artifactItem>
-                  <groupId>net.java.dev.webdav</groupId>
-                  <artifactId>webdav-jaxrs</artifactId>
-                </artifactItem>
-              </artifactItems>
-
-              <outputDirectory>${project.build.directory}/classes/lib
-              </outputDirectory>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
-
 </project>
