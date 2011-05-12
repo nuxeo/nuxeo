@@ -1106,6 +1106,9 @@
       <selector path="textarea">
         <padding>5px</padding>
       </selector>
+      <selector path=".checkBox">
+        <margin-right>3px</margin-right>
+      </selector>
       <selector path=".rightsAddManager">
         <background preset="addmanager (Galaxy backgrounds)"/>
         <width>100%</width>
@@ -1519,6 +1522,10 @@
       </selector>
       <selector path=".facetedSearchBlock input, .facetedSearchBlock select">
         <width>100%</width>
+      </selector>
+      <selector path=".facetedSearchBlock input.rich-calendar-input">
+        <width>68%%</width>
+        <margin>1px 3px 1px 5px</margin>
       </selector>
       <selector path=".facetedSearchBlock .dataInputTextDate">
         <width>45px</width>
