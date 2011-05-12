@@ -24,7 +24,7 @@
     <unzip dest="${outdir}">
       <artifact:resolveFile key="${NX_DISTRIBUTION}" />
       <patternset>
-        <exclude name="**/bundles/nuxeo-platform-wss-backend*.jar" />
+        <exclude name="**/bundles/nuxeo-platform-wi-backend*.jar" />
         <exclude name="**/lib/nuxeo-generic-wss-handler*.jar" />
       </patternset>
     </unzip>

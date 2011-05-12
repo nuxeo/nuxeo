@@ -288,7 +288,12 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-wss-backend</artifactId>
+        <artifactId>nuxeo-webdav</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-wi-backend</artifactId>
         <version>${nuxeo.addons.version}</version>
       </dependency>
 

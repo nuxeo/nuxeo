@@ -174,7 +174,7 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-wss-backend</artifactId>
+      <artifactId>nuxeo-platform-wi-backend</artifactId>
     </dependency>
 
     <!-- OpenSocial -->
