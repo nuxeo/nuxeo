@@ -81,9 +81,9 @@
       <resource>jquery.tools.tooltip.min.js</resource>
     </view>
 
-    <view name="User services (Galaxy theme)" template-engine="jsf-facelets">
+    <view name="Nuxeo header" template-engine="jsf-facelets">
       <format-type>widget</format-type>
-      <template>incl/user_services_galaxy.xhtml</template>
+      <template>incl/nuxeo_header.xhtml</template>
       <resource>screen.css</resource>
       <resource>header.css</resource>
     </view>
@@ -104,7 +104,6 @@
       <format-type>widget</format-type>
       <template>incl/tree_explorer.xhtml</template>
     </view>
-
 
     <view name="nuxeo5 directory tree explorer"
       template-engine="jsf-facelets">
