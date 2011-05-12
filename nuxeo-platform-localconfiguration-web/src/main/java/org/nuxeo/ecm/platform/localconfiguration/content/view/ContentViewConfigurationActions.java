@@ -21,22 +21,26 @@ import static org.nuxeo.ecm.core.schema.FacetNames.FOLDERISH;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.faces.model.SelectItem;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.schema.SchemaManager;
-import org.nuxeo.ecm.platform.contentview.jsf.ContentView;
+import org.nuxeo.ecm.platform.contentview.jsf.ContentViewHeader;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewService;
+import org.nuxeo.ecm.platform.types.Type;
+import org.nuxeo.ecm.platform.types.TypeManager;
+import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.directory.SelectItemComparator;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 import org.nuxeo.runtime.api.Framework;
@@ -48,7 +52,13 @@ public class ContentViewConfigurationActions implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private static final Log log = LogFactory.getLog(ContentViewConfigurationActions.class);
+    protected transient SchemaManager schemaManager;
+
+    @In(create = true)
+    protected transient TypeManager typeManager;
+
+    @In(create = true)
+    protected transient NavigationContext navigationContext;
 
     @In(create = true)
     protected ContentViewService contentViewService;
@@ -56,16 +66,32 @@ public class ContentViewConfigurationActions implements Serializable {
     @In(create = true)
     protected ResourcesAccessor resourcesAccessor;
 
-    public List<SelectItem> getAvailableDocTypes() {
-        List<SelectItem> items = new ArrayList<SelectItem>();
-        SchemaManager schemaManager;
-        try {
-            schemaManager = Framework.getService(SchemaManager.class);
-        } catch (Exception e) {
-            log.error("Exception in retrieving document types : ", e);
-            return null;
+    protected SchemaManager getSchemaManager() throws ClientException {
+        if ( schemaManager == null ){
+            try {
+                schemaManager = Framework.getService(SchemaManager.class);
+            } catch (Exception e) {
+                throw new ClientException("can NOT obtain schema manager", e);
+            }
         }
-        for (String typeName : schemaManager.getDocumentTypeNamesForFacet(FOLDERISH)) {
+        return schemaManager;
+    }
+
+    public List<SelectItem> getAvailableDocTypes() throws ClientException {
+        List<SelectItem> items = new ArrayList<SelectItem>();
+        Set<String> folderishDocTypeNames = getSchemaManager().getDocumentTypeNamesForFacet(FOLDERISH);
+        DocumentModel currentDocument = navigationContext.getCurrentDocument();
+        String currentDocTypeName = currentDocument.getType();
+        Collection<Type> allowedSubTypes = typeManager.findAllAllowedSubTypesFrom(currentDocTypeName);
+        Type currentDocType = typeManager.getType(currentDocTypeName);
+        if (!allowedSubTypes.contains(currentDocType)) {
+            allowedSubTypes.add(currentDocType);
+        }
+        for (Type type : allowedSubTypes) {
+            String typeName = type.getId();
+            if (!folderishDocTypeNames.contains(typeName)) {
+                continue;
+            }
             SelectItem item;
             Map<String, String> messages = resourcesAccessor.getMessages();
             if (messages.containsKey(typeName)) {
@@ -82,13 +108,13 @@ public class ContentViewConfigurationActions implements Serializable {
     public List<SelectItem> getAvailableContentViews() throws ClientException {
         List<SelectItem> items = new ArrayList<SelectItem>();
         for (String cvName : contentViewService.getContentViewNames()) { // TODO : use flag ?
-            ContentView contentView = contentViewService.getContentView(cvName);
-            String title = contentView.getTitle();
+            ContentViewHeader contentViewHeader = contentViewService.getContentViewHeader(cvName);
+            String title = contentViewHeader.getTitle();
             SelectItem item;
             if (title == null) {
                 item = new SelectItem(cvName);
             } else {
-                if (contentView.getTranslateTitle()) {
+                if (contentViewHeader.isTranslateTitle()) {
                     title = resourcesAccessor.getMessages().get(title);
                 }
                 item = new SelectItem(cvName, title);
