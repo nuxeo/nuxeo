@@ -289,8 +289,7 @@
         <color>#fff</color>
       </selector>
       <selector path=".mainTabs li.selected">
-        <background>none #fff</background>
-        <border-radius>2px 2px 0 0</border-radius>
+        <background-color>#fff</background-color>
       </selector>
       <selector path=".mainTabs li.selected a, .mainTabs li.selected a:hover, .mainTabs li.selected a:visited">
         <color>#000000</color>
