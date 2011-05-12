@@ -153,10 +153,12 @@ function DropZoneUIHandler(idx, dropZoneId, options,targetSelectedCB) {
       getOptions.addParameter("category",context);
       getOptions.setContext(this.ctx);
       getOptions.execute(function(data, textStatus,xhr) {
-                            handler.operationsDef=data;
                             if (data.length==0) {
-                              handler.canNotUpload(false);
+                              handler.operationsDef=null;
+                              handler.canNotUpload(false,true);
+                              return;
                             };
+                            handler.operationsDef=data;
                             if(handler.executionPending) {
                               // execution was waiting for the op definitions
                               handler.executionPending=false;
@@ -164,16 +166,17 @@ function DropZoneUIHandler(idx, dropZoneId, options,targetSelectedCB) {
                             }
                           },
                           function(xhr, status, e) {
-                              handler.canNotUpload(true);
+                              log(e);
+                              handler.canNotUpload(true,false);
                           });
   }
 
-  DropZoneUIHandler.prototype.canNotUpload = function(isError) {
+  DropZoneUIHandler.prototype.canNotUpload = function(isError, noop) {
     this.cancelUpload();
     if (isError) {
-      alert("Upload cannot continue due to an error");
-    } else {
-      alert("You cannot upload here (maybe insufficient rights)");
+      alert(jQuery("#dndErrorMessage").html());
+    } else if (noop){
+      alert(jQuery("#dndMessageNoOperation").html());
     }
   }
 
@@ -181,9 +184,15 @@ function DropZoneUIHandler(idx, dropZoneId, options,targetSelectedCB) {
     this.cancelled=true;
     jQuery("#dndContinueButton").css("display","none");
     jQuery("#dropzone-info-panel").css("display","none");
+    jQuery(".dropzoneTargetOverlay").remove();
     var dzone = jQuery("#"+this.dropZoneId);
     dzone.removeClass("dropzoneTarget");
-
+    dzone.removeClass("dropzoneTargetExtended");
+    var dragoverTimer = dzone.data("dragoverTimer");
+    if (dragoverTimer) {
+      window.clearTimeout(dragoverTimer);
+      dzone.removeData("dragoverTimer");
+    }
     var targetUrl = this.url + 'drop/' + this.batchId;
     jQuery.ajax({
         type: 'GET',
@@ -309,6 +318,7 @@ function DropZoneUIHandler(idx, dropZoneId, options,targetSelectedCB) {
     if (this.operationsDef==null) {
       this.executionPending=true;
       log("No OpDEf found !!!");
+      return;
     } else {
       if ((this.extendedMode==false || this.operationsDef.length==1) && this.operationsDef[0].link=='') {
         this.executeBatch(this.operationsDef[0].id,{});
@@ -388,7 +398,7 @@ function DropZoneUIHandler(idx, dropZoneId, options,targetSelectedCB) {
 
   DropZoneUIHandler.prototype.enableExtendedMode = function(dropId) {
     this.extendedMode=true;
-    jQuery("#"+dropId).css("border","2px solid #54d920");
+    jQuery("#"+dropId).addClass('dropzoneTargetExtended');
   }
 
   DropZoneUIHandler.prototype.removeDropPanel = function(dropId, batchId) {

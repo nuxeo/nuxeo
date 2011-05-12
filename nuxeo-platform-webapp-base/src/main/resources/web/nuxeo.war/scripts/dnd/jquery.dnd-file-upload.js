@@ -131,12 +131,10 @@
       } else {
         // Webkit and FF4 => use Overlay
         var overlay = jQuery("<div></div>");
-        overlay.css("position","absolute");
+        overlay.addClass("dropzoneTargetOverlay");
         overlay.css(zone.position());
         overlay.width(zone.width()+2);
         overlay.height(zone.height()+2);
-        overlay.addClass("dropzoneTargetOverlay");
-        overlay.css("backgroundColor",'rgba(200,220,250,0.3)');
         zone.append(overlay);
         overlay.bind("dragleave",  function(event) { removeOverlay(event, overlay, zone, opts);});
         zone.unbind("dragenter");

@@ -1,6 +1,11 @@
 <div xmlns:h="http://java.sun.com/jsf/html"
  xmlns:nxu="http://nuxeo.org/nxweb/util">
 
+<div style="display:none">
+ <span id="dndMessageNoOperation"> <h:outputText value="#{messages['label.dnd.nooperation']}" /></span>
+ <span id="dndErrorMessage"> <h:outputText value="#{messages['label.dnd.error']}" /></span>
+</div>
+
   <!-- Information panel for DnD import -->
   <div id="dropzone-info-panel" class="dndProgressPanel" style="display:none;">
     <table width="100%">
