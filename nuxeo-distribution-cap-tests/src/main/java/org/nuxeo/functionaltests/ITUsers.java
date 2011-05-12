@@ -23,8 +23,10 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.LoginPage;
-import org.nuxeo.functionaltests.pages.UsersGroupsBasePage;
-import org.nuxeo.functionaltests.pages.tabs.UsersTabSubPage;
+import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UserChangePasswordFormPage;
+import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UserCreationFormPage;
+import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UsersGroupsBasePage;
+import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UsersTabSubPage;
 
 /**
  * Create a user in Nuxeo DM.
@@ -38,12 +40,13 @@ public class ITUsers extends AbstractTest {
         String firstname = "firstname";
 
         UsersGroupsBasePage page;
-        UsersTabSubPage usersTab = login().getHeaderLinks().goToUserManagementPage().getUsersTab();
+        UsersTabSubPage usersTab = login().getAdminCenter().getUsersGroupsHomePage().getUsersTab();
         usersTab = usersTab.searchUser(username);
         if (!usersTab.isUserFound(username)) {
             page = usersTab.getUserCreatePage().createUser(username, firstname,
                     "lastname1", "company1", "email1", password, "members");
-            assertEquals(page.getFeedbackMessage(), "User created");
+            // no confirmation message anymore
+            // assertEquals(page.getFeedbackMessage(), "User created");
             usersTab = page.getUsersTab(true);
         }
 
@@ -51,17 +54,21 @@ public class ITUsers extends AbstractTest {
         usersTab = usersTab.searchUser(username);
         assertTrue(usersTab.isUserFound(username));
 
+        // exit admin center and reconnect
+        usersTab = usersTab.exitAdminCenter().getAdminCenter().getUsersGroupsHomePage().getUsersTab();
+
         // user already exists
         page = usersTab.getUserCreatePage().createUser(username, "firstname1",
                 "lastname1", "company1", "email1", "test_user1", "members");
         assertEquals(page.getFeedbackMessage(), "User already exists");
+        // cancel
+        usersTab = asPage(UserCreationFormPage.class).cancelCreation();
 
         // modify a user firstname
         firstname = firstname + "modified";
-        usersTab = page.getHeaderLinks().goToUserManagementPage().getUsersTab();
+        usersTab = page.getUsersGroupsHomePage().getUsersTab();
         usersTab = usersTab.viewUser(username).getEditUserTab().editUser(
-                firstname, null, "newcompany", null, "administrators").getUsersTab(
-                true);
+                firstname, null, "newcompany", null, "administrators").backToTheList();
 
         // search user using its new firstname
         usersTab = usersTab.searchUser(firstname);
@@ -73,26 +80,26 @@ public class ITUsers extends AbstractTest {
         homepage.getHeaderLinks().logout();
 
         // login as admin
-        usersTab = login().getHeaderLinks().goToUserManagementPage().getUsersTab();
+        page = login().getAdminCenter().getUsersGroupsHomePage();
 
         // change password
-        usersTab = page.getHeaderLinks().goToUserManagementPage().getUsersTab();
+        usersTab = page.getUsersTab();
         usersTab = usersTab.searchUser(firstname);
         password = "testmodified";
-        usersTab = usersTab.viewUser(username).getChangePasswordUserTab().changePassword(
-                password).getHeaderLinks().goToUserManagementPage().getUsersTab(
-                true);
+        UserChangePasswordFormPage tab = usersTab.viewUser(username).getChangePasswordUserTab().changePassword(
+                password);
 
+        homepage = tab.exitAdminCenter();
+        homepage.getHeaderLinks().logout();
         // try to login with the new password
-        usersTab.getHeaderLinks().logout();
         homepage = login(username, password);
         homepage.getHeaderLinks().logout();
 
         // login as admin
-        usersTab = login().getHeaderLinks().goToUserManagementPage().getUsersTab();
+        page = login().getAdminCenter().getUsersGroupsHomePage();
 
         // delete user
-        usersTab = page.getHeaderLinks().goToUserManagementPage().getUsersTab();
+        usersTab = page.getUsersTab();
         usersTab = usersTab.searchUser(firstname);
         usersTab = usersTab.viewUser(username).deleteUser();
 

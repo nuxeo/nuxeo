@@ -14,20 +14,22 @@
  * Contributors:
  *     Benoit Delbosc
  */
-package org.nuxeo.functionaltests.pages;
+package org.nuxeo.functionaltests.pages.admincenter.usermanagement;
 
 import static org.junit.Assert.assertNotNull;
 
 import org.nuxeo.functionaltests.Required;
-import org.nuxeo.functionaltests.pages.tabs.UsersTabSubPage;
+import org.nuxeo.functionaltests.pages.admincenter.AdminCenterBasePage;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
 /**
- * Nuxeo User and Groups Base page.
+ * Nuxeo User and Groups Base page. (New one in the admin center)
+ *
+ * @since 5.4.2
  */
-public class UsersGroupsBasePage extends AbstractPage {
+public class UsersGroupsBasePage extends AdminCenterBasePage {
     @FindBy(xpath = "//div[@class=\"tabsBar\"]/form/ul/li[@class=\"selected\"]/a[text()=\"Users\" or text()=\"Groups\"]")
     public WebElement selectedTab;
 

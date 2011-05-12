@@ -14,40 +14,44 @@
  * Contributors:
  *     Benoit Delbosc
  */
-package org.nuxeo.functionaltests.pages.forms;
+package org.nuxeo.functionaltests.pages.admincenter.usermanagement;
 
 import org.nuxeo.functionaltests.Required;
-import org.nuxeo.functionaltests.pages.UsersGroupsBasePage;
-import org.nuxeo.functionaltests.pages.tabs.UserViewTabSubPage;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
+/**
+ * Change password sub tab page (New user management in the admin center)
+ *
+ * @since 5.4.2
+ *
+ */
 public class UserChangePasswordFormPage extends UsersGroupsBasePage {
 
     @Required
-    @FindBy(id = "editUser:nxl_user:nxw_firstPassword")
+    @FindBy(id = "viewUserView:editUserPassword:nxl_user_3:nxw_firstPassword_1")
     WebElement firstPasswordInput;
 
     @Required
-    @FindBy(id = "editUser:nxl_user:nxw_secondPassword")
+    @FindBy(id = "viewUserView:editUserPassword:nxl_user_3:nxw_secondPassword_1")
     WebElement secondPasswordInput;
 
     @Required
-    @FindBy(xpath = "//form[@id=\"editUser\"]//input[@value=\"Save\"]")
+    @FindBy(xpath = "//input[@value=\"Save\"]")
     WebElement saveButton;
 
     public UserChangePasswordFormPage(WebDriver driver) {
         super(driver);
     }
 
-    public UserViewTabSubPage changePassword(String password) {
+    public UserChangePasswordFormPage changePassword(String password) {
         firstPasswordInput.clear();
         firstPasswordInput.sendKeys(password);
         secondPasswordInput.clear();
         secondPasswordInput.sendKeys(password);
         saveButton.click();
-        return asPage(UserViewTabSubPage.class);
+        return asPage(UserChangePasswordFormPage.class);
     }
 
 }

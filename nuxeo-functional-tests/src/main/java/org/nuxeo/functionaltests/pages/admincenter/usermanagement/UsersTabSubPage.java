@@ -14,27 +14,30 @@
  * Contributors:
  *     Benoit Delbosc
  */
-package org.nuxeo.functionaltests.pages.tabs;
+package org.nuxeo.functionaltests.pages.admincenter.usermanagement;
 
 import org.nuxeo.functionaltests.Required;
-import org.nuxeo.functionaltests.pages.UsersGroupsBasePage;
-import org.nuxeo.functionaltests.pages.forms.UserCreationFormPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
+/**
+ * Users Tab Page of the users & groups management (New one in the admin center)
+ *
+ * @since 5.4.2
+ */
 public class UsersTabSubPage extends UsersGroupsBasePage {
 
     @Required
     @FindBy(linkText = "Create a new user")
     WebElement createNewUserLink;
 
-    @FindBy(name = "searchForm:searchText")
+    @FindBy(name = "usersListingView:searchForm:searchText")
     WebElement searchInput;
 
-    @FindBy(name = "searchForm:searchButton")
+    @FindBy(name = "usersListingView:searchForm:searchButton")
     WebElement searchButton;
 
     public UsersTabSubPage(WebDriver driver) {

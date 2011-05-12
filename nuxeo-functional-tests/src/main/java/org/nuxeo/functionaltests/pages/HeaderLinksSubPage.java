@@ -18,15 +18,15 @@ package org.nuxeo.functionaltests.pages;
 
 import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.pages.AbstractPage;
-import org.nuxeo.functionaltests.pages.UsersGroupsPage;
+import org.nuxeo.functionaltests.pages.usermanagement.compat.UsersGroupsPage;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
 public class HeaderLinksSubPage extends AbstractPage {
 
-    @Required
     @FindBy(linkText = "Users & groups")
+    @Deprecated
     WebElement userAndGroupsLink;
 
     @FindBy(linkText = "Log out")
