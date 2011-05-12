@@ -125,4 +125,16 @@ public class SessionInfo implements Comparable<SessionInfo> {
     public int compareTo(SessionInfo o) {
         return getInactivityInS() > o.getInactivityInS() ? 1 : -1;
     }
+
+    @Override
+    public String toString() {
+        StringBuffer sb = new StringBuffer();
+
+        sb.append("Sid=");
+        sb.append(sessionId);
+        sb.append(" : login=");
+        sb.append(loginName);
+
+        return sb.toString();
+    }
 }

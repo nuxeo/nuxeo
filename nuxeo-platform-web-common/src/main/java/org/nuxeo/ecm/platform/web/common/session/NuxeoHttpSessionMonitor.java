@@ -30,6 +30,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  *
  * Singleton used to keep track of all HttpSessions. This Singleton is
@@ -40,6 +43,8 @@ import javax.servlet.http.HttpSession;
  * @since 5.4.2
  */
 public class NuxeoHttpSessionMonitor {
+
+    protected static Log log = LogFactory.getLog(NuxeoHttpSessionMonitor.class);
 
     protected static NuxeoHttpSessionMonitor instance = new NuxeoHttpSessionMonitor();
 
