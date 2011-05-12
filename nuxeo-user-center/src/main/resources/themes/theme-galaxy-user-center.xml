@@ -236,7 +236,7 @@
         <margin>10px 5px</margin>
         <font-size>13px</font-size>
       </selector>
-      <selector path=".directoryBack">
+      <selector path=".adminViewContent .directoryBack">
         <background preset="back (Galaxy User Center backgrounds)"/>
         <padding>2px 2px 2px 20px</padding>
       </selector>
