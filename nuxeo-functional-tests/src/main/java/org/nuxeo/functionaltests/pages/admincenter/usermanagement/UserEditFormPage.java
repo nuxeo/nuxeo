@@ -24,33 +24,34 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
 /**
- * View user details
+ * Edit user details (New one in the admin center)
+ *
+ * @since 5.4.2
  */
 public class UserEditFormPage extends UsersGroupsBasePage {
 
     @Required
-    @FindBy(id = "editUser:nxl_user:nxw_firstname")
+    @FindBy(id = "viewUserView:editUser:nxl_user_2:nxw_firstname_2")
     WebElement firstnameInput;
 
     @Required
-    @FindBy(id = "editUser:nxl_user:nxw_lastname")
+    @FindBy(id = "viewUserView:editUser:nxl_user_2:nxw_lastname_2")
     WebElement lastnameInput;
 
     @Required
-    @FindBy(id = "editUser:nxl_user:nxw_company")
+    @FindBy(id = "viewUserView:editUser:nxl_user_2:nxw_company_2")
     WebElement companyInput;
 
     @Required
-    @FindBy(id = "editUser:nxl_user:nxw_email")
+    @FindBy(id = "viewUserView:editUser:nxl_user_2:nxw_email_2")
     WebElement emailInput;
 
     @Required
-    @FindBy(id = "editUser:nxl_user:nxw_groups_suggest")
+    @FindBy(id = "viewUserView:editUser:nxl_user_2:nxw_groups_2_suggest")
     WebElement groupInput;
 
-
     @Required
-    @FindBy(xpath="//form[@id=\"editUser\"]//input[@value=\"Save\"]")
+    @FindBy(xpath = "//input[@value=\"Save\"]")
     WebElement saveButton;
 
     public UserEditFormPage(WebDriver driver) {
@@ -78,7 +79,8 @@ public class UserEditFormPage extends UsersGroupsBasePage {
         updateInput(emailInput, email);
         if (group != null) {
             groupInput.sendKeys(group);
-            WebElement ajaxUserListElement = findElementWithTimeout(By.xpath("//table[@id='editUser:nxl_user:nxw_groups_suggestionBox:suggest']/tbody/tr[1]/td[2]"));
+            WebElement ajaxUserListElement = findElementWithTimeout(By.xpath("//td[text()=\""
+                    + group + "\"]"));
             ajaxUserListElement.click();
         }
         saveButton.click();

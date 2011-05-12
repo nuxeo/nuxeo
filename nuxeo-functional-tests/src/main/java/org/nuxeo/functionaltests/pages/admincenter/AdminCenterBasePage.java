@@ -19,13 +19,20 @@ package org.nuxeo.functionaltests.pages.admincenter;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.pages.AbstractPage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
+import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UsersGroupsBasePage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
 
 public class AdminCenterBasePage extends AbstractPage {
+
+    @Required
+    @FindBy(linkText = "Users & groups")
+    public WebElement userAndGroupsLink;
 
     public static final String EXIT_ADMIN_CENTER = "Exit admin center";
 
@@ -50,6 +57,11 @@ public class AdminCenterBasePage extends AbstractPage {
         }
         link.click();
         return asPage(pageClass);
+    }
+
+    public UsersGroupsBasePage getUsersGroupsHomePage() {
+        userAndGroupsLink.click();
+        return asPage(UsersGroupsBasePage.class);
     }
 
     public ConnectHomePage getConnectHomePage() {

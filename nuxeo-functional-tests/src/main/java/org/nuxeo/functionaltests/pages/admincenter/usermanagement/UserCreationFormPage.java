@@ -25,45 +25,51 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
 /**
- * Nuxeo DM user management page.
+ * Nuxeo DM user management creation form page. (New one in the admin center)
+ *
+ * @since 5.4.2
  */
 public class UserCreationFormPage extends UsersGroupsBasePage {
 
     @Required
-    @FindBy(id = "createUser:nxl_user:nxw_username")
+    @FindBy(id = "createUserView:createUser:nxl_user:nxw_username")
     WebElement usernameInput;
 
     @Required
-    @FindBy(id = "createUser:nxl_user:nxw_firstname")
+    @FindBy(id = "createUserView:createUser:nxl_user:nxw_firstname")
     WebElement firstnameInput;
 
     @Required
-    @FindBy(id = "createUser:nxl_user:nxw_lastname")
+    @FindBy(id = "createUserView:createUser:nxl_user:nxw_lastname")
     WebElement lastnameInput;
 
     @Required
-    @FindBy(id = "createUser:nxl_user:nxw_company")
+    @FindBy(id = "createUserView:createUser:nxl_user:nxw_company")
     WebElement companyInput;
 
     @Required
-    @FindBy(id = "createUser:nxl_user:nxw_email")
+    @FindBy(id = "createUserView:createUser:nxl_user:nxw_email")
     WebElement emailInput;
 
     @Required
-    @FindBy(id = "createUser:nxl_user:nxw_firstPassword")
+    @FindBy(id = "createUserView:createUser:nxl_user:nxw_firstPassword")
     WebElement firstPasswordInput;
 
     @Required
-    @FindBy(id = "createUser:nxl_user:nxw_secondPassword")
+    @FindBy(id = "createUserView:createUser:nxl_user:nxw_secondPassword")
     WebElement secondPasswordInput;
 
     @Required
-    @FindBy(id = "createUser:nxl_user:nxw_groups_suggest")
+    @FindBy(id = "createUserView:createUser:nxl_user:nxw_groups_suggest")
     WebElement groupInput;
 
     @Required
-    @FindBy(id = "createUser:button_create")
+    @FindBy(id = "createUserView:createUser:button_create")
     WebElement createButton;
+
+    @Required
+    @FindBy(xpath = "//input[@value=\"Cancel\"]")
+    WebElement cancelButton;
 
     public UserCreationFormPage(WebDriver driver) {
         super(driver);
@@ -80,10 +86,15 @@ public class UserCreationFormPage extends UsersGroupsBasePage {
         firstPasswordInput.sendKeys(password);
         secondPasswordInput.sendKeys(password);
         groupInput.sendKeys(group);
-        WebElement ajaxUserListElement = findElementWithTimeout(By.xpath("//table[@id='createUser:nxl_user:nxw_groups_suggestionBox:suggest']/tbody/tr[1]/td[2]"));
+        WebElement ajaxUserListElement = findElementWithTimeout(By.xpath("//*[@id='createUserView:createUser:nxl_user:nxw_groups_suggestionBox:suggest']/tbody/tr[1]/td[2]"));
         ajaxUserListElement.click();
         createButton.click();
         return asPage(UsersGroupsBasePage.class);
+    }
+
+    public UsersTabSubPage cancelCreation() {
+        cancelButton.click();
+        return asPage(UsersTabSubPage.class);
     }
 
 }

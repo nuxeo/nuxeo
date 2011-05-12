@@ -18,15 +18,26 @@ package org.nuxeo.functionaltests.pages.admincenter.usermanagement;
 
 import static org.junit.Assert.assertEquals;
 
+import org.nuxeo.functionaltests.Required;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
 /**
- * View user details
+ * View user details (New one in the admin center)
+ *
+ * @since 5.4.2
  */
 public class UserViewTabSubPage extends UsersGroupsBasePage {
+
+    @Required
+    @FindBy(linkText = "View")
+    WebElement viewUserTab;
+
+    @Required
+    @FindBy(linkText = "Back to the list")
+    WebElement backToTheListLink;
 
     @FindBy(linkText = "Delete")
     WebElement deleteUserLink;
@@ -57,6 +68,11 @@ public class UserViewTabSubPage extends UsersGroupsBasePage {
     public UserChangePasswordFormPage getChangePasswordUserTab() {
         changePasswordLink.click();
         return asPage(UserChangePasswordFormPage.class);
+    }
+
+    public UsersTabSubPage backToTheList() {
+        backToTheListLink.click();
+        return asPage(UsersTabSubPage.class);
     }
 
 }

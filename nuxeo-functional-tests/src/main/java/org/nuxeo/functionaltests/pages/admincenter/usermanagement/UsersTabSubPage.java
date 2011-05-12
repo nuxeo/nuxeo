@@ -23,16 +23,21 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
+/**
+ * Users Tab Page of the users & groups management (New one in the admin center)
+ *
+ * @since 5.4.2
+ */
 public class UsersTabSubPage extends UsersGroupsBasePage {
 
     @Required
     @FindBy(linkText = "Create a new user")
     WebElement createNewUserLink;
 
-    @FindBy(name = "searchForm:searchText")
+    @FindBy(name = "usersListingView:searchForm:searchText")
     WebElement searchInput;
 
-    @FindBy(name = "searchForm:searchButton")
+    @FindBy(name = "usersListingView:searchForm:searchButton")
     WebElement searchButton;
 
     public UsersTabSubPage(WebDriver driver) {

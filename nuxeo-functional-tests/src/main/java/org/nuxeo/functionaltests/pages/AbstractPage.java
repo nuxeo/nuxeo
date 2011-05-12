@@ -32,8 +32,6 @@ import org.openqa.selenium.support.FindBy;
  */
 public abstract class AbstractPage {
 
-    @FindBy(xpath = "//div[@id=\"facesStatusMessage\"]/ul/li")
-    public WebElement infoFeedback;
 
     @FindBy(name = "userServicesForm")
     public WebElement userServicesForm;
@@ -60,7 +58,7 @@ public abstract class AbstractPage {
     public String getFeedbackMessage() {
         String ret;
         try {
-            ret = infoFeedback.getText();
+            ret = findElementWithTimeout(By.xpath("//li[@class=\"errorFeedback\"]")).getText();
         } catch (NoSuchElementException e) {
             ret = "";
         }
