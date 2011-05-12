@@ -171,9 +171,9 @@ function DropZoneUIHandler(idx, dropZoneId, options,targetSelectedCB) {
   DropZoneUIHandler.prototype.canNotUpload = function(isError) {
     this.cancelUpload();
     if (isError) {
-      alert("Upload can be continue because of an error");
+      alert("Upload cannot continue due to an error");
     } else {
-      alert("You can not upload here (may be insufisant rights)");
+      alert("You cannot upload here (maybe insufficient rights)");
     }
   }
 
@@ -397,7 +397,7 @@ function DropZoneUIHandler(idx, dropZoneId, options,targetSelectedCB) {
       this.batchId=null;
       this.nxUploaded=0;
       this.nxUploadStarted=0;
-      alert("Batch " + batchId + " completed !!!");
+      alert("Batch " + batchId + " completed");
   }
 
 };
