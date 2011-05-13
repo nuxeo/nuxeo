@@ -3,7 +3,7 @@
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="actions">
 
-    <action id="admin" link="view_admin" label="label.main.tab.administration" order="30">
+    <action id="admin" link="view_admin" label="label.main.tab.admin.center" order="60">
       <category>MAIN_TABS</category>
     </action>
 
