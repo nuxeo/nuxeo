@@ -15,9 +15,9 @@
 package org.nuxeo.theme.types;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -27,9 +27,9 @@ public final class TypeRegistry implements Registrable {
 
     private static final Log log = LogFactory.getLog(TypeRegistry.class);
 
-    private final Map<String, Type> registry = new HashMap<String, Type>();
+    private final Map<String, Type> registry = new ConcurrentHashMap<String, Type>();
 
-    private final Map<TypeFamily, List<String>> typeNames = new HashMap<TypeFamily, List<String>>();
+    private final Map<TypeFamily, List<String>> typeNames = new ConcurrentHashMap<TypeFamily, List<String>>();
 
     public synchronized void register(final Type type) {
         String typeName = type.getTypeName();
@@ -101,6 +101,7 @@ public final class TypeRegistry implements Registrable {
         return String.format("%s/%s", family, name);
     }
 
+    @Override
     public synchronized void clear() {
         registry.clear();
         typeNames.clear();
