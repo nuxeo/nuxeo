@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -50,6 +50,9 @@ public class MultipartInput extends MimeMultipart {
             part.attachFile(((HasFile) blob).getFile());
         } else {
             part.setDataHandler(new DataHandler(new BlobDataSource(blob)));
+            if (blob.getFileName() != null) {
+                part.setFileName(blob.getFileName());
+            }
         }
         part.setHeader("Content-Type", blob.getMimeType());
         part.setHeader("Content-Transfer-Encoding", "binary");
