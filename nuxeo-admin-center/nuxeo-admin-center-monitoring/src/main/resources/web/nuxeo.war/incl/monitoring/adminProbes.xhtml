@@ -32,7 +32,7 @@
     <h:column>
       <f:facet name="header"><h:outputText value="#{messages['label.monitoring.probe.status']}" />
       </f:facet>
-      <h:outputText value="#{probe.status}" />
+      <h:outputText value="#{probe.status}" escape="false" />
     </h:column>
     <h:column>
       <f:facet name="header"><h:outputText value="#{messages['label.monitoring.probe.history']}" />
