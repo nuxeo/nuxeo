@@ -5,6 +5,7 @@
 
     <action id="admin" link="view_admin" label="label.main.tab.admin.center" order="60">
       <category>MAIN_TABS</category>
+      <filter-id>only_for_manager</filter-id>
     </action>
 
     <action id="SystemInfo" link="view_admin-fragment.xhtml"
@@ -111,18 +112,21 @@
     <action id="UsersGroupsManager" link="view_admin-fragment.xhtml"
       label="command.manageMembers" order="45">
       <category>NUXEO_ADMIN</category>
+      <filter-id>only_for_manager</filter-id>
       <filter-id>user_manager</filter-id>
       <filter-id>not_readonly</filter-id>
     </action>
     <action id="UsersManager" link="users/view_users.xhtml"
       label="label.userManager.users" order="10">
       <category>UsersGroupsManager_sub_tab</category>
+      <filter-id>only_for_manager</filter-id>
       <filter-id>user_manager</filter-id>
       <filter-id>not_readonly</filter-id>
     </action>
     <action id="GroupsManager" link="users/view_groups.xhtml"
       label="label.groupManager.groups" order="20">
       <category>UsersGroupsManager_sub_tab</category>
+      <filter-id>only_for_manager</filter-id>
       <filter-id>user_manager</filter-id>
       <filter-id>not_readonly</filter-id>
     </action>
