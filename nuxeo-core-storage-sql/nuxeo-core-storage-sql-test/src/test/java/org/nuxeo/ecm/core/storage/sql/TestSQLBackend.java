@@ -409,7 +409,6 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals("900150983cd24fb0d6963f7d28e17f72", bin.getDigest());
         assertEquals("abc", readAllBytes(bin.getStream()));
         assertEquals("abc", readAllBytes(bin.getStream())); // readable twice
-
     }
 
     // assumes one read will read everything
@@ -423,6 +422,73 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals(len, read);
         assertEquals(-1, in.read()); // EOF
         return new String(bytes, "ISO-8859-1");
+    }
+
+    public void testBinaryGC() throws Exception {
+        Session session = repository.getConnection();
+
+        // store some binaries
+        for (String str : Arrays.asList("ABC", "DEF", "GHI", "JKL")) {
+            addBinary(session, str, str);
+            addBinary(session, str, str + "2");
+        }
+        session.save();
+
+        BinaryManagerStatus status = runBinariesGC(0, null);
+        assertEquals(4, status.numBinaries); // ABC, DEF, GHI, JKL
+        assertEquals(4 * 3, status.sizeBinaries);
+        assertEquals(0, status.numBinariesGC);
+        assertEquals(0, status.sizeBinariesGC);
+
+        // remove some binaries
+        session.removeNode(session.getNodeByPath("/ABC", null));
+        session.removeNode(session.getNodeByPath("/ABC2", null));
+        session.removeNode(session.getNodeByPath("/DEF", null));
+        session.removeNode(session.getNodeByPath("/DEF2", null));
+        session.removeNode(session.getNodeByPath("/GHI", null)); // GHI2 remains
+        session.save();
+
+        // add a new binary during GC and revive one which was about to die
+        Thread.sleep(3 * 1000); // sleep before GC to pass its time threshold
+        status = runBinariesGC(1, session);
+        assertEquals(4, status.numBinaries); // DEF3, GHI2, JKL, MNO
+        assertEquals(4 * 3, status.sizeBinaries);
+        assertEquals(1, status.numBinariesGC); // ABC
+        assertEquals(1 * 3, status.sizeBinariesGC);
+
+        Thread.sleep(3 * 1000);
+        status = runBinariesGC(0, null);
+        assertEquals(4, status.numBinaries); // DEF3, GHI2, JKL, MNO
+        assertEquals(4 * 3, status.sizeBinaries);
+        assertEquals(0, status.numBinariesGC);
+        assertEquals(0, status.sizeBinariesGC);
+    }
+
+    protected void addBinary(Session session, String binstr, String name)
+            throws Exception {
+        Binary bin = session.getBinary(new ByteArrayInputStream(
+                binstr.getBytes("UTF-8")));
+        session.addChildNode(session.getRootNode(), name, null, "TestDoc",
+                false).setSimpleProperty("tst:bin", bin);
+    }
+
+    protected BinaryManagerStatus runBinariesGC(int moreWork, Session session)
+            throws Exception {
+        BinaryGarbageCollector gc = repository.getBinaryGarbageCollector();
+        gc.start();
+        repository.markReferencedBinaries(gc);
+        if (moreWork == 1) {
+            // while GC is in progress
+            // add a new binary
+            addBinary(session, "MNO", "MNO");
+            // and revive one that was about to be deleted
+            // note that this wouldn't work if we didn't recreate the Binary
+            // object from an InputStream and reused an old one
+            addBinary(session, "DEF", "DEF3");
+            session.save();
+        }
+        gc.stop(true);
+        return gc.getStatus();
     }
 
     public void testACLs() throws Exception {
@@ -1890,7 +1956,8 @@ public class TestSQLBackend extends SQLBackendTestCase {
         Node node = session.addChildNode(root, "foo", null, "TestDoc", false);
         node.addMixinType("Aged");
         node.setSimpleProperty("age:age", "123");
-        node.setCollectionProperty("age:nicknames", new String[] { "bar", "gee" });
+        node.setCollectionProperty("age:nicknames",
+                new String[] { "bar", "gee" });
         session.save();
 
         // copy the doc

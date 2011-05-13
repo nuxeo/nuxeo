@@ -1143,6 +1143,15 @@ public class SessionImpl implements Session, XAResource {
         throw new RuntimeException("Not implemented");
     }
 
+    public void markReferencedBinaries(BinaryGarbageCollector gc) {
+        checkLive();
+        try {
+            mapper.markReferencedBinaries(gc);
+        } catch (StorageException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     /*
      * ----- XAResource -----
      */

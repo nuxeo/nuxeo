@@ -48,7 +48,14 @@ public interface BinaryManager {
      * @param digest the digest, or {@code null}
      * @return the corresponding binary
      */
-
     Binary getBinary(String digest);
+
+    /**
+     * Returns the Binary Garbage Collector that can be used for this binary
+     * manager.
+     *
+     * @return the binary GC
+     */
+    BinaryGarbageCollector getGarbageCollector();
 
 }

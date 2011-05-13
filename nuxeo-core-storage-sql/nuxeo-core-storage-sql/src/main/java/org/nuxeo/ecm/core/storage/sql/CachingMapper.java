@@ -147,6 +147,11 @@ public class CachingMapper extends CachingRowMapper implements Mapper {
     }
 
     @Override
+    public void markReferencedBinaries(BinaryGarbageCollector gc) throws StorageException {
+        mapper.markReferencedBinaries(gc);
+    }
+
+    @Override
     public void start(Xid xid, int flags) throws XAException {
         mapper.start(xid, flags);
     }

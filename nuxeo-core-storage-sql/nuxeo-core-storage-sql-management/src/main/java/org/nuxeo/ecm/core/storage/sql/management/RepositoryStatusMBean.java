@@ -12,6 +12,8 @@
 
 package org.nuxeo.ecm.core.storage.sql.management;
 
+import org.nuxeo.ecm.core.storage.sql.BinaryManagerStatus;
+
 /**
  * @author Florent Guillaume
  */
@@ -36,5 +38,12 @@ public interface RepositoryStatusMBean {
      * Clears the caches.
      */
     String clearCaches();
+
+    /**
+     * GC the unused binaries.
+     *
+     * @return a status about the number of gc-ed binaries
+     */
+    BinaryManagerStatus gcBinaries();
 
 }

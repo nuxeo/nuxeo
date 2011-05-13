@@ -36,6 +36,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.storage.sql.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.storage.sql.ConnectionSpecImpl;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
 import org.nuxeo.ecm.core.storage.sql.RepositoryImpl;
@@ -241,6 +242,22 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory,
     public void processClusterInvalidationsNext() {
         if (repository != null) {
             repository.processClusterInvalidationsNext();
+        }
+    }
+
+    @Override
+    public BinaryGarbageCollector getBinaryGarbageCollector() {
+        if (repository == null) {
+            return null;
+        }
+        return repository.getBinaryGarbageCollector();
+
+    }
+
+    @Override
+    public void markReferencedBinaries(BinaryGarbageCollector gc) {
+        if (repository != null) {
+            repository.markReferencedBinaries(gc);
         }
     }
 

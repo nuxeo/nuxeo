@@ -12,8 +12,10 @@
 
 package org.nuxeo.ecm.core.storage.sql.management;
 
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import javax.naming.Binding;
 import javax.naming.InitialContext;
@@ -22,6 +24,8 @@ import javax.naming.NamingException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.storage.sql.BinaryGarbageCollector;
+import org.nuxeo.ecm.core.storage.sql.BinaryManagerStatus;
 import org.nuxeo.ecm.core.storage.sql.Repository;
 import org.nuxeo.ecm.core.storage.sql.RepositoryManagement;
 import org.nuxeo.ecm.core.storage.sql.RepositoryResolver;
@@ -61,7 +65,7 @@ public class RepositoryStatus implements RepositoryStatusMBean {
                 list.add((RepositoryManagement) object);
             }
         }
-        if (list.size()==0) {
+        if (list.size() == 0) {
             List<Repository> repos = RepositoryResolver.getRepositories();
             for (Repository repo : repos) {
                 list.add(repo);
@@ -154,6 +158,50 @@ public class RepositoryStatus implements RepositoryStatusMBean {
             buf.append("<br/>");
         }
         return buf.toString();
+    }
+
+    @Override
+    public BinaryManagerStatus gcBinaries() {
+        BinaryManagerStatus status = new BinaryManagerStatus();
+        List<RepositoryManagement> repositories;
+        try {
+            repositories = getRepositories();
+        } catch (NamingException e) {
+            log.error("Error getting repositories", e);
+            status.numBinaries = -1;
+            status.sizeBinaries = -1;
+            return status;
+        }
+        Map<String, BinaryGarbageCollector> repogcs = new LinkedHashMap<String, BinaryGarbageCollector>();
+        Map<String, BinaryGarbageCollector> gcs = new LinkedHashMap<String, BinaryGarbageCollector>();
+        for (RepositoryManagement repository : repositories) {
+            BinaryGarbageCollector gc = repository.getBinaryGarbageCollector();
+            if (gc == null) {
+                // no GC available for this repository (net backend)
+            }
+            String gcid = gc.getId();
+            if (gcs.containsKey(gcid)) {
+                // reuse existing GC with the same unique identifier
+                gc = gcs.get(gcid);
+            } else {
+                gcs.put(gcid, gc);
+                gc.start();
+            }
+            repogcs.put(repository.getName(), gc);
+        }
+        for (RepositoryManagement repository : repositories) {
+            BinaryGarbageCollector gc = repogcs.get(repository.getName());
+            repository.markReferencedBinaries(gc);
+        }
+        for (BinaryGarbageCollector gc : gcs.values()) {
+            gc.stop(true);
+            BinaryManagerStatus s = gc.getStatus();
+            status.numBinaries += s.numBinaries;
+            status.sizeBinaries += s.sizeBinaries;
+            status.numBinariesGC += s.numBinariesGC;
+            status.sizeBinariesGC += s.sizeBinariesGC;
+        }
+        return status;
     }
 
 }

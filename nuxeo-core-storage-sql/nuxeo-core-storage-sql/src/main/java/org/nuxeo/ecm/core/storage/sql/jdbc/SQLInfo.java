@@ -112,12 +112,6 @@ public class SQLInfo {
 
     private final Map<String, Column> copyIdColumnMap;
 
-    private final String selectVersionIdByLabelSql;
-
-    private final List<Column> selectVersionIdByLabelWhereColumns;
-
-    private final Column selectVersionIdByLabelWhatColumn;
-
     protected final Map<String, SQLInfoSelect> selectFragmentById;
 
     protected SQLInfoSelect selectVersionsBySeries;
@@ -141,6 +135,10 @@ public class SQLInfo {
     protected Map<String, List<SQLStatement>> sqlStatements;
 
     protected Map<String, Serializable> sqlStatementsProperties;
+
+    protected List<String> getBinariesSql;
+
+    protected List<Column> getBinariesColumns;
 
     /**
      * Generates and holds the needed SQL statements given a {@link Model} and a
@@ -189,9 +187,8 @@ public class SQLInfo {
         copySqlMap = new HashMap<String, String>();
         copyIdColumnMap = new HashMap<String, Column>();
 
-        selectVersionIdByLabelSql = null;
-        selectVersionIdByLabelWhereColumns = new ArrayList<Column>(2);
-        selectVersionIdByLabelWhatColumn = null;
+        getBinariesSql = new ArrayList<String>(1);
+        getBinariesColumns = new ArrayList<Column>(1);
 
         initSQL();
     }
@@ -411,17 +408,6 @@ public class SQLInfo {
         return copyIdColumnMap.get(tableName);
     }
 
-    public String getVersionIdByLabelSql() {
-        return selectVersionIdByLabelSql;
-    }
-
-    public List<Column> getVersionIdByLabelWhereColumns() {
-        return selectVersionIdByLabelWhereColumns;
-    }
-
-    public Column getVersionIdByLabelWhatColumn() {
-        return selectVersionIdByLabelWhatColumn;
-    }
 
     // ----- prepare everything -----
 
@@ -521,6 +507,24 @@ public class SQLInfo {
                             model.FULLTEXT_SIMPLETEXT_KEY + suffix,
                             model.FULLTEXT_BINARYTEXT_KEY + suffix);
                 }
+            }
+        }
+
+        /*
+         * binary columns for GC
+         */
+        for (Entry<String, List<String>> e : model.getBinaryPropertyInfos().entrySet()) {
+            String tableName = e.getKey();
+            Table table = database.getTable(tableName);
+            for (String key : e.getValue()) {
+                Select select = new Select(table);
+                Column col = table.getColumn(key); // key = name for now
+                select.setWhat("DISTINCT " + col.getQuotedName());
+                select.setFrom(table.getQuotedName());
+                getBinariesSql.add(select.getStatement());
+                // in the result column we want the digest, not the binary
+                Column resCol = new Column(table, null, ColumnType.STRING, null);
+                getBinariesColumns.add(resCol);
             }
         }
     }

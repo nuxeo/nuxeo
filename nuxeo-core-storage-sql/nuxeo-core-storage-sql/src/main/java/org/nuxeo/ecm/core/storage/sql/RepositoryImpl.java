@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.naming.Reference;
+import javax.resource.ResourceException;
 import javax.resource.cci.ConnectionSpec;
 import javax.resource.cci.RecordFactory;
 import javax.resource.cci.ResourceAdapterMetaData;
@@ -468,6 +469,25 @@ public class RepositoryImpl implements Repository {
     @Override
     public void processClusterInvalidationsNext() {
         // TODO pass through or something
+    }
+
+    @Override
+    public BinaryGarbageCollector getBinaryGarbageCollector() {
+        return binaryManager.getGarbageCollector();
+    }
+
+    @Override
+    public void markReferencedBinaries(BinaryGarbageCollector gc) {
+        try {
+            SessionImpl conn = getConnection();
+            try {
+                conn.markReferencedBinaries(gc);
+            } finally {
+                conn.close();
+            }
+        } catch (ResourceException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /*

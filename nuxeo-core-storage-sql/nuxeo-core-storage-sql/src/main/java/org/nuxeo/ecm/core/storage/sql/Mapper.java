@@ -238,4 +238,12 @@ public interface Mapper extends RowMapper, XAResource {
     Lock removeLock(Serializable id, String owner, boolean force)
             throws StorageException;
 
+    /**
+     * Marks the binaries referenced by this mapper with the referenced binary
+     * garbage collector.
+     *
+     * @param gc the binary garbage collector
+     */
+    void markReferencedBinaries(BinaryGarbageCollector gc) throws StorageException;
+
 }

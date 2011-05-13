@@ -32,6 +32,7 @@ import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.security.SecurityManager;
 import org.nuxeo.ecm.core.storage.Credentials;
 import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.storage.sql.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.storage.sql.ConnectionSpecImpl;
 import org.nuxeo.ecm.core.storage.sql.Repository;
 import org.nuxeo.ecm.core.storage.sql.Session;
@@ -73,6 +74,7 @@ public class ConnectionFactoryImpl implements Repository,
      * constructed by application code and passed our manual
      * {@link ConnectionManagerImpl}.
      */
+    @SuppressWarnings("unused")
     private final boolean managed;
 
     private boolean firstAccessInitialized;
@@ -307,6 +309,16 @@ public class ConnectionFactoryImpl implements Repository,
     @Override
     public void processClusterInvalidationsNext() {
         managedConnectionFactory.processClusterInvalidationsNext();
+    }
+
+    @Override
+    public BinaryGarbageCollector getBinaryGarbageCollector() {
+        return managedConnectionFactory.getBinaryGarbageCollector();
+    }
+
+    @Override
+    public void markReferencedBinaries(BinaryGarbageCollector gc) {
+        managedConnectionFactory.markReferencedBinaries(gc);
     }
 
     @Override

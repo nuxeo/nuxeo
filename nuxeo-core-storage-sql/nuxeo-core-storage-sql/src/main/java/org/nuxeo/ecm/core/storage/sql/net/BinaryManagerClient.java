@@ -22,6 +22,7 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.storage.sql.Binary;
+import org.nuxeo.ecm.core.storage.sql.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.storage.sql.BinaryManager;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
 import org.nuxeo.ecm.core.storage.sql.RepositoryImpl;
@@ -52,6 +53,12 @@ public class BinaryManagerClient implements BinaryManager {
     public void initialize(RepositoryDescriptor repositoryDescriptor)
             throws IOException {
         url = getUrl(repositoryDescriptor);
+    }
+
+    @Override
+    public BinaryGarbageCollector getGarbageCollector() {
+        // cannot GC for a remote repository
+        return null;
     }
 
     protected static String getUrl(RepositoryDescriptor repositoryDescriptor) {

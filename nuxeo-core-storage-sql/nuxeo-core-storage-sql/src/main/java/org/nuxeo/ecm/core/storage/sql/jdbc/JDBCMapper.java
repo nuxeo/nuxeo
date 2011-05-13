@@ -48,6 +48,8 @@ import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.storage.sql.BinaryGarbageCollector;
+import org.nuxeo.ecm.core.storage.sql.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.Invalidations;
 import org.nuxeo.ecm.core.storage.sql.LockManager;
 import org.nuxeo.ecm.core.storage.sql.Mapper;
@@ -875,6 +877,46 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             deleteRows(Model.LOCK_TABLE_NAME, id);
         }
         return oldLock;
+    }
+
+    @Override
+    public void markReferencedBinaries(BinaryGarbageCollector gc)
+            throws StorageException {
+        log.debug("Starting binaries GC mark");
+        Statement st = null;
+        try {
+            st = connection.createStatement();
+            int i = -1;
+            for (String sql : sqlInfo.getBinariesSql) {
+                i++;
+                Column col = sqlInfo.getBinariesColumns.get(i);
+                if (logger.isLogEnabled()) {
+                    logger.log(sql);
+                }
+                ResultSet rs = st.executeQuery(sql);
+                int n = 0;
+                while (rs.next()) {
+                    n++;
+                    String digest = (String) col.getFromResultSet(rs, 1);
+                    gc.mark(digest);
+                }
+                if (logger.isLogEnabled()) {
+                    logger.logCount(n);
+                }
+            }
+        } catch (Exception e) {
+            checkConnectionReset(e);
+            throw new RuntimeException("Failed to mark binaries for gC", e);
+        } finally {
+            if (st != null) {
+                try {
+                    closeStatement(st);
+                } catch (SQLException e) {
+                    log.error(e.getMessage(), e);
+                }
+            }
+        }
+        log.debug("End of binaries GC mark");
     }
 
     /*

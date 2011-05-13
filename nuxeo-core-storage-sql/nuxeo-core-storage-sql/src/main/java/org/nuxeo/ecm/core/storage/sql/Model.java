@@ -298,6 +298,9 @@ public class Model {
     /** Per-table info about fragments keys type. */
     private final Map<String, Map<String, ColumnType>> fragmentsKeys;
 
+    /** All binary columns, fragment name -> keys. */
+    private final Map<String, List<String>> binaryPropertyInfos;
+
     /** Maps collection table names to their type. */
     private final Map<String, PropertyType> collectionTables;
 
@@ -360,6 +363,7 @@ public class Model {
         allPathPropertyInfos = new HashMap<String, ModelProperty>();
         fulltextInfo = new ModelFulltext();
         fragmentsKeys = new HashMap<String, Map<String, ColumnType>>();
+        binaryPropertyInfos = new HashMap<String, List<String>>();
 
         collectionTables = new HashMap<String, PropertyType>();
         collectionOrderBy = new HashMap<String, String>();
@@ -472,6 +476,15 @@ public class Model {
                         fragmentKeys = new LinkedHashMap<String, ColumnType>());
             }
             fragmentKeys.put(fragmentKey, type);
+
+            // record binary columns for the GC
+            if (type.spec == ColumnSpec.BLOBID) {
+                List<String> keys = binaryPropertyInfos.get(fragmentName);
+                if (keys == null) {
+                    binaryPropertyInfos.put(fragmentName, keys = new ArrayList<String>(1));
+                }
+                keys.add(fragmentKey);
+            }
         }
 
         // system properties
@@ -864,6 +877,10 @@ public class Model {
 
     public Map<String, ColumnType> getFragmentKeysType(String fragmentName) {
         return fragmentsKeys.get(fragmentName);
+    }
+
+    public Map<String, List<String>> getBinaryPropertyInfos() {
+        return binaryPropertyInfos;
     }
 
     protected void addTypeSimpleFragment(String typeName, String fragmentName) {
