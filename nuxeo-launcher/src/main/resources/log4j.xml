@@ -21,7 +21,7 @@
   <!-- ================================= -->
   <appender name="FILE" class="org.apache.log4j.DailyRollingFileAppender">
     <errorHandler class="org.apache.log4j.helpers.OnlyOnceErrorHandler" />
-    <param name="File" value="${nuxeo.home}/log/console.log" />
+    <param name="File" value="${nuxeo.log.dir}/console.log" />
     <param name="Append" value="true" />
     <!-- Rollover at midnight every day -->
     <param name="DatePattern" value="'.'yyyy-MM-dd" />

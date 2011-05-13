@@ -132,7 +132,7 @@ echo Found NUXEO_CONF = %NUXEO_CONF%
 set PATH=%PATH%;%NUXEO_HOME%\3rdparty
 set JAVA_OPTS=-Xms512m -Xmx1024m -XX:MaxPermSize=256m -Djava.net.preferIPv4Stack=true -Dsun.rmi.dgc.client.gcInterval=3600000 -Dsun.rmi.dgc.server.gcInterval=3600000 -Dfile.encoding=UTF-8
 
-echo Launcher command: "%JAVA%" -Dlauncher.java.opts="%JAVA_OPTS%" -Dnuxeo.home="%NUXEO_HOME%" -Dnuxeo.conf="%NUXEO_CONF%" -jar "%NUXEO_LAUNCHER%" %GUI_OPTION% %1 %2 %3 %4 %5 %6 %7 %8 %9
-"%JAVA%" -Dlauncher.java.opts="%JAVA_OPTS%" -Dnuxeo.home="%NUXEO_HOME%" -Dnuxeo.conf="%NUXEO_CONF%" -jar "%NUXEO_LAUNCHER%" %GUI_OPTION% %1 %2 %3 %4 %5 %6 %7 %8 %9
+echo Launcher command: "%JAVA%" -Dlauncher.java.opts="%JAVA_OPTS%" -Dnuxeo.home="%NUXEO_HOME%" -Dnuxeo.conf="%NUXEO_CONF%" -Dnuxeo.log.dir="%APPDATA%\Nuxeo\log" -jar "%NUXEO_LAUNCHER%" %GUI_OPTION% %1 %2 %3 %4 %5 %6 %7 %8 %9
+"%JAVA%" -Dlauncher.java.opts="%JAVA_OPTS%" -Dnuxeo.home="%NUXEO_HOME%" -Dnuxeo.conf="%NUXEO_CONF%" -Dnuxeo.log.dir="%APPDATA%\Nuxeo\log" -jar "%NUXEO_LAUNCHER%" %GUI_OPTION% %1 %2 %3 %4 %5 %6 %7 %8 %9
 
 :END
