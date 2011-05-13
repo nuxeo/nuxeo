@@ -185,7 +185,7 @@
         <color>#D7E3F1</color>
         <display>inline-block</display>
         <font-size>12px</font-size>
-        <padding>4px 11px</padding>
+        <padding>4px 11px 9px</padding>
         <text-decoration>none</text-decoration>
       </selector>
       <selector path=".mainTabs li.selected">
