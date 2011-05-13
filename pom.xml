@@ -136,21 +136,6 @@
     <url>http://hg.nuxeo.org/nuxeo/nuxeo-runtime</url>
   </scm>
 
-  <developers>
-    <developer>
-      <id>bstefanescu</id>
-      <name>Bogdan Stefanescu</name>
-      <email>contact@nuxeo.com</email>
-      <organization>Nuxeo SAS</organization>
-      <organizationUrl>http://www.nuxeo.com/en</organizationUrl>
-      <url>http://blogs.nuxeo.com/section/blogs/bogdan_stefanescu</url>
-      <roles>
-        <role>Lead Architect</role>
-        <role>Project Manager</role>
-      </roles>
-    </developer>
-  </developers>
-
   <repositories>
     <repository>
       <id>public</id>
