@@ -254,9 +254,14 @@ public class RepositoryImpl implements Repository {
     @Override
     public String getServerURL() {
         String host = Framework.getProperty(RUNTIME_SERVER_HOST, "localhost");
-        return String.format("http://%s:%d/%s", host,
+        if (repositoryDescriptor.listen!=null) {
+            return String.format("http://%s:%d/%s", host,
                 repositoryDescriptor.listen.port,
                 repositoryDescriptor.listen.path);
+        }
+        else {
+            return null;
+        }
     }
 
     @Override

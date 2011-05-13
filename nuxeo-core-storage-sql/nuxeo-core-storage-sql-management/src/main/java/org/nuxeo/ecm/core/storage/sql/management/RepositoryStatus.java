@@ -22,7 +22,9 @@ import javax.naming.NamingException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.storage.sql.Repository;
 import org.nuxeo.ecm.core.storage.sql.RepositoryManagement;
+import org.nuxeo.ecm.core.storage.sql.RepositoryResolver;
 import org.nuxeo.ecm.core.storage.sql.net.MapperClientInfo;
 
 /**
@@ -57,6 +59,12 @@ public class RepositoryStatus implements RepositoryStatusMBean {
                     continue;
                 }
                 list.add((RepositoryManagement) object);
+            }
+        }
+        if (list.size()==0) {
+            List<Repository> repos = RepositoryResolver.getRepositories();
+            for (Repository repo : repos) {
+                list.add(repo);
             }
         }
         return list;
@@ -125,21 +133,26 @@ public class RepositoryStatus implements RepositoryStatusMBean {
             return "Error!";
         }
         StringBuilder buf = new StringBuilder();
-        buf.append("<dl>").append("\n");
+        buf.append("Actives remote session for SQL repositories:<br />");
         for (RepositoryManagement repository : repositories) {
-            buf.append("<dt class='repository'>").append(repository.getName()).append("</dt>").append("\n");
-            buf.append("<dd>").append("\n");
-            buf.append(" <dl>").append("\n");
-            buf.append("  <dt>location</dt>");
-            buf.append("  <dd class='location'>").append(repository.getServerURL()).append("</dd>");
-            for (MapperClientInfo info : repository.getClientInfos()) {
-                buf.append("  <dt>").append(info.getRemoteUser()).append("  </dt>");
-                buf.append("  <dd>").append(info.getRemoteIP()).append("  </dd>").append("\n");
+            buf.append("<b>").append(repository.getName()).append("</b>");
+            if (repository.getServerURL()==null) {
+                buf.append(" Server mode not activated");
+            } else {
+                buf.append(repository.getServerURL()).append("<br/>");
+                if (repository.getClientInfos().size()==0) {
+                    buf.append("No client connected").append("<br/>");
+                }else {
+                    buf.append("<ul>");
+                    for (MapperClientInfo info : repository.getClientInfos()) {
+                        buf.append("  <li>").append(info.getRemoteUser()).append("  :");
+                        buf.append(info.getRemoteIP()).append("  </li>");
+                    }
+                    buf.append("</ul>");
+                }
             }
-            buf.append(" </dl>").append("\n");
-            buf.append("</dd>").append("\n");
+            buf.append("<br/>");
         }
-        buf.append("</dl>").append("\n");
         return buf.toString();
     }
 

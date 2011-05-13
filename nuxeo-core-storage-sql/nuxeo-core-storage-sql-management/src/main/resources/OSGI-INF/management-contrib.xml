@@ -13,7 +13,13 @@
     target="org.nuxeo.ecm.core.management.CoreManagementComponent"
     point="probes">
          <probe name="remoteSQLStorageSessions"
-                  class="org.nuxeo.ecm.core.storage.sql.management.RemoteSessionsProbe"/>
+                  class="org.nuxeo.ecm.core.storage.sql.management.RemoteSessionsProbe">
+                  <label>Remote SQL sessions</label>
+                  </probe>
+         <probe name="activeRepositorySessions"
+                  class="org.nuxeo.ecm.core.storage.sql.management.ActiveSessionsProbe">
+                  <label>Active (local) SQL sessions</label>
+                  </probe>
    </extension>
 
 </component>
