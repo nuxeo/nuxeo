@@ -47,6 +47,7 @@ from webunit.utility import Upload
 from utils import extractToken, extractJsfState, extractIframes, extractJsessionId
 from funkload.utils import Data
 
+
 class BasePage:
     """Base class for nuxeo ep page."""
     fl = None
@@ -72,7 +73,6 @@ class BasePage:
         fl = self.fl
         fl.get(fl.server_url + '/login.jsp',
                description="Check if the server is alive")
-
 
     # pages
     def logout(self):
@@ -112,7 +112,7 @@ class BasePage:
             ['Submit', 'Connexion']],
             description="Login invalid user " + user)
         fl.assert_('loginFailed=true' in fl.getLastUrl(),
-                   'Invalid login expected for %s:%s.' %  (user, password))
+                   'Invalid login expected for %s:%s.'  %  (user, password))
         return self
 
     def viewDocumentPath(self, path, description=None, raiseOn404=True,
@@ -157,82 +157,128 @@ class BasePage:
     def getRootSections(self):
         return self.viewDocumentPath("sections")
 
-    def memberManagement(self):
+    def adminCenter(self):
         fl = self.fl
-        self.viewDocumentUid(self.getDocUid(), outcome='view_users',
-                             description="View member management")
+        fl.post(fl.server_url + "/view_documents.faces", params=[
+            ['userServicesForm_SUBMIT', '1'],
+            ['javax.faces.ViewState', fl.getLastJsfState()],
+            ['userServicesForm:userServicesActionsTable:2:userServicesActionCommandLink', 'userServicesForm:userServicesActionsTable:2:userServicesActionCommandLink']],
+            description="Admin center page")
+        fl.assert_("Exit admin center" in fl.getBody(),
+                   "Wrong admin center page")
+        return self
+
+    def exitAdminCenter(self):
+        fl = self.fl
+        if not "Exit admin center" in fl.getBody():
+            # not in admin center
+            return self
+        fl.post(fl.server_url + "/view_admin.faces", params=[
+            ['userServicesForm_SUBMIT', '1'],
+            ['javax.faces.ViewState', fl.getLastJsfState()],
+            ['userServicesForm:userServicesBottomActionsTable:2:userServicesBottomActionCommandLink', 'userServicesForm:userServicesBottomActionsTable:2:userServicesBottomActionCommandLink']],
+            description="Exit admin center")
+        fl.assert_(not '@view_admin' in fl.getLastUrl(),
+                   "Fail to exit admin center")
+        return self
+
+    def usersAndGroupsPage(self):
+        fl = self.fl
+        if not "Exit admin center" in fl.getBody():
+            self.adminCenter()
+        fl.post(fl.server_url + "/view_admin.faces", params=[
+            ['adminSelectorForm_SUBMIT', '1'],
+            ['javax.faces.ViewState', fl.getLastJsfState()],
+            ['adminSelectorForm:adminSelectorList:5:item', 'adminSelectorForm:adminSelectorList:5:item']],
+            description="Users and groups page")
+        fl.assert_('usersListingView' in fl.getBody(),
+                   "Wrong user page")
         return self
 
     def createUser(self, username, email, password, firstname='',
                    lastname='', company='', groups=''):
         """This method does not raise exception if user already exists"""
         fl = self.fl
-        self.memberManagement()
-
-        fl.post(fl.server_url + '/userscompat/view_users.faces', params=[
-            ['createUserActionsForm:createUserButton', 'createUserActionsForm:createUserButton'],
-            ['javax.faces.ViewState', fl.getLastJsfState()],
-            ['createUserActionsForm_SUBMIT', '1']],
-            description="View user creation form")
+        if (not 'createUser:button_save_and_create' in fl.getBody()):
+            fl.assert_('createUserButton' in fl.getBody(),
+                       "You should call usersAndGroupsPage first")
+            fl.post(fl.server_url + "/view_admin.faces", params=[
+                    ['AJAXREQUEST', 'usersListingView:cv_users_listing_search_only__region'],
+                    ['usersListingView:createUserActionsForm_SUBMIT', '1'],
+                    ['javax.faces.ViewState', fl.getLastJsfState()],
+                    ['usersListingView:createUserActionsForm:createUserButton', 'usersListingView:createUserActionsForm:createUserButton']],
+                    description="View user creation form")
+        fl.assert_('createUser:button_save_and_create' in fl.getBody(), 
+                   'Wrong page')
 
         jsfState = fl.getLastJsfState()
-
-        fl.post(fl.server_url + '/userscompat/create_user.faces', params=[
-            ['AJAXREQUEST', 'createUser:nxl_user:nxw_groups_ajax_region'],
-            ['createUser:nxl_user:nxw_username', username],
-            ['createUser:nxl_user:nxw_firstname', firstname],
-            ['createUser:nxl_user:nxw_lastname', lastname],
-            ['createUser:nxl_user:nxw_company', company],
-            ['createUser:nxl_user:nxw_email', email],
-            ['createUser:nxl_user:nxw_firstPassword', password],
-            ['createUser:nxl_user:nxw_secondPassword', password],
-            ['createUser:nxl_user:nxw_passwordMatcher', 'needed'],
-            ['createUser:nxl_user:nxw_groups_suggest', groups],
-            ['createUser:nxl_user:nxw_groups_suggestionBox_selection', ''],
-            ['createUser_SUBMIT', '1'],
+        fl.post(fl.server_url + "/view_admin.faces", params=[
+            ['AJAXREQUEST', 'createUserView:createUser:nxl_user:nxw_groups_ajax_region'],
+            ['createUserView:createUser:nxl_user:nxw_username', username],
+            ['createUserView:createUser:nxl_user:nxw_firstname', firstname],
+            ['createUserView:createUser:nxl_user:nxw_lastname', lastname],
+            ['createUserView:createUser:nxl_user:nxw_company', company],
+            ['createUserView:createUser:nxl_user:nxw_email', email],
+            ['createUserView:createUser:nxl_user:nxw_firstPassword', password],
+            ['createUserView:createUser:nxl_user:nxw_secondPassword', password],
+            ['createUserView:createUser:nxl_user:nxw_passwordMatcher', 'needed'],
+            ['createUserView:createUser:nxl_user:nxw_groups_suggest', groups],
+            ['createUserView:createUser:nxl_user:nxw_groups_suggestionBox_selection', ''],
+            ['createUserView:createUser', 'createUserView:createUser'],
+            ['autoScroll', ''],
             ['javax.faces.ViewState', jsfState],
+            ['hideVirtualGroups', 'true'],
             ['userSuggestionSearchType', 'GROUP_TYPE'],
             ['userSuggestionMaxSearchResults', '0'],
-            ['ajaxSingle', 'createUser:nxl_user:nxw_groups_suggestionBox'],
-            ['createUser:nxl_user:nxw_groups_suggestionBox', 'createUser:nxl_user:nxw_groups_suggestionBox'],
+            ['ajaxSingle', 'createUserView:createUser:nxl_user:nxw_groups_suggestionBox'],
+            ['createUserView:createUser:nxl_user:nxw_groups_suggestionBox', 'createUserView:createUser:nxl_user:nxw_groups_suggestionBox'],
             ['inputvalue', groups],
             ['AJAX:EVENTS_COUNT', '1']],
             description="Create user search group")
 
-        fl.post(fl.server_url + '/userscompat/create_user.faces', params=[
-            ['AJAXREQUEST', 'createUser:nxl_user:nxw_groups_ajax_region'],
-            ['createUser:nxl_user:nxw_username', username],
-            ['createUser:nxl_user:nxw_firstname', firstname],
-            ['createUser:nxl_user:nxw_lastname', lastname],
-            ['createUser:nxl_user:nxw_company', company],
-            ['createUser:nxl_user:nxw_email', email],
-            ['createUser:nxl_user:nxw_firstPassword', password],
-            ['createUser:nxl_user:nxw_secondPassword', password],
-            ['createUser:nxl_user:nxw_passwordMatcher', 'needed'],
-            ['createUser:nxl_user:nxw_groups_suggest', groups],
-            ['createUser:nxl_user:nxw_groups_suggestionBox_selection', '0'],
-            ['createUser_SUBMIT', '1'],
+        fl.post(fl.server_url + "/view_admin.faces", params=[
+            ['AJAXREQUEST', 'createUserView:createUser:nxl_user:nxw_groups_ajax_region'],
+            ['createUserView:createUser:nxl_user:nxw_username', username],
+            ['createUserView:createUser:nxl_user:nxw_firstname', firstname],
+            ['createUserView:createUser:nxl_user:nxw_lastname', lastname],
+            ['createUserView:createUser:nxl_user:nxw_company', company],
+            ['createUserView:createUser:nxl_user:nxw_email', email],
+            ['createUserView:createUser:nxl_user:nxw_firstPassword', password],
+            ['createUserView:createUser:nxl_user:nxw_secondPassword', password],
+            ['createUserView:createUser:nxl_user:nxw_passwordMatcher', 'needed'],
+            ['createUserView:createUser:nxl_user:nxw_groups_suggest', ''],
+            ['createUserView:createUser:nxl_user:nxw_groups_suggestionBox_selection', '0'],
+            ['createUserView:createUser', 'createUserView:createUser'],
+            ['autoScroll', ''],
             ['javax.faces.ViewState', jsfState],
-            ['createUser:nxl_user:nxw_groups_suggestionBox:nxw_groups_listRegion_select', 'createUser:nxl_user:nxw_groups_suggestionBox:nxw_groups_listRegion_select'],
+            ['hideVirtualGroups', 'true'],
+            ['userSuggestionSearchType', 'GROUP_TYPE'],
+            ['userSuggestionMaxSearchResults', '0'],
             ['suggestionSelectionListId', 'nxw_groups_list'],
-            ['suggestionInputSelectorId', 'nxw_groups_suggest']],
+            ['createUserView:createUser:nxl_user:nxw_groups_suggestionBox:nxw_groups_listRegion_select', 'createUserView:createUser:nxl_user:nxw_groups_suggestionBox:nxw_groups_listRegion_select']],
             description="Create user select group")
 
-        fl.post(fl.server_url + "/userscompat/create_user.faces", params=[
-            ['createUser:nxl_user:nxw_username', username],
-            ['createUser:nxl_user:nxw_firstname', firstname],
-            ['createUser:nxl_user:nxw_lastname', lastname],
-            ['createUser:nxl_user:nxw_company', company],
-            ['createUser:nxl_user:nxw_email', email],
-            ['createUser:nxl_user:nxw_firstPassword', password],
-            ['createUser:nxl_user:nxw_secondPassword', password],
-            ['createUser:nxl_user:nxw_passwordMatcher', 'needed'],
-            ['createUser:nxl_user:nxw_groups_suggest', ''],
-            ['createUser:nxl_user:nxw_groups_suggestionBox_selection', ''],
-            ['createUser:button_create', 'Save'],
-            ['createUser_SUBMIT', '1'],
-            ['javax.faces.ViewState', jsfState]],
+
+        fl.post(fl.server_url + "/view_admin.faces", params=[
+            ['AJAXREQUEST', '_viewRoot'],
+            ['createUserView:createUser:nxl_user:nxw_username', username],
+            ['createUserView:createUser:nxl_user:nxw_firstname', firstname],
+            ['createUserView:createUser:nxl_user:nxw_lastname', lastname],
+            ['createUserView:createUser:nxl_user:nxw_company', company],
+            ['createUserView:createUser:nxl_user:nxw_email', email],
+            ['createUserView:createUser:nxl_user:nxw_firstPassword', password],
+            ['createUserView:createUser:nxl_user:nxw_secondPassword', password],
+            ['createUserView:createUser:nxl_user:nxw_passwordMatcher', 'needed'],
+            ['createUserView:createUser:nxl_user:nxw_groups_suggest', groups],
+            ['createUserView:createUser:nxl_user:nxw_groups_suggestionBox_selection', ''],
+            ['createUserView:createUser', 'createUserView:createUser'],
+            ['autoScroll', ''],
+            ['javax.faces.ViewState', jsfState],
+            ['createUserView:createUser:button_save_and_create', 'createUserView:createUser:button_save_and_create']],
                 description="Create user submit form")
+
+        fl.assert_('User already exists' in fl.getBody() or 
+                   'User created' in fl.getBody())
         return self
 
     def dashboard(self):
@@ -248,7 +294,7 @@ class BasePage:
         """open social dashboard"""
         fl = self.fl
         server_url = fl.server_url
-        fl.post(server_url + "/view_documents.faces", params=[
+        fl.post(fl.server_url + "/view_documents.faces", params=[
             ['userServicesForm:userServicesActionsTable:0:userServicesActionCommandLink', 'userServicesForm:userServicesActionsTable:0:userServicesActionCommandLink'],
             ['javax.faces.ViewState', fl.getLastJsfState()],
             ['userServicesForm_SUBMIT', '1']],
@@ -360,7 +406,6 @@ class BasePage:
                      'Not a search result page')
         return self
 
-
     def edit(self):
         ret = self.viewDocumentUid(self.getDocUid(), tab='TAB_EDIT',
                                    description="View edit tab")
@@ -454,7 +499,6 @@ class BasePage:
         return ret
 
 
-
 class LoginPage(BasePage):
     """The Login page."""
     def view(self):
@@ -500,7 +544,7 @@ class FolderPage(BasePage):
             description="Create a section form")
         fl.assert_('nxw_title' in fl.getBody(),
                    "Workspace creation form not found.")
-        
+
         fl.post(server_url + "/create_document.faces", params=[
             ['javax.faces.ViewState', fl.getLastJsfState()],
             ['document_create:nxl_heading:nxw_description', description],
@@ -510,7 +554,6 @@ class FolderPage(BasePage):
             description="Create a section submit")
         fl.assert_('Section saved' in fl.getBody())
         return self
-        
 
     def createFolder(self, title, description):
         fl = self.fl
@@ -571,7 +614,7 @@ class FolderPage(BasePage):
         else:
             start = html.find('form id="document_content"')
         end = html.find(title, start)
-        fl.assert_(end>0, 'Item with title "%s" not found.' % title)
+        fl.assert_(end > 0, 'Item with title "%s" not found.' % title)
         start = html.rfind('<tr class', start, end)
 
         # seam remoting selection is now done in ajax
@@ -618,7 +661,7 @@ class FolderPage(BasePage):
         if item_type in ['Section', 'SectionRoot']:
             table_name = "section_content"
             pos = '0'
-        params=[
+        params = [
             [table_name + ':nxl_document_listing_ajax:nxw_listing_ajax_selection_box_with_current_document', 'on'],
             ['javax.faces.ViewState', state],
             [table_name + ':clipboardActionsTable_0_0:' + pos + ':clipboardActionsButton', 'Delete'],
@@ -740,4 +783,3 @@ class FolderPage(BasePage):
 
 class DocumentPage(BasePage):
     """Document page."""
-

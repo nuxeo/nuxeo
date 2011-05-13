@@ -33,7 +33,7 @@ class Nuxeo(NuxeoTestCase):
     dir_title = "FLNXTEST Bench folder"
     dir_path = "workspaces/FLNXTEST Bench workspace/FLNXTEST Bench folder"
     section_title = "FLNXTEST Bench section"
-    section_path = "sections/flnxtest-bench-section"
+    section_path = "sections/FLNXTEST Bench section"
     tag = "FLNXTEST"
 
     def setUp(self):
@@ -61,7 +61,7 @@ class Nuxeo(NuxeoTestCase):
                  .rights().grant('ReadWrite', 'members')
                  .view()
                  .createFolder(self.dir_title, 'A description'))
-
+        return
         # create users
         login = self.cred_member[0]
         pwd = self.cred_member[1]
@@ -69,13 +69,14 @@ class Nuxeo(NuxeoTestCase):
         host = self.credential_host
         port = self.credential_port
         group = 'members'
-        p = p.memberManagement()
+        p = p.adminCenter().usersAndGroupsPage()
         while True:
             p.createUser(login, login + '@127.0.0.1', pwd, groups='members',
                          firstname="first", lastname=login.capitalize())
             login, pwd = xmlrpc_get_credential(host, port, group)
             if login == first_login:
                 break
+        p = p.exitAdminCenter()
         p.logout()
 
     def testWriter(self):
