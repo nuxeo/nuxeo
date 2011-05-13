@@ -8,8 +8,14 @@
 
  <h2><h:outputText value="#{messages['adminsubtab.sysinfo.hostserverinfo']}" /></h2>
  <script>
+ var nbActiveSessions=#{nbActiveUserHttpSessions};
+
  function confirmRestart() {
-  return window.confirm("<h:outputText value="#{messages['label.restart.confirm']}" />");
+  var restartMessage = '<h:outputText value="#{messages['label.restart.confirm']}" />';
+  if (nbActiveSessions>1) {
+    restartMessage = restartMessage + "\n( " + (nbActiveSessions-1) + " " + "<h:outputText value="#{messages['label.restart.connectedusers']}" />" + ' )';
+  }
+  return window.confirm(restartMessage);
  }
  </script>
  <pre>
