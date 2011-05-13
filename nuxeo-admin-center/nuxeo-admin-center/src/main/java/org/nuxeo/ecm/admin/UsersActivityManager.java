@@ -178,7 +178,7 @@ public class UsersActivityManager implements Serializable {
 
     @Factory(value = "nbActiveUserHttpSessions", scope = ScopeType.EVENT)
     public int getUserSessionsCount() {
-        return NuxeoHttpSessionMonitor.instance().getTrackedSessions().size();
+        return NuxeoHttpSessionMonitor.instance().getSortedSessions().size();
     }
 
     @Factory(value = "userHttpSessions", scope = ScopeType.EVENT)
