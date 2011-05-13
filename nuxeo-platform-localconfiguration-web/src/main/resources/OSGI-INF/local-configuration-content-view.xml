@@ -13,25 +13,9 @@
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
-    point="widgettypes">
-
-    <widgetType name="content_view_selection">
-      <documentation>
-
-      </documentation>
-      <handler-class>
-        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
-      </handler-class>
-      <property name="template">/widgets/content_view_selection_widget_template.xhtml
-      </property>
-    </widgetType>
-
-  </extension>
-
-  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="widgets">
 
-    <widget name="content_view_selection" type="content_view_selection">
+    <widget name="content_view_selection" type="list">
       <labels>
         <label mode="any">label.local.configuration.content.view.contentViewSelection</label>
       </labels>
@@ -39,6 +23,49 @@
       <fields>
         <field>cvconf:cvNamesByType</field>
       </fields>
+      <properties mode="any">
+        <property name="hideSubLabels">true</property>
+      </properties>
+      <subWidgets>
+        <widget name="complexListItem" type="template">
+          <labels>
+            <label mode="any"></label>
+          </labels>
+          <properties mode="any">
+            <property name="template">
+              /widgets/complex_list_item_widget_template.xhtml
+            </property>
+            <property name="hideSubLabels">true</property>
+            <property name="display">inline</property>
+          </properties>
+          <subWidgets>
+            <widget name="docType" type="selectOneMenu">
+              <fields>
+                <field>docType</field>
+              </fields>
+              <labels>
+                <label mode="any"></label>
+              </labels>
+              <selectOptions>
+                <options value="#{contentViewConfigurationActions.availableDocTypes}"
+                  var="docType" itemValue="#{docType.value}" itemLabel="#{docType.label}" />
+              </selectOptions>
+            </widget>
+            <widget name="contentView" type="selectOneMenu">
+              <fields>
+                <field>contentView</field>
+              </fields>
+              <labels>
+                <label mode="any"></label>
+              </labels>
+              <selectOptions>
+                <options value="#{contentViewConfigurationActions.availableContentViews}"
+                  var="contentView" itemValue="#{contentView.value}" itemLabel="#{contentView.label}" />
+              </selectOptions>
+            </widget>
+          </subWidgets>
+        </widget>
+      </subWidgets>
     </widget>
 
   </extension>

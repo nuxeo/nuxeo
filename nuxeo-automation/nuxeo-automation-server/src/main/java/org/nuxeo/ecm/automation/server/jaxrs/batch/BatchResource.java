@@ -30,6 +30,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
@@ -53,6 +55,8 @@ public class BatchResource {
 
     private static final String REQUEST_BATCH_ID = "batchId";
 
+    protected static final Log log = LogFactory.getLog(BatchResource.class);
+
     public CoreSession getCoreSession(HttpServletRequest request) {
         return SessionFactory.getSession(request);
     }
@@ -69,8 +73,7 @@ public class BatchResource {
 
         fileName = URLDecoder.decode(fileName, "UTF-8");
         InputStream is = request.getInputStream();
-
-        System.out.println(" uploaded " + fileName + " (" + fileSize + "b)");
+        log.debug("uploaded " + fileName + " (" + fileSize + "b)");
 
         BatchManager bm = Framework.getLocalService(BatchManager.class);
         bm.addStream(batchId, idx, is, fileName, mimeType);
@@ -124,6 +127,7 @@ public class BatchResource {
                 return as.run(ctx, chain);
             }
         } catch (Exception e) {
+            log.error("Error while executing batch", e);
             return "{ error:'" + e.getMessage() + "'}";
         }
     }

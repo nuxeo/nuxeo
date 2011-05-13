@@ -15,7 +15,9 @@
  </c:if>
 
  <a4j:outputPanel id="repoInfos">
-  <p><h:outputText value="#{messages['adminsubtab.sysinfo.repostat.openconnection.1']}" />  #{systemInfo.openSessionNumber} <h:outputText value="#{messages['adminsubtab.sysinfo.repostat.openconnection.2']}" /></p>
+  <p><h:outputText value="#{messages['adminsubtab.sysinfo.repostat.openconnection.1']} #{systemInfo.openSessionNumber} #{messages['adminsubtab.sysinfo.repostat.openconnection.2']}" /></p>
+
+  <p><h:outputText value="#{messages['adminsubtab.sysinfo.repostat.activeconnection']} #{systemInfo.activeSessionNumber}" /></p>
 
   <a4j:log/>
 

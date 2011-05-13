@@ -75,6 +75,7 @@ public class TestLogEntryProvider extends PersistenceTestCase {
         createdEntry.setDocUUID(docId);
         createdEntry.setEventDate(new Date());
         createdEntry.setDocPath("/" + docId);
+        createdEntry.setRepositoryId("test");
         createdEntry.setExtendedInfos(createExtendedInfos());
         return createdEntry;
     }

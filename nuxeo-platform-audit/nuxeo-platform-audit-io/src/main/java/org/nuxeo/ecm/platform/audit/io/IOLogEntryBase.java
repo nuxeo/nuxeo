@@ -95,6 +95,7 @@ public class IOLogEntryBase {
         logEntryElement.addAttribute("docPath", logEntry.getDocPath());
         logEntryElement.addAttribute("docType", logEntry.getDocType());
         logEntryElement.addAttribute("docUUID", logEntry.getDocUUID());
+        logEntryElement.addAttribute("repoId", logEntry.getRepositoryId());
 
         String creationDate = getDateFormat().format(logEntry.getEventDate());
         logEntryElement.addAttribute("creationDate", creationDate);
@@ -143,6 +144,7 @@ public class IOLogEntryBase {
         logEntry.setDocPath(logEntryElement.attributeValue("docPath"));
         logEntry.setDocType(logEntryElement.attributeValue("docType"));
         logEntry.setDocUUID(logEntryElement.attributeValue("docUUID"));
+        logEntry.setRepositoryId(logEntryElement.attributeValue("repoId"));
 
         try {
             Date creationDate = getDateFormat().parse(

@@ -209,9 +209,7 @@ public class WSAuditBean extends AbstractNuxeoWebService implements
         List<EventDescriptor> events = new ArrayList<EventDescriptor>();
 
         for (LogEntry logEntry : logEntries) {
-            events.add(new EventDescriptor(logEntry.getEventId(),
-                    logEntry.getEventDate(), logEntry.getDocPath(),
-                    logEntry.getDocUUID(), logEntry.getDocLifeCycle()));
+            events.add(new EventDescriptor(logEntry));
         }
 
         EventDescriptor[] evts = new EventDescriptor[events.size()];
@@ -250,9 +248,7 @@ public class WSAuditBean extends AbstractNuxeoWebService implements
         List<EventDescriptor> events = new ArrayList<EventDescriptor>();
 
         for (LogEntry logEntry : logEntries) {
-            events.add(new EventDescriptor(logEntry.getEventId(),
-                    logEntry.getEventDate(), logEntry.getDocPath(),
-                    logEntry.getDocUUID(), logEntry.getDocLifeCycle()));
+            events.add(new EventDescriptor(logEntry));
         }
 
         EventDescriptor[] evts = new EventDescriptor[events.size()];
@@ -280,9 +276,7 @@ public class WSAuditBean extends AbstractNuxeoWebService implements
         List<EventDescriptor> events = new ArrayList<EventDescriptor>();
 
         for (LogEntry logEntry : logEntries) {
-            events.add(new EventDescriptor(logEntry.getEventId(),
-                    logEntry.getEventDate(), logEntry.getDocPath(),
-                    logEntry.getDocUUID(), logEntry.getDocLifeCycle()));
+            events.add(new EventDescriptor(logEntry));
         }
 
         EventDescriptor[] evts = new EventDescriptor[events.size()];

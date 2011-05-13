@@ -102,6 +102,7 @@ public class TestNXAuditEventsService extends RepositoryOSGITestCase {
         assertEquals("File", entry.getDocType());
         assertEquals("documentCreated", entry.getEventId());
         assertEquals("Administrator", entry.getPrincipalName());
+        assertEquals("test", entry.getRepositoryId());
     }
 
     public void testLogDocumentMessageWithoutCategory() throws ClientException {
@@ -130,6 +131,7 @@ public class TestNXAuditEventsService extends RepositoryOSGITestCase {
             } else {
                 assertEquals("documentCreated", entry.getEventId());
             }
+            assertEquals("test", entry.getRepositoryId());
         }
     }
 
@@ -160,6 +162,7 @@ public class TestNXAuditEventsService extends RepositoryOSGITestCase {
             } else {
                 assertEquals("documentCreated", entry.getEventId());
             }
+            assertEquals("test", entry.getRepositoryId());
         }
     }
 
@@ -197,6 +200,7 @@ public class TestNXAuditEventsService extends RepositoryOSGITestCase {
         assertEquals("Root", entry.getDocType());
         assertEquals("documentCreated", entry.getEventId());
         assertEquals(SecurityConstants.SYSTEM_USERNAME, entry.getPrincipalName());
+        assertEquals("test", entry.getRepositoryId());
     }
 
     protected Set<ObjectName> doQuery(String name) {

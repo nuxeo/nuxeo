@@ -9,7 +9,7 @@
         value="#{subTabsActionsList}"
         itemStyleClass="#{nxu:test(webActions.currentSubTabId == subTab.id, 'selected', '')}">
         <nxd:restDocumentLink document="#{currentDocument}"
-          tab="#{webActions.currentTabAction.id}" subTab="#{subTab.id}">
+          tab="#{webActions.currentTabId}" subTab="#{subTab.id}">
           <h:outputText value="#{messages[subTab.label]}" />
         </nxd:restDocumentLink>
       </nxu:dataList>

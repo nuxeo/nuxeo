@@ -41,9 +41,21 @@
       order="60"> <category>NUXEO_ADMIN_SystemInfo</category> <filter-id>only_for_manager</filter-id>
       </action> -->
 
-    <action id="UserActivity" link="/incl/sysinfo/usersActivity.xhtml"
-      label="tab.sysinfo.usersActivity" order="60">
-      <category>SystemInfo_sub_tab</category>
+    <action id="UsersActivity" link="view_admin-fragment.xhtml"
+      label="admcommand.useractivity" order="15">
+      <category>NUXEO_ADMIN</category>
+      <filter-id>only_for_manager</filter-id>
+    </action>
+
+    <action id="UsersSessions" link="/incl/usersActivity/usersSessions.xhtml"
+      label="tab.useractivity.usersSessions" order="10">
+      <category>UsersActivity_sub_tab</category>
+      <filter-id>only_for_manager</filter-id>
+    </action>
+
+    <action id="EventActivity" link="/incl/usersActivity/usersActivity.xhtml"
+      label="tab.useractivity.usersActivity" order="20">
+      <category>UsersActivity_sub_tab</category>
       <filter-id>only_for_manager</filter-id>
     </action>
 
