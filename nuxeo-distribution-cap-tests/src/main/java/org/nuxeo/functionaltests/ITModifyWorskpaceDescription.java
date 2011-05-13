@@ -17,16 +17,16 @@
  */
 package org.nuxeo.functionaltests;
 
+import static junit.framework.Assert.assertEquals;
+
 import java.util.Date;
 
 import org.junit.Test;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
-import org.nuxeo.functionaltests.pages.UsersGroupsBasePage;
+import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UsersGroupsBasePage;
+import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UsersTabSubPage;
 import org.nuxeo.functionaltests.pages.forms.WorkspaceFormPage;
 import org.nuxeo.functionaltests.pages.tabs.AccessRightsSubPage;
-import org.nuxeo.functionaltests.pages.tabs.UsersTabSubPage;
-
-import static junit.framework.Assert.assertEquals;
 
 /**
  * <p>
@@ -48,15 +48,15 @@ public class ITModifyWorskpaceDescription extends AbstractTest {
     public void testModifyWsDescription() throws Exception {
 
         // As an administrator, check that jsmith is created and has rights
-        UsersGroupsBasePage usergroupPage = login().getHeaderLinks().goToUserManagementPage();
+        UsersGroupsBasePage usergroupPage = login().getAdminCenter().getUsersGroupsHomePage();
         UsersTabSubPage page = usergroupPage.getUsersTab().searchUser("jsmith");
         if (!page.isUserFound("jsmith")) {
-
-            usergroupPage = usergroupPage.getUsersTab().getUserCreatePage().createUser(
-                    "jsmith", "John", "Smith", "Nuxeo", "jsmith@nuxeo.com",
-                    "jsmith1", "members");
+            usergroupPage = page.getUserCreatePage().createUser("jsmith",
+                    "John", "Smith", "Nuxeo", "jsmith@nuxeo.com", "jsmith1",
+                    "members");
         }
-        DocumentBasePage documentBasePage = usergroupPage.getHeaderLinks().getNavigationSubPage().goToDocument(
+
+        DocumentBasePage documentBasePage = usergroupPage.exitAdminCenter().getHeaderLinks().getNavigationSubPage().goToDocument(
                 "Workspaces");
         AccessRightsSubPage accessRightSubTab = documentBasePage.getManageTab().getAccessRightsSubTab();
         if (!accessRightSubTab.hasPermissionForUser("Write", "jsmith")) {
