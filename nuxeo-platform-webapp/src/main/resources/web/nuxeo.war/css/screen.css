@@ -581,7 +581,7 @@ padding:5px 0px 2px 0px;
 
 .loadingComplete {
   background: transparent url(/nuxeo/icons/checked.gif) no-repeat left center;
-  padding: 0 0 0 18px;
+  padding: 2px 0 0 18px;
 }
 
 .dropPanel {
@@ -646,8 +646,8 @@ padding:5px 0px 2px 0px;
  }
 
  .dropzone-bar-msg {
-   display: block;
-  padding-top: 7px;
+  display: block;
+  padding-top: 2px;
  }
 
  .dndFormPanel{
@@ -658,6 +658,8 @@ padding:5px 0px 2px 0px;
     padding : 25px;
     margin: 4px;
     z-index: 5000;
+    max-height: 350px;
+    overflow: auto;
     font: normal 11px Lucida Grande, Helvetica, sans-serif;
  }
 
