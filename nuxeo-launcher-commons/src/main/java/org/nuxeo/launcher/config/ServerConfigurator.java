@@ -28,6 +28,7 @@ import java.net.MalformedURLException;
 import java.util.Enumeration;
 import java.util.Properties;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.xml.DOMConfigurator;
@@ -214,7 +215,19 @@ public abstract class ServerConfigurator {
      * @since 5.4.2
      */
     public void checkPaths() throws ConfigurationException {
-        // Check common paths
+        File badInstanceClid = new File(generator.getNuxeoHome(),
+                getDefaultDataDir() + File.separator + "instance.clid");
+        if (badInstanceClid.exists()
+                && !getDataDir().equals(
+                        new File(generator.getNuxeoHome(), getDefaultDataDir()))) {
+            log.warn("Moving " + badInstanceClid + " to " + getDataDir() + ".");
+            try {
+                FileUtils.moveFileToDirectory(badInstanceClid, getDataDir(),
+                        true);
+            } catch (IOException e) {
+                throw new ConfigurationException("Move failed.", e);
+            }
+        }
     }
 
     /**
