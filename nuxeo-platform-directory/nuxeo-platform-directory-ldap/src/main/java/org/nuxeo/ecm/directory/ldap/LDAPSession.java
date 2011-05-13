@@ -546,9 +546,8 @@ public class LDAPSession extends BaseSession implements EntrySource {
             if (log.isDebugEnabled()) {
                 log.debug(String.format(
                         "LDAPSession.query(...): LDAP search base='%s' filter='%s' args='%s' scope='%s' [%s]",
-                        searchBaseDn, filterExpr,
-                        StringUtils.join(filterArgs, ","),
-                        scts.getSearchScope(), this));
+                        searchBaseDn, filterExpr, StringUtils.join(filterArgs,
+                                ","), scts.getSearchScope(), this));
             }
             try {
                 NamingEnumeration<SearchResult> results = dirContext.search(
@@ -868,10 +867,8 @@ public class LDAPSession extends BaseSession implements EntrySource {
                         // do not try to fetch the password attribute
                         continue;
                     } else {
-                        fieldMap.put(
-                                fieldName,
-                                getFieldValue(attribute, fieldName, entryId,
-                                        fetchReferences));
+                        fieldMap.put(fieldName, getFieldValue(attribute,
+                                fieldName, entryId, fetchReferences));
                     }
                 }
             }
