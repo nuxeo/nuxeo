@@ -18,9 +18,9 @@
 package org.nuxeo.ecm.webapp.dashboard;
 
 import org.jboss.seam.ScopeType;
-import org.jboss.seam.annotations.Install;
+import org.jboss.seam.annotations.In;import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
-import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.annotations.Scope;import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 
 @Name("dashboardNavigationHelper")
 @Scope(ScopeType.STATELESS)
@@ -28,9 +28,15 @@ import org.jboss.seam.annotations.Scope;
 public class DefaultDashboardNavigationHelper implements
         DashboardNavigationHelper {
 
+    public static final String HOME_TAB = "MAIN_TABS:home";
+
     public static final String DASHBOARD_VIEW = "view_home";
 
+    @In(create = true)
+    protected transient WebActions webActions;
+
     public String navigateToDashboard() {
+        webActions.setCurrentTabIds(HOME_TAB);
         return DASHBOARD_VIEW;
     }
 

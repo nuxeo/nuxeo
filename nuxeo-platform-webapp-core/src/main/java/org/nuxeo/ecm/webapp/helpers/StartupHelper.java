@@ -47,7 +47,7 @@ import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
-import org.nuxeo.ecm.platform.util.RepositoryLocation;
+import org.nuxeo.ecm.platform.ui.web.api.WebActions;import org.nuxeo.ecm.platform.util.RepositoryLocation;
 import org.nuxeo.ecm.webapp.clipboard.ClipboardActionsBean;
 import org.nuxeo.ecm.webapp.dashboard.DashboardNavigationHelper;
 
@@ -64,6 +64,8 @@ public class StartupHelper implements Serializable {
 
     protected static final String DOMAIN_TYPE = "Domain";
 
+    protected static final String DOCUMENT_MANAGEMENT_TAB = "MAIN_TABS:documents";
+
     private static final long serialVersionUID = 3248972387619873245L;
 
     private static final Log log = LogFactory.getLog(StartupHelper.class);
@@ -73,6 +75,9 @@ public class StartupHelper implements Serializable {
 
     @In(create = true)
     protected transient NavigationContext navigationContext;
+
+    @In(create = true)
+    protected transient WebActions webActions;
 
     @In
     protected transient Context sessionContext;
@@ -172,6 +177,7 @@ public class StartupHelper implements Serializable {
                     rootDocument.getRef(), null, SecurityConstants.READ,
                     complexFilter, null);
 
+            webActions.setCurrentTabIds(DOCUMENT_MANAGEMENT_TAB);
             if (domains.size() == 1) {
                 // select and go to the unique domain
                 return navigationContext.navigateToDocument(domains.get(0),
