@@ -19,11 +19,11 @@
 
 This suite is configured using the Pages.conf file.
 """
-import os
 import unittest
 from funkload.Lipsum import Lipsum
 from nuxeo.pages import *
 from nuxeo.testcase import NuxeoTestCase
+
 
 class Pages(NuxeoTestCase):
     ws_title = "FLNXTEST Page workspace"
@@ -32,13 +32,13 @@ class Pages(NuxeoTestCase):
     _lipsum = Lipsum()
 
     def testAvailable(self):
-        p = BasePage(self).available()
+        BasePage(self).available()
 
     def testLoginPage(self):
-        p = (LoginPage(self).view()
+        (LoginPage(self).view()
              .login(*self.cred_admin)
              .logout())
-        p = LoginPage(self).loginInvalid('foo', 'bar')
+        LoginPage(self).loginInvalid('foo', 'bar')
 
     def testBasePageViewDocumentPath(self):
         # fluent test
@@ -78,7 +78,6 @@ class Pages(NuxeoTestCase):
              .deleteItem(title, "Section")
              .logout())
 
-
     def dbgtestPublish(self):
         p = LoginPage(self).login(*self.cred_admin)
         p.viewDocumentPath('workspaces/flnxtest-page-workspace/flnxtest-page-folder/flnxtest-tsoc1g7-tris')
@@ -108,7 +107,6 @@ class Pages(NuxeoTestCase):
              .getRootSections()
              .deleteItem(title_section, "Section"))
         p.logout()
-
 
     def testFolderPage(self):
         title = self._lipsum.getSubject(uniq=True, prefix=self.tag)
@@ -151,19 +149,17 @@ class Pages(NuxeoTestCase):
              .deleteItem(self.ws_title)
              .logout())
 
-
-    def testMemberManagementPage(self):
+    def testUsersGroupsPage(self):
         p = LoginPage(self).login(*self.cred_admin)
         login = self.tag.lower()
         pwd = 'secret'
-        p = (p.memberManagement()
+        p = (p.adminCenter().usersAndGroupsPage()
              .createUser(login, 'bob@foo.com', pwd, groups='members',
                          firstname="first", lastname=login.capitalize())
              .createUser(login, 'bobtwice@foo.com', pwd, groups='members',
                          firstname='first', lastname='last'))
-        p.logout()
+        p.exitAdminCenter().logout()
         p.login(login, pwd).getRootWorkspaces().logout()
-
 
 
 if __name__ in ('main', '__main__'):
