@@ -102,7 +102,7 @@
       <width>0%</width>
     </layout>
     <layout element="page[1]/section[2]">
-      <height>100%</height>
+      <height>700px</height>
       <width>100%</width>
     </layout>
     <layout element="page[1]/section[2]/cell[1]">
