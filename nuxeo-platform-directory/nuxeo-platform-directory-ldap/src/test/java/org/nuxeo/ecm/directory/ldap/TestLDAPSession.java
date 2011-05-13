@@ -558,6 +558,52 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
         }
     }
 
+    public void testCreateEntry3() throws ClientException {
+        Session session = null;
+
+        try {
+            session = getLDAPDirectory("userDirectory").getSession();
+
+            if (USE_EXTERNAL_TEST_LDAP_SERVER) {
+                assertNotNull(session);
+
+                Map<String, Object> map = new HashMap<String, Object>();
+                map.put("username", "user123");
+                map.put("password", "pwd123");
+                map.put("firstName", "John");
+                map.put("lastName", "Doh");
+
+                // special DN read only field should be ignored
+                map.put("dn", "cn=this,ou=is,ou=a,ou=fake,o=dn");
+
+                map.put("employeeType", new ArrayList<Serializable>());
+                DocumentModel user = session.getEntry(session.createEntry(map).getId());
+
+                assertNotNull(user);
+                assertEquals(Collections.<String> emptyList(),
+                        user.getProperty(USER_SCHEMANAME, "employeeType"));
+
+                map = new HashMap<String, Object>();
+                map.put("username", "anotherUser");
+                map.put("password", "secret");
+                map.put("firstName", "Mister");
+                map.put("lastName", "Untel");
+                map.put("dn", "cn=this,ou=is,ou=a,ou=fake,o=dn");
+
+                map.put("employeeType", Collections.<String>emptyList());
+
+                user = session.getEntry(session.createEntry(map).getId());
+                assertNotNull(user);
+                assertEquals(Collections.<String> emptyList(),
+                        user.getProperty(USER_SCHEMANAME, "employeeType"));
+            }
+        } finally {
+            if (session != null) {
+                session.close();
+            }
+        }
+    }
+
     public void testUpdateEntry() throws Exception {
         if (USE_EXTERNAL_TEST_LDAP_SERVER) {
             Session session = getLDAPDirectory("userDirectory").getSession();

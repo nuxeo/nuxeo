@@ -187,7 +187,8 @@ public class LDAPSession extends BaseSession implements EntrySource {
                             fieldId));
                 } else {
                     Object value = fieldMap.get(fieldId);
-                    if ((value != null) && !value.equals("")) {
+                    if ((value != null) && !value.equals("")
+                            && !Collections.emptyList().equals(value)) {
                         attrs.put(getAttributeValue(fieldId, value));
                     }
                 }
