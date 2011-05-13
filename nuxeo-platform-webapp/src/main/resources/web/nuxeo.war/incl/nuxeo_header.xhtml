@@ -2,6 +2,7 @@
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:nxh="http://nuxeo.org/nxweb/html"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:fn="http://java.sun.com/jsp/jstl/functions">
@@ -13,13 +14,11 @@
     <div class="mainTabs">
       <nxu:dataList layout="unorderedList" var="mainTab" value="#{webActions.getActionsList('MAIN_TABS')}"
           itemStyleClass="#{nxu:test(webActions.getCurrentTabId('MAIN_TABS') == mainTab.id, 'selected', '')}">
-          <nxh:commandLink action="#{mainTab.getLink()}"
-              id="mainTabsActionCommandLink"
-              immediate="#{mainTab.immediate}">
-              <nxu:actionListenerMethod
-                value="#{webActions.setCurrentTabId('MAIN_TABS', mainTab.id, null)}" />
-              <h:outputText value="#{messages[mainTab.label]}" />
-          </nxh:commandLink>
+          <nxd:restDocumentLink document="#{currentDocument}"
+            view="#{mainTab.getLink()}" addTabInfo="false"
+            tabs="#{webActions.currentTabIds},MAIN_TABS:#{mainTab.id}">
+            <h:outputText value="#{messages[mainTab.label]}" />
+          </nxd:restDocumentLink>
       </nxu:dataList>
     </div>
 
