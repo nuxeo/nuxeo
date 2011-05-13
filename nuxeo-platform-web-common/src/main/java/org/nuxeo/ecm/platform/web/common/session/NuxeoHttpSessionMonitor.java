@@ -117,7 +117,11 @@ public class NuxeoHttpSessionMonitor {
     public List<SessionInfo> getSortedSessions() {
 
         List<SessionInfo> sortedSessions = new ArrayList<SessionInfo>();
-        sortedSessions.addAll(getTrackedSessions());
+        for (SessionInfo si : getTrackedSessions()) {
+            if (si.getLoginName()!=null) {
+                sortedSessions.add(si);
+            }
+        }
         Collections.sort(sortedSessions);
         return sortedSessions;
     }
@@ -126,7 +130,7 @@ public class NuxeoHttpSessionMonitor {
 
         List<SessionInfo> sortedSessions = new ArrayList<SessionInfo>();
         for (SessionInfo si : getTrackedSessions()) {
-            if (si.getInactivityInS() < maxInactivity) {
+            if (si.getLoginName()!=null && si.getInactivityInS() < maxInactivity) {
                 sortedSessions.add(si);
             }
         }
