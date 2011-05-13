@@ -22,6 +22,8 @@ public abstract class AbstractUserGroupManagement {
 
     public static final String VIEW_HOME = "view_home";
 
+    public static final String MAIN_TAB_HOME = "MAIN_TABS:home";
+
     public static final String VALID_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-0123456789.@";
 
     public static final String DEFAULT_LISTING_MODE = "search_only";

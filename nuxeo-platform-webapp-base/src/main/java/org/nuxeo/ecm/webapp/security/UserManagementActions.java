@@ -66,6 +66,8 @@ public class UserManagementActions extends AbstractUserGroupManagement implement
 
     private static final Log log = LogFactory.getLog(UserManagementActions.class);
 
+    public static final String USERS_TAB = "USER_CENTER:UsersGroupsHome:UsersHome";
+
     public static final String USERS_LISTING_CHANGED = "usersListingChanged";
 
     public static final String USERS_SEARCH_CHANGED = "usersSearchChanged";
@@ -299,7 +301,7 @@ public class UserManagementActions extends AbstractUserGroupManagement implement
     public String viewUser(String userName) throws ClientException {
         setSelectedUser(userName);
         showUserOrGroup = true;
-        webActions.setCurrentTabIds("USER_CENTER:UsersGroupsHome:UsersHome");
+        webActions.setCurrentTabIds(MAIN_TAB_HOME + "," + USERS_TAB);
         return VIEW_HOME;
     }
 

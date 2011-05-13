@@ -58,6 +58,8 @@ public class GroupManagementActions extends AbstractUserGroupManagement implemen
 
     private static final Log log = LogFactory.getLog(GroupManagementActions.class);
 
+    public static final String GROUPS_TAB = "USER_CENTER:UsersGroupsHome:GroupsHome";
+
     public static final String GROUPS_LISTING_CHANGED = "groupsListingChanged";
 
     protected Boolean canEditGroups;
@@ -199,7 +201,7 @@ public class GroupManagementActions extends AbstractUserGroupManagement implemen
     public String viewGroup(String groupName) throws ClientException {
         setSelectedGroup(groupName);
         showUserOrGroup = true;
-        webActions.setCurrentTabIds("USER_CENTER:UsersGroupsHome:GroupsHome");
+        webActions.setCurrentTabIds(MAIN_TAB_HOME + "," + GROUPS_TAB);
         return VIEW_HOME;
     }
 
