@@ -9,6 +9,8 @@
   <xs:element name="groupname" type="xs:string" />
   <xs:element name="description" type="xs:string" />
   
+  <xs:element name="gidNumber" type="xs:int" />
+  
   <!-- This is a special readonly field that is only
    useful when working with LDAP directories as backend
    implementation -->

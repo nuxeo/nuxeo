@@ -55,12 +55,24 @@ public abstract class LDAPDirectoryTestCase extends NXRuntimeTestCase {
 
     public String EXTERNAL_SERVER_SETUP = "TestDirectoriesWithExternalOpenLDAP.xml";
 
-    public static final String INTERNAL_SERVER_SETUP = "TestDirectoriesWithInternalApacheDS.xml";
+    public String INTERNAL_SERVER_SETUP = "TestDirectoriesWithInternalApacheDS.xml";
 
     public static final String EXTERNAL_SERVER_SETUP_OVERRIDE = "TestDirectoriesWithExternalOpenLDAP-override.xml";
 
     public static final String INTERNAL_SERVER_SETUP_OVERRIDE = "TestDirectoriesWithInternalApacheDS-override.xml";
 
+    public List<String> getLdifFiles() {
+    	List<String> lstLdifFiles = new ArrayList<String>();
+    	
+    	lstLdifFiles.add("sample-users.ldif");
+    	lstLdifFiles.add("sample-groups.ldif");
+    	
+    	if (HAS_DYNGROUP_SCHEMA)
+    		lstLdifFiles.add("sample-dynamic-groups.ldif");
+    	
+    	return lstLdifFiles;
+    }
+    
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -92,11 +104,10 @@ public abstract class LDAPDirectoryTestCase extends NXRuntimeTestCase {
         LDAPSession session = (LDAPSession) getLDAPDirectory("userDirectory").getSession();
         try {
             DirContext ctx = session.getContext();
-            loadDataFromLdif("sample-users.ldif", ctx);
-            loadDataFromLdif("sample-groups.ldif", ctx);
-            if (HAS_DYNGROUP_SCHEMA) {
-                loadDataFromLdif("sample-dynamic-groups.ldif", ctx);
-            }
+            List<String> lstLdifFiles = getLdifFiles();
+            
+            for (String ldifFile : lstLdifFiles)
+            	loadDataFromLdif(ldifFile, ctx);            
         } finally {
             session.close();
         }
