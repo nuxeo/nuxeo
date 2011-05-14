@@ -425,6 +425,10 @@ public class TestSQLBackend extends SQLBackendTestCase {
     }
 
     public void testBinaryGC() throws Exception {
+        if (this instanceof TestSQLBackendNet
+                || this instanceof ITSQLBackendNet) {
+            return;
+        }
         Session session = repository.getConnection();
 
         // store some binaries
