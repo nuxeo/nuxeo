@@ -114,8 +114,7 @@ public class DocumentBasePage extends AbstractPage {
      */
     public void checkUserConnected(String username)
             throws UserNotConnectedException {
-        String expectedConnectedMessage = "You are logged as " + username;
-        if (!(getHeaderLinks().getText().contains(expectedConnectedMessage))) {
+        if (!(getHeaderLinks().getText().contains(username))) {
             throw new UserNotConnectedException(username);
         }
     }
@@ -146,7 +145,7 @@ public class DocumentBasePage extends AbstractPage {
 
 
     public AdminCenterBasePage getAdminCenter() {
-        findElementWithTimeout(By.linkText("Nuxeo Admin Center")).click();
+        findElementWithTimeout(By.linkText("Admin Center")).click();
         return asPage(AdminCenterBasePage.class);
     }
 

@@ -34,7 +34,7 @@ public class AdminCenterBasePage extends AbstractPage {
     @FindBy(linkText = "Users & groups")
     public WebElement userAndGroupsLink;
 
-    public static final String EXIT_ADMIN_CENTER = "Exit admin center";
+    public static final String DOCUMENT_MANAGEMENT = "Document Management";
 
     public static final String SYSTEM_INFORMATION = "System information";
 
@@ -106,7 +106,7 @@ public class AdminCenterBasePage extends AbstractPage {
     }
 
     public DocumentBasePage exitAdminCenter() {
-        findElementWithTimeout(By.linkText(EXIT_ADMIN_CENTER)).click();
+        findElementWithTimeout(By.linkText(DOCUMENT_MANAGEMENT)).click();
         return asPage(DocumentBasePage.class);
     }
 }
