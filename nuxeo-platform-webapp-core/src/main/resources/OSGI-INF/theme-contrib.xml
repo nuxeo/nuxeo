@@ -92,7 +92,6 @@
       <format-type>widget</format-type>
       <template>incl/nuxeo_header.xhtml</template>
       <resource>screen.css</resource>
-      <resource>nuxeo_header.css</resource>
     </view>
 
     <view name="nuxeo5 breadcrumbs" template-engine="jsf-facelets">
@@ -136,10 +135,6 @@
 
     <resource name="screen.css">
       <path>css/screen.css</path>
-    </resource>
-
-    <resource name="nuxeo_header.css">
-      <path>css/nuxeo_header.css</path>
     </resource>
 
     <resource name="foldable-box.js">
