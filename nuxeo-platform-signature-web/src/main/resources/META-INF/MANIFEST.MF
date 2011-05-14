@@ -13,3 +13,4 @@ Nuxeo-Component:
  OSGI-INF/layouts-contrib.xml,
  OSGI-INF/audit-contrib.xml,
  OSGI-INF/actions-contrib.xml
+ 

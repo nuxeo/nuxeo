@@ -39,6 +39,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.platform.signature.api.exception.AlreadySignedException;
 import org.nuxeo.ecm.platform.signature.api.exception.CertException;
 import org.nuxeo.ecm.platform.signature.api.exception.SignException;
 import org.nuxeo.ecm.platform.signature.api.pki.CertService;
@@ -70,7 +71,7 @@ public class SignatureServiceImpl extends DefaultComponent implements
     private static final int SIGNATURE_FIELD_HEIGHT=50;
     private static final int PAGE_TO_SIGN=1;
     private static final Log log = LogFactory.getLog(SignatureServiceImpl.class);
-
+    
     private List<SignatureDescriptor> config = new ArrayList<SignatureDescriptor>();
 
     protected CertService certService;
@@ -107,9 +108,9 @@ public class SignatureServiceImpl extends DefaultComponent implements
 
             if(certificatePresentInPDF(origPDFBytes, certificate)){
                 X509Certificate userX509Certificate=(X509Certificate)certificate;
-                String message="User "+userX509Certificate.getSubjectX500Principal().getName()+" already signed this document";
+                String message="This document has already been signed by "+userX509Certificate.getSubjectX500Principal().getName();
                 log.info(message);
-                throw new SignException(message);
+                throw new AlreadySignedException(message);
             }
             
             
@@ -146,6 +147,8 @@ public class SignatureServiceImpl extends DefaultComponent implements
         } catch (SignatureException e) {
             throw new SignException(e);
         } catch (DocumentException e) {
+            throw new SignException(e);
+        } catch (AlreadySignedException e) {
             throw new SignException(e);
         } catch (Exception e) {
             throw new SignException(e);

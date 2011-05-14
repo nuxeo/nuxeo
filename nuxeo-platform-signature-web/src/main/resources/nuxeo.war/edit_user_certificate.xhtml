@@ -1,51 +1,62 @@
-<div xmlns:ui="http://java.sun.com/jsf/facelets"
-  xmlns:h="http://java.sun.com/jsf/html"
-  xmlns:c="http://java.sun.com/jstl/core"
-  xmlns:nxl="http://nuxeo.org/nxforms/layout"><ui:composition
-  template="/view_user_template.xhtml">
-  <ui:param name="currentUserSubTab" value="editCertificate" />
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:rich="http://richfaces.org/rich"
+  xmlns:a4j="http://richfaces.org/a4j"
+    xmlns:c="http://java.sun.com/jstl/core"
+  >
 
-  <ui:define name="mainContent">
+<h2>
+<h:outputText styleClass="label"
+    value="#{messages['label.cert.user.center.certificate']}"/>
+</h2>
 
-    <h:outputText styleClass="label"
-      value="#{messages['label.cert.missing']}"
-      rendered="#{certActions.canGenerateCertificate(userManagerActions.selectedUser) and !certActions.hasCertificate()}" />
+<h:outputText styleClass="label"
+    value="#{currentUser.getName()}, #{messages['label.cert.missing']}"
+    rendered="#{certActions.canGenerateCertificate() and !certActions.hasCertificate()}" />
 
-    <h:form id="certificateForm">
-      <nxl:layout name="cert" mode="edit"
-        value="#{certActions.getCertificate(userManagerActions.selectedUser)}" />
+  
+    <nxl:layout name="cert" mode="edit"
+      value="#{certActions.getCertificate()}" />
 
-      <c:if test="#{!certActions.hasCertificate()}">
-        <table class="dataInput">
-          <tbody>
-            <tr>
-              <td><h:outputText value="#{userWorkspacePath}" /> <h:outputText
-                value="#{messages['label.cert.password.prompt']}" /></td>
-            </tr>
-            <tr>
-              <td><h:outputText
-                value="#{messages['label.cert.password.first']}"
-                rendered="#{certActions.canGenerateCertificate(userManagerActions.selectedUser)}" />
-              <h:inputSecret id="firstPassword" value="#{firstPassword}"
-                required="true"
-                rendered="#{certActions.canGenerateCertificate(userManagerActions.selectedUser)}" />
-              <h:outputText
-                value="#{messages['label.cert.password.second']}"
-                rendered="#{certActions.canGenerateCertificate(userManagerActions.selectedUser)}" />
-              <h:inputSecret id="secondPassword"
-                value="#{secondPassword}" required="true"
-                rendered="#{certActions.canGenerateCertificate(userManagerActions.selectedUser)}" />
-              </td>
-              <td><h:commandButton type="submit"
-                value="#{messages['command.cert.generate']}"
-                action="#{certActions.createCertificate(userManagerActions.selectedUser,firstPassword,secondPassword)}"
-                styleClass="button"
-                rendered="#{certActions.canGenerateCertificate(userManagerActions.selectedUser)}" />
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </c:if>
-    </h:form>
-  </ui:define>
-</ui:composition></div>
+            <h:form>
+                <h:commandLink action="#{certActions.backToDocument()}" immediate="true">
+                  <h:outputText value="#{messages['label.cert.navigate.back']}" />
+                </h:commandLink>
+              </h:form>
+
+
+  <h:form id="certificateForm">
+    <c:if test="#{!certActions.hasCertificate()}">
+      <table class="dataInput">
+        <tbody>
+          <tr>
+            <td><h:outputText value="#{userWorkspacePath}" /> <h:outputText
+              value="#{messages['label.cert.password.prompt']}" /></td>
+          </tr>
+          <tr>
+            <td><h:outputText
+              value="#{messages['label.cert.password.first']}"
+              rendered="#{certActions.canGenerateCertificate()}" />
+            <h:inputSecret id="firstPassword" value="#{firstPassword}"
+              required="true"
+              rendered="#{certActions.canGenerateCertificate()}" />
+            <h:outputText
+              value="#{messages['label.cert.password.second']}"
+              rendered="#{certActions.canGenerateCertificate()}" />
+            <h:inputSecret id="secondPassword" value="#{secondPassword}"
+              required="true"
+              rendered="#{certActions.canGenerateCertificate()}" />
+            </td>
+            <td><h:commandButton type="submit"
+              value="#{messages['command.cert.generate']}"
+              action="#{certActions.createCertificate(firstPassword,secondPassword)}"
+              styleClass="button"
+              rendered="#{certActions.canGenerateCertificate()}" />
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </c:if>
+  </h:form>
+</div>

@@ -19,7 +19,6 @@ package org.nuxeo.ecm.platform.signature.web.sign;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Serializable;
-import java.security.Principal;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
@@ -29,9 +28,11 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
+import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -39,10 +40,13 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.directory.sql.PasswordHelper;
+import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.signature.api.exception.CertException;
 import org.nuxeo.ecm.platform.signature.api.pki.CertService;
 import org.nuxeo.ecm.platform.signature.api.user.CUserService;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
+import org.nuxeo.ecm.platform.ui.web.api.TabActionsSelection;
+import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 
@@ -87,6 +91,7 @@ public class CertActions implements Serializable {
 
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
+    
 
     @In(create = true)
     protected transient NuxeoPrincipal currentUser;
@@ -94,6 +99,11 @@ public class CertActions implements Serializable {
     @In(create = true)
     protected transient UserManager userManager;
 
+    @In(create = true, required = false)
+    protected WebActions webActions;
+
+    protected DocumentModel lastVisitedDocument;
+    
     protected DocumentModel certificate;
 
     private static final String ROOT_CERTIFICATE_FILE_NAME = "ROOT_CA_.crt";
@@ -106,9 +116,8 @@ public class CertActions implements Serializable {
      * @return
      * @throws ClientException
      */
-    public DocumentModel getCertificate(DocumentModel user)
-            throws ClientException {
-        String userID = (String) user.getPropertyValue("user:username");
+    public DocumentModel getCertificate() throws ClientException {
+        String userID = (String) getCurrentUserModel().getPropertyValue("user:username");
         return cUserService.getCertificate(userID);
     }
 
@@ -127,12 +136,12 @@ public class CertActions implements Serializable {
     /**
      * Checks if a specified user has a certificate
      * 
-     * @param username
+     * @param userID
      * @return
      * @throws ClientException
      */
-    public boolean hasCertificate(String username) throws ClientException {
-        return cUserService.hasCertificate(username);
+    public boolean hasCertificate(String userID) throws ClientException {
+        return cUserService.hasCertificate(userID);
     }
 
     /**
@@ -142,9 +151,7 @@ public class CertActions implements Serializable {
      * @throws ClientException
      */
     public boolean hasCertificate() throws ClientException {
-        Principal currentUser = FacesContext.getCurrentInstance().getExternalContext().getUserPrincipal();
-        DocumentModel user = userManager.getUserModel(currentUser.getName());
-        return hasCertificate(user);
+        return hasCertificate(getCurrentUserModel());
     }
 
     /**
@@ -154,12 +161,11 @@ public class CertActions implements Serializable {
      * @return
      * @throws ClientException
      */
-    public boolean canGenerateCertificate(DocumentModel user)
-            throws ClientException {
+    public boolean canGenerateCertificate() throws ClientException {
         boolean canGenerateCertificate = false;
-        Principal currentUser = FacesContext.getCurrentInstance().getExternalContext().getUserPrincipal();
-        canGenerateCertificate = currentUser.getName().equals(
-                (String) user.getPropertyValue("user:username"));
+        // TODO currently allows generating certificates but will be used for
+        // tightening security
+        canGenerateCertificate = true;
         return canGenerateCertificate;
     }
 
@@ -171,8 +177,8 @@ public class CertActions implements Serializable {
      * @param firstPassword
      * @param secondPassword
      */
-    public void createCertificate(DocumentModel user, String firstPassword,
-            String secondPassword) throws ClientException {
+    public void createCertificate(String firstPassword, String secondPassword)
+            throws ClientException {
         boolean areRequirementsMet = false;
 
         try {
@@ -187,7 +193,7 @@ public class CertActions implements Serializable {
 
         if (areRequirementsMet) {
             try {
-                cUserService.createCertificate(user, firstPassword);
+                cUserService.createCertificate(getCurrentUserModel(), firstPassword);
                 facesMessages.add(StatusMessage.Severity.INFO,
                         resourcesAccessor.getMessages().get(
                                 "label.cert.created"));
@@ -195,7 +201,8 @@ public class CertActions implements Serializable {
                 LOG.error(e);
                 facesMessages.add(StatusMessage.Severity.ERROR,
                         resourcesAccessor.getMessages().get(
-                                "label.cert.generate.problem")+e.getMessage());
+                                "label.cert.generate.problem")
+                                + e.getMessage());
             } catch (ClientException e) {
                 LOG.error(e);
                 facesMessages.add(StatusMessage.Severity.ERROR,
@@ -220,7 +227,6 @@ public class CertActions implements Serializable {
     public void validatePasswords(String firstPassword, String secondPassword)
             throws ClientException {
 
-        DocumentModel user = userManager.getUserModel(currentUser.getName());
 
         if (firstPassword == null || secondPassword == null) {
             FacesMessage message = new FacesMessage(
@@ -240,7 +246,7 @@ public class CertActions implements Serializable {
             throw new ValidatorException(message);
         }
 
-        // at least 8 characters    
+        // at least 8 characters
         if (firstPassword.length() < MINIMUM_PASSWORD_LENGTH) {
             FacesMessage message = new FacesMessage(
                     FacesMessage.SEVERITY_ERROR,
@@ -249,12 +255,12 @@ public class CertActions implements Serializable {
             throw new ValidatorException(message);
         }
 
-        String hashedUserPassword = (String) user.getPropertyValue("user:password");
+        String hashedUserPassword = (String) getCurrentUserModel().getPropertyValue("user:password");
 
         /*
          * If the certificate password matches the user login password an
-         * exception is thrown, as those passwords should not be the same
-         * to increase security and decouple one from another to allow for reuse
+         * exception is thrown, as those passwords should not be the same to
+         * increase security and decouple one from another to allow for reuse
          */
         if (PasswordHelper.verifyPassword(firstPassword, hashedUserPassword)) {
             FacesMessage message = new FacesMessage(
@@ -322,5 +328,27 @@ public class CertActions implements Serializable {
         } catch (IOException e) {
             throw new CertException(e);
         }
+    }
+
+    
+
+    public String goToCertificateManagement() {
+        lastVisitedDocument = navigationContext.getCurrentDocument();
+            webActions.setCurrentTabIds("USER_CENTER:Certificate");
+            return "view_home";
+    }
+    
+    
+    public String backToDocument() throws ClientException {
+        if (lastVisitedDocument != null) {
+            webActions.setCurrentTabIds("sign_view");
+            return navigationContext.navigateToDocument(lastVisitedDocument);
+        } else {
+            return navigationContext.goHome();
+        }
+    }
+    
+    protected DocumentModel getCurrentUserModel() throws ClientException {
+        return userManager.getUserModel(currentUser.getName());
     }
 }

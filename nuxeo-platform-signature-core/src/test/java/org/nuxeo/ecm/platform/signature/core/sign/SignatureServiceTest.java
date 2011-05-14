@@ -61,6 +61,8 @@ import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.directory.sql.SQLDirectoryProxy;
 import org.nuxeo.ecm.directory.sql.SimpleDataSource;
+import org.nuxeo.ecm.platform.signature.api.exception.AlreadySignedException;
+import org.nuxeo.ecm.platform.signature.api.exception.SignException;
 import org.nuxeo.ecm.platform.signature.api.pki.CertService;
 import org.nuxeo.ecm.platform.signature.api.pki.RootService;
 import org.nuxeo.ecm.platform.signature.api.sign.SignatureService;
@@ -101,7 +103,6 @@ public class SignatureServiceTest {
     @Inject
     protected CertService rootService;
 
-    
     @Inject
     protected CUserService cUserService;
 
@@ -114,8 +115,9 @@ public class SignatureServiceTest {
     /**
      * A test keystore file a user pdfca with pdfcacert and pdfkey entries
      */
-    
-    // mark this true if you want to keep the signed pdf for manual verification/preview
+
+    // mark this true if you want to keep the signed pdf for manual
+    // verification/preview
     private static final boolean KEEP_SIGNED_PDF = true;
 
     private static final String ROOT_KEY_PASSWORD = "abc";
@@ -134,9 +136,12 @@ public class SignatureServiceTest {
 
     private static final String KEYSTORE_PATH = "test-files/keystore.jks";
 
-    private static final String USER_ID = "hsimpson";
-
     private static DocumentModel user;
+    private static DocumentModel user2;
+
+    private static final String DEFAULT_USER_ID = "hSimpson";
+
+    private static final String SECOND_USER_ID = "mSimpson";
 
     // Signing Prerequisite: a user with a certificate needs to be present
     @Before
@@ -144,56 +149,87 @@ public class SignatureServiceTest {
         // setup the naming service
 
         setUpContextFactory();
-        // pre-populate user & certificate
+        // pre-populate users & certificates
         DocumentModel user = getUser();
         DocumentModel certificate = cUserService.createCertificate(user,
                 USER_KEY_PASSWORD);
         assertNotNull(certificate);
+
+        DocumentModel user2 = getUser2();
+        DocumentModel certificate2 = cUserService.createCertificate(user2,
+                USER_KEY_PASSWORD);
+        assertNotNull(certificate2);
+
         origPdfFile = FileUtils.getResourceFileFromContext("pdf-tests/original.pdf");
     }
 
     @After
     public void cleanup() throws Exception {
 
-        // delete the certificate associated with user id
+        // delete certificates associated with user ids
         Session sqlSession = getDirectoryService().open(
                 CERTIFICATE_DIRECTORY_NAME);
-        sqlSession.deleteEntry(USER_ID);
+        sqlSession.deleteEntry(DEFAULT_USER_ID);
+        sqlSession.deleteEntry(SECOND_USER_ID);
         sqlSession.commit();
         sqlSession.close();
 
-        // delete the user
+        // delete users
         UserManager userManager = Framework.getLocalService(UserManager.class);
         assertNotNull(userManager);
-        if (userManager.getUserModel(USER_ID) != null) {
-            userManager.deleteUser(USER_ID);
+        if (userManager.getUserModel(DEFAULT_USER_ID) != null) {
+            userManager.deleteUser(DEFAULT_USER_ID);
+        }
+        if (userManager.getUserModel(SECOND_USER_ID) != null) {
+            userManager.deleteUser(SECOND_USER_ID);
         }
     }
 
     @Test
     public void testSignPDF() throws Exception {
-        File signedFile = signatureService.signPDF(getUser(),
+        // first user signed
+
+        DocumentModel defaultUser = getUser();
+        DocumentModel secondUser = getUser2();
+
+        File signedFile = signatureService.signPDF(defaultUser,
                 USER_KEY_PASSWORD, "test reason", new FileInputStream(
                         origPdfFile));
 
-        File fileSignedTwice = signatureService.signPDF(getUser(),
-                USER_KEY_PASSWORD, "test reason", new FileInputStream(
-                        signedFile));
+        File fileSignedTwice = null;
+
+        // try for the same user to sign the certificate again
+        try {
+            fileSignedTwice=signatureService.signPDF(defaultUser, USER_KEY_PASSWORD,
+                    "test reason", new FileInputStream(signedFile));
+        } catch (SignException sE) {
+            if (sE.getCause().getClass().equals(AlreadySignedException.class)) {
+                log.debug("Caught AlreadySignedException");
+            } else {
+                // rethrow if not the alreadySignedException
+                throw sE;
+            }
+        }
+
+        // try for the second user to sign the certificate, do not catch the
+        // alreadySignedException here
+        fileSignedTwice=signatureService.signPDF(secondUser, USER_KEY_PASSWORD, "test reason",
+                new FileInputStream(signedFile));
 
         assertTrue(signedFile.exists());
         assertTrue(fileSignedTwice.exists());
-        
+
         // test presence of multiple signatures
         PdfReader reader = new PdfReader(fileSignedTwice.getAbsolutePath());
         AcroFields af = reader.getAcroFields();
         ArrayList<String> names = af.getSignatureNames();
         log.debug("Registered signature names:");
-        for(String signatureName:names){
+        for (String signatureName : names) {
             log.debug(signatureName);
         }
-        
-        assertTrue(2==names.size());
-        
+
+        assertTrue(2 == names.size());
+
         if (KEEP_SIGNED_PDF) {
             log.info("SIGNED PDF: " + signedFile.getAbsolutePath());
         } else {
@@ -272,14 +308,27 @@ public class SignatureServiceTest {
     public DocumentModel getUser() throws Exception {
         if (user == null) {
             DocumentModel userModel = getUserManager().getBareUserModel();
-            userModel.setProperty("user", "username", USER_ID);
+            userModel.setProperty("user", "username", DEFAULT_USER_ID);
             userModel.setProperty("user", "firstName", "Homer");
             userModel.setProperty("user", "lastName", "Simpson");
-            userModel.setProperty("user", "email", "simps@on.com");
-            userModel.setPathInfo("/", USER_ID);
+            userModel.setProperty("user", "email", "hsimpson@springfield.com");
+            userModel.setPathInfo("/", DEFAULT_USER_ID);
             user = getUserManager().createUser(userModel);
         }
         return user;
+    }
+
+    public DocumentModel getUser2() throws Exception {
+        if (user2 == null) {
+            DocumentModel userModel = getUserManager().getBareUserModel();
+            userModel.setProperty("user", "username", SECOND_USER_ID);
+            userModel.setProperty("user", "firstName", "Marge");
+            userModel.setProperty("user", "lastName", "Simpson");
+            userModel.setProperty("user", "email", "msimpson@springfield.com");
+            userModel.setPathInfo("/", SECOND_USER_ID);
+            user2 = getUserManager().createUser(userModel);
+        }
+        return user2;
     }
 
     public UserInfo getUserInfo(String userID) throws Exception {
