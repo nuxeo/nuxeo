@@ -85,7 +85,7 @@ public class CertServiceImpl extends DefaultComponent implements CertService {
     private static final int KEY_SIZE = 1024;
 
     private static final String KEYSTORE_TYPE = "JKS";
-
+ 
     static {
         if (Security.getProvider("BC") == null) {
             Security.addProvider(new BouncyCastleProvider());

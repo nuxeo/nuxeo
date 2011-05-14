@@ -12,5 +12,15 @@
 				</rule>
 			</filter>
 		</action>
+    
+      <action id="Certificate" link="user_center_fragment.xhtml" label="label.cert.user.center.certificate"
+      order="70">
+      <category>USER_CENTER</category>
+    </action>
+
+    <action id="CertificateView" link="edit_user_certificate.xhtml"
+      order="10">
+      <category>Certificate_sub_tab</category>
+    </action>
 </extension>
 </component>

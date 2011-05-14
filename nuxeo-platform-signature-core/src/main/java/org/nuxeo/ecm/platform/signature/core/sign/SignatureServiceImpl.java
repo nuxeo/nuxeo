@@ -17,6 +17,7 @@
 
 package org.nuxeo.ecm.platform.signature.core.sign;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -34,9 +35,11 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.platform.signature.api.exception.AlreadySignedException;
 import org.nuxeo.ecm.platform.signature.api.exception.CertException;
 import org.nuxeo.ecm.platform.signature.api.exception.SignException;
 import org.nuxeo.ecm.platform.signature.api.pki.CertService;
@@ -64,26 +67,34 @@ import com.lowagie.text.pdf.PdfStamper;
  */
 public class SignatureServiceImpl extends DefaultComponent implements
         SignatureService {
-    private static final Log log = LogFactory.getLog(SignatureServiceImpl.class);
 
+    private static final int SIGNATURE_FIELD_HEIGHT=50;
+    private static final int PAGE_TO_SIGN=1;
+    private static final Log log = LogFactory.getLog(SignatureServiceImpl.class);
+    
     private List<SignatureDescriptor> config = new ArrayList<SignatureDescriptor>();
 
     protected CertService certService;
 
     protected CUserService cUserService;
-
+    
     public File signPDF(DocumentModel user, String keyPassword, String reason,
             InputStream origPdfStream) throws SignException {
         File outputFile = null;
         try {
-            outputFile = File.createTempFile("signed-", ".pdf");
-            PdfReader reader = new PdfReader(origPdfStream);
+            byte[] origPDFBytes= IOUtils.toByteArray(origPdfStream);
+            String userID = (String) user.getPropertyValue("user:username");
 
+
+            outputFile = File.createTempFile("signed-", ".pdf");
+            PdfReader reader = new PdfReader(origPDFBytes);
+
+            // allows for multiple signatures
             PdfStamper stp = PdfStamper.createSignature(reader,
-                    new FileOutputStream(outputFile), '\0');
+                    new FileOutputStream(outputFile), '\0',null, true);
+            
             PdfSignatureAppearance sap = stp.getSignatureAppearance();
 
-            String userID = (String) user.getPropertyValue("user:username");
             AliasWrapper alias = new AliasWrapper(userID);
             KeyStore keystore = getCUserService().getUserKeystore(userID,
                     keyPassword);
@@ -92,6 +103,17 @@ public class SignatureServiceImpl extends DefaultComponent implements
             KeyPair keyPair = getCertService().getKeyPair(keystore,
                     alias.getId(AliasType.KEY), alias.getId(AliasType.CERT),
                     keyPassword);
+            
+            //TODO return if the same user already signed the document
+
+            if(certificatePresentInPDF(origPDFBytes, certificate)){
+                X509Certificate userX509Certificate=(X509Certificate)certificate;
+                String message="This document has already been signed by "+userX509Certificate.getSubjectX500Principal().getName();
+                log.info(message);
+                throw new AlreadySignedException(message);
+            }
+            
+            
             List<Certificate> certificates = new ArrayList<Certificate>();
             certificates.add(certificate);
 
@@ -102,11 +124,10 @@ public class SignatureServiceImpl extends DefaultComponent implements
                 reason = getSigningReason();
             }
             sap.setReason(reason);
+            
             sap.setCertificationLevel(PdfSignatureAppearance.CERTIFIED_NO_CHANGES_ALLOWED);
-            sap.setVisibleSignature(new Rectangle(400, 450, 200, 200), 1,
-                    "SOME NAME");
+            sap.setVisibleSignature(new Rectangle(100, getNextCertificatePosition(origPDFBytes), 200, 200), 1,null);
             sap.setAcro6Layers(true);
-            sap.setRender(PdfSignatureAppearance.SignatureRenderNameAndDescription);
             stp.close();
             log.debug("File " + outputFile.getAbsolutePath()
                     + " created and signed with " + reason);
@@ -127,12 +148,46 @@ public class SignatureServiceImpl extends DefaultComponent implements
             throw new SignException(e);
         } catch (DocumentException e) {
             throw new SignException(e);
+        } catch (AlreadySignedException e) {
+            throw new SignException(e);
         } catch (Exception e) {
             throw new SignException(e);
         }
         return outputFile;
     }
-
+    
+    private boolean certificatePresentInPDF(byte[] origPDFBytes, Certificate userCert) throws SignException{
+        boolean certificatePresent=false;
+        X509Certificate xUserCert=(X509Certificate)userCert;
+        List<X509Certificate> existingCertificates=getPDFCertificates(new ByteArrayInputStream(origPDFBytes));
+        for(X509Certificate xcert:existingCertificates){
+            // matching certificate found
+            if(xcert.getSubjectX500Principal().equals(xUserCert.getSubjectX500Principal())){
+                return true;
+            }
+        }
+        return certificatePresent;
+    }
+    
+    
+    private int getNextCertificatePosition(byte[] pdfBytes) throws SignException{
+        int numberOfSignatures=getPDFCertificates(new ByteArrayInputStream(pdfBytes)).size();
+        int verticalPosition=numberOfSignatures*SIGNATURE_FIELD_HEIGHT;
+        // verify page size
+        try {
+            PdfReader reader = new PdfReader(pdfBytes);
+            Rectangle pageSizeRectangle=reader.getPageSize(PAGE_TO_SIGN);
+            if(verticalPosition>pageSizeRectangle.getHeight()){
+                throw new SignException("Signature position exceeds the page bounds");
+            }
+        } catch (IOException e) {
+            String message="PDF signing problem";
+            log.error(message+e);
+            throw new SignException(message);
+        }
+        return verticalPosition;
+    }
+    
     @Override
     public List<X509Certificate> getPDFCertificates(InputStream pdfStream)
             throws SignException {

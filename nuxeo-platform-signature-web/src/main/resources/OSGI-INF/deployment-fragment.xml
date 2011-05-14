@@ -28,6 +28,11 @@
    <to-view-id>/edit_user_certificate.xhtml</to-view-id>
    <redirect />
   </navigation-case>
+  <navigation-case>
+   <from-outcome>sign_view</from-outcome>
+   <to-view-id>/sign_view.xhtml</to-view-id>
+   <redirect />
+  </navigation-case>
  </extension>
 
 </fragment>

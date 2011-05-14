@@ -19,7 +19,7 @@
 
   <!-- root certificate info -->
   <h3 class="summaryTitle"><h:outputText
-    value="#{messages['label.heading.root.certificate']}" /></h3>
+    value="#{messages['label.cert.heading.root.certificate']}" /></h3>
   <h:form>
     <table class="dataInput">
       <tbody>
@@ -28,7 +28,7 @@
             action="#{certActions.downloadRootCertificate}"
             immediate="true">
             <h:outputText
-              value="#{messages['command.root.certificate.download']}" />
+              value="#{messages['command.cert.root.certificate.download']}" />
           </h:commandLink></td>
         </tr>
       </tbody>
@@ -38,7 +38,7 @@
   <!-- document is signed -->
   <!-- document signature info -->
   <h3 class="summaryTitle"><h:outputText
-    value="#{messages['label.heading.document.signature']}" /></h3>
+    value="#{messages['label.sign.heading.document.signature']}" /></h3>
 
   <table class="dataInput">
     <tbody>
@@ -53,7 +53,7 @@
           <h:outputText
             value="#{currentDocumentAsBlobHolder.blob.filename}" />
           <nxh:graphicImage value="/icons/download.png"
-            title="#{label.root.certificate.download}" />
+            title="#{label.cert.root.certificate.download}" />
         </nxh:outputLink></td>
       </tr>
     </tbody>
@@ -102,15 +102,13 @@
                 value="#{messages['label.sign.certificate.prompt']}" /></td>
             </tr>
             <tr>
-              <td class="fieldColumn"><h:form>
-                <h:outputText
-                  value="#{userManagerActions.setSelectedUser(userManager.getUserModel(currentUser.name))}" />
-                <h:commandLink action="edit_certificate"
-                  immediate="true">
-                  <h:outputText
-                    value="#{messages['label.cert.navigate']}" />
+              <td class="fieldColumn">
+              <h:form>
+                <h:commandLink action="#{certActions.goToCertificateManagement()}" immediate="true">
+                  <h:outputText value="#{messages['label.cert.navigate']}" />
                 </h:commandLink>
-              </h:form></td>
+              </h:form>
+              </td>
             </tr>
           </c:if>
 
