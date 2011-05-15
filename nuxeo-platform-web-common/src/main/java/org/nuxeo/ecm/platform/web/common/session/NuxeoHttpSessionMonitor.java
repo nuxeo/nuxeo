@@ -55,7 +55,7 @@ public class NuxeoHttpSessionMonitor {
     protected Map<String, SessionInfo> sessionTracker = new ConcurrentHashMap<String, SessionInfo>();
 
     public SessionInfo addEntry(HttpSession session) {
-        if (session == null) {
+        if (session == null || session.getId()==null) {
             return null;
         }
         SessionInfo si = new SessionInfo(session.getId());
@@ -65,7 +65,7 @@ public class NuxeoHttpSessionMonitor {
 
     public SessionInfo associatedUser(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
-        if (session != null) {
+        if (session != null && session.getId()!=null) {
             SessionInfo si = sessionTracker.get(session.getId());
             if (si == null) {
                 si = addEntry(session);
@@ -80,7 +80,7 @@ public class NuxeoHttpSessionMonitor {
     }
 
     public SessionInfo associatedUser(HttpSession session, String userName) {
-        if (session == null) {
+        if (session == null || session.getId()==null) {
             return null;
         }
         SessionInfo si = sessionTracker.get(session.getId());
@@ -93,7 +93,7 @@ public class NuxeoHttpSessionMonitor {
 
     public SessionInfo updateEntry(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
-        if (session != null) {
+        if (session != null && session.getId()!=null) {
             SessionInfo si = sessionTracker.get(session.getId());
             if (si != null) {
                 si.updateLastAccessTime();
