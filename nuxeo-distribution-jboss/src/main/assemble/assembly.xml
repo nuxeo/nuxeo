@@ -112,7 +112,7 @@
     <copy tofile="${jboss}/common/lib/hibernate-core.jar">
       <artifact:resolveFile key="org.hibernate:hibernate-core:3.3.2.GA" />
     </copy>
-    <mkdir dir="${jboss}/client"/>
+    <mkdir dir="${jboss}/client" />
     <copy todir="${jboss}/client">
       <artifact:resolveFile key="org.nuxeo.shell:nuxeo-shell" />
     </copy>
@@ -316,6 +316,15 @@
         -->
       </fileset>
     </delete>
+
+    <move todir="${distribution.dir}/server/default/lib">
+      <fileset dir="${distribution.dir}/server/default/deploy/nuxeo.ear/lib">
+        <include name="commons-lang*" />
+        <include name="freemarker*" />
+        <include name="lucene-core*" />
+        <include name="lucene-analyzers*" />
+      </fileset>
+    </move>
   </target>
 
   <target name="set-distribution-properties">
