@@ -70,7 +70,7 @@ public class DefaultBinaryManager implements BinaryManager {
 
     protected BinaryManagerDescriptor descriptor;
 
-    private BinaryGarbageCollector garbageCollector;
+    protected BinaryGarbageCollector garbageCollector;
 
     @Override
     public void initialize(RepositoryDescriptor repositoryDescriptor)
