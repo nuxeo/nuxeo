@@ -61,7 +61,6 @@ class Nuxeo(NuxeoTestCase):
                  .rights().grant('ReadWrite', 'members')
                  .view()
                  .createFolder(self.dir_title, 'A description'))
-        return
         # create users
         login = self.cred_member[0]
         pwd = self.cred_member[1]

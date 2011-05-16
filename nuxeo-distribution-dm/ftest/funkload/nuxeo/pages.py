@@ -96,9 +96,9 @@ class BasePage:
             ['requestedUrl', ''],
             ['Submit', 'Connexion']],
             description="Login " + user)
-        fl.assert_('LoginFailed=true' not in fl.getLastUrl(),
+        fl.assert_('loginFailed=true' not in fl.getLastUrl(),
                    'Login failed for %s:%s' % (user, password))
-        fl.assert_(user in fl.getBody(),
+        fl.assert_('class="userActions">' + user in fl.getBody(),
                     "User login not found on the welcome page")
         fl.current_login = user
         return FolderPage(self.fl)
@@ -159,26 +159,21 @@ class BasePage:
 
     def adminCenter(self):
         fl = self.fl
-        fl.post(fl.server_url + "/view_documents.faces", params=[
-            ['userServicesForm_SUBMIT', '1'],
-            ['javax.faces.ViewState', fl.getLastJsfState()],
-            ['userServicesForm:userServicesActionsTable:2:userServicesActionCommandLink', 'userServicesForm:userServicesActionsTable:2:userServicesActionCommandLink']],
-            description="Admin center page")
-        fl.assert_("Exit admin center" in fl.getBody(),
+        if "@view_admin" in fl.getLastUrl():
+            # already in admin center
+            return self
+        self.viewDocumentUid(self.getDocUid(), outcome="view_admin", description="Admin center page")
+        fl.assert_("adminSelectorForm" in fl.getBody(),
                    "Wrong admin center page")
         return self
 
     def exitAdminCenter(self):
         fl = self.fl
-        if not "Exit admin center" in fl.getBody():
+        if not "@view_admin" in fl.getLastUrl():
             # not in admin center
             return self
-        fl.post(fl.server_url + "/view_admin.faces", params=[
-            ['userServicesForm_SUBMIT', '1'],
-            ['javax.faces.ViewState', fl.getLastJsfState()],
-            ['userServicesForm:userServicesBottomActionsTable:2:userServicesBottomActionCommandLink', 'userServicesForm:userServicesBottomActionsTable:2:userServicesBottomActionCommandLink']],
-            description="Exit admin center")
-        fl.assert_(not '@view_admin' in fl.getLastUrl(),
+        self.viewDocumentUid(self.getDocUid(), outcome="view_document", description="Document Management")
+        fl.assert_('id="document_content"' not in fl.getBody(),
                    "Fail to exit admin center")
         return self
 
@@ -189,7 +184,7 @@ class BasePage:
         fl.post(fl.server_url + "/view_admin.faces", params=[
             ['adminSelectorForm_SUBMIT', '1'],
             ['javax.faces.ViewState', fl.getLastJsfState()],
-            ['adminSelectorForm:adminSelectorList:5:item', 'adminSelectorForm:adminSelectorList:5:item']],
+            ['adminSelectorForm:adminSelectorList:6:item', 'adminSelectorForm:adminSelectorList:6:item']],
             description="Users and groups page")
         fl.assert_('usersListingView' in fl.getBody(),
                    "Wrong user page")
