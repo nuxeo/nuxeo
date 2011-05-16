@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,11 +12,9 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Thierry Delprat
+ *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.admin;
 
 import static org.jboss.seam.ScopeType.CONVERSATION;
@@ -30,7 +28,6 @@ import java.util.Collection;
 import java.util.List;
 
 import javax.faces.context.FacesContext;
-import javax.faces.model.SelectItem;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
@@ -48,23 +45,20 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
+import org.nuxeo.ecm.core.storage.sql.BinaryManagerStatus;
 import org.nuxeo.ecm.core.storage.sql.management.RepositoryStatus;
-import org.nuxeo.ecm.platform.audit.api.AuditReader;
-import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
 import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.ecm.platform.web.common.session.NuxeoHttpSessionMonitor;
-import org.nuxeo.ecm.platform.web.common.session.SessionInfo;
 
 /**
  * Seam Bean to export System info.
- *
- * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
  */
 @Name("systemInfo")
 @Scope(CONVERSATION)
 public class SystemInfoManager implements Serializable {
+
+    private static final Log log = LogFactory.getLog(SystemInfoManager.class);
 
     private static final long serialVersionUID = 1L;
 
@@ -76,7 +70,9 @@ public class SystemInfoManager implements Serializable {
 
     protected RepoStatInfo statResult;
 
-    protected static final Log log = LogFactory.getLog(SystemInfoManager.class);
+    protected volatile boolean binaryManagerStatusInvalidation;
+
+    protected volatile BinaryManagerStatus binaryManagerStatus;
 
     // *********************************
     // Host info Management
@@ -215,10 +211,6 @@ public class SystemInfoManager implements Serializable {
         runningStat.run(new PathRef("/"));
     }
 
-    public void checkReady() {
-        isStatInfoAvailable();
-    }
-
     public boolean isStatInfoInProgress() {
         if (isStatInfoAvailable()) {
             return false;
@@ -267,6 +259,9 @@ public class SystemInfoManager implements Serializable {
         return sb.toString();
     }
 
+    // *********************************
+    // Server restart
+
     public String restartServer() {
         FacesContext context = FacesContext.getCurrentInstance();
         HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
@@ -279,6 +274,52 @@ public class SystemInfoManager implements Serializable {
             log.error("Error while redirecting to restart page", e);
         }
         return null;
+    }
+
+    // *********************************
+    // Binaries GC
+
+    public void startBinariesGC() {
+        if (isBinariesGCInProgress()) {
+            return;
+        }
+        binaryManagerStatus = null;
+        binaryManagerStatusInvalidation = false;
+        Runnable gcTask = new BinariesGCTask();
+        Thread t = new Thread(gcTask, "NuxeoBinariesGCUI");
+        t.setDaemon(true);
+        t.start();
+    }
+
+    public boolean isBinariesGCInProgress() {
+        return new RepositoryStatus().isBinariesGCInProgress();
+    }
+
+    public boolean isBinaryManagerStatusAvailable() {
+        if (binaryManagerStatusInvalidation) {
+            // invalidate Seam value in context
+            Contexts.getEventContext().remove("binaryManagerStatus");
+            binaryManagerStatusInvalidation = false;
+        }
+        return binaryManagerStatus != null;
+    }
+
+    @Factory(value = "binaryManagerStatus", scope = ScopeType.EVENT)
+    public BinaryManagerStatus getBinaryManagerStatus() {
+        return binaryManagerStatus;
+
+    }
+
+    public class BinariesGCTask implements Runnable {
+        @Override
+        public void run() {
+            try {
+                binaryManagerStatus = new RepositoryStatus().gcBinaries();
+                binaryManagerStatusInvalidation = true;
+            } catch (RuntimeException e) {
+                log.error("Error while executing BinariesGCTask", e);
+            }
+        }
     }
 
 }

@@ -38,6 +38,12 @@
       <filter-id>only_for_manager</filter-id>
     </action>
 
+    <action id="BinariesInfo" link="/incl/sysinfo/binariesInfo.xhtml"
+      label="tab.sysinfo.binariesInfo" order="60">
+      <category>SystemInfo_sub_tab</category>
+      <filter-id>only_for_manager</filter-id>
+    </action>
+
     <!-- <action id="ReposUsage" link="/incl/sysinfo/reposUsage.xhtml" label="tab.sysinfo.reposStats"
       order="60"> <category>NUXEO_ADMIN_SystemInfo</category> <filter-id>only_for_manager</filter-id>
       </action> -->
