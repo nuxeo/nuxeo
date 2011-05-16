@@ -415,7 +415,7 @@ public class ClipboardActionsBean extends InputController implements
             moveDocumentList(getCurrentSelectedListName());
         } catch (ClientException e) {
             log.info("moveWorkingList failed" + e.getMessage(), e);
-            facesMessages.add(StatusMessage.Severity.WARN,
+            facesMessages.add(FacesMessage.SEVERITY_WARN,
                     resourcesAccessor.getMessages().get("invalid_operation"),
                     null);
         }
@@ -427,7 +427,7 @@ public class ClipboardActionsBean extends InputController implements
             pasteDocumentList(getCurrentSelectedList());
         } catch (ClientException e) {
             log.info("pasteWorkingList failed" + e.getMessage(), e);
-            facesMessages.add(StatusMessage.Severity.WARN,
+            facesMessages.add(FacesMessage.SEVERITY_WARN,
                     resourcesAccessor.getMessages().get("invalid_operation"),
                     null);
         }
@@ -440,7 +440,7 @@ public class ClipboardActionsBean extends InputController implements
             returnToPreviouslySelectedList();
         } catch (ClientException e) {
             log.info("pasteClipboard failed" + e.getMessage(), e);
-            facesMessages.add(StatusMessage.Severity.WARN,
+            facesMessages.add(FacesMessage.SEVERITY_WARN,
                     resourcesAccessor.getMessages().get("invalid_operation"),
                     null);
 
@@ -947,5 +947,5 @@ public class ClipboardActionsBean extends InputController implements
             throw ClientException.wrap(io);
         }
     }
-    
+
 }
