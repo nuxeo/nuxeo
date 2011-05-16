@@ -211,9 +211,11 @@ public class ClipboardActionsBean extends InputController implements
         canEditSelectedDocs = null;
         if (null != docsList) {
             Object[] params = { docsList.size() };
-            facesMessages.add(StatusMessage.Severity.INFO, "#0 "
-                    + resourcesAccessor.getMessages().get(
-                            "n_added_to_worklist_docs"), params);
+            facesMessages.add(
+                    StatusMessage.Severity.INFO,
+                    "#0 "
+                            + resourcesAccessor.getMessages().get(
+                                    "n_added_to_worklist_docs"), params);
 
             // Add to the default working list
             documentsListsManager.addToWorkingList(
@@ -386,19 +388,41 @@ public class ClipboardActionsBean extends InputController implements
         return moveDocumentList(listName, currentDocument.getId());
     }
 
-    public String moveWorkingList() throws ClientException {
-        moveDocumentList(getCurrentSelectedListName());
+    public String moveWorkingList() {
+        try {
+            moveDocumentList(getCurrentSelectedListName());
+        } catch (ClientException e) {
+            log.info("moveWorkingList failed" + e.getMessage(), e);
+            facesMessages.add(StatusMessage.Severity.WARN,
+                    resourcesAccessor.getMessages().get("invalid_operation"),
+                    null);
+        }
         return null;
     }
 
-    public String pasteWorkingList() throws ClientException {
-        pasteDocumentList(getCurrentSelectedList());
+    public String pasteWorkingList() {
+        try {
+            pasteDocumentList(getCurrentSelectedList());
+        } catch (ClientException e) {
+            log.info("pasteWorkingList failed" + e.getMessage(), e);
+            facesMessages.add(StatusMessage.Severity.WARN,
+                    resourcesAccessor.getMessages().get("invalid_operation"),
+                    null);
+        }
         return null;
     }
 
-    public String pasteClipboard() throws ClientException {
-        pasteDocumentList(DocumentsListsManager.CLIPBOARD);
-        returnToPreviouslySelectedList();
+    public String pasteClipboard() {
+        try {
+            pasteDocumentList(DocumentsListsManager.CLIPBOARD);
+            returnToPreviouslySelectedList();
+        } catch (ClientException e) {
+            log.info("pasteClipboard failed" + e.getMessage(), e);
+            facesMessages.add(StatusMessage.Severity.WARN,
+                    resourcesAccessor.getMessages().get("invalid_operation"),
+                    null);
+
+        }
         return null;
     }
 
@@ -498,9 +522,8 @@ public class ClipboardActionsBean extends InputController implements
      * Rules:
      * <p>
      * In general the currentDocument is the parent. Exceptions to this rule:
-     * when the currentDocument is a domain or null. If Domain then content
-     * root is the parent. If null is passed, then the JCR root is taken as
-     * parent.
+     * when the currentDocument is a domain or null. If Domain then content root
+     * is the parent. If null is passed, then the JCR root is taken as parent.
      */
     protected DocumentModel getParent(DocumentModel currentDocument)
             throws ClientException {
@@ -778,8 +801,8 @@ public class ClipboardActionsBean extends InputController implements
                 actionCache = new HashMap<String, List<Action>>();
             }
             if (!actionCache.containsKey(lstName)) {
-                actionCache.put(lstName, webActions.getActionsList(lstName
-                        + "_LIST"));
+                actionCache.put(lstName,
+                        webActions.getActionsList(lstName + "_LIST"));
             }
             return actionCache.get(lstName);
         } else {

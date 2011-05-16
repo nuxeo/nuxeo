@@ -62,12 +62,12 @@ public interface ClipboardActions {
     /**
      * Called when the "paste all" button is clicked on the clipboard.
      */
-    String pasteWorkingList() throws ClientException;
+    String pasteWorkingList();
 
     /**
      * Called when the "move all" button is clicked on the clipboard/selection
      */
-    String moveWorkingList() throws ClientException;
+    String moveWorkingList();
 
     /**
      * Called when the drag and drop is launched in the body fragment.
@@ -87,7 +87,7 @@ public interface ClipboardActions {
     String pasteDocumentListInside(String listName, String docId) throws ClientException;
 
 
-    String pasteClipboard() throws ClientException;
+    String pasteClipboard();
 
     String pasteClipboardInside(String docId) throws ClientException;
 
