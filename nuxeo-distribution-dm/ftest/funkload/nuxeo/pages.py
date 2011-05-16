@@ -98,7 +98,7 @@ class BasePage:
             description="Login " + user)
         fl.assert_('LoginFailed=true' not in fl.getLastUrl(),
                    'Login failed for %s:%s' % (user, password))
-        fl.assert_("You are logged as " + user in fl.getBody(),
+        fl.assert_(user in fl.getBody(),
                     "User login not found on the welcome page")
         fl.current_login = user
         return FolderPage(self.fl)
