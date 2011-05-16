@@ -1753,7 +1753,6 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         assertEquals(3, res.getNumItems().intValue());
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void testQueryContains() throws Exception {
 
@@ -1765,6 +1764,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
                 "dc:title", "new title1");
         PropertyData<?> propDescription = factory.createPropertyStringData(
                 "dc:description", "new description1");
+        @SuppressWarnings("unchecked")
         Properties properties = factory.createPropertiesData(Arrays.asList(
                 propTitle, propDescription));
 
@@ -1805,6 +1805,46 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         // warning instead and fallback to the default index)
         statement = "SELECT cmis:name FROM File" //
                 + " WHERE CONTAINS('nx:borked:title1')";
+        res = query(statement);
+        assertEquals(1, res.getNumItems().intValue());
+        assertEquals("new title1",
+                getString(res.getObjects().get(0), PropertyIds.NAME));
+    }
+
+    @Test
+    public void testQueryContainsSyntax() throws Exception {
+        ObjectData ob = getObjectByPath("/testfolder1/testfile1");
+        assertEquals("testfile1_Title", getString(ob, "dc:title"));
+
+        BindingsObjectFactory factory = binding.getObjectFactory();
+        PropertyData<?> propTitle = factory.createPropertyStringData(
+                "dc:title", "new title1");
+        PropertyData<?> propDescription = factory.createPropertyStringData(
+                "dc:description", "new description1");
+        @SuppressWarnings("unchecked")
+        Properties properties = factory.createPropertiesData(Arrays.asList(
+                propTitle, propDescription));
+
+        Holder<String> objectIdHolder = new Holder<String>(ob.getId());
+        objService.updateProperties(repositoryId, objectIdHolder, null,
+                properties, null);
+
+        ObjectList res;
+        String statement;
+
+        statement = "SELECT cmis:name FROM File WHERE CONTAINS('title1 description1')";
+        res = query(statement);
+        assertEquals(1, res.getNumItems().intValue());
+        assertEquals("new title1",
+                getString(res.getObjects().get(0), PropertyIds.NAME));
+
+        statement = "SELECT cmis:name FROM File WHERE CONTAINS('title1 AND description1')";
+        res = query(statement);
+        assertEquals(1, res.getNumItems().intValue());
+        assertEquals("new title1",
+                getString(res.getObjects().get(0), PropertyIds.NAME));
+
+        statement = "SELECT cmis:name FROM File WHERE CONTAINS('title1 OR blorgzap')";
         res = query(statement);
         assertEquals(1, res.getNumItems().intValue());
         assertEquals("new title1",

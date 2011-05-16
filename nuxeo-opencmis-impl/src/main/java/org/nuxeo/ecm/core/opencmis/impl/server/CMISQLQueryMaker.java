@@ -1060,10 +1060,21 @@ public class CMISQLQueryMaker implements QueryMaker {
                                     + " fallback to '%s'", indexName));
                 }
             }
+            // CMIS syntax to our internal google-like internal syntax
+            statement = cmisToFulltextQuery(statement);
+            // internal syntax to backend syntax
+            statement = dialect.getDialectFulltextQuery(statement);
             fulltextMatchInfo = dialect.getFulltextScoredMatchInfo(statement,
                     indexName, 1, column, model, database);
             return null;
         }
+    }
+
+    protected static String cmisToFulltextQuery(String statement) {
+        // internal syntax has implicit AND
+        statement = statement.replace(" and ", " ");
+        statement = statement.replace(" AND ", " ");
+        return statement;
     }
 
     /**
