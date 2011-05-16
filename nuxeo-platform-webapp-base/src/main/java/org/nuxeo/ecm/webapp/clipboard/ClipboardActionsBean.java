@@ -410,19 +410,41 @@ public class ClipboardActionsBean extends InputController implements
         return moveDocumentList(listName, currentDocument.getId());
     }
 
-    public String moveWorkingList() throws ClientException {
-        moveDocumentList(getCurrentSelectedListName());
+    public String moveWorkingList() {
+        try {
+            moveDocumentList(getCurrentSelectedListName());
+        } catch (ClientException e) {
+            log.info("moveWorkingList failed" + e.getMessage(), e);
+            facesMessages.add(StatusMessage.Severity.WARN,
+                    resourcesAccessor.getMessages().get("invalid_operation"),
+                    null);
+        }
         return null;
     }
 
-    public String pasteWorkingList() throws ClientException {
-        pasteDocumentList(getCurrentSelectedList());
+    public String pasteWorkingList() {
+        try {
+            pasteDocumentList(getCurrentSelectedList());
+        } catch (ClientException e) {
+            log.info("pasteWorkingList failed" + e.getMessage(), e);
+            facesMessages.add(StatusMessage.Severity.WARN,
+                    resourcesAccessor.getMessages().get("invalid_operation"),
+                    null);
+        }
         return null;
     }
 
-    public String pasteClipboard() throws ClientException {
-        pasteDocumentList(DocumentsListsManager.CLIPBOARD);
-        returnToPreviouslySelectedList();
+    public String pasteClipboard() {
+        try {
+            pasteDocumentList(DocumentsListsManager.CLIPBOARD);
+            returnToPreviouslySelectedList();
+        } catch (ClientException e) {
+            log.info("pasteClipboard failed" + e.getMessage(), e);
+            facesMessages.add(StatusMessage.Severity.WARN,
+                    resourcesAccessor.getMessages().get("invalid_operation"),
+                    null);
+
+        }
         return null;
     }
 
@@ -804,8 +826,8 @@ public class ClipboardActionsBean extends InputController implements
                 actionCache = new HashMap<String, List<Action>>();
             }
             if (!actionCache.containsKey(lstName)) {
-                actionCache.put(lstName, webActions.getActionsList(lstName
-                        + "_LIST"));
+                actionCache.put(lstName,
+                        webActions.getActionsList(lstName + "_LIST"));
             }
             return actionCache.get(lstName);
         } else {
