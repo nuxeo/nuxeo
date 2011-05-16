@@ -1447,6 +1447,13 @@
         <width>80%</width>
         <height>70%</height>
       </selector>
+      <!-- For RFaces Navigation Tree in the main area -->
+      <selector path=".dataInput .dr-tree td, .dataInput .dr-tree td td">
+        <padding>1px</padding>
+      </selector>
+      <selector path=".fieldColumn .dr-tree img">
+        <margin>0</margin>
+      </selector>
     </style>
     <style name="tree and clipboard column" inherit="common style 1">
       <selector path="div,dd,dt,dl,img,p,h1,h2,h3,h4,h5,form,hr,fieldset">
