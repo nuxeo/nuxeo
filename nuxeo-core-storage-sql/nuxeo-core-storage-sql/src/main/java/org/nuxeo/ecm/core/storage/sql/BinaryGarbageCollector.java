@@ -73,4 +73,17 @@ public interface BinaryGarbageCollector {
      */
     BinaryManagerStatus getStatus();
 
+    /**
+     * Checks if a GC is in progress.
+     * <p>
+     * A GC is in progress is {@code #start} has been called but not
+     * {@code #stop}.
+     * <p>
+     * It's only useful to call this from a separate thread from the one that
+     * calls {@link #mark}.
+     *
+     * @return {@code true} if a GC is in progress
+     */
+    boolean isInProgress();
+
 }

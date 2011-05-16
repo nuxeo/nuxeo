@@ -898,7 +898,9 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                 while (rs.next()) {
                     n++;
                     String digest = (String) col.getFromResultSet(rs, 1);
-                    gc.mark(digest);
+                    if (digest != null) {
+                        gc.mark(digest);
+                    }
                 }
                 if (logger.isLogEnabled()) {
                     logger.logCount(n);

@@ -70,6 +70,8 @@ public class DefaultBinaryManager implements BinaryManager {
 
     protected BinaryManagerDescriptor descriptor;
 
+    private BinaryGarbageCollector garbageCollector;
+
     @Override
     public void initialize(RepositoryDescriptor repositoryDescriptor)
             throws IOException {
@@ -110,6 +112,7 @@ public class DefaultBinaryManager implements BinaryManager {
         storageDir.mkdirs();
         tmpDir.mkdirs();
         descriptor = getDescriptor(new File(base, CONFIG_FILE));
+        createGarbageCollector();
     }
 
     public File getStorageDir() {
@@ -265,9 +268,13 @@ public class DefaultBinaryManager implements BinaryManager {
         return buf.toString();
     }
 
+    protected void createGarbageCollector() {
+        garbageCollector = new DefaultBinaryGarbageCollector(this);
+    }
+
     @Override
     public BinaryGarbageCollector getGarbageCollector() {
-        return new DefaultBinaryGarbageCollector(this);
+        return garbageCollector;
     }
 
     /**
@@ -427,13 +434,12 @@ public class DefaultBinaryManager implements BinaryManager {
 
         protected final DefaultBinaryManager binaryManager;
 
-        protected final BinaryManagerStatus status;
+        protected volatile long startTime;
 
-        protected long startTime;
+        protected BinaryManagerStatus status;
 
         public DefaultBinaryGarbageCollector(DefaultBinaryManager binaryManager) {
             this.binaryManager = binaryManager;
-            status = new BinaryManagerStatus();
         }
 
         @Override
@@ -447,10 +453,18 @@ public class DefaultBinaryManager implements BinaryManager {
         }
 
         @Override
+        public boolean isInProgress() {
+            // volatile as this is designed to be called from another thread
+            return startTime != 0;
+        }
+
+        @Override
         public void start() {
-            if (startTime == 0) {
-                startTime = System.currentTimeMillis();
+            if (startTime != 0) {
+                throw new RuntimeException("Alread started");
             }
+            startTime = System.currentTimeMillis();
+            status = new BinaryManagerStatus();
         }
 
         @Override
@@ -470,6 +484,7 @@ public class DefaultBinaryManager implements BinaryManager {
             }
             deleteOld(binaryManager.getStorageDir(), startTime
                     - TIME_RESOLUTION, 0, delete);
+            status.gcDuration = System.currentTimeMillis() - startTime;
             startTime = 0;
         }
 

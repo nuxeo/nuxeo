@@ -22,24 +22,49 @@ package org.nuxeo.ecm.core.storage.sql;
  */
 public class BinaryManagerStatus {
 
+    public long gcDuration;
+
+    public long numBinaries;
+
+    public long sizeBinaries;
+
+    public long numBinariesGC;
+
+    public long sizeBinariesGC;
+
+    /**
+     * The GC duration, in milliseconds
+     */
+    public long getGCDuration() {
+        return gcDuration;
+    }
+
     /**
      * The number of binaries.
      */
-    public long numBinaries;
+    public long getNumBinaries() {
+        return numBinaries;
+    }
 
     /**
      * The cumulated size of the binaries.
      */
-    public long sizeBinaries;
+    public long getSizeBinaries() {
+        return sizeBinaries;
+    }
 
     /**
      * The number of garbage collected binaries.
      */
-    public long numBinariesGC;
+    public long getNumBinariesGC() {
+        return numBinariesGC;
+    }
 
     /**
      * The cumulated size of the garbage collected binaries.
      */
-    public long sizeBinariesGC;
+    public long getSizeBinariesGC() {
+        return sizeBinariesGC;
+    }
 
 }

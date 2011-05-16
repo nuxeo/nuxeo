@@ -172,6 +172,7 @@ public class RepositoryStatus implements RepositoryStatusMBean {
             status.sizeBinaries = -1;
             return status;
         }
+        long start = System.currentTimeMillis();
         Map<String, BinaryGarbageCollector> repogcs = new LinkedHashMap<String, BinaryGarbageCollector>();
         Map<String, BinaryGarbageCollector> gcs = new LinkedHashMap<String, BinaryGarbageCollector>();
         for (RepositoryManagement repository : repositories) {
@@ -201,7 +202,24 @@ public class RepositoryStatus implements RepositoryStatusMBean {
             status.numBinariesGC += s.numBinariesGC;
             status.sizeBinariesGC += s.sizeBinariesGC;
         }
+        status.gcDuration = System.currentTimeMillis() - start;
         return status;
+    }
+
+    @Override
+    public boolean isBinariesGCInProgress() {
+        try {
+            List<RepositoryManagement> repositories = getRepositories();
+            for (RepositoryManagement repo : repositories) {
+                BinaryGarbageCollector gc = repo.getBinaryGarbageCollector();
+                if (gc != null & gc.isInProgress()) {
+                    return true;
+                }
+            }
+        } catch (NamingException e) {
+            log.error("Error getting repositories", e);
+        }
+        return false;
     }
 
 }

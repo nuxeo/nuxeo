@@ -479,7 +479,9 @@ public class TestSQLBackend extends SQLBackendTestCase {
     protected BinaryManagerStatus runBinariesGC(int moreWork, Session session)
             throws Exception {
         BinaryGarbageCollector gc = repository.getBinaryGarbageCollector();
+        assertFalse(gc.isInProgress());
         gc.start();
+        assertTrue(gc.isInProgress());
         repository.markReferencedBinaries(gc);
         if (moreWork == 1) {
             // while GC is in progress

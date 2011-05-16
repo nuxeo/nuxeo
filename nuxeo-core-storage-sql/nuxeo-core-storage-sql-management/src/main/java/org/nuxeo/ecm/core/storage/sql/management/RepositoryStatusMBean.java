@@ -42,8 +42,18 @@ public interface RepositoryStatusMBean {
     /**
      * GC the unused binaries.
      *
-     * @return a status about the number of gc-ed binaries
+     * @return a status about the number of GCed binaries
      */
     BinaryManagerStatus gcBinaries();
+
+    /**
+     * Is a GC of the binaries in progress?
+     * <p>
+     * It's only useful to call this from a separate thread from the one that
+     * called {@link #gcBinaries}.
+     *
+     * @return {@code true} if a GC of the binaries is in progress
+     */
+    boolean isBinariesGCInProgress();
 
 }

@@ -63,9 +63,13 @@ public class TestDefaultBinaryManager extends NXRuntimeTestCase {
 
         // GC in non-delete mode
         BinaryGarbageCollector gc = binaryManager.getGarbageCollector();
+        assertFalse(gc.isInProgress());
         gc.start();
+        assertTrue(gc.isInProgress());
         gc.mark(CONTENT_MD5);
+        assertTrue(gc.isInProgress());
         gc.stop(false);
+        assertFalse(gc.isInProgress());
         BinaryManagerStatus status = gc.getStatus();
         assertEquals(2, status.numBinaries);
         assertEquals(bytes.length + 4, status.sizeBinaries);
@@ -76,9 +80,13 @@ public class TestDefaultBinaryManager extends NXRuntimeTestCase {
 
         // real GC
         gc = binaryManager.getGarbageCollector();
+        assertFalse(gc.isInProgress());
         gc.start();
+        assertTrue(gc.isInProgress());
         gc.mark(CONTENT_MD5);
+        assertTrue(gc.isInProgress());
         gc.stop(true);
+        assertFalse(gc.isInProgress());
         status = gc.getStatus();
         assertEquals(2, status.numBinaries);
         assertEquals(bytes.length + 4, status.sizeBinaries);
