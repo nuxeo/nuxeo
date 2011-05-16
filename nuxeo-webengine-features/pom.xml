@@ -28,6 +28,8 @@
     <module>nuxeo-webengine-blogs</module>
     <module>nuxeo-webengine-blogs-api</module>
     <module>nuxeo-webengine-blogs-core</module>
+    <module>nuxeo-webengine-samples-base</module>
+    <module>nuxeo-webengine-samples-extended</module>
   </modules>
 
   <profiles>

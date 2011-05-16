@@ -934,6 +934,17 @@
         </exclusions>
       </dependency>
       <dependency>
+        <groupId>org.nuxeo.ecm.webengine</groupId>
+        <artifactId>nuxeo-webengine-samples-base</artifactId>
+        <version>${nuxeo.webengine.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.webengine</groupId>
+        <artifactId>nuxeo-webengine-samples-extended</artifactId>
+        <version>${nuxeo.webengine.version}</version>
+      </dependency>
+
+      <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-management</artifactId>
         <version>${nuxeo.features.version}</version>
