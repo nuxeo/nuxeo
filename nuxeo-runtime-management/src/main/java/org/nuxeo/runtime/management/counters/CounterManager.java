@@ -36,6 +36,9 @@ public interface CounterManager {
      */
     void increaseCounter(String counterName);
 
+
+    void increaseCounter(String counterName, long value);
+
     /**
      * Set the value of a counter
      *
@@ -50,6 +53,8 @@ public interface CounterManager {
      * @param counterName
      */
     void decreaseCounter(String counterName);
+
+    void decreaseCounter(String counterName, long value);
 
     /**
      * Get recorder values of the counter over time

@@ -71,8 +71,24 @@ public class CounterManagerImpl extends DefaultComponent implements
     }
 
     @Override
+    public void decreaseCounter(String counterName, long value) {
+        if (SimonManager.getCounter(counterName).isEnabled()) {
+            SimonManager.getCounter(counterName).decrease(value);
+        }
+    }
+
+    @Override
+    public void increaseCounter(String counterName, long value) {
+        if (SimonManager.getCounter(counterName).isEnabled()) {
+            SimonManager.getCounter(counterName).increase(value);
+        }
+    }
+
+    @Override
     public void setCounterValue(String counterName, long value) {
-        SimonManager.getCounter(counterName).set(value);
+        if (SimonManager.getCounter(counterName).isEnabled()) {
+            SimonManager.getCounter(counterName).set(value);
+        }
     }
 
     public CounterHistoryStack getCounterHistory(String counterName) {
