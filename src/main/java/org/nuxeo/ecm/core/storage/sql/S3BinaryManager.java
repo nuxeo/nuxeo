@@ -31,6 +31,9 @@ import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.cert.Certificate;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -50,8 +53,10 @@ import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.CryptoConfiguration;
 import com.amazonaws.services.s3.model.EncryptionMaterials;
 import com.amazonaws.services.s3.model.GetObjectRequest;
+import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectResult;
+import com.amazonaws.services.s3.model.S3ObjectSummary;
 
 /**
  * A Binary Manager that stores binaries as S3 BLOBs
@@ -96,6 +101,10 @@ public class S3BinaryManager extends DefaultBinaryManager {
 
     public static final String PROXY_PASSWORD_KEY = "nuxeo.http.proxy.password";
 
+    private static final String MD5 = "MD5"; // must be MD5 for Etag
+
+    private static final Pattern MD5_RE = Pattern.compile("[0-9a-f]{32}");
+
     protected String bucketName;
 
     protected BasicAWSCredentials awsCredentials;
@@ -117,7 +126,7 @@ public class S3BinaryManager extends DefaultBinaryManager {
             throws IOException {
         repositoryName = repositoryDescriptor.name;
         descriptor = new BinaryManagerDescriptor();
-        descriptor.digest = "MD5"; // matches ETag computation
+        descriptor.digest = MD5; // matches ETag computation
         log.info("Repository '" + repositoryDescriptor.name + "' using "
                 + getClass().getSimpleName());
 
@@ -247,6 +256,13 @@ public class S3BinaryManager extends DefaultBinaryManager {
         fileCache = new LRUFileCache(dir, cacheSize);
         log.info("Using binary cache directory: " + dir.getPath() + " size: "
                 + cacheSizeStr);
+
+        createGarbageCollector();
+    }
+
+    @Override
+    protected void createGarbageCollector() {
+        garbageCollector = new S3BinaryGarbageCollector(this);
     }
 
     @Override
@@ -304,7 +320,6 @@ public class S3BinaryManager extends DefaultBinaryManager {
         }
     }
 
-    /** Used by unit tests only. */
     protected void removeBinary(String digest) {
         amazonS3.deleteObject(bucketName, digest);
     }
@@ -316,6 +331,10 @@ public class S3BinaryManager extends DefaultBinaryManager {
                     || "Not Found".equals(e.getMessage());
         }
         return false;
+    }
+
+    public static boolean isMD5(String digest) {
+        return MD5_RE.matcher(digest).matches();
     }
 
     public static class S3LazyBinary extends LazyBinary {
@@ -373,6 +392,111 @@ public class S3BinaryManager extends DefaultBinaryManager {
                 }
                 return null;
             }
+        }
+    }
+
+    /**
+     * Garbage collector for S3 binaries that stores the marked (in use)
+     * binaries in memory.
+     */
+    public static class S3BinaryGarbageCollector implements
+            BinaryGarbageCollector {
+
+        protected final S3BinaryManager binaryManager;
+
+        protected volatile long startTime;
+
+        protected BinaryManagerStatus status;
+
+        protected Set<String> marked;
+
+        public S3BinaryGarbageCollector(S3BinaryManager binaryManager) {
+            this.binaryManager = binaryManager;
+        }
+
+        @Override
+        public String getId() {
+            return "s3:" + binaryManager.bucketName;
+        }
+
+        @Override
+        public BinaryManagerStatus getStatus() {
+            return status;
+        }
+
+        @Override
+        public boolean isInProgress() {
+            // volatile as this is designed to be called from another thread
+            return startTime != 0;
+        }
+
+        @Override
+        public void start() {
+            if (startTime != 0) {
+                throw new RuntimeException("Alread started");
+            }
+            startTime = System.currentTimeMillis();
+            status = new BinaryManagerStatus();
+            marked = new HashSet<String>();
+        }
+
+        @Override
+        public void mark(String digest) {
+            marked.add(digest);
+        }
+
+        @Override
+        public void stop(boolean delete) {
+            if (startTime == 0) {
+                throw new RuntimeException("Not started");
+            }
+
+            try {
+                // list S3 objects in the bucket
+                // record those not marked
+                Set<String> unmarked = new HashSet<String>();
+                ObjectListing list = null;
+                do {
+                    if (list == null) {
+                        list = binaryManager.amazonS3.listObjects(binaryManager.bucketName);
+                    } else {
+                        list = binaryManager.amazonS3.listNextBatchOfObjects(list);
+                    }
+                    for (S3ObjectSummary summary : list.getObjectSummaries()) {
+                        String digest = summary.getKey();
+                        if (!isMD5(digest)) {
+                            // ignore files that cannot be MD5 digests for
+                            // safety
+                            continue;
+                        }
+                        long length = summary.getSize();
+                        if (marked.contains(digest)) {
+                            status.numBinaries++;
+                            status.sizeBinaries += length;
+                        } else {
+                            status.numBinariesGC++;
+                            status.sizeBinariesGC += length;
+                            // record file to delete
+                            unmarked.add(digest);
+                            marked.remove(digest); // optimize memory
+                        }
+                    }
+                } while (list.isTruncated());
+                marked = null; // help GC
+
+                // delete unmarked objects
+                if (delete) {
+                    for (String digest : unmarked) {
+                        binaryManager.removeBinary(digest);
+                    }
+                }
+
+            } catch (AmazonClientException e) {
+                throw new RuntimeException(e);
+            }
+
+            status.gcDuration = System.currentTimeMillis() - startTime;
+            startTime = 0;
         }
     }
 
