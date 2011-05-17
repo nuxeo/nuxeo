@@ -28,7 +28,6 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.api.ServiceManagement;
@@ -37,29 +36,36 @@ import org.nuxeo.runtime.api.ServiceManagement;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * @deprecated use new service API {@link ServiceManagement}
  */
-@SuppressWarnings({"ALL"})
+@SuppressWarnings( { "ALL" })
 @Deprecated
 public class Server {
 
     private static final String jndiPrefix = "nuxeo/";
+
     private static final String jndiSuffix = "/remote";
 
     private final Platform platform;
 
     private final String name;
+
     private final String host;
+
     private final String port;
 
     private final Map<String, ServiceDescriptor> services;
+
     private final Map<String, RepositoryDescriptor> repositories;
 
     private final JndiContextFactory jndiContextFactory;
+
     private InitialContext jndiContext;
+
     private RepositoryConnector repositoryConnector;
+
     private ServiceConnector serviceConnector;
 
-
-    public Server(Platform platform, ServerDescriptor descriptor) throws Exception {
+    public Server(Platform platform, ServerDescriptor descriptor)
+            throws Exception {
         name = descriptor.name;
         this.platform = platform;
         services = new Hashtable<String, ServiceDescriptor>();
@@ -67,7 +73,7 @@ public class Server {
         host = Framework.expandVars(descriptor.host);
         port = descriptor.port == null ? "1099" : descriptor.port;
         if (descriptor.jndiContextFactory == null) {
-            jndiContextFactory =  DefaultJndiContextFactory.getInstance();
+            jndiContextFactory = DefaultJndiContextFactory.getInstance();
         } else {
             jndiContextFactory = (JndiContextFactory) descriptor.jndiContextFactory.newInstance();
         }
@@ -114,13 +120,12 @@ public class Server {
         return serviceConnector.connect(sd);
     }
 
-    public CoreSession openRepository(RepositoryDescriptor rd, Map<String, Serializable> ctx)
-            throws NamingException, ClientException {
+    public CoreSession openRepository(RepositoryDescriptor rd,
+            Map<String, Serializable> ctx) throws NamingException,
+            ClientException {
         CoreSession session = repositoryConnector.connect(rd);
         if (session != null) {
-            String sid = session.connect(rd.name, ctx);
-            // register session on local JVM so it can be used later by doc models
-            CoreInstance.getInstance().registerSession(sid, session);
+            session.connect(rd.name, ctx);
         }
         return session;
     }
