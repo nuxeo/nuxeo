@@ -152,9 +152,7 @@ public class Repository implements Serializable {
         if (repositoryUri == null) {
             repositoryUri = name;
         }
-        String sid = session.connect(repositoryUri, context);
-        // register session on local JVM so it can be used later by doc models
-        CoreInstance.getInstance().registerSession(sid, session);
+        session.connect(repositoryUri, context);
         return session;
     }
 

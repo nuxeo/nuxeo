@@ -23,7 +23,6 @@ import org.nuxeo.runtime.api.ServiceDescriptor;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class CoreSessionAdapter implements ServiceAdapter {
 
@@ -33,9 +32,7 @@ public class CoreSessionAdapter implements ServiceAdapter {
     public Object adapt(ServiceDescriptor svc, Object service) throws Exception {
         Map<String, Serializable> ctx = new HashMap<String, Serializable>();
         CoreSession session = (CoreSession) service;
-        String sid = session.connect(svc.getName(), ctx);
-        // register session on local JVM so it can be used later by doc models
-        CoreInstance.getInstance().registerSession(sid, session);
+        session.connect(svc.getName(), ctx);
         return session;
     }
 

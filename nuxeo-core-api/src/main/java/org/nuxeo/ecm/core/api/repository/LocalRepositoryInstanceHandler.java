@@ -56,7 +56,7 @@ public class LocalRepositoryInstanceHandler extends RepositoryInstanceHandler {
         Map<String, Serializable> ctx = new HashMap<String, Serializable>();
         ctx.put("principal", (NuxeoPrincipal) principal);
         String sid = session.connect(repositoryUri, ctx);
-        // register session on local JVM so it can be used later by doc models
+        // register proxy on local JVM so it can be used later by doc models
         CoreInstance.getInstance().registerSession(sid, proxy);
     }
 

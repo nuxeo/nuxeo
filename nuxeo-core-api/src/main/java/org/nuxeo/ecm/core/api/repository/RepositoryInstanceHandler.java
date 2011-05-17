@@ -117,7 +117,7 @@ public class RepositoryInstanceHandler implements InvocationHandler, RepositoryC
             repositoryUri = repository.getName();
         }
         String sid = session.connect(repositoryUri, new HashMap<String, Serializable>());
-        // register session on local JVM so it can be used later by doc models
+        // register proxy on local JVM so it can be used later by doc models
         CoreInstance.getInstance().registerSession(sid, proxy);
     }
 

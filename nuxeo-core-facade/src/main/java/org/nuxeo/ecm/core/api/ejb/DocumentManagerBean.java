@@ -133,6 +133,7 @@ public class DocumentManagerBean extends AbstractSession implements
             if (session != null && session.isLive()) {
                 session.close();
             }
+            // why not unregister the session?
             session = null;
         } catch (Exception e) {
             log.error("Failed to close session", e);

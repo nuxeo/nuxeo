@@ -38,17 +38,18 @@ import org.nuxeo.runtime.api.Framework;
  * remotely.
  * <p>
  * A server instance uses a CoreSessionFactory to create CoreSession instances.
- * CoreSessionFactory objects are implementation-dependent and may be registered
- * using extension points. See {@link CoreSessionFactory} for more details.
+ * CoreSessionFactory objects are implementation-dependent and may be
+ * registered using extension points. See {@link CoreSessionFactory} for more
+ * details.
  * <p>
  * Thus you can use a different implementation for the local ServerConnector
  * than the one for the remote ServerConnector.
  * <p>
- * When clients need to perform a connection to a repository, they simply open a
- * new session using the {@link CoreInstance#open(String, Map)} method.
+ * When clients need to perform a connection to a repository, they simply open
+ * a new session using the {@link CoreInstance#open(String, Map)} method.
  * <p>
- * When the client has done its work it <b>must</b> close its session by calling
- * {@link CoreInstance#close(CoreSession)}.
+ * When the client has done its work it <b>must</b> close its session by
+ * calling {@link CoreInstance#close(CoreSession)}.
  * <p>
  * This ensures correctly freeing all the resources held by the client session.
  * <p>
@@ -174,8 +175,15 @@ public class CoreInstance implements Serializable {
         return sessions.containsKey(sid);
     }
 
-    /** @deprecated unused */
-    @Deprecated
+    /**
+     * Returns the number of registered sessions.
+     *
+     * @since 5.4.2
+     */
+    public int getNumberOfSessions() {
+        return sessions.size();
+    }
+
     public CoreSession[] getSessions() {
         Collection<CoreSession> valuesOfMap = sessions.values();
         return valuesOfMap.toArray(new CoreSession[0]);
@@ -189,7 +197,7 @@ public class CoreInstance implements Serializable {
      */
     public CoreSession getSession(String sid) {
         HashMap<String, CoreSession> reentrantSession = DocumentModelImpl.reentrantCoreSession.get();
-        if (reentrantSession!=null && reentrantSession.containsKey(sid)) {
+        if (reentrantSession != null && reentrantSession.containsKey(sid)) {
             return reentrantSession.get(sid);
         }
         return sessions.get(sid);
