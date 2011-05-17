@@ -32,15 +32,33 @@ public class CounterHelper {
     protected static CounterManager cm = Framework.getLocalService(CounterManager.class);
 
     public static void increaseCounter(String counterName) {
-        cm.increaseCounter(counterName);
+        if (cm!=null) {
+            cm.increaseCounter(counterName);
+        }
+    }
+
+    public static void increaseCounter(String counterName, long value) {
+        if (cm!=null) {
+            cm.increaseCounter(counterName, value);
+        }
     }
 
     public static void setCounterValue(String counterName, long value) {
-        cm.setCounterValue(counterName, value);
+        if (cm!=null) {
+            cm.setCounterValue(counterName, value);
+        }
     }
 
     public static void decreaseCounter(String counterName) {
-        cm.decreaseCounter(counterName);
+        if (cm!=null) {
+            cm.decreaseCounter(counterName);
+        }
+    }
+
+    public static void decreaseCounter(String counterName, long value) {
+        if (cm!=null) {
+            cm.decreaseCounter(counterName, value);
+        }
     }
 
 }
