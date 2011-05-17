@@ -332,7 +332,11 @@ public class WebActionsBean implements WebActionsLocal, Serializable {
     }
 
     public void setCurrentTabId(String tabId) {
-        setCurrentTabId(DEFAULT_TABS_CATEGORY, tabId);
+        if (tabId != null) {
+            // do not reset tab when not set as this method
+            // is used for compatibility in default url pattern
+            setCurrentTabId(DEFAULT_TABS_CATEGORY, tabId);
+        }
     }
 
     public String getCurrentSubTabId() {
@@ -344,11 +348,15 @@ public class WebActionsBean implements WebActionsLocal, Serializable {
     }
 
     public void setCurrentSubTabId(String tabId) {
-        Action action = getCurrentTabAction();
-        if (action != null) {
-            setCurrentTabId(
-                    TabActionsSelection.getSubTabCategory(action.getId()),
-                    tabId);
+        if (tabId != null) {
+            // do not reset tab when not set as this method
+            // is used for compatibility in default url pattern
+            Action action = getCurrentTabAction();
+            if (action != null) {
+                setCurrentTabId(
+                        TabActionsSelection.getSubTabCategory(action.getId()),
+                        tabId);
+            }
         }
     }
 
