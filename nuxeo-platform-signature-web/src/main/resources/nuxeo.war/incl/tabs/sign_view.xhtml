@@ -58,7 +58,8 @@
       </tr>
     </tbody>
   </table>
-
+  
+  <!-- This document has signatures. Show them. -->
   <c:if test="#{signActions.isPDFSigned()}">
     <table class="dataInput">
       <tbody>
@@ -76,8 +77,8 @@
     </table>
   </c:if>
 
-  <!-- the document is not signed -->
-  <c:if test="#{ !signActions.isPDFSigned()}">
+  <!-- The current user did not sign this document. Display the signing form. -->
+  <c:if test="#{ !signActions.isPDFSignedByCurrentUser()}">
     <table class="dataInput">
       <tbody>
         <tr>

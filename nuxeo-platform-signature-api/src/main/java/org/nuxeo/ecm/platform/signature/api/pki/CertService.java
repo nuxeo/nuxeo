@@ -27,26 +27,28 @@ import org.nuxeo.ecm.platform.signature.api.exception.CertException;
 import org.nuxeo.ecm.platform.signature.api.user.UserInfo;
 
 /**
- *
- * This service provides certificate generation and certificate related keystore operations.
+ * 
+ * This service provides certificate generation and certificate related keystore
+ * operations.
  * <p>
- * The interfaces provided by this service are intended to abstract
- * low-level generic certificate operations like PKI key and
- * certificate generation, CSR (Certificate Signing Request) signing with the
- * root certificate, retrieving the certificates from the keystore in a generic
- * way, and also providing CRLs (Certificate Revocation Lists).
+ * The interfaces provided by this service are intended to abstract low-level
+ * generic certificate operations like PKI key and certificate generation, CSR
+ * (Certificate Signing Request) signing with the root certificate, retrieving
+ * the certificates from the keystore in a generic way, and also providing CRLs
+ * (Certificate Revocation Lists).
  * <p>
- * The bulk of this functionality is provided via the initializeUser(..) method used to
- * generate a fully initialized certificate enclosed in a secured keystore.
- *
+ * The bulk of this functionality is provided via the initializeUser(..) method
+ * used to generate a fully initialized certificate enclosed in a secured
+ * keystore.
+ * 
  * @author <a href="mailto:ws@nuxeo.com">Wojciech Sulejman</a>
- *
+ * 
  */
 public interface CertService {
 
     /**
      * Retrieves the root certificate.
-     *
+     * 
      * @return
      * @throws CertException
      */
@@ -55,7 +57,7 @@ public interface CertService {
     /**
      * Sets up a root service to be used for CA-related services like
      * certificate request signing and certificate revocation.
-     *
+     * 
      * @param keystore
      * @throws CertException
      */
@@ -64,7 +66,7 @@ public interface CertService {
     /**
      * Retrieves a KeyStore object from a supplied InputStream. Requires a
      * keystore password.
-     *
+     * 
      * @param userId
      * @return
      */
@@ -73,7 +75,7 @@ public interface CertService {
 
     /**
      * Retrieves existing private and public key from a KeyStore.
-     *
+     * 
      * @param userId
      * @return
      */
@@ -83,6 +85,7 @@ public interface CertService {
     /**
      * Retrieves an existing certificate from a keystore using keystore's
      * certificate alias.
+     * 
      * @param userId
      * @return
      */
@@ -94,7 +97,7 @@ public interface CertService {
      * field information was enclosed in a UserInfo parameter. Stores those
      * artifacts in a password protected keystore. This is the principal method
      * for activating a new certificate and signing it with a root certificate.
-     *
+     * 
      * @param userId
      * @return KeyStore based on the provided userInfo
      */
@@ -105,7 +108,7 @@ public interface CertService {
     /**
      * Wraps a certificate object into an OutputStream object secured by a
      * keystore password
-     *
+     * 
      * @param keystore
      * @param os
      * @param keystorePassword
@@ -113,5 +116,15 @@ public interface CertService {
      */
     public void storeCertificate(KeyStore keystore, OutputStream os,
             String keystorePassword) throws CertException;
+
+    /**
+     * Extracts the email address from a certificate
+     * 
+     * @param certificate
+     * @return
+     * @throws CertException
+     */
+    public String getCertificateEmail(X509Certificate certificate)
+            throws CertException;
 
 }

@@ -1,5 +1,6 @@
 package org.nuxeo.ecm.platform.signature.core.pki;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -15,7 +16,6 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.Security;
 import java.security.UnrecoverableKeyException;
-import java.security.cert.Certificate;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateParsingException;
@@ -27,10 +27,13 @@ import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.bouncycastle.asn1.ASN1InputStream;
 import org.bouncycastle.asn1.ASN1Set;
+import org.bouncycastle.asn1.DERObject;
 import org.bouncycastle.asn1.DERObjectIdentifier;
 import org.bouncycastle.asn1.DEROctetString;
 import org.bouncycastle.asn1.DERSet;
+import org.bouncycastle.asn1.DERUTF8String;
 import org.bouncycastle.asn1.pkcs.Attribute;
 import org.bouncycastle.asn1.pkcs.CertificationRequest;
 import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
@@ -73,7 +76,6 @@ public class CertServiceImpl extends DefaultComponent implements CertService {
         this.rootService = rootService;
     }
 
-
     protected X509Certificate rootCertificate;
 
     private static final int CERTIFICATE_DURATION_IN_MONTHS = 12;
@@ -85,7 +87,7 @@ public class CertServiceImpl extends DefaultComponent implements CertService {
     private static final int KEY_SIZE = 1024;
 
     private static final String KEYSTORE_TYPE = "JKS";
- 
+
     static {
         if (Security.getProvider("BC") == null) {
             Security.addProvider(new BouncyCastleProvider());
@@ -152,19 +154,19 @@ public class CertServiceImpl extends DefaultComponent implements CertService {
         } catch (java.security.SignatureException e) {
             throw new CertException(e);
         }
-        LOG.debug("Certificate generated for subject: "+cert.getSubjectDN());
+        LOG.debug("Certificate generated for subject: " + cert.getSubjectDN());
         return cert;
     }
 
     @Override
     public X509Certificate getRootCertificate() throws CertException {
         if (rootCertificate == null) {
-            rootCertificate = getCertificate(getRootService().getRootKeyStore(),
+            rootCertificate = getCertificate(
+                    getRootService().getRootKeyStore(),
                     getRootService().getRootCertificateAlias());
         }
         return rootCertificate;
     }
-
 
     protected Date getCertStartDate() {
         Calendar cal = Calendar.getInstance();
@@ -193,7 +195,7 @@ public class CertServiceImpl extends DefaultComponent implements CertService {
             java.security.cert.Certificate[] chain = { getRootCertificate() };
             ks.setKeyEntry(keystoreAlias.getId(AliasType.KEY),
                     keyPair.getPrivate(), password, chain);
-            Certificate cert = getCertificate(keyPair, userInfo);
+            X509Certificate cert = getCertificate(keyPair, userInfo);
             ks.setCertificateEntry(keystoreAlias.getId(AliasType.CERT), cert);
         } catch (CertificateException e) {
             throw new CertException(e);
@@ -323,6 +325,29 @@ public class CertServiceImpl extends DefaultComponent implements CertService {
         return ks;
     }
 
+
+    @Override
+    public String getCertificateEmail(X509Certificate certificate) throws CertException{
+        String emailOID = "2.5.29.17";
+        byte[] emailBytes = certificate.getExtensionValue(emailOID);
+        String certificateEmail=null;
+        try {
+            byte[] octets=((DEROctetString)org.bouncycastle.asn1.ASN1Object.fromByteArray(emailBytes)).getOctets();
+            GeneralNames generalNameCont=GeneralNames.getInstance(org.bouncycastle.asn1.ASN1Object.fromByteArray(octets));
+            GeneralName[] generalNames=generalNameCont.getNames();
+            if(generalNames.length>0){
+                GeneralName generalName=generalNames[0];
+                certificateEmail=generalName.getName().toString();
+            }
+        } catch (IOException e) {
+             throw new CertException("Email could not be extracted from certificate",e);
+        }
+        return certificateEmail;
+    }
+
+    
+  
+    
     /**
      * {@inheritDoc}
      */
@@ -341,7 +366,6 @@ public class CertServiceImpl extends DefaultComponent implements CertService {
             throw new CertException(e);
         }
     }
-
 
     protected RootService getRootService() throws CertException {
         if (rootService == null) {
