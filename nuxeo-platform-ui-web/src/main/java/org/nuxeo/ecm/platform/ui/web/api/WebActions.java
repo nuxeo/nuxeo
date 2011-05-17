@@ -43,6 +43,14 @@ public interface WebActions {
     public static final String SUBTAB_CATEGORY_SUFFIX = "_sub_tab";
 
     /**
+     * Event raised when the current tab has changed, with 2 parameters: first
+     * parameter is a String representing the tab category, and second
+     * parameter is a String representing the new tab id (or null if current
+     * tab is reset for this category).
+     */
+    public static final String CURRENT_TAB_CHANGED = "currentTabChanged";
+
+    /**
      * Returns all filtered actions for a given category and given resolution
      * context.
      * <p>
@@ -121,7 +129,10 @@ public interface WebActions {
     String getCurrentTabId();
 
     /**
-     * Sets the current action id for category {@link #DEFAULT_TABS_CATEGORY}
+     * Sets the current action id for category {@link #DEFAULT_TABS_CATEGORY}.
+     * <p>
+     * Does nothing if tabId is null, but resets current tab for this category
+     * when using an empty string instead.
      */
     void setCurrentTabId(String tabId);
 
@@ -134,6 +145,9 @@ public interface WebActions {
     /**
      * Sets the current sub tab id for a category computed from the current tab
      * action id and the suffix {@link #SUBTAB_CATEGORY_SUFFIX}.
+     * <p>
+     * Does nothing if sub tab id is null, but resets current tab for this
+     * category when using an empty string instead.
      */
     void setCurrentSubTabId(String tabId);
 

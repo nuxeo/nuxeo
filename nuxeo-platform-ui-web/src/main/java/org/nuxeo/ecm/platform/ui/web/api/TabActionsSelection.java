@@ -22,16 +22,19 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jboss.seam.core.Events;
 import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.actions.ActionContext;
 import org.nuxeo.ecm.platform.actions.ejb.ActionManager;
 
 /**
- * Handles selected action tabs
+ * Handles selected action tabs and raised events on current tab change.
  *
+ * @see WebActions#CURRENT_TAB_CHANGED
  * @since 5.4.2
  */
 public class TabActionsSelection implements Serializable {
@@ -77,6 +80,9 @@ public class TabActionsSelection implements Serializable {
                         categoryFound = true;
                         Action oldAction = currentTabActions.get(category);
                         currentTabActions.put(category, tabAction);
+                        Events.instance().raiseEvent(
+                                WebActions.CURRENT_TAB_CHANGED, category,
+                                tabAction.getId());
                         if (oldAction != null) {
                             // additional cleanup of possible sub tabs
                             resetCurrentTabs(getSubTabCategory(oldAction.getId()));
@@ -255,7 +261,12 @@ public class TabActionsSelection implements Serializable {
      * @since 5.4.2
      */
     public void resetCurrentTabs() {
+        Set<String> categories = currentTabActions.keySet();
         currentTabActions.clear();
+        for (String category : categories) {
+            Events.instance().raiseEvent(WebActions.CURRENT_TAB_CHANGED,
+                    category, null);
+        }
     }
 
     /**
@@ -267,6 +278,8 @@ public class TabActionsSelection implements Serializable {
         if (currentTabActions.containsKey(category)) {
             Action action = currentTabActions.get(category);
             currentTabActions.remove(category);
+            Events.instance().raiseEvent(WebActions.CURRENT_TAB_CHANGED,
+                    category, null);
             if (action != null) {
                 resetCurrentTabs(getSubTabCategory(action.getId()));
             }
