@@ -33,6 +33,10 @@ public class PortletWidget extends Composite implements
 
     private static final String TITLE_COLOR_PREFIX_CSS = "title-color-";
 
+    private static final String HIDEICON_CLASS = "hideicon";
+
+    private static final String NOSHADOW_CLASS = "noshadow";
+
     private FlowPanel portletPanel;
 
     private SimplePanel headerPanel;
@@ -116,8 +120,14 @@ public class PortletWidget extends Composite implements
 
     public void setBorderColor(String color) {
         ElementUtils.removeStyle(this.getElement(), BORDER_COLOR_PREFIX_CSS);
+        ElementUtils.removeStyle(headerContent.getElement(), HIDEICON_CLASS);
+        ElementUtils.removeStyle(this.getElement(), NOSHADOW_CLASS);
         if (color != null) {
             this.addStyleName(BORDER_COLOR_PREFIX_CSS + color);
+            if (ColorsEnum.WHITE.getCssColor().equals(color)) {
+                headerContent.addStyleName(HIDEICON_CLASS);
+                this.addStyleName(NOSHADOW_CLASS);
+            }
         } else {
             this.addStyleName(BORDER_COLOR_PREFIX_CSS
                     + ColorsEnum.NONE.getCssColor());
