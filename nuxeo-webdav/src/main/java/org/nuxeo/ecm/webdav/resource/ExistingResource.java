@@ -21,9 +21,10 @@ package org.nuxeo.ecm.webdav.resource;
 
 import static javax.ws.rs.core.Response.Status.OK;
 
-import java.net.URI;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.DELETE;
@@ -58,14 +59,16 @@ import net.java.dev.webdav.jaxrs.xml.elements.Status;
 import net.java.dev.webdav.jaxrs.xml.elements.TimeOut;
 import net.java.dev.webdav.jaxrs.xml.properties.LockDiscovery;
 
+import org.apache.commons.httpclient.util.URIUtil;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.webdav.Constants;
 import org.nuxeo.ecm.webdav.Util;
+import org.nuxeo.ecm.webdav.backend.Backend;
 import org.nuxeo.ecm.webdav.backend.WebDavBackend;
 
 /**
@@ -121,40 +124,50 @@ public class ExistingResource extends AbstractResource {
     }
 
     private Response copyOrMove(String method,
-            @HeaderParam("Destination") String dest,
+            @HeaderParam("Destination") String destination,
             @HeaderParam("Overwrite") String overwrite) throws Exception {
 
         if (backend.isLocked(doc.getRef()) && !backend.canUnlock(doc.getRef())) {
             return Response.status(423).build();
         }
 
-        dest = Util.encode(dest.getBytes(), "ISO-8859-1");
+        destination = Util.encode(destination.getBytes(), "ISO-8859-1");
+        destination = URIUtil.decode(destination);
 
-        URI destUri = new URI(dest);
-        String destPath = destUri.getPath();
-        while (destPath.endsWith("/")) {
-            destPath = destPath.substring(0, destPath.length() - 1);
+        WebDavBackend root = Backend.get("/", request);
+        Set<String> names = new HashSet<String>(root.getVirtualFolderNames());
+        Path destinationPath = new Path(destination);
+        String[] segments = destinationPath.segments();
+        int removeSegments = 0;
+        for (String segment : segments){
+            if(names.contains(segment)){
+                break;
+            } else {
+                removeSegments++;
+            }
         }
-        destPath = destPath.substring(RootResource.rootPath.length()
-                + Constants.DAV_HOME.length(), destPath.length());
+        destinationPath = destinationPath.removeFirstSegments(removeSegments);
+
+        String destPath = destinationPath.toString();
         String davDestPath = destPath;
-        destPath = backend.parseLocation(destPath).toString();
-        log.info("to " + destPath);
+        WebDavBackend destinationBackend = Backend.get(davDestPath, request);
+        destPath = destinationBackend.parseLocation(destPath).toString();
+        log.info("to " + davDestPath);
 
         // Remove dest if it exists and the Overwrite header is set to "T".
         int status = 201;
-        if (backend.exists(davDestPath)) {
+        if (destinationBackend.exists(davDestPath)) {
             if ("F".equals(overwrite)) {
                 return Response.status(412).build();
             }
-            backend.removeItem(davDestPath);
+            destinationBackend.removeItem(davDestPath);
             status = 204;
         }
 
         // Check if parent exists
         String destParentPath = Util.getParentPath(destPath);
         PathRef destParentRef = new PathRef(destParentPath);
-        if (!backend.exists(Util.getParentPath(davDestPath))) {
+        if (!destinationBackend.exists(Util.getParentPath(davDestPath))) {
             return Response.status(409).build();
         }
 

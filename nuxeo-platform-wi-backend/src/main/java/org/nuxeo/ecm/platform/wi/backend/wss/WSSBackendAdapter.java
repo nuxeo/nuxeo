@@ -333,14 +333,17 @@ public class WSSBackendAdapter extends AbstractWSSBackend {
     }
 
     protected String cleanLocation(String location) {
-        if (location.startsWith("/")) {
-            location = location.substring(1);
-        }
-
+        location = cleanPath(location);
         if (location.startsWith(virtualRoot)) {
             location = location.substring(virtualRoot.length());
         }
         return location;
     }
 
+    protected String cleanPath(String path) {
+        if (path.startsWith("/")) {
+            path = path.substring(1);
+        }
+        return path;
+    }
 }

@@ -17,9 +17,15 @@
  */
 package org.nuxeo.ecm.platform.wi.backend.wss;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.Path;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.wi.backend.Backend;
 import org.nuxeo.wss.WSSException;
@@ -30,6 +36,8 @@ import org.nuxeo.wss.spi.dws.DWSMetaData;
 import org.nuxeo.wss.spi.dws.Site;
 
 public class WSSRootBackendAdapter extends WSSBackendAdapter {
+
+    private static final Log log = LogFactory.getLog(WSSRootBackendAdapter.class);
 
     public WSSRootBackendAdapter(Backend backend, String virtualRoot) {
         super(backend, virtualRoot);
@@ -119,8 +127,27 @@ public class WSSRootBackendAdapter extends WSSBackendAdapter {
         if (StringUtils.isEmpty(location)) {
             return new WSSFakeBackend();
         }
+        try {
+            Set<String> names = new HashSet<String>(this.backend.getVirtualFolderNames());
+            Path locationPath = new Path(location);
+            String[] segments = locationPath.segments();
+            int removeSegments = 0;
+            for (String segment : segments){
+                if(names.contains(segment)){
+                    break;
+                } else {
+                    removeSegments++;
+                }
+            }
+            Path localVirtualRootPath = locationPath.removeLastSegments(
+                    locationPath.segmentCount() - removeSegments);
+            virtualRoot = cleanPath(localVirtualRootPath.toString());
+        } catch (ClientException e) {
+            log.warn("Error during resolve virtual root");
+        }
 
-        Backend backend = this.backend.getBackend(cleanLocation(location));
+        location = cleanLocation(location);
+        Backend backend = this.backend.getBackend(location);
         if (backend == null) {
             return new WSSFakeBackend();
         }
@@ -129,4 +156,5 @@ public class WSSRootBackendAdapter extends WSSBackendAdapter {
         }
         return new WSSBackendAdapter(backend, virtualRoot);
     }
+
 }

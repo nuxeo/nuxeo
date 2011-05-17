@@ -37,6 +37,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
@@ -48,26 +49,14 @@ import com.sun.jersey.spi.CloseableService;
 @Path("dav")
 public class RootResource {
 
-    /**
-     * Global root path computed once to serve as a prefix to URLs when needed.
-     */
-    static String rootPath;
-
     private static final Log log = LogFactory.getLog(RootResource.class);
 
     private HttpServletRequest request;
 
-    public RootResource(@Context HttpServletRequest request,
-            @Context CloseableService closeableService) throws Exception {
+    public RootResource(@Context HttpServletRequest request)
+            throws Exception {
         log.debug(request.getMethod() + " " + request.getRequestURI());
-
         this.request = request;
-
-        if (rootPath == null) {
-            rootPath = request.getContextPath() + request.getServletPath();
-            log.info(rootPath);
-        }
-
     }
 
     @GET
@@ -121,9 +110,10 @@ public class RootResource {
         DocumentModel doc = null;
         try {
             doc = backend.resolveLocation(path);
+        } catch (ClientRuntimeException pnfe){
+            log.warn(pnfe);
         } catch (Exception e) {
-            log.error("Error during resolving path: " + path + " Message:"
-                    + e.getMessage());
+            log.error("Error during resolving path: " + path, e);
             throw new WebApplicationException(Response.Status.CONFLICT);
         }
 

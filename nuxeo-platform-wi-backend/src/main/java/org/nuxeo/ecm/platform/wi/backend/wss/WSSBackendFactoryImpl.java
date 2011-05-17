@@ -34,6 +34,10 @@ public class WSSBackendFactoryImpl implements WSSBackendFactory {
     }
 
     protected String computeVirtualRoot(WSSRequest request) {
+        if(request == null){
+            return "nuxeo"; //for tests
+        }
+
         String virtualRoot = request.getSitePath();
 
         if (virtualRoot == null || virtualRoot.equals("")) {
@@ -42,17 +46,12 @@ public class WSSBackendFactoryImpl implements WSSBackendFactory {
         if (virtualRoot.startsWith("/")) {
             virtualRoot = virtualRoot.substring(1);
         }
+
         return virtualRoot;
     }
 
     @Override
     public WSSBackend getBackend(WSSRequest wssRequest) {
-        String virtualRoot;
-        if (wssRequest != null) {
-            virtualRoot = computeVirtualRoot(wssRequest);
-        } else {
-            virtualRoot = "nuxeo";
-        }
         Backend backend = null;
         if (wssRequest != null) {
             backend = factory.getBackend("/", wssRequest.getHttpRequest());
@@ -62,6 +61,9 @@ public class WSSBackendFactoryImpl implements WSSBackendFactory {
         if (backend == null) {
             return new WSSFakeBackend();
         }
+
+        String virtualRoot = computeVirtualRoot(wssRequest);
+
         if (backend.isRoot()) {
             return new WSSRootBackendAdapter(backend, virtualRoot);
         } else if (backend.isVirtual()) {

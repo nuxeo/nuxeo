@@ -31,9 +31,9 @@ import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.trash.TrashService;
-import org.nuxeo.ecm.webdav.Util;
 import org.nuxeo.runtime.api.Framework;
 
 import java.io.UnsupportedEncodingException;
@@ -59,6 +59,8 @@ public class SimpleBackend extends AbstractCoreBackend {
     protected TrashService trashService;
 
     protected PathCache pathCache;
+
+    protected LinkedList<String> orderedBackendNames;
 
     protected SimpleBackend(String backendDisplayName, String rootPath,
             String rootUrl, CoreSession session) {
@@ -134,8 +136,17 @@ public class SimpleBackend extends AbstractCoreBackend {
     }
 
     @Override
-    public LinkedList<String> getVirtualFolderNames() {
-        return new LinkedList<String>();
+    public LinkedList<String> getVirtualFolderNames() throws ClientException {
+        if(orderedBackendNames == null){
+            List<DocumentModel> children = getChildren(new PathRef(rootPath));
+            orderedBackendNames = new LinkedList<String>();
+            if(children != null){
+                for(DocumentModel model : children){
+                    orderedBackendNames.add(model.getName());
+                }
+            }
+        }
+        return orderedBackendNames;
     }
 
     @Override
@@ -191,7 +202,7 @@ public class SimpleBackend extends AbstractCoreBackend {
                 DocumentModel parentDocument = resolveParent(parentLocation.toString());
                 if (parentDocument == null) {
                     log.warn("Unable to find parent for item " + location);
-                    throw new ClientException("Unable to find parent for item "
+                    throw new ClientRuntimeException("Unable to find parent for item "
                             + location);
                 }
                 List<DocumentModel> children = getChildren(parentDocument.getRef());
@@ -213,7 +224,7 @@ public class SimpleBackend extends AbstractCoreBackend {
                                         blobFilename)) {
                                     doc = child;
                                     break;
-                                } else if (Util.encode(blobFilename.getBytes(),
+                                } else if (encode(blobFilename.getBytes(),
                                         "ISO-8859-1").equals(filename)) {
                                     doc = child;
                                     break;
@@ -591,6 +602,14 @@ public class SimpleBackend extends AbstractCoreBackend {
             throws ClientException {
         DocumentModel parent = getSession().getDocument(parentRef);
         return cleanTrashPath(parent, name);
+    }
+
+    private String encode(byte[] bytes, String encoding) throws ClientException {
+        try {
+            return new String(bytes, encoding);
+        } catch (UnsupportedEncodingException e) {
+            throw new ClientException("Unsupported encoding " + encoding);
+        }
     }
 
 }
