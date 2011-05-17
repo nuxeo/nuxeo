@@ -317,11 +317,13 @@ public class TabActionsSelection implements Serializable {
      * @see WebActions#CURRENT_TAB_CHANGED_EVENT
      */
     protected void raiseEventOnCurrentTabChange(String category, String tabId) {
-        Events.instance().raiseEvent(WebActions.CURRENT_TAB_CHANGED_EVENT,
-                category, tabId);
-        Events.instance().raiseEvent(
-                WebActions.CURRENT_TAB_CHANGED_EVENT + "_" + category,
-                category, tabId);
+        if (Events.exists()) {
+            Events.instance().raiseEvent(WebActions.CURRENT_TAB_CHANGED_EVENT,
+                    category, tabId);
+            Events.instance().raiseEvent(
+                    WebActions.CURRENT_TAB_CHANGED_EVENT + "_" + category,
+                    category, tabId);
+        }
     }
 
 }
