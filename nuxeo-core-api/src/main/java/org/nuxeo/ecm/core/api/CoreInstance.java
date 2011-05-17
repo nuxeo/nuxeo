@@ -146,15 +146,21 @@ public class CoreInstance implements Serializable {
         // connect to the server
         client.connect(repositoryName, context);
         // register the client locally
-        sessions.put(client.getSessionId(), client);
+        registerSession(client.getSessionId(), client);
         return client;
     }
 
     public void registerSession(String sid, CoreSession session) {
+        if (log.isDebugEnabled()) {
+            log.debug("Register session with id '" + sid + "'.");
+        }
         sessions.put(sid, session);
     }
 
     public CoreSession unregisterSession(String sid) {
+        if (log.isDebugEnabled()) {
+            log.debug("Unregister session with id '" + sid + "'.");
+        }
         return sessions.remove(sid);
     }
 
@@ -163,7 +169,7 @@ public class CoreInstance implements Serializable {
         if (sid == null) {
             return; // session not yet connected
         }
-        client = sessions.remove(sid);
+        client = unregisterSession(sid);
         if (client != null) {
             client.destroy();
         } else {
