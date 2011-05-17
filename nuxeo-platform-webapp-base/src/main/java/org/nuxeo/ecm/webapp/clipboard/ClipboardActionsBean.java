@@ -353,9 +353,11 @@ public class ClipboardActionsBean extends InputController implements
         }
 
         DocumentRef destFolderRef = destFolder.getRef();
+        boolean destinationIsDeleted = LifeCycleConstants.DELETED_STATE.equals(destFolder.getCurrentLifeCycleState());
         List<DocumentModel> newDocs = new ArrayList<DocumentModel>();
         for (DocumentModel docModel : docs) {
             DocumentRef sourceFolderRef = docModel.getParentRef();
+
             String sourceType = docModel.getType();
             boolean canRemoveDoc = documentManager.hasPermission(
                     sourceFolderRef, SecurityConstants.REMOVE_CHILDREN);
@@ -365,7 +367,20 @@ public class ClipboardActionsBean extends InputController implements
                 DocumentModel newDoc = documentManager.move(docModel.getRef(),
                         destFolderRef, null);
                 newDocs.add(newDoc);
+                if (destinationIsDeleted) {
+                    try {
+                        newDoc.followTransition(LifeCycleConstants.DELETE_TRANSITION);
+                    } catch (ClientException e) {
+                        String docInfo = newDoc.getId() + ":"
+                                + newDoc.getType() + ":"
+                                + newDoc.getPathAsString();
+                        log.info("can NOT change the state to :"
+                                + LifeCycleConstants.DELETED_STATE + " for "
+                                + docInfo, e);
+                    }
+                }
             }
+
         }
         documentManager.save();
 
@@ -490,6 +505,7 @@ public class ClipboardActionsBean extends InputController implements
 
         // copying proxy or document
         boolean isPublishSpace = isPublishSpace(parent);
+        boolean destinationIsDeleted = LifeCycleConstants.DELETED_STATE.equals(parent.getCurrentLifeCycleState());
         List<DocumentRef> docRefs = new ArrayList<DocumentRef>();
         List<DocumentRef> proxyRefs = new ArrayList<DocumentRef>();
         for (DocumentModel doc : documentsToPast) {
@@ -508,6 +524,19 @@ public class ClipboardActionsBean extends InputController implements
         }
         if (!docRefs.isEmpty()) {
             newDocuments.addAll(documentManager.copy(docRefs, parent.getRef()));
+        }
+        if (destinationIsDeleted) {
+            for (DocumentModel d : newDocuments) {
+                try {
+                    d.followTransition(LifeCycleConstants.DELETE_TRANSITION);
+                } catch (ClientException e) {
+                    String docInfo = d.getId() + ":" + d.getType() + ":"
+                            + d.getPathAsString();
+                    log.info("can NOT change the state to :"
+                            + LifeCycleConstants.DELETED_STATE + " for "
+                            + docInfo, e);
+                }
+            }
         }
         documentManager.save();
 
