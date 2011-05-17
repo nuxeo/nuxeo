@@ -2,28 +2,32 @@
 	width: 100%;
 }
 
-.NativeRichTextGadget.center .gadget-content {
+.NativeRichTextGadget.center .gadget-text {
 	width: 100%;
 }
 
 .NativeRichTextGadget.left .RichTextImage {
-	float: left;
+	float: right;
 	width: 50%;
-}
-
-.NativeRichTextGadget.left .gadget-content {
-	float: left;
-	width: 50%;
+	margin: 0 3px 0 3px;
 }
 
 .NativeRichTextGadget.right .RichTextImage {
-	float: right;
-	width: 50%;
-}
-
-.NativeRichTextGadget.right .gadget-content {
 	float: left;
 	width: 50%;
+	margin: 0 3px 0 3px;
+}
+
+.NativeRichTextGadget.right .gadget-text {
+	margin: 0 1%;
+}
+
+.NativeRichTextGadget.left .gadget-text {
+	margin: 0 1%;
+}
+
+.NativeRichTextGadget .gadget-separator {
+	clear:both;
 }
 
 .NativeRichTextGadget .deletePicture {

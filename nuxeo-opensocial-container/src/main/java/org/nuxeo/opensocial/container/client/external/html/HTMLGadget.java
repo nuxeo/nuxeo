@@ -50,6 +50,10 @@ public class HTMLGadget extends AbstractGadget implements HTMLPresenter.Display 
 
     private HTML htmlContent;
 
+    private FlowPanel contentPanel;
+
+    private FlowPanel separatorDiv;
+
     private Image htmlPicture;
 
     private FlexTable modifPanel;
@@ -98,13 +102,21 @@ public class HTMLGadget extends AbstractGadget implements HTMLPresenter.Display 
         htmlTitle.setStyleName("gadget-title");
         layout.add(htmlTitle);
 
+        separatorDiv = new FlowPanel();
+        separatorDiv.setStyleName("gadget-separator");
+        layout.add(separatorDiv);
+        
+        contentPanel = new FlowPanel();
+        contentPanel.setStyleName("gadget-content");
+        layout.add(contentPanel);
+        
         htmlPicture = new Image();
         htmlPicture.setStyleName("RichTextImage");
-        layout.add(htmlPicture);
+        contentPanel.add(htmlPicture);
 
         htmlContent = new HTML();
-        htmlContent.setStyleName("gadget-content");
-        layout.add(htmlContent);
+        htmlContent.setStyleName("gadget-text");
+        contentPanel.add(htmlContent);
     }
 
     public void enableModifPanel(String baseUrl) {
