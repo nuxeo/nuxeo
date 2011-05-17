@@ -1374,6 +1374,14 @@ public interface CoreSession {
             throws ClientException;
 
     /**
+     * Reinitializes the life cycle state of the document to its default state.
+     *
+     * @param docRef the document
+     * @since 5.4.2
+     */
+    void reinitLifeCycleState(DocumentRef docRef) throws ClientException;
+
+    /**
      * Retrieves the given field value from the given schema for all the given
      * documents.
      *

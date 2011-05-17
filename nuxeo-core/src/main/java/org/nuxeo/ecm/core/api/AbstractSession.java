@@ -2842,6 +2842,20 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
     }
 
     @Override
+    public void reinitLifeCycleState(DocumentRef docRef) throws ClientException {
+        try {
+            Document doc = resolveReference(docRef);
+            checkPermission(doc, WRITE_LIFE_CYCLE);
+            LifeCycleService service = NXCore.getLifeCycleService();
+            service.reinitLifeCycle(doc);
+        } catch (DocumentException e) {
+            throw new ClientException("Failed to get content data " + docRef, e);
+        } catch (LifeCycleException e) {
+            throw new ClientException("Failed to reinit life cycle " + docRef, e);
+        }
+    }
+
+    @Override
     public Object[] getDataModelsField(DocumentRef[] docRefs, String schema,
             String field) throws ClientException {
 

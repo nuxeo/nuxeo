@@ -2104,6 +2104,10 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals(2, allowedStateTransitions.size());
         assertTrue(allowedStateTransitions.contains("delete"));
         assertTrue(allowedStateTransitions.contains("backToProject"));
+
+        session.reinitLifeCycleState(childFile.getRef());
+        assertEquals("project",
+                session.getCurrentLifeCycleState(childFile.getRef()));
     }
 
     public void testDataModelLifeCycleAPI() throws ClientException {
