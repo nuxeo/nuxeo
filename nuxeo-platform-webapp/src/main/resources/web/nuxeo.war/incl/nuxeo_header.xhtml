@@ -16,7 +16,7 @@
           itemStyleClass="#{nxu:test(webActions.getCurrentTabId('MAIN_TABS') == mainTab.id, 'selected', '')}">
           <nxd:restDocumentLink document="#{currentDocument}"
             view="#{mainTab.getLink()}" addTabInfo="false"
-            tabs="#{webActions.currentTabIds},MAIN_TABS:#{mainTab.id}">
+            tabs="MAIN_TABS:#{mainTab.id}">
             <h:outputText value="#{messages[mainTab.label]}" />
           </nxd:restDocumentLink>
       </nxu:dataList>
