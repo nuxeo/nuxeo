@@ -190,7 +190,7 @@ public class SystemInfoManager implements Serializable {
     }
 
     public int getOpenSessionNumber() {
-        return CoreInstance.getInstance().getSessions().length;
+        return CoreInstance.getInstance().getNumberOfSessions();
     }
 
     public int getActiveSessionNumber() {
@@ -241,7 +241,7 @@ public class SystemInfoManager implements Serializable {
     public String getRepoUsage() throws Exception {
         StringBuilder sb = new StringBuilder();
 
-        int nbSessions = CoreInstance.getInstance().getSessions().length;
+        int nbSessions = CoreInstance.getInstance().getNumberOfSessions();
 
         sb.append("Number of open repository session : ");
         sb.append(nbSessions);
