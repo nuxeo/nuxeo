@@ -42,6 +42,8 @@ import org.nuxeo.ecm.core.search.api.client.querymodel.QueryModel;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
+import org.nuxeo.ecm.platform.contentview.jsf.ContentView;
+import org.nuxeo.ecm.platform.contentview.seam.ContentViewActions;
 import org.nuxeo.ecm.platform.ui.web.directory.DirectoryHelper;
 import org.nuxeo.ecm.platform.ui.web.util.SeamContextHelper;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
