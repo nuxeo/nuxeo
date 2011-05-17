@@ -34,7 +34,7 @@ import org.nuxeo.ecm.platform.actions.ejb.ActionManager;
 /**
  * Handles selected action tabs and raised events on current tab change.
  *
- * @see WebActions#CURRENT_TAB_CHANGED
+ * @see WebActions#CURRENT_TAB_CHANGED_EVENT
  * @since 5.4.2
  */
 public class TabActionsSelection implements Serializable {
@@ -80,8 +80,7 @@ public class TabActionsSelection implements Serializable {
                         categoryFound = true;
                         Action oldAction = currentTabActions.get(category);
                         currentTabActions.put(category, tabAction);
-                        Events.instance().raiseEvent(
-                                WebActions.CURRENT_TAB_CHANGED, category,
+                        raiseEventOnCurrentTabChange(category,
                                 tabAction.getId());
                         if (oldAction != null) {
                             // additional cleanup of possible sub tabs
@@ -264,8 +263,7 @@ public class TabActionsSelection implements Serializable {
         Set<String> categories = currentTabActions.keySet();
         currentTabActions.clear();
         for (String category : categories) {
-            Events.instance().raiseEvent(WebActions.CURRENT_TAB_CHANGED,
-                    category, null);
+            raiseEventOnCurrentTabChange(category, null);
         }
     }
 
@@ -278,8 +276,7 @@ public class TabActionsSelection implements Serializable {
         if (currentTabActions.containsKey(category)) {
             Action action = currentTabActions.get(category);
             currentTabActions.remove(category);
-            Events.instance().raiseEvent(WebActions.CURRENT_TAB_CHANGED,
-                    category, null);
+            raiseEventOnCurrentTabChange(category, null);
             if (action != null) {
                 resetCurrentTabs(getSubTabCategory(action.getId()));
             }
@@ -304,6 +301,27 @@ public class TabActionsSelection implements Serializable {
             return null;
         }
         return parentActionId + WebActions.SUBTAB_CATEGORY_SUFFIX;
+    }
+
+    /**
+     * Raises a seam event when current tab changes for a given category.
+     * <p>
+     * Actually raises 2 events: one with name
+     * WebActions#CURRENT_TAB_CHANGED_EVENT and another with name
+     * WebActions#CURRENT_TAB_CHANGED_EVENT + '_' + category to optimize
+     * observers declarations.
+     * <p>
+     * The event is always sent with 2 parameters: the category and tab id (the
+     * tab id can be null when resetting current tab for given category).
+     *
+     * @see WebActions#CURRENT_TAB_CHANGED_EVENT
+     */
+    protected void raiseEventOnCurrentTabChange(String category, String tabId) {
+        Events.instance().raiseEvent(WebActions.CURRENT_TAB_CHANGED_EVENT,
+                category, tabId);
+        Events.instance().raiseEvent(
+                WebActions.CURRENT_TAB_CHANGED_EVENT + "_" + category,
+                category, tabId);
     }
 
 }

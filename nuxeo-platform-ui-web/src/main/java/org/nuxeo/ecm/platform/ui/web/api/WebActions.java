@@ -47,8 +47,10 @@ public interface WebActions {
      * parameter is a String representing the tab category, and second
      * parameter is a String representing the new tab id (or null if current
      * tab is reset for this category).
+     *
+     * @since 5.4.2
      */
-    public static final String CURRENT_TAB_CHANGED = "currentTabChanged";
+    public static final String CURRENT_TAB_CHANGED_EVENT = "currentTabChanged";
 
     /**
      * Returns all filtered actions for a given category and given resolution
