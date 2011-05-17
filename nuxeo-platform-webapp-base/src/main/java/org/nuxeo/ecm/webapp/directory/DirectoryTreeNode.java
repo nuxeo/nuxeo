@@ -20,13 +20,19 @@ package org.nuxeo.ecm.webapp.directory;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+
+import javax.faces.context.FacesContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.core.Events;
+import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -36,8 +42,6 @@ import org.nuxeo.ecm.core.search.api.client.querymodel.QueryModel;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
-import org.nuxeo.ecm.platform.contentview.jsf.ContentView;
-import org.nuxeo.ecm.platform.contentview.seam.ContentViewActions;
 import org.nuxeo.ecm.platform.ui.web.directory.DirectoryHelper;
 import org.nuxeo.ecm.platform.ui.web.util.SeamContextHelper;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
@@ -258,10 +262,11 @@ public class DirectoryTreeNode {
         try {
             String schema = getDirectorySchema();
             DocumentModelList results = getChildrenEntries();
+            FacesContext context = FacesContext.getCurrentInstance();
             for (DocumentModel result : results) {
                 String childIdendifier = result.getId();
-                String childDescription = (String) result.getProperty(schema,
-                        LABEL_FIELD_ID);
+                String childDescription = translate(context,
+                        (String) result.getProperty(schema, LABEL_FIELD_ID));
                 String childPath;
                 if ("".equals(path)) {
                     childPath = childIdendifier;
@@ -272,11 +277,39 @@ public class DirectoryTreeNode {
                         childIdendifier, childDescription, childPath,
                         getDirectoryService()));
             }
+
+            // sort children
+            Comparator<? super DirectoryTreeNode> cmp = new FieldComparator();
+            Collections.sort(children, cmp);
+
             return children;
         } catch (ClientException e) {
             log.error(e);
             return children;
         }
+    }
+
+    private class FieldComparator implements Comparator<DirectoryTreeNode> {
+
+        @Override
+        public int compare(DirectoryTreeNode o1, DirectoryTreeNode o2) {
+            if (o1.getDescription() == null && o2.getDescription() != null) {
+                return -1;
+            } else if (o1.getDescription() != null && o2.getDescription() == null) {
+                return 1;
+            } else if (o1.getDescription() == o2.getDescription()) {
+                return 0;
+            } else {
+                return o1.getDescription().compareTo(o2.getDescription());
+            }
+        }
+    }
+
+    protected static String translate(FacesContext context, String label) {
+        String bundleName = context.getApplication().getMessageBundle();
+        Locale locale = context.getViewRoot().getLocale();
+        label = I18NUtils.getMessageString(bundleName, label, null, locale);
+        return label;
     }
 
     protected DocumentModelList getChildrenEntries() throws ClientException {
