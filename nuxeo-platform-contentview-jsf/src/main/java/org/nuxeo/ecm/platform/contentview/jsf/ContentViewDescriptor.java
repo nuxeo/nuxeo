@@ -171,7 +171,7 @@ public class ContentViewDescriptor {
     }
 
     public List<String> getResetEventNames() {
-        return refreshEventNames;
+        return resetEventNames;
     }
 
     public Boolean getUseGlobalPageSize() {

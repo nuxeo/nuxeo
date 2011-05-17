@@ -86,6 +86,9 @@ public class TestContentViewService extends NXRuntimeTestCase {
         assertNotNull(eventNames);
         assertEquals(1, eventNames.size());
         assertEquals("documentChildrenChanged", eventNames.get(0));
+        eventNames = contentView.getResetEventNames();
+        assertNotNull(eventNames);
+        assertEquals(0, eventNames.size());
         assertFalse(contentView.getUseGlobalPageSize());
 
         List<String> flags = contentView.getFlags();
@@ -151,6 +154,9 @@ public class TestContentViewService extends NXRuntimeTestCase {
         assertNotNull(eventNames);
         assertEquals(1, eventNames.size());
         assertEquals("documentChildrenChanged", eventNames.get(0));
+        eventNames = contentView.getResetEventNames();
+        assertNotNull(eventNames);
+        assertEquals(0, eventNames.size());
         assertTrue(contentView.getUseGlobalPageSize());
 
         List<String> flags = contentView.getFlags();
