@@ -12,10 +12,14 @@
 
 package org.nuxeo.ecm.core.storage.sql;
 
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.ADMINISTRATOR;
+
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -24,16 +28,22 @@ import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.ADMINISTRATOR;
-
 /**
  * @author Florent Guillaume
  */
 public abstract class SQLRepositoryTestCase extends NXRuntimeTestCase {
 
+    private static final Log log = LogFactory.getLog(SQLRepositoryTestCase.class);
+
     public static final String REPOSITORY_NAME = "test";
 
     public CoreSession session;
+
+    /**
+     * Initial number of registered session at setup, to be compared with the
+     * number of sessions at tear down.
+     */
+    protected int initialOpenSessions;
 
     public DatabaseHelper database = DatabaseHelper.DATABASE;
 
@@ -46,6 +56,11 @@ public abstract class SQLRepositoryTestCase extends NXRuntimeTestCase {
 
     @Override
     public void setUp() throws Exception {
+        initialOpenSessions = CoreInstance.getInstance().getNumberOfSessions();
+        if (initialOpenSessions != 0) {
+            log.error(String.format("There are %s open session(s) at setup.",
+                    Integer.valueOf(initialOpenSessions)));
+        }
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.schema");
         deployBundle("org.nuxeo.ecm.core.api");
@@ -66,6 +81,15 @@ public abstract class SQLRepositoryTestCase extends NXRuntimeTestCase {
         Framework.getLocalService(EventService.class).waitForAsyncCompletion();
         super.tearDown();
         database.tearDown();
+        int finalOpenSessions = CoreInstance.getInstance().getNumberOfSessions();
+        if (finalOpenSessions != 0) {
+            int created = finalOpenSessions - initialOpenSessions;
+            log.error(String.format(
+                    "There are %s open session(s) at tear down; it seems "
+                            + "the test leaked %s session(s).",
+                    Integer.valueOf(finalOpenSessions),
+                    Integer.valueOf(created)));
+        }
     }
 
     public void openSession() throws ClientException {
