@@ -13,7 +13,7 @@
 
   <groupId>org.nuxeo.dam</groupId>
   <artifactId>nuxeo-dam-parent</artifactId>
-  <version>1.3-SNAPSHOT</version>
+  <version>1.4-SNAPSHOT</version>
   <name>Nuxeo DAM Parent</name>
   <packaging>pom</packaging>
   <description>Nuxeo DAM Parent</description>
@@ -30,7 +30,7 @@
   </modules>
 
   <properties>
-    <nuxeo.dam.version>1.3-SNAPSHOT</nuxeo.dam.version>
+    <nuxeo.dam.version>1.4-SNAPSHOT</nuxeo.dam.version>
   </properties>
 
   <dependencyManagement>
