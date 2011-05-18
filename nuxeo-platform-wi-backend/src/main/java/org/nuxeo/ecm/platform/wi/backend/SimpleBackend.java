@@ -108,6 +108,8 @@ public class SimpleBackend extends AbstractCoreBackend {
             }
         } catch (ClientException e) {
             return false;
+        } catch (ClientRuntimeException e2) {
+            return false;
         }
     }
 
