@@ -181,6 +181,11 @@ public class UsersActivityManager implements Serializable {
         return NuxeoHttpSessionMonitor.instance().getSortedSessions().size();
     }
 
+    @Factory(value = "nbUserRequests", scope = ScopeType.EVENT)
+    public long getUserRequestCount() {
+        return NuxeoHttpSessionMonitor.instance().getGlobalRequestCounter();
+    }
+
     @Factory(value = "userHttpSessions", scope = ScopeType.EVENT)
     public List<SessionInfo> getUserSessions() {
         if (getSelectedHttpSessionsTimeRange().equals("all")) {

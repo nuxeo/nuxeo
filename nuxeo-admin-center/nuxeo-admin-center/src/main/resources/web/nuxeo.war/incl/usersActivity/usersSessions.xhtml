@@ -13,6 +13,12 @@
   value="#{messages['adminsubtab.usersActivity.userSessions.total']}" /><f:verbatim>&amp;nbsp;</f:verbatim>
 <h:outputText
   value="#{nbActiveUserHttpSessions}"/>
+<br/>
+<h:outputText
+  value="#{messages['adminsubtab.usersActivity.requests.total']}" /><f:verbatim>&amp;nbsp;</f:verbatim>
+<h:outputText
+  value="#{nbUserRequests}"/>
+<br/>
 
 <a4j:outputPanel id="usersHttpSessionsListing">
 
@@ -51,6 +57,14 @@
           <h:outputText value="#{messages['label.userSession.inactivity']}" />
         </f:facet>
         <h:outputText value="#{row.inactivityAsString}" />
+      </nxu:column>
+
+      <!--  Pages count -->
+      <nxu:column>
+        <f:facet name="header">
+          <h:outputText value="#{messages['label.userSession.requests']}" />
+        </f:facet>
+        <h:outputText value="#{row.accessedPagesCount}" />
       </nxu:column>
 
 
