@@ -16,7 +16,7 @@ endif
 
 
 # all test except bench
-all: start rest page test-nuxeo webengine stop
+all: start rest page test-nuxeo webengine dav stop
 
 start:
 	-mkdir -p $(REPORT) $(LOG_HOME)
@@ -40,6 +40,9 @@ page:
 webengine:
 	fl-run-test -v --simple-fetch test_webengine.py $(FLOPS)
 
+dav:
+	fl-run-test -v --simple-fetch test_dav.py -e testDav $(FLOPS)
+	fl-run-test -v --simple-fetch test_dav.py -e testUserAgents $(FLOPS)
 
 # test nuxeo ep
 init:
@@ -75,6 +78,10 @@ bench-writer:
 bench-rest-writer:
 	-fl-run-bench --simple-fetch -c 1:10 -D 30 -f test_rest.py Rest.testWriter $(FLOPS)
 	-fl-build-report $(LOG_HOME)/rest-bench.xml --html -o $(REPORT)
+
+bench-dav-writer:
+	-fl-run-bench --simple-fetch -c 1:10:20:30:40:50 -D 40 -f test_dav.py Dav.testWriter $(FLOPS)
+	-fl-build-report $(LOG_HOME)/dav-bench.xml --html -o $(REPORT)
 
 warmup:
 	fl-run-test --simple-fetch -v -m 0 -M 0 test_nuxeo.py -e testReader $(FLOPS)
