@@ -23,7 +23,7 @@
           ecm:currentLifeCycleState != 'deleted'
         </pattern>
         <parameter>#{documentSearchActions.simpleSearchKeywords}</parameter>
-        <sort column="dc:title" ascending="true" />
+        <!-- sort column="dc:title" ascending="true" / sort by fulltext relevance -->
         <sortInfosBinding>
           #{documentSearchActions.searchSortInfos}
         </sortInfosBinding>
@@ -153,7 +153,7 @@
             ecm:mixinType != 'HiddenInNavigation' AND ecm:isCheckedInVersion = 0
           </fixedPart>
         </whereClause>
-        <sort column="dc:title" ascending="true" />
+        <!-- sort column="dc:title" ascending="true" / sort by fulltext relevance -->
         <pageSize>20</pageSize>
         <sortInfosBinding>
           #{documentSearchActions.searchSortInfos}
@@ -205,7 +205,7 @@
         <property name="coreSession">#{documentManager}</property>
         <pattern quoteParameters="false" escapeParameters="false">?</pattern>
         <parameter>#{documentSearchActions.nxqlQuery}</parameter>
-        <sort column="dc:title" ascending="true" />
+        <!-- sort column="dc:title" ascending="true" / sort by fulltext relevance -->
         <sortInfosBinding>
           #{documentSearchActions.searchSortInfos}
         </sortInfosBinding>
