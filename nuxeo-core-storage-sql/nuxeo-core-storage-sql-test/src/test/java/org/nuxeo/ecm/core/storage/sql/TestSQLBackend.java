@@ -1508,6 +1508,32 @@ public class TestSQLBackend extends SQLBackendTestCase {
                 "SELECT * FROM TestDoc WHERE ecm:fulltext = 'world' AND  ecm:fulltext = 'barbar'",
                 QueryFilter.EMPTY, false);
         assertEquals(0, res.list.size());
+
+        // other query generation cases
+
+        // no union and implicit score sort
+        res = session.query(
+                "SELECT * FROM TestDoc WHERE ecm:fulltext = 'world' AND ecm:isProxy = 0",
+                QueryFilter.EMPTY, false);
+        assertEquals(1, res.list.size());
+
+        // order by so no implicit score sort
+        res = session.query(
+                "SELECT * FROM TestDoc WHERE ecm:fulltext = 'world'"
+                        + " ORDER BY dc:title", QueryFilter.EMPTY, false);
+        assertEquals(1, res.list.size());
+
+        // order by and no union so no implicit score sort
+        res = session.query(
+                "SELECT * FROM TestDoc WHERE ecm:fulltext = 'world' AND ecm:isProxy = 0"
+                        + " ORDER BY dc:title", QueryFilter.EMPTY, false);
+        assertEquals(1, res.list.size());
+
+        // no union but distinct so no implicit score sort
+        res = session.query(
+                "SELECT DISTINCT * FROM TestDoc WHERE ecm:fulltext = 'world' AND ecm:isProxy = 0",
+                QueryFilter.EMPTY, false);
+        assertEquals(1, res.list.size());
     }
 
     public void testFulltextDisabled() throws Exception {

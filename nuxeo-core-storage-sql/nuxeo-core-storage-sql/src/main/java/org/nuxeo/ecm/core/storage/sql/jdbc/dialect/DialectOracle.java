@@ -295,10 +295,10 @@ public class DialectOracle extends Dialect {
         return translateFulltext(ft, "OR", "AND", "NOT", "");
     }
 
-    // SELECT ..., SCORE(1) / 100
+    // SELECT ..., (SCORE(1) / 100) AS "_nxscore"
     // FROM ... LEFT JOIN fulltext ON fulltext.id = hierarchy.id
     // WHERE ... AND CONTAINS(fulltext.fulltext, ?, 1) > 0
-    // ORDER BY SCORE(1) DESC
+    // ORDER BY "_nxscore" DESC
     @Override
     public FulltextMatchInfo getFulltextScoredMatchInfo(String fulltextQuery,
             String indexName, int nthMatch, Column mainColumn, Model model,
@@ -309,6 +309,7 @@ public class DialectOracle extends Dialect {
         Column ftColumn = ft.getColumn(model.FULLTEXT_FULLTEXT_KEY
                 + indexSuffix);
         String score = String.format("SCORE(%d)", nthMatch);
+        String nthSuffix = nthMatch == 1 ? "" : String.valueOf(nthMatch);
         FulltextMatchInfo info = new FulltextMatchInfo();
         if (nthMatch == 1) {
             // Need only one JOIN involving the fulltext table
@@ -319,8 +320,8 @@ public class DialectOracle extends Dialect {
         info.whereExpr = String.format("CONTAINS(%s, ?, %d) > 0",
                 ftColumn.getFullQuotedName(), nthMatch);
         info.whereExprParam = fulltextQuery;
-        info.scoreExpr = String.format("%s / 100", score);
-        info.scoreAlias = score;
+        info.scoreExpr = String.format("(%s / 100)", score);
+        info.scoreAlias = openQuote() + "_nxscore" + nthSuffix + closeQuote();
         info.scoreCol = new Column(mainColumn.getTable(), null,
                 ColumnType.DOUBLE, null);
         return info;

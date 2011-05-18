@@ -273,7 +273,6 @@ public class DialectMySQL extends Dialect {
             String indexName, int nthMatch, Column mainColumn, Model model,
             Database database) {
         String nthSuffix = nthMatch == 1 ? "" : String.valueOf(nthMatch);
-        String scoreAlias = "_nxscore" + nthSuffix;
         String indexSuffix = model.getFulltextIndexSuffix(indexName);
         Table ft = database.getTable(model.FULLTEXT_TABLE_NAME);
         Column ftMain = ft.getColumn(model.MAIN_KEY);
@@ -297,10 +296,9 @@ public class DialectMySQL extends Dialect {
         // in boolean mode.
         // Note: dividing by 10 is arbitrary, but MySQL cannot really
         // normalize scores.
-        info.scoreExpr = String.format("(%s AGAINST (?) / 10) AS %s", match,
-                scoreAlias);
+        info.scoreExpr = String.format("(%s AGAINST (?) / 10)", match);
         info.scoreExprParam = fulltextQuery;
-        info.scoreAlias = scoreAlias;
+        info.scoreAlias = "_nxscore" + nthSuffix;
         info.scoreCol = new Column(mainColumn.getTable(), null,
                 ColumnType.DOUBLE, null);
         return info;

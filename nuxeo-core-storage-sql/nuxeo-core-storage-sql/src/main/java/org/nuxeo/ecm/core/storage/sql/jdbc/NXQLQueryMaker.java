@@ -280,6 +280,7 @@ public class NXQLQueryMaker implements QueryMaker {
         List<Select> withSelects = new LinkedList<Select>();
         List<String> withSelectsStatements = new LinkedList<String>();
         List<Serializable> withParams = new LinkedList<Serializable>();
+        boolean distinct = sqlQuery.select.isDistinct();
 
         for (DocKind docKind : docKinds) {
 
@@ -374,6 +375,9 @@ public class NXQLQueryMaker implements QueryMaker {
                     whereParams.addAll(whereBuilder.whereParams);
                 }
             }
+            FulltextMatchInfo ftMatchInfo = whereBuilder.ftMatchInfo;
+            boolean orderByScoreDesc = sqlQuery.orderBy == null
+                    && whereBuilder.ftJoinNumber == 1 && !distinct;
 
             /*
              * Columns on which to select and do ordering.
@@ -381,7 +385,8 @@ public class NXQLQueryMaker implements QueryMaker {
 
             // alias columns in all cases to simplify logic
             int nalias = 0;
-            List<String> whatNames = new LinkedList<String>();
+            List<String> whatNames = new ArrayList<String>(1);
+            List<Serializable> whatNamesParams = new ArrayList<Serializable>(1);
             String mainAlias = hierId;
             for (Column col : whatColumns) {
                 String name = getSelectColName(col);
@@ -407,8 +412,17 @@ public class NXQLQueryMaker implements QueryMaker {
                     whatNames.add(name);
                 }
             }
+            if (orderByScoreDesc) {
+                // add score expression to selected columns
+                String scoreExprSql = ftMatchInfo.scoreExpr + " AS "
+                        + ftMatchInfo.scoreAlias;
+                whatNames.add(scoreExprSql);
+                if (ftMatchInfo.scoreExprParam != null) {
+                    whatNamesParams.add(ftMatchInfo.scoreExprParam);
+                }
+            }
             String selectWhat = StringUtils.join(whatNames, ", ");
-            if (!doUnion && sqlQuery.getSelectClause().isDistinct()) {
+            if (!doUnion && distinct) {
                 selectWhat = "DISTINCT " + selectWhat;
             }
 
@@ -447,11 +461,16 @@ public class NXQLQueryMaker implements QueryMaker {
              * Order by. Compute it just once. May use just aliases.
              */
 
-            if (orderBy == null && sqlQuery.orderBy != null) {
-                whereBuilder.aliasColumns = doUnion;
-                whereBuilder.buf.setLength(0);
-                sqlQuery.orderBy.accept(whereBuilder);
-                orderBy = whereBuilder.buf.toString();
+            if (orderBy == null) {
+                if (sqlQuery.orderBy != null) {
+                    whereBuilder.aliasColumns = doUnion;
+                    whereBuilder.buf.setLength(0);
+                    sqlQuery.orderBy.accept(whereBuilder);
+                    orderBy = whereBuilder.buf.toString();
+                } else if (orderByScoreDesc) {
+                    // add order by score desc
+                    orderBy = ftMatchInfo.scoreAlias + " DESC";
+                }
             }
 
             /*
@@ -485,6 +504,7 @@ public class NXQLQueryMaker implements QueryMaker {
 
             select = new Select(null);
             select.setWhat(selectWhat);
+            selectParams.addAll(whatNamesParams);
 
             StringBuilder fromb = new StringBuilder(from);
             if (dialect.needsOracleJoins()) {
@@ -535,7 +555,7 @@ public class NXQLQueryMaker implements QueryMaker {
                 whatNames.add(name);
             }
             String selectWhat = StringUtils.join(whatNames, ", ");
-            if (sqlQuery.getSelectClause().isDistinct()) {
+            if (distinct) {
                 selectWhat = "DISTINCT " + selectWhat;
             }
             select.setWhat(selectWhat);
@@ -1029,7 +1049,9 @@ public class NXQLQueryMaker implements QueryMaker {
 
         private int nalias = 0;
 
-        private int ftJoinNumber;
+        protected int ftJoinNumber;
+
+        protected FulltextMatchInfo ftMatchInfo;
 
         public WhereBuilder(Database database, Model model,
                 PathResolver pathResolver, Dialect dialect, Table hierTable,
@@ -1530,6 +1552,7 @@ public class NXQLQueryMaker implements QueryMaker {
                 FulltextMatchInfo info = dialect.getFulltextScoredMatchInfo(
                         fulltextQuery, name, ftJoinNumber, mainColumn, model,
                         database);
+                ftMatchInfo = info; // used for order by if only one
                 if (info.joins != null) {
                     joins.addAll(info.joins);
                 }

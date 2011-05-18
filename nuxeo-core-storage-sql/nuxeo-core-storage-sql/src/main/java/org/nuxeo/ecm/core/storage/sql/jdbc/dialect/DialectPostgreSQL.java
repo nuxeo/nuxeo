@@ -287,7 +287,6 @@ public class DialectPostgreSQL extends Dialect {
                 + indexSuffix);
         String nthSuffix = nthMatch == 1 ? "" : String.valueOf(nthMatch);
         String queryAlias = "_nxquery" + nthSuffix;
-        String scoreAlias = "_nxscore" + nthSuffix;
         FulltextMatchInfo info = new FulltextMatchInfo();
         info.joins = new ArrayList<Join>();
         if (nthMatch == 1) {
@@ -303,9 +302,9 @@ public class DialectPostgreSQL extends Dialect {
                 null, null));
         info.whereExpr = String.format("(%s @@ %s)", queryAlias,
                 ftColumn.getFullQuotedName());
-        info.scoreExpr = String.format("TS_RANK_CD(%s, %s, 32) AS %s",
-                ftColumn.getFullQuotedName(), queryAlias, scoreAlias);
-        info.scoreAlias = scoreAlias;
+        info.scoreExpr = String.format("TS_RANK_CD(%s, %s, 32)",
+                ftColumn.getFullQuotedName(), queryAlias);
+        info.scoreAlias = "_nxscore" + nthSuffix;
         info.scoreCol = new Column(mainColumn.getTable(), null,
                 ColumnType.DOUBLE, null);
         return info;

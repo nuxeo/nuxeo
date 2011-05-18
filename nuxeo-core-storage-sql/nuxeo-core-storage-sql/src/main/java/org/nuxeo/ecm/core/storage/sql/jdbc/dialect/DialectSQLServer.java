@@ -275,7 +275,6 @@ public class DialectSQLServer extends Dialect {
         Column ftMain = ft.getColumn(model.MAIN_KEY);
         String nthSuffix = nthMatch == 1 ? "" : String.valueOf(nthMatch);
         String tableAlias = "_nxfttbl" + nthSuffix;
-        String scoreAlias = "_nxscore" + nthSuffix;
         FulltextMatchInfo info = new FulltextMatchInfo();
         // there are two left joins here
         info.joins = new ArrayList<Join>();
@@ -294,9 +293,8 @@ public class DialectSQLServer extends Dialect {
                 String.format("%s.[KEY]", tableAlias) // on2
         ));
         info.whereExpr = String.format("%s.[KEY] IS NOT NULL", tableAlias);
-        info.scoreExpr = String.format("%s.RANK / 1000.0 AS %s", tableAlias,
-                scoreAlias);
-        info.scoreAlias = scoreAlias;
+        info.scoreExpr = String.format("(%s.RANK / 1000.0)", tableAlias);
+        info.scoreAlias = "_nxscore" + nthSuffix;
         info.scoreCol = new Column(mainColumn.getTable(), null,
                 ColumnType.DOUBLE, null);
         return info;

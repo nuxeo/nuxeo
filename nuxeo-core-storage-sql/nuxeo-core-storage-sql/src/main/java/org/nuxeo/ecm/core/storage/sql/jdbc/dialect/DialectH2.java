@@ -226,8 +226,6 @@ public class DialectH2 extends Dialect {
         String fullIndexName = "PUBLIC_" + phftname + "_" + indexName;
         String nthSuffix = nthMatch == 1 ? "" : String.valueOf(nthMatch);
         String tableAlias = "_nxfttbl" + nthSuffix;
-        String scoreAlias = "_nxscore" + nthSuffix;
-        // String scoreAlias = "_nxscore" + nthSuffix;
         FulltextMatchInfo info = new FulltextMatchInfo();
         info.joins = Collections.singletonList( //
         new Join(
@@ -239,8 +237,8 @@ public class DialectH2 extends Dialect {
                 mainColumn.getFullQuotedName() // on2
         ));
         info.whereExpr = String.format("%s.KEY IS NOT NULL", tableAlias);
-        info.scoreExpr = String.format("1 AS %s", scoreAlias);
-        info.scoreAlias = scoreAlias;
+        info.scoreExpr = "1";
+        info.scoreAlias = "_nxscore" + nthSuffix;
         info.scoreCol = new Column(mainColumn.getTable(), null,
                 ColumnType.DOUBLE, null);
         return info;
