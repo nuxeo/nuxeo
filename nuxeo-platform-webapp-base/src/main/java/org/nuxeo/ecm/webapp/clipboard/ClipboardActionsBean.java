@@ -201,7 +201,8 @@ public class ClipboardActionsBean extends InputController implements
             Object[] params = { docsList.size() };
 
             FacesMessage message = FacesMessages.createFacesMessage(
-                    FacesMessage.SEVERITY_INFO, "#0 "
+                    FacesMessage.SEVERITY_INFO,
+                    "#0 "
                             + resourcesAccessor.getMessages().get(
                                     "n_copied_docs"), params);
 
@@ -228,9 +229,11 @@ public class ClipboardActionsBean extends InputController implements
         canEditSelectedDocs = null;
         if (null != docsList) {
             Object[] params = { docsList.size() };
-            facesMessages.add(FacesMessage.SEVERITY_INFO, "#0 "
-                    + resourcesAccessor.getMessages().get(
-                            "n_added_to_worklist_docs"), params);
+            facesMessages.add(
+                    FacesMessage.SEVERITY_INFO,
+                    "#0 "
+                            + resourcesAccessor.getMessages().get(
+                                    "n_added_to_worklist_docs"), params);
 
             // Add to the default working list
             documentsListsManager.addToWorkingList(
@@ -355,6 +358,7 @@ public class ClipboardActionsBean extends InputController implements
         DocumentRef destFolderRef = destFolder.getRef();
         boolean destinationIsDeleted = LifeCycleConstants.DELETED_STATE.equals(destFolder.getCurrentLifeCycleState());
         List<DocumentModel> newDocs = new ArrayList<DocumentModel>();
+        StringBuilder sb = new StringBuilder();
         for (DocumentModel docModel : docs) {
             DocumentRef sourceFolderRef = docModel.getParentRef();
 
@@ -364,25 +368,28 @@ public class ClipboardActionsBean extends InputController implements
             boolean canPasteInCurrentFolder = allowedList.contains(sourceType);
             boolean sameFolder = sourceFolderRef.equals(destFolderRef);
             if (canRemoveDoc && canPasteInCurrentFolder && !sameFolder) {
-                DocumentModel newDoc = documentManager.move(docModel.getRef(),
-                        destFolderRef, null);
-                newDocs.add(newDoc);
                 if (destinationIsDeleted) {
-                    try {
-                        newDoc.followTransition(LifeCycleConstants.DELETE_TRANSITION);
-                    } catch (ClientException e) {
-                        String docInfo = newDoc.getId() + ":"
-                                + newDoc.getType() + ":"
-                                + newDoc.getPathAsString();
-                        log.info("can NOT change the state to :"
-                                + LifeCycleConstants.DELETED_STATE + " for "
-                                + docInfo, e);
+                    if (checkDeletedState(docModel)) {
+                        DocumentModel newDoc = documentManager.move(
+                                docModel.getRef(), destFolderRef, null);
+                        setDeleteState(newDoc);
+                        newDocs.add(newDoc);
+                    } else {
+                        addWarnMessage(sb, docModel);
                     }
+                } else {
+                    DocumentModel newDoc = documentManager.move(
+                            docModel.getRef(), destFolderRef, null);
+                    newDocs.add(newDoc);
                 }
             }
 
+
         }
         documentManager.save();
+        if (sb.length() > 0) {
+            facesMessages.add(FacesMessage.SEVERITY_WARN, sb.toString(), null);
+        }
 
         return newDocs;
     }
@@ -508,10 +515,13 @@ public class ClipboardActionsBean extends InputController implements
         boolean destinationIsDeleted = LifeCycleConstants.DELETED_STATE.equals(parent.getCurrentLifeCycleState());
         List<DocumentRef> docRefs = new ArrayList<DocumentRef>();
         List<DocumentRef> proxyRefs = new ArrayList<DocumentRef>();
+        StringBuilder sb = new StringBuilder();
         for (DocumentModel doc : documentsToPast) {
-            if (doc.isProxy() && !isPublishSpace) {
-                // in a non-publish space, we want to expand proxies into normal
-                // docs
+            if (destinationIsDeleted && !checkDeletedState(doc)) {
+                addWarnMessage(sb, doc);
+            } else if (doc.isProxy() && !isPublishSpace) {
+                // in a non-publish space, we want to expand proxies into
+                // normal docs
                 proxyRefs.add(doc.getRef());
             } else {
                 // copy as is
@@ -527,20 +537,44 @@ public class ClipboardActionsBean extends InputController implements
         }
         if (destinationIsDeleted) {
             for (DocumentModel d : newDocuments) {
-                try {
-                    d.followTransition(LifeCycleConstants.DELETE_TRANSITION);
-                } catch (ClientException e) {
-                    String docInfo = d.getId() + ":" + d.getType() + ":"
-                            + d.getPathAsString();
-                    log.info("can NOT change the state to :"
-                            + LifeCycleConstants.DELETED_STATE + " for "
-                            + docInfo, e);
-                }
+                setDeleteState(d);
             }
         }
         documentManager.save();
-
+        if (sb.length() > 0) {
+            facesMessages.add(FacesMessage.SEVERITY_WARN, sb.toString(), null);
+        }
         return newDocuments;
+    }
+
+    protected boolean checkDeletedState(DocumentModel doc)
+            throws ClientException {
+        if (LifeCycleConstants.DELETED_STATE.equals(doc.getCurrentLifeCycleState())) {
+            return true;
+        }
+        if (doc.getAllowedStateTransitions().contains(
+                LifeCycleConstants.DELETE_TRANSITION)) {
+            return true;
+        }
+        return false;
+    }
+
+    protected void setDeleteState(DocumentModel doc) throws ClientException {
+        if (doc.getAllowedStateTransitions().contains(
+                LifeCycleConstants.DELETE_TRANSITION)) {
+            doc.followTransition(LifeCycleConstants.DELETE_TRANSITION);
+        }
+    }
+
+    protected void addWarnMessage(StringBuilder sb, DocumentModel doc)
+            throws ClientException {
+        if (sb.length() == 0) {
+            sb.append(resourcesAccessor.getMessages().get(
+                    "document_no_deleted_state"));
+            sb.append("'").append(doc.getTitle()).append("'");
+        } else {
+            sb.append(", '").append(doc.getTitle()).append("'");
+        }
     }
 
     /**
@@ -616,13 +650,13 @@ public class ClipboardActionsBean extends InputController implements
         return exportWorklistAsZip();
     }
 
-    public String  exportMainBlobFromWorkingListAsZip() throws ClientException {
-       return exportWorklistAsZip();
+    public String exportMainBlobFromWorkingListAsZip() throws ClientException {
+        return exportWorklistAsZip();
     }
 
     public String exportWorklistAsZip(List<DocumentModel> documents)
             throws ClientException {
-       return exportWorklistAsZip(documents, true);
+        return exportWorklistAsZip(documents, true);
     }
 
     /**
