@@ -25,37 +25,37 @@ import java.io.IOException;
 
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.common.utils.PathFilter;
-import org.nuxeo.common.utils.ZipUtils;
 import org.nuxeo.runtime.deployment.preprocessor.install.Command;
 import org.nuxeo.runtime.deployment.preprocessor.install.CommandContext;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class UnzipCommand implements Command {
+public class MoveCommand implements Command {
 
     protected final Path src;
     protected final Path dst;
     protected final PathFilter filter;
-    protected final String prefix;
 
-    public UnzipCommand(Path src, Path dst) {
-        this(src, dst, null,null);
+    /**
+     * Constructor for copy command.
+     *
+     * @param src
+     *            the path relative to the root container. The path will be made
+     *            absolute if not already
+     * @param dst
+     *            the path relative to teh root container of the destination. If
+     *            it is ending with a slash '/' the destination path is treated
+     *            as a directory
+     */
+    public MoveCommand(Path src, Path dst) {
+        this(src, dst, null);
     }
 
-    public UnzipCommand(Path src, Path dst, PathFilter filter) {
-        this(src, dst, filter,null);
-    }
-
-    public UnzipCommand(Path src, Path dst, String prefix) {
-        this(src, dst, null ,prefix);
-    }
-
-    public UnzipCommand(Path src, Path dst, PathFilter filter, String prefix) {
+    public MoveCommand(Path src, Path dst, PathFilter filter) {
         this.src = src;
         this.dst = dst;
         this.filter = filter;
-        this.prefix=prefix;
     }
 
     @Override
@@ -65,46 +65,41 @@ public class UnzipCommand implements Command {
         File dstFile = new File(baseDir, ctx.expandVars(dst.toString()));
 
         if (!srcFile.exists()) {
-            throw new FileNotFoundException("Could not find the file " + srcFile.getAbsolutePath() + " to unzip.");
+            throw new FileNotFoundException("Could not find the file "
+                    + srcFile.getAbsolutePath() + " to move.");
+        }
+
+        if (filter != null && !filter.accept(new Path(dstFile.getAbsolutePath()))) {
+            return;
+        }
+      
+        if (!dstFile.exists()) {
+            if (dst.hasTrailingSeparator()) {
+                dstFile.mkdirs();
+            } else {
+                // make sure parent dirs exists
+                File parent = dstFile.getParentFile();
+                if (!parent.isDirectory()) {
+                    parent.mkdirs();
+                }
+            }
         }
         
-        if (srcFile.isDirectory()) {
-        	new CopyCommand(src.addTrailingSeparator(), dst.addTrailingSeparator(), filter).exec(ctx);
-        	return;
+        if (dstFile.exists()) {
+            dstFile.delete();
         }
-
-        if (dstFile.isFile()) {
-            throw new IllegalArgumentException("When unziping the destination file must be a directory: "
-                    + dstFile.getAbsolutePath());
-        }
-
-        if (!dstFile.exists()) {
-            dstFile.mkdirs();
-        }
-        // unzip srcFile to directory dstFile
-        if (filter != null) {
-            if (prefix!=null) {
-                ZipUtils.unzip(prefix,srcFile, dstFile, filter);
-            } else {
-                ZipUtils.unzip(srcFile, dstFile, filter);
-            }
-        } else {
-            if (prefix!=null) {
-                ZipUtils.unzip(prefix, srcFile, dstFile);
-            } else {
-                ZipUtils.unzip(srcFile, dstFile);
-            }
-        }
+        
+        srcFile.renameTo(dstFile);
     }
 
     @Override
     public String toString() {
-        return "unzip " + src.toString() + " > " + dst.toString();
+        return "copy " + src.toString() + " > " + dst.toString();
     }
 
     @Override
     public String toString(CommandContext ctx) {
-        return "unzip " + ctx.expandVars(src.toString()) + " > " +
+        return "copy " + ctx.expandVars(src.toString()) + " > " +
                 ctx.expandVars(dst.toString());
     }
 

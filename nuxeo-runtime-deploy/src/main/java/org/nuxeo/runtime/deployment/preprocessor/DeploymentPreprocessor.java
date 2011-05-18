@@ -22,6 +22,8 @@ package org.nuxeo.runtime.deployment.preprocessor;
 
 import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -43,7 +45,9 @@ import org.nuxeo.common.utils.JarUtils;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.common.xmap.XMap;
+import org.nuxeo.runtime.deployment.preprocessor.install.CommandContext;
 import org.nuxeo.runtime.deployment.preprocessor.install.CommandContextImpl;
+import org.nuxeo.runtime.deployment.preprocessor.install.commands.SeamHotDeployCommand;
 import org.nuxeo.runtime.deployment.preprocessor.template.TemplateContribution;
 import org.nuxeo.runtime.deployment.preprocessor.template.TemplateParser;
 
@@ -111,9 +115,9 @@ public class DeploymentPreprocessor {
     }
 
     protected void init(ContainerDescriptor cd) throws Exception {
-        if (cd.context == null) {
-            cd.context = new CommandContextImpl(cd.directory);
-        }
+        cd.context = new CommandContextImpl(cd.directory);
+        // 
+        initSeamHotDeploy(cd.context);
         // run container install instructions if any
         if (cd.install != null) {
             cd.install.setLogger(log);
@@ -132,6 +136,30 @@ public class DeploymentPreprocessor {
                 }
             }
         }
+    }
+
+    public static final String SEAM_HOT_RELOAD_GLOBAL_CONFIG = "config/seam-debug.properties";
+
+    public static final String SEAM_HOT_RELOAD_SYSTEM_PROP = "org.nuxeo.seam.debug";
+
+    protected void initSeamHotDeploy(CommandContext ctx) throws IOException {
+
+        File f = new File(dir, SEAM_HOT_RELOAD_GLOBAL_CONFIG);
+        if (!f.exists()) {
+            log.info("Nuxeo's Seam HotReload Preprocessus is not enabled");
+            return;
+        }
+        FileInputStream is = new FileInputStream(f);
+        try {
+            SeamHotDeployCommand.loadFilters(is);
+        } finally {
+            is.close();
+        }
+        
+        log.info("Nuxeo's Seam HotReload Preprocessor is enabled");
+        SeamHotDeployCommand.enabled = true;
+        ctx.put(SEAM_HOT_RELOAD_SYSTEM_PROP, "true");
+        System.setProperty(SEAM_HOT_RELOAD_SYSTEM_PROP, "true");
     }
 
     protected void processFile(ContainerDescriptor cd, File file)
@@ -241,10 +269,6 @@ public class DeploymentPreprocessor {
     }
 
     protected static void predeploy(ContainerDescriptor cd) throws Exception {
-        if (cd.context == null) {
-            cd.context = new CommandContextImpl(cd.directory);
-        }
-
         // run installer and register contributions for each fragment
         List<DependencyTree.Entry<String, FragmentDescriptor>> entries = cd.fragments.getResolvedEntries();
         printInfo(entries);

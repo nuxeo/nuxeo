@@ -69,6 +69,10 @@ public class CopyCommand implements Command {
             throw new FileNotFoundException("Could not find the file "
                     + srcFile.getAbsolutePath() + " to copy.");
         }
+        
+        // canonicalize paths
+        dstFile = new File(dstFile.getCanonicalPath());
+        srcFile = new File(srcFile.getCanonicalPath());
 
         if (!dstFile.exists()) {
             if (dst.hasTrailingSeparator()) {
