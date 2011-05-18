@@ -670,7 +670,7 @@ class FolderPage(BasePage):
 
     def view(self):
         """Default summary tab."""
-        self.viewDocumentUid(self.getDocUid())
+        self.viewDocumentUid(self.getDocUid(), tab='TAB_CONTENT')
         return self
 
     def rights(self):
