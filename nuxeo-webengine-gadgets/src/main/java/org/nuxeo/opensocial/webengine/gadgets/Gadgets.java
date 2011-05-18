@@ -17,17 +17,24 @@
 
 package org.nuxeo.opensocial.webengine.gadgets;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
+import org.nuxeo.common.utils.StringUtils;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
+import org.nuxeo.opensocial.container.server.utils.SecureTokenBuilder;
 import org.nuxeo.opensocial.gadgets.service.api.GadgetDeclaration;
 import org.nuxeo.opensocial.gadgets.service.api.GadgetService;
 import org.nuxeo.runtime.api.Framework;
@@ -126,6 +133,26 @@ public class Gadgets extends ModuleRoot {
             label = label.substring(0, 1).toUpperCase() + label.substring(1);
         }
         return label;
+    }
+
+    @GET
+    @Path("samplecontainer")
+    public Object getSampleContainer() {
+        return getView("samplecontainer");
+    }
+
+    @POST
+    @Path("securetoken")
+    public String getSecureToken(@FormParam("gadgetSpecUrls[]") List<String> gadgetSpecUrls) throws Exception {
+        CoreSession session = WebEngine.getActiveContext().getCoreSession();
+        String principalName = session.getPrincipal().getName();
+
+        List<String> secureTokens = new ArrayList<String>();
+        for (String gadgetSpecUrl : gadgetSpecUrls) {
+            secureTokens.add(SecureTokenBuilder.getSecureToken(principalName, principalName, gadgetSpecUrl));
+        }
+
+        return StringUtils.join(secureTokens, ",");
     }
 
 }
