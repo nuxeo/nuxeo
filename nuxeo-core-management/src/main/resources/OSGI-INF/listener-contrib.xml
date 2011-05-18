@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.management.listener">
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
+    point="listener">
+    <listener name="CounterListener" async="false"
+      postCommit="true" priority="1000"
+      class="org.nuxeo.ecm.core.management.events.EventCounterListener">
+    </listener>
+  </extension>
+
+</component>
