@@ -618,7 +618,9 @@ public class CMISQLQueryMaker implements QueryMaker {
             if (key == null) {
                 key = "SEARCH_SCORE"; // default, from spec
             }
-            SqlColumn c = new SqlColumn(fulltextMatchInfo.scoreExpr,
+            String scoreExprSql = fulltextMatchInfo.scoreExpr + " AS "
+                    + fulltextMatchInfo.scoreAlias;
+            SqlColumn c = new SqlColumn(scoreExprSql,
                     fulltextMatchInfo.scoreCol, key);
             realColumns.add(c);
             if (fulltextMatchInfo.scoreExprParam != null) {
