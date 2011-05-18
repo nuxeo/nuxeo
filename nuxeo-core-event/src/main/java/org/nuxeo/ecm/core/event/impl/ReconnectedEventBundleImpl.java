@@ -237,4 +237,11 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
         return sourceEventBundle.containsEventName(eventName);
     }
 
+    public List<String> getEventNames() {
+        List<String> eventNames = new ArrayList<String>();
+        for (Event event : sourceEventBundle) {
+            eventNames.add(event.getName());
+        }
+        return eventNames;
+    }
 }
