@@ -108,9 +108,10 @@ public class CMISQLQueryMaker implements QueryMaker {
     // list of SQL column where NULL (missing value) should be treated as
     // Boolean.FALSE
     public static final Set<String> NULL_IS_FALSE_COLUMNS = new HashSet<String>(
-            Arrays.asList(Model.HIER_TABLE_NAME + " " + Model.MAIN_IS_VERSION_KEY,
-                    Model.VERSION_TABLE_NAME + " " + Model.VERSION_IS_LATEST_KEY,
-                    Model.VERSION_TABLE_NAME + " " + Model.VERSION_IS_LATEST_MAJOR_KEY));
+            Arrays.asList(Model.HIER_TABLE_NAME + " "
+                    + Model.MAIN_IS_VERSION_KEY, Model.VERSION_TABLE_NAME + " "
+                    + Model.VERSION_IS_LATEST_KEY, Model.VERSION_TABLE_NAME
+                    + " " + Model.VERSION_IS_LATEST_MAJOR_KEY));
 
     /**
      * These mixins never match an instance mixin when used in a clause
@@ -128,7 +129,6 @@ public class CMISQLQueryMaker implements QueryMaker {
     protected Table hierTable;
 
     public boolean skipDeleted = true;
-
 
     // ----- filled during walks of the clauses -----
 
@@ -286,7 +286,6 @@ public class CMISQLQueryMaker implements QueryMaker {
                 join = joins.get(njoin);
                 alias = join.alias;
             }
-
 
             String typeQueryName = qualifierToType.get(alias);
             String qual = canonicalQualifier.get(alias);
@@ -702,7 +701,8 @@ public class CMISQLQueryMaker implements QueryMaker {
 
         // fetch column and associate it to the selector
         Column column = getColumn(col);
-        if (!NuxeoTypeHelper.NX_FACETS.equals(col.getPropertyId()) && column == null) {
+        if (!NuxeoTypeHelper.NX_FACETS.equals(col.getPropertyId())
+                && column == null) {
             throw new QueryParseException("Cannot use column in " + clauseType
                     + " clause: " + col.getPropertyQueryName());
         }
@@ -1155,8 +1155,8 @@ public class CMISQLQueryMaker implements QueryMaker {
 
         protected void walkIsNullOrFalse(Tree leftNode) {
             Column c = resolveColumn(leftNode);
-            String columnSpec = c.getTable().getRealTable().getKey()
-                    + " " + c.getKey();
+            String columnSpec = c.getTable().getRealTable().getKey() + " "
+                    + c.getKey();
             if (NULL_IS_FALSE_COLUMNS.contains(columnSpec)) {
                 // treat NULL and FALSE as equivalent
                 whereBuf.append("(");
@@ -1425,7 +1425,7 @@ public class CMISQLQueryMaker implements QueryMaker {
             Set<String> mixins;
 
             int opType = opNode.getType();
-            if (opType ==  CmisQlStrictLexer.EQ_ANY) {
+            if (opType == CmisQlStrictLexer.EQ_ANY) {
                 include = true;
                 if (literalNode.getType() != CmisQlStrictLexer.STRING_LIT) {
                     throw new QueryMakerException(NuxeoTypeHelper.NX_FACETS
