@@ -324,7 +324,7 @@ public final class FileUtils {
     public static void copyFile(File src, File dst) throws IOException {
         if (dst.isDirectory()) {
             dst = new File(dst, src.getName());
-        }
+        } 
         FileInputStream in = null;
         FileOutputStream out = new FileOutputStream(dst);
         try {
@@ -365,25 +365,27 @@ public final class FileUtils {
     }
 
     public static void copyTree(File src, File dst, PathFilter filter) throws IOException {
-        if (!filter.accept(new Path(src.getAbsolutePath()))) {
-            return;
-        }
-        if (src.isFile()) {
-            copyFile(src, dst);
-        } else if (src.isDirectory()) {
-            if (dst.exists()) {
-                dst = new File(dst, src.getName());
-                dst.mkdir();
-            } else { // allow renaming dest dir
-                dst.mkdirs();
-            }
-            File[] files = src.listFiles();
-            for (File file : files) {
-                copyTree(file, dst, filter);
-            }
+        int rootIndex = src.getPath().length() + 1;
+        for (File file:src.listFiles()) {
+            copyTree(rootIndex, file, new File(dst, file.getName()), filter);
         }
     }
 
+    protected static void copyTree(int rootIndex, File src, File dst, PathFilter filter) throws IOException {
+        if (src.isFile()) {
+            String relPath = src.getPath().substring(rootIndex);
+            if (!filter.accept(new Path(relPath))) {
+                return;
+            }
+            dst.mkdirs();
+            copyFile(src, dst);
+        } else if (src.isDirectory()) {
+            File[] files = src.listFiles();
+            for (File file : files) {
+                copyTree(rootIndex, file, new File(dst, file.getName()), filter);
+            }
+        }
+    }
     /**
      * Decodes an URL path so that is can be processed as a filename later.
      *
