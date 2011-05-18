@@ -2,6 +2,7 @@
 <component name="org.nuxeo.ecm.platform.wi.auth.config">
 
   <require>org.nuxeo.ecm.platform.login.digest</require>
+  <require>org.nuxeo.ecm.webdav.auth.config</require>
   <extension target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService" point="specificChains">
 
     <specificAuthenticationChain name="WSS">
