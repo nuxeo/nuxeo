@@ -69,18 +69,17 @@
     </h:panelGroup>
   </div>
 
-  <nxu:dataTable value="#{availablePublicationTrees}" var="tree"
+  <nxu:repeat value="#{availablePublicationTrees}" var="tree"
                  styleClass="dataOutput">
-    <nxu:column>
+
+      <nxu:set var="publishedDocuments"
+                        value="#{publishActions.getPublishedDocumentsFor(tree.name)}" cache="true">
+      <h:panelGroup rendered="#{publishedDocuments != null and publishedDocuments.size()>0}">
       <h4><h:outputText value="#{messages[tree.title]}#{publishActions.getDomainName(tree.name)}"/></h4>
-      <nxu:methodResult name="publishedDocuments"
-                        value="#{publishActions.getPublishedDocumentsFor(tree.name)}">
-        <h:outputText
-                value="#{messages['label.publication.tree.not.available']}"
-                rendered="#{publishedDocuments == null}"/>
+      </h:panelGroup>
         <nxu:dataTable value="#{publishedDocuments}"
                        var="publishedDocument"
-                       rendered="#{publishedDocuments != null}"
+                       rendered="#{publishedDocuments != null and publishedDocuments.size()>0}"
                        styleClass="dataOutput">
           <!-- id and selection -->
           <nxu:column>
@@ -108,8 +107,6 @@
             <h:outputText value="#{publishedDocument.sourceVersionLabel}"/>
           </nxu:column>
         </nxu:dataTable>
-      </nxu:methodResult>
-    </nxu:column>
-  </nxu:dataTable>
-
+      </nxu:set>
+  </nxu:repeat>
 </div>

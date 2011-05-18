@@ -28,6 +28,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import javax.faces.context.FacesContext;
 
@@ -144,10 +145,31 @@ public class PublishActionsBean extends AbstractPublishActions implements
         }
     }
 
+    protected Map<String, String> filterEmptyTrees(Map<String, String> trees) throws PublicationTreeNotAvailable, ClientException {
+
+        Map<String, String> filtredTrees = new HashMap<String, String>();
+
+        for (Entry<String, String> tree : trees.entrySet()) {
+            PublicationTree pTree = publisherService.getPublicationTree(tree.getKey(), documentManager, null, navigationContext.getCurrentDocument());
+            if (pTree!=null) {
+                if (pTree.getTreeType().equals("RootSectionsPublicationTree")) {
+                    if (pTree.getChildrenNodes().size()>0) {
+                        filtredTrees.put(tree.getKey(), tree.getValue());
+                    }
+                } else {
+                    filtredTrees.put(tree.getKey(), tree.getValue());
+                }
+            }
+        }
+        return filtredTrees;
+    }
+
     @Factory(value = "availablePublicationTrees", scope = ScopeType.EVENT)
     public List<PublicationTreeInformation> getAvailablePublicationTrees()
             throws ClientException {
         Map<String, String> trees = publisherService.getAvailablePublicationTrees();
+        // remove empty trees
+        trees = filterEmptyTrees(trees);
         List<PublicationTreeInformation> treesInformation = new ArrayList<PublicationTreeInformation>();
         for (Map.Entry<String, String> entry : trees.entrySet()) {
             treesInformation.add(new PublicationTreeInformation(entry.getKey(),
