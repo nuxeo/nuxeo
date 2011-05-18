@@ -1857,31 +1857,34 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         String statement;
         ObjectData data;
 
+        // Oracle cannot match on testfile2_Title, because it gets split
+        // so match on a single word "football"
+
         statement = "SELECT cmis:name, SCORE() FROM File" //
-                + " WHERE CONTAINS('testfile1_Title')";
+                + " WHERE CONTAINS('football')";
         res = query(statement);
         assertEquals(1, res.getNumItems().intValue());
         data = res.getObjects().get(0);
-        assertEquals("testfile1_Title", getString(data, PropertyIds.NAME));
+        assertEquals("testfile2_Title", getString(data, PropertyIds.NAME));
         assertNotNull(getValue(data, "SEARCH_SCORE")); // name from spec
 
         // using an alias for the score
         statement = "SELECT cmis:name, SCORE() AS priority FROM File" //
-                + " WHERE CONTAINS('testfile1_Title')";
+                + " WHERE CONTAINS('football')";
         res = query(statement);
         assertEquals(1, res.getNumItems().intValue());
         data = res.getObjects().get(0);
-        assertEquals("testfile1_Title", getString(data, PropertyIds.NAME));
+        assertEquals("testfile2_Title", getString(data, PropertyIds.NAME));
         assertNotNull(getValue(data, "priority"));
 
         // ORDER BY score
         statement = "SELECT cmis:name, SCORE() importance FROM File" //
-                + " WHERE CONTAINS('testfile1_Title')" //
+                + " WHERE CONTAINS('football')" //
                 + " ORDER BY importance DESC";
         res = query(statement);
         assertEquals(1, res.getNumItems().intValue());
         data = res.getObjects().get(0);
-        assertEquals("testfile1_Title", getString(data, PropertyIds.NAME));
+        assertEquals("testfile2_Title", getString(data, PropertyIds.NAME));
         assertNotNull(getValue(data, "importance"));
     }
 
