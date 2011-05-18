@@ -331,6 +331,7 @@ public class ClipboardActionsBean extends InputController implements
         DocumentRef destFolderRef = destFolder.getRef();
         boolean destinationIsDeleted = LifeCycleConstants.DELETED_STATE.equals(destFolder.getCurrentLifeCycleState());
         List<DocumentModel> newDocs = new ArrayList<DocumentModel>();
+        StringBuilder sb = new StringBuilder();
         for (DocumentModel docModel : docs) {
             DocumentRef sourceFolderRef = docModel.getParentRef();
 
@@ -342,26 +343,25 @@ public class ClipboardActionsBean extends InputController implements
                     navigationContext.getCurrentDocument());
             boolean sameFolder = sourceFolderRef.equals(destFolderRef);
             if (canRemoveDoc && canPasteInCurrentFolder && !sameFolder) {
-                DocumentModel newDoc = documentManager.move(docModel.getRef(),
-                        destFolderRef, null);
-                newDocs.add(newDoc);
                 if (destinationIsDeleted) {
-                    try {
+                    if ( docModel.getAllowedStateTransitions().contains(LifeCycleConstants.DELETE_TRANSITION)) {
+                        DocumentModel newDoc = documentManager.move(docModel.getRef(), destFolderRef, null);
                         newDoc.followTransition(LifeCycleConstants.DELETE_TRANSITION);
-                    } catch (ClientException e) {
-                        String docInfo = newDoc.getId() + ":"
-                                + newDoc.getType() + ":"
-                                + newDoc.getPathAsString();
-                        log.info("can NOT change the state to :"
-                                + LifeCycleConstants.DELETED_STATE + " for "
-                                + docInfo, e);
+                        newDocs.add(newDoc);
+                    } else {
+                        addWarnMessage(sb, docModel);
                     }
+                } else {
+                    DocumentModel newDoc = documentManager.move(docModel.getRef(), destFolderRef, null);
+                    newDocs.add(newDoc);
                 }
             }
-
         }
         documentManager.save();
 
+        if ( sb.length() > 0 ) {
+            facesMessages.add(StatusMessage.Severity.WARN, sb.toString(), null);
+        }
         return newDocs;
     }
 
@@ -482,8 +482,11 @@ public class ClipboardActionsBean extends InputController implements
         boolean destinationIsDeleted = LifeCycleConstants.DELETED_STATE.equals(parent.getCurrentLifeCycleState());
         List<DocumentRef> docRefs = new ArrayList<DocumentRef>();
         List<DocumentRef> proxyRefs = new ArrayList<DocumentRef>();
+        StringBuilder sb = new StringBuilder();
         for (DocumentModel doc : documentsToPast) {
-            if (doc.isProxy() && !isPublishSpace) {
+            if ( destinationIsDeleted && !doc.getAllowedStateTransitions().contains(LifeCycleConstants.DELETE_TRANSITION)) {
+                addWarnMessage(sb, doc);
+            }if (doc.isProxy() && !isPublishSpace) {
                 // in a non-publish space, we want to expand proxies into
                 // normal docs
                 proxyRefs.add(doc.getRef());
@@ -501,20 +504,23 @@ public class ClipboardActionsBean extends InputController implements
         }
         if (destinationIsDeleted) {
             for (DocumentModel d : newDocuments) {
-                try {
-                    d.followTransition(LifeCycleConstants.DELETE_TRANSITION);
-                } catch (ClientException e) {
-                    String docInfo = d.getId() + ":" + d.getType() + ":"
-                            + d.getPathAsString();
-                    log.info("can NOT change the state to :"
-                            + LifeCycleConstants.DELETED_STATE + " for "
-                            + docInfo, e);
-                }
+                d.followTransition(LifeCycleConstants.DELETE_TRANSITION);
             }
         }
         documentManager.save();
-
+        if ( sb.length() > 0 ) {
+            facesMessages.add(StatusMessage.Severity.WARN, sb.toString(), null);
+        }
         return newDocuments;
+    }
+
+    protected void addWarnMessage(StringBuilder sb, DocumentModel doc) throws ClientException {
+        if ( sb.length() == 0 ) {
+            sb.append(resourcesAccessor.getMessages().get("document_no_deleted_state"));
+            sb.append("'").append(doc.getTitle()).append("'");
+        } else {
+            sb.append(", '").append(doc.getTitle()).append("'");
+        }
     }
 
     /**
