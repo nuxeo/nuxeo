@@ -93,11 +93,12 @@ public class GetCounters {
                 valueArray.add(value);
                 valueSerie.add(valueArray);
 
+                // delta values
+                deltaArray.add(ts);
+                deltaArray.add(value - lastValue);
+                deltaSerie.add(deltaArray);
+
                 if (lastTS>0) {
-                    // delta values
-                    deltaArray.add(ts);
-                    deltaArray.add(value - lastValue);
-                    deltaSerie.add(deltaArray);
                     // speed values
                     speedArray.add(ts);
                     float tdelta = lastTS-t;
