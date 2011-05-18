@@ -344,22 +344,24 @@ public class ClipboardActionsBean extends InputController implements
             boolean sameFolder = sourceFolderRef.equals(destFolderRef);
             if (canRemoveDoc && canPasteInCurrentFolder && !sameFolder) {
                 if (destinationIsDeleted) {
-                    if ( docModel.getAllowedStateTransitions().contains(LifeCycleConstants.DELETE_TRANSITION)) {
-                        DocumentModel newDoc = documentManager.move(docModel.getRef(), destFolderRef, null);
-                        newDoc.followTransition(LifeCycleConstants.DELETE_TRANSITION);
+                    if (checkDeletedState(docModel)) {
+                        DocumentModel newDoc = documentManager.move(
+                                docModel.getRef(), destFolderRef, null);
+                        setDeleteState(newDoc);
                         newDocs.add(newDoc);
                     } else {
                         addWarnMessage(sb, docModel);
                     }
                 } else {
-                    DocumentModel newDoc = documentManager.move(docModel.getRef(), destFolderRef, null);
+                    DocumentModel newDoc = documentManager.move(
+                            docModel.getRef(), destFolderRef, null);
                     newDocs.add(newDoc);
                 }
             }
         }
         documentManager.save();
 
-        if ( sb.length() > 0 ) {
+        if (sb.length() > 0) {
             facesMessages.add(StatusMessage.Severity.WARN, sb.toString(), null);
         }
         return newDocs;
@@ -484,9 +486,10 @@ public class ClipboardActionsBean extends InputController implements
         List<DocumentRef> proxyRefs = new ArrayList<DocumentRef>();
         StringBuilder sb = new StringBuilder();
         for (DocumentModel doc : documentsToPast) {
-            if ( destinationIsDeleted && !doc.getAllowedStateTransitions().contains(LifeCycleConstants.DELETE_TRANSITION)) {
+            if (destinationIsDeleted && !checkDeletedState(doc)) {
                 addWarnMessage(sb, doc);
-            }if (doc.isProxy() && !isPublishSpace) {
+            }
+            if (doc.isProxy() && !isPublishSpace) {
                 // in a non-publish space, we want to expand proxies into
                 // normal docs
                 proxyRefs.add(doc.getRef());
@@ -504,19 +507,40 @@ public class ClipboardActionsBean extends InputController implements
         }
         if (destinationIsDeleted) {
             for (DocumentModel d : newDocuments) {
-                d.followTransition(LifeCycleConstants.DELETE_TRANSITION);
+                setDeleteState(d);
             }
         }
         documentManager.save();
-        if ( sb.length() > 0 ) {
+        if (sb.length() > 0) {
             facesMessages.add(StatusMessage.Severity.WARN, sb.toString(), null);
         }
         return newDocuments;
     }
 
-    protected void addWarnMessage(StringBuilder sb, DocumentModel doc) throws ClientException {
-        if ( sb.length() == 0 ) {
-            sb.append(resourcesAccessor.getMessages().get("document_no_deleted_state"));
+    protected boolean checkDeletedState(DocumentModel doc)
+            throws ClientException {
+        if (LifeCycleConstants.DELETED_STATE.equals(doc.getCurrentLifeCycleState())) {
+            return true;
+        }
+        if (doc.getAllowedStateTransitions().contains(
+                LifeCycleConstants.DELETE_TRANSITION)) {
+            return true;
+        }
+        return false;
+    }
+
+    protected void setDeleteState(DocumentModel doc) throws ClientException {
+        if (doc.getAllowedStateTransitions().contains(
+                LifeCycleConstants.DELETE_TRANSITION)) {
+            doc.followTransition(LifeCycleConstants.DELETE_TRANSITION);
+        }
+    }
+
+    protected void addWarnMessage(StringBuilder sb, DocumentModel doc)
+            throws ClientException {
+        if (sb.length() == 0) {
+            sb.append(resourcesAccessor.getMessages().get(
+                    "document_no_deleted_state"));
             sb.append("'").append(doc.getTitle()).append("'");
         } else {
             sb.append(", '").append(doc.getTitle()).append("'");
