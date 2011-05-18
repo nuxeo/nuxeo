@@ -1,5 +1,5 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 1
-Bundle-Name: lm-richtexteditor
-Bundle-SymbolicName: com.leroymerlin.corp.nuxeo.gwt.richtexteditor;singleton:=true
+Bundle-Name: nuxeo-gwt-richtexteditor
+Bundle-SymbolicName: org.nuxeo.ecm.opensocial.gwt.richtexteditor;singleton:=true
 
