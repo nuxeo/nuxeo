@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.opensocial.gadgets.monitoring" version="1.0">
+
+  <extension target="org.nuxeo.opensocial.gadgets.service" point="gadget">
+
+    <!-- Nuxeo -->
+    <internalGadget name="httpMonitoring" disabled="false">
+      <mountPoint>/httpMonitoring</mountPoint>
+      <entryPoint>httpMonitoring.xml</entryPoint>
+      <category>Nuxeo</category>
+      <icon>monitoring.png</icon>
+    </internalGadget>
+
+
+    <internalGadget name="eventMonitoring" disabled="false">
+      <mountPoint>/eventMonitoring</mountPoint>
+      <entryPoint>eventMonitoring.xml</entryPoint>
+      <category>Nuxeo</category>
+      <icon>monitoring.png</icon>
+    </internalGadget>
+
+  </extension>
+</component>
