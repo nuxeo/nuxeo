@@ -488,8 +488,7 @@ public class ClipboardActionsBean extends InputController implements
         for (DocumentModel doc : documentsToPast) {
             if (destinationIsDeleted && !checkDeletedState(doc)) {
                 addWarnMessage(sb, doc);
-            }
-            if (doc.isProxy() && !isPublishSpace) {
+            } else if (doc.isProxy() && !isPublishSpace) {
                 // in a non-publish space, we want to expand proxies into
                 // normal docs
                 proxyRefs.add(doc.getRef());
