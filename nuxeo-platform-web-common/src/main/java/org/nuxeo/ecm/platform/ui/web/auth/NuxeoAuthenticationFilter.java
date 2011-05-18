@@ -29,6 +29,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.login.LoginContext;
@@ -100,6 +103,8 @@ public class NuxeoAuthenticationFilter implements Filter {
     protected final boolean avoidReauthenticate = true;
 
     protected PluggableAuthenticationService service;
+
+    protected ReentrantReadWriteLock unAuthenticatedURLPrefixLock = new ReentrantReadWriteLock();
 
     protected List<String> unAuthenticatedURLPrefix;
 
@@ -790,7 +795,6 @@ public class NuxeoAuthenticationFilter implements Filter {
     }
 
     // Plugin API
-
     protected void initUnAuthenticatedURLPrefix() {
         // gather unAuthenticated URLs
         unAuthenticatedURLPrefix = new ArrayList<String>();
@@ -805,14 +809,25 @@ public class NuxeoAuthenticationFilter implements Filter {
 
     protected boolean bypassAuth(HttpServletRequest httpRequest) {
         if (unAuthenticatedURLPrefix == null) {
-            // late init to allow plugins registered after this filter init
-            initUnAuthenticatedURLPrefix();
-        }
-        String requestPage = getRequestedPage(httpRequest);
-        for (String prefix : unAuthenticatedURLPrefix) {
-            if (requestPage.startsWith(prefix)) {
-                return true;
+            try {
+                unAuthenticatedURLPrefixLock.writeLock().lock();
+                // late init to allow plugins registered after this filter init
+                initUnAuthenticatedURLPrefix();
+            } finally {
+                unAuthenticatedURLPrefixLock.writeLock().unlock();
             }
+        }
+
+        try {
+            unAuthenticatedURLPrefixLock.readLock().lock();
+            String requestPage = getRequestedPage(httpRequest);
+            for (String prefix : unAuthenticatedURLPrefix) {
+                if (requestPage.startsWith(prefix)) {
+                    return true;
+                }
+            }
+        } finally {
+            unAuthenticatedURLPrefixLock.readLock().unlock();
         }
 
         List<OpenUrlDescriptor> openUrls = service.getOpenUrls();
