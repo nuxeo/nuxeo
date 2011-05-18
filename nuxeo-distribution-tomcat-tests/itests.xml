@@ -9,7 +9,7 @@
   <property name="out.dir" value="${maven.project.build.directory}" />
   <property name="nuxeo.home" value="${out.dir}/tomcat" />
   <unzip dest="${out.dir}/" overwrite="false">
-    <artifact:resolveFile key="org.nuxeo:nuxeo-ftest::zip" />
+    <artifact:resolveFile key="org.nuxeo:nuxeo-ftest:1.4-SNAPSHOT:zip" />
   </unzip>
   <import file="${out.dir}/nuxeo-ftest.xml" />
 
