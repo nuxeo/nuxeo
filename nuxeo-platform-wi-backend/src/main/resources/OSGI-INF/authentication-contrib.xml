@@ -24,7 +24,7 @@
 
     <specificAuthenticationChain name="WebDAV">
       <headers>
-        <header name="User-Agent">(Microsoft-WebDAV-MiniRedir|litmus|gvfs|davfs|WebDAV|cadaver).*</header>
+        <header name="User-Agent">(Microsoft-WebDAV-MiniRedir|DavClnt|litmus|gvfs|davfs|WebDAV|cadaver).*</header>
       </headers>
 
       <allowedPlugins>
