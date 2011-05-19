@@ -137,9 +137,9 @@
       <filter-id>not_readonly</filter-id>
     </action>
 
-    <action id="themes_manager" link="#{themeEditorAction.startEditor}"
-      label="command.manageThemes" order="20">
-      <category>NUXEO_ADMIN_USER_SERVICES</category>
+    <action id="ThemesManager" link="/incl/theme/themes_manager.xhtml"
+      label="tab.themes.management" order="70">
+      <category>NUXEO_ADMIN</category>
       <filter-id>only_for_manager</filter-id>
       <filter-id>not_readonly</filter-id>
     </action>
