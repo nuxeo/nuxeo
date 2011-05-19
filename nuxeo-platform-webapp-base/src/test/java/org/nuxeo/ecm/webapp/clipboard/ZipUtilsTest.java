@@ -19,10 +19,13 @@
 package org.nuxeo.ecm.webapp.clipboard;
 
 import java.io.File;
-import java.util.LinkedList;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.zip.ZipFile;
 
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
@@ -31,44 +34,86 @@ import org.nuxeo.runtime.api.Framework;
 
 public class ZipUtilsTest extends SQLRepositoryTestCase {
 
-    List<DocumentModel> documents;
-
     @Override
     public void setUp() throws Exception {
         super.setUp();
         openSession();
-        documents = new LinkedList<DocumentModel>();
-        DocumentModel parent = new DocumentModelImpl("/", "parent", "Folder");
-        parent = session.createDocument(parent);
-        parent.setPropertyValue("dc:title", "parent");
-        parent = session.saveDocument(parent);
-        DocumentModel file = new DocumentModelImpl("/parent", "éèà", "File");
-        file = session.createDocument(file);
-        StringBlob strBlob = new StringBlob("ééà");
-        strBlob.setFilename("éèà");
-        file.setPropertyValue("file:content", strBlob);
-        file.setPropertyValue("dc:title", "éèà");
-        file = session.saveDocument(file);
-        documents.add(parent);
     }
 
     public void tearDown() throws Exception {
         session.destroy();
     }
 
+    protected DocumentModel createTestFolder() throws ClientException {
+        DocumentModel parent = new DocumentModelImpl("/", "parent", "Folder");
+        parent.setPropertyValue("dc:title", "Parent");
+        parent = session.createDocument(parent);
 
-    public void testZippingSummary() throws Exception {
+        DocumentModel file = new DocumentModelImpl("/parent", "éèà", "File");
+        file.setPropertyValue("dc:title", "éèà");
+
+        StringBlob blob = new StringBlob("ééà");
+        blob.setFilename("éèà");
+        file.setPropertyValue("file:content", blob);
+        file.setPropertyValue("dc:title", "éèà");
+        file = session.createDocument(file);
+        return parent;
+    }
+
+    protected DocumentModel createHeavyFile() throws ClientException {
+        DocumentModel heavyFile = session.createDocumentModel("/", "heavyFile",
+                "File");
+        heavyFile.setPropertyValue("dc:title", "Heavy File");
+
+        StringBlob blob1 = new StringBlob("abc");
+        blob1.setFilename("blob1.raw");
+        heavyFile.setPropertyValue("file:content", blob1);
+
+        StringBlob blob2 = new StringBlob("123");
+        blob2.setFilename("blob2.raw");
+
+        HashMap<String, Serializable> blob = new HashMap<String, Serializable>();
+        blob.put("file", (Serializable) blob2);
+        blob.put("filename", blob2.getFilename());
+
+        ArrayList<HashMap<String, Serializable>> blobs = new ArrayList<HashMap<String, Serializable>>();
+        blobs.add(blob);
+
+        heavyFile.setPropertyValue("files:files", blobs);
+        heavyFile = session.createDocument(heavyFile);
+
+        return heavyFile;
+    }
+
+    public void testExportSimpleFile() throws Exception {
+        DocumentModel folder = createTestFolder();
+        List<DocumentModel> documents = new ArrayList<DocumentModel>();
+        documents.add(folder);
+
         DocumentListZipExporter zipExporter = new DocumentListZipExporter();
         File file = zipExporter.exportWorklistAsZip(documents, session, true);
         assertNotNull(file);
         ZipFile zipFile = new ZipFile(file);
-        assertNotNull(zipFile.getEntry("parent/éèà"));
+        assertNotNull(zipFile.getEntry("Parent/éèà"));
         Framework.getProperties().setProperty(
                 DocumentListZipExporter.ZIP_ENTRY_ENCODING_PROPERTY,
                 DocumentListZipExporter.ZIP_ENTRY_ENCODING_OPTIONS.ascii.name());
         file = zipExporter.exportWorklistAsZip(documents, session, true);
         assertNotNull(file);
         zipFile = new ZipFile(file);
-        assertNotNull(zipFile.getEntry("parent/eea"));
+        assertNotNull(zipFile.getEntry("Parent/eea"));
+    }
+
+    public void testExportAllBlobs() throws Exception {
+        DocumentModel heavyFile = createHeavyFile();
+        List<DocumentModel> documents = new ArrayList<DocumentModel>();
+        documents.add(heavyFile);
+
+        DocumentListZipExporter zipExporter = new DocumentListZipExporter();
+        File file = zipExporter.exportWorklistAsZip(documents, session, true);
+        assertNotNull(file);
+        ZipFile zipFile = new ZipFile(file);
+        assertNotNull(zipFile.getEntry("blob2.raw"));
+        assertNotNull(zipFile.getEntry("blob1.raw"));
     }
 }
