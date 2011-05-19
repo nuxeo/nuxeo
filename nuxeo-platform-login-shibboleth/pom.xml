@@ -19,25 +19,26 @@
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-login</artifactId>
-      <scope>provided</scope>
     </dependency>
 
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-ui-web</artifactId>
-      <scope>provided</scope>
     </dependency>
 
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-usermanager-core</artifactId>
-      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-usermanager-api</artifactId>
     </dependency>
 
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-el</artifactId>
-      <scope>provided</scope>
     </dependency>
 
     <dependency>

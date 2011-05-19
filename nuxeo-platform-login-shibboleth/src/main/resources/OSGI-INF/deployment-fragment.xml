@@ -1,32 +1,5 @@
 <?xml version="1.0"?>
 <fragment>
-
-  <extension target="faces-config#NAVIGATION">
-    <navigation-case>
-      <from-outcome>view_shibbGroups</from-outcome>
-      <to-view-id>/view_shibbGroups.xhtml</to-view-id>
-      <redirect />
-    </navigation-case>
-
-    <navigation-case>
-      <from-outcome>view_shibbGroup</from-outcome>
-      <to-view-id>/view_shibbGroup.xhtml</to-view-id>
-      <redirect />
-    </navigation-case>
-
-    <navigation-case>
-      <from-outcome>edit_shibbGroup</from-outcome>
-      <to-view-id>/edit_shibbGroup.xhtml</to-view-id>
-      <redirect />
-    </navigation-case>
-
-    <navigation-case>
-      <from-outcome>create_shibbGroup</from-outcome>
-      <to-view-id>/create_shibbGroup.xhtml</to-view-id>
-      <redirect />
-    </navigation-case>
-  </extension>
-
   <install>
     <!--  unzip the war template -->
     <unzip from="${bundle.fileName}" to="/" prefix="web">

@@ -16,43 +16,89 @@
       </templates>
       <rows>
         <row>
-          <widget>groupName</widget>
+          <widget>shibbGroupName</widget>
         </row>
         <row>
           <widget>expressionLanguage</widget>
         </row>
       </rows>
-      <widget name="groupName" type="text">
-        <translated>true</translated>
-        <labels>
-          <label mode="any">label.widget.shibboleth.groupName</label>
-        </labels>
-        <widgetModes>
-          <mode value="create">edit</mode>
-          <mode value="any">hidden</mode>
-        </widgetModes>
-        <fields>
-          <field>shibbGroup:groupName</field>
-        </fields>
-        <properties widgetMode="any">
-          <property name="required">true</property>
-          <property name="styleClass">dataInputText</property>
-        </properties>
-      </widget>
-      <widget name="expressionLanguage" type="text">
-        <translated>true</translated>
-        <labels>
-          <label mode="any">label.widget.shibboleth.expressionLanguage
-          </label>
-        </labels>
-        <fields>
-          <field>shibbGroup:expressionLanguage</field>
-        </fields>
-        <properties widgetMode="any">
-          <property name="required">true</property>
-          <property name="styleClass">dataInputText</property>
-        </properties>
-      </widget>
     </layout>
+
+    <layout name="shibb_groups_listing">
+      <templates>
+        <template mode="any">
+          /layouts/layout_listing_template.xhtml
+        </template>
+        <template mode="csv">
+          /layouts/layout_listing_csv_template.xhtml
+        </template>
+        <template mode="pdf">
+          /layouts/layout_listing_pdf_template.xhtml
+        </template>
+      </templates>
+      <properties mode="any">
+        <property name="showListingHeader">true</property>
+        <property name="showRowEvenOddClass">true</property>
+      </properties>
+      <columns>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+          </properties>
+          <widget>listing_shibbGroupName</widget>
+        </column>
+      </columns>
+    </layout>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgets">
+    <widget name="shibbGroupName" type="text">
+      <translated>true</translated>
+      <labels>
+        <label mode="any">label.widget.shibboleth.groupName</label>
+      </labels>
+      <widgetModes>
+        <mode value="create">edit</mode>
+        <mode value="any">hidden</mode>
+      </widgetModes>
+      <fields>
+        <field>shibbGroup:groupName</field>
+      </fields>
+      <properties widgetMode="any">
+        <property name="required">true</property>
+        <property name="styleClass">dataInputText</property>
+      </properties>
+    </widget>
+
+    <widget name="expressionLanguage" type="text">
+      <translated>true</translated>
+      <labels>
+        <label mode="any">label.widget.shibboleth.expressionLanguage
+        </label>
+      </labels>
+      <fields>
+        <field>shibbGroup:expressionLanguage</field>
+      </fields>
+      <properties widgetMode="any">
+        <property name="required">true</property>
+        <property name="styleClass">dataInputText</property>
+      </properties>
+    </widget>
+
+    <widget name="listing_shibbGroupName" type="template">
+      <labels>
+        <label mode="any">label.widget.shibboleth.groupName</label>
+      </labels>
+      <fields>
+         <field>data.shibbGroup.groupName</field>
+      </fields>
+      <widgetModes>
+        <mode value="any">view</mode>
+      </widgetModes>
+      <properties mode="any">
+        <property name="template">/widgets/listing_shibboleth_groupname_widget.xhtml</property>
+      </properties>
+    </widget>
   </extension>
 </component>

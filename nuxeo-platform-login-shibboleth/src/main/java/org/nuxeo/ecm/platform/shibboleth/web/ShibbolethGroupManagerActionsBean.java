@@ -20,36 +20,29 @@ package org.nuxeo.ecm.platform.shibboleth.web;
 import static org.jboss.seam.ScopeType.CONVERSATION;
 import static org.jboss.seam.annotations.Install.FRAMEWORK;
 
-import java.security.Principal;
-
-import javax.faces.application.FacesMessage;
-
-import org.apache.commons.lang.StringUtils;
-import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
+import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
-import org.jboss.seam.annotations.datamodel.DataModel;
-import org.jboss.seam.annotations.datamodel.DataModelSelection;
-import org.jboss.seam.faces.FacesMessages;
+import org.jboss.seam.core.Events;
+import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.model.InvalidPropertyValueException;
 import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.platform.shibboleth.ShibbolethGroupHelper;
-import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.platform.usermanager.exceptions.GroupAlreadyExistsException;
-import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
+import org.nuxeo.ecm.webapp.security.AbstractUserGroupManagement;
 
 @Name("shibbGroupManagerActions")
 @Scope(CONVERSATION)
 @Install(precedence = FRAMEWORK)
-public class ShibbolethGroupManagerActionsBean {
+public class ShibbolethGroupManagerActionsBean extends AbstractUserGroupManagement{
+
+    protected static final String EVENT_SHIBB_GROUP_LISTING = "shibbGroupsListingChanged";
 
     protected static final String VIEW_SHIBB_GROUP = "view_shibbGroup";
 
@@ -59,61 +52,52 @@ public class ShibbolethGroupManagerActionsBean {
 
     private static final long serialVersionUID = -2103588024105680788L;
 
-    @DataModel(value = "shibbGroupList")
-    protected DocumentModelList groups;
-
-    @DataModelSelection("shibbGroupList")
     protected DocumentModel selectedGroup;
 
     protected DocumentModel newGroup;
-
-    protected String searchString = null;
-
-    protected String groupListingMode;
 
     protected Boolean canEditGroups;
 
     @In(create = true)
     protected transient CoreSession documentManager;
 
-    @In(create = true)
-    protected transient UserManager userManager;
+    public void createGroup() throws ClientException {
+        createGroup(false);
+    }
 
-    @In(create = true)
-    protected Principal currentUser;
-
-    @In(create = true, required = false)
-    protected transient FacesMessages facesMessages;
-
-    @In(create = true)
-    protected transient ResourcesAccessor resourcesAccessor;
-
-    public String createGroup() throws ClientException {
+    public void createGroup(boolean createAnotherGroup) throws ClientException {
         try {
             selectedGroup = ShibbolethGroupHelper.createGroup(newGroup);
             newGroup = null;
-            // reset so that group list is computed again
-            resetGroups();
-            return viewGroup(selectedGroup, false);
+            facesMessages.add(
+                    StatusMessage.Severity.INFO,
+                    resourcesAccessor.getMessages().get(
+                            "info.groupManager.groupCreated"));
+            if (createAnotherGroup) {
+                showCreateForm = true;
+            } else {
+                showCreateForm = false;
+                showUserOrGroup = true;
+            }
+            fireSeamEvent(EVENT_SHIBB_GROUP_LISTING);
         } catch (GroupAlreadyExistsException e) {
             String message = resourcesAccessor.getMessages().get(
                     "error.groupManager.groupAlreadyExists");
             facesMessages.addToControl("groupName",
-                    FacesMessage.SEVERITY_ERROR, message);
-            return null;
+                    StatusMessage.Severity.ERROR, message);
         } catch (InvalidPropertyValueException e) {
             String message = resourcesAccessor.getMessages().get(
                     "error.shibboleth.groupManager.wrongEl");
             facesMessages.addToControl("expressionLanguage",
-                    FacesMessage.SEVERITY_ERROR, message);
-            return null;
+                    StatusMessage.Severity.ERROR, message);
         }
     }
 
-    public String deleteGroup() throws ClientException {
+    public void deleteGroup() throws ClientException {
         ShibbolethGroupHelper.deleteGroup(selectedGroup);
-        resetGroups();
-        return viewGroups();
+        selectedGroup = null;
+        showUserOrGroup = false;
+        fireSeamEvent(EVENT_SHIBB_GROUP_LISTING);
     }
 
     public String editGroup() throws ClientException {
@@ -121,35 +105,11 @@ public class ShibbolethGroupManagerActionsBean {
         return EDIT_SHIBB_GROUP;
     }
 
-    @Factory(value = "shibbGroupList")
-    public DocumentModelList getShibbGroups() throws ClientException {
-        if (groups == null) {
-            String groupListingMode = getGroupListingMode();
-            if ("all".equals(groupListingMode)
-                    || "*".equals(getTrimmedSearchString())) {
-                groups = ShibbolethGroupHelper.getGroups();
-            } else if (!StringUtils.isEmpty(getTrimmedSearchString())) {
-                groups = ShibbolethGroupHelper.searchGroup(getTrimmedSearchString());
-            }
-        }
-        if (groups == null) {
-            groups = new DocumentModelListImpl();
-        }
-        return groups;
-    }
-
     protected String getTrimmedSearchString() {
         if (searchString == null) {
             return null;
         }
         return searchString.trim();
-    }
-
-    protected String getGroupListingMode() throws ClientException {
-        if (groupListingMode == null) {
-            groupListingMode = userManager.getGroupListingMode();
-        }
-        return groupListingMode;
     }
 
     public DocumentModel getNewGroup() throws ClientException {
@@ -163,30 +123,30 @@ public class ShibbolethGroupManagerActionsBean {
         return false;
     }
 
-    public String updateGroup() throws ClientException {
+    public void updateGroup() throws ClientException {
         try {
             ShibbolethGroupHelper.updateGroup(selectedGroup);
-            // reset users and groups
-            resetGroups();
-            return viewGroup(selectedGroup.getId());
+            detailsMode = DETAILS_VIEW_MODE;
+            fireSeamEvent(EVENT_SHIBB_GROUP_LISTING);
         } catch (InvalidPropertyValueException e) {
             String message = resourcesAccessor.getMessages().get(
                     "error.shibboleth.groupManager.wrongEl");
             facesMessages.addToControl("expressionLanguage",
-                    FacesMessage.SEVERITY_ERROR, message);
-            return null;
+                    StatusMessage.Severity.ERROR, message);
         }
     }
 
-    protected void resetGroups() {
-        groups = null;
-    }
-
     public String viewGroup() throws ClientException {
-        return viewGroup(selectedGroup, false);
+        if (selectedGroup == null) {
+            return null;
+        } else {
+            return viewGroup(selectedGroup, false);
+        }
     }
 
     public String viewGroup(String groupName) throws ClientException {
+        setSelectedGroup(groupName);
+        showUserOrGroup = true;
         return viewGroup(ShibbolethGroupHelper.getGroup(groupName), false);
     }
 
@@ -208,6 +168,11 @@ public class ShibbolethGroupManagerActionsBean {
             }
         }
         return null;
+    }
+
+    public void clearSearch() {
+        searchString = null;
+        fireSeamEvent(EVENT_SHIBB_GROUP_LISTING);
     }
 
     protected boolean getCanEditGroups() throws ClientException {
@@ -238,33 +203,26 @@ public class ShibbolethGroupManagerActionsBean {
                 && !BaseSession.isReadOnlyEntry(selectedGroup);
     }
 
-    public String viewGroups() {
-        return VIEW_SHIBB_GROUPS;
-    }
-
-    public String getSearchString() {
-        return searchString;
-    }
-
-    public void setSearchString(String searchString) {
-        this.searchString = searchString;
-    }
-
-    public String searchGroups() {
-        resetGroups();
-        return viewGroups();
-    }
-
-    public String clearSearch() {
-        searchString = null;
-        return searchGroups();
+    @Override
+    protected String computeListingMode() throws ClientException {
+        return userManager.getGroupListingMode();
     }
 
     public DocumentModel getSelectedGroup() {
         return selectedGroup;
     }
 
-    public void setSelectedGroup(DocumentModel group) throws ClientException {
-        selectedGroup = refreshGroup(group.getId());
+    public void setSelectedGroup(String group) throws ClientException {
+        selectedGroup = refreshGroup(group);
+    }
+
+    protected void fireSeamEvent(String eventName) {
+        Events.instance().raiseEvent(eventName);
+    }
+
+    @Observer(value = { EVENT_SHIBB_GROUP_LISTING })
+    public void onUsersListingChanged() {
+        contentViewActions.refreshOnSeamEvent(EVENT_SHIBB_GROUP_LISTING);
+        contentViewActions.resetPageProviderOnSeamEvent(EVENT_SHIBB_GROUP_LISTING);
     }
 }
