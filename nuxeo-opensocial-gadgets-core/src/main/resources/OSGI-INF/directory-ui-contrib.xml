@@ -1,11 +1,6 @@
 <?xml version="1.0"?>
 <component name="xml-opensocialDashboard.directoryUIContrib">
 
-  <extension target="org.nuxeo.ecm.directory.ui.DirectoryUIManager"
-    point="directories">
-    <directory name="externalGadgets" layout="externalGadgetLayout"
-      sortField="label" />
-  </extension>
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="layouts">
 
