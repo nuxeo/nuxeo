@@ -42,9 +42,21 @@ class Dav(FunkLoadTestCase):
                                                 self.credential_port,
                                                 'admin')
         self.dav_url = self.server_url + "/site/dav"
+        self.nb_docs = self.conf_getInt('testWriter', 'nb_docs')
         self.cred_member = xmlrpc_get_credential(self.credential_host,
                                                  self.credential_port,
                                                  'members')
+
+    def initWorkspace(self):
+        """Create an initial workspace using rest,
+        because DAV is not allowed to create workspace."""
+        r = RestAPI(self)
+        r.login(*self.cred_admin)
+        root_uid = r.getRootWorkspaceUid()
+        ws_uid = r.getChildUid(root_uid, self.ws_title, 'Workspace')
+        if not ws_uid:
+            ws_uid = r.createDocument(root_uid, 'Workspace', self.ws_title,
+                                      'DAV Test workspace description.')
 
     def testDav(self):
         self.initWorkspace()
@@ -92,48 +104,30 @@ class Dav(FunkLoadTestCase):
 
         self.clearBasicAuth()
 
-    def initWorkspace(self):
-        """Create an initial workspace using rest"""
-        r = RestAPI(self)
-        r.login(*self.cred_admin)
-        root_uid = r.getRootWorkspaceUid()
-        ws_uid = r.getChildUid(root_uid, self.ws_title, 'Workspace')
-        if not ws_uid:
-            ws_uid = r.createDocument(root_uid, 'Workspace', self.ws_title,
-                                      'DAV Test workspace description.')
-
-
     def testWriter(self):
-        self.setUserAgent("webdavson")
-        self.setBasicAuth(*self.cred_member)
+        self.initWorkspace()
+        self.setBasicAuth(*self.cred_admin)
         dav_url = self.dav_url
+        url = dav_url + "/" + self.ws_title
 
-        resp = self.options(dav_url, description="option on root")
-        dav = resp.headers.get('DAV')
-        self.assert_(dav is not None)
-        resp = self.propfind(dav_url, depth=1,
-                             description="propfind root depth1")
-        dom = parseString(self.getBody())
-        for node in dom.getElementsByTagName('ns2:href'):
-            url = node.firstChild.data
         folder_url = url + "/" + self._lipsum.getUniqWord()
-        # create a folder in the last workspace
+        # create a folder
         self.method("MKCOL", folder_url, ok_codes=[201, ],
                     description="Create a folder")
-        resp = self.propfind(folder_url, depth=0,
-                             description="propfind root depth0")
-        # create 5 file
-        for i in range(5):
+        #resp = self.propfind(folder_url, depth=0,
+        #                     description="propfind root depth0")
+        # create files
+        for i in range(self.nb_docs):
             doc_url = folder_url + '/' + self._lipsum.getUniqWord() + '.txt'
             content = self._lipsum.getParagraph()
             self.put(doc_url, params=Data(None, content),
-                     description="Create a doc", ok_codes=[201, ])
+                     description="Create a doc " + str(i), ok_codes=[201, ])
         self.clearBasicAuth()
 
     def testUserAgents(self):
         dav_url = self.dav_url
         # check that nuxeo ask for digest auth for the following ua
-        uas = ["MSFrontPage 1", "Microsoft-WebDAV-MiniRedir 1",
+        uas = ["MSFrontPage 1", "Microsoft-WebDAV-MiniRedir 1", "DavClnt"
                "litmus 1", "gvfs 1", "davfs 1", "WebDAV 1", "cadaver 1"]
         for ua in uas:
             self.setUserAgent(ua)
@@ -142,7 +136,47 @@ class Dav(FunkLoadTestCase):
                                   ok_codes=[401, ])
             auth = resp.headers.get('WWW-Authenticate')
             # print auth
-            self.assert_("Digest realm" in auth, auth)
+            self.assert_("Digest realm" in auth, "%s: %s" % (ua, auth))
+        self.setUserAgent("FunkLoad")
+        resp = self.propfind(dav_url,
+                             description="test non DAV ua",
+                             ok_codes=[200, 302])
+        self.assert_('login.jsp' in self.getLastUrl(),
+                     "Expecting redirection to login form " +
+                     self.getLastUrl())
+
+    def testLocks(self):
+        self.initWorkspace()
+        self.setBasicAuth(*self.cred_admin)
+        dav_url = self.dav_url
+        url = dav_url + "/" + self.ws_title
+        doc_url = url + "/" + "lockme"
+        content = self._lipsum.getParagraph()
+
+        self.delete(doc_url, ok_codes=[204, 404],
+                    description="Remove doc if exists")
+
+        self.put(doc_url, params=Data(None, content),
+                 description="Create a doc", ok_codes=[201, ])
+
+        data = Data('text/xml', """<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
+<lockinfo xmlns='DAV:'>
+ <lockscope><exclusive/></lockscope>
+<locktype><write/></locktype><owner>funkload test suite</owner>
+</lockinfo>""")
+        self.method("LOCK", doc_url, params=data, description="Lock")
+
+        self.propfind(doc_url, ok_codes=[207, ],
+                      description="Get info")
+        # nothing in the response tell that the doc is locked :/
+        # print self.getBody()
+        self.method("UNLOCK", doc_url, ok_codes=[204, ],
+                    description="Unlock")
+
+        self.delete(doc_url, ok_codes=[204, ],
+                    description="Remove doc")
+
 
 if __name__ in ('main', '__main__'):
     unittest.main()

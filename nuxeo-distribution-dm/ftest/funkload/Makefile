@@ -41,8 +41,7 @@ webengine:
 	fl-run-test -v --simple-fetch test_webengine.py $(FLOPS)
 
 dav:
-	fl-run-test -v --simple-fetch test_dav.py -e testDav $(FLOPS)
-	fl-run-test -v --simple-fetch test_dav.py -e testUserAgents $(FLOPS)
+	fl-run-test -v --simple-fetch test_dav.py $(FLOPS)
 
 # test nuxeo ep
 init:
