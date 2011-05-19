@@ -15,11 +15,13 @@ package org.nuxeo.ecm.core.api.blobholder;
 
 import java.io.Serializable;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.utils.BlobsExtractor;
 
 /**
  * {@link BlobHolder} implementation based on a {@link DocumentModel} and a
@@ -103,6 +105,11 @@ public class
     @Override
     public Map<String, Serializable> getProperties() {
         return doc.getPrefetch();
+    }
+
+    @Override
+    public List<Blob> getBlobs() throws ClientException {
+        return new BlobsExtractor().getBlobs(doc);
     }
 
 }
