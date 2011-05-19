@@ -18,6 +18,7 @@ package org.nuxeo.ecm.webapp.security;
 
 import static org.jboss.seam.ScopeType.CONVERSATION;
 import static org.jboss.seam.annotations.Install.FRAMEWORK;
+import static org.nuxeo.ecm.platform.ui.web.api.WebActions.CURRENT_TAB_CHANGED_EVENT;
 
 import java.io.Serializable;
 
@@ -52,13 +53,15 @@ import org.nuxeo.ecm.platform.usermanager.exceptions.GroupAlreadyExistsException
 @Name("groupManagementActions")
 @Scope(CONVERSATION)
 @Install(precedence = FRAMEWORK)
-public class GroupManagementActions extends AbstractUserGroupManagement implements Serializable {
+public class GroupManagementActions extends AbstractUserGroupManagement
+        implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     private static final Log log = LogFactory.getLog(GroupManagementActions.class);
 
-    public static final String GROUPS_TAB = "USER_CENTER:UsersGroupsHome:GroupsHome";
+    public static final String GROUPS_TAB = USER_CENTER_CATEGORY + ":"
+            + USERS_GROUPS_HOME + ":" + "GroupsHome";
 
     public static final String GROUPS_LISTING_CHANGED = "groupsListingChanged";
 
@@ -77,8 +80,7 @@ public class GroupManagementActions extends AbstractUserGroupManagement implemen
         return selectedGroup;
     }
 
-    public void setSelectedGroup(String groupName)
-            throws ClientException {
+    public void setSelectedGroup(String groupName) throws ClientException {
         this.selectedGroup = refreshGroup(groupName);
     }
 
@@ -199,9 +201,9 @@ public class GroupManagementActions extends AbstractUserGroupManagement implemen
     }
 
     public String viewGroup(String groupName) throws ClientException {
+        webActions.setCurrentTabIds(MAIN_TAB_HOME + "," + GROUPS_TAB);
         setSelectedGroup(groupName);
         showUserOrGroup = true;
-        webActions.setCurrentTabIds(MAIN_TAB_HOME + "," + GROUPS_TAB);
         return VIEW_HOME;
     }
 
@@ -214,6 +216,18 @@ public class GroupManagementActions extends AbstractUserGroupManagement implemen
     public void onUsersListingChanged() {
         contentViewActions.refreshOnSeamEvent(GROUPS_LISTING_CHANGED);
         contentViewActions.resetPageProviderOnSeamEvent(GROUPS_LISTING_CHANGED);
+    }
+
+    @Observer(value = { CURRENT_TAB_CHANGED_EVENT + "_" + MAIN_TABS_CATEGORY,
+            CURRENT_TAB_CHANGED_EVENT + "_" + NUXEO_ADMIN_CATEGORY,
+            CURRENT_TAB_CHANGED_EVENT + "_" + USER_CENTER_CATEGORY,
+            CURRENT_TAB_CHANGED_EVENT + "_" + USERS_GROUPS_MANAGER_SUB_TAB,
+            CURRENT_TAB_CHANGED_EVENT + "_" + USERS_GROUPS_HOME_SUB_TAB })
+    public void resetState() {
+        newGroup = null;
+        showUserOrGroup = false;
+        showCreateForm = false;
+        detailsMode = DETAILS_VIEW_MODE;
     }
 
 }

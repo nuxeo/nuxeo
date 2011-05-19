@@ -19,6 +19,7 @@ package org.nuxeo.ecm.webapp.security;
 import static org.jboss.seam.ScopeType.APPLICATION;
 import static org.jboss.seam.ScopeType.CONVERSATION;
 import static org.jboss.seam.annotations.Install.FRAMEWORK;
+import static org.nuxeo.ecm.platform.ui.web.api.WebActions.CURRENT_TAB_CHANGED_EVENT;
 
 import java.io.Serializable;
 import java.util.List;
@@ -60,13 +61,15 @@ import org.nuxeo.runtime.api.Framework;
 @Name("userManagementActions")
 @Scope(CONVERSATION)
 @Install(precedence = FRAMEWORK)
-public class UserManagementActions extends AbstractUserGroupManagement implements Serializable {
+public class UserManagementActions extends AbstractUserGroupManagement
+        implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     private static final Log log = LogFactory.getLog(UserManagementActions.class);
 
-    public static final String USERS_TAB = "USER_CENTER:UsersGroupsHome:UsersHome";
+    public static final String USERS_TAB = USER_CENTER_CATEGORY + ":"
+            + USERS_GROUPS_HOME + ":" + "UsersHome";
 
     public static final String USERS_LISTING_CHANGED = "usersListingChanged";
 
@@ -299,9 +302,9 @@ public class UserManagementActions extends AbstractUserGroupManagement implement
     }
 
     public String viewUser(String userName) throws ClientException {
+        webActions.setCurrentTabIds(MAIN_TAB_HOME + "," + USERS_TAB);
         setSelectedUser(userName);
         showUserOrGroup = true;
-        webActions.setCurrentTabIds(MAIN_TAB_HOME + "," + USERS_TAB);
         return VIEW_HOME;
     }
 
@@ -328,5 +331,16 @@ public class UserManagementActions extends AbstractUserGroupManagement implement
         contentViewActions.resetPageProviderOnSeamEvent(SELECTED_LETTER_CHANGED);
     }
 
-}
+    @Observer(value = { CURRENT_TAB_CHANGED_EVENT + "_" + MAIN_TABS_CATEGORY,
+            CURRENT_TAB_CHANGED_EVENT + "_" + NUXEO_ADMIN_CATEGORY,
+            CURRENT_TAB_CHANGED_EVENT + "_" + USER_CENTER_CATEGORY,
+            CURRENT_TAB_CHANGED_EVENT + "_" + USERS_GROUPS_MANAGER_SUB_TAB,
+            CURRENT_TAB_CHANGED_EVENT + "_" + USERS_GROUPS_HOME_SUB_TAB })
+    public void resetState() {
+        newUser = null;
+        showUserOrGroup = false;
+        showCreateForm = false;
+        detailsMode = DETAILS_VIEW_MODE;
+    }
 
+}
