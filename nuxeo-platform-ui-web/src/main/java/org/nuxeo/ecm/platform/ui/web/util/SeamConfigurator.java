@@ -33,6 +33,7 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Startup;
 import org.jboss.seam.core.Init;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -52,8 +53,16 @@ public class SeamConfigurator implements Serializable {
     @In(value = "org.jboss.seam.core.init")
     transient Init init;
 
+    public boolean isDebugEnabled() {
+        String prop = Framework.getProperty("org.nuxeo.seam.debug");
+        if (prop == null) {
+            return false;
+        }
+        return Boolean.parseBoolean(prop);
+    }
     @Create
     public void init() {
+        init.setDebug(isDebugEnabled());
         init.setJbpmInstalled(false);
         try {
             TransactionHelper.lookupUserTransaction();
