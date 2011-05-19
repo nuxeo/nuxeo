@@ -26,6 +26,7 @@
 
     var settings = {
       'baseURL'     : 'http://localhost:8080/nuxeo/',
+      'language'    : 'ALL',
       'gadgetSpecs' : [],
       'titles'      : [],
       'shindigServerSuffix' : 'opensocial/gadgets/',
@@ -57,6 +58,7 @@
             return this;
           }
 
+          gadgets.container.setLanguage(settings.language);
           var gadget = gadgets.container.createGadget({specUrl: settings.gadgetSpecs[index]});
           gadget.serverBase_ = settings.baseURL + settings.shindigServerSuffix;
           gadget.secureToken = secureTokens[index];

@@ -12,6 +12,7 @@
     $(document).ready(function() {
       $('.gadgets-gadget-chrome').openSocialGadget({
         baseURL: '${contextPath}' + '/',
+        language: 'fr',
         gadgetSpecs: ['http://www.labpixies.com/campaigns/todo/todo.xml',
           'http://localhost:8080/nuxeo/site/gadgets/lastdocuments/lastdocuments.xml']
       });
