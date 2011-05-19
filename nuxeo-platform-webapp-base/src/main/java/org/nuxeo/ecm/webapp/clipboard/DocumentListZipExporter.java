@@ -63,10 +63,10 @@ public class DocumentListZipExporter {
 
             BlobHolder bh = doc.getAdapter(BlobHolder.class);
             if (doc.isFolder() && !isEmptyFolder(doc, documentManager)) {
-                addFolderToZip(".", out, doc, data, documentManager, blobList,
+                addFolderToZip("", out, doc, data, documentManager, blobList,
                         exportAllBlobs);
             } else if (bh != null) {
-                addBlobHolderToZip(".", out, doc, data, blobList, bh,
+                addBlobHolderToZip("", out, doc, data, blobList, bh,
                         exportAllBlobs);
             }
         }
@@ -95,12 +95,18 @@ public class DocumentListZipExporter {
                 continue;
             }
             BlobHolder bh = docChild.getAdapter(BlobHolder.class);
+            String newPath = null;
+            if ( path.length() == 0 ) {
+                newPath = title;
+            } else {
+                newPath = path + "/" + title;
+            }
             if (docChild.isFolder()
                     && !isEmptyFolder(docChild, documentManager)) {
-                addFolderToZip(path + "/" + title, out, docChild, data,
+                addFolderToZip(newPath, out, docChild, data,
                         documentManager, blobList, exportAllBlobs);
             } else if (bh != null) {
-                addBlobHolderToZip(path + "/" + title, out, docChild, data,
+                addBlobHolderToZip(newPath, out, docChild, data,
                         blobList, bh, exportAllBlobs);
             }
         }
@@ -163,8 +169,10 @@ public class DocumentListZipExporter {
         if (blobs.size() > 0) { // add document info
             SimpleDateFormat format = new SimpleDateFormat(
                     "dd-MM-yyyy HH:mm:ss");
-            blobList.append(path).append('/').append(doc.getTitle()).append(" ");
-
+            if ( path.length() > 0 ) {
+                blobList.append(path).append('/');
+            }
+            blobList.append(doc.getTitle()).append(" ");
             blobList.append(doc.getType()).append(" ");
 
             Calendar c = (Calendar) doc.getPropertyValue("dc:modified");
@@ -192,7 +200,11 @@ public class DocumentListZipExporter {
                         entryName = formatFileName(fileName, "(" + tryCount
                                 + ")");
                     }
-                    entryPath = path + "/" + entryName;
+                    if ( path.length() == 0 ) {
+                        entryPath = entryName;
+                    } else {
+                        entryPath = path + "/" + entryName;
+                    }
                     entryPath = escapeEntryPath(entryPath);
                     entry = new ZipEntry(entryPath);
                     out.putNextEntry(entry);
