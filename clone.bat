@@ -22,6 +22,8 @@ hg clone http://hg.nuxeo.org/addons addons
 scripts\hgf pull
 scripts\hgf up %VERSION%
 
-cd addons ; hg pull ; hg up $VERSION
-python clone.py $VERSION
+cd addons
+hg pull
+hg up %VERSION%
+python clone.py %VERSION%
 cd ..
