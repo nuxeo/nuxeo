@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS <http://nuxeo.com> and others
+ * (C) Copyright 2006-2011 Nuxeo SAS <http://nuxeo.com> and others
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -9,7 +9,6 @@
  * Contributors:
  *     Jean-Marc Orliaguet, Chalmers
  *
- * $Id$
  */
 
 package org.nuxeo.theme.protocol.nxtheme;
@@ -70,6 +69,7 @@ public final class Connection extends URLConnection {
 
         ThemeManager themeManager = Manager.getThemeManager();
 
+        log.debug(url);
         // render a single element
         if (host.equals("element")) {
             rendered = ThemeManager.getElementByUrl(url);
