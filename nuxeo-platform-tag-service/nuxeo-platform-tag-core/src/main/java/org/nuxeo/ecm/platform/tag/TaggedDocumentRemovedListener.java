@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2010-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -13,6 +13,7 @@
  *
  * Contributors:
  *     Anahide Tchertchian
+ *     Florent Guillaume
  */
 package org.nuxeo.ecm.platform.tag;
 
@@ -23,6 +24,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
@@ -32,11 +34,11 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Core listener that removes associated tags when a message with given
- * document is received.
+ * Core listener that removes associated tags when a document is removed or
+ * trashed.
  *
- * @author Anahide Tchertchian
  * @since 5.4
+ * @since 5.4.2 for the removal on trash
  */
 public class TaggedDocumentRemovedListener implements PostCommitEventListener {
 
@@ -44,17 +46,22 @@ public class TaggedDocumentRemovedListener implements PostCommitEventListener {
 
     @Override
     public void handleEvent(EventBundle events) throws ClientException {
-        if (events.containsEventName(DocumentEventTypes.DOCUMENT_REMOVED)) {
+        if (events.containsEventName(DocumentEventTypes.DOCUMENT_REMOVED)
+                || events.containsEventName(LifeCycleConstants.TRANSITION_EVENT)) {
             for (Event event : events) {
-                handleEvent(event);
+                String eventName = event.getName();
+                if (DocumentEventTypes.DOCUMENT_REMOVED.equals(eventName)) {
+                    handleEvent(event);
+                } else if (LifeCycleConstants.TRANSITION_EVENT.equals(eventName)
+                        && LifeCycleConstants.DELETED_STATE.equals(event.getContext().getProperty(
+                                LifeCycleConstants.TRANSTION_EVENT_OPTION_TO))) {
+                    handleEvent(event);
+                }
             }
         }
     }
 
     public void handleEvent(Event event) {
-        if (! DocumentEventTypes.DOCUMENT_REMOVED.equals(event.getName())) {
-            return;
-        }
         EventContext ctx = event.getContext();
         if (ctx instanceof DocumentEventContext) {
             DocumentEventContext docCtx = (DocumentEventContext) ctx;

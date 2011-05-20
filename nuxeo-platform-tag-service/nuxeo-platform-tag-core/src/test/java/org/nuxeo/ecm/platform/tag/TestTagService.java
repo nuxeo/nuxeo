@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -29,6 +29,8 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.LifeCycleConstants;
+import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.core.storage.sql.DatabaseOracle;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
@@ -49,7 +51,8 @@ public class TestTagService extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.platform.comment.core");
         deployBundle("org.nuxeo.ecm.platform.tag");
         deployBundle("org.nuxeo.ecm.platform.ws");
-        deployTestContrib("org.nuxeo.ecm.platform.tag", getClass().getResource("/login-config.xml"));
+        deployTestContrib("org.nuxeo.ecm.platform.tag",
+                getClass().getResource("/login-config.xml"));
         openSession();
         tagService = Framework.getLocalService(TagService.class);
     }
@@ -175,9 +178,9 @@ public class TestTagService extends SQLRepositoryTestCase {
         assertEquals(twotags, labels(suggestions));
 
         maybeSleep();
-        
+
         // ws loader
-        
+
         NuxeoRemotingBean remoting = new NuxeoRemotingBean();
         String sid = remoting.connect("Administrator", "Administrator");
         DocumentSnapshot snapshot = remoting.getDocumentSnapshot(sid, file1Id);
@@ -188,10 +191,11 @@ public class TestTagService extends SQLRepositoryTestCase {
             public int compare(DocumentProperty o1, DocumentProperty o2) {
                 return o1.getName().compareTo(o2.getName());
             }
-            
+
         };
         Arrays.sort(props, propsComparator);
-        int ti = Arrays.binarySearch(props, new DocumentProperty("tags", null), propsComparator);
+        int ti = Arrays.binarySearch(props, new DocumentProperty("tags", null),
+                propsComparator);
         assertTrue(ti > 0);
         assertEquals(props[ti].toString(), "tags:othertag,mytag");
         // remove explicit tagging
@@ -212,6 +216,58 @@ public class TestTagService extends SQLRepositoryTestCase {
             list.add(tag.getLabel());
         }
         return list;
+    }
+
+    public void testUntagOnDelete() throws Exception {
+        DocumentModel file = session.createDocumentModel("/", "foo", "File");
+        file.setPropertyValue("dc:title", "File1");
+        file = session.createDocument(file);
+        session.save();
+        String file1Id = file.getId();
+        List<Tag> tags;
+
+        tagService.tag(session, file1Id, "mytag", "Administrator");
+
+        // check tag present
+        tags = tagService.getDocumentTags(session, file1Id, null);
+        assertEquals(Collections.singleton("mytag"), labels(tags));
+
+        // delete doc
+        session.removeDocument(file.getRef());
+        session.save();
+
+        // wait for async tag removal
+        Framework.getService(EventService.class).waitForAsyncCompletion();
+
+        // check no more tag
+        tags = tagService.getDocumentTags(session, file1Id, null);
+        assertEquals(Collections.emptySet(), labels(tags));
+    }
+
+    public void testUntagOnTrash() throws Exception {
+        DocumentModel file = session.createDocumentModel("/", "foo", "File");
+        file.setPropertyValue("dc:title", "File1");
+        file = session.createDocument(file);
+        session.save();
+        String file1Id = file.getId();
+        List<Tag> tags;
+
+        tagService.tag(session, file1Id, "mytag", "Administrator");
+
+        // check tag present
+        tags = tagService.getDocumentTags(session, file1Id, null);
+        assertEquals(Collections.singleton("mytag"), labels(tags));
+
+        // trash doc
+        file.followTransition(LifeCycleConstants.DELETE_TRANSITION);
+        session.save();
+
+        // wait for async tag removal
+        Framework.getService(EventService.class).waitForAsyncCompletion();
+
+        // check no more tag
+        tags = tagService.getDocumentTags(session, file1Id, null);
+        assertEquals(Collections.emptySet(), labels(tags));
     }
 
     public void testCloudNormalization() throws Exception {

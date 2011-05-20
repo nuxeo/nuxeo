@@ -7,6 +7,8 @@
     <listener name="taggedDocumentRemovedListener" async="true"
       postCommit="true"
       class="org.nuxeo.ecm.platform.tag.TaggedDocumentRemovedListener">
+      <event>documentRemoved</event>
+      <event>lifecycle_transition_event</event>
     </listener>
 
   </extension>
