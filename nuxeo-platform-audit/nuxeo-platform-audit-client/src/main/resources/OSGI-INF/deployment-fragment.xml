@@ -12,6 +12,10 @@
     <unzip from="${bundle.fileName}" to="/" prefix="web">
       <include>web/nuxeo.war/**</include>
     </unzip>
+    <!--   install hot deployable beans -->
+    <seamHotDeploy>
+    	<include>**/ContentHistoryActionsBean*.class</include>
+    </seamHotDeploy>
   </install>
 
 </fragment>
