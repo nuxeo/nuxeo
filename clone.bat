@@ -19,8 +19,6 @@ hg clone http://hg.nuxeo.org/nuxeo/nuxeo-distribution
 
 hg clone http://hg.nuxeo.org/addons addons
 
-svn export https://svn.nuxeo.org/nuxeo/tools/mercurial .
-
 scripts\hgf pull
 scripts\hgf up %VERSION%
 
