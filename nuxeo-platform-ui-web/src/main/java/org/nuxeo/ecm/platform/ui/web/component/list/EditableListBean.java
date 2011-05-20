@@ -206,6 +206,20 @@ public class EditableListBean {
             }
             model.removeValue(index);
             break;
+        case MOVEUP:
+            index = getIndex(requestMap);
+            if (index == null) {
+                return;
+            }
+            model.moveValue(index, index - 1);
+            break;
+        case MOVEDOWN:
+            index = getIndex(requestMap);
+            if (index == null) {
+                return;
+            }
+            model.moveValue(index, index + 1);
+            break;
         }
     }
 

@@ -25,7 +25,7 @@ package org.nuxeo.ecm.platform.ui.web.component.list;
  */
 public enum EditableListModificationType {
 
-    ADD, INSERT, REMOVE;
+    ADD, INSERT, REMOVE, MOVEUP, MOVEDOWN;
 
     /**
      * String type to use in html pages.

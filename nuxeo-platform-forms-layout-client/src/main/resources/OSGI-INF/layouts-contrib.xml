@@ -85,6 +85,9 @@
                 <row>
                   <widget>required</widget>
                 </row>
+                <row>
+                  <widget>orderable</widget>
+                </row>
               </rows>
               <widget name="required" type="checkbox">
                 <labels>
@@ -92,6 +95,20 @@
                 </labels>
                 <fields>
                   <field>required</field>
+                </fields>
+              </widget>
+              <widget name="orderable" type="checkbox">
+                <labels>
+                  <label mode="any">Orderable</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    This attribute controls the possibility to order the items.
+                    Available since 5.4.3.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>orderable</field>
                 </fields>
               </widget>
             </layout>
