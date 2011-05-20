@@ -156,7 +156,7 @@ public class EditableModelImpl extends DataModel implements EditableModel,
     }
 
     /**
-     * Returns a new row key taht is not already used.
+     * Returns a new row key that is not already used.
      */
     protected int getNewRowKey() {
         Collection<Integer> keys = keyMap.values();
@@ -342,7 +342,33 @@ public class EditableModelImpl extends DataModel implements EditableModel,
         Object old = data.remove(fromIndex);
         data.add(toIndex, old);
         listDiff.move(fromIndex, toIndex);
-        // TODO update key map to reflect new structure
+        // update key map to reflect new structure
+        Map<Integer, Integer> newKeyMap = new HashMap<Integer, Integer>();
+        if (fromIndex < toIndex) {
+            for (Integer i : keyMap.keySet()) {
+                Integer key = keyMap.get(i);
+                if (i < fromIndex) {
+                    newKeyMap.put(i, key);
+                } else if (i > fromIndex && i <= toIndex) {
+                    newKeyMap.put(i - 1, key);
+                } else if (i > toIndex) {
+                    newKeyMap.put(i, key);
+                }
+            }
+        } else if (fromIndex > toIndex) {
+            for (Integer i : keyMap.keySet()) {
+                Integer key = keyMap.get(i);
+                if (i < toIndex) {
+                    newKeyMap.put(i, key);
+                } else if (i >= toIndex && i < fromIndex) {
+                    newKeyMap.put(i + 1, key);
+                } else if (i > fromIndex) {
+                    newKeyMap.put(i, key);
+                }
+            }
+        }
+        newKeyMap.put(toIndex, keyMap.get(fromIndex));
+        keyMap = newKeyMap;
         return old;
     }
 

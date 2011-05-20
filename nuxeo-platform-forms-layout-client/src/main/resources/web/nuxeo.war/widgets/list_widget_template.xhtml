@@ -75,25 +75,51 @@
 
   <a4j:region renderRegionOnly="true" id="#{widget.id}_region">
     <a4j:outputPanel ajaxRendered="true">
-  
+
       <c:set value="#{widget.fieldDefinitions[0].propertyName}"
         var="propValueForTemplate"/>
-  
+
       <nxu:inputList value="#{field}" id="#{widget.id}_input" model="model"
         template="#{nxd:propertyDefaultValue(propValueForTemplate)}"
         required="#{widget.required}" diff="#{widget.properties['diff']}">
-  
+
         <h:panelGrid columns="2">
-          <a4j:commandLink immediate="true"
-            actionListener="#{editableListBean.performAction}"
-            id="#{widget.id}_delete" reRender="#{widget.id}_input"
-            bypassUpdates="true">
-            <h:graphicImage value="/icons/action_delete.gif" />
-            <f:param name="for" value="#{widget.id}_input" />
-            <f:param name="index" value="#{model.rowIndex}" />
-            <f:param name="type" value="remove" />
-          </a4j:commandLink>
-  
+          <h:panelGroup>
+            <a4j:commandLink immediate="true"
+              actionListener="#{editableListBean.performAction}"
+              id="#{widget.id}_delete" reRender="#{widget.id}_input"
+              bypassUpdates="true">
+              <h:graphicImage value="/icons/action_delete.gif" />
+              <f:param name="for" value="#{widget.id}_input" />
+              <f:param name="index" value="#{model.rowIndex}" />
+              <f:param name="type" value="remove" />
+            </a4j:commandLink>
+
+            <c:if test="#{widgetProperty_orderable}">
+              <a4j:commandLink immediate="true"
+                actionListener="#{editableListBean.performAction}"
+                id="#{widget.id}_move_down" reRender="#{widget.id}_input"
+                bypassUpdates="true" rendered="#{model.rowIndex != model.rowCount - 1}">
+                <h:graphicImage value="/icons/go_down.png" />
+                <f:param name="for" value="#{widget.id}_input" />
+                <f:param name="index" value="#{model.rowIndex}" />
+                <f:param name="type" value="movedown" />
+              </a4j:commandLink>
+              <h:graphicImage value="/icons/inactive_go_down.png" rendered="#{model.rowIndex == model.rowCount - 1}" />
+
+              <a4j:commandLink immediate="true"
+                actionListener="#{editableListBean.performAction}"
+                id="#{widget.id}_move_up" reRender="#{widget.id}_input"
+                bypassUpdates="true" rendered="#{model.rowIndex != 0}">
+                <h:graphicImage value="/icons/go_up.png" />
+                <f:param name="for" value="#{widget.id}_input" />
+                <f:param name="index" value="#{model.rowIndex}" />
+                <f:param name="type" value="moveup" />
+              </a4j:commandLink>
+              <h:graphicImage value="/icons/inactive_go_up.png" rendered="#{model.rowIndex == 0}" />
+            </c:if>
+          </h:panelGroup>
+
           <h:panelGroup>
             <table>
               <tbody>
@@ -131,15 +157,15 @@
                 </c:choose>
               </tbody>
             </table>
-          </h:panelGroup>  
+          </h:panelGroup>
 
         </h:panelGrid>
-  
+
       </nxu:inputList>
       <h:message styleClass="errorMessage" for="#{widget.id}_input"
         id="#{widget.id}_message" />
     </a4j:outputPanel>
-  
+
     <a4j:commandLink immediate="true"
       actionListener="#{editableListBean.performAction}" id="#{widget.id}_add">
       <f:param name="for" value="#{widget.id}_input" />
@@ -147,7 +173,7 @@
       <h:graphicImage value="/widgets/img/action_add.gif" />
       <h:outputText value="#{messages['command.add']}" />
     </a4j:commandLink>
-  
+
   </a4j:region>
 
 </c:if>
