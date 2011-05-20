@@ -103,6 +103,9 @@
     <profile>
       <id>itest</id>
       <modules>
+        <module>nuxeo-distribution-cap</module>
+        <module>nuxeo-distribution-dm</module>
+        <module>nuxeo-distribution-tomcat</module>
         <module>nuxeo-distribution-tomcat-tests</module>
       </modules>
     </profile>
