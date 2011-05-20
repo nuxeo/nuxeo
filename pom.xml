@@ -1,7 +1,5 @@
 <?xml version="1.0"?>
-<project
-  xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.nuxeo</groupId>
@@ -2357,11 +2355,8 @@
               <configuration>
                 <tasks>
                   <echo>Running ANT assembly in ${basedir}</echo>
-                  <taskdef
-                    resource="org/nuxeo/build/ant/antlib.xml" />
-                  <antrun
-                    file="${basedir}/build.xml"
-                    optional="true" />
+                  <taskdef resource="org/nuxeo/build/ant/antlib.xml" />
+                  <antrun file="${basedir}/build.xml" optional="true" />
                 </tasks>
               </configuration>
             </execution>
@@ -2680,18 +2675,20 @@
               </execution>
             </executions>
           </plugin>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-enforcer-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>enforce-plugin-versions</id>
-                <goals>
-                  <goal>enforce</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
+          <!-- Temporarily deactivate to allow SNAPSHOT artifacts and plugins before
+            final release -->
+          <!-- <plugin> -->
+          <!-- <groupId>org.apache.maven.plugins</groupId> -->
+          <!-- <artifactId>maven-enforcer-plugin</artifactId> -->
+          <!-- <executions> -->
+          <!-- <execution> -->
+          <!-- <id>enforce-plugin-versions</id> -->
+          <!-- <goals> -->
+          <!-- <goal>enforce</goal> -->
+          <!-- </goals> -->
+          <!-- </execution> -->
+          <!-- </executions> -->
+          <!-- </plugin> -->
         </plugins>
       </build>
     </profile>
