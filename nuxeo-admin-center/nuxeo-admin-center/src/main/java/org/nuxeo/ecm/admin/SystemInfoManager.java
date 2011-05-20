@@ -74,6 +74,10 @@ public class SystemInfoManager implements Serializable {
 
     protected volatile BinaryManagerStatus binaryManagerStatus;
 
+    protected boolean binariesGCDelete;
+
+    protected boolean binariesWereDeleted;
+
     // *********************************
     // Host info Management
 
@@ -279,16 +283,30 @@ public class SystemInfoManager implements Serializable {
     // *********************************
     // Binaries GC
 
+    public void setBinariesGCDelete(boolean binariesGCDelete) {
+        this.binariesGCDelete = binariesGCDelete;
+    }
+
+    public boolean getBinariesGCDelete() {
+        return binariesGCDelete;
+    }
+
+    public boolean getBinariesWereDeleted() {
+        return binariesWereDeleted;
+    }
+
     public void startBinariesGC() {
         if (isBinariesGCInProgress()) {
             return;
         }
         binaryManagerStatus = null;
         binaryManagerStatusInvalidation = false;
-        Runnable gcTask = new BinariesGCTask();
+        Runnable gcTask = new BinariesGCTask(binariesGCDelete);
         Thread t = new Thread(gcTask, "NuxeoBinariesGCUI");
         t.setDaemon(true);
         t.start();
+        binariesWereDeleted = binariesGCDelete;
+        binariesGCDelete = false;
     }
 
     public boolean isBinariesGCInProgress() {
@@ -311,10 +329,16 @@ public class SystemInfoManager implements Serializable {
     }
 
     public class BinariesGCTask implements Runnable {
+        public boolean delete;
+
+        public BinariesGCTask(boolean delete) {
+            this.delete = delete;
+        }
+
         @Override
         public void run() {
             try {
-                binaryManagerStatus = new RepositoryStatus().gcBinaries();
+                binaryManagerStatus = new RepositoryStatus().gcBinaries(delete);
                 binaryManagerStatusInvalidation = true;
             } catch (RuntimeException e) {
                 log.error("Error while executing BinariesGCTask", e);

@@ -25,10 +25,14 @@
     </h:panelGroup>
 
     <h:panelGroup rendered="#{!systemInfo.isBinariesGCInProgress()}">
-      <a4j:commandButton
+      <p><a4j:commandButton
         value="#{messages['adminsubtab.sysinfo.binariesinfo.start']}"
         action="#{systemInfo.startBinariesGC()}"
-        reRender="binariesInfos" />
+        reRender="binariesInfos" /></p>
+      <p><h:selectBooleanCheckbox class="dataInputText"
+        value="#{systemInfo.binariesGCDelete}">
+      </h:selectBooleanCheckbox> <span><h:outputText
+        value="#{messages['adminsubtab.sysinfo.binariesinfo.delete']}" /></span></p>
     </h:panelGroup>
   </a4j:form></p>
 
@@ -36,6 +40,10 @@
     rendered="#{systemInfo.isBinaryManagerStatusAvailable()}">
     <p><h:outputText
       value="#{messages['adminsubtab.sysinfo.binariesinfo.info']}" /></p>
+    <h:panelGroup rendered="#{!systemInfo.binariesWereDeleted}">
+      <p><h:outputText
+        value="#{messages['adminsubtab.sysinfo.binariesinfo.notdeleted']}" /></p>
+    </h:panelGroup>
     <table class="dataOutput">
       <tr class="dataRowEven">
         <td><h:outputText
