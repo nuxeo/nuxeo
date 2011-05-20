@@ -627,6 +627,17 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         assertEquals("testfile1_Title",
                 p.getProperties().get("dc:title").getFirstValue());
 
+        // null value from nuxeo property
+        PropertyData<?> v;
+        v = p.getProperties().get("dc:nature");
+        assertNull(v.getFirstValue());
+        assertEquals(Collections.emptyList(), v.getValues());
+
+        // null value from NuxeoPropertyStringDataFixed
+        v = p.getProperties().get("cmis:changeToken");
+        assertNull(v.getFirstValue());
+        assertEquals(Collections.emptyList(), v.getValues());
+
         // with filter
         p = objService.getProperties(repositoryId, ob.getId(), "cmis:name",
                 null);

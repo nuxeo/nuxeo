@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -77,7 +77,9 @@ public abstract class NuxeoPropertyDataBase<T> implements PropertyData<T> {
 
     @Override
     public List<T> getValues() {
-        return Collections.singletonList(getFirstValue());
+        T v = getFirstValue();
+        return v == null ? Collections.<T> emptyList()
+                : Collections.singletonList(v);
     }
 
     public void setValue(Object value) {
