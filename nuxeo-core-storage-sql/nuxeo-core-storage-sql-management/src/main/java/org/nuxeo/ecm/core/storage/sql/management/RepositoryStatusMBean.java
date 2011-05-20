@@ -42,9 +42,12 @@ public interface RepositoryStatusMBean {
     /**
      * GC the unused binaries.
      *
+     * @param delete if {@code false} don't actually delete the GCed binaries
+     *            (but still return statistics about them), if {@code true}
+     *            delete them
      * @return a status about the number of GCed binaries
      */
-    BinaryManagerStatus gcBinaries();
+    BinaryManagerStatus gcBinaries(boolean delete);
 
     /**
      * Is a GC of the binaries in progress?

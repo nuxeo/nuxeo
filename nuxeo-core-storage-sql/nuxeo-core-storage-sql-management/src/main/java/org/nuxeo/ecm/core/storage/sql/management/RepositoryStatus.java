@@ -161,7 +161,7 @@ public class RepositoryStatus implements RepositoryStatusMBean {
     }
 
     @Override
-    public BinaryManagerStatus gcBinaries() {
+    public BinaryManagerStatus gcBinaries(boolean delete) {
         BinaryManagerStatus status = new BinaryManagerStatus();
         List<RepositoryManagement> repositories;
         try {
@@ -195,7 +195,7 @@ public class RepositoryStatus implements RepositoryStatusMBean {
             repository.markReferencedBinaries(gc);
         }
         for (BinaryGarbageCollector gc : gcs.values()) {
-            gc.stop(true);
+            gc.stop(delete);
             BinaryManagerStatus s = gc.getStatus();
             status.numBinaries += s.numBinaries;
             status.sizeBinaries += s.sizeBinaries;
