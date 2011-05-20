@@ -333,8 +333,7 @@ gadgets.StaticLayoutManager.prototype.pushGadgetChromeIds =
       if (typeof this.gadgetChromeIds_ === 'undefined') {
         this.gadgetChromeIds_ = [];
       }
-  this.gadgetChromeIds_ = this.gadgetChromeIds_.concat(gadgetChromeIds);
-      console.log(this.gadgetChromeIds_);
+    this.gadgetChromeIds_ = this.gadgetChromeIds_.concat(gadgetChromeIds);
 };
 
 gadgets.StaticLayoutManager.prototype.getGadgetChrome = function(gadget) {
