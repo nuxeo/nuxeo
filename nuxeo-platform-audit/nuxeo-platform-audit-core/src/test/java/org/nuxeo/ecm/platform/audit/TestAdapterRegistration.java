@@ -25,6 +25,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestAdapterRegistration extends NXRuntimeTestCase{
 
+
     @Override
     public void setUp() throws Exception {
         super.setUp();

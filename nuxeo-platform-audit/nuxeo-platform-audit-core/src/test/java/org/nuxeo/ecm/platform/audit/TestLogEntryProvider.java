@@ -49,6 +49,7 @@ public class TestLogEntryProvider extends PersistenceTestCase {
 
     private LogEntryProvider providerUnderTest;
 
+
     @Override
     protected void handleAfterSetup(EntityManager entityManager) {
         providerUnderTest = LogEntryProvider.createProvider(entityManager);

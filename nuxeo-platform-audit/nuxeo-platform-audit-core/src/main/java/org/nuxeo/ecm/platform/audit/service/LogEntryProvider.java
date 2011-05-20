@@ -26,6 +26,7 @@ import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import javax.persistence.TemporalType;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

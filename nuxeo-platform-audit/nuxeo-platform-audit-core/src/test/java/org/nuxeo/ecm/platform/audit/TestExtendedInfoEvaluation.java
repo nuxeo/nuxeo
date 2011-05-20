@@ -43,6 +43,7 @@ public class TestExtendedInfoEvaluation extends RepositoryOSGITestCase {
         return coreSession.createDocument(model);
     }
 
+
     @Override
     public void setUp() throws Exception {
         super.setUp();

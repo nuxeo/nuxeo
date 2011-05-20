@@ -70,6 +70,10 @@
       <groupId>org.osgi</groupId>
       <artifactId>osgi-core</artifactId>
     </dependency>
+     <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-query-api</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-annotations</artifactId>
@@ -132,5 +136,6 @@
     </dependency>
 
   </dependencies>
+
 
 </project>

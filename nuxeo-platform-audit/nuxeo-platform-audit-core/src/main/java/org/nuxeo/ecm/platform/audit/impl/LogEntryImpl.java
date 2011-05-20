@@ -43,6 +43,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Log entry implementation.
@@ -297,7 +298,29 @@ public class LogEntryImpl implements LogEntry {
 
     @Override
     public String toString() {
+        if (Framework.isTestModeSet()) {
+            return toStringTest();
+        }
         return ToStringBuilder.reflectionToString(this);
     }
+
+    public String toStringTest() {
+        StringBuffer sb = new StringBuffer();
+
+        sb.append(this.id);
+        sb.append(" ");
+        sb.append(this.category);
+        sb.append(" ");
+        sb.append(this.eventId);
+        sb.append(" ");
+        sb.append(this.docUUID);
+        sb.append(" ");
+        sb.append(this.principalName);
+        sb.append(" ");
+        sb.append(this.eventDate.toString());
+
+        return sb.toString();
+    }
+
 
 }
