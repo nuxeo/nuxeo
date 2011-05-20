@@ -30,7 +30,7 @@
       qualifiedName="org.nuxeo:type=service,name=rg.nuxeo.runtime.management.Dummy" />
   </extension>
 
-  <extension target="org.nuxeo.runtime.management.ResourcePublisher"
+  <extension target="org.nuxeo.runtime.management.ServerLocator"
     point="locators">
      <locator domainName="DEFAULT_DOMAIN"/>
   </extension>

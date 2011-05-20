@@ -49,6 +49,7 @@ public class MetricComponent extends DefaultComponent {
 
     @Override
     public void deactivate(ComponentContext context) throws Exception {
+        doStop();
         super.deactivate(context);
     }
 
@@ -71,7 +72,9 @@ public class MetricComponent extends DefaultComponent {
 
     protected void doStop() {
         SimonManager.disable();
-        SimonManager.callback().removeCallback(registeringCB);
+        if (SimonManager.callback()!=null) {
+            SimonManager.callback().removeCallback(registeringCB);
+        }
         register.unregisterMXBean(enabler);
         register.unregisterMXBean(serializer);
     }
