@@ -9,6 +9,7 @@
  * Contributors:
  *     Bogdan Stefanescu
  *     Florent Guillaume
+ *     Julien Carsique
  */
 
 package org.nuxeo.runtime.osgi;
@@ -93,7 +94,8 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
 
     /**
      * OSGi doesn't provide a method to lookup bundles by symbolic name. This
-     * table is used to map symbolic names to bundles. This map is not handling bundle versions.
+     * table is used to map symbolic names to bundles. This map is not handling
+     * bundle versions.
      */
     final Map<String, Bundle> bundles;
 
@@ -238,7 +240,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
     }
 
     protected boolean loadConfigurationFromProvider() throws Exception {
-        //TODO use a OSGi service for this.
+        // TODO use a OSGi service for this.
         Iterable<URL> provider = Environment.getDefault().getConfigurationProvider();
         if (provider == null) {
             return false;
@@ -450,9 +452,14 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
         return expandVars(value);
     }
 
-    protected void notifyComponentsOnStarted() throws Exception {
+    protected void notifyComponentsOnStarted() {
         for (RegistrationInfo ri : manager.getRegistrations()) {
-            ri.notifyApplicationStarted();
+            try {
+                ri.notifyApplicationStarted();
+            } catch (Exception e) {
+                log.error("Failed to notify components on application started",
+                        e);
+            }
         }
     }
 
@@ -473,11 +480,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
         // requirement
         // on this marker component
         deployFrameworkStartedComponent();
-        try {
-            notifyComponentsOnStarted();
-        } catch (Exception e) {
-            log.error("Failed to notify components on application started", e);
-        }
+        notifyComponentsOnStarted();
         // print the startup message
         printStatusMessage();
     }
