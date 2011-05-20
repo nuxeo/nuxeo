@@ -19,8 +19,8 @@ hg clone http://hg.nuxeo.org/nuxeo/nuxeo-distribution
 
 hg clone http://hg.nuxeo.org/addons addons
 
-scripts\hgf pull
-scripts\hgf up %VERSION%
+call scripts\hgf pull
+call scripts\hgf up %VERSION%
 
 cd addons
 hg pull
