@@ -17,28 +17,10 @@
     globalOnly="true" infoClass="infoFeedback"
     warnClass="warningFeedback" errorClass="errorFeedback" /></div>
 
-  <!-- root certificate info -->
-  <h3 class="summaryTitle"><h:outputText
-    value="#{messages['label.cert.heading.root.certificate']}" /></h3>
-  <h:form>
-    <table class="dataInput">
-      <tbody>
-        <tr>
-          <td class="fieldColumn"><h:commandLink
-            action="#{certActions.downloadRootCertificate}"
-            immediate="true">
-            <h:outputText
-              value="#{messages['command.cert.root.certificate.download']}" />
-          </h:commandLink></td>
-        </tr>
-      </tbody>
-    </table>
-  </h:form>
 
-  <!-- document is signed -->
-  <!-- document signature info -->
-  <h3 class="summaryTitle"><h:outputText
-    value="#{messages['label.sign.heading.document.signature']}" /></h3>
+  <!-- document file -->
+ <h3 class="summaryTitle"><h:outputText
+    value="#{messages['label.sign.heading.document.file']}" /></h3>
 
   <table class="dataInput">
     <tbody>
@@ -58,27 +40,49 @@
       </tr>
     </tbody>
   </table>
-  
-  <!-- This document has signatures. Show them. -->
-  <c:if test="#{signActions.isPDFSigned()}">
+
+
+  <!-- root certificate info -->
+  <h3 class="summaryTitle"><h:outputText
+    value="#{messages['label.cert.heading.root.certificate']}" /></h3>
+  <h:form>
     <table class="dataInput">
       <tbody>
         <tr>
-          <td class="labelColumn"><h:outputText
-            value="#{messages['label.sign.document.signed']}" /></td>
+          <td class="fieldColumn"><h:commandLink
+            action="#{certActions.downloadRootCertificate}"
+            immediate="true">
+            <h:outputText
+              value="#{messages['command.cert.root.certificate.download']}" />
+          </h:commandLink></td>
         </tr>
-        <tr>
-          <td class="fieldColumn"><h:outputText
-            value="#{signActions.getPDFCertificateInfo()}" /></td>
-        </tr>
-
-
       </tbody>
     </table>
+  </h:form>
+
+
+
+  <!-- document is signed -->
+  <!-- document signature info -->
+ 
+  <!-- This document has signatures. Show them. -->
+  <c:if test="#{signActions.isPDFSigned()}">
+     <h3 class="summaryTitle"><h:outputText
+            value="#{messages['label.sign.heading.document.signatures']}" /></h3>
+    <h:dataTable value="#{signActions.getPDFCertificateList()}"
+      var="signature">
+      <h:column>
+#{signature}
+</h:column>
+    </h:dataTable>
+
   </c:if>
 
-  <!-- The current user did not sign this document. Display the signing form. -->
+  <!-- Signing form -->
+  <!-- The current user did not sign this document. -->
   <c:if test="#{ !signActions.isPDFSignedByCurrentUser()}">
+  <h3 class="summaryTitle"><h:outputText
+            value="#{messages['label.sign.heading.document.form']}" /></h3>
     <table class="dataInput">
       <tbody>
         <tr>
@@ -103,13 +107,14 @@
                 value="#{messages['label.sign.certificate.prompt']}" /></td>
             </tr>
             <tr>
-              <td class="fieldColumn">
-              <h:form>
-                <h:commandLink action="#{certActions.goToCertificateManagement()}" immediate="true">
-                  <h:outputText value="#{messages['label.cert.navigate']}" />
+              <td class="fieldColumn"><h:form>
+                <h:commandLink
+                  action="#{certActions.goToCertificateManagement()}"
+                  immediate="true">
+                  <h:outputText
+                    value="#{messages['label.cert.navigate']}" />
                 </h:commandLink>
-              </h:form>
-              </td>
+              </h:form></td>
             </tr>
           </c:if>
 

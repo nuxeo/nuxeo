@@ -93,7 +93,7 @@ public class SignatureServiceImpl extends DefaultComponent implements
             PdfStamper stp = PdfStamper.createSignature(reader,
                     new FileOutputStream(outputFile), '\0',null, true);
             
-            PdfSignatureAppearance sap = stp.getSignatureAppearance();
+            PdfSignatureAppearance pdfSignatureAppearance = stp.getSignatureAppearance();
 
             AliasWrapper alias = new AliasWrapper(userID);
             KeyStore keystore = getCUserService().getUserKeystore(userID,
@@ -118,16 +118,13 @@ public class SignatureServiceImpl extends DefaultComponent implements
             certificates.add(certificate);
 
             Certificate[] certChain = certificates.toArray(new Certificate[0]);
-            sap.setCrypto(keyPair.getPrivate(), certChain, null,
+            pdfSignatureAppearance.setCrypto(keyPair.getPrivate(), certChain, null,
                     PdfSignatureAppearance.SELF_SIGNED);
             if (null == reason || reason == "") {
                 reason = getSigningReason();
             }
-            sap.setReason(reason);
-            
-            sap.setCertificationLevel(PdfSignatureAppearance.CERTIFIED_NO_CHANGES_ALLOWED);
-            sap.setVisibleSignature(new Rectangle(100, getNextCertificatePosition(origPDFBytes), 200, 200), 1,null);
-            sap.setAcro6Layers(true);
+            pdfSignatureAppearance.setReason(reason);
+            pdfSignatureAppearance.setAcro6Layers(true);
             stp.close();
             log.debug("File " + outputFile.getAbsolutePath()
                     + " created and signed with " + reason);

@@ -22,6 +22,7 @@ import java.io.Serializable;
 import java.security.Principal;
 import java.security.cert.X509Certificate;
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -192,14 +193,6 @@ public class SignActions implements Serializable {
         signedBlob.setEncoding(originalBlob.getEncoding());
         signedBlob.setMimeType(originalBlob.getMimeType());
 
-        // retrieve the original files from the "files" schema
-        final List<Map<String, Object>> originalFileList = (List<Map<String, Object>>) signedDoc.getProperty(
-                "files", "files");
-        ListDiff listDiff = new ListDiff();
-        for (Object entry : originalFileList) {
-            listDiff.add(entry);
-        }
-
         // add the original blob to the file list in the "files" schema
         // prefix the original file name with user name
         final Map<String, Object> filesEntry = new HashMap<String, Object>();
@@ -214,11 +207,12 @@ public class SignActions implements Serializable {
                 + "-signed-on-" + currentDatePrefix + "-"
                 + originalBlob.getFilename());
 
+        ListDiff outputFileList = new ListDiff();
         filesEntry.put("file", originalBlob);
-        listDiff.add(filesEntry);
+        outputFileList.add(filesEntry);
 
         // set the grown list to become new "files" schema
-        signedDoc.setProperty("files", "files", listDiff);
+        signedDoc.setProperty("files", "files", outputFileList);
 
         // set the main file to the newly signed blob
         signedDoc.getAdapter(BlobHolder.class).setBlob(signedBlob);
@@ -335,8 +329,8 @@ public class SignActions implements Serializable {
      * @throws SignException
      * @throws ClientException
      */
-    public String getPDFCertificateInfo() throws SignException, ClientException {
-        String pdfCertificateInfo = "";
+    public List<String> getPDFCertificateList() throws SignException, ClientException {
+        List<String> pdfCertificateList = new ArrayList<String>();
 
         DocumentModel currentDoc = navigationContext.getCurrentDocument();
         if (currentDoc == null) {
@@ -364,17 +358,11 @@ public class SignActions implements Serializable {
             } catch (IOException e) {
                 throw new SignException(e);
             }
-            if (pdfCertificates.size() > 0) {
-                X509Certificate certificate = pdfCertificates.get(0);
-                pdfCertificateInfo = "This document was certified by "
-                        + certificate.getSubjectDN()
-                        + ". The certificate was issued by "
-                        + certificate.getIssuerDN()
-                        + ". The certificate will expire on "
-                        + certificate.getNotAfter();
+            for(X509Certificate certificate:pdfCertificates){
+                pdfCertificateList.add(getCertificateInfo(certificate));
             }
         }
-        return pdfCertificateInfo;
+        return pdfCertificateList;
     }
 
     protected EventProducer getEventProducer() throws ClientException {
@@ -411,4 +399,15 @@ public class SignActions implements Serializable {
         DocumentModel user = userManager.getUserModel(currentPrincipal.getName());
         return user;
     }
+    
+    String getCertificateInfo(X509Certificate certificate){
+        String pdfCertificateInfo = "This certificate belongs to"
+            + certificate.getSubjectDN()
+            + ". It was issued by "
+            + certificate.getIssuerDN()
+            + ". It will expire on "
+            + certificate.getNotAfter();
+        return pdfCertificateInfo;
+    }
+    
 }
