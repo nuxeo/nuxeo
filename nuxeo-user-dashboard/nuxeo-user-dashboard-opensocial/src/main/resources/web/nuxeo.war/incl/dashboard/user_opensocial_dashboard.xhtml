@@ -4,6 +4,12 @@
      xmlns:f="http://java.sun.com/jsf/core"
      xmlns:nxu="http://nuxeo.org/nxweb/util">
 
+  <script type="text/javascript">
+    function confirmRestoreDashboard() {
+      return confirm("#{messages['label.opensocial.container.confirmRestoreDashboard']}");
+    }
+  </script>
+
   <nxu:set var="repositoryName" value="#{navigationContext.currentServerLocation.name}">
   <nxu:set var="spaceProviderName" value="#{nxu:test(currentUser.anonymous, 'anonymousDashboardSpaceProvider', 'userDashboardSpaceProvider')}">
 
@@ -11,6 +17,31 @@
 
       <ui:define name="opensocial_container_title">
         <h1>#{messages['label.user.dashboard']}</h1>
+      </ui:define>
+
+      <ui:define name="opensocial_container_actions">
+        <c:if test="#{not currentUser.anonymous}">
+          <div class="opensocial_buttons">
+            <h:form id="openSocialActionsForm">
+              <ul>
+                <li>
+                  <a onclick="nuxeo.container.openContainerBuilder();"
+                    id="openContainerBuilder"
+                    title="#{messages['label.opensocial.container.change.layout']}">#{messages['label.opensocial.container.change.layout']}</a>
+                </li>
+                <li>
+                  <a id="addGadgetButton" href="#{baseURL}site/gadgets">#{messages['label.opensocial.container.add.gadget']}</a>
+                </li>
+                <li>
+                  <h:commandLink id="restoreToDefault" action="#{userDashboardActions.removeUserDashboard()}"
+                    immediate="true" onclick="return confirmRestoreDashboard();">
+                    <h:outputText value="#{messages['label.opensocial.container.restore.default']}" />
+                  </h:commandLink>
+                </li>
+              </ul>
+            </h:form>
+          </div>
+        </c:if>
       </ui:define>
 
     </ui:decorate>
