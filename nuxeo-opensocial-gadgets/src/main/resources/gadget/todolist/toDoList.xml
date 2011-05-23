@@ -81,7 +81,7 @@
 
         input
         {
-         border:1px solid #ffffff;
+         border:1px solid #eee;
         }
 
         img.favicon{
@@ -138,7 +138,7 @@
 
         #addItemForm{
          width:100%;
-         background-color:#666666;
+         background-color:#f7f7f7;
         }
 
         #addItemIcon{
@@ -170,7 +170,7 @@
         }
 
         #newNameInput{
-         border:1px solid #ffffff;
+         border:1px solid #eee;
         }
 
 
@@ -220,8 +220,7 @@
         }
 
         span.label{
-          color:#ffffff;
-          font-weight:bold;
+          color:#555;
         }
 
          span.labelError{
@@ -266,12 +265,12 @@
     }
 
     #valider{
-    background:url("accept.png") no-repeat scroll 0 0 transparent;
-    color:#FFFFFF;
+    background:url("/nuxeo/img/accept.png") no-repeat scroll 0 0 transparent;
+    color:#555;
     display:block;
     float:right;
     font-weight:bold;
-    padding-left:18px;
+    padding:0 0 2px 18px;
     text-decoration:none;
     }
 

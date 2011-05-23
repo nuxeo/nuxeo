@@ -58,8 +58,6 @@
 
 
   label{
-     font-family:Tahoma, Arial,Verdana;
-     font-weight:bold;
      padding-left:8px;
   }
 
@@ -76,34 +74,33 @@
   }
 
   #hideContainer {
-      background:#666666;
+      background:#f7f7f7;
       text-align:right;
     }
 
     #upload,#fileuploadBtn{
       padding-left:14px;
       background:url(/nuxeo/img/accept.png) no-repeat 0 0;
-      color:#FFFFFF;
+      color:#555;
       display:block;
       float:right;
       font-weight:bold;
-      padding-left:18px;
+      padding:0px 0px 2px 18px;
       text-decoration:none;
     }
 
     .form{
-       background:#666666;
-       font-family:Arial,Verdana;
+       background:#f7f7f7;
        font-size:11px;
     }
 
     #title-field,#link-field,#legend-field{
       width:98%;
-      border:1px solid #ffffff;
+      border:1px solid #eee;
     }
 
     .form td{
-       color:#ffffff;
+       color:#555;
     }
 
     #formUpload{

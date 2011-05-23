@@ -31,7 +31,7 @@
      }
 
       #baliseVideo{
-       border:1px solid #ffffff;
+       border:1px solid #eee;
        width:98%;
        height:70px;
        display:block;
@@ -39,7 +39,7 @@
 
       #title-field{
        width:98%;
-       border:1px solid #ffffff;
+       border:1px solid #eee;
       }
 
       #container{
@@ -47,7 +47,7 @@
       }
 
       #hideContainer{
-         background:#666666;
+         background:#f7f7f7;
         text-align:right;
       }
 
@@ -63,10 +63,8 @@
       }
 
       #formVideo{
-        background:#666666;
-        color:#ffffff;
-        font-family:Tahoma, Arial, Verdana;
-        font-weight:bold;
+        background:#f7f7f7;
+        color:#555;
       }
 
       label{
@@ -97,11 +95,11 @@
       #valid{
         padding-left:14px;
         background:url(/nuxeo/img/accept.png) no-repeat 0 0;
-        color:#FFFFFF;
+        color:#555;
         display:block;
         float:right;
         font-weight:bold;
-        padding-left:18px;
+        padding:0px 0px 2px 18px;
         text-decoration:none;
       }
 

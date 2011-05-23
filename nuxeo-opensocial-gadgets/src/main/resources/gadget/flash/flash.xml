@@ -31,14 +31,10 @@
    }
 
    *{
-      font-family:Trebuchet, Arial,Verdana;
+      font-family:Lucida Grande, Arial,Verdana;
       font-size:11px;
     }
 
-    label{
-       font-family:Tahoma, Arial,Verdana;
-       font-weight:bold;
-    }
 
     #show a{
       text-decoration:none;
@@ -65,32 +61,32 @@
     }
 
   #hideContainer{
-    background:#666666;
+    background:#f7f7f7;
     text-align:right;
   }
 
   #title-field,#link-field{
     width:98%;
-    border:1px solid #ffffff;
+    border:1px solid #eee;
   }
 
 
   #formFlash{
-   background:#666666;
+   background:#f7f7f7;
   }
 
   #formFlash td{
-   color:#ffffff;
+   color:#555;
   }
 
   #upload{
     padding-left:14px;
     background:url(/nuxeo/img/accept.png) no-repeat 0 0;
-    color:#FFFFFF;
+    color:#555;
     display:block;
     float:right;
     font-weight:bold;
-    padding-left:18px;
+    padding:0 0 3px 18px;
     text-decoration:none;
   }
 
@@ -131,7 +127,7 @@
         <tr>
           <td style="width:30%"><label for="photo">Animation</label> </td>
           <td style="width:70%">
-          <form style="text-align:center;" method="post" id="formUpload" enctype="multipart/form-data" action="#">
+          <form method="post" id="formUpload" enctype="multipart/form-data" action="#">
             <input type="file" name="file" id="file" size="20" />
           </form>
         </td>
