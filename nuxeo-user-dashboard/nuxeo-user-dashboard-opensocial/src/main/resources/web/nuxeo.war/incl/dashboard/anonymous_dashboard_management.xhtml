@@ -5,12 +5,13 @@
      xmlns:nxu="http://nuxeo.org/nxweb/util">
 
   <nxu:set var="repositoryName" value="#{navigationContext.currentServerLocation.name}">
-  <nxu:set var="spaceProviderName" value="#{nxu:test(currentUser.anonymous, 'anonymousDashboardSpaceProvider', 'userDashboardSpaceProvider')}">
+  <nxu:set var="spaceProviderName" value="anonymousDashboardSpaceProvider">
+
+    <p>#{messages['label.dashboard.management.anonymous.description']}</p>
 
     <ui:decorate template="/incl/opensocial_container_template.xhtml">
 
       <ui:define name="opensocial_container_title">
-        <h1>#{messages['label.user.dashboard']}</h1>
       </ui:define>
 
     </ui:decorate>
