@@ -607,6 +607,15 @@ padding:5px 0px 2px 0px;
    border:2px solid #92cdff;
 }
 
+.dropzoneTargetExtended {
+  border: 2px solid #54d920;
+}
+
+.dropzoneTargetOverlay {
+  position : absolute;
+  background-color : rgba(200,220,250,0.3);
+}
+
 .dropzone-info-block {
   display: block;
   margin: 5px 0 0 0;
