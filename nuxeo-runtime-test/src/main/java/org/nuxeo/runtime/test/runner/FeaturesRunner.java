@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     bstefanescu
  */
@@ -161,6 +161,12 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
         }
     }
 
+    protected void testCreated(Object test) throws Exception {
+        for (RunnerFeature feature : features) {
+            feature.testCreated(test);
+        }
+    }
+
     protected void start() throws Exception {
         for (RunnerFeature feature : features) {
             feature.start(this);
@@ -226,7 +232,14 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
     @Override
     public Object createTest() {
         // Return a Guice injected test class
-        return injector.getInstance(getTestClass().getJavaClass());
+        Object test = injector.getInstance(getTestClass().getJavaClass());
+        // let features adapt the test object if needed
+        try {
+            testCreated(test);
+        } catch (Exception e) {
+            throw new Error("Filed to prepare test instance: "+test, e);
+        }
+        return test;
     }
 
     @Override

@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     bstefanescu
  */
@@ -86,6 +86,15 @@ public interface RunnerFeature {
      * Features are initialized. Runner is ready to create the injector.
      */
     void start(FeaturesRunner runner) throws Exception;
+
+    /**
+     * Notification that a test instance was created. Can be used by features to
+     * make custom injection or other preparation of the test instance.
+     *
+     * @param test
+     * @throws Exception
+     */
+    void testCreated(Object test) throws Exception;
 
     /**
      * Before exiting the test.
