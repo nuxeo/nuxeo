@@ -21,12 +21,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
-import javax.persistence.TemporalType;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -54,6 +53,19 @@ public class LogEntryProvider {
 
     protected void doPersist(LogEntry entry) {
         em.persist(entry);
+    }
+
+    protected List<?> doPublishIfEntries(List<?> entries) {
+        if (entries==null || entries.size()==0) {
+            return entries;
+        }
+        Object entry = entries.get(0);
+        if (entry instanceof LogEntry) {
+            for (Object logEntry : entries) {
+                doPublish((LogEntry)logEntry);
+            }
+        }
+        return entries;
     }
 
     protected List<LogEntry> doPublish(List<LogEntry> entries) {
@@ -171,11 +183,14 @@ public class LogEntryProvider {
             query.setFirstResult((pageNb - 1) * pageSize);
         }
         query.setMaxResults(pageSize);
-        return query.getResultList();
+        return doPublishIfEntries(query.getResultList());
     }
 
     public List<?> nativeQuery(String queryString, Map<String, Object> params,
             int pageNb, int pageSize) {
+        if (pageSize<=0) {
+            pageSize=1000;
+        }
         Query query = em.createQuery(queryString);
         for (Entry<String, Object> en : params.entrySet()) {
             query.setParameter(en.getKey(), en.getValue());
@@ -184,7 +199,7 @@ public class LogEntryProvider {
             query.setFirstResult((pageNb - 1) * pageSize);
         }
         query.setMaxResults(pageSize);
-        return query.getResultList();
+        return doPublishIfEntries(query.getResultList());
     }
 
     @SuppressWarnings("unchecked")

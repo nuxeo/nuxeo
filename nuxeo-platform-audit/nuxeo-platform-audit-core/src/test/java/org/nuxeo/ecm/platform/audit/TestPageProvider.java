@@ -388,4 +388,46 @@ public class TestPageProvider extends RepositoryOSGITestCase {
 
     }
 
+    public void testDocumentHistoryPageProvider() throws Exception {
+
+        PageProviderService pps = Framework.getService(PageProviderService.class);
+        assertNotNull(pps);
+
+        PageProviderDefinition ppdef = pps.getPageProviderDefinition("DOCUMENT_HISTORY_PROVIDER");
+        assertNotNull(ppdef);
+
+        GenericPageProviderDescriptor gppdef = (GenericPageProviderDescriptor) ppdef;
+        assertEquals( AuditPageProvider.class.getSimpleName(), gppdef.getPageProviderClass().getSimpleName());
+
+        PageProvider<?> pp = pps.getPageProvider("DOCUMENT_HISTORY_PROVIDER", null,  Long.valueOf(6), Long.valueOf(0), new HashMap<String, Serializable>(), "uuid");
+
+        openSession();
+        DocumentModel searchDoc = session.createDocumentModel("BasicAuditSearch");
+        searchDoc.setPathInfo("/", "auditsearch");
+
+        Calendar startDate = (Calendar)testDate.clone();
+        startDate.add(Calendar.DAY_OF_YEAR, 7);
+        Calendar endDate = (Calendar)testDate.clone();
+        endDate.add(Calendar.DAY_OF_YEAR, 9);
+
+        searchDoc.setPropertyValue("bas:startDate", startDate);
+        searchDoc.setPropertyValue("bas:endDate", endDate);
+
+        searchDoc = session.createDocument(searchDoc);
+        pp.setSearchDocumentModel(searchDoc);
+
+        assertNotNull(pp);
+
+        List<LogEntry> entries = (List<LogEntry>) pp.getCurrentPage();
+
+        dump(pp);
+        dump(entries);
+
+        assertNotNull(entries);
+        assertEquals(6, entries.size());
+
+        long nbPages = pp.getNumberOfPages();
+
+        assertEquals(1, nbPages);
+    }
 }

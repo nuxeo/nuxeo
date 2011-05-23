@@ -14,7 +14,10 @@ Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Vendor: Nuxeo
 Bundle-Version: 0.0.0.SNAPSHOT
-Nuxeo-Component: OSGI-INF/nxaudit-service.xml
+Nuxeo-Component: OSGI-INF/nxaudit-service.xml,
+ OSGI-INF/core-type-contrib.xml,
+ OSGI-INF/directories-contrib.xml,
+ OSGI-INF/pageprovider-contrib.xml
 Bundle-ManifestVersion: 2
 Import-Package: de.odysseus.el;version="2.1.2",
  javax.annotation;version="1.0",

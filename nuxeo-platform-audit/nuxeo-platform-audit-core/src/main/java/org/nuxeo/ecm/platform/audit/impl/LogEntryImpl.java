@@ -38,11 +38,13 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
+import org.nuxeo.ecm.platform.audit.api.comment.UIAuditComment;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -91,6 +93,8 @@ public class LogEntryImpl implements LogEntry {
     private String docLifeCycle;
 
     private String repositoryId;
+
+    protected transient UIAuditComment uiComment;
 
     private Map<String, ExtendedInfoImpl> extendedInfos = new HashMap<String, ExtendedInfoImpl>();
 
@@ -322,5 +326,15 @@ public class LogEntryImpl implements LogEntry {
         return sb.toString();
     }
 
+    @Transient
+    @Override
+    public UIAuditComment getPreprocessedComment() {
+        return uiComment;
+    }
+
+    @Override
+    public void setPreprocessedComment(UIAuditComment uiComment) {
+        this.uiComment=uiComment;
+    }
 
 }
