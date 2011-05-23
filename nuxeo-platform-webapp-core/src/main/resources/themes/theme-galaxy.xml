@@ -294,7 +294,7 @@
       </selector>
       <selector path=".userMenuActions a.userButton">
         <background>url(/nuxeo/icons/user.png) no-repeat scroll 3px center transparent</background>
-        <padding>3px 4px 5px 23px</padding>
+        <padding>3px 8px 5px 23px</padding>
       </selector>
       <selector path=".userMenuActions li ul">
         <display>none</display>
