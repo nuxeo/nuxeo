@@ -1873,6 +1873,12 @@
         </exclusions>
       </dependency>
       <dependency>
+        <groupId>org.seleniumhq.selenium</groupId>
+        <artifactId>selenium-server</artifactId>
+        <version>2.0b1</version>
+        <classifier>standalone</classifier>
+      </dependency>
+      <dependency>
         <groupId>net.oauth.core</groupId>
         <artifactId>oauth</artifactId>
         <version>20090531</version>
@@ -2753,8 +2759,7 @@
             <artifactId>maven-javadoc-plugin</artifactId>
             <configuration>
               <maxmemory>512m</maxmemory>
-              <!-- stylesheetfile> ${basedir}/src/site/resources/css/jdstyle.css
-                </stylesheetfile -->
+              <!-- stylesheetfile>${basedir}/src/site/resources/css/jdstyle.css </stylesheetfile -->
               <windowtitle>
                 Nuxeo Enterprise Platform 5.4 API Documentation
               </windowtitle>
