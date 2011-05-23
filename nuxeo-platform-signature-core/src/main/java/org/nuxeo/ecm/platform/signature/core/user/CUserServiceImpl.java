@@ -40,6 +40,8 @@ import org.nuxeo.ecm.platform.signature.api.user.CNField;
 import org.nuxeo.ecm.platform.signature.api.user.CUserService;
 import org.nuxeo.ecm.platform.signature.api.user.UserInfo;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.model.ComponentInstance;
+import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
  * Base implementation of the user certificate service.
@@ -48,7 +50,7 @@ import org.nuxeo.runtime.api.Framework;
  * @author <a href="mailto:ws@nuxeo.com">Wojciech Sulejman</a>
  * 
  */
-public class CUserServiceImpl implements CUserService {
+public class CUserServiceImpl  extends DefaultComponent implements CUserService {
 
     private static final Log LOG = LogFactory.getLog(CUserServiceImpl.class);
 
@@ -57,6 +59,22 @@ public class CUserServiceImpl implements CUserService {
     protected RootService rootService;
 
     protected CertService certService;
+
+    /**
+     * Configurable country code
+     */
+    protected String countryCode;
+
+    /**
+     * Configurable organization name
+     */
+    protected String organization;
+
+    /**
+     * Configurable organizational unit name
+     */
+    protected String organizationalUnit;
+    
 
     @Override
     public UserInfo getUserInfo(DocumentModel userModel) throws CertException {
@@ -69,9 +87,9 @@ public class CUserServiceImpl implements CUserService {
 
             Map<CNField, String> userFields = new HashMap<CNField, String>();
 
-            userFields.put(CNField.C, "US");
-            userFields.put(CNField.O, "Nuxeo");
-            userFields.put(CNField.OU, "IT");
+            userFields.put(CNField.C, countryCode);
+            userFields.put(CNField.O, organization);
+            userFields.put(CNField.OU, organizationalUnit);
 
             userFields.put(CNField.CN, firstName + " " + lastName);
             userFields.put(CNField.Email, email);
@@ -233,6 +251,19 @@ public class CUserServiceImpl implements CUserService {
         }
     }
 
+    
+    @Override
+    public void registerContribution(Object contribution,
+            String extensionPoint, ComponentInstance contributor)
+            throws Exception {
+        if (contribution instanceof CUserDescriptor) {
+            CUserDescriptor desc = (CUserDescriptor) contribution;
+            this.countryCode=desc.getCountryCode();
+            this.organization=desc.getOrganization();
+            this.organizationalUnit=desc.getOrganizationalUnit();
+        }
+    }
+    
     protected CertService getCertService() throws ClientException {
         if (certService == null) {
             try {
