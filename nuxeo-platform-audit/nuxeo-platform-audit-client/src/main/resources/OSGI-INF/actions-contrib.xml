@@ -34,7 +34,7 @@
       </filter>
     </action>
 
-    <action id="TAB_EVENTS" link="/incl/tabs/document_events.xhtml"
+    <action id="TAB_EVENTS" link="/incl/tabs/document_events_cv.xhtml"
       enabled="true" label="action.view.events" icon="/icons/file.gif"
       order="50">
       <category>TAB_CONTENT_HISTORY_sub_tab</category>

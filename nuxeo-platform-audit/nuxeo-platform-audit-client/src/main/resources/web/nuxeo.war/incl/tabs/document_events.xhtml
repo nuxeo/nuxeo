@@ -1,7 +1,9 @@
 <div xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
-  xmlns:nxd="http://nuxeo.org/nxweb/document">
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:c="http://java.sun.com/jstl/core">
 
   <h:dataTable var="logEntry" value="${logEntries}"
     class="dataOutput" rowClasses="dataRowEven,dataRowOdd">
@@ -73,7 +75,7 @@
             alt="#{(logEntriesLinkedDocs[logEntry.id]).document.type}">
           </nxu:graphicImage>
         </nxd:restDocumentLink>
-      </f:subview>  
+      </f:subview>
     </h:column>
      <h:column>
       <f:facet name="header">
@@ -82,6 +84,7 @@
       <h:outputText value="#{messages[logEntry.docLifeCycle]}" />
     </h:column>
   </h:dataTable>
+
 
 <script>
   jQuery(document).ready(function() {

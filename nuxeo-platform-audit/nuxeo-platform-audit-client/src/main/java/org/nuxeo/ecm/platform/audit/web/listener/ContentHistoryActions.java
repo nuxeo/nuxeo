@@ -30,7 +30,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.audit.api.AuditException;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
-import org.nuxeo.ecm.platform.audit.web.listener.ejb.LinkedDocument;
+import org.nuxeo.ecm.platform.audit.api.comment.LinkedDocument;
 
 /**
  * Content history actions business interface.
@@ -65,7 +65,9 @@ public interface ContentHistoryActions extends Serializable {
      * <p>
      * This log may be filled automatically when dealing with copy/paste/move
      * log entries.
+     * @Deprecated This now handled by the PageProvider
      */
+    @Deprecated
     String getLogComment(LogEntry entry);
 
     /**
@@ -73,7 +75,9 @@ public interface ContentHistoryActions extends Serializable {
      * <p>
      * The linked document is resolved from the log original comment, when
      * dealing with copy/paste/move log entries.
+     * @Deprecated This now handled by the PageProvider
      */
+    @Deprecated
     LinkedDocument getLogLinkedDocument(LogEntry entry);
 
     String doSearch();

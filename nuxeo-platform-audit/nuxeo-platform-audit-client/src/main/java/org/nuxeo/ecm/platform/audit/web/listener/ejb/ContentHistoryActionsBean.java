@@ -41,8 +41,6 @@ import org.jboss.seam.annotations.web.RequestParameter;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
@@ -51,9 +49,10 @@ import org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData;
 import org.nuxeo.ecm.platform.audit.api.FilterMapEntry;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.api.Logs;
+import org.nuxeo.ecm.platform.audit.api.comment.CommentProcessorHelper;
+import org.nuxeo.ecm.platform.audit.api.comment.LinkedDocument;
 import org.nuxeo.ecm.platform.audit.web.listener.ContentHistoryActions;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
-import org.nuxeo.ecm.platform.util.RepositoryLocation;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -257,82 +256,33 @@ public class ContentHistoryActionsBean implements ContentHistoryActions {
         logEntriesComments = new HashMap<Long, String>();
         logEntriesLinkedDocs = new HashMap<Long, LinkedDocument>();
 
+
+        CommentProcessorHelper cph = new CommentProcessorHelper(documentManager);
+
+
         if (logEntries == null) {
             return;
         }
 
         for (LogEntry entry : logEntries) {
-            logEntriesComments.put(entry.getId(), getLogComment(entry));
-            LinkedDocument linkedDoc = getLogLinkedDocument(entry);
+            logEntriesComments.put(entry.getId(), cph.getLogComment(entry));
+            LinkedDocument linkedDoc = cph.getLogLinkedDocument(entry);
             if (linkedDoc != null) {
                 logEntriesLinkedDocs.put(entry.getId(), linkedDoc);
             }
         }
     }
 
+    @Deprecated
     public String getLogComment(LogEntry entry) {
-        String oldComment = entry.getComment();
-        if (oldComment == null) {
-            return null;
-        }
-
-        String newComment = oldComment;
-        DocumentModel targetDoc = null;
-        try {
-            String strDocRef = oldComment.split(":")[1];
-
-            DocumentRef docRef = new IdRef(strDocRef);
-            targetDoc = documentManager.getDocument(docRef);
-        } catch (Exception e) {
-        }
-
-        if (targetDoc != null) {
-            String eventId = entry.getEventId();
-            // update comment
-            if (DocumentEventTypes.DOCUMENT_DUPLICATED.equals(eventId)) {
-                newComment = "audit.duplicated_to";
-            } else if (DocumentEventTypes.DOCUMENT_CREATED_BY_COPY.equals(eventId)) {
-                newComment = "audit.copied_from";
-            } else if (DocumentEventTypes.DOCUMENT_MOVED.equals(eventId)) {
-                newComment = "audit.moved_from";
-            }
-        }
-
-        return newComment;
+        CommentProcessorHelper cph = new CommentProcessorHelper(documentManager);
+        return cph.getLogComment(entry);
     }
 
+    @Deprecated
     public LinkedDocument getLogLinkedDocument(LogEntry entry) {
-        String oldComment = entry.getComment();
-        if (oldComment == null) {
-            return null;
-        }
-
-        LinkedDocument linkedDoc = null;
-
-        try {
-            String repoName = oldComment.split(":")[0];
-            String strDocRef = oldComment.split(":")[1];
-
-            DocumentRef docRef = new IdRef(strDocRef);
-            RepositoryLocation repoLoc = new RepositoryLocation(repoName);
-
-            // create linked doc, broken by default
-            linkedDoc = new LinkedDocument();
-            linkedDoc.setDocumentRef(docRef);
-            linkedDoc.setRepository(repoLoc);
-
-            // try to resolve target document
-            // XXX multi-repository management
-            DocumentModel targetDoc = documentManager.getDocument(docRef);
-            if (targetDoc != null) {
-                linkedDoc.setDocument(targetDoc);
-                linkedDoc.setBrokenDocument(false);
-            }
-        } catch (Exception e) {
-            // not the expected format or broken document
-        }
-
-        return linkedDoc;
+        CommentProcessorHelper cph = new CommentProcessorHelper(documentManager);
+        return cph.getLogLinkedDocument(entry);
     }
 
     public SortInfo getSortInfo() {
