@@ -1,16 +1,16 @@
 <div xmlns:h="http://java.sun.com/jsf/html"
- xmlns:ui="http://java.sun.com/jsf/facelets"
- xmlns:f="http://java.sun.com/jsf/core"
- xmlns:c="http://java.sun.com/jstl/core"
- xmlns:nxd="http://nuxeo.org/nxweb/document"
- xmlns:nxh="http://nuxeo.org/nxweb/html"
- xmlns:nxu="http://nuxeo.org/nxweb/util"
- xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:fn="http://java.sun.com/jsp/jstl/functions">
 
 <ui:insert name="user">
 
- <div class="userServicesBlock">
- <h:form id="userServicesForm">
+  <div class="userServicesBlock">
+  <h:form id="userServicesForm">
 
    <div class="mainTabs">
      <ul>
@@ -25,9 +25,9 @@
        </nxu:dataList>
      </ul>
    </div>
-   
+
    <div class="userMenuActions">
-		 <ul class="userMenuList">
+     <ul class="userMenuList">
        <li>
          <a class="userButton" href="#"><h:outputText value="#{messages['label.loggedAsUser']}" /></a>
          <nxu:set var="actions"
@@ -40,16 +40,16 @@
              rowCountVar="rowCount"
              id="userMenuActionsTable">
              <nxh:commandLink action="#{action.getLink()}"
-		           rendered="#{fn:startsWith(action.link,'#')}"
-		           immediate="#{action.immediate}"
-		           id="userMenuActionCommandLink">
-		           <h:outputText value="#{messages[action.label]}" />
-		         </nxh:commandLink>
-		         <h:outputLink value="#{baseURL}#{action.link}"
-		           rendered="#{!(fn:startsWith(action.link,'#'))}"
-		           id="userMenuActionLink">
-		           <h:outputText value="#{messages[action.label]}" />
-		         </h:outputLink>
+               rendered="#{fn:startsWith(action.link,'#')}"
+               immediate="#{action.immediate}"
+               id="userMenuActionCommandLink">
+               <h:outputText value="#{messages[action.label]}" />
+             </nxh:commandLink>
+             <h:outputLink value="#{baseURL}#{action.link}"
+               rendered="#{!(fn:startsWith(action.link,'#'))}"
+               id="userMenuActionLink">
+               <h:outputText value="#{messages[action.label]}" />
+             </h:outputLink>
            </nxu:dataList>
          </nxu:set>
        </li>
@@ -57,7 +57,7 @@
    </div>
 
    <div class="userActions">
-        
+
      <nxu:set var="actions"
        value="#{webActions.getActionsList('USER_SERVICES')}"
        cache="true">
@@ -126,11 +126,11 @@
 
    </div>
    <div class="clear"></div>
- </h:form>
- </div>
+  </h:form>
+  </div>
 
- <div class="userSearchBlock">
- <h:form id="userServicesSearchForm">
+  <div class="userSearchBlock">
+  <h:form id="userServicesSearchForm">
    <div class="searchService">
 
      <c:if test="#{userServicesContext.searchEnabled}">
@@ -161,16 +161,16 @@
        </nxu:set>
      </c:if>
    </div>
- </h:form>
- </div>
- 
- <div class="clear"></div>
+  </h:form>
+  </div>
 
- <c:if test="#{adminMessageActivated}">
+  <div class="clear"></div>
+
+  <c:if test="#{adminMessageActivated}">
    <div style="text-align: center; padding: 5px 5px 5px 25px; border: 1px solid rgb(170, 187, 255); background: url('icons/info.gif') no-repeat 3px center #fff; font: normal 12px Arial,sans-serif; margin:3px;">
      <h:outputText value="#{adminMessage}"/>
    </div>
- </c:if>
+  </c:if>
 
 </ui:insert>
 
