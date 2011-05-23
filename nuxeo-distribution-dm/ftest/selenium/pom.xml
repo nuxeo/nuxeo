@@ -21,15 +21,10 @@
     It also provide a plugin for running regular Surefire tests.
   </description>
 
-  <properties>
-    <selenium.version>2.0b1</selenium.version>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
       <artifactId>selenium-server</artifactId>
-      <version>${selenium.version}</version>
       <classifier>standalone</classifier>
     </dependency>
   </dependencies>
@@ -45,7 +40,7 @@
             <artifactItem>
               <groupId>org.seleniumhq.selenium</groupId>
               <artifactId>selenium-server</artifactId>
-              <version>${selenium.version}</version>
+              <version>2.0b1</version>
               <classifier>standalone</classifier>
               <overWrite>true</overWrite>
               <outputDirectory>.</outputDirectory>
