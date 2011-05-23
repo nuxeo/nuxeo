@@ -172,7 +172,7 @@ JMXSTAT_LOG="$LOG_DIR"/jmxstat.log
 JMXSTAT_PID="$PID_DIR"/jmxstat.pid
 JMXSTAT_INTERVAL=$SAR_INTERVAL
 JMXSTAT_COUNT=$SAR_COUNT
-JMXSTAT_OPTS="localhost:1089 --contention Catalina:type=DataSource,path=/nuxeo,host=localhost,class=javax.sql.DataSource,name=\"jdbc/nxsqldirectory\"[numActive,numIdle] Catalina:type=Manager,path=/nuxeo,host=localhost[activeSessions]"
+JMXSTAT_OPTS="localhost:1089 --contention Catalina:type=DataSource,path=/nuxeo,host=localhost,class=javax.sql.DataSource,name=\"jdbc/nxsqldirectory\"[numActive,numIdle]"
 [ -z $JMXSTAT ] && echo "You can install jmxstat from https://github.com/bdelbosc/jmxstat"
 
 JMX_LISTENING=`netstat -ltn | grep 1089`
