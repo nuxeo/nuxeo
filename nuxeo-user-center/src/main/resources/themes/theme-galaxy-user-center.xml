@@ -145,14 +145,18 @@
         <font preset="small (Galaxy User Center fonts)"/>
         <color preset="header.text (Galaxy User Center colors)" />
         <line-height>185%</line-height>
-        <padding>6px 10px 0px</padding>
-        <text-align>right</text-align>
-        <float>right</float>
+        <padding>5px 0 0 0</padding>
+        <text-align>left</text-align>
+        <float>left</float>
+        <margin>0 0 0 15px</margin>
       </selector>
       <selector path=".searchService">
-        <float>right</float>
-        <padding-top>8px</padding-top>
+        <padding-top>4px</padding-top>
         <font preset="small (Galaxy User Center fonts)"/>
+      </selector>
+      <selector path=".searchService input.button">
+        <margin>3px 5px 0 3px</margin>
+        <padding>2px</padding>
       </selector>
       <selector path=".userServicesBlock">
         <float>left</float>
@@ -161,7 +165,64 @@
       <selector path=".userSearchBlock">
         <float>right</float>
       </selector>
-      <selector path=".searchService input.button">
+      <selector path=".userMenuActions">
+        <font preset="default (Galaxy User Center fonts)"/>
+        <color preset="header.text (Galaxy User Center colors)" />
+        <line-height>185%</line-height>
+        <padding>0px</padding>
+        <text-align>right</text-align>
+        <float>left</float>
+        <margin>0 0 0 15px</margin>
+      </selector>
+      <selector path=".userMenuActions ul, .userMenuActions ul ul">
+        <list-style>none</list-style>
+      </selector>
+      <selector path=".userMenuActions ul">
+        <margin>0</margin>
+        <padding>0</padding>
+        <height>28px</height>
+      </selector>
+      <selector path=".userMenuActions ul li">
+        <float>left</float>
+        <text-align>left</text-align>
+      </selector>
+      <selector path=".userMenuActions ul li a:hover, .userMenuActions ul li:hover">
+        <background-color>#fff</background-color>
+        <color>#000</color>
+      </selector>
+      <selector path=".userMenuActions a">
+        <display>block</display>
+        <text-decoration>none</text-decoration>
+        <margin>0</margin>
+        <color>#7693a3</color>
+        <background-color>#fff</background-color>
+      </selector>
+      <selector path=".userMenuActions a.userButton">
+        <background>url(/nuxeo/icons/user.png) no-repeat scroll 3px center transparent</background>
+        <padding>3px 4px 5px 23px</padding>
+      </selector>
+      <selector path=".userMenuActions li ul">
+        <display>none</display>
+        <position>absolute</position>
+        <width>180px</width>
+        <height>auto</height>
+        <border>1px solid #e0e0e0</border>
+        <box-shadow>3px 3px 5px rgba(0, 0, 0, 0.5)</box-shadow>
+        <border-top>none</border-top>
+      </selector>
+      <selector path=".userMenuActions li:hover ul">
+        <display>block</display>
+      </selector>
+      <selector path=".userMenuActions li ul a">
+        <padding>4px 4px 4px 22px</padding>
+      </selector>
+      <selector path=".userMenuActions ul li li">
+        <width>180px</width>
+      </selector>
+       <selector path=".userMenuActions ul ul a:hover">
+        <background-color>#ccf1ff</background-color>
+      </selector>
+      <selector path=".userMenuActions input.button">
         <margin>0 5px</margin>
       </selector>
       <selector path=".mainTabs">
@@ -181,12 +242,17 @@
         <height>28px</height>
         <margin>0 5px</margin>
       </selector>
-      <selector path=".mainTabs a, .mainTabs a:hover, .mainTabs a:visited">
+      <selector path=".mainTabs a, .mainTabs a:visited">
         <color>#D7E3F1</color>
         <display>inline-block</display>
         <font-size>12px</font-size>
         <padding>4px 11px 9px</padding>
         <text-decoration>none</text-decoration>
+      </selector>
+      <selector path=".mainTabs li:hover">
+      </selector>
+      <selector path=".mainTabs a:hover">
+        <color>#fff</color>
       </selector>
       <selector path=".mainTabs li.selected">
         <background-color>#fff</background-color>
@@ -198,6 +264,11 @@
       </selector>
       <selector path=".mainTabs li a:hover">
         <text-decoration>none</text-decoration>
+      </selector>
+      <!-- Fix rss-font-grid inheritance from Opensocial -->
+      <selector path=".searchService input.directoryFilter">
+        <padding>1px 0</padding>
+        <font preset="default (Galaxy User Center fonts)" />
       </selector>
       <selector path=".footerBlock">
         <margin>0</margin>
@@ -226,29 +297,6 @@
         <float>right</float>
         <padding>2px 20px 0 0</padding>
         <color>#9a9a9a</color>
-      </selector>
-      <selector path="a.twitt">
-        <background>transparent url(/nuxeo/icons/icones-metanav.png) no-repeat left top</background>
-        <height>16px</height>
-        <width>16px</width>
-        <display>inline-block</display>
-        <margin>0px 5px</margin>
-      </selector>
-      <selector path="a.twitt:hover">
-        <background-position>left bottom</background-position>
-      </selector>
-      <selector path="a.linkedin">
-        <background>transparent url(/nuxeo/icons/icones-metanav.png) no-repeat -16px top</background>
-        <height>16px</height>
-        <width>16px</width>
-        <display>inline-block</display>
-        <margin>0px 5px</margin>
-      </selector>
-      <selector path="a.linkedin:hover">
-        <background-position>-16px bottom</background-position>
-      </selector>
-      <selector path=".clear">
-        <clear>both</clear>
       </selector>
     </style>
     <style inherit="default buttons" name="default tabs">
