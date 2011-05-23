@@ -19,6 +19,10 @@
       <artifactId>nuxeo-core-api</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-management</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.nuxeo.ecm.opensocial</groupId>
       <artifactId>nuxeo-opensocial-spaces</artifactId>
     </dependency>
