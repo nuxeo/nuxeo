@@ -9,7 +9,8 @@
 
 <ui:insert name="user">
 
- <h:form id="userServicesForm" class="userServicesBlock">
+ <div class="userServicesBlock">
+ <h:form id="userServicesForm">
 
    <div class="mainTabs">
      <ul>
@@ -124,10 +125,12 @@
      </nxu:set>
 
    </div>
-
+   <div class="clear"></div>
  </h:form>
+ </div>
 
- <h:form id="userServicesSearchForm" class="userSearchBlock">
+ <div class="userSearchBlock">
+ <h:form id="userServicesSearchForm">
    <div class="searchService">
 
      <c:if test="#{userServicesContext.searchEnabled}">
@@ -159,6 +162,8 @@
      </c:if>
    </div>
  </h:form>
+ </div>
+ 
  <div class="clear"></div>
 
  <c:if test="#{adminMessageActivated}">

@@ -241,17 +241,17 @@
         <color preset="header.text (Galaxy colors)" />
         <line-height>185%</line-height>
         <padding>5px 0 0 0</padding>
-        <text-align>right</text-align>
-        <float>right</float>
+        <text-align>left</text-align>
+        <float>left</float>
         <margin>0 0 0 15px</margin>
       </selector>
       <selector path=".searchService">
-        <float>right</float>
         <padding-top>4px</padding-top>
         <font preset="small (Galaxy fonts)"/>
       </selector>
       <selector path=".searchService input.button">
-        <margin>3px</margin>
+        <margin>3px 5px 0 3px</margin>
+        <padding>2px</padding>
       </selector>
       <selector path=".userServicesBlock">
         <float>left</float>
@@ -265,7 +265,7 @@
         <color preset="header.text (Galaxy colors)" />
         <line-height>185%</line-height>
         <padding>0px</padding>
-        <text-align>right</text-align>
+        <text-align>left</text-align>
         <float>left</float>
         <margin>0 0 0 15px</margin>
       </selector>
