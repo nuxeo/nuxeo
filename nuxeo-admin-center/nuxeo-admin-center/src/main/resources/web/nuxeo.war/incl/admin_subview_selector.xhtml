@@ -3,7 +3,7 @@
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   class="tabsBar">
-  <h:form>
+  <a4j:form ajaxSubmit="true">
     <nxu:dataList layout="unorderedList" var="adminSubTab" value="#{adminViews.availableSubActions}"
       itemStyleClass="#{nxu:test(adminViews.currentSubViewId == adminSubTab.id, 'selected', '')}">
 
@@ -12,5 +12,5 @@
       </a4j:commandLink>
 
     </nxu:dataList>
-  </h:form>
+  </a4j:form>
 </div>

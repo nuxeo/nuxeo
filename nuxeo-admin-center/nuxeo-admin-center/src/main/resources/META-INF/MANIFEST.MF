@@ -6,6 +6,8 @@ Bundle-Version: 0.0.1
 Bundle-Vendor: Nuxeo
 Nuxeo-Component: OSGI-INF/actions-contrib.xml,
  OSGI-INF/theme-contrib.xml,
- OSGI-INF/auth-contrib.xml
+ OSGI-INF/auth-contrib.xml,
+ OSGI-INF/layout-contrib.xml,
+ OSGI-INF/content-view-contrib.xml 
 Export-Package: i18n
 Nuxeo-WebModule: org.nuxeo.ecm.webengine.app.WebEngineModule
