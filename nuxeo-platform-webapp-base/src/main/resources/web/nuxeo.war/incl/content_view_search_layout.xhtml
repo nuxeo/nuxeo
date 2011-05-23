@@ -20,10 +20,7 @@ Needed parameters:
     <c:set var="filterFormId" value="#{contentViewRenderId}_filterForm" />
     <nxu:set var="openBox" value="#{nxu:hasMessages(filterFormId)}"
       cache="true">
-    <h3 class="#{nxu:test(openBox, 'unfolded', 'folded')}">
-      <a href="#nologo" onclick="return toggleBox(this)">
-        <h:outputText value="#{messages['label.contentview.filter.title']}"/>
-      </a>
+
       <div class="action_bar_message">
         <a4j:form id="#{contentViewRenderId}_resetFilterForm"
           ajaxSubmit="true">
@@ -40,7 +37,11 @@ Needed parameters:
           </a4j:commandLink>
         </a4j:form>
       </div>
-      <div style="clear:both;"/>
+
+    <h3 class="#{nxu:test(openBox, 'unfolded', 'folded')}">
+      <a href="#nologo" onclick="return toggleBox(this)">
+        <h:outputText value="#{messages['label.contentview.filter.title']}"/>
+      </a>
     </h3>
     </nxu:set>
     <div class="boxBody"
