@@ -34,7 +34,7 @@
         </predicate>
       </whereClause>
       <parameter>#{currentDocument.id}</parameter>
-      <sort column="log.eventDate" ascending="true" />
+      <sort column="log.eventDate" ascending="false" />
       <pageSize>10</pageSize>
       <maxPageSize>1000</maxPageSize>
     </genericPageProvider>
