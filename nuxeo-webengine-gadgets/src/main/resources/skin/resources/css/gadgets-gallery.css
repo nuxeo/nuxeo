@@ -124,6 +124,7 @@ cursor: pointer;
  }
 
  #gadgetListContainer .gadget:hover { 
+ background-image: none;
  background-color:#C0DCF5;
  }
 
