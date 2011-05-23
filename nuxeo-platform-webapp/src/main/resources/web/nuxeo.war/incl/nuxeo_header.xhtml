@@ -9,130 +9,167 @@
 
 <ui:insert name="user">
 
-  <h:form id="userServicesForm" class="userServicesBlock">
+  <div class="userServicesBlock">
+  <h:form id="userServicesForm">
 
-    <div class="mainTabs">
-      <nxu:dataList layout="unorderedList" var="mainTab" value="#{webActions.getActionsList('MAIN_TABS')}"
-        itemStyleClass="#{nxu:test(webActions.getCurrentTabId('MAIN_TABS') == mainTab.id, 'selected', '')}">
-        <nxd:restDocumentLink document="#{currentDocument}"
-          view="#{mainTab.getLink()}" addTabInfo="false"
-          tabs="MAIN_TABS:#{mainTab.id}">
-          <h:outputText value="#{messages[mainTab.label]}" />
-        </nxd:restDocumentLink>
-      </nxu:dataList>
-    </div>
+   <div class="mainTabs">
+     <ul>
+       <nxu:dataList var="mainTab" value="#{webActions.getActionsList('MAIN_TABS')}">
+         <li class="#{nxu:test(webActions.getCurrentTabId('MAIN_TABS') == mainTab.id, 'selected', '')}">
+           <nxd:restDocumentLink document="#{currentDocument}"
+             view="#{mainTab.getLink()}" addTabInfo="false"
+             tabs="MAIN_TABS:#{mainTab.id}">
+             <h:outputText value="#{messages[mainTab.label]}" />
+           </nxd:restDocumentLink>
+         </li>
+       </nxu:dataList>
+     </ul>
+   </div>
 
-    <div class="userActions">
-      <h:outputText value="#{messages['label.loggedAsUser']}" />
+   <div class="userMenuActions">
+     <ul class="userMenuList">
+       <li>
+         <a class="userButton" href="#"><h:outputText value="#{messages['label.loggedAsUser']}" /></a>
+         <nxu:set var="actions"
+           value="#{webActions.getActionsList('USER_MENU_ACTIONS')}"
+           cache="true">
+           <nxu:dataList layout="unorderedList"
+             var="action"
+             value="#{actions}"
+             rowIndexVar="row"
+             rowCountVar="rowCount"
+             id="userMenuActionsTable">
+             <nxh:commandLink action="#{action.getLink()}"
+               rendered="#{fn:startsWith(action.link,'#')}"
+               immediate="#{action.immediate}"
+               id="userMenuActionCommandLink">
+               <h:outputText value="#{messages[action.label]}" />
+             </nxh:commandLink>
+             <h:outputLink value="#{baseURL}#{action.link}"
+               rendered="#{!(fn:startsWith(action.link,'#'))}"
+               id="userMenuActionLink">
+               <h:outputText value="#{messages[action.label]}" />
+             </h:outputLink>
+           </nxu:dataList>
+         </nxu:set>
+       </li>
+     </ul>
+   </div>
 
-      <nxu:set var="actions"
-        value="#{webActions.getActionsList('USER_SERVICES')}"
-        cache="true">
-        <nxu:dataList layout="simple"
-          var="action"
-          value="#{actions}"
-          rowIndexVar="row"
-          rowCountVar="rowCount"
-          id="userServicesActionsTable">
-          <h:outputText value=" | " rendered="#{row!=rowCount}"/>
-          <nxh:commandLink action="#{action.getLink()}"
-            id="userServicesActionCommandLink"
-            immediate="#{action.immediate}">
-            <h:outputText value="#{messages[action.label]}" />
-          </nxh:commandLink>
-        </nxu:dataList>
-      </nxu:set>
+   <div class="userActions">
 
-      <nxu:set var="actions"
-        value="#{webActions.getActionsList('USER_SERVICES_BOTTOM')}"
-        cache="true">
-        <nxu:dataList layout="simple"
-          var="action"
-          value="#{actions}"
-          rowIndexVar="row"
-          rowCountVar="rowCount"
-          id="userServicesBottomActionsTable">
-          <h:outputText value=" | " rendered="#{row!=rowCount}"/>
+     <nxu:set var="actions"
+       value="#{webActions.getActionsList('USER_SERVICES')}"
+       cache="true">
+       <nxu:dataList layout="simple"
+         var="action"
+         value="#{actions}"
+         rowIndexVar="row"
+         rowCountVar="rowCount"
+         id="userServicesActionsTable">
+         <h:outputText value=" | " rendered="#{row!=rowCount}"/>
+         <nxh:commandLink action="#{action.getLink()}"
+           id="userServicesActionCommandLink"
+           immediate="#{action.immediate}">
+           <h:outputText value="#{messages[action.label]}" />
+         </nxh:commandLink>
+       </nxu:dataList>
+     </nxu:set>
 
-          <nxh:commandLink action="#{action.getLink()}"
-            rendered="#{fn:startsWith(action.link,'#')}"
-            immediate="#{action.immediate}"
-            id="userServicesBottomActionCommandLink">
-            <h:outputText value="#{messages[action.label]}" />
-          </nxh:commandLink>
+     <nxu:set var="actions"
+       value="#{webActions.getActionsList('USER_SERVICES_BOTTOM')}"
+       cache="true">
+       <nxu:dataList layout="simple"
+         var="action"
+         value="#{actions}"
+         rowIndexVar="row"
+         rowCountVar="rowCount"
+         id="userServicesBottomActionsTable">
+         <h:outputText value=" | " rendered="#{row!=rowCount}"/>
 
-          <h:outputLink value="#{baseURL}#{action.link}"
-            rendered="#{!(fn:startsWith(action.link,'#'))}"
-            id="userServicesBottomActionLink">
-            <h:outputText value="#{messages[action.label]}" />
-          </h:outputLink>
+         <nxh:commandLink action="#{action.getLink()}"
+           rendered="#{fn:startsWith(action.link,'#')}"
+           immediate="#{action.immediate}"
+           id="userServicesBottomActionCommandLink">
+           <h:outputText value="#{messages[action.label]}" />
+         </nxh:commandLink>
 
-        </nxu:dataList>
-      </nxu:set>
+         <h:outputLink value="#{baseURL}#{action.link}"
+           rendered="#{!(fn:startsWith(action.link,'#'))}"
+           id="userServicesBottomActionLink">
+           <h:outputText value="#{messages[action.label]}" />
+         </h:outputLink>
 
-    </div>
+       </nxu:dataList>
+     </nxu:set>
 
-    <div class="searchService">
+   </div>
 
-      <nxu:set var="actions"
-        value="#{webActions.getActionsList('SEARCH_LINKS')}"
-        cache="true">
-        <nxu:dataList layout="simple"
-          var="action"
-          value="#{actions}"
-          rowIndexVar="row"
-          rowCountVar="rowCount"
-          id="searchLinksActionsTable">
-          <h:outputText value=" | " rendered="#{row!=rowCount}"/>
-          <h:outputLink value="#{baseURL}#{action.getLink()}"
-            id="searchLinksActionLink">
-            <h:outputText value="#{messages[action.label]}" />
-          </h:outputLink>
-        </nxu:dataList>
-      </nxu:set>
+   <div class="searchService">
 
-    </div>
+     <nxu:set var="actions"
+       value="#{webActions.getActionsList('SEARCH_LINKS')}"
+       cache="true">
+       <nxu:dataList layout="simple"
+         var="action"
+         value="#{actions}"
+         rowIndexVar="row"
+         rowCountVar="rowCount"
+         id="searchLinksActionsTable">
+         <h:outputText value=" | " rendered="#{row!=rowCount}"/>
+         <h:outputLink value="#{baseURL}#{action.getLink()}"
+           id="searchLinksActionLink">
+           <h:outputText value="#{messages[action.label]}" />
+         </h:outputLink>
+       </nxu:dataList>
+     </nxu:set>
 
+   </div>
+   <div class="clear"></div>
   </h:form>
+  </div>
 
-  <h:form id="userServicesSearchForm" class="userSearchBlock">
-    <div class="searchService">
+  <div class="userSearchBlock">
+  <h:form id="userServicesSearchForm">
+   <div class="searchService">
 
-      <c:if test="#{userServicesContext.searchEnabled}">
-        <h:inputText value="#{documentSearchActions.simpleSearchKeywords}" size="15"
-          class="directoryFilter"
-          onkeydown="if (event.keyCode == 13) {Element.next(Element.next(this)).select();} else return true;"
-          id="simpleSearchKeywordsInput"
-          required="true" requiredMessage="#{messages['feedback.search.noKeywords']}"
-          validator="#{documentSearchActions.validateSimpleSearchKeywords}" />
-        <h:commandButton action="search_results_simple"
-          value="#{messages['command.search']}" styleClass="button"
-          id="simpleSearchSubmitButton" />
+     <c:if test="#{userServicesContext.searchEnabled}">
+       <h:inputText value="#{documentSearchActions.simpleSearchKeywords}" size="15"
+         class="directoryFilter"
+         onkeydown="if (event.keyCode == 13) {Element.next(Element.next(this)).select();} else return true;"
+         id="simpleSearchKeywordsInput"
+         required="true" requiredMessage="#{messages['feedback.search.noKeywords']}"
+         validator="#{documentSearchActions.validateSimpleSearchKeywords}" />
+       <h:commandButton action="search_results_simple"
+         value="#{messages['command.search']}" styleClass="button"
+         id="simpleSearchSubmitButton" />
 
-        <nxu:set var="actions"
-          value="#{webActions.getActionsList('SEARCH_ACTIONS')}"
-          cache="true">
-          <nxu:dataList layout="simple"
-            var="action"
-            value="#{actions}"
-            id="searchActionsTable">
-            <span class="advancedSearchLink">
-              <nxh:commandLink action="#{action.getLink()}"
-                value="#{messages[action.label]}"
-                immediate="true"
-                id="searchActionsButton" />
-            </span>
-          </nxu:dataList>
-        </nxu:set>
-      </c:if>
-    </div>
+       <nxu:set var="actions"
+         value="#{webActions.getActionsList('SEARCH_ACTIONS')}"
+         cache="true">
+         <nxu:dataList layout="simple"
+           var="action"
+           value="#{actions}"
+           id="searchActionsTable">
+           <span class="advancedSearchLink">
+             <nxh:commandLink action="#{action.getLink()}"
+               value="#{messages[action.label]}"
+               immediate="true"
+               id="searchActionsButton" />
+           </span>
+         </nxu:dataList>
+       </nxu:set>
+     </c:if>
+   </div>
   </h:form>
+  </div>
+
   <div class="clear"></div>
 
   <c:if test="#{adminMessageActivated}">
-    <div style="text-align: center; padding: 5px 5px 5px 25px; border: 1px solid rgb(170, 187, 255); background: url('icons/info.gif') no-repeat 3px center #fff; font: normal 12px Arial,sans-serif; margin:3px;">
-      <h:outputText value="#{adminMessage}"/>
-    </div>
+   <div style="text-align: center; padding: 5px 5px 5px 25px; border: 1px solid rgb(170, 187, 255); background: url('icons/info.gif') no-repeat 3px center #fff; font: normal 12px Arial,sans-serif; margin:3px;">
+     <h:outputText value="#{adminMessage}"/>
+   </div>
   </c:if>
 
 </ui:insert>

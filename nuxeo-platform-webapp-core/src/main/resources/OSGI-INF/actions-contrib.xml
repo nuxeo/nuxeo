@@ -15,13 +15,13 @@
       <category>MAIN_TABS</category>
     </action>
 
-    <action id="non_anonymous_logout" link="logout" label="command.logout">
-      <category>USER_SERVICES_BOTTOM</category>
+    <action id="non_anonymous_logout" link="logout" label="command.logout" order="100">
+      <category>USER_MENU_ACTIONS</category>
       <filter-id>not_anonymous</filter-id>
     </action>
 
-    <action id="login" link="logout" label="command.login">
-      <category>USER_SERVICES_BOTTOM</category>
+    <action id="login" link="logout" label="command.login" order="100">
+      <category>USER_MENU_ACTIONS</category>
       <filter-id>anonymous</filter-id>
     </action>
 
