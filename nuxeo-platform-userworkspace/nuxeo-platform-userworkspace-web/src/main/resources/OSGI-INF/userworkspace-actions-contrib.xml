@@ -9,7 +9,6 @@
       enabled="true" label="command.user.return.to.repository"
       icon="/icons/go_to_repository.gif" order="60">
       <category>USER_MENU_ACTIONS</category>
-      <category>USER_SERVICES</category>
       <filter-id>isInsidePersonalWorkspace</filter-id>
     </action>
 
@@ -18,7 +17,6 @@
       enabled="true" label="command.user.personal.workspace"
       icon="/icons/show_personal_workspace.gif" order="61">
       <category>USER_MENU_ACTIONS</category>
-      <category>USER_SERVICES</category>
       <filter-id>not_anonymous</filter-id>
       <filter-id>canAccessPersonalWorkspace</filter-id>
     </action>

@@ -123,7 +123,6 @@
     </style>
     <!-- header and footer style custom for Admin View -->
     <style name="header and footer style" inherit="default buttons">
-      <style name="header and footer style" inherit="default buttons">
       <selector path="a, a:link, a:visited">
         <text-decoration>none</text-decoration>
       </selector>
