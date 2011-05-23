@@ -12,23 +12,26 @@ import org.nuxeo.opensocial.container.shared.webcontent.WebContentData;
  * @author Stéphane Fourrier
  */
 public interface WebContentAdapter<T extends WebContentData> {
-    public void feedFrom(T data) throws ClientException;
+    void feedFrom(T data) throws ClientException;
 
-    public T getData() throws ClientException;
+    T getData() throws ClientException;
 
-    public String getTitle() throws ClientException;
+    String getTitle() throws ClientException;
 
-    public void setTitle(String title) throws ClientException;
+    void setTitle(String title) throws ClientException;
 
-    public long getPosition() throws ClientException;
+    long getPosition() throws ClientException;
 
-    public void setPosition(long position) throws ClientException;
+    void setPosition(long position) throws ClientException;
 
-    public boolean isInAPortlet() throws ClientException;
+    boolean isInAPortlet() throws ClientException;
 
-    public void setInAPortlet(boolean isInAPortlet) throws ClientException;
+    void setInAPortlet(boolean isInAPortlet) throws ClientException;
 
-    public boolean isCollapsed() throws ClientException;
+    boolean isCollapsed() throws ClientException;
 
-    public void setCollapsed(boolean isCollapsed) throws ClientException;
+    void setCollapsed(boolean isCollapsed) throws ClientException;
+
+    void update() throws ClientException;
+
 }

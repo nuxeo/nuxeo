@@ -103,4 +103,9 @@ public abstract class AbstractWebContentAdapter<T extends WebContentData>
             data.addPreference(name, value);
         }
     }
+
+    @Override
+    public void update() throws ClientException {
+        doc.getCoreSession().saveDocument(doc);
+    }
 }
