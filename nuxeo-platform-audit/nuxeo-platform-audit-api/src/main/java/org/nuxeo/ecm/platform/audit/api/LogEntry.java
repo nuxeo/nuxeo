@@ -19,6 +19,7 @@ import java.util.Date;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.platform.audit.api.comment.UIAuditComment;
 
 /**
  * Log entry.
@@ -143,4 +144,14 @@ public interface LogEntry extends Serializable {
 
     void setExtendedInfos(Map<String, ExtendedInfo> infos);
 
+    /**
+     * Return the comment preprocessed to be ready for display.
+     * (extract info about linked documents)
+     * Only available when accessed via the entry is fetched via the {@link AuditPageProvider}
+     *
+     * @return
+     */
+    UIAuditComment getPreprocessedComment();
+
+    void setPreprocessedComment(UIAuditComment uiComment);
 }

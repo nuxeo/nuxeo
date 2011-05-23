@@ -13,6 +13,7 @@
  */
 package org.nuxeo.ecm.platform.audit.api;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -23,8 +24,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.SortInfo;
+import org.nuxeo.ecm.platform.audit.api.comment.CommentProcessorHelper;
 import org.nuxeo.ecm.platform.query.api.AbstractPageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
@@ -37,18 +40,20 @@ import org.nuxeo.runtime.api.Framework;
  * Service
  *
  * @author Tiry (tdelprat@nuxeo.com)
- *
+ * @since 5.4.2
  */
 public class AuditPageProvider extends AbstractPageProvider<LogEntry> implements
         PageProvider<LogEntry> {
 
     private static final long serialVersionUID = 1L;
 
-    protected long currentPageIndex = 1;
-
     protected String auditQuery;
 
     protected Map<String, Object> auditQueryParams;
+
+    public static final String CORE_SESSION_PROPERTY = "coreSession";
+
+    public static final String UICOMMENTS_PROPERTY = "generateUIComments";
 
     public String toString() {
         StringBuffer sb = new StringBuffer();
@@ -67,6 +72,17 @@ public class AuditPageProvider extends AbstractPageProvider<LogEntry> implements
         return sb.toString();
     }
 
+    protected void preprocessCommentsIfNeeded(List<LogEntry> entries) {
+        Serializable preprocess = getProperties().get(UICOMMENTS_PROPERTY);
+        CoreSession session = (CoreSession) getProperties().get(
+                CORE_SESSION_PROPERTY);
+        if (session != null && preprocess != null
+                && "true".equalsIgnoreCase(preprocess.toString())) {
+            CommentProcessorHelper cph = new CommentProcessorHelper(session);
+            cph.processComments(entries);
+        }
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     public List<LogEntry> getCurrentPage() {
@@ -78,10 +94,11 @@ public class AuditPageProvider extends AbstractPageProvider<LogEntry> implements
         }
 
         buildAuditQuery(true);
-        return (List<LogEntry>) reader.nativeQuery(auditQuery,
-                auditQueryParams, (int) getCurrentPageIndex(),
-                (int) getPageSize());
-
+        List<LogEntry> entries = (List<LogEntry>) reader.nativeQuery(
+                auditQuery, auditQueryParams, (int) getCurrentPageIndex() + 1,
+                (int) getMinMaxPageSize());
+        preprocessCommentsIfNeeded(entries);
+        return entries;
     }
 
     protected String getSortPart() {
@@ -106,24 +123,34 @@ public class AuditPageProvider extends AbstractPageProvider<LogEntry> implements
     }
 
     protected Object convertParam(Object param) {
-        if (param==null) {
+        if (param == null) {
             return null;
         }
         // Hibernate does not like Calendar type
         if (param instanceof Calendar) {
             return new Timestamp(((Calendar) param).getTime().getTime());
-            //return ((Calendar) param).getTime();
+            // return ((Calendar) param).getTime();
         }
         return param;
     }
 
     protected boolean isNonNullParam(Object[] val) {
-        if (val==null) {
+        if (val == null) {
             return false;
         }
         for (Object v : val) {
-            if (v!=null) {
-                return true;
+            if (v != null) {
+                if (v instanceof String) {
+                    if (!((String)v).isEmpty()) {
+                        return true;
+                    }
+                } else if (v instanceof String[]) {
+                    if (((String[])v).length>0) {
+                        return true;
+                    }
+                } else {
+                    return true;
+                }
             }
         }
         return false;
@@ -155,7 +182,7 @@ public class AuditPageProvider extends AbstractPageProvider<LogEntry> implements
             // Where clause based on DocumentModel
 
             StringBuilder baseQuery = new StringBuilder(
-                    "from LogEntry log where ");
+                    "from LogEntry log ");
 
             // manage fixed part
             String fixedPart = def.getWhereClause().getFixedPart();
@@ -169,6 +196,7 @@ public class AuditPageProvider extends AbstractPageProvider<LogEntry> implements
                             convertParam(params[idxParam]));
                     idxParam++;
                 }
+                baseQuery.append(" where ");
                 baseQuery.append(fixedPart);
             }
 
@@ -208,8 +236,12 @@ public class AuditPageProvider extends AbstractPageProvider<LogEntry> implements
                     continue;
                 }
 
+
+
                 if (idxPredicate > 0 || idxParam > 0) {
                     baseQuery.append(" AND ");
+                } else {
+                    baseQuery.append(" where ");
                 }
 
                 baseQuery.append(predicate.getParameter());
@@ -249,26 +281,24 @@ public class AuditPageProvider extends AbstractPageProvider<LogEntry> implements
                         }
                     }
                     baseQuery.append(" ) ");
-                }
-                else if (predicate.getOperator().equalsIgnoreCase("BETWEEN")) {
+                } else if (predicate.getOperator().equalsIgnoreCase("BETWEEN")) {
                     Object startValue = convertParam(val[0]);
                     Object endValue = null;
-                    if (val.length>1) {
+                    if (val.length > 1) {
                         endValue = convertParam(val[1]);
                     }
-
-                    if (startValue!=null && endValue!=null) {
+                    if (startValue != null && endValue != null) {
                         baseQuery.append(predicate.getOperator());
                         baseQuery.append(" :param" + idxParam);
                         qParams.put("param" + idxParam, startValue);
                         idxParam++;
                         baseQuery.append(" AND :param" + idxParam);
                         qParams.put("param" + idxParam, endValue);
-                    } else if (startValue==null) {
+                    } else if (startValue == null) {
                         baseQuery.append("<=");
                         baseQuery.append(" :param" + idxParam);
                         qParams.put("param" + idxParam, endValue);
-                    } else if (endValue==null) {
+                    } else if (endValue == null) {
                         baseQuery.append(">=");
                         baseQuery.append(" :param" + idxParam);
                         qParams.put("param" + idxParam, startValue);
@@ -292,38 +322,9 @@ public class AuditPageProvider extends AbstractPageProvider<LogEntry> implements
         }
     }
 
-    @Override
-    public long getCurrentPageIndex() {
-        return currentPageIndex;
-    }
-
-    @Override
-    public void nextPage() {
-        currentPageIndex += 1;
-    }
-
-    @Override
-    public void previousPage() {
-        currentPageIndex -= 1;
-        if (currentPageIndex < 1) {
-            currentPageIndex = 1;
-        }
-    }
-
     public void refresh() {
         super.refresh();
-        currentPageIndex=1;
-    }
-
-    @Override
-    public void firstPage() {
-        currentPageIndex = 1;
-    }
-
-    @Override
-    public List<LogEntry> setCurrentPage(long page) {
-        currentPageIndex = page;
-        return getCurrentPage();
+        offset = 0;
     }
 
     @Override
@@ -350,6 +351,6 @@ public class AuditPageProvider extends AbstractPageProvider<LogEntry> implements
                 "select count(log.id) " + auditQuery, auditQueryParams, 1, 20);
         resultsCount = ((Long) res.get(0)).longValue();
 
-        return this.resultsCount;
+        return resultsCount;
     }
 }
