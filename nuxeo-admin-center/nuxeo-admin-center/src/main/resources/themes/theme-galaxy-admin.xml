@@ -265,6 +265,11 @@
       <selector path=".mainTabs li a:hover">
         <text-decoration>none</text-decoration>
       </selector>
+      <!-- Fix rss-font-grid inheritance from Opensocial -->
+      <selector path=".searchService input.directoryFilter">
+        <padding>1px 0</padding>
+        <font preset="default (Galaxy Admin fonts)" />
+      </selector>
       <selector path=".footerBlock">
         <margin>0</margin>
         <line-height>1.25em</line-height>
