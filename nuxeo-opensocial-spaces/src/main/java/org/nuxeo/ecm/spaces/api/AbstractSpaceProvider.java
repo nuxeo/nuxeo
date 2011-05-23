@@ -34,6 +34,9 @@ abstract public class AbstractSpaceProvider implements SpaceProvider {
     final public Space getSpace(CoreSession session,
             DocumentModel contextDocument, String spaceName, Map<String, String> parameters)
             throws SpaceException {
+        if (parameters == null) {
+            parameters = new HashMap<String, String>();
+        }
         Space result = doGetSpace(session, contextDocument, spaceName, parameters);
         if (result == null) {
             throw new SpaceNotFoundException();
