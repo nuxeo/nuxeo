@@ -22,8 +22,8 @@
       <cacheKey>only_one_cache</cacheKey>
       <cacheSize>1</cacheSize>
       <resultLayouts>
-        <layout name="users_listing" showCSVExport="true"
-          showPDFExport="true" />
+        <layout name="users_listing" showCSVExport="false"
+          showPDFExport="false" />
       </resultLayouts>
     </contentView>
 
@@ -46,8 +46,8 @@
       <cacheKey>only_one_cache</cacheKey>
       <cacheSize>1</cacheSize>
       <resultLayouts>
-        <layout name="users_listing" showCSVExport="true"
-          showPDFExport="true" />
+        <layout name="users_listing" showCSVExport="false"
+          showPDFExport="false" />
       </resultLayouts>
     </contentView>
 
@@ -67,8 +67,8 @@
       <cacheKey>only_one_cache</cacheKey>
       <cacheSize>1</cacheSize>
       <resultLayouts>
-        <layout name="groups_listing" showCSVExport="true"
-          showPDFExport="true" />
+        <layout name="groups_listing" showCSVExport="false"
+          showPDFExport="false" />
       </resultLayouts>
     </contentView>
 
