@@ -43,12 +43,10 @@
     <page name="popup">
       <section>
         <cell>
-          <!-- main area -->
-          <fragment type="region fragment"/>
-        </cell>
-        <cell>
           <!-- Include -->
           <fragment type="generic fragment"/>
+          <!-- main area -->
+          <fragment type="region fragment"/>
         </cell>
       </section>
     </page>
@@ -70,7 +68,7 @@
     <defaultBody/>
     <defaultSrc/>
   </properties>
-  <properties element="page[2]/section[1]/cell[1]/fragment[1]">
+  <properties element="page[2]/section[1]/cell[1]/fragment[2]">
     <name>body</name>
     <defaultBody/>
     <defaultSrc/>
@@ -128,9 +126,6 @@
       <width>100%</width>
     </layout>
     <layout element="page[2]/section[1]/cell[1]"/>
-    <layout element="page[2]/section[1]/cell[2]">
-      <width>0%</width>
-    </layout>
     <layout element="page[3]">
       <padding>20px</padding>
     </layout>
@@ -176,13 +171,13 @@
     <widget element="page[1]/section[2]/cell[2]/fragment[1]">
       <view>nuxeo5 breadcrumbs</view>
     </widget>
-    <widget element="page[1]/section[2]/cell[2]/fragment[2]|page[2]/section[1]/cell[1]/fragment[1]">
+    <widget element="page[1]/section[2]/cell[2]/fragment[2]|page[2]/section[1]/cell[1]/fragment[2]">
       <view>facelet region</view>
     </widget>
     <widget element="page[1]/section[3]/cell[1]/fragment[1]">
       <view>Nuxeo footer</view>
     </widget>
-    <widget element="page[2]/section[1]/cell[2]/fragment[1]">
+    <widget element="page[2]/section[1]/cell[1]/fragment[1]">
       <view>nuxeo5 includes</view>
     </widget>
     <!-- Page 3 : print page -->
@@ -1849,7 +1844,7 @@
     </style>
     <style element="page[1]/section[2]/cell[2]/fragment[1]" inherit="breadcrumbs style"/>
     <!-- Footer -->
-    <style element="page[1]/section[3]"> 
+    <style element="page[1]/section[3]">
       <selector path="" view="section frame">
         <border-top preset="footer (Galaxy borders)"/>
         <background preset="footer (Galaxy backgrounds)"/>
@@ -1863,7 +1858,7 @@
       </selector>
     </style>
     <!-- main fragment for default page & popup -->
-    <style element="page[1]/section[2]/cell[2]/fragment[2]|page[2]/section[1]/cell[1]/fragment[1]" inherit="common style 1">
+    <style element="page[1]/section[2]/cell[2]/fragment[2]|page[2]/section[1]/cell[1]/fragment[2]" inherit="common style 1">
       <selector path="" view="facelet region">
         <padding>7px</padding>
       </selector>
