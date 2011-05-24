@@ -23,10 +23,10 @@ jQuery(document).ready(function() {
       baseURL: '#{baseURL}',
       language: '#{localeSelector.language}',
       gadgetDefs: [
-                   {specUrl : 'http://localhost:8080/nuxeo/site/gadgets/eventMonitoring/eventMonitoring.xml',
+                   {specUrl : 'http://localhost:8080#{contextPath}/site/gadgets/eventMonitoring/eventMonitoring.xml',
                     title : '#{messages['adminsubtab.usersActivity.charts.eventMonitoring']}',
                     width : '100%'},
-                   {specUrl : 'http://localhost:8080/nuxeo/site/gadgets/httpMonitoring/httpMonitoring.xml',
+                   {specUrl : 'http://localhost:8080#{contextPath}/site/gadgets/httpMonitoring/httpMonitoring.xml',
                     title : '#{messages['adminsubtab.usersActivity.charts.httpMonitoring']}',
                     width : '100%'}]
     });

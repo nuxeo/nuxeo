@@ -21,7 +21,7 @@
     <h:panelGroup rendered="#{systemInfo.isBinariesGCInProgress()}">
       <div><h:outputText
         value="#{messages['adminsubtab.sysinfo.binariesinfo.wait']}" /></div>
-      <img src="/nuxeo/img/big_loading.gif" />
+      <img src="#{contextPath}/img/big_loading.gif" />
     </h:panelGroup>
 
     <h:panelGroup rendered="#{!systemInfo.isBinariesGCInProgress()}">

@@ -26,7 +26,7 @@
 
      <h:panelGroup rendered="#{systemInfo.isStatInfoInProgress()}">
        <div><h:outputText value="#{messages['adminsubtab.sysinfo.repostat.computing']}" /> </div>
-       <img src="/nuxeo/img/big_loading.gif"/>
+       <img src="#{contextPath}/img/big_loading.gif"/>
      </h:panelGroup>
 
      <h:panelGroup rendered="#{!systemInfo.isStatInfoInProgress()}">

@@ -81,12 +81,12 @@
   </script>
 
   <c:if test="#{connectServerReachable and registredConnectInstance}">
-    <iframe src="/nuxeo/site/connectClient/packages/studio" frameborder="0" scrolling="auto" width="100%" height="200px"
+    <iframe src="#{contextPath}/site/connectClient/packages/studio" frameborder="0" scrolling="auto" width="100%" height="200px"
     style="display:none" onload="javascript:hideWaiter();this.style.display='block';">
     </iframe>
 
     <div id="connectLoaderWaiter" style="width:100%;height:200px;text-align:center">
-        <img src="/nuxeo/img/big_loading.gif"/>
+        <img src="#{contextPath}/img/big_loading.gif"/>
     </div>
 
   </c:if>
