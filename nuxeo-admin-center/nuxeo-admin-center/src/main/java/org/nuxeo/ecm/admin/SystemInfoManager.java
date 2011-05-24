@@ -164,6 +164,10 @@ public class SystemInfoManager implements Serializable {
         return RuntimeInstrospection.getInfo();
     }
 
+    public boolean isBundleDeployed(String bundleId) {
+        return RuntimeInstrospection.getBundleIds().contains(bundleId);
+    }
+
     // *********************************
     // Repo settings Management
 

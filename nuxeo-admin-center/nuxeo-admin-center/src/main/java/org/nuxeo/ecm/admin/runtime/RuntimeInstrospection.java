@@ -48,12 +48,14 @@ public class RuntimeInstrospection {
 
     protected static SimplifiedServerInfo info;
 
+    protected static List<String> bundleIds;
+
     public static synchronized SimplifiedServerInfo getInfo() {
         if (info == null) {
             RuntimeService runtime = Framework.getRuntime();
             Collection<RegistrationInfo> registrations = runtime.getComponentManager().getRegistrations();
 
-            List<String> bundleIds = new ArrayList<String>();
+            bundleIds = new ArrayList<String>();
 
             List<SimplifiedBundleInfo> bundles = new ArrayList<SimplifiedBundleInfo>();
 
@@ -76,6 +78,13 @@ public class RuntimeInstrospection {
             info.setWarnings(runtime.getWarnings());
         }
         return info;
+    }
+
+    public static List<String> getBundleIds() {
+        if (bundleIds == null) {
+            getInfo();
+        }
+        return bundleIds;
     }
 
     @SuppressWarnings("unchecked")
