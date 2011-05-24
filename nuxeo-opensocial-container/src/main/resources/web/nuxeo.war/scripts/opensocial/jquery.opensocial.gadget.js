@@ -27,8 +27,7 @@
     var settings = {
       'baseURL'     : 'http://localhost:8080/nuxeo/',
       'language'    : 'ALL',
-      'gadgetSpecs' : [],
-      'titles'      : [],
+      'gadgetDefs'  : [],
       'shindigServerSuffix' : 'opensocial/gadgets/',
       'secureTokenSuffix' : 'site/gadgets/securetoken'
     };
@@ -39,9 +38,12 @@
 
     var elements = this;
     var currentGadgetIdIndex = currentGlobalGadgetIdIndex;
-    currentGlobalGadgetIdIndex  += settings.gadgetSpecs.length;
+    currentGlobalGadgetIdIndex  += settings.gadgetDefs.length;
+
+    var gadgetSpecs = $.map( settings.gadgetDefs, function( value, index ) { return value['specUrl'];});
+
     // get the secure tokens for each gadget
-    $.post(settings.baseURL + settings.secureTokenSuffix, { 'gadgetSpecUrls[]': settings.gadgetSpecs },
+    $.post(settings.baseURL + settings.secureTokenSuffix, { 'gadgetSpecUrls[]': gadgetSpecs },
       function(data) {
         function generateId() {
           return 'opensocial-gadget-' + currentGadgetIdIndex++;
@@ -53,18 +55,26 @@
 
         var index = 0;
         elements.each(function() {
-          if (index >= settings.gadgetSpecs.length) {
+          if (index >= gadgetSpecs.length) {
             // no more gadget spec URL
+            if (window.console) {
+              console.log("no more gadgetSpec available, check init parameters")
+            }
             return this;
           }
 
           gadgets.container.setLanguage(settings.language);
-          var gadget = gadgets.container.createGadget({specUrl: settings.gadgetSpecs[index]});
+          var gadget = gadgets.container.createGadget({specUrl: gadgetSpecs[index]});
           gadget.serverBase_ = settings.baseURL + settings.shindigServerSuffix;
           gadget.secureToken = secureTokens[index];
-          if (index < settings.titles.length) {
-            gadget.title = settings.titles[index];
-          }
+
+          $.each(settings.gadgetDefs[index], function (name,value)
+              {
+                if (name!='specUrl') {
+                  gadget[name]=value;
+                }
+              });
+
           gadgets.container.addGadget(gadget);
           createdGadgets.push(gadget);
           var id = $(this).attr('id');
