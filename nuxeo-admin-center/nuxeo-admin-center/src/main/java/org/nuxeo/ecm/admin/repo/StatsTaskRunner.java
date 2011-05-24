@@ -81,12 +81,18 @@ public class StatsTaskRunner extends UnrestrictedSessionRunner {
         if (includeBlob) {
             BlobHolder bh = doc.getAdapter(BlobHolder.class);
             if (bh != null) {
-                List<Blob> blobs = bh.getBlobs();
-                if (blobs != null) {
-                    for (Blob blob : blobs) {
-                        hostTask.getInfo().addBlob(blob.getLength(),
-                                doc.getPath());
+                try {
+                    List<Blob> blobs = bh.getBlobs();
+                    if (blobs != null) {
+                        for (Blob blob : blobs) {
+                            if (blob!=null) {
+                                hostTask.getInfo().addBlob(blob.getLength(),
+                                    doc.getPath());
+                            }
+                        }
                     }
+                } catch (Throwable t) {
+                    log.warn("Unable to find Blob info for doc " + doc.getId(), t);
                 }
             }
         }
