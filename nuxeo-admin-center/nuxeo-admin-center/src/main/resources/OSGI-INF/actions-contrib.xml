@@ -66,6 +66,12 @@
       <filter-id>only_for_manager</filter-id>
     </action>
 
+    <action id="ActivityCharts" link="/incl/usersActivity/activityCharts.xhtml"
+      label="tab.useractivity.charts" order="30">
+      <category>UsersActivity_sub_tab</category>
+      <filter-id>only_for_manager</filter-id>
+    </action>
+
     <action id="ConnectClient" link="view_admin-fragment.xhtml"
       label="admcommand.nuxeoconnect" order="20">
       <category>NUXEO_ADMIN</category>

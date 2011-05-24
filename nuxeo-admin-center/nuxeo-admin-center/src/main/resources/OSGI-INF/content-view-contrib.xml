@@ -14,7 +14,6 @@
       class="org.nuxeo.ecm.platform.audit.api.AuditPageProvider">
       <property name="coreSession">#{documentManager}</property>
       <property name="generateUIComments">false</property>
-
       <whereClause docType="BasicAuditSearch">
         <predicate parameter="log.eventDate" operator="BETWEEN">
           <field schema="basicauditsearch" name="startDate" />
@@ -30,8 +29,7 @@
           <field schema="basicauditsearch" name="principalName" />
         </predicate>
       </whereClause>
-      <parameter>#{currentDocument.id}</parameter>
-      <sort column="log.eventDate" ascending="true" />
+      <sort column="log.eventDate" ascending="false" />
       <pageSize>10</pageSize>
       <maxPageSize>1000</maxPageSize>
     </genericPageProvider>

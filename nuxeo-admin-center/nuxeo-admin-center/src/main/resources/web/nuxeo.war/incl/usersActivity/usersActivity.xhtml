@@ -8,11 +8,9 @@
   xmlns:nxh="http://nuxeo.org/nxweb/html">
 
 <h2><h:outputText
-  value="#{messages['adminsubtab.sysinfo.userinfo.title']}" /></h2>
+  value="#{messages['adminsubtab.usersActivity.events.title']}" /></h2>
 
 <a4j:outputPanel id="usersEventsListing">
-
-<a4j:log level="ALL" popup="true" width="400" height="200"/>
 
   <nxu:set var="contentViewName" value="EVENTS_VIEW">
     <ui:decorate template="/incl/content_view.xhtml">
@@ -23,5 +21,4 @@
     </ui:decorate>
   </nxu:set>
 
-</a4j:outputPanel>
-</div>
+</a4j:outputPanel></div>
