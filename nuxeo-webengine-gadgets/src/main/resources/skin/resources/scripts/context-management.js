@@ -77,3 +77,10 @@ function availableContextsReceived(entries, nxParams) {
 function showContextPathSelector() {
     _gel("contextChooser").style.display = "block";
 }
+
+function initContextPathSettingsButton() {
+  var permission = gadgets.nuxeo.isEditable();
+  if(permission) {
+    _gel("contextButton").style.display = "block";
+  }
+}
