@@ -272,7 +272,7 @@ public class LocalPackageImpl implements LocalPackage {
                 return FileUtils.readFile(file);
             } catch (Exception e) {
                 throw new PackageException(
-                        "Failed to rad license.txt file for package: "
+                        "Failed to read license.txt file for package: "
                                 + getId());
             }
         }
