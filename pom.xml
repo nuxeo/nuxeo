@@ -476,6 +476,10 @@
           <!-- jmimemagic has a dependency on an old xercesImpl -->
           <exclusion>
             <groupId>xerces</groupId>
+            <artifactId>xerces</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>xerces</groupId>
             <artifactId>xercesImpl</artifactId>
           </exclusion>
           <!-- exclude bad versions 1.O.b2 -->
@@ -1748,6 +1752,12 @@
         <groupId>net.sourceforge.nekohtml</groupId>
         <artifactId>nekohtml</artifactId>
         <version>1.9.9</version>
+        <exclusions>
+          <exclusion>
+            <groupId>xerces</groupId>
+            <artifactId>xerces</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>net.sourceforge.htmlunit</groupId>
