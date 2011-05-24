@@ -36,7 +36,8 @@
 
         <ui:define name="pageNavigationControls" >
           <ui:include src="/pagination/a4jPageNavigationControls.xhtml">
-            <ui:param name="contentIdToBeReRendered" value="#{contentViewRenderId}_resultsPanel" />
+            <ui:param name="contentIdToBeReRendered"
+              value="#{contentViewRenderId}_resultsPanel,#{contentViewRenderId}_contentViewActionsPanel" />
           </ui:include>
         </ui:define>
       </ui:decorate>

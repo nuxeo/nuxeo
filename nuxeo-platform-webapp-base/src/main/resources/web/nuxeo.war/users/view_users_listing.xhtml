@@ -14,7 +14,8 @@
             value="#{userManagementActions.searchString}"
             onkeydown="if(event.keyCode == 13 ||event.keyCode == 9 ){return false;}"
             styleClass="directoryFilter">
-            <a4j:support event="onkeyup" reRender="#{contentViewRenderId}_resultsPanel"
+            <a4j:support event="onkeyup"
+              reRender="usersListingPanel"
               requestDelay="1000" action="#{contentViewActions.refreshAndRewind(contentViewName)}"
               ignoreDupResponses="true" eventsQueue="userSearchQueue" />
           </h:inputText>
