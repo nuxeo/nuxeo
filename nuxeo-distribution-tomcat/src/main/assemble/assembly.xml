@@ -104,7 +104,7 @@
       <!-- copy jdbc drivers -->
       <artifact:resolveFile key="mysql:mysql-connector-java:5.1.6" />
     </copy>
-    <mkdir dir="${tomcat}/client"/>
+    <mkdir dir="${tomcat}/client" />
     <copy todir="${tomcat}/client">
       <artifact:resolveFile key="org.nuxeo.shell:nuxeo-shell" />
     </copy>
@@ -237,12 +237,11 @@
            perm="ug+x"
            includes="*.sh,*ctl,*.command" />
 
-    <!-- CoreServer resources -->
-    <copy todir="${distribution.dir}/templates/"
-          overwrite="true"
-          failonerror="true">
-      <fileset dir="src/main/resources-coreserver" />
-    </copy>
+    <!-- Complementary templates for CoreServer -->
+    <unzip dest="${distribution.dir}/templates" overwrite="true">
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${maven.project.version}:zip"
+                            classifier="templates-tomcat-coreserver" />
+    </unzip>
 
     <delete failonerror="false">
       <fileset dir="${distribution.dir}/nxserver/bundles">
