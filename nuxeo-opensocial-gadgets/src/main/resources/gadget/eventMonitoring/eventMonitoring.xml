@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Module>
+  <ModulePrefs title="Nuxeo Repository Monitoring"
+    description="Displays a graph of Nuxeo repository activity"
+    author="tdeprat" author_email="tdelprat@nuxeo.com">
+    <Require feature="setprefs"/>
+    <#include "dynamic-translations.ftl"/>
+    <Require feature="dynamic-height" />
+    <#include "default-oauth-prefs.ftl"/>
+  </ModulePrefs>
+  <#include "context-prefs.ftl"/>
+  <Content type="html">
+
+<![CDATA[
+<html>
+  <head>
+  <link rel="stylesheet" type="text/css" href="${specDirectoryUrl}gadget-common.css"/>
+
+  ${jsContext}
+
+  <script src="${specDirectoryUrl}default-automation-request.js"></script>
+  <script src="${clientSideBaseUrl}site/skin/base/script/jquery/jquery.js"></script>
+  <script src="${clientSideBaseUrl}site/skin/base/script/jquery/flot/jquery.flot.min.js"></script>
+
+  <script>
+   var prefs = new gadgets.Prefs();
+
+   // configure Automation REST call
+   var NXRequestParams={ operationId : 'Counters.GET',
+     operationParams : { counterNames : 'org.nuxeo.event.create,org.nuxeo.event.update,org.nuxeo.event.remove'},
+     operationContext : {},                                                // context
+     entityType : 'documents',                                             // result type : only document is supported for now
+     usePagination : true,                                                 // manage pagination or not
+     operationCallback : displayCounters,
+     noEntryLabel: '__MSG_label.gadget.no.document__'
+   };
+
+   function getCounters() {
+         doAutomationRequest(NXRequestParams);
+   }
+
+   function displayCounters(response, params) {
+
+         counters = response.data;
+
+         if (!counters['org.nuxeo.event.create']) {
+           showErrorMessage("No data found, are you administrator ?");
+           return;
+         }
+
+         var createStats = counters['org.nuxeo.event.create']['deltas'];
+         var updateStats = counters['org.nuxeo.event.update']['deltas'];
+         var removeStats = counters['org.nuxeo.event.remove']['deltas'];
+
+         // Padd to have both series with the same end
+
+         $.plot($("#chart"),
+           [ { data: createStats, label: "Document creations" , lines: { show: true}, points: { show: true }},
+             { data: updateStats, label: "Document updates" , lines: { show: true}, points: { show: true }},
+             { data: removeStats, label: "Document removal" , lines: { show: true}, points: { show: true }}],
+           {
+               xaxes: [ { mode: 'time' } ],
+               legend: { position: 'sw' }
+           });
+        gadgets.window.adjustHeight();
+   }
+
+   // auto-adjust gadget height
+   gadgets.util.registerOnLoadHandler(function() {
+     getCounters();
+     gadgets.window.adjustHeight();
+     window.setInterval("getCounters()",30*1000);
+   });
+
+  </script>
+  </head>
+  <body>
+   <span style="font-size:14pt;font-weight:bold;font-family:Arial"> __MSG_label.eventMonitoring__ </span>
+   <div style="float:right"><A href="javascript:getCounters()">__MSG_command.refresh__</A></div>
+   <div id="chart" style="width:600px;height:250px;"></div>
+   <div id="content">
+     <#include "default-request-controls.ftl"/>
+   </div>
+
+  </body>
+</html>
+]]>
+  </Content>
+</Module>

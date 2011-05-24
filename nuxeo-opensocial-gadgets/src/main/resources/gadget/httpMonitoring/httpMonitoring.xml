@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Module>
+  <ModulePrefs title="Nuxeo Http Monitoring"
+    description="Displays a graph of http front activity"
+    author="tdeprat" author_email="tdelprat@nuxeo.com">
+    <Require feature="setprefs"/>
+    <#include "dynamic-translations.ftl"/>
+    <Require feature="dynamic-height" />
+    <#include "default-oauth-prefs.ftl"/>
+  </ModulePrefs>
+  <#include "context-prefs.ftl"/>
+  <Content type="html">
+
+<![CDATA[
+<html>
+  <head>
+  <link rel="stylesheet" type="text/css" href="${specDirectoryUrl}gadget-common.css"/>
+
+  <!-- insert JS Context -->
+  ${jsContext}
+
+  <script src="${specDirectoryUrl}default-automation-request.js"></script>
+  <script src="${clientSideBaseUrl}site/skin/base/script/jquery/jquery.js"></script>
+  <script src="${clientSideBaseUrl}site/skin/base/script/jquery/flot/jquery.flot.min.js"></script>
+
+  <script>
+   var prefs = new gadgets.Prefs();
+
+   // configure Automation REST call
+   var NXRequestParams={ operationId : 'Counters.GET',
+     operationParams : { counterNames : 'org.nuxeo.web.requests,org.nuxeo.web.sessions'},
+     operationContext : {},                                                // context
+     entityType : 'documents',                                             // result type : only document is supported for now
+     usePagination : true,                                                 // manage pagination or not
+     operationCallback : displayCounters,
+     noEntryLabel: '__MSG_label.gadget.no.document__'
+   };
+
+   function getCounters() {
+         doAutomationRequest(NXRequestParams);
+   }
+
+   function displayCounters(response, params) {
+         counters = response.data;
+
+         if (!counters['org.nuxeo.web.requests']) {
+           showErrorMessage("No data found, are you administrator ?");
+           return;
+         }
+
+         var reqStats = counters['org.nuxeo.web.requests']['speed'];
+         var sessionStats= counters['org.nuxeo.web.sessions']['values'];
+
+         // Padd to have both series with the same end
+         var nbRItems = reqStats.length;
+         var lastRequestTime=reqStats[nbRItems-1][0];
+         var nbSItems = sessionStats.length;
+         var lastSessionTime=sessionStats[nbSItems-1][0];
+         if (lastSessionTime < lastRequestTime) {
+           sessionStats.push([lastRequestTime,sessionStats[nbSItems-1][1]]);
+         } else {
+           reqStats.push([lastSessionTime,reqStats[nbRItems-1][1]]);
+         }
+
+         $.plot($("#chart"),
+           [ { data: sessionStats, label: "Nb Sessions", yaxis: 2, lines: { show: true, fill:true }},
+             { data: reqStats, label: "Requests/minutes", lines: { show: true }, points: { show: true } }],
+           {
+               xaxes: [ { mode: 'time' } ],
+               yaxes: [ { min: 0 , tickFormatter: function(v, axis){return v.toFixed(axis.tickDecimals) +" R/m";}},
+                        {
+                          position: 'right',
+                          tickFormatter: function(v, axis){return v.toFixed(axis.tickDecimals) + " sessions";}
+                        } ],
+               legend: { position: 'sw' }
+           });
+        gadgets.window.adjustHeight();
+   }
+
+   // auto-adjust gadget height
+   gadgets.util.registerOnLoadHandler(function() {
+     getCounters();
+     gadgets.window.adjustHeight();
+     window.setInterval("getCounters()",30*1000);
+   });
+
+  </script>
+  </head>
+  <body>
+
+   <span style="font-size:14pt;font-weight:bold;font-family:Arial"> __MSG_label.httpMonitoring__ </span>
+   <div style="float:right"><A href="javascript:getCounters()">__MSG_command.refresh__</A></div>
+   <div id="chart" style="width:600px;height:250px;"></div>
+   <div id="content">
+     <#include "default-request-controls.ftl"/>
+   </div>
+
+  </body>
+</html>
+]]>
+  </Content>
+</Module>

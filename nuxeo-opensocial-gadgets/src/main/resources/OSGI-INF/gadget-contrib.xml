@@ -59,6 +59,20 @@
       <icon>user_deleted_documents.png</icon>
     </internalGadget>
 
+    <!-- Monitoring -->
+    <internalGadget name="httpMonitoring" disabled="false">
+      <mountPoint>/httpMonitoring</mountPoint>
+      <entryPoint>httpMonitoring.xml</entryPoint>
+      <category>Monitoring</category>
+      <icon>monitoring.png</icon>
+    </internalGadget>
+
+    <internalGadget name="eventMonitoring" disabled="false">
+      <mountPoint>/eventMonitoring</mountPoint>
+      <entryPoint>eventMonitoring.xml</entryPoint>
+      <category>Monitoring</category>
+      <icon>monitoring.png</icon>
+    </internalGadget>
 
     <!-- Media -->
     <internalGadget name="photo">
