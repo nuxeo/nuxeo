@@ -21,28 +21,28 @@ Needed parameters:
     <nxu:set var="openBox" value="#{nxu:hasMessages(filterFormId)}"
       cache="true">
 
-      <div class="action_bar_message">
-        <a4j:form id="#{contentViewRenderId}_resetFilterForm"
-          ajaxSubmit="true">
-          <a4j:commandLink
-            value="#{messages['label.contentview.filter.clearFilter']}"
-            id="#{contentViewRenderId}_resetFilterSubmit"
-            ajaxSingle="true"
-            rendered="#{nxd:isDirty(contentView.searchDocumentModel)}"
-            reRender="#{contentViewRenderId}_resultsPanel, #{contentViewRenderId}_resetFilterForm, #{contentViewRenderId}_filterForm"
-            oncomplete="initNXDrapAndDropOnPage(jQuery('#' + '#{contentViewRenderId}_panel'));"
-            styleClass="button warningLink">
-            <nxu:actionListenerMethod
-              value="#{contentView.resetSearchDocumentModel()}" />
-          </a4j:commandLink>
-        </a4j:form>
+      <div class="foldableLightBoxHeader #{nxu:test(openBox, 'unfolded', 'folded')}">
+        <a href="#nologo" onclick="return toggleBox(this)">
+          <h:outputText value="#{messages['label.contentview.filter.title']}"/>
+        </a>
+        <div class="action_bar_message">
+          <a4j:form id="#{contentViewRenderId}_resetFilterForm"
+            ajaxSubmit="true">
+            <a4j:commandLink
+              value="#{messages['label.contentview.filter.clearFilter']}"
+              id="#{contentViewRenderId}_resetFilterSubmit"
+              ajaxSingle="true"
+              rendered="#{nxd:isDirty(contentView.searchDocumentModel)}"
+              reRender="#{contentViewRenderId}_resultsPanel, #{contentViewRenderId}_resetFilterForm, #{contentViewRenderId}_filterForm"
+              oncomplete="initNXDrapAndDropOnPage(jQuery('#' + '#{contentViewRenderId}_panel'));"
+              styleClass="button warningLink">
+              <nxu:actionListenerMethod
+                value="#{contentView.resetSearchDocumentModel()}" />
+            </a4j:commandLink>
+          </a4j:form>
+        </div>
       </div>
 
-    <h3 class="#{nxu:test(openBox, 'unfolded', 'folded')}">
-      <a href="#nologo" onclick="return toggleBox(this)">
-        <h:outputText value="#{messages['label.contentview.filter.title']}"/>
-      </a>
-    </h3>
     </nxu:set>
     <div class="boxBody"
       style="#{nxu:test(openBox, '', 'overflow: visible; display: none;')}">
