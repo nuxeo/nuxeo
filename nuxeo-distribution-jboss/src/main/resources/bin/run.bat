@@ -17,9 +17,9 @@ pushd %DIRNAME%..
 set NUXEO_HOME=%CD%
 popd
 
-set NXCTL=%NUXEO_HOME%\bin\nuxeoctl.exe
+set NXCTL=%NUXEO_HOME%\bin\nuxeoctl.bat
 if exist "%NXCTL%" goto FOUND_NXCTL
-echo Could not locate %NXCTL%. 
+echo Could not locate %NXCTL%.
 echo Please check that you are in the bin directory when running this script.
 goto END
 

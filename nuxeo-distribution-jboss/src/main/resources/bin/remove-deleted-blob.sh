@@ -5,12 +5,12 @@
 #    - a stored-blob.txt file that list the md5 of blob that are stored inside JBoss
 #    - a deleted-blob.txt file that list the md5 of blob that were removed from Nuxeo but still are in JBoss
 # This script can take several hours to run depending of the size of your data directory.
-# It will remove the deleted-blob from JBoss and copy them to $BACKUP_DIR.     
-# It assumes that you are using Postgres
+# It will remove the deleted-blob from JBoss and copy them to $BACKUP_DIR.
+# It assumes that you are using PostgreSQL
 # you need to set the following property first
 
-# the path of the jboss server
-JBOSS_HOME=/opt/nuxeo-dm-5.2.0
+# the path of the JBoss server
+JBOSS_HOME=/opt/nuxeo-dm-5.4.2-SNAPSHOT
 # the path where the deleted blob will be moved
 BACKUP_DIR=/tmp/nuxeo-delete
 # other property you might change

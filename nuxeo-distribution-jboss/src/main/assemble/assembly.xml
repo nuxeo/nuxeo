@@ -45,6 +45,7 @@
   </target>
 
   <target name="prepare-jboss">
+    <!-- unzip JBoss as ${outdir}/jboss-5.1.0.GA -->
     <unzip dest="${outdir}">
       <artifact:resolveFile key="org.jboss:jboss-as:5.1.0.GA:zip" />
       <!--
@@ -59,11 +60,19 @@
         <exclude name="**/bindings-jboss-beans.xml" />
       </patternset>
     </unzip>
-    <!-- will use a skeleton instead
-    <move todir="${jboss}">
-      <fileset dir="${outdir}/jboss-5.1.0.GA" />
+    <!-- Remove non-nuxeo information files from root -->
+    <mkdir dir="${outdir}/jboss-5.1.0.GA/doc-jboss" />
+    <move todir="${outdir}/jboss-5.1.0.GA/doc-jboss">
+      <fileset dir="${outdir}/jboss-5.1.0.GA">
+        <include name="lgpl.html" />
+        <include name="JBossORG-EULA.txt" />
+        <include name="jar-versions.xml" />
+        <include name="derby.log" />
+        <include name="copyright.txt" />
+      </fileset>
     </move>
-    -->
+
+    <!-- prepare a skeleton without JBoss -->
     <mkdir dir="${jboss}" />
     <unzip dest="${jboss}">
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${nuxeo.distribution.version}:zip"
@@ -82,19 +91,6 @@
                             classifier="bin" />
     </unzip>
     <chmod dir="${jboss}/bin" perm="ug+x" includes="*.sh,*ctl,*.command" />
-
-    <!-- Remove non-nuxeo information files from root
-    <mkdir dir="${jboss}/doc-jboss" />
-    <move todir="${jboss}/doc-jboss">
-      <fileset dir="${jboss}">
-        <include name="lgpl.html" />
-        <include name="JBossORG-EULA.txt" />
-        <include name="jar-versions.xml" />
-        <include name="derby.log" />
-        <include name="copyright.txt" />
-      </fileset>
-    </move>
-    -->
 
     <unzip dest="${jboss}/templates" overwrite="true">
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${maven.project.version}:zip"

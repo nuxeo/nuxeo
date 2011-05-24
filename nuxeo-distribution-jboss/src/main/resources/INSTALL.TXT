@@ -1,30 +1,33 @@
 Warning :
 =========
-This directory structure is does not contain a JBoss AS server.
+This directory structure does not contain a JBoss AS server.
 
 Content of this directory :
 ===========================
 
 |-- bin
-|   |-- (nuxeo startup utilities)
+|   `-- (Nuxeo startup utilities)
+|-- client
+|   `-- (Nuxeo Shell)
 |-- common
 |   `-- lib
-|       `--(common libs)
+|       `--(common libraries)
+|-- licenses
 |-- server
 |   `-- default
 |       |-- conf
-|       |   `-- (log4j configuration)
+|       |   `-- (Log4J configuration)
 |       |-- deploy
-|       |   |-- nuxeo.ear (nuxeo EAR)
+|       |   |-- nuxeo.ear (Nuxeo EAR)
 |       |   `-- ROOT.war
 |       |       `-- WEB-INF
-|       |           `-- web.xml (declaration for wss root filter)
+|       |           `-- web.xml (declaration for WSS root filter)
 |       |-- deployers
-|       |   `-- nuxeo-jboss-deployer-5.4.0-SNAPSHOT.jar
+|       |   `-- nuxeo-jboss-deployer-5.4.2-SNAPSHOT.jar
 |       `-- lib
-|           |-- (jdbc drivers) 
-|-- templates
-|   |-- (nuxeo configuration templates)
+|           `-- (jdbc drivers)
+`-- templates
+    `-- (Nuxeo configuration templates)
 
 
 Installation :
@@ -33,11 +36,9 @@ Installation :
 To run Nuxeo you need to :
 
  - install a JBoss Application Server
-   (JBoss AS 5.1 and JBoss EAP 5.0.1 have been tested successfully)
+   (JBoss AS 5.1 and JBoss EAP 5.0.1 have been successfully tested)
 
  - copy the content of this directory into your JBoss directory
 
- - under windows : run bin/nuxeoctl.exe
- - under macos/linux : run bin/nuxeoctl console (you may need to make the script executable : chmod +x bin/nuxeoctl)
-
-
+ - under Windows: run bin\nuxeoctl.bat start
+ - under MacOS/Linux: run bin/nuxeoctl start
