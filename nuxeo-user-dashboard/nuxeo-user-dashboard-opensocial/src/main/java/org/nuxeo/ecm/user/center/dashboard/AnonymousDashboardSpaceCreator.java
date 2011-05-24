@@ -67,7 +67,9 @@ public class AnonymousDashboardSpaceCreator extends
 
         addInitialGadgets(anonymousDashboardSpace);
         addAnonymousACP(anonymousDashboardSpace);
-        return session.saveDocument(anonymousDashboardSpace);
+        anonymousDashboardSpace = session.saveDocument(anonymousDashboardSpace);
+        session.save();
+        return anonymousDashboardSpace;
     }
 
     protected void addAnonymousACP(DocumentModel anonymousDashboardSpace)
@@ -77,7 +79,6 @@ public class AnonymousDashboardSpaceCreator extends
         acl.add(new ACE(getUserManager().getAnonymousUserId(),
                 SecurityConstants.READ, true));
         anonymousDashboardSpace.setACP(acp, true);
-
     }
 
 }

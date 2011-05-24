@@ -175,8 +175,6 @@ public class UserDashboardSpaceProvider extends AbstractSpaceProvider {
                 newSpace.setPropertyValue("dc:title", "user dashboard space");
                 newSpace.setPropertyValue("dc:description",
                         "user dashboard space");
-                session.saveDocument(newSpace);
-                session.save();
 
                 ACP acp = newSpace.getACP();
                 ACL acl = acp.getOrCreateACL();
@@ -185,6 +183,8 @@ public class UserDashboardSpaceProvider extends AbstractSpaceProvider {
                 }
                 newSpace.setACP(acp, true);
 
+                session.saveDocument(newSpace);
+                session.save();
                 copiedSpaceRef = newSpace.getRef();
             }
         }
