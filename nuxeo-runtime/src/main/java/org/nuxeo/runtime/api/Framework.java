@@ -83,7 +83,6 @@ public final class Framework {
     private Framework() {
     }
 
-    // FIXME: this method can't work as it is implemented here.
     public static void initialize(RuntimeService runtimeService)
             throws Exception {
         if (runtime != null) {
