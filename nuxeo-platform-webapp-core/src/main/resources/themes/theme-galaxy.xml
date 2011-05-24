@@ -1214,7 +1214,7 @@
         <float>left</float>
       </selector>
       <selector path=".action_bar_message">
-        <margin>0px 0px 0px 0</margin>
+        <margin>0 0 -15px</margin>
         <line-height>normal</line-height>
         <float>right</float>
       </selector>
