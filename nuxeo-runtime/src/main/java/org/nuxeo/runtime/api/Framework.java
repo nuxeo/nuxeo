@@ -8,8 +8,7 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     bstefanescu, fguillaume, sfermigier, ldoguin, jcarsique
  */
 
 package org.nuxeo.runtime.api;
@@ -218,7 +217,8 @@ public final class Framework {
      *
      * @since 5.4.2
      */
-    public static LoginContext loginAsUser(String username) throws LoginException {
+    public static LoginContext loginAsUser(String username)
+            throws LoginException {
         return getLocalService(LoginAs.class).loginAs(username);
     }
 
@@ -310,7 +310,7 @@ public final class Framework {
      * @return the property value if any otherwise the default value
      */
     public static String getProperty(String key, String defValue) {
-        return runtime==null?null:runtime.getProperty(key, defValue);
+        return runtime == null ? null : runtime.getProperty(key, defValue);
     }
 
     /**
@@ -320,7 +320,7 @@ public final class Framework {
      * @return the framework properties map. Never returns null.
      */
     public static Properties getProperties() {
-        return runtime==null?null:runtime.getProperties();
+        return runtime == null ? null : runtime.getProperties();
     }
 
     /**
