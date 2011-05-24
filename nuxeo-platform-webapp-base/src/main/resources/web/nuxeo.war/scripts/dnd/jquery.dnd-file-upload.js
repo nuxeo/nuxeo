@@ -51,7 +51,7 @@
     // update upload speed every second
     uploadRateRefreshTime : 1000,
     // time to enable extended mode
-    extendedModeTimeout : 2500,
+    extendedModeTimeout : 1500,
 
     handler : {
       // invoked when new files are dropped
