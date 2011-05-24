@@ -954,48 +954,29 @@
       <selector path=".foldableLightBox">
         <margin-bottom>20px</margin-bottom>
       </selector>
-      <selector path=".foldableLightBox h3">
+      <selector path=".foldableLightBox div.folded, .foldableLightBox div.unfolded ">
         <border-bottom preset="tabisnotselected (Galaxy borders)"/>
         <color preset="foldablelightbox.titles (Galaxy colors)" />
-        <background preset="tabiselectedlight (Galaxy backgrounds)"/>
         <padding>3px 3px 3px 18px</padding>
         <font-size>9px</font-size>
       </selector>
-      <selector path=".foldableLightBox h3.folded">
+      <selector path=".foldableLightBox div.folded">
         <background preset="foldedlight (Galaxy backgrounds)"/>
         <height>18px</height>
       </selector>
-      <selector path=".foldableLightBox h3.foldedDisabled">
+      <selector path=".foldableLightBox div.foldedDisabled">
         <background>#d2d2d2 none</background>
         <height>18px</height>
         <color>#555</color>
         <border-bottom>1px solid #d2d2d2</border-bottom>
       </selector>
-      <selector path=".foldableLightBox h3 span, .foldableLightBox h3 a:link, .foldableLightBox h3 a:visited, .foldableLightBox h3 a:hover, .foldableLightBox h3 a:visited:hover">
-        <color preset="foldablelightbox.titles (Galaxy colors)" />
-        <float>left</float>
-        <padding-right>10px</padding-right>
-      </selector>
-      <selector path=".foldableLightBox h3.unfolded">
+      <selector path=".foldableLightBox div.unfolded">
         <background preset="unfoldedlight (Galaxy backgrounds)"/>
-        <clear>both</clear>
         <height>18px</height>
       </selector>
-      <selector path=".foldableLightBox h3 a">
+      <selector path=".foldableLightBox div.folded a, .foldableLightBox div.unfolded a">
         <color preset="foldablelightbox.titles (Galaxy colors)" />
-        <display>block</display>
-      </selector>
-      <selector path=".foldableLightBox h3 a.warningLink">
-        <color>red !important</color>
-        <font-weight>bold</font-weight>
-      </selector>
-      <selector path=".foldableLightBox h3 a.action, .foldableLightBox h3 a.action:visited, .foldableLightBox h3 a.action:hover, .foldableLightBox h3 a.action:visited:hover">
-        <background-color>#EFEFEF</background-color>
-        <border>1px solid #CECECE</border>
-        <color>#333333</color>
-        <float>right</float>
-        <font-weight>normal</font-weight>
-        <padding>1px 3px</padding>
+        <float>left</float>
       </selector>
       <selector path=".foldableLightBox .boxBody">
         <border-left preset="tabisnotselected (Galaxy borders)"/>
@@ -1214,9 +1195,13 @@
         <float>left</float>
       </selector>
       <selector path=".action_bar_message">
-        <margin>0 0 -15px</margin>
-        <line-height>normal</line-height>
+        <margin>0</margin>
+        <font-size>9px</font-size>
         <float>right</float>
+      </selector>
+      <selector path=".action_bar_message form">
+        <display>inline</display>
+        <text-align>right</text-align>
       </selector>
       <selector path=".action_bar ul">
         <margin>0</margin>
