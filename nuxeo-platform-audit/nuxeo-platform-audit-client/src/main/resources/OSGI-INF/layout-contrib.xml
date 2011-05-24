@@ -210,8 +210,8 @@
         </properties>
       </widget>
 
-      <!-- XXX use i18n text widget -->
-      <widget name="eventLC" type="text">
+      <!-- XXX use i18n text widget instead of widget template-->
+      <widget name="eventLC" type="template">
         <labels>
           <label mode="any">label.lifecycle</label>
         </labels>
@@ -219,8 +219,12 @@
         <fields>
           <field>data.docLifeCycle</field>
         </fields>
+        <properties mode="any">
+        <property name="template">
+          /widgets/auditlc_widget_template.xhtml
+        </property>
+        </properties>
       </widget>
-
 
     </layout>
 
