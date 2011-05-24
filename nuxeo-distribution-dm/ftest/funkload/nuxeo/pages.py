@@ -98,8 +98,10 @@ class BasePage:
             description="Login " + user)
         fl.assert_('loginFailed=true' not in fl.getLastUrl(),
                    'Login failed for %s:%s' % (user, password))
-        fl.assert_('class="userActions">' + user in fl.getBody(),
-                    "User login not found on the welcome page")
+        fl.assert_('"userMenuActions"' in fl.getBody(),
+                    "No user menu found in the welcome page")
+        fl.assert_(user in fl.getBody(),
+                   "username not found on the page" + user)
         fl.current_login = user
         return FolderPage(self.fl)
 
