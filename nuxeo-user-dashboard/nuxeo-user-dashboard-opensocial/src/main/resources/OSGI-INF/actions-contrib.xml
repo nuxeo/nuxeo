@@ -23,16 +23,20 @@
       <filter-id>only_for_manager</filter-id>
     </action>
 
-    <action id="AnonymousDashboardManagement" link="/incl/dashboard/anonymous_dashboard_management.xhtml"
-      label="tab.dashboard.management.anonymous" order="10">
+    <action id="DefaultDashboardManagement" link="/incl/dashboard/default_dashboard_management.xhtml"
+      label="tab.dashboard.management.default" order="10">
       <category>DashboardManagement_sub_tab</category>
       <filter-id>only_for_manager</filter-id>
     </action>
 
-    <action id="DefaultDashboardManagement" link="/incl/dashboard/default_dashboard_management.xhtml"
-      label="tab.dashboard.management.default" order="20">
+    <action id="AnonymousDashboardManagement" link="/incl/dashboard/anonymous_dashboard_management.xhtml"
+      label="tab.dashboard.management.anonymous" order="20">
       <category>DashboardManagement_sub_tab</category>
       <filter-id>only_for_manager</filter-id>
+    </action>
+
+    <action id="ExternalGadgets">
+      <category>DashboardManagement_sub_tab</category>
     </action>
 
   </extension>
