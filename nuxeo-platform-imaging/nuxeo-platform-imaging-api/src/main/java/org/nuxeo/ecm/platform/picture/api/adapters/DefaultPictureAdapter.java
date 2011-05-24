@@ -118,9 +118,12 @@ public class DefaultPictureAdapter extends AbstractPictureAdapter {
 
     public Blob getPictureFromTitle(String title) throws PropertyException,
             ClientException {
+        if (title==null) {
+            return null;
+        }
         Collection<Property> views = doc.getProperty(VIEWS_PROPERTY).getChildren();
         for (Property property : views) {
-            if (property.getValue(TITLE_PROPERTY).equals(title)) {
+            if (title.equals(property.getValue(TITLE_PROPERTY))) {
                 Blob blob = (Blob) property.getValue("content");
                 blob.setFilename((String) property.getValue(FILENAME_PROPERTY));
                 return blob;
