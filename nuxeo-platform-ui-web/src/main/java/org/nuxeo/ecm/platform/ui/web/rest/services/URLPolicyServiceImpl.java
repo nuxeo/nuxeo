@@ -267,7 +267,9 @@ public class URLPolicyServiceImpl implements URLPolicyService {
 
     public String getUrlFromDocumentView(DocumentView docView, String baseUrl) {
         String url = null;
-        for (URLPatternDescriptor desc : getURLPatternDescriptors()) {
+        String docViewId = docView.getViewId();
+        List<URLPatternDescriptor> descs = getSortedURLPatternDescriptorsFor(docViewId);
+        for (URLPatternDescriptor desc : descs) {
             url = getUrlFromDocumentView(desc.getName(), docView, baseUrl);
             if (url != null) {
                 break;
@@ -277,6 +279,24 @@ public class URLPolicyServiceImpl implements URLPolicyService {
         // log.debug("Could not get url from document view");
         // }
         return url;
+    }
+
+    protected List<URLPatternDescriptor> getSortedURLPatternDescriptorsFor(
+            String viewId) {
+        List<URLPatternDescriptor> sortedDescriptors = new ArrayList<URLPatternDescriptor>();
+        List<URLPatternDescriptor> nonMatchingViewIdDescriptors = new ArrayList<URLPatternDescriptor>();
+
+        List<URLPatternDescriptor> descriptors = getURLPatternDescriptors();
+        for (URLPatternDescriptor descriptor : descriptors) {
+            List<String> handledViewIds = descriptor.getViewIds();
+            if (handledViewIds != null && handledViewIds.contains(viewId)) {
+                sortedDescriptors.add(descriptor);
+            } else {
+                nonMatchingViewIdDescriptors.add(descriptor);
+            }
+        }
+        sortedDescriptors.addAll(nonMatchingViewIdDescriptors);
+        return sortedDescriptors;
     }
 
     public String getUrlFromDocumentView(String patternName,
@@ -416,9 +436,10 @@ public class URLPolicyServiceImpl implements URLPolicyService {
                                 httpRequest.setAttribute(paramName, value);
                             }
                         } catch (Exception e) {
-                            log.error(String.format(
-                                    "Could not get parameter %s from expression %s",
-                                    paramName, expr), e);
+                            log.error(
+                                    String.format(
+                                            "Could not get parameter %s from expression %s",
+                                            paramName, expr), e);
                         }
                     }
                 }

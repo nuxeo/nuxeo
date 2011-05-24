@@ -63,6 +63,9 @@
         <binding name="language" callGetter="false">
           #{restHelper.localeString}
         </binding>
+        <binding name="mainTabId" callGetter="false">
+          #{webActions.currentTabIds}
+        </binding>
       </bindings>
     </urlPattern>
 

@@ -124,6 +124,7 @@ public class RestHelper implements Serializable {
             if (currentDocument.isVersion()) {
                 params.put("version", "true");
             }
+            params.put("mainTabId", "MAIN_TABS:documents");
             // additional params will be set according to the url pattern,
             // calling getters on bindings.
             docView = new DocumentViewImpl(docLoc, typeInfo.getDefaultView(),
