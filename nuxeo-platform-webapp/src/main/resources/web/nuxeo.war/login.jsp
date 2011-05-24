@@ -247,7 +247,7 @@ nxthemes css is not used in login.jsp */
             </li>
             <li>
               <a onclick="window.open(this.href); return false;"
-                href="http://www.nuxeo.org/discussions/index.jspa?utm_source=dm&amp;utm_medium=login-page-top&amp;utm_campaign=products">
+                href="http://forum.nuxeo.com/?utm_source=dm&amp;utm_medium=login-page-top&amp;utm_campaign=products">
                 <fmt:message bundle="${messages}" key="label.login.forums" />
               </a>
             </li>
