@@ -35,9 +35,6 @@
       class="org.nuxeo.ecm.automation.core.operations.services.FileManagerImport" />
 
     <operation
-      class="org.nuxeo.ecm.automation.core.operations.services.UserWorkspaceCreateFromBlob" />
-
-    <operation
       class="org.nuxeo.ecm.automation.core.operations.services.BlobHolderAttach" />
 
     <operation
