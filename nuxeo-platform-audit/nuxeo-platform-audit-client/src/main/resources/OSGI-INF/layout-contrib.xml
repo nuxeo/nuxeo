@@ -110,8 +110,8 @@
         </column>
       </columns>
 
-
-      <widget name="eventId" type="text">
+      <!-- XXX use directory to get the labels, but should use i18n text widget -->
+       <widget name="eventId" type="selectOneDirectory">
         <labels>
           <label mode="any">label.performedAction</label>
         </labels>
@@ -119,6 +119,10 @@
         <fields>
           <field>data.eventId</field>
         </fields>
+        <properties mode="any">
+          <property name="directoryName">eventTypes</property>
+          <property name="localize">true</property>
+        </properties>
       </widget>
 
       <widget name="eventDate" type="datetime">
@@ -145,19 +149,24 @@
         </fields>
       </widget>
 
-      <!-- XXX use i18n text widget -->
-      <widget name="eventCategory" type="text">
+      <!-- XXX use directory to get the labels, but should use i18n text widget -->
+       <widget name="eventCategory" type="selectOneDirectory">
         <labels>
           <label mode="any">label.category</label>
         </labels>
         <translated>true</translated>
         <fields>
-          <field>data.category</field>
+          <field>data:category</field>
         </fields>
+        <properties mode="any">
+          <property name="directoryName">eventCategories</property>
+          <property name="localize">true</property>
+        </properties>
       </widget>
 
-      <!-- XXX use i18n text widget -->
-      <widget name="taskDirective" type="text">
+
+      <!-- XXX use i18n text widget instead of widget template-->
+      <widget name="taskDirective" type="template">
         <labels>
           <label mode="any">label.workflow.task.directive</label>
         </labels>
@@ -165,6 +174,11 @@
         <fields>
           <field>data.extendedInfos['directive'].serializableValue</field>
         </fields>
+        <properties mode="any">
+        <property name="template">
+          /widgets/auditdirective_widget_template.xhtml
+        </property>
+        </properties>
       </widget>
 
       <widget name="dueDate" type="datetime">
