@@ -28,7 +28,7 @@
   <extension target="faces-config#NAVIGATION">
     <navigation-case>
       <from-outcome>view_home</from-outcome>
-      <to-view-id>/user_center.xhtml</to-view-id>
+      <to-view-id>/view_home.xhtml</to-view-id>
       <redirect />
     </navigation-case>
   </extension>

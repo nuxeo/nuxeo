@@ -32,7 +32,7 @@
     <application root="${org.nuxeo.ecm.contextPath}"
       template-engine="jsf-facelets">
 
-      <view id="/user_center.xhtml">
+      <view id="/view_home.xhtml">
         <theme>userCenter/default</theme>
       </view>
 
