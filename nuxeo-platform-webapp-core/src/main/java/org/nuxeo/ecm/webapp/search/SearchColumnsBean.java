@@ -298,7 +298,7 @@ public class SearchColumnsBean extends InputController implements SearchColumns,
         }
     }
 
-    private Map<String, FieldWidget> buildFieldMap() {
+    private static Map<String, FieldWidget> buildFieldMap() {
         Map<String, FieldWidget> fieldMap = new HashMap<String, FieldWidget>();
         TypeService typeService = (TypeService) Framework.getRuntime().getComponent(
                 TypeService.ID);

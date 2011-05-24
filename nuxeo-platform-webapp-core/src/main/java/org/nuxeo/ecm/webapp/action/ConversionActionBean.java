@@ -245,7 +245,7 @@ public class ConversionActionBean implements ConversionAction {
      * Simply sends what to be downloaded or shown at screen via
      * HttpServletResponse.
      */
-    private void writeResponse(String header, String headerContent,
+    private static void writeResponse(String header, String headerContent,
             String contentType, byte[] value) throws IOException {
         FacesContext context = FacesContext.getCurrentInstance();
         HttpServletResponse response = (HttpServletResponse) context
