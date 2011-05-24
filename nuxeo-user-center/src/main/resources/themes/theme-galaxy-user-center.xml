@@ -1162,6 +1162,7 @@
       <!-- Style for Admin View -->
       <selector path=".adminViewContent">
         <width>100%</width>
+        <height>100%</height>
         <border-collapse>collapse</border-collapse>
       </selector>
       <selector path=".adminViewContent td">
@@ -1174,30 +1175,51 @@
         <padding>5px 0</padding>
       </selector>
       <selector path=".adminTabsColumn">
-        <background-color>#dbe0e4</background-color>
+        <background-color>#fff8f1</background-color>
         <padding>0</padding>
-        <width>150px</width>
+        <width>200px</width>
+        <height>100%</height>
       </selector>
       <selector path=".adminTabsColumn ul">
-        <padding>0</padding>
-        <margin>0</margin>
+        <padding>20px 0 0</padding>
+        <margin>0px -1px 0 0</margin>
         <list-style>none</list-style>
       </selector>
       <selector path=".adminTabsColumn li">
-        <padding>7px 10px 8px 20px</padding>
+        <padding>0</padding>
+        <margin>0 0 3px 6px</margin>
+        <border-width>1px</border-width>
+        <border-color>#eee</border-color>
+        <border-style>solid</border-style>
+        <background-color>#fffdf9</background-color>
       </selector>
-      <selector path=".adminTabsColumn li.selected">
+      <selector path=".adminTabsColumn li.selected, .adminTabsColumn li.selected:hover">
         <background-color>#fff</background-color>
+        <border-style>solid</border-style>
+        <border-color>#e4e4e4 #fff #e4e4e4 #e4e4e4</border-color>
+        <margin>0 0 3px 0</margin>
+      </selector>
+      <selector path=".adminTabsColumn li:hover">
+        <background-color>#f3f9ff</background-color>
+        <border-color>#eee</border-color>
+        <margin>0 0 3px 0px</margin>
       </selector>
       <selector path=".adminTabsColumn li a">
-        <color>#757575</color>
+        <color>#8c8c8c</color>
         <display>block</display>
+        <padding>7px 10px 8px 20px</padding>
+        <text-decoration>none</text-decoration>
+      </selector>
+       <selector path=".adminTabsColumn li a:hover">
+        <color>#555</color>
       </selector>
       <selector path=".adminTabsColumn li.selected a">
         <color>#212121</color>
       </selector>
       <selector path=".adminTabBlock">
-        <margin>10px 0 10px 5px</margin>
+        <height>100%</height>
+        <margin>0 0 0 5px</margin>
+        <border-right>1px solid #eee</border-right>
       </selector>
       <selector path=".adminContentColumn">
         <padding>20px</padding>
