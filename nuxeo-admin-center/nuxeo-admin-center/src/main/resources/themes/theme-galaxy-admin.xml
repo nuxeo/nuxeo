@@ -547,9 +547,39 @@
         <line-height>1.25em</line-height>
         <padding>0</padding>
       </selector>
+      <selector path=".contentViewTitle">
+        <margin>10px 10px 10px 0</margin>
+        <line-height>normal</line-height>
+        <float>left</float>
+      </selector>
       <selector path=".listingLayoutSelector">
         <float>right</float>
-        <margin>11px 0 10px</margin>
+        <margin>11px 0 10px 7px</margin>
+        <text-align>right</text-align>
+      </selector>
+      <selector path=".listingLayoutSelector .contentViewPageSelectorDesc">
+        <float>left</float>
+        <padding>2px 3px 0 0</padding>
+      </selector>
+      <selector path=".listingLayoutSelector .langSelect">
+        <float>left</float>
+        <margin>0px 0 10px</margin>
+      </selector>
+      <selector path=".calendarTrigger">
+        <cursor>pointer</cursor>
+        <vertical-align>bottom</vertical-align>
+        <margin>0 0 5px</margin>
+      </selector>
+      <!-- rich faces tree -->
+      <selector path=".dr-tree-h-ic-div">
+        <margin-left>8px</margin-left>
+        <padding-left>10px</padding-left>
+      </selector>
+      <selector path=".treeNodeHighlightedClass">
+        <text-decoration>none</text-decoration>
+      </selector>
+      <selector path=".treeNodeSelectedClass">
+        <border>none</border>
       </selector>
       <!-- Rich Faces fileUpload -->
       <selector path=".rich-fileupload-list-decor">
@@ -724,18 +754,76 @@
       </selector>
       <selector path=".foldableBox h3.folded">
         <background preset="folded (Galaxy Admin backgrounds)"/>
+        <height>18px</height>
       </selector>
-      <selector path=".foldableBox h3 a:link, .foldableBox h3 a:visited, .foldableBox h3 a:hover, .foldableBox h3 a:visited:hover">
+      <selector path=".foldableBox h3.foldedDisabled">
+        <background>#d2d2d2 none</background>
+        <height>18px</height>
+        <color>#555</color>
+        <border-bottom>1px solid #d2d2d2</border-bottom>
+      </selector>
+      <selector path=".foldableBox h3 span, .foldableBox h3 a:link, .foldableBox h3 a:visited, .foldableBox h3 a:hover, .foldableBox h3 a:visited:hover">
         <color preset="foldablebox.titles (Galaxy Admin colors)" />
+        <float>left</float>
+        <padding-right>10px</padding-right>
       </selector>
       <selector path=".foldableBox h3.unfolded">
         <background preset="unfolded (Galaxy Admin backgrounds)"/>
+        <clear>both</clear>
+        <height>18px</height>
       </selector>
       <selector path=".foldableBox h3 a">
         <color preset="foldablebox.titles (Galaxy Admin colors)" />
         <display>block</display>
       </selector>
+      <selector path=".foldableBox h3 a.warningLink">
+        <color>red !important</color>
+        <font-weight>bold</font-weight>
+      </selector>
+      <selector path=".foldableBox h3 a.action, .foldableBox h3 a.action:visited, .foldableBox h3 a.action:hover, .foldableBox h3 a.action:visited:hover">
+        <background-color>#EFEFEF</background-color>
+        <border>1px solid #CECECE</border>
+        <color>#333333</color>
+        <float>right</float>
+        <font-weight>normal</font-weight>
+        <padding>1px 3px</padding>
+      </selector>
       <selector path=".foldableBox .boxBody">
+        <clear>both</clear>
+        <padding>10px</padding>
+      </selector>
+      <selector path=".foldableLightBox">
+        <margin-bottom>20px</margin-bottom>
+      </selector>
+      <selector path=".foldableLightBox div.folded, .foldableLightBox div.unfolded ">
+        <border-bottom preset="tabisnotselected (Galaxy Admin borders)"/>
+        <color preset="foldablelightbox.titles (Galaxy Admin colors)" />
+        <padding>3px 3px 3px 18px</padding>
+        <font-size>9px</font-size>
+      </selector>
+      <selector path=".foldableLightBox div.folded">
+        <background preset="foldedlight (Galaxy Admin backgrounds)"/>
+        <height>18px</height>
+      </selector>
+      <selector path=".foldableLightBox div.foldedDisabled">
+        <background>#d2d2d2 none</background>
+        <height>18px</height>
+        <color>#555</color>
+        <border-bottom>1px solid #d2d2d2</border-bottom>
+      </selector>
+      <selector path=".foldableLightBox div.unfolded">
+        <background preset="unfoldedlight (Galaxy Admin backgrounds)"/>
+        <height>18px</height>
+      </selector>
+      <selector path=".foldableLightBox div.folded a, .foldableLightBox div.unfolded a">
+        <color preset="foldablelightbox.titles (Galaxy Admin colors)" />
+        <float>left</float>
+      </selector>
+      <selector path=".foldableLightBox .boxBody">
+        <border-left preset="tabisnotselected (Galaxy Admin borders)"/>
+        <border-right preset="tabisnotselected (Galaxy Admin borders)"/>
+        <border-bottom preset="tabisnotselected (Galaxy Admin borders)"/>
+        <clear>both</clear>
         <padding>10px</padding>
       </selector>
       <selector path=".relationCreateFieldColumn, .fieldColumn, .workflowFieldColumn">
@@ -763,7 +851,7 @@
         <background-color preset="blue.sky (Galaxy Admin backgrounds)"/>
       </selector>
       <selector path=".buttonsGadget">
-        <margin>5px 0px 5px 135px</margin>
+        <margin>5px 0px 5px 40px</margin>
       </selector>
       <selector path=".errorFeedback">
         <font preset="big.default (Galaxy Admin fonts)"/>
@@ -779,6 +867,9 @@
       <selector path=".dataInput td">
         <border>0px solid #FFF</border>
         <padding>7px 4px</padding>
+      </selector>
+      <selector path=".dataInput td td, .dataInput td td td">
+        <padding>3px 4px</padding>
       </selector>
       <selector path=".dataInput textarea, .dataInput .dataInputText, .dataInput .dataInputTextNoSize">
         <font preset="default (Galaxy Admin fonts)"/>
@@ -914,6 +1005,7 @@
       </selector>
       <selector path=".required">
         <background preset="required (Galaxy Admin backgrounds)"/>
+        <padding>0 10px 0 0</padding>
       </selector>
       <selector path=".rightsAddManager .labelColumn">
         <width>80px</width>
@@ -944,6 +1036,15 @@
         <line-height>normal</line-height>
         <float>left</float>
       </selector>
+      <selector path=".action_bar_message">
+        <margin>0</margin>
+        <font-size>9px</font-size>
+        <float>right</float>
+      </selector>
+      <selector path=".action_bar_message form">
+        <display>inline</display>
+        <text-align>right</text-align>
+      </selector>
       <selector path=".action_bar ul">
         <margin>0</margin>
         <padding>0px 10px 0 0</padding>
@@ -972,6 +1073,10 @@
         <color preset="buttons.hover (Galaxy Admin colors)" />
         <border preset="buttons.hover (Galaxy Admin borders)" />
       </selector>
+      <selector path=".tabsContent">
+        <margin>0px</margin>
+        <padding>5px 10px 10px 10px</padding>
+      </selector>
       <selector path=".tabsContent table.trashTable thead th">
         <background-color preset="orange.lite (Galaxy Admin backgrounds)" />
       </selector>
@@ -980,6 +1085,9 @@
       </selector>
       <selector path="textarea">
         <padding>5px</padding>
+      </selector>
+      <selector path=".checkBox">
+        <margin-right>3px</margin-right>
       </selector>
       <selector path=".rightsAddManager">
         <background preset="addmanager (Galaxy Admin backgrounds)"/>
@@ -1084,6 +1192,10 @@
       <selector path=".rank_block, .publication_block, .attachments">
         <margin-top>15px</margin-top>
       </selector>
+      <selector path=".content_block table">
+        <width>100%</width>
+        <margin-bottom>10px</margin-bottom>
+      </selector>
       <selector path=".content_block td">
         <vertical-align>top</vertical-align>
         <padding>0px 0px 10px 0px</padding>
@@ -1100,7 +1212,7 @@
       <selector path=".note_content_block">
         <padding>15px</padding>
         <border>1px solid #D7D7D7</border>
-        <margin-top>20px</margin-top>
+        <margin>0 0 15px</margin>
       </selector>
       <selector path=".relation_block">
       </selector>
@@ -1152,6 +1264,7 @@
       <selector path=".summary_div_0">
         <float>left</float>
         <width>62%</width>
+        <padding-top>10px</padding-top>
       </selector>
       <selector path=".summary_div_1">
         <float>right</float>
