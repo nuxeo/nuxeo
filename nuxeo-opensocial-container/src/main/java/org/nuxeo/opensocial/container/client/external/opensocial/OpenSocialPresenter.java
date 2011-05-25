@@ -61,6 +61,7 @@ public class OpenSocialPresenter extends
         setLanguage();
         setPermissions();
         setParent();
+        setHeight();
 
         display.setUrl(model.getData().getFrameUrl());
 
@@ -121,6 +122,18 @@ public class OpenSocialPresenter extends
         return url;
     }
 
+    protected void setHeight() {
+        String heightPref = model.getData().getModulePreferences().get("height");
+        if (heightPref != null) {
+            try {
+                int height = Integer.parseInt(heightPref);
+                display.setHeight(height);
+            } catch(NumberFormatException e) {
+                // do nothing
+            }
+        }
+    }
+
     @Override
     public Place getPlace() {
         return PLACE;
@@ -142,6 +155,7 @@ public class OpenSocialPresenter extends
         setLanguage();
         setPermissions();
         setParent();
+        setHeight();
         display.setUrl(model.getData().getFrameUrl());
     }
 

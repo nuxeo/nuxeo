@@ -35,7 +35,7 @@ import org.apache.shindig.common.uri.Uri;
 import org.apache.shindig.gadgets.GadgetContext;
 import org.apache.shindig.gadgets.GadgetSpecFactory;
 import org.apache.shindig.gadgets.spec.GadgetSpec;
-import org.apache.shindig.gadgets.spec.UserPref;
+import org.apache.shindig.gadgets.spec.ModulePrefs;import org.apache.shindig.gadgets.spec.UserPref;
 import org.apache.shindig.gadgets.spec.UserPref.EnumValuePair;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -167,11 +167,26 @@ public class OpenSocialAdapter extends
             }
 
             data.setUserPrefs(dataUserPrefs);
+
+            Map<String, String> modulePreferences = buildModulePreferences(gadgetSpec);
+            data.setModulePreferences(modulePreferences);
         }
 
         setFrameUrlFor(data);
 
         return data;
+    }
+
+    protected Map<String, String> buildModulePreferences(GadgetSpec gadgetSpec) {
+        Map<String, String> modulePreferencesMap = new HashMap<String, String>();
+        ModulePrefs modulePrefs = gadgetSpec.getModulePrefs();
+        modulePreferencesMap.put("title", modulePrefs.getTitle());
+        modulePreferencesMap.put("description", modulePrefs.getDescription());
+        modulePreferencesMap.put("author", modulePrefs.getAuthor());
+        modulePreferencesMap.put("author_email", modulePrefs.getAuthorEmail());
+        modulePreferencesMap.put("width", modulePrefs.getAttribute("width"));
+        modulePreferencesMap.put("height", modulePrefs.getAttribute("height"));
+        return modulePreferencesMap;
     }
 
     private GadgetSpec getGadgetSpec(OpenSocialData data) {

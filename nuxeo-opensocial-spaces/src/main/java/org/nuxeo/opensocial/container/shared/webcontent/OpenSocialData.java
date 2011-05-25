@@ -1,6 +1,7 @@
 package org.nuxeo.opensocial.container.shared.webcontent;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -32,9 +33,12 @@ public class OpenSocialData extends AbstractWebContentData {
 
     private List<UserPref> userPrefs;
 
+    private Map<String, String> modulePreferences;
+
     public OpenSocialData() {
         super();
         setUserPrefs(new ArrayList<UserPref>());
+        setModulePreferences(new HashMap<String, String>());
     }
 
     public String getFrameUrl() {
@@ -78,6 +82,14 @@ public class OpenSocialData extends AbstractWebContentData {
             }
         }
         return null;
+    }
+
+    public void setModulePreferences(Map<String, String> modulePreferences) {
+        this.modulePreferences = modulePreferences;
+    }
+
+    public Map<String, String> getModulePreferences() {
+        return modulePreferences;
     }
 
     public void setGadgetName(String name) {
