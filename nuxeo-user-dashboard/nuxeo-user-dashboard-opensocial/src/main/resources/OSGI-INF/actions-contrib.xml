@@ -33,6 +33,11 @@
       label="tab.dashboard.management.anonymous" order="20">
       <category>DashboardManagement_sub_tab</category>
       <filter-id>only_for_manager</filter-id>
+      <filter id="isAnonymousUserDefined">
+        <rule grant="true">
+          <condition>#{anonymousUserDefined}</condition>
+        </rule>
+      </filter>
     </action>
 
     <action id="ExternalGadgets">
