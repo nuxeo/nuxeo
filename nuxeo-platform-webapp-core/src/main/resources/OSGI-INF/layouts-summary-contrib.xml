@@ -484,9 +484,9 @@
         <row>
           <widget>summary_current_document_lc_and_version</widget>
           <widget>summary_current_document_actions</widget>
+          <widget>summary_current_document_custom_actions</widget>
           <widget>summary_current_document_tagging</widget>
           <widget>summary_current_document_relations</widget>
-          <widget>summary_current_document_custom_actions</widget>
         </row>
         <row>
           <widget>summary_current_document_publications</widget>
@@ -512,9 +512,9 @@
         <row>
           <widget>summary_current_document_lc_and_version</widget>
           <widget>summary_current_document_actions</widget>
+          <widget>summary_current_document_custom_actions</widget>
           <widget>summary_current_document_tagging</widget>
           <widget>summary_current_document_relations</widget>
-          <widget>summary_current_document_custom_actions</widget>
         </row>
         <row>
           <widget>summary_current_document_publications</widget>

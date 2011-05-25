@@ -1366,7 +1366,7 @@
       <selector path=".note_content_block">
         <padding>15px</padding>
         <border>1px solid #D7D7D7</border>
-        <margin-top>20px</margin-top>
+        <margin>0 0 15px</margin>
       </selector>
       <selector path=".relation_block">
       </selector>
@@ -1418,6 +1418,7 @@
       <selector path=".summary_div_0">
         <float>left</float>
         <width>62%</width>
+        <padding-top>10px</padding-top>
       </selector>
       <selector path=".summary_div_1">
         <float>right</float>
