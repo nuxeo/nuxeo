@@ -1066,7 +1066,7 @@
       </selector>
       <selector path=".dataInput .fieldColumn table.mceEditor">
         <background preset="blue.sky (Galaxy backgrounds)"/>
-        <border preset="gray.light (Galaxy borders"/>
+        <border preset="gray.light (Galaxy borders)"/>
       </selector>
       <selector path="table.dataOutput thead th">
         <border-bottom preset="tablelines (Galaxy borders)"/>
