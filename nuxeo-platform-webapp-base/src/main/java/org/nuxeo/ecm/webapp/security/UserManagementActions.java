@@ -313,6 +313,11 @@ public class UserManagementActions extends AbstractUserGroupManagement
         evtManager.raiseEvent(eventName);
     }
 
+    @Factory(value = "anonymousUserDefined", scope = APPLICATION)
+    public boolean anonymousUserDefined() throws ClientException {
+        return userManager.getAnonymousUserId() != null;
+    }
+
     @Observer(value = { USERS_LISTING_CHANGED })
     public void onUsersListingChanged() {
         contentViewActions.refreshOnSeamEvent(USERS_LISTING_CHANGED);
