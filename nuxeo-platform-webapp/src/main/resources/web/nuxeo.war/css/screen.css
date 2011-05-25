@@ -731,3 +731,35 @@ padding:5px 0px 2px 0px;
    border-color:#444444;
    border-width: 0px 0px 0px 2px;
  }
+
+ /* Footer Banner */
+
+ .bannerBottom {
+  font: normal 11px "Lucida Grande", Helvetica, sans-serif;
+  text-align:left;
+  }
+
+.unregistered {
+  background-color: #0e88b5;
+  color:#fff;
+  }
+
+.message {
+  padding: 5px 10px 7px;
+  }
+
+.links {
+  padding: 2px 10px 0;
+  }
+
+.unregistered .message {
+  float: left;
+  }
+
+.unregistered .links {
+  float: right;
+  }
+
+.bold {
+  font-weight: bold;
+  }

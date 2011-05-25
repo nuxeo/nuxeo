@@ -1,0 +1,60 @@
+<f:subview xmlns:h="http://java.sun.com/jsf/html"
+     xmlns:c="http://java.sun.com/jstl/core"
+     xmlns:ui="http://java.sun.com/jsf/facelets"
+     xmlns:f="http://java.sun.com/jsf/core">
+
+<ui:insert name="prefooter">
+  <c:if test="#{(prefooter_template!=null) and (!prefooter_template.equals(''))}">
+     <ui:include src="#{prefooter_template}"/>
+  </c:if>
+</ui:insert>
+
+<ui:insert name="footer">
+ <div class="nuxLinks">
+ <h:outputLink onclick="window.open(this.href); return false;" value="http://www.nuxeo.com/en/about/contact?utm_source=dm&amp;utm_medium=pages-footer&amp;utm_campaign=products">
+  <h:outputText value="#{messages['label.footer.contactUs']}" />
+    </h:outputLink> | <!-- &nbsp; -->
+    <h:outputLink onclick="window.open(this.href); return false;" value="http://blogs.nuxeo.com/?utm_source=dm&amp;utm_medium=pages-footer&amp;utm_campaign=products">
+  <h:outputText value="#{messages['label.footer.blogs']}" />
+    </h:outputLink> | <!-- &nbsp; -->
+  <h:outputLink onclick="window.open(this.href); return false;" value="http://community.nuxeo.com/?utm_source=dm&amp;utm_medium=pages-footer&amp;utm_campaign=products">
+  <h:outputText value="#{messages['label.footer.community']}" />
+    </h:outputLink> | <!-- &nbsp; -->
+  <h:outputLink onclick="window.open(this.href); return false;" value="http://forum.nuxeo.com/?utm_source=dm&amp;utm_medium=pages-footer&amp;utm_campaign=products">
+    <h:outputText value="#{messages['label.footer.forums']}" />
+  </h:outputLink>
+  | <!-- &nbsp; -->
+  <h:outputLink onclick="window.open(this.href); return false;" value="http://doc.nuxeo.com/?utm_source=dm&amp;utm_medium=pages-footer&amp;utm_campaign=products">
+    <h:outputText value="#{messages['label.footer.documentation']}" />
+  </h:outputLink>
+  | <!-- &nbsp; -->
+  <h:outputLink class="twitt" onclick="window.open(this.href); return false;" value="http://twitter.com/nuxeo/?utm_source=dm&amp;utm_medium=pages-footer&amp;utm_campaign=products">
+    <h:outputText value="Twitter" style="display:none;"/>
+  </h:outputLink><!-- &nbsp; -->
+  <h:outputLink class="linkedin" onclick="window.open(this.href); return false;" value="http://www.linkedin.com/groupRegistration?gid=43314&amp;utm_source=dm&amp;utm_medium=pages-footer&amp;utm_campaign=products">
+    <h:outputText value="LinkedIn" style="display:none;" />
+  </h:outputLink>
+  </div>
+
+  <div class="copyrights">
+   <h:outputText value="#{messages['label.login.copyright']}" />
+ </div>
+  <div class="clear"></div>
+
+<c:if test="false">
+  NXP-3151: move language selector to login page
+  <h:form id="langSelectForm">
+    <h:outputText value="#{messages['label.selectLocale']}" />
+    <h:selectOneMenu value="#{localeSelector.localeString}" styleClass="langSelect"
+      id="langSelectMenu">
+      <f:selectItems value="#{localeSelector.supportedLocales}"/>
+    </h:selectOneMenu>
+    <h:commandButton action="#{localeSelector.select}"
+                     value="#{messages['command.changeLocale']}"
+                     class="langSubmit"
+                     id="langSelectSubmitButton" />
+  </h:form>
+</c:if>
+
+</ui:insert>
+</f:subview>

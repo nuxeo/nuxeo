@@ -54,7 +54,14 @@
          </nxu:set>
        </li>
      </ul>
+
    </div>
+
+    <c:if test="#{availableHotFixCount!=null and availableHotFixCount>=0}">
+     <div style="float:left; color:white">
+      #{availableHotFixCount} update available
+     </div>
+    </c:if>
 
    <div class="userActions">
 
