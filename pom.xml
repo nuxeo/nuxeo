@@ -1,6 +1,5 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -9,7 +8,7 @@
     <version>5.4.2-SNAPSHOT</version>
   </parent>
 
-  <groupId>org.nuxeo.ecm.platform</groupId>  
+  <groupId>org.nuxeo.ecm.platform</groupId>
   <artifactId>nuxeo-apidoc-server-parent</artifactId>
   <name>Nuxeo Documentation Server</name>
   <description>Parent for Documentation Server</description>
@@ -101,14 +100,13 @@
         <version>${nuxeo.core.version}</version>
         <scope>test</scope>
       </dependency>
-
     </dependencies>
   </dependencyManagement>
 
   <repositories>
     <repository>
-      <id>internal-private</id>
-      <url>http://mavenpriv.in.nuxeo.com/internal</url>
+      <id>public</id>
+      <url>http://maven.nuxeo.org/nexus/content/groups/public</url>
       <releases>
         <enabled>true</enabled>
       </releases>
@@ -117,21 +115,22 @@
       </snapshots>
     </repository>
     <repository>
-      <id>internal-private-snapshots</id>
-      <url>http://mavenpriv.in.nuxeo.com/internal-snapshots</url>
+      <id>public-snapshot</id>
+      <url>http://maven.nuxeo.org/nexus/content/groups/public-snapshot</url>
       <releases>
         <enabled>false</enabled>
       </releases>
       <snapshots>
-        <enabled>true</enabled>
         <updatePolicy>always</updatePolicy>
+        <enabled>true</enabled>
       </snapshots>
     </repository>
   </repositories>
+
   <pluginRepositories>
     <pluginRepository>
-      <id>internal-private</id>
-      <url>http://mavenpriv.in.nuxeo.com/internal</url>
+      <id>public</id>
+      <url>http://maven.nuxeo.org/nexus/content/groups/public</url>
       <name>Nuxeo virtual release repository</name>
       <releases>
         <enabled>true</enabled>
@@ -141,8 +140,8 @@
       </snapshots>
     </pluginRepository>
     <pluginRepository>
-      <id>internal-private-snapshots</id>
-      <url>http://mavenpriv.in.nuxeo.com/internal-snapshots</url>
+      <id>public-snapshot</id>
+      <url>http://maven.nuxeo.org/nexus/content/groups/public-snapshot</url>
       <name>Nuxeo virtual snapshot repository</name>
       <releases>
         <enabled>false</enabled>
@@ -153,14 +152,4 @@
       </snapshots>
     </pluginRepository>
   </pluginRepositories>
-  <distributionManagement>
-    <repository>
-      <id>releases</id>
-      <url>http://mavenpriv.in.nuxeo.com/releases</url>
-    </repository>
-    <snapshotRepository>
-      <id>snapshots</id>
-      <url>http://mavenpriv.in.nuxeo.com/snapshots</url>
-    </snapshotRepository>
-  </distributionManagement>
 </project>
