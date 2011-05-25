@@ -1,0 +1,17 @@
+<f:subview xmlns:h="http://java.sun.com/jsf/html"
+     xmlns:c="http://java.sun.com/jstl/core"
+     xmlns:ui="http://java.sun.com/jsf/facelets"
+     xmlns:f="http://java.sun.com/jsf/core">
+
+  <div class="message">
+          <p>This application is powered by Nuxeo DM 5.4.2, but your<span class="bold"> Nuxeo Connect registration is not valid </span>.</p>
+          <c:if test="#{availableHotFixCount>0}">
+            <p><span class="bold"> #{availableHotFixCount} hotfixes have been published your last update.</span>. Enable Nuxeo Connect if you want to register and benefit from automatic maintenance.</p>
+          </c:if>
+        </div>
+        <div class="links">
+          <a href="https://connect.nuxeo.com/nuxeo/site/connect/trial/form" target="_blank">Subscribe to Nuxeo Connect</a>
+        </div>
+  <div class="clear" />
+
+</f:subview>

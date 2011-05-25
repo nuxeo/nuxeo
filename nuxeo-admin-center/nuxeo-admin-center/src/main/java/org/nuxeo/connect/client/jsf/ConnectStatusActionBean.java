@@ -45,11 +45,15 @@ import org.nuxeo.connect.client.status.ConnectStatusHolder;
 import org.nuxeo.connect.client.status.SubscriptionStatusWrapper;
 import org.nuxeo.connect.connector.NuxeoClientInstanceType;
 import org.nuxeo.connect.data.ConnectProject;
+import org.nuxeo.connect.data.DownloadablePackage;
 import org.nuxeo.connect.identity.LogicalInstanceIdentifier;
 import org.nuxeo.connect.identity.TechnicalInstanceIdentifier;
 import org.nuxeo.connect.identity.LogicalInstanceIdentifier.InvalidCLID;
+import org.nuxeo.connect.packages.PackageManager;
 import org.nuxeo.connect.registration.ConnectRegistrationService;
+import org.nuxeo.connect.update.PackageType;
 import org.nuxeo.connect.update.PackageUpdateService;
+import org.nuxeo.ecm.admin.runtime.PlatformVersionHelper;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 import org.nuxeo.runtime.api.Framework;
@@ -69,6 +73,10 @@ import org.nuxeo.runtime.api.Framework;
 public class ConnectStatusActionBean implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
+    public static final String CLIENT_BANNER_TYPE = "clientSideBanner";
+
+    public static final String SERVER_BANNER_TYPE = "serverSideBanner";
 
     private static final Log log = LogFactory.getLog(ConnectStatusActionBean.class);
 
@@ -153,16 +161,18 @@ public class ConnectStatusActionBean implements Serializable {
         this.password = password;
     }
 
-    @Factory(scope = ScopeType.EVENT, value = "registredConnectInstance")
+    @Factory(scope = ScopeType.APPLICATION, value = "registredConnectInstance")
     public boolean isRegistred() {
         return getService().isInstanceRegistred();
     }
 
-    protected void flushEventCache() {
+    protected void flushContextCache() {
         // A4J and Event cache don't play well ...
         Contexts.getEventContext().remove("connectLoginValidated");
         Contexts.getEventContext().remove("projectsForRegistration");
-        Contexts.getEventContext().remove("registredConnectInstance");
+
+        Contexts.getApplicationContext().remove("registredConnectInstance");
+        Contexts.getApplicationContext().remove("prefooter_template");
     }
 
     public void validateLogin() {
@@ -171,7 +181,7 @@ public class ConnectStatusActionBean implements Serializable {
                     resourcesAccessor.getMessages().get(
                             "label.empty.loginpassword"));
             loginValidated = false;
-            flushEventCache();
+            flushContextCache();
             return;
         }
         List<ConnectProject> prjs = getProjectsAvailableForRegistration();
@@ -180,10 +190,10 @@ public class ConnectStatusActionBean implements Serializable {
                     resourcesAccessor.getMessages().get(
                             "label.bad.loginpassword.or.noproject"));
             loginValidated = false;
-            flushEventCache();
+            flushContextCache();
             return;
         }
-        flushEventCache();
+        flushContextCache();
         loginValidated = true;
     }
 
@@ -254,7 +264,7 @@ public class ConnectStatusActionBean implements Serializable {
         loginValidated = false;
         registredProject = null;
         instanceDescription = null;
-        flushEventCache();
+        flushContextCache();
         return null;
     }
 
@@ -279,7 +289,7 @@ public class ConnectStatusActionBean implements Serializable {
             log.error("Error while registring instance", e);
         }
 
-        flushEventCache();
+        flushContextCache();
         ConnectStatusHolder.instance().flush();
         return null;
     }
@@ -302,7 +312,7 @@ public class ConnectStatusActionBean implements Serializable {
             log.error("Error while registring instance locally", e);
         }
 
-        flushEventCache();
+        flushContextCache();
         return null;
     }
 
@@ -352,5 +362,59 @@ public class ConnectStatusActionBean implements Serializable {
             packageFileName = null;
             packageToUpload = null;
         }
+    }
+
+    @Factory(scope = ScopeType.APPLICATION, value = "prefooter_template")
+    public String getFooter() {
+        String footer_type=null;
+
+        if (!isRegistred()) {
+            footer_type =  CLIENT_BANNER_TYPE;
+        } else {
+            if (isConnectServerReachable()) {
+                if (getStatus().isError()) {
+                    footer_type =  SERVER_BANNER_TYPE;
+                }
+            } else {
+                footer_type = CLIENT_BANNER_TYPE;
+            }
+        }
+
+        if (footer_type!=null) {
+            return "/incl/" + footer_type + ".xhtml";
+        } else {
+            return "";
+        }
+    }
+
+    @Factory(scope = ScopeType.SESSION, value = "availableHotFixCount")
+    public int getAvailableUpdateCount() {
+
+        if (isRegistred() && isConnectServerReachable()) {
+            PackageManager pm = Framework.getLocalService(PackageManager.class);
+
+            List<DownloadablePackage> pkgs = pm.listUpdatePackages(PackageType.HOT_FIX);
+
+            List<DownloadablePackage> localHotFixes = pm.listLocalPackages(PackageType.HOT_FIX);
+
+            List<DownloadablePackage> applicablePkgs = new ArrayList<DownloadablePackage>();
+
+            for (DownloadablePackage pkg : pkgs) {
+                if (PlatformVersionHelper.isCompatible(pkg.getTargetPlatforms())) {
+                    boolean isInstalled = false;
+                    for (DownloadablePackage localPkg : localHotFixes) {
+                        if (localPkg.getId().equals(pkg.getId())) {
+                            isInstalled=true;
+                            break;
+                        }
+                    }
+                    if (!isInstalled) {
+                        applicablePkgs.add(pkg);
+                    }
+                }
+            }
+            return applicablePkgs.size();
+        }
+        return 0;
     }
 }

@@ -1,0 +1,65 @@
+<f:subview xmlns:h="http://java.sun.com/jsf/html"
+     xmlns:c="http://java.sun.com/jstl/core"
+     xmlns:ui="http://java.sun.com/jsf/facelets"
+     xmlns:f="http://java.sun.com/jsf/core">
+
+ <c:choose>
+      <c:when test="#{!registredConnectInstance}">
+         <c:if test="false"> Instance is not registred </c:if>
+         <div class="bannerBottom unregistered">
+         <div class="message">
+          <p>This application is powered by Nuxeo DM 5.4.2 and is <span class="bold">not registered in Nuxeo Connect</span>. It might be <span class="bold">not up to date</span>.</p>
+          <p><span class="bold" id="connectHotFixesCountMsg" style="display:none"><span id="connectHotFixesCount">3</span> hotfixes have been published since this release</span>. Enable Nuxeo Connect if you want to register and benefit from automatic maintenance.</p>
+        </div>
+        <div class="links">
+          <a href="http://doc.nuxeo.com/display/NXDOC/Register+your+Nuxeo+instance" target="_blank">How to enable Nuxeo Connect</a>
+          <a href="https://connect.nuxeo.com/nuxeo/site/connect/trial/form" target="_blank">Subscribe to Nuxeo Connect</a>
+        </div>
+        <div class="clear" />
+        </div>
+        <script>
+         function updateConnectAvailableUpdates(nbPkg) {
+                  jQuery(document).ready(function(){
+                  if (nbPkg>0) {
+                   jQuery("#connectHotFixesCount").html(""+nbPkg);
+                   jQuery("#connectHotFixesCountMsg").css("display","block");
+                  }
+                 });
+         }
+        </script>
+        <script src="https://connect.nuxeo.com/nuxeo/site/connectGateway/jsonp/unregistered?product=#{nuxeoPlatformIdentifier}%26callback=updateConnectAvailableUpdates"></script>
+
+      </c:when>
+      <c:otherwise>
+       <c:if test="false"> Instance is registred, but we can not check the status from the server side </c:if>
+       <span style="display:none" id="connectExpiredMessageBanner">
+        <div class="bannerBottom unregistered">
+        <div class="message">
+          <p>This application is powered by Nuxeo DM 5.4.2 . <span class="bold">Nuxeo Connect registration has expired</span>. It might be <span class="bold">not up to date</span>.</p>
+          <p><span class="bold" id="connectHotFixesCountMsg" style="display:none"><span id="connectHotFixesCount">3</span> hotfixes have been published since this release</span>. Re-enable Nuxeo Connect if you want to register and benefit from automatic maintenance.</p>
+        </div>
+        <div class="clear" />
+        </div>
+       </span>
+
+       <script>
+       function updateBanner(registrationStatus) {
+         if (registrationStatus.registred!=true) {
+               jQuery(document).ready(function(){
+                   if (registrationStatus.nbPkgs>0) {
+                     jQuery("#connectHotFixesCount").html(""+registrationStatus.nbPkgs);
+                     jQuery("#connectHotFixesCountMsg").css("display","block");
+                   }
+                   jQuery("#connectExpiredMessageBanner").css("display","block");
+               });
+         }
+       }
+       </script>
+       <script src="https://connect.nuxeo.com/nuxeo/site/connectGateway/jsonp/registered?product=#{nuxeoPlatformIdentifier}%26instance=#{connectStatus.CLID}%26callback=updateConnectBanner"></script>
+
+      </c:otherwise>
+
+ </c:choose>
+
+
+</f:subview>

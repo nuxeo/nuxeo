@@ -39,6 +39,7 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.contexts.Contexts;
 import org.nuxeo.ecm.admin.repo.RepoStat;
 import org.nuxeo.ecm.admin.repo.RepoStatInfo;
+import org.nuxeo.ecm.admin.runtime.PlatformVersionHelper;
 import org.nuxeo.ecm.admin.runtime.RuntimeInstrospection;
 import org.nuxeo.ecm.admin.runtime.SimplifiedServerInfo;
 import org.nuxeo.ecm.core.api.CoreInstance;
@@ -157,6 +158,11 @@ public class SystemInfoManager implements Serializable {
         sb.append(uts + " s  ");
 
         return sb.toString();
+    }
+
+    @Factory(value = "nuxeoPlatformIdentifier", scope = ScopeType.APPLICATION)
+    public String getNuxeoPlatformIdentifier() {
+        return PlatformVersionHelper.getPlatformFilter();
     }
 
     @Factory(value = "nuxeoServerInfo", scope = ScopeType.EVENT)
