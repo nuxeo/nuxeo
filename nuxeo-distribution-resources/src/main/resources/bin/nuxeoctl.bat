@@ -82,8 +82,8 @@ goto END
 
 :FOUND_NUXEO_CONF
 echo Found NUXEO_CONF = %NUXEO_CONF%
-echo "" > "%NUXEO_CONF%" || (
-  echo ERROR: %NUXEO_CONF% must be writeable. Run as the right user or set NUXEO_CONF point to another nuxeo.conf file.
+echo. >> "%NUXEO_CONF%" || (
+  echo ERROR: "%NUXEO_CONF%" must be writable. Run as the right user or set NUXEO_CONF point to another nuxeo.conf file.
   goto END
 )
 
@@ -99,7 +99,7 @@ REM ***** Check log directory *****
 if "%NUXEO_LOG_DIR%" == "" set NUXEO_LOG_DIR=%NUXEO_HOME%\log
 if not exist "%NUXEO_LOG_DIR%" mkdir "%NUXEO_LOG_DIR%" 2>nul
 IF %ERRORLEVEL% NEQ 0 goto SET_DEFAULT_LOG_DIR
-echo "" > "%NUXEO_LOG_DIR%\console.log" || goto SET_DEFAULT_LOG_DIR
+echo. >> "%NUXEO_LOG_DIR%\console.log" || goto SET_DEFAULT_LOG_DIR
 goto LOG_DIR_OK
 
 :SET_DEFAULT_LOG_DIR
