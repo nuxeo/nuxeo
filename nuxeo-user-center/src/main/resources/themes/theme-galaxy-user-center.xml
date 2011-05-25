@@ -340,6 +340,16 @@
         <padding>0</padding>
         <float>left</float>
       </selector>
+      <selector path=".tooltip">
+        <color preset="default.text (Galaxy User Center colors)" />
+        <border preset="blue.border (Galaxy User Center borders)" />
+        <background preset="tooltip (Galaxy User Center backgrounds)" />
+        <margin-bottom>5px !important</margin-bottom>
+        <padding>5px 5px 5px 23px !important</padding>
+        <display>none</display>
+        <max-width>20%</max-width>
+        <z-index>1000</z-index>
+      </selector>
       <selector path=".tabsBar a, .tabsBar a:hover, .tabsBar a:visited">
         <color preset="tablink (Galaxy User Center colors)" />
         <border preset="tabisnotselected (Galaxy User Center borders)"/>
@@ -1211,19 +1221,19 @@
         <padding>0</padding>
         <margin>0 0 3px 6px</margin>
         <border-width>1px</border-width>
-        <border-color>#eee</border-color>
+        <border-color>#ffebd7</border-color>
         <border-style>solid</border-style>
-        <background-color>#fffdf9</background-color>
+        <background-color>#fffcf7</background-color>
       </selector>
       <selector path=".adminTabsColumn li.selected, .adminTabsColumn li.selected:hover">
         <background-color>#fff</background-color>
         <border-style>solid</border-style>
-        <border-color>#e4e4e4 #fff #e4e4e4 #e4e4e4</border-color>
+        <border-color>#ffebd7 #fff #ffebd7 #ffebd7</border-color>
         <margin>0 0 3px 0</margin>
       </selector>
       <selector path=".adminTabsColumn li:hover">
-        <background-color>#f3f9ff</background-color>
-        <border-color>#eee</border-color>
+        <background-color>#fffefb</background-color>
+        <border-color>#ffebd7</border-color>
         <margin>0 0 3px 0px</margin>
       </selector>
       <selector path=".adminTabsColumn li a">
@@ -1241,7 +1251,7 @@
       <selector path=".adminTabBlock">
         <height>100%</height>
         <margin>0 0 0 5px</margin>
-        <border-right>1px solid #eee</border-right>
+        <border-right>1px solid #ffebd7</border-right>
       </selector>
       <selector path=".adminContentColumn">
         <padding>20px</padding>
