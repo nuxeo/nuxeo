@@ -57,7 +57,6 @@
       <width>0%</width>
     </layout>
     <layout element="page[1]/section[2]">
-      <height>100%</height>
       <width>100%</width>
     </layout>
     <layout element="page[1]/section[2]/cell[1]">
@@ -297,6 +296,29 @@
         <float>right</float>
         <padding>2px 20px 0 0</padding>
         <color>#9a9a9a</color>
+      </selector>
+      <selector path="a.twitt">
+        <background>transparent url(/nuxeo/icons/icones-metanav.png) no-repeat left top</background>
+        <height>16px</height>
+        <width>16px</width>
+        <display>inline-block</display>
+        <margin>0px 5px</margin>
+      </selector>
+      <selector path="a.twitt:hover">
+        <background-position>left bottom</background-position>
+      </selector>
+      <selector path="a.linkedin">
+        <background>transparent url(/nuxeo/icons/icones-metanav.png) no-repeat -16px top</background>
+        <height>16px</height>
+        <width>16px</width>
+        <display>inline-block</display>
+        <margin>0px 5px</margin>
+      </selector>
+      <selector path="a.linkedin:hover">
+        <background-position>-16px bottom</background-position>
+      </selector>
+      <selector path=".clear">
+        <clear>both</clear>
       </selector>
     </style>
     <style inherit="default buttons" name="default tabs">
@@ -1181,7 +1203,7 @@
         <height>100%</height>
       </selector>
       <selector path=".adminTabsColumn ul">
-        <padding>20px 0 0</padding>
+        <padding>20px 0 30px</padding>
         <margin>0px -1px 0 0</margin>
         <list-style>none</list-style>
       </selector>
