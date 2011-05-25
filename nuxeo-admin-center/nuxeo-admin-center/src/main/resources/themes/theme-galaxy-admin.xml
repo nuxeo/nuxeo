@@ -57,7 +57,6 @@
       <width>0%</width>
     </layout>
     <layout element="page[1]/section[2]">
-      <height>100%</height>
       <width>100%</width>
     </layout>
     <layout element="page[1]/section[2]/cell[1]">
@@ -342,9 +341,9 @@
         <float>left</float>
       </selector>
       <selector path=".tooltip">
-        <color preset="default.text (Galaxy colors)" />
-        <border preset="blue.border (Galaxy borders)" />
-        <background preset="tooltip (Galaxy backgrounds)" />
+        <color preset="default.text (Galaxy Admin colors)" />
+        <border preset="blue.border (Galaxy Admin borders)" />
+        <background preset="tooltip (Galaxy Admin backgrounds)" />
         <margin-bottom>5px !important</margin-bottom>
         <padding>5px 5px 5px 23px !important</padding>
         <display>none</display>
@@ -1195,6 +1194,7 @@
       <!-- Style for Admin View -->
       <selector path=".adminViewContent">
         <width>100%</width>
+        <height>100%</height>
         <border-collapse>collapse</border-collapse>
       </selector>
       <selector path=".adminViewContent td">
@@ -1207,30 +1207,50 @@
         <padding>5px 0</padding>
       </selector>
       <selector path=".adminTabsColumn">
-        <background-color>#dbe0e4</background-color>
+        <background-color>#b9cfe0</background-color>
         <padding>0</padding>
-        <width>150px</width>
+        <width>200px</width>
+        <height>100%</height>
       </selector>
       <selector path=".adminTabsColumn ul">
-        <padding>0</padding>
-        <margin>0</margin>
+        <padding>20px 0 30px</padding>
+        <margin>0px -1px 0 0</margin>
         <list-style>none</list-style>
       </selector>
       <selector path=".adminTabsColumn li">
-        <padding>7px 10px 8px 20px</padding>
+        <padding>0</padding>
+        <margin>0 0 3px 6px</margin>
+        <border-width>1px</border-width>
+        <border-color>#aac4d9</border-color>
+        <border-style>solid</border-style>
+        <background-color>#f4faff</background-color>
       </selector>
-      <selector path=".adminTabsColumn li.selected">
+      <selector path=".adminTabsColumn li.selected, .adminTabsColumn li.selected:hover">
         <background-color>#fff</background-color>
+        <border-style>solid</border-style>
+        <border-color>#aac4d9 #fff #aac4d9 #aac4d9</border-color>
+        <margin>0 0 3px 0</margin>
+      </selector>
+      <selector path=".adminTabsColumn li:hover">
+        <background-color>#fafdff</background-color>
+        <margin>0 0 3px 0px</margin>
       </selector>
       <selector path=".adminTabsColumn li a">
-        <color>#757575</color>
+        <color>#8c8c8c</color>
         <display>block</display>
+        <padding>7px 10px 8px 20px</padding>
+        <text-decoration>none</text-decoration>
+      </selector>
+       <selector path=".adminTabsColumn li a:hover">
+        <color>#555</color>
       </selector>
       <selector path=".adminTabsColumn li.selected a">
         <color>#212121</color>
       </selector>
       <selector path=".adminTabBlock">
-        <margin>10px 0 10px 5px</margin>
+        <height>100%</height>
+        <margin>0 0 0 5px</margin>
+        <border-right>1px solid #aac4d9</border-right>
       </selector>
       <selector path=".adminContentColumn">
         <padding>20px</padding>
