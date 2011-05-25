@@ -17,6 +17,7 @@
 
 package org.nuxeo.ecm.platform.signature.core.sign;
 
+import java.awt.Color;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -52,6 +53,8 @@ import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 import com.lowagie.text.DocumentException;
+import com.lowagie.text.Font;
+import com.lowagie.text.FontFactory;
 import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.AcroFields;
 import com.lowagie.text.pdf.PdfPKCS7;
@@ -68,33 +71,37 @@ import com.lowagie.text.pdf.PdfStamper;
 public class SignatureServiceImpl extends DefaultComponent implements
         SignatureService {
 
-    private static final int SIGNATURE_FIELD_HEIGHT=50;
-    private static final int PAGE_TO_SIGN=1;
+    private static final int SIGNATURE_FIELD_HEIGHT = 50;
+
+    private static final int SIGNATURE_FIELD_WIDTH = 200;
+
+    private static final int SIGNATURE_LEFT_POSITION = 400;
+
+    private static final int PAGE_TO_SIGN = 1;
+
     private static final Log log = LogFactory.getLog(SignatureServiceImpl.class);
-    
+
     private List<SignatureDescriptor> config = new ArrayList<SignatureDescriptor>();
 
     protected CertService certService;
 
     protected CUserService cUserService;
-    
+
     public File signPDF(DocumentModel user, String keyPassword, String reason,
             InputStream origPdfStream) throws SignException {
         File outputFile = null;
         try {
-            byte[] origPDFBytes= IOUtils.toByteArray(origPdfStream);
+            byte[] origPDFBytes = IOUtils.toByteArray(origPdfStream);
             String userID = (String) user.getPropertyValue("user:username");
-
 
             outputFile = File.createTempFile("signed-", ".pdf");
             PdfReader reader = new PdfReader(origPDFBytes);
 
             // allows for multiple signatures
             PdfStamper stp = PdfStamper.createSignature(reader,
-                    new FileOutputStream(outputFile), '\0',null, true);
-            
-            PdfSignatureAppearance pdfSignatureAppearance = stp.getSignatureAppearance();
+                    new FileOutputStream(outputFile), '\0', null, true);
 
+            PdfSignatureAppearance pdfSignatureAppearance = stp.getSignatureAppearance();
             AliasWrapper alias = new AliasWrapper(userID);
             KeyStore keystore = getCUserService().getUserKeystore(userID,
                     keyPassword);
@@ -103,28 +110,34 @@ public class SignatureServiceImpl extends DefaultComponent implements
             KeyPair keyPair = getCertService().getKeyPair(keystore,
                     alias.getId(AliasType.KEY), alias.getId(AliasType.CERT),
                     keyPassword);
-            
-            //TODO return if the same user already signed the document
 
-            if(certificatePresentInPDF(origPDFBytes, certificate)){
-                X509Certificate userX509Certificate=(X509Certificate)certificate;
-                String message="This document has already been signed by "+userX509Certificate.getSubjectX500Principal().getName();
+            if (certificatePresentInPDF(origPDFBytes, certificate)) {
+                X509Certificate userX509Certificate = (X509Certificate) certificate;
+                String message = "This document has already been signed by "
+                        + userX509Certificate.getSubjectX500Principal().getName();
                 log.info(message);
                 throw new AlreadySignedException(message);
             }
-            
-            
+
             List<Certificate> certificates = new ArrayList<Certificate>();
             certificates.add(certificate);
 
             Certificate[] certChain = certificates.toArray(new Certificate[0]);
-            pdfSignatureAppearance.setCrypto(keyPair.getPrivate(), certChain, null,
-                    PdfSignatureAppearance.SELF_SIGNED);
+            pdfSignatureAppearance.setCrypto(keyPair.getPrivate(), certChain,
+                    null, PdfSignatureAppearance.SELF_SIGNED);
             if (null == reason || reason == "") {
                 reason = getSigningReason();
             }
             pdfSignatureAppearance.setReason(reason);
             pdfSignatureAppearance.setAcro6Layers(true);
+            Font layer2Font = FontFactory.getFont(FontFactory.TIMES, 10,
+                    Font.NORMAL, new Color(0x00, 0x00, 0x00));
+            pdfSignatureAppearance.setLayer2Font(layer2Font);
+            pdfSignatureAppearance.setRender(PdfSignatureAppearance.SignatureRenderDescription);
+
+            pdfSignatureAppearance.setVisibleSignature(
+                    getNextCertificatePosition(reader, origPDFBytes), 1, null);
+
             stp.close();
             log.debug("File " + outputFile.getAbsolutePath()
                     + " created and signed with " + reason);
@@ -152,39 +165,67 @@ public class SignatureServiceImpl extends DefaultComponent implements
         }
         return outputFile;
     }
-    
-    private boolean certificatePresentInPDF(byte[] origPDFBytes, Certificate userCert) throws SignException{
-        boolean certificatePresent=false;
-        X509Certificate xUserCert=(X509Certificate)userCert;
-        List<X509Certificate> existingCertificates=getPDFCertificates(new ByteArrayInputStream(origPDFBytes));
-        for(X509Certificate xcert:existingCertificates){
+
+    private boolean certificatePresentInPDF(byte[] origPDFBytes,
+            Certificate userCert) throws SignException {
+        boolean certificatePresent = false;
+        X509Certificate xUserCert = (X509Certificate) userCert;
+        List<X509Certificate> existingCertificates = getPDFCertificates(new ByteArrayInputStream(
+                origPDFBytes));
+        for (X509Certificate xcert : existingCertificates) {
             // matching certificate found
-            if(xcert.getSubjectX500Principal().equals(xUserCert.getSubjectX500Principal())){
+            if (xcert.getSubjectX500Principal().equals(
+                    xUserCert.getSubjectX500Principal())) {
                 return true;
             }
         }
         return certificatePresent;
     }
-    
-    
-    private int getNextCertificatePosition(byte[] pdfBytes) throws SignException{
-        int numberOfSignatures=getPDFCertificates(new ByteArrayInputStream(pdfBytes)).size();
-        int verticalPosition=numberOfSignatures*SIGNATURE_FIELD_HEIGHT;
-        // verify page size
-        try {
-            PdfReader reader = new PdfReader(pdfBytes);
-            Rectangle pageSizeRectangle=reader.getPageSize(PAGE_TO_SIGN);
-            if(verticalPosition>pageSizeRectangle.getHeight()){
-                throw new SignException("Signature position exceeds the page bounds");
-            }
-        } catch (IOException e) {
-            String message="PDF signing problem";
-            log.error(message+e);
-            throw new SignException(message);
-        }
-        return verticalPosition;
+
+    /**
+     * Provides the position rectangle for the next certificate.
+     * 
+     * An assumption is made that all previous certificates in a given PDF
+     * were placed using the same technique and settings.
+     * 
+     * New certificates are added on a vertical plane going downwards.
+     * 
+     * @param reader
+     * @param pdfBytes
+     * @return
+     * @throws SignException
+     */
+    private Rectangle getNextCertificatePosition(PdfReader reader,
+            byte[] pdfBytes) throws SignException {
+        int numberOfSignatures = getPDFCertificates(
+                new ByteArrayInputStream(pdfBytes)).size();
+        float bottomLeftY = 0;
+        float pageHeight = reader.getPageSize(PAGE_TO_SIGN).getHeight();
+        bottomLeftY = pageHeight - (numberOfSignatures + 1)
+                * SIGNATURE_FIELD_HEIGHT;
+        validatePageBounds(reader, 1, bottomLeftY, false);
+
+        Rectangle pageSize = reader.getPageSize(PAGE_TO_SIGN);
+
+        float bottomLeftX = pageSize.getLeft() + SIGNATURE_LEFT_POSITION;
+        float topRightX = bottomLeftX+SIGNATURE_FIELD_WIDTH;
+        float topRightY = bottomLeftY + SIGNATURE_FIELD_HEIGHT;
+
+        // verify current position coordinates in case they were
+        // misconfigured
+        validatePageBounds(reader, 1, bottomLeftX, true);
+        validatePageBounds(reader, 1, bottomLeftY, false);
+        validatePageBounds(reader, 1, topRightX, true);
+        validatePageBounds(reader, 1, topRightY, false);
+
+        log.debug("The new signature position is: "+bottomLeftX+" "+bottomLeftY+" "+topRightX+" "+topRightY);
+        
+        Rectangle positionRectangle = new Rectangle(bottomLeftX, bottomLeftY,
+                topRightX, topRightY);
+
+        return positionRectangle;
     }
-    
+
     @Override
     public List<X509Certificate> getPDFCertificates(InputStream pdfStream)
             throws SignException {
@@ -192,7 +233,7 @@ public class SignatureServiceImpl extends DefaultComponent implements
         try {
             PdfReader pdfReader = new PdfReader(pdfStream);
             AcroFields acroFields = pdfReader.getAcroFields();
-            // get all signatures
+
             List signatureNames = acroFields.getSignatureNames();
             for (int k = 0; k < signatureNames.size(); ++k) {
                 String signatureName = (String) signatureNames.get(k);
@@ -201,13 +242,50 @@ public class SignatureServiceImpl extends DefaultComponent implements
                 pdfCertificates.add(signingCertificate);
             }
         } catch (IOException e) {
-            String message="";
-            if(e.getMessage().equals("PDF header signature not found.")){
-                message="PDF seems to be corrupted";
+            String message = "";
+            if (e.getMessage().equals("PDF header signature not found.")) {
+                message = "PDF seems to be corrupted";
             }
-            throw new SignException(message,e);
+            throw new SignException(message, e);
         }
         return pdfCertificates;
+    }
+
+    /**
+     * Verifies that a provided value fits within the page bounds. If it does
+     * not, a sign exception is thrown. This is to verify externally
+     * configurable signature positioning.
+     * 
+     * @param reader
+     * @param pageNo
+     * @param valueToCheck
+     * @Param isHorizontal - if false, the current value is checked agains the
+     *        vertical page dimension
+     */
+    protected void validatePageBounds(PdfReader reader, int pageNo,
+            float valueToCheck, boolean isHorizontal) throws SignException {
+        if (valueToCheck <= 0) {
+            String message = "The new signature position "
+                    + valueToCheck
+                    + " exceeds the page bounds. The position must be a positive number.";
+            log.warn(message);
+            throw new SignException(message);
+        }
+        Rectangle pageRectangle = reader.getPageSize(pageNo);
+        if (isHorizontal && valueToCheck > pageRectangle.getRight()) {
+            String message = "The new signature position "
+                    + valueToCheck
+                    + " exceeds the page bounds. The position exceeds the horizontal page dimension.";
+            log.warn(message);
+            throw new SignException(message);
+        }
+        if (!isHorizontal && valueToCheck > pageRectangle.getTop()) {
+            String message = "The new signature position "
+                    + valueToCheck
+                    + " exceeds the page bounds. The position exceeds the vertical page dimension.";
+            log.warn(message);
+            throw new SignException(message);
+        }
     }
 
     protected CertService getCertService() throws Exception {
