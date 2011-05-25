@@ -16,8 +16,6 @@
  */
 package org.nuxeo.functionaltests.pages;
 
-import org.nuxeo.functionaltests.Required;
-import org.nuxeo.functionaltests.pages.AbstractPage;
 import org.nuxeo.functionaltests.pages.usermanagement.compat.UsersGroupsPage;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -32,7 +30,7 @@ public class HeaderLinksSubPage extends AbstractPage {
     @FindBy(linkText = "Log out")
     WebElement logoutLink;
 
-    @FindBy(xpath = "//div[@class=\"userActions\"]")
+    @FindBy(xpath = "//div[@class=\"userMenuActions\"]")
     public WebElement userActions;
 
     public HeaderLinksSubPage(WebDriver driver) {
