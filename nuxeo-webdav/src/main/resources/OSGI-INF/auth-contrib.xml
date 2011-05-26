@@ -35,4 +35,6 @@ Setup a Basic Auth plugin for /dav paths that will always send 401 on authentica
 
   </extension>
 
+  </extension>
+
 </component>

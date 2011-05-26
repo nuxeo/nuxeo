@@ -3,6 +3,7 @@
 
   <require>org.nuxeo.ecm.platform.login.digest</require>
   <require>org.nuxeo.ecm.webdav.auth.config</require>
+
   <extension target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService" point="specificChains">
 
     <specificAuthenticationChain name="WSS">
@@ -18,9 +19,6 @@
         <plugin>BASIC_AUTH</plugin>
       </allowedPlugins>
     </specificAuthenticationChain>
-  </extension>
-
-  <extension target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService" point="specificChains">
 
     <specificAuthenticationChain name="WebDAV">
       <headers>
