@@ -17,7 +17,6 @@
 package org.nuxeo.runtime.deployment.preprocessor.install.commands;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
@@ -85,30 +84,26 @@ public class SeamHotDeployCommand implements Command {
             originalFilename = originalFilename.replace(HOTDEPLOY_JAR, JAR);
         }
         Path originalJarPath = new Path(originalFilename);
-        Path explodedJarPath = new Path(originalFilename.replace(JAR,
-                HOTDEPLOY_JAR));
         Path backupJarPath = new Path(originalFilename.concat(BACKUP_JAR));
         Path seamDevPath = new Path("${war}/WEB-INF/dev");
 
         // uninstall hot deployment
-        try {
+        File backupJar = new File(ctx.getBaseDir(),backupJarPath.toString());
+        if (backupJar.exists()) {
+            new DeleteCommand(originalJarPath).exec(ctx);
             new MoveCommand(backupJarPath, originalJarPath).exec(ctx);
-        } catch (FileNotFoundException e) {
-            ;
         }
-        new DeleteCommand(explodedJarPath).exec(ctx);
 
         if (!enabled) {
             return;
         }
 
-        loadFilters(new File(ctx.getBaseDir(),originalJarPath.toString()));
-
         // install hot deploy
-        new UnzipCommand(originalJarPath, seamDevPath, filters).exec(ctx);
-        new UnzipCommand(originalJarPath, explodedJarPath, new ColdFilter(
-                filters)).exec(ctx);
+        loadFilters(new File(ctx.getBaseDir(),originalJarPath.toString()));
         new MoveCommand(originalJarPath, backupJarPath).exec(ctx);
+        new UnzipCommand(backupJarPath, seamDevPath, filters).exec(ctx);
+        new UnzipCommand(backupJarPath, originalJarPath, new ColdFilter(
+                filters)).exec(ctx);
     }
 
     protected void loadFilters(File file) throws IOException {
