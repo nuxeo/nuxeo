@@ -1,4 +1,5 @@
-// Copied from Seam 2.1.0.SP1
+// Copied from Seam 2.2.1
+// to get the bugfix for JBSEAM-3721
 
 // Init base-level objects
 var Seam = new Object();
@@ -157,7 +158,8 @@ Seam.Remoting.createNamespace = function(namespace)
   }
 }
 
-Seam.Remoting.__Context = function() {
+Seam.Remoting.__Context = function()
+{
   this.conversationId = null;
 
   Seam.Remoting.__Context.prototype.setConversationId = function(conversationId)
@@ -168,6 +170,16 @@ Seam.Remoting.__Context = function() {
   Seam.Remoting.__Context.prototype.getConversationId = function()
   {
     return this.conversationId;
+  }
+}
+
+Seam.Remoting.Exception = function(msg)
+{
+  this.message = msg;
+
+  Seam.Remoting.Exception.prototype.getMessage = function()
+  {
+    return this.message;
   }
 }
 
@@ -471,7 +483,7 @@ Seam.Remoting.__callId = 0;
 //  call.asyncReq = Seam.Remoting.sendAjaxRequest(envelope, Seam.Remoting.PATH_EXECUTE, Seam.Remoting.processResponse, false);
 //}
 
-Seam.Remoting.createCall = function(component, methodName, params, callback)
+Seam.Remoting.createCall = function(component, methodName, params, callback, exceptionHandler)
 {
   var callId = "" + Seam.Remoting.__callId++;
   if (!callback)
@@ -511,7 +523,7 @@ Seam.Remoting.createCall = function(component, methodName, params, callback)
 
   data += "</call>";
 
-  return {data: data, id: callId, callback: callback};
+  return {data: data, id: callId, callback: callback, exceptionHandler: exceptionHandler};
 }
 
 Seam.Remoting.createHeader = function()
@@ -602,9 +614,9 @@ Seam.Remoting.cancelCall = function(callId)
   }
 }
 
-Seam.Remoting.execute = function(component, methodName, params, callback)
+Seam.Remoting.execute = function(component, methodName, params, callback, exceptionHandler)
 {
-  var call = Seam.Remoting.createCall(component, methodName, params, callback);
+  var call = Seam.Remoting.createCall(component, methodName, params, callback, exceptionHandler);
 
   if (Seam.Remoting.inBatch)
   {
@@ -615,7 +627,7 @@ Seam.Remoting.execute = function(component, methodName, params, callback)
     // Marshal the request
     var envelope = Seam.Remoting.createEnvelope(Seam.Remoting.createHeader(), call.data);
     Seam.Remoting.pendingCalls.put(call.id, call);
-    call.asyncReq = Seam.Remoting.sendAjaxRequest(envelope, Seam.Remoting.PATH_EXECUTE, Seam.Remoting.processResponse, false);
+    Seam.Remoting.sendAjaxRequest(envelope, Seam.Remoting.PATH_EXECUTE, Seam.Remoting.processResponse, false);
   }
 
   return call;
@@ -637,15 +649,63 @@ Seam.Remoting.sendAjaxRequest = function(envelope, path, callback, silent)
       asyncReq.overrideMimeType('text/xml');
   }
   else
+  {
     asyncReq = new ActiveXObject("Microsoft.XMLHTTP");
+  }
 
-  var rcb = Seam.Remoting.requestCallback;
+  asyncReq.onreadystatechange = function()
+  {
+    if (asyncReq.readyState == 4)
+    {
+      var inScope = typeof(Seam) == "undefined" ? false : true;
 
-  window.setTimeout(function() {
-    asyncReq.onreadystatechange = function() {
-    if (rcb) rcb(asyncReq, callback);
+      if (inScope) Seam.Remoting.hideLoadingMessage();
+
+      if (asyncReq.status == 200)
+      {
+        // We do this to avoid a memory leak
+        window.setTimeout(function() {
+          asyncReq.onreadystatechange = function() {};
+        }, 0);
+
+        if (inScope) Seam.Remoting.log("Response packet:\n" + asyncReq.responseText);
+
+        if (callback)
+        {
+          // The following code deals with a Firefox security issue.  It reparses the XML
+          // response if accessing the documentElement throws an exception
+          try
+          {
+            asyncReq.responseXML.documentElement;
+            //Seam.Remoting.processResponse(asyncReq.responseXML);
+      callback(asyncReq.responseXML);
+          }
+          catch (ex)
+          {
+             try
+             {
+               // Try it the IE way first...
+               var doc = new ActiveXObject("Microsoft.XMLDOM");
+               doc.async = "false";
+               doc.loadXML(asyncReq.responseText);
+               callback(doc);
+             }
+             catch (e)
+             {
+               // If that fails, use standards
+               var parser = new DOMParser();
+               //Seam.Remoting.processResponse(parser.parseFromString(asyncReq.responseText, "text/xml"));
+         callback(parser.parseFromString(asyncReq.responseText, "text/xml"));
+             }
+          }
+        }
+      }
+      else
+      {
+        Seam.Remoting.displayError(asyncReq.status);
+      }
     }
-  }, 0);
+  }
 
   if (Seam.Remoting.encodedSessionId)
   {
@@ -654,61 +714,16 @@ Seam.Remoting.sendAjaxRequest = function(envelope, path, callback, silent)
 
   asyncReq.open("POST", Seam.Remoting.resourcePath + path, true);
   asyncReq.send(envelope);
-  return asyncReq;
+}
+
+Seam.Remoting.displayError = function(code)
+{
+  alert("There was an error processing your request.  Error code: " + code);
 }
 
 Seam.Remoting.setCallback = function(component, methodName, callback)
 {
   component.__callback[methodName] = callback;
-}
-
-Seam.Remoting.requestCallback = function(req, callback)
-{
-  if (req.readyState == 4)
-  {
-    var inScope = typeof(Seam) == "undefined" ? false : true;
-
-    if (inScope) Seam.Remoting.hideLoadingMessage();
-
-    window.setTimeout(function() {
-      req.onreadystatechange = function() {};
-    }, 0);
-
-    if (req.status == 200)
-    {
-      if (inScope) Seam.Remoting.log("Response packet:\n" + req.responseText);
-
-      if (callback)
-      {
-        // The following code deals with a Firefox security issue.  It reparses the XML
-        // response if accessing the documentElement throws an exception
-        try
-        {
-          req.responseXML.documentElement;
-          callback(req.responseXML);
-        }
-        catch (ex)
-        {
-           try
-           {
-             // Try it the IE way first...
-             var doc = new ActiveXObject("Microsoft.XMLDOM");
-             doc.async = "false";
-             doc.loadXML(req.responseText);
-             callback(doc);
-           }
-           catch (e)
-           {
-             // If that fails, use standards
-             var parser = new DOMParser();
-             callback(parser.parseFromString(req.responseText, "text/xml"));
-           }
-        }
-      }
-    }
-    else
-      alert("There was an error processing your request.  Error code: " + req.status);
-  }
 }
 
 Seam.Remoting.processResponse = function(doc)
@@ -770,10 +785,11 @@ Seam.Remoting.processResult = function(result, context)
   var call = Seam.Remoting.pendingCalls.get(callId);
   Seam.Remoting.pendingCalls.remove(callId);
 
-  if (call && call.callback)
+  if (call && (call.callback || call.exceptionHandler))
   {
     var valueNode = null;
     var refsNode = null;
+    var exceptionNode = null;
 
     var children = result.childNodes;
     for (var i = 0; i < children.length; i++)
@@ -783,15 +799,35 @@ Seam.Remoting.processResult = function(result, context)
         valueNode = children.item(i);
       else if (tag == "refs")
         refsNode = children.item(i);
+      else if (tag == "exception")
+        exceptionNode = children.item(i);
     }
 
-    var refs = new Array();
-    if (refsNode)
-      Seam.Remoting.unmarshalRefs(refsNode, refs);
+    if (exceptionNode != null)
+    {
+      var msgNode = null;
+      var children = exceptionNode.childNodes;
+      for (var i = 0; i < children.length; i++)
+      {
+        var tag = children.item(i).tagName;
+        if (tag == "message")
+          msgNode = children.item(i);
+      }
 
-    var value = Seam.Remoting.unmarshalValue(valueNode.firstChild, refs);
+      var msg = Seam.Remoting.unmarshalValue(msgNode.firstChild);
+      var ex = new Seam.Remoting.Exception(msg);
+      call.exceptionHandler(ex);
+    }
+    else
+    {
+      var refs = new Array();
+      if (refsNode)
+        Seam.Remoting.unmarshalRefs(refsNode, refs);
 
-    call.callback(value, context, callId);
+      var value = Seam.Remoting.unmarshalValue(valueNode.firstChild, refs);
+
+      call.callback(value, context, callId);
+    }
   }
 }
 
