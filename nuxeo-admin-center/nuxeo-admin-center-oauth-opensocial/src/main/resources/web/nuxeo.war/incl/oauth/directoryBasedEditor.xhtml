@@ -104,11 +104,11 @@
         <c:set var="directoryEntryClass" value="dataRowEven" />
       </c:if>
       <c:if test="#{index == 0}">
-        <nxl:layout name="#{entryLayoutName}" mode="list_and_header"
+        <nxl:layout name="#{entryLayoutName}" mode="view_list_and_header"
           value="#{entry}" />
       </c:if>
       <c:if test="#{index != 0}">
-        <nxl:layout name="#{entryLayoutName}" mode="list" value="#{entry}" />
+        <nxl:layout name="#{entryLayoutName}" mode="view_list" value="#{entry}" />
       </c:if>
     </nxu:repeat>
   </tbody>
