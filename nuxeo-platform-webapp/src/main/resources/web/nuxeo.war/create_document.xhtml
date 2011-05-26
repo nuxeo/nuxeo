@@ -7,6 +7,7 @@
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:c="http://java.sun.com/jstl/core">
 
@@ -17,7 +18,7 @@
   <ui:define name="body">
     <div>
     <h3>
-      <h:outputText value="#{messages['title.create.document']} #{messages[changeableDocument.type]}" />
+      <h:outputText value="#{messages['title.create.document']} #{messages[nxd:typeInfo(changeableDocument).label]}" />
     </h3>
     <ui:include src="/incl/message_banner.xhtml" />
     <h:form enctype="multipart/form-data" id="document_create">
