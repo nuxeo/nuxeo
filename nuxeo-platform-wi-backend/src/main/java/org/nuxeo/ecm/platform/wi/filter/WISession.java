@@ -37,6 +37,8 @@ public class WISession implements Serializable {
 
     private long accessTime;
 
+    private boolean invalid = false;
+
     public WISession(String key) {
         this.creationTime = System.currentTimeMillis();
         access();
@@ -67,10 +69,13 @@ public class WISession implements Serializable {
         this.accessTime = System.currentTimeMillis();
     }
 
+    public void invalid(){
+        invalid = true;
+    }
+
     public boolean isValid() {
         long time = System.currentTimeMillis();
-        if (time > creationTime + 20 * 60 * 1000
-                && time > accessTime + 2 * 60 * 1000) {
+        if ((invalid && time > accessTime + 3 * 1000) || (time > creationTime + 20 * 60 * 1000 && time > accessTime + 2 * 60 * 1000) ) {
             return false;
         } else {
             return true;

@@ -17,6 +17,8 @@
 package org.nuxeo.ecm.platform.wi.service;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -40,6 +42,10 @@ public class WIServiceImpl implements WIService {
         String path = model.getPathAsString();
         Backend backend = getBackend(session);
         return backend.getVirtualPath(path);
+    }
+
+    public void invalidateCache() {
+        SessionCacheHolder.getInstance().getCache().invalidateCache();
     }
 
     private Backend getBackend(CoreSession session) {

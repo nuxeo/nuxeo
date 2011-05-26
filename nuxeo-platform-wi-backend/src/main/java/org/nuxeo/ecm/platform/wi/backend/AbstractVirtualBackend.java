@@ -316,6 +316,11 @@ public abstract class AbstractVirtualBackend extends AbstractCoreBackend
     }
 
     @Override
+    public DocumentModel getDocument(String location) throws ClientException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public DocumentModel updateDocument(DocumentModel doc, String name,
             Blob content) throws ClientException {
         throw new UnsupportedOperationException();

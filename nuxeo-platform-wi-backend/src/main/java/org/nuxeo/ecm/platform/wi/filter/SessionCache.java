@@ -25,6 +25,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Base64;
 import org.nuxeo.ecm.platform.wi.backend.Backend;
 
@@ -73,6 +75,12 @@ public class SessionCache implements Serializable {
 
     public void put(WISession session) {
         map.put(session.getKey(), session);
+    }
+
+    public void invalidateCache(){
+        for(WISession session : map.values()){
+            session.invalid();
+        }
     }
 
     private String getKey(HttpServletRequest httpRequest) {
