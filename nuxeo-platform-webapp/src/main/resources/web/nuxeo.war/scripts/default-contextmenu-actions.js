@@ -1,7 +1,9 @@
 // helper functions
 function navigationCB(url)
 {
- url= getBaseURL() + url;
+ if (url.indexOf("http")<0) {
+   url= getBaseURL() + url;
+ }
  window.location.href=url;
 }
 
