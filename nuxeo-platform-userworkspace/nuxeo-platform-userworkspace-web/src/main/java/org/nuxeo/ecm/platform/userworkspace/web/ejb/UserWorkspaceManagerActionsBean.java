@@ -41,6 +41,7 @@ import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceManagerActions;
 import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
 import org.nuxeo.ecm.platform.userworkspace.constants.UserWorkspaceConstants;
+import org.nuxeo.ecm.webapp.action.MainTabsActions;
 import org.nuxeo.ecm.webapp.dashboard.DashboardNavigationHelper;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.runtime.api.Framework;
@@ -64,6 +65,8 @@ public class UserWorkspaceManagerActionsBean implements
 
     public static final String DOCUMENT_VIEW = "view_documents";
 
+    public static final String DOCUMENT_MANAGEMENT_ACTION = "documents";
+
     protected boolean showingPersonalWorkspace;
 
     protected boolean initialized;
@@ -81,7 +84,10 @@ public class UserWorkspaceManagerActionsBean implements
     protected transient CoreSession documentManager;
 
     @In(create = true)
-    protected DashboardNavigationHelper dashboardNavigationHelper;
+    protected transient DashboardNavigationHelper dashboardNavigationHelper;
+
+    @In(create = true)
+    protected transient MainTabsActions mainTabsActions;
 
     public void initialize() {
         log.debug("Initializing user workspace manager actions bean");
@@ -141,14 +147,13 @@ public class UserWorkspaceManagerActionsBean implements
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         if (!isShowingPersonalWorkspace() && currentDocument != null
                 && currentDocument.getPath().segment(0) != null) {
-            lastAccessedDocument = navigationContext.getCurrentDocument();
+            lastAccessedDocument = mainTabsActions.getDocumentFor(
+                    DOCUMENT_MANAGEMENT_ACTION, navigationContext.getCurrentDocument());
         }
         navigationContext.setCurrentDocument(currentUserPersonalWorkspace);
         showingPersonalWorkspace = true;
 
-
         Events.instance().raiseEvent(EventNames.GO_PERSONAL_WORKSPACE);
-
 
         return returnView;
     }
