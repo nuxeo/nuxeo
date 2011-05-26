@@ -300,15 +300,13 @@
           <div class="actionBar">
             <a4j:commandButton value="#{messages['action.setup.save']}"
                 action="#{setupWizardAction.save()}" reRender="setupPanel"
-                styleClass="button" />
+                styleClass="button" onclick="jQuery('html, body').animate({scrollTop:0}, 'slow');return true" />
             <a4j:commandButton value="#{messages['action.setup.cancel']}"
                 action="#{setupWizardAction.resetParameters()}"
                 reRender="setupPanel" styleClass="button" />
           </div>
-      </a4j:form>
 
           <h2><h:outputText value="#{messages['adminsubtab.sysinfo.advancedsetup']}" /></h2>
-      <a4j:form>
           <p><h:outputText styleClass="warningLabel" value="#{messages['label.setup.advancedSearch.warning']}" /></p>
 
             <table class="dataOutput">
@@ -325,10 +323,10 @@
             <div class="actionBar">
               <a4j:commandButton value="#{messages['action.setup.save']}"
                   action="#{setupWizardAction.save()}" reRender="setupPanel"
-                  styleClass="button" />
+                  styleClass="button" onclick="jQuery('html, body').animate({scrollTop:0}, 'slow');return true" />
               <a4j:commandButton value="#{messages['action.setup.cancel']}"
                   action="#{setupWizardAction.resetParameters()}"
-                  reRender="setupPanel" styleClass="button" />
+                  reRender="setupPanel" styleClass="button"  />
             </div>
 
         </a4j:form>
