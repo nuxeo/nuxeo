@@ -168,7 +168,7 @@ function DropZoneUIHandler(idx, dropZoneId, options,targetSelectedCB) {
                           function(xhr, status, e) {
                               log(e);
                               handler.canNotUpload(true,false);
-                          });
+                          }, false);
   }
 
   DropZoneUIHandler.prototype.canNotUpload = function(isError, noop) {
@@ -395,7 +395,8 @@ function DropZoneUIHandler(idx, dropZoneId, options,targetSelectedCB) {
           },
           function(xhr,status,e) {
               log("Error while executing batch");
-          }
+          },
+          true
       );
   }
 

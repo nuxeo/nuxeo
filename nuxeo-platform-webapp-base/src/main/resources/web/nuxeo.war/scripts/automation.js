@@ -23,12 +23,18 @@ function AutomationWrapper(operationId,opts) {
     return this;
   }
 
-  AutomationWrapper.prototype.execute = function(successCB, failureCB){
+  AutomationWrapper.prototype.execute = function(successCB, failureCB, voidOp){
     var targetUrl = this.opts.url + '/' + this.operationId;
+    if (!voidOp) {
+      voidOp=false;
+    }
     jQuery.ajax({
         type: 'POST',
         contentType : 'application/json+nxrequest',
         data: JSON.stringify(this.opts.automationParams),
+        beforeSend : function (xhr) {
+            xhr.setRequestHeader('X-NXVoidOperation', voidOp);
+        },
         url: targetUrl,
         timeout: 10000,
         error: function(xhr, status, e) {
@@ -60,8 +66,11 @@ function AutomationWrapper(operationId,opts) {
       }
   }
 
-  AutomationWrapper.prototype.batchExecute = function(batchId, successCB, failureCB){
+  AutomationWrapper.prototype.batchExecute = function(batchId, successCB, failureCB, voidOp){
 
+    if (!voidOp) {
+      voidOp=false;
+    }
     this.addParameter("operationId", this.operationId);
     this.addParameter("batchId", batchId);
 
@@ -70,6 +79,9 @@ function AutomationWrapper(operationId,opts) {
         type: 'POST',
         contentType : 'application/json+nxrequest',
         data: JSON.stringify(this.opts.automationParams),
+        beforeSend : function (xhr) {
+            xhr.setRequestHeader('X-NXVoidOperation', voidOp);
+        },
         url: targetUrl,
         timeout: 10000,
         error: function(xhr, status, e) {
