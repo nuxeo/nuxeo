@@ -38,8 +38,6 @@ public class DirectoryConfigurationAdapter implements
 
     protected String lcDirectorySuffix;
 
-    protected boolean canMerge = false;
-
     public DirectoryConfigurationAdapter(DocumentModel doc) {
         documentRef = doc.getRef();
         try {
@@ -51,7 +49,7 @@ public class DirectoryConfigurationAdapter implements
 
     @Override
     public boolean canMerge() {
-        return canMerge;
+        return false;
     }
 
     @Override

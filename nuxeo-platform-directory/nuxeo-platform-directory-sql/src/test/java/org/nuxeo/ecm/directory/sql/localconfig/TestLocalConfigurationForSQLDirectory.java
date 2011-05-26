@@ -77,7 +77,7 @@ public class TestLocalConfigurationForSQLDirectory extends
         initRepository();
     }
 
-    public void testshouldReturnUserDirectoryWhenNoContextIsGiven()
+    public void testShouldReturnUserDirectoryWhenNoContextIsGiven()
             throws Exception {
 
         DirectoryService dirService = (DirectoryService) Framework.getRuntime().getComponent(
@@ -91,7 +91,7 @@ public class TestLocalConfigurationForSQLDirectory extends
 
     }
 
-    public void testshouldReturnUserDirectoryWhenContextIsNull()
+    public void testShouldReturnUserDirectoryWhenContextIsNull()
             throws Exception {
 
         DirectoryService dirService = (DirectoryService) Framework.getRuntime().getComponent(
@@ -105,7 +105,7 @@ public class TestLocalConfigurationForSQLDirectory extends
 
     }
 
-    public void testshouldReturnUserDirectoryWhenNoLocalConfigurationSet()
+    public void testShouldReturnUserDirectoryWhenNoLocalConfigurationSet()
             throws Exception {
 
         DirectoryService dirService = (DirectoryService) Framework.getRuntime().getComponent(
@@ -121,7 +121,7 @@ public class TestLocalConfigurationForSQLDirectory extends
 
     }
 
-    public void testshouldReturnUserDirectoryWithoutSuffixWhenDirectoryContextIsGivenAndDirectoryNotExists()
+    public void testShouldReturnUserDirectoryWithoutSuffixWhenDirectoryContextIsGivenAndDirectoryNotExists()
             throws Exception {
 
         DirectoryService dirService = (DirectoryService) Framework.getRuntime().getComponent(
@@ -137,7 +137,7 @@ public class TestLocalConfigurationForSQLDirectory extends
 
     }
 
-    public void testshouldReturnUserDirectoryWithSuffixWhenDirectoryContextIsGiven()
+    public void testShouldReturnUserDirectoryWithSuffixWhenDirectoryContextIsGiven()
             throws Exception {
 
         DirectoryService dirService = (DirectoryService) Framework.getRuntime().getComponent(
