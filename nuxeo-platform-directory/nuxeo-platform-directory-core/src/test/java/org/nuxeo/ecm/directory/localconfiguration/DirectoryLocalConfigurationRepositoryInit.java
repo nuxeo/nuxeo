@@ -22,7 +22,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 
 /**
- * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
+ * @author <a href="mailto:bjalon@nuxeo.com">Benjamin JALON</a>
  */
 public class DirectoryLocalConfigurationRepositoryInit extends DefaultRepositoryInit {
 

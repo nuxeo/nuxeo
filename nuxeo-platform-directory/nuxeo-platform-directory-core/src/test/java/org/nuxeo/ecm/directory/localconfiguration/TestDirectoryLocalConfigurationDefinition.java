@@ -46,7 +46,7 @@ import com.google.inject.Inject;
 ;
 
 /**
- * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
+ * @author <a href="mailto:bjalon@nuxeo.com">Benjamin JALON</a>
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
@@ -71,7 +71,7 @@ public class TestDirectoryLocalConfigurationDefinition {
     protected LocalConfigurationService localConfigurationService;
 
     @Test
-    public void shouldNotTakeIntoAccountConfigurationIfNoCurrentDocumentIsGiven()
+    public void shouldReturnANullSuffixValueIfLocalConfigurationNotSet()
             throws Exception {
         DocumentModel workspace = session.getDocument(PARENT_DOMAIN_REF);
         LocalConfigurationService localConfigurationService = Framework.getService(LocalConfigurationService.class);
@@ -89,7 +89,7 @@ public class TestDirectoryLocalConfigurationDefinition {
             throws Exception {
         DocumentModel workspace = session.getDocument(PARENT_DOMAIN_REF);
 
-        setDirectorySuffix(workspace, "_suffix");
+        setDirectorySuffix(workspace, "suffix");
 
         LocalConfigurationService localConfigurationService = Framework.getService(LocalConfigurationService.class);
         DirectoryConfiguration configuration = localConfigurationService.getConfiguration(
@@ -97,7 +97,23 @@ public class TestDirectoryLocalConfigurationDefinition {
                 workspace);
 
         assertNotNull(configuration);
-        assertEquals("_suffix", configuration.getDirectorySuffix());
+        assertEquals("suffix", configuration.getDirectorySuffix());
+    }
+
+    @Test
+    public void shouldReturnSuffixGivenByLocalConfigWithTrim()
+            throws Exception {
+        DocumentModel workspace = session.getDocument(PARENT_DOMAIN_REF);
+
+        setDirectorySuffix(workspace, "  suffix     ");
+
+        LocalConfigurationService localConfigurationService = Framework.getService(LocalConfigurationService.class);
+        DirectoryConfiguration configuration = localConfigurationService.getConfiguration(
+                DirectoryConfiguration.class, DIRECTORY_CONFIGURATION_FACET,
+                workspace);
+
+        assertNotNull(configuration);
+        assertEquals("suffix", configuration.getDirectorySuffix());
     }
 
 

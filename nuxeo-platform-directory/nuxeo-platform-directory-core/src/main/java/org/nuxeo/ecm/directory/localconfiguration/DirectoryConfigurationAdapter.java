@@ -42,6 +42,9 @@ public class DirectoryConfigurationAdapter implements
         documentRef = doc.getRef();
         try {
             lcDirectorySuffix = (String) doc.getPropertyValue(DIRECTORY_CONFIGURATION_FIELD);
+            if (lcDirectorySuffix != null) {
+                lcDirectorySuffix = lcDirectorySuffix.trim();
+            }
         } catch (ClientException e) {
             log.error("Failed to get DirectoryConfiguration", e);
         }

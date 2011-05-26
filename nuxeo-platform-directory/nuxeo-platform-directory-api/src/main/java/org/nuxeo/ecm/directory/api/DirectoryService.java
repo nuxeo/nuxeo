@@ -79,6 +79,7 @@ public interface DirectoryService {
      * found. If no local configuration is found the service will return the
      * directoryName directory.
      * <p>
+     * If the directoryName is null, return null.
      *
      * @param directoryName
      * @param documentContext
@@ -92,6 +93,7 @@ public interface DirectoryService {
     /**
      * Return the directory with the name directoryName.
      * <p>
+     * If the directoryName is null, return null.
      *
      * @param directoryName
      * @param documentContext

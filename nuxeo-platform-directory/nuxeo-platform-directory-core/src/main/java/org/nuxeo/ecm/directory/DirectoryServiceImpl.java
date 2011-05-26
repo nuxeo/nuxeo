@@ -39,6 +39,8 @@ import org.nuxeo.runtime.model.Extension;
 public class DirectoryServiceImpl extends DefaultComponent implements
         DirectoryService {
 
+    protected static final String DELIMITER_BETWEEN_DIRECTORY_NAME_AND_SUFFIX = "_";
+
     private static final Log log = LogFactory.getLog(DirectoryServiceImpl.class);
 
     private Map<String, DirectoryFactory> factories;
@@ -61,8 +63,45 @@ public class DirectoryServiceImpl extends DefaultComponent implements
         return configuration;
     }
 
+    /**
+     * This will return the local directory name according the local
+     * configuration. If the localconfiguration is null or the suffix value is
+     * null or the suffix value trimmed is an empty string the returned value is
+     * the directoryName given in parameter. If not this is directoryName +
+     * DELIMITER_BETWEEN_DIRECTORY_NAME_AND_SUFFIX + suffix.
+     * if directoryName is null, return null.
+     *
+     * @param directoryName
+     * @param configuration
+     * @return
+     */
+    protected String getWaitingLocalDirectoryName(String directoryName,
+            DirectoryConfiguration configuration) {
+        if (directoryName == null) {
+            return null;
+        }
+
+        if (configuration != null && configuration.getDirectorySuffix() != null) {
+            String suffix = configuration.getDirectorySuffix().trim();
+            if (!"".equals(suffix)) {
+                return directoryName
+                        + DELIMITER_BETWEEN_DIRECTORY_NAME_AND_SUFFIX + suffix;
+            }
+            log.warn("The local configuration detected is an empty value, we concider it as no configuration set.");
+            log.debug("Directory Local Configuration is on : "
+                    + configuration.getDocumentRef());
+        }
+
+        return directoryName;
+
+    }
+
     public Directory getDirectory(String directoryName)
             throws DirectoryException {
+        if (directoryName == null) {
+            return null;
+        }
+
         List<DirectoryFactory> potentialFactories = factoriesByDirectoryName.get(directoryName);
         if (potentialFactories == null) {
             return null;
@@ -80,15 +119,18 @@ public class DirectoryServiceImpl extends DefaultComponent implements
 
     public Directory getDirectory(String name, DocumentModel documentContext)
             throws DirectoryException {
-        Directory directory = null;
-        DirectoryConfiguration configuration = getDirectoryConfiguration(documentContext);
-
-        if (configuration != null) {
-            directory = getDirectory(name + configuration.getDirectorySuffix());
+        if (name == null) {
+            return null;
         }
 
-        if (directory == null) {
-            directory = getDirectory(name);
+        Directory directory = null;
+        String localDirectoryName = getWaitingLocalDirectoryName(name, getDirectoryConfiguration(documentContext));
+
+        directory = getDirectory(localDirectoryName);
+
+        if (directory == null && (!name.equals(localDirectoryName))) {
+                log.debug("The local directory name " + localDirectoryName + " not found. Look for the default one : " + name);
+                directory = getDirectory(name);
         }
 
         return directory;

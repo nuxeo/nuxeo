@@ -36,22 +36,9 @@ import org.nuxeo.runtime.api.Framework;
 public class TestLocalConfigurationForSQLDirectory extends
         SQLRepositoryTestCase {
 
-    public static final String DIRECTORY_NAME = "userDirectory";
+    DocumentModel workspace;
 
-    public static final String DEFAULT_DIRECTORY_NAME = DIRECTORY_NAME;
-
-    public static final String DIRECTORY_SUFFIX = "_domain_a";
-
-    public static final String SILLY_DIRECTORY_SUFFIX = "alaclairefontaine";
-
-    public static final String SPECIFIC_DIRECTORY_NAME = DIRECTORY_NAME
-            + DIRECTORY_SUFFIX;
-
-    DocumentModel superSpaceWithoutLocalConfiguration;
-
-    DocumentModel superSpaceWithLocalConfiguration;
-
-    DocumentModel superSpaceWithSillyLocalConfiguration;
+    DirectoryService dirService = null;
 
     @Override
     public void setUp() throws Exception {
@@ -75,18 +62,18 @@ public class TestLocalConfigurationForSQLDirectory extends
                 "test-types-with-directory-local-configuration.xml");
 
         initRepository();
+        dirService = (DirectoryService) Framework.getRuntime().getComponent(
+                DirectoryService.NAME);
+
     }
 
     public void testShouldReturnUserDirectoryWhenNoContextIsGiven()
             throws Exception {
 
-        DirectoryService dirService = (DirectoryService) Framework.getRuntime().getComponent(
-                DirectoryService.NAME);
+        Directory dir = dirService.getDirectory("userDirectory");
+        assertEquals("userDirectory", dir.getName());
 
-        Directory dir = dirService.getDirectory(DIRECTORY_NAME);
-        assertEquals(DEFAULT_DIRECTORY_NAME, dir.getName());
-
-        Session dirSession = dirService.open(DIRECTORY_NAME);
+        Session dirSession = dirService.open("userDirectory");
         assertEquals(3, dirSession.getEntries().size());
 
     }
@@ -94,13 +81,10 @@ public class TestLocalConfigurationForSQLDirectory extends
     public void testShouldReturnUserDirectoryWhenContextIsNull()
             throws Exception {
 
-        DirectoryService dirService = (DirectoryService) Framework.getRuntime().getComponent(
-                DirectoryService.NAME);
+        Directory dir = dirService.getDirectory("userDirectory", null);
+        assertEquals("userDirectory", dir.getName());
 
-        Directory dir = dirService.getDirectory(DIRECTORY_NAME, null);
-        assertEquals(DEFAULT_DIRECTORY_NAME, dir.getName());
-
-        Session dirSession = dirService.open(DIRECTORY_NAME, null);
+        Session dirSession = dirService.open("userDirectory", null);
         assertEquals(3, dirSession.getEntries().size());
 
     }
@@ -108,31 +92,25 @@ public class TestLocalConfigurationForSQLDirectory extends
     public void testShouldReturnUserDirectoryWhenNoLocalConfigurationSet()
             throws Exception {
 
-        DirectoryService dirService = (DirectoryService) Framework.getRuntime().getComponent(
-                DirectoryService.NAME);
+        Directory dir = dirService.getDirectory("userDirectory", workspace);
+        assertEquals("userDirectory", dir.getName());
 
-        Directory dir = dirService.getDirectory(DIRECTORY_NAME,
-                superSpaceWithoutLocalConfiguration);
-        assertEquals(DEFAULT_DIRECTORY_NAME, dir.getName());
-
-        Session dirSession = dirService.open(DIRECTORY_NAME,
-                superSpaceWithoutLocalConfiguration);
+        Session dirSession = dirService.open("userDirectory", workspace);
         assertEquals(3, dirSession.getEntries().size());
 
     }
 
-    public void testShouldReturnUserDirectoryWithoutSuffixWhenDirectoryContextIsGivenAndDirectoryNotExists()
+    public void testShouldReturnUserDirectoryWhenLocalConfigurationSetIsAnEmptyString()
             throws Exception {
 
-        DirectoryService dirService = (DirectoryService) Framework.getRuntime().getComponent(
-                DirectoryService.NAME);
+        setDirectorySuffix(workspace, "          ");
 
-        Directory dir = dirService.getDirectory(DIRECTORY_NAME,
-                superSpaceWithSillyLocalConfiguration);
-        assertEquals(DEFAULT_DIRECTORY_NAME, dir.getName());
+        Directory dir = dirService.getDirectory("userDirectory", workspace);
+        assertEquals("userDirectory", dir.getName());
+        // even id the userDirectory_ exists, we return the userDirectory
+        // directory
 
-        Session dirSession = dirService.open(DIRECTORY_NAME,
-                superSpaceWithSillyLocalConfiguration);
+        Session dirSession = dirService.open("userDirectory", workspace);
         assertEquals(3, dirSession.getEntries().size());
 
     }
@@ -140,15 +118,12 @@ public class TestLocalConfigurationForSQLDirectory extends
     public void testShouldReturnUserDirectoryWithSuffixWhenDirectoryContextIsGiven()
             throws Exception {
 
-        DirectoryService dirService = (DirectoryService) Framework.getRuntime().getComponent(
-                DirectoryService.NAME);
+        setDirectorySuffix(workspace, "domain_a");
 
-        Directory dir = dirService.getDirectory(DIRECTORY_NAME,
-                superSpaceWithLocalConfiguration);
-        assertEquals(SPECIFIC_DIRECTORY_NAME, dir.getName());
+        Directory dir = dirService.getDirectory("userDirectory", workspace);
+        assertEquals("userDirectory_domain_a", dir.getName());
 
-        Session dirSession = dirService.open(DIRECTORY_NAME,
-                superSpaceWithLocalConfiguration);
+        Session dirSession = dirService.open("userDirectory", workspace);
         assertEquals(1, dirSession.getEntries().size());
 
     }
@@ -157,21 +132,10 @@ public class TestLocalConfigurationForSQLDirectory extends
 
         openSession();
 
-        superSpaceWithoutLocalConfiguration = session.createDocumentModel("Workspace");
-        superSpaceWithoutLocalConfiguration.setPathInfo("/", "default-domain");
-        session.createDocument(superSpaceWithoutLocalConfiguration);
-
-        superSpaceWithLocalConfiguration = session.createDocumentModel("Workspace");
-        superSpaceWithLocalConfiguration.setPathInfo("/", "domain-with-conf");
-        session.createDocument(superSpaceWithLocalConfiguration);
-
-        setDirectorySuffix(superSpaceWithLocalConfiguration, DIRECTORY_SUFFIX);
-
-        superSpaceWithSillyLocalConfiguration = session.createDocumentModel("Workspace");
-        superSpaceWithSillyLocalConfiguration.setPathInfo("/", "domain-with-conf2");
-        session.createDocument(superSpaceWithSillyLocalConfiguration);
-
-        setDirectorySuffix(superSpaceWithSillyLocalConfiguration, SILLY_DIRECTORY_SUFFIX);
+        workspace = session.createDocumentModel("Workspace");
+        workspace.setPathInfo("/", "default-domain");
+        session.createDocument(workspace);
+        session.save();
 
     }
 
