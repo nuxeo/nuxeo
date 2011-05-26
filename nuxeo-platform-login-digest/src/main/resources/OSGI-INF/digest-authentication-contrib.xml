@@ -24,59 +24,12 @@
     </authenticationPlugin>
   </extension>
 
-  <extension
-    target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
-    point="chain">
-    <authenticationChain>
-      <plugins>
-        <plugin>BASIC_AUTH</plugin>
-        <plugin>FORM_AUTH</plugin>
-        <plugin>DIGEST_AUTH</plugin>
-      </plugins>
-    </authenticationChain>
-  </extension>
-
   <extension target="org.nuxeo.ecm.platform.login.LoginPluginRegistry"
     point="plugin">
     <LoginPlugin name="DigestLoginPlugin"
       class="org.nuxeo.ecm.ui.web.auth.digest.DigestLoginPlugin">
       <enabled>true</enabled>
     </LoginPlugin>
-  </extension>
-
-  <extension
-    target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
-    point="specificChains">
-
-    <specificAuthenticationChain name="WSS">
-      <urlPatterns>
-        <url>(.*)/_vti_.*</url>
-      </urlPatterns>
-      <headers>
-        <header name="User-Agent">MSFrontPage.*</header>
-      </headers>
-
-      <allowedPlugins>
-        <plugin>DIGEST_AUTH</plugin>
-        <plugin>BASIC_AUTH</plugin>
-      </allowedPlugins>
-    </specificAuthenticationChain>
-  </extension>
-
-  <extension
-    target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
-    point="specificChains">
-
-    <specificAuthenticationChain name="WebDAV">
-      <headers>
-        <header name="User-Agent">Microsoft-WebDAV-MiniRedir.*</header>
-      </headers>
-
-      <allowedPlugins>
-        <plugin>DIGEST_AUTH</plugin>
-        <plugin>BASIC_AUTH</plugin>
-      </allowedPlugins>
-    </specificAuthenticationChain>
   </extension>
 
 </component>
