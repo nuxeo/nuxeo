@@ -102,4 +102,6 @@ public interface Backend {
 
     String getVirtualPath(String path) throws ClientException;
 
+    DocumentModel getDocument(String location) throws ClientException;
+
 }

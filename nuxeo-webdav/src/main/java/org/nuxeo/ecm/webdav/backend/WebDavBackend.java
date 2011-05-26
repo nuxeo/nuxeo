@@ -73,4 +73,6 @@ public interface WebDavBackend {
     LinkedList<String> getVirtualFolderNames() throws ClientException;
 
     boolean isVirtual();
+
+    DocumentModel getDocument(String location) throws Exception;
 }

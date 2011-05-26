@@ -82,7 +82,7 @@ public class RootResource {
 
     @PROPFIND
     public Object getRootPropfind(@Context UriInfo uriInfo,
-            @HeaderParam("depth") String depth) throws Exception {
+                                  @HeaderParam("depth") String depth) throws Exception {
         Object resource = findResource("");
         if (resource instanceof FolderResource) {
             return ((FolderResource) resource).propfind(uriInfo, depth);
@@ -109,9 +109,7 @@ public class RootResource {
 
         DocumentModel doc = null;
         try {
-            doc = backend.resolveLocation(path);
-        } catch (ClientRuntimeException pnfe){
-            log.warn(pnfe);
+            doc = backend.getDocument(path);
         } catch (Exception e) {
             log.error("Error during resolving path: " + path, e);
             throw new WebApplicationException(Response.Status.CONFLICT);

@@ -17,12 +17,10 @@
  */
 package org.nuxeo.ecm.platform.wi.backend.webdav;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Path;
-import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.*;
 import org.nuxeo.ecm.platform.wi.backend.Backend;
 import org.nuxeo.ecm.webdav.backend.WebDavBackend;
 
@@ -30,6 +28,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class WebDavBackendAdapter implements WebDavBackend {
+
+    private static final Log log = LogFactory.getLog(WebDavBackendAdapter.class);
 
     private Backend backend;
 
@@ -169,5 +169,14 @@ public class WebDavBackendAdapter implements WebDavBackend {
     @Override
     public boolean isVirtual() {
         return backend.isVirtual();
+    }
+
+    public DocumentModel getDocument(String location) throws ClientException {
+        try {
+            return backend.getDocument(location);
+        } catch (ClientRuntimeException e) {
+            log.warn(e);
+            return null;
+        }
     }
 }

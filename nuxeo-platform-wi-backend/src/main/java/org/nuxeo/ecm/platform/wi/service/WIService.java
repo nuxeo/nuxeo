@@ -23,4 +23,6 @@ public interface WIService {
 
     String getPathById(String uuid, CoreSession session) throws ClientException;
 
+    void invalidateCache();
+
 }

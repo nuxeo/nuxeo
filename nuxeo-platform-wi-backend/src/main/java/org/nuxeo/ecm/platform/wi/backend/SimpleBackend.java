@@ -551,6 +551,10 @@ public class SimpleBackend extends AbstractCoreBackend {
         }
     }
 
+    public DocumentModel getDocument(String location) throws ClientException {
+        return resolveLocation(location);
+    }
+
     protected String getFileName(DocumentModel doc) {
         BlobHolder bh = doc.getAdapter(BlobHolder.class);
         if (bh != null) {
@@ -577,14 +581,14 @@ public class SimpleBackend extends AbstractCoreBackend {
         }
     }
 
-    private TrashService getTrashService() throws Exception {
+    protected TrashService getTrashService() throws Exception {
         if (trashService == null) {
             trashService = Framework.getService(TrashService.class);
         }
         return trashService;
     }
 
-    private boolean cleanTrashPath(DocumentModel parent, String name)
+    protected boolean cleanTrashPath(DocumentModel parent, String name)
             throws ClientException {
         Path checkedPath = new Path(parent.getPathAsString()).append(name);
         if (getSession().exists(new PathRef(checkedPath.toString()))) {
@@ -600,13 +604,13 @@ public class SimpleBackend extends AbstractCoreBackend {
         return false;
     }
 
-    private boolean cleanTrashPath(DocumentRef parentRef, String name)
+    protected boolean cleanTrashPath(DocumentRef parentRef, String name)
             throws ClientException {
         DocumentModel parent = getSession().getDocument(parentRef);
         return cleanTrashPath(parent, name);
     }
 
-    private String encode(byte[] bytes, String encoding) throws ClientException {
+    protected String encode(byte[] bytes, String encoding) throws ClientException {
         try {
             return new String(bytes, encoding);
         } catch (UnsupportedEncodingException e) {
