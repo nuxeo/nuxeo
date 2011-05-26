@@ -143,10 +143,6 @@
       <param name="distribution.properties.file"
              value="${distribution.dir}/templates/common/config/distribution.properties" />
       <param name="org.nuxeo.distribution.name" value="cap" />
-      <param name="org.nuxeo.distribution.server" value="jboss" />
-      <param name="org.nuxeo.distribution.version"
-             value="${maven.project.version}" />
-      <param name="org.nuxeo.distribution.date" value="${DSTAMP}${TSTAMP}" />
     </antcall>
     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-cap-ear.zip"
          basedir="${outdir}"
@@ -221,10 +217,6 @@
       <param name="distribution.properties.file"
              value="${distribution.dir}/templates/common/config/distribution.properties" />
       <param name="org.nuxeo.distribution.name" value="dm" />
-      <param name="org.nuxeo.distribution.server" value="jboss" />
-      <param name="org.nuxeo.distribution.version"
-             value="${maven.project.version}" />
-      <param name="org.nuxeo.distribution.date" value="${DSTAMP}${TSTAMP}" />
     </antcall>
     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-dm-ear.zip"
          basedir="${outdir}"
@@ -327,9 +319,10 @@
     <echo append="false" file="${distribution.properties.file}">
 ## DO NOT MANUALLY EDIT THIS FILE
 org.nuxeo.distribution.name=${org.nuxeo.distribution.name}
-org.nuxeo.distribution.server=${org.nuxeo.distribution.server}
-org.nuxeo.distribution.version=${org.nuxeo.distribution.version}
-org.nuxeo.distribution.date=${org.nuxeo.distribution.date}
+org.nuxeo.distribution.server=jboss
+org.nuxeo.distribution.version=${maven.project.version}
+org.nuxeo.distribution.date=${DSTAMP}${TSTAMP}
+org.nuxeo.distribution.package=zip
     </echo>
   </target>
 
