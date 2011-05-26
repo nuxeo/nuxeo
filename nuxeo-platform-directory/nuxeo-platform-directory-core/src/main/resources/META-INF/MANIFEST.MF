@@ -15,7 +15,8 @@ Require-Bundle: org.nuxeo.ecm.directory.api;visibility:=reexport,
 Bundle-Vendor: Nuxeo
 Eclipse-LazyStart: true
 Bundle-Version: 0.0.0.SNAPSHOT
-Nuxeo-Component: OSGI-INF/DirectoryService.xml
+Nuxeo-Component: OSGI-INF/DirectoryService.xml,
+ OSGI-INF/directory-local-configuration.xml
 Bundle-ManifestVersion: 2
 Import-Package: org.apache.commons.logging,
  org.nuxeo.common.xmap.annotation,

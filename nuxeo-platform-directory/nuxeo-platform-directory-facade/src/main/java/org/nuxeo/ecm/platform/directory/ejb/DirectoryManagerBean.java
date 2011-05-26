@@ -305,9 +305,9 @@ public class DirectoryManagerBean implements DirectoryManagerLocal {
         }
     }
 
-    public Session open(String directoryName) throws DirectoryException {
+    public Session open(String directoryName, DocumentModel documentContext) throws DirectoryException {
         try {
-            Session session = getService().open(directoryName);
+            Session session = getService().open(directoryName, documentContext);
             long id = sessionIdCounter.incrementAndGet();
             sessionMap.put(id, session);
             sessionDirectoryNames.put(id, directoryName);
@@ -317,7 +317,15 @@ public class DirectoryManagerBean implements DirectoryManagerLocal {
         }
     }
 
+    public Session open(String directoryName) throws DirectoryException {
+        return open(directoryName, null);
+    }
+
     public Directory getDirectory(String name) throws DirectoryException {
+        throw new DirectoryException("Directories cannot be remotely retrieved");
+    }
+
+    public Directory getDirectory(String name, DocumentModel documentContext) throws DirectoryException {
         throw new DirectoryException("Directories cannot be remotely retrieved");
     }
 

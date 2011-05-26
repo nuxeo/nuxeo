@@ -22,6 +22,7 @@ package org.nuxeo.ecm.directory.api;
 import java.util.List;
 
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.DirectoryFactory;
@@ -52,8 +53,60 @@ public interface DirectoryService {
      */
     Session open(String directoryName) throws DirectoryException;
 
-    Directory getDirectory(String name) throws DirectoryException;
+    /**
+     * Opens a session on the directory for the specified context. The context
+     * is given by the document. The document service will try to find the
+     * directory local configuration of the document that will specify the
+     * suffix. the directory will fetch the directoryName + suffix found. If no
+     * local configuration is found the service will return the directoryName
+     * directory.
+     * <p>
+     * This method prefers to throw rather than returning null.
+     *
+     * @param directoryName
+     * @param documentContext
+     * @return the session
+     * @throws DirectoryException in case the session cannot be created
+     */
+    Session open(String directoryName, DocumentModel documentContext)
+            throws DirectoryException;
 
+    /**
+     * Return the directory for the specified context. The
+     * context is given by the document. The document service will try to find
+     * the directory local configuration of the document that will specify the
+     * suffix. The directory service will fetch the directoryName + suffix
+     * found. If no local configuration is found the service will return the
+     * directoryName directory.
+     * <p>
+     *
+     * @param directoryName
+     * @param documentContext
+     * @return the directory, if the factory of the directory or the directory
+     *         itself is not found return null
+     * @throws DirectoryException
+     */
+    Directory getDirectory(String directoryName, DocumentModel documentContext)
+            throws DirectoryException;
+
+    /**
+     * Return the directory with the name directoryName.
+     * <p>
+     *
+     * @param directoryName
+     * @param documentContext
+     * @return the directory, if the factory of the directory or the directory
+     *         itself is not found return null
+     * @throws DirectoryException
+     */
+    Directory getDirectory(String directoryName) throws DirectoryException;
+
+    /**
+     * Return all the directories registred into the service.
+     * <p>
+     *
+     * @throws DirectoryException
+     */
     List<Directory> getDirectories() throws DirectoryException;
 
     void registerDirectory(String directoryName, DirectoryFactory factory);

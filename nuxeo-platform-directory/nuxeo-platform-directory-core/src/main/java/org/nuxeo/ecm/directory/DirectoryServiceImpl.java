@@ -18,6 +18,8 @@
 
 package org.nuxeo.ecm.directory;
 
+import static org.nuxeo.ecm.directory.localconfiguration.DirectoryConfigurationConstants.DIRECTORY_CONFIGURATION_FACET;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,7 +27,11 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.localconfiguration.LocalConfigurationService;
 import org.nuxeo.ecm.directory.api.DirectoryService;
+import org.nuxeo.ecm.directory.localconfiguration.DirectoryConfiguration;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.Extension;
@@ -39,23 +45,63 @@ public class DirectoryServiceImpl extends DefaultComponent implements
 
     private Map<String, List<DirectoryFactory>> factoriesByDirectoryName;
 
-    public Directory getDirectory(String name) throws DirectoryException {
-        List<DirectoryFactory> potentialFactories = factoriesByDirectoryName.get(name);
+    protected DirectoryConfiguration getDirectoryConfiguration(
+            DocumentModel documentContext) {
+        DirectoryConfiguration configuration = null;
+
+        try {
+            LocalConfigurationService localConfigurationService = Framework.getService(LocalConfigurationService.class);
+
+            configuration = localConfigurationService.getConfiguration(
+                    DirectoryConfiguration.class,
+                    DIRECTORY_CONFIGURATION_FACET, documentContext);
+        } catch (Exception e) {
+            log.error(e, e);
+        }
+        return configuration;
+    }
+
+    public Directory getDirectory(String directoryName)
+            throws DirectoryException {
+        List<DirectoryFactory> potentialFactories = factoriesByDirectoryName.get(directoryName);
         if (potentialFactories == null) {
             return null;
         }
         Directory dir = null;
         for (DirectoryFactory factory : potentialFactories) {
-            dir = factory.getDirectory(name);
+            dir = factory.getDirectory(directoryName);
             if (null != dir) {
                 break;
             }
         }
         return dir;
+
+    }
+
+    public Directory getDirectory(String name, DocumentModel documentContext)
+            throws DirectoryException {
+        Directory directory = null;
+        DirectoryConfiguration configuration = getDirectoryConfiguration(documentContext);
+
+        if (configuration != null) {
+            directory = getDirectory(name + configuration.getDirectorySuffix());
+        }
+
+        if (directory == null) {
+            directory = getDirectory(name);
+        }
+
+        return directory;
     }
 
     private Directory getDirectoryOrFail(String name) throws DirectoryException {
-        Directory dir = getDirectory(name);
+        return getDirectoryOrFail(name, null);
+    }
+
+    private Directory getDirectoryOrFail(String name,
+            DocumentModel documentContext) throws DirectoryException {
+
+        Directory dir = getDirectory(name, documentContext);
         if (null == dir) {
             throw new DirectoryException(String.format(
                     "no directory registered with name '%s'", name));
@@ -166,6 +212,11 @@ public class DirectoryServiceImpl extends DefaultComponent implements
 
     public Session open(String directoryName) throws DirectoryException {
         return getDirectoryOrFail(directoryName).getSession();
+    }
+
+    public Session open(String directoryName, DocumentModel documentContext)
+            throws DirectoryException {
+        return getDirectoryOrFail(directoryName, documentContext).getSession();
     }
 
     public String getParentDirectoryName(String directoryName)
