@@ -17,14 +17,15 @@
  */
 package org.nuxeo.ecm.platform.wi.backend;
 
-import org.apache.commons.logging.Log;
+import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.platform.wi.filter.WIRequestFilter;
 import org.nuxeo.ecm.platform.wi.filter.WISession;
-
-import javax.servlet.http.HttpServletRequest;
+import org.nuxeo.ecm.webengine.jaxrs.context.RequestCleanupHandler;
+import org.nuxeo.ecm.webengine.jaxrs.context.RequestContext;
 
 public abstract class AbstractBackendFactory implements BackendFactory {
 
@@ -38,7 +39,7 @@ public abstract class AbstractBackendFactory implements BackendFactory {
                     + request.getRequestURI());
         }
 
-        Backend backend = null;
+        final Backend backend;
         if (request != null) {
             WISession wiSession = (WISession) request.getAttribute(WIRequestFilter.SESSION_KEY);
             backend = getBackend(wiSession);
@@ -46,6 +47,13 @@ public abstract class AbstractBackendFactory implements BackendFactory {
             // for tests
             backend = createRootBackend();
         }
+        // register a backend cleanup handler
+        RequestContext.getActiveContext(request).addRequestCleanupHandler(
+                new RequestCleanupHandler() {
+                    public void cleanup(HttpServletRequest req) {
+                        backend.destroy();
+                    }
+                });
         return backend.getBackend(path);
     }
 
