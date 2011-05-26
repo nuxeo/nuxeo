@@ -37,9 +37,9 @@ public class MetricComponent extends DefaultComponent {
         return super.getAdapter(adapter);
     }
 
-    protected final MetricRegisterer register = new MetricRegisterer();
+    protected final MetricRegister register = new MetricRegister();
 
-    protected final MetricRegisteringCallback registeringCB = new  MetricRegisteringCallback();
+    protected final MetricRegisteringCallback registeringCB = new  MetricRegisteringCallback(register);
 
     @Override
     public void activate(ComponentContext context) throws Exception {
@@ -66,8 +66,8 @@ public class MetricComponent extends DefaultComponent {
         enabler.setSerializer(serializer);
         SimonManager.enable();
         SimonManager.callback().addCallback(registeringCB);
-        register.registerMXBean(enabler);
-        register.registerMXBean(serializer);
+        register.registerMXBean(enabler,  "enabler", MetricEnablerMXBean.class, "Feature");
+        register.registerMXBean(serializer, "serializer", MetricSerializerMXBean.class, "Feature");
     }
 
     protected void doStop() {

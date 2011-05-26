@@ -67,6 +67,16 @@ public class ObjectNameFactory {
     public static String formatMetricQualifiedName(ComponentName name, String metricName) {
         return formatQualifiedName(name) + ",metric=" + metricName + ",management=metric";
     }
+    
+    public static String formatMetricQualifiedName(String name, String type) {
+        if (NUXEO_DOMAIN_NAME.equals(name)) {
+            name ="root";
+        }
+        if (name.startsWith(NUXEO_DOMAIN_NAME)) {
+            name = name.substring(NUXEO_DOMAIN_NAME.length()+1);
+        }
+        return String.format("%s:name=%s,type=%s,management=metric", NUXEO_DOMAIN_NAME, name, type);
+    }
 
     public static String formatAVAs(String... avas) {
         StringBuffer buffer = new StringBuffer();
@@ -78,13 +88,7 @@ public class ObjectNameFactory {
         }
         return buffer.toString();
     }
-
-    public static String formatMetricQualifiedName(ComponentName name,
-            String metricName, String... avas) {
-        return formatQualifiedName(name) + ",metric=" + metricName + ","
-                + formatAVAs(avas) + ",management=metric";
-    }
-
+        
     public static String formatInventoryQualifiedName(ComponentName name) {
         return formatQualifiedName(name) + ",management=inventory";
     }

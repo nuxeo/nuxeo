@@ -223,6 +223,7 @@ public class ResourcePublisherService extends DefaultComponent implements
 
         protected void doRegisterResource(Resource resource) {
             registry.put(resource.getManagementName(), resource);
+            doBind(resource);
             if (log.isDebugEnabled()) {
                 log.debug("registered " + resource.getManagementName());
             }

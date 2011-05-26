@@ -23,10 +23,10 @@ import java.beans.MethodDescriptor;
 import java.beans.ParameterDescriptor;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -74,15 +74,18 @@ public class ModelMBeanIntrospector {
         }
 
         // Collect ifaces
-        List<Class> ifaces = new ArrayList<Class>(1);
+        Set<Class<?>> ifaces = new HashSet<Class<?>>(1);
         if (clazz.isInterface()) {
             ifaces.add(clazz);
         } else {
-            doCollectIfaces(ifaces, clazz);
+            doCollectMgmtIfaces(ifaces, clazz);
+            if (ifaces.isEmpty()) {
+                doCollectIfaces(ifaces, clazz);
+            }
         }
 
         // Introspect
-        for (Class iface : ifaces) {
+        for (Class<?> iface : ifaces) {
             BeanInfo beanInfo;
             try {
                 beanInfo = Introspector.getBeanInfo(iface);
@@ -112,15 +115,38 @@ public class ModelMBeanIntrospector {
         return managementInfo;
     }
 
-    protected void doCollectIfaces(List<Class> ifaces, Class clazz) {
+    protected void doCollectMgmtIfaces(Set<Class<?>> ifaces, Class<?> clazz) {
+        if (clazz == null) {
+            return;
+        }
+        if (Object.class.equals(clazz)) {
+            return;
+        }
         for (Class<?> iface : clazz.getInterfaces()) {
-            if (iface.getName().endsWith("MBean")) {
+            if (iface.getName().endsWith("MBean") || iface.getName().endsWith("MXBean")) {
+                ifaces.add(iface);
+                doCollectMgmtIfaces(ifaces, iface);
+            }
+        }
+        doCollectMgmtIfaces(ifaces, clazz.getSuperclass());        
+    }
+    
+    protected void doCollectIfaces(Set<Class<?>> ifaces, Class<?> clazz) {
+        if (clazz == null) {
+            return;
+        }
+        if (Object.class.equals(clazz)) {
+            return;
+        }
+        for (Class<?> iface : clazz.getInterfaces()) {
+            if (iface.getName().endsWith("MBean") || iface.getName().endsWith("MXBean")) {
                 ifaces.clear();
                 ifaces.add(iface);
                 return;
             }
             ifaces.add(iface);
         }
+        doCollectIfaces(ifaces, clazz.getSuperclass());
     }
 
     protected void doCollectNotifications(Class<?> clazz, BeanInfo info) {

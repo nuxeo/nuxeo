@@ -17,22 +17,57 @@
 
 package org.nuxeo.runtime.management.metrics;
 
-import org.javasimon.SimonManager;
-import org.javasimon.jmx.JmxRegisterCallback;
+import org.javasimon.CallbackSkeleton;
+import org.javasimon.Counter;
+import org.javasimon.Simon;
+import org.javasimon.Stopwatch;
 import org.javasimon.jmx.SimonSuperMXBean;
+import org.nuxeo.runtime.management.counters.CounterMXBeanImpl;
+import org.nuxeo.runtime.management.stopwatchs.StopwatchMXBeanImpl;
 
-public class MetricRegisteringCallback extends JmxRegisterCallback {
-
-    @Override
-    public void initialize() {
-        for (String name : SimonManager.simonNames()) {
-            this.simonCreated(SimonManager.getSimon(name));
-        }
+/**
+ * Callback that registers MXBeans for metrics after their creation.
+ */
+public class MetricRegisteringCallback extends CallbackSkeleton {
+   
+    MetricRegister register;
+    
+    /**
+     * @param register
+     */
+    public MetricRegisteringCallback(MetricRegister register) {
+       this.register = register;
     }
 
 
     @Override
-    protected String constructObjectName(SimonSuperMXBean simonMxBean) {
-        return String.format("org.nuxeo:metric=%s,management=metric", simonMxBean.getName());
+    public void simonCreated(Simon simon) {
+        if (simon.getName() == null) {
+            return;
+        }
+        register(simon);
+    }
+
+
+    @Override
+    public void simonDestroyed(Simon simon) {
+        register.unregisterMXBean(simon.getName());
+    }
+
+    @Override
+    public void clear() {
+        register.unregisterAll();
+    }
+
+    protected final void register(Simon simon) {
+        SimonSuperMXBean mbean;
+        if (simon instanceof Counter) {
+            mbean = new CounterMXBeanImpl((Counter) simon);
+        } else  if (simon instanceof Stopwatch) {
+            mbean = new StopwatchMXBeanImpl((Stopwatch) simon);
+        } else {
+            return;
+        }
+        register.registerMXBean(mbean, simon.getName(), mbean.getClass(), mbean.getType());
     }
 }

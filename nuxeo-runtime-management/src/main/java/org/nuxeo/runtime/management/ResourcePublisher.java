@@ -31,5 +31,9 @@ public interface ResourcePublisher {
     Set<ObjectName> getResourcesName();
 
     ObjectName lookupName(String name);
-
+    
+     void registerResource(String shortName, String qualifiedName,
+            Class<?> managementClass, Object instance);
+     
+     void unregisterResource(String shortName, String qualifiedName);
 }
