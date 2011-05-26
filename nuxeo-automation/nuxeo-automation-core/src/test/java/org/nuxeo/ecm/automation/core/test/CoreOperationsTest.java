@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -11,9 +11,13 @@
  */
 package org.nuxeo.ecm.automation.core.test;
 
-import static org.hamcrest.Matchers.*;
-
-import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import org.junit.Before;
 import org.junit.Ignore;
@@ -122,7 +126,7 @@ public class CoreOperationsTest {
         service.run(ctx, chain);
         assertEquals(src.getTitle(), ctx.get("script_title"));
     }
-    
+
     @Test
     public void testRunScriptOperation() throws Exception {
         OperationContext ctx = new OperationContext(session);
@@ -440,6 +444,24 @@ public class CoreOperationsTest {
         chain.add(RunDocumentChain.ID).set("id", "doc_subchain");
         DocumentModel doc = (DocumentModel) service.run(ctx, chain);
         assertEquals("My Doc", doc.getTitle());
+        assertEquals("My Doc desc", doc.getPropertyValue("dc:description"));
+    }
+
+    /**
+     * Alternate version - use xml properties instead of java properties when defining a properties value
+     * @throws Exception
+     */
+    @Test
+    public void testSubChainAlt() throws Exception {
+        OperationContext ctx = new OperationContext(session);
+        ctx.setInput(src);
+
+        OperationChain chain = new OperationChain("testChain");
+        chain.add(FetchContextDocument.ID);
+        chain.add(RunDocumentChain.ID).set("id", "doc_subchain_alt");
+        DocumentModel doc = (DocumentModel) service.run(ctx, chain);
+        assertEquals("My Doc", doc.getTitle());
+        assertEquals("My Doc desc", doc.getPropertyValue("dc:description"));
     }
 
     /**
