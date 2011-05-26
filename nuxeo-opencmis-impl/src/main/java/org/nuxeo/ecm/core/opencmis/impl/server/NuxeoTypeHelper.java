@@ -262,7 +262,6 @@ public class NuxeoTypeHelper {
         t.setLocalNamespace(ns == null ? NAMESPACE : ns.uri);
         t.setQueryName(id);
         t.setIsCreatable(Boolean.valueOf(creatable));
-        t.setIsFileable(Boolean.TRUE);
         t.setIsQueryable(Boolean.TRUE);
         t.setIsIncludedInSupertypeQuery(Boolean.TRUE);
         t.setIsFulltextIndexed(Boolean.TRUE);
@@ -270,6 +269,7 @@ public class NuxeoTypeHelper {
         t.setIsControllablePolicy(Boolean.FALSE);
         addBasePropertyDefinitions();
         if (t instanceof FolderTypeDefinitionImpl) {
+            t.setIsFileable(Boolean.TRUE);
             FolderTypeDefinitionImpl ft = (FolderTypeDefinitionImpl) t;
             addFolderPropertyDefinitions(ft);
         } else if (t instanceof RelationshipTypeDefinitionImpl) {
@@ -277,9 +277,11 @@ public class NuxeoTypeHelper {
             rt.setAllowedSourceTypes(null);
             rt.setAllowedTargetTypes(null);
             addRelationshipPropertyDefinitions(rt);
+            t.setIsFileable(Boolean.FALSE);
         } else {
             DocumentTypeDefinitionImpl dt = (DocumentTypeDefinitionImpl) t;
             dt.setIsVersionable(Boolean.FALSE);
+            t.setIsFileable(Boolean.TRUE);
             ContentStreamAllowed csa = (documentType != null && supportsBlobHolder(documentType)) ? ContentStreamAllowed.ALLOWED
                     : ContentStreamAllowed.NOTALLOWED;
             dt.setContentStreamAllowed(csa);
@@ -290,31 +292,31 @@ public class NuxeoTypeHelper {
     protected void addBasePropertyDefinitions() {
         t.addPropertyDefinition(newPropertyDefinition(PropertyIds.OBJECT_ID,
                 "Object ID", PropertyType.ID, Cardinality.SINGLE,
-                Updatability.READONLY, false, true, true));
+                Updatability.READONLY, false, false, true));
         t.addPropertyDefinition(newPropertyDefinition(
                 PropertyIds.OBJECT_TYPE_ID, "Type ID", PropertyType.ID,
                 Cardinality.SINGLE, Updatability.ONCREATE, false, true, false));
         t.addPropertyDefinition(newPropertyDefinition(PropertyIds.BASE_TYPE_ID,
                 "Base Type ID", PropertyType.ID, Cardinality.SINGLE,
-                Updatability.READONLY, false, true, false));
+                Updatability.READONLY, false, false, false));
         t.addPropertyDefinition(newPropertyDefinition(PropertyIds.NAME, "Name",
                 PropertyType.STRING, Cardinality.SINGLE,
                 Updatability.READWRITE, false, true, true));
         t.addPropertyDefinition(newPropertyDefinition(PropertyIds.CREATED_BY,
                 "Created By", PropertyType.STRING, Cardinality.SINGLE,
-                Updatability.READONLY, false, true, true));
+                Updatability.READONLY, false, false, true));
         t.addPropertyDefinition(newPropertyDefinition(
                 PropertyIds.CREATION_DATE, "Creation Date",
                 PropertyType.DATETIME, Cardinality.SINGLE,
-                Updatability.READONLY, false, true, true));
+                Updatability.READONLY, false, false, true));
         t.addPropertyDefinition(newPropertyDefinition(
                 PropertyIds.LAST_MODIFIED_BY, "Last Modified By",
                 PropertyType.STRING, Cardinality.SINGLE, Updatability.READONLY,
-                false, true, false));
+                false, false, false));
         t.addPropertyDefinition(newPropertyDefinition(
                 PropertyIds.LAST_MODIFICATION_DATE, "Last Modification Date",
                 PropertyType.DATETIME, Cardinality.SINGLE,
-                Updatability.READONLY, false, true, true));
+                Updatability.READONLY, false, false, true));
         t.addPropertyDefinition(newPropertyDefinition(PropertyIds.CHANGE_TOKEN,
                 "Change Token", PropertyType.STRING, Cardinality.SINGLE,
                 Updatability.READONLY, false, false, false));
@@ -346,10 +348,10 @@ public class NuxeoTypeHelper {
             RelationshipTypeDefinitionImpl t) {
         t.addPropertyDefinition(newPropertyDefinition(PropertyIds.SOURCE_ID,
                 "Source ID", PropertyType.ID, Cardinality.SINGLE,
-                Updatability.READWRITE, false, false, true));
+                Updatability.READWRITE, false, true, true));
         t.addPropertyDefinition(newPropertyDefinition(PropertyIds.TARGET_ID,
                 "Target ID", PropertyType.ID, Cardinality.SINGLE,
-                Updatability.READWRITE, false, false, true));
+                Updatability.READWRITE, false, true, true));
     }
 
     protected static void addDocumentPropertyDefinitions(
@@ -372,15 +374,15 @@ public class NuxeoTypeHelper {
         t.addPropertyDefinition(newPropertyDefinition(
                 PropertyIds.VERSION_LABEL, "Version Label",
                 PropertyType.STRING, Cardinality.SINGLE, Updatability.READONLY,
-                false, true, true));
+                false, false, true));
         t.addPropertyDefinition(newPropertyDefinition(
                 PropertyIds.VERSION_SERIES_ID, "Version Series ID",
                 PropertyType.ID, Cardinality.SINGLE, Updatability.READONLY,
-                false, true, false));
+                false, false, false));
         t.addPropertyDefinition(newPropertyDefinition(
                 PropertyIds.IS_VERSION_SERIES_CHECKED_OUT,
                 "Is Version Series Checked Out", PropertyType.BOOLEAN,
-                Cardinality.SINGLE, Updatability.READONLY, false, true, false));
+                Cardinality.SINGLE, Updatability.READONLY, false, false, false));
         t.addPropertyDefinition(newPropertyDefinition(
                 PropertyIds.VERSION_SERIES_CHECKED_OUT_BY,
                 "Version Series Checked Out By", PropertyType.STRING,
