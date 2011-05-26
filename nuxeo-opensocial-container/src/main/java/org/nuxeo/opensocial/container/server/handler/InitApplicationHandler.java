@@ -32,8 +32,6 @@ public class InitApplicationHandler extends
         // webcontents
         Space space = getOrCreateSpace(action, session);
 
-        Map<String, Map<String, Boolean>> permissions = space.getPermissions();
-
         // Get the layout from NUXEO
         YUILayout layout = space.getLayout().getLayout();
 
