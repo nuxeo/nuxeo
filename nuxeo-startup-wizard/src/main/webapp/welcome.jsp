@@ -11,9 +11,9 @@
 <p><b><fmt:message key="label.welcome.p3" /></b></p>
 <p><fmt:message key="label.welcome.p4" />
 <ul>
-    <li><a href="https://doc.nuxeo.com/x/lYFH" target="doc"> <fmt:message
-        key="label.welcome.p4a" /></a></li>
     <li><a href="https://doc.nuxeo.com/x/EIAV" target="doc"> <fmt:message
+        key="label.welcome.p4a" /></a></li>
+    <li><a href="https://doc.nuxeo.com/x/lYFH" target="doc"> <fmt:message
         key="label.welcome.p4b" /></a></li>
 </ul>
 </p>
