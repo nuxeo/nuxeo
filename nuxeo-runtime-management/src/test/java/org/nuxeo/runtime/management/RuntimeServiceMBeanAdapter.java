@@ -86,7 +86,7 @@ public class RuntimeServiceMBeanAdapter implements RuntimeServiceMBean {
         public Object transform(Object input) {
             Set<String> output = new HashSet<String>();
             TransformedSet.decorate(output, ComponentNameTransformer.INSTANCE).addAll(
-                    (Collection) input);
+                    (Collection<?>) input);
             return output;
         }
     }
