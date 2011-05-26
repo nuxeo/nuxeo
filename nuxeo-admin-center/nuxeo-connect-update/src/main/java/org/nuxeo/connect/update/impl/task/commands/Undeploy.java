@@ -63,6 +63,10 @@ public class Undeploy extends AbstractCommand {
     protected Command doRun(Task task, Map<String, String> prefs)
             throws PackageException {
         try {
+            if (!file.isFile()) {
+                // avoid throwing errors - this may happen at uninstall for broken packages
+                return null;
+            }
             new Uninstall(file).doRun(task, prefs);
             // TODO is this really needed - anyway a complete flush is made
             // after an install/uninstall - see CommandsTask.doRun
