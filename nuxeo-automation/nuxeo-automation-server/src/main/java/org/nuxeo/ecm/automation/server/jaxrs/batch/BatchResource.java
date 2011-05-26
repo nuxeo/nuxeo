@@ -38,6 +38,7 @@ import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationParameters;
 import org.nuxeo.ecm.automation.core.util.BlobList;
 import org.nuxeo.ecm.automation.server.jaxrs.ExecutionRequest;
+import org.nuxeo.ecm.automation.server.jaxrs.ResponseHelper;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.webengine.jaxrs.context.RequestCleanupHandler;
@@ -115,16 +116,22 @@ public class BatchResource {
 
                 });
         try {
+            Object result=null;
             if (operationId.startsWith("Chain.")) {
                 // Copy params in the Chain context
                 ctx.putAll(xreq.getParams());
-                return as.run(ctx, operationId.substring(6));
+                result = as.run(ctx, operationId.substring(6));
             } else {
                 OperationChain chain = new OperationChain("operation");
                 OperationParameters oparams = new OperationParameters(
                         operationId, params);
                 chain.add(oparams);
-                return as.run(ctx, chain);
+                result = as.run(ctx, chain);
+            }
+            if ("true".equals(request.getHeader("X-NXVoidOperation"))) {
+                return ResponseHelper.emptyContent(); // void response
+            } else {
+                return result;
             }
         } catch (Exception e) {
             log.error("Error while executing batch", e);
