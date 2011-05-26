@@ -21,10 +21,10 @@
   </c:if>
 
   <c:if test="#{widget.mode == 'view' }">
-    <h:outputText rendered="#{field != '0'}"
+    <h:outputText rendered="#{field != 0}"
       value="#{messages['label.yes']}" id="#{widget.id}_yes" />
     <h:outputText rendered="#{field == 0}"
       value="#{messages['label.no']}" id="#{widget.id}_no" />
   </c:if>
-  
+
 </div>
