@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.webengine.model;
 
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
@@ -42,6 +43,9 @@ public class Messages {
         messages = new ConcurrentHashMap<String, MessagesBundle>();
         String serverDefaultLang = Locale.getDefault().getLanguage();
         defaultMessages = getMessagesBundle(serverDefaultLang);
+        if (defaultMessages == null) {
+            defaultMessages = new MessagesBundle(null, new HashMap<String, String>());
+        }
         if (defaultMessages.messages.size() == 0
                 && !BUILT_IN_DEFAULT_LANG.equals(serverDefaultLang)) {
             defaultMessages = getMessagesBundle(BUILT_IN_DEFAULT_LANG);

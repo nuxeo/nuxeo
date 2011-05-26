@@ -46,6 +46,17 @@
     <url-pattern>/site/*</url-pattern>
   </servlet-mapping>
   <filter>
+    <display-name>RequestContextFilter</display-name>
+    <filter-name>RequestContextFilter</filter-name>
+    <filter-class>
+      org.nuxeo.ecm.webengine.jaxrs.context.RequestContextFilter
+    </filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>RequestContextFilter</filter-name>
+    <url-pattern>/site/*</url-pattern>
+  </filter-mapping>
+  <filter>
     <display-name>WebEngineFilter</display-name>
     <filter-name>WebEngineFilter</filter-name>
     <filter-class>
@@ -65,17 +76,6 @@
   </filter>
   <filter-mapping>
     <filter-name>SessionCleanupFilter</filter-name>
-    <url-pattern>/site/*</url-pattern>
-  </filter-mapping>
-  <filter>
-    <display-name>RequestContextFilter</display-name>
-    <filter-name>RequestContextFilter</filter-name>
-    <filter-class>
-      org.nuxeo.ecm.webengine.jaxrs.context.RequestContextFilter
-    </filter-class>
-  </filter>
-  <filter-mapping>
-    <filter-name>RequestContextFilter</filter-name>
     <url-pattern>/site/*</url-pattern>
   </filter-mapping>
   
