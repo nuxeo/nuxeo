@@ -319,12 +319,6 @@
           <properties mode="any">
             <property name="columnStyleClass">iconColumn</property>
           </properties>
-          <widget>empty</widget>
-        </column>
-        <column>
-          <properties mode="any">
-            <property name="columnStyleClass">iconColumn</property>
-          </properties>
           <widget>icon_task</widget>
         </column>
         <column>
