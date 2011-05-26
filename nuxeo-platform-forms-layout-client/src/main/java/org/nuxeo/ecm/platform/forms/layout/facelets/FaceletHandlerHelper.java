@@ -206,14 +206,17 @@ public final class FaceletHandlerHelper {
      * id).
      */
     public boolean shouldCreateReferenceAttribute(String key, Serializable value) {
+        // FIXME: NXP-7004: make this configurable per widget type and mode or
+        // JSF component
         if ((value instanceof String)
                 && (ComponentTagUtils.isValueReference((String) value)
                         || "converter".equals(key) || "validator".equals(key)
                         // size is mistaken for the properties map size because
                         // of jboss el resolvers
                         || "size".equals(key)
-                // richfaces calendar does not resolve EL expressions correctly
-                || "showApplyButton".equals(key))) {
+                        // richfaces calendar does not resolve EL expressions
+                        // correctly
+                        || "showApplyButton".equals(key) || "defaultTime".equals(key))) {
             return false;
         }
         return true;
