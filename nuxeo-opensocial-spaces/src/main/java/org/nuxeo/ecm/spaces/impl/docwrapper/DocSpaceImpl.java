@@ -298,6 +298,11 @@ public class DocSpaceImpl implements Space {
     // TODO ******************************************************************
 
     public Map<String, Map<String, Boolean>> getPermissions()
+    throws ClientException {
+        return getPermissions((List<WebContentData>) null);
+    }
+
+    public Map<String, Map<String, Boolean>> getPermissions(List<WebContentData> list)
             throws ClientException {
         Map<String, Map<String, Boolean>> rights = new HashMap<String, Map<String, Boolean>>();
 
@@ -308,7 +313,10 @@ public class DocSpaceImpl implements Space {
         // TODO STUB Get every gadgets in the space and assign the space's
         // permission
         // value
-        for (WebContentData data : readWebContents()) {
+        if (list == null) {
+            list = readWebContents();
+        }
+        for (WebContentData data : list) {
             rights.put(data.getId(), spaceRight);
         }
 

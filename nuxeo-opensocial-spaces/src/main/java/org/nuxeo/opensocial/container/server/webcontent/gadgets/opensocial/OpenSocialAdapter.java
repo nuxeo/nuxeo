@@ -35,7 +35,8 @@ import org.apache.shindig.common.uri.Uri;
 import org.apache.shindig.gadgets.GadgetContext;
 import org.apache.shindig.gadgets.GadgetSpecFactory;
 import org.apache.shindig.gadgets.spec.GadgetSpec;
-import org.apache.shindig.gadgets.spec.ModulePrefs;import org.apache.shindig.gadgets.spec.UserPref;
+import org.apache.shindig.gadgets.spec.ModulePrefs;
+import org.apache.shindig.gadgets.spec.UserPref;
 import org.apache.shindig.gadgets.spec.UserPref.EnumValuePair;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -79,8 +80,13 @@ public class OpenSocialAdapter extends
         setGadgetDefUrl(gadgetDefUrl);
         setGadgetName(data.getGadgetName());
 
+        Map<String, Map<String, Serializable>> tmpMap = new LinkedHashMap<String, Map<String, Serializable>>();
+        
         List<Map<String, Serializable>> savedUserPrefs = (List<Map<String, Serializable>>) doc.getPropertyValue(WC_OPEN_SOCIAL_USER_PREFS_PROPERTY);
 
+        for (Map<String, Serializable> entry : savedUserPrefs) {
+            tmpMap.put((String) entry.get("name"), entry);
+        }
         // add the additional preferences as user preferences
         Map<String, String> additionalPreferences = data.getAdditionalPreferences();
         for (Entry<String, String> entry : additionalPreferences.entrySet()) {
@@ -88,6 +94,7 @@ public class OpenSocialAdapter extends
             savedUserPref.put("name", entry.getKey());
             savedUserPref.put("value", entry.getValue());
             savedUserPrefs.add(savedUserPref);
+            tmpMap.put((String) savedUserPref.get("name"), savedUserPref);
         }
 
         for (org.nuxeo.opensocial.container.shared.webcontent.UserPref dataPref : data.getUserPrefs()) {
@@ -97,8 +104,11 @@ public class OpenSocialAdapter extends
                 savedUserPref.put("value", dataPref.getActualValue());
 
                 savedUserPrefs.add(savedUserPref);
+                tmpMap.put((String) savedUserPref.get("name"), savedUserPref);
             }
         }
+        savedUserPrefs.clear();
+        savedUserPrefs.addAll(tmpMap.values());
 
         doc.setPropertyValue(WC_OPEN_SOCIAL_USER_PREFS_PROPERTY,
                 (Serializable) savedUserPrefs);

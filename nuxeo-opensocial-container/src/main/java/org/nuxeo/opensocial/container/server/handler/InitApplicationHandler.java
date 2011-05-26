@@ -39,6 +39,7 @@ public class InitApplicationHandler extends
 
         // Get the webcontents in the layout
         List<WebContentData> list = space.readWebContents();
+        Map<String, Map<String, Boolean>> permissions = space.getPermissions(list);
         Map<String, List<WebContentData>> webContents = new HashMap<String, List<WebContentData>>();
 
         for (WebContentData data : list) {
