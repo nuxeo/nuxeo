@@ -149,6 +149,9 @@ goto END
 :HAS_JAVA_HOME
 echo Found JAVA_HOME = %JAVA_HOME%
 set JAVA=%JAVA_HOME%\bin\java.exe
+if exist "%JAVA%" goto HAS_JAVA
+echo Could not find java.exe in JAVA_HOME\bin. Please fix or remove JAVA_HOME; ensure Java 6 is properly installed.
+goto END
 
 :HAS_JAVA
 echo Using JAVA = %JAVA%
