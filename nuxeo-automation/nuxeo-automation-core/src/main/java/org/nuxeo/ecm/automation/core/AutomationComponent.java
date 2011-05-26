@@ -16,6 +16,7 @@ import org.nuxeo.ecm.automation.core.events.EventHandler;
 import org.nuxeo.ecm.automation.core.events.EventHandlerRegistry;
 import org.nuxeo.ecm.automation.core.events.operations.FireEvent;
 import org.nuxeo.ecm.automation.core.impl.OperationServiceImpl;
+import org.nuxeo.ecm.automation.core.operations.FetchContextBlob;
 import org.nuxeo.ecm.automation.core.operations.FetchContextDocument;
 import org.nuxeo.ecm.automation.core.operations.RestoreBlobInput;
 import org.nuxeo.ecm.automation.core.operations.RestoreBlobsInput;
@@ -111,6 +112,7 @@ public class AutomationComponent extends DefaultComponent {
         service = new OperationServiceImpl();
         // register built-in operations
         service.putOperation(FetchContextDocument.class);
+        service.putOperation(FetchContextBlob.class);
         service.putOperation(SetVar.class);
         service.putOperation(PushDocument.class);
         service.putOperation(PushDocumentList.class);
