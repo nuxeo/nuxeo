@@ -78,8 +78,8 @@ public class CheckboxWidgetTypeHandler extends AbstractWidgetTypeHandler {
             FaceletHandler[] handlers = { input, message };
             return new CompositeFaceletHandler(handlers);
         } else {
-            TagAttributes attributes = getViewTagAttributes(helper, widgetId,
-                    widget, !BuiltinWidgetModes.isLikePlainMode(mode));
+            TagAttributes attributes = getViewTagAttributes(ctx, helper,
+                    widgetId, widget, !BuiltinWidgetModes.isLikePlainMode(mode));
             // default on text for other modes
             ComponentHandler output = helper.getHtmlComponentHandler(
                     widgetTagConfigId, attributes, leaf,
@@ -100,17 +100,19 @@ public class CheckboxWidgetTypeHandler extends AbstractWidgetTypeHandler {
      * for the 'value' field by a specific expression to display the boolean
      * value as an internationalized label.
      */
-    protected TagAttributes getViewTagAttributes(FaceletHandlerHelper helper,
-            String id, Widget widget, boolean addId) {
+    protected TagAttributes getViewTagAttributes(FaceletContext ctx,
+            FaceletHandlerHelper helper, String id, Widget widget, boolean addId) {
         List<TagAttribute> attrs = new ArrayList<TagAttribute>();
         FieldDefinition[] fields = widget.getFieldDefinitions();
         if (fields != null && fields.length > 0) {
             FieldDefinition field = fields[0];
             String bareExpression = ValueExpressionHelper.createBareExpressionString(
                     widget.getValueName(), field);
+            String bundleName = ctx.getFacesContext().getApplication().getMessageBundle();
+            String messageYes = String.format("%s['label.yes']", bundleName);
+            String messageNo = String.format("%s['label.no']", bundleName);
             String expression = String.format("#{%s ? %s : %s}",
-                    bareExpression, "messages['label.yes']",
-                    "messages['label.no']");
+                    bareExpression, messageYes, messageNo);
             TagAttribute valueAttr = helper.createAttribute("value", expression);
             attrs.add(valueAttr);
         }
