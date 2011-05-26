@@ -10,10 +10,4 @@
     <provide interface="org.nuxeo.runtime.management.metrics.MetricSerializer" />
   </service>
 
-  <!--extension target="org.nuxeo.runtime.management.ResourcePublisher"
-    point="factories">
-    <factory name="metrics"
-      class="org.nuxeo.runtime.management.metrics.MetricManagementFactory" />
-  </extension-->
-
 </component>
