@@ -33,6 +33,7 @@ import javax.swing.SwingUtilities;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.artofsolving.jodconverter.util.PlatformUtils;
 import org.nuxeo.launcher.NuxeoLauncher;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.launcher.daemon.DaemonThreadFactory;
@@ -64,6 +65,14 @@ public class NuxeoLauncherGUI {
      */
     public NuxeoLauncherGUI(NuxeoLauncher launcher) {
         this.launcher = launcher;
+        // Set OS-specific decorations
+        if (PlatformUtils.isMac()) {
+            System.setProperty("apple.laf.useScreenMenuBar", "true");
+            System.setProperty("com.apple.mrj.application.growbox.intrudes",
+                    "false");
+            System.setProperty("com.apple.mrj.application.live-resize", "true");
+            System.setProperty("com.apple.macos.smallTabs", "true");
+        }
     }
 
     private void initFrame(final NuxeoLauncherGUI controller) {

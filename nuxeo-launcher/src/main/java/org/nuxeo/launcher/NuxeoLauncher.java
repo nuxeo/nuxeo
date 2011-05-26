@@ -143,6 +143,12 @@ public abstract class NuxeoLauncher {
         processManager = getOSProcessManager();
         processRegex = Pattern.quote(configurationGenerator.getNuxeoConf().getPath())
                 + ".*" + Pattern.quote(getServerPrint());
+        // Set OS-specific decorations
+        if (PlatformUtils.isMac()) {
+            System.setProperty(
+                    "com.apple.mrj.application.apple.menu.about.name",
+                    "NuxeoCtl");
+        }
     }
 
     private ProcessManager getOSProcessManager() {
