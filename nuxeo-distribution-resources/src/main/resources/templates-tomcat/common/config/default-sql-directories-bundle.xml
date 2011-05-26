@@ -22,7 +22,7 @@
       <autoincrementIdField>false</autoincrementIdField>
       <dataFile>users.csv</dataFile>
       <createTablePolicy>on_missing_columns</createTablePolicy>
-      <querySizeLimit>15</querySizeLimit>
+      <querySizeLimit>50</querySizeLimit>
 
       <references>
         <inverseReference field="groups" directory="groupDirectory"
