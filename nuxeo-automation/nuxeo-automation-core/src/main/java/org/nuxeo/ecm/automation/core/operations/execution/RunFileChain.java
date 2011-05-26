@@ -21,7 +21,7 @@ import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
-import org.nuxeo.ecm.automation.core.collectors.BlobCollector;
+import org.nuxeo.ecm.automation.core.util.BlobList;
 import org.nuxeo.ecm.core.api.Blob;
 
 /**
@@ -48,12 +48,21 @@ public class RunFileChain {
     protected boolean isolate = false;
 
 
-    @OperationMethod(collector=BlobCollector.class)
-    public Blob run(Blob doc) throws Exception {
+    @OperationMethod
+    public Blob run(Blob blob) throws Exception {
         Map<String, Object> vars = isolate ? new HashMap<String, Object>(ctx.getVars()) : ctx.getVars();
         OperationContext subctx = new OperationContext(ctx.getCoreSession(), vars);
-        subctx.setInput(doc);
+        subctx.setInput(blob);
         return (Blob) service.run(subctx, chainId);
+    }
+
+    @OperationMethod
+    public BlobList run(BlobList blobs) throws Exception {
+        BlobList result = new BlobList(blobs.size());
+        for (Blob blob : blobs) {
+            result.add(run(blob));
+        }
+        return result;
     }
 
 }

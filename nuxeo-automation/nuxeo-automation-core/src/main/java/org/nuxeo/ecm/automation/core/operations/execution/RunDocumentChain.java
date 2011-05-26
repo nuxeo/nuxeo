@@ -21,8 +21,9 @@ import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
-import org.nuxeo.ecm.automation.core.collectors.DocumentModelCollector;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 
 /**
  * Run an embedded operation chain that returns a DocumentModel using the
@@ -48,12 +49,21 @@ public class RunDocumentChain {
     protected boolean isolate = false;
 
 
-    @OperationMethod(collector=DocumentModelCollector.class)
+    @OperationMethod
     public DocumentModel run(DocumentModel doc) throws Exception {
         Map<String, Object> vars = isolate ? new HashMap<String, Object>(ctx.getVars()) : ctx.getVars();
         OperationContext subctx = new OperationContext(ctx.getCoreSession(), vars);
         subctx.setInput(doc);
         return (DocumentModel) service.run(subctx, chainId);
+    }
+
+    @OperationMethod
+    public DocumentModelList run(DocumentModelList docs) throws Exception {
+        DocumentModelList result = new DocumentModelListImpl(docs.size());
+        for (DocumentModel doc : docs) {
+            result.add(run(doc));
+        }
+        return result;
     }
 
 }
