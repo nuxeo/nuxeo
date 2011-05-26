@@ -8,7 +8,8 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *     bstefanescu, fguillaume, sfermigier, ldoguin, jcarsique
+ *
+ * $Id$
  */
 
 package org.nuxeo.runtime.api;
@@ -309,7 +310,7 @@ public final class Framework {
      * @return the property value if any otherwise the default value
      */
     public static String getProperty(String key, String defValue) {
-        return runtime == null ? null : runtime.getProperty(key, defValue);
+        return runtime.getProperty(key, defValue);
     }
 
     /**
@@ -319,7 +320,7 @@ public final class Framework {
      * @return the framework properties map. Never returns null.
      */
     public static Properties getProperties() {
-        return runtime == null ? null : runtime.getProperties();
+        return runtime.getProperties();
     }
 
     /**
