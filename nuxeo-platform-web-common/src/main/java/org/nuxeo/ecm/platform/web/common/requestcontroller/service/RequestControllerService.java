@@ -76,10 +76,10 @@ public class RequestControllerService extends DefaultComponent implements
     public void registerFilterConfig(FilterConfigDescriptor desc) {
         if (desc.isGrantRule()) {
             grantPatterns.put(desc.getName(), desc);
-            log.debug("Registred grant filter config");
+            log.debug("Registered grant filter config");
         } else {
             denyPatterns.put(desc.getName(), desc);
-            log.debug("Registred deny filter config");
+            log.debug("Registered deny filter config");
         }
     }
 

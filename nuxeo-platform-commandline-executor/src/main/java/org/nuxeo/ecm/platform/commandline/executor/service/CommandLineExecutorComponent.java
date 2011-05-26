@@ -162,7 +162,7 @@ public class CommandLineExecutorComponent extends DefaultComponent implements
     public CommandAvailability getCommandAvailability(String commandName) {
         if (!commandDescriptors.containsKey(commandName)) {
             return new CommandAvailability(commandName
-                    + " is not a registred command");
+                    + " is not a registered command");
         }
 
         CommandLineDescriptor desc = commandDescriptors.get(commandName);

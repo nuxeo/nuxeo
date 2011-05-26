@@ -53,15 +53,13 @@ import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * This Filter is registred as a pre-Filter of NuxeoAuthenticationFilter.
- *
+ * This Filter is registered as a pre-Filter of NuxeoAuthenticationFilter.
+ * <p>
  * It is used to handle OAuth Authentication :
  *
  * - 3 legged OAuth negociation - 2 legged OAuth (Signed fetch)
  *
- *
  * @author tiry
- *
  */
 public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
 
@@ -252,7 +250,7 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
         NuxeoOAuthConsumer consumer = getOAuthConsumerRegistry().getConsumer(
                 consumerKey, message.getSignatureMethod());
         if (consumer == null) {
-            log.error("Consumer " + consumerKey + " is not registred");
+            log.error("Consumer " + consumerKey + " is not registered");
             int errCode = OAuth.Problems.TO_HTTP_CODE.get(OAuth.Problems.CONSUMER_KEY_UNKNOWN);
             httpResponse.sendError(errCode, "Unknown consumer key");
             return;
@@ -307,7 +305,7 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
                 consumerKey, message.getSignatureMethod());
 
         if (consumer == null) {
-            log.error("Consumer " + consumerKey + " is not registred");
+            log.error("Consumer " + consumerKey + " is not registered");
             int errCode = OAuth.Problems.TO_HTTP_CODE.get(OAuth.Problems.CONSUMER_KEY_UNKNOWN);
             httpResponse.sendError(errCode, "Unknown consumer key");
             return;
@@ -410,7 +408,7 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
             log.error("Consumer " + consumerKey
                     + " is unknow, can not authenticated");
             httpResponse.sendError(errCode, "Consumer " + consumerKey
-                    + " is not registred");
+                    + " is not registered");
             return null;
         } else {
 

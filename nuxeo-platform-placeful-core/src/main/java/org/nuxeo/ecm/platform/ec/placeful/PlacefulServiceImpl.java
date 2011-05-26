@@ -176,7 +176,7 @@ public class PlacefulServiceImpl extends DefaultComponent implements PlacefulSer
         String className = registry.get(name);
         if (className == null) {
             // add fail safe
-            log.warn("No placeful configuration registred for " + name);
+            log.warn("No placeful configuration registered for " + name);
             return new ArrayList<Annotation>();
         }
         String shortClassName = getShortName(className);

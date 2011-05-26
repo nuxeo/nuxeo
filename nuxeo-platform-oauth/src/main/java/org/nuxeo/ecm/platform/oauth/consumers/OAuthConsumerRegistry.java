@@ -21,53 +21,40 @@ package org.nuxeo.ecm.platform.oauth.consumers;
 
 import java.util.List;
 
-
 /**
  * Service interface for managing OAuth Service Consumers
  *
  * @author tiry
- *
  */
 public interface OAuthConsumerRegistry {
 
     /**
-     * Get a Consumer from it's consumerKey
-     * @param consumerKey
-     * @return
+     * Get a Consumer from its consumerKey.
      */
     NuxeoOAuthConsumer getConsumer(String consumerKey);
 
-
     /**
-     * Get a Consumer from it's consumerKey
-     * The keyType param indicate if we need HMAC or RSA secret
-     * This is needed because the default OAuthValidator implementation only uses 1 field for both Keys
-     * If keyType is OAUth.RSA_SHA1, the consumerSecret field will be polupated with the RSA public key rather than the HMAC secret.
-     *
-     * @param consumerKey
-     * @return
+     * Get a Consumer from its consumerKey.
+     * <p>
+     * The keyType param indicates if we need HMAC or RSA secret.
+     * This is needed because the default OAuthValidator implementation only uses 1 field for both Keys.
+     * If keyType is OAUth.RSA_SHA1, the consumerSecret field will be polupated with the RSA public key
+     * rather than the HMAC secret.
      */
     NuxeoOAuthConsumer getConsumer(String consumerKey, String keyType);
 
     /**
      * remove a Consumer
-     * @param consumerKey
      */
     void deleteConsumer(String consumerKey);
 
     /**
-     * List all registred Consumers
-     *
-     * @return
+     * List all registered Consumers
      */
     List<NuxeoOAuthConsumer> listConsumers();
 
     /**
      * Store a new Consumer
-     *
-     * @param consumer
-     * @return
-     * @throws Exception
      */
     NuxeoOAuthConsumer storeConsumer(NuxeoOAuthConsumer consumer) throws Exception;
 }

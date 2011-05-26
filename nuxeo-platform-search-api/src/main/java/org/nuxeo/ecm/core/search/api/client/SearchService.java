@@ -246,7 +246,7 @@ public interface SearchService extends Serializable {
             boolean full);
 
     /**
-     * Returns all the indexable resource configurations registred.
+     * Returns all the indexable resource configurations registered.
      *
      * @return the a map from indexable resource configuration name to indexable
      *         resource configuration instance.
