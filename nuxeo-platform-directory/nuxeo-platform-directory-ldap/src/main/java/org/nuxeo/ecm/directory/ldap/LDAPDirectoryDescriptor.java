@@ -112,6 +112,9 @@ public class LDAPDirectoryDescriptor {
     @XNode("missingIdFieldCase")
     public String missingIdFieldCase = "unchanged";
 
+    @XNode("idFieldCase")
+    public String idFieldCase = "unchanged";
+
     @XNode("querySizeLimit")
     private int querySizeLimit = 200;
 
