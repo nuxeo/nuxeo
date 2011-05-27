@@ -306,6 +306,15 @@
     <priority value="INFO" />
   </category>
 
+  <!-- make Jersey less noisy -->
+  <category name="com.sun.jersey.spi.container.servlet.WebComponent">
+    <priority value="ERROR" />
+  </category>
+
+  <category name="org.apache.shindig.common.xml.XmlUtil">
+    <priority value="WARN" />
+  </category>
+
   <!--
     Limit JBoss categories
     <category name="org.jboss">
