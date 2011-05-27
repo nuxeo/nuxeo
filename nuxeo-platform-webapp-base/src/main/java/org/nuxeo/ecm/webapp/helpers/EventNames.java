@@ -73,6 +73,12 @@ public final class EventNames {
      */
     public static final String LOCATION_SELECTION_CHANGED = "locationSelectionChanged";
 
+    /**
+     * Fired after navigating to a document, the document is passed as argument.
+     * @since 5.4.2
+     */
+    public static final String NAVIGATE_TO_DOCUMENT = "navigateToDocument";
+
 
     /**
      * Should be raised before an edited document is saved.
