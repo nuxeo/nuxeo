@@ -381,7 +381,7 @@ public class EditableModelImpl extends DataModel implements EditableModel,
             Integer key = keyMap.get(i);
             if (i > index) {
                 newKeyMap.put(i - 1, key);
-            } else if (i <= index) {
+            } else if (i < index) {
                 newKeyMap.put(i, key);
             }
         }
