@@ -29,6 +29,7 @@
         <title>Single user/group suggestion</title>
         <supportedModes>
           <mode>edit</mode>
+          <mode>view</mode>
         </supportedModes>
         <fields>
           <list>true</list>
@@ -39,12 +40,10 @@
         </fields>
         <categories>
           <category>document</category>
-          <category>studio</category>
         </categories>
         <properties>
           <layouts mode="view">
-            <layout
-              name="singleUserSuggestion_widget_type_properties_edit">
+            <layout name="singleUserSuggestion_widget_type_properties_edit">
               <rows>
                 <row>
                   <widget>userSuggestionSearchType</widget>
@@ -83,8 +82,8 @@
                 </labels>
                 <helpLabels>
                   <label mode="any">
-                    Field to use as the first label when displaying
-                    the selected user. Default to 'firstName'.
+                    Field to use as the first label when displaying the selected
+                    user. Default to 'firstName'.
                   </label>
                 </helpLabels>
                 <fields>
@@ -97,8 +96,8 @@
                 </labels>
                 <helpLabels>
                   <label mode="any">
-                    Field to use as the second label when displaying
-                    the selected user. Default to 'lastName'.
+                    Field to use as the second label when displaying the
+                    selected user. Default to 'lastName'.
                   </label>
                 </helpLabels>
                 <fields>
@@ -128,19 +127,18 @@
                 <helpLabels>
                   <label mode="any">
                     The display action to use when rendering the user or group.
-                    Can be 'nothing' to just display text only, 'view' to have
-                    a link going to the user or group view, or 'edit' to have a
-                    link going to the user or group edition.
-                    The 'edit' action assumes the widget is used in the Users
-                    and Groups management.
+                    Can be 'nothing' to just display text only, 'view' to have a
+                    link going to the user or group view, or 'edit' to have a
+                    link going to the user or group edition. The 'edit' action
+                    assumes the widget is used in the Users and Groups
+                    management.
                   </label>
                 </helpLabels>
                 <fields>
                   <field>displayAction</field>
                 </fields>
                 <selectOptions>
-                  <option itemLabel="Nothing"
-                    itemValue="nothing" />
+                  <option itemLabel="Nothing" itemValue="nothing" />
                   <option itemLabel="View" itemValue="view" />
                   <option itemLabel="Edit" itemValue="edit" />
                 </selectOptions>
@@ -148,8 +146,7 @@
             </layout>
           </layouts>
           <layouts mode="edit">
-            <layout
-              name="singleUserSuggestion_widget_type_properties_edit">
+            <layout name="singleUserSuggestion_widget_type_properties_edit">
               <rows>
                 <row>
                   <widget>required</widget>
@@ -282,6 +279,7 @@
         <title>Multiple users/groups suggestion</title>
         <supportedModes>
           <mode>edit</mode>
+          <mode>view</mode>
         </supportedModes>
         <fields>
           <list>true</list>
@@ -292,7 +290,6 @@
         </fields>
         <categories>
           <category>document</category>
-          <category>studio</category>
         </categories>
         <properties>
           <layouts mode="edit">
@@ -429,6 +426,7 @@
       <configuration>
         <title>Multiple prefixed users/groups suggestion</title>
         <supportedModes>
+          <mode>view</mode>
           <mode>edit</mode>
         </supportedModes>
         <fields>
@@ -440,7 +438,6 @@
         </fields>
         <categories>
           <category>document</category>
-          <category>studio</category>
         </categories>
         <properties>
           <layouts mode="edit">
@@ -570,6 +567,139 @@
       </handler-class>
       <property name="template">
         /widgets/user_prefixed_suggestion_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="multipleDocumentsSuggestion">
+      <configuration>
+        <title>Multiple documents suggestion</title>
+        <supportedModes>
+          <mode>view</mode>
+          <mode>edit</mode>
+        </supportedModes>
+        <fields>
+          <list>true</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+          </supportedTypes>
+        </fields>
+        <categories>
+          <category>document</category>
+        </categories>
+        <properties>
+          <layouts mode="edit">
+            <layout
+              name="multipleDocumentsSuggestion_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget>required</widget>
+                </row>
+                <row>
+                  <widget>pageProviderName</widget>
+                </row>
+                <row>
+                  <widget>minChars</widget>
+                </row>
+                <row>
+                  <widget>frequency</widget>
+                </row>
+                <row>
+                  <widget>requestDelay</widget>
+                </row>
+                <row>
+                  <widget>width</widget>
+                </row>
+              </rows>
+              <widget name="required" type="checkbox">
+                <labels>
+                  <label mode="any">Required</label>
+                </labels>
+                <fields>
+                  <field>required</field>
+                </fields>
+              </widget>
+              <widget name="pageProviderName" type="text">
+                <labels>
+                  <label mode="any">Document page provider name</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The page provider that will be called to perform a search
+                    for the suggestion. It must accept one parameter that will
+                    be replaced by the suggestion input. If no name is defined,
+                    a default page provider is used.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>pageProviderName</field>
+                </fields>
+              </widget>
+              <widget name="minChars" type="int">
+                <labels>
+                  <label mode="any">Minimum characters</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The minimal number of characters to type for the suggestion
+                    to be active. Defaults to 3.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>minChars</field>
+                </fields>
+              </widget>
+              <widget name="frequency" type="int">
+                <labels>
+                  <label mode="any">Frequency</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Delay (in seconds) before activating the suggestion pop-up.
+                    Default value is 0ms.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>frequency</field>
+                </fields>
+              </widget>
+              <widget name="requestDelay" type="int">
+                <labels>
+                  <label mode="any">Request delay</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The requestDelay attribute specifies an amount of time in
+                    milliseconds for the request to wait in the queue before
+                    being sent to the server. If a similar request is added to
+                    the queue before the delay is over, the original request is
+                    removed from the queue and not sent.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>requestDelay</field>
+                </fields>
+              </widget>
+              <widget name="width" type="int">
+                <labels>
+                  <label mode="any">Width</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">The suggestion width.</label>
+                </helpLabels>
+                <fields>
+                  <field>width</field>
+                </fields>
+              </widget>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/multiple_document_suggestion_widget_template.xhtml
       </property>
     </widgetType>
 
