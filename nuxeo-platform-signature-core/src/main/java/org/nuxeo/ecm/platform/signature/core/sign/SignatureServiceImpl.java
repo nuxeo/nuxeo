@@ -72,11 +72,10 @@ public class SignatureServiceImpl extends DefaultComponent implements
         SignatureService {
 
     private static final int SIGNATURE_FIELD_HEIGHT = 50;
-
-    private static final int SIGNATURE_FIELD_WIDTH = 200;
-
-    private static final int SIGNATURE_LEFT_POSITION = 400;
-
+    private static final int SIGNATURE_FIELD_WIDTH = 150;
+    private static final int SIGNATURE_MARGIN= 10;
+    
+    
     private static final int PAGE_TO_SIGN = 1;
 
     private static final Log log = LogFactory.getLog(SignatureServiceImpl.class);
@@ -199,17 +198,14 @@ public class SignatureServiceImpl extends DefaultComponent implements
             byte[] pdfBytes) throws SignException {
         int numberOfSignatures = getPDFCertificates(
                 new ByteArrayInputStream(pdfBytes)).size();
-        float bottomLeftY = 0;
-        float pageHeight = reader.getPageSize(PAGE_TO_SIGN).getHeight();
-        bottomLeftY = pageHeight - (numberOfSignatures + 1)
-                * SIGNATURE_FIELD_HEIGHT;
-        validatePageBounds(reader, 1, bottomLeftY, false);
-
         Rectangle pageSize = reader.getPageSize(PAGE_TO_SIGN);
+        // make smaller by page margin
+        float topRightX = pageSize.getRight() - SIGNATURE_MARGIN;
+        float topRightY = pageSize.getHeight() - SIGNATURE_MARGIN- numberOfSignatures * SIGNATURE_FIELD_HEIGHT;
+        float bottomLeftX = topRightX - SIGNATURE_FIELD_WIDTH;
+        float bottomLeftY = topRightY - SIGNATURE_FIELD_HEIGHT;
 
-        float bottomLeftX = pageSize.getLeft() + SIGNATURE_LEFT_POSITION;
-        float topRightX = bottomLeftX+SIGNATURE_FIELD_WIDTH;
-        float topRightY = bottomLeftY + SIGNATURE_FIELD_HEIGHT;
+        log.debug("The new signature position is: "+bottomLeftX+" "+bottomLeftY+" "+topRightX+" "+topRightY);
 
         // verify current position coordinates in case they were
         // misconfigured
@@ -218,7 +214,6 @@ public class SignatureServiceImpl extends DefaultComponent implements
         validatePageBounds(reader, 1, topRightX, true);
         validatePageBounds(reader, 1, topRightY, false);
 
-        log.debug("The new signature position is: "+bottomLeftX+" "+bottomLeftY+" "+topRightX+" "+topRightY);
         
         Rectangle positionRectangle = new Rectangle(bottomLeftX, bottomLeftY,
                 topRightX, topRightY);
@@ -271,18 +266,19 @@ public class SignatureServiceImpl extends DefaultComponent implements
             log.warn(message);
             throw new SignException(message);
         }
+        
         Rectangle pageRectangle = reader.getPageSize(pageNo);
         if (isHorizontal && valueToCheck > pageRectangle.getRight()) {
             String message = "The new signature position "
                     + valueToCheck
-                    + " exceeds the page bounds. The position exceeds the horizontal page dimension.";
+                    + " exceeds the horizontal page bounds. The page dimensions are: ("+pageRectangle+").";
             log.warn(message);
             throw new SignException(message);
         }
         if (!isHorizontal && valueToCheck > pageRectangle.getTop()) {
             String message = "The new signature position "
                     + valueToCheck
-                    + " exceeds the page bounds. The position exceeds the vertical page dimension.";
+                    + " exceeds the vertical page bounds. The page dimensions are: ("+pageRectangle+").";
             log.warn(message);
             throw new SignException(message);
         }
@@ -316,6 +312,9 @@ public class SignatureServiceImpl extends DefaultComponent implements
         return reason;
     }
 
+    
+    
+    
     @Override
     public void registerContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor) {
