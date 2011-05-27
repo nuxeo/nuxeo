@@ -36,7 +36,6 @@ if "%1" == "nogui" (
 ) else goto ADD_GUI
 :NO_GUI
 SHIFT
-echo %1
 goto NEXT_GUI_OPTION
 :ADD_GUI
 set GUI_OPTION=gui
@@ -97,8 +96,9 @@ FOR /F "eol=# tokens=1,2 delims==" %%A in ("%NUXEO_CONF%") do (
 
 REM ***** Check log directory *****
 if "%NUXEO_LOG_DIR%" == "" set NUXEO_LOG_DIR=%NUXEO_HOME%\log
-if not exist "%NUXEO_LOG_DIR%" mkdir "%NUXEO_LOG_DIR%" 2>nul
-IF %ERRORLEVEL% NEQ 0 goto SET_DEFAULT_LOG_DIR
+if not exist "%NUXEO_LOG_DIR%" (
+    mkdir "%NUXEO_LOG_DIR%" || goto SET_DEFAULT_LOG_DIR
+)
 echo. >> "%NUXEO_LOG_DIR%\console.log" || goto SET_DEFAULT_LOG_DIR
 goto LOG_DIR_OK
 
