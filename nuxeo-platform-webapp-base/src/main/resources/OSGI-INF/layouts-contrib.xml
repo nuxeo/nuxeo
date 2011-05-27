@@ -27,6 +27,7 @@
     <widgetType name="singleUserSuggestion">
       <configuration>
         <title>Single user/group suggestion</title>
+        <sinceVersion>5.4.2</sinceVersion>
         <supportedModes>
           <mode>edit</mode>
           <mode>view</mode>
@@ -277,6 +278,7 @@
     <widgetType name="multipleUsersSuggestion">
       <configuration>
         <title>Multiple users/groups suggestion</title>
+        <sinceVersion>5.4.2</sinceVersion>
         <supportedModes>
           <mode>edit</mode>
           <mode>view</mode>
@@ -425,6 +427,7 @@
     <widgetType name="multiplePrefixedUsersSuggestion">
       <configuration>
         <title>Multiple prefixed users/groups suggestion</title>
+        <sinceVersion>5.4.2</sinceVersion>
         <supportedModes>
           <mode>view</mode>
           <mode>edit</mode>
@@ -573,6 +576,7 @@
     <widgetType name="multipleDocumentsSuggestion">
       <configuration>
         <title>Multiple documents suggestion</title>
+        <sinceVersion>5.4.2</sinceVersion>
         <supportedModes>
           <mode>view</mode>
           <mode>edit</mode>
