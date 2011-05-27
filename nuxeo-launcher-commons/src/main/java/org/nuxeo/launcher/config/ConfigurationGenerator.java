@@ -434,6 +434,10 @@ public class ConfigurationGenerator {
         }
     }
 
+    private StringBuffer loadConfiguration() throws ConfigurationException {
+        return loadConfiguration(null);
+    }
+
     private void writeConfiguration(StringBuffer configuration)
             throws ConfigurationException {
         writeConfiguration(configuration, null);
@@ -513,7 +517,8 @@ public class ConfigurationGenerator {
         setFalseToOnce = true;
         // Will change wizardParam value instead of appending it
         wizardParam = changedParameters.remove(PARAM_WIZARD_DONE);
-        writeConfiguration(loadConfiguration(), changedParameters);
+        writeConfiguration(loadConfiguration(changedParameters),
+                changedParameters);
     }
 
     /**
@@ -593,7 +598,8 @@ public class ConfigurationGenerator {
         }
     }
 
-    private StringBuffer loadConfiguration() throws ConfigurationException {
+    private StringBuffer loadConfiguration(Map<String, String> changedParameters)
+            throws ConfigurationException {
         StringBuffer newContent = new StringBuffer();
         BufferedReader reader = null;
         try {
@@ -622,8 +628,23 @@ public class ConfigurationGenerator {
                     }
                 } else {
                     if (!line.startsWith(BOUNDARY_END)) {
-                        // ignore previously generated content
-                        continue;
+                        if (changedParameters == null) {
+                            newContent.append(line
+                                    + System.getProperty("line.separator"));
+                        } else {
+                            int equalIdx = line.indexOf("=");
+                            if (line.trim().startsWith("#")) {
+                                String key = line.substring(1, equalIdx).trim();
+                                String value = line.substring(equalIdx + 1).trim();
+                                userConfig.setProperty(key, value);
+                            } else {
+                                String key = line.substring(0, equalIdx).trim();
+                                if (!changedParameters.containsKey(key)) {
+                                    String value = line.substring(equalIdx + 1).trim();
+                                    changedParameters.put(key, value);
+                                }
+                            }
+                        }
                     } else {
                         onConfiguratorContent = false;
                     }
