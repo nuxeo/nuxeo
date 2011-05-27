@@ -19,9 +19,10 @@ package org.nuxeo.ecm.directory.localconfiguration;
 import org.nuxeo.ecm.core.api.localconfiguration.LocalConfiguration;
 
 /**
- * Local configuration class to handle configuration of DocumentDirectory.
+ * Local configuration class to handle local configuration for directories.
  *
  * @author <a href="mailto:bjalon@nuxeo.com">Benjamin JALON</a>
+ * @since 5.4.2
  */
 public interface DirectoryConfiguration extends LocalConfiguration<DirectoryConfiguration> {
 

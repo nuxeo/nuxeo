@@ -18,6 +18,7 @@ package org.nuxeo.ecm.directory.localconfiguration;
 
 /**
  * @author <a href="mailto:bjalon@nuxeo.com">Benjamin JALON</a>
+ * @since 5.4.2
  */
 public class DirectoryConfigurationConstants {
 

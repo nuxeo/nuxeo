@@ -23,6 +23,7 @@ import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 
 /**
  * @author <a href="mailto:bjalon@nuxeo.com">Benjamin JALON</a>
+ * @since 5.4.2
  */
 public class DirectoryLocalConfigurationRepositoryInit extends DefaultRepositoryInit {
 

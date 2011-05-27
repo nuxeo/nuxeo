@@ -27,6 +27,7 @@ import org.nuxeo.ecm.core.api.adapter.DocumentAdapterFactory;
  *
  * @see DirectoryConfigurationAdapter
  * @author <a href="mailto:qlamerand@nuxeo.com">Quentin Lamernad</a>
+ * @since 5.4.2
  */
 public class DirectoryConfigurationFactory implements DocumentAdapterFactory {
 

@@ -28,6 +28,7 @@ import org.nuxeo.ecm.core.api.DocumentRef;
  * Default implementation of {@code DirectoryConfiguration}.
  *
  * @author <a href="mailto:qlamerand@nuxeo.com">Benjamin JALON</a>
+ * @since 5.4.2
  */
 public class DirectoryConfigurationAdapter implements
         DirectoryConfiguration {

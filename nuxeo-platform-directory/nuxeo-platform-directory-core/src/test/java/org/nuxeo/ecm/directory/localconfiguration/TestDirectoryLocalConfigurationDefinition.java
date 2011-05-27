@@ -47,6 +47,7 @@ import com.google.inject.Inject;
 
 /**
  * @author <a href="mailto:bjalon@nuxeo.com">Benjamin JALON</a>
+ * @since 5.4.2
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
