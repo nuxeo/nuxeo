@@ -43,8 +43,8 @@ import org.nuxeo.ecm.core.event.ReconnectedEventBundle;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Default implementation for an {@link EventBundle} that need to be reconnected
- * to a usable Session.
+ * Default implementation for an {@link EventBundle} that need to be
+ * reconnected to a usable Session.
  *
  * @author tiry
  */
@@ -117,7 +117,7 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
                 List<Object> newArgs = new ArrayList<Object>();
                 for (Object arg : ctx.getArguments()) {
                     Object newArg = arg;
-                    if (arg instanceof DocumentModel && session != null
+                    if (refetchDocumentModel(session, arg)
                             && session.getPrincipal() != null) {
                         DocumentModel oldDoc = (DocumentModel) arg;
                         DocumentRef ref = oldDoc.getRef();
@@ -152,7 +152,7 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
                 Map<String, Serializable> newProps = new HashMap<String, Serializable>();
                 for (Entry<String, Serializable> prop : ctx.getProperties().entrySet()) {
                     Serializable propValue = prop.getValue();
-                    if (propValue instanceof DocumentModel && session != null) {
+                    if (refetchDocumentModel(session, propValue)) {
                         DocumentModel oldDoc = (DocumentModel) propValue;
                         try {
                             propValue = session.getDocument(oldDoc.getRef());
@@ -171,6 +171,18 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
             }
         }
         return reconnectedEvents;
+    }
+
+    protected boolean refetchDocumentModel(CoreSession session,
+            Object eventProperty) {
+        if (eventProperty instanceof DocumentModel && session != null) {
+            DocumentModel doc = (DocumentModel) eventProperty;
+            if (Boolean.TRUE.equals(doc.getContextData(SKIP_REFETCH_DOCUMENT_CONTEXT_KEY))) {
+                return false;
+            }
+            return true;
+        }
+        return false;
     }
 
     @Override

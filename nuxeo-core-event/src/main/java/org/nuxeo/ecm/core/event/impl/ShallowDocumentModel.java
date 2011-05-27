@@ -43,8 +43,8 @@ import org.nuxeo.ecm.core.schema.DocumentType;
 
 /**
  * Light weight {@link DocumentModel} implementation Only holds
- * {@link DocumentRef}, RepositoryName, name and path. Used to reduce memory
- * footprint of {@link Event} stacked in {@link EventBundle}.
+ * {@link DocumentRef}, RepositoryName, name, path and context data. Used to
+ * reduce memory footprint of {@link Event} stacked in {@link EventBundle}.
  *
  * @author Thierry Delprat
  */
@@ -66,6 +66,8 @@ public class ShallowDocumentModel implements DocumentModel {
 
     private final boolean isVersion;
 
+    private final ScopedMap contextData;
+
     public ShallowDocumentModel(DocumentModel doc) {
         id = doc.getId();
         repoName = doc.getRepositoryName();
@@ -74,6 +76,7 @@ public class ShallowDocumentModel implements DocumentModel {
         type = doc.getType();
         isFolder = doc.isFolder();
         isVersion = doc.isVersion();
+        contextData = doc.getContextData();
     }
 
     @Override
@@ -175,12 +178,15 @@ public class ShallowDocumentModel implements DocumentModel {
 
     @Override
     public ScopedMap getContextData() {
-        throw new UnsupportedOperationException();
+        return contextData;
     }
 
     @Override
     public Serializable getContextData(ScopeType scope, String key) {
-        throw new UnsupportedOperationException();
+        if (contextData == null) {
+            return null;
+        }
+        return contextData.getScopedValue(scope, key);
     }
 
     @Override
@@ -468,7 +474,10 @@ public class ShallowDocumentModel implements DocumentModel {
 
     @Override
     public Serializable getContextData(String key) {
-        throw new UnsupportedOperationException();
+        if (contextData == null) {
+            return null;
+        }
+        return contextData.getScopedValue(key);
     }
 
     @Override
