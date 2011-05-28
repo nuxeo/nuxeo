@@ -100,8 +100,8 @@ html,body {
 
 .header .title {
   font-weight: bold;
-  padding:0.35em 0.5em;
-  padding-left:1em;
+  font-size: 102%;
+  padding:0.35em 0.5em 0.35em 1em;
 }
 
 .facet.facet-close {
