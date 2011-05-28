@@ -26,7 +26,7 @@
 
     <!-- Users and Groups directory -->
     <action id="UsersGroupsHome" link="user_center_fragment.xhtml"
-      label="command.manageMembers" order="60">
+      label="command.manageMembers" icon="/icons/users_groups.png" order="60">
       <category>USER_CENTER</category>
       <filter-id>not_readonly</filter-id>
     </action>

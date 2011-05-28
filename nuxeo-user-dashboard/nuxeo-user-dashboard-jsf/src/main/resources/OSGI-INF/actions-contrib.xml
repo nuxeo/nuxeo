@@ -3,15 +3,11 @@
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="actions">
 
-    <action id="Dashboard" link="user_center_fragment.xhtml"
-      label="user.center.dashboard"
-      order="10">
+    <action id="Dashboard" link="user_center_fragment.xhtml" label="user.center.dashboard" icon="/icons/dashboard.png" order="10">
       <category>USER_CENTER</category>
     </action>
 
-    <action id="DashboardMain" link="/incl/dashboard/user_jsf_dashboard.xhtml"
-      label=""
-      order="10">
+    <action id="DashboardMain" link="/incl/dashboard/user_jsf_dashboard.xhtml" label="" order="10">
       <category>Dashboard_sub_tab</category>
     </action>
 

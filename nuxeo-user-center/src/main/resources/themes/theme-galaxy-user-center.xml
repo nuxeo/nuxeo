@@ -1320,9 +1320,9 @@
         <padding>5px 0</padding>
       </selector>
       <selector path=".adminTabsColumn">
-        <background-color>#fff8f1</background-color>
+        <background preset="leftcolumn (Galaxy User Center backgrounds)"/>
         <padding>0</padding>
-        <width>200px</width>
+        <width>210px</width>
         <height>100%</height>
       </selector>
       <selector path=".adminTabsColumn ul">
@@ -1334,24 +1334,26 @@
         <padding>0</padding>
         <margin>0 0 3px 6px</margin>
         <border-width>1px</border-width>
-        <border-color>#ffebd7</border-color>
+        <border-color>#aff0f2 #00aaaf #aff0f2 #aff0f2</border-color>
         <border-style>solid</border-style>
-        <background-color>#fffcf7</background-color>
+        <background-color>#edfcfd</background-color>
       </selector>
       <selector path=".adminTabsColumn li.selected, .adminTabsColumn li.selected:hover">
         <background-color>#fff</background-color>
         <border-style>solid</border-style>
-        <border-color>#ffebd7 #fff #ffebd7 #ffebd7</border-color>
+        <border-color>#00aaaf #fff #00aaaf #00aaaf</border-color>
         <margin>0 0 3px 0</margin>
       </selector>
       <selector path=".adminTabsColumn li:hover">
-        <background-color>#fffefb</background-color>
+        <background-color>#f7feff</background-color>
         <margin>0 0 3px 0px</margin>
       </selector>
       <selector path=".adminTabsColumn li a">
         <color>#8c8c8c</color>
+        <font-size>110%</font-size>
+        <border>1px solid #fff</border>
         <display>block</display>
-        <padding>7px 10px 8px 20px</padding>
+        <padding>7px 10px 8px 8px</padding>
         <text-decoration>none</text-decoration>
       </selector>
        <selector path=".adminTabsColumn li a:hover">
@@ -1360,10 +1362,13 @@
       <selector path=".adminTabsColumn li.selected a">
         <color>#212121</color>
       </selector>
+      <selector path=".adminTabsColumn li a img">
+        <margin>0px 5px -1px 0</margin>
+      </selector>
       <selector path=".adminTabBlock">
         <height>100%</height>
         <margin>0 0 0 5px</margin>
-        <border-right>1px solid #ffebd7</border-right>
+        <border-right>1px solid #00aaaf</border-right>
       </selector>
       <selector path=".adminContentColumn">
         <padding>20px</padding>
