@@ -27,6 +27,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.annotation.ejb.SerializedConcurrentAccess;
@@ -34,6 +38,7 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.remoting.WebRemote;
+import org.jboss.seam.web.ServletContexts;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -45,6 +50,7 @@ import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.actions.ActionContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
+import org.nuxeo.ecm.platform.ui.web.tag.fn.Functions;
 import org.nuxeo.ecm.webapp.edit.lock.LockActions;
 
 @Name("popupHelper")
@@ -198,6 +204,18 @@ public class PopupHelper implements Serializable {
         return getNavigationURLOnPopupdoc2(tabId, null);
     }
 
+    protected HttpServletRequest getRequest() {
+        HttpServletRequest request =  ServletContexts.instance().getRequest();
+        if (request!=null) {
+            return request;
+        }
+        FacesContext context = FacesContext.getCurrentInstance();
+        if (context!=null) {
+            return (HttpServletRequest) context.getExternalContext().getRequest();
+        }
+        return null;
+    }
+
     @WebRemote
     public String getNavigationURLOnPopupdoc2(String tabId, String subTabId) {
         Map<String, String> params = new HashMap<String, String>();
@@ -208,7 +226,7 @@ public class PopupHelper implements Serializable {
             params.put("subTabId", subTabId);
         }
         return DocumentModelFunctions.documentUrl(null, currentPopupDocument,
-                null, params, false);
+                null, params, false,getRequest());
     }
 
     protected Map<String, String> getCurrentTabParameters() {

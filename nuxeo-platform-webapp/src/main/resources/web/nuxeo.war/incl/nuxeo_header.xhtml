@@ -16,7 +16,7 @@
      <ul>
        <nxu:dataList var="mainTab" value="#{webActions.getActionsList('MAIN_TABS')}">
          <li class="#{nxu:test(webActions.getCurrentTabId('MAIN_TABS') == mainTab.id, 'selected', '')}">
-           <nxd:restDocumentLink document="#{currentDocument}"
+           <nxd:restDocumentLink document="#{mainTabsActions.getDocumentFor(mainTab.id)}"
              view="#{mainTab.getLink()}" addTabInfo="false"
              tabs="MAIN_TABS:#{mainTab.id}">
              <h:outputText value="#{messages[mainTab.label]}" />
@@ -25,6 +25,20 @@
        </nxu:dataList>
      </ul>
    </div>
+
+<c:if test="#{currentNuxeoPrincipal!=null and currentNuxeoPrincipal.isAdministrator()}">
+     <div style="float:left; color:white" class="studioButton">
+     <c:choose>
+      <c:when test="#{connectUpdateStatusInfo.registered}">
+        <a target="studio" href="https://connect.nuxeo.com/nuxeo/site/studio/ide">Studio</a>
+      </c:when>
+      <c:otherwise>
+        <a href="https://connect.nuxeo.com/nuxeo/site/connect/trial/form?source=studioButton&#38;product=#{connectUpdateStatusInfo.distributionLabel}" target="studio">Studio</a>
+      </c:otherwise>
+     </c:choose>
+     </div>
+</c:if>
+
 
    <div class="userMenuActions">
      <ul class="userMenuList">
@@ -56,12 +70,6 @@
      </ul>
 
    </div>
-
-    <c:if test="#{availableHotFixCount!=null and availableHotFixCount>=0}">
-     <div style="float:left; color:white">
-      #{availableHotFixCount} update available
-     </div>
-    </c:if>
 
    <div class="userActions">
 
@@ -170,6 +178,14 @@
    </div>
   </h:form>
   </div>
+
+<c:if test="#{currentNuxeoPrincipal!=null and currentNuxeoPrincipal.isAdministrator()}">
+  <c:if test="#{connectUpdateStatusInfo.availableUpdateCount>0}">
+     <div class="updateNotificationArea" style="float:right;vertical-align:middle;padding:10px">
+       <img src="#{contextPath}/icons/update.png" title="#{connectUpdateStatusInfo.availableUpdateCount} update(s) available" alt="#{connectUpdateStatusInfo.availableUpdateCount} update(s) available"/>
+     </div>
+  </c:if>
+</c:if>
 
   <div class="clear"></div>
 

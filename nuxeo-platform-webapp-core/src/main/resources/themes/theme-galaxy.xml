@@ -1368,6 +1368,10 @@
         <border>1px solid #D7D7D7</border>
         <margin>0 0 15px</margin>
       </selector>
+      <selector path=".note_content_block span">
+        <line-height>1.8em</line-height>
+        <font-size>105%</font-size>
+      </selector>
       <selector path=".relation_block">
       </selector>
       <selector path=".lockFile_block, .restoreFile_block">

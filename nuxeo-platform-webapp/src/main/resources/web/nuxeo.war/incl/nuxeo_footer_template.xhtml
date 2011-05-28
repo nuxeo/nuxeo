@@ -4,8 +4,8 @@
      xmlns:f="http://java.sun.com/jsf/core">
 
 <ui:insert name="prefooter">
-  <c:if test="#{(prefooter_template!=null) and (!prefooter_template.equals(''))}">
-     <ui:include src="#{prefooter_template}"/>
+  <c:if test="#{connectUpdateStatusInfo.bannerPath!=null}">
+     <ui:include src="#{connectUpdateStatusInfo.bannerPath}"/>
   </c:if>
 </ui:insert>
 

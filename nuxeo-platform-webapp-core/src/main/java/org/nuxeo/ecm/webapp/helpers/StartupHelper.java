@@ -113,6 +113,7 @@ public class StartupHelper implements Serializable {
             navigationContext.setCurrentServerLocation(repLoc);
         }
 
+        webActions.setCurrentTabIds(DOCUMENT_MANAGEMENT_TAB);
         // if more than one repo : display the server selection screen
         if (repositoryManager.getRepositories().size() > 1) {
             return SERVERS_VIEW;

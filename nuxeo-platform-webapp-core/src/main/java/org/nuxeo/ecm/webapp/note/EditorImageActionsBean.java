@@ -180,7 +180,13 @@ public class EditorImageActionsBean extends InputController implements
     }
 
     public boolean getInCreationMode() {
-        final DocumentModel doc = navigationContext.getChangeableDocument();
+        DocumentModel doc = navigationContext.getChangeableDocument();
+        if (doc==null) {
+            doc = navigationContext.getCurrentDocument();
+        }
+        if (doc==null) {
+            return false;
+        }
         if (doc.getId() == null) {
             return true;
         } else {
