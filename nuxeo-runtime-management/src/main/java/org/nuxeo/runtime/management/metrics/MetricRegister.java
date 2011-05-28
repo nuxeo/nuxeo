@@ -57,7 +57,9 @@ public class MetricRegister {
             return;
         }
         String cname = cnames.remove(name);
-        srv.unregisterResource(name, cname);
+        if (cname!=null) {
+            srv.unregisterResource(name, cname);
+        }
     }
 
     public void unregisterAll() {

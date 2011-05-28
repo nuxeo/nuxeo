@@ -67,7 +67,7 @@ public class ObjectNameFactory {
     public static String formatMetricQualifiedName(ComponentName name, String metricName) {
         return formatQualifiedName(name) + ",metric=" + metricName + ",management=metric";
     }
-    
+
     public static String formatMetricQualifiedName(String name, String type) {
         if (NUXEO_DOMAIN_NAME.equals(name)) {
             name ="root";
@@ -88,7 +88,7 @@ public class ObjectNameFactory {
         }
         return buffer.toString();
     }
-        
+
     public static String formatInventoryQualifiedName(ComponentName name) {
         return formatQualifiedName(name) + ",management=inventory";
     }
@@ -142,6 +142,9 @@ public class ObjectNameFactory {
     private static final Pattern namePattern = Pattern.compile(".*:.*");
 
     public static boolean hasDomain(String value) {
+        if (value==null) {
+            return false;
+        }
         Matcher matcher = namePattern.matcher(value);
         return matcher.matches();
     }
@@ -149,6 +152,9 @@ public class ObjectNameFactory {
     private static final Pattern avaPattern = Pattern.compile(".*=.*");
 
     public static boolean hasAttributeValueAssertion(String value) {
+        if (value==null) {
+            return false;
+        }
         Matcher matcher = avaPattern.matcher(value);
         return matcher.matches();
     }
