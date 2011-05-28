@@ -279,6 +279,11 @@
         <mode value="any">view</mode>
       </widgetModes>
     </widget>
+    <widget name="empty_hidden_withoutManageRight" type="text">
+      <widgetModes>
+        <mode value="any">#{jbpmActions.canManageParticipants ? 'view' : 'hidden'}</mode>
+      </widgetModes>
+    </widget>
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
@@ -319,7 +324,7 @@
           <properties mode="any">
             <property name="columnStyleClass">iconColumn</property>
           </properties>
-          <widget>empty</widget>
+          <widget>empty_hidden_withoutManageRight</widget>
         </column>
         <column>
           <properties mode="any">

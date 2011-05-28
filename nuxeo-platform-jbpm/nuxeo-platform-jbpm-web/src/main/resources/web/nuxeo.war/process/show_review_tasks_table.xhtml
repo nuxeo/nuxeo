@@ -71,24 +71,31 @@
       <f:subview
         rendered="#{jbpmActions.canManageProcess}">
         <div>
-          <h:commandButton
-          value="#{messages['label.workflow.edit']}"
-          action="#{jbpmActions.changeVirtualTaskModification()}"
-          styleClass="button"
-          rendered="#{not empty virtualTasks}" />
+          <c:if test="#{!jbpmActions.formInEditMode}">
+            <c:if test="#{jbpmActions.canManageParticipants}">
+              <h:commandButton
+              value="#{messages['label.workflow.edit']}"
+              action="#{jbpmActions.changeVirtualTaskModification()}"
+              styleClass="button"
+              rendered="#{not empty virtualTasks}" />
+            </c:if>
+            <f:subview rendered="#{!jbpmActions.isProcessStarted('choose-participant')}">
+              <h:commandButton
+              value="#{messages['label.workflow.start']}"
+              action="#{jbpmActions.startProcess('choose-participant')}"
+              styleClass="button" />
+            </f:subview>
+          </c:if>
           <c:if test="#{jbpmActions.canManageParticipants and jbpmActions.formInEditMode}">
             <h:commandButton
             value="#{messages['label.workflow.save']}"
             action="#{jbpmActions.persistProcessInstance()}"
             styleClass="button" />
+            <h:commandButton
+            value="#{messages['command.cancel']}"
+            action="#{jbpmActions.changeVirtualTaskModification()}"
+            styleClass="button" />
           </c:if>
-          <f:subview
-            rendered="#{!jbpmActions.isProcessStarted('choose-participant')}">
-          <h:commandButton
-          value="#{messages['label.workflow.start']}"
-          action="#{jbpmActions.startProcess('choose-participant')}"
-          styleClass="button" />
-          </f:subview>
         </div>
       </f:subview>
 

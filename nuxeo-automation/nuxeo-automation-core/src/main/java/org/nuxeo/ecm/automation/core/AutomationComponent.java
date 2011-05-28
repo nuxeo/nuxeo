@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -16,6 +16,7 @@ import org.nuxeo.ecm.automation.core.events.EventHandler;
 import org.nuxeo.ecm.automation.core.events.EventHandlerRegistry;
 import org.nuxeo.ecm.automation.core.events.operations.FireEvent;
 import org.nuxeo.ecm.automation.core.impl.OperationServiceImpl;
+import org.nuxeo.ecm.automation.core.operations.FetchContextBlob;
 import org.nuxeo.ecm.automation.core.operations.FetchContextDocument;
 import org.nuxeo.ecm.automation.core.operations.RestoreBlobInput;
 import org.nuxeo.ecm.automation.core.operations.RestoreBlobsInput;
@@ -63,6 +64,7 @@ import org.nuxeo.ecm.automation.core.operations.document.SetDocumentProperty;
 import org.nuxeo.ecm.automation.core.operations.document.UnlockDocument;
 import org.nuxeo.ecm.automation.core.operations.document.UpdateDocument;
 import org.nuxeo.ecm.automation.core.operations.execution.RunDocumentChain;
+import org.nuxeo.ecm.automation.core.operations.execution.RunFileChain;
 import org.nuxeo.ecm.automation.core.operations.execution.RunOperation;
 import org.nuxeo.ecm.automation.core.operations.execution.SaveSession;
 import org.nuxeo.ecm.automation.core.operations.login.LoginAs;
@@ -110,6 +112,7 @@ public class AutomationComponent extends DefaultComponent {
         service = new OperationServiceImpl();
         // register built-in operations
         service.putOperation(FetchContextDocument.class);
+        service.putOperation(FetchContextBlob.class);
         service.putOperation(SetVar.class);
         service.putOperation(PushDocument.class);
         service.putOperation(PushDocumentList.class);
@@ -123,6 +126,7 @@ public class AutomationComponent extends DefaultComponent {
         service.putOperation(RunScript.class);
         service.putOperation(RunOperation.class);
         service.putOperation(RunDocumentChain.class);
+        service.putOperation(RunFileChain.class);
         service.putOperation(CopyDocument.class);
         service.putOperation(CreateDocument.class);
         service.putOperation(CreateVersion.class);

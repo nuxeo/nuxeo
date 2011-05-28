@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -110,7 +110,7 @@ public class RestTest {
     public static void setupClientMarshalling() {
         JsonMarshalling.addMarshaller(new MyObjectClientMarshaller());
     }
-    
+
     // ------ Tests comes here --------
 
     @BeforeClass
@@ -275,7 +275,7 @@ public class RestTest {
                 Constants.HEADER_NX_SCHEMAS, "*").set("value",
                 "/docsInput/note2").execute();
         assertEquals("updated", doc.getString("dc:description"));
-       
+
         String now = DateUtils.formatDate(new Date());
         doc = (Document)session.newRequest(UpdateDocument.ID).setHeader(Constants.HEADER_NX_SCHEMAS, "*").setInput(new DocRef("/docsInput/note1")).set("properties", "dc:valid=".concat(now)).execute();
         assertThat(doc.getDate("dc:valid"), is(DateUtils.parseDate(now)));
@@ -531,7 +531,7 @@ public class RestTest {
         OperationDocumentation opd = session.getOperation("principals");
         assertNotNull(opd);
         try {
-            session.newRequest("principals").setInput(null).execute();
+            session.newRequest("principals").setInput(DocRef.newRef("/")).execute();
             fail("chains invocation is supposed to fail since it is disabled - should return 404");
         } catch (RemoteException e) {
             assertEquals(404, e.getStatus());

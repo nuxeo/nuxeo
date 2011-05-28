@@ -34,7 +34,21 @@
       <operation id="Document.Create">
         <param type="string" name="type">Note</param>
         <param type="string" name="name">MyDoc</param>
-        <param type="properties" name="properties">dc:title=My Doc</param>
+        <param type="properties" name="properties">
+        dc:title=My Doc
+        dc:description=My Doc desc
+        </param>
+      </operation>
+    </chain>
+    <chain id="doc_subchain_alt">
+      <operation id="Context.FetchDocument" />
+      <operation id="Document.Create">
+        <param type="string" name="type">Note</param>
+        <param type="string" name="name">MyDoc</param>
+        <param type="properties" name="properties">
+          <property key="dc:title">My Doc</property>
+          <property key="dc:description">My Doc desc</property>          
+        </param>
       </operation>
     </chain>
     <chain id="core_chain1">

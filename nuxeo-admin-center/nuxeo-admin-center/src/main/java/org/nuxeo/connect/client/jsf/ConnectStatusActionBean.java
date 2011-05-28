@@ -42,18 +42,16 @@ import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.connect.client.status.ConnectStatusHolder;
+import org.nuxeo.connect.client.status.ConnectUpdateStatusInfo;
 import org.nuxeo.connect.client.status.SubscriptionStatusWrapper;
 import org.nuxeo.connect.connector.NuxeoClientInstanceType;
 import org.nuxeo.connect.data.ConnectProject;
-import org.nuxeo.connect.data.DownloadablePackage;
+import org.nuxeo.connect.data.SubscriptionStatusType;
 import org.nuxeo.connect.identity.LogicalInstanceIdentifier;
 import org.nuxeo.connect.identity.TechnicalInstanceIdentifier;
 import org.nuxeo.connect.identity.LogicalInstanceIdentifier.InvalidCLID;
-import org.nuxeo.connect.packages.PackageManager;
 import org.nuxeo.connect.registration.ConnectRegistrationService;
-import org.nuxeo.connect.update.PackageType;
 import org.nuxeo.connect.update.PackageUpdateService;
-import org.nuxeo.ecm.admin.runtime.PlatformVersionHelper;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 import org.nuxeo.runtime.api.Framework;
@@ -172,7 +170,7 @@ public class ConnectStatusActionBean implements Serializable {
         Contexts.getEventContext().remove("projectsForRegistration");
 
         Contexts.getApplicationContext().remove("registredConnectInstance");
-        Contexts.getApplicationContext().remove("prefooter_template");
+        Contexts.getApplicationContext().remove("connectUpdateStatusInfo");
     }
 
     public void validateLogin() {
@@ -204,6 +202,7 @@ public class ConnectStatusActionBean implements Serializable {
 
     public String refreshStatus() {
         ConnectStatusHolder.instance().getStatus(true);
+        flushContextCache();
         return null;
     }
 
@@ -364,57 +363,26 @@ public class ConnectStatusActionBean implements Serializable {
         }
     }
 
-    @Factory(scope = ScopeType.APPLICATION, value = "prefooter_template")
-    public String getFooter() {
-        String footer_type=null;
-
+    @Factory(scope = ScopeType.APPLICATION, value = "connectUpdateStatusInfo")
+    public ConnectUpdateStatusInfo getConnectUpdateStatusInfo() {
         if (!isRegistred()) {
-            footer_type =  CLIENT_BANNER_TYPE;
+            return ConnectUpdateStatusInfo.unregistred();
         } else {
             if (isConnectServerReachable()) {
                 if (getStatus().isError()) {
-                    footer_type =  SERVER_BANNER_TYPE;
+                    return ConnectUpdateStatusInfo.connectServerUnreachable();
+                } else {
+                    if (ConnectStatusHolder.instance().getStatus().status() == SubscriptionStatusType.OK) {
+                        return ConnectUpdateStatusInfo.ok();
+                    } else {
+                        return ConnectUpdateStatusInfo.notValid();
+                    }
                 }
             } else {
-                footer_type = CLIENT_BANNER_TYPE;
+                return ConnectUpdateStatusInfo.connectServerUnreachable();
             }
         }
 
-        if (footer_type!=null) {
-            return "/incl/" + footer_type + ".xhtml";
-        } else {
-            return "";
-        }
     }
 
-    @Factory(scope = ScopeType.SESSION, value = "availableHotFixCount")
-    public int getAvailableUpdateCount() {
-
-        if (isRegistred() && isConnectServerReachable()) {
-            PackageManager pm = Framework.getLocalService(PackageManager.class);
-
-            List<DownloadablePackage> pkgs = pm.listUpdatePackages(PackageType.HOT_FIX);
-
-            List<DownloadablePackage> localHotFixes = pm.listLocalPackages(PackageType.HOT_FIX);
-
-            List<DownloadablePackage> applicablePkgs = new ArrayList<DownloadablePackage>();
-
-            for (DownloadablePackage pkg : pkgs) {
-                if (PlatformVersionHelper.isCompatible(pkg.getTargetPlatforms())) {
-                    boolean isInstalled = false;
-                    for (DownloadablePackage localPkg : localHotFixes) {
-                        if (localPkg.getId().equals(pkg.getId())) {
-                            isInstalled=true;
-                            break;
-                        }
-                    }
-                    if (!isInstalled) {
-                        applicablePkgs.add(pkg);
-                    }
-                }
-            }
-            return applicablePkgs.size();
-        }
-        return 0;
-    }
 }

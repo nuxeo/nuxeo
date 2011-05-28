@@ -6,8 +6,7 @@
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   id="#{layout.id}">
-
-<c:if test="#{layout.mode == 'list_and_header'}">
+<c:if test="#{layout.mode == 'view_list_and_header'}">
 
   <thead>
     <tr>
@@ -60,7 +59,7 @@
 
 </c:if>
 
-<c:if test="#{layout.mode == 'list'}">
+<c:if test="#{layout.mode == 'view_list'}">
 
   <tr class="#{directoryEntryClass}">
     <nxl:layoutRow>

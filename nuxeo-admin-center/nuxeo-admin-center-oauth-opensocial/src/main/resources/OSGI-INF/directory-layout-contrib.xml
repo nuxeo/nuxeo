@@ -372,9 +372,6 @@
         <row>
           <widget>url</widget>
         </row>
-        <row>
-          <widget>iconUrl</widget>
-        </row>
       </rows>
 
       <widget name="id" type="text">

@@ -3,15 +3,28 @@
      xmlns:ui="http://java.sun.com/jsf/facelets"
      xmlns:f="http://java.sun.com/jsf/core">
 
-  <div class="message">
-          <p>This application is powered by Nuxeo DM 5.4.2, but your<span class="bold"> Nuxeo Connect registration is not valid </span>.</p>
-          <c:if test="#{availableHotFixCount>0}">
-            <p><span class="bold"> #{availableHotFixCount} hotfixes have been published your last update.</span>. Enable Nuxeo Connect if you want to register and benefit from automatic maintenance.</p>
-          </c:if>
-        </div>
-        <div class="links">
-          <a href="https://connect.nuxeo.com/nuxeo/site/connect/trial/form" target="_blank">Subscribe to Nuxeo Connect</a>
-        </div>
-  <div class="clear" />
+       <c:if test="#{currentNuxeoPrincipal!=null and currentNuxeoPrincipal.isAdministrator()}">
+  <div class="bannerBottom unregistered">
+    <div class="bannerMessage">
+            <p style="padding:0px;margin:0px">This application is powered by Nuxeo #{connectUpdateStatusInfo.distributionLabel}, but your<span class="bold"> Nuxeo Connect registration
+
+            <c:if test="#{connectUpdateStatusInfo.expired}">
+            is expired
+            </c:if>
+            <c:if test="#{!connectUpdateStatusInfo.expired}">
+            can not be validated (#{messages[connectStatus.status.contractStatusLabel]})
+            </c:if>
+
+            </span>.</p>
+            <c:if test="#{connectUpdateStatusInfo.availableUpdateCount>0}">
+              <p style="padding:0px;margin:0px"><span class="bold"> #{connectUpdateStatusInfo.availableUpdateCount} hotfixes have been published your last update.</span>. Enable Nuxeo Connect if you want to register and benefit from automatic maintenance.</p>
+            </c:if>
+          </div>
+            <div class="links">
+              <a href="mailto:connect-support@nuxeo.com?subject=Issue%20in%20Connect%20contract%20#{connectUpdateStatusInfo.identifier}">Contact connect-support@nuxeo.com to reactivate Nuxeo Connect</a>
+            </div>
+    <div class="clear" />
+  </div>
+  </c:if>
 
 </f:subview>

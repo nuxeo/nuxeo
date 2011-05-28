@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -12,13 +12,12 @@
 package org.nuxeo.ecm.automation.core.operations;
 
 import org.nuxeo.ecm.automation.OperationContext;
-import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 
 /**
  * Generic fetch document operation that can be used on any context that has a
@@ -28,7 +27,7 @@ import org.nuxeo.ecm.core.api.DocumentRef;
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@Operation(id = FetchContextDocument.ID, category = Constants.CAT_FETCH, label = "Context Document", description = "Fetch the input of the context as a document. The document will become the input for the next operation.")
+@Operation(id = FetchContextDocument.ID, category = Constants.CAT_FETCH, label = "Context Document(s)", description = "Fetch the input of the context as a document or list of documents. The document will become the input for the next operation.")
 public class FetchContextDocument {
 
     public static final String ID = "Context.FetchDocument";
@@ -37,15 +36,13 @@ public class FetchContextDocument {
     protected OperationContext ctx;
 
     @OperationMethod
-    public DocumentModel run() throws Exception {
-        Object input = ctx.getInput();
-        if (input instanceof DocumentModel) {
-            return (DocumentModel) input;
-        } else if (input instanceof DocumentRef) {
-            return ctx.getCoreSession().getDocument((DocumentRef) input);
-        }
-        throw new OperationException(
-                "Unsupported context for FetchDocument operation. No document available as input in the context");
+    public DocumentModel run(DocumentModel doc) throws Exception {
+        return doc;
+    }
+
+    @OperationMethod
+    public DocumentModelList run(DocumentModelList docs) throws Exception {
+        return docs;
     }
 
 }

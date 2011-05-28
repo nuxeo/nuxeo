@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -23,11 +23,14 @@ import static org.nuxeo.ecm.automation.core.Constants.T_STRING;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.common.xmap.annotation.XContent;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
+import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationParameters;
@@ -91,7 +94,11 @@ public class OperationChainContribution {
                         break;
                     case 'p':
                         if (T_PROPERTIES.equals(type)) {
-                            val = new Properties(param.value);
+                            if (param.map != null && !param.map.isEmpty()) {
+                                val = new Properties(param.map);
+                            } else {
+                                val = new Properties(param.value);
+                            }
                         }
                         break;
                     case 'i':
@@ -171,6 +178,11 @@ public class OperationChainContribution {
 
         @XContent
         protected String value;
+
+        //Optional map for properties type values
+        @XNodeMap(value="property", key="@key", type=HashMap.class, componentType=String.class, nullByDefault=true)
+        protected Map<String, String> map;
+
     }
 
 }

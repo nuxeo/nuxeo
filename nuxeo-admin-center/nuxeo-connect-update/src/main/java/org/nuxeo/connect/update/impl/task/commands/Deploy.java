@@ -61,6 +61,10 @@ public class Deploy extends AbstractCommand {
     @Override
     protected Command doRun(Task task, Map<String, String> prefs)
             throws PackageException {
+        if (!file.isFile()) {
+            // avoid throwing errors - this may happen at uninstall for broken packages
+            return null;
+        }
         try {
             Framework.getLocalService(ReloadService.class).deployBundle(file);
         } catch (Exception e) {
