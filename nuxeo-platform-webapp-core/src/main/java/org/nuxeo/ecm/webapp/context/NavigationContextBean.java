@@ -21,7 +21,7 @@ package org.nuxeo.ecm.webapp.context;
 
 import static org.jboss.seam.ScopeType.CONVERSATION;
 import static org.jboss.seam.ScopeType.EVENT;
-import static org.jboss.seam.annotations.Install.FRAMEWORK;
+import static org.jboss.seam.annotations.Install.FRAMEWORK;import static org.nuxeo.ecm.webapp.helpers.EventNames.NAVIGATE_TO_DOCUMENT;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -747,6 +747,9 @@ public class NavigationContextBean implements NavigationContextLocal,
                 chosenView = defaultView;
             }
         }
+
+        Events.instance().raiseEvent(NAVIGATE_TO_DOCUMENT, currentDocument);
+
         return chosenView;
     }
 

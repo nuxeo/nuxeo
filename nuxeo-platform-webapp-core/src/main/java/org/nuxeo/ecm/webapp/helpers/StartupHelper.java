@@ -113,6 +113,17 @@ public class StartupHelper implements Serializable {
             navigationContext.setCurrentServerLocation(repLoc);
         }
 
+        if (documentManager == null) {
+            documentManager = navigationContext.getOrCreateDocumentManager();
+        }
+        DocumentModel rootDocument = documentManager.getRootDocument();
+        if (!documentManager.hasPermission(rootDocument.getRef(),
+                SecurityConstants.READ_CHILDREN)) {
+            // user cannot see the root but maybe she can see contained
+            // documents thus forwarding her to her dashboard
+            return dashboardNavigationHelper.navigateToDashboard();
+        }
+
         webActions.setCurrentTabIds(DOCUMENT_MANAGEMENT_TAB);
         // if more than one repo : display the server selection screen
         if (repositoryManager.getRepositories().size() > 1) {
@@ -154,20 +165,9 @@ public class StartupHelper implements Serializable {
                 // we assume it has been done or something went wrong
                 return result;
             }
-            if (documentManager == null) {
-                documentManager = navigationContext.getOrCreateDocumentManager();
-            }
 
             // get the domains from selected server
             DocumentModel rootDocument = documentManager.getRootDocument();
-
-            if (!documentManager.hasPermission(rootDocument.getRef(),
-                    SecurityConstants.READ_CHILDREN)) {
-                // user cannot see the root but maybe she can see contained
-                // documents thus forwarding her to her dashboard
-                return dashboardNavigationHelper.navigateToDashboard();
-            }
-
             FacetFilter facetFilter = new FacetFilter(
                     FacetNames.HIDDEN_IN_NAVIGATION, false);
             LifeCycleFilter lcFilter = new LifeCycleFilter(

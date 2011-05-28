@@ -16,11 +16,12 @@
      <ul>
        <nxu:dataList var="mainTab" value="#{webActions.getActionsList('MAIN_TABS')}">
          <li class="#{nxu:test(webActions.getCurrentTabId('MAIN_TABS') == mainTab.id, 'selected', '')}">
-           <nxd:restDocumentLink document="#{mainTabsActions.getDocumentFor(mainTab.id)}"
-             view="#{mainTab.getLink()}" addTabInfo="false"
-             tabs="MAIN_TABS:#{mainTab.id}">
-             <h:outputText value="#{messages[mainTab.label]}" />
-           </nxd:restDocumentLink>
+             <nxd:restDocumentLink document="#{mainTabsActions.getDocumentFor(mainTab.id)}"
+               view="#{mainTabsActions.getViewFor(mainTab)}" addTabInfo="false"
+               tabs="MAIN_TABS:#{mainTab.id}">
+               <h:outputText value="#{messages[mainTab.label]}" />
+             </nxd:restDocumentLink>
+
          </li>
        </nxu:dataList>
      </ul>

@@ -472,43 +472,48 @@
     </style>
     <style inherit="default buttons" name="default tabs">
       <selector path=".tabsBar">
-        <border-bottom preset="tabsbar (Galaxy borders)"/>
         <width>100%</width>
         <margin-top>5px</margin-top>
         <line-height>normal</line-height>
         <float>left</float>
       </selector>
       <selector path=".tabsBar ul">
+        <border-bottom preset="tabsbar (Galaxy borders)"/>
+        <height>24px</height>
         <margin>0</margin>
         <padding>0px 10px 0 0</padding>
         <list-style>none</list-style>
       </selector>
       <selector path=".tabsBar li">
-        <margin-right>5px</margin-right>
-        <margin>0</margin>
+        <margin>0 2px 0 4px</margin>
         <padding>0</padding>
         <float>left</float>
       </selector>
-      <selector path=".tabsBar a, .tabsBar a:hover, .tabsBar a:visited">
+      <selector path=".tabsBar a, .tabsBar a:visited">
         <color preset="tablink (Galaxy colors)" />
         <border preset="tabisnotselected (Galaxy borders)"/>
-        <background preset="white (Galaxy backgrounds)"/>
+        <background preset="tabisunselected (Galaxy backgrounds)"/>
         <text-decoration>none</text-decoration>
         <font-weight>normal</font-weight>
         <display>block</display>
         <padding>3px 7px</padding>
         <float>left</float>
+        <height>16px</height>
+      </selector>
+      <selector path=".tabsBar a:hover">
+        <border preset="tabisnotselected (Galaxy borders)"/>
+        <color preset="tablink.active (Galaxy colors)" />
+        <background preset="tabiselected (Galaxy backgrounds)"/>
+        <text-decoration>none</text-decoration>
       </selector>
       <selector path=".tabsBar li.selected a, .tabsBar li.selected a:hover, .tabsBar li.selected a:visited">
         <color preset="tablink.active (Galaxy colors)" />
         <border preset="tabiselected (Galaxy borders)"/>
         <background preset="tabiselected (Galaxy backgrounds)"/>
+        <padding>3px 7px 4px</padding>
+        <border-bottom>1px solid white</border-bottom>
       </selector>
-      <selector path=".tabsBar li a:hover">
-        <color preset="tablink.active (Galaxy colors)" />
-        <background preset="tabiselected (Galaxy backgrounds)"/>
-      </selector>
-      <selector path=".subtabsBar">
+      <selector path=".subtabsBar ul">
         <border-bottom preset="subtabsbar (Galaxy borders)"/>
         <font preset="default (Galaxy fonts)"/>
       </selector>
@@ -518,12 +523,11 @@
       </selector>
       <selector path=".subtabsBar li a:hover">
         <color preset="subtablink.active (Galaxy colors)" />
-        <background preset="subtabiselected (Galaxy backgrounds)"/>
       </selector>
       <selector path=".subtabsBar li.selected a, .subtabsBar li.selected a:hover, .subtabsBar li.selected a:visited">
         <color preset="subtablink.active (Galaxy colors)" />
         <border preset="subtabiselected (Galaxy borders)"/>
-        <background preset="subtabiselected (Galaxy backgrounds)"/>
+        <border-bottom>1px solid white</border-bottom>
       </selector>
     </style>
     <style inherit="default tabs" name="common style 1">
@@ -577,7 +581,7 @@
         <z-index>1000</z-index>
       </selector>
       <selector path=".rightsAddManager td">
-        <border preset="tabiselected (Galaxy borders)" />
+        <border preset="subtabsbar (Galaxy borders)" />
         <background-color preset="white (Galaxy backgrounds)"/>
         <margin>0 10px 0 10px</margin>
         <padding>10px</padding>
@@ -1368,7 +1372,7 @@
         <border>1px solid #D7D7D7</border>
         <margin>0 0 15px</margin>
       </selector>
-      <selector path=".note_content_block span">
+      <selector path=".note_content_block span, .note_content_block p">
         <line-height>1.8em</line-height>
         <font-size>105%</font-size>
       </selector>
