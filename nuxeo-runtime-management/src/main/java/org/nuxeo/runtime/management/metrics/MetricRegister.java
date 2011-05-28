@@ -19,6 +19,7 @@ package org.nuxeo.runtime.management.metrics;
 
 import java.lang.management.ManagementFactory;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import javax.management.MBeanServer;
 
@@ -63,7 +64,9 @@ public class MetricRegister {
     }
 
     public void unregisterAll() {
-        for (String name : cnames.keySet()) {
+        HashSet<String> names = new HashSet<String>();
+        names.addAll(cnames.keySet());
+        for (String name : names) {
             unregisterMXBean(name);
         }
     }

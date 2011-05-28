@@ -75,8 +75,7 @@ public class MetricComponent extends DefaultComponent {
         if (SimonManager.callback()!=null) {
             SimonManager.callback().removeCallback(registeringCB);
         }
-        register.unregisterMXBean(enabler);
-        register.unregisterMXBean(serializer);
+        register.unregisterAll();
     }
 
 }
