@@ -65,10 +65,12 @@
       <groupId>jline</groupId>
       <artifactId>jline</artifactId>
     </dependency>
+<!--
     <dependency>
       <groupId>org.jboss.client</groupId>
       <artifactId>jbossall-client</artifactId>
-    </dependency>
+    </dependency> 
+ -->
     <dependency>
       <groupId>log4j</groupId>
       <artifactId>log4j</artifactId>
