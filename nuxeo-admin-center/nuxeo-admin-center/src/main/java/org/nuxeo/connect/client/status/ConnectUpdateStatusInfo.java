@@ -136,8 +136,19 @@ public class ConnectUpdateStatusInfo {
         return PlatformVersionHelper.getDistributionName().toUpperCase() + " " + PlatformVersionHelper.getDistributionVersion();
     }
 
-    protected int compluteAvailableUpdateCount() {
+    public String getDistributionName() {
+        return PlatformVersionHelper.getDistributionName().toUpperCase();
+    }
 
+    public String getDistributionVersion() {
+        return PlatformVersionHelper.getDistributionVersion();
+    }
+
+
+    protected int compluteAvailableUpdateCount() {
+        if (!ConnectStatusHolder.instance().getStatus().isConnectServerUnreachable()) {
+            return 0;
+        }
         PackageManager pm = Framework.getLocalService(PackageManager.class);
 
         List<DownloadablePackage> pkgs = pm.listUpdatePackages(PackageType.HOT_FIX);
