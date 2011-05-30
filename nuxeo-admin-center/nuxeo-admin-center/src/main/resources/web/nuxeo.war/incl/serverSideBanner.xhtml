@@ -6,7 +6,7 @@
        <c:if test="#{currentNuxeoPrincipal!=null and currentNuxeoPrincipal.isAdministrator()}">
   <div class="bannerBottom unregistered">
     <div class="bannerMessage">
-            <p style="padding:0px;margin:0px">This application is powered by Nuxeo #{connectUpdateStatusInfo.distributionLabel}, but your<span class="bold"> Nuxeo Connect registration
+            <p>This application is powered by Nuxeo #{connectUpdateStatusInfo.distributionLabel}, but your<span class="bold"> Nuxeo Connect registration
 
             <c:if test="#{connectUpdateStatusInfo.expired}">
             is expired
@@ -17,7 +17,7 @@
 
             </span>.</p>
             <c:if test="#{connectUpdateStatusInfo.availableUpdateCount>0}">
-              <p style="padding:0px;margin:0px"><span class="bold"> #{connectUpdateStatusInfo.availableUpdateCount} hotfixes have been published your last update.</span>. Enable Nuxeo Connect if you want to register and benefit from automatic maintenance.</p>
+              <p><span class="bold"> #{connectUpdateStatusInfo.availableUpdateCount} hotfixes have been published your last update.</span>. Enable Nuxeo Connect if you want to register and benefit from automatic maintenance.</p>
             </c:if>
           </div>
             <div class="links">
