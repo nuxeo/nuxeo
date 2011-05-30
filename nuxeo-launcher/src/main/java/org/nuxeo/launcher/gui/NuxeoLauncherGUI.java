@@ -24,6 +24,7 @@ import java.awt.HeadlessException;
 import java.awt.Toolkit;
 import java.io.File;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
@@ -215,8 +216,9 @@ public class NuxeoLauncherGUI {
         try {
             message = ResourceBundle.getBundle("i18n/messages").getString(key);
         } catch (MissingResourceException e) {
-            log.error(e);
-            message = getMessage("missing.translation") + key;
+            log.info(getMessage("missing.translation") + key);
+            message = ResourceBundle.getBundle("i18n/messages", Locale.ENGLISH).getString(
+                    key);
         }
         return message;
     }
