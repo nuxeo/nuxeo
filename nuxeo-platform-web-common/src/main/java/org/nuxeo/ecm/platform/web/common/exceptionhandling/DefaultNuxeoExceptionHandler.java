@@ -62,8 +62,7 @@ public class DefaultNuxeoExceptionHandler implements NuxeoExceptionHandler {
                 log.debug("Initial exception", t);
             }
             // mark request as already processed by this mechanism to avoid
-            // looping
-            // over it
+            // looping over it
             request.setAttribute(EXCEPTION_HANDLER_MARKER, true);
             // disable further redirect by nuxeo url system
             request.setAttribute(NXAuthConstants.DISABLE_REDIRECT_REQUEST_KEY,
