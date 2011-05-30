@@ -34,8 +34,6 @@
       <!-- copy jdbc drivers -->
       <artifact:resolveFile key="postgresql:postgresql:8.3-604.jdbc3" />
       <artifact:resolveFile key="mysql:mysql-connector-java:5.1.6" />
-      <!-- copy logging monitor -->
-      <artifact:resolveFile key="org.jboss.services:logging-monitor" />
     </copy>
 
     <copy todir="${jboss}/server/default/deploy/nuxeo.ear/plugins/"
