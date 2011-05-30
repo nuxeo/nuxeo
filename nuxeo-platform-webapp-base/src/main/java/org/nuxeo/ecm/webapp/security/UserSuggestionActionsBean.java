@@ -19,7 +19,7 @@
 
 package org.nuxeo.ecm.webapp.security;
 
-import static org.jboss.seam.ScopeType.PAGE;
+import static org.jboss.seam.ScopeType.*;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -34,7 +34,6 @@ import javax.faces.convert.Converter;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.annotation.ejb.SerializedConcurrentAccess;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
@@ -56,7 +55,6 @@ import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
  * @author Anahide Tchertchian
  */
 @Name("userSuggestionActions")
-@SerializedConcurrentAccess
 @Scope(PAGE)
 public class UserSuggestionActionsBean implements Serializable {
 

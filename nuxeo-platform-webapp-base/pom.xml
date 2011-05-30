@@ -100,6 +100,10 @@
       <artifactId>ejb-api</artifactId>
       <scope>provided</scope>
     </dependency>
+     <dependency>
+      <groupId>org.jboss.ejb3</groupId>
+      <artifactId>jboss-ejb3-ext-api</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.jboss.seam</groupId>
       <artifactId>jboss-seam</artifactId>
@@ -169,10 +173,6 @@
       <groupId>javax.ejb</groupId>
       <artifactId>ejb-api</artifactId>
       <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>jboss</groupId>
-      <artifactId>jboss-annotations-ejb3</artifactId>
     </dependency>
     <dependency>
       <groupId>org.jboss.seam</groupId>
