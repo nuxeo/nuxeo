@@ -1622,7 +1622,7 @@
       </selector>
       <!-- Faceted Search -->
       <selector path=".facetedSearchActionBar">
-        <border preset="faceted.actionBar (Galaxy borders)" />
+        <border-bottom preset="faceted.actionBar (Galaxy borders)" />
         <padding>2px</padding>
       </selector>
       <selector path=".facetedSearchActionBar a">
