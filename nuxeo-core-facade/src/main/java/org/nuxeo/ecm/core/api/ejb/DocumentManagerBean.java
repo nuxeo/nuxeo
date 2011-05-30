@@ -41,7 +41,7 @@ import javax.persistence.Transient;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.annotation.security.SecurityDomain;
+import org.jboss.ejb3.annotation.SecurityDomain;
 import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.AbstractSession;
 import org.nuxeo.ecm.core.api.CallerPrincipalProvider;

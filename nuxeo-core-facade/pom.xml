@@ -40,10 +40,6 @@
     </dependency>
 
     <dependency>
-      <groupId>jboss</groupId>
-      <artifactId>jboss-annotations-ejb3</artifactId>
-    </dependency>
-    <dependency>
       <groupId>javax.annotation</groupId>
       <artifactId>jsr250-api</artifactId>
     </dependency>
@@ -56,6 +52,16 @@
       <artifactId>ejb-api</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.jboss.ejb3</groupId>
+      <artifactId>jboss-ejb3-ext-api</artifactId>
+      <exclusions>
+	<exclusion>
+	  <groupId>org.jboss.javaee</groupId>
+	  <artifactId>jboss-ejb-api</artifactId>
+	</exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
       <groupId>javax.jms</groupId>
       <artifactId>jms</artifactId>
     </dependency>
@@ -65,6 +71,12 @@
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime-test</artifactId>
       <scope>test</scope>
+      <exclusions>
+	<exclusion>
+	  <groupId>org.jboss.jbossas</groupId>
+	  <artifactId>jboss-as-jbossas-remoting</artifactId>
+	</exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>jmock</groupId>
@@ -101,6 +113,11 @@
       <artifactId>groovy-all</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+        <groupId>org.jboss</groupId>
+        <artifactId>jboss-common-core</artifactId>
+        <scope>test</scope>
+     </dependency>
   </dependencies>
 
   <build>

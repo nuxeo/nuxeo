@@ -45,7 +45,7 @@
     <!-- Fixes compilation failure on 10 sept 2008.
          Is this the right fix? -->
     <dependency>
-      <groupId>jboss</groupId>
+      <groupId>org.jboss.remoting</groupId>
       <artifactId>jboss-remoting</artifactId>
       <scope>compile</scope>
     </dependency>
