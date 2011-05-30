@@ -103,10 +103,6 @@ public class PreviewAdapterManagerComponent extends DefaultComponent implements
             return null;
         }
 
-        if (doc.isFolder()) {
-            return null;
-        }
-
         String docType = doc.getType();
 
         log.debug("Looking for HTMLPreviewAdapter for type " + docType);
@@ -114,6 +110,10 @@ public class PreviewAdapterManagerComponent extends DefaultComponent implements
         if (factoryRegistry.containsKey(docType)) {
             log.debug("dedicated HTMLPreviewAdapter factory found");
             return factoryRegistry.get(docType).getAdapter(doc);
+        }
+
+        if (doc.isFolder()) {
+            return null;
         }
 
         BlobHolder bh = doc.getAdapter(BlobHolder.class);
