@@ -211,11 +211,9 @@ function DropZoneUIHandler(idx, dropZoneId, options,targetSelectedCB) {
         this.fetchOptions();
       }
       // Add the status bar on top of body
-      //var panel=jQuery("#dropzone-info-panel").remove();
-      //jQuery("body").append(panel);
       var panel=jQuery("#dropzone-info-panel");
-      panel.css({ position : 'absolute', top : '5px', left : '5px', 'background-color' : 'rgba(240,240,240,1)'});
-      panel.css("width",jQuery("body").width()-100);
+      panel.css({ position : 'absolute', right : '0px', top : '0px', 'background-color' : '#FFFFF1'});
+      //panel.css("width",jQuery("body").width()-100);
       panel.css("display","block");
       jQuery("#dndMsgUploadInProgress").css("display","block");
       jQuery("#dndMsgUploadCompleted").css("display","none");
