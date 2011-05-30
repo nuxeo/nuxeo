@@ -22,6 +22,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.actions.Action;
+import org.nuxeo.ecm.platform.actions.ejb.ActionManager;
 import org.nuxeo.ecm.platform.types.adapter.TypeInfo;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
@@ -65,6 +66,9 @@ public class MainTabsActions implements Serializable {
 
     @In(create = true)
     protected transient WebActions webActions;
+
+    @In(create = true, required = false)
+    protected transient ActionManager actionManager;
 
     protected Map<String, DocumentModel> documentsByMainTabs = new HashMap<String, DocumentModel>();
 
@@ -133,7 +137,8 @@ public class MainTabsActions implements Serializable {
     public DocumentModel getDocumentFor(String mainTabId,
             DocumentModel defaultDocument) throws ClientException {
         DocumentModel doc = documentsByMainTabs.get(mainTabId);
-        if (doc == null || !documentManager.exists(doc.getRef())
+        if (doc == null
+                || !documentManager.exists(doc.getRef())
                 || documentManager.hasPermission(doc.getRef(),
                         SecurityConstants.READ_CHILDREN)) {
             documentsByMainTabs.put(mainTabId, defaultDocument);
@@ -154,6 +159,11 @@ public class MainTabsActions implements Serializable {
             return typeInfo.getDefaultView();
         }
         return DEFAULT_VIEW;
+    }
+
+    public String getViewFor(String mainTabId) throws ClientException {
+        Action mainTabAction = actionManager.getAction(mainTabId);
+        return mainTabAction != null ? getViewFor(mainTabAction) : null;
     }
 
 }
