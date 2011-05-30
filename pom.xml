@@ -648,9 +648,9 @@
         <version>2.2</version>
       </dependency>
       <dependency>
-	<groupId>org.jboss.ejb3</groupId>
-	<artifactId>jboss-ejb3-ext-api</artifactId>
-	<version>1.0.0</version>
+        <groupId>org.jboss.ejb3</groupId>
+        <artifactId>jboss-ejb3-ext-api</artifactId>
+        <version>1.0.0</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
@@ -732,7 +732,7 @@
         <version>1.0.3.GA</version>
         <scope>provided</scope>
       </dependency>
-       <dependency>
+      <dependency>
         <groupId>org.jboss.jbossas</groupId>
         <artifactId>jboss-as-system</artifactId>
         <version>5.1.0.GA</version>
@@ -802,13 +802,13 @@
         <groupId>org.jboss.jbossas</groupId>
         <artifactId>jboss-as-aspects</artifactId>
         <version>5.1.0.GA</version>
-	<classifier>jboss-aspects-jdk50-client</classifier>
+        <classifier>jboss-aspects-jdk50-client</classifier>
       </dependency>
       <dependency>
         <groupId>org.jboss.jbossas</groupId>
         <artifactId>jboss-as-varia</artifactId>
         <version>5.1.0.GA</version>
-	<classifier>logging-monitor</classifier>
+        <classifier>logging-monitor</classifier>
         <scope>provided</scope>
       </dependency>
       <dependency>
@@ -2282,14 +2282,12 @@
           <artifactId>maven-clean-plugin</artifactId>
           <version>2.4</version>
         </plugin>
-	<!-- MECLIPSE-576 fixed in 2.9 -->
-<!--
+        <!-- MECLIPSE-576 fixed in 2.9 -->
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-eclipse-plugin</artifactId>
           <version>2.6</version>
         </plugin>
- -->
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>gwt-maven-plugin</artifactId>
