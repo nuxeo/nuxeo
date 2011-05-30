@@ -1,10 +1,12 @@
 package org.nuxeo.ecm.user.center.dashboard.seam;
 
+import static org.jboss.seam.ScopeType.APPLICATION;
 import static org.jboss.seam.ScopeType.CONVERSATION;
 import static org.jboss.seam.annotations.Install.FRAMEWORK;
 
 import java.io.Serializable;
 
+import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
@@ -15,6 +17,7 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.spaces.api.Space;
 import org.nuxeo.ecm.spaces.api.SpaceManager;
+import org.nuxeo.opensocial.helper.OpenSocialGadgetHelper;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -49,6 +52,11 @@ public class UserDashboardActions implements Serializable {
             throw new ClientException(
                     "Unable to retrieve SpaceManager service", e);
         }
+    }
+
+    @Factory(value = "gadgetsBaseURL", scope = APPLICATION)
+    public String getGadgetsBaseURL() {
+        return OpenSocialGadgetHelper.getGadgetsBaseUrl(false);
     }
 
 }
