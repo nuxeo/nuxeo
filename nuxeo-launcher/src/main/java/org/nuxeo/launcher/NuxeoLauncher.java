@@ -943,8 +943,9 @@ public abstract class NuxeoLauncher {
     private void setArgs(String[] args) {
         command = args[0];
         int firstParamToKeep = 1;
-        if ("gui".equalsIgnoreCase(command)) {
-            useGui = true;
+        if ("gui".equalsIgnoreCase(command)
+                || "nogui".equalsIgnoreCase(command)) {
+            useGui = "gui".equalsIgnoreCase(command);
             command = args.length > 1 ? args[1] : null;
             firstParamToKeep = 2;
         }
@@ -979,7 +980,7 @@ public abstract class NuxeoLauncher {
                 + "\t\tPath to nuxeo.conf file (default is $NUXEO_HOME/bin/nuxeo.conf).");
         log.error("\t\t jvmcheck\t\tWill continue execution if equals to \"nofail\", else will exit.");
         log.error("\t\t gui\t\t\tLauncher with a graphical user interface (default is headless/console mode).");
-        log.error("\t\t nogui\t\t\tWindows only. Deactivate gui option which is set by default under Windows.");
+        log.error("\t\t nogui\t\t\tDeactivate gui option which is set by default under Windows.");
         log.error("\n\t Commands:");
         log.error("\t\t help\t\tPrint this message.");
         log.error("\t\t start\t\tStart Nuxeo server in background, waiting for effective start. Useful for batch executions requiring the server being immediately available after the script returned.");

@@ -28,20 +28,6 @@ set NUXEO_HOME=%CD%
 popd
 
 
-REM *****  Check for gui/nogui parameter *****
-if "%1" == "nogui" (
-  goto NO_GUI
-) else if "%1" == "gui" (
-  goto NEXT_GUI_OPTION
-) else goto ADD_GUI
-:NO_GUI
-SHIFT
-goto NEXT_GUI_OPTION
-:ADD_GUI
-set GUI_OPTION=gui
-:NEXT_GUI_OPTION
-
-
 REM *****  Check for the Java launcher *****
 set NUXEO_LAUNCHER=%NUXEO_HOME%\bin\nuxeo-launcher.jar
 if exist "%NUXEO_LAUNCHER%" goto FOUND_NUXEO_LAUNCHER
@@ -159,7 +145,25 @@ echo Using JAVA = %JAVA%
 if "%JAVA_OPTS%" == "" set JAVA_OPTS=-Xms512m -Xmx1024m -XX:MaxPermSize=256m -Djava.net.preferIPv4Stack=true -Dsun.rmi.dgc.client.gcInterval=3600000 -Dsun.rmi.dgc.server.gcInterval=3600000 -Dfile.encoding=UTF-8
 set PATH=%PATH%;%NUXEO_HOME%\3rdparty
 
+
+echo Command: %0 %1 %2 %3 %4 > "%NUXEO_LOG_DIR%\nuxeoctl.log"
+REM *****  Check for gui/nogui parameter *****
+if "%1" == "nogui" (
+  goto NO_GUI
+) else if "%1" == "gui" (
+  goto NEXT_GUI_OPTION
+) else goto ADD_GUI
+:NO_GUI
+SHIFT
+set GUI_OPTION=
+goto NEXT_GUI_OPTION
+:ADD_GUI
+set GUI_OPTION=gui
+:NEXT_GUI_OPTION
+
+
 echo Launcher command: "%JAVA%" -Dlauncher.java.opts="%JAVA_OPTS%" -Dnuxeo.home="%NUXEO_HOME%" -Dnuxeo.conf="%NUXEO_CONF%" -Dnuxeo.log.dir="%NUXEO_LOG_DIR%" -jar "%NUXEO_LAUNCHER%" %GUI_OPTION% %1 %2 %3 %4 %5 %6 %7 %8 %9
+echo Launcher command: "%JAVA%" -Dlauncher.java.opts="%JAVA_OPTS%" -Dnuxeo.home="%NUXEO_HOME%" -Dnuxeo.conf="%NUXEO_CONF%" -Dnuxeo.log.dir="%NUXEO_LOG_DIR%" -jar "%NUXEO_LAUNCHER%" %GUI_OPTION% %1 %2 %3 %4 %5 %6 %7 %8 %9 >> "%NUXEO_LOG_DIR%\nuxeoctl.log"
 "%JAVA%" -Dlauncher.java.opts="%JAVA_OPTS%" -Dnuxeo.home="%NUXEO_HOME%" -Dnuxeo.conf="%NUXEO_CONF%" -Dnuxeo.log.dir="%NUXEO_LOG_DIR%" -jar "%NUXEO_LAUNCHER%" %GUI_OPTION% %1 %2 %3 %4 %5 %6 %7 %8 %9
 
 :END
