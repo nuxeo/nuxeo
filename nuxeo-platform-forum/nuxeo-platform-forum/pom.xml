@@ -59,10 +59,6 @@
       <artifactId>jsf-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>jboss</groupId>
-      <artifactId>jboss-j2ee</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.jboss.seam</groupId>
       <artifactId>jboss-seam</artifactId>
     </dependency>

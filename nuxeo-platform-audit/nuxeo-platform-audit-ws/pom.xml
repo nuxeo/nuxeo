@@ -48,10 +48,6 @@
       <artifactId>jsr181</artifactId>
     </dependency>
     <dependency>
-      <groupId>jboss</groupId>
-      <artifactId>jboss-annotations-ejb3</artifactId>
-    </dependency>
-    <dependency>
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
     </dependency>

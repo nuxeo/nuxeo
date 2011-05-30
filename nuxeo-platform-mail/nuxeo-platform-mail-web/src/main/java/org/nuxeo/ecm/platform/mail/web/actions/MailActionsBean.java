@@ -26,7 +26,6 @@ import java.io.Serializable;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.annotation.ejb.SerializedConcurrentAccess;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
@@ -47,7 +46,6 @@ import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
  */
 @Name("mailActions")
 @Scope(ScopeType.CONVERSATION)
-@SerializedConcurrentAccess
 public class MailActionsBean implements Serializable {
 
     private static final long serialVersionUID = 1L;

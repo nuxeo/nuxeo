@@ -116,11 +116,6 @@
       <classifier>jdk15</classifier>
     </dependency>
     <dependency>
-      <groupId>jboss</groupId>
-      <artifactId>jboss-annotations-ejb3</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
       <groupId>org.jboss.seam</groupId>
       <artifactId>jboss-seam</artifactId>
       <scope>provided</scope>

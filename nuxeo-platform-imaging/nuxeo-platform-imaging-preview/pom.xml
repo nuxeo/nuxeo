@@ -32,11 +32,6 @@
       <artifactId>ejb</artifactId>
       <scope>provided</scope>
     </dependency>
-    <dependency>
-      <groupId>jboss</groupId>
-      <artifactId>jboss-annotations-ejb3</artifactId>
-      <scope>provided</scope>
-    </dependency>
   </dependencies>
 
 </project>

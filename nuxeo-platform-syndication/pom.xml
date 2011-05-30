@@ -58,10 +58,6 @@
       <artifactId>jboss-seam</artifactId>
     </dependency>
     <dependency>
-      <groupId>jboss</groupId>
-      <artifactId>jboss-annotations-ejb3</artifactId>
-    </dependency>
-    <dependency>
       <groupId>rome</groupId>
       <artifactId>rome</artifactId>
     </dependency>

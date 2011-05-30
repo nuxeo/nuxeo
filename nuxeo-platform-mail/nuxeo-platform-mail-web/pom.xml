@@ -19,6 +19,10 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-ui-web</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-mail-core</artifactId>
     </dependency>
 
@@ -31,14 +35,6 @@
       <artifactId>commons-lang</artifactId>
     </dependency>
     <dependency>
-      <groupId>jboss</groupId>
-      <artifactId>jboss-annotations-ejb3</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>jboss</groupId>
-      <artifactId>ejb3</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.jboss.seam</groupId>
       <artifactId>jboss-seam</artifactId>
     </dependency>
@@ -47,8 +43,16 @@
       <artifactId>hibernate-annotations</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-validator</artifactId>
+    </dependency>
+    <dependency>
       <groupId>javax.ejb</groupId>
       <artifactId>ejb</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.ejb3</groupId>
+      <artifactId>jboss-ejb3-ext-api</artifactId>
     </dependency>
     <dependency>
       <groupId>javax.faces</groupId>
