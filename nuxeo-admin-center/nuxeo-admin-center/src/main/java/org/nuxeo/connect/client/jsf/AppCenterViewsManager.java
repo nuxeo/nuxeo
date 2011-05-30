@@ -158,8 +158,9 @@ public class AppCenterViewsManager implements Serializable {
             studioAutoInstaller = new StudioAutoInstaller(
                     downloadingStudioSnapshot);
 
-            Thread thread = new Thread(studioAutoInstaller);
-            thread.start();
+            studioAutoInstaller.run();
+            //Thread thread = new Thread(studioAutoInstaller);
+            //thread.start();
         } else {
             studioSnapshotUpdateError = "No snapshot package found";
         }
