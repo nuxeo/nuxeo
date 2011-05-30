@@ -49,7 +49,7 @@ public interface SecurityActions extends StatefulBaseLifeCycle {
      *
      * @return the page that needs to be displayed next
      */
-    String addPermission();
+    String addPermission() throws ClientException;
 
     /**
      * Adds a list of permission to the list of permissions for the current
@@ -59,10 +59,10 @@ public interface SecurityActions extends StatefulBaseLifeCycle {
      *
      * @return the page that needs to be displayed next
      */
-    String addPermissions();
+    String addPermissions() throws ClientException;
 
     String addPermission(String principalName, String permissionName,
-            boolean grant);
+            boolean grant) throws ClientException;
 
     /**
      * Removes a permission from the list of permissions for the current
