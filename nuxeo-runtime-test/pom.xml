@@ -164,6 +164,11 @@
       <type>jar</type>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+      <groupId>jboss</groupId>
+      <artifactId>jboss-serialization</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
 </project>

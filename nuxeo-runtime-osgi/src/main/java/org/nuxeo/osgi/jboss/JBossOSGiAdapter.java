@@ -29,11 +29,11 @@ import java.util.jar.Manifest;
 
 import javax.management.Notification;
 
+import org.jboss.bootstrap.spi.Server;
+import org.jboss.bootstrap.spi.ServerConfig;
 import org.jboss.deployment.DeploymentInfo;
 import org.jboss.deployment.SubDeployer;
 import org.jboss.system.ListenerServiceMBeanSupport;
-import org.jboss.system.server.Server;
-import org.jboss.system.server.ServerConfig;
 import org.jboss.system.server.ServerConfigLocator;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.FileUtils;
