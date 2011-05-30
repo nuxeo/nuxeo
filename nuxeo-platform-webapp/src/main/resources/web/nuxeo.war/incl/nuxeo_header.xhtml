@@ -44,7 +44,11 @@
    <div class="userMenuActions">
      <ul class="userMenuList">
        <li>
-         <a class="userButton" href="#"><h:outputText value="#{messages['label.loggedAsUser']}" /></a>
+         <nxd:restDocumentLink styleClass="userButton" document="#{mainTabsActions.getDocumentFor('home')}"
+           view="#{mainTabsActions.getViewFor('home')}" addTabInfo="false"
+           tabs="MAIN_TABS:home">
+           <h:outputText value="#{messages['label.loggedAsUser']}" />
+         </nxd:restDocumentLink>
          <nxu:set var="actions"
            value="#{webActions.getActionsList('USER_MENU_ACTIONS')}"
            cache="true">
