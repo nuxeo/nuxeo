@@ -370,8 +370,8 @@ public class ConnectStatusActionBean implements Serializable {
         HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         String bannerType = req.getParameter("bannerType");
 
-        if ("unregistred".equals(bannerType)) {
-            return ConnectUpdateStatusInfo.unregistred();
+        if ("unregistered".equals(bannerType)) {
+            return ConnectUpdateStatusInfo.unregistered();
         } else if ("notreachable".equals(bannerType)) {
             return ConnectUpdateStatusInfo.connectServerUnreachable();
         } else if ("notvalid".equals(bannerType)) {
@@ -385,7 +385,7 @@ public class ConnectStatusActionBean implements Serializable {
     @Factory(scope = ScopeType.APPLICATION, value = "connectUpdateStatusInfo")
     public ConnectUpdateStatusInfo getConnectUpdateStatusInfo() {
         if (!isRegistred()) {
-            return ConnectUpdateStatusInfo.unregistred();
+            return ConnectUpdateStatusInfo.unregistered();
         } else {
             if (isConnectServerReachable()) {
                 if (getStatus().isError()) {

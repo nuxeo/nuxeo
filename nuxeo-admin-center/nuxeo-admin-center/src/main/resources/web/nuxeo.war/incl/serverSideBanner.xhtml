@@ -17,7 +17,7 @@
 
             </span>.</p>
             <c:if test="#{connectUpdateStatusInfo.availableUpdateCount>0}">
-              <p><span class="bold"> #{connectUpdateStatusInfo.availableUpdateCount} hotfixes have been published your last update.</span>. Enable Nuxeo Connect if you want to register and benefit from automatic maintenance.</p>
+              <p><a target="marketplace" href="https://connect.nuxeo.com/nuxeo/site/marketplace/hotfixes/#{connectUpdateStatusInfo.distributionLabel}"><span class="bold"> #{connectUpdateStatusInfo.availableUpdateCount} hotfixes have been published your last update.</span></a> Enable Nuxeo Connect if you want to register and benefit from automatic maintenance.</p>
             </c:if>
           </div>
             <div class="links">

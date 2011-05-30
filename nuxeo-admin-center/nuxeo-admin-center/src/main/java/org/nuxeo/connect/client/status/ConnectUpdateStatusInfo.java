@@ -42,8 +42,8 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class ConnectUpdateStatusInfo {
 
-    protected static final String UNREGISTRED ="unregistred";
-    protected static final String ONLINE_REGISTRED ="onlineregistred";
+    protected static final String UNREGISTERED ="unregistered";
+    protected static final String ONLINE_REGISTERED ="onlineregistered";
     protected static final String CONNECT_UNREACHABLE="unreachable";
     protected static final String EXPIRED ="expired";
 
@@ -59,9 +59,9 @@ public class ConnectUpdateStatusInfo {
 
     protected static Log log = LogFactory.getLog(ConnectUpdateStatusInfo.class);
 
-    public static ConnectUpdateStatusInfo unregistred() {
+    public static ConnectUpdateStatusInfo unregistered() {
         ConnectUpdateStatusInfo status = new ConnectUpdateStatusInfo();
-        status.type=UNREGISTRED;
+        status.type=UNREGISTERED;
         status.setBannerPath("clientSideBanner");
         status.feedUrl = buildFeedUrl(false);
         status.availableUpdateCount=0;
@@ -71,7 +71,7 @@ public class ConnectUpdateStatusInfo {
 
     public static ConnectUpdateStatusInfo ok() {
         ConnectUpdateStatusInfo status = new ConnectUpdateStatusInfo();
-        status.type=ONLINE_REGISTRED;
+        status.type=ONLINE_REGISTERED;
         status.registered=true;
         return status;
     }
