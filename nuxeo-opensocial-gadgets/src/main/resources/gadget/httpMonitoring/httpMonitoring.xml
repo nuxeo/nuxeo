@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Module>
-  <ModulePrefs title="Nuxeo Http Monitoring"
-    description="Displays a graph of http front activity"
+  <ModulePrefs title="Nuxeo HTTP Monitoring"
+    description="Displays a graph of front-end HTTP activity"
     author="tdeprat" author_email="tdelprat@nuxeo.com">
     <Require feature="setprefs"/>
     <#include "dynamic-translations.ftl"/>

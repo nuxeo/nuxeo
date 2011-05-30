@@ -2,7 +2,7 @@
 <Module>
   <ModulePrefs title="Photo" height="95" scrolling="true"
     scaling="true" directory_title="Photo"
-    description="File browser in the ECM system" author="Guillaume CUSNIEUX"
+    description="Displays a picture" author="Guillaume CUSNIEUX"
     author_email="gcusnieux@leroymerlin.fr" author_affiliation="Leroy Merlin"
     author_location="Lezennes, France"  icon="photo.png">
     <Require feature="dynamic-height" />

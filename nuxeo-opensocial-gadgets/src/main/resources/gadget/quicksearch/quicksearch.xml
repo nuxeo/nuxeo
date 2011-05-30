@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Module>
   <ModulePrefs title="Nuxeo Quick Search"
-    description="Simple gadget that does a full text search on Nuxeo"
+    description="Performs a full-text search on the repository"
     author="tdeprat" author_email="tdelprat@nuxeo.com">
     <Require feature="setprefs"/>
     <#include "dynamic-translations.ftl"/>
