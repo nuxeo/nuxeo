@@ -51,11 +51,6 @@
       <artifactId>jms</artifactId>
     </dependency>
 
-    <!-- jboss-j2ee is required for EJBException class ??? -->
-    <dependency>
-      <groupId>jboss</groupId>
-      <artifactId>jboss-j2ee</artifactId>
-    </dependency>
 
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>

@@ -42,10 +42,6 @@
       <groupId>javax.persistence</groupId>
       <artifactId>persistence</artifactId>
     </dependency>
-    <dependency>
-      <groupId>jboss</groupId>
-      <artifactId>jboss</artifactId>
-    </dependency>
 
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>

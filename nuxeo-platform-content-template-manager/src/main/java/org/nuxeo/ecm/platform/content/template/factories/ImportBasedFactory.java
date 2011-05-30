@@ -22,7 +22,6 @@ package org.nuxeo.ecm.platform.content.template.factories;
 import java.util.List;
 import java.util.Map;
 
-import org.jboss.util.NotImplementedException;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.content.template.service.ACEDescriptor;
@@ -32,12 +31,12 @@ public class ImportBasedFactory extends BaseContentFactory {
 
     public void createContentStructure(DocumentModel eventDoc)
             throws ClientException {
-        throw new NotImplementedException();
+        throw new UnsupportedOperationException();
     }
 
     public boolean initFactory(Map<String, String> options,
             List<ACEDescriptor> rootAcl, List<TemplateItemDescriptor> template) {
-        throw new NotImplementedException();
+        throw new UnsupportedOperationException();
     }
 
 }
