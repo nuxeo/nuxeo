@@ -42,12 +42,12 @@ String maintenanceMessage = AdminStatusHelper.getMaintenanceMessage();
 <!--
  body {
   font: normal 11px "Lucida Grande", sans-serif;
-  background: url("<%=context%>/img/theme_galaxy/sanfrancisco.jpg") no-repeat scroll center -400px #000000;
+  background: url("<%=context%>/img/theme_galaxy/seattle.jpg") no-repeat scroll center -350px black;
   color: #343434;
   }
 
 .topBar {
-  background:#212325 url(<%=context%>/img/theme_galaxy/small_gray_bar.png) repeat-x scroll left top;
+  background:#000 none;
   width:100%;
   height:36px;
   border:0;
