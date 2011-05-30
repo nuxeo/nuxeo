@@ -886,7 +886,7 @@ public class LDAPSession extends BaseSession implements EntrySource {
                     directory.getConfig().missingIdFieldCase));
         } else if (obj instanceof String) {
             fieldMap.put(fieldId, changeEntryIdCase((String) obj,
-                    directory.getConfig().idFieldCase));
+                    directory.getConfig().idCase));
         }
         return fieldMapToDocumentModel(fieldMap);
     }

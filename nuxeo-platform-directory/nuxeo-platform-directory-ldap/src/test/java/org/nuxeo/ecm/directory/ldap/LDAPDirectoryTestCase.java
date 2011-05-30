@@ -61,6 +61,8 @@ public abstract class LDAPDirectoryTestCase extends NXRuntimeTestCase {
 
     public static final String INTERNAL_SERVER_SETUP_OVERRIDE = "TestDirectoriesWithInternalApacheDS-override.xml";
 
+    public static final String INTERNAL_SERVER_SETUP_UPPER_ID = "TestDirectoriesWithInternalApacheDS-override-upper-id.xml";
+
     @Override
     public void setUp() throws Exception {
         super.setUp();
