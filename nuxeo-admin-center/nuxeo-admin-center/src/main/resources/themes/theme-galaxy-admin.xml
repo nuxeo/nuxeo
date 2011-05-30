@@ -169,7 +169,7 @@
         <color preset="header.text (Galaxy Admin colors)" />
         <line-height>185%</line-height>
         <padding>0px</padding>
-        <text-align>right</text-align>
+        <text-align>left</text-align>
         <float>left</float>
         <margin>0 0 0 15px</margin>
       </selector>
@@ -186,18 +186,18 @@
         <text-align>left</text-align>
       </selector>
       <selector path=".userMenuActions ul li a:hover, .userMenuActions ul li:hover">
-        <background-color>#fff</background-color>
-        <color>#000</color>
+        <background-color preset="white (Galaxy Admin backgrounds)" />
+        <color preset="header.userMenuHover (Galaxy Admin colors)" />
       </selector>
       <selector path=".userMenuActions a">
         <display>block</display>
         <text-decoration>none</text-decoration>
         <margin>0</margin>
-        <color>#7693a3</color>
-        <background-color>#fff</background-color>
+        <color preset="header.userMenu (Galaxy Admin colors)" />
+        <background-color preset="white (Galaxy Admin backgrounds)" />
       </selector>
       <selector path=".userMenuActions a.userButton">
-        <background>url(/nuxeo/icons/user.png) no-repeat scroll 3px center transparent</background>
+        <background preset="header.userMenu (Galaxy Admin backgrounds)"/>
         <padding>3px 8px 5px 23px</padding>
       </selector>
       <selector path=".userMenuActions li ul">
@@ -205,7 +205,7 @@
         <position>absolute</position>
         <width>180px</width>
         <height>auto</height>
-        <border>1px solid #e0e0e0</border>
+        <border preset="header.userMenuList (Galaxy Admin borders)" />
         <box-shadow>3px 3px 5px rgba(0, 0, 0, 0.5)</box-shadow>
         <border-top>none</border-top>
       </selector>
@@ -219,7 +219,7 @@
         <width>180px</width>
       </selector>
        <selector path=".userMenuActions ul ul a:hover">
-        <background-color>#ccf1ff</background-color>
+        <background-color preset="header.userListLinkHover (Galaxy Admin backgrounds)" />
       </selector>
       <selector path=".userMenuActions input.button">
         <margin>0 5px</margin>
@@ -235,29 +235,27 @@
         <padding>0</padding>
       </selector>
       <selector path=".mainTabs li">
-        <background-color>#207594</background-color>
+        <background-color preset="header.mainTabs (Galaxy Admin backgrounds)" />
         <display>inline</display>
         <float>left</float>
         <height>28px</height>
         <margin>0 5px</margin>
       </selector>
       <selector path=".mainTabs a, .mainTabs a:visited">
-        <color>#D7E3F1</color>
+        <color preset="header.mainTabs (Galaxy Admin colors)" />
         <display>inline-block</display>
         <font-size>12px</font-size>
-        <padding>4px 11px 9px</padding>
+        <padding>5px 11px 8px</padding>
         <text-decoration>none</text-decoration>
       </selector>
-      <selector path=".mainTabs li:hover">
-      </selector>
       <selector path=".mainTabs a:hover">
-        <color>#fff</color>
+        <color preset="header.mainTabsHover (Galaxy Admin colors)" />
       </selector>
       <selector path=".mainTabs li.selected">
-        <background-color>#fff</background-color>
+        <background-color preset="header.mainTabsSelected (Galaxy Admin backgrounds)" />
       </selector>
       <selector path=".mainTabs li.selected a, .mainTabs li.selected a:hover, .mainTabs li.selected a:visited">
-        <color>#000000</color>
+        <color preset="header.mainTabsSelected (Galaxy Admin colors)" />
         <font-weight>bold</font-weight>
         <text-decoration>none</text-decoration>
       </selector>
@@ -268,6 +266,11 @@
       <selector path=".searchService input.directoryFilter">
         <padding>1px 0</padding>
         <font preset="default (Galaxy Admin fonts)" />
+      </selector>
+      <selector path=".footerDefaultLinks">
+        <border-top preset="footer (Galaxy Admin borders)"/>
+        <background preset="footer (Galaxy Admin backgrounds)"/>
+        <padding>15px</padding>
       </selector>
       <selector path=".footerBlock">
         <margin>0</margin>
@@ -295,10 +298,10 @@
       <selector path=".copyrights">
         <float>right</float>
         <padding>2px 20px 0 0</padding>
-        <color>#9a9a9a</color>
+        <color preset="footer.text (Galaxy Admin colors)" />
       </selector>
       <selector path="a.twitt">
-        <background>transparent url(/nuxeo/icons/icones-metanav.png) no-repeat left top</background>
+        <background preset="footer.twittLink (Galaxy Admin backgrounds)" />
         <height>16px</height>
         <width>16px</width>
         <display>inline-block</display>
@@ -308,7 +311,7 @@
         <background-position>left bottom</background-position>
       </selector>
       <selector path="a.linkedin">
-        <background>transparent url(/nuxeo/icons/icones-metanav.png) no-repeat -16px top</background>
+        <background preset="footer.linkedInLink (Galaxy Admin backgrounds)" />
         <height>16px</height>
         <width>16px</width>
         <display>inline-block</display>
@@ -323,53 +326,48 @@
     </style>
     <style inherit="default buttons" name="default tabs">
       <selector path=".tabsBar">
-        <border-bottom preset="tabsbar (Galaxy Admin borders)"/>
         <width>100%</width>
         <margin-top>5px</margin-top>
         <line-height>normal</line-height>
         <float>left</float>
       </selector>
       <selector path=".tabsBar ul">
+        <border-bottom preset="tabsbar (Galaxy Admin borders)"/>
+        <height>24px</height>
         <margin>0</margin>
         <padding>0px 10px 0 0</padding>
         <list-style>none</list-style>
       </selector>
       <selector path=".tabsBar li">
-        <margin-right>5px</margin-right>
-        <margin>0</margin>
+        <margin>0 2px 0 4px</margin>
         <padding>0</padding>
         <float>left</float>
-      </selector>
-      <selector path=".tooltip">
-        <color preset="default.text (Galaxy Admin colors)" />
-        <border preset="blue.border (Galaxy Admin borders)" />
-        <background preset="tooltip (Galaxy Admin backgrounds)" />
-        <margin-bottom>5px !important</margin-bottom>
-        <padding>5px 5px 5px 23px !important</padding>
-        <display>none</display>
-        <max-width>20%</max-width>
-        <z-index>1000</z-index>
       </selector>
       <selector path=".tabsBar a, .tabsBar a:hover, .tabsBar a:visited">
         <color preset="tablink (Galaxy Admin colors)" />
         <border preset="tabisnotselected (Galaxy Admin borders)"/>
-        <background preset="white (Galaxy Admin backgrounds)"/>
+        <background preset="tabisunselected (Galaxy Admin backgrounds)"/>
         <text-decoration>none</text-decoration>
         <font-weight>normal</font-weight>
         <display>block</display>
         <padding>3px 7px</padding>
         <float>left</float>
+        <height>16px</height>
+      </selector>
+      <selector path=".tabsBar a:hover">
+        <border preset="tabisnotselected (Galaxy Admin borders)"/>
+        <color preset="tablink.active (Galaxy Admin colors)" />
+        <background preset="tabiselected (Galaxy Admin backgrounds)"/>
+        <text-decoration>none</text-decoration>
       </selector>
       <selector path=".tabsBar li.selected a, .tabsBar li.selected a:hover, .tabsBar li.selected a:visited">
         <color preset="tablink.active (Galaxy Admin colors)" />
         <border preset="tabiselected (Galaxy Admin borders)"/>
         <background preset="tabiselected (Galaxy Admin backgrounds)"/>
+        <padding>3px 7px 4px</padding>
+        <border-bottom preset="noborder (Galaxy Admin borders)"/>
       </selector>
-      <selector path=".tabsBar li a:hover">
-        <color preset="tablink.active (Galaxy Admin colors)" />
-        <background preset="tabiselected (Galaxy Admin backgrounds)"/>
-      </selector>
-      <selector path=".subtabsBar">
+      <selector path=".subtabsBar ul">
         <border-bottom preset="subtabsbar (Galaxy Admin borders)"/>
         <font preset="default (Galaxy Admin fonts)"/>
       </selector>
@@ -378,13 +376,12 @@
         <border preset="subtabisnotselected (Galaxy Admin borders)"/>
       </selector>
       <selector path=".subtabsBar li a:hover">
-        <color preset="subtablink.active (Galaxy Admin colors)" />
-        <background preset="subtabiselected (Galaxy Admin backgrounds)"/>
+       <color preset="subtablink.active (Galaxy Admin colors)" />
       </selector>
       <selector path=".subtabsBar li.selected a, .subtabsBar li.selected a:hover, .subtabsBar li.selected a:visited">
         <color preset="subtablink.active (Galaxy Admin colors)" />
         <border preset="subtabiselected (Galaxy Admin borders)"/>
-        <background preset="subtabiselected (Galaxy Admin backgrounds)"/>
+        <border-bottom preset="noborder (Galaxy Admin borders)" />
       </selector>
     </style>
     <style inherit="default tabs" name="common style 1">
@@ -423,8 +420,26 @@
       <selector path=".taskActions">
         <width>470px</width>
       </selector>
+      <selector path=".infoMessage">
+        <color preset="default.text (Galaxy Admin colors)" />
+        <border preset="blue.border (Galaxy Admin borders)" />
+        <background preset="info (Galaxy Admin backgrounds)"/>
+        <margin-bottom>5px</margin-bottom>
+        <padding>5px 5px 5px 23px</padding>
+        <display>block</display>
+      </selector>
+      <selector path=".tooltip">
+        <color preset="default.text (Galaxy Admin colors)" />
+        <border preset="blue.border (Galaxy Admin borders)" />
+        <background preset="tooltip (Galaxy Admin backgrounds)" />
+        <margin-bottom>5px !important</margin-bottom>
+        <padding>5px 5px 5px 23px !important</padding>
+        <display>none</display>
+        <max-width>20%</max-width>
+        <z-index>1000</z-index>
+      </selector>
       <selector path=".rightsAddManager td">
-        <border preset="tabiselected (Galaxy Admin borders)" />
+        <border preset="subtabsbar (Galaxy Admin borders)" />
         <background-color preset="white (Galaxy Admin backgrounds)"/>
         <margin>0 10px 0 10px</margin>
         <padding>10px</padding>
@@ -537,6 +552,7 @@
       <selector path=".currentItemDescription">
         <color preset="default.text (Galaxy Admin colors)" />
         <font-size>13px</font-size>
+        <display>block</display>
       </selector>
       <selector path=".dataInput">
         <margin-top>5px</margin-top>
@@ -648,7 +664,7 @@
         <text-align>center</text-align>
       </selector>
       <selector path=".dataList">
-        <background>white</background>
+        <background-color preset="white (Galaxy Admin backgrounds)"/>
         <border-collapse>collapse</border-collapse>
         <margin>0</margin>
       </selector>
@@ -746,21 +762,21 @@
         <margin-bottom>20px</margin-bottom>
       </selector>
       <selector path=".foldableBox h3">
-        <border-bottom preset="tabiselected (Galaxy Admin borders)"/>
+        <border preset="tabiselected (Galaxy Admin borders)"/>
         <color preset="foldablebox.titles (Galaxy Admin colors)" />
         <background preset="tabiselected (Galaxy Admin backgrounds)"/>
         <padding>3px 3px 3px 18px</padding>
-        <font-size>11px</font-size>
+        <font preset="default (Galaxy Admin fonts)"/>
       </selector>
       <selector path=".foldableBox h3.folded">
         <background preset="folded (Galaxy Admin backgrounds)"/>
         <height>18px</height>
       </selector>
       <selector path=".foldableBox h3.foldedDisabled">
-        <background>#d2d2d2 none</background>
+        <background preset="foldedDisabled (Galaxy Admin backgrounds)"/>
         <height>18px</height>
-        <color>#555</color>
-        <border-bottom>1px solid #d2d2d2</border-bottom>
+        <color preset="foldablebox.titlesDisabled (Galaxy Admin colors)" />
+        <border-bottom preset="foldablebox.titlesDisabled (Galaxy Admin borders)" />
       </selector>
       <selector path=".foldableBox h3 span, .foldableBox h3 a:link, .foldableBox h3 a:visited, .foldableBox h3 a:hover, .foldableBox h3 a:visited:hover">
         <color preset="foldablebox.titles (Galaxy Admin colors)" />
@@ -777,13 +793,12 @@
         <display>block</display>
       </selector>
       <selector path=".foldableBox h3 a.warningLink">
-        <color>red !important</color>
-        <font-weight>bold</font-weight>
+        <color preset="warning.message (Galaxy Admin colors)" />
       </selector>
       <selector path=".foldableBox h3 a.action, .foldableBox h3 a.action:visited, .foldableBox h3 a.action:hover, .foldableBox h3 a.action:visited:hover">
-        <background-color>#EFEFEF</background-color>
-        <border>1px solid #CECECE</border>
-        <color>#333333</color>
+        <background-color preset="foldableBox.action (Galaxy Admin backgrounds)" />
+        <border preset="foldableBox.actions (Galaxy Admin borders)" />
+        <color preset="foldablebox.actions (Galaxy Admin colors)" />
         <float>right</float>
         <font-weight>normal</font-weight>
         <padding>1px 3px</padding>
@@ -799,21 +814,14 @@
         <border-bottom preset="tabisnotselected (Galaxy Admin borders)"/>
         <color preset="foldablelightbox.titles (Galaxy Admin colors)" />
         <padding>3px 3px 3px 18px</padding>
-        <font-size>9px</font-size>
+        <font preset="small (Galaxy Admin fonts)"/>
+        <height>18px</height>
       </selector>
       <selector path=".foldableLightBox div.folded">
         <background preset="foldedlight (Galaxy Admin backgrounds)"/>
-        <height>18px</height>
-      </selector>
-      <selector path=".foldableLightBox div.foldedDisabled">
-        <background>#d2d2d2 none</background>
-        <height>18px</height>
-        <color>#555</color>
-        <border-bottom>1px solid #d2d2d2</border-bottom>
       </selector>
       <selector path=".foldableLightBox div.unfolded">
         <background preset="unfoldedlight (Galaxy Admin backgrounds)"/>
-        <height>18px</height>
       </selector>
       <selector path=".foldableLightBox div.folded a, .foldableLightBox div.unfolded a">
         <color preset="foldablelightbox.titles (Galaxy Admin colors)" />
@@ -841,7 +849,6 @@
         <padding>7px 7px 7px 24px</padding>
       </selector>
       <selector path=".vocabularyEntryContent .currentDocumentInformation">
-        <background-color preset="blue.sky (Galaxy Admin backgrounds)"/>
       </selector>
       <selector path=".rightsAddLabel">
         <font-weight>bold</font-weight>
@@ -865,7 +872,7 @@
         <float>left</float>
       </selector>
       <selector path=".dataInput td">
-        <border>0px solid #FFF</border>
+        <border>0px solid #fff</border>
         <padding>7px 4px</padding>
       </selector>
       <selector path=".dataInput td td, .dataInput td td td">
@@ -1038,7 +1045,7 @@
       </selector>
       <selector path=".action_bar_message">
         <margin>0</margin>
-        <font-size>9px</font-size>
+        <font preset="small (Galaxy Admin fonts)"/>
         <float>right</float>
       </selector>
       <selector path=".action_bar_message form">
@@ -1152,7 +1159,7 @@
         <background preset="search (Galaxy Admin backgrounds)"/>
         <margin>0 5px 10px 0</margin>
         <padding>3px 3px 3px 20px</padding>
-        <font-size>11px</font-size>
+        <font preset="default (Galaxy Admin fonts)"/>
       </selector>
       <selector path=".taskPrincipalSelect select">
         <border preset="dataInput (Galaxy Admin borders)" />
@@ -1198,21 +1205,26 @@
       </selector>
       <selector path=".content_block td">
         <vertical-align>top</vertical-align>
-        <padding>0px 0px 10px 0px</padding>
+        <padding>0</padding>
       </selector>
       <selector path=".content_block .labelColumn">
         <width>100px</width>
       </selector>
       <selector path=".content_block .fieldColumn div">
-        <padding>0px 0px 2px</padding>
+        <width>20%</width>
+        <vertical-align>top</vertical-align>
       </selector>
       <selector path=".content_block img">
         <padding>0px 5px</padding>
       </selector>
       <selector path=".note_content_block">
         <padding>15px</padding>
-        <border>1px solid #D7D7D7</border>
+        <border preset="summary.noteBlock (Galaxy Admin borders)"/>
         <margin>0 0 15px</margin>
+      </selector>
+      <selector path=".note_content_block span, .note_content_block p">
+        <line-height>1.8em</line-height>
+        <font-size>105%</font-size>
       </selector>
       <selector path=".relation_block">
       </selector>
@@ -1231,11 +1243,11 @@
         <padding-top>5px</padding-top>
       </selector>
       <selector path=".lcAndVersion">
-        <border>1px solid #dedede</border>
+        <border preset="summary.actions (Galaxy Admin borders)" />
         <padding>3px</padding>
       </selector>
       <selector path=".actions_block">
-        <border>1px solid #DEDEDE</border>
+        <border preset="summary.actions (Galaxy Admin borders)" />
         <padding>10px 7px 3px</padding>
         <margin>10px 0</margin>
       </selector>
@@ -1256,10 +1268,10 @@
         <display>inline</display>
       </selector>
       <selector path=".layoutViewMode a img">
-        <border>1px solid #fff</border>
+        <border preset="noborder (Galaxy Admin borders)" />
       </selector>
       <selector path=".layoutViewMode a:hover img, .layoutViewMode li.selected img">
-        <border>1px solid #aaa</border>
+        <border preset="layoutselected.icon (Galaxy Admin borders)" />
       </selector>
       <selector path=".summary_div_0">
         <float>left</float>
@@ -1288,8 +1300,7 @@
       <selector path="div.syndicationButton">
         <background preset="rss (Galaxy Admin backgrounds)"/>
         <margin-bottom>5px</margin-bottom>
-        <margin-top>10px</margin-top>
-        <font-size>9px</font-size>
+        <font preset="small (Galaxy Admin fonts)"/>
         <float>right</float>
       </selector>
       <selector path=".syndicationContainer">
@@ -1303,6 +1314,10 @@
       <selector path="div.syndicationButton div.syndicationLinks a">
         <color preset="syndication.link (Galaxy Admin colors)" />
         <text-decoration>none</text-decoration>
+      </selector>
+      <!-- Advanced Search -->
+      <selector path=".listShuttleTable .listShuttleSelectionActions a">
+        <display>block</display>
       </selector>
       <!-- Style for Admin View -->
       <selector path=".adminViewContent">
@@ -1320,9 +1335,9 @@
         <padding>5px 0</padding>
       </selector>
       <selector path=".adminTabsColumn">
-        <background-color>#b9cfe0</background-color>
+        <background preset="leftcolumn (Galaxy Admin backgrounds)"/>
         <padding>0</padding>
-        <width>200px</width>
+        <width>210px</width>
         <height>100%</height>
       </selector>
       <selector path=".adminTabsColumn ul">
@@ -1333,37 +1348,40 @@
       <selector path=".adminTabsColumn li">
         <padding>0</padding>
         <margin>0 0 3px 6px</margin>
-        <border-width>1px</border-width>
-        <border-color>#aac4d9</border-color>
-        <border-style>solid</border-style>
-        <background-color>#f4faff</background-color>
+        <border preset="leftTabs.li (Galaxy Admin borders)" />
+        <background-color preset="leftTabs.li (Galaxy Admin backgrounds)" />
       </selector>
       <selector path=".adminTabsColumn li.selected, .adminTabsColumn li.selected:hover">
-        <background-color>#fff</background-color>
+        <background-color preset="leftTabs.liSelected (Galaxy Admin backgrounds)" />
         <border-style>solid</border-style>
-        <border-color>#aac4d9 #fff #aac4d9 #aac4d9</border-color>
+        <border-color preset="leftTabs.liSelected (Galaxy Admin borders)" />
         <margin>0 0 3px 0</margin>
       </selector>
       <selector path=".adminTabsColumn li:hover">
-        <background-color>#fafdff</background-color>
+        <background-color preset="leftTabs.liHover (Galaxy Admin backgrounds)" />
         <margin>0 0 3px 0px</margin>
       </selector>
       <selector path=".adminTabsColumn li a">
-        <color>#8c8c8c</color>
+        <color preset="leftTabs.listLinks (Galaxy Admin colors)" />
+        <font-size>110%</font-size>
+        <border preset="noborder (Galaxy Admin borders)" />
         <display>block</display>
-        <padding>7px 10px 8px 20px</padding>
+        <padding>7px 10px 8px 8px</padding>
         <text-decoration>none</text-decoration>
       </selector>
        <selector path=".adminTabsColumn li a:hover">
-        <color>#555</color>
+        <color preset="leftTabs.liHover (Galaxy Admin colors)" />
       </selector>
       <selector path=".adminTabsColumn li.selected a">
-        <color>#212121</color>
+        <color preset="leftTabs.liSelected (Galaxy Admin colors)" />
+      </selector>
+      <selector path=".adminTabsColumn li a img">
+        <margin>0px 5px -1px 0</margin>
       </selector>
       <selector path=".adminTabBlock">
         <height>100%</height>
         <margin>0 0 0 5px</margin>
-        <border-right>1px solid #aac4d9</border-right>
+        <border-right preset="leftcolumn (Galaxy Admin borders)" />
       </selector>
       <selector path=".adminContentColumn">
         <padding>20px</padding>
@@ -1377,8 +1395,8 @@
         <padding>0</padding>
       </selector>
       <selector path=".actionBar">
-        <border-bottom>1px solid #bde7F3</border-bottom>
-        <background-color>#efefef</background-color>
+        <border-bottom preset="actionBar (Galaxy Admin borders)" />
+        <background-color preset="actionBar (Galaxy Admin backgrounds)" />
         <padding>10px</padding>
       </selector>
       <selector path=".actionBar span">
@@ -1408,7 +1426,7 @@
       </selector>
       <selector path=".infoMessage">
         <color preset="default.text (Galaxy Admin colors)" />
-        <border>1px solid #445B71</border>
+        <border preset="infofeedback (Galaxy Admin borders)" />
         <background preset="tip (Galaxy Admin backgrounds)" />
         <margin>15px 70px</margin>
         <padding>10px 15px 10px 25px</padding>
@@ -1453,7 +1471,7 @@
         <color>#848484</color>
       </selector>
       <selector path=".importantLabel">
-        <color>#f68500</color>
+        <color preset="warning.message (Galaxy Admin colors)" />
       </selector>
       <selector path=".wide">
         <width>570px</width>
@@ -1477,7 +1495,7 @@
       </selector>
       <selector path=".boldLabel">
         <font-weight>bold</font-weight>
-        <color>#777777</color>
+        <color preset="comments.details (Galaxy Admin colors)" />
       </selector>
       <selector path=".studioUpdateActions">
         <margin>5px 0px</margin>
@@ -1504,7 +1522,7 @@
         <text-align>left</text-align>
         <padding>0 0 5px</padding>
         <font-size>12px</font-size>
-        <border-bottom>1px solid #c7c7c7</border-bottom>
+        <border-bottom preset="tablelines (Galaxy Admin borders)" />
       </selector>
       <selector path=".setupPanel .dataOutput td">
         <padding>0 0 5px 7px</padding>
@@ -1520,7 +1538,7 @@
         <background-color>transparent</background-color>
       </selector>
       <selector path=".warningLabel">
-        <border>1px solid #ffc76e</border>
+        <border preset="orange (Galaxy Admin borders)" />
         <background preset="warning (Galaxy Admin backgrounds)"/>
         <padding>5px 10px 5px 23px</padding>
       </selector>
@@ -1563,7 +1581,6 @@
     <!-- Footer -->
     <style element="page[1]/section[3]">
       <selector path="" view="section frame">
-        <border-top preset="footer (Galaxy Admin borders)"/>
         <background preset="footer (Galaxy Admin backgrounds)"/>
       </selector>
     </style>
@@ -1571,7 +1588,6 @@
       <selector path="" view="Nuxeo footer">
         <font preset="small (Galaxy Admin fonts)"/>
         <color preset="header.text (Galaxy Admin colors)" />
-        <padding>15px</padding>
       </selector>
     </style>
     <!-- main fragment for default page & popup -->
