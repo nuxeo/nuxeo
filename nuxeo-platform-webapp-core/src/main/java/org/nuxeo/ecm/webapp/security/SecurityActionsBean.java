@@ -25,7 +25,6 @@ import java.io.Serializable;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -129,8 +128,6 @@ public class SecurityActionsBean extends InputController implements
     protected transient List<String> cachedDeletedUserAndGroups;
 
     private Boolean blockRightInheritance;
-
-    protected static final Map<String, List<UserVisiblePermission>> visibleUserPermissions = new HashMap<String, List<UserVisiblePermission>>();
 
     protected String selectedEntry;
 
@@ -319,7 +316,7 @@ public class SecurityActionsBean extends InputController implements
     }
 
     public String addPermission(String principalName, String permissionName,
-            boolean grant) {
+            boolean grant) throws ClientException  {
         if (securityData == null) {
             try {
                 securityData = getSecurityData();
@@ -331,21 +328,17 @@ public class SecurityActionsBean extends InputController implements
 
         String grantPerm = permissionName;
         String denyPerm = permissionName;
-        if (visibleUserPermissions != null) {
-            List<UserVisiblePermission> uvps = visibleUserPermissions.get(securityData.getDocumentType());
-            if (uvps != null) {
-                for (UserVisiblePermission uvp : uvps) {
-                    if (uvp.getId().equals(permissionName)) {
-                        grantPerm = uvp.getPermission();
-                        denyPerm = uvp.getDenyPermission();
-                        break;
-                    }
+        List<UserVisiblePermission> uvps = getVisibleUserPermissions(securityData.getDocumentType());
+        if (uvps != null) {
+            for (UserVisiblePermission uvp : uvps) {
+                if (uvp.getId().equals(permissionName)) {
+                    grantPerm = uvp.getPermission();
+                    denyPerm = uvp.getDenyPermission();
+                    break;
                 }
-            } else {
-                log.debug("no entry for documentType in visibleUserPermissions this should never happend, using default mapping ...");
             }
         } else {
-            log.debug("visibleUserPermissions is null this should never happend, using default mapping ...");
+            log.debug("no entry for documentType in visibleUserPermissions this should never happend, using default mapping ...");
         }
 
         if (grant) {
@@ -384,14 +377,14 @@ public class SecurityActionsBean extends InputController implements
         return null;
     }
 
-    public String addPermission() {
+    public String addPermission() throws ClientException {
         String permissionName = permissionListManager.getSelectedPermission();
         boolean grant = permissionActionListManager.getSelectedGrant().equals(
                 "Grant");
         return addPermission(selectedEntry, permissionName, grant);
     }
 
-    public String addPermissions() {
+    public String addPermissions() throws ClientException {
         if (selectedEntries == null || selectedEntries.isEmpty()) {
             String message = ComponentUtils.translate(
                     FacesContext.getCurrentInstance(),
@@ -506,6 +499,16 @@ public class SecurityActionsBean extends InputController implements
         }
     }
 
+    public List<UserVisiblePermission> getVisibleUserPermissions(String documentType) throws ClientException  {
+        try {
+            return Framework.getLocalService(PermissionProvider.class).getUserVisiblePermissionDescriptors(documentType);
+        } catch (ClientException e) {
+            throw e;
+        } catch (Throwable t) {
+            throw new ClientException("Unable to get PermissionProvider", t);
+        }
+    }
+
     public List<SelectItem> getSettablePermissions() throws ClientException {
         String documentType = navigationContext.getCurrentDocument().getType();
 
@@ -517,21 +520,7 @@ public class SecurityActionsBean extends InputController implements
         if (settablePermissions == null || settablePermissions.length == 0) {
             // new centralized permission provider at the core level
 
-            List<UserVisiblePermission> visiblePerms = visibleUserPermissions.get(documentType);
-            if (visiblePerms == null) {
-                PermissionProvider pservice;
-                try {
-                    pservice = Framework.getService(PermissionProvider.class);
-                } catch (Exception e) {
-                    throw new ClientException(
-                            "Unable to get PermissionProvider", e);
-                }
-
-                synchronized (visibleUserPermissions) {
-                    visiblePerms = pservice.getUserVisiblePermissionDescriptors(documentType);
-                    visibleUserPermissions.put(documentType, visiblePerms);
-                }
-            }
+            List<UserVisiblePermission> visiblePerms = getVisibleUserPermissions(documentType);
             settablePermissions = new String[visiblePerms.size()];
             int idx = 0;
             for (UserVisiblePermission uvp : visiblePerms) {
