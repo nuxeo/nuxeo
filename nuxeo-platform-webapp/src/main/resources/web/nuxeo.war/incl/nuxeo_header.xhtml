@@ -187,7 +187,12 @@
 <c:if test="#{currentNuxeoPrincipal!=null and currentNuxeoPrincipal.isAdministrator()}">
   <c:if test="#{connectUpdateStatusInfo.availableUpdateCount>0}">
      <div class="updateNotificationArea" style="float:right;vertical-align:middle;padding:10px">
-       <img src="#{contextPath}/icons/update.png" title="#{connectUpdateStatusInfo.availableUpdateCount} update(s) available" alt="#{connectUpdateStatusInfo.availableUpdateCount} update(s) available"/>
+        <nxd:restDocumentLink
+           view="#{mainTabsActions.getViewFor('admin')}" addTabInfo="false"
+           document="#{mainTabsActions.getDocumentFor('admin')}"
+           tabs="MAIN_TABS:admin,NUXEO_ADMIN:ConnectApps:ConnectAppsUpdates">
+           <img src="#{contextPath}/icons/update.png" title="#{connectUpdateStatusInfo.availableUpdateCount} update(s) available" alt="#{connectUpdateStatusInfo.availableUpdateCount} update(s) available"/>
+       </nxd:restDocumentLink>
      </div>
   </c:if>
 </c:if>
