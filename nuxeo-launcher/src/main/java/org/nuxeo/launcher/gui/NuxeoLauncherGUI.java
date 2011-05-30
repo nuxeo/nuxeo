@@ -129,6 +129,8 @@ public class NuxeoLauncherGUI {
      * @see NuxeoLauncher#stop()
      */
     public void stop() {
+        waitForFrameLoaded();
+        nuxeoFrame.mainButton.setText(getMessage("mainbutton.stop.inprogress"));
         executor.execute(new Runnable() {
 
             @Override
@@ -137,8 +139,6 @@ public class NuxeoLauncherGUI {
                 updateServerStatus();
             }
         });
-        waitForFrameLoaded();
-        nuxeoFrame.mainButton.setText(getMessage("mainbutton.stop.inprogress"));
     }
 
     /**
@@ -172,6 +172,8 @@ public class NuxeoLauncherGUI {
      * @see NuxeoLauncher#doStart() NuxeoLauncher#doStartAndWait()
      */
     public void start() {
+        waitForFrameLoaded();
+        nuxeoFrame.mainButton.setText(NuxeoLauncherGUI.getMessage("mainbutton.start.inprogress"));
         executor.execute(new Runnable() {
 
             @Override
@@ -180,8 +182,6 @@ public class NuxeoLauncherGUI {
                 updateServerStatus();
             }
         });
-        waitForFrameLoaded();
-        nuxeoFrame.mainButton.setText(NuxeoLauncherGUI.getMessage("mainbutton.start.inprogress"));
     }
 
     /**

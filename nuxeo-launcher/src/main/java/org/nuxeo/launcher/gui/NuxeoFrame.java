@@ -30,7 +30,6 @@ import java.awt.HeadlessException;
 import java.awt.Image;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.image.BufferedImage;
@@ -40,6 +39,7 @@ import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
@@ -112,19 +112,25 @@ public class NuxeoFrame extends JFrame {
         }
     }
 
-    protected class StartStopAction extends AbstractAction {
+    private Action startAction = new AbstractAction() {
         private static final long serialVersionUID = 1L;
 
         @Override
         public void actionPerformed(ActionEvent e) {
             mainButton.setEnabled(false);
-            if (controller.launcher.isRunning()) {
-                controller.stop();
-            } else {
-                controller.start();
-            }
+            controller.start();
         }
-    }
+    };
+
+    private Action stopAction = new AbstractAction() {
+        private static final long serialVersionUID = 1L;
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            mainButton.setEnabled(false);
+            controller.stop();
+        }
+    };
 
     protected static final Log log = LogFactory.getLog(NuxeoFrame.class);
 
@@ -296,7 +302,7 @@ public class NuxeoFrame extends JFrame {
     }
 
     private JComponent buildMainButton() {
-        mainButton = createButton(new StartStopAction(), null);
+        mainButton = createButton(null);
         updateMainButton();
         return mainButton;
     }
@@ -355,9 +361,8 @@ public class NuxeoFrame extends JFrame {
         return tabbedPanel;
     }
 
-    private JButton createButton(ActionListener action, ImageIcon icon) {
+    private JButton createButton(ImageIcon icon) {
         JButton button = new JButton();
-        button.addActionListener(action);
         button.setIcon(icon);
         return button;
     }
@@ -387,19 +392,17 @@ public class NuxeoFrame extends JFrame {
 
     protected void updateMainButton() {
         if (controller.launcher.isRunning()) {
+            mainButton.setAction(stopAction);
             mainButton.setText(NuxeoLauncherGUI.getMessage("mainbutton.stop.text"));
             mainButton.setToolTipText(NuxeoLauncherGUI.getMessage("mainbutton.stop.tooltip"));
             mainButton.setIcon(stopIcon);
         } else {
+            mainButton.setAction(startAction);
             mainButton.setText(NuxeoLauncherGUI.getMessage("mainbutton.start.text"));
             mainButton.setToolTipText(NuxeoLauncherGUI.getMessage("mainbutton.start.tooltip"));
             mainButton.setIcon(startIcon);
         }
         mainButton.setEnabled(true);
-        // if (controller.launcher.isWizardRequired()) {
-        // // disable start button
-        // // TODO look about where enabling start button
-        // }
         mainButton.validate();
     }
 
