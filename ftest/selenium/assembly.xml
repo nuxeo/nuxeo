@@ -30,11 +30,6 @@
       src="${integration.dir}/nuxeo-cap-${nuxeo.version}-tomcat" />
     <chmod dir="${tomcat}/bin" perm="u+x" includes="*.sh,*ctl" />
 
-    <copy todir="${tomcat}/nxserver/lib">
-      <!-- copy logging monitor -->
-      <artifact:resolveFile key="org.jboss.services:logging-monitor" />
-    </copy>
-
     <copy todir="${tomcat}/nxserver/plugins/" overwrite="true" flatten="true">
       <fileset dir="${maven.project.build.directory}">
         <include name="${maven.project.artifactId}*.jar" />
