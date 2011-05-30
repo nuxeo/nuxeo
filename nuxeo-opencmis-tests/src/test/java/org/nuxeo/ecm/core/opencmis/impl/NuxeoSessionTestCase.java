@@ -384,8 +384,6 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
                 Action.CAN_CREATE_RELATIONSHIP, //
                 Action.CAN_DELETE_TREE, //
                 Action.CAN_GET_RENDITIONS, //
-                Action.CAN_ADD_OBJECT_TO_FOLDER, //
-                Action.CAN_REMOVE_OBJECT_FROM_FOLDER, //
                 Action.CAN_UPDATE_PROPERTIES, //
                 Action.CAN_MOVE_OBJECT, //
                 Action.CAN_DELETE_OBJECT);
@@ -403,6 +401,8 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
                 Action.CAN_UPDATE_PROPERTIES, //
                 Action.CAN_MOVE_OBJECT, //
                 Action.CAN_DELETE_OBJECT, //
+                Action.CAN_ADD_OBJECT_TO_FOLDER, //
+                Action.CAN_REMOVE_OBJECT_FROM_FOLDER, //
                 Action.CAN_GET_RENDITIONS, //
                 Action.CAN_GET_ALL_VERSIONS, //
                 Action.CAN_CANCEL_CHECK_OUT, //

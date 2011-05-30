@@ -232,6 +232,8 @@ public class NuxeoObjectData implements ObjectData {
         } else if (isDocument) {
             set.add(Action.CAN_GET_CONTENT_STREAM);
             set.add(Action.CAN_GET_ALL_VERSIONS);
+            set.add(Action.CAN_ADD_OBJECT_TO_FOLDER);
+            set.add(Action.CAN_REMOVE_OBJECT_FROM_FOLDER);
             try {
                 if (doc.isCheckedOut()) {
                     set.add(Action.CAN_CHECK_IN);
@@ -252,8 +254,6 @@ public class NuxeoObjectData implements ObjectData {
                 set.add(Action.CAN_CREATE_FOLDER);
                 set.add(Action.CAN_CREATE_RELATIONSHIP);
                 set.add(Action.CAN_DELETE_TREE);
-                set.add(Action.CAN_ADD_OBJECT_TO_FOLDER);
-                set.add(Action.CAN_REMOVE_OBJECT_FROM_FOLDER);
             } else if (isDocument) {
                 set.add(Action.CAN_SET_CONTENT_STREAM);
                 set.add(Action.CAN_DELETE_CONTENT_STREAM);
