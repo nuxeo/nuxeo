@@ -18,10 +18,15 @@
 
 package org.nuxeo.wizard.context;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.servlet.http.HttpServletRequest;
+
+import org.nuxeo.launcher.config.ConfigurationGenerator;
 
 /**
  * Simple Context management
@@ -40,6 +45,8 @@ public class Context {
     protected Map<String, String> errors = new HashMap<String, String>();
 
     protected static Map<String, String> connectMap;
+
+    protected static String distributionKey = null;
 
     protected HttpServletRequest req;
 
@@ -66,6 +73,31 @@ public class Context {
             collector = new ParamCollector();
         }
         return collector;
+    }
+
+    public String getDistributionKey() {
+
+        if (distributionKey==null) {
+
+            ConfigurationGenerator configurationGenerator = new ConfigurationGenerator();
+            configurationGenerator.init();
+            try {
+                Properties distribution = new Properties();
+                distribution.load(new FileInputStream(new File(
+                        configurationGenerator.getConfigDir(),
+                        "distribution.properties")));
+                String name = distribution.getProperty("org.nuxeo.distribution.name", "unknow").toLowerCase();
+                String server = distribution.getProperty("org.nuxeo.distribution.server", "unknown").toLowerCase();
+                String version = distribution.getProperty("org.nuxeo.distribution.version", "unknow").toLowerCase();
+                String pkg = distribution.getProperty("org.nuxeo.distribution.package", "unknow").toLowerCase();
+
+                distributionKey = name + "-" + server + "-" + version + "-" + pkg;
+
+            } catch (Exception e) {
+                distributionKey = "unknown";
+            }
+        }
+        return distributionKey;
     }
 
     public void trackError(String fieldId, String message) {

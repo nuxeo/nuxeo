@@ -5,8 +5,8 @@ String cbUrl = (String) request.getAttribute("callBackUrl");
 
 String formUrl = "https://connect.nuxeo.com/nuxeo/site/connect/embeddedTrial/form";
 // String formUrl = "https://connect-test.nuxeo.com/nuxeo/site/connect/embeddedTrial/form";
-//formUrl = contextPath + "/jsp/fakeConnectForm.jsp";
 formUrl = formUrl + "?WizardCB=" + cbUrl;
+formUrl = formUrl + "&source=wizard&pkg=" + ctx.getDistributionKey();
 
 boolean showRegistrationForm = !ctx.isConnectRegistrationDone();
 
