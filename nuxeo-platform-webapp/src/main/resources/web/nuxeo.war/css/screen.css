@@ -734,11 +734,10 @@ padding:5px 0px 2px 0px;
 
  /* Footer Banner */
 
- .bannerBottom {
-  font: normal 11px "Lucida Grande", Helvetica, sans-serif;
+.bannerBottom {
+  font-size: 110%;
   text-align:left;
-  padding:1px;
-  margin:1px;
+  padding:3px 15px 1px;
   }
 
 .unregistered {
@@ -750,8 +749,24 @@ padding:5px 0px 2px 0px;
   padding:1px
 }
 
-.links {
-  padding: 2px 10px 0;
+.bannerMessage p { margin: 0 0 3px; }
+
+.bannerBottom .links a, .links a:link, .links a:visited {
+    background-color: #108EBD;
+    border: 1px solid #1191C1;
+    color: #EFEFEF;
+    cursor: pointer;
+    display: block;
+    margin: 3px;
+    padding: 1px 30px 1px 50px;
+    text-decoration: none;
+  }
+
+.bannerBottom .links a:hover {
+  background-color: #1aabe0;
+  border: 1px solid #3ab6e3;
+  color:#fff; 
+  text-decoration: none;
   }
 
 .unregistered .bannerMessage {
@@ -766,11 +781,13 @@ padding:5px 0px 2px 0px;
   font-weight: bold;
   }
 
+
+/* Studio header link */
 .studioButton a {
     background-color: #00a5b8;
     border: 1px solid #00a5b8;
     display: block;
-    padding: 2px 20px;
+    padding: 2px 10px;
     color: #f1f5f7;
     text-decoration: none;
     -moz-border-radius: 4px;
@@ -778,7 +795,7 @@ padding:5px 0px 2px 0px;
     border-radius: 4px;
     text-shadow: 0 -1px 1px rgba(0, 0, 0, 0.25);
     font : 12px 'Lucida Grande',Verdana,Arial,sans-serif;
-    margin:0 0 0 15px;
+    margin:0 0 0 10px;
 }
 
 .studioButton a:hover {
