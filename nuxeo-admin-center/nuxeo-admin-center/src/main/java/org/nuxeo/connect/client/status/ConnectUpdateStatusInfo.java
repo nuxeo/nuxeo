@@ -94,12 +94,13 @@ public class ConnectUpdateStatusInfo {
         return status;
     }
 
+
     protected static String buildFeedUrl(boolean registred) {
 
         StringBuffer sb = new StringBuffer();
 
-        sb.append(ConnectUrlConfig.getBaseUrl());
-        sb.append("connectGateway/jsonp/");
+        sb.append(Framework.getProperty("org.nuxeo.connect.client.feedUrl", ConnectUrlConfig.getBaseUrl()));
+        sb.append("connect-gateway/jsonp/");
 
 
         if (registred) {
@@ -115,7 +116,7 @@ public class ConnectUpdateStatusInfo {
             try {
                 sb.append(LogicalInstanceIdentifier.instance().getCLID1());
             } catch (NoCLID e) {
-                log.error("Error in ConnectUpdateStatusInfo generation", e);
+                log.error("Error in ConnectUpdateStatusInfo generation : No CLID is defined ...");
             }
         }
 

@@ -29,7 +29,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -363,6 +365,23 @@ public class ConnectStatusActionBean implements Serializable {
         }
     }
 
+    //@Factory(scope = ScopeType.EVENT, value = "connectUpdateStatusInfo")
+    public ConnectUpdateStatusInfo getDynamicConnectUpdateStatusInfo() {
+        HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+        String bannerType = req.getParameter("bannerType");
+
+        if ("unregistred".equals(bannerType)) {
+            return ConnectUpdateStatusInfo.unregistred();
+        } else if ("notreachable".equals(bannerType)) {
+            return ConnectUpdateStatusInfo.connectServerUnreachable();
+        } else if ("notvalid".equals(bannerType)) {
+            return ConnectUpdateStatusInfo.notValid();
+        } else if ("ok".equals(bannerType)) {
+            return ConnectUpdateStatusInfo.ok();
+        }
+        return getConnectUpdateStatusInfo();
+    }
+
     @Factory(scope = ScopeType.APPLICATION, value = "connectUpdateStatusInfo")
     public ConnectUpdateStatusInfo getConnectUpdateStatusInfo() {
         if (!isRegistred()) {
@@ -382,7 +401,6 @@ public class ConnectStatusActionBean implements Serializable {
                 return ConnectUpdateStatusInfo.connectServerUnreachable();
             }
         }
-
     }
 
 }
