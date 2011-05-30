@@ -538,22 +538,11 @@
         <version>1.0.2</version>
         <classifier>client</classifier>
       </dependency>
-      <!-- <dependency> -->
-      <!-- <groupId>org.jboss.osgi.runtime</groupId> -->
-      <!-- <artifactId>jboss-osgi-framework</artifactId> -->
-      <!-- <version>1.0.0.Alpha3</version> -->
-      <!-- <classifier>all</classifier> -->
-      <!-- </dependency> -->
       <dependency>
         <groupId>org.jboss.logging</groupId>
         <artifactId>jboss-logging-log4j</artifactId>
         <version>2.1.0.GA</version>
       </dependency>
-      <!-- <dependency> -->
-      <!-- <groupId>jboss</groupId> -->
-      <!-- <artifactId>jbosssx-client</artifactId> -->
-      <!-- <version>4.2.3.GA</version> -->
-      <!-- </dependency> -->
 
       <!-- jboss (+ hibernate, richfaces...) -->
       <dependency>
@@ -642,13 +631,6 @@
         <scope>provided</scope>
       </dependency>
 
-      <!-- JBoss dependencies to check, upgrade or remove -->
-      <dependency>
-        <groupId>jboss</groupId>
-        <artifactId>ejb3</artifactId>
-        <version>${jboss.ejb.version}</version>
-        <scope>provided</scope>
-      </dependency>
       <dependency>
         <groupId>org.jbpm.jbpm3</groupId>
         <artifactId>jbpm-jpdl</artifactId>
@@ -666,69 +648,20 @@
         <version>2.2</version>
       </dependency>
       <dependency>
-        <groupId>jboss</groupId>
-        <artifactId>jboss</artifactId>
-        <version>4.2.3.GA</version>
+	<groupId>org.jboss.ejb3</groupId>
+	<artifactId>jboss-ejb3-ext-api</artifactId>
+	<version>1.0.0</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
-        <groupId>jboss</groupId>
-        <artifactId>jboss-annotations-ejb3</artifactId>
-        <version>${jboss.ejb.version}</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>jboss</groupId>
-        <artifactId>jboss-aop-jdk50</artifactId>
-        <version>1.4.0.SP1</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>jboss</groupId>
-        <artifactId>jboss-cache</artifactId>
-        <version>1.4.0.BETA2</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>jboss</groupId>
-        <artifactId>jboss-cache-jdk50</artifactId>
-        <version>1.4.0.SP1</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>jboss</groupId>
-        <artifactId>cglib-jboss</artifactId>
-        <version>2.1.2</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>jboss</groupId>
-        <artifactId>jboss-common</artifactId>
-        <version>4.2.3.GA</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>jboss</groupId>
-        <artifactId>jboss-j2ee</artifactId>
-        <version>4.2.3.GA</version>
-        <scope>provided</scope>
+        <groupId>org.jboss.remoting</groupId>
+        <artifactId>jboss-remoting</artifactId>
+        <version>2.5.1</version>
       </dependency>
       <dependency>
         <groupId>javassist</groupId>
         <artifactId>javassist</artifactId>
         <version>3.9.0.GA</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>jboss</groupId>
-        <artifactId>jboss-jmx</artifactId>
-        <version>4.2.3.GA</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>jboss</groupId>
-        <artifactId>jboss-remoting</artifactId>
-        <version>2.2.2.SP1</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
@@ -799,10 +732,10 @@
         <version>1.0.3.GA</version>
         <scope>provided</scope>
       </dependency>
-      <dependency>
-        <groupId>jboss</groupId>
-        <artifactId>jboss-system</artifactId>
-        <version>4.2.3.GA</version>
+       <dependency>
+        <groupId>org.jboss.jbossas</groupId>
+        <artifactId>jboss-as-system</artifactId>
+        <version>5.1.0.GA</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
@@ -824,9 +757,14 @@
         <scope>provided</scope>
       </dependency>
       <dependency>
+        <groupId>org.jboss.jbossas</groupId>
+        <artifactId>jboss-as-server</artifactId>
+        <version>5.1.0.GA</version>
+      </dependency>
+      <dependency>
         <groupId>jboss</groupId>
         <artifactId>jgroups</artifactId>
-        <version>2.2.9</version>
+        <version>4.2.2.GA</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
@@ -855,30 +793,17 @@
         <classifier>light</classifier>
       </dependency>
       <dependency>
-        <groupId>jboss</groupId>
-        <artifactId>jboss-aspect-jdk50-client</artifactId>
-        <version>1.5</version>
+        <groupId>org.jboss.jbossas</groupId>
+        <artifactId>jboss-as-aspects</artifactId>
+        <version>5.1.0.GA</version>
+	<classifier>jboss-aspects-jdk50-client</classifier>
       </dependency>
       <dependency>
-        <groupId>jboss</groupId>
-        <artifactId>jboss-transaction-client</artifactId>
-        <version>4.0.4.GA</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.client</groupId>
-        <artifactId>jbossall-client</artifactId>
-        <version>5.0.0.GA</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.services</groupId>
-        <artifactId>logging-monitor</artifactId>
-        <version>4.2.3.GA</version>
+        <groupId>org.jboss.jbossas</groupId>
+        <artifactId>jboss-as-varia</artifactId>
+        <version>5.1.0.GA</version>
+	<classifier>logging-monitor</classifier>
         <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>jboss</groupId>
-        <artifactId>jboss-client</artifactId>
-        <version>4.0.2</version>
       </dependency>
 
       <!-- Jetty mortbay -->
@@ -2344,11 +2269,6 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-clean-plugin</artifactId>
           <version>2.4</version>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-eclipse-plugin</artifactId>
-          <version>2.6</version><!-- MECLIPSE-576 fixed in 2.9 -->
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
