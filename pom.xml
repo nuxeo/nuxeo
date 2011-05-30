@@ -751,6 +751,12 @@
         <scope>provided</scope>
       </dependency>
       <dependency>
+        <groupId>org.jboss.security</groupId>
+        <artifactId>jbosssx-client</artifactId>
+        <version>2.0.3.SP1</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
         <groupId>org.jboss.jbossas</groupId>
         <artifactId>jboss-as-security</artifactId>
         <version>${version.org.jboss.integration}</version>
@@ -804,6 +810,12 @@
         <version>5.1.0.GA</version>
 	<classifier>logging-monitor</classifier>
         <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.jbossas</groupId>
+        <artifactId>jboss-as-client</artifactId>
+        <version>5.1.0.GA</version>
+        <type>pom</type>
       </dependency>
 
       <!-- Jetty mortbay -->
@@ -2271,11 +2283,13 @@
           <version>2.4</version>
         </plugin>
 	<!-- MECLIPSE-576 fixed in 2.9 -->
+<!--
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-eclipse-plugin</artifactId>
           <version>2.6</version>
         </plugin>
+ -->
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>gwt-maven-plugin</artifactId>
