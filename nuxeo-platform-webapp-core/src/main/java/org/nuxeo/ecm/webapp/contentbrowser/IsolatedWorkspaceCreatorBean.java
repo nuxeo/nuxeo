@@ -19,13 +19,12 @@
 
 package org.nuxeo.ecm.webapp.contentbrowser;
 
-import static org.jboss.seam.ScopeType.STATELESS;
+import static org.jboss.seam.ScopeType.*;
 
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jboss.annotation.ejb.SerializedConcurrentAccess;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
@@ -37,7 +36,6 @@ import org.nuxeo.ecm.webapp.security.SecurityActions;
 
 @Name("isolatedWorkspaceCreator")
 @Scope(STATELESS)
-@SerializedConcurrentAccess
 public class IsolatedWorkspaceCreatorBean {
 
     @In(create = true)

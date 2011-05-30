@@ -18,7 +18,7 @@
 
 package org.nuxeo.ecm.webapp.action;
 
-import static org.jboss.seam.ScopeType.CONVERSATION;
+import static org.jboss.seam.ScopeType.*;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -33,7 +33,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.annotation.ejb.SerializedConcurrentAccess;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
@@ -55,7 +54,6 @@ import org.nuxeo.ecm.webapp.edit.lock.LockActions;
 
 @Name("popupHelper")
 @Scope(CONVERSATION)
-@SerializedConcurrentAccess
 public class PopupHelper implements Serializable {
 
     private static final long serialVersionUID = 1L;
