@@ -212,6 +212,7 @@ public class NuxeoObjectData implements ObjectData {
         BaseTypeId baseType = NuxeoTypeHelper.getBaseTypeId(doc);
         boolean isDocument = baseType == BaseTypeId.CMIS_DOCUMENT;
         boolean isFolder = baseType == BaseTypeId.CMIS_FOLDER;
+        boolean isRoot = "/".equals(doc.getPathAsString());
         boolean canWrite;
         try {
             canWrite = creation
@@ -226,9 +227,11 @@ public class NuxeoObjectData implements ObjectData {
         set.add(Action.CAN_GET_PROPERTIES);
         if (isFolder) {
             set.add(Action.CAN_GET_DESCENDANTS);
-            set.add(Action.CAN_GET_FOLDER_PARENT);
             set.add(Action.CAN_GET_FOLDER_TREE);
             set.add(Action.CAN_GET_CHILDREN);
+            if (!isRoot) {
+                set.add(Action.CAN_GET_FOLDER_PARENT);
+            }
         } else if (isDocument) {
             set.add(Action.CAN_GET_CONTENT_STREAM);
             set.add(Action.CAN_GET_ALL_VERSIONS);
@@ -263,7 +266,9 @@ public class NuxeoObjectData implements ObjectData {
                 // Relationships are not fileable
                 set.add(Action.CAN_MOVE_OBJECT);
             }
-            set.add(Action.CAN_DELETE_OBJECT);
+            if (!isRoot) {
+                set.add(Action.CAN_DELETE_OBJECT);
+            }
         }
         if (Boolean.FALSE.booleanValue()) {
             // TODO
