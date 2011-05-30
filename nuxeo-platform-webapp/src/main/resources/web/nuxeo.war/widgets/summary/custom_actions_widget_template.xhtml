@@ -45,49 +45,57 @@
         <c:when test="#{widgetProperty_display == 'buttons'}">
           <nxu:dataList layout="simple"
             var="action" value="#{actions}">
-            <nxh:commandButton action="#{action.getLink()}"
-              immediate="#{action.immediate}"
-              id="#{widget.id}_#{action.id}"
-              value="#{messages[action.label]}"
-              styleClass="button" />
+            <div>
+              <nxh:commandButton action="#{action.getLink()}"
+                immediate="#{action.immediate}"
+                id="#{widget.id}_#{action.id}"
+                value="#{messages[action.label]}"
+                styleClass="button" />
+            </div>
           </nxu:dataList>
         </c:when>
         <c:when test="#{widgetProperty_display == 'links'}">
           <nxu:dataList layout="simple"
             var="action" value="#{actions}">
-            <nxh:commandLink action="#{action.getLink()}"
-              immediate="#{action.immediate}"
-              id="#{widget.id}_#{action.id}"
-              value="#{messages[action.label]}"
-              styleClass="button" />
+            <div>
+              <nxh:commandLink action="#{action.getLink()}"
+                immediate="#{action.immediate}"
+                id="#{widget.id}_#{action.id}"
+                value="#{messages[action.label]}"
+                styleClass="button" />
+            </div>
           </nxu:dataList>
         </c:when>
         <c:when test="#{widgetProperty_display == 'icons'}">
           <nxu:dataList layout="simple"
             var="action" value="#{actions}">
-            <nxh:commandLink action="#{action.getLink()}"
-              id="#{widget.id}_#{action.id}"
-              immediate="#{action.immediate}">
-              <h:graphicImage value="#{action.icon}"
-                title="#{messages[action.label]}"
-                alt="#{messages[action.label]}"
-                styleClass="smallIcon" />
-            </nxh:commandLink>
+            <div>
+              <nxh:commandLink action="#{action.getLink()}"
+                id="#{widget.id}_#{action.id}"
+                immediate="#{action.immediate}">
+                <h:graphicImage value="#{action.icon}"
+                  title="#{messages[action.label]}"
+                  alt="#{messages[action.label]}"
+                  styleClass="smallIcon" />
+              </nxh:commandLink>
+            </div>
           </nxu:dataList>
         </c:when>
         <c:otherwise>
           <nxu:dataList layout="simple"
             var="action" value="#{actions}">
-            <nxh:commandLink action="#{action.getLink()}"
-              id="#{widget.id}_#{action.id}"
-              immediate="#{action.immediate}">
-              <h:graphicImage value="#{action.icon}"
-                title="#{messages[action.label]}"
-                alt="#{messages[action.label]}"
-                styleClass="smallIcon"
-                rendered="#{not empty action.icon}" />
-              <h:outputText  value=" #{messages[action.label]}" />
-            </nxh:commandLink>
+            <div>
+              <nxh:commandLink action="#{action.getLink()}"
+                id="#{widget.id}_#{action.id}"
+                immediate="#{action.immediate}">
+                <h:graphicImage value="#{action.icon}"
+                  title="#{messages[action.label]}"
+                  alt="#{messages[action.label]}"
+                  styleClass="smallIcon"
+                  rendered="#{not empty action.icon}" />
+                <h:outputText  value=" #{messages[action.label]}" />
+              </nxh:commandLink>
+            </div>
           </nxu:dataList>
         </c:otherwise>
       </c:choose>
