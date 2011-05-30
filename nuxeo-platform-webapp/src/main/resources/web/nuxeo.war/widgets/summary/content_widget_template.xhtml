@@ -17,7 +17,7 @@
 
   <c:if test="#{!hasMainBlob and canHaveMainBlob}">
     <div class="dropzone" context="mainBlob" id="mainBlobDropZone">
-       DROP HERE !!!
+       #{messages['label.dnd.dropHere']}
     </div>
   </c:if>
   <c:if test="#{hasMainBlob}">
