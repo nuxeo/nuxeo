@@ -2270,6 +2270,12 @@
           <artifactId>maven-clean-plugin</artifactId>
           <version>2.4</version>
         </plugin>
+	<!-- MECLIPSE-576 fixed in 2.9 -->
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-eclipse-plugin</artifactId>
+          <version>2.6</version>
+        </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>gwt-maven-plugin</artifactId>
