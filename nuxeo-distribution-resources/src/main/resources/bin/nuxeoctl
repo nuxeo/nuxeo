@@ -154,9 +154,10 @@ if [ ! -e "$NUXEO_LAUNCHER" ]; then
     exit 1
 fi
 
-echo "Command: $0 $@" > $LOG_DIR/nuxeoctl.log
+echo "[`date`] Command: $0 $@" >> $LOG_DIR/nuxeoctl.log
 
 #LAUNCHER_DEBUG="-Xdebug -Xrunjdwp:transport=dt_socket,address=8787,server=y,suspend=y"
 
 echo Launcher command: $JAVA $LAUNCHER_DEBUG -Dlauncher.java.opts="$JAVA_OPTS" -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" -Dnuxeo.log.dir="$LOG_DIR" -jar $NUXEO_LAUNCHER $@
+echo [`date`] Launcher command: $JAVA $LAUNCHER_DEBUG -Dlauncher.java.opts="$JAVA_OPTS" -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" -Dnuxeo.log.dir="$LOG_DIR" -jar $NUXEO_LAUNCHER $@ >> $LOG_DIR/nuxeoctl.log
 exec "$JAVA" $LAUNCHER_DEBUG -Dlauncher.java.opts="$JAVA_OPTS" -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" -Dnuxeo.log.dir="$LOG_DIR" -jar "$NUXEO_LAUNCHER" "$@"
