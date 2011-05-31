@@ -49,6 +49,8 @@ public class TestSnapshotPersist extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.platform.usermanager.api");
         deployBundle("org.nuxeo.ecm.platform.usermanager");
 
+        deployBundle("org.nuxeo.ecm.automation.core");
+
         deployBundle("org.nuxeo.apidoc.core");
         openSession();
     }

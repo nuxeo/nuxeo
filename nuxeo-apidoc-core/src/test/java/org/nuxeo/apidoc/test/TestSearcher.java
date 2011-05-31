@@ -48,6 +48,8 @@ public class TestSearcher extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.core.convert.plugins");
         deployBundle("org.nuxeo.ecm.core.storage.sql"); // event listener
 
+        deployBundle("org.nuxeo.ecm.automation.core");
+
         deployBundle("org.nuxeo.apidoc.core");
         openSession();
     }
