@@ -1056,6 +1056,12 @@
         <scope>provided</scope>
       </dependency>
       <dependency>
+        <groupId>org.hamcrest</groupId>
+        <artifactId>hamcrest-all</artifactId>
+        <scope>test</scope>
+        <version>1.1</version>
+      </dependency>
+      <dependency>
         <groupId>opensymphony</groupId>
         <artifactId>quartz-all</artifactId>
         <version>1.5.2</version>
@@ -1810,8 +1816,8 @@
       </dependency>
       <dependency>
         <groupId>org.seleniumhq.selenium</groupId>
-        <artifactId>selenium</artifactId>
-        <version>2.0b1</version>
+        <artifactId>selenium-api</artifactId>
+        <version>2.0b3</version>
         <exclusions>
           <exclusion>
             <groupId>org.testng</groupId>
@@ -1822,7 +1828,29 @@
       <dependency>
         <groupId>org.seleniumhq.selenium</groupId>
         <artifactId>selenium-server</artifactId>
-        <version>2.0b1</version>
+        <version>2.0b3</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.seleniumhq.selenium</groupId>
+        <artifactId>selenium-remote-control</artifactId>
+        <version>2.0b3</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.seleniumhq.selenium</groupId>
+        <artifactId>selenium-support</artifactId>
+        <version>2.0b3</version>
         <exclusions>
           <exclusion>
             <groupId>org.testng</groupId>
@@ -1833,7 +1861,7 @@
       <dependency>
         <groupId>org.seleniumhq.selenium</groupId>
         <artifactId>selenium-server</artifactId>
-        <version>2.0b1</version>
+        <version>2.0b3</version>
         <classifier>standalone</classifier>
       </dependency>
       <dependency>
