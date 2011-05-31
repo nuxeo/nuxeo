@@ -5,6 +5,11 @@
   <script type="text/javascript" src="${skinPath}/script/jquery.tablesorter_filter.js"></script>
 </@block>
 
+<#if Root.isEmbeddedMode()>
+  <#assign hideNav=true/>
+</#if>
+
+
 <@block name="right">
 <#include "/docMacros.ftl">
 

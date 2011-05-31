@@ -3,6 +3,10 @@
 <@block name="stylesheets"></@block>
 <@block name="header_scripts"></@block>
 
+<#if Root.isEmbeddedMode()>
+  <#assign hideNav=true/>
+</#if>
+
 <@block name="right">
 
 <h1>Extension point <span class="componentTitle">${extensionPoint.name}</span>

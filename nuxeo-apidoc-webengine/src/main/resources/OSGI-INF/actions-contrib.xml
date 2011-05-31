@@ -30,6 +30,12 @@
           <filter-id>only_for_manager</filter-id>
         </action>
 
+        <action id="PlatformExplorerOp" link="/incl/apidoc/operations.xhtml"
+          label="tab.explorer.operations" order="50">
+          <category>PlatformExplorer_sub_tab</category>
+          <filter-id>only_for_manager</filter-id>
+        </action>
+
   </extension>
 
 </component>
