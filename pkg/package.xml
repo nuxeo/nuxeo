@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<package name="PlatformExplorer" version="1.0.1" type="addon">
+<package name="PlatformExplorer" version="1.0.5" type="addon">
   <title>Nuxeo Platform Explorer</title>
   <description>Platform explorer allows to browse components, services and extension points of your Nuxeo instance.
 	       Platform explorer is the addon used to generate the web site http://explorer.nuxeo.org.
@@ -11,7 +11,7 @@
   <nuxeo-validation>inprocess</nuxeo-validation>
   <production-state>none</production-state>
   <platforms>
-    <platform>DM-5.4.1</platform>
+    <platform>DM-5.4.2</platform>
   </platforms>
   <dependencies>
   </dependencies>
