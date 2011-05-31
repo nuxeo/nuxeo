@@ -69,24 +69,12 @@
    <artifactId>nuxeo-platform-ui-web</artifactId>
   </dependency>
   <dependency>
-   <groupId>jboss</groupId>
-   <artifactId>jboss-annotations-ejb3</artifactId>
-  </dependency>
-  <dependency>
-   <groupId>jboss</groupId>
-   <artifactId>ejb3</artifactId>
-  </dependency>
-  <dependency>
    <groupId>org.jboss.seam</groupId>
    <artifactId>jboss-seam</artifactId>
   </dependency>
   <dependency>
    <groupId>org.jboss.seam</groupId>
    <artifactId>jboss-seam-ui</artifactId>
-  </dependency>
-  <dependency>
-   <groupId>jboss</groupId>
-   <artifactId>jboss-j2ee</artifactId>
   </dependency>
   <dependency>
    <groupId>org.richfaces.framework</groupId>
