@@ -35,12 +35,11 @@ import java.util.jar.JarFile;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
-import org.nuxeo.functionaltests.pages.LoginPage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedException;
+import org.nuxeo.functionaltests.pages.LoginPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.NotFoundException;
-import org.openqa.selenium.Speed;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
@@ -88,9 +87,6 @@ public abstract class AbstractTest {
         addFireBug(profile);
 
         driver = new FirefoxDriver(profile);
-        // Set speed between user interaction: keyboard and mouse
-        // Fast: 0, MEDIUM: 0.5s SLOW: 1s
-        driver.manage().setSpeed(Speed.FAST);
     }
 
     @AfterClass
