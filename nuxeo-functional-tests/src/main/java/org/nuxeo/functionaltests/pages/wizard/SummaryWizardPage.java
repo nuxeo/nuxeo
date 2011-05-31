@@ -29,7 +29,7 @@ public class SummaryWizardPage extends WizardPage {
 
     public LoginPage restart() {
         nav(WizardPage.class, "Start Nuxeo");
-        findElementWithTimeout(By.id("username"), 120 * 1000);
+        findElementWithTimeout(By.id("username"), 240 * 1000);
         return asPage(LoginPage.class);
     }
 
