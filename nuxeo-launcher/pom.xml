@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.nuxeo</groupId>
     <artifactId>nuxeo-ecm</artifactId>
-    <version>5.4.2-SNAPSHOT</version>
+    <version>5.4.2</version>
   </parent>
 
   <artifactId>nuxeo-launcher</artifactId>
@@ -13,8 +13,8 @@
   <description>Build a Nuxeo launcher working with all Nuxeo products</description>
 
   <properties>
-    <nuxeo.runtime.version>5.4.2-SNAPSHOT</nuxeo.runtime.version>
-    <nuxeo.shell.version>5.4.2-SNAPSHOT</nuxeo.shell.version>
+    <nuxeo.runtime.version>5.4.2</nuxeo.runtime.version>
+    <nuxeo.shell.version>5.4.2</nuxeo.shell.version>
   </properties>
 
   <dependencyManagement>
