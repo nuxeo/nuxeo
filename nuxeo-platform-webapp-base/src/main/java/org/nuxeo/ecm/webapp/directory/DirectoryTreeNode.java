@@ -346,6 +346,9 @@ public class DirectoryTreeNode {
     }
 
     public String getDescription() {
+        if (level==0) {
+            return translate( FacesContext.getCurrentInstance(), description);
+        }
         return description;
     }
 
