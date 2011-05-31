@@ -12,13 +12,12 @@
          <div style="display:none" id="connectExpiredMessageBanner">
           <div class="bannerBottom unregistered">
            <div class="bannerMessage">
-            <p>This Nuxeo #{connectUpdateStatusInfo.distributionName} instance is not registered to Nuxeo Connect : you won't be able to get the most recent fixes and stay up to date.
+
+            <p>Nuxeo #{connectUpdateStatusInfo.distributionName} version: #{connectUpdateStatusInfo.distributionVersion}. Your Nuxeo #{connectUpdateStatusInfo.distributionName} instance has been registered to Nuxeo Connect but your registration status can not be validated.</p>
+            <p>
             <span class="bold" id="connectHotFixesCountMsg" style="display:none"><a target="marketplace" href="https://connect.nuxeo.com/nuxeo/site/marketplace/hotfixes/#{connectUpdateStatusInfo.distributionLabel}"><span id="connectHotFixesCount">3</span> hotfix(es) published since this release.</a></span>
             </p>
-            <p>Nuxeo #{connectUpdateStatusInfo.distributionName} version: #{connectUpdateStatusInfo.distributionVersion}. Register and enable Nuxeo Connect to benefit from automatic maintenance.</p>
-           </div>
-           <div class="links">
-              <a href="mailto:connect-support@nuxeo.com?subject=Issue%20in%20Connect%20contract%20#{connectUpdateStatusInfo.identifier}"> &gt; Contact connect-support@nuxeo.com to reactivate Nuxeo Connect</a>
+            <p><a href="mailto:connect-support@nuxeo.com?subject=Issue%20in%20Connect%20contract%20#{connectUpdateStatusInfo.identifier}"> Contact connect-support@nuxeo.com to reactivate Nuxeo Connect</a></p>
            </div>
            <div class="clear" />
           </div>
@@ -54,7 +53,7 @@
 
          <div class="bannerBottom unregistered" >
            <div class="bannerMessage">
-            <p>This Nuxeo #{connectUpdateStatusInfo.distributionName} instance is not registered to Nuxeo Connect : you won't be able to get the most recent fixes and stay up to date.
+            <p>This Nuxeo #{connectUpdateStatusInfo.distributionName} instance is not registered to Nuxeo Connect: you won't be able to get the most recent fixes and stay up to date.
             <span class="bold" id="connectHotFixesCountMsg" style="display:none"><a target="marketplace" href="https://connect.nuxeo.com/nuxeo/site/marketplace/hotfixes/#{connectUpdateStatusInfo.distributionLabel}"><span id="connectHotFixesCount">3</span> hotfix(es) published since this release.</a></span>
             </p>
             <p>Nuxeo #{connectUpdateStatusInfo.distributionName} version: #{connectUpdateStatusInfo.distributionVersion}. Register and enable Nuxeo Connect to benefit from automatic maintenance.</p>
