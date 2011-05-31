@@ -9,10 +9,10 @@
   <name>Nuxeo ECM Projects</name>
   <description>Nuxeo ECM Platform and related components.</description>
 
-  <url>http://www.nuxeo.com/en/products/platform</url>
+  <url>http://www.nuxeo.com/en/products</url>
   <organization>
     <name>Nuxeo SAS</name>
-    <url>http://www.nuxeo.com/en</url>
+    <url>http://www.nuxeo.com</url>
   </organization>
   <licenses>
     <license>
