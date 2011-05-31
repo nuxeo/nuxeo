@@ -12,13 +12,12 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     bstefanescu
  */
 package org.nuxeo.runtime.test.runner.web;
 
-import org.openqa.selenium.Speed;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
@@ -52,7 +51,7 @@ public enum BrowserFamily {
         @Override
         public WebDriver createDriver() {
             FirefoxDriver ff = new FirefoxDriver();
-            ff.manage().setSpeed(Speed.FAST);
+            //ff.manage().setSpeed(Speed.FAST);
             return ff;
         }
         @Override
@@ -68,7 +67,7 @@ public enum BrowserFamily {
         @Override
         public WebDriver createDriver() {
             ChromeDriver ff = new ChromeDriver();
-            ff.manage().setSpeed(Speed.FAST);
+            //ff.manage().setSpeed(Speed.FAST);
             return ff;
         }
         @Override
@@ -84,7 +83,7 @@ public enum BrowserFamily {
         @Override
         public WebDriver createDriver() {
             InternetExplorerDriver driver = new InternetExplorerDriver();
-            driver.manage().setSpeed(Speed.FAST);
+            //driver.manage().setSpeed(Speed.FAST);
             return driver;
         }
         @Override
