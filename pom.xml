@@ -51,6 +51,7 @@
     <module>nuxeo-platform-rendition</module>
     <module>nuxeo-platform-replication</module>
     <module>nuxeo-apidoc-server</module>
+    <module>nuxeo-shell-ejb</module>
   </modules>
 
   <repositories>
