@@ -101,7 +101,7 @@ public class ATOMSerializer extends AbstractSyndicationSerializer implements
     /**
      * Adapts a DashboardItems to a SyndEntry.
      */
-    private SyndEntry adaptDashBoardItem(DashBoardItem item, HttpServletRequest req)
+    private static SyndEntry adaptDashBoardItem(DashBoardItem item, HttpServletRequest req)
             throws ClientException {
 
         SyndEntry entry = new SyndEntryImpl();

@@ -251,7 +251,7 @@ public class TilingPreviewControllerPanel extends FocusPanel implements
         selectedArea.centerOn(x, y);
     }
 
-    private void cancelEvent(Event event) {
+    private static void cancelEvent(Event event) {
         event.preventDefault();
         event.cancelBubble(true);
     }

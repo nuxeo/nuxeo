@@ -34,15 +34,13 @@ import org.nuxeo.connect.update.PackageState;
 import org.nuxeo.connect.update.task.Task;
 
 /**
- *
- * The file nxserver/data/packages/.packages is storing the state of all local
- * features
- *
+ * The file {@code nxserver/data/packages/.packages} stores the state of all local
+ * features.
+ * <p>
  * Each local package have a corresponding directory in
- * nxserver/data/features/store which is named: <package_uid> ("id-version")
+ * {@code nxserver/data/features/store} which is named: {@code <package_uid>} ("id-version")
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class PackagePersistence {
 
@@ -180,7 +178,7 @@ public class PackagePersistence {
         return pkg;
     }
 
-    public synchronized int getState(String featureId) throws PackageException {
+    public synchronized int getState(String featureId) {
         Integer state = states.get(featureId);
         if (state == null) {
             return 0;

@@ -111,7 +111,7 @@ public class TestFSPublishing extends SQLRepositoryTestCase {
         doc2publishLocation = new DocumentLocationImpl(doc2Publish);
     }
 
-    protected void createFSDirs() throws Exception {
+    protected void createFSDirs() {
         String tmpPath = new Path(System.getProperty("java.io.tmpdir")).append(
                 "TestFSSections" + System.currentTimeMillis()).toString();
 
@@ -130,7 +130,6 @@ public class TestFSPublishing extends SQLRepositoryTestCase {
                 new Path(section2.getAbsolutePath()).append("section21").toString()).mkdirs();
         new File(
                 new Path(section2.getAbsolutePath()).append("section22").toString()).mkdirs();
-
     }
 
     public void testFSPublishing() throws Exception {
@@ -263,10 +262,9 @@ public class TestFSPublishing extends SQLRepositoryTestCase {
 
         assertEquals(0,
                 tree.getExistingPublishedDocument(doc2publishLocation).size());
-
     }
 
-    private void writeFile(File file, String content) throws Exception {
+    private static void writeFile(File file, String content) throws Exception {
         BufferedWriter out = null;
         try {
             out = new BufferedWriter(new FileWriter(file));

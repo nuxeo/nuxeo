@@ -53,7 +53,7 @@ public class MagickTiler implements PictureTiler {
         return "MagicTiler";
     }
 
-    int[] computeCropCoords(ImageInfo input, int maxTiles, int tileWidth,
+    static int[] computeCropCoords(ImageInfo input, int maxTiles, int tileWidth,
             int tileHeight, int xCenter, int yCenter) {
         int startX = 0;
         int startY = 0;

@@ -31,7 +31,7 @@ import java.util.Map;
  */
 public interface PublisherService {
 
-    final String DOMAIN_NAME_KEY = "DomainName";
+    String DOMAIN_NAME_KEY = "DomainName";
 
     List<String> getAvailablePublicationTree();
 

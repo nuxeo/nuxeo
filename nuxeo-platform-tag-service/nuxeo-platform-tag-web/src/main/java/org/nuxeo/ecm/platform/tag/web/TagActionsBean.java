@@ -234,7 +234,7 @@ public class TagActionsBean implements Serializable {
      * Returns <b>true</b> if the current logged user has permission to modify
      * a tag that is applied on the current document.
      */
-    public boolean canModifyTag(Tag tag) throws ClientException {
+    public boolean canModifyTag(Tag tag) {
         return tag != null;
     }
 

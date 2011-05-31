@@ -131,7 +131,7 @@ public class TestAdapters extends SQLRepositoryTestCase {
         assertTilingIsWorkingFor(picture);
     }
 
-    protected List<Map<String, Object>> getDefaultViewsList(Blob image) throws Exception {
+    protected List<Map<String, Object>> getDefaultViewsList(Blob image) {
         List<Map<String, Object>> viewsList = new ArrayList<Map<String, Object>>();
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("title", "Medium");

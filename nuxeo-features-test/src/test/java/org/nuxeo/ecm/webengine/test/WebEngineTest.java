@@ -49,7 +49,7 @@ public class WebEngineTest {
     private WebEngineHomePage home;
 
     @Test
-    public void iCanRunWebEngine() throws Exception {
+    public void iCanRunWebEngine() {
         LoginPage login = home.getLoginPage();
         assertTrue(home.hasModule("Admin"));
         assertFalse(login.isAuthenticated());

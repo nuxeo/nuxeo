@@ -62,7 +62,7 @@ public class TestPictureBlobHolder extends RepositoryOSGITestCase {
         return file;
     }
 
-    private List<Map<String, Serializable>> createViews() {
+    private static List<Map<String, Serializable>> createViews() {
         List<Map<String, Serializable>> views = new ArrayList<Map<String, Serializable>>();
         Map<String, Serializable> map = new HashMap<String, Serializable>();
         map.put("title", "Original");

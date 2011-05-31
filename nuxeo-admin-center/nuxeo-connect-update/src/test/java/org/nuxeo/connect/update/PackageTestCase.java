@@ -28,7 +28,6 @@ import com.google.inject.Inject;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @RunWith(FeaturesRunner.class)
 @Features(RuntimeFeature.class)

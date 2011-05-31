@@ -130,7 +130,7 @@ public class SelectedArea {
                 area.getTopLeft().getY(), area.getWidth(), area.getHeight());
     }
 
-    private void updateAreaStyles(Widget w, int left, int top, int width,
+    private static void updateAreaStyles(Widget w, int left, int top, int width,
             int height) {
         Element element = w.getElement();
         DOM.setStyleAttribute(element, "left", "" + left + "px");

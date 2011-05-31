@@ -29,22 +29,21 @@ import org.nuxeo.connect.update.PackageType;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Helper class used to manage packagesinstallation issue under windows systems.
- *
+ * Helper class used to manage packages installation issue under windows systems.
+ * <p>
  * Because the Vindoz OS locks all the jar files loaded by the JVM, we can not
  * do proper installation. So installation is delayed until next restart where
  * installation is done before nuxeo starts (and loads the jars).
  *
  * @author Tiry (tdelprat@nuxeo.com)
- *
  */
 public class InstallAfterRestart {
-
-    protected static final List<String> pkgIds = new ArrayList<String>();
 
     public static final String FILE_NAME = "installAfterRestart.log";
 
     public static final String FAKE_VIDOZ = "org.nuxeo.fake.vindoz";
+
+    protected static final List<String> pkgIds = new ArrayList<String>();
 
     protected static final Log log = LogFactory.getLog(InstallAfterRestart.class);
 
@@ -77,7 +76,7 @@ public class InstallAfterRestart {
     protected static void savePkgList() {
         String path = Framework.getProperty("nuxeo.data.dir");
         if (!path.endsWith(File.separator)) {
-            path = path + File.separator;
+            path += File.separator;
         }
         File installFile = new File(path + FILE_NAME);
         try {

@@ -129,7 +129,7 @@ public class TiledImagePreviewer extends AbstractPreviewer implements
         return writer.toString();
     }
 
-    private void appendPreviewSettings(StringWriter sb) {
+    private static void appendPreviewSettings(StringWriter sb) {
         sb.append("<script type=\"text/javascript\">");
         sb.append("var previewSettings = { ");
         sb.append("imageOnly: \"true\", ");

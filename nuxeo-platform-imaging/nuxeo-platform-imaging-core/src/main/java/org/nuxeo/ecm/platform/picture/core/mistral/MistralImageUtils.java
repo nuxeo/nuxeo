@@ -236,7 +236,7 @@ public class MistralImageUtils implements ImageUtils {
         return null;
     }
 
-    private File writeJpegFile(EditableImage image) {
+    private static File writeJpegFile(EditableImage image) {
         BufferedImage bimage = image.execute(new ConvertToBufferedImageOp()).getBufferedImage();
         if (bimage != null) {
             Iterator<ImageWriter> iterator = ImageIO.getImageWritersByMIMEType("image/jpeg");

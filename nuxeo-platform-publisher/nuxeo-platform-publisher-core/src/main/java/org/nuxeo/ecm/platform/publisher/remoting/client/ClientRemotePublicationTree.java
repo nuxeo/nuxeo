@@ -37,19 +37,14 @@ import java.util.List;
 import java.util.Map;
 
 /**
- *
  * {@link PublicationTree} implementation that points to a remote tree on a
- * remote server
- *
+ * remote server.
+ * 
  * @author tiry
- *
  */
 public class ClientRemotePublicationTree extends AbstractRemotableTree
         implements PublicationTree {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 1L;
 
     protected static final String ORGSERVER_KEY = "originalServer";

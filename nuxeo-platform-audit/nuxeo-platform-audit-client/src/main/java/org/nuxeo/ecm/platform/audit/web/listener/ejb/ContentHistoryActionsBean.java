@@ -319,7 +319,7 @@ public class ContentHistoryActionsBean implements ContentHistoryActions {
         }
     }
 
-    private FilterMapEntry computeQueryForLogsOnDocUntilDate(Date date) {
+    private static FilterMapEntry computeQueryForLogsOnDocUntilDate(Date date) {
         FilterMapEntry filterByDate = new FilterMapEntry();
         filterByDate.setColumnName(BuiltinLogEntryData.LOG_EVENT_DATE);
         filterByDate.setOperator("<=");
@@ -328,7 +328,7 @@ public class ContentHistoryActionsBean implements ContentHistoryActions {
         return filterByDate;
     }
 
-    private FilterMapEntry computeQueryForLogsOnDocAfterDate(Date date) {
+    private static FilterMapEntry computeQueryForLogsOnDocAfterDate(Date date) {
         FilterMapEntry filterByDate = new FilterMapEntry();
         filterByDate.setColumnName(BuiltinLogEntryData.LOG_EVENT_DATE);
         filterByDate.setOperator(">=");
@@ -337,7 +337,7 @@ public class ContentHistoryActionsBean implements ContentHistoryActions {
         return filterByDate;
     }
 
-    private FilterMapEntry computeQueryForLogsWithEvent(String eventName) {
+    private static FilterMapEntry computeQueryForLogsWithEvent(String eventName) {
         FilterMapEntry filterByDate = new FilterMapEntry();
         filterByDate.setColumnName(BuiltinLogEntryData.LOG_EVENT_ID);
         filterByDate.setOperator("LIKE");

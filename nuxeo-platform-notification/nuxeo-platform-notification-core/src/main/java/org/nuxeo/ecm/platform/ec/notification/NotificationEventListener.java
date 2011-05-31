@@ -364,7 +364,7 @@ public class NotificationEventListener implements PostCommitEventListener {
         }
     }
 
-    private void storeUserForNotification(Notification notification,
+    private static void storeUserForNotification(Notification notification,
             String user, Map<Notification, List<String>> targetUsers) {
         List<String> subscribedUsers = targetUsers.get(notification);
         if (subscribedUsers == null) {
