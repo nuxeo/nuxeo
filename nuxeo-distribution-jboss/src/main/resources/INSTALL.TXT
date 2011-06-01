@@ -1,9 +1,9 @@
-Warning :
-=========
+Warning:
+========
 This directory structure does not contain a JBoss AS server.
 
-Content of this directory :
-===========================
+Content of this directory:
+==========================
 
 |-- bin
 |   `-- (Nuxeo startup utilities)
@@ -30,10 +30,10 @@ Content of this directory :
     `-- (Nuxeo configuration templates)
 
 
-Installation :
-==============
+Installation:
+=============
 
-To run Nuxeo you need to :
+To run Nuxeo you need to:
 
  - install a JBoss Application Server
    (JBoss AS 5.1 and JBoss EAP 5.0.1 have been successfully tested)
