@@ -1,6 +1,18 @@
-// set absolute path to current folder here, used in tests with file upload
+// DEPRECATED: see https://github.com/nuxeo/tools-nuxeo-ftest
+
+// Absolute path to current folder this path is set at runtime by run.sh
 Selenium.prototype.doRetrieveTestFolderPath = function() {
   storedVars['testfolderpath'] = "/path/to/project-ear/ftest/selenium/data/";
+};
+
+// helper method to store current year/month/day
+Selenium.prototype.doRetrieveCurrentDateInfo = function() {
+  var date = new Date();
+  storedVars['currentYear'] = date.getFullYear();
+  var m = date.getMonth() + 1;
+  storedVars['currentMonth'] = (m < 10) ? '0' + m : m;
+  var d = date.getDate();
+  storedVars['currentDay'] = (d < 10) ? '0' + d : d;
 };
 
 // override default method to make sure privilege to type file path is enabled
@@ -94,3 +106,94 @@ Selenium.prototype.doWaitForJSQueries = function(timeout) {
     return false;
   }, timeout);
 }
+
+/**
+ * Function that waits for opensocial gadgets to be loaded.
+ * Assumes frame name starts with "open-social" and will display a div with id
+ * "content".
+ * Accepts a mandatory element id with content to check, and timeout.
+ */
+Selenium.prototype.doWaitForOpensocialGadgetsToLoad = function(mandatoryElementId, timeout) {
+  var framesLoadedPredicate = function () {
+    var testWindow = selenium.browserbot.getCurrentWindow();
+    if (testWindow.wrappedJSObject) {
+      testWindow = testWindow.wrappedJSObject;
+    }
+
+    if(testWindow.document.getElementById("gwtContainerDiv") === null) {
+      // there is no OpenSocial container
+      return true;
+    }
+
+    var foundOneGadgetFrame = false;
+    if (testWindow.frames && testWindow.frames.length && testWindow.frames.length > 0) {
+      for (var i = 0; i < testWindow.frames.length; i++) {
+        LOG.info("Selected frame: " + testWindow.frames[i].name);
+        if (testWindow.frames[i].name && testWindow.frames[i].name.match("^open-social")=="open-social") {
+          foundOneGadgetFrame = true;
+          selenium.browserbot.selectFrame("index="+i);
+          var testFrame = selenium.browserbot.getCurrentWindow();
+          if (testFrame.wrappedJSObject) {
+            testFrame = testFrame.wrappedJSObject;
+          }
+          // wait for frame to be loaded
+          var loaded = false;
+          if (testFrame.document.getElementById(mandatoryElementId)) {
+            var content = this.getText(testFrame.document.getElementById(mandatoryElementId));
+            if (content) {
+              loaded = true;
+            }
+          }
+          if (!loaded) {
+            // go back to original window
+            selenium.browserbot.selectWindow();
+            return false;
+          }
+          LOG.info("Loaded frame: " + testWindow.frames[i].name);
+          // go back to original window to iterate over frames
+          selenium.browserbot.selectWindow();
+        }
+      }
+      if (!foundOneGadgetFrame) {
+        LOG.info("no gadget frames present yet");
+        return false;
+      }
+    } else {
+      LOG.info("no frames present yet");
+      return false;
+    }
+    return true;
+  };
+
+  return Selenium.decorateFunctionWithTimeout(framesLoadedPredicate, timeout);
+}
+
+/**
+ * Function that selects the frame for a given gadget name.
+ * Assumes frame css classes contains a class which is the gadget name.
+ *
+ * Do not fail if there is no frame for the given gadget name in the page.
+ */
+Selenium.prototype.doSelectOpenSocialGadgetFrame = function(gadgetName) {
+  var testWindow = selenium.browserbot.getCurrentWindow();
+  if (testWindow.wrappedJSObject) {
+    testWindow = testWindow.wrappedJSObject;
+  }
+
+  if (testWindow.frames && testWindow.frames.length && testWindow.frames.length > 0) {
+    for (var i = 0; i < testWindow.frames.length; i++) {
+      var frame = testWindow.document.getElementById(testWindow.frames[i].name);
+      if (typeof frame !== 'undefined' && frame !== null) {
+        var styleClass = frame.getAttribute("class");
+        if (styleClass !== null && styleClass.indexOf(gadgetName) != -1) {
+          LOG.info("Found frame with name '" + testWindow.frames[i].name +
+                   "' for gadgetName '" + gadgetName + "'");
+          return selenium.browserbot.selectFrame(testWindow.frames[i].name);
+        }
+      }
+    }
+  }
+  LOG.info("No frame found for gadget '" + gadgetName + "'");
+  return;
+}
+
