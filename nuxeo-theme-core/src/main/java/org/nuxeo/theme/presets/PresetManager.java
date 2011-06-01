@@ -145,6 +145,9 @@ public class PresetManager {
             }
             PresetType preset = getPresetByName(presetName);
             if (preset == null) {
+                log.warn(String.format(
+                        "Preset named '%s' not resolved for theme '%s'",
+                        presetName, themeName, presetStr));
                 sb.append(presetStr);
                 continue;
             }
