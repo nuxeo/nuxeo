@@ -22,10 +22,10 @@
 
   <property name="serverLocator" value="${org.nuxeo.runtime.streaming.serverLocator}"/>
 
-
+<!-- 
   <service>
     <provide interface="org.nuxeo.runtime.services.streaming.StreamManager" />
   </service>
-
+ -->
 </component>
 
