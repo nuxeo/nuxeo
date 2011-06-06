@@ -53,15 +53,13 @@ import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * This Filter is registred as a pre-Filter of NuxeoAuthenticationFilter.
- *
+ * This Filter is registered as a pre-Filter of NuxeoAuthenticationFilter.
+ * <p>
  * It is used to handle OAuth Authentication :
  *
  * - 3 legged OAuth negociation - 2 legged OAuth (Signed fetch)
  *
- *
  * @author tiry
- *
  */
 public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
 
@@ -180,7 +178,7 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
 
         if (httpRequest.getMethod().equals("GET")) {
 
-            log.info("OAuth authorize : from end user ");
+            log.debug("OAuth authorize : from end user ");
 
             // initial access => send to real login page
             String loginUrl = VirtualHostHelper.getBaseURL(httpRequest);
@@ -197,7 +195,7 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
 
         } else {
             // post after permission validation
-            log.info("OAuth authorize validate ");
+            log.debug("OAuth authorize validate ");
 
             String nuxeo_login = httpRequest.getParameter("nuxeo_login");
             String duration = httpRequest.getParameter("duration");
@@ -235,7 +233,7 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
 
             String targetUrl = sb.toString();
 
-            log.info("redirecting user after successful grant " + sb.toString());
+            log.debug("redirecting user after successful grant " + sb.toString());
 
             httpResponse.sendRedirect(targetUrl);
         }
@@ -252,7 +250,7 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
         NuxeoOAuthConsumer consumer = getOAuthConsumerRegistry().getConsumer(
                 consumerKey, message.getSignatureMethod());
         if (consumer == null) {
-            log.error("Consumer " + consumerKey + " is not registred");
+            log.error("Consumer " + consumerKey + " is not registered");
             int errCode = OAuth.Problems.TO_HTTP_CODE.get(OAuth.Problems.CONSUMER_KEY_UNKNOWN);
             httpResponse.sendError(errCode, "Unknown consumer key");
             return;
@@ -269,7 +267,7 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
             return;
         }
 
-        log.info("OAuth request-token : generate a tmp token");
+        log.debug("OAuth request-token : generate a tmp token");
         String callBack = message.getParameter(OAuth.OAUTH_CALLBACK);
 
         // XXX should not only use consumerKey !!!
@@ -289,7 +287,7 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
         sb.append(rToken.getTokenSecret());
         sb.append("&oauth_callback_confirmed=true");
 
-        log.info("returning : " + sb.toString());
+        log.debug("returning : " + sb.toString());
 
         httpResponse.getWriter().write(sb.toString());
 
@@ -307,7 +305,7 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
                 consumerKey, message.getSignatureMethod());
 
         if (consumer == null) {
-            log.error("Consumer " + consumerKey + " is not registred");
+            log.error("Consumer " + consumerKey + " is not registered");
             int errCode = OAuth.Problems.TO_HTTP_CODE.get(OAuth.Problems.CONSUMER_KEY_UNKNOWN);
             httpResponse.sendError(errCode, "Unknown consumer key");
             return;
@@ -331,12 +329,12 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
             return;
         }
 
-        log.info("OAuth access-token : generate a real token");
+        log.debug("OAuth access-token : generate a real token");
 
         String verif = message.getParameter("oauth_verifier");
         token = message.getParameter(OAuth.OAUTH_TOKEN);
 
-        log.info("OAuth verifier = " + verif);
+        log.debug("OAuth verifier = " + verif);
 
         boolean allowByPassVerifier=false;
 
@@ -369,7 +367,7 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
             sb.append("=");
             sb.append(aToken.getTokenSecret());
 
-            log.info("returning : " + sb.toString());
+            log.debug("returning : " + sb.toString());
 
             httpResponse.getWriter().write(sb.toString());
 
@@ -391,7 +389,7 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
         String consumerKey = message.getConsumerKey();
         String signatureMethod = message.getSignatureMethod();
 
-        log.info("Received OAuth signed request on "
+        log.debug("Received OAuth signed request on "
                 + httpRequest.getRequestURI() + " with consumerKey="
                 + consumerKey + " and signature method " + signatureMethod);
 
@@ -410,7 +408,7 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
             log.error("Consumer " + consumerKey
                     + " is unknow, can not authenticated");
             httpResponse.sendError(errCode, "Consumer " + consumerKey
-                    + " is not registred");
+                    + " is not registered");
             return null;
         } else {
 

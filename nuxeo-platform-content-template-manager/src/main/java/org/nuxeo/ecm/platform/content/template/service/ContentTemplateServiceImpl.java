@@ -131,8 +131,8 @@ public class ContentTemplateServiceImpl extends DefaultComponent implements
                 }
             } else {
                 log.error("Factory Binding" + descriptor.getName()
-                        + " can not be registred since Factory "
-                        + descriptor.getFactoryName() + " is not registred");
+                        + " can not be registered since Factory "
+                        + descriptor.getFactoryName() + " is not registered");
             }
         }
     }

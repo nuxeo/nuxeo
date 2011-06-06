@@ -45,7 +45,7 @@ public class IndexingWrapperManagerComponent extends DefaultComponent implements
             DocumentModelIndexingWrapperDescriptor desc = (DocumentModelIndexingWrapperDescriptor) contribution;
             DocumentIndexingWrapperFactory factory = desc.getNewInstance();
             wrapperFactories.put(desc.getTypeName(), factory);
-            log.info("registred new IndexingWrapper for type " + desc.getTypeName());
+            log.info("registered new IndexingWrapper for type " + desc.getTypeName());
         } else {
             log.error("Unknown extension point " + extensionPoint);
         }

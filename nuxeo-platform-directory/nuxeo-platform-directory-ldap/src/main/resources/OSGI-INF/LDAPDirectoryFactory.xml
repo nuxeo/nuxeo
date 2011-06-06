@@ -113,6 +113,7 @@
           <server>default</server>
           <schema>user</schema>
           <idField>username</idField>
+          <idCase>unchanged</idCase>
           <passwordField>password</passwordField>
           <searchBaseDn>ou=people,dc=example,dc=com</searchBaseDn>
           <searchClass>person</searchClass>
@@ -249,8 +250,14 @@
       <ldapReference/>
       </code>
 
-      When using dynamic references, caching is advised since dynamic
-      group resolution can be expensive.
+      When using dynamic references, caching is advised since dynamic group
+      resolution can be expensive.
+
+      The element "idCase" makes it possible to control the case of the
+      identifier on Nuxeo side. It accepts values "upper", "lower" or
+      "unchanged". It is useful when changing case on the LDAP without affecting
+      Nuxeo (for rights management for instance which is case sensitive for
+      instance).
 
     </documentation>
 

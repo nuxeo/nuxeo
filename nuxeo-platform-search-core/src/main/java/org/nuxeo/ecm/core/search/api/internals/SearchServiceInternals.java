@@ -39,9 +39,9 @@ import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.document.I
 public interface SearchServiceInternals extends SearchService {
 
     /**
-     * Returns registred search engine plugins.
+     * Returns registered search engine plugins.
      *
-     * @return registred search engine plugins.
+     * @return registered search engine plugins.
      */
     Map<String, SearchEngineBackend> getSearchEngineBackends();
 

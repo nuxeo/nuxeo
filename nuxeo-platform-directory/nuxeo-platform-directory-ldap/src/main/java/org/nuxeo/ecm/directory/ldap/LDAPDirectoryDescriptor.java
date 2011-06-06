@@ -112,6 +112,12 @@ public class LDAPDirectoryDescriptor {
     @XNode("missingIdFieldCase")
     public String missingIdFieldCase = "unchanged";
 
+    /**
+     * Since 5.4.2: force id case to upper or lower, or leaver it unchanged.
+     */
+    @XNode("idCase")
+    public String idCase = "unchanged";
+
     @XNode("querySizeLimit")
     private int querySizeLimit = 200;
 

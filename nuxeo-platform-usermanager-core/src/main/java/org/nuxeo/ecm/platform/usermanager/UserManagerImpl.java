@@ -370,8 +370,9 @@ public class UserManagerImpl implements UserManager {
 
         String ha1 = encodeDigestAuthPassword(username, digestAuthRealm,
                 password);
-        Session dir = dirService.open(digestAuthDirectory);
+        Session dir = null;
         try {
+            dir = dirService.open(digestAuthDirectory);
             String schema = dirService.getDirectorySchema(digestAuthDirectory);
             DocumentModel entry = dir.getEntry(username, true);
             if (entry == null) {
@@ -393,9 +394,11 @@ public class UserManagerImpl implements UserManager {
                 }
             }
         } catch (DirectoryException e) {
-            log.error("Digest auth password not synchronized", e);
+            log.warn("Digest auth password not synchronized, check your configuration", e);
         } finally {
-            dir.close();
+            if (dir!=null) {
+                dir.close();
+            }
         }
     }
 

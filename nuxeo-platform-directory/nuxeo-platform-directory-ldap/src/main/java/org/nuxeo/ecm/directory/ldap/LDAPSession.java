@@ -211,7 +211,8 @@ public class LDAPSession extends BaseSession implements EntrySource {
             String dnFieldName = directory.getFieldMapper().getDirectoryField(
                     LDAPDirectory.DN_SPECIAL_ATTRIBUTE_KEY);
             if (directory.getSchemaFieldMap().containsKey(dnFieldName)) {
-                // add the DN special attribute to the fieldmap of the new entry
+                // add the DN special attribute to the fieldmap of the new
+                // entry
                 fieldMap.put(dnFieldName, dn);
             }
             directory.invalidateCaches();
@@ -314,8 +315,8 @@ public class LDAPSession extends BaseSession implements EntrySource {
                         "Unable to fetch entry for '%s': found more than one match,"
                                 + " for instance: '%s' and '%s'", id, dn, dn2);
                 log.error(msg);
-                // ignore entries that are ambiguous while giving enough info in
-                // the logs to let the LDAP admin be able to fix the issue
+                // ignore entries that are ambiguous while giving enough info
+                // in the logs to let the LDAP admin be able to fix the issue
                 return null;
             }
             if (log.isDebugEnabled()) {
@@ -835,9 +836,10 @@ public class LDAPSession extends BaseSession implements EntrySource {
                         LDAPReference ldapReference = (LDAPReference) reference;
                         referencedIds = ldapReference.getLdapTargetIds(attributes);
                     } else if (reference instanceof LDAPTreeReference) {
-                        // TODO: optimize using the current LDAPSession directly
-                        // to provide the LDAP reference with the needed backend
-                        // entries (needs to implement getLdapTargetIds)
+                        // TODO: optimize using the current LDAPSession
+                        // directly to provide the LDAP reference with the
+                        // needed backend entries (needs to implement
+                        // getLdapTargetIds)
                         LDAPTreeReference ldapReference = (LDAPTreeReference) reference;
                         referencedIds = ldapReference.getTargetIdsForSource(entryId);
                     } else {
@@ -875,18 +877,21 @@ public class LDAPSession extends BaseSession implements EntrySource {
             }
         }
         // check if the idAttribute was returned from the search. If not
-        // set it anyway.
+        // set it anyway, maybe changing its case if it's a String instance
         String fieldId = directory.getFieldMapper().getDirectoryField(
                 idAttribute);
         Object obj = fieldMap.get(fieldId);
         if (obj == null) {
-            fieldMap.put(fieldId, changeEntryIdCase(entryId));
+            fieldMap.put(fieldId, changeEntryIdCase(entryId,
+                    directory.getConfig().missingIdFieldCase));
+        } else if (obj instanceof String) {
+            fieldMap.put(fieldId, changeEntryIdCase((String) obj,
+                    directory.getConfig().idCase));
         }
         return fieldMapToDocumentModel(fieldMap);
     }
 
-    protected String changeEntryIdCase(String id) {
-        String idFieldCase = directory.getConfig().missingIdFieldCase;
+    protected String changeEntryIdCase(String id, String idFieldCase) {
         if (MISSING_ID_LOWER_CASE.equals(idFieldCase)) {
             return id.toLowerCase();
         } else if (MISSING_ID_UPPER_CASE.equals(idFieldCase)) {
@@ -900,8 +905,8 @@ public class LDAPSession extends BaseSession implements EntrySource {
             throws DirectoryException {
 
         if (password == null || "".equals(password.trim())) {
-            // never use anonymous bind as a way to authenticate a user in Nuxeo
-            // EP
+            // never use anonymous bind as a way to authenticate a user in
+            // Nuxeo EP
             return false;
         }
 
