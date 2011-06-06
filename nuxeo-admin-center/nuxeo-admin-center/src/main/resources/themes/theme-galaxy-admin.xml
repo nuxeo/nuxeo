@@ -345,7 +345,7 @@
         <float>left</float>
       </selector>
       <selector path=".tabsBar a, .tabsBar a:hover, .tabsBar a:visited">
-        <color preset="tablink (Galaxy Admin colors)" />
+        <color preset="tabslink (Galaxy Admin colors)" />
         <border preset="tabisnotselected (Galaxy Admin borders)"/>
         <background preset="tabisunselected (Galaxy Admin backgrounds)"/>
         <text-decoration>none</text-decoration>
@@ -373,8 +373,8 @@
         <font preset="default (Galaxy Admin fonts)"/>
       </selector>
       <selector path=".subtabsBar a, .subtabsBar a:hover, .subtabsBar a:visited">
-        <color preset="subtablink (Galaxy Admin colors)" />
-        <border preset="subtabisnotselected (Galaxy Admin borders)"/>
+        <color preset="subtabslink (Galaxy Admin colors)" />
+        <border preset="subtabinotselected (Galaxy Admin borders)"/>
       </selector>
       <selector path=".subtabsBar li a:hover">
        <color preset="subtablink.active (Galaxy Admin colors)" />
@@ -1026,7 +1026,7 @@
       </selector>
       <selector path="h2">
         <color preset="titles (Galaxy Admin colors)" />
-        <font preset="title 2 (Galaxy Admin fonts)"/>
+        <font preset="title2 (Galaxy Admin fonts)"/>
         <padding>0.5em 1em 0.5em 0</padding>
       </selector>
       <selector path=".dataInput select">
