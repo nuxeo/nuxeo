@@ -43,6 +43,9 @@
     <operation
       class="org.nuxeo.ecm.automation.core.operations.management.GetCounters" />
 
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.services.GetDirectoryEntries" />
+
   </extension>
 
   <extension point="chains"
