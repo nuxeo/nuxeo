@@ -13,7 +13,7 @@
 			</filter>
 		</action>
     
-      <action id="Certificate" link="user_center_fragment.xhtml" label="label.cert.user.center.certificate"
+      <action id="Certificate" link="user_center_fragment.xhtml" label="label.cert.user.center.certificate" icon="/icons/certificates.png"
       order="70">
       <category>USER_CENTER</category>
     </action>

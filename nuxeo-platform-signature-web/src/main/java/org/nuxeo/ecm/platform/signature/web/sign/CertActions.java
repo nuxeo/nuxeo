@@ -70,6 +70,10 @@ public class CertActions implements Serializable {
 
     private static final String USER_FIELD_EMAIL = "user:email";
 
+    private static final String HOME_TAB = "MAIN_TABS:home";
+
+    private static final String CERTIFICATE_TAB = "USER_CENTER:Certificate";
+
     @In(create = true)
     protected transient CertService certService;
 
@@ -87,7 +91,6 @@ public class CertActions implements Serializable {
 
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
-    
 
     @In(create = true)
     protected transient NuxeoPrincipal currentUser;
@@ -99,7 +102,7 @@ public class CertActions implements Serializable {
     protected WebActions webActions;
 
     protected DocumentModel lastVisitedDocument;
-    
+
     protected DocumentModel certificate;
 
     private static final String ROOT_CERTIFICATE_FILE_NAME = "ROOT_CA_.crt";
@@ -113,7 +116,8 @@ public class CertActions implements Serializable {
      * @throws ClientException
      */
     public DocumentModel getCertificate() throws ClientException {
-        String userID = (String) getCurrentUserModel().getPropertyValue("user:username");
+        String userID = (String) getCurrentUserModel().getPropertyValue(
+                "user:username");
         return cUserService.getCertificate(userID);
     }
 
@@ -189,7 +193,8 @@ public class CertActions implements Serializable {
 
         if (areRequirementsMet) {
             try {
-                cUserService.createCertificate(getCurrentUserModel(), firstPassword);
+                cUserService.createCertificate(getCurrentUserModel(),
+                        firstPassword);
                 facesMessages.add(StatusMessage.Severity.INFO,
                         resourcesAccessor.getMessages().get(
                                 "label.cert.created"));
@@ -223,7 +228,6 @@ public class CertActions implements Serializable {
     public void validatePasswords(String firstPassword, String secondPassword)
             throws ClientException {
 
-
         if (firstPassword == null || secondPassword == null) {
             FacesMessage message = new FacesMessage(
                     FacesMessage.SEVERITY_ERROR,
@@ -251,7 +255,8 @@ public class CertActions implements Serializable {
             throw new ValidatorException(message);
         }
 
-        String hashedUserPassword = (String) getCurrentUserModel().getPropertyValue("user:password");
+        String hashedUserPassword = (String) getCurrentUserModel().getPropertyValue(
+                "user:password");
 
         /*
          * If the certificate password matches the user login password an
@@ -326,15 +331,13 @@ public class CertActions implements Serializable {
         }
     }
 
-    
-
     public String goToCertificateManagement() {
         lastVisitedDocument = navigationContext.getCurrentDocument();
-            webActions.setCurrentTabIds("USER_CENTER:Certificate");
-            return "view_home";
+        webActions.setCurrentTabIds(HOME_TAB);
+        webActions.setCurrentTabIds(CERTIFICATE_TAB);
+        return "view_home";
     }
-    
-    
+
     public String backToDocument() throws ClientException {
         if (lastVisitedDocument != null) {
             webActions.setCurrentTabIds("sign_view");
@@ -343,7 +346,7 @@ public class CertActions implements Serializable {
             return navigationContext.goHome();
         }
     }
-    
+
     protected DocumentModel getCurrentUserModel() throws ClientException {
         return userManager.getUserModel(currentUser.getName());
     }

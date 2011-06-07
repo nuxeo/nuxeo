@@ -1,0 +1,161 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:t="http://myfaces.apache.org/tomahawk"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxdir="http://nuxeo.org/nxdirectory"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"><a4j:outputPanel
+  id="signPanel">
+
+  <!-- status messages -->
+  <div id="facesStatusMessage" class="facesStatusMessage"><h:messages
+    globalOnly="true" infoClass="infoFeedback"
+    warnClass="warningFeedback" errorClass="errorFeedback" /></div>
+
+
+  <!-- document file -->
+ <h3 class="summaryTitle"><h:outputText
+    value="#{messages['label.sign.heading.document.file']}" /></h3>
+
+  <table class="dataInput">
+    <tbody>
+      <tr>
+        <td class="labelColumn"><h:outputText
+          value="#{messages['label.sign.prompt']}" /></td>
+        <td class="fieldColumn"><nxh:outputLink class="boldLabel"
+          value="#{nxd:fileUrl('downloadFile', currentDocument, 'blobholder:0', currentDocumentAsBlobHolder.blob.filename)}">
+          <nxh:graphicImage
+            value="#{nxd:fileIconPath(currentDocumentAsBlobHolder.blob)}"
+            rendered="#{! empty nxd:fileIconPath(currentDocumentAsBlobHolder.blob)}" />
+          <h:outputText
+            value="#{currentDocumentAsBlobHolder.blob.filename}" />
+          <nxh:graphicImage value="/icons/download.png"
+            title="#{label.cert.root.certificate.download}" />
+        </nxh:outputLink></td>
+      </tr>
+    </tbody>
+  </table>
+
+
+  <!-- root certificate info -->
+  <h3 class="summaryTitle"><h:outputText
+    value="#{messages['label.cert.heading.root.certificate']}" /></h3>
+  <h:form>
+    <table class="dataInput">
+      <tbody>
+        <tr>
+          <td class="fieldColumn"><h:commandLink
+            action="#{certActions.downloadRootCertificate}"
+            immediate="true">
+            <h:outputText
+              value="#{messages['command.cert.root.certificate.download']}" />
+          </h:commandLink></td>
+        </tr>
+      </tbody>
+    </table>
+  </h:form>
+
+
+
+  <!-- document is signed -->
+  <!-- document signature info -->
+ 
+  <!-- This document has signatures. Show them. -->
+  <c:if test="#{signActions.isPDFSigned()}">
+     <h3 class="summaryTitle"><h:outputText
+            value="#{messages['label.sign.heading.document.signatures']}" /></h3>
+    <h:dataTable value="#{signActions.getPDFCertificateList()}"
+      var="signature">
+      <h:column>
+#{signature}
+</h:column>
+    </h:dataTable>
+
+  </c:if>
+
+  <!-- Signing form -->
+  <!-- The current user did not sign this document. -->
+  <c:if test="#{ !signActions.isPDFSignedByCurrentUser()}">
+  <h3 class="summaryTitle"><h:outputText
+            value="#{messages['label.sign.heading.document.form']}" /></h3>
+    <table class="dataInput">
+      <tbody>
+        <tr>
+          <td class="fieldColumn" colspan="2"><h:outputText
+            value="#{messages['label.sign.document.not.signed']}" /></td>
+        </tr>
+        <!-- the user cannot modify documents -->
+        <c:if test="#{!nxd:canModify(currentDocument)}">
+          <tr>
+            <td class="fieldColumn"><h:outputText
+              value="#{messages['label.sign.modify.permission.warning']}" />
+            </td>
+          </tr>
+        </c:if>
+
+        <!-- the user can modify documents -->
+        <c:if test="#{nxd:canModify(currentDocument)}">
+          <!-- the user does not have a certificate -->
+          <c:if test="#{!certActions.hasCertificate()}">
+            <tr>
+              <td class="fieldColumn"><h:outputText
+                value="#{messages['label.sign.certificate.prompt']}" /></td>
+            </tr>
+            <tr>
+              <td class="fieldColumn"><h:form>
+                <h:commandLink
+                  action="#{certActions.goToCertificateManagement()}"
+                  immediate="true">
+                  <h:outputText
+                    value="#{messages['label.cert.navigate']}" />
+                </h:commandLink>
+              </h:form></td>
+            </tr>
+          </c:if>
+
+          <c:if test="#{certActions.hasCertificate()}">
+            <tr>
+              <td><a4j:form id="sign_form" ajaxSingle="true"
+                enctype="multipart/form-data"
+                rendered="#{certActions.hasCertificate()}">
+                <table>
+                  <tbody>
+                    <tr>
+                      <td class="labelColumn"><h:outputText
+                        value="#{messages['label.sign.reason']}" /></td>
+                      <td class="fieldColumn"><h:inputTextarea
+                        rows="3" cols="20" id="signingReason"
+                        value="#{signingReason}" required="true" /></td>
+                    </tr>
+                    <tr>
+                      <td class="labelColumn"><h:outputText
+                        value="#{messages['label.sign.password']}" /></td>
+                      <td class="fieldColumn"><h:inputSecret
+                        id="password" value="#{password}"
+                        required="true" rendered="true" /></td>
+                    </tr>
+                    <tr>
+                      <td class="fieldColumn"><a4j:commandButton
+                        id="SignPDF" styleClass="button"
+                        value="#{messages['label.sign.submit']}"
+                        action="#{signActions.signCurrentDoc(signingReason,password)}"
+                        onclick=""
+                        data="#{facesContext.maximumSeverity.ordinal ge 2}"
+                        oncomplete="if (data) { hideWaiter() } else { processFinished() };"
+                        reRender="signPanel" /></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </a4j:form></td>
+            </tr>
+          </c:if>
+        </c:if>
+      </tbody>
+    </table>
+  </c:if>
+</a4j:outputPanel></div>
