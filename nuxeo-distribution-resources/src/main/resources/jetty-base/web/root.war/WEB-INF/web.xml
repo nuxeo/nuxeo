@@ -38,6 +38,18 @@
   </filter-mapping>
 
   <filter>
+    <display-name>RequestContextFilter</display-name>
+    <filter-name>RequestContextFilter</filter-name>
+    <filter-class>
+      org.nuxeo.ecm.webengine.jaxrs.context.RequestContextFilter
+    </filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>RequestContextFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+
+  <filter>
     <display-name>WebEngineFilter</display-name>
     <filter-name>WebEngineFilter</filter-name>
     <filter-class>
@@ -50,7 +62,7 @@
   </filter-mapping>
   <servlet>
     <servlet-name>Nuxeo WebEngine Servlet</servlet-name>
-    <servlet-class>org.nuxeo.ecm.webengine.jaxrs.servlet.JerseyServlet</servlet-class>
+    <servlet-class>org.nuxeo.ecm.webengine.app.jersey.WebEngineServlet</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>Nuxeo WebEngine Servlet</servlet-name>
@@ -66,17 +78,6 @@
   </filter>
   <filter-mapping>
     <filter-name>SessionCleanupFilter</filter-name>
-    <url-pattern>/*</url-pattern>
-  </filter-mapping>
-  <filter>
-    <display-name>RequestContextFilter</display-name>
-    <filter-name>RequestContextFilter</filter-name>
-    <filter-class>
-      org.nuxeo.ecm.webengine.jaxrs.context.RequestContextFilter
-    </filter-class>
-  </filter>
-  <filter-mapping>
-    <filter-name>RequestContextFilter</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
 
