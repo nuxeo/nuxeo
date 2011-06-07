@@ -23,6 +23,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -100,6 +101,7 @@ public class FrameworkLoader {
         FrameworkLoader.home = home;
         FrameworkLoader.bundleFiles = bundleFiles == null ? new ArrayList<File>()
                 : bundleFiles;
+        Collections.sort(FrameworkLoader.bundleFiles);
         loader = cl;
         doInitialize(hostEnv);
         osgi = new OSGiAdapter(home);
