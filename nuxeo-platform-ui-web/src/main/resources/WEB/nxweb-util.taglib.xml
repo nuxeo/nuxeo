@@ -194,6 +194,15 @@
     </function-signature>
   </function>
   <function>
+    <function-name>groupDisplayName</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.Functions
+    </function-class>
+    <function-signature>
+      String groupDisplayName(java.lang.String, java.lang.String)
+    </function-signature>
+  </function>
+  <function>
     <function-name>htmlEscape</function-name>
     <function-class>
       org.nuxeo.ecm.platform.ui.web.tag.fn.Functions

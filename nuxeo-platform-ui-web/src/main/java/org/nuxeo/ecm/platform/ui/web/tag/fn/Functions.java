@@ -288,6 +288,10 @@ public final class Functions {
         }
     }
 
+    public static String groupDisplayName(String name, String label) {
+        return label == null || label.length() == 0 ? name : label;
+    }
+
     public static String dateFormater(String formatLength) {
         // A map to store temporary available date format
         FacesContext context = FacesContext.getCurrentInstance();
