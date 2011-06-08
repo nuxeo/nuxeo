@@ -21,20 +21,15 @@
   <dependencies>
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
-      <artifactId>nuxeo-runtime-scripting</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime-osgi</artifactId>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
-      <artifactId>nuxeo-runtime-launcher</artifactId>
+      <artifactId>nuxeo-runtime-scripting</artifactId>
     </dependency>
-
     <dependency>
-      <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-core-client</artifactId>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime-launcher</artifactId>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
@@ -52,7 +47,6 @@
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-api</artifactId>
     </dependency>
-
     <dependency>
       <groupId>org.codehaus.groovy</groupId>
       <artifactId>groovy-all</artifactId>
@@ -65,12 +59,6 @@
       <groupId>jline</groupId>
       <artifactId>jline</artifactId>
     </dependency>
-<!--
-    <dependency>
-      <groupId>org.jboss.client</groupId>
-      <artifactId>jbossall-client</artifactId>
-    </dependency> 
- -->
     <dependency>
       <groupId>log4j</groupId>
       <artifactId>log4j</artifactId>

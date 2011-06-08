@@ -16,9 +16,12 @@
   </target>
 
   <target name="expand">
-    <artifact:nuxeo-expand>
+    <artifact:nuxeo-expand> 
       <excludes>
-        <artifact artifactId="nuxeo-distribution-tools" />
+	<artifact artifactId="junit"/>
+	<artifact artifactId="*-test"/>
+	<artifact artifactId="nuxeo-apt-extensions"/>
+	<artifact artifactId="nuxeo-webengine-apt"/>
       </excludes>
     </artifact:nuxeo-expand>
     <!-- <artifact:print output="dependency-tree.log" /> -->
@@ -41,9 +44,6 @@
         </includes>
         <excludes>
           <artifact artifactId="*-test" />
-          <artifact artifactId="nuxeo-runtime-management-metrics" />
-          <artifact artifactId="nuxeo-apt-extensions" />
-          <artifact artifactId="nuxeo-webengine-apt" />
         </excludes>
       </artifact:set>
     </copy>
@@ -61,12 +61,6 @@
   <target name="third-party-libraries">
     <copy todir="${nuxeo.ear}/lib" overwrite="true">
       <artifact:set>
-        <excludes>
-          <artifact artifactId="gwt-dev" />
-          <artifact artifactId="gwt-user" />
-          <artifact artifactId="json-jena" />
-          <artifact artifactId="h2" />
-        </excludes>
         <includes>
           <artifact groupId="!org.nuxeo*" />
         </includes>
@@ -74,6 +68,7 @@
     </copy>
     <!-- Remove duplicates -->
     <nx:rmdups dir="${nuxeo.ear}/lib" />
+
   </target>
 
 </project>

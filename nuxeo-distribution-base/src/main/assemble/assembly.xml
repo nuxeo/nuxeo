@@ -18,7 +18,7 @@
 
   <target name="expand" unless="no.build">
     <artifact:nuxeo-expand />
-    <!--artifact:print output="dependency-tree.log" /-->
+    <artifact:print output="dependency-tree.log" />
   </target>
 
   <target name="build" depends="init,clean" unless="no.build">
@@ -42,6 +42,7 @@
           <artifact artifactId="nuxeo-apt-extensions" />
           <artifact artifactId="nuxeo-runtime-test" />
           <artifact artifactId="nuxeo-runtime-launcher" />
+          <artifact artifactId="nuxeo-runtime-remoting" />
         </excludes>
       </artifact:set>
     </copy>

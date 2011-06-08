@@ -29,7 +29,21 @@
   </target>
 
   <target name="expand" unless="no.build">
-    <artifact:nuxeo-expand />
+    <artifact:nuxeo-expand> 
+      <excludes>
+	<artifact artifactId="*-test"/>
+	<artifact artifactId="ejb-api"/>
+	<artifact artifactId="jboss-ejb3-ext-api"/>
+	<artifact artifactId="nuxeo-runtime-remoting"/>
+	<artifact artifactId="jboss-remoting"/>
+	<artifact artifactId="jboss-as-system"/>
+	<artifact artifactId="jboss-as-system-jmx"/>
+	<artifact artifactId="jboss-common-core"/>
+	<artifact artifactId="nuxeo-apt-extensions"/>
+	<artifact artifactId="nuxeo-webengine-apt"/>
+      </excludes>
+    </artifact:nuxeo-expand>
+    <!--artifact:print output="dependency-tree.log" /-->
   </target>
 
   <target name="build" depends="init" unless="no.build">
@@ -278,9 +292,7 @@
         <include name="jboss-cache*" />
         <include name="jboss-common*" />
         <include name="jboss-remoting*" />
-        <!-- keep seam debug ?
         <include name="jboss-seam-debug*" />
-        -->
         <include name="hibernate*" />
         <include name="javaassist*" />
         <include name="commons-collections*" />
@@ -289,7 +301,7 @@
         <include name="jta-*" />
         <include name="log4j-*" />
         <include name="persistence-*" />
-        <include name="servlet-api-*" />
+        <include name="servlet-api*" />
         <include name="script-api-*" />
         <include name="jca-api-*" />
         <include name="connector-api-*" />

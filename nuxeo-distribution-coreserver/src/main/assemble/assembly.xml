@@ -16,28 +16,19 @@
   </target>
 
   <target name="expand">
-    <artifact:nuxeo-expand mavenExclusions="true"> 
+    <artifact:nuxeo-expand> 
       <excludes>
-	<artifact artifactId="*junit"/>
+	<artifact artifactId="junit"/>
 	<artifact artifactId="*-test"/>
 	<artifact artifactId="*-facade"/>
-	<artifact artifactId="*-jboss"/>
-	<artifact artifactId="ejb-api"/>
-	<artifact artifactId="jboss-ejb3-ext-api"/>
-	<artifact artifactId="nuxeo-runtime-remoting"/>
-	<artifact artifactId="jboss-remoting"/>
-	<artifact artifactId="jboss-as-system"/>
-	<artifact artifactId="jboss-as-system-jmx"/>
-	<artifact artifactId="jboss-common-core"/>
 	<artifact artifactId="nuxeo-apt-extensions"/>
 	<artifact artifactId="nuxeo-webengine-apt"/>
-	<artifact artifactId="nuxeo-distribution-tools"/>
       </excludes>
     </artifact:nuxeo-expand>
-    <!-- <artifact:print output="dependency-tree.log" /> -->
+    <!--artifact:print output="dependency-tree.log" /--> 
   </target>
 
-  <target name="build" depends="init" description="Build Nuxeo DM">
+  <target name="build" depends="init" description="Build Nuxeo Core Server">
     <echo>Building default Nuxeo DM EAR</echo>
     <delete failonerror="false" dir="${nuxeo.ear}" />
     <mkdir dir="${nuxeo.ear}" />
@@ -53,11 +44,7 @@
           <artifact groupId="org.nuxeo*" />
         </includes>
         <excludes>
-          <artifact artifactId="nuxeo-runtime-management-metrics" />
-          <artifact artifactId="nuxeo-generic-wss-handler" />
-          <artifact artifactId="nuxeo-generic-wss-front" />
-          <artifact artifactId="nuxeo-apt-extensions" />
-          <artifact artifactId="nuxeo-webengine-apt" />
+          <artifact artifactId="*-test" />
         </excludes>
       </artifact:set>
     </copy>
@@ -78,9 +65,6 @@
         <excludes>
           <artifact artifactId="gwt-dev" />
           <artifact artifactId="gwt-user" />
-          <artifact artifactId="gwt-log" />
-          <artifact artifactId="gwt-dnd" />
-          <artifact artifactId="gwt-presenter" />
           <artifact artifactId="json-jena" />
           <artifact artifactId="h2" />
         </excludes>
@@ -88,8 +72,6 @@
           <artifact groupId="!org.nuxeo*" />
         </includes>
       </artifact:set>
-      <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-generic-wss-front" />
-      <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-generic-wss-handler" />
     </copy>
     <!-- Remove duplicates -->
     <nx:rmdups dir="${nuxeo.ear}/lib" />
