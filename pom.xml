@@ -127,7 +127,7 @@
       <dependency>
         <groupId>org.nuxeo.build</groupId>
         <artifactId>nuxeo-distribution-tools</artifactId>
-        <version>1.8.0</version>
+        <version>1.9</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
@@ -2466,7 +2466,7 @@
         <plugin>
           <groupId>org.nuxeo.build</groupId>
           <artifactId>nuxeo-distribution-tools</artifactId>
-          <version>1.8</version>
+          <version>1.9</version>
           <extensions>true</extensions>
         </plugin>
         <!-- Cannot upgrade after 2.2-beta-1 because of MASSEMBLY-285 -->
