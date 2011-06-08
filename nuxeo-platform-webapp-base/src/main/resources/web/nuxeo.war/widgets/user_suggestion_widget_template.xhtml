@@ -8,6 +8,7 @@
   class="UserSuggestionInput">
 
   <c:set var="userSchema" value="#{userManager.userSchemaName}" />
+  <c:set var="groupSchema" value="#{userManager.groupSchemaName}" />
 
   <c:if test="#{widget.mode != 'edit'}">
     <c:set var="firstLabelField" value="#{nxu:test(!empty widgetProperties_firstLabelField, widgetProperties_firstLabelField, 'firstName')}" />
@@ -42,7 +43,7 @@
           </f:subview>
           <f:subview rendered="#{info.type == 'GROUP_TYPE'}">
             <h:graphicImage value="/icons/group.gif" alt="group.gif" />
-            <h:commandLink value="#{info.id}"
+            <h:commandLink value="#{nxu:groupDisplayName(view.id, view.entry[groupSchema].grouplabel)}"
                 action="#{groupManagementActions.viewGroup(info.id)}" />
           </f:subview>
           <f:subview rendered="#{empty info.type}">
@@ -123,10 +124,10 @@
               </f:subview>
               <f:subview rendered="#{result.type == 'GROUP_TYPE'}" id="#{widget.id}_group_result">
                 <h:graphicImage value="/icons/group.gif" alt="group.gif" />
-                <h:outputText value="#{result.id}" />
+                <h:outputText value="#{nxu:groupDisplayName(result.id, result.entry[groupSchema].grouplabel)}" />
               </f:subview>
               <f:subview rendered="#{empty result.type}" id="#{widget.id}_result">
-                <h:outputText value="#{result}" />
+                <h:outputText value="#{nxu:groupDisplayName(result.id, result.entry[groupSchema].grouplabel)}" />
               </f:subview>
             </h:column>
           </rich:suggestionbox>
@@ -160,7 +161,7 @@
                     </f:subview>
                     <f:subview rendered="#{info.type == 'GROUP_TYPE'}">
                       <h:graphicImage value="/icons/group.gif" alt="group.gif" />
-                      <h:outputText value="#{info.id}" />
+                      <h:outputText value="#{nxu:groupDisplayName(info.id, info.entry[groupSchema].grouplabel)}" />
                     </f:subview>
                     <f:subview rendered="#{empty info.type}">
                       <h:outputText value="#{info}" />

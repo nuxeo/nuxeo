@@ -931,6 +931,9 @@
           <widget>groupname</widget>
         </row>
         <row>
+          <widget>grouplabel</widget>
+        </row>
+        <row>
           <widget>members</widget>
         </row>
         <row>
@@ -951,6 +954,18 @@
         </widgetModes>
         <properties widgetMode="any">
           <property name="required">true</property>
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+      <widget name="grouplabel" type="text">
+        <labels>
+          <label mode="any">label.groupManager.groupLabel</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field schema="group">grouplabel</field>
+        </fields>
+        <properties widgetMode="edit">
           <property name="styleClass">dataInputText</property>
         </properties>
       </widget>

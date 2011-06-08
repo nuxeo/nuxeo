@@ -66,6 +66,12 @@
           </properties>
           <widget>listing_groupName</widget>
         </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+          </properties>
+          <widget>listing_groupLabel</widget>
+        </column>
       </columns>
     </layout>
 
@@ -145,6 +151,23 @@
         <property name="hideFirstLabel">true</property>
         <property name="hideSecondLabel">true</property>
         <property name="displayAction">edit</property>
+      </properties>
+    </widget>
+
+    <widget name="listing_groupLabel" type="singleUserSuggestion">
+      <labels>
+        <label mode="any">label.groupManager.groupLabel</label>
+      </labels>
+      <fields>
+         <field>data.group.grouplabel</field>
+      </fields>
+      <widgetModes>
+        <mode value="any">view</mode>
+      </widgetModes>
+      <properties widgetMode="view">
+        <property name="userSuggestionSearchType">GROUP_TYPE</property>
+        <property name="hideFirstLabel">true</property>
+        <property name="hideSecondLabel">true</property>
       </properties>
     </widget>
 
