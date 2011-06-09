@@ -342,7 +342,10 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
                     }
                 } else {
                     groupsToProcess.addAll(nxGroup.getParentGroups());
-                    resultingGroups.add(groupName);
+                    // fetch the group name from the returned entry in case
+                    // it does not have the same case than the actual entry in
+                    // directory (for case insensitive directories)
+                    resultingGroups.add(nxGroup.getName());
                     // XXX: maybe remove group from virtual groups if it
                     // actually exists? otherwise it would be ignored when
                     // setting groups
