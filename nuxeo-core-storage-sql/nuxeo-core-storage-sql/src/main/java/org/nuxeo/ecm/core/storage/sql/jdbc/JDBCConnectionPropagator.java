@@ -30,6 +30,10 @@ public class JDBCConnectionPropagator {
         connections.add(connection);
     }
 
+    public synchronized void removeConnection(JDBCConnection connection) {
+        connections.remove(connection);
+    }
+
     /**
      * Notifies all connection that they must check their validity.
      *

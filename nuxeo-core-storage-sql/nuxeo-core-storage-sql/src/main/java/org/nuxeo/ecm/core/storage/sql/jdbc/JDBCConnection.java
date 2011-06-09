@@ -96,6 +96,7 @@ public class JDBCConnection {
     }
 
     public void close() {
+        connectionPropagator.removeConnection(this);
         if (connection != null) {
             try {
                 connection.close();
