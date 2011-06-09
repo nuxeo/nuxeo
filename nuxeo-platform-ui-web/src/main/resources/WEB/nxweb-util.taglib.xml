@@ -184,6 +184,15 @@
     </function-signature>
   </function>
   <function>
+    <function-name>groupFullName</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.Functions
+    </function-class>
+    <function-signature>
+      String groupFullName(java.lang.String)
+    </function-signature>
+  </function>
+  <function>
     <function-name>userDisplayName</function-name>
     <function-class>
       org.nuxeo.ecm.platform.ui.web.tag.fn.Functions

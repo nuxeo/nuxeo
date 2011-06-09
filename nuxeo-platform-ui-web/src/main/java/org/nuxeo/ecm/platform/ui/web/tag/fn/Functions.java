@@ -265,6 +265,23 @@ public final class Functions {
         return fullName;
     }
 
+    /**
+     * Returns the full name of a group
+     *
+     * @param groupName the group id
+     * @return group label, or groupname if it not exists
+     * @since 5.4.3
+     */
+    public static String groupFullName(String groupName) {
+        String groupLabel;
+        try {
+            groupLabel = getUserManager().getGroup(groupName).getLabel();
+        } catch (Exception e) {
+            groupLabel = groupName;
+        }
+        return groupLabel;
+    }
+
     // this should be a method of the principal itself
     public static String principalFullName(NuxeoPrincipal principal) {
         String first = principal.getFirstName();
@@ -288,6 +305,14 @@ public final class Functions {
         }
     }
 
+    /**
+     * Return the display name of a group
+     *
+     * @param name the group name
+     * @param label the group name
+     * @return label if not empty or null, group name either
+     * @since 5.4.3
+     */
     public static String groupDisplayName(String name, String label) {
         return label == null || label.length() == 0 ? name : label;
     }
