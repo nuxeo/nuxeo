@@ -77,6 +77,7 @@ public class GroupManagementActions extends AbstractUserGroupManagement
     }
 
     public DocumentModel getSelectedGroup() {
+        shouldResetStateOnTabChange = true;
         return selectedGroup;
     }
 
@@ -204,6 +205,8 @@ public class GroupManagementActions extends AbstractUserGroupManagement
         webActions.setCurrentTabIds(MAIN_TAB_HOME + "," + GROUPS_TAB);
         setSelectedGroup(groupName);
         showUserOrGroup = true;
+        // do not reset the state before actually viewing the group
+        shouldResetStateOnTabChange = false;
         return VIEW_HOME;
     }
 
@@ -224,10 +227,12 @@ public class GroupManagementActions extends AbstractUserGroupManagement
             CURRENT_TAB_CHANGED_EVENT + "_" + USERS_GROUPS_MANAGER_SUB_TAB,
             CURRENT_TAB_CHANGED_EVENT + "_" + USERS_GROUPS_HOME_SUB_TAB })
     public void resetState() {
-        newGroup = null;
-        showUserOrGroup = false;
-        showCreateForm = false;
-        detailsMode = DETAILS_VIEW_MODE;
+        if (shouldResetStateOnTabChange) {
+            newGroup = null;
+            showUserOrGroup = false;
+            showCreateForm = false;
+            detailsMode = DETAILS_VIEW_MODE;
+        }
     }
 
 }
