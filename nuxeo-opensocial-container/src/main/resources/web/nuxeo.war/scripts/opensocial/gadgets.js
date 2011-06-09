@@ -519,11 +519,11 @@ gadgets.IfrGadget.prototype.getTitleBarContent = function(continuation) {
   continuation('<div id="' + this.cssClassTitleBar + '-' + this.id +
       '" class="' + this.cssClassTitleBar + '"><span id="' +
       this.getIframeId() + '_title" class="' +
-      this.cssClassTitle + '">' + (this.title ? this.title : 'Title') + '</span> | <span class="' +
+      this.cssClassTitle + '">' + (this.title ? this.title : 'Title') + '</span> <span class="' +
       this.cssClassTitleButtonBar + '">' + settingsButton +
       '<a href="#" onclick="gadgets.container.getGadget(' + this.id +
       ').handleToggle();return false;" class="' + this.cssClassTitleButton +
-      '">toggle</a></span></div>');
+      '">toggle</a></span><div style="clear:both"></div></div>');
 };
 
 gadgets.IfrGadget.prototype.getUserPrefsDialogContent = function(continuation) {

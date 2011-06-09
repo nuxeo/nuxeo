@@ -20,25 +20,26 @@
 .gadgets-gadget-chrome {
   float: left;
   margin: 4px;
-  border: 1px solid #7aa5d6;
+  border: 1px solid #ddd;
 }
 
 .gadgets-gadget {
   border: none;
 }
 
-.gadgets-gadget-title-bar {
-  padding: 2px 4px;
-  background-color: #e5ecf9;
+div.gadgets-gadget-title-bar {
+  padding: 3px 0px 5px;
+  border-bottom: 2px solid #f8f8f8;
 }
 
 .gadgets-gadget-title {
   font-weight: bold;
-  color: #3366cc;
+  color: #333;
 }
 
 .gadgets-gadget-title-button-bar {
   font-size: smaller;
+  float:right;
 }
 
 .gadgets-gadget-user-prefs-dialog {
@@ -53,7 +54,7 @@
 .gadgets-gadget-title-button {
 }
 
-.gadgets-gadget-content {
+div.gadgets-gadget-content {
   padding: 4px;
 }
 
