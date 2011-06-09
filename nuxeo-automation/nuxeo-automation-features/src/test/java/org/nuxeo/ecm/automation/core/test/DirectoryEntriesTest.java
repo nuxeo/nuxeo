@@ -46,7 +46,7 @@ import com.google.inject.Inject;
 ;
 
 /**
- * @author <a href="mailto:bjalon@nuxeo.com">Quentin Lamerand</a>
+ * @author <a href="mailto:qlamerand@nuxeo.com">Quentin Lamerand</a>
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)

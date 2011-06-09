@@ -37,12 +37,14 @@ import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 
 /**
+ * Return the content of a {@link Directory} as a JSON StringBlob
+ *
  * @author <a href="mailto:qlamerand@nuxeo.com">Quentin Lamerand</a>
  */
 @Operation(id = GetDirectoryEntries.ID, category = Constants.CAT_SERVICES, label = "Get directory entries", description = "Get the entries of a directory. This is returning a blob containing a serialized JSON array. The input document, if specified, is used as a context for a potential local configuration of the directory.")
 public class GetDirectoryEntries {
 
-    public static final String ID = "Directories.Entries";
+    public static final String ID = "Directory.Entries";
 
     @Context
     protected OperationContext ctx;
