@@ -37,7 +37,7 @@
           action="#{userManagementActions.viewUser(user)}"
           rendered="#{principalType=='USER_TYPE'}">
         </h:commandLink>
-        <h:commandLink value="#{user}" immediate="true"
+        <h:commandLink value="#{nxu:groupFullName(user)}" immediate="true"
           action="#{groupManagementActions.viewGroup(user)}"
           rendered="#{principalType!='USER_TYPE'}">
         </h:commandLink>
@@ -128,7 +128,7 @@
             rendered="#{securityActions.dataTableModel.currentUserType=='USER_TYPE'}">
           </h:commandLink>
           <h:commandLink
-            value="#{securityActions.dataTableModel.currentCellDisplayedValue}"
+            value="#{nxu:groupFullName(securityActions.dataTableModel.currentCellDisplayedValue)}"
             immediate="true"
             action="#{groupManagementActions.viewGroup(securityActions.dataTableModel.currentCellDisplayedValue)}"
             rendered="#{securityActions.dataTableModel.currentUserType!='USER_TYPE'}">
