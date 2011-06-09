@@ -1686,6 +1686,10 @@ public class TestSQLBackend extends SQLBackendTestCase {
     }
 
     public void testJDBCConnectionPropagatorLeak() throws Exception {
+        if (this instanceof TestSQLBackendNet
+                || this instanceof ITSQLBackendNet) {
+            return;
+        }
         assertEquals(0, getJDBCConnectionPropagatorSize());
         repository.getConnection().close();
         // 1 connection remains for the lock manager
