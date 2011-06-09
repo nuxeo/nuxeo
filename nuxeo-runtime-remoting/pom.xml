@@ -29,12 +29,12 @@
       <groupId>org.osgi</groupId>
       <artifactId>osgi-core</artifactId>
     </dependency>
+
     <dependency>
-      <groupId>org.jboss.jbossas</groupId>
-      <artifactId>jboss-as-jbossas-remoting</artifactId>
-      <version>5.1.0.GA</version>
-      <scope>compile</scope>
+      <groupId>org.jboss.remoting</groupId>
+      <artifactId>jboss-remoting</artifactId>
     </dependency>
+
   </dependencies>
 
   <build>

@@ -104,10 +104,6 @@
       <artifactId>antlr</artifactId>
     </dependency>
 
-    <dependency>
-      <groupId>org.jboss.remoting</groupId>
-      <artifactId>jboss-remoting</artifactId>
-    </dependency>
   </dependencies>
 
   <build>
