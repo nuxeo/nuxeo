@@ -39,7 +39,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelComparator;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -121,6 +120,8 @@ public class UserManagerImpl implements UserManager {
 
     protected String groupIdField;
 
+    protected String groupLabelField;
+
     protected String groupMembersField;
 
     protected String groupSubGroupsField;
@@ -184,6 +185,7 @@ public class UserManagerImpl implements UserManager {
         userEmailField = descriptor.userEmailField;
         userSearchFields = descriptor.userSearchFields;
         userPasswordPattern = descriptor.userPasswordPattern;
+        groupLabelField = descriptor.groupLabelField;
         groupMembersField = descriptor.groupMembersField;
         groupSubGroupsField = descriptor.groupSubGroupsField;
         groupParentGroupsField = descriptor.groupParentGroupsField;
@@ -250,6 +252,10 @@ public class UserManagerImpl implements UserManager {
 
     public String getGroupIdField() throws ClientException {
         return groupIdField;
+    }
+
+    public String getGroupLabelField() throws ClientException {
+        return groupLabelField;
     }
 
     public String getGroupSchemaName() throws ClientException {
@@ -598,6 +604,15 @@ public class UserManagerImpl implements UserManager {
         }
         if (list != null) {
             group.setParentGroups(list);
+        }
+        try {
+            String label = (String) groupEntry.getProperty(groupSchemaName,
+                    groupLabelField);
+            if (label != null) {
+                group.setLabel(label);
+            }
+        } catch (ClientException e) {
+            // Nothing to do.
         }
         return group;
     }

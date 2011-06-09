@@ -59,6 +59,7 @@ public class TestUserManager extends NXRuntimeTestCase {
 
         deployBundle("org.nuxeo.ecm.core.schema");
         deployBundle("org.nuxeo.ecm.core");
+        deployBundle("org.nuxeo.ecm.core.api");
         deployBundle("org.nuxeo.ecm.directory.api");
         deployBundle("org.nuxeo.ecm.directory");
         deployBundle("org.nuxeo.ecm.directory.sql");
@@ -381,6 +382,9 @@ public class TestUserManager extends NXRuntimeTestCase {
 
         DocumentModel g1 = getGroup("test_g1");
         DocumentModel g2 = getGroup("test_g2");
+        DocumentModel g3 = getGroup("test_g3");
+        g3.setPropertyValue("group:grouplabel", "test_g3_label");
+
 
         List<String> g1Users = Arrays.asList("test_u1");
         List<String> g2Users = Arrays.asList("test_u1", "test_u2");
@@ -393,14 +397,23 @@ public class TestUserManager extends NXRuntimeTestCase {
         g2.setProperty("group", "subGroups", g2Groups);
         userManager.createGroup(g2);
 
+        //without users / groups
+        userManager.createGroup(g3);
+
         NuxeoGroup newG1 = userManager.getGroup("test_g1");
         NuxeoGroup newG2 = userManager.getGroup("test_g2");
+        NuxeoGroup newG3 = userManager.getGroup("test_g3");
 
         assertNotNull(newG1);
         assertNotNull(newG2);
+        assertNotNull(newG3);
 
         assertEquals("test_g1", newG1.getName());
         assertEquals("test_g2", newG2.getName());
+        assertEquals("test_g3", newG3.getName());
+        assertEquals("test_g1", newG1.getLabel());
+        assertEquals("test_g2", newG2.getLabel());
+        assertEquals("test_g3_label", newG3.getLabel());
         assertEquals(g1Users, newG1.getMemberUsers());
         assertEquals(g2Users, newG2.getMemberUsers());
         assertEquals(g2Groups, newG2.getMemberGroups());

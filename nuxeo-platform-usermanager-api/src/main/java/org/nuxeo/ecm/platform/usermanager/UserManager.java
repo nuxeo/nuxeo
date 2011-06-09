@@ -371,6 +371,14 @@ public interface UserManager extends Authenticator, Serializable {
     String getGroupIdField() throws ClientException;
 
     /**
+     * Returns the group label field.
+     *
+     * @since 5.4.3
+     * @throws ClientException
+     */
+    String getGroupLabelField() throws ClientException;
+
+    /**
      * Gets the group members field.
      *
      * @return the group members field.

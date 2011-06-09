@@ -67,6 +67,7 @@ public class UserService extends DefaultComponent {
         merged.userSearchFields.put("lastName", MatchType.SUBSTRING);
 
         merged.groupDirectoryName = "groupDirectory";
+        merged.groupLabelField = "grouplabel";
         merged.groupMembersField = "members";
         merged.groupSubGroupsField = "subGroups";
         merged.groupParentGroupsField = "parentGroups";

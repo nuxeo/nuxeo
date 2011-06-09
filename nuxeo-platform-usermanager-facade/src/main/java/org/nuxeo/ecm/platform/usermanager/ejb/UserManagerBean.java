@@ -444,6 +444,14 @@ public class UserManagerBean implements UserManagerLocal {
         }
     }
 
+    public String getGroupLabelField() throws ClientException {
+        try {
+            return getUserManager().getGroupLabelField();
+        } catch (Throwable e) {
+            throw ClientException.wrap(e);
+        }
+    }
+
     public String getGroupSchemaName() throws ClientException {
         try {
             return getUserManager().getGroupSchemaName();

@@ -36,6 +36,7 @@
       <groups>
         <directory>somegroupdir</directory>
         <membersField>members</membersField>
+        <groupLabelField>grouplabel</groupLabelField>
         <subGroupsField>subg</subGroupsField>
         <parentGroupsField>parentg</parentGroupsField>
         <listingMode>search_oh_yeah</listingMode>

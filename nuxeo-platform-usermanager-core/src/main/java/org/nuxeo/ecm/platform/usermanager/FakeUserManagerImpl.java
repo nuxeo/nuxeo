@@ -377,6 +377,10 @@ public class FakeUserManagerImpl implements UserManager {
         return "groupname";
     }
 
+    public String getGroupLabelField() throws ClientException {
+        return "grouplabel";
+    }
+
     public String getGroupSchemaName() throws ClientException {
         return "group";
     }

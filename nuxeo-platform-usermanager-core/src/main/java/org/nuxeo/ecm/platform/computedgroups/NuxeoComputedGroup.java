@@ -62,6 +62,10 @@ public class NuxeoComputedGroup implements ComputedGroup {
         return name;
     }
 
+    public String getLabel() {
+        return getName();
+    }
+
     public List<String> getParentGroups() {
         if (parents == null) {
             ComputedGroupsService cgs = Framework.getLocalService(ComputedGroupsService.class);
@@ -99,6 +103,11 @@ public class NuxeoComputedGroup implements ComputedGroup {
     }
 
     public void setName(String name) {
+        throw new UnsupportedOperationException(
+                "Computed groups are read only");
+    }
+
+    public void setLabel(String label) {
         throw new UnsupportedOperationException(
                 "Computed groups are read only");
     }

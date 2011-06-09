@@ -136,6 +136,9 @@ public class UserManagerDescriptor implements Serializable {
     @XNode("groups/directory")
     public String groupDirectoryName;
 
+    @XNode("groups/groupLabelField")
+    public String groupLabelField;
+
     @XNode("groups/membersField")
     public String groupMembersField;
 
@@ -217,6 +220,9 @@ public class UserManagerDescriptor implements Serializable {
         }
         if (other.groupDirectoryName != null) {
             groupDirectoryName = other.groupDirectoryName;
+        }
+        if (other.groupLabelField != null) {
+            groupLabelField = other.groupLabelField;
         }
         if (other.groupMembersField != null) {
             groupMembersField = other.groupMembersField;
