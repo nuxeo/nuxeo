@@ -110,7 +110,7 @@ public class WebEngineModule extends Application implements ApplicationFactory {
                 Scanner.PATH_ANNO, Scanner.PROVIDER_ANNO, WEBOBJECT_ANNO, WEBADAPTER_ANNO);
         scanner.scan();
         Collection<Class<?>> paths = scanner.getCollector(Scanner.PATH_ANNO);
-        Collection<Class<?>> providers = scanner.getCollector(Scanner.PATH_ANNO);
+        Collection<Class<?>> providers = scanner.getCollector(Scanner.PROVIDER_ANNO);
         cfg.roots = new Class<?>[paths.size()+providers.size()];
         int i=0;
         for (Class<?> cl : paths) {
