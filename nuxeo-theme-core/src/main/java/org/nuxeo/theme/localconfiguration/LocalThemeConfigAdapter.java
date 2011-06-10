@@ -19,13 +19,16 @@ package org.nuxeo.theme.localconfiguration;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.localconfiguration.AbstractLocalConfiguration;
 
 /**
  * Default implementation of {@code LocalThemeConfig}.
  *
  * @author <a href="mailto:qlamerand@nuxeo.com">Quentin Lamerand</a>
  */
-public class LocalThemeConfigAdapter implements LocalThemeConfig {
+public class LocalThemeConfigAdapter extends
+        AbstractLocalConfiguration<LocalThemeConfig> implements
+        LocalThemeConfig {
 
     protected DocumentRef documentRef;
 
