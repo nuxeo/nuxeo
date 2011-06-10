@@ -24,14 +24,13 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.localconfiguration.AbstractLocalConfiguration;
 
 /**
  * @author <a href="mailto:ei@nuxeo.com">Eugen Ionica</a>
- *
- *
- *
  */
-public class SearchLocalConfigurationAdapter implements
+public class SearchLocalConfigurationAdapter extends
+        AbstractLocalConfiguration<SearchLocalConfiguration> implements
         SearchLocalConfiguration {
 
     private static final Log log = LogFactory.getLog(SearchLocalConfigurationAdapter.class);
