@@ -833,6 +833,12 @@
         <artifactId>servlet-api-2.5</artifactId>
         <version>${jetty.mortbay.version}</version>
         <scope>provided</scope>
+	<exclusions>
+	  <exclusion>
+	    <groupId>org.mortbay.jetty</groupId>
+	    <artifactId>servlet-api-2.5</artifactId>
+	  </exclusion>
+	</exclusions>
       </dependency>
       <dependency>
         <groupId>org.mortbay.jetty</groupId>
