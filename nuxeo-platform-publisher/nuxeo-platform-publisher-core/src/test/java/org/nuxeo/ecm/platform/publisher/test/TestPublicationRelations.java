@@ -17,6 +17,11 @@
 
 package org.nuxeo.ecm.platform.publisher.test;
 
+import java.util.List;
+
+import javax.naming.Context;
+import javax.naming.InitialContext;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hsqldb.jdbc.jdbcDataSource;
@@ -33,10 +38,6 @@ import org.nuxeo.ecm.platform.publisher.api.PublisherService;
 import org.nuxeo.ecm.platform.publisher.helper.PublicationRelationHelper;
 import org.nuxeo.ecm.platform.publisher.impl.core.SimpleCorePublishedDocument;
 import org.nuxeo.runtime.api.Framework;
-
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import java.util.List;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
