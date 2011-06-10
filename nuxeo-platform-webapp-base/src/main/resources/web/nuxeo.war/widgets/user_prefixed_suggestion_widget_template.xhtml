@@ -2,11 +2,11 @@
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:a4j="http://richfaces.org/a4j"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
-  xmlns:nxdir="http://nuxeo.org/nxdirectory"
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:rich="http://richfaces.org/rich">
 
   <c:set var="userSchema" value="#{userManager.userSchemaName}" />
+  <c:set var="groupSchema" value="#{userManager.groupSchemaName}" />
 
   <c:if test="#{widget.mode != 'edit'}">
 
@@ -20,7 +20,7 @@
           </f:subview>
           <f:subview rendered="#{info.type == 'GROUP_TYPE'}">
             <h:graphicImage value="/icons/group.gif" alt="group.gif" />
-            <h:outputText value="#{info.id}" />
+            <h:outputText value="#{nxu:groupDisplayName(info.id, info.entry[groupSchema].grouplabel)}" />
           </f:subview>
           <f:subview rendered="#{empty info.type}">
             <h:outputText value="#{item}" />
@@ -80,7 +80,7 @@
               id="#{widget.id}_listRegion_select">
               <f:setPropertyActionListener value="#{result['prefixed_id']}"
                 target="#{suggestionActions.selectedValue}" />
-              <nxu:actionListenerMethod value="#{suggestionActions.addBoundSelectionToList}" /> 
+              <nxu:actionListenerMethod value="#{suggestionActions.addBoundSelectionToList}" />
               <f:param name="suggestionSelectionListId" value="#{widget.id}_list" />
               <f:param name="userSuggestionSearchType" value="#{searchType}" />
               <f:param name="userSuggestionMaxSearchResults" value="#{maxSearchResults}" />
@@ -92,7 +92,7 @@
               </f:subview>
               <f:subview rendered="#{result.type == 'GROUP_TYPE'}" id="#{widget.id}_group_result">
                 <h:graphicImage value="/icons/group.gif" alt="group.gif" />
-                <h:outputText value="#{result.id}" />
+                <h:outputText value="#{nxu:groupDisplayName(result.id, result.entry[groupSchema].grouplabel)}" />
               </f:subview>
               <f:subview rendered="#{empty result.type}" id="#{widget.id}_result">
                 <h:outputText value="#{item}" />
@@ -127,7 +127,7 @@
                     </f:subview>
                     <f:subview rendered="#{info.type == 'GROUP_TYPE'}">
                       <h:graphicImage value="/icons/group.gif" alt="group.gif" />
-                      <h:outputText value="#{info.id}" />
+                      <h:outputText value="#{nxu:groupDisplayName(info.id, info.entry[groupSchema].grouplabel)}" />
                     </f:subview>
                     <f:subview rendered="#{empty info.type}">
                       <h:outputText value="#{item}" />
