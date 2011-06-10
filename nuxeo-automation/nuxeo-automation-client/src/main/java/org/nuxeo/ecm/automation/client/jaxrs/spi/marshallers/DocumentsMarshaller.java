@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -11,16 +11,16 @@
  */
 package org.nuxeo.ecm.automation.client.jaxrs.spi.marshallers;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
+import org.codehaus.jackson.JsonGenerator;
+import org.codehaus.jackson.JsonParser;
+import org.codehaus.jackson.JsonToken;
 import org.nuxeo.ecm.automation.client.jaxrs.model.Documents;
 import org.nuxeo.ecm.automation.client.jaxrs.model.PaginableDocuments;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.JsonMarshaller;
 
 /**
  * @author matic
- * 
+ *
  */
 public class DocumentsMarshaller implements JsonMarshaller<Documents> {
 
@@ -38,32 +38,69 @@ public class DocumentsMarshaller implements JsonMarshaller<Documents> {
     public String getReference(Documents info) {
         return info.getInputRef();
     }
-        
+
     @Override
-    public Documents read(JSONObject json) {
-        Documents docs;
-        JSONArray ar = json.getJSONArray("entries");
-        int size = ar.size();
-        if (json.optBoolean("isPaginable") == true) {
-            int totalSize = json.getInt("totalSize");
-            int pageSize = json.getInt("pageSize");
-            int pageCount = json.getInt("pageCount");
-            int pageIndex = json.getInt("pageIndex");
-            docs = new PaginableDocuments(size, totalSize, pageSize, pageCount,
-                    pageIndex);
-        } else {
-            docs = new Documents(size);
+    public void write(JsonGenerator jg, Documents value) throws Exception {
+        throw new UnsupportedOperationException();
+    }
+
+    protected void readDocumentEntries(JsonParser jp, Documents docs) throws Exception {
+        JsonToken tok = jp.nextToken();
+        while (tok != JsonToken.END_ARRAY) {
+            docs.add(DocumentMarshaller.readDocument(jp));
+            tok = jp.nextToken();
         }
-        for (int i = 0; i < size; i++) {
-            JSONObject obj = ar.getJSONObject(i);
-            docs.add(DocumentMarshaller.readDocument(obj));
+    }
+
+    protected Documents readDocuments(JsonParser jp) throws Exception {
+        Documents docs = new Documents();
+        JsonToken tok = jp.nextToken();
+        while (tok != JsonToken.END_ARRAY) {
+            String key = jp.getCurrentName();
+            if ("entries".equals(key)) {
+                readDocumentEntries(jp, docs);
+                return docs;
+            }
+            tok = jp.nextToken();
         }
         return docs;
     }
 
+    protected Documents readPaginableDocuments(JsonParser jp) throws Exception {
+        PaginableDocuments docs = new PaginableDocuments();
+        JsonToken tok = jp.getCurrentToken();
+        while (tok != JsonToken.END_OBJECT) {
+            String key = jp.getCurrentName();
+            jp.nextToken();
+            if ("totalSize".equals(key)) {
+                docs.setTotalSize(jp.getIntValue());
+            } else if ("pageSize".equals(key)) {
+                docs.setPageSize(jp.getIntValue());
+            } else if ("pageCount".equals(key)) {
+                docs.setPageCount(jp.getIntValue());
+            } else if ("pageIndex".equals(key)) {
+                docs.setPageIndex(jp.getIntValue());
+            } else if ("entries".equals(key)) {
+                readDocumentEntries(jp, docs);
+            }
+            tok = jp.nextToken();
+        }
+        return docs;
+    }
 
     @Override
-    public void write(JSONObject object, Documents value) {
-        throw new UnsupportedOperationException();
+    public Documents read(JsonParser jp) throws Exception {
+        jp.nextToken();
+        String key = jp.getCurrentName();
+        if ("isPaginable".equals(key)) {
+            jp.nextToken();
+            boolean isPaginable = jp.getBooleanValue();
+            if (isPaginable) {
+                jp.nextToken();
+                return readPaginableDocuments(jp);
+            }
+        }
+        return readDocuments(jp);
     }
+
 }

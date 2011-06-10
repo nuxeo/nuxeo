@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -11,14 +11,16 @@
  */
 package org.nuxeo.ecm.automation.client.jaxrs.spi.marshallers;
 
-import net.sf.json.JSONObject;
-
+import org.codehaus.jackson.JsonGenerator;
+import org.codehaus.jackson.JsonParser;
+import org.codehaus.jackson.JsonToken;
 import org.nuxeo.ecm.automation.client.jaxrs.RemoteException;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.JsonMarshaller;
+import org.nuxeo.ecm.automation.client.jaxrs.spi.JsonMarshalling;
 
 /**
  * @author matic
- * 
+ *
  */
 public class ExceptionMarshaller implements JsonMarshaller<RemoteException> {
 
@@ -31,32 +33,53 @@ public class ExceptionMarshaller implements JsonMarshaller<RemoteException> {
     public Class<RemoteException> getJavaType() {
         return RemoteException.class;
     }
-    
+
     @Override
     public String getReference(RemoteException info) {
         throw new UnsupportedOperationException();
     }
-    
-    @Override
-    public RemoteException read(JSONObject json) {
-        return readException(json);
+
+
+    public static RemoteException readException(String content) throws Exception {
+        JsonParser jp = JsonMarshalling.getFactory().createJsonParser(content);
+        jp.nextToken(); // skip {
+        return _read(jp);
     }
-    
-    /* (non-Javadoc)
-     * @see org.nuxeo.ecm.automation.client.jaxrs.spi.JsonMarshaller#write(java.lang.Object)
-     */
+
     @Override
-    public void write(JSONObject object, RemoteException value) {
+    public RemoteException read(JsonParser jp) throws Exception {
+        return _read(jp);
+    }
+
+    public static RemoteException _read(JsonParser jp) throws Exception {
+        int status = 0;
+        String type = null, message = null, stack = null;
+        JsonToken tok = jp.nextToken();
+        while (tok != JsonToken.END_OBJECT) {
+            String key = jp.getCurrentName();
+            tok = jp.nextToken();
+            if ("status".equals(key)) {
+                if (tok == JsonToken.VALUE_NUMBER_INT) {
+                    status = jp.getIntValue();
+                } else {
+                    status = Integer.parseInt(jp.getText());
+                }
+            } else if ("type".equals(key)) {
+                type = jp.getText();
+            } else if ("message".equals(key)) {
+                message = jp.getText();
+            } else if ("stack".equals(key)) {
+                stack = jp.getText();
+            }
+            tok = jp.nextToken();
+        }
+        return new RemoteException(status, type, message, stack);
+    }
+
+    @Override
+    public void write(JsonGenerator jg, RemoteException value) throws Exception {
         throw new UnsupportedOperationException();
     }
 
-    public static RemoteException readException(String content) {
-        return readException(JSONObject.fromObject(content));
-    }
-
-    protected static RemoteException readException(JSONObject json) {
-        return new RemoteException(Integer.parseInt(json.getString("status")),
-                json.optString("type", null), json.optString("message"),
-                json.optString("stack", null));
-    }
 }
+

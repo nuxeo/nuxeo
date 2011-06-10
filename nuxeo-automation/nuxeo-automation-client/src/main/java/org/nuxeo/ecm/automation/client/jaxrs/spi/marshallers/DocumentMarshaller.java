@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -11,15 +11,9 @@
  */
 package org.nuxeo.ecm.automation.client.jaxrs.spi.marshallers;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import net.sf.json.JSON;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONNull;
-import net.sf.json.JSONObject;
-
+import org.codehaus.jackson.JsonGenerator;
+import org.codehaus.jackson.JsonParser;
+import org.codehaus.jackson.JsonToken;
 import org.nuxeo.ecm.automation.client.jaxrs.model.Document;
 import org.nuxeo.ecm.automation.client.jaxrs.model.PropertyList;
 import org.nuxeo.ecm.automation.client.jaxrs.model.PropertyMap;
@@ -27,7 +21,7 @@ import org.nuxeo.ecm.automation.client.jaxrs.spi.JsonMarshaller;
 
 /**
  * @author matic
- * 
+ *
  */
 public class DocumentMarshaller implements JsonMarshaller<Document> {
 
@@ -35,87 +29,99 @@ public class DocumentMarshaller implements JsonMarshaller<Document> {
     public String getType() {
         return "document";
     }
-    
+
     @Override
     public Class<Document> getJavaType() {
         return Document.class;
     }
-    
+
     @Override
     public String getReference(Document info) {
         return info.getInputRef();
     }
 
     @Override
-    public Document read(JSONObject json) {
-        return readDocument(json);
+    public Document read(JsonParser jp) throws Exception {
+        return readDocument(jp);
     }
-    
-    
-    protected static Document readDocument(JSONObject json) {
-        String uid = json.getString("uid");
-        String path = json.getString("path");
-        String type = json.getString("type");
-        String state = json.optString("state", null);
-        String lock = json.optString("lock", null);
-        String title = json.optString("title", null);
-        String lastModified = json.optString("lastModified", null);
-        JSONObject jsonProps = json.optJSONObject("properties");
-        PropertyMap props;
-        if (jsonProps != null) {
-            props = (PropertyMap) readValue(jsonProps);
-        } else {
-            props = new PropertyMap();
+
+    protected static Document readDocument(JsonParser jp) throws Exception {
+        String uid = null;
+        String type = null;
+        String path = null;
+        String state = null;
+        String lock = null;
+        String repository = null;
+        JsonToken tok = jp.nextToken();
+        PropertyMap props = new PropertyMap();
+        while (tok != JsonToken.END_OBJECT) {
+            String key = jp.getCurrentName();
+            tok = jp.nextToken();
+            if (key.equals("uid")) {
+                uid = jp.getText();
+            } else if (key.equals("path")) {
+                path = jp.getText();
+            } else if (key.equals("type")) {
+                type = jp.getText();
+            } else if (key.equals("state")) {
+                state = jp.getText();
+            } else if (key.equals("lock")) {
+                lock = jp.getText();
+            } else if (key.equals("repository")) {
+                repository = jp.getText();
+            } else if (key.equals("title")) {
+                props.set("dc:title", jp.getText());
+            } else if (key.equals("lastModified")) {
+                props.set("dc:modified", jp.getText());
+            } else if (key.equals("properties")) {
+                readProperties(jp, props);
+            }
+            tok = jp.nextToken();
         }
-        props.set("dc:title", title);
-        props.set("dc:modified", lastModified);
-        return new Document(uid, type, path, state, lock, props);
+        return new Document(uid, type, path, state, lock, repository, props);
     }
-    
+
+    protected static void readProperties(JsonParser jp, PropertyMap props) throws Exception {
+        JsonToken tok = jp.nextToken();
+        while (tok != JsonToken.END_OBJECT) {
+            String key = jp.getCurrentName();
+            tok = jp.nextToken();
+            if (tok == JsonToken.START_ARRAY) {
+                props.set(key, readArrayProperty(jp));
+            } else if (tok == JsonToken.START_OBJECT) {
+                props.set(key, readObjectProperty(jp));
+            } else {
+                props.set(key, jp.getText());
+            }
+            tok = jp.nextToken();
+        }
+    }
+
+    protected static PropertyMap readObjectProperty(JsonParser jp) throws Exception {
+        PropertyMap map = new PropertyMap();
+        readProperties(jp, map);
+        return map;
+    }
+
+    protected static PropertyList readArrayProperty(JsonParser jp) throws Exception {
+        PropertyList list = new PropertyList();
+        JsonToken tok = jp.nextToken();
+        while (tok != JsonToken.END_ARRAY) {
+            if (tok == JsonToken.START_ARRAY) {
+                list.add(readArrayProperty(jp));
+            } else if (tok == JsonToken.START_OBJECT) {
+                list.add(readObjectProperty(jp));
+            } else {
+                list.add(jp.getText());
+            }
+            tok = jp.nextToken();
+        }
+        return list;
+    }
 
     @Override
-    public void write(JSONObject object, Document doc) {
+    public void write(JsonGenerator jg, Document value) throws Exception {
         throw new UnsupportedOperationException();
-    }
-
-    @SuppressWarnings("unchecked")
-    protected static Object readValue(Object o) {
-        if (o == null) {
-            return null;
-        }
-        if (o instanceof JSON) {
-            JSON jo = (JSON) o;
-            if (jo == JSONNull.getInstance()) {
-                return null;
-            } else if (jo.isArray()) {
-                JSONArray ar = (JSONArray) jo;
-                PropertyList plist = new PropertyList();
-                List<Object> list = plist.list();
-                for (int i = 0, size = ar.size(); i < size; i++) {
-                    Object v = readValue(ar.get(i));
-                    if (v != null) {
-                        list.add(v);
-                    }
-                }
-                return plist;
-            } else {
-                JSONObject ob = (JSONObject) jo;
-                if (ob.isNullObject()) {
-                    return null;
-                }
-                PropertyMap pmap = new PropertyMap();
-                Map<String, Object> map = pmap.map();
-                Iterator<String> keys = ob.keys();
-                while (keys.hasNext()) {
-                    String key = keys.next();
-                    Object v = readValue(ob.get(key));
-                    map.put(key, v);
-                }
-                return pmap;
-            }
-        } else {
-            return o.toString();
-        }
     }
 
 }

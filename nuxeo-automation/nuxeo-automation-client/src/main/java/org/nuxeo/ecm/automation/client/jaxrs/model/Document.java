@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -32,6 +32,8 @@ import java.util.Date;
  */
 public class Document extends DocRef {
 
+    protected final String repository;
+
     protected final String path;
 
     protected final String type;
@@ -49,13 +51,18 @@ public class Document extends DocRef {
      * unmarshalling documents.
      */
     public Document(String id, String type, String path, String state,
-            String lock, PropertyMap properties) {
+            String lock, String repository, PropertyMap properties) {
         super(id);
         this.path = path;
         this.type = type;
         this.state = state;
         this.lock = lock;
+        this.repository = repository;
         this.properties = properties == null ? new PropertyMap() : properties;
+    }
+
+    public String getRepository() {
+        return repository;
     }
 
     public String getId() {

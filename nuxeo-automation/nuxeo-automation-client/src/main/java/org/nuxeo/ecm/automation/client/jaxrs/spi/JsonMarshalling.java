@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -11,12 +11,14 @@
  */
 package org.nuxeo.ecm.automation.client.jaxrs.spi;
 
+import java.io.StringWriter;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.Map;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
+import org.codehaus.jackson.JsonFactory;
+import org.codehaus.jackson.JsonGenerator;
+import org.codehaus.jackson.JsonParser;
+import org.codehaus.jackson.JsonToken;
 import org.nuxeo.ecm.automation.client.jaxrs.Constants;
 import org.nuxeo.ecm.automation.client.jaxrs.OperationRequest;
 import org.nuxeo.ecm.automation.client.jaxrs.model.OperationDocumentation;
@@ -27,22 +29,28 @@ import org.nuxeo.ecm.automation.client.jaxrs.spi.marshallers.DocumentsMarshaller
 import org.nuxeo.ecm.automation.client.jaxrs.spi.marshallers.ExceptionMarshaller;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.marshallers.LoginMarshaller;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.marshallers.PrimitiveMarshaller;
-import org.nuxeo.ecm.automation.client.jaxrs.util.JSONExporter;
+import org.nuxeo.ecm.automation.client.jaxrs.util.JsonOperationMarshaller;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class JsonMarshalling {
-	
+
 	private JsonMarshalling() {
 	}
 
-	protected static final HashMap<String,JsonMarshaller<?>> marshallersByType = 
+	protected static JsonFactory factory = new JsonFactory();
+
+	protected static final HashMap<String,JsonMarshaller<?>> marshallersByType =
 	        new HashMap<String,JsonMarshaller<?>>();
-	
-	protected static final HashMap<Class<?>,JsonMarshaller<?>> marshallersByJavaType = 
+
+	protected static final HashMap<Class<?>,JsonMarshaller<?>> marshallersByJavaType =
 	        new HashMap<Class<?>,JsonMarshaller<?>>();
-	
+
+	public static JsonFactory getFactory() {
+	    return factory;
+	}
+
 	static {
 	    addMarshaller(new DocumentMarshaller());
 	    addMarshaller(new DocumentsMarshaller());
@@ -56,87 +64,119 @@ public class JsonMarshalling {
 		addMarshaller(new PrimitiveMarshaller<Double>(Double.class));
 
 	}
-	
+
 	public static void addMarshaller(JsonMarshaller<?> marshaller) {
 	    marshallersByType.put(marshaller.getType(), marshaller);
 	    marshallersByJavaType.put(marshaller.getJavaType(), marshaller);
 	}
-	
+
 	@SuppressWarnings("unchecked")
     public static <T> JsonMarshaller<T> getMarshaller(String type) {
 	    return (JsonMarshaller<T>)marshallersByType.get(type);
 	}
-	
+
 	@SuppressWarnings("unchecked")
     public static <T> JsonMarshaller<T> getMarshaller(Class<T> clazz) {
 	    return (JsonMarshaller<T>)marshallersByJavaType.get(clazz);
 	}
 
-	protected static JsonMarshaller<?> findMarshaller(JSONObject json) {
-	    String type= json.getString(Constants.KEY_ENTITY_TYPE);
-	    JsonMarshaller<?> js = marshallersByType.get(type);
-	    if (js == null) {
-	        throw new IllegalArgumentException("no marshaller for " + type);
-	    }
-	    return js;
-	}
-	
-    @SuppressWarnings("unchecked")
-    public static OperationRegistry readRegistry(String content) {
-        JSONObject json = JSONObject.fromObject(content);
+    public static OperationRegistry readRegistry(String content) throws Exception {
         HashMap<String, OperationDocumentation> ops = new HashMap<String, OperationDocumentation>();
         HashMap<String, OperationDocumentation> chains = new HashMap<String, OperationDocumentation>();
         HashMap<String, String> paths = new HashMap<String, String>();
-        JSONArray ar = json.getJSONArray("operations");
-        if (ar != null) {
-            for (int i = 0, len = ar.size(); i < len; i++) {
-                JSONObject obj = ar.getJSONObject(i);
-                OperationDocumentation op = JSONExporter.fromJSON(obj);
-                ops.put(op.id, op);
+
+        JsonParser jp = factory.createJsonParser(content);
+        jp.nextToken(); // start_obj
+        JsonToken tok = jp.nextToken();
+        while (tok != JsonToken.END_OBJECT) {
+            String key = jp.getCurrentName();
+            if ("operations".equals(key)) {
+                readOperations(jp, ops);
+            } else if ("chains".equals(key)) {
+                readChains(jp, chains);
+            } else if ("paths".equals(key)) {
+                readPaths(jp, paths);
             }
-        }
-        ar = json.getJSONArray("chains");
-        if (ar != null) {
-            for (int i = 0, len = ar.size(); i < len; i++) {
-                JSONObject obj = ar.getJSONObject(i);
-                OperationDocumentation op = JSONExporter.fromJSON(obj);
-                chains.put(op.id, op);
-            }
-        }
-        JSONObject pathsObj = json.getJSONObject("paths");
-        if (pathsObj != null) {
-            Iterator<String> it = pathsObj.keys();
-            while (it.hasNext()) {
-                String key = it.next();
-                String value = pathsObj.getString(key);
-                paths.put(key, value);
-            }
+            tok = jp.nextToken();
         }
         return new OperationRegistry(paths, ops, chains);
     }
 
-    public static Object readEntity(String content) {
+    private static void readOperations(JsonParser jp, Map<String, OperationDocumentation> ops) throws Exception {
+        jp.nextToken(); // skip [
+        JsonToken tok = jp.nextToken();
+        while (tok != JsonToken.END_ARRAY) {
+            OperationDocumentation op = JsonOperationMarshaller.read(jp);
+            ops.put(op.id, op);
+            tok = jp.nextToken();
+        }
+    }
+
+    private static void readChains(JsonParser jp, Map<String, OperationDocumentation> chains) throws Exception {
+        jp.nextToken(); // skip [
+        JsonToken tok = jp.nextToken();
+        while (tok != JsonToken.END_ARRAY) {
+            OperationDocumentation op = JsonOperationMarshaller.read(jp);
+            chains.put(op.id, op);
+            tok = jp.nextToken();
+        }
+    }
+
+    private static void readPaths(JsonParser jp, Map<String, String> paths) throws Exception {
+        jp.nextToken(); // skip {
+        JsonToken tok = jp.nextToken();
+        while (tok != JsonToken.END_OBJECT) {
+            jp.nextToken();
+            paths.put(jp.getCurrentName(), jp.getText());
+            tok = jp.nextToken();
+        }
+    }
+
+    public static Object readEntity(String content) throws Exception {
         if (content.length() == 0) { // void response
             return null;
         }
-        JSONObject json = JSONObject.fromObject(content);
-        JsonMarshaller<?> marshaller = findMarshaller(json);
-        return marshaller.read(json);
+        JsonParser jp = factory.createJsonParser(content);
+        jp.nextToken(); // will return JsonToken.START_OBJECT (verify?)
+        jp.nextToken();
+        if (!Constants.KEY_ENTITY_TYPE.equals(jp.getText())) {
+            throw new RuntimeException("unuspported respone type. No entity-type key foud at top of the object");
+        }
+        jp.nextToken();
+        String etype = jp.getText();
+        JsonMarshaller<?> jm = marshallersByType.get(etype);
+        if (jm == null) {
+            throw new IllegalArgumentException("no marshaller for " + etype);
+        }
+        return jm.read(jp);
     }
 
     public static String writeRequest(OperationRequest req) throws Exception {
-        JSONObject entity = new JSONObject();
+        StringWriter writer = new StringWriter();
         OperationInput input = req.getInput();
-
+        JsonGenerator jg = factory.createJsonGenerator(writer);
+        jg.writeStartObject();
         if (input != null && !input.isBinary()) {
             String ref = input.getInputRef();
             if (ref != null) {
-                entity.element("input", ref);
+                jg.writeStringField("input", ref);
             }
         }
-        entity.element("params", req.getParameters());
-        entity.element("context", req.getContextParameters());
-        return entity.toString();
+        jg.writeObjectFieldStart("params");
+        writeStringMap(jg, req.getParameters());
+        jg.writeEndObject();
+        jg.writeObjectFieldStart("context");
+        writeStringMap(jg, req.getContextParameters());
+        jg.writeEndObject();
+        jg.writeEndObject();
+        jg.close();
+        return writer.toString();
+    }
+
+    public static void writeStringMap(JsonGenerator jg, Map<String,String> map) throws Exception {
+        for (Map.Entry<String, String> entry : map.entrySet()) {
+            jg.writeStringField(entry.getKey(), entry.getValue());
+        }
     }
 
 }

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -11,7 +11,8 @@
  */
 package org.nuxeo.ecm.automation.client.jaxrs.spi;
 
-import net.sf.json.JSONObject;
+import org.codehaus.jackson.JsonGenerator;
+import org.codehaus.jackson.JsonParser;
 
 /**
  * Plugs in automation client new input/output marshalling logic.
@@ -22,41 +23,42 @@ import net.sf.json.JSONObject;
  */
 public interface JsonMarshaller<T> {
     /**
-     * The type name that appears in serialization 
-     * 
+     * The type name that appears in serialization
+     *
      * @return
      */
     String getType();
-    
+
     /**
      * The marshalled java type
-     * 
+     *
      * @return
      */
     Class<T> getJavaType();
-    
+
     /**
      * Gets an input reference from the POJO object that
      * can be fetched server side.
-     * 
+     *
      * @param ref
      * @return
      */
     String getReference(T value);
-    
+
     /**
      * Builds and returns a POJO from the JSON object
-     * 
+     *
      * @param json
      * @return
      */
-    T read(JSONObject object);
-    
+    T read(JsonParser jp) throws Exception;
+
     /**
-     * Writes in the JSON object the POJO's data
-     * 
+     * Writes the POJO object to the JsonGenerator
+     *
      * @param o
      * @param value
      */
-    void write(JSONObject object, T data);
+    void write(JsonGenerator jg, T value) throws Exception;
+
 }

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -12,16 +12,17 @@
 package org.nuxeo.ecm.automation.client.jaxrs.spi.marshallers;
 
 import java.util.HashSet;
+import java.util.Set;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
+import org.codehaus.jackson.JsonGenerator;
+import org.codehaus.jackson.JsonParser;
+import org.codehaus.jackson.JsonToken;
 import org.nuxeo.ecm.automation.client.jaxrs.LoginInfo;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.JsonMarshaller;
 
 /**
  * @author matic
- * 
+ *
  */
 public class LoginMarshaller implements JsonMarshaller<LoginInfo> {
 
@@ -34,39 +35,54 @@ public class LoginMarshaller implements JsonMarshaller<LoginInfo> {
     public Class<LoginInfo> getJavaType() {
         return LoginInfo.class;
     }
-    
+
     public String getReference(LoginInfo info) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public LoginInfo read(JSONObject json) {
-        return readLogin(json);
+    public LoginInfo read(JsonParser jp) throws Exception {
+        boolean isAdmin = false;
+        String username = null;
+        Set<String> groups = null;
+        JsonToken tok = jp.nextToken();
+        while (tok != JsonToken.END_OBJECT) {
+            String key = jp.getCurrentName();
+            if ("username".equals(key)) {
+                username = jp.getText();
+            } else if ("isAdministrator".equals(key)) {
+                isAdmin = Boolean.parseBoolean(jp.getText());
+            } else if ("groups".equals(key)) {
+                jp.nextToken();
+                groups = readGroups(jp);
+            }
+            tok = jp.nextToken();
+        }
+        return new LoginInfo(username, groups, isAdmin);
     }
 
+    protected Set<String> readGroups(JsonParser jp) throws Exception {
+        HashSet<String> groups = new HashSet<String>();
+        JsonToken tok = jp.nextToken();
+        while (tok != JsonToken.END_ARRAY) {
+            groups.add(jp.getText());
+            tok = jp.nextToken();
+        }
+        return groups;
+    }
 
     @Override
-    public void write(JSONObject object, LoginInfo info) {
-        object.put("username", info.getUsername());
-        object.put("isAdministrator", info.isAdministrator());
-        JSONArray groups = new JSONArray();
-        for (String group:info.getGroups()) {
-            groups.add(group);
-        }
-        object.put("groups", groups);
-    }
-
-    protected static LoginInfo readLogin(JSONObject json) {
-        String username = json.getString("username");
-        String isAdmin = json.optString("isAdministrator", "false");
-        JSONArray groups = json.optJSONArray("groups");
-        HashSet<String> set = new HashSet<String>();
+    public void write(JsonGenerator jg, LoginInfo value) throws Exception {
+        jg.writeStringField("username", value.getUsername());
+        jg.writeBooleanField("isAdministrator", value.isAdministrator());
+        jg.writeArrayFieldStart("groups");
+        String[] groups = value.getGroups();
         if (groups != null) {
-            for (int i = 0, size = groups.size(); i < size; i++) {
-                set.add(groups.getString(i));
+            for (String g : groups) {
+                jg.writeString(g);
             }
         }
-        return new LoginInfo(username, set, Boolean.parseBoolean(isAdmin));
+        jg.writeEndArray();
     }
 
 }

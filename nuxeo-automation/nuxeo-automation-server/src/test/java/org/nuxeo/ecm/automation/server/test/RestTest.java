@@ -11,13 +11,19 @@
  */
 package org.nuxeo.ecm.automation.server.test;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.zip.ZipEntry;
@@ -653,9 +659,14 @@ public class RestTest {
     public void testMyObject() throws Exception {
         MyObject mo = new MyObject();
         Object r;
+        try {
         r = session.newRequest(ReturnOperation.ID).setInput(
                 new BeanInput<MyObject>(MyObject.class, mo)).execute();
         assertThat((MyObject) r, is(mo));
+        } catch (RemoteException e) {
+            System.out.println(e.getStatus()+" - "+e.getType()+" - "+e.getMessage());
+            System.out.println(e.getRemoteStackTrace());
+        }
     }
 
     @Test

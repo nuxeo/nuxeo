@@ -50,6 +50,15 @@
       <artifactId>nuxeo-common</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.codehaus.jackson</groupId>
+      <artifactId>jackson-core-asl</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.jackson</groupId>
+      <artifactId>jackson-mapper-asl</artifactId>
+    </dependency>
+    <!-- must be removed - since will be replaced by jackson -->
+    <dependency>
       <groupId>net.sf.json-lib</groupId>
       <artifactId>json-lib</artifactId>
       <classifier>jdk15</classifier>
@@ -63,7 +72,7 @@
       <artifactId>mail</artifactId>
     </dependency>
 
-    
+
     <!--
       dependency> <groupId>org.codehaus.jackson</groupId>
       <artifactId>jackson-core-asl</artifactId> <version>1.4.0</version>
@@ -80,13 +89,13 @@
       <artifactId>httpclient</artifactId>
       <scope>test</scope>
     </dependency>
-    
+
     <dependency>
       <groupId>org.nuxeo.ecm.automation</groupId>
       <artifactId>nuxeo-automation-client</artifactId>
       <scope>test</scope>
     </dependency>
-    
+
     <dependency>
       <groupId>org.nuxeo.ecm.automation</groupId>
       <artifactId>nuxeo-automation-features</artifactId>
@@ -114,7 +123,7 @@
       <artifactId>nuxeo-webengine-core</artifactId>
       <version>${nuxeo.webengine.version}</version>
       <scope>test</scope>
-    </dependency>    
+    </dependency>
     <dependency>
       <groupId>org.mortbay.jetty</groupId>
       <artifactId>jetty</artifactId>

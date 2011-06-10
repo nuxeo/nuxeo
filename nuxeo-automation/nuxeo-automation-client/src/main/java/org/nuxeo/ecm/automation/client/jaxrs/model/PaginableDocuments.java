@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -17,6 +17,13 @@ package org.nuxeo.ecm.automation.client.jaxrs.model;
  */
 public class PaginableDocuments extends Documents {
 
+    public PaginableDocuments() {
+    }
+
+    public PaginableDocuments(int size) {
+        super (size);
+    }
+
     /**
      * @param size
      */
@@ -30,12 +37,12 @@ public class PaginableDocuments extends Documents {
 
 
     private static final long serialVersionUID = 1L;
-    
+
     protected int totalSize;
     protected int pageSize;
     protected int pageCount;
     protected int pageIndex;
-    
+
     public int getTotalSize() {
         return totalSize;
     }
@@ -43,14 +50,30 @@ public class PaginableDocuments extends Documents {
     public int getPageSize() {
         return pageSize;
     }
-    
+
 
     public int getPageCount() {
         return pageCount;
     }
-    
+
     public int getPageIndex() {
         return pageIndex;
+    }
+
+    public void setTotalSize(int totalSize) {
+        this.totalSize = totalSize;
+    }
+
+    public void setPageCount(int pageCount) {
+        this.pageCount = pageCount;
+    }
+
+    public void setPageIndex(int pageIndex) {
+        this.pageIndex = pageIndex;
+    }
+
+    public void setPageSize(int pageSize) {
+        this.pageSize = pageSize;
     }
 
 }

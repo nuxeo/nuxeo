@@ -1,5 +1,5 @@
 package org.nuxeo.ecm.automation.server.jaxrs.io.marshallers;
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -20,26 +20,26 @@ import net.sf.json.JsonConfig;
 import org.nuxeo.ecm.automation.server.jaxrs.io.JsonMarshaller;
 
 public class BeanMarshaller<T> implements JsonMarshaller<T> {
-  
+
     protected final Class<T> clazz;
     protected final JsonConfig config;
-        
+
     public BeanMarshaller(Class<T> clazz) {
         this.clazz = clazz;
         this.config = new JsonConfig();
         this.config.setRootClass(clazz);
     }
-    
+
     @Override
     public String getType() {
         return clazz.getSimpleName().toLowerCase();
     }
-    
+
     @Override
     public Class<T> getJavaType() {
         return clazz;
     }
-    
+
     @Override
     public T resolveReference(String ref) {
         return read(JSONObject.fromObject(ref, config));
@@ -51,18 +51,19 @@ public class BeanMarshaller<T> implements JsonMarshaller<T> {
         write(json, value);
         return json.toString(2);
     }
-    
+
     @Override
     public T read(JSONObject json) {
-        return clazz.cast(JSONObject.toBean(json, config));
+        JSONObject obj = json.optJSONObject("value");
+        if (obj == null) {
+            return null;
+        }
+        return clazz.cast(JSONObject.toBean(obj, config));
     }
-    
+
     @Override
     public void write(JSONObject json, Object value) {
         JSONObject o = JSONObject.fromObject(value, config);
-        for (Object e:o.entrySet()) {
-            Map.Entry<?,?> me = (Map.Entry<?, ?>)e;
-            json.put(me.getKey(), me.getValue());
-        }
+        json.element("value", o);
     }
 }

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -26,7 +26,7 @@ public class OperationDocumentation implements
 
     private static final long serialVersionUID = 1L;
 
-    public final String id;
+    public String id;
 
     /**
      * An array of size multiple of 2. Each pair in the array is the input and
@@ -50,6 +50,13 @@ public class OperationDocumentation implements
     // service home)
     // of the page where the operation is exposed
     public String url;
+
+    /**
+     * Should only be used by marshaller
+     */
+    public OperationDocumentation() {
+
+    }
 
     public OperationDocumentation(String id) {
         this.id = id;
