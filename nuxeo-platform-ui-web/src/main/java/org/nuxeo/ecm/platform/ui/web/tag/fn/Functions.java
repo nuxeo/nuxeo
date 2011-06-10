@@ -38,6 +38,7 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
@@ -266,20 +267,22 @@ public final class Functions {
     }
 
     /**
-     * Returns the full name of a group
+     * Returns the full name of a group from his id
+     * @see org.nuxeo.ecm.platform.ui.web.tag.fn.Functions#groupDisplayName
      *
-     * @param groupName the group id
-     * @return group label, or groupname if it not exists
+     * @param groupId the group id
+     * @return the group full name
      * @since 5.4.3
      */
-    public static String groupFullName(String groupName) {
-        String groupLabel;
+    public static String groupFullName(String groupId) {
         try {
-            groupLabel = getUserManager().getGroup(groupName).getLabel();
+            NuxeoGroup group = getUserManager().getGroup(groupId);
+            String groupLabel = group.getLabel();
+            String groupName = group.getName();
+            return groupDisplayName(groupName, groupLabel);
         } catch (Exception e) {
-            groupLabel = groupName;
+            return groupId;
         }
-        return groupLabel;
     }
 
     // this should be a method of the principal itself
@@ -306,15 +309,15 @@ public final class Functions {
     }
 
     /**
-     * Return the display name of a group
+     * Choose between label or name the best string to display a group
      *
      * @param name the group name
      * @param label the group name
-     * @return label if not empty or null, group name either
+     * @return label if not empty or null, otherwise group name
      * @since 5.4.3
      */
     public static String groupDisplayName(String name, String label) {
-        return label == null || label.length() == 0 ? name : label;
+        return StringUtils.isBlank(label) ? name : label;
     }
 
     public static String dateFormater(String formatLength) {
