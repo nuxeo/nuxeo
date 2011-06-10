@@ -72,6 +72,20 @@
         <groupId>org.nuxeo.runtime</groupId>
         <artifactId>nuxeo-runtime-osgi</artifactId>
         <version>${nuxeo.runtime.version}</version>
+	<exclusions>
+	  <exclusion>
+	    <groupId>org.jboss.jbossas</groupId>
+	    <artifactId>jboss-as-system</artifactId>
+	  </exclusion>
+	  <exclusion>
+	    <groupId>org.jboss.jbossas</groupId>
+	    <artifactId>jboss-as-system-jmx</artifactId>
+	  </exclusion>
+	  <exclusion>
+	    <groupId>org.jboss</groupId>
+	    <artifactId>jboss-common-core</artifactId>
+	  </exclusion>
+	</exclusions>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.runtime</groupId>
@@ -94,6 +108,12 @@
         <groupId>org.nuxeo.runtime</groupId>
         <artifactId>nuxeo-runtime-scripting</artifactId>
         <version>${nuxeo.runtime.version}</version>
+	<exclusions>
+	  <exclusion>
+	    <groupId>org.jboss.remoting</groupId>
+            <artifactId>jboss-remoting</artifactId>
+	  </exclusion>
+	</exclusions>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.runtime</groupId>
