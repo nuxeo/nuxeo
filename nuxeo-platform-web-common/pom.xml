@@ -52,11 +52,6 @@
       <artifactId>nuxeo-runtime-management</artifactId>
     </dependency>
     <dependency>
-      <groupId>javax.ejb</groupId>
-      <artifactId>ejb-api</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>servlet-api</artifactId>
     </dependency>
@@ -99,10 +94,6 @@
       <groupId>apache-httpclient</groupId>
       <artifactId>commons-httpclient</artifactId>
       <version>3.0.1</version>
-    </dependency>
-    <dependency>
-      <groupId>org.jboss.remoting</groupId>
-      <artifactId>jboss-remoting</artifactId>
     </dependency>
 
     <dependency>

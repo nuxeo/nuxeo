@@ -119,11 +119,17 @@
       <scope>compile</scope>
     </dependency>
 
-
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime-launcher</artifactId>
+    </dependency>
+    
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <scope>compile</scope>
     </dependency>
   </dependencies>
+
+
 </project>

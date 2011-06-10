@@ -25,11 +25,15 @@ import java.util.List;
 
 import javax.servlet.ServletException;
 
-import org.jboss.remoting.transport.coyote.ClientAbortException;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
 
 public class ExceptionHelper {
+
+    /**
+     * 
+     */
+    private static final String CLIENT_ABORT_EXCEPTION = "ClientAbortException";
 
     private ExceptionHelper() {
     }
@@ -77,23 +81,22 @@ public class ExceptionHelper {
     }
 
     public static boolean isClientAbortError(Throwable t) {
-        if (t instanceof ClientAbortException || t instanceof SocketException) {
+        if (t instanceof SocketException) {
             return true;
-        } else if (t.getCause() instanceof ClientAbortException
-                || t.getCause() instanceof SocketException) {
+        } else if (t.getCause() instanceof SocketException) {
             return true;
         } else if (t != null) {
             // handle all IOException that are ClientAbortException by looking
             // at their class name since the package name is not the same for
             // jboss, glassfish, tomcat and jetty and we don't want to add
             // implementation specific build dependencies to this project
-            if (ClientAbortException.class.getSimpleName().equals(
+            if (CLIENT_ABORT_EXCEPTION.equals(
                     t.getClass().getSimpleName())) {
                 return true;
             }
             Throwable cause = t.getCause();
             if (cause != null
-                    && ClientAbortException.class.getSimpleName().equals(
+                    && CLIENT_ABORT_EXCEPTION.equals(
                             cause.getClass().getSimpleName())) {
                 return true;
             }
