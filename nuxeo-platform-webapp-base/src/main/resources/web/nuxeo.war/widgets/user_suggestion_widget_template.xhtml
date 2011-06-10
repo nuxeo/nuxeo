@@ -43,7 +43,7 @@
           </f:subview>
           <f:subview rendered="#{info.type == 'GROUP_TYPE'}">
             <h:graphicImage value="/icons/group.gif" alt="group.gif" />
-            <h:commandLink value="#{nxu:groupDisplayName(view.id, view.entry[groupSchema].grouplabel)}"
+            <h:commandLink value="#{nxu:groupDisplayName(info.id, info.entry[groupSchema].grouplabel)}"
                 action="#{groupManagementActions.viewGroup(info.id)}" />
           </f:subview>
           <f:subview rendered="#{empty info.type}">
