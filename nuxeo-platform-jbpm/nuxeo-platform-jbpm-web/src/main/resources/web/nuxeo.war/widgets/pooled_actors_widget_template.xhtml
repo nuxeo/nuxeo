@@ -7,6 +7,7 @@
   xmlns:rich="http://richfaces.org/rich">
 
   <c:set var="userSchema" value="#{userManager.userSchemaName}" />
+  <c:set var="groupSchema" value="#{userManager.groupSchemaName}" />
 
   <c:if test="#{widget.mode != 'edit'}">
 
@@ -20,7 +21,7 @@
           </f:subview>
           <f:subview rendered="#{info.type == 'GROUP_TYPE'}">
             <h:graphicImage value="/icons/group.gif" alt="group.gif" />
-            <h:outputText value="#{info.id}" />
+            <h:outputText value="#{nxu:groupDisplayName(info.id, info.entry[groupSchema].grouplabel)}" />
           </f:subview>
           <f:subview rendered="#{empty info.type}">
             <h:outputText value="#{item}" />
