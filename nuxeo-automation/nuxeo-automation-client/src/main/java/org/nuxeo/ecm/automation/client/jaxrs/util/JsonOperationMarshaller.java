@@ -74,9 +74,7 @@ public class JsonOperationMarshaller {
 
     private static void readParams(JsonParser jp, OperationDocumentation op) throws Exception {
         JsonToken tok = jp.nextToken();  // skip [
-        if (tok != JsonToken.END_ARRAY) {
-            op.params = new ArrayList<OperationDocumentation.Param>();
-        } else {
+        if (tok == JsonToken.END_ARRAY) {
             return;
         }
         do {

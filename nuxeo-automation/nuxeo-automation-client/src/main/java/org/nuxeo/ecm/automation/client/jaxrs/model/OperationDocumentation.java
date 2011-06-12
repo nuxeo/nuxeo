@@ -12,6 +12,7 @@
 package org.nuxeo.ecm.automation.client.jaxrs.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -55,12 +56,13 @@ public class OperationDocumentation implements
      * Should only be used by marshaller
      */
     public OperationDocumentation() {
-
+        this (null);
     }
 
     public OperationDocumentation(String id) {
         this.id = id;
         this.url = id;
+        this.params = new ArrayList<OperationDocumentation.Param>();
     }
 
     public int compareTo(OperationDocumentation o) {
