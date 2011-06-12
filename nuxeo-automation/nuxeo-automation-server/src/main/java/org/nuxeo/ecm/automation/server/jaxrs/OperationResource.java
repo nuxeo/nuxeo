@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -13,17 +13,10 @@ package org.nuxeo.ecm.automation.server.jaxrs;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Response;
-
-import net.sf.json.JSONObject;
 
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
-import org.nuxeo.ecm.automation.OperationDocumentation;
 import org.nuxeo.ecm.automation.OperationType;
-import org.nuxeo.ecm.automation.core.doc.JSONExporter;
-import org.nuxeo.ecm.automation.server.jaxrs.io.JsonMarshalling;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -40,37 +33,20 @@ public class OperationResource extends ExecutableResource {
     @GET
     @Produces("application/json")
     public Object doGet() {
-        OperationDocumentation doc = type.getDocumentation();
-        JSONObject json = JSONExporter.toJSON(doc);
-        return Response.ok(json).type("application/json").build();
+        return type.getDocumentation();
     }
 
     @Override
     public Object execute(ExecutionRequest xreq) throws Exception {
         OperationContext ctx = xreq.createContext(request, getCoreSession());
         Object result = service.run(ctx, xreq.createChain(type));
-        if (result == null) {
-            return null;
-        }
-        Class<?> resultClass = result.getClass();
-        JsonMarshalling jm = marshalling();
-        if (!jm.canMarshall(resultClass)) {
-            return result;
-        }
-        JSONObject json = new JSONObject();
-        json.element("entity-type", entityType(resultClass));
-        jm.write(resultClass, json, result);
-        return json;
+        return result;
     }
 
     protected static String entityType(Class<?> clazz) {
         return clazz.getSimpleName().toLowerCase();
     }
 
-    protected static JsonMarshalling marshalling() {
-        return Framework.getLocalService(JsonMarshalling.class);
-    }
-        
     @Override
     public String getId() {
         return type.getId();

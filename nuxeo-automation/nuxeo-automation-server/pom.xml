@@ -58,7 +58,7 @@
       <artifactId>jackson-mapper-asl</artifactId>
     </dependency>
     <!-- must be removed - since will be replaced by jackson -->
-    <dependency>
+    <!--dependency>
       <groupId>net.sf.json-lib</groupId>
       <artifactId>json-lib</artifactId>
       <classifier>jdk15</classifier>
@@ -66,18 +66,16 @@
     <dependency>
       <groupId>net.sf.ezmorph</groupId>
       <artifactId>ezmorph</artifactId>
+    </dependency-->
+    <dependency>
+      <groupId>com.caucho</groupId>
+      <artifactId>hessian</artifactId>
+      <version>4.0.7</version>
     </dependency>
     <dependency>
       <groupId>javax.mail</groupId>
       <artifactId>mail</artifactId>
     </dependency>
-
-
-    <!--
-      dependency> <groupId>org.codehaus.jackson</groupId>
-      <artifactId>jackson-core-asl</artifactId> <version>1.4.0</version>
-      <optional>true</optional> </dependency
-    -->
     <!-- only for tests -->
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>

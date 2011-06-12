@@ -34,6 +34,7 @@ import junit.framework.Assert;
 import org.hamcrest.number.IsCloseTo;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
@@ -43,7 +44,6 @@ import org.nuxeo.ecm.automation.client.jaxrs.RemoteException;
 import org.nuxeo.ecm.automation.client.jaxrs.Session;
 import org.nuxeo.ecm.automation.client.jaxrs.adapters.DocumentService;
 import org.nuxeo.ecm.automation.client.jaxrs.impl.HttpAutomationClient;
-import org.nuxeo.ecm.automation.client.jaxrs.model.BeanInput;
 import org.nuxeo.ecm.automation.client.jaxrs.model.Blobs;
 import org.nuxeo.ecm.automation.client.jaxrs.model.DateInput;
 import org.nuxeo.ecm.automation.client.jaxrs.model.DateUtils;
@@ -70,7 +70,9 @@ import org.nuxeo.ecm.automation.core.operations.document.Query;
 import org.nuxeo.ecm.automation.core.operations.document.UpdateDocument;
 import org.nuxeo.ecm.automation.core.operations.services.DocumentPageProviderOperation;
 import org.nuxeo.ecm.automation.server.AutomationServer;
+import org.nuxeo.ecm.automation.server.jaxrs.io.ObjectCodecService;
 import org.nuxeo.ecm.webengine.test.WebEngineFeature;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -90,7 +92,6 @@ import com.google.inject.Inject;
         "org.nuxeo.ecm.automation.server", "org.nuxeo.ecm.automation.features",
         "org.nuxeo.ecm.platform.query.api" })
 @LocalDeploy({ "org.nuxeo.ecm.automation.server:test-bindings.xml",
-        "org.nuxeo.ecm.automation.server:test-marshalling.xml",
         "org.nuxeo.ecm.automation.server:test-mvalues.xml" })
 // @RepositoryConfig(cleanup=Granularity.METHOD)
 public class RestTest {
@@ -112,15 +113,12 @@ public class RestTest {
         return file;
     }
 
-    @BeforeClass
-    public static void setupClientMarshalling() {
-        JsonMarshalling.addMarshaller(new MyObjectClientMarshaller());
-    }
-
     // ------ Tests comes here --------
 
     @BeforeClass
-    public static void connect() {
+    public static void connect() throws Exception {
+        Framework.getLocalService(ObjectCodecService.class).addCodec(new MyObjectCodec());
+        Framework.getLocalService(AutomationService.class).putOperation(MyObjectOperation.class);
         try {
             client = new HttpAutomationClient(
                     "http://localhost:18080/automation");
@@ -633,6 +631,15 @@ public class RestTest {
     }
 
     @Test
+    public void testCodecs() throws Exception {
+        JsonMarshalling.addMarshaller(new MyObjectMarshaller());
+        //session.getClient().addCodec(new MyObjectCodec());
+        MyObject msg = (MyObject)session.newRequest(MyObjectOperation.ID).execute();
+        assertEquals("hello world", msg.getMessage());
+    }
+
+    @Ignore("No custom inputs are supported for now. and may not be supported in future. Use context/params to pass structured objects")
+    @Test
     public void testReturnValues() throws Exception {
         Object r;
         r = session.newRequest(ReturnOperation.ID).setInput(
@@ -653,20 +660,6 @@ public class RestTest {
         Date now = DateUtils.parseDate(DateUtils.formatDate(new Date(0)));
         r = session.newRequest(ReturnOperation.ID).setInput(new DateInput(now)).execute();
         assertThat((Date) r, is(now));
-    }
-
-    @Test
-    public void testMyObject() throws Exception {
-        MyObject mo = new MyObject();
-        Object r;
-        try {
-        r = session.newRequest(ReturnOperation.ID).setInput(
-                new BeanInput<MyObject>(MyObject.class, mo)).execute();
-        assertThat((MyObject) r, is(mo));
-        } catch (RemoteException e) {
-            System.out.println(e.getStatus()+" - "+e.getType()+" - "+e.getMessage());
-            System.out.println(e.getRemoteStackTrace());
-        }
     }
 
     @Test

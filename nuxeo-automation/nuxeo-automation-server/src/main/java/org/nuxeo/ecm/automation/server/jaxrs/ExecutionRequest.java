@@ -16,8 +16,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import net.sf.json.JSONObject;
-
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationParameters;
@@ -36,6 +34,10 @@ public class ExecutionRequest {
 
     protected Map<String, Object> params;
 
+    public ExecutionRequest() {
+        this (null);
+    }
+
     public ExecutionRequest(Object input) {
         ctx = new RestOperationContext();
         this.input = input;
@@ -50,7 +52,7 @@ public class ExecutionRequest {
         return input;
     }
 
-    public void setContextParam(String key, JSONObject value) {
+    public void setContextParam(String key, Object value) {
         ctx.put(key, value);
     }
 
@@ -58,7 +60,7 @@ public class ExecutionRequest {
         ctx.put(key, value);
     }
 
-    public void setParam(String key, JSONObject jsonObject) {
+    public void setParam(String key, Object jsonObject) {
         params.put(key, jsonObject);
     }
 

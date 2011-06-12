@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -27,13 +27,12 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.automation.core.util.PaginableDocumentModelList;
+import org.nuxeo.ecm.automation.server.jaxrs.io.JsonWriter;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 
@@ -44,8 +43,6 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 @Produces({ "application/json+nxentity", "application/json" })
 public class JsonDocumentListWriter implements
         MessageBodyWriter<DocumentModelList> {
-
-    public static final String DOCUMENT_PROPERTIES_HEADER = "X-NXDocumentProperties";
 
     private static final Log log = LogFactory.getLog(JsonDocumentListWriter.class);
 
@@ -64,37 +61,45 @@ public class JsonDocumentListWriter implements
 
     public void writeTo(DocumentModelList docs, Class<?> arg1, Type arg2,
             Annotation[] arg3, MediaType arg4,
-            MultivaluedMap<String, Object> arg5, OutputStream arg6)
+            MultivaluedMap<String, Object> arg5, OutputStream out)
             throws IOException, WebApplicationException {
         try {
-            JSONObject json = new JSONObject();
-            JSONArray ar = new JSONArray();
-            List<String> props = headers.getRequestHeader(DOCUMENT_PROPERTIES_HEADER);
+            List<String> props = headers.getRequestHeader(JsonDocumentWriter.DOCUMENT_PROPERTIES_HEADER);
             String[] schemas = null;
             if (props != null && !props.isEmpty()) {
                 schemas = StringUtils.split(props.get(0), ',', true);
             }
-            for (DocumentModel doc : docs) {
-                ar.add(JsonDocumentWriter.getJSON(doc, schemas));
-            }
-
-            json.element("entity-type", "documents");
-
-            if (docs instanceof PaginableDocumentModelList) {
-                PaginableDocumentModelList provider = (PaginableDocumentModelList) docs;
-                json.element("isPaginable", true);
-                json.element("totalSize", provider.totalSize());
-                json.element("pageIndex", provider.getCurrentPageIndex());
-                json.element("pageSize", provider.getPageSize());
-                json.element("pageCount", provider.getNumberOfPages());
-            }
-
-            json.element("entries", ar);
-
-            arg6.write(json.toString(2).getBytes("UTF-8"));
+            writeDocuments(out, docs, schemas);
         } catch (Exception e) {
             log.error("Failed to wserialize document list", e);
             throw new WebApplicationException(500);
         }
     }
+
+    public static void writeDocuments(OutputStream out, DocumentModelList docs, String[] schemas)
+            throws Exception {
+        writeDocuments(JsonWriter.createGenerator(out), docs, schemas);
+    }
+
+    public static void writeDocuments(JsonGenerator jg, DocumentModelList docs, String[] schemas)
+            throws Exception {
+        jg.writeStartObject();
+        jg.writeStringField("entity-type", "documents");
+        if (docs instanceof PaginableDocumentModelList) {
+            PaginableDocumentModelList provider = (PaginableDocumentModelList) docs;
+            jg.writeBooleanField("isPaginable", true);
+            jg.writeNumberField("totalSize", provider.totalSize());
+            jg.writeNumberField("pageIndex", provider.getCurrentPageIndex());
+            jg.writeNumberField("pageSize", provider.getPageSize());
+            jg.writeNumberField("pageCount", provider.getNumberOfPages());
+        }
+        jg.writeArrayFieldStart("entries");
+        for (DocumentModel doc : docs) {
+            JsonDocumentWriter.writeDocument(jg, doc, schemas);
+        }
+        jg.writeEndArray();
+        jg.writeEndObject();
+        jg.flush();
+    }
+
 }

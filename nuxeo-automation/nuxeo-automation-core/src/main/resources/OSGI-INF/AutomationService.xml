@@ -79,8 +79,8 @@
       accept="java.lang.String"
       produce="org.nuxeo.ecm.automation.core.util.Properties" />
     <adapter
-      class="org.nuxeo.ecm.automation.core.impl.adapters.JSONObjectToProperties"
-      accept="net.sf.json.JSONObject"
+      class="org.nuxeo.ecm.automation.core.impl.adapters.JsonNodeToProperties"
+      accept="org.codehaus.jackson.JsonNode"
       produce="org.nuxeo.ecm.automation.core.util.Properties" />
     <adapter class="org.nuxeo.ecm.automation.core.impl.adapters.StringToURL"
       accept="java.lang.String" produce="java.net.URL" />

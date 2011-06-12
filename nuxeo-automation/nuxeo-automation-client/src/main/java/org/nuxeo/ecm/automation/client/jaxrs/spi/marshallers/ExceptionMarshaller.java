@@ -34,11 +34,6 @@ public class ExceptionMarshaller implements JsonMarshaller<RemoteException> {
         return RemoteException.class;
     }
 
-    @Override
-    public String getReference(RemoteException info) {
-        throw new UnsupportedOperationException();
-    }
-
 
     public static RemoteException readException(String content) throws Exception {
         JsonParser jp = JsonMarshalling.getFactory().createJsonParser(content);

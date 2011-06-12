@@ -21,38 +21,46 @@ import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
+import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
+import javax.ws.rs.ext.Provider;
 
-import net.sf.json.JSONObject;
+import org.codehaus.jackson.JsonGenerator;
+import org.codehaus.jackson.JsonNode;
+import org.nuxeo.ecm.automation.server.jaxrs.io.JsonWriter;
 
 /**
- * @author matic
+ * @author bstefanescu
  *
  */
-public class JsonObjectWriter implements MessageBodyWriter<JSONObject> {
+@Provider
+@Produces("application/json")
+public class JsonTreeWriter implements MessageBodyWriter<JsonNode> {
 
     @Override
     public boolean isWriteable(Class<?> type, Type genericType,
             Annotation[] annotations, MediaType mediaType) {
-        return JSONObject.class.isAssignableFrom(type);
+        return JsonNode.class.isAssignableFrom(type);
     }
 
     @Override
-    public long getSize(JSONObject t, Class<?> type, Type genericType,
+    public long getSize(JsonNode t, Class<?> type, Type genericType,
             Annotation[] annotations, MediaType mediaType) {
         return -1;
     }
 
     @Override
-    public void writeTo(JSONObject t, Class<?> type, Type genericType,
+    public void writeTo(JsonNode t, Class<?> type, Type genericType,
             Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream) throws IOException,
             WebApplicationException {
-        entityStream.write(t.toString(2).getBytes("UTF-8"));
+        JsonGenerator jg = JsonWriter.getFactory().createJsonGenerator(entityStream);
+        jg.writeTree(t);
+        jg.flush();
     }
 
 }

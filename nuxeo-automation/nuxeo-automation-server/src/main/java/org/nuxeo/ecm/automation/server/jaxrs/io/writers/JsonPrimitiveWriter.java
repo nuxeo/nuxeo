@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -22,7 +22,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
 
-import net.sf.json.JSONObject;
+import org.nuxeo.ecm.automation.server.jaxrs.io.JsonWriter;
 
 @Produces( { "application/json+nxentity", "application/json" })
 public class JsonPrimitiveWriter implements MessageBodyWriter<Object> {
@@ -36,10 +36,10 @@ public class JsonPrimitiveWriter implements MessageBodyWriter<Object> {
     @Override
     public boolean isWriteable(Class<?> typeClass, Type arg1,
             Annotation[] arg2, MediaType arg3) {
-        if (String.class.isAssignableFrom(typeClass)) {
+        if (typeClass == String.class) {
             return true;
         }
-        if (Boolean.class.isAssignableFrom(typeClass)) {
+        if (typeClass == Boolean.class) {
             return true;
         }
         if (Number.class.isAssignableFrom(typeClass)) {
@@ -53,23 +53,7 @@ public class JsonPrimitiveWriter implements MessageBodyWriter<Object> {
             Annotation[] arg3, MediaType arg4,
             MultivaluedMap<String, Object> arg5, OutputStream out)
             throws IOException, WebApplicationException {
-        JSONObject json = new JSONObject();
-        json.element("entity-type", "primitive");
-        if (value instanceof Number) {
-            if (value instanceof Double) {
-                json.element("type", "double");
-            } else if (value instanceof Long) {
-                json.element("type", "long");
-            } else {
-                json.element("type", "integer");
-            }
-        } else if (value instanceof String) {
-            json.element("type", "string");
-        } else if (value instanceof Boolean) {
-            json.element("type", "boolean");
-        }
-        json.element("value", value);
-        out.write(json.toString(2).getBytes("UTF-8"));
+        JsonWriter.writePrimitive(out, value);
     }
 
 }

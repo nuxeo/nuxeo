@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -56,7 +56,6 @@ public class Request extends HashMap<String, String> {
 
     protected Object entity;
 
-    protected Object result;
 
     public Request(int method, String url) {
         this.method = method;
@@ -100,10 +99,6 @@ public class Request extends HashMap<String, String> {
 
     public String asStringEntity() {
         return isMultiPart ? null : (String) entity;
-    }
-
-    public Object getResult() {
-        return result;
     }
 
     /**

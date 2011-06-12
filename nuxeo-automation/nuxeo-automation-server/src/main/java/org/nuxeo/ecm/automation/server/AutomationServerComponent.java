@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -17,8 +17,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.nuxeo.ecm.automation.server.jaxrs.io.JsonMarshalling;
-import org.nuxeo.ecm.automation.server.jaxrs.io.JsonRequestReader;
+import org.nuxeo.ecm.automation.server.jaxrs.io.CodecDescriptor;
+import org.nuxeo.ecm.automation.server.jaxrs.io.ObjectCodecService;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -32,22 +32,24 @@ public class AutomationServerComponent extends DefaultComponent implements
 
     protected static final String XP_BINDINGS = "bindings";
 
-    protected static final String XP_MARSHALLERS = "marshallers";
-    
+    protected static final String XP_CODECS = "codecs";
+
     protected Map<String, RestBinding> bindings;
 
     protected volatile Map<String, RestBinding> lookup;
-    
-    protected JsonMarshalling marshalling = new JsonMarshalling();
+
+    protected ObjectCodecService codecs;
 
     @Override
     public void activate(ComponentContext context) throws Exception {
         bindings = new HashMap<String, RestBinding>();
+        codecs = new ObjectCodecService();
     }
 
     @Override
     public void deactivate(ComponentContext context) throws Exception {
         bindings = null;
+        codecs = null;
     }
 
     @Override
@@ -57,9 +59,9 @@ public class AutomationServerComponent extends DefaultComponent implements
         if (XP_BINDINGS.equals(extensionPoint)) {
             RestBinding binding = (RestBinding) contribution;
             addBinding(binding);
-        } else if (XP_MARSHALLERS.equals(extensionPoint)) {
-            RestMarshaller marshaller = (RestMarshaller) contribution;
-            marshalling.addMarshaller(marshaller.newInstance());
+        } else if (XP_CODECS.equals(extensionPoint)) {
+            CodecDescriptor codec = (CodecDescriptor) contribution;
+            codecs.addCodec(codec.newInstance());
         }
     }
 
@@ -70,9 +72,9 @@ public class AutomationServerComponent extends DefaultComponent implements
         if (XP_BINDINGS.equals(extensionPoint)) {
             RestBinding binding = (RestBinding) contribution;
             removeBinding(binding);
-        } else if (XP_MARSHALLERS.equals(extensionPoint)) {
-            RestMarshaller marshaller = (RestMarshaller) contribution;
-            marshalling.removeMarshaller(marshaller.clazz);
+        } else if (XP_CODECS.equals(extensionPoint)) {
+            CodecDescriptor codec = (CodecDescriptor) contribution;
+            codecs.removeCodec(codec.newInstance().getJavaType());
         }
     }
 
@@ -81,10 +83,14 @@ public class AutomationServerComponent extends DefaultComponent implements
         if (AutomationServer.class.isAssignableFrom(adapter)) {
             return adapter.cast(this);
         }
-        if (JsonMarshalling.class.isAssignableFrom(adapter)) {
-            return adapter.cast(marshalling);
+        if (ObjectCodecService.class.isAssignableFrom(adapter)) {
+            return adapter.cast(codecs);
         }
         return null;
+    }
+
+    public ObjectCodecService getCodecs() {
+        return codecs;
     }
 
     public RestBinding getOperationBinding(String name) {
@@ -116,7 +122,7 @@ public class AutomationServerComponent extends DefaultComponent implements
         lookup = null;
         return result;
     }
-    
+
     public boolean accept(String name, boolean isChain, HttpServletRequest req) {
         if (isChain) {
             name = "Chain." + name;
@@ -164,5 +170,5 @@ public class AutomationServerComponent extends DefaultComponent implements
         return _lookup;
     }
 
-    
+
 }

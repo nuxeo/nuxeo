@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -20,12 +20,14 @@ import org.nuxeo.ecm.automation.server.jaxrs.io.JsonRequestReader;
 import org.nuxeo.ecm.automation.server.jaxrs.io.MultiPartRequestReader;
 import org.nuxeo.ecm.automation.server.jaxrs.io.UrlEncodedFormRequestReader;
 import org.nuxeo.ecm.automation.server.jaxrs.io.writers.BlobsWriter;
+import org.nuxeo.ecm.automation.server.jaxrs.io.writers.JsonAdapterWriter;
 import org.nuxeo.ecm.automation.server.jaxrs.io.writers.JsonAutomationInfoWriter;
 import org.nuxeo.ecm.automation.server.jaxrs.io.writers.JsonDocumentListWriter;
 import org.nuxeo.ecm.automation.server.jaxrs.io.writers.JsonDocumentWriter;
 import org.nuxeo.ecm.automation.server.jaxrs.io.writers.JsonExceptionWriter;
 import org.nuxeo.ecm.automation.server.jaxrs.io.writers.JsonLoginInfoWriter;
-import org.nuxeo.ecm.automation.server.jaxrs.io.writers.JsonObjectWriter;
+import org.nuxeo.ecm.automation.server.jaxrs.io.writers.JsonOperationWriter;
+import org.nuxeo.ecm.automation.server.jaxrs.io.writers.JsonTreeWriter;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -44,7 +46,7 @@ public class AutomationModule extends Application {
 
     protected static final Set<Object> singletons =
             setupSingletons();
-    
+
     protected static Set<Object> setupSingletons() {
         Set<Object> result = new HashSet<Object>();
         result.add(new JsonRequestReader());
@@ -54,15 +56,17 @@ public class AutomationModule extends Application {
         result.add(new JsonDocumentListWriter());
         result.add(new BlobsWriter());
         result.add(new JsonLoginInfoWriter());
+        result.add(new JsonOperationWriter());
         result.add(new UrlEncodedFormRequestReader());
-        result.add(new JsonObjectWriter());
+        result.add(new JsonTreeWriter());
+        result.add(new JsonAdapterWriter());
         return result;
     }
-    
+
     public static void addSingleton(Object singleton) {
         singletons.add(singleton);
     }
-    
+
     @Override
     public Set<Object> getSingletons() {
         return singletons;

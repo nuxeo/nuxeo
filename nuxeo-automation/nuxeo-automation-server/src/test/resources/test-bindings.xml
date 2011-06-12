@@ -10,6 +10,11 @@
     </binding>
   </extension>
 
+  <extension target="org.nuxeo.ecm.automation.server.AutomationServer"
+        point="codecs">
+        <codec class="org.nuxeo.ecm.automation.server.test.MyObjectCodec" />
+  </extension>
+
   <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
     point="chains">
     <chain id="testchain">
@@ -83,5 +88,5 @@
     <operation
       class="org.nuxeo.ecm.automation.server.test.ReturnOperation" />
   </extension>
-    
+  
 </component>

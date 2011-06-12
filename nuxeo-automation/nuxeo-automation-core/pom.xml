@@ -77,16 +77,15 @@
       <groupId>javax.script</groupId>
       <artifactId>script-api</artifactId>
     </dependency>
-    <!-- only for documentation generation -->
+    <!-- only for jsonnodetoproperties adapter shoul be moved in server module -->
     <dependency>
-      <groupId>net.sf.json-lib</groupId>
-      <artifactId>json-lib</artifactId>
-      <classifier>jdk15</classifier>
-    </dependency>
+      <groupId>org.codehaus.jackson</groupId>
+      <artifactId>jackson-core-asl</artifactId>
+    </dependency>    
     <dependency>
-      <groupId>net.sf.ezmorph</groupId>
-      <artifactId>ezmorph</artifactId>
-    </dependency>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
+    </dependency>    
     <!-- only for tests -->
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>

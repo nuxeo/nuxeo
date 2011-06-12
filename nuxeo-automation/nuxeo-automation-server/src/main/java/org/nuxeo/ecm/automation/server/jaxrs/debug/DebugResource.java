@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -27,7 +27,7 @@ import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.OperationChainContribution;
-import org.nuxeo.ecm.automation.core.doc.JSONExporter;
+import org.nuxeo.ecm.automation.server.jaxrs.io.JsonWriter;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -54,7 +54,7 @@ public class DebugResource {
     }
 
     public String getOperationsListAsJson() throws Exception {
-        return JSONExporter.toJSON();
+        return JsonWriter.exportOperations();
     }
 
     @GET
@@ -67,13 +67,13 @@ public class DebugResource {
     @Produces("text/plain")
     @Path("doc")
     public Object doGetText() throws Exception {
-        return JSONExporter.toJSON();
+        return getOperationsListAsJson();
     }
 
     @GET
     @Produces("application/json")
     public Object doGetJSON() throws Exception {
-        return JSONExporter.toJSON();
+        return getOperationsListAsJson();
     }
 
     @POST

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -28,15 +28,13 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONNull;
-import net.sf.json.JSONObject;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.codehaus.jackson.JsonGenerator;
 import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
 import org.nuxeo.common.utils.StringUtils;
+import org.nuxeo.ecm.automation.server.jaxrs.io.JsonWriter;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.Lock;
@@ -56,6 +54,8 @@ import org.nuxeo.ecm.core.schema.utils.DateParser;
 @Produces({ "application/json+nxentity", "application/json" })
 public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
 
+    public static final String DOCUMENT_PROPERTIES_HEADER = "X-NXDocumentProperties";
+
     private static final Log log = LogFactory.getLog(JsonDocumentWriter.class);
 
     @Context
@@ -73,71 +73,78 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
 
     public void writeTo(DocumentModel doc, Class<?> arg1, Type arg2,
             Annotation[] arg3, MediaType arg4,
-            MultivaluedMap<String, Object> arg5, OutputStream arg6)
+            MultivaluedMap<String, Object> arg5, OutputStream out)
             throws IOException, WebApplicationException {
         try {
             // schema names: dublincore, file, ... or *
-            List<String> props = headers.getRequestHeader("X-NXDocumentProperties");
-            JSONObject obj = null;
-            if (props == null || props.isEmpty()) {
-                obj = getJSON(doc, null);
-            } else {
-                obj = getJSON(doc, StringUtils.split(props.get(0), ',', true));
+            List<String> props = headers.getRequestHeader(DOCUMENT_PROPERTIES_HEADER);
+            String[] schemas = null;
+            if (props != null && !props.isEmpty()) {
+                schemas = StringUtils.split(props.get(0), ',', true);
             }
-            arg6.write(obj.toString(2).getBytes("UTF-8"));
+            writeDocument(out, doc, schemas);
+        } catch (IOException e) {
+            log.error("Failed to serialize document", e);
+            throw e;
         } catch (Exception e) {
             log.error("Failed to serialize document", e);
-            throw new WebApplicationException(500);
+            throw new WebApplicationException(e, 500);
         }
     }
 
-    public static JSONObject getJSON(DocumentModel doc, String[] schemas)
+
+    public static void writeDocument(OutputStream out, DocumentModel doc, String[] schemas)
             throws Exception {
-        JSONObject json = new JSONObject();
-        json.element("entity-type", "document");
-        json.element("repository", doc.getRepositoryName());
-        json.element("uid", doc.getId());
-        json.element("path", doc.getPathAsString());
-        json.element("type", doc.getType());
-        json.element("state", doc.getCurrentLifeCycleState());
-        json.element("lock", doc.getLock()); // old
+        writeDocument(JsonWriter.createGenerator(out), doc, schemas);
+    }
+
+    public static void writeDocument(JsonGenerator jg, DocumentModel doc, String[] schemas)
+            throws Exception {
+        jg.writeStartObject();
+        jg.writeStringField("entity-type", "document");
+        jg.writeStringField("repository", doc.getRepositoryName());
+        jg.writeStringField("uid", doc.getId());
+        jg.writeStringField("path", doc.getPathAsString());
+        jg.writeStringField("type", doc.getType());
+        jg.writeStringField("state", doc.getCurrentLifeCycleState());
         Lock lock = doc.getLockInfo();
         if (lock != null) {
-            json.element("lockOwner", lock.getOwner());
-            json.element(
+            jg.writeStringField("lockOwner", lock.getOwner());
+            jg.writeStringField(
                     "lockCreated",
                     ISODateTimeFormat.dateTime().print(
                             new DateTime(lock.getCreated())));
+        } else {
+            jg.writeStringField("lock", doc.getLock()); // old
         }
-        json.element("title", doc.getTitle());
+        jg.writeStringField("title", doc.getTitle());
         Calendar cal = (Calendar) doc.getPart("dublincore").getValue("modified");
         if (cal != null) {
-            json.element("lastModified",
+            jg.writeStringField("lastModified",
                     DateParser.formatW3CDateTime(cal.getTime()));
         }
 
-        if (schemas == null || schemas.length == 0) {
-            return json;
+
+        if (schemas != null && schemas.length > 0) {
+            jg.writeObjectFieldStart("properties");
+            if (schemas.length == 1 && "*".equals(schemas[0])) {
+                // full document
+                for (String schema : doc.getSchemas()) {
+                    writeProperties(jg, doc, schema);
+                }
+            } else {
+                for (String schema : schemas) {
+                    writeProperties(jg, doc, schema);
+                }
+            }
+            jg.writeEndObject();
         }
 
-        JSONObject props = new JSONObject();
-        if (schemas.length == 1 && "*".equals(schemas[0])) { // full
-            // document
-            for (String schema : doc.getSchemas()) {
-                addSchema(props, doc, schema);
-            }
-        } else {
-            for (String schema : schemas) {
-                addSchema(props, doc, schema);
-            }
-        }
-
-        json.element("properties", props);
-        return json;
+        jg.writeEndObject();
+        jg.flush();
     }
 
-    protected static void addSchema(JSONObject json, DocumentModel doc,
-            String schema) throws Exception {
+    protected static void writeProperties(JsonGenerator jg, DocumentModel doc, String schema) throws Exception {
         DocumentPart part = doc.getPart(schema);
         if (part==null) {
             return;
@@ -146,82 +153,111 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
         if (prefix == null || prefix.length() == 0) {
             prefix = schema;
         }
-        prefix += ':';
+        prefix = prefix.concat(":");
         String filesBaseUrl = "files/" + doc.getId() + "?path=";
         for (Property p : part.getChildren()) {
-            json.element(prefix + p.getField().getName().getLocalName(),
-                    propertyToJsonValue(filesBaseUrl, p));
+            jg.writeFieldName(prefix + p.getField().getName().getLocalName());
+            writePropertyValue(jg, p, filesBaseUrl);
         }
     }
 
     /**
-     * Converts the given core property to JSON format. The given filesBaseUrl
+     * Converts the value of the given core property to JSON format. The given filesBaseUrl
      * is the baseUrl that can be used to locate blob content and is useful to
      * generate blob urls.
      */
-    protected static Object propertyToJsonValue(final String filesBaseUrl,
-            Property prop) throws Exception {
+    protected static void writePropertyValue(JsonGenerator jg, Property prop, String filesBaseUrl) throws Exception {
         org.nuxeo.ecm.core.schema.types.Type type = prop.getType();
         if (prop.isScalar()) {
-            Object v = prop.getValue();
-            if (v == null) {
-                return JSONNull.getInstance();
-            }
-            return type.encode(v);
+            writeScalarPropertyValue(jg, prop);
         } else if (prop.isList()) {
-            if (prop instanceof ArrayProperty) {
-                Object[] ar = (Object[]) prop.getValue();
-                if (ar == null) {
-                    return new JSONArray();
-                }
-                JSONArray jsar = new JSONArray();
-                for (Object o : ar) {
-                    jsar.add(((ListType)type).getFieldType().encode(o));
-                }
-                return jsar;
-            } else {
-                ListProperty listp = (ListProperty) prop;
-                JSONArray jsar = new JSONArray();
-                for (Property p : listp.getChildren()) {
-                    jsar.add(propertyToJsonValue(filesBaseUrl, p));
-                }
-                return jsar;
-            }
+            writeListPropertyValue(jg, prop, filesBaseUrl);
         } else {
             if (prop.isPhantom()) {
-                return JSONNull.getInstance();
-            }
-            if (prop instanceof BlobProperty) { // a blob
-                Blob blob = (Blob) ((BlobProperty) prop).getValue();
-                JSONObject jsob = new JSONObject();
-                String v = blob.getFilename();
-                jsob.element("name", v == null ? JSONNull.getInstance() : v);
-                v = blob.getMimeType();
-                jsob.element("mime-type", v == null ? JSONNull.getInstance()
-                        : v);
-                v = blob.getEncoding();
-                jsob.element("encoding", v == null ? JSONNull.getInstance() : v);
-                v = blob.getDigest();
-                jsob.element("digest", v == null ? JSONNull.getInstance() : v);
-                v = Long.toString(blob.getLength());
-                jsob.element("length", v);
-                jsob.element(
-                        "data",
-                        filesBaseUrl
-                                + URLEncoder.encode(prop.getPath(), "UTF-8"));
-                return jsob;
+                jg.writeNull();
+            } else if (prop instanceof BlobProperty) { // a blob
+                writeBlobPropertyValue(jg, prop, filesBaseUrl);
             } else { // a complex property
-                ComplexProperty cp = (ComplexProperty) prop;
-                if (prop.isPhantom()) {
-                    return JSONNull.getInstance();
-                }
-                JSONObject jsob = new JSONObject();
-                for (Property p : cp.getChildren()) {
-                    jsob.put(p.getName(), propertyToJsonValue(filesBaseUrl, p));
-                }
-                return jsob;
+                writeMapPropertyValue(jg, (ComplexProperty)prop, filesBaseUrl);
             }
         }
+    }
+
+    protected static void writeScalarPropertyValue(JsonGenerator jg, Property prop) throws Exception {
+        org.nuxeo.ecm.core.schema.types.Type type = prop.getType();
+        Object v = prop.getValue();
+        if (v == null) {
+            jg.writeNull();
+        } else {
+            jg.writeString(type.encode(v));
+        }
+    }
+
+    protected static void writeListPropertyValue(JsonGenerator jg, Property prop, String filesBaseUrl) throws Exception {
+        jg.writeStartArray();
+        if (prop instanceof ArrayProperty) {
+            Object[] ar = (Object[]) prop.getValue();
+            if (ar == null) {
+                return;
+            }
+            org.nuxeo.ecm.core.schema.types.Type type = ((ListType)prop.getType()).getFieldType();
+            for (Object o : ar) {
+                jg.writeString(type.encode(o));
+            }
+        } else {
+            ListProperty listp = (ListProperty) prop;
+            for (Property p : listp.getChildren()) {
+                writePropertyValue(jg, p, filesBaseUrl);
+            }
+        }
+        jg.writeEndArray();
+    }
+
+    protected static void writeMapPropertyValue(JsonGenerator jg, ComplexProperty prop, String filesBaseUrl) throws Exception {
+        jg.writeStartObject();
+        for (Property p : prop.getChildren()) {
+            jg.writeFieldName(p.getName());
+            writePropertyValue(jg, p, filesBaseUrl);
+        }
+        jg.writeEndObject();
+    }
+
+    protected static void writeBlobPropertyValue(JsonGenerator jg, Property prop, String filesBaseUrl) throws Exception {
+        Blob blob = (Blob) prop.getValue();
+        if (blob == null) {
+            jg.writeNull();
+            return;
+        }
+        jg.writeStartObject();
+        String v = blob.getFilename();
+        if (v == null) {
+            jg.writeNullField("name");
+        } else {
+            jg.writeStringField("name", v);
+        }
+        v = blob.getMimeType();
+        if (v == null) {
+            jg.writeNullField("mime-type");
+        } else {
+            jg.writeStringField("mime-type", v);
+        }
+        v = blob.getEncoding();
+        if (v == null) {
+            jg.writeNullField("encoding");
+        } else {
+            jg.writeStringField("encoding", v);
+        }
+        v = blob.getDigest();
+        if (v == null) {
+            jg.writeNullField("digest");
+        } else {
+            jg.writeStringField("digest", v);
+        }
+        jg.writeStringField("length", Long.toString(blob.getLength()));
+        jg.writeStringField("data",
+                filesBaseUrl
+                        + URLEncoder.encode(prop.getPath(), "UTF-8"));
+        jg.writeEndObject();
     }
 
 }

@@ -35,11 +35,6 @@ public class DocumentsMarshaller implements JsonMarshaller<Documents> {
     }
 
     @Override
-    public String getReference(Documents info) {
-        return info.getInputRef();
-    }
-
-    @Override
     public void write(JsonGenerator jg, Documents value) throws Exception {
         throw new UnsupportedOperationException();
     }

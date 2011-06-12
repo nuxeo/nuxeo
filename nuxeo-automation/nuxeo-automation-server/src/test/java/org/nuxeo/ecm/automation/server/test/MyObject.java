@@ -22,15 +22,13 @@ package org.nuxeo.ecm.automation.server.test;
  *
  */
 public class MyObject {
-    
-    public static final String TYPE = MyObject.class.getSimpleName().toLowerCase();
-    
+
     protected String msg = "hello world";
-    
+
     public String getMessage() {
         return msg;
     }
-    
+
     public void setMessage(String msg) {
         if (msg == null) {
             throw new IllegalArgumentException("msg cannot be null");
@@ -50,7 +48,7 @@ public class MyObject {
         MyObject other = (MyObject)obj;
         return this.msg.equals(other.msg);
     }
-    
+
     @Override
     public int hashCode() {
         return msg.hashCode();

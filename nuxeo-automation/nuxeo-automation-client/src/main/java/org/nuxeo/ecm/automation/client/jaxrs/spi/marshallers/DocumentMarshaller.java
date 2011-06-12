@@ -36,11 +36,6 @@ public class DocumentMarshaller implements JsonMarshaller<Document> {
     }
 
     @Override
-    public String getReference(Document info) {
-        return info.getInputRef();
-    }
-
-    @Override
     public Document read(JsonParser jp) throws Exception {
         return readDocument(jp);
     }

@@ -23,12 +23,10 @@ import org.nuxeo.ecm.automation.client.jaxrs.Constants;
 import org.nuxeo.ecm.automation.client.jaxrs.OperationRequest;
 import org.nuxeo.ecm.automation.client.jaxrs.model.OperationDocumentation;
 import org.nuxeo.ecm.automation.client.jaxrs.model.OperationInput;
-import org.nuxeo.ecm.automation.client.jaxrs.spi.marshallers.DateMarshaller;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.marshallers.DocumentMarshaller;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.marshallers.DocumentsMarshaller;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.marshallers.ExceptionMarshaller;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.marshallers.LoginMarshaller;
-import org.nuxeo.ecm.automation.client.jaxrs.spi.marshallers.PrimitiveMarshaller;
 import org.nuxeo.ecm.automation.client.jaxrs.util.JsonOperationMarshaller;
 
 /**
@@ -56,13 +54,6 @@ public class JsonMarshalling {
 	    addMarshaller(new DocumentsMarshaller());
 	    addMarshaller(new ExceptionMarshaller());
 	    addMarshaller(new LoginMarshaller());
-	    addMarshaller(new DateMarshaller());
-	    addMarshaller(new PrimitiveMarshaller<String>(String.class));
-	    addMarshaller(new PrimitiveMarshaller<Boolean>(Boolean.class));
-	    addMarshaller(new PrimitiveMarshaller<Integer>(Integer.class));
-		addMarshaller(new PrimitiveMarshaller<Long>(Long.class));
-		addMarshaller(new PrimitiveMarshaller<Double>(Double.class));
-
 	}
 
 	public static void addMarshaller(JsonMarshaller<?> marshaller) {
@@ -140,7 +131,7 @@ public class JsonMarshalling {
         jp.nextToken(); // will return JsonToken.START_OBJECT (verify?)
         jp.nextToken();
         if (!Constants.KEY_ENTITY_TYPE.equals(jp.getText())) {
-            throw new RuntimeException("unuspported respone type. No entity-type key foud at top of the object");
+            throw new RuntimeException("unuspported respone type. No entity-type key found at top of the object");
         }
         jp.nextToken();
         String etype = jp.getText();

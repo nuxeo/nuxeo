@@ -22,6 +22,7 @@ import org.codehaus.jackson.JsonParser;
  * @param <T>
  */
 public interface JsonMarshaller<T> {
+
     /**
      * The type name that appears in serialization
      *
@@ -35,15 +36,6 @@ public interface JsonMarshaller<T> {
      * @return
      */
     Class<T> getJavaType();
-
-    /**
-     * Gets an input reference from the POJO object that
-     * can be fetched server side.
-     *
-     * @param ref
-     * @return
-     */
-    String getReference(T value);
 
     /**
      * Builds and returns a POJO from the JSON object
