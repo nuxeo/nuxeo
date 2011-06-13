@@ -260,15 +260,9 @@
       <dependency>
         <groupId>commons-fileupload</groupId>
         <artifactId>commons-fileupload</artifactId>
-        <version>1.1.1</version>
+        <version>1.2.2</version>
         <scope>provided</scope>
       </dependency>
-      <!-- was used nuxeo-platform-ui-web -->
-      <!-- <dependency> -->
-      <!-- <groupId>commons-fileupload</groupId> -->
-      <!-- <artifactId>commons-fileupload</artifactId> -->
-      <!-- <version>1.2</version> -->
-      <!-- </dependency> -->
       <dependency>
         <groupId>commons-io</groupId>
         <artifactId>commons-io</artifactId>
@@ -2756,12 +2750,12 @@
               <maxmemory>512m</maxmemory>
               <!-- stylesheetfile>${basedir}/src/site/resources/css/jdstyle.css </stylesheetfile -->
               <windowtitle>
-                Nuxeo Enterprise Platform 5.4 API Documentation
+                Nuxeo Enterprise Platform 5.4.3-SNAPSHOT API Documentation
               </windowtitle>
               <doctitle>
-                Nuxeo Enterprise Platform 5.4 API Documentation
+                Nuxeo Enterprise Platform 5.4.3-SNAPSHOT API Documentation
               </doctitle>
-              <header>Nuxeo Enterprise Platform 5.4</header>
+              <header>Nuxeo Enterprise Platform 5.4.3-SNAPSHOT</header>
               <links>
                 <link>http://java.sun.com/j2se/1.5.0/docs/api/</link>
                 <link>http://java.sun.com/javaee/5/docs/api/</link>
