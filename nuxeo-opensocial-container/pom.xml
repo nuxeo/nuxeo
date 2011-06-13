@@ -47,6 +47,10 @@
           <groupId>com.google.code.guice</groupId>
           <artifactId>guice</artifactId>
         </exclusion>
+        <exclusion>
+          <groupId>org.nuxeo.build</groupId>
+          <artifactId>nuxeo-distribution-tools</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
 

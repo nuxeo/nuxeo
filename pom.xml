@@ -50,6 +50,12 @@
         <groupId>org.nuxeo.ecm.opensocial</groupId>
         <artifactId>nuxeo-opensocial-container</artifactId>
         <version>${nuxeo.features.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.nuxeo.build</groupId>
+            <artifactId>nuxeo-distribution-tools</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.opensocial</groupId>
