@@ -106,7 +106,7 @@
 
     <action id="MOVE_STEP_UP" label="command.selection.moveUp"
       link="#{routingActions.moveRouteElement('up')}"
-      icon="/icons/move_up.png">
+      icon="/icons/routing_move_up.png">
       <category>EDIT_STEP_ACTIONS_LIST</category>
       <filter-id>isNotRunning</filter-id>
       <filter-id>isEditableRoute</filter-id>
@@ -114,7 +114,7 @@
 
     <action id="MOVE_STEP_DOWN" label="command.selection.moveDown"
       link="#{routingActions.moveRouteElement('down')}"
-      icon="/icons/move_down.png">
+      icon="/icons/routing_move_down.png">
       <category>EDIT_STEP_ACTIONS_LIST</category>
       <filter-id>isNotRunning</filter-id>
       <filter-id>isEditableRoute</filter-id>
