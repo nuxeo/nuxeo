@@ -18,11 +18,8 @@
     <module>nuxeo-automation-core</module>
     <module>nuxeo-automation-features</module>
     <module>nuxeo-automation-jsf</module>
-    <module>nuxeo-automation-common</module>
     <module>nuxeo-automation-server</module>
     <module>nuxeo-automation-client</module>
-    <module>nuxeo-automation-client-hessian</module>
-    <module>nuxeo-automation-server-hessian</module>
   </modules>
 
   <developers>
