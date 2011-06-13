@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     Florent Guillaume
  */
@@ -27,6 +27,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import org.apache.commons.collections.map.ReferenceMap;
 import org.apache.commons.io.FileCleaningTracker;
 import org.apache.commons.io.IOUtils;
 
@@ -55,6 +56,13 @@ public class LRUFileCache implements FileCache {
     /** Cached files. */
     protected final Map<String, LRUFileCacheEntry> cache;
 
+    /**
+     * Referenced files on the filesystem. Contains all the cached files, plus
+     * all those that have been marked for deletion but haven't been deleted
+     * yet. Because of the latter, this is a weak value map.
+     */
+    protected final Map<String, File> files;
+
     /** Size of the cached files. */
     protected long cacheSize;
 
@@ -80,10 +88,14 @@ public class LRUFileCache implements FileCache {
      * @param dir the directory to use to store cached files
      * @param maxSize the maximum size of the cache (in bytes)
      */
+    @SuppressWarnings("unchecked")
     public LRUFileCache(File dir, long maxSize) {
         this.dir = dir;
         this.maxSize = maxSize;
         cache = new HashMap<String, LRUFileCacheEntry>();
+        // use a weak reference for the values: don't hold values longer than
+        // they need to be referenced elsewhere
+        files = new ReferenceMap(ReferenceMap.HARD, ReferenceMap.WEAK);
         lru = new LinkedList<String>();
     }
 
@@ -113,11 +125,22 @@ public class LRUFileCache implements FileCache {
     public synchronized File putFile(String key, InputStream in)
             throws IOException {
         try {
+            // check the cache
             LRUFileCacheEntry entry = cache.get(key);
             if (entry != null) {
                 return entry.file;
             }
-            File file = getTempFile();
+
+            // maybe the cache entry was just deleted but the file is still
+            // there?
+            File file = files.get(key);
+            if (file != null) {
+                // use not-yet-deleted file
+                return putFileInCache(key, file);
+            }
+
+            // store the stream in a temporary file
+            file = getTempFile();
             FileOutputStream out = new FileOutputStream(file);
             try {
                 IOUtils.copy(in, out);
@@ -138,27 +161,42 @@ public class LRUFileCache implements FileCache {
     @Override
     public synchronized File putFile(String key, File file)
             throws IllegalArgumentException, IOException {
+        // check the cache
         LRUFileCacheEntry entry = cache.get(key);
         if (entry != null) {
             file.delete(); // tmp file not used
             return entry.file;
         }
 
+        // maybe the cache entry was just deleted but the file is still
+        // there?
+        File dest = files.get(key);
+        if (dest != null) {
+            // use not-yet-deleted file
+            return putFileInCache(key, dest);
+        }
+
         // put file in cache with standard name
         checkKey(key);
-        File dest = new File(dir, key);
+        dest = new File(dir, key);
         if (!file.renameTo(dest)) {
             // already something there
             file.delete();
         }
-        file = dest;
-        long size = file.length();
+        return putFileInCache(key, dest);
+    }
 
+    /**
+     * Puts a file that's already in the correct filesystem location in the
+     * internal cache datastructures.
+     */
+    protected File putFileInCache(String key, File file) {
         // remove oldest entries until size fits
+        long size = file.length();
         ensureCapacity(size);
 
         // put new entry in cache
-        entry = new LRUFileCacheEntry();
+        LRUFileCacheEntry entry = new LRUFileCacheEntry();
         entry.size = size;
         entry.file = file;
         add(key, entry);
@@ -175,13 +213,17 @@ public class LRUFileCache implements FileCache {
 
     @Override
     public synchronized File getFile(String key) {
+        // check the cache
         LRUFileCacheEntry entry = cache.get(key);
-        if (entry == null) {
-            return null;
+        if (entry != null) {
+            // note access in most recently used list
+            recordAccess(key);
+            return entry.file;
         }
-        // note access in most recently used list
-        recordAccess(key);
-        return entry.file;
+
+        // maybe the cache entry was just deleted but the file is still
+        // there?
+        return files.get(key);
     }
 
     @Override
@@ -199,12 +241,14 @@ public class LRUFileCache implements FileCache {
 
     protected void add(String key, LRUFileCacheEntry entry) {
         cache.put(key, entry);
+        files.put(key, entry.file);
         lru.addFirst(key);
         cacheSize += entry.size;
     }
 
     protected void remove(String key) {
         LRUFileCacheEntry entry = cache.remove(key);
+        // don't remove from files here, the GC will do it
         cacheSize -= entry.size;
         // delete file when not referenced anymore
         fileCleaningTracker.track(entry.file, entry.file);

@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     Florent Guillaume
  */
@@ -111,6 +111,62 @@ public class TestLRUFileCache extends TestCase {
         System.gc();
         Thread.sleep(1000);
         assertEquals(0, getDirSize());
+    }
+
+    public void testLRUFileCachePrematureRemoval() throws Exception {
+        LRUFileCache cache = new LRUFileCache(dir, 100);
+
+        File[] held = new File[2];
+        byte[] buf = new byte[80];
+        held[0] = cache.putFile("1", new ByteArrayInputStream(buf));
+        assertEquals(1, cache.getNumberOfItems());
+        assertEquals(80, cache.getSize());
+        assertEquals(80, getDirSize());
+        cache.putFile("2", new ByteArrayInputStream(buf));
+        assertEquals(1, cache.getNumberOfItems());
+        assertEquals(80, cache.getSize());
+        assertEquals(160, getDirSize()); // not GCed because referenced
+        System.gc();
+        Thread.sleep(1000);
+        assertEquals(1, cache.getNumberOfItems());
+        assertEquals(80, cache.getSize());
+        assertEquals(160, getDirSize()); // still not GCed
+        assertTrue(new File(dir, "1").exists());
+        assertTrue(new File(dir, "2").exists());
+
+        // make new reference to "1"
+        held[1] = cache.putFile("1", new ByteArrayInputStream(buf));
+        assertEquals(1, cache.getNumberOfItems());
+        assertEquals(80, cache.getSize());
+        assertEquals(160, getDirSize());
+        assertTrue(new File(dir, "1").exists());
+        assertTrue(new File(dir, "2").exists());
+
+        // clear first reference and make GC run
+        // file "1" should not be deleted as a new reference to it was made
+        held[0] = null;
+        System.gc();
+        Thread.sleep(1000);
+        assertEquals(1, cache.getNumberOfItems());
+        assertEquals(80, cache.getSize());
+        assertEquals(80, getDirSize());
+        assertTrue(new File(dir, "1").exists());
+
+        // new file evicting "1"
+        cache.putFile("2", new ByteArrayInputStream(buf));
+        assertEquals(1, cache.getNumberOfItems());
+        assertEquals(80, cache.getSize());
+        assertEquals(160, getDirSize()); // not GCed because referenced
+
+        // clear second reference and make GC run
+        held[1] = null;
+        System.gc();
+        Thread.sleep(1000);
+        assertEquals(1, cache.getNumberOfItems());
+        assertEquals(80, cache.getSize());
+        assertEquals(80, getDirSize());
+        assertFalse(new File(dir, "1").exists());
+        assertTrue(new File(dir, "2").exists());
     }
 
 }
