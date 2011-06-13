@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
@@ -40,7 +39,6 @@
       <artifactId>nuxeo-gwt-richtexteditor</artifactId>
     </dependency>
 
-
     <dependency>
       <groupId>org.nuxeo.ecm.webengine</groupId>
       <artifactId>nuxeo-webengine-gwt</artifactId>
@@ -59,12 +57,10 @@
     <dependency>
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-user</artifactId>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-dev</artifactId>
-      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>com.google.gwt</groupId>
@@ -93,15 +89,14 @@
       <artifactId>guice-servlet</artifactId>
     </dependency>
     <dependency>
- 			<groupId>gwt.habyt</groupId>
- 			<artifactId>gwt-habyt-upload</artifactId>
- 		</dependency>
+      <groupId>gwt.habyt</groupId>
+      <artifactId>gwt-habyt-upload</artifactId>
+    </dependency>
 
- 		<dependency>
- 			<groupId>commons-fileupload</groupId>
- 			<artifactId>commons-fileupload</artifactId>
-      <version>1.2.2</version>
- 		</dependency>
+    <dependency>
+      <groupId>commons-fileupload</groupId>
+      <artifactId>commons-fileupload</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>org.nuxeo.build</groupId>
@@ -131,12 +126,10 @@
       <resource>
         <directory>src/main/java</directory>
       </resource>
-
       <resource>
         <directory>src/main/resources</directory>
       </resource>
     </resources>
-
     <plugins>
       <!-- APT plugin for annotation preprocessing -->
       <plugin>
@@ -155,10 +148,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <source>1.5</source>
-          <target>1.5</target>
-        </configuration>
       </plugin>
       <!-- correctly generate eclipse files with GWT nature -->
       <plugin>
@@ -167,72 +156,55 @@
         <configuration>
           <downloadSources>false</downloadSources>
           <additionalProjectnatures>
-            <projectnature>com.google.gwt.eclipse.core.gwtNature
-            </projectnature>
-
-            <projectnature>com.google.gdt.eclipse.core.webAppNature
-            </projectnature>
+            <projectnature>com.google.gwt.eclipse.core.gwtNature</projectnature>
+            <projectnature>com.google.gdt.eclipse.core.webAppNature</projectnature>
           </additionalProjectnatures>
           <additionalBuildcommands>
             <buildCommand>
               <name>com.google.gwt.eclipse.core.gwtProjectValidator</name>
-              <arguments>
-              </arguments>
+              <arguments></arguments>
               <name>com.google.gdt.eclipse.core.webAppProjectValidator</name>
-
               <arguments></arguments>
             </buildCommand>
           </additionalBuildcommands>
           <classpathContainers>
-            <classpathContainer>org.eclipse.jdt.launching.JRE_CONTAINER
-            </classpathContainer>
-            <classpathContainer>com.google.gwt.eclipse.core.GWT_CONTAINER
-            </classpathContainer>
+            <classpathContainer>org.eclipse.jdt.launching.JRE_CONTAINER</classpathContainer>
+            <classpathContainer>com.google.gwt.eclipse.core.GWT_CONTAINER</classpathContainer>
           </classpathContainers>
           <buildOutputDirectory>war/WEB-INF/classes</buildOutputDirectory>
         </configuration>
       </plugin>
 
-      <!--
-         After compiling java sources compile java to JS using GWT compiler.
-         This must be done process-classes after compile step finished to be
-         sure we have all the needed files in classes directory. I am using
-         ant for this since the maven exec plugin is not able to run
-         correctly this
-       -->
+      <!-- After compiling java sources compile java to JS using GWT compiler. This
+        must be done process-classes after compile step finished to be sure we have all the
+        needed files in classes directory. I am using ant for this since the maven exec plugin
+        is not able to run correctly this -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-antrun-plugin</artifactId>
         <executions>
-
           <execution>
             <id>compile-js</id>
             <phase>process-classes</phase>
             <configuration>
               <tasks>
-                <property name="compile_classpath"
-                  refid="maven.compile.classpath"/>
-                <property name="runtime_classpath"
-                  refid="maven.runtime.classpath"/>
-                <java failonerror="true" fork="true"
-                  classname="com.google.gwt.dev.Compiler">
-
+                <property name="compile_classpath" refid="maven.compile.classpath" />
+                <property name="runtime_classpath" refid="maven.runtime.classpath" />
+                <java failonerror="true" fork="true" classname="com.google.gwt.dev.Compiler">
                   <classpath>
-                    <pathelement location="${project.build.outputDirectory}"/>
-                    <pathelement path="${compile_classpath}"/>
-                    <pathelement path="${runtime_classpath}"/>
+                    <pathelement location="${project.build.outputDirectory}" />
+                    <pathelement path="${compile_classpath}" />
+                    <pathelement path="${runtime_classpath}" />
                   </classpath>
-
-                  <jvmarg value="-Xmx256M"/>
+                  <jvmarg value="-Xmx256M" />
                   <!-- jvmarg value="${gwt.arg}" / -->
-                  <arg value="-style"/>
-                  <arg value="PRETTY"/>
-
+                  <arg value="-style" />
+                  <arg value="PRETTY" />
                   <!-- to speed up compiler <arg value="-draftCompile" / -->
-                  <arg value="-draftCompile"/>
-                  <arg value="-war"/>
-                  <arg value="${project.build.outputDirectory}/gwt-war"/>
-                  <arg value="${gwt.module}"/>
+                  <arg value="-draftCompile" />
+                  <arg value="-war" />
+                  <arg value="${project.build.outputDirectory}/gwt-war" />
+                  <arg value="${gwt.module}" />
                 </java>
               </tasks>
             </configuration>

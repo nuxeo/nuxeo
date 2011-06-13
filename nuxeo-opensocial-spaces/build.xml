@@ -18,8 +18,10 @@
   <property name="deploy.dir" value="${jboss.dir}/server/default/deploy" />
   <property name="nuxeo.ear" value="nuxeo.ear" />
   <property name="mvn.opts" value="" />
-  <property name="lm.portal.dir.web.module" value="${lm.portal.dir}/web/modules/org.nuxeo.opensocial.spaces" />
-  <property name="webengine.bundle.dir" value="${tomcat.dir}/nxserver/bundles"/>
+  <property name="lm.portal.dir.web.module"
+            value="${lm.portal.dir}/web/modules/org.nuxeo.opensocial.spaces" />
+  <property name="webengine.bundle.dir"
+            value="${tomcat.dir}/nxserver/bundles" />
 
   <condition property="osfamily-unix">
     <os family="unix" />
@@ -28,11 +30,17 @@
     <os family="windows" />
   </condition>
 
-  <target name="deploy" depends="install,copy" description="Build and copy to JBoss" />
+  <target name="deploy"
+          depends="install,copy"
+          description="Build and copy to JBoss" />
 
-  <target name="deploy-webengine" depends="install,copy-webengine" description="Build and copy to Web Engine"/>
+  <target name="deploy-webengine"
+          depends="install,copy-webengine"
+          description="Build and copy to Web Engine" />
 
-  <target name="install" depends="install-unix,install-windows" description="Build" />
+  <target name="install"
+          depends="install-unix,install-windows"
+          description="Build" />
   <target name="install-unix" if="osfamily-unix">
     <exec executable="mvn" failonerror="true">
       <arg value="install" />
@@ -61,15 +69,17 @@
 
   <target name="copy-webengine" description="Copy files to webengine">
     <echo message="${name}" />
-	<copy todir="${webengine.bundle.dir}/" overwrite="true">
-  	  <fileset dir="${build.dir}" casesensitive="yes">
-  	    <include name="${name}-*.jar"/>
-  	    <exclude name="${name}-*-sources.jar"/>
-  	  </fileset>
-	</copy>
+    <copy todir="${webengine.bundle.dir}/" overwrite="true">
+      <fileset dir="${build.dir}" casesensitive="yes">
+        <include name="${name}-*.jar" />
+        <exclude name="${name}-*-sources.jar" />
+      </fileset>
+    </copy>
   </target>
 
-  <target name="eclipseeclipse" depends="eclipseeclipse-unix,eclipseeclipse-windows" description="Build" />
+  <target name="eclipseeclipse"
+          depends="eclipseeclipse-unix,eclipseeclipse-windows"
+          description="Build" />
   <target name="eclipseeclipse-unix" if="osfamily-unix">
     <exec executable="mvn" failonerror="true">
       <arg value="eclipse:eclipse" />

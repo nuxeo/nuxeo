@@ -17,7 +17,7 @@
 
   <target name="usage">
     <echo message="usage: ant [build|deploy|web]" />
-    <echo message="ant build              => Build Nuxeo OpenSocil" />
+    <echo message="ant build              => Build Nuxeo OpenSocial" />
     <echo message="ant build-with-tests   => Build and Test Nuxeo OpenSocial" />
     <echo message="ant deploy-tomcat      => Build Nuxeo OpenSocial and deploy it on a Tomcat instance" />
     <echo message="ant web-tomcat         => Copy web files to a live Tomcat" />
