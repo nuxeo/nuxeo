@@ -309,6 +309,12 @@ public class DialectSQLServer extends Dialect {
 
     @Override
     public boolean supportsCircularCascadeDeleteConstraints() {
+        // See http://support.microsoft.com/kb/321843
+        // Msg 1785 Introducing FOREIGN KEY constraint
+        // 'hierarchy_parentid_hierarchy_fk' on table 'hierarchy' may cause
+        // cycles or multiple cascade paths. Specify ON DELETE NO ACTION or ON
+        // UPDATE NO ACTION, or modify other FOREIGN KEY constraints.
+        // Instead we use a trigger "INSTEAD OF DELETE" to do the recursion.
         return false;
     }
 
