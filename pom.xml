@@ -2750,12 +2750,12 @@
               <maxmemory>512m</maxmemory>
               <!-- stylesheetfile>${basedir}/src/site/resources/css/jdstyle.css </stylesheetfile -->
               <windowtitle>
-                Nuxeo Enterprise Platform 5.4.3-SNAPSHOT API Documentation
+                ${pom.name} ${pom.version} API Documentation
               </windowtitle>
               <doctitle>
-                Nuxeo Enterprise Platform 5.4.3-SNAPSHOT API Documentation
+                ${pom.name} ${pom.version} API Documentation
               </doctitle>
-              <header>Nuxeo Enterprise Platform 5.4.3-SNAPSHOT</header>
+              <header>${pom.name} ${pom.version}</header>
               <links>
                 <link>http://java.sun.com/j2se/1.5.0/docs/api/</link>
                 <link>http://java.sun.com/javaee/5/docs/api/</link>
