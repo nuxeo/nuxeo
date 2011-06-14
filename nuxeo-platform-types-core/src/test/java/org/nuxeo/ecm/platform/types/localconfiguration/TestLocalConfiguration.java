@@ -40,7 +40,11 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.localconfiguration.LocalConfigurationService;
-import org.nuxeo.ecm.core.api.security.ACE;import org.nuxeo.ecm.core.api.security.ACL;import org.nuxeo.ecm.core.api.security.ACP;import org.nuxeo.ecm.core.api.security.SecurityConstants;import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.api.security.ACE;
+import org.nuxeo.ecm.core.api.security.ACL;
+import org.nuxeo.ecm.core.api.security.ACP;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.BackendType;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -375,9 +379,11 @@ public class TestLocalConfiguration {
     }
 
     @Test
-    public void shouldFindAllAllowedSubtypesWithoutConfiguration() throws ClientException {
+    public void shouldFindAllAllowedSubtypesWithoutConfiguration()
+            throws ClientException {
         DocumentModel workspace = session.getDocument(PARENT_WORKSPACE_REF);
-        Collection<Type> allowedSubTypes = typeManager.findAllAllowedSubTypesFrom(WORKSPACE_TYPE, workspace);
+        Collection<Type> allowedSubTypes = typeManager.findAllAllowedSubTypesFrom(
+                WORKSPACE_TYPE, workspace);
 
         assertNotNull(allowedSubTypes);
         assertFalse(allowedSubTypes.isEmpty());
@@ -392,7 +398,8 @@ public class TestLocalConfiguration {
     }
 
     @Test
-    public void userWithoutReadRightOnWorkspaceShouldRetrieveConfiguration() throws ClientException {
+    public void userWithoutReadRightOnWorkspaceShouldRetrieveConfiguration()
+            throws ClientException {
         DocumentModel workspace = session.getDocument(PARENT_WORKSPACE_REF);
         setDeniedTypes(workspace, FILE_TYPE);
 
