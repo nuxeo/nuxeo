@@ -154,6 +154,7 @@ if [ ! -e "$NUXEO_LAUNCHER" ]; then
     exit 1
 fi
 
+[ -d "$LOG_DIR" ] || mkdir -p "$LOG_DIR"
 echo "[`date`] Command: $0 $@" >> $LOG_DIR/nuxeoctl.log
 
 #LAUNCHER_DEBUG="-Xdebug -Xrunjdwp:transport=dt_socket,address=8787,server=y,suspend=y"

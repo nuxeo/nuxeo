@@ -90,6 +90,7 @@ goto LOG_DIR_OK
 
 :SET_DEFAULT_LOG_DIR
 set NUXEO_LOG_DIR=%APPDATA%\Nuxeo\log
+if not exist "%NUXEO_LOG_DIR%" mkdir "%NUXEO_LOG_DIR%"
 :LOG_DIR_OK
 
 
