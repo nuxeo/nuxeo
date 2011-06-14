@@ -76,6 +76,7 @@
         <pattern>getSyndicationDocument.faces</pattern>
         <pattern>getSyndicationSearch.faces</pattern>
         <pattern>nxfile/</pattern>
+        <pattern>nxbigfile/</pattern>
         <pattern>nxpdffile/</pattern>
         <pattern>nxeditfile/</pattern>
       </patterns>
