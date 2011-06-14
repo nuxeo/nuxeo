@@ -208,6 +208,7 @@
         <border preset="header.userMenuList (Galaxy User Center borders)" />
         <box-shadow>3px 3px 5px rgba(0, 0, 0, 0.5)</box-shadow>
         <border-top>none</border-top>
+        <z-index>1000</z-index>
       </selector>
       <selector path=".userMenuActions li:hover ul">
         <display>block</display>
