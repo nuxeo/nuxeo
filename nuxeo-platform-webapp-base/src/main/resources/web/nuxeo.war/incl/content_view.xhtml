@@ -111,47 +111,45 @@
             </ui:define>
 
             <ui:define name="buttons">
-              <c:if test="#{documents.rowCount != 0}">
-                <a4j:outputPanel id="ajax_selection_buttons" ajaxRendered="false">
-                  <div id="selection_buttons">
-                    <table>
-                      <tbody>
-                        <tr>
-                          <td>
-                            <c:forEach var="actionCategory" items="#{contentView.actionsCategories}" varStatus="status">
-                              <nxu:set var="actions" value="#{webActions.getUnfiltredActionsList(actionCategory)}" cache="true">
-                                <c:if test="#{not status.first and not empty actions}">
-                                  <br />
-                                </c:if>
-                                <nxu:dataList var="sel_action" value="#{actions}"
-                                  id="clipboardActionsTable_#{contentViewId}_#{status.index}">
-                                <span id="#{sel_action.id}">
-                                  <nxh:commandButton
-                                    styleClass="button"
-                                    action="#{sel_action.getLink()}"
-                                    value="#{messages[sel_action.label]}"
-                                    onclick="#{sel_action.confirm}"
-                                    disabled="#{!sel_action.available}"
-                                    immediate="#{sel_action.immediate}"
-                                    id="clipboardActionsButton" />
-                                 </span>
-                                </nxu:dataList>
-                              </nxu:set>
-                            </c:forEach>
-                          </td>
-                          <td rowSpan="#{contentView.actionsCategories.size}" valign="middle">
-                            <a4j:status>
-                              <f:facet name="start">
-                                <h:graphicImage value="/img/standart_waiter.gif" />
-                              </f:facet>
-                            </a4j:status>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </a4j:outputPanel>
-              </c:if>
+              <a4j:outputPanel id="ajax_selection_buttons" ajaxRendered="false">
+                <div id="selection_buttons">
+                  <table>
+                    <tbody>
+                      <tr>
+                        <td>
+                          <c:forEach var="actionCategory" items="#{contentView.actionsCategories}" varStatus="status">
+                            <nxu:set var="actions" value="#{webActions.getUnfiltredActionsList(actionCategory)}" cache="true">
+                              <c:if test="#{not status.first and not empty actions}">
+                                <br />
+                              </c:if>
+                              <nxu:dataList var="sel_action" value="#{actions}"
+                                id="clipboardActionsTable_#{contentViewId}_#{status.index}">
+                              <span id="#{sel_action.id}">
+                                <nxh:commandButton
+                                  styleClass="button"
+                                  action="#{sel_action.getLink()}"
+                                  value="#{messages[sel_action.label]}"
+                                  onclick="#{sel_action.confirm}"
+                                  disabled="#{!sel_action.available}"
+                                  immediate="#{sel_action.immediate}"
+                                  id="clipboardActionsButton" />
+                               </span>
+                              </nxu:dataList>
+                            </nxu:set>
+                          </c:forEach>
+                        </td>
+                        <td rowSpan="#{contentView.actionsCategories.size}" valign="middle">
+                          <a4j:status>
+                            <f:facet name="start">
+                              <h:graphicImage value="/img/standart_waiter.gif" />
+                            </f:facet>
+                          </a4j:status>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </a4j:outputPanel>
             </ui:define>
 
             <ui:define name="syndication_buttons">
