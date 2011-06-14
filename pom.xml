@@ -1499,6 +1499,12 @@
         <groupId>com.googlecode.gwt.inject</groupId>
         <artifactId>gin</artifactId>
         <version>1.0</version>
+        <exclusions>
+          <exclusion>
+            <artifactId>gwt-servlet</artifactId>
+            <groupId>com.google.gwt</groupId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>com.google.inject.extensions</groupId>
