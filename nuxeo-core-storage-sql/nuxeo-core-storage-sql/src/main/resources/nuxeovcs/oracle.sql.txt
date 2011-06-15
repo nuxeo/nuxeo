@@ -258,10 +258,10 @@ LOG.INFO Initializing ancestors table for path optimization, please wait...
 SELECT 1 FROM USER_TABLES WHERE table_name = 'READ_ACLS'
 
 #IF: !emptyResult
-ALTER TABLE read_acls RENAME TO aclr;
+ALTER TABLE read_acls RENAME TO aclr
 
 #IF: !emptyResult
-ALTER TABLE aclr RENAME COLUMN id TO acl_id;
+ALTER TABLE aclr RENAME COLUMN id TO acl_id
 
 # -- TODO: Remove useless primary key since 5.4.1 read_acls_pkey
 # -- Check the principal contraint on ACLR.ACL_ID, then drop it like
