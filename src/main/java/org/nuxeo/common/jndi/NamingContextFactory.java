@@ -132,6 +132,7 @@ public class NamingContextFactory implements InitialContextFactory {
         System.setProperty(Context.URL_PKG_PREFIXES, "org.nuxeo.common.jndi");
     }
 
+
     /**
      * Same as {@link #setAsInitial()} but it use strong types (avoiding reflection)
      * to install the naming context factory.
