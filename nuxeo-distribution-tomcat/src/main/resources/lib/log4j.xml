@@ -44,7 +44,7 @@
   <appender name="ERROR-FILE" class="org.apache.log4j.DailyRollingFileAppender">
     <errorHandler class="org.apache.log4j.helpers.OnlyOnceErrorHandler" />
     <param name="File" value="${nuxeo.log.dir}/nuxeo-error.log" />
-    <param name="Append" value="false" />
+    <param name="Append" value="true" />
     <!-- Rollover at midnight every day -->
     <param name="DatePattern" value="'.'yyyy-MM-dd" />
     <layout class="org.apache.log4j.PatternLayout">
@@ -64,7 +64,7 @@
   <appender name="STDERR-FILE" class="org.apache.log4j.DailyRollingFileAppender">
     <errorHandler class="org.apache.log4j.helpers.OnlyOnceErrorHandler" />
     <param name="File" value="${nuxeo.log.dir}/stderr.log" />
-    <param name="Append" value="false" />
+    <param name="Append" value="true" />
     <!-- Rollover at midnight every day -->
     <param name="DatePattern" value="'.'yyyy-MM-dd" />
     <layout class="org.apache.log4j.PatternLayout">
@@ -264,9 +264,12 @@
   <category name="org.nuxeo.runtime.osgi.OSGiRuntimeService">
     <priority value="INFO" />
   </category>
+  <!-- Uncomment for components registration info -->
+  <!--
   <category name="org.nuxeo.runtime.model.impl">
     <priority value="INFO" />
   </category>
+  -->
   <category name="org.nuxeo.osgi.application.loader.FrameworkLoader">
     <priority value="INFO" />
   </category>

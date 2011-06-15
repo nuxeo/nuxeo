@@ -3,9 +3,6 @@
   Log4j Configuration - For more configuration information and examples see
   the Jakarta Log4j - website: http://jakarta.apache.org/log4j
 -->
-<!--
-  $Id: jboss-log4j.xml 75507 2008-07-08 20:15:07Z stan.silvert@jboss.com $
--->
 <!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
 <log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/"
   debug="false" threshold="null">
@@ -216,9 +213,6 @@
   <category name="org.apache" additivity="true">
     <priority value="INFO" />
   </category>
-  <category name="org.apache.jackrabbit.core.query.lucene.IndexMerger">
-    <priority value="WARN" />
-  </category>
   <category name="org.apache.myfaces.renderkit.html.util.DefaultAddResource">
     <priority value="ERROR" />
   </category>
@@ -272,13 +266,25 @@
   <category name="org.nuxeo.runtime.osgi.OSGiRuntimeService">
     <priority value="INFO" />
   </category>
-  <category name="org.nuxeo.runtime.jboss.deployer">
+  <!-- Uncomment for components registration info -->
+  <!--
+  <category name="org.nuxeo.runtime.model.impl">
     <priority value="INFO" />
   </category>
+  -->
   <category name="org.nuxeo.osgi.application.loader.FrameworkLoader">
     <priority value="INFO" />
   </category>
   <category name="org.nuxeo.osgi.application.StandaloneApplication">
+    <priority value="INFO" />
+  </category>
+  <category name="org.nuxeo.osgi.application.FrameworkBootstrap">
+    <priority value="INFO" />
+  </category>
+  <category name="org.nuxeo.runtime.jboss.deployment.NuxeoDeployer">
+    <priority value="INFO" />
+  </category>
+  <category name="org.nuxeo.runtime.tomcat.NuxeoDeployer">
     <priority value="INFO" />
   </category>
 
@@ -305,6 +311,15 @@
   <!-- Limit the org.quartz category to INFO as its DEBUG is verbose -->
   <category name="org.quartz" additivity="true">
     <priority value="INFO" />
+  </category>
+
+  <!-- make Jersey less noisy -->
+  <category name="com.sun.jersey.spi.container.servlet.WebComponent">
+    <priority value="ERROR" />
+  </category>
+
+  <category name="org.apache.shindig.common.xml.XmlUtil">
+    <priority value="WARN" />
   </category>
 
   <!--

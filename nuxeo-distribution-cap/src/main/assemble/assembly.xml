@@ -17,9 +17,9 @@
 
   <target name="expand">
     <artifact:nuxeo-expand>
-      <includes>
-        <artifact artifactId="!nuxeo-distribution-tools" />
-      </includes>
+      <excludes>
+        <artifact artifactId="nuxeo-distribution-tools" />
+      </excludes>
     </artifact:nuxeo-expand>
     <!-- <artifact:print output="dependency-tree.log" /> -->
   </target>
