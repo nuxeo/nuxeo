@@ -98,6 +98,12 @@
         <artifactId>nuxeo-runtime-test</artifactId>
         <version>${nuxeo.runtime.version}</version>
         <scope>test</scope>
+        <exclusions>
+	  <exclusion>
+	    <groupId>org.nuxeo.runtime</groupId>
+	    <artifactId>nuxeo-runtime-remoting</artifactId>
+	  </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.runtime</groupId>
