@@ -69,7 +69,7 @@ public abstract class AnnotatedServiceProvider implements ServiceProvider {
                 return true;
             }
             for (Method m : srvClass.getMethods()) {
-                if (m.getAnnotation(Transacted.class) != null) {
+                if (m.getAnnotation(annotationClass) != null) {
                     return true;
                 }
             }

@@ -52,6 +52,12 @@
       <artifactId>nuxeo-runtime-osgi</artifactId>
     </dependency>
 
+     <dependency>
+      <groupId>org.javasimon</groupId>
+      <artifactId>javasimon-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+
     <!-- Use of compile scope for external dependencies because this module must only be used
       with a test scope (except in [module]-test where you may use compile scope)-->
     <dependency>
