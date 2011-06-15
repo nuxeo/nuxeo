@@ -93,6 +93,9 @@ public class LDAPReference extends AbstractReference {
 
     protected LDAPDirectoryDescriptor targetDirectoryDescriptor;
 
+    @XNode("@staticAttributeIsId")
+    private boolean staticAttributeIsId;
+
     @XNode("@staticAttributeId")
     protected String staticAttributeId;
 
@@ -222,6 +225,7 @@ public class LDAPReference extends AbstractReference {
      *
      * @see org.nuxeo.ecm.directory.Reference#addLinks(String, List)
      */
+    @Override
     public void addLinks(String sourceId, List<String> targetIds)
             throws DirectoryException {
 
@@ -262,20 +266,26 @@ public class LDAPReference extends AbstractReference {
                 String emptyRefMarker = sourceDirectory.getConfig().getEmptyRefMarker();
                 Attribute attrToAdd = new BasicAttribute(attributeId);
                 for (String targetId : targetIds) {
-                    // TODO optim: avoid LDAP search request when targetDn can
-                    // be forged client side (rdnAttribute = idAttribute and
-                    // scope is onelevel)
-                    ldapEntry = targetSession.getLdapEntry(targetId);
-                    if (ldapEntry == null) {
-                        log.warn(String.format(
-                                "entry '%s' in directory '%s' not found: could not add link from '%s' in directory '%s' for '%s'",
-                                targetId, targetDirectory.getName(), sourceId,
-                                sourceDirectory.getName(), this));
-                        continue;
-                    }
-                    String dn = ldapEntry.getNameInNamespace();
-                    if (storedAttr == null || !storedAttr.contains(dn)) {
-                        attrToAdd.add(dn);
+                    if (!staticAttributeIsId) {
+                        // TODO optim: avoid LDAP search request when targetDn
+                        // can be forged client side (rdnAttribute = idAttribute
+                        // and scope is onelevel)
+                        ldapEntry = targetSession.getLdapEntry(targetId);
+                        if (ldapEntry == null) {
+                            log.warn(String.format(
+                                    "entry '%s' in directory '%s' not found: could not add link from '%s' in directory '%s' for '%s'",
+                                    targetId, targetDirectory.getName(),
+                                    sourceId, sourceDirectory.getName(), this));
+                            continue;
+                        }
+                        String dn = ldapEntry.getNameInNamespace();
+                        if (storedAttr == null || !storedAttr.contains(dn)) {
+                            attrToAdd.add(dn);
+                        }
+                    } else {
+                        if (storedAttr == null
+                                || !storedAttr.contains(targetId))
+                            attrToAdd.add(targetId);
                     }
                 }
                 if (attrToAdd.size() > 0) {
@@ -340,6 +350,7 @@ public class LDAPReference extends AbstractReference {
      *
      * @see org.nuxeo.ecm.directory.Reference#addLinks(List, String)
      */
+    @Override
     public void addLinks(List<String> sourceIds, String targetId)
             throws DirectoryException {
         String attributeId = getStaticAttributeId();
@@ -364,7 +375,13 @@ public class LDAPReference extends AbstractReference {
                                     "could not add links to unexisting %s in directory %s",
                                     targetId, targetDirectory.getName()));
                 }
-                String targetDn = ldapEntry.getNameInNamespace();
+                String targetKeyValue;
+
+                if (!staticAttributeIsId)
+                    targetKeyValue = ldapEntry.getNameInNamespace();
+                else
+                    targetKeyValue = targetId;
+
                 for (String sourceId : sourceIds) {
                     // fetch the entry to be able to run the security policy implemented in an entry adaptor
                     DocumentModel sourceEntry = sourceSession.getEntry(sourceId, false);
@@ -391,7 +408,7 @@ public class LDAPReference extends AbstractReference {
                     try {
                         // add the new dn
                         Attributes attrs = new BasicAttributes(attributeId,
-                                targetDn);
+                                targetKeyValue);
 
                         if (log.isDebugEnabled()) {
                             log.debug(String.format(
@@ -448,6 +465,7 @@ public class LDAPReference extends AbstractReference {
      *
      * @see org.nuxeo.ecm.directory.Reference#getSourceIdsForTarget(String)
      */
+    @Override
     public List<String> getSourceIdsForTarget(String targetId)
             throws DirectoryException {
 
@@ -463,25 +481,30 @@ public class LDAPReference extends AbstractReference {
             // directory by the static dn valued strategy
             LDAPDirectory targetDir = getTargetLDAPDirectory();
             LDAPSession targetSession = (LDAPSession) targetDir.getSession();
-            try {
-                targetLdapEntry = targetSession.getLdapEntry(targetId, true);
-                if (targetLdapEntry == null) {
-                    String msg = String.format(
-                            "Failed to perform inverse lookup on LDAPReference"
-                                    + " resolving field '%s' of '%s' to entries of '%s'"
-                                    + " using the static content of attribute '%s':"
-                                    + " entry '%s' cannot be found in '%s'",
-                            fieldName, sourceDirectory, targetDirectoryName,
-                            staticAttributeId, targetId, targetDirectoryName);
-                    throw new DirectoryException(msg);
+
+            if (staticAttributeIsId) {
+                try {
+                    targetLdapEntry = targetSession.getLdapEntry(targetId, true);
+                    if (targetLdapEntry == null) {
+                        String msg = String.format(
+                                "Failed to perform inverse lookup on LDAPReference"
+                                        + " resolving field '%s' of '%s' to entries of '%s'"
+                                        + " using the static content of attribute '%s':"
+                                        + " entry '%s' cannot be found in '%s'",
+                                fieldName, sourceDirectory,
+                                targetDirectoryName, staticAttributeId,
+                                targetId, targetDirectoryName);
+                        throw new DirectoryException(msg);
+                    }
+                    targetDn = pseudoNormalizeDn(targetLdapEntry.getNameInNamespace());
+
+                } catch (NamingException e) {
+                    throw new DirectoryException("error fetching " + targetId
+                            + " from " + targetDirectoryName + ": "
+                            + e.getMessage(), e);
+                } finally {
+                    targetSession.close();
                 }
-                targetDn = pseudoNormalizeDn(targetLdapEntry.getNameInNamespace());
-            } catch (NamingException e) {
-                throw new DirectoryException("error fetching " + targetId
-                        + " from " + targetDirectoryName + ": "
-                        + e.getMessage(), e);
-            } finally {
-                targetSession.close();
             }
 
             // step #1.2: search for entries that reference that dn in the
@@ -490,7 +513,12 @@ public class LDAPReference extends AbstractReference {
 
             String filterExpr = String.format("(&(%s={0})%s)",
                     staticAttributeId, sourceDirectory.getBaseFilter());
-            String[] filterArgs = { targetDn };
+            String[] filterArgs = new String[1];
+
+            if (staticAttributeIsId)
+                filterArgs[0] = targetId;
+            else
+                filterArgs[0] = targetDn;
 
             String searchBaseDn = sourceDirectory.getConfig().getSearchBaseDn();
             LDAPSession sourceSession = (LDAPSession) sourceDirectory.getSession();
@@ -520,7 +548,7 @@ public class LDAPReference extends AbstractReference {
                 }
             } catch (NamingException e) {
                 throw new DirectoryException(
-                        "error during reference search for " + targetDn, e);
+                        "error during reference search for " + filterArgs[0], e);
             } finally {
                 sourceSession.close();
             }
@@ -635,6 +663,7 @@ public class LDAPReference extends AbstractReference {
      *
      * @see org.nuxeo.ecm.directory.Reference#getSourceIdsForTarget(String)
      */
+    @Override
     // XXX: broken, use getLdapTargetIds for a proper implementation
     @SuppressWarnings("unchecked")
     public List<String> getTargetIdsForSource(String sourceId)
@@ -695,7 +724,14 @@ public class LDAPReference extends AbstractReference {
             if (staticAttributeId != null) {
                 staticAttribute = attributes.get(staticAttributeId);
             }
-            if (staticAttribute != null) {
+
+            if (staticAttribute != null && staticAttributeIsId) {
+                NamingEnumeration<?> staticContent = staticAttribute.getAll();
+                while (staticContent.hasMore())
+                    targetIds.add(staticContent.next().toString());
+            }
+
+            if (staticAttribute != null && !staticAttributeIsId) {
                 NamingEnumeration<?> targetDns = staticAttribute.getAll();
 
                 while (targetDns.hasMore()) {
@@ -954,6 +990,7 @@ public class LDAPReference extends AbstractReference {
      *
      * @see org.nuxeo.ecm.directory.Reference#removeLinksForSource(String)
      */
+    @Override
     public void removeLinksForSource(String sourceId) throws DirectoryException {
         LDAPDirectory targetDirectory = (LDAPDirectory) getTargetDirectory();
         LDAPDirectory sourceDirectory = (LDAPDirectory) getSourceDirectory();
@@ -987,17 +1024,22 @@ public class LDAPReference extends AbstractReference {
             NamingEnumeration<?> oldAttrs = oldAttr.getAll();
             String targetBaseDn = pseudoNormalizeDn(targetDirectory.getConfig().getSearchBaseDn());
             while (oldAttrs.hasMore()) {
-                String dn = pseudoNormalizeDn(oldAttrs.next().toString());
-                if (forceDnConsistencyCheck) {
-                    String id = getIdForDn(targetSession, dn);
-                    if (id != null && targetSession.hasEntry(id)) {
+                String targetKeyAttr = oldAttrs.next().toString();
+
+                if (!staticAttributeIsId) {
+                    String dn = pseudoNormalizeDn(targetKeyAttr);
+                    if (forceDnConsistencyCheck) {
+                        String id = getIdForDn(targetSession, dn);
+                        if (id != null && targetSession.hasEntry(id)) {
+                            // this is an entry managed by the current reference
+                            attrToRemove.add(dn);
+                        }
+                    } else if (dn.endsWith(targetBaseDn)) {
                         // this is an entry managed by the current reference
                         attrToRemove.add(dn);
                     }
-                } else if (dn.endsWith(targetBaseDn)) {
-                    // this is an entry managed by the current reference
-                    attrToRemove.add(dn);
-                }
+                } else
+                    attrToRemove.add(targetKeyAttr);
             }
             try {
                 if (attrToRemove.size() == oldAttr.size()) {
@@ -1007,7 +1049,7 @@ public class LDAPReference extends AbstractReference {
                             attributeId, emptyRefMarker);
                     if (log.isDebugEnabled()) {
                         log.debug(String.format(
-                                "LDAPReference.removeLinksForSource(%s): LDAP modifyAttributes dn='%s' "
+                                "LDAPReference.removeLinksForSource(%s): LDAP modifyAttributes key='%s' "
                                         + " mod_op='REPLACE_ATTRIBUTE' attrs='%s' [%s]",
                                 sourceId, sourceDn, emptyAttribute, this));
                     }
@@ -1053,6 +1095,7 @@ public class LDAPReference extends AbstractReference {
      *
      * @see org.nuxeo.ecm.directory.Reference#removeLinksForTarget(String)
      */
+    @Override
     public void removeLinksForTarget(String targetId) throws DirectoryException {
         LDAPDirectory targetDirectory = (LDAPDirectory) getTargetDirectory();
         LDAPSession targetSession = (LDAPSession) targetDirectory.getSession();
@@ -1062,29 +1105,33 @@ public class LDAPReference extends AbstractReference {
         try {
             if (!sourceSession.isReadOnly()) {
                 // get the dn of the target that matches targetId
-                String targetDn;
-                SearchResult targetLdapEntry = targetSession.getLdapEntry(targetId);
-                if (targetLdapEntry == null) {
-                    String rdnAttribute = targetDirectory.getConfig().getRdnAttribute();
-                    if (!rdnAttribute.equals(targetSession.idAttribute)) {
-                        log.warn(String.format(
-                                "cannot remove links to missing entry %s in directory %s for reference %s",
-                                targetId, targetDirectory.getName(), this));
-                        return;
-                    }
-                    // the entry might have already been deleted, try to
-                    // re-forge it if possible (might not work if scope is
-                    // subtree)
-                    targetDn = String.format("%s=%s,%s", rdnAttribute,
-                            targetId,
-                            targetDirectory.getConfig().getSearchBaseDn());
-                } else {
-                    targetDn = pseudoNormalizeDn(targetLdapEntry.getNameInNamespace());
-                }
+                String targetKeyValue;
 
-                // build a LDAP query to find entries that point to targetDn
+                if (!staticAttributeIsId) {
+                    SearchResult targetLdapEntry = targetSession.getLdapEntry(targetId);
+                    if (targetLdapEntry == null) {
+                        String rdnAttribute = targetDirectory.getConfig().getRdnAttribute();
+                        if (!rdnAttribute.equals(targetSession.idAttribute)) {
+                            log.warn(String.format(
+                                    "cannot remove links to missing entry %s in directory %s for reference %s",
+                                    targetId, targetDirectory.getName(), this));
+                            return;
+                        }
+                        // the entry might have already been deleted, try to
+                        // re-forge it if possible (might not work if scope is
+                        // subtree)
+                        targetKeyValue = String.format("%s=%s,%s",
+                                rdnAttribute, targetId,
+                                targetDirectory.getConfig().getSearchBaseDn());
+                    } else {
+                        targetKeyValue = pseudoNormalizeDn(targetLdapEntry.getNameInNamespace());
+                    }
+                } else
+                    targetKeyValue = targetId;
+
+                // build a LDAP query to find entries that point to the target
                 String searchFilter = String.format("(%s=%s)", attributeId,
-                        targetDn);
+                        targetKeyValue);
                 String sourceFilter = sourceDirectory.getBaseFilter();
 
                 if (sourceFilter != null && !"".equals(sourceFilter)) {
@@ -1096,11 +1143,12 @@ public class LDAPReference extends AbstractReference {
                 scts.setSearchScope(sourceDirectory.getConfig().getSearchScope());
                 scts.setReturningAttributes(new String[] { attributeId });
 
-                // find all source entries that point to targetDn and clean
+                // find all source entries that point to the target key and
+                // clean
                 // those references
                 if (log.isDebugEnabled()) {
                     log.debug(String.format(
-                            "LDAPReference.removeLinksForTarget(%s): LDAP search dn='%s' "
+                            "LDAPReference.removeLinksForTarget(%s): LDAP search baseDn='%s' "
                                     + " filter='%s' scope='%s' [%s]", targetId,
                             sourceSession.searchBaseDn, searchFilter,
                             scts.getSearchScope(), this));
@@ -1124,7 +1172,7 @@ public class LDAPReference extends AbstractReference {
                             // the server schema
                             if (log.isDebugEnabled()) {
                                 log.debug(String.format(
-                                        "LDAPReference.removeLinksForTarget(%s): LDAP modifyAttributes dn='%s' "
+                                        "LDAPReference.removeLinksForTarget(%s): LDAP modifyAttributes key='%s' "
                                                 + "mod_op='ADD_ATTRIBUTE' attrs='%s' [%s]",
                                         targetId, result.getNameInNamespace(),
                                         attrs, this));
@@ -1133,14 +1181,14 @@ public class LDAPReference extends AbstractReference {
                                     result.getNameInNamespace(),
                                     DirContext.ADD_ATTRIBUTE, emptyAttribute);
                         }
-                        // remove the reference to targetDn
+                        // remove the reference to the target key
                         attrs = new BasicAttributes();
                         attr = new BasicAttribute(attributeId);
-                        attr.add(targetDn);
+                        attr.add(targetKeyValue);
                         attrs.put(attr);
                         if (log.isDebugEnabled()) {
                             log.debug(String.format(
-                                    "LDAPReference.removeLinksForTarget(%s): LDAP modifyAttributes dn='%s' "
+                                    "LDAPReference.removeLinksForTarget(%s): LDAP modifyAttributes key='%s' "
                                             + "mod_op='REMOVE_ATTRIBUTE' attrs='%s' [%s]",
                                     targetId, result.getNameInNamespace(),
                                     attrs, this));
@@ -1178,6 +1226,7 @@ public class LDAPReference extends AbstractReference {
      * @see org.nuxeo.ecm.directory.Reference#setSourceIdsForTarget(String,
      *      List)
      */
+    @Override
     public void setSourceIdsForTarget(String targetId, List<String> sourceIds)
             throws DirectoryException {
         removeLinksForTarget(targetId);
@@ -1191,6 +1240,7 @@ public class LDAPReference extends AbstractReference {
      * @see org.nuxeo.ecm.directory.Reference#setTargetIdsForSource(String,
      *      List)
      */
+    @Override
     public void setTargetIdsForSource(String sourceId, List<String> targetIds)
             throws DirectoryException {
         removeLinksForSource(sourceId);

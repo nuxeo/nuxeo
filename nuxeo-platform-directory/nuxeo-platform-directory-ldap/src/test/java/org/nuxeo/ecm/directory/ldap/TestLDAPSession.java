@@ -44,9 +44,9 @@ import org.nuxeo.ecm.directory.ldap.management.LDAPDirectoriesProbe;
  */
 public class TestLDAPSession extends LDAPDirectoryTestCase {
 
-    private static final String USER_SCHEMANAME = "user";
+    protected static final String USER_SCHEMANAME = "user";
 
-    private static final String GROUP_SCHEMANAME = "group";
+    protected static final String GROUP_SCHEMANAME = "group";
 
     @SuppressWarnings("unchecked")
     public void testGetEntry() throws Exception {
@@ -918,7 +918,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
                 // 2 dynamic groups
                 assertEquals(9, entries.size());
             } else {
-                assertEquals(7, entries.size());
+                assertEquals(6, entries.size());
             }
         } finally {
             session.close();

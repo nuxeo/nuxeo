@@ -49,7 +49,7 @@
       <passwordField>userPassword</passwordField>
 
       <!-- the following dn weird casing is intentional -->
-      <searchBaseDn>ou=people,dc=example, DC=COM</searchBaseDn>
+      <searchBaseDn>ou=people,dc=example, DC=com</searchBaseDn>
       <searchClass>person</searchClass>
       <searchScope>onelevel</searchScope>
 
@@ -70,6 +70,7 @@
       <fieldMapping name="email">mail</fieldMapping>
       <fieldMapping name="intField">employeeNumber</fieldMapping>
       <fieldMapping name="company">o</fieldMapping>
+      
       <!-- <fieldMapping name="dateField">mydate</fieldMapping> -->
 
       <references>
@@ -87,34 +88,31 @@
     <directory name="groupDirectory">
       <server>default</server>
       <schema>group</schema>
+      
       <idField>groupname</idField>
 
       <searchBaseDn>ou=groups,dc=example,dc=com</searchBaseDn>
-      <searchFilter>
-        (|(objectClass=groupOfUniqueNames)(objectClass=groupOfURLs))
-      </searchFilter>
+      <searchFilter>(objectClass=posixGroup)</searchFilter>
       <searchScope>subtree</searchScope>
 
       <readOnly>false</readOnly>
+
+      <creationBaseDn>ou=editable,ou=groups,dc=example,dc=com</creationBaseDn>
+      <creationClass>top</creationClass>
+      <creationClass>posixGroup</creationClass>
+      <rdnAttribute>cn</rdnAttribute>
+
       <entryAdaptor class="org.nuxeo.ecm.directory.impl.WritePolicyEntryAdaptor">
         <parameter name="fieldName">dn</parameter>
         <parameter name="regexp">.*,ou=editable,ou=groups,dc=example,dc=com</parameter>
       </entryAdaptor>
-
-      <creationBaseDn>ou=editable,ou=groups,dc=example,dc=com</creationBaseDn>
-      <creationClass>top</creationClass>
-      <creationClass>groupOfUniqueNames</creationClass>
-      <rdnAttribute>cn</rdnAttribute>
 
       <fieldMapping name="groupname">cn</fieldMapping>
 
       <references>
 
         <ldapReference field="members" directory="userDirectory"
-          staticAttributeId="uniqueMember" dynamicAttributeId="memberURL" />
-
-        <ldapReference field="subGroups" directory="groupDirectory"
-          staticAttributeId="uniqueMember" dynamicAttributeId="memberURL" />
+          staticAttributeId="memberUID" staticAttributeIsId="true" />
 
         <ldapTreeReference field="ldapDirectChildren" directory="groupDirectory"
           scope="onelevel" />
@@ -122,14 +120,11 @@
           scope="subtree" />
         <ldapTreeReference field="ldapUnitDirectChildren"
           directory="unitDirectory" scope="onelevel" />
-
-        <inverseReference field="parentGroups" directory="groupDirectory"
-          dualReferenceField="subGroups" />
-
+          
         <inverseReference field="ldapDirectParents" directory="groupDirectory"
           dualReferenceField="ldapDirectChildren" />
         <inverseReference field="ldapParents" directory="groupDirectory"
-          dualReferenceField="ldapChildren" />
+          dualReferenceField="ldapChildren" />          
 
       </references>
 
