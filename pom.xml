@@ -120,6 +120,7 @@
     <!-- should use same property name as JBoss to ease upgrades -->
     <jboss.ejb.version>3.0-RC8</jboss.ejb.version>
     <javax.ejb.version>3.0-RC8</javax.ejb.version>
+    <nuxeo.distribution.tools.version>1.9.3</nuxeo.distribution.tools.version>
   </properties>
 
   <dependencyManagement>
@@ -127,7 +128,7 @@
       <dependency>
         <groupId>org.nuxeo.build</groupId>
         <artifactId>nuxeo-distribution-tools</artifactId>
-        <version>1.9.1</version>
+        <version>${nuxeo.distribution.tools.version}</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
@@ -2483,7 +2484,7 @@
         <plugin>
           <groupId>org.nuxeo.build</groupId>
           <artifactId>nuxeo-distribution-tools</artifactId>
-          <version>1.9.1</version>
+          <version>${nuxeo.distribution.tools.version}</version>
           <extensions>true</extensions>
         </plugin>
         <!-- Cannot upgrade after 2.2-beta-1 because of MASSEMBLY-285 -->
