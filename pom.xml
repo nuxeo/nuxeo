@@ -160,6 +160,16 @@
         <groupId>org.nuxeo.ecm.core</groupId>
         <artifactId>nuxeo-core-storage-sql-extensions</artifactId>
         <version>${nuxeo.core.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+          </exclusion>
+          <exclusion>
+	    <groupId>org.apache.lucene</groupId>
+	    <artifactId>lucene-core</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
