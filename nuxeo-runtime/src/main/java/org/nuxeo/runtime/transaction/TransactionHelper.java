@@ -66,7 +66,8 @@ public class TransactionHelper {
         int i = 0;
         for (String name : UT_NAMES) {
             try {
-                UserTransaction userTransaction = (UserTransaction) context.lookup(name);
+                final Object lookup = context.lookup(name);
+                UserTransaction userTransaction = (UserTransaction) lookup;
                 if (userTransaction != null) {
                     if (i != 0) {
                         // put successful name first for next time
