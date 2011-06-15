@@ -52,7 +52,6 @@ import org.apache.directory.server.core.partition.PartitionNexus;
  * @author Luke Taylor
  * @version $Id: LdapTestServer.java 1496 2006-05-23 13:38:33Z benalex $
  */
-@SuppressWarnings({"ALL"})
 public class MockLdapServer implements ContextProvider {
     // ~ Instance fields
     // ================================================================================================

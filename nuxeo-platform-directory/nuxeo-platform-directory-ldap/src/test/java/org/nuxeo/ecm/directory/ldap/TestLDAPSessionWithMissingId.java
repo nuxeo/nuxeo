@@ -89,7 +89,8 @@ public class TestLDAPSessionWithMissingId extends LDAPDirectoryTestCase {
             assertNull(entry.getProperty(USER_SCHEMANAME, "password"));
             // assertNull(entry.getProperty(USER_SCHEMANAME, "userPassword"));
 
-            List val = (List) entry.getProperty(USER_SCHEMANAME, "employeeType");
+            List<String> val = (List<String>) entry.getProperty(
+                    USER_SCHEMANAME, "employeeType");
             assertTrue(val.isEmpty());
 
             if (USE_EXTERNAL_TEST_LDAP_SERVER) {

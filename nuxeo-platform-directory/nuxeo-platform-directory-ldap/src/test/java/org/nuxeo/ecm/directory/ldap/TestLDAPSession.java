@@ -68,7 +68,8 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
                     "firstName"));
             assertNull(entry.getProperty(USER_SCHEMANAME, "password"));
 
-            List val = (List) entry.getProperty(USER_SCHEMANAME, "employeeType");
+            List<String> val = (List<String>) entry.getProperty(
+                    USER_SCHEMANAME, "employeeType");
             assertTrue(val.isEmpty());
 
             if (USE_EXTERNAL_TEST_LDAP_SERVER) {
