@@ -24,6 +24,7 @@ import javax.sql.DataSource;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.jndi.InitContextAccessor;
 
 /**
  * Helper class to look up {@link DataSource}s without having to deal with
@@ -37,17 +38,6 @@ public class DataSourceHelper {
     private DataSourceHelper() {
     }
 
-    protected static final class TestingInitialContext extends InitialContext {
-        protected TestingInitialContext() throws NamingException {
-            super(false); // lazy mode is breaking jboss
-        }
-        // subclass in order to access the protected method
-        @Override
-        public Context getDefaultInitCtx() throws NamingException {
-            return super.getDefaultInitCtx();
-        }
-    }
-
     private static final Log log = LogFactory.getLog(DataSourceHelper.class);
 
     public static final String PREFIX_PROPERTY = "org.nuxeo.runtime.datasource.prefix";
@@ -57,7 +47,7 @@ public class DataSourceHelper {
     protected static String prefix;
 
     public static void autodetectPrefix() {
-        Context ctx = getDefaultInitCtx();
+        Context ctx = InitContextAccessor.getInitCtx();
         String name = ctx == null ? null : ctx.getClass().getName();
         if ("org.nuxeo.common.jndi.NamingContext".equals(name)) { // Nuxeo-Embedded
             prefix = DEFAULT_PREFIX;
@@ -77,13 +67,7 @@ public class DataSourceHelper {
         log.info("Using JDBC JNDI prefix: " + prefix);
     }
 
-    public static Context getDefaultInitCtx() {
-        try {
-            return new TestingInitialContext().getDefaultInitCtx();
-        } catch (NamingException e) {
-            return null;
-        }
-    }
+
 
     /**
      * Get the JNDI prefix used for DataSource lookups.
