@@ -7,7 +7,11 @@
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:c="http://java.sun.com/jstl/core">
 
-
-   <h:outputText value="#{commentManagerActions.getCommentsAsThreadOnDoc(field_0).size()}"/>
+  <c:if test="#{field_1}">
+    <h:outputText value="#{field_2}"/>
+  </c:if>
+  <c:if test="#{not field_1}">
+    <h:outputText value="#{commentManagerActions.getCommentsAsThreadOnDoc(field_0).size()}"/>
+  </c:if>
 
 </f:subview>

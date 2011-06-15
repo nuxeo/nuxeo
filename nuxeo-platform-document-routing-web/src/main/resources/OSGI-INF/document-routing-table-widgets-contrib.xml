@@ -328,6 +328,8 @@
       <translated>true</translated>
       <fields>
         <field>data.document</field>
+        <field>data.document.hasFacet('CommentsInfoHolder')</field>
+        <field>data.document.infocom.numberOfComments</field>
       </fields>
     </widget>
 
