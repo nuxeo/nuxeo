@@ -12,10 +12,10 @@ public class TestLDAPPOSIXSession extends TestLDAPSession {
 	@Override
 	public List<String> getLdifFiles() {
 		List<String> lstLdifFiles = new ArrayList<String>();
-		
 		lstLdifFiles.add("sample-users-posix.ldif");
-		lstLdifFiles.add("sample-groups-posix.ldif");
-		
+        lstLdifFiles.add("sample-posixgroups.ldif");
+        // if your server uses structural posix groups uncomment the following
+        // lstLdifFiles.add("sample-structural-posixgroups.ldif");
 		return lstLdifFiles;
 	}
 

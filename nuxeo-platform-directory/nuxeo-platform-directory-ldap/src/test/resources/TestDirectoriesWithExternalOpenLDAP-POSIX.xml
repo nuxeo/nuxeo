@@ -33,7 +33,7 @@
 
       <!-- Use the admin credentials to be able to reinit the LDAP tree
         at each setUp and tearDown -->
-      <bindDn>cn=admin,dc=example,dc=com</bindDn>
+      <bindDn>cn=admin</bindDn>
       <bindPassword>admin</bindPassword>
     </server>
 
@@ -99,6 +99,9 @@
 
       <creationBaseDn>ou=editable,ou=groups,dc=example,dc=com</creationBaseDn>
       <creationClass>top</creationClass>
+      <!-- Comment the groupOfNames if your server has a structural definition
+       for the posixGroup class -->
+      <creationClass>groupOfNames</creationClass>
       <creationClass>posixGroup</creationClass>
       <rdnAttribute>cn</rdnAttribute>
 

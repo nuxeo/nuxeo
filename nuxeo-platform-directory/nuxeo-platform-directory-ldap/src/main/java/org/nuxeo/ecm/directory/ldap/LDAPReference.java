@@ -375,12 +375,12 @@ public class LDAPReference extends AbstractReference {
                                     "could not add links to unexisting %s in directory %s",
                                     targetId, targetDirectory.getName()));
                 }
-                String targetKeyValue;
-
-                if (!staticAttributeIsId)
-                    targetKeyValue = ldapEntry.getNameInNamespace();
-                else
-                    targetKeyValue = targetId;
+                String targetAttributeValue;
+                if (!staticAttributeIsId) {
+                    targetAttributeValue = ldapEntry.getNameInNamespace();
+                } else {
+                    targetAttributeValue = targetId;
+                }
 
                 for (String sourceId : sourceIds) {
                     // fetch the entry to be able to run the security policy implemented in an entry adaptor
@@ -408,7 +408,7 @@ public class LDAPReference extends AbstractReference {
                     try {
                         // add the new dn
                         Attributes attrs = new BasicAttributes(attributeId,
-                                targetKeyValue);
+                                targetAttributeValue);
 
                         if (log.isDebugEnabled()) {
                             log.debug(String.format(
@@ -482,7 +482,7 @@ public class LDAPReference extends AbstractReference {
             LDAPDirectory targetDir = getTargetLDAPDirectory();
             LDAPSession targetSession = (LDAPSession) targetDir.getSession();
 
-            if (staticAttributeIsId) {
+            if (!staticAttributeIsId) {
                 try {
                     targetLdapEntry = targetSession.getLdapEntry(targetId, true);
                     if (targetLdapEntry == null) {
@@ -515,10 +515,11 @@ public class LDAPReference extends AbstractReference {
                     staticAttributeId, sourceDirectory.getBaseFilter());
             String[] filterArgs = new String[1];
 
-            if (staticAttributeIsId)
+            if (staticAttributeIsId) {
                 filterArgs[0] = targetId;
-            else
+            } else {
                 filterArgs[0] = targetDn;
+            }
 
             String searchBaseDn = sourceDirectory.getConfig().getSearchBaseDn();
             LDAPSession sourceSession = (LDAPSession) sourceDirectory.getSession();
@@ -714,7 +715,7 @@ public class LDAPReference extends AbstractReference {
         LDAPDirectory targetDirectory = (LDAPDirectory) getTargetDirectory();
         LDAPDirectoryDescriptor targetDirconfig = getTargetDirectoryDescriptor();
         LDAPSession targetSession = (LDAPSession) targetDirectory.getSession();
-
+        String emptyRefMarker = targetDirectory.getConfig().getEmptyRefMarker();
         try {
             String baseDn = pseudoNormalizeDn(targetDirconfig.getSearchBaseDn());
 
@@ -727,8 +728,12 @@ public class LDAPReference extends AbstractReference {
 
             if (staticAttribute != null && staticAttributeIsId) {
                 NamingEnumeration<?> staticContent = staticAttribute.getAll();
-                while (staticContent.hasMore())
-                    targetIds.add(staticContent.next().toString());
+                while (staticContent.hasMore()) {
+                    String value = staticContent.next().toString();
+                    if (!emptyRefMarker.equals(value)) {
+                        targetIds.add(value);
+                    }
+                }
             }
 
             if (staticAttribute != null && !staticAttributeIsId) {
@@ -1038,8 +1043,9 @@ public class LDAPReference extends AbstractReference {
                         // this is an entry managed by the current reference
                         attrToRemove.add(dn);
                     }
-                } else
+                } else {
                     attrToRemove.add(targetKeyAttr);
+                }
             }
             try {
                 if (attrToRemove.size() == oldAttr.size()) {
@@ -1105,7 +1111,7 @@ public class LDAPReference extends AbstractReference {
         try {
             if (!sourceSession.isReadOnly()) {
                 // get the dn of the target that matches targetId
-                String targetKeyValue;
+                String targetAttributeValue;
 
                 if (!staticAttributeIsId) {
                     SearchResult targetLdapEntry = targetSession.getLdapEntry(targetId);
@@ -1120,18 +1126,19 @@ public class LDAPReference extends AbstractReference {
                         // the entry might have already been deleted, try to
                         // re-forge it if possible (might not work if scope is
                         // subtree)
-                        targetKeyValue = String.format("%s=%s,%s",
+                        targetAttributeValue = String.format("%s=%s,%s",
                                 rdnAttribute, targetId,
                                 targetDirectory.getConfig().getSearchBaseDn());
                     } else {
-                        targetKeyValue = pseudoNormalizeDn(targetLdapEntry.getNameInNamespace());
+                        targetAttributeValue = pseudoNormalizeDn(targetLdapEntry.getNameInNamespace());
                     }
-                } else
-                    targetKeyValue = targetId;
+                } else {
+                    targetAttributeValue = targetId;
+                }
 
                 // build a LDAP query to find entries that point to the target
                 String searchFilter = String.format("(%s=%s)", attributeId,
-                        targetKeyValue);
+                        targetAttributeValue);
                 String sourceFilter = sourceDirectory.getBaseFilter();
 
                 if (sourceFilter != null && !"".equals(sourceFilter)) {
@@ -1184,7 +1191,7 @@ public class LDAPReference extends AbstractReference {
                         // remove the reference to the target key
                         attrs = new BasicAttributes();
                         attr = new BasicAttribute(attributeId);
-                        attr.add(targetKeyValue);
+                        attr.add(targetAttributeValue);
                         attrs.put(attr);
                         if (log.isDebugEnabled()) {
                             log.debug(String.format(

@@ -33,7 +33,7 @@
 
       <!-- Use the admin credentials to be able to reinit the LDAP tree
         at each setUp and tearDown -->
-      <bindDn>cn=admin,dc=example,dc=com</bindDn>
+      <bindDn>cn=admin</bindDn>
       <bindPassword>admin</bindPassword>
     </server>
 
