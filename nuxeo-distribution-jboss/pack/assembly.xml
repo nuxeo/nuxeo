@@ -34,7 +34,7 @@
   </target>
   <target name="pack">
     <echo>Packing distribution: ${NX_DISTRIBUTION}</echo>
-    <chmod dir="${stage}/bin" includes="*.sh,*ctl,*.command" perm="ug+x" />
+    <chmod dir="${stage}/bin" includes="*.sh,*ctl,*.command,pack" perm="ug+x" />
     <!-- patch the distribution according to the pack configuration -->
     <!-- generate nuxeo structure xml file -->
     <loadfile property="nxstructure"
@@ -64,8 +64,7 @@
 
     <!-- run the pack command -->
     <echo>Executing pack command</echo>
-    <exec executable="${stage}/bin/nuxeoctl">
-      <arg value="pack" />
+    <exec executable="${stage}/bin/pack">
       <arg value="${outdir}/deploy" />
     </exec>
     <delete dir="${stage}" />
