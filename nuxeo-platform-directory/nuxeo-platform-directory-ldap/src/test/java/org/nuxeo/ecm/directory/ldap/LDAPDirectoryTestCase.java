@@ -48,6 +48,10 @@ public abstract class LDAPDirectoryTestCase extends NXRuntimeTestCase {
     // non networked default ApacheDS implementation
     public static final boolean USE_EXTERNAL_TEST_LDAP_SERVER = false;
 
+    // change this flag in case the external LDAP server considers the
+    // posixGroup class structural
+    public static final boolean POSIXGROUP_IS_STRUCTURAL = true;
+
     // change this flag if your test server has support for dynamic groups
     // through the groupOfURLs objectclass, eg for OpenLDAP:
     // http://www.ldap.org.br/modules/ldap/files/files///dyngroup.schema
@@ -55,11 +59,21 @@ public abstract class LDAPDirectoryTestCase extends NXRuntimeTestCase {
 
     public String EXTERNAL_SERVER_SETUP = "TestDirectoriesWithExternalOpenLDAP.xml";
 
-    public static final String INTERNAL_SERVER_SETUP = "TestDirectoriesWithInternalApacheDS.xml";
+    public String INTERNAL_SERVER_SETUP = "TestDirectoriesWithInternalApacheDS.xml";
 
-    public static final String EXTERNAL_SERVER_SETUP_OVERRIDE = "TestDirectoriesWithExternalOpenLDAP-override.xml";
+    public String EXTERNAL_SERVER_SETUP_OVERRIDE = "TestDirectoriesWithExternalOpenLDAP-override.xml";
 
-    public static final String INTERNAL_SERVER_SETUP_OVERRIDE = "TestDirectoriesWithInternalApacheDS-override.xml";
+    public String INTERNAL_SERVER_SETUP_OVERRIDE = "TestDirectoriesWithInternalApacheDS-override.xml";
+
+    public List<String> getLdifFiles() {
+        List<String> ldifFiles = new ArrayList<String>();
+        ldifFiles.add("sample-users.ldif");
+        ldifFiles.add("sample-groups.ldif");
+        if (HAS_DYNGROUP_SCHEMA) {
+            ldifFiles.add("sample-dynamic-groups.ldif");
+        }
+        return ldifFiles;
+    }
 
     public static final String INTERNAL_SERVER_SETUP_UPPER_ID = "TestDirectoriesWithInternalApacheDS-override-upper-id.xml";
 
@@ -67,8 +81,7 @@ public abstract class LDAPDirectoryTestCase extends NXRuntimeTestCase {
     public void setUp() throws Exception {
         super.setUp();
         // setup the client environment
-        deployContrib("org.nuxeo.ecm.core",
-                "OSGI-INF/CoreService.xml");
+        deployContrib("org.nuxeo.ecm.core", "OSGI-INF/CoreService.xml");
         deployContrib("org.nuxeo.ecm.directory.ldap.tests",
                 "ldap-test-setup/TypeService.xml");
 
@@ -94,11 +107,8 @@ public abstract class LDAPDirectoryTestCase extends NXRuntimeTestCase {
         LDAPSession session = (LDAPSession) getLDAPDirectory("userDirectory").getSession();
         try {
             DirContext ctx = session.getContext();
-            loadDataFromLdif("sample-users.ldif", ctx);
-            loadDataFromLdif("sample-groups.ldif", ctx);
-            if (HAS_DYNGROUP_SCHEMA) {
-                loadDataFromLdif("sample-dynamic-groups.ldif", ctx);
-            }
+            for (String ldifFile : getLdifFiles())
+                loadDataFromLdif(ldifFile, ctx);
         } finally {
             session.close();
         }
@@ -120,8 +130,7 @@ public abstract class LDAPDirectoryTestCase extends NXRuntimeTestCase {
         } finally {
             session.close();
         }
-        undeployContrib("org.nuxeo.ecm.core",
-                "OSGI-INF/CoreService.xml");
+        undeployContrib("org.nuxeo.ecm.core", "OSGI-INF/CoreService.xml");
         undeployContrib("org.nuxeo.ecm.directory.ldap.tests",
                 "ldap-test-setup/TypeService.xml");
 
@@ -164,8 +173,8 @@ public abstract class LDAPDirectoryTestCase extends NXRuntimeTestCase {
             SearchResult child = children.next();
             String subDn = child.getName();
             if (!USE_EXTERNAL_TEST_LDAP_SERVER && subDn.endsWith(providerUrl)) {
-                subDn = subDn.substring(0, subDn.length()
-                        - providerUrl.length() - 1);
+                subDn = subDn.substring(0,
+                        subDn.length() - providerUrl.length() - 1);
             } else {
                 subDn = subDn + ',' + dn;
             }

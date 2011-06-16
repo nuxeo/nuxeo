@@ -201,6 +201,10 @@ public class MockLdapServer implements ContextProvider {
         indexedAttrs.add("cn");
         indexedAttrs.add("ou");
         indexedAttrs.add("uniqueMember");
+        
+        // POSIX RFC-2307 schema.
+        indexedAttrs.add("gidNumber");
+        indexedAttrs.add("uidNumber");
 
         testPartition.setIndexedAttributes(indexedAttrs);
 
