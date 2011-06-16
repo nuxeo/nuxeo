@@ -81,10 +81,12 @@
     </dependency>
 
     <!-- beanshell -->
+
     <dependency>
       <groupId>bsh</groupId>
       <artifactId>bsh</artifactId>
     </dependency>
+
     <dependency>
       <groupId>javax.script</groupId>
       <artifactId>bsh-engine</artifactId>
@@ -94,6 +96,7 @@
       <groupId>org.codehaus.groovy</groupId>
       <artifactId>groovy-all</artifactId>
     </dependency>
+
     <dependency>
       <groupId>javax.script</groupId>
       <artifactId>groovy-engine</artifactId>
@@ -106,91 +109,4 @@
 
   </dependencies>
 
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>copy</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>copy</goal>
-            </goals>
-            <configuration>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>commons-jexl</groupId>
-                  <artifactId>commons-jexl</artifactId>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>rhino</groupId>
-                  <artifactId>js</artifactId>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>org.jruby</groupId>
-                  <artifactId>jruby</artifactId>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>org.python</groupId>
-                  <artifactId>jython</artifactId>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>org.codehaus.groovy</groupId>
-                  <artifactId>groovy-all</artifactId>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>javax.script</groupId>
-                  <artifactId>groovy-engine</artifactId>
-                </artifactItem>
-
-                <artifactItem>
-                  <groupId>javax.script</groupId>
-                  <artifactId>script-api</artifactId>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>javax.script</groupId>
-                  <artifactId>bsh-engine</artifactId>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>javax.script</groupId>
-                  <artifactId>jython-engine</artifactId>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>javax.script</groupId>
-                  <artifactId>jruby-engine</artifactId>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>javax.script</groupId>
-                  <artifactId>js-engine</artifactId>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>javax.script</groupId>
-                  <artifactId>jexl-engine</artifactId>
-                </artifactItem>
-
-                <artifactItem>
-                  <groupId>backport-util-concurrent</groupId>
-                  <artifactId>backport-util-concurrent</artifactId>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>asm</groupId>
-                  <artifactId>asm</artifactId>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>antlr</groupId>
-                  <artifactId>antlr</artifactId>
-                </artifactItem>
-
-              </artifactItems>
-              <outputDirectory>
-                ${project.build.directory}/classes/lib
-              </outputDirectory>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
 </project>
