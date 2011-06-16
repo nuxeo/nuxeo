@@ -11,7 +11,7 @@
   <groupId>org.nuxeo.ecm.distribution</groupId>
   <artifactId>nuxeo-distribution-gf3</artifactId>
   <packaging>pom</packaging>
-  <name>Nuxeo GF3 template</name>
+  <name>DEPRECATED - Nuxeo GF3 template</name>
   <description>DEPRECATED - Defines the skeleton of a glassfish3 nuxeo application</description>
 
   <profiles>
@@ -28,7 +28,7 @@
       </activation>
     </profile>
   </profiles>
-  
+
   <properties>
     <nuxeo.core.version>5.4.3-SNAPSHOT</nuxeo.core.version>
     <gf3.version>3.0-b38</gf3.version>
@@ -53,11 +53,9 @@
       <artifactId>nuxeo-runtime-gf3-adapter</artifactId>
       <version>${nuxeo.runtime.version}</version>
     </dependency>
-    <!--
-      these dependencies are normally part of specific profiles but maven is
-      limited when working with profiles and these will not be available when
-      activating a profile from ant
-    -->
+    <!-- these dependencies are normally part of specific profiles but maven is limited
+      when working with profiles and these will not be available when activating a profile
+      from ant -->
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-jca</artifactId>

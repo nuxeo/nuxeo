@@ -11,8 +11,8 @@
   <groupId>org.nuxeo.ecm.distribution</groupId>
   <artifactId>nuxeo-distribution-server</artifactId>
   <packaging>pom</packaging>
-  <name>Nuxeo Server Template</name>
-  <description>Defines the skeleton of a standalone nuxeo server</description>
+  <name>DEPRECATED - Nuxeo Server Template</name>
+  <description>DEPRECATED - Defines the skeleton of a standalone nuxeo server</description>
 
   <properties>
     <application.name>${project.artifactId}-${project.version}</application.name>
@@ -79,7 +79,7 @@
             </goals>
             <configuration>
               <runPreprocessor>false</runPreprocessor>
-              <!--format>directory</format-->
+              <!--format>directory</format -->
               <format>zip</format>
               <outputDirectory>target</outputDirectory>
               <targetFile>${application.name}</targetFile>
