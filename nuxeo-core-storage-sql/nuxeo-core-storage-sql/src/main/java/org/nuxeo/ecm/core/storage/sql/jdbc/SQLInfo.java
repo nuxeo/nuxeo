@@ -194,6 +194,12 @@ public class SQLInfo {
         selectVersionIdByLabelWhatColumn = null;
 
         initSQL();
+
+        try {
+            initSQLStatements(JDBCMapper.testProps);
+        } catch (IOException e) {
+            throw new StorageException(e);
+        }
     }
 
     public Database getDatabase() {

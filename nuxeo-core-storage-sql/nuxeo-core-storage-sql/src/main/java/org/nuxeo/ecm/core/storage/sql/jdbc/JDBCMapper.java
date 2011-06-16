@@ -11,7 +11,6 @@
  */
 package org.nuxeo.ecm.core.storage.sql.jdbc;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.security.MessageDigest;
 import java.sql.Array;
@@ -135,11 +134,6 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
 
     @Override
     public void createDatabase() throws StorageException {
-        try {
-            sqlInfo.initSQLStatements(testProps);
-        } catch (IOException e) {
-            throw new StorageException(e);
-        }
         try {
             createTables();
         } catch (Exception e) {
