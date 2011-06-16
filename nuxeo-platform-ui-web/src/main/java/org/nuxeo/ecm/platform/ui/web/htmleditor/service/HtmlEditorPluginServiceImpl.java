@@ -57,7 +57,8 @@ public class HtmlEditorPluginServiceImpl extends DefaultComponent implements
             String extensionPoint, ComponentInstance contributor) {
         if (PLUGINS_EXTENSION_POINT.equals(extensionPoint)) {
             final HtmlEditorPluginDescriptor descriptor = (HtmlEditorPluginDescriptor) contribution;
-            if (descriptor.getRemove() && pluginsDescriptors.containsKey(descriptor.getPluginName())) {
+            if (descriptor.getRemove()
+                    && pluginsDescriptors.containsKey(descriptor.getPluginName())) {
                 pluginsDescriptors.remove(descriptor.getPluginName());
             } else {
                 pluginsDescriptors.put(descriptor.getPluginName(), descriptor);
@@ -74,14 +75,26 @@ public class HtmlEditorPluginServiceImpl extends DefaultComponent implements
         }
     }
 
+    @Override
     public List<String> getPluginsName() {
         return new ArrayList<String>(pluginsDescriptors.keySet());
     }
 
+    @Override
     public String getFormattedPluginsNames() {
         return StringUtils.join(getPluginsName(), ',');
     }
 
+    public List<String> getToolbarsButtonsNames() {
+        return new ArrayList<String>(pluginsDescriptors.keySet());
+    }
+
+    @Override
+    public String getFormattedToolbarsButtonsNames() {
+        return StringUtils.join(getToolbarsButtonsNames(), ',');
+    }
+
+    @Override
     public Map<String, String> getToolbarsButtons() {
         final Map<String, String> result = new HashMap<String, String>();
         final Map<String, List<String>> temp = new HashMap<String, List<String>>();

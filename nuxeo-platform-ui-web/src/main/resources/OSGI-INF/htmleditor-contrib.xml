@@ -16,6 +16,12 @@
            toolbarName="theme_advanced_buttons3_add">
    </htmlEditorPlugin>
 
+   <htmlEditorPlugin
+           pluginName="fullscreen"
+           pluginButtonName="fullscreen"
+           toolbarName="theme_advanced_buttons3_add">
+   </htmlEditorPlugin>
+
   </extension>
 
 </component>
