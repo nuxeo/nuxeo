@@ -85,6 +85,15 @@ public class HtmlEditorPluginServiceImpl extends DefaultComponent implements
         return StringUtils.join(getPluginsName(), ',');
     }
 
+    public List<String> getToolbarsButtonsNames() {
+        return new ArrayList<String>(pluginsDescriptors.keySet());
+    }
+
+    @Override
+    public String getFormattedToolbarsButtonsNames() {
+        return StringUtils.join(getToolbarsButtonsNames(), ',');
+    }
+
     @Override
     public Map<String, String> getToolbarsButtons() {
         final Map<String, String> result = new HashMap<String, String>();

@@ -33,4 +33,6 @@ public interface HtmlEditorPluginService {
 
     Map<String, String> getToolbarsButtons();
 
+    String getFormattedToolbarsButtonsNames();
+
 }
