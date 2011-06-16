@@ -103,11 +103,16 @@ public class SQLHelper {
             boolean tableExists = tableExists();
 
             // check the field names match the column names
-            if (policy.equals("on_missing_columns") && tableExists
-                    && hasMatchingColumns()) {
-                // all required columns were found
-                log.debug("policy='on_missing_columns' and all column matched, skipping sql setup script");
-                return false;
+            if (policy.equals("on_missing_columns") && tableExists) {
+                if (hasMatchingColumns()) {
+                    // all required columns were found
+                    log.debug("policy='on_missing_columns' and all column matched, skipping sql setup script");
+                    return false;
+                } else {
+                    log.debug("policy='on_missing_columns' and some columns are missing");
+                    addMissingColumns();
+                    return true;
+                }
             }
 
             createTable(tableExists);
@@ -123,6 +128,24 @@ public class SQLHelper {
         }
 
         return true;
+    }
+
+    private void addMissingColumns() throws DirectoryException {
+        try {
+            Statement stmt = connection.createStatement();
+
+            for (Column column : getMissingColumns(false)) {
+                String alter = table.getAddColumnSql(column);
+                if (logger.isLogEnabled()) {
+                    logger.log(alter);
+                }
+                stmt.execute(alter);
+            }
+        } catch (SQLException e) {
+            throw new DirectoryException(String.format(
+                    "Table '%s' alteration failed: %s", table, e.getMessage()),
+                    e);
+        }
     }
 
     private void createTable(boolean tableExists) throws DirectoryException {
@@ -150,47 +173,70 @@ public class SQLHelper {
     }
 
     public boolean hasMatchingColumns() {
-        ResultSet rs = null;
-        String tableName = this.tableName;
+        Set<Column> missingColumns = getMissingColumns(true);
+        if (missingColumns == null || missingColumns.size() > 0) {
+            return false;
+        } else {
+            // all fields have a matching column, this looks not that bad
+            log.debug(String.format("all fields matched for table '%s'",
+                    tableName));
+            return true;
+        }
+    }
+
+    public Set<Column> getMissingColumns(Boolean breakAtFirstMissing) {
         try {
+            Set<Column> missingColumns = new HashSet<Column>();
 
             // Test whether there are new fields added in the schema that are
             // not present in the table schema. If so it is advised to
             // reinitialise the database.
 
-            // fetch the database columns definitions
-            DatabaseMetaData metadata = connection.getMetaData();
-            rs = metadata.getColumns(null, "%", tableName, "%");
-
-            Set<String> columnNames = new HashSet<String>();
-            while (rs.next()) {
-                columnNames.add(rs.getString("COLUMN_NAME"));
-            }
+            Set<String> columnNames = getPhysicalColumns();
 
             // check the field names match the column names (case-insensitive)
             for (Column column : table.getColumns()) {
                 // TODO: check types as well
                 String fieldName = column.getPhysicalName();
                 if (!columnNames.contains(fieldName)) {
-                    log.debug(String.format(
-                            "required field: %s, available columns: [%s]",
-                            fieldName, columnNames));
-                    return false;
+                    log.debug(String.format("required field: %s is missing",
+                            fieldName));
+                    missingColumns.add(column);
+
+                    if (breakAtFirstMissing) {
+                        return null;
+                    }
                 }
             }
-            // all fields have a matching column, this looks not that bad
-            log.debug(String.format("all fields matched for table '%s'",
-                    tableName));
-            return true;
+
+            return missingColumns;
         } catch (SQLException e) {
             log.warn("error while introspecting table: " + tableName, e);
-            return false;
+            return null;
+        }
+    }
+
+    private Set<String> getPhysicalColumns() throws SQLException {
+        ResultSet rs = null;
+        Set<String> columnNames = new HashSet<String>();
+        try {
+            // fetch the database columns definitions
+            DatabaseMetaData metadata = connection.getMetaData();
+            rs = metadata.getColumns(null, "%", tableName, "%");
+
+            while (rs.next()) {
+                columnNames.add(rs.getString("COLUMN_NAME"));
+            }
         } finally {
             try {
-                rs.close();
-            } catch (Exception e2) {
+                if (rs != null) {
+                    rs.close();
+                }
+            } catch (Exception e) {
+                log.warn("Error while trying to close result set", e);
             }
         }
+        return columnNames;
     }
 
     private boolean tableExists() throws DirectoryException {
