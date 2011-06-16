@@ -93,8 +93,15 @@ public class LDAPReference extends AbstractReference {
 
     protected LDAPDirectoryDescriptor targetDirectoryDescriptor;
 
-    @XNode("@staticAttributeIsId")
-    private boolean staticAttributeIsId;
+    /**
+     * Resolve staticAttributeId as distinguished names (true by default) such
+     * as in the uniqueMember field of groupOfUniqueNames.
+     * 
+     * Set to false to resolve as simple id (as in memberUID of posixGroup for
+     * instance).
+     */
+    @XNode("@staticAttributeIdIsDn")
+    private boolean staticAttributeIdIsDn = true;
 
     @XNode("@staticAttributeId")
     protected String staticAttributeId;
@@ -266,7 +273,7 @@ public class LDAPReference extends AbstractReference {
                 String emptyRefMarker = sourceDirectory.getConfig().getEmptyRefMarker();
                 Attribute attrToAdd = new BasicAttribute(attributeId);
                 for (String targetId : targetIds) {
-                    if (!staticAttributeIsId) {
+                    if (staticAttributeIdIsDn) {
                         // TODO optim: avoid LDAP search request when targetDn
                         // can be forged client side (rdnAttribute = idAttribute
                         // and scope is onelevel)
@@ -376,7 +383,7 @@ public class LDAPReference extends AbstractReference {
                                     targetId, targetDirectory.getName()));
                 }
                 String targetAttributeValue;
-                if (!staticAttributeIsId) {
+                if (staticAttributeIdIsDn) {
                     targetAttributeValue = ldapEntry.getNameInNamespace();
                 } else {
                     targetAttributeValue = targetId;
@@ -486,7 +493,7 @@ public class LDAPReference extends AbstractReference {
             LDAPDirectory targetDir = getTargetLDAPDirectory();
             LDAPSession targetSession = (LDAPSession) targetDir.getSession();
 
-            if (!staticAttributeIsId) {
+            if (staticAttributeIdIsDn) {
                 try {
                     targetLdapEntry = targetSession.getLdapEntry(targetId, true);
                     if (targetLdapEntry == null) {
@@ -519,10 +526,10 @@ public class LDAPReference extends AbstractReference {
                     staticAttributeId, sourceDirectory.getBaseFilter());
             String[] filterArgs = new String[1];
 
-            if (staticAttributeIsId) {
-                filterArgs[0] = targetId;
-            } else {
+            if (staticAttributeIdIsDn) {
                 filterArgs[0] = targetDn;
+            } else {
+                filterArgs[0] = targetId;
             }
 
             String searchBaseDn = sourceDirectory.getConfig().getSearchBaseDn();
@@ -730,7 +737,7 @@ public class LDAPReference extends AbstractReference {
                 staticAttribute = attributes.get(staticAttributeId);
             }
 
-            if (staticAttribute != null && staticAttributeIsId) {
+            if (staticAttribute != null && !staticAttributeIdIsDn) {
                 NamingEnumeration<?> staticContent = staticAttribute.getAll();
                 while (staticContent.hasMore()) {
                     String value = staticContent.next().toString();
@@ -740,7 +747,7 @@ public class LDAPReference extends AbstractReference {
                 }
             }
 
-            if (staticAttribute != null && !staticAttributeIsId) {
+            if (staticAttribute != null && staticAttributeIdIsDn) {
                 NamingEnumeration<?> targetDns = staticAttribute.getAll();
 
                 while (targetDns.hasMore()) {
@@ -1035,7 +1042,7 @@ public class LDAPReference extends AbstractReference {
             while (oldAttrs.hasMore()) {
                 String targetKeyAttr = oldAttrs.next().toString();
 
-                if (!staticAttributeIsId) {
+                if (staticAttributeIdIsDn) {
                     String dn = pseudoNormalizeDn(targetKeyAttr);
                     if (forceDnConsistencyCheck) {
                         String id = getIdForDn(targetSession, dn);
@@ -1121,7 +1128,7 @@ public class LDAPReference extends AbstractReference {
                 // get the dn of the target that matches targetId
                 String targetAttributeValue;
 
-                if (!staticAttributeIsId) {
+                if (staticAttributeIdIsDn) {
                     SearchResult targetLdapEntry = targetSession.getLdapEntry(targetId);
                     if (targetLdapEntry == null) {
                         String rdnAttribute = targetDirectory.getConfig().getRdnAttribute();

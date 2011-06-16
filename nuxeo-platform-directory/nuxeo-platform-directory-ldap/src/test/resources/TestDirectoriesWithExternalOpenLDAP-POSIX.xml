@@ -115,7 +115,7 @@
       <references>
 
         <ldapReference field="members" directory="userDirectory"
-          staticAttributeId="memberUID" staticAttributeIsId="true"
+          staticAttributeId="memberUID" staticAttributeIdIsDn="false"
           dynamicAttributeId="memberURL" />
 
         <ldapReference field="subGroups" directory="groupDirectory"
