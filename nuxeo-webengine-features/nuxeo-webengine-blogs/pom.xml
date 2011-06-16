@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
@@ -13,10 +12,6 @@
   <artifactId>nuxeo-webengine-blogs</artifactId>
   <name>Nuxeo Webengine Blogs</name>
   <description>Sites Module to handle blogs.</description>
-
-  <properties>
-    <nuxeo.distribution.version>5.4.3-SNAPSHOT</nuxeo.distribution.version>
-  </properties>
 
   <dependencies>
     <dependency>
@@ -42,7 +37,7 @@
     <dependency>
       <groupId>javax.ws.rs</groupId>
       <artifactId>jsr311-api</artifactId>
-    </dependency>    
+    </dependency>
 
     <!--this is required to index annotations at build time -->
     <dependency>
@@ -58,18 +53,6 @@
       </exclusions>
     </dependency>
   </dependencies>
-
-  <profiles>
-    <profile>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
-      <id>dev</id>
-      <properties>
-        <assembly.name>${assembly.tests.name}</assembly.name>
-      </properties>
-    </profile>
-  </profiles>
 
   <build>
     <plugins>
@@ -87,19 +70,6 @@
         </executions>
       </plugin>
       <!-- end APT plugin -->
-      <!-- manual testing purpose -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-nuxeo-plugin</artifactId>
-        <extensions>true</extensions>
-        <configuration>
-          <runPreprocessor>false</runPreprocessor>
-          <format>directory</format>
-          <outputDirectory>target</outputDirectory>
-          <targetFile>blogs.ear</targetFile>
-          <descriptor>${basedir}/src/main/resources/assemble/blogs.xml</descriptor>
-        </configuration>
-      </plugin>
     </plugins>
   </build>
 
