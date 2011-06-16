@@ -289,7 +289,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
 
     // NXP-2730: ldap queries are case-insensitive => test entry retrieval is ok
     // when using other cases (lower or upper)
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public void testGetEntryWithIdInDifferentCase() throws ClientException {
         Session session = getLDAPDirectory("userDirectory").getSession();
         try {
