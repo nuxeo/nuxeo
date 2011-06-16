@@ -111,8 +111,9 @@ objectClass: organizationalUnit
 ou: readonly
 
 dn: cn=readonlygroup1,ou=readonly,ou=groups,dc=example,dc=com
-uniqueMember: uid=user2,ou=people,dc=example,dc=com
+memberUID: user2
 objectClass: top
-objectClass: groupOfUniqueNames
+objectClass: posixGroup
 description: Statically defined group that is not editable
 cn: readonlygroup1
+gidNumber: 4096

@@ -405,6 +405,10 @@ public class LDAPReference extends AbstractReference {
                     String sourceDn = ldapEntry.getNameInNamespace();
                     Attribute storedAttr = ldapEntry.getAttributes().get(
                             attributeId);
+                    if (storedAttr.contains(targetAttributeValue)) {
+                        // no need to readd
+                        continue;
+                    }
                     try {
                         // add the new dn
                         Attributes attrs = new BasicAttributes(attributeId,
@@ -1103,6 +1107,10 @@ public class LDAPReference extends AbstractReference {
      */
     @Override
     public void removeLinksForTarget(String targetId) throws DirectoryException {
+        if (!isStatic()) {
+            // nothing to do: dynamic references cannot be updated
+            return;
+        }
         LDAPDirectory targetDirectory = (LDAPDirectory) getTargetDirectory();
         LDAPSession targetSession = (LDAPSession) targetDirectory.getSession();
         LDAPDirectory sourceDirectory = (LDAPDirectory) getSourceDirectory();

@@ -1135,8 +1135,15 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
             session = (LDAPSession) getLDAPDirectory("groupDirectory").getSession();
             try {
                 List<String> mandatoryAttributes = session.getMandatoryAttributes();
-                assertEquals(Arrays.asList("uniqueMember", "cn"),
-                        mandatoryAttributes);
+                if (mandatoryAttributes.size() == 2) {
+                    Collections.sort(mandatoryAttributes);
+                    assertEquals(Arrays.asList("cn", "uniqueMember"),
+                            mandatoryAttributes);
+                } else {
+                    // on some LDAP servers, the default schema does not make
+                    // uniqueMember a mandatory attribute
+                    assertEquals(Arrays.asList("cn"), mandatoryAttributes);
+                }
             } finally {
                 session.close();
             }
