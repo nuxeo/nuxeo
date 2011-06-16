@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -56,6 +57,9 @@ public class GetRelations {
 
     @Param(name = "outgoing", required = false)
     protected boolean outgoing = true;
+
+    @Param(name = "graphName", required = false)
+    protected String graphName;
 
     @OperationMethod
     public DocumentModelList run(DocumentModel doc) throws Exception {
@@ -105,13 +109,13 @@ public class GetRelations {
     protected List<Statement> getIncomingStatements(QNameResource res,
             Resource predicate) throws ClientException {
         Statement pattern = new StatementImpl(null, predicate, res);
-        return relations.getStatements(RelationConstants.GRAPH_NAME, pattern);
+        return relations.getStatements(getGraphName(), pattern);
     }
 
     protected List<Statement> getOutgoingStatements(QNameResource res,
             Resource predicate) throws ClientException {
         Statement pattern = new StatementImpl(res, predicate, null);
-        return relations.getStatements(RelationConstants.GRAPH_NAME, pattern);
+        return relations.getStatements(getGraphName(), pattern);
     }
 
     protected DocumentModel getDocumentModel(Node node) throws ClientException {
@@ -127,6 +131,13 @@ public class GetRelations {
             }
         }
         return null;
+    }
+
+    public String getGraphName() {
+        if (StringUtils.isEmpty(graphName)) {
+            return RelationConstants.GRAPH_NAME;
+        }
+        return graphName;
     }
 
 }

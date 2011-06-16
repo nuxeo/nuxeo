@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -284,6 +284,12 @@ public class DocumentService {
                 "predicate", predicate).set("outgoing", outgoing).execute();
     }
 
+    public Documents getRelations(DocRef doc, String predicate, boolean outgoing, String graphName)
+            throws Exception {
+        return (Documents) session.newRequest(GetRelations).setInput(doc).set(
+                "predicate", predicate).set("outgoing", outgoing).set("graphName", graphName).execute();
+    }
+
     public void setBlob(DocRef doc, Blob blob) throws Exception {
         setBlob(doc, blob, null);
     }
@@ -342,7 +348,7 @@ public class DocumentService {
     /**
      * Increment is one of "None", "Major", "Minor". If null the server default
      * will be used.
-     * 
+     *
      * See {@link VersionIncrement}
      */
     public Document createVersion(DocRef doc, String increment)

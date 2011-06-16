@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -100,6 +100,14 @@ public class RelationOperationsTest {
 
         assertEquals(1, docs.size());
         assertEquals(dst, docs.get(0));
+
+        ctx = new OperationContext(session);
+        ctx.setInput(src);
+        chain = new OperationChain("getRelationWithGraphName");
+        chain.add(FetchContextDocument.ID);
+        chain.add(GetRelations.ID).set("predicate", conformsTo).set("graphName", null);
+        DocumentModelList docs2 = (DocumentModelList) service.run(ctx, chain);
+        assertEquals(docs, docs2);
     }
 
 }
