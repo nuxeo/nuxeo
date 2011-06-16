@@ -133,6 +133,9 @@ public class GetRelations {
         return null;
     }
 
+    /**
+     * @since 5.4.3
+     */
     public String getGraphName() {
         if (StringUtils.isEmpty(graphName)) {
             return RelationConstants.GRAPH_NAME;

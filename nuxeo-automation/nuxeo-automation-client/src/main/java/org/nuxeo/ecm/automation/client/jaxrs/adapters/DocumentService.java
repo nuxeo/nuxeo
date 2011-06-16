@@ -284,6 +284,9 @@ public class DocumentService {
                 "predicate", predicate).set("outgoing", outgoing).execute();
     }
 
+    /**
+     * @since 5.4.3
+     */
     public Documents getRelations(DocRef doc, String predicate, boolean outgoing, String graphName)
             throws Exception {
         return (Documents) session.newRequest(GetRelations).setInput(doc).set(
