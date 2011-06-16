@@ -42,10 +42,15 @@ public class ValueExpressionHelper {
         return false;
     }
 
-    public static String createExpressionString(String valueName,
+    /**
+     * Returns the value expression string representation without the
+     * surrounding brackets, for instance: "value.property" instead of
+     * #{value.property}.
+     */
+    public static String createBareExpressionString(String valueName,
             FieldDefinition field) {
         if (field == null || "".equals(field.getPropertyName())) {
-            return String.format("#{%s}", valueName);
+            return valueName;
         }
         List<String> expressionElements = new ArrayList<String>();
         expressionElements.add(valueName);
@@ -57,9 +62,7 @@ public class ValueExpressionHelper {
             // already formatted as an EL expression => ignore schema name, do
             // not resolve field and do not modify expression format
             expressionElements.add(fieldName);
-            dmResolverValue = String.format("#{%s}", StringUtils.join(
-                    expressionElements, "."));
-
+            dmResolverValue = StringUtils.join(expressionElements, ".");
         } else {
             // try to resolve schema name/prefix
             String schemaName = field.getSchemaName();
@@ -86,10 +89,15 @@ public class ValueExpressionHelper {
                     expressionElements.add(String.format("['%s']", item));
                 }
             }
-            dmResolverValue = String.format("#{%s}", StringUtils.join(
-                    expressionElements, ""));
+            dmResolverValue = StringUtils.join(expressionElements, "");
         }
         return dmResolverValue;
+    }
+
+    public static String createExpressionString(String valueName,
+            FieldDefinition field) {
+        String bareExpression = createBareExpressionString(valueName, field);
+        return String.format("#{%s}", bareExpression);
     }
 
 }
