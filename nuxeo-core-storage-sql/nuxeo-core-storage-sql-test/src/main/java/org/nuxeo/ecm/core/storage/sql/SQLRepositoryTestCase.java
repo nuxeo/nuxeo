@@ -57,10 +57,6 @@ public abstract class SQLRepositoryTestCase extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         initialOpenSessions = CoreInstance.getInstance().getNumberOfSessions();
-        if (initialOpenSessions != 0) {
-            log.error(String.format("There are %s open session(s) at setup.",
-                    Integer.valueOf(initialOpenSessions)));
-        }
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.schema");
         deployBundle("org.nuxeo.ecm.core.api");
@@ -82,17 +78,21 @@ public abstract class SQLRepositoryTestCase extends NXRuntimeTestCase {
         super.tearDown();
         database.tearDown();
         int finalOpenSessions = CoreInstance.getInstance().getNumberOfSessions();
-        if (finalOpenSessions != 0) {
-            int created = finalOpenSessions - initialOpenSessions;
+        int leakedOpenSessions = finalOpenSessions - initialOpenSessions;
+        if (leakedOpenSessions != 0) {
             log.error(String.format(
                     "There are %s open session(s) at tear down; it seems "
                             + "the test leaked %s session(s).",
                     Integer.valueOf(finalOpenSessions),
-                    Integer.valueOf(created)));
+                    Integer.valueOf(leakedOpenSessions)));
         }
     }
 
     public void openSession() throws ClientException {
+        if (session != null) {
+            log.warn("Closing session for you");
+            closeSession();
+        }
         session = openSessionAs(ADMINISTRATOR);
         assertNotNull(session);
     }
@@ -112,6 +112,7 @@ public abstract class SQLRepositoryTestCase extends NXRuntimeTestCase {
 
     public void closeSession() {
         closeSession(session);
+        session = null;
     }
 
     public void closeSession(CoreSession session) {

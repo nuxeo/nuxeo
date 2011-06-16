@@ -80,6 +80,11 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
         doc = session.createDocument(doc);
     }
 
+    public void tearDown() throws Exception {
+        closeSession();
+        super.tearDown();
+    }
+
     protected File createTempFile() throws Exception {
         File file = File.createTempFile("testExternalBlob", ".txt");
         FileWriter fstream = new FileWriter(file);
