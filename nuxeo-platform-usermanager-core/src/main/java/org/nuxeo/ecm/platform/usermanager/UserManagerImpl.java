@@ -208,7 +208,7 @@ public class UserManagerImpl implements UserManager {
             userSchemaName = dirService.getDirectorySchema(userDirectoryName);
             userIdField = dirService.getDirectoryIdField(userDirectoryName);
         } catch (ClientException e) {
-            throw new RuntimeException("Unkown user directory "
+            throw new RuntimeException("Unknown user directory "
                     + userDirectoryName, e);
         }
     }
