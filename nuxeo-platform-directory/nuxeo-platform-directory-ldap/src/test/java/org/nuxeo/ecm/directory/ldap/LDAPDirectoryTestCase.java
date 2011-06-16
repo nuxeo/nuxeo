@@ -38,7 +38,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
  * @author <a href="ogrisel@nuxeo.com">Olivier Grisel</a>
- * 
+ *
  */
 public abstract class LDAPDirectoryTestCase extends NXRuntimeTestCase {
 
@@ -47,6 +47,10 @@ public abstract class LDAPDirectoryTestCase extends NXRuntimeTestCase {
     // change this flag to use an external LDAP directory instead of the
     // non networked default ApacheDS implementation
     public static final boolean USE_EXTERNAL_TEST_LDAP_SERVER = false;
+
+    // change this flag in case the external LDAP server considers the
+    // posixGroup class structural
+    public static final boolean POSIXGROUP_IS_STRUCTURAL = true;
 
     // change this flag if your test server has support for dynamic groups
     // through the groupOfURLs objectclass, eg for OpenLDAP:
@@ -63,14 +67,11 @@ public abstract class LDAPDirectoryTestCase extends NXRuntimeTestCase {
 
     public List<String> getLdifFiles() {
         List<String> ldifFiles = new ArrayList<String>();
-
         ldifFiles.add("sample-users.ldif");
         ldifFiles.add("sample-groups.ldif");
-
         if (HAS_DYNGROUP_SCHEMA) {
             ldifFiles.add("sample-dynamic-groups.ldif");
         }
-
         return ldifFiles;
     }
 

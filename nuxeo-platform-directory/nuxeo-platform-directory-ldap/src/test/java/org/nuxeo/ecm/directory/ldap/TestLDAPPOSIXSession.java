@@ -11,12 +11,17 @@ public class TestLDAPPOSIXSession extends TestLDAPSession {
 	
 	@Override
 	public List<String> getLdifFiles() {
-		List<String> lstLdifFiles = new ArrayList<String>();
-		lstLdifFiles.add("sample-users-posix.ldif");
-        lstLdifFiles.add("sample-posixgroups.ldif");
-        // if your server uses structural posix groups uncomment the following
-        // lstLdifFiles.add("sample-structural-posixgroups.ldif");
-		return lstLdifFiles;
+		List<String> ldifFiles = new ArrayList<String>();
+		ldifFiles.add("sample-users-posix.ldif");
+		if  (POSIXGROUP_IS_STRUCTURAL) {
+		    ldifFiles.add("sample-structural-posixgroups.ldif");
+		} else {
+		    ldifFiles.add("sample-posixgroups.ldif");
+		}
+        if (HAS_DYNGROUP_SCHEMA) {
+            ldifFiles.add("sample-dynamic-groups.ldif");
+        }
+		return ldifFiles;
 	}
 
 	@Override
@@ -75,7 +80,7 @@ public class TestLDAPPOSIXSession extends TestLDAPSession {
             session.close();
         }
     }	
-    
+
     public void testCreateEntry2() throws Exception {
         if (USE_EXTERNAL_TEST_LDAP_SERVER) {
             Session session = getLDAPDirectory("groupDirectory").getSession();
@@ -238,8 +243,81 @@ public class TestLDAPPOSIXSession extends TestLDAPSession {
                 session.close();
             }
         }
-    }   
-    
+    }
+
+    @SuppressWarnings("unchecked")
+    public void testGetEntry3() throws ClientException {
+        if (!HAS_DYNGROUP_SCHEMA) {
+            return;
+        }
+        Session session = getLDAPDirectory("groupDirectory").getSession();
+        try {
+            DocumentModel entry = session.getEntry("dyngroup1");
+            assertNotNull(entry);
+            assertEquals("dyngroup1", entry.getId());
+            assertEquals("dyngroup1", entry.getProperty(GROUP_SCHEMANAME,
+                    "groupname"));
+
+            List<String> members = (List<String>) entry.getProperty(
+                    GROUP_SCHEMANAME, "members");
+            assertEquals(Arrays.asList("user1", "user3"), members);
+
+            List<String> subGroups = (List<String>) entry.getProperty(
+                    GROUP_SCHEMANAME, "subGroups");
+            assertEquals(Arrays.asList("subgroup", "submembers", "subsubgroup",
+                    "subsubsubgroup"), subGroups);
+
+            List<String> parentGroups = (List<String>) entry.getProperty(
+                    GROUP_SCHEMANAME, "parentGroups");
+            assertNotNull(parentGroups);
+            assertEquals(0, parentGroups.size());
+
+            entry = session.getEntry("dyngroup2");
+            assertNotNull(entry);
+            assertEquals("dyngroup2", entry.getId());
+            assertEquals("dyngroup2", entry.getProperty(GROUP_SCHEMANAME,
+                    "groupname"));
+
+            members = (List<String>) entry.getProperty(GROUP_SCHEMANAME,
+                    "members");
+            assertEquals(Arrays.asList("user1", "user3"), members);
+            // user4 is not there since userDirectory is scoped 'onelevel'
+
+            subGroups = (List<String>) entry.getProperty(GROUP_SCHEMANAME,
+                    "subGroups");
+            assertNotNull(subGroups);
+            assertEquals(0, subGroups.size());
+
+            parentGroups = (List<String>) entry.getProperty(GROUP_SCHEMANAME,
+                    "parentGroups");
+            assertNotNull(parentGroups);
+            assertEquals(0, parentGroups.size());
+
+            // test that submembers is a subgroup of dyngroup1 (inverse
+            // reference resolution)
+            entry = session.getEntry("submembers");
+            assertNotNull(entry);
+            assertEquals("submembers", entry.getId());
+            assertEquals("submembers", entry.getProperty(GROUP_SCHEMANAME,
+                    "groupname"));
+
+            members = (List<String>) entry.getProperty(GROUP_SCHEMANAME,
+                    "members");
+            assertEquals(Arrays.asList("user2"), members);
+
+            subGroups = (List<String>) entry.getProperty(GROUP_SCHEMANAME,
+                    "subGroups");
+            assertNotNull(subGroups);
+            assertEquals(0, subGroups.size());
+
+            parentGroups = (List<String>) entry.getProperty(GROUP_SCHEMANAME,
+                    "parentGroups");
+            assertEquals(Arrays.asList("dyngroup1"), parentGroups);
+        } finally {
+            session.close();
+        }
+    }
+
     public void testGetMandatoryAttributes() throws ClientException {
         if (USE_EXTERNAL_TEST_LDAP_SERVER) {
             LDAPSession session = (LDAPSession) getLDAPDirectory(
@@ -253,8 +331,9 @@ public class TestLDAPPOSIXSession extends TestLDAPSession {
             session = (LDAPSession) getLDAPDirectory("groupDirectory").getSession();
             try {
                 List<String> mandatoryAttributes = session.getMandatoryAttributes();
-                assertEquals(Arrays.asList("gidNumber", "cn"),
-                        mandatoryAttributes);
+                List<String> expectedAttributes = Arrays.asList("cn", "gidNumber");
+                Collections.sort(mandatoryAttributes);
+                assertEquals(expectedAttributes, mandatoryAttributes);
             } finally {
                 session.close();
             }

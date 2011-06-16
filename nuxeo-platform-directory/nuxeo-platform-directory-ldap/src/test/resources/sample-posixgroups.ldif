@@ -56,7 +56,7 @@ objectClass: top
 objectClass: groupOfNames
 objectClass: posixGroup
 cn: subgroup
-description: A sample child of a group
+description: A sample child of a group using the LdapTreeReference
 gidNumber: 2004
 
 dn: cn=subsubgroup,cn=subgroup,cn=group,ou=editable,ou=groups,dc=example,dc=com
@@ -65,7 +65,7 @@ objectClass: top
 objectClass: groupOfNames
 objectClass: posixGroup
 cn: subsubgroup
-description: A sample subchild of a subgroup
+description: A sample subchild of a subgroup using the LdapTreeReference
 gidNumber: 2005
 
 dn: cn=subsubsubgroup,cn=subsubgroup,cn=subgroup,cn=group,ou=editable,ou=groups,dc=example,dc=com
@@ -74,7 +74,7 @@ objectClass: top
 objectClass: groupOfNames
 objectClass: posixGroup
 cn: subsubsubgroup
-description: A sample subchild of a subgroup
+description: A sample subchild of a subsubgroup using the LdapTreeReference
 gidNumber: 2006
 
 dn: ou=unit,cn=group,ou=editable,ou=groups,dc=example,dc=com

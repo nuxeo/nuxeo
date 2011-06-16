@@ -92,7 +92,7 @@
       <idField>groupname</idField>
 
       <searchBaseDn>ou=groups,dc=example,dc=com</searchBaseDn>
-      <searchFilter>(objectClass=posixGroup)</searchFilter>
+      <searchFilter>(|(objectClass=posixGroup)(objectClass=groupOfURLs))</searchFilter>
       <searchScope>subtree</searchScope>
 
       <readOnly>false</readOnly>
@@ -115,7 +115,13 @@
       <references>
 
         <ldapReference field="members" directory="userDirectory"
-          staticAttributeId="memberUID" staticAttributeIsId="true" />
+          staticAttributeId="memberUID" staticAttributeIsId="true"
+          dynamicAttributeId="memberURL" />
+
+        <ldapReference field="subGroups" directory="groupDirectory"
+          dynamicAttributeId="memberURL" />
+        <inverseReference field="parentGroups" directory="groupDirectory"
+          dualReferenceField="subGroups" />
 
         <ldapTreeReference field="ldapDirectChildren" directory="groupDirectory"
           scope="onelevel" />
