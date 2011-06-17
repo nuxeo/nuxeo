@@ -55,7 +55,6 @@
     <module>nuxeo-admin-center</module>
     <module>nuxeo-platform-forms-layout-export</module>
     <module>nuxeo-platform-localconfiguration</module>
-    <module>nuxeo-platform-localconfiguration-web</module>
     <module>nuxeo-platform-directory-web</module>
   </modules>
 

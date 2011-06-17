@@ -15,6 +15,7 @@
 
   <modules>
     <module>nuxeo-platform-localconfiguration-simple</module>
+    <module>nuxeo-platform-localconfiguration-web</module>
   </modules>
 
 </project>
