@@ -54,6 +54,7 @@
     <module>nuxeo-features-test</module>
     <module>nuxeo-admin-center</module>
     <module>nuxeo-platform-forms-layout-export</module>
+    <module>nuxeo-platform-localconfiguration</module>
     <module>nuxeo-platform-localconfiguration-web</module>
     <module>nuxeo-platform-directory-web</module>
   </modules>
@@ -502,6 +503,11 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-types-facade</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-localconfiguration-simple</artifactId>
         <version>${nuxeo.features.version}</version>
       </dependency>
       <dependency>
