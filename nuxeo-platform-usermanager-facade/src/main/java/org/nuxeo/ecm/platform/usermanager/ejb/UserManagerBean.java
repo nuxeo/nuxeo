@@ -170,6 +170,14 @@ public class UserManagerBean implements UserManagerLocal {
         }
     }
 
+    public Set<String> getGroupSearchFields() throws ClientException {
+        try {
+            return getUserManager().getGroupSearchFields();
+        } catch (Throwable e) {
+            throw ClientException.wrap(e);
+        }
+    }
+
     public String getGroupDirectoryName() throws ClientException {
         try {
             return getUserManager().getGroupDirectoryName();

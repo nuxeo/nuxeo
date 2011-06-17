@@ -347,6 +347,11 @@ public interface UserManager extends Authenticator, Serializable {
     Set<String> getUserSearchFields() throws ClientException;
 
     /**
+     * Gets the group search fields.
+     */
+    Set<String> getGroupSearchFields() throws ClientException;
+
+    /**
      * Gets the group directory name.
      *
      * @return the group directory name.

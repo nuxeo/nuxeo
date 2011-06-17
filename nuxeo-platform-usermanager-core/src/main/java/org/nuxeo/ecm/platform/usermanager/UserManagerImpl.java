@@ -237,6 +237,10 @@ public class UserManagerImpl implements UserManager {
         return Collections.unmodifiableSet(userSearchFields.keySet());
     }
 
+    public Set<String> getGroupSearchFields() {
+        return Collections.unmodifiableSet(groupSearchFields.keySet());
+    }
+
     protected void setGroupDirectoryName(String groupDirectoryName) {
         this.groupDirectoryName = groupDirectoryName;
         try {
@@ -1016,19 +1020,11 @@ public class UserManagerImpl implements UserManager {
             Set<String> fulltext) throws ClientException {
         Session groupDir = null;
         try {
-
             removeVirtualFilters(filter);
             groupDir = dirService.open(groupDirectoryName);
 
-            String sortField = groupSortField != null ? groupSortField
-                    : groupDir.getIdField();
-            Map<String, String> orderBy = new HashMap<String, String>();
-            orderBy.put(sortField, DocumentModelComparator.ORDER_ASC);
-            // XXX: do not fetch references, can be costly
-            DocumentModelList entries = groupDir.query(filter, fulltext,
-                    orderBy, false);
-
-            return entries;
+            return groupDir.query(filter, fulltext,
+                    getGroupSortMap(), false);
         } finally {
             if (groupDir != null) {
                 groupDir.close();

@@ -72,6 +72,8 @@ public class FakeUserManagerImpl implements UserManager {
 
     String groupMembersField;
 
+    Map<String, MatchType> groupSearchFields;
+
     String groupSubGroupsField;
 
     String groupParentGroupsField;
@@ -149,6 +151,10 @@ public class FakeUserManagerImpl implements UserManager {
 
     public Set<String> getUserSearchFields() {
         return userSearchFields.keySet();
+    }
+
+    public Set<String> getGroupSearchFields() {
+        return groupSearchFields.keySet();
     }
 
     public void setGroupDirectoryName(String groupDirectoryName) {
