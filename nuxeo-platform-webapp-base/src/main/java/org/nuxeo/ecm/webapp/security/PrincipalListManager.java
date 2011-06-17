@@ -40,8 +40,10 @@ import org.jboss.seam.contexts.Context;
 import org.jboss.seam.contexts.Contexts;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.NuxeoGroup;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.directory.SizeLimitExceededException;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
@@ -184,25 +186,25 @@ public class PrincipalListManager implements Serializable {
         return result;
     }
 
-    protected List<NuxeoGroup> getSuggestedGroups() {
+    protected DocumentModelList getSuggestedGroups() {
         if (searchFilter == null || searchFilter.length() == 0) {
-            return Collections.emptyList();
+            return new DocumentModelListImpl();
         }
 
-        List<NuxeoGroup> result;
+        DocumentModelList result;
         try {
             result = userManager.searchGroups(searchFilter);
         } catch (SizeLimitExceededException e) {
             searchOverflow = true;
-            return Collections.emptyList();
+            return new DocumentModelListImpl();
         } catch (ClientException e) {
             log.error("error searching for groups: " + e.getMessage());
-            return Collections.emptyList();
+            return new DocumentModelListImpl();
         }
 
         if (result.size() > MAX_SEARCH_RESULTS) {
             searchOverflow = true;
-            return Collections.emptyList();
+            return new DocumentModelListImpl();
         }
         return result;
     }
@@ -227,12 +229,12 @@ public class PrincipalListManager implements Serializable {
             users = Collections.emptyList();
         }
 
-        List<NuxeoGroup> groups;
+        DocumentModelList groups;
         if (GROUP_TYPE.equals(searchType) || USER_GROUP_TYPE.equals(searchType)
                 || StringUtils.isEmpty(searchType)) {
             groups = getSuggestedGroups();
         } else {
-            groups = Collections.emptyList();
+            groups = new DocumentModelListImpl();
         }
 
         List<Map<String, Object>> result = new ArrayList<Map<String, Object>>(
@@ -260,11 +262,17 @@ public class PrincipalListManager implements Serializable {
             result.add(entry);
         }
 
-        for (NuxeoGroup group : groups) {
+        for (DocumentModel group : groups) {
             Map<String, Object> entry = new HashMap<String, Object>();
-            String name = group.getName();
-            entry.put("label", name);
-            entry.put("id", name);
+            try {
+                entry.put("label", group.getProperty(
+                        userManager.getGroupSchemaName(), userManager.getGroupLabelField()));
+            } catch (ClientException e) {
+                log.warn("Unable to get group label of " + group.getId());
+                log.debug(e);
+                entry.put("label", group.getId());
+            }
+            entry.put("id", group.getId());
             entry.put("icon", "icons/group.gif");
             result.add(entry);
         }
