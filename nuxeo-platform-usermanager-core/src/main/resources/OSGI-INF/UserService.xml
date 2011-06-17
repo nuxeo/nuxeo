@@ -61,9 +61,14 @@
           <groups>
             <directory>somegroupdir</directory>
             <membersField>members</membersField>
+            <groupLabelField>grouplabel</groupLabelField>
             <subGroupsField>subgroups</subGroupsField>
             <parentGroupsField>parentgroup</parentGroupsField>
             <listingMode>search_only</listingMode>
+            <searchFields append="true">
+              <substringMatchSearchField>grouplabel</substringMatchSearchField>
+              <exactMatchSearchField>groupname</exactMatchSearchField>
+            </searchFields>
           </groups>
           <defaultGroup>members</defaultGroup>
           <groupSortField>groupname</groupSortField>
