@@ -27,6 +27,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import javax.naming.CompositeName;
+import javax.naming.InvalidNameException;
 import javax.naming.Name;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
@@ -38,6 +39,8 @@ import javax.naming.directory.DirContext;
 import javax.naming.directory.SchemaViolationException;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
+import javax.naming.ldap.LdapName;
+import javax.naming.ldap.Rdn;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -96,7 +99,7 @@ public class LDAPReference extends AbstractReference {
     /**
      * Resolve staticAttributeId as distinguished names (true by default) such
      * as in the uniqueMember field of groupOfUniqueNames.
-     * 
+     *
      * Set to false to resolve as simple id (as in memberUID of posixGroup for
      * instance).
      */
@@ -700,12 +703,17 @@ public class LDAPReference extends AbstractReference {
      *
      * @param dn the raw unnormalized dn
      * @return lowercase version without whitespace after commas
+     * @throws InvalidNameException
      */
-    protected static String pseudoNormalizeDn(String dn) {
-        // this method does not respect the LDAP DN RFCs
-        // but this is enough to compare our base dns in getLdapTargetIds
-        dn = dn.replaceAll(", ", ",");
-        return dn.toLowerCase();
+    protected static String pseudoNormalizeDn(String dn) throws InvalidNameException {
+        LdapName ldapName = new LdapName(dn);
+        List<String> rdns = new ArrayList<String>();
+        for (Rdn rdn : ldapName.getRdns()) {
+            String value = rdn.getValue().toString().toLowerCase().replaceAll(",", "\\\\,");
+            String rdnStr = rdn.getType().toLowerCase() + "=" + value;
+            rdns.add(0, rdnStr);
+        }
+        return StringUtils.join(rdns, ',');
     }
 
     /**
