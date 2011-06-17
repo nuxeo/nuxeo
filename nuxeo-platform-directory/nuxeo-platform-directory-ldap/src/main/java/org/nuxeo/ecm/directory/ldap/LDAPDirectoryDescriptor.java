@@ -169,6 +169,10 @@ public class LDAPDirectoryDescriptor {
         return idField;
     }
 
+    public String getIdCase() {
+        return idCase;
+    }
+
     public String getSchemaName() {
         return schemaName;
     }

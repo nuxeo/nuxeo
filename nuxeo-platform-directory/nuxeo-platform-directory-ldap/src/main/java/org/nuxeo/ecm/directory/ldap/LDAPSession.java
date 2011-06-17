@@ -91,6 +91,8 @@ public class LDAPSession extends BaseSession implements EntrySource {
 
     protected final String idAttribute;
 
+    protected final String idCase;
+
     protected final LDAPDirectory directory;
 
     protected final String searchBaseDn;
@@ -112,6 +114,7 @@ public class LDAPSession extends BaseSession implements EntrySource {
         this.dirContext = dirContext;
         DirectoryFieldMapper fieldMapper = directory.getFieldMapper();
         idAttribute = fieldMapper.getBackendField(directory.getConfig().getIdField());
+        idCase = directory.getConfig().getIdCase();
         schemaName = directory.getSchema();
         schemaFieldMap = directory.getSchemaFieldMap();
         sid = String.valueOf(SIDGenerator.next());
@@ -822,6 +825,8 @@ public class LDAPSession extends BaseSession implements EntrySource {
                 entryId = entry.toString();
             }
         }
+        // NXP-7136 handle id case
+        entryId = changeEntryIdCase(entryId, idCase);
 
         if (entryId == null) {
             // don't bother
@@ -889,8 +894,7 @@ public class LDAPSession extends BaseSession implements EntrySource {
             fieldMap.put(fieldId, changeEntryIdCase(entryId,
                     directory.getConfig().missingIdFieldCase));
         } else if (obj instanceof String) {
-            fieldMap.put(fieldId, changeEntryIdCase((String) obj,
-                    directory.getConfig().idCase));
+            fieldMap.put(fieldId, changeEntryIdCase((String) obj, idCase));
         }
         return fieldMapToDocumentModel(fieldMap);
     }
@@ -977,7 +981,6 @@ public class LDAPSession extends BaseSession implements EntrySource {
     public boolean rdnMatchesIdField() {
         return directory.getConfig().rdnAttribute.equals(idAttribute);
     }
-
 
     @SuppressWarnings("unchecked")
     protected List<String> getMandatoryAttributes(
