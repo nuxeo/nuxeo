@@ -90,7 +90,12 @@ public class FormData implements FormInstance {
 
     protected String getString(FileItem item) {
         try {
-            return item.getString(request.getCharacterEncoding());
+            String enc = request.getCharacterEncoding();
+            if (enc != null) {
+                return item.getString(request.getCharacterEncoding());
+            } else {
+                return item.getString();
+            }
         } catch (UnsupportedEncodingException e) {
             return item.getString();
         }
