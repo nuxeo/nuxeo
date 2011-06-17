@@ -162,26 +162,26 @@ public class PrincipalListManager implements Serializable {
         this.selectedPrincipal = selectedPrincipal;
     }
 
-    protected List<NuxeoPrincipal> getSuggestedUsers() {
+    protected DocumentModelList getSuggestedUsers() {
         if (searchFilter == null || searchFilter.length() == 0) {
-            return Collections.emptyList();
+            return new DocumentModelListImpl();
         }
 
-        List<NuxeoPrincipal> result;
+        DocumentModelList result;
         try {
-            result = userManager.searchPrincipals(searchFilter);
+            result = userManager.searchUsers(searchFilter);
         } catch (SizeLimitExceededException e) {
             searchOverflow = true;
-            return Collections.emptyList();
+            return new DocumentModelListImpl();
         } catch (ClientException e) {
             // XXX: this exception should not be catched
             log.error("error searching for principals: " + e.getMessage());
-            return Collections.emptyList();
+            return new DocumentModelListImpl();
         }
 
         if (result.size() > MAX_SEARCH_RESULTS) {
             searchOverflow = true;
-            return Collections.emptyList();
+            return new DocumentModelListImpl();
         }
         return result;
     }
@@ -221,12 +221,12 @@ public class PrincipalListManager implements Serializable {
 
         searchOverflow = false;
 
-        List<NuxeoPrincipal> users;
+        DocumentModelList users;
         if (USER_TYPE.equals(searchType) || USER_GROUP_TYPE.equals(searchType)
                 || StringUtils.isEmpty(searchType)) {
             users = getSuggestedUsers();
         } else {
-            users = Collections.emptyList();
+            users = new DocumentModelListImpl();
         }
 
         DocumentModelList groups;
@@ -240,26 +240,32 @@ public class PrincipalListManager implements Serializable {
         List<Map<String, Object>> result = new ArrayList<Map<String, Object>>(
                 users.size() + groups.size());
 
-        for (NuxeoPrincipal user : users) {
+        for (DocumentModel user : users) {
             if (user == null) {
                 continue;
             }
 
-            String name = user.getName();
-            StringBuilder label = new StringBuilder(name).append("  (");
-            if (user.getFirstName() != null) {
-                label.append(user.getFirstName());
-            }
-            if (user.getLastName() != null) {
-                label.append(' ').append(user.getLastName());
-            }
-            label.append(')');
+            try {
+                NuxeoPrincipal principal = userManager.getPrincipal(user.getId());
+                String name = principal.getName();
+                StringBuilder label = new StringBuilder(name).append("  (");
+                if (principal.getFirstName() != null) {
+                    label.append(principal.getFirstName());
+                }
+                if (principal.getLastName() != null) {
+                    label.append(' ').append(principal.getLastName());
+                }
+                label.append(')');
 
-            Map<String, Object> entry = new HashMap<String, Object>();
-            entry.put("label", label.toString());
-            entry.put("id", name);
-            entry.put("icon", "icons/user.gif");
-            result.add(entry);
+                Map<String, Object> entry = new HashMap<String, Object>();
+                entry.put("label", label.toString());
+                entry.put("id", name);
+                entry.put("icon", "icons/user.gif");
+                result.add(entry);
+            } catch (ClientException e) {
+                log.info("Unable to get Principal from " + user.getId());
+                log.debug(e);
+            }
         }
 
         for (DocumentModel group : groups) {
