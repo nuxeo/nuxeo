@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.platform.usermanager;
 
 import java.io.Serializable;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -78,10 +77,11 @@ public interface UserManager extends Authenticator, Serializable {
             throws ClientException;
 
     /**
-     * @deprecated see {@link #searchGroups(String)}
+     * Search matching groups through their defined search fields
+     *
+     * @since 5.4.3
      */
-    @Deprecated
-    List<NuxeoGroup> searchGroups(String pattern) throws ClientException;
+    DocumentModelList searchGroups(String pattern) throws ClientException;
 
     /**
      * Returns the list of all user ids.
@@ -193,7 +193,7 @@ public interface UserManager extends Authenticator, Serializable {
      * @throws ClientException
      */
     DocumentModelList searchGroups(Map<String, Serializable> filter,
-            HashSet<String> fulltext) throws ClientException;
+            Set<String> fulltext) throws ClientException;
 
     /**
      * Creates a group from given model.

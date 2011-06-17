@@ -21,7 +21,6 @@ package org.nuxeo.ecm.platform.usermanager.ejb;
 
 import java.io.Serializable;
 import java.security.Principal;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -103,7 +102,7 @@ public class UserManagerBean implements UserManagerLocal {
         }
     }
 
-    public List<NuxeoGroup> searchGroups(String pattern) throws ClientException {
+    public DocumentModelList searchGroups(String pattern) throws ClientException {
         try {
             return getUserManager().searchGroups(pattern);
         } catch (Throwable e) {
@@ -363,7 +362,7 @@ public class UserManagerBean implements UserManagerLocal {
     }
 
     public DocumentModelList searchGroups(Map<String, Serializable> filter,
-            HashSet<String> fulltext) throws ClientException {
+            Set<String> fulltext) throws ClientException {
         try {
             return getUserManager().searchGroups(filter, fulltext);
         } catch (Throwable e) {

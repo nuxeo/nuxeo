@@ -19,9 +19,9 @@
 package org.nuxeo.ecm.platform.computedgroups;
 
 import java.io.Serializable;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
@@ -74,6 +74,6 @@ public interface ComputedGroupsService {
      * Searches for a computed group.
      */
     List<String> searchComputedGroups(Map<String, Serializable> filter,
-            HashSet<String> fulltext);
+            Set<String> fulltext);
 
 }

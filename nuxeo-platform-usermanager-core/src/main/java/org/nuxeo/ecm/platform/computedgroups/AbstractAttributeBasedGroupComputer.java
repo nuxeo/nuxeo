@@ -89,7 +89,7 @@ public abstract class AbstractAttributeBasedGroupComputer extends
 
     @Override
     public List<String> searchGroups(Map<String, Serializable> filter,
-            HashSet<String> fulltext) throws Exception {
+            Set<String> fulltext) throws Exception {
 
         List<String> companies = new ArrayList<String>();
 

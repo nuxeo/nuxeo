@@ -19,9 +19,9 @@
 package org.nuxeo.ecm.platform.computedgroups;
 
 import java.io.Serializable;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 
@@ -65,7 +65,7 @@ public interface GroupComputer {
      * search/select a group).
      */
     List<String> searchGroups(Map<String, Serializable> filter,
-            HashSet<String> fulltext) throws Exception;
+            Set<String> fulltext) throws Exception;
 
     /**
      * Returns true if the given group exists.

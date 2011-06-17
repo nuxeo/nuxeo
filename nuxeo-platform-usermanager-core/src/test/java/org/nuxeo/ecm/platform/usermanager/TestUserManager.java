@@ -645,6 +645,35 @@ public class TestUserManager extends NXRuntimeTestCase {
                 || "test_u1".equals(name2) && "test_u2".equals(name1));
     }
 
+    public void testSearchUser() throws Exception {
+        assertEquals(0, userManager.searchUsers("test").size());
+
+        DocumentModel doc = getUser("test");
+        userManager.createUser(doc);
+        doc = getUser("test_2");
+        userManager.createUser(doc);
+        assertEquals(2, userManager.searchUsers("test").size());
+
+        doc = getUser("else");
+        doc.setProperty("user", "firstName", "test");
+        userManager.createUser(doc);
+        assertEquals(3, userManager.searchUsers("test").size());
+
+        doc = getGroup("group");
+        userManager.createGroup(doc);
+        doc = getGroup("group_1");
+        userManager.createGroup(doc);
+
+        Map<String, Serializable> filters = new HashMap<String, Serializable>();
+        filters.put(userManager.getGroupIdField(), "group");
+        assertEquals(2, userManager.searchGroups("group").size());
+
+        doc = getGroup("else");
+        doc.setProperty("group","grouplabel","group");
+        userManager.createGroup(doc);
+        assertEquals(3, userManager.searchGroups("group").size());
+    }
+
     public void testUpdatePrincipal() throws Exception {
         deleteTestObjects();
         NuxeoPrincipal u1 = new NuxeoPrincipalImpl("test_u1");

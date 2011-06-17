@@ -22,9 +22,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -209,7 +209,7 @@ public class ComputedGroupsServiceImpl extends DefaultComponent implements
     }
 
     public List<String> searchComputedGroups(Map<String, Serializable> filter,
-            HashSet<String> fulltext) {
+            Set<String> fulltext) {
 
         List<String> foundGroups = new ArrayList<String>();
         try {

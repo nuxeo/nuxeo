@@ -71,6 +71,11 @@ public class UserService extends DefaultComponent {
         merged.groupMembersField = "members";
         merged.groupSubGroupsField = "subGroups";
         merged.groupParentGroupsField = "parentGroups";
+
+        merged.groupSearchFields = new HashMap<String, MatchType>();
+        merged.groupSearchFields.put("groupname", MatchType.SUBSTRING);
+        merged.groupSearchFields.put("grouplabel", MatchType.SUBSTRING);
+
         for (UserManagerDescriptor descriptor : descriptors) {
             merged.merge(descriptor);
         }
