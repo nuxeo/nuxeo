@@ -19,13 +19,12 @@
 
 package org.nuxeo.ecm.webapp.security;
 
-import static org.jboss.seam.ScopeType.*;
+import static org.jboss.seam.ScopeType.PAGE;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -42,8 +41,11 @@ import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelComparator;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.directory.SizeLimitExceededException;
 import org.nuxeo.ecm.platform.ui.web.component.list.UIEditableList;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
@@ -125,24 +127,44 @@ public class UserSuggestionActionsBean implements Serializable {
     public List<DocumentModel> getGroupsSuggestions(Object input)
             throws ClientException {
         try {
+            Map<String, DocumentModel> uniqueGroups = new HashMap<String, DocumentModel>();
+
             String pattern = (String) input;
-            // XXX: this doesn't fetch group members (references)
-            Map<String, Serializable> filter = new HashMap<String, Serializable>();
-            if (pattern != null && pattern != "") {
-                filter.put(userManager.getGroupIdField(), pattern);
+            for (String field : userManager.getGroupSearchFields()) {
+                // XXX: this doesn't fetch group members (references)
+                Map<String, Serializable> filter = new HashMap<String, Serializable>();
+
+                if (pattern != null && pattern != "") {
+                    filter.put(userManager.getGroupIdField(), pattern);
+                }
+                if (Boolean.TRUE.equals(hideVirtualGroups)) {
+                    filter.put("__virtualGroup", false);
+                }
+
+                for (DocumentModel group : userManager.searchGroups(filter,
+                        filter.keySet())) {
+                    uniqueGroups.put(group.getId(), group);
+                }
             }
-            if (Boolean.TRUE.equals(hideVirtualGroups)) {
-             filter.put("__virtualGroup", false);
-            }
-            // parameters must be serializable so copy keySet to HashSet
-            return userManager.searchGroups(filter, new HashSet<String>(
-                    filter.keySet()));
+
+            DocumentModelList groups = new DocumentModelListImpl();
+            groups.addAll(uniqueGroups.values());
+            Collections.sort(groups, new DocumentModelComparator(
+                    userManager.getGroupSchemaName(), getGroupsOrderBy()));
+            return groups;
         } catch (SizeLimitExceededException e) {
             addSearchOverflowMessage();
             return Collections.emptyList();
         } catch (Exception e) {
             throw new ClientException("error searching for groups", e);
         }
+    }
+
+    protected Map<String, String> getGroupsOrderBy() throws ClientException {
+        Map<String, String> order = new HashMap<String, String>();
+        order.put(userManager.getGroupLabelField(),
+                DocumentModelComparator.ORDER_ASC);
+        return order;
     }
 
     public List<DocumentModel> getUserSuggestions(Object input)
