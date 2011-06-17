@@ -54,9 +54,9 @@
         </tr>
       </thead>
       <tbody>
-      <#list groups as user>
+      <#list groups as group>
         <tr>
-          <td><a href="${This.path}/group/${user}">${user}<a/></td>
+          <td><a href="${This.path}/group/${group.id}">${group.id}<a/></td>
         </tr>
       </#list>
       </tbody>
