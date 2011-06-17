@@ -61,18 +61,10 @@ function addBookmark(name, url) {
 function formatUrl(url)
 {
   url = jQuery.trim(url);
-  if (url.toLowerCase().indexOf("http://") == 0) {
-    return(url);
-  } else if (url.toLowerCase().indexOf("ftp") == 0) {
-    if (url.toLowerCase().indexOf("ftp://") == 0) {
-      return(url);
-    } else {
-      return("http://" + url);
-    }
-  } else if (url.length > 0) {
-    return("http://" + url);
+  if (url.match(/[a-z]+:\/\//)) {
+    return url;
   } else {
-    return "";
+    return "http://" + url;
   }
 }
 
