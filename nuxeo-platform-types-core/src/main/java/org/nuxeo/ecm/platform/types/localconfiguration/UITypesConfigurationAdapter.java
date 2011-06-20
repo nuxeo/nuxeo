@@ -102,7 +102,7 @@ public class UITypesConfigurationAdapter extends
         try {
             value = (String) doc.getPropertyValue(UI_TYPES_CONFIGURATION_DEFAULT_TYPE);
         } catch (ClientException e) {
-            log.debug("cann't get default type for:" + doc.getPathAsString(), e);
+            log.debug("can't get default type for:" + doc.getPathAsString(), e);
         }
         return value;
     }
