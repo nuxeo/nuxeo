@@ -21,11 +21,11 @@
       </labels>
       <translated>true</translated>
       <fields>
-        <field>searchLocalConfiguration:advancedSearchView</field>
+        <field>slc:advancedSearchView</field>
       </fields>
       <selectOptions>
         <options value="#{contentViewService.getContentViewHeaders('ADVANCED_SEARCH')}"
-          var="contentViewHeader" itemValue="#{header.name}"
+          var="contentViewHeader" itemValue="#{contentViewHeader.name}"
           itemLabel="#{contentViewHeader.translateTitle ? messages[contentViewHeader.title] : contentViewHeader.title}" />
       </selectOptions>
     </widget>
