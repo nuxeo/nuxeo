@@ -63,7 +63,9 @@ public class SearchLocalConfigurationAdapter extends
         try {
             value = (String) doc.getPropertyValue(FIELD_ADVANCED_SEARCH_VIEW);
         } catch (ClientException e) {
-            log.debug("cann't get default type for:" + doc.getPathAsString(), e);
+            log.debug(
+                    "Unable to retrieve configured advanced search content view for "
+                            + doc.getPathAsString(), e);
         }
         return value;
     }
