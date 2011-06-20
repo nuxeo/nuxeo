@@ -1692,16 +1692,15 @@ public class TestSQLBackend extends SQLBackendTestCase {
         }
         assertEquals(0, getJDBCConnectionPropagatorSize());
         repository.getConnection().close();
-        // 1 connection remains for the lock manager
-        assertEquals(1, getJDBCConnectionPropagatorSize());
+        assertEquals(0, getJDBCConnectionPropagatorSize());
         Session s1 = repository.getConnection();
         Session s2 = repository.getConnection();
         Session s3 = repository.getConnection();
-        assertEquals(1 + 3, getJDBCConnectionPropagatorSize());
+        assertEquals(3, getJDBCConnectionPropagatorSize());
         s1.close();
         s2.close();
         s3.close();
-        assertEquals(1, getJDBCConnectionPropagatorSize());
+        assertEquals(0, getJDBCConnectionPropagatorSize());
     }
 
     protected int getJDBCConnectionPropagatorSize() throws Exception {
