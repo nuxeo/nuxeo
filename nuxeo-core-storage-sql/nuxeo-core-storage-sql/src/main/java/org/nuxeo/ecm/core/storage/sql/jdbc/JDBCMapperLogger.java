@@ -85,6 +85,17 @@ public class JDBCMapperLogger {
         }
     }
 
+    public void logCounts(int[] counts) {
+        if (!isLogEnabled()) {
+            return;
+        }
+        int count = 0;
+        for (int c : counts) {
+            count += c;
+        }
+        logCount(count);
+    }
+
     public void logResultSet(ResultSet rs, List<Column> columns)
             throws SQLException {
         List<String> res = new LinkedList<String>();

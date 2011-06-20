@@ -1283,6 +1283,60 @@ public class TestSQLBackend extends SQLBackendTestCase {
         session.save();
     }
 
+    public void testBulkUpdates() throws Exception {
+        Session session = repository.getConnection();
+        Node root = session.getRootNode();
+
+        // bulk insert
+        Node nodea = session.addChildNode(root, "foo", null, "TestDoc", false);
+        Node nodeb = session.addChildNode(nodea, "bar", null, "TestDoc", false);
+        Node nodec = session.addChildNode(nodeb, "gee", null, "TestDoc", false);
+        nodea.setSingleProperty("tst:title", "foo");
+        nodeb.setSingleProperty("tst:title", "bar");
+        nodec.setSingleProperty("tst:title", "gee");
+        nodea.setCollectionProperty("tst:subjects", new String[] { "a", "b",
+                "c" });
+        nodeb.setCollectionProperty("tst:subjects", new String[] { "d", "e",
+                "f" });
+        nodec.setCollectionProperty("tst:subjects", new String[] { "g", "h" });
+        session.save();
+
+        // bulk update
+        nodea.setSingleProperty("tst:title", "foo2");
+        nodeb.setSingleProperty("tst:title", "bar2");
+        nodec.setSingleProperty("tst:title", "gee2");
+        nodea.setCollectionProperty("tst:subjects", new String[] { "a2", "b2",
+                "c2" });
+        nodeb.setCollectionProperty("tst:subjects", new String[] { "d2", "e2" });
+        nodec.setCollectionProperty("tst:subjects", new String[] {});
+        session.save();
+
+        // bulk update, not identical groups of keys
+        nodea.setSingleProperty("tst:title", "foo3");
+        nodea.setSingleProperty("tst:count", Long.valueOf(333));
+        nodeb.setSingleProperty("tst:title", "bar3");
+        nodec.setSingleProperty("tst:title", "gee3");
+        session.save();
+
+        // bulk update, ACLs
+        ACLRow acl1 = new ACLRow(1, "test", true, "Write", "steve", null);
+        ACLRow acl2 = new ACLRow(0, "test", true, "Read", null, "Members");
+        ACLRow acl3 = new ACLRow(2, "local", true, "ReadWrite", "bob", null);
+        nodea.getCollectionProperty(Model.ACL_PROP).setValue(
+                new ACLRow[] { acl1, acl2, acl3 });
+        nodeb.getCollectionProperty(Model.ACL_PROP).setValue(
+                new ACLRow[] { acl2 });
+        nodec.getCollectionProperty(Model.ACL_PROP).setValue(
+                new ACLRow[] { acl3 });
+        session.save();
+
+        // bulk delete
+        session.removeNode(nodea);
+        session.removeNode(nodeb);
+        session.removeNode(nodec);
+        session.save();
+    }
+
     public void testBulkFetch() throws Exception {
         Session session = repository.getConnection();
 

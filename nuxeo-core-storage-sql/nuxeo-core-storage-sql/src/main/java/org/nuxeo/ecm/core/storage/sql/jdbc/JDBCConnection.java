@@ -50,6 +50,8 @@ public class JDBCConnection {
     /** The actual connection. */
     public Connection connection;
 
+    protected boolean supportsBatchUpdates;
+
     protected XAResource xaresource;
 
     protected final JDBCConnectionPropagator connectionPropagator;
@@ -93,6 +95,7 @@ public class JDBCConnection {
         try {
             xaconnection = xadatasource.getXAConnection();
             connection = xaconnection.getConnection();
+            supportsBatchUpdates = connection.getMetaData().supportsBatchUpdates();
             xaresource = xaconnection.getXAResource();
         } catch (SQLException e) {
             throw new StorageException(e);
