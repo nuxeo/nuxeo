@@ -33,7 +33,7 @@
           <mode>view</mode>
         </supportedModes>
         <fields>
-          <list>true</list>
+          <list>false</list>
           <complex>false</complex>
           <supportedTypes>
             <type>string</type>
