@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.platform.scheduler.core.service;
 
 import java.io.Serializable;
+import java.net.URL;
 import java.text.ParseException;
 import java.util.Map;
 
@@ -38,7 +39,6 @@ import org.quartz.JobDetail;
 import org.quartz.ObjectAlreadyExistsException;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
-import org.quartz.SchedulerFactory;
 import org.quartz.Trigger;
 import org.quartz.impl.StdSchedulerFactory;
 
@@ -65,7 +65,11 @@ public class SchedulerRegistryService extends DefaultComponent implements
         bundle = context.getRuntimeContext();
 
         // Find a scheduler
-        SchedulerFactory schedulerFactory = new StdSchedulerFactory();
+        StdSchedulerFactory schedulerFactory = new StdSchedulerFactory();
+        URL cfg = context.getRuntimeContext().getResource("config/quartz.properties");
+        if (cfg != null) {
+            schedulerFactory.initialize(cfg.openStream());
+        }
         scheduler = schedulerFactory.getScheduler();
         scheduler.start();
         // server = MBeanServerFactory.createMBeanServer();
