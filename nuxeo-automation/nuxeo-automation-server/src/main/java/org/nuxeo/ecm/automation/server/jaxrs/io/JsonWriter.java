@@ -108,6 +108,7 @@ public class JsonWriter {
         }
         jg.writeEndArray();
         jg.writeEndObject();
+        jg.flush();
         return out.toString("UTF-8");
     }
 
