@@ -847,7 +847,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             Row row = new Row(Model.LOCK_TABLE_NAME, id);
             row.put(Model.LOCK_OWNER_KEY, lock.getOwner());
             row.put(Model.LOCK_CREATED_KEY, lock.getCreated());
-            insertSimpleRow(row);
+            insertSimpleRows(Model.LOCK_TABLE_NAME, Collections.singletonList(row));
         }
         return oldLock;
     }
@@ -867,7 +867,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             }
         }
         if (force || oldLock != null) {
-            deleteRows(Model.LOCK_TABLE_NAME, id);
+            deleteRows(Model.LOCK_TABLE_NAME, Collections.singleton(id));
         }
         return oldLock;
     }
