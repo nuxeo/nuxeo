@@ -10,7 +10,7 @@
   <directives>
     <directive name="omitXmlDeclaration" value="true" />
     <directive name="omitDoctypeDeclaration" value="true" />
-    <directive name="maxInputSize" value="15000" />
+    <directive name="maxInputSize" value="100000" />
     <directive name="useXHTML" value="true" />
     <directive name="formatOutput" value="true" />
 
@@ -778,6 +778,11 @@
         </literal-list>
       </attribute>
       <attribute name="name" />
+      <attribute name="target">
+        <literal-list>
+          <literal value="_blank" />
+        </literal-list>
+      </attribute>
 
     </tag>
 
