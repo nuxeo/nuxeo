@@ -33,12 +33,14 @@
     <profile>
       <id>nuxeo-cap</id>
       <modules>
+        <module>nuxeo-distribution-coreserver</module>
         <module>nuxeo-distribution-cap</module>
       </modules>
     </profile>
     <profile>
       <id>nuxeo-dm</id>
       <modules>
+        <module>nuxeo-distribution-coreserver</module>
         <module>nuxeo-distribution-cap</module>
         <module>nuxeo-distribution-dm</module>
       </modules>
@@ -47,6 +49,7 @@
       <!-- Build JBoss distributions -->
       <id>jboss</id>
       <modules>
+        <module>nuxeo-distribution-coreserver</module>
         <module>nuxeo-distribution-cap</module>
         <module>nuxeo-distribution-dm</module>
         <module>nuxeo-distribution-jboss</module>
@@ -55,6 +58,7 @@
     <profile>
       <id>tomcat</id>
       <modules>
+        <module>nuxeo-distribution-coreserver</module>
         <module>nuxeo-distribution-cap</module>
         <module>nuxeo-distribution-dm</module>
         <module>nuxeo-distribution-tomcat</module>
@@ -68,6 +72,7 @@
       </activation>
       <modules>
         <module>nuxeo-distribution-base</module>
+        <module>nuxeo-distribution-coreserver</module>
         <module>nuxeo-distribution-cap</module>
         <module>nuxeo-distribution-dm</module>
         <module>nuxeo-distribution-jboss</module>
@@ -77,6 +82,7 @@
     <profile>
       <id>itest</id>
       <modules>
+        <module>nuxeo-distribution-coreserver</module>
         <module>nuxeo-distribution-cap</module>
         <module>nuxeo-distribution-dm</module>
         <module>nuxeo-distribution-tomcat</module>

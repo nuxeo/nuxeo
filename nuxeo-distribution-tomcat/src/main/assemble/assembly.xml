@@ -29,25 +29,8 @@
   </target>
 
   <target name="expand" unless="no.build">
-    <artifact:nuxeo-expand>
-      <excludes>
-	<artifact artifactId="*-test"/>
-	<artifact artifactId="*-facade"/>
-	<artifact artifactId="*-jboss"/>
-	<artifact artifactId="ejb-api"/>
-	<artifact artifactId="jboss-ejb3-ext-api"/>
-	<artifact artifactId="nuxeo-runtime-remoting"/>
-	<artifact artifactId="jboss-remoting"/>
-	<artifact artifactId="jboss-as-system"/>
-	<artifact artifactId="jboss-as-system-jmx"/>
-	<artifact artifactId="nuxeo-apt-extensions"/>
-	<artifact artifactId="nuxeo-webengine-apt"/>
-	<artifact artifactId="jsp-api"/>
-	<artifact artifactId="juel-api"/>
-	<artifact artifactId="jboss-seam-debug"/>
-      </excludes>
-    </artifact:nuxeo-expand>
-    <!--artifact:print output="dependency-tree.log" /--> 
+    <artifact:nuxeo-expand/>
+    <artifact:print output="dependency-tree.log" /> 
   </target>
 
   <target name="build" depends="init" unless="no.build">
@@ -308,9 +291,6 @@
         <includes>
           <artifact groupId="!org.nuxeo*" />
         </includes>
-        <excludes>
-          <artifact artifactId="h2" />
-        </excludes>
       </artifact:set>
     </copy>
 

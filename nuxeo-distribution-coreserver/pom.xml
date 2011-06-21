@@ -14,31 +14,14 @@
 
   <dependencies>
 
-    <!-- include some provided -->
-
     <dependency>
-      <groupId>xml-apis</groupId>
-      <artifactId>xml-apis</artifactId>
+      <groupId>javax.servlet</groupId>
+      <artifactId>jstl</artifactId>
     </dependency>
 
     <dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-annotations</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>javassist</groupId>
-      <artifactId>javassist</artifactId>
-    </dependency>
-    
-    <dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-annotations</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>javax.resource</groupId>
-      <artifactId>connector-api</artifactId>
+      <groupId>commons-el</groupId>
+      <artifactId>commons-el</artifactId>
     </dependency>
 
     <!-- nuxeo bundles -->

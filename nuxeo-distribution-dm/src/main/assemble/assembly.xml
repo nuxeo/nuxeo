@@ -16,25 +16,8 @@
   </target>
 
   <target name="expand">
-    <artifact:nuxeo-expand mavenExclusions="true"> 
-      <excludes>
-	<artifact artifactId="*junit"/>
-	<artifact artifactId="*-test"/>
-	<artifact artifactId="*-facade"/>
-	<artifact artifactId="*-jboss"/>
-	<artifact artifactId="ejb-api"/>
-	<artifact artifactId="jboss-ejb3-ext-api"/>
-	<artifact artifactId="nuxeo-runtime-remoting"/>
-	<artifact artifactId="jboss-remoting"/>
-	<artifact artifactId="jboss-as-system"/>
-	<artifact artifactId="jboss-as-system-jmx"/>
-	<artifact artifactId="jboss-common-core"/>
-	<artifact artifactId="nuxeo-apt-extensions"/>
-	<artifact artifactId="nuxeo-webengine-apt"/>
-	<artifact artifactId="nuxeo-distribution-tools"/>
-      </excludes>
-    </artifact:nuxeo-expand>
-    <!-- <artifact:print output="dependency-tree.log" /> -->
+    <artifact:nuxeo-expand/> 
+    <artifact:print output="dependency-tree.log" />
   </target>
 
   <target name="build" depends="init" description="Build Nuxeo DM">
@@ -53,11 +36,9 @@
           <artifact groupId="org.nuxeo*" />
         </includes>
         <excludes>
-          <artifact artifactId="nuxeo-runtime-management-metrics" />
+          <artifact groupId="org.nuxeo.ecm.distribution" />
           <artifact artifactId="nuxeo-generic-wss-handler" />
           <artifact artifactId="nuxeo-generic-wss-front" />
-          <artifact artifactId="nuxeo-apt-extensions" />
-          <artifact artifactId="nuxeo-webengine-apt" />
         </excludes>
       </artifact:set>
     </copy>

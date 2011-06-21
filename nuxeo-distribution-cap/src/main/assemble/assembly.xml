@@ -16,15 +16,8 @@
   </target>
 
   <target name="expand">
-    <artifact:nuxeo-expand> 
-      <excludes>
-	<artifact artifactId="junit"/>
-	<artifact artifactId="*-test"/>
-	<artifact artifactId="nuxeo-apt-extensions"/>
-	<artifact artifactId="nuxeo-webengine-apt"/>
-      </excludes>
-    </artifact:nuxeo-expand>
-    <!-- <artifact:print output="dependency-tree.log" /> -->
+    <artifact:nuxeo-expand/> 
+    <artifact:print output="dependency-tree.log" />
   </target>
 
   <target name="build" depends="init" description="Build Nuxeo CAP">
@@ -42,9 +35,9 @@
         <includes>
           <artifact groupId="org.nuxeo*" />
         </includes>
-        <excludes>
-          <artifact artifactId="*-test" />
-        </excludes>
+	<excludes>
+          <artifact groupId="org.nuxeo.ecm.distribution" />
+	</excludes>
       </artifact:set>
     </copy>
 
