@@ -187,8 +187,7 @@
                   <field>userSuggestionSearchType</field>
                 </fields>
                 <selectOptions>
-                  <option itemLabel="Users and groups"
-                    itemValue="USER_GROUP_TYPE" />
+                  <option itemLabel="Users and groups" itemValue="" />
                   <option itemLabel="Users" itemValue="USER_TYPE" />
                   <option itemLabel="Groups" itemValue="GROUP_TYPE" />
                 </selectOptions>
@@ -336,8 +335,7 @@
                   <field>userSuggestionSearchType</field>
                 </fields>
                 <selectOptions>
-                  <option itemLabel="Users and groups"
-                    itemValue="USER_GROUP_TYPE" />
+                  <option itemLabel="Users and groups" itemValue="" />
                   <option itemLabel="Users" itemValue="USER_TYPE" />
                   <option itemLabel="Groups" itemValue="GROUP_TYPE" />
                 </selectOptions>
@@ -485,8 +483,7 @@
                   <field>userSuggestionSearchType</field>
                 </fields>
                 <selectOptions>
-                  <option itemLabel="Users and groups"
-                    itemValue="USER_GROUP_TYPE" />
+                  <option itemLabel="Users and groups" itemValue="" />
                   <option itemLabel="Users" itemValue="USER_TYPE" />
                   <option itemLabel="Groups" itemValue="GROUP_TYPE" />
                 </selectOptions>
