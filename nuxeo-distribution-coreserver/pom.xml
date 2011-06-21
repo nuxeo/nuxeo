@@ -52,6 +52,10 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-management</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-storage-sql</artifactId>
     </dependency>
     <dependency>
@@ -116,8 +120,6 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-audit-ws</artifactId>
-    </dependency>
       <artifactId>nuxeo-platform-commandline-executor</artifactId>
     </dependency>
     <dependency>

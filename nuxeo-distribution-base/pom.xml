@@ -30,6 +30,7 @@
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime-launcher</artifactId>
+      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>

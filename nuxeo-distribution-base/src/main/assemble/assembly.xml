@@ -39,10 +39,7 @@
           <artifact groupId="org.nuxeo*" />
         </includes>
         <excludes>
-          <artifact artifactId="nuxeo-apt-extensions" />
-          <artifact artifactId="nuxeo-runtime-test" />
           <artifact artifactId="nuxeo-runtime-launcher" />
-          <artifact artifactId="nuxeo-runtime-remoting" />
         </excludes>
       </artifact:set>
     </copy>
