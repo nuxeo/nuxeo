@@ -1973,6 +1973,16 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
     }
 
     @Test
+    public void testQueryJoinWithFacets() throws Exception {
+        String statement = "SELECT A.cmis:objectId" //
+                + " FROM cmis:folder A" //
+                + " JOIN cmis:folder B ON A.cmis:objectId = B.cmis:parentId" //
+                + " WHERE ANY A.nuxeo:secondaryObjectTypeIds NOT IN ('Foo')";
+        ObjectList res = query(statement);
+        assertEquals(2, res.getNumItems().intValue());
+    }
+
+    @Test
     public void testQueryBad() throws Exception {
         try {
             query("SELECT foo bar baz");
