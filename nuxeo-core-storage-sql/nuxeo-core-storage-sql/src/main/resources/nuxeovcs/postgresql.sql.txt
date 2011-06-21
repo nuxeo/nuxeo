@@ -947,12 +947,22 @@ DROP FUNCTION nx_upgrade_versions();
 DELETE FROM cluster_nodes N WHERE
   NOT EXISTS(SELECT * FROM pg_stat_activity S WHERE N.nodeid = S.procpid);
 
+# Remove orphan invalidations
+DELETE FROM CLUSTER_INVALS
+  USING CLUSTER_INVALS i LEFT JOIN CLUSTER_NODES n ON i.NODEID=n.NODEID
+  WHERE n.NODEID IS NULL
+
 INSERT INTO cluster_nodes (nodeid, created) VALUES (pg_backend_pid(), CURRENT_TIMESTAMP);
 
 
 #CATEGORY: removeClusterNode
 
 DELETE FROM cluster_nodes WHERE nodeid = pg_backend_pid();
+
+# Remove orphan invalidations
+DELETE FROM CLUSTER_INVALS
+  USING CLUSTER_INVALS i LEFT JOIN CLUSTER_NODES n ON i.NODEID=n.NODEID
+  WHERE n.NODEID IS NULL
 
 
 ############################################################
