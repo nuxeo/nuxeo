@@ -44,9 +44,9 @@ import org.nuxeo.ecm.directory.ldap.management.LDAPDirectoriesProbe;
  */
 public class TestLDAPSession extends LDAPDirectoryTestCase {
 
-    private static final String USER_SCHEMANAME = "user";
+    protected static final String USER_SCHEMANAME = "user";
 
-    private static final String GROUP_SCHEMANAME = "group";
+    protected static final String GROUP_SCHEMANAME = "group";
 
     @SuppressWarnings("unchecked")
     public void testGetEntry() throws Exception {
@@ -68,7 +68,8 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
                     "firstName"));
             assertNull(entry.getProperty(USER_SCHEMANAME, "password"));
 
-            List val = (List) entry.getProperty(USER_SCHEMANAME, "employeeType");
+            List<String> val = (List<String>) entry.getProperty(
+                    USER_SCHEMANAME, "employeeType");
             assertTrue(val.isEmpty());
 
             if (USE_EXTERNAL_TEST_LDAP_SERVER) {
@@ -288,7 +289,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
 
     // NXP-2730: ldap queries are case-insensitive => test entry retrieval is ok
     // when using other cases (lower or upper)
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public void testGetEntryWithIdInDifferentCase() throws ClientException {
         Session session = getLDAPDirectory("userDirectory").getSession();
         try {
@@ -917,7 +918,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
                 // 2 dynamic groups
                 assertEquals(9, entries.size());
             } else {
-                assertEquals(7, entries.size());
+                assertEquals(6, entries.size());
             }
         } finally {
             session.close();
@@ -1134,8 +1135,15 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
             session = (LDAPSession) getLDAPDirectory("groupDirectory").getSession();
             try {
                 List<String> mandatoryAttributes = session.getMandatoryAttributes();
-                assertEquals(Arrays.asList("uniqueMember", "cn"),
-                        mandatoryAttributes);
+                if (mandatoryAttributes.size() == 2) {
+                    Collections.sort(mandatoryAttributes);
+                    assertEquals(Arrays.asList("cn", "uniqueMember"),
+                            mandatoryAttributes);
+                } else {
+                    // on some LDAP servers, the default schema does not make
+                    // uniqueMember a mandatory attribute
+                    assertEquals(Arrays.asList("cn"), mandatoryAttributes);
+                }
             } finally {
                 session.close();
             }
@@ -1240,4 +1248,8 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
         assertTrue(status.isSuccess());
     }
 
+    public void testPseudoNormalizeDn() throws Exception {
+        String normalizedDN = LDAPReference.pseudoNormalizeDn("cn=Lamerand\\, Quentin,OU=developper,ou=PEOPLE, dc=nuxeo,dc=com");
+        assertEquals("cn=lamerand\\, quentin,ou=developper,ou=people,dc=nuxeo,dc=com", normalizedDN);
+    }
 }

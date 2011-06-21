@@ -23,6 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.localconfiguration.AbstractLocalConfiguration;
 
 /**
  * Default implementation of {@code DirectoryConfiguration}.
@@ -30,7 +31,8 @@ import org.nuxeo.ecm.core.api.DocumentRef;
  * @author <a href="mailto:qlamerand@nuxeo.com">Benjamin JALON</a>
  * @since 5.4.2
  */
-public class DirectoryConfigurationAdapter implements
+public class DirectoryConfigurationAdapter extends
+        AbstractLocalConfiguration<DirectoryConfiguration> implements
         DirectoryConfiguration {
 
     private static final Log log = LogFactory.getLog(DirectoryConfigurationAdapter.class);
@@ -63,7 +65,8 @@ public class DirectoryConfigurationAdapter implements
 
     @Override
     public DirectoryConfiguration merge(DirectoryConfiguration other) {
-        throw new UnsupportedOperationException("Directory configurations can't be merged");
+        throw new UnsupportedOperationException(
+                "Directory configurations can't be merged");
     }
 
     @Override

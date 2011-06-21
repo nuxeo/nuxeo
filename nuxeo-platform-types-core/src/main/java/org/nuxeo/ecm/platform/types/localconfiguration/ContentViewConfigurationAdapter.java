@@ -30,13 +30,15 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.localconfiguration.AbstractLocalConfiguration;
 
 /**
  * Default implementation of {@code ContentViewConfiguration}.
  *
  * @author <a href="mailto:qlamerand@nuxeo.com">Quentin Lamerand</a>
  */
-public class ContentViewConfigurationAdapter implements
+public class ContentViewConfigurationAdapter extends
+        AbstractLocalConfiguration<ContentViewConfiguration> implements
         ContentViewConfiguration {
 
     private static final Log log = LogFactory.getLog(ContentViewConfigurationAdapter.class);

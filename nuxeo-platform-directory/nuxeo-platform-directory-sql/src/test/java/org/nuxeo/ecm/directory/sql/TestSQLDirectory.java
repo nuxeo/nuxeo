@@ -648,4 +648,45 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
         }
     }
 
+    public void testColumnCreation() throws Exception {
+        deployContrib("org.nuxeo.ecm.directory.sql.tests",
+                "test-sql-directories-alteration-config.xml");
+
+        SQLDirectory dirtmp1 = null;
+        SQLDirectory dirtmp2 = null;
+
+        try {
+            dirtmp1 = (SQLDirectory) getDirectory("tmpdirectory1");
+            assertNotNull(dirtmp1);
+
+            Session session = dirtmp1.getSession();
+
+            String schema1 = "tmpschema1";
+            DocumentModel entry = BaseSession.createEntryModel(null, schema1,
+                        null, null);
+            entry.setProperty(schema1, "id", "john");
+            entry.setProperty(schema1, "label", "monLabel");
+
+            assertNull(session.getEntry("john"));
+            entry = session.createEntry(entry);
+            assertEquals("john", entry.getId());
+            assertNotNull(session.getEntry("john"));
+
+            // Open a new directory that uses the same table with a different schema.
+            // And test if the table has not been re-created, and data are there
+            dirtmp2 = (SQLDirectory) getDirectory("tmpdirectory2");
+            assertNotNull(dirtmp2);
+
+            session = dirtmp2.getSession();
+            assertNotNull(session.getEntry("john"));
+        }
+        finally {
+            if (dirtmp1 != null) {
+                dirtmp1.shutdown();
+            }
+            if (dirtmp2 != null) {
+                dirtmp2.shutdown();
+            }
+        }
+    }
 }

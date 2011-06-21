@@ -196,6 +196,7 @@ public class LDAPDirectory extends AbstractDirectory {
         // compute LDAPReferences
         Set<String> attrs = new HashSet<String>();
         attrs.addAll(fieldMapper.getBackendFields(schemaFieldMap.keySet()));
+        attrs.add("objectClass");
 
         for (Reference reference : references.values()) {
             if (reference instanceof LDAPReference) {

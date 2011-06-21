@@ -35,6 +35,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.localconfiguration.AbstractLocalConfiguration;
 import org.nuxeo.ecm.platform.types.SubType;
 
 /**
@@ -42,7 +43,9 @@ import org.nuxeo.ecm.platform.types.SubType;
  *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  */
-public class UITypesConfigurationAdapter implements UITypesConfiguration {
+public class UITypesConfigurationAdapter extends
+        AbstractLocalConfiguration<UITypesConfiguration> implements
+        UITypesConfiguration {
 
     private static final Log log = LogFactory.getLog(UITypesConfigurationAdapter.class);
 
@@ -64,7 +67,7 @@ public class UITypesConfigurationAdapter implements UITypesConfiguration {
                 UI_TYPES_CONFIGURATION_ALLOWED_TYPES_PROPERTY);
         deniedTypes = getTypesList(doc,
                 UI_TYPES_CONFIGURATION_DENIED_TYPES_PROPERTY);
-        defaultType= getDefaultType(doc);
+        defaultType = getDefaultType(doc);
 
         denyAllTypes = getDenyAllTypesProperty(doc);
         if (denyAllTypes) {
@@ -99,7 +102,7 @@ public class UITypesConfigurationAdapter implements UITypesConfiguration {
         try {
             value = (String) doc.getPropertyValue(UI_TYPES_CONFIGURATION_DEFAULT_TYPE);
         } catch (ClientException e) {
-            log.debug("cann't get default type for:" + doc.getPathAsString(), e);
+            log.debug("can't get default type for:" + doc.getPathAsString(), e);
         }
         return value;
     }
@@ -176,8 +179,12 @@ public class UITypesConfigurationAdapter implements UITypesConfiguration {
         return filteredAllowedSubTypes;
     }
 
-    /* (non-Javadoc)
-     * @see org.nuxeo.ecm.platform.types.localconfiguration.UITypesConfiguration#getDefaultType()
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * org.nuxeo.ecm.platform.types.localconfiguration.UITypesConfiguration#
+     * getDefaultType()
      */
     @Override
     public String getDefaultType() {

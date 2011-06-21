@@ -16,6 +16,15 @@
 
 package org.nuxeo.ecm.platform.types.localconfiguration;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ecm.platform.types.localconfiguration.UITypesConfigurationConstants.UI_TYPES_CONFIGURATION_ALLOWED_TYPES_PROPERTY;
+import static org.nuxeo.ecm.platform.types.localconfiguration.UITypesConfigurationConstants.UI_TYPES_CONFIGURATION_DENIED_TYPES_PROPERTY;
+import static org.nuxeo.ecm.platform.types.localconfiguration.UITypesConfigurationConstants.UI_TYPES_CONFIGURATION_DENY_ALL_TYPES_PROPERTY;
+import static org.nuxeo.ecm.platform.types.localconfiguration.UITypesConfigurationConstants.UI_TYPES_CONFIGURATION_FACET;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,6 +40,10 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.localconfiguration.LocalConfigurationService;
+import org.nuxeo.ecm.core.api.security.ACE;
+import org.nuxeo.ecm.core.api.security.ACL;
+import org.nuxeo.ecm.core.api.security.ACP;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.BackendType;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
@@ -44,15 +57,6 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 import com.google.inject.Inject;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.nuxeo.ecm.platform.types.localconfiguration.UITypesConfigurationConstants.UI_TYPES_CONFIGURATION_ALLOWED_TYPES_PROPERTY;
-import static org.nuxeo.ecm.platform.types.localconfiguration.UITypesConfigurationConstants.UI_TYPES_CONFIGURATION_DENIED_TYPES_PROPERTY;
-import static org.nuxeo.ecm.platform.types.localconfiguration.UITypesConfigurationConstants.UI_TYPES_CONFIGURATION_FACET;
-import static org.nuxeo.ecm.platform.types.localconfiguration.UITypesConfigurationConstants.UI_TYPES_CONFIGURATION_DENY_ALL_TYPES_PROPERTY;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
@@ -84,6 +88,9 @@ public class TestLocalConfiguration {
     public static final String SIMPLE_DOCUMENT_CATEGORY = "SimpleDocument";
 
     public static final String COLLABORATIVE_CATEGORY = "Collaborative";
+
+    @Inject
+    protected FeaturesRunner featuresRunner;
 
     @Inject
     protected CoreSession session;
@@ -372,9 +379,11 @@ public class TestLocalConfiguration {
     }
 
     @Test
-    public void shouldFindAllAllowedSubtypesWithoutConfiguration() throws ClientException {
+    public void shouldFindAllAllowedSubtypesWithoutConfiguration()
+            throws ClientException {
         DocumentModel workspace = session.getDocument(PARENT_WORKSPACE_REF);
-        Collection<Type> allowedSubTypes = typeManager.findAllAllowedSubTypesFrom(WORKSPACE_TYPE, workspace);
+        Collection<Type> allowedSubTypes = typeManager.findAllAllowedSubTypesFrom(
+                WORKSPACE_TYPE, workspace);
 
         assertNotNull(allowedSubTypes);
         assertFalse(allowedSubTypes.isEmpty());
@@ -388,4 +397,41 @@ public class TestLocalConfiguration {
         assertFalse(typesNames.contains(SECTION_TYPE));
     }
 
+    @Test
+    public void userWithoutReadRightOnWorkspaceShouldRetrieveConfiguration()
+            throws ClientException {
+        DocumentModel workspace = session.getDocument(PARENT_WORKSPACE_REF);
+        setDeniedTypes(workspace, FILE_TYPE);
+
+        addReadForEveryone(CHILD_WORKSPACE_REF);
+
+        changeUser("user1");
+        DocumentModel childWorkspace = session.getDocument(CHILD_WORKSPACE_REF);
+        assertTrue(typeManager.isAllowedSubType(FOLDER_TYPE,
+                childWorkspace.getType(), childWorkspace));
+        assertTrue(typeManager.isAllowedSubType(WORKSPACE_TYPE,
+                childWorkspace.getType(), childWorkspace));
+        assertTrue(typeManager.isAllowedSubType(NOTE_TYPE,
+                childWorkspace.getType(), childWorkspace));
+        assertFalse(typeManager.isAllowedSubType(FILE_TYPE,
+                childWorkspace.getType(), childWorkspace));
+    }
+
+    protected void addReadForEveryone(DocumentRef ref) throws ClientException {
+        DocumentModel childWorkspace = session.getDocument(ref);
+        ACP acp = childWorkspace.getACP();
+        ACL acl = acp.getOrCreateACL();
+        acl.clear();
+        acl.add(new ACE(SecurityConstants.EVERYONE, SecurityConstants.READ,
+                true));
+        childWorkspace.setACP(acp, true);
+        session.saveDocument(childWorkspace);
+        session.save();
+    }
+
+    protected void changeUser(String username) throws ClientException {
+        CoreFeature coreFeature = featuresRunner.getFeature(CoreFeature.class);
+        session = coreFeature.getRepository().getRepositoryHandler().changeUser(
+                session, username);
+    }
 }

@@ -91,6 +91,8 @@ public class LDAPSession extends BaseSession implements EntrySource {
 
     protected final String idAttribute;
 
+    protected final String idCase;
+
     protected final LDAPDirectory directory;
 
     protected final String searchBaseDn;
@@ -112,6 +114,7 @@ public class LDAPSession extends BaseSession implements EntrySource {
         this.dirContext = dirContext;
         DirectoryFieldMapper fieldMapper = directory.getFieldMapper();
         idAttribute = fieldMapper.getBackendField(directory.getConfig().getIdField());
+        idCase = directory.getConfig().getIdCase();
         schemaName = directory.getSchema();
         schemaFieldMap = directory.getSchemaFieldMap();
         sid = String.valueOf(SIDGenerator.next());
@@ -398,9 +401,13 @@ public class LDAPSession extends BaseSession implements EntrySource {
                         continue;
                     }
                     if (value == null || value.equals("")) {
+                        Attribute objectClasses = oldattrs.get("objectClass");
                         Attribute attr;
-                        if (getMandatoryAttributes().contains(backendField)) {
+                        if (getMandatoryAttributes(objectClasses).contains(
+                                backendField)) {
                             attr = new BasicAttribute(backendField);
+                            // XXX: this might fail if the mandatory attribute
+                            // is typed integer for instance
                             attr.add(" ");
                             attrs.put(attr);
                         } else if (oldattrs.get(backendField) != null) {
@@ -818,6 +825,8 @@ public class LDAPSession extends BaseSession implements EntrySource {
                 entryId = entry.toString();
             }
         }
+        // NXP-7136 handle id case
+        entryId = changeEntryIdCase(entryId, idCase);
 
         if (entryId == null) {
             // don't bother
@@ -885,8 +894,7 @@ public class LDAPSession extends BaseSession implements EntrySource {
             fieldMap.put(fieldId, changeEntryIdCase(entryId,
                     directory.getConfig().missingIdFieldCase));
         } else if (obj instanceof String) {
-            fieldMap.put(fieldId, changeEntryIdCase((String) obj,
-                    directory.getConfig().idCase));
+            fieldMap.put(fieldId, changeEntryIdCase((String) obj, idCase));
         }
         return fieldMapToDocumentModel(fieldMap);
     }
@@ -975,15 +983,31 @@ public class LDAPSession extends BaseSession implements EntrySource {
     }
 
     @SuppressWarnings("unchecked")
-    protected List<String> getMandatoryAttributes() throws DirectoryException {
+    protected List<String> getMandatoryAttributes(
+            Attribute objectClassesAttribute) throws DirectoryException {
         try {
             List<String> mandatoryAttributes = new ArrayList<String>();
 
             DirContext schema = dirContext.getSchema("");
-            List<String> creationClasses = new ArrayList<String>(
-                    Arrays.asList(directory.getConfig().getCreationClasses()));
-            creationClasses.remove("top");
-            for (String creationClass : creationClasses) {
+            List<String> objectClasses = new ArrayList<String>();
+            if (objectClassesAttribute == null) {
+                // use the creation classes as reference schema for this entry
+                objectClasses.addAll(Arrays.asList(directory.getConfig().getCreationClasses()));
+            } else {
+                // introspec the objectClass definitions to find the mandatory
+                // attributes for this entry
+                NamingEnumeration<Object> values = null;
+                try {
+                    values = (NamingEnumeration<Object>) objectClassesAttribute.getAll();
+                    while (values.hasMore()) {
+                        objectClasses.add(values.next().toString().trim());
+                    }
+                } catch (NamingException e) {
+                    throw new DirectoryException(e);
+                }
+            }
+            objectClasses.remove("top");
+            for (String creationClass : objectClasses) {
                 Attributes attributes = schema.getAttributes("ClassDefinition/"
                         + creationClass);
                 Attribute attribute = attributes.get("MUST");
@@ -995,11 +1019,15 @@ public class LDAPSession extends BaseSession implements EntrySource {
                     }
                 }
             }
-
             return mandatoryAttributes;
         } catch (NamingException e) {
             throw new DirectoryException("getMandatoryAttributes failed", e);
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    protected List<String> getMandatoryAttributes() throws DirectoryException {
+        return getMandatoryAttributes(null);
     }
 
     @Override
