@@ -91,7 +91,6 @@ public class EditorImageActionsBean extends InputController implements
 
     private static final Log log = LogFactory.getLog(EditorImageActionsBean.class);
 
-
     @In(create = true, required = false)
     private transient CoreSession documentManager;
 
@@ -116,6 +115,7 @@ public class EditorImageActionsBean extends InputController implements
 
     private String selectedSize = "Original";
 
+    @Override
     public String getSelectedTab() {
         if (selectedTab != null) {
             oldSelectedTab = selectedTab;
@@ -123,31 +123,38 @@ public class EditorImageActionsBean extends InputController implements
         return oldSelectedTab;
     }
 
+    @Override
     public String getUrlForImage() {
         isImageUploaded = false;
         return imageUrl;
     }
 
+    @Override
     public boolean getIsImageUploaded() {
         return isImageUploaded;
     }
 
+    @Override
     public void setUploadedImage(InputStream uploadedImage) {
         this.uploadedImage = uploadedImage;
     }
 
+    @Override
     public InputStream getUploadedImage() {
         return uploadedImage;
     }
 
+    @Override
     public String getUploadedImageName() {
         return uploadedImageName;
     }
 
+    @Override
     public void setUploadedImageName(String uploadedImageName) {
         this.uploadedImageName = uploadedImageName;
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public String uploadImage() throws ClientException {
         if (uploadedImage == null || uploadedImageName == null) {
@@ -179,12 +186,13 @@ public class EditorImageActionsBean extends InputController implements
         return "editor_image_upload";
     }
 
+    @Override
     public boolean getInCreationMode() {
         DocumentModel doc = navigationContext.getChangeableDocument();
-        if (doc==null) {
+        if (doc == null) {
             doc = navigationContext.getCurrentDocument();
         }
-        if (doc==null) {
+        if (doc == null) {
             return false;
         }
         if (doc.getId() == null) {
@@ -194,18 +202,22 @@ public class EditorImageActionsBean extends InputController implements
         }
     }
 
+    @Override
     public boolean getHasSearchResults() {
         return hasSearchResults;
     }
 
+    @Override
     public List<DocumentModel> getSearchImageResults() {
         return resultDocuments;
     }
 
+    @Override
     public String getSearchKeywords() {
         return searchKeywords;
     }
 
+    @Override
     public String searchImages() throws ClientException {
         log.debug("Entering searchDocuments with keywords: " + searchKeywords);
 
@@ -223,35 +235,40 @@ public class EditorImageActionsBean extends InputController implements
         }
         constraints.add("ecm:primaryType = 'Picture'");
 
-        final String query = String.format(SEARCH_QUERY, StringUtils.join(
-                constraints, " AND "));
+        final String query = String.format(SEARCH_QUERY,
+                StringUtils.join(constraints, " AND "));
         resultDocuments = documentManager.query(query, 100);
         hasSearchResults = !resultDocuments.isEmpty();
-        log.debug("query result contains: " + resultDocuments.size()
-                + " docs.");
+        log.debug("query result contains: " + resultDocuments.size() + " docs.");
         return "editor_image_upload";
     }
 
+    @Override
     public void setSearchKeywords(final String searchKeywords) {
         this.searchKeywords = searchKeywords;
     }
 
+    @Override
     public List<Map<String, String>> getSizes() {
         return SIZES;
     }
 
+    @Override
     public String getSelectedSize() {
         return selectedSize;
     }
 
+    @Override
     public void setSelectedSize(final String selectedSize) {
         this.selectedSize = selectedSize;
     }
 
+    @Override
     public String getImageProperty() {
         return selectedSize + ":content";
     }
 
+    @Override
     @Destroy
     @Remove
     public void destroy() {
