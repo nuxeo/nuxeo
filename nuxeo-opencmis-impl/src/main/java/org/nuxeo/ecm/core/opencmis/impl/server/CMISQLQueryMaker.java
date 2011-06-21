@@ -128,6 +128,8 @@ public class CMISQLQueryMaker implements QueryMaker {
 
     protected Table hierTable;
 
+    protected Table qualHierTable;
+
     public boolean skipDeleted = true;
 
     // ----- filled during walks of the clauses -----
@@ -289,7 +291,7 @@ public class CMISQLQueryMaker implements QueryMaker {
 
             String typeQueryName = qualifierToType.get(alias);
             String qual = canonicalQualifier.get(alias);
-            Table qualHierTable = getTable(hierTable, qual);
+            qualHierTable = getTable(hierTable, qual);
 
             // table this join is about
             Table table;
@@ -1477,7 +1479,7 @@ public class CMISQLQueryMaker implements QueryMaker {
              * SQL generation
              */
             if (!types.isEmpty()) {
-                Column col = hierTable.getColumn(Model.MAIN_PRIMARY_TYPE_KEY);
+                Column col = qualHierTable.getColumn(Model.MAIN_PRIMARY_TYPE_KEY);
                 whereBuf.append(col.getFullQuotedName());
                 whereBuf.append(" IN ");
                 whereBuf.append('(');
@@ -1497,7 +1499,7 @@ public class CMISQLQueryMaker implements QueryMaker {
 
             if (!instanceMixins.isEmpty()) {
                 whereBuf.append('(');
-                Column mixinsColumn = hierTable.getColumn(Model.MAIN_MIXIN_TYPES_KEY);
+                Column mixinsColumn = qualHierTable.getColumn(Model.MAIN_MIXIN_TYPES_KEY);
                 String[] returnParam = new String[1];
                 for (Iterator<String> it = instanceMixins.iterator(); it.hasNext();) {
                     String mixin = it.next();
