@@ -1,13 +1,14 @@
 package org.nuxeo.ecm.webapp.security;
 
-import static org.nuxeo.ecm.platform.ui.web.api.WebActions.SUBTAB_CATEGORY_SUFFIX;import java.security.Principal;
+import static org.nuxeo.ecm.platform.ui.web.api.WebActions.SUBTAB_CATEGORY_SUFFIX;
+
+import java.security.Principal;
 
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.contentview.seam.ContentViewActions;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
-import org.nuxeo.ecm.platform.ui.web.api.TabActionsSelection;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
@@ -33,11 +34,13 @@ public abstract class AbstractUserGroupManagement {
 
     public static final String USERS_GROUPS_MANAGER = "UsersGroupsManager";
 
-    public static final String USERS_GROUPS_MANAGER_SUB_TAB = USERS_GROUPS_MANAGER + SUBTAB_CATEGORY_SUFFIX;
+    public static final String USERS_GROUPS_MANAGER_SUB_TAB = USERS_GROUPS_MANAGER
+            + SUBTAB_CATEGORY_SUFFIX;
 
     public static final String USERS_GROUPS_HOME = "UsersGroupsHome";
 
-    public static final String USERS_GROUPS_HOME_SUB_TAB = USERS_GROUPS_HOME + SUBTAB_CATEGORY_SUFFIX;
+    public static final String USERS_GROUPS_HOME_SUB_TAB = USERS_GROUPS_HOME
+            + SUBTAB_CATEGORY_SUFFIX;
 
     public static final String VALID_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-0123456789.@";
 
@@ -75,6 +78,8 @@ public abstract class AbstractUserGroupManagement {
     protected boolean showCreateForm;
 
     protected boolean showUserOrGroup;
+
+    protected boolean shouldResetStateOnTabChange = true;
 
     public String getSearchString() {
         return searchString;

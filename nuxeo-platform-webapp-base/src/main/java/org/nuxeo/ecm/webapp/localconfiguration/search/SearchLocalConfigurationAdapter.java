@@ -24,14 +24,13 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.localconfiguration.AbstractLocalConfiguration;
 
 /**
  * @author <a href="mailto:ei@nuxeo.com">Eugen Ionica</a>
- *
- *
- *
  */
-public class SearchLocalConfigurationAdapter implements
+public class SearchLocalConfigurationAdapter extends
+        AbstractLocalConfiguration<SearchLocalConfiguration> implements
         SearchLocalConfiguration {
 
     private static final Log log = LogFactory.getLog(SearchLocalConfigurationAdapter.class);
@@ -64,7 +63,9 @@ public class SearchLocalConfigurationAdapter implements
         try {
             value = (String) doc.getPropertyValue(FIELD_ADVANCED_SEARCH_VIEW);
         } catch (ClientException e) {
-            log.debug("cann't get default type for:" + doc.getPathAsString(), e);
+            log.debug(
+                    "Unable to retrieve configured advanced search content view for "
+                            + doc.getPathAsString(), e);
         }
         return value;
     }

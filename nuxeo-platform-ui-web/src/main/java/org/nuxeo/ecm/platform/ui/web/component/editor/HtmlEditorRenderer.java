@@ -74,14 +74,18 @@ public class HtmlEditorRenderer extends HtmlBasicInputRenderer {
         // declare variables for tinyMCE init
         writer.startElement("script", editorComp);
         writer.writeAttribute("type", "text/javascript", null);
-        writer.writeText(String.format("var lang = \"%s\";\n",
-                locale.getLanguage()), null);
-        writer.writeText(String.format("var editorSelector = \"%s\";\n",
-                editorSelector), null);
-        writer.writeText(String.format("var width = \"%s\";\n",
-                editorComp.getWidth()), null);
-        writer.writeText(String.format("var height = \"%s\";\n",
-                editorComp.getHeight()), null);
+        writer.writeText(
+                String.format("var lang = \"%s\";\n", locale.getLanguage()),
+                null);
+        writer.writeText(
+                String.format("var editorSelector = \"%s\";\n", editorSelector),
+                null);
+        writer.writeText(
+                String.format("var width = \"%s\";\n", editorComp.getWidth()),
+                null);
+        writer.writeText(
+                String.format("var height = \"%s\";\n", editorComp.getHeight()),
+                null);
 
         // plugins registration
         if (pluginsOptions == null) {
@@ -89,11 +93,16 @@ public class HtmlEditorRenderer extends HtmlBasicInputRenderer {
             pluginsOptions = new HashMap<String, String>();
             pluginsOptions.put("plugins",
                     pluginService.getFormattedPluginsNames());
-            toolbarPluginsOptions = pluginService.getToolbarsButtons();
+            toolbarPluginsOptions = new HashMap<String, String>();
+            toolbarPluginsOptions.put("toolbar",
+                    pluginService.getFormattedToolbarsButtonsNames());
         }
-        writer.writeText(String.format("var plugins = \"%s\";\n",
-                pluginsOptions.get("plugins")), null);
-        writer.writeText(generateToolbarOptions(toolbarPluginsOptions), null);
+        writer.writeText(
+                String.format("var plugins = \"%s\";\n",
+                        pluginsOptions.get("plugins")), null);
+        writer.writeText(
+                String.format("var toolbar = \"%s\";\n",
+                        toolbarPluginsOptions.get("toolbar")), null);
         writer.endElement("script");
 
         // init tinyMCE
@@ -145,16 +154,6 @@ public class HtmlEditorRenderer extends HtmlBasicInputRenderer {
         res.append('{');
         res.append(StringUtils.join(strOptions.toArray(), ", "));
         res.append('}');
-        return res.toString();
-    }
-
-    protected static String generateToolbarOptions(Map<String, String> options) {
-        StringBuilder res = new StringBuilder();
-        res.append("var toolbarOptions = new Array();\n");
-        for (Map.Entry<String, String> option : options.entrySet()) {
-            res.append("toolbarOptions['" + option.getKey() + "'] = '"
-                    + option.getValue() + "';\n");
-        }
         return res.toString();
     }
 
