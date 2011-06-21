@@ -7,6 +7,10 @@ nuxeo-startup-wizard/bin
 nuxeo-functional-tests/bin
 target
 target*
+*.rej
+*~bak
+*-bak
+*-new
 *~
 *.orig
 .pydevproject
