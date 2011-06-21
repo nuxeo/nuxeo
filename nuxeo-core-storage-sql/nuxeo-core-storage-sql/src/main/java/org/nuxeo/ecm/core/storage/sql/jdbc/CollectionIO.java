@@ -18,6 +18,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import org.nuxeo.ecm.core.storage.sql.Model;
+import org.nuxeo.ecm.core.storage.sql.Row;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 
 /**
@@ -36,11 +37,10 @@ public interface CollectionIO {
 
     /**
      * Sets the values of a fragment to a SQL prepared statement, and executes
-     * the statement for each value.
+     * the statement for each value. Uses batching if possible.
      */
-    void setToPreparedStatement(Serializable id, Serializable[] array,
-            List<Column> columns, PreparedStatement ps, Model model,
-            List<Serializable> debugValues, String sql, JDBCLogger logger)
-            throws SQLException;
+    void executeInserts(PreparedStatement ps, List<Row> rows,
+            List<Column> columns, boolean supportsBatchUpdates, String sql,
+            JDBCLogger logger) throws SQLException;
 
 }

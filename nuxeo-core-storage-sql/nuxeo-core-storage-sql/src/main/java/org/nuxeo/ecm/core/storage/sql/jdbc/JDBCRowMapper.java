@@ -32,6 +32,7 @@ import javax.sql.XADataSource;
 import javax.transaction.xa.XAException;
 import javax.transaction.xa.Xid;
 
+import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Invalidations;
 import org.nuxeo.ecm.core.storage.sql.Invalidations.InvalidationsPair;
@@ -52,6 +53,8 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.db.Update;
  * A {@link JDBCRowMapper} maps {@link Row}s to and from a JDBC database.
  */
 public class JDBCRowMapper extends JDBCConnection implements RowMapper {
+
+    public static final int UPDATE_BATCH_SIZE = 100; // also insert/delete
 
     /**
      * Cluster node handler, or {@code null} if this {@link Mapper} is not the
@@ -446,15 +449,9 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             String tableName = en.getKey();
             List<Row> rows = en.getValue();
             if (model.isCollectionFragment(tableName)) {
-                for (Row row : rows) {
-                    // TODO optimize loop
-                    insertCollectionRows(row);
-                }
+                insertCollectionRows(tableName, rows);
             } else {
-                for (Row row : rows) {
-                    // TODO optimize loop
-                    insertSimpleRow(row);
-                }
+                insertSimpleRows(tableName, rows);
             }
         }
     }
@@ -475,15 +472,9 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             String tableName = en.getKey();
             List<RowUpdate> rows = en.getValue();
             if (model.isCollectionFragment(tableName)) {
-                for (RowUpdate rowu : rows) {
-                    // TODO optimize loop
-                    updateCollectionRows(rowu.row);
-                }
+                updateCollectionRows(tableName, rows);
             } else {
-                for (RowUpdate rowu : rows) {
-                    // TODO optimize loop
-                    updateSimpleRow(rowu.row, rowu.keys);
-                }
+                updateSimpleRows(tableName, rows);
             }
         }
     }
@@ -503,124 +494,208 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
         for (Entry<String, Set<Serializable>> en : tableIds.entrySet()) {
             String tableName = en.getKey();
             Set<Serializable> ids = en.getValue();
-            for (Serializable id : ids) {
-                // TODO optimize loop
-                deleteRows(tableName, id);
-            }
+            deleteRows(tableName, ids);
         }
     }
 
-    protected void insertSimpleRow(Row row) throws StorageException {
-        PreparedStatement ps = null;
-        try {
-            // insert the row
-            // XXX statement should be already prepared
-            String sql = sqlInfo.getInsertSql(row.tableName);
-            if (sql == null) {
-                throw new StorageException("Unknown table: " + row.tableName);
-            }
-            List<Column> columns = sqlInfo.getInsertColumns(row.tableName);
-            try {
-                if (logger.isLogEnabled()) {
-                    logger.logSQL(sql, columns, row);
-                }
-                ps = connection.prepareStatement(sql);
-                int i = 1;
-                for (Column column : columns) {
-                    column.setToPreparedStatement(ps, i++,
-                            row.get(column.getKey()));
-                }
-                ps.execute();
-            } catch (Exception e) {
-                checkConnectionReset(e);
-                throw new StorageException("Could not insert: " + sql, e);
-            }
-            // TODO DB_IDENTITY : post insert fetch idrow
-        } finally {
-            if (ps != null) {
-                try {
-                    closeStatement(ps);
-                } catch (SQLException e) {
-                    logger.error(e.getMessage(), e);
-                }
-            }
-        }
-        // return row.id;
-    }
-
-    protected void insertCollectionRows(Row row) throws StorageException {
-        PreparedStatement ps = null;
-        try {
-            String sql = sqlInfo.getInsertSql(row.tableName);
-            List<Column> columns = sqlInfo.getInsertColumns(row.tableName);
-            try {
-                List<Serializable> debugValues = null;
-                if (logger.isLogEnabled()) {
-                    debugValues = new ArrayList<Serializable>(3);
-                }
-                ps = connection.prepareStatement(sql);
-                getCollectionIO(row.tableName).setToPreparedStatement(row.id,
-                        row.values, columns, ps, model, debugValues, sql,
-                        logger);
-            } catch (Exception e) {
-                checkConnectionReset(e);
-                throw new StorageException("Could not insert: " + sql, e);
-            }
-            // TODO DB_IDENTITY : post insert fetch idrow
-        } finally {
-            if (ps != null) {
-                try {
-                    closeStatement(ps);
-                } catch (SQLException e) {
-                    logger.error(e.getMessage(), e);
-                }
-            }
-        }
-    }
-
-    protected void updateSimpleRow(Row row, Collection<String> keys)
+    /**
+     * Inserts multiple rows, all for the same table.
+     */
+    protected void insertSimpleRows(String tableName, List<Row> rows)
             throws StorageException {
-        if (keys.isEmpty()) {
+        if (rows.isEmpty()) {
             return;
         }
-        SQLInfoSelect update = sqlInfo.getUpdateById(row.tableName, keys);
+        String sql = sqlInfo.getInsertSql(tableName);
+        if (sql == null) {
+            throw new StorageException("Unknown table: " + tableName);
+        }
+        String loggedSql = supportsBatchUpdates && rows.size() > 1 ? sql
+                + " -- BATCHED" : sql;
+        List<Column> columns = sqlInfo.getInsertColumns(tableName);
         try {
-            PreparedStatement ps = connection.prepareStatement(update.sql);
+            PreparedStatement ps = connection.prepareStatement(sql);
             try {
-                if (logger.isLogEnabled()) {
-                    logger.logSQL(update.sql, update.whatColumns, row);
+                int batch = 0;
+                for (Row row : rows) {
+                    batch++;
+                    if (logger.isLogEnabled()) {
+                        logger.logSQL(loggedSql, columns, row);
+                    }
+                    int i = 1;
+                    for (Column column : columns) {
+                        column.setToPreparedStatement(ps, i++,
+                                row.get(column.getKey()));
+                    }
+                    if (supportsBatchUpdates) {
+                        ps.addBatch();
+                        if (batch % UPDATE_BATCH_SIZE == 0) {
+                            ps.executeBatch();
+                        }
+                    } else {
+                        ps.execute();
+                    }
                 }
-                int i = 1;
-                for (Column column : update.whatColumns) {
-                    column.setToPreparedStatement(ps, i++,
-                            row.get(column.getKey()));
+                if (supportsBatchUpdates) {
+                    ps.executeBatch();
                 }
-                int count = ps.executeUpdate();
-                logger.logCount(count);
             } finally {
                 closeStatement(ps);
             }
         } catch (Exception e) {
             checkConnectionReset(e);
-            throw new StorageException("Could not update: " + update.sql, e);
+            throw new StorageException("Could not insert: " + sql, e);
         }
     }
 
-    protected void updateCollectionRows(Row row) throws StorageException {
-        deleteRows(row.tableName, row.id);
-        insertCollectionRows(row);
+    /**
+     * Updates multiple collection rows, all for the same table.
+     */
+    protected void insertCollectionRows(String tableName, List<Row> rows)
+            throws StorageException {
+        if (rows.isEmpty()) {
+            return;
+        }
+        String sql = sqlInfo.getInsertSql(tableName);
+        List<Column> columns = sqlInfo.getInsertColumns(tableName);
+        CollectionIO io = getCollectionIO(tableName);
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            try {
+                io.executeInserts(ps, rows, columns, supportsBatchUpdates, sql,
+                        logger);
+            } finally {
+                closeStatement(ps);
+            }
+        } catch (Exception e) {
+            checkConnectionReset(e);
+            throw new StorageException("Could not insert: " + sql, e);
+        }
     }
 
-    protected void deleteRows(String tableName, Serializable id)
+    /**
+     * Updates multiple simple rows, all for the same table.
+     */
+    protected void updateSimpleRows(String tableName, List<RowUpdate> rows)
             throws StorageException {
+        if (rows.isEmpty()) {
+            return;
+        }
+
+        // reorganize by unique sets of keys
+        Map<String, List<RowUpdate>> updatesByKeys = new HashMap<String, List<RowUpdate>>();
+        for (RowUpdate rowu : rows) {
+            List<String> keys = new ArrayList<String>(rowu.keys);
+            if (keys.isEmpty()) {
+                continue;
+            }
+            Collections.sort(keys);
+            String k = StringUtils.join(keys, ","); // canonical keys
+            List<RowUpdate> keysUpdates = updatesByKeys.get(k);
+            if (keysUpdates == null) {
+                updatesByKeys.put(k, keysUpdates = new LinkedList<RowUpdate>());
+            }
+            keysUpdates.add(rowu);
+        }
+
+        for (List<RowUpdate> keysUpdates : updatesByKeys.values()) {
+            Collection<String> keys = keysUpdates.iterator().next().keys;
+            SQLInfoSelect update = sqlInfo.getUpdateById(tableName, keys);
+            String loggedSql = supportsBatchUpdates && rows.size() > 1 ? update.sql
+                    + " -- BATCHED"
+                    : update.sql;
+            try {
+                PreparedStatement ps = connection.prepareStatement(update.sql);
+                int batch = 0;
+                try {
+                    for (RowUpdate rowu : keysUpdates) {
+                        batch++;
+                        if (logger.isLogEnabled()) {
+                            logger.logSQL(loggedSql, update.whatColumns,
+                                    rowu.row);
+                        }
+                        int i = 1;
+                        for (Column column : update.whatColumns) {
+                            column.setToPreparedStatement(ps, i++,
+                                    rowu.row.get(column.getKey()));
+                        }
+                        if (supportsBatchUpdates) {
+                            ps.addBatch();
+                            if (batch % UPDATE_BATCH_SIZE == 0) {
+                                int[] counts = ps.executeBatch();
+                                logger.logCounts(counts);
+                            }
+                        } else {
+                            int count = ps.executeUpdate();
+                            logger.logCount(count);
+                        }
+                    }
+                    if (supportsBatchUpdates) {
+                        int[] counts = ps.executeBatch();
+                        logger.logCounts(counts);
+                    }
+                } finally {
+                    closeStatement(ps);
+                }
+            } catch (Exception e) {
+                checkConnectionReset(e);
+                throw new StorageException("Could not update: " + update.sql, e);
+            }
+        }
+    }
+
+    protected void updateCollectionRows(String tableName, List<RowUpdate> rowus)
+            throws StorageException {
+        Set<Serializable> ids = new HashSet<Serializable>(rowus.size());
+        List<Row> rows = new ArrayList<Row>(rowus.size());
+        for (RowUpdate rowu : rowus) {
+            ids.add(rowu.row.id);
+            rows.add(rowu.row);
+        }
+        deleteRows(tableName, ids);
+        insertCollectionRows(tableName, rows);
+    }
+
+    /**
+     * Deletes multiple rows, all for the same table.
+     */
+    protected void deleteRows(String tableName, Set<Serializable> ids)
+            throws StorageException {
+        if (ids.isEmpty()) {
+            return;
+        }
+        int size = ids.size();
+        int chunkSize = sqlInfo.getMaximumArgsForIn();
+        if (size > chunkSize) {
+            List<Serializable> idList = new ArrayList<Serializable>(ids);
+            for (int start = 0; start < size; start += chunkSize) {
+                int end = start + chunkSize;
+                if (end > size) {
+                    end = size;
+                }
+                // needs to be Serializable -> copy
+                List<Serializable> chunkIds = new ArrayList<Serializable>(
+                        idList.subList(start, end));
+                deleteRowsDirect(tableName, chunkIds);
+            }
+        } else {
+            deleteRowsDirect(tableName, ids);
+        }
+    }
+
+    protected void deleteRowsDirect(String tableName,
+            Collection<Serializable> ids) throws StorageException {
         try {
-            String sql = sqlInfo.getDeleteSql(tableName);
+            String sql = sqlInfo.getDeleteSql(tableName, ids.size());
             if (logger.isLogEnabled()) {
-                logger.logSQL(sql, Collections.singletonList(id));
+                logger.logSQL(sql, ids);
             }
             PreparedStatement ps = connection.prepareStatement(sql);
             try {
-                ps.setObject(1, id);
+                int i = 1;
+                for (Serializable id : ids) {
+                    ps.setObject(i++, id);
+                }
                 int count = ps.executeUpdate();
                 logger.logCount(count);
             } finally {
@@ -628,7 +703,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             }
         } catch (Exception e) {
             checkConnectionReset(e);
-            throw new StorageException("Could not delete: " + id.toString(), e);
+            throw new StorageException("Could not delete: " + tableName, e);
         }
     }
 

@@ -258,10 +258,10 @@ LOG.INFO Initializing ancestors table for path optimization, please wait...
 SELECT 1 FROM USER_TABLES WHERE table_name = 'READ_ACLS'
 
 #IF: !emptyResult
-ALTER TABLE read_acls RENAME TO aclr;
+ALTER TABLE read_acls RENAME TO aclr
 
 #IF: !emptyResult
-ALTER TABLE aclr RENAME COLUMN id TO acl_id;
+ALTER TABLE aclr RENAME COLUMN id TO acl_id
 
 # -- TODO: Remove useless primary key since 5.4.1 read_acls_pkey
 # -- Check the principal contraint on ACLR.ACL_ID, then drop it like
@@ -845,12 +845,20 @@ DROP PROCEDURE nx_upgrade_versions
 DELETE FROM "CLUSTER_NODES" N WHERE
   NOT EXISTS(SELECT S.SID FROM V$SESSION S WHERE N.NODEID = S.SID)
 
+# Remove orphan invalidations
+DELETE FROM CLUSTER_INVALS i WHERE i.NODEID NOT IN 
+  (SELECT NODEID FROM CLUSTER_NODES n WHERE n.NODEID = i.NODEID)
+
 INSERT INTO "CLUSTER_NODES" (NODEID, CREATED) VALUES (SYS_CONTEXT('USERENV', 'SID'), CURRENT_TIMESTAMP)
 
 
 #CATEGORY: removeClusterNode
 
 DELETE FROM "CLUSTER_NODES" WHERE NODEID = SYS_CONTEXT('USERENV', 'SID')
+
+# Remove orphan invalidations
+DELETE FROM CLUSTER_INVALS i WHERE i.NODEID NOT IN 
+  (SELECT NODEID FROM CLUSTER_NODES n WHERE n.NODEID = i.NODEID)
 
 
 ############################################################

@@ -494,7 +494,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
      * Detaches the documentImpl from its existing session, so that it can
      * survive beyond the session's closing.
      *
-     * @param loadAll if {@code true}, load all data from the session before
+     * @param loadAll if {@code true}, load all data and ACP from the session before
      *            detaching
      */
     public void detach(boolean loadAll) throws ClientException {
@@ -507,10 +507,10 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
                     loadDataModel(schema);
                 }
             }
-        }
-        // fetch ACP too if possible
-        if (ref != null) {
-            getACP();
+            // fetch ACP too if possible
+            if (ref != null) {
+                getACP();
+            }
         }
         sid = null;
     }

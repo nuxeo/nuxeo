@@ -191,6 +191,12 @@ public class SQLInfo {
         getBinariesColumns = new ArrayList<Column>(1);
 
         initSQL();
+
+        try {
+            initSQLStatements(JDBCMapper.testProps);
+        } catch (IOException e) {
+            throw new StorageException(e);
+        }
     }
 
     public Database getDatabase() {
@@ -374,10 +380,45 @@ public class SQLInfo {
      * are free parameters.
      *
      * @param tableName the table name
-     * @return the SQL {@code INSERT} statement
+     * @return the SQL {@code DELETE} statement
      */
     public String getDeleteSql(String tableName) {
         return deleteSqlMap.get(tableName);
+    }
+
+    /**
+     * Returns the SQL {@code DELETE} to delete several rows. The primary key
+     * columns are free parameters.
+     *
+     * @param tableName the table name
+     * @param n the number of rows to delete
+     * @return the SQL {@code DELETE} statement with a {@code IN} for the keys
+     */
+    public String getDeleteSql(String tableName, int n) {
+        Table table = database.getTable(tableName);
+        Delete delete = new Delete(table);
+        String where = null;
+        for (Column column : table.getColumns()) {
+            if (column.getKey().equals(model.MAIN_KEY)) {
+                StringBuilder buf = new StringBuilder();
+                buf.append(column.getQuotedName());
+                if (n == 1) {
+                    buf.append(" = ?");
+                } else {
+                    buf.append(" IN (");
+                    for (int i = 0; i < n; i++) {
+                        if (i > 0) {
+                            buf.append(", ");
+                        }
+                        buf.append("?");
+                    }
+                    buf.append(")");
+                }
+                where = buf.toString();
+            }
+        }
+        delete.setWhere(where);
+        return delete.getStatement();
     }
 
     // ----- copy -----
@@ -407,7 +448,6 @@ public class SQLInfo {
     public Column getCopyIdColumn(String tableName) {
         return copyIdColumnMap.get(tableName);
     }
-
 
     // ----- prepare everything -----
 

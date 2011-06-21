@@ -12,6 +12,7 @@
 
 package org.nuxeo.ecm.core.api.localconfiguration;
 
+import org.nuxeo.ecm.core.api.ClientException;import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DetachedAdapter;
 import org.nuxeo.ecm.core.api.DocumentRef;
 
@@ -39,5 +40,12 @@ public interface LocalConfiguration<T> extends DetachedAdapter {
      * Merge this {@code LocalConfiguration} with another one.
      */
     T merge(T other);
+
+    /**
+     * Save this LocalConfiguration.
+     *
+     * @since 5.4.3
+     */
+    void save(CoreSession session) throws ClientException;
 
 }

@@ -16,6 +16,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -44,6 +45,8 @@ import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.FulltextIndexDescriptor;
+import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCBackend;
+import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCConnectionPropagator;
 import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCMapper;
 
 public class TestSQLBackend extends SQLBackendTestCase {
@@ -1355,6 +1358,60 @@ public class TestSQLBackend extends SQLBackendTestCase {
         session.save();
     }
 
+    public void testBulkUpdates() throws Exception {
+        Session session = repository.getConnection();
+        Node root = session.getRootNode();
+
+        // bulk insert
+        Node nodea = session.addChildNode(root, "foo", null, "TestDoc", false);
+        Node nodeb = session.addChildNode(nodea, "bar", null, "TestDoc", false);
+        Node nodec = session.addChildNode(nodeb, "gee", null, "TestDoc", false);
+        nodea.setSimpleProperty("tst:title", "foo");
+        nodeb.setSimpleProperty("tst:title", "bar");
+        nodec.setSimpleProperty("tst:title", "gee");
+        nodea.setCollectionProperty("tst:subjects", new String[] { "a", "b",
+                "c" });
+        nodeb.setCollectionProperty("tst:subjects", new String[] { "d", "e",
+                "f" });
+        nodec.setCollectionProperty("tst:subjects", new String[] { "g", "h" });
+        session.save();
+
+        // bulk update
+        nodea.setSimpleProperty("tst:title", "foo2");
+        nodeb.setSimpleProperty("tst:title", "bar2");
+        nodec.setSimpleProperty("tst:title", "gee2");
+        nodea.setCollectionProperty("tst:subjects", new String[] { "a2", "b2",
+                "c2" });
+        nodeb.setCollectionProperty("tst:subjects", new String[] { "d2", "e2" });
+        nodec.setCollectionProperty("tst:subjects", new String[] {});
+        session.save();
+
+        // bulk update, not identical groups of keys
+        nodea.setSimpleProperty("tst:title", "foo3");
+        nodea.setSimpleProperty("tst:count", Long.valueOf(333));
+        nodeb.setSimpleProperty("tst:title", "bar3");
+        nodec.setSimpleProperty("tst:title", "gee3");
+        session.save();
+
+        // bulk update, ACLs
+        ACLRow acl1 = new ACLRow(1, "test", true, "Write", "steve", null);
+        ACLRow acl2 = new ACLRow(0, "test", true, "Read", null, "Members");
+        ACLRow acl3 = new ACLRow(2, "local", true, "ReadWrite", "bob", null);
+        nodea.getCollectionProperty(Model.ACL_PROP).setValue(
+                new ACLRow[] { acl1, acl2, acl3 });
+        nodeb.getCollectionProperty(Model.ACL_PROP).setValue(
+                new ACLRow[] { acl2 });
+        nodec.getCollectionProperty(Model.ACL_PROP).setValue(
+                new ACLRow[] { acl3 });
+        session.save();
+
+        // bulk delete
+        session.removeNode(nodea);
+        session.removeNode(nodeb);
+        session.removeNode(nodec);
+        session.save();
+    }
+
     public void testBulkFetch() throws Exception {
         Session session = repository.getConnection();
 
@@ -2231,6 +2288,35 @@ public class TestSQLBackend extends SQLBackendTestCase {
         id = "11111111-2222-3333-4444-555555555555";
         lock = session.getLock(id);
         assertNull(lock);
+    }
+
+    public void testJDBCConnectionPropagatorLeak() throws Exception {
+        if (this instanceof TestSQLBackendNet
+                || this instanceof ITSQLBackendNet) {
+            return;
+        }
+        assertEquals(0, getJDBCConnectionPropagatorSize());
+        repository.getConnection().close();
+        // 1 connection remains for the lock manager
+        assertEquals(1, getJDBCConnectionPropagatorSize());
+        Session s1 = repository.getConnection();
+        Session s2 = repository.getConnection();
+        Session s3 = repository.getConnection();
+        assertEquals(1 + 3, getJDBCConnectionPropagatorSize());
+        s1.close();
+        s2.close();
+        s3.close();
+        assertEquals(1, getJDBCConnectionPropagatorSize());
+    }
+
+    protected int getJDBCConnectionPropagatorSize() throws Exception {
+        Field backendField = RepositoryImpl.class.getDeclaredField("backend");
+        backendField.setAccessible(true);
+        JDBCBackend backend = (JDBCBackend) backendField.get(repository);
+        Field propagatorField = JDBCBackend.class.getDeclaredField("connectionPropagator");
+        propagatorField.setAccessible(true);
+        JDBCConnectionPropagator propagator = (JDBCConnectionPropagator) propagatorField.get(backend);
+        return propagator.connections.size();
     }
 
 }

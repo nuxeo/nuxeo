@@ -11,7 +11,6 @@
  */
 package org.nuxeo.ecm.core.storage.sql.jdbc;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.security.MessageDigest;
 import java.sql.Array;
@@ -49,7 +48,6 @@ import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.BinaryGarbageCollector;
-import org.nuxeo.ecm.core.storage.sql.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.Invalidations;
 import org.nuxeo.ecm.core.storage.sql.LockManager;
 import org.nuxeo.ecm.core.storage.sql.Mapper;
@@ -137,11 +135,6 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
 
     @Override
     public void createDatabase() throws StorageException {
-        try {
-            sqlInfo.initSQLStatements(testProps);
-        } catch (IOException e) {
-            throw new StorageException(e);
-        }
         try {
             createTables();
         } catch (Exception e) {
@@ -854,7 +847,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             Row row = new Row(Model.LOCK_TABLE_NAME, id);
             row.put(Model.LOCK_OWNER_KEY, lock.getOwner());
             row.put(Model.LOCK_CREATED_KEY, lock.getCreated());
-            insertSimpleRow(row);
+            insertSimpleRows(Model.LOCK_TABLE_NAME, Collections.singletonList(row));
         }
         return oldLock;
     }
@@ -874,7 +867,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             }
         }
         if (force || oldLock != null) {
-            deleteRows(Model.LOCK_TABLE_NAME, id);
+            deleteRows(Model.LOCK_TABLE_NAME, Collections.singleton(id));
         }
         return oldLock;
     }
