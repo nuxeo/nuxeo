@@ -5,6 +5,7 @@ syntax:glob
 .settings
 bin
 target
+*.rej
 *~
 *.orig
 *.DS_Store
