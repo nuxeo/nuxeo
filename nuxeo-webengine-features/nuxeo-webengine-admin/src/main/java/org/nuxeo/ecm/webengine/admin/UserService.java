@@ -31,6 +31,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.NuxeoGroupImpl;
@@ -51,7 +52,7 @@ public class UserService extends DefaultObject {
         if (query != null && !query.equals("")) {
             UserManager userManager = Framework.getService(UserManager.class);
             if (group != null) {
-                List<NuxeoGroup> results = userManager.searchGroups(query);
+                DocumentModelList results = userManager.searchGroups(query);
                 return getView("index").arg("groups", results);
             } else {
                 List<NuxeoPrincipal> results = userManager.searchPrincipals(query);
