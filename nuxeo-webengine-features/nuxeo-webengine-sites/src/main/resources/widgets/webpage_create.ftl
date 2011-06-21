@@ -6,11 +6,11 @@
 
 <!-- tinyMCE -->
 <script type="text/javascript" src="${skinPath}/script/tiny_mce/tiny_mce.js"></script>
-<script type="text/javascript" src="${skinPath}/script/tiny_mce/langs/en.js"></script>
-<script type="text/javascript" src="${skinPath}/script/tiny_mce/themes/simple/editor_template.js"></script>
+<script type="text/javascript" src="${skinPath}/script/tiny_mce/tiny_mce_init.js"></script>
 <!-- end tinyMCE -->
 
 <script type="text/javascript">
+	tinymce.baseURL = "${skinPath}/script/tiny_mce";
     function onSelectRadio(obj) {
 
         if (obj.id == "wikitext") {
@@ -92,10 +92,10 @@
     </tr>
     <tr>
       <td colspan="2">
-      <div id="wikitextArea"><textarea name="wikitextEditor"
+      <div id="wikitextArea"><textarea name="wikitextEditor" 
         cols="60" rows="20" id="wiki_editor"></textarea></div>
       <div id="richtextArea" style='display: none;'><textarea
-        name="richtextEditor" style="width: 300px; height: 400px"
+        name="richtextEditor"  class="mceEditor" style="width: 300px; height: 400px"
         cols="60" rows="20" id="richtextEditor"></textarea></div>
       </td>
     </tr>
@@ -161,17 +161,6 @@ function launchEditor() {
 $('#richtextEditor').ready(
 function() {
 document.getElementById('wikitext').checked = true;
-
-document.tmceCreate = new tinymce.Editor(
-  'richtextEditor',
-  {
-   mode : "textareas",
-   theme : "advanced",
-   editor_selector : "mceAdvanced"
-  });
-
-
-  document.tmceCreate.render();
 });
 
 $('#wiki_editor').ready( function() {

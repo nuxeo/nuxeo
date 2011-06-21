@@ -18,7 +18,7 @@ var ImageDialog = {
 
 		e = ed.selection.getNode();
 
-		this.fillFileList('image_list', 'tinyMCEImageList');
+		this.fillFileList('image_list', tinyMCEPopup.getParam('external_image_list', 'tinyMCEImageList'));
 
 		if (e.nodeName == 'IMG') {
 			f.src.value = ed.dom.getAttrib(e, 'src');
@@ -39,7 +39,7 @@ var ImageDialog = {
 	fillFileList : function(id, l) {
 		var dom = tinyMCEPopup.dom, lst = dom.get(id), v, cl;
 
-		l = window[l];
+		l = typeof(l) === 'function' ? l() : window[l];
 
 		if (l && l.length > 0) {
 			lst.options[lst.options.length] = new Option('', '');
@@ -77,7 +77,7 @@ var ImageDialog = {
 			args.style = this.styleVal;
 
 		tinymce.extend(args, {
-			src : f.src.value,
+			src : f.src.value.replace(/ /g, '%20'),
 			alt : f.alt.value,
 			width : f.width.value,
 			height : f.height.value
@@ -87,6 +87,8 @@ var ImageDialog = {
 
 		if (el && el.nodeName == 'IMG') {
 			ed.dom.setAttribs(el, args);
+			tinyMCEPopup.editor.execCommand('mceRepaint');
+			tinyMCEPopup.editor.focus();
 		} else {
 			ed.execCommand('mceInsertContent', false, '<img id="__mce_tmp" />', {skip_undo : 1});
 			ed.dom.setAttribs('__mce_tmp', args);
@@ -151,8 +153,8 @@ var ImageDialog = {
 			}
 
 			// Merge
-			st = tinyMCEPopup.dom.parseStyle(dom.serializeStyle(st));
-			this.styleVal = dom.serializeStyle(st);
+			st = tinyMCEPopup.dom.parseStyle(dom.serializeStyle(st), 'img');
+			this.styleVal = dom.serializeStyle(st, 'img');
 		}
 	},
 

@@ -1,5 +1,5 @@
 // FR lang variables
 
-tinyMCE.addToLang('nuxeolink',{
-desc : 'Ins&eacute;rer un lien vers un document Nuxeo'
+tinyMCE.addI18n('fr.nuxeolink',{
+desc : 'Ins\u00e9rer un lien vers un document Nuxeo'
 });

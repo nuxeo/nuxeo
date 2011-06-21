@@ -6,9 +6,12 @@
 
 <!-- tinyMCE -->
 <script type="text/javascript" src="${skinPath}/script/tiny_mce/tiny_mce.js"></script>
-<script type="text/javascript" src="${skinPath}/script/tiny_mce/langs/en.js"></script>
-<script type="text/javascript" src="${skinPath}/script/tiny_mce/themes/simple/editor_template.js"></script>
+<script type="text/javascript" src="${skinPath}/script/tiny_mce/tiny_mce_init.js"></script>
 <!-- end tinyMCE -->
+
+<script type="text/javascript">
+	tinymce.baseURL = "${skinPath}/script/tiny_mce";
+</script>
 
 <form name="pageEdit" method="POST" action="${This.path}/modifyWebPage" accept-charset="utf-8">
   <table class="modifyWebPage">
@@ -31,7 +34,7 @@
       <tr>
         <td>
           <#if (Document.webpage.isRichtext == true)>
-            <textarea name="richtextEditorEdit" style="width: 300px;height: 400px" cols="60" rows="20" id="richtextEditorEdit">${Document.webpage.content}</textarea>
+            <textarea name="richtextEditorEdit" class="mceEditor" style="width: 300px;height: 400px" cols="60" rows="20" id="richtextEditorEdit">${Document.webpage.content}</textarea>
           <#else>
             <textarea name="wikitextEditorEdit" cols="60" rows="20" id="wikitextEditorEdit" >${Document.webpage.content}</textarea>
           </#if>
@@ -93,17 +96,6 @@ function launchEditor() {
 
   $('#wikitextEditorEdit').markItUp(mySitesWikiSettings);
 }
-
-$('#richtextEditorEdit').ready(function() {
-
-  document.tmceEdit = new tinymce.Editor('richtextEditorEdit',{
-  mode : "textareas",
-  theme : "advanced",
-  editor_selector : "mceAdvanced"
-    });
-
-  document.tmceEdit.render();
-});
 
 $('#wikitextEditorEdit').ready(function() {
   setTimeout(launchEditor, 10);

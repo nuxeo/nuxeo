@@ -1,11 +1,11 @@
 <!-- tinyMCE -->
 <script type="text/javascript" src="${skinPath}/script/jquery/jquery-1.3.2.min.js"></script>
 <script type="text/javascript" src="${skinPath}/script/tiny_mce/tiny_mce.js"></script>
-<script type="text/javascript" src="${skinPath}/script/tiny_mce/langs/en.js"></script>
-<script type="text/javascript" src="${skinPath}/script/tiny_mce/themes/simple/editor_template.js"></script>
+<script type="text/javascript" src="${skinPath}/script/tiny_mce/tiny_mce_init.js"></script>
 <!-- end tinyMCE -->
 
 <script type="text/javascript">
+	tinymce.baseURL = "${skinPath}/script/tiny_mce";
     function isTitleSet() {
         var title = document.getElementById('titleInput');
         if (title) {
@@ -40,7 +40,7 @@
     </tr>
     <tr>
       <td>
-        <textarea name="richtextEditor" style="width:300px; height:400px" cols="80" rows="20" id="richtextEditor"></textarea>
+        <textarea name="richtextEditor" class="mceEditor" style="width:300px; height:400px" cols="80" rows="20" id="richtextEditor"></textarea>
       </td>
     </tr>
     <tr>
@@ -55,15 +55,3 @@
   </tbody>
 </table>
 </form>
-
-<script type="text/javascript">
-$('#richtextEditor').ready(function() {
-  document.tmceCreate = new tinymce.Editor('richtextEditor',{
-    mode : "textareas",
-    theme : "advanced",
-    editor_selector : "mceAdvanced"
-  });
-
-  document.tmceCreate.render();
-});
-</script>
