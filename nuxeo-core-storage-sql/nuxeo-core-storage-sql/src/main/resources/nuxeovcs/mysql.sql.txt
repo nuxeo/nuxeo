@@ -229,12 +229,18 @@ DROP PROCEDURE nx_upgrade_versions;
 DELETE N FROM cluster_nodes N WHERE
   NOT EXISTS(SELECT 1 FROM INFORMATION_SCHEMA.PROCESSLIST P WHERE N.nodeid = P.id);
 
+# Remove orphan invalidations
+DELETE i FROM CLUSTER_INVALS i LEFT JOIN CLUSTER_NODES n ON i.NODEID=n.NODEID WHERE n.NODEID IS NULL
+
 INSERT INTO cluster_nodes (nodeid, created) VALUES (@@PSEUDO_THREAD_ID, CURRENT_TIMESTAMP);
 
 
 #CATEGORY: removeClusterNode
 
 DELETE FROM cluster_nodes WHERE nodeid = @@PSEUDO_THREAD_ID;
+
+# Remove orphan invalidations
+DELETE i FROM CLUSTER_INVALS i LEFT JOIN CLUSTER_NODES n ON i.NODEID=n.NODEID WHERE n.NODEID IS NULL
 
 
 ############################################################
