@@ -25,3 +25,5 @@ mail.user=nobody
 mail.pop3.host=pop3.nosuchhost.nosuchdomain.com
 # Enable debugging output from the javamail classes
 mail.debug=false
+
+tomcat.emptySessionPath=false
