@@ -76,22 +76,24 @@
       <artifactId>connector-api</artifactId>
     </dependency>
 
+    <!-- Needed by H2 fulltext -->
     <dependency>
-      <!-- Needed by H2 fulltext -->
       <groupId>org.apache.lucene</groupId>
       <artifactId>lucene-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.lucene</groupId>
+      <artifactId>lucene-analyzers</artifactId>
     </dependency>
 
     <!-- NetServer -->
     <dependency>
       <groupId>org.mortbay.jetty</groupId>
       <artifactId>jetty</artifactId>
-      <scope>compile</scope> <!-- override provided -->
     </dependency>
     <dependency>
       <groupId>org.mortbay.jetty</groupId>
       <artifactId>jetty-util</artifactId>
-      <scope>compile</scope> <!-- override provided -->
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
@@ -106,11 +108,6 @@
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime-test</artifactId>
       <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.lucene</groupId>
-      <artifactId>lucene-analyzers</artifactId>
-      <scope>runtime</scope>
     </dependency>
 
     <dependency>
