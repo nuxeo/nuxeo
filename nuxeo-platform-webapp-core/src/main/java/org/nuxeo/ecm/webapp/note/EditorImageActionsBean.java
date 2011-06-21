@@ -119,6 +119,8 @@ public class EditorImageActionsBean extends InputController implements
     public String getSelectedTab() {
         if (selectedTab != null) {
             oldSelectedTab = selectedTab;
+        } else if (oldSelectedTab == null) {
+            oldSelectedTab = "UPLOAD";
         }
         return oldSelectedTab;
     }
