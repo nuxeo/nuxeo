@@ -93,7 +93,6 @@
     <module>nuxeo-features</module>
     <module>nuxeo-theme</module>
     <module>nuxeo-webengine</module>
-    <!-- NXP-5660 - temporary rollback because of Hudson issue -->
     <module>nuxeo-dm</module>
     <module>nuxeo-gwt</module>
   </modules>
@@ -2506,9 +2505,6 @@
   </reporting>
 
   <profiles>
-    <!-- NXP-5660 - temporary rollback because of Hudson issue <profile> <id>no-osgi</id>
-      <activation> <file> <exists>pom.xml</exists> </file> </activation> <modules> <module>nuxeo-dm</module>
-      <module>nuxeo-gwt</module> </modules> </profile> -->
     <profile>
       <id>pde</id>
       <build>
