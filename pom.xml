@@ -21,16 +21,9 @@
     <module>nuxeo-webengine-jaxrs</module>
     <module>nuxeo-webengine-core</module>
     <module>nuxeo-webengine-ui</module>
-    <!-- NXP-5660 - temporary rollback because of Hudson issue -->
     <module>nuxeo-webengine-gwt</module>
     <module>nuxeo-theme-webengine</module>
   </modules>
-
-  <profiles>
-    <!-- NXP-5660 - temporary rollback because of Hudson issue <profile> <id>no-osgi</id>
-      <activation> <file> <exists>pom.xml</exists> </file> </activation> <modules> <module>nuxeo-webengine-gwt</module>
-      <module>nuxeo-theme-webengine</module> </modules> </profile> -->
-  </profiles>
 
   <properties>
     <nuxeo.webengine.version>5.4.3-SNAPSHOT</nuxeo.webengine.version>
