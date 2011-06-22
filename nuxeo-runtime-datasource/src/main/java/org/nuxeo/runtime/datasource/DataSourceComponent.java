@@ -43,21 +43,22 @@ public class DataSourceComponent extends DefaultComponent {
 
     public static final String DATASOURCES_XP = "datasources";
 
-   public static final String ENV_CTX_NAME = "java:comp/env";
+    public static final String ENV_CTX_NAME = "java:comp/env";
 
     protected boolean isNamingOwner;
 
     @Override
     public void activate(ComponentContext context) throws Exception {
-         Context ctx = InitContextAccessor.getInitCtx();
+        Context ctx = InitContextAccessor.getInitCtx();
         if (ctx != null) {
             if (InitContextAccessor.isWritable(ctx)) {
                 return;
             }
             NamingContextFactory.setDelegateContext(ctx);
             NamingContextFactory.setDelegateEnvironment(ctx.getEnvironment());
-	}
-	isNamingOwner = true;
+        } 
+        NamingContextFactory.setAsInitial();
+        isNamingOwner = true;
     }
 
     @Override
@@ -101,7 +102,7 @@ public class DataSourceComponent extends DefaultComponent {
     protected void addDataSource(DataSourceDescriptor descr) {
         log.info("Registering datasource: " + descr.name);
         try {
-            Name name = new CompositeName(ENV_CTX_NAME+"/"+descr.name);
+            Name name = new CompositeName(ENV_CTX_NAME + "/" + descr.name);
             Context ctx = new InitialContext();
             // bind intermediate names as subcontexts (jdbc/foo)
             for (int i = 0; i < name.size() - 1; i++) {
@@ -121,7 +122,7 @@ public class DataSourceComponent extends DefaultComponent {
         log.info("Unregistering datasource: " + descr.name);
         try {
             Context ctx = new InitialContext();
-            ctx.unbind(ENV_CTX_NAME+"/"+descr.name);
+            ctx.unbind(ENV_CTX_NAME + "/" + descr.name);
         } catch (NamingException e) {
             log.error("Cannot unbind datasource '" + descr.name + "' in JNDI",
                     e);
