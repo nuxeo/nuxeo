@@ -124,12 +124,6 @@
     <dependency>
       <groupId>jotm</groupId>
       <artifactId>jotm</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>javax.resource</groupId>
-          <artifactId>connector</artifactId>
-        </exclusion>
-      </exclusions>
       <scope>test</scope>
     </dependency>
 
