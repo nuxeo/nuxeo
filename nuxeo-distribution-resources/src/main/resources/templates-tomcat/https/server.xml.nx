@@ -64,12 +64,10 @@
          APR (HTTP/AJP) Connector: /docs/apr.html
          Define a non-SSL HTTP/1.1 Connector on port ${nuxeo.server.http.port}
     -->
-    <!--
     <Connector port="${nuxeo.server.http.port}" protocol="HTTP/1.1"
-               address="${nuxeo.bind.address}"
-               connectionTimeout="20000"
-               redirectPort="${nuxeo.server.https.port}" />
-     -->
+               address="127.0.0.1"
+               connectionTimeout="20000" />
+
     <!-- A "Connector" using the shared thread pool-->
     <!--
     <Connector executor="tomcatThreadPool"
@@ -90,11 +88,9 @@
                clientAuth="false" sslProtocol="TLS" />
 
     <!-- Define an AJP 1.3 Connector on port ${nuxeo.server.ajp.port} -->
-    <!--
     <Connector port="${nuxeo.server.ajp.port}" protocol="AJP/1.3"
                address="${nuxeo.bind.address}"
                redirectPort="${nuxeo.server.https.port}" />
-    -->
 
     <!-- An Engine represents the entry point (within Catalina) that processes
          every request.  The Engine implementation for Tomcat stand alone

@@ -2,6 +2,8 @@
 nuxeo.template.includes=default
 https.target=conf
 
+nuxeo.server.http.port=8080
+nuxeo.server.ajp.port=8009
 nuxeo.server.https.port=443
 nuxeo.server.https.keystoreFile=/path/to/keystore
 nuxeo.server.https.keystorePass=password
@@ -9,5 +11,6 @@ nuxeo.server.tomcat-admin.port=8005
 nuxeo.server.jvmRoute=nuxeo
 
 nuxeo.url=https://localhost/nuxeo
-nuxeo.loopback.url=https://localhost/nuxeo
-opensocial.gadgets.port=443
+nuxeo.loopback.url=http://localhost:8080/nuxeo
+
+nuxeo.server.emptySessionPath=false
