@@ -15,6 +15,7 @@
   <name>Nuxeo Core SQL Storage</name>
   <description>Nuxeo Core: SQL Storage.</description>
 
+
   <dependencies>
     <dependency>
       <groupId>org.nuxeo.common</groupId>
@@ -76,6 +77,7 @@
       <artifactId>connector-api</artifactId>
     </dependency>
 
+
     <!-- Needed by H2 fulltext -->
     <dependency>
       <groupId>org.apache.lucene</groupId>
@@ -119,6 +121,19 @@
       <!-- needed for convert plugins -->
       <groupId>javax.mail</groupId>
       <artifactId>mail</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <!--fix test classpath in eclipse -->
+    <dependency>
+      <groupId>jotm</groupId>
+      <artifactId>jotm</artifactId>
+      <exclusions>
+	<exclusion>
+	  <groupId>javax.resource</groupId>
+	  <artifactId>connector</artifactId>
+	</exclusion>
+      </exclusions>
       <scope>test</scope>
     </dependency>
 
