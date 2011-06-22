@@ -25,9 +25,8 @@ import javax.naming.NamingException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.jndi.NamingContext;
+import org.nuxeo.common.jndi.InitContextAccessor;
 import org.nuxeo.common.jndi.NamingContextFactory;
-import org.nuxeo.runtime.api.DataSourceHelper;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -44,35 +43,29 @@ public class DataSourceComponent extends DefaultComponent {
 
     public static final String DATASOURCES_XP = "datasources";
 
-    public static final String ENV_CTX_NAME = "java:comp/env";
+   public static final String ENV_CTX_NAME = "java:comp/env";
 
-    protected Context envCtx;
+    protected boolean isNamingOwner;
 
     @Override
     public void activate(ComponentContext context) throws Exception {
-        Context ctx = DataSourceHelper.getDefaultInitCtx();
-        if (ctx != null && !(ctx instanceof NamingContext)) {
-            throw new RuntimeException(String.format(
-                    "A JNDI server already exists (%s), "
-                            + "nuxeo-runtime-datasource cannot be deployed",
-                    ctx.getClass().getName()));
-        }
-        NamingContextFactory.setAsInitial();
-        ctx = new InitialContext();
-        Name name = new CompositeName(ENV_CTX_NAME);
-        for (int i = 0; i < name.size(); i++) {
-            try {
-                ctx = (Context) ctx.lookup(name.get(i));
-            } catch (NamingException e) {
-                ctx = ctx.createSubcontext(name.get(i));
+         Context ctx = InitContextAccessor.getInitCtx();
+        if (ctx != null) {
+            if (InitContextAccessor.isWritable(ctx)) {
+                return;
             }
-        }
-        envCtx = ctx;
+            NamingContextFactory.setDelegateContext(ctx);
+            NamingContextFactory.setDelegateEnvironment(ctx.getEnvironment());
+	}
+	isNamingOwner = true;
     }
 
     @Override
     public void deactivate(ComponentContext context) throws Exception {
-        NamingContextFactory.revertSetAsInitial();
+        if (isNamingOwner) {
+            NamingContextFactory.revertSetAsInitial();
+            isNamingOwner = false;
+        }
     }
 
     @Override
@@ -108,8 +101,8 @@ public class DataSourceComponent extends DefaultComponent {
     protected void addDataSource(DataSourceDescriptor descr) {
         log.info("Registering datasource: " + descr.name);
         try {
-            Name name = new CompositeName(descr.name);
-            Context ctx = envCtx;
+            Name name = new CompositeName(ENV_CTX_NAME+"/"+descr.name);
+            Context ctx = new InitialContext();
             // bind intermediate names as subcontexts (jdbc/foo)
             for (int i = 0; i < name.size() - 1; i++) {
                 try {
@@ -127,7 +120,8 @@ public class DataSourceComponent extends DefaultComponent {
     protected void removeDataSource(DataSourceDescriptor descr) {
         log.info("Unregistering datasource: " + descr.name);
         try {
-            envCtx.unbind(descr.name);
+            Context ctx = new InitialContext();
+            ctx.unbind(ENV_CTX_NAME+"/"+descr.name);
         } catch (NamingException e) {
             log.error("Cannot unbind datasource '" + descr.name + "' in JNDI",
                     e);

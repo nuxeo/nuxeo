@@ -22,15 +22,14 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
-import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 
+import org.nuxeo.common.jndi.NamingContextFactory;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.runtime.api.DataSourceHelper;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
-import org.nuxeo.runtime.jtajca.NuxeoContainer.TransactionManagerConfiguration;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -42,17 +41,9 @@ public class TestDataSourceComponent extends NXRuntimeTestCase {
     /** Property used in the datasource URL. */
     private static final String PROP_NAME = "ds.test.home";
 
-    protected static void initJTA() throws Exception {
-        NuxeoContainer.initTransactionManager(new TransactionManagerConfiguration());
-        InitialContext context = new InitialContext();
-        context.bind("java:comp/TransactionManager",
-                NuxeoContainer.getTransactionManager());
-        context.bind("java:comp/UserTransaction",
-                NuxeoContainer.getUserTransaction());
-    }
-
     @Override
     public void setUp() throws Exception {
+        NamingContextFactory.setAsInitial();
         super.setUp();
         File dir = new File(DIRECTORY);
         FileUtils.deleteTree(dir);
@@ -62,6 +53,12 @@ public class TestDataSourceComponent extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.runtime.datasource");
     }
 
+    @Override
+    public void tearDown() throws Exception {
+        super.tearDown();
+       NamingContextFactory.revertSetAsInitial();
+    }
+    
     public void testJNDIName() throws Exception {
         assertEquals("java:comp/env/jdbc/foo",
                 DataSourceHelper.getDataSourceJNDIName("foo"));
@@ -86,10 +83,14 @@ public class TestDataSourceComponent extends NXRuntimeTestCase {
     }
 
     public void testNonXA() throws Exception {
-        initJTA();
-        deployContrib("org.nuxeo.runtime.datasource.tests",
-                "OSGI-INF/datasource-contrib.xml");
-        checkDataSourceOk();
+        NuxeoContainer.install();
+        try {
+            deployContrib("org.nuxeo.runtime.datasource.tests",
+                    "OSGI-INF/datasource-contrib.xml");
+            checkDataSourceOk();
+        } finally {
+            NuxeoContainer.uninstall();
+        }
     }
 
     public void testXANoTM() throws Exception {
@@ -104,14 +105,18 @@ public class TestDataSourceComponent extends NXRuntimeTestCase {
     }
 
     public void testXA() throws Exception {
-        initJTA();
-        deployContrib("org.nuxeo.runtime.datasource.tests",
-                "OSGI-INF/xadatasource-contrib.xml");
-        TransactionHelper.startTransaction();
+        NuxeoContainer.install();
         try {
-            checkDataSourceOk();
+            deployContrib("org.nuxeo.runtime.datasource.tests",
+                    "OSGI-INF/xadatasource-contrib.xml");
+            TransactionHelper.startTransaction();
+            try {
+                checkDataSourceOk();
+            } finally {
+                TransactionHelper.commitOrRollbackTransaction();
+            }
         } finally {
-            TransactionHelper.commitOrRollbackTransaction();
+            NuxeoContainer.uninstall();
         }
     }
 
