@@ -93,7 +93,6 @@
     <module>nuxeo-features</module>
     <module>nuxeo-theme</module>
     <module>nuxeo-webengine</module>
-    <!-- NXP-5660 - temporary rollback because of Hudson issue -->
     <module>nuxeo-dm</module>
     <module>nuxeo-gwt</module>
   </modules>
@@ -120,7 +119,7 @@
     <!-- should use same property name as JBoss to ease upgrades -->
     <jboss.ejb.version>3.0-RC8</jboss.ejb.version>
     <javax.ejb.version>3.0-RC8</javax.ejb.version>
-    <nuxeo.distribution.tools.version>1.9.3</nuxeo.distribution.tools.version>
+    <nuxeo.distribution.tools.version>1.10</nuxeo.distribution.tools.version>
     <!-- compliance property since removal of maven-nuxeo-plugin execution -->
     <eclipseVersion>${project.version}</eclipseVersion>
   </properties>
@@ -131,14 +130,12 @@
         <groupId>org.nuxeo.build</groupId>
         <artifactId>nuxeo-distribution-tools</artifactId>
         <version>${nuxeo.distribution.tools.version}</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.nuxeo</groupId>
         <artifactId>nuxeo-ftest</artifactId>
         <version>1.4</version>
         <type>zip</type>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>xom</groupId>
@@ -155,67 +152,56 @@
         <groupId>javax.ejb</groupId>
         <artifactId>ejb-api</artifactId>
         <version>3.0</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>javax.annotation</groupId>
         <artifactId>jsr250-api</artifactId>
         <version>1.0</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>javax.ejb</groupId>
         <artifactId>ejb</artifactId>
         <version>${javax.ejb.version}</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>javax.el</groupId>
         <artifactId>el-api</artifactId>
         <version>unknown</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>javax.el</groupId>
         <artifactId>el-ri</artifactId>
         <version>unknown</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>javax.faces</groupId>
         <artifactId>jsf-api</artifactId>
         <version>1.2_12</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>javax.faces</groupId>
         <artifactId>jsf-impl</artifactId>
         <version>1.2_12</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>javax.jms</groupId>
         <artifactId>jms</artifactId>
         <version>1.1</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>javax.jws</groupId>
         <artifactId>jsr181</artifactId>
         <version>1.0</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>javax.mail</groupId>
         <artifactId>mail</artifactId>
         <version>1.4</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>javax.persistence</groupId>
         <artifactId>persistence</artifactId>
         <version>3.0</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>javax.persistence</groupId>
@@ -226,26 +212,22 @@
         <groupId>javax.servlet.jsp</groupId>
         <artifactId>jsp-api</artifactId>
         <version>2.1</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>javax.servlet</groupId>
         <artifactId>jstl</artifactId>
         <version>1.1.2</version>
-        <scope>provided</scope>
       </dependency>
       <!-- Jetty package uses 2.5 -->
       <dependency>
         <groupId>javax.servlet</groupId>
         <artifactId>servlet-api</artifactId>
         <version>2.4</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>javax.transaction</groupId>
         <artifactId>jta</artifactId>
         <version>1.1</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>javax.script</groupId>
@@ -258,32 +240,27 @@
         <groupId>commons-collections</groupId>
         <artifactId>commons-collections</artifactId>
         <version>3.1</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>commons-fileupload</groupId>
         <artifactId>commons-fileupload</artifactId>
         <version>1.2.2</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>commons-io</groupId>
         <artifactId>commons-io</artifactId>
         <version>1.4</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>commons-lang</groupId>
         <artifactId>commons-lang</artifactId>
         <version>2.3</version>
-        <scope>provided</scope>
       </dependency>
       <!-- used in jboss patch -->
       <dependency>
         <groupId>commons-beanutils</groupId>
         <artifactId>commons-beanutils</artifactId>
         <version>1.6</version>
-        <scope>provided</scope>
         <exclusions>
           <exclusion>
             <groupId>commons-collections</groupId>
@@ -300,33 +277,28 @@
         <groupId>commons-digester</groupId>
         <artifactId>commons-digester</artifactId>
         <version>1.8</version>
-        <scope>provided</scope>
       </dependency>
       <!-- used in jboss patch -->
       <dependency>
         <groupId>commons-el</groupId>
         <artifactId>commons-el</artifactId>
         <version>1.0</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>commons-logging</groupId>
         <artifactId>commons-logging</artifactId>
         <version>1.1</version>
-        <scope>provided</scope>
       </dependency>
       <!-- be careful using this dependency as it breaks unit tests logging -->
       <dependency>
         <groupId>commons-logging</groupId>
         <artifactId>commons-logging-api</artifactId>
         <version>1.1</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>commons-codec</groupId>
         <artifactId>commons-codec</artifactId>
         <version>1.4</version>
-        <scope>provided</scope>
         <!-- JBoss 4.2.3 provides 1.3 actually -->
         <!-- dependency added by hand in final assemblies -->
       </dependency>
@@ -334,7 +306,6 @@
         <groupId>commons-dbcp</groupId>
         <artifactId>commons-dbcp</artifactId>
         <version>1.3-RC1</version>
-        <scope>provided</scope>
       </dependency>
 
       <!-- apache -->
@@ -342,7 +313,6 @@
         <groupId>org.apache.derby</groupId>
         <artifactId>derby</artifactId>
         <version>10.5.3.0_1</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.apache.derby</groupId>
@@ -354,25 +324,21 @@
         <groupId>org.apache.lucene</groupId>
         <artifactId>lucene-core</artifactId>
         <version>2.3.2</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.apache.lucene</groupId>
         <artifactId>lucene-analyzers</artifactId>
         <version>2.3.2</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.apache.directory.shared</groupId>
         <artifactId>shared-asn1</artifactId>
         <version>${apachedshared.version}</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.apache.directory.shared</groupId>
         <artifactId>shared-ldap-constants</artifactId>
         <version>${apachedshared.version}</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.apache.poi</groupId>
@@ -414,42 +380,35 @@
         <groupId>org.apache.directory.shared</groupId>
         <artifactId>shared-ldap</artifactId>
         <version>${apachedshared.version}</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.apache.directory.server</groupId>
         <artifactId>apacheds-protocol-shared</artifactId>
         <version>${apacheds.version}</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.apache.directory.server</groupId>
         <artifactId>apacheds-core</artifactId>
         <version>${apacheds.version}</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.apache.directory.server</groupId>
         <artifactId>apacheds-core-shared</artifactId>
         <version>${apacheds.version}</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.apache.directory.server</groupId>
         <artifactId>apacheds-bootstrap-partition</artifactId>
         <version>${apacheds.version}</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>xerces</groupId>
         <artifactId>xmlParserAPIs</artifactId>
-        <scope>provided</scope>
         <version>2.6.2</version>
       </dependency>
       <dependency>
         <groupId>xerces</groupId>
         <artifactId>xercesImpl</artifactId>
-        <scope>provided</scope>
         <version>2.9.1</version>
         <exclusions>
           <!-- exclude bad versions 1.O.b2 -->
@@ -462,7 +421,6 @@
       <dependency>
         <groupId>xml-apis</groupId>
         <artifactId>xml-apis</artifactId>
-        <scope>provided</scope>
         <version>1.3.04</version>
       </dependency>
       <dependency>
@@ -546,13 +504,11 @@
         <groupId>org.jboss.deployers</groupId>
         <artifactId>jboss-deployers-vfs-spi</artifactId>
         <version>${version.org.jboss.deployers}</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.jboss</groupId>
         <artifactId>jboss-vfs</artifactId>
         <version>${version.org.jboss.vfs}</version>
-        <scope>provided</scope>
         <exclusions>
           <exclusion>
             <artifactId>jboss-common-core</artifactId>
@@ -564,68 +520,57 @@
         <groupId>org.jboss.javaee</groupId>
         <artifactId>jboss-ejb-api</artifactId>
         <version>${version.org.jboss.cache.pojo}</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.jboss.microcontainer</groupId>
         <artifactId>jboss-dependency</artifactId>
         <version>${version.org.jboss.microcontainer}</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.jboss.deployers</groupId>
         <artifactId>jboss-deployers-spi</artifactId>
         <version>${version.org.jboss.deployers}</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.jboss.deployers</groupId>
         <artifactId>jboss-deployers-structure-spi</artifactId>
         <version>${version.org.jboss.deployers}</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.jboss.deployers</groupId>
         <artifactId>jboss-deployers-vfs</artifactId>
         <version>${version.org.jboss.deployers}</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.jboss.microcontainer</groupId>
         <artifactId>jboss-kernel</artifactId>
         <version>${version.org.jboss.microcontainer}</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.jboss.deployers</groupId>
         <artifactId>jboss-deployers-core-spi</artifactId>
         <version>${version.org.jboss.deployers}</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.jboss.jbossas</groupId>
         <artifactId>jboss-as-j2se</artifactId>
         <version>${version.org.jboss.integration}</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.jboss.jbossas</groupId>
         <artifactId>jboss-as-system-jmx</artifactId>
         <version>${version.org.jboss.integration}</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.jboss.jbossas</groupId>
         <artifactId>jboss-as-server</artifactId>
         <version>${version.org.jboss.integration}</version>
-        <scope>provided</scope>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.jboss.jbossas</groupId>
         <artifactId>jboss-as-ejb3</artifactId>
         <version>${version.org.jboss.integration}</version>
-        <scope>provided</scope>
       </dependency>
 
       <dependency>
@@ -648,7 +593,16 @@
         <groupId>org.jboss.ejb3</groupId>
         <artifactId>jboss-ejb3-ext-api</artifactId>
         <version>1.0.0</version>
-        <scope>provided</scope>
+        <exclusions>
+          <exclusion>
+            <groupId>org.jboss.javaee</groupId>
+            <artifactId>jboss-ejb-api</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.jboss.metadata</groupId>
+            <artifactId>jboss-metadata</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.jboss.remoting</groupId>
@@ -659,31 +613,26 @@
         <groupId>javassist</groupId>
         <artifactId>javassist</artifactId>
         <version>3.9.0.GA</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.jboss.seam</groupId>
         <artifactId>jboss-seam</artifactId>
         <version>2.1.0.SP1</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.jboss.seam</groupId>
         <artifactId>jboss-seam-remoting</artifactId>
         <version>2.1.0.SP1</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.jboss.seam</groupId>
         <artifactId>jboss-seam-ui</artifactId>
         <version>2.1.0.SP1</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.jboss.seam</groupId>
         <artifactId>jboss-seam-mail</artifactId>
         <version>2.1.0.SP1</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.jboss.seam</groupId>
@@ -715,49 +664,41 @@
         <groupId>org.jboss.seam</groupId>
         <artifactId>jboss-seam-debug</artifactId>
         <version>2.1.0.SP1</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.jboss.el</groupId>
         <artifactId>jboss-el</artifactId>
         <version>1.0_02.CR2</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>jboss</groupId>
         <artifactId>jboss-serialization</artifactId>
         <version>1.0.3.GA</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.jboss.jbossas</groupId>
         <artifactId>jboss-as-system</artifactId>
         <version>5.1.0.GA</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.jboss.security</groupId>
         <artifactId>jboss-security-spi</artifactId>
         <version>2.0.3.SP1</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.jboss.security</groupId>
         <artifactId>jbosssx</artifactId>
         <version>2.0.3.SP1</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.jboss.security</groupId>
         <artifactId>jbosssx-client</artifactId>
         <version>2.0.3.SP1</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.jboss.jbossas</groupId>
         <artifactId>jboss-as-security</artifactId>
         <version>${version.org.jboss.integration}</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.jboss.jbossas</groupId>
@@ -768,25 +709,21 @@
         <groupId>jboss</groupId>
         <artifactId>jgroups</artifactId>
         <version>4.2.2.GA</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.jboss.naming</groupId>
         <artifactId>jnp-client</artifactId>
         <version>5.0.3.GA</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.jboss.logging</groupId>
         <artifactId>jboss-logging-spi</artifactId>
         <version>2.1.0.GA</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.jboss</groupId>
         <artifactId>jboss-common-core</artifactId>
         <version>2.2.14.GA</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.jboss</groupId>
@@ -806,7 +743,6 @@
         <artifactId>jboss-as-varia</artifactId>
         <version>5.1.0.GA</version>
         <classifier>logging-monitor</classifier>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.jboss.jbossas</groupId>
@@ -820,7 +756,6 @@
         <groupId>org.mortbay.jetty</groupId>
         <artifactId>jetty</artifactId>
         <version>${jetty.mortbay.version}</version>
-        <scope>provided</scope>
         <exclusions>
           <exclusion>
             <groupId>org.mortbay.jetty</groupId>
@@ -832,62 +767,58 @@
         <groupId>org.mortbay.jetty</groupId>
         <artifactId>servlet-api-2.5</artifactId>
         <version>${jetty.mortbay.version}</version>
-        <scope>provided</scope>
+        <exclusions>
+          <exclusion>
+            <groupId>org.mortbay.jetty</groupId>
+            <artifactId>servlet-api-2.5</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.mortbay.jetty</groupId>
         <artifactId>jetty-plus</artifactId>
         <version>${jetty.mortbay.version}</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.mortbay.jetty</groupId>
         <artifactId>jetty-naming</artifactId>
         <version>${jetty.mortbay.version}</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.mortbay.jetty</groupId>
         <artifactId>jetty-annotations</artifactId>
         <version>${jetty.mortbay.version}</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.mortbay.jetty</groupId>
         <artifactId>jetty-util</artifactId>
         <version>${jetty.mortbay.version}</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.mortbay.jetty</groupId>
         <artifactId>jsp-api-2.1</artifactId>
         <version>6.1.6</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.mortbay.jetty</groupId>
         <artifactId>jsp-2.1</artifactId>
         <version>6.1.6</version>
-        <scope>provided</scope>
       </dependency>
 
       <dependency>
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-core</artifactId>
         <version>3.3.2.GA</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-annotations</artifactId>
         <version>3.4.0.GA</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-entitymanager</artifactId>
         <version>3.4.0.GA</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.hibernate</groupId>
@@ -903,19 +834,16 @@
       <dependency>
         <groupId>org.richfaces.framework</groupId>
         <artifactId>richfaces-api</artifactId>
-        <scope>provided</scope>
         <version>3.3.1.GA</version>
       </dependency>
       <dependency>
         <groupId>org.richfaces.framework</groupId>
         <artifactId>richfaces-impl</artifactId>
-        <scope>provided</scope>
         <version>3.3.1.GA-NX2</version>
       </dependency>
       <dependency>
         <groupId>org.richfaces.ui</groupId>
         <artifactId>richfaces-ui</artifactId>
-        <scope>provided</scope>
         <version>3.3.1.GA-NX</version>
       </dependency>
 
@@ -924,69 +852,58 @@
         <groupId>org.openoffice</groupId>
         <artifactId>juh</artifactId>
         <version>3.1.0</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.openoffice</groupId>
         <artifactId>jurt</artifactId>
         <version>3.1.0</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.openoffice</groupId>
         <artifactId>ridl</artifactId>
         <version>3.1.0</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.openoffice</groupId>
         <artifactId>unoil</artifactId>
         <version>3.1.0</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.artofsolving.jodconverter</groupId>
         <artifactId>jodconverter-core</artifactId>
         <version>3.0-NX3</version>
-        <scope>provided</scope>
       </dependency>
       <!-- others -->
       <dependency>
         <groupId>com.h2database</groupId>
         <artifactId>h2</artifactId>
         <version>1.1.114-nx</version>
-        <scope>provided</scope>
       </dependency>
 
       <dependency>
         <groupId>org.milyn</groupId>
         <artifactId>milyn-magger</artifactId>
         <version>1.3.1</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.milyn</groupId>
         <artifactId>milyn-commons</artifactId>
         <version>1.3.1</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.milyn</groupId>
         <artifactId>flute</artifactId>
         <version>1.3</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.w3c</groupId>
         <artifactId>sac</artifactId>
         <version>1.3</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>com.sun.facelets</groupId>
         <artifactId>jsf-facelets</artifactId>
         <version>1.1.15.B1</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>com.sun.xml</groupId>
@@ -1012,13 +929,11 @@
         <groupId>org.freemarker</groupId>
         <artifactId>freemarker</artifactId>
         <version>2.3.11</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>concurrent</groupId>
         <artifactId>concurrent</artifactId>
         <version>1.3.4</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>backport-util-concurrent</groupId>
@@ -1029,13 +944,11 @@
         <groupId>hsqldb</groupId>
         <artifactId>hsqldb</artifactId>
         <version>1.8.0.1</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>log4j</groupId>
         <artifactId>log4j</artifactId>
         <version>1.2.16</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>ch.qos.logback</groupId>
@@ -1068,38 +981,32 @@
         <groupId>opensymphony</groupId>
         <artifactId>quartz-all</artifactId>
         <version>1.5.2</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
         <version>1.6.0</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-log4j12</artifactId>
         <version>1.6.0</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>jcl-over-slf4j</artifactId>
         <version>1.6.0</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>net.sf.ehcache</groupId>
         <artifactId>ehcache</artifactId>
         <version>1.5.0</version>
-        <scope>provided</scope>
       </dependency>
       <!-- deprecated - you must use jackson -->
       <dependency>
         <groupId>net.sf.json-lib</groupId>
         <artifactId>json-lib</artifactId>
         <version>2.2.1</version>
-        <scope>provided</scope>
         <classifier>jdk15</classifier>
       </dependency>
       <dependency>
@@ -1116,25 +1023,21 @@
         <groupId>net.sf.ezmorph</groupId>
         <artifactId>ezmorph</artifactId>
         <version>1.0.4</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>net.sf.opencsv</groupId>
         <artifactId>opencsv</artifactId>
         <version>2.1</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-utils</artifactId>
         <version>1.5.6</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.osgi</groupId>
         <artifactId>osgi-core</artifactId>
         <version>4.1</version>
-        <scope>provided</scope>
       </dependency>
       <!-- OSGI compendium - do not change to org.osgi group since it is not containing
         all needed classes -->
@@ -1142,19 +1045,16 @@
         <groupId>org.osgi</groupId>
         <artifactId>org.osgi.compendium</artifactId>
         <version>4.2.0</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>oro</groupId>
         <artifactId>oro</artifactId>
         <version>2.0.8</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>dom4j</groupId>
         <artifactId>dom4j</artifactId>
         <version>1.6.1</version>
-        <scope>provided</scope>
         <exclusions>
           <!-- exclude bad versions 1.O.b2 -->
           <exclusion>
@@ -1173,43 +1073,36 @@
         <groupId>bsh</groupId>
         <artifactId>bsh</artifactId>
         <version>2.0b1</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>taglibs</groupId>
         <artifactId>standard</artifactId>
         <version>1.1.2</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>antlr</groupId>
         <artifactId>antlr</artifactId>
         <version>2.7.7</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>postgresql</groupId>
         <artifactId>postgresql</artifactId>
         <version>9.0-801.jdbc4</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>mysql</groupId>
         <artifactId>mysql-connector-java</artifactId>
         <version>5.1.6</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>net.sourceforge.jtds</groupId>
         <artifactId>jtds</artifactId>
         <version>1.2.4</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>jmock</groupId>
         <artifactId>jmock</artifactId>
         <version>1.2.0</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.apache.pdfbox</groupId>
@@ -1240,25 +1133,21 @@
         <groupId>com.thoughtworks.xstream</groupId>
         <artifactId>xstream</artifactId>
         <version>1.3.1</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>cglib</groupId>
         <artifactId>cglib-nodep</artifactId>
         <version>2.1_3</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>commons-jexl</groupId>
         <artifactId>commons-jexl</artifactId>
         <version>1.1</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.codehaus.groovy</groupId>
         <artifactId>groovy-all</artifactId>
         <version>1.5.7</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.mvel</groupId>
@@ -1270,7 +1159,6 @@
         <groupId>javax.script</groupId>
         <artifactId>groovy-engine</artifactId>
         <version>1.0</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>javax.script</groupId>
@@ -1322,19 +1210,16 @@
         <groupId>javax.ressource</groupId>
         <artifactId>jca-api</artifactId>
         <version>1.5</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>javax.resource</groupId>
         <artifactId>connector-api</artifactId>
         <version>1.5</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>javax.activation</groupId>
         <artifactId>activation</artifactId>
         <version>1.1</version>
-        <scope>provided</scope>
       </dependency>
 
       <!-- ImageJ -->
@@ -1387,7 +1272,6 @@
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-jaxrs</artifactId>
         <version>1.0.2.GA-nx</version>
-        <scope>provided</scope>
       </dependency>
 
       <dependency>
@@ -1421,31 +1305,26 @@
         <groupId>org.apache.geronimo.components</groupId>
         <artifactId>geronimo-connector</artifactId>
         <version>2.1.3-NX1</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.apache.geronimo.components</groupId>
         <artifactId>geronimo-transaction</artifactId>
         <version>2.1.3</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.apache.geronimo.specs</groupId>
         <artifactId>geronimo-jta_1.1_spec</artifactId>
         <version>1.1.1</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.apache.geronimo.specs</groupId>
         <artifactId>geronimo-j2ee-connector_1.5_spec</artifactId>
         <version>2.0.0</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>com.google.gwt</groupId>
         <artifactId>gwt-user</artifactId>
         <version>${gwt.version}</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>com.google.gwt</groupId>
@@ -1535,7 +1414,6 @@
         <groupId>apache-httpclient</groupId>
         <artifactId>commons-httpclient</artifactId>
         <version>3.1</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
@@ -1703,14 +1581,12 @@
         <groupId>jotm</groupId>
         <artifactId>jotm</artifactId>
         <version>2.0.10</version>
-        <scope>provided</scope>
       </dependency>
       <!-- org.jbpm.jbpm3:jbpm-jpdl:jar:3.3.0.GA uses ant 1.7.0 -->
       <dependency>
         <groupId>org.apache.ant</groupId>
         <artifactId>ant</artifactId>
         <version>1.7.0</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.eclipse.jdt</groupId>
@@ -1904,7 +1780,6 @@
         <groupId>org.apache.tomcat</groupId>
         <artifactId>catalina</artifactId>
         <version>6.0.20</version>
-        <scope>provided</scope>
         <exclusions>
           <exclusion>
             <groupId>org.apache.tomcat</groupId>
@@ -2091,6 +1966,12 @@
         <groupId>dnsjava</groupId>
         <artifactId>dnsjava</artifactId>
         <version>2.0.6</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.glassfish.embedded</groupId>
+        <artifactId>glassfish-embedded-all</artifactId>
+        <version>3.0-b38-nxp-web-210</version>
       </dependency>
 
     </dependencies>
@@ -2624,39 +2505,6 @@
   </reporting>
 
   <profiles>
-    <!-- NXP-5660 - temporary rollback because of Hudson issue <profile> <id>no-osgi</id>
-      <activation> <file> <exists>pom.xml</exists> </file> </activation> <modules> <module>nuxeo-dm</module>
-      <module>nuxeo-gwt</module> </modules> </profile> -->
-    <profile>
-      <id>pde</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-eclipse-plugin</artifactId>
-            <version>2.9-NXP-4</version>
-            <configuration>
-              <additionalProjectnatures>
-                <projectnature>
-                  org.nuxeo.ide.builders.BundleNature
-                </projectnature>
-              </additionalProjectnatures>
-              <additionalBuildcommands>
-                <buildcommand>
-                  org.nuxeo.ide.builders.BundleBuilder
-                </buildcommand>
-              </additionalBuildcommands>
-              <downloadSources>false</downloadSources>
-              <pde>true</pde>
-              <osgideps>true</osgideps>
-              <notests>true</notests>
-              <osgify>false</osgify>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-
     <profile>
       <id>release</id>
       <activation>
