@@ -1100,6 +1100,11 @@
         <version>1.2.4</version>
       </dependency>
       <dependency>
+        <groupId>com.oracle</groupId>
+        <artifactId>ojdbc14</artifactId>
+        <version>10.2.0.3.0</version>
+      </dependency>
+      <dependency>
         <groupId>jmock</groupId>
         <artifactId>jmock</artifactId>
         <version>1.2.0</version>
@@ -1581,6 +1586,12 @@
         <groupId>jotm</groupId>
         <artifactId>jotm</artifactId>
         <version>2.0.10</version>
+        <exclusions>
+          <exclusion>
+            <groupId>javax.resource</groupId>
+            <artifactId>connector</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <!-- org.jbpm.jbpm3:jbpm-jpdl:jar:3.3.0.GA uses ant 1.7.0 -->
       <dependency>
