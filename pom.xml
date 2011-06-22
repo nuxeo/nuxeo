@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
@@ -29,7 +28,6 @@
   <modules>
     <module>nuxeo-platform-ui-api</module>
     <module>nuxeo-platform-ui-web</module>
-    <!-- NXP-5660 - temporary rollback because of Hudson issue -->
     <module>nuxeo-platform-ui-web-test</module>
     <module>nuxeo-platform-ui-web-compat</module>
     <module>nuxeo-platform-forms-layout-client</module>
@@ -38,14 +36,6 @@
     <module>nuxeo-theme-jsf</module>
     <module>nuxeo-platform-contentview-jsf</module>
   </modules>
-
-  <profiles>
-    <!-- NXP-5660 - temporary rollback because of Hudson issue <profile> <id>no-osgi</id> 
-      <activation> <file><exists>pom.xml</exists></file> </activation> <modules> <module>nuxeo-platform-ui-web-test</module> 
-      <module>nuxeo-platform-ui-web-compat</module> <module>nuxeo-platform-forms-layout-client</module> 
-      <module>nuxeo-platform-webapp-base</module> <module>nuxeo-theme-jsf</module> </modules> 
-      </profile> -->
-  </profiles>
 
   <dependencyManagement>
     <dependencies>
