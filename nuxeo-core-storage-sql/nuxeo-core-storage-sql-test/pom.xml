@@ -32,7 +32,7 @@
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime-test</artifactId>
-      <scope>compile</scope> <!-- override -->
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>jmock</groupId>
@@ -56,7 +56,7 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <scope>compile</scope> <!-- override -->
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
@@ -126,15 +126,13 @@
       <scope>compile</scope>
     </dependency>
 
-
-
     <dependency>
       <groupId>com.h2database</groupId>
       <artifactId>h2</artifactId>
       <scope>compile</scope>
     </dependency>
+    <!-- Needed by H2 fulltext -->
     <dependency>
-      <!-- Needed by H2 fulltext -->
       <groupId>org.apache.lucene</groupId>
       <artifactId>lucene-core</artifactId>
       <scope>compile</scope>
@@ -155,8 +153,8 @@
       <artifactId>nuxeo-core-convert-plugins</artifactId>
       <scope>test</scope>
     </dependency>
+    <!-- needed for convert plugins -->
     <dependency>
-      <!-- needed for convert plugins -->
       <groupId>javax.mail</groupId>
       <artifactId>mail</artifactId>
       <scope>test</scope>
@@ -176,17 +174,18 @@
     <dependency>
       <groupId>mysql</groupId>
       <artifactId>mysql-connector-java</artifactId>
-      <version>5.1.6</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>net.sourceforge.jtds</groupId>
       <artifactId>jtds</artifactId>
-      <version>1.2.2</version>
       <scope>runtime</scope>
     </dependency>
-    <!-- <dependency> <groupId>com.oracle</groupId> <artifactId>ojdbc14</artifactId>
-      <version>10.2.0.3.0</version> <scope>runtime</scope> </dependency> -->
+    <!-- <dependency> -->
+    <!-- <groupId>com.oracle</groupId> -->
+    <!-- <artifactId>ojdbc14</artifactId> -->
+    <!-- <scope>runtime</scope> -->
+    <!-- </dependency> -->
   </dependencies>
 
   <profiles>
