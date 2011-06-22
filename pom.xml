@@ -2506,36 +2506,6 @@
 
   <profiles>
     <profile>
-      <id>pde</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-eclipse-plugin</artifactId>
-            <version>2.9-NXP-4</version>
-            <configuration>
-              <additionalProjectnatures>
-                <projectnature>
-                  org.nuxeo.ide.builders.BundleNature
-                </projectnature>
-              </additionalProjectnatures>
-              <additionalBuildcommands>
-                <buildcommand>
-                  org.nuxeo.ide.builders.BundleBuilder
-                </buildcommand>
-              </additionalBuildcommands>
-              <downloadSources>false</downloadSources>
-              <pde>true</pde>
-              <osgideps>true</osgideps>
-              <notests>true</notests>
-              <osgify>false</osgify>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-
-    <profile>
       <id>release</id>
       <activation>
         <activeByDefault>false</activeByDefault>
