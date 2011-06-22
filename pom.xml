@@ -31,14 +31,22 @@
 
   <profiles>
     <profile>
+      <id>nuxeo-coreserver</id>
+      <modules>
+        <module>nuxeo-distribution-coreserver</module>
+      </modules>
+    </profile>
+    <profile>
       <id>nuxeo-cap</id>
       <modules>
+        <module>nuxeo-distribution-coreserver</module>
         <module>nuxeo-distribution-cap</module>
       </modules>
     </profile>
     <profile>
       <id>nuxeo-dm</id>
       <modules>
+        <module>nuxeo-distribution-coreserver</module>
         <module>nuxeo-distribution-cap</module>
         <module>nuxeo-distribution-dm</module>
       </modules>
@@ -47,6 +55,7 @@
       <!-- Build JBoss distributions -->
       <id>jboss</id>
       <modules>
+        <module>nuxeo-distribution-coreserver</module>
         <module>nuxeo-distribution-cap</module>
         <module>nuxeo-distribution-dm</module>
         <module>nuxeo-distribution-jboss</module>
@@ -55,6 +64,7 @@
     <profile>
       <id>tomcat</id>
       <modules>
+        <module>nuxeo-distribution-coreserver</module>
         <module>nuxeo-distribution-cap</module>
         <module>nuxeo-distribution-dm</module>
         <module>nuxeo-distribution-tomcat</module>
@@ -67,7 +77,7 @@
         <activeByDefault>true</activeByDefault>
       </activation>
       <modules>
-        <module>nuxeo-distribution-base</module>
+        <module>nuxeo-distribution-coreserver</module>
         <module>nuxeo-distribution-cap</module>
         <module>nuxeo-distribution-dm</module>
         <module>nuxeo-distribution-jboss</module>
@@ -77,6 +87,7 @@
     <profile>
       <id>itest</id>
       <modules>
+        <module>nuxeo-distribution-coreserver</module>
         <module>nuxeo-distribution-cap</module>
         <module>nuxeo-distribution-dm</module>
         <module>nuxeo-distribution-tomcat</module>
@@ -87,25 +98,38 @@
 
   <dependencyManagement>
     <dependencies>
+
+      <!-- distribution modules -->
+
       <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-webapp</artifactId>
-        <version>${nuxeo.dm.version}</version>
+        <groupId>org.nuxeo.ecm.distribution</groupId>
+        <artifactId>nuxeo-distribution-coreserver</artifactId>
+        <version>${nuxeo.distribution.version}</version>
+        <type>zip</type>
       </dependency>
       <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-webapp-core</artifactId>
-        <version>${nuxeo.dm.version}</version>
+        <groupId>org.nuxeo.ecm.distribution</groupId>
+        <artifactId>nuxeo-distribution-coreserver</artifactId>
+        <version>${nuxeo.distribution.version}</version>
+        <type>pom</type>
       </dependency>
       <dependency>
-        <groupId>org.nuxeo.ecm.core</groupId>
-        <artifactId>nuxeo-opencmis-impl</artifactId>
-        <version>${nuxeo.opencmis.version}</version>
+        <groupId>org.nuxeo.ecm.distribution</groupId>
+        <artifactId>nuxeo-distribution-cap</artifactId>
+        <version>${nuxeo.distribution.version}</version>
+        <type>pom</type>
       </dependency>
       <dependency>
-        <groupId>org.nuxeo.ecm.core</groupId>
-        <artifactId>nuxeo-opencmis-bindings</artifactId>
-        <version>${nuxeo.opencmis.version}</version>
+        <groupId>org.nuxeo.ecm.distribution</groupId>
+        <artifactId>nuxeo-distribution-cap</artifactId>
+        <version>${nuxeo.distribution.version}</version>
+        <type>zip</type>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.distribution</groupId>
+        <artifactId>nuxeo-distribution-cap-tests</artifactId>
+        <version>${nuxeo.distribution.version}</version>
+        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.distribution</groupId>
@@ -118,18 +142,6 @@
         <artifactId>nuxeo-distribution-dm</artifactId>
         <version>${nuxeo.distribution.version}</version>
         <type>zip</type>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-distribution-cap</artifactId>
-        <version>${nuxeo.features.version}</version>
-        <type>pom</type>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-distribution-cap-tests</artifactId>
-        <version>${nuxeo.distribution.version}</version>
-        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.distribution</groupId>
@@ -154,13 +166,6 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-distribution-tomcat</artifactId>
-        <version>${nuxeo.distribution.version}</version>
-        <type>zip</type>
-        <classifier>nuxeo-dm-cmis</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.distribution</groupId>
         <artifactId>nuxeo-distribution-resources</artifactId>
         <version>${nuxeo.distribution.version}</version>
         <type>zip</type>
@@ -177,6 +182,44 @@
         <artifactId>nuxeo-functional-tests</artifactId>
         <version>${nuxeo.distribution.version}</version>
         <scope>test</scope>
+      </dependency>
+
+      <!-- various features -->
+
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-forms-layout-export</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-admin-center-monitoring</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-admin-center-oauth-opensocial</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.core</groupId>
+        <artifactId>nuxeo-opencmis-impl</artifactId>
+        <version>${nuxeo.opencmis.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.core</groupId>
+        <artifactId>nuxeo-opencmis-bindings</artifactId>
+        <version>${nuxeo.opencmis.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.automation</groupId>
+        <artifactId>nuxeo-automation-core</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.automation</groupId>
+        <artifactId>nuxeo-automation-server</artifactId>
+        <version>${nuxeo.features.version}</version>
       </dependency>
 
       <!-- OpenSocial -->
@@ -328,6 +371,7 @@
         <version>${nuxeo.addons.version}</version>
       </dependency>
     </dependencies>
+
   </dependencyManagement>
 
   <scm>

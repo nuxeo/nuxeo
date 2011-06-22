@@ -8,7 +8,14 @@
 
   <target name="init" unless="init.done">
     <tstamp />
-    <condition property="build.ep">
+    <condition property="build.core">
+      <or>
+        <isset property="maven.profile.nuxeo-coreserver" />
+        <isset property="maven.profile.all" />
+        <isset property="maven.profile.all-distributions" />
+      </or>
+    </condition>
+    <condition property="build.cap">
       <or>
         <isset property="maven.profile.nuxeo-cap" />
         <isset property="maven.profile.all" />
@@ -30,6 +37,7 @@
 
   <target name="expand" unless="no.build">
     <artifact:nuxeo-expand />
+    <!-- <artifact:print output="${basedir}/dependency-tree.log" /> -->
   </target>
 
   <target name="build" depends="init" unless="no.build">
@@ -39,9 +47,9 @@
     <artifact:attach file="pom.xml"
                      target="${maven.project.groupId}:${maven.project.artifactId}"
                      type="pom" />
+    <antcall target="build-nuxeo-coreserver" />
     <antcall target="build-nuxeo-cap" />
     <antcall target="build-nuxeo-dm" />
-    <antcall target="build-nuxeo-coreserver" />
     <delete dir="${tomcat}" failonerror="false" />
   </target>
 
@@ -110,8 +118,68 @@
     </copy>
   </target>
 
+  <target name="build-nuxeo-coreserver"
+          if="build.core"
+          description="Build Tomcat distribution with Nuxeo CoreServer">
+    <property name="distribution.dir"
+              value="${outdir}/nuxeo-coreserver-${maven.project.version}-tomcat" />
+    <delete failonerror="false" dir="${distribution.dir}" />
+    <copy todir="${distribution.dir}">
+      <fileset dir="${tomcat}" />
+    </copy>
+    <chmod dir="${distribution.dir}/bin"
+           perm="ug+x"
+           includes="*.sh,*ctl,*.command" />
+
+    <!-- Nuxeo core server -->
+    <unzip dest="${distribution.dir}/nxserver">
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-coreserver:${nuxeo.distribution.version}:zip" />
+    </unzip>
+
+    <unzip dest="${distribution.dir}/templates" overwrite="true">
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${maven.project.version}:zip"
+                            classifier="templates-tomcat-coreserver" />
+    </unzip>
+
+    <!-- Nuxeo wizard -->
+    <copy tofile="${distribution.dir}/templates/nuxeo-wizard.war">
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-startup-wizard:${nuxeo.distribution.version}:war" />
+    </copy>
+
+    <antcall target="reorganize-libs">
+      <param name="distribution.dir" value="${distribution.dir}" />
+    </antcall>
+
+    <delete failonerror="false">
+      <fileset dir="${distribution.dir}/nxserver/bundles">
+        <include name="nuxeo-*ws*" />
+      </fileset>
+      <fileset dir="${distribution.dir}/templates/common/config">
+        <include name="commentService-config-bundle.xml" />
+        <include name="notification-config.xml" />
+        <include name="default-opensocial-config.xml" />
+        <include name="nxmail-*.xml" />
+      </fileset>
+    </delete>
+
+    <antcall target="set-distribution-properties">
+      <param name="distribution.properties.file"
+             value="${distribution.dir}/templates/common/config/distribution.properties" />
+      <param name="org.nuxeo.distribution.name" value="coreserver" />
+    </antcall>
+    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-coreserver.zip"
+         basedir="${outdir}"
+         includes="nuxeo-coreserver-${maven.project.version}-tomcat/**" />
+    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-coreserver.zip"
+                     target="${maven.project.groupId}:${maven.project.artifactId}"
+                     classifier="coreserver"
+                     type="zip" />
+
+
+  </target>
+
   <target name="build-nuxeo-cap"
-          if="build.ep"
+          if="build.cap"
           description="Build Tomcat distribution with Nuxeo CAP">
     <property name="distribution.dir"
               value="${outdir}/nuxeo-cap-${maven.project.version}-tomcat" />
@@ -215,108 +283,6 @@
                      type="zip" />
   </target>
 
-  <target name="build-nuxeo-coreserver"
-          if="build.dm"
-          description="Build Tomcat distribution with Nuxeo CoreServer">
-    <echo>Preparing Nuxeo Chemistry...</echo>
-    <!-- reuse nuxeo-dm build -->
-    <property name="distribution.dir"
-              value="${outdir}/nuxeo-coreserver-${maven.project.version}-tomcat" />
-    <copy todir="${distribution.dir}">
-      <fileset dir="${outdir}/nuxeo-dm-${maven.project.version}-tomcat" />
-    </copy>
-    <chmod dir="${distribution.dir}/bin"
-           perm="ug+x"
-           includes="*.sh,*ctl,*.command" />
-
-    <!-- Complementary templates for CoreServer -->
-    <unzip dest="${distribution.dir}/templates" overwrite="true">
-      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${maven.project.version}:zip"
-                            classifier="templates-tomcat-coreserver" />
-    </unzip>
-
-    <delete failonerror="false">
-      <fileset dir="${distribution.dir}/nxserver/bundles">
-        <include name="nuxeo-opensocial*" />
-        <include name="nuxeo-platform-annotations*" />
-        <include name="nuxeo-platform-audit*" />
-        <exclude name="nuxeo-platform-audit-api*" />
-        <exclude name="nuxeo-platform-audit-core*" />
-        <exclude name="nuxeo-platform-audit-ws*" />
-        <include name="nuxeo-platform-comment*" />
-        <include name="nuxeo-platform-forum*" />
-        <include name="nuxeo-platform-imaging*" />
-        <include name="nuxeo-platform-jbpm*" />
-        <include name="nuxeo-platform-publisher*" />
-        <include name="nuxeo-platform-tag*" />
-        <include name="nuxeo-platform-userworkspace*" />
-        <include name="nuxeo-platform-virtualnavigation*" />
-        <include name="nuxeo-spaces*" />
-        <include name="nuxeo-theme-*" />
-        <include name="nuxeo-webengine-blogs*" />
-        <include name="nuxeo-platform-${maven.project.version}*" />
-        <include name="nuxeo-platform-actions-core*" />
-        <include name="nuxeo-platform-forms-layout*" />
-        <include name="nuxeo-platform-mail*" />
-        <include name="nuxeo-platform-notification*" />
-        <include name="nuxeo-platform-placeful*" />
-        <include name="nuxeo-platform-preview*" />
-        <include name="nuxeo-platform-syndication*" />
-        <include name="nuxeo-platform-ui-*" />
-        <exclude name="nuxeo-platform-ui-api*" />
-        <include name="nuxeo-platform-uidgen*" />
-        <include name="nuxeo-platform-url*" />
-        <exclude name="nuxeo-platform-url-api*" />
-        <include name="nuxeo-platform-webapp*" />
-        <include name="nuxeo-webengine-*" />
-        <exclude name="nuxeo-webengine-jaxrs*" />
-        <exclude name="nuxeo-webengine-core*" />
-        <exclude name="nuxeo-webengine-base*" />
-        <exclude name="nuxeo-webengine-admin*" />
-        <include name="nuxeo-platform-directory-web-*" />
-        <include name="nuxeo-platform-relations-web-*" />
-        <include name="nuxeo-platform-default-config-*" />
-        <include name="nuxeo-platform-io-client-*" />
-        <include name="nuxeo-platform-lang-*" />
-        <include name="nuxeo-webengine-*" />
-        <exclude name="nuxeo-webengine-core*" />
-        <exclude name="nuxeo-webengine-base*" />
-        <include name="nuxeo-platform-faceted*" />
-        <include name="nuxeo-connect-*" />
-        <include name="nuxeo-admin-*" />
-      </fileset>
-      <!--<fileset dir="${distribution.dir}/templates/common/META-INF/templates">
-        <include name="faces-config.xml" />
-        <include name="pages.xml" />
-        <include name="components.xml" />
-      </fileset>-->
-      <fileset dir="${distribution.dir}/templates/common/config">
-        <include name="commentService-config-bundle.xml" />
-        <include name="notification-config.xml" />
-        <include name="default-opensocial-config.xml" />
-      </fileset>
-
-      <!-- Remove unused third-party libraries to reduce total size -->
-      <fileset dir="${distribution.dir}/nxserver/lib">
-        <include name="ooxml-schemas*" />
-        <include name="richfaces*" />
-        <include name="gwt*" />
-      </fileset>
-    </delete>
-
-    <antcall target="set-distribution-properties">
-      <param name="distribution.properties.file"
-             value="${distribution.dir}/templates/common/config/distribution.properties" />
-      <param name="org.nuxeo.distribution.name" value="coreserver" />
-    </antcall>
-    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-coreserver.zip"
-         basedir="${outdir}"
-         includes="nuxeo-coreserver-${maven.project.version}-tomcat/**" />
-    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-coreserver.zip"
-                     target="${maven.project.groupId}:${maven.project.artifactId}"
-                     classifier="coreserver"
-                     type="zip" />
-  </target>
 
   <target name="reorganize-libs">
     <!-- Add Tomcat specific requirements -->
@@ -332,9 +298,6 @@
         <includes>
           <artifact groupId="!org.nuxeo*" />
         </includes>
-        <excludes>
-          <artifact artifactId="h2" />
-        </excludes>
       </artifact:set>
     </copy>
 
@@ -343,28 +306,12 @@
 
     <!-- remove libraries already provided by Tomcat or unneeded -->
     <delete>
-      <fileset dir="${distribution.dir}/nxserver/bundles">
-        <include name="nuxeo-runtime-jetty-*" />
-        <include name="nuxeo-platform-login-jboss*" />
-        <include name="nuxeo-platform-auth-web-jboss*" />
-        <include name="nuxeo*facade*" />
-      </fileset>
       <fileset dir="${distribution.dir}/nxserver/lib">
-        <include name="jboss-seam-debug*" />
-        <include name="jboss-system*" />
-        <include name="jbosssx*" />
-        <exclude name="jboss-common-core*" />
-        <include name="jboss-common*" />
-        <include name="jboss-jmx*" />
-        <include name="jboss-cache-jdk50*" />
-        <include name="jbossall-client*" />
-        <include name="core-*" />
         <!-- jetty is needed by vcs remote -->
         <!-- jetty-util is needed by jsp impl jar - which is referring jetty log classes -->
         <!-- jetty-naming has jndi properties conflicting with Tomcat -->
         <include name="jetty-naming*" />
-        <include name="jsp-api*" />
-        <include name="servlet-api-*" />
+        <include name="servlet-api*" />
         <include name="el-api*" />
         <include name="jsp-*" />
         <include name="catalina-*" />

@@ -20,7 +20,7 @@
     <!-- <artifact:print output="${basedir}/dependency-tree.log" /> -->
   </target>
 
-  <target name="build" depends="init" description="Build Nuxeo CAP">
+  <target name="build" depends="init" description="Build Nuxeo Core Server">
     <echo>Building default Nuxeo DM EAR</echo>
     <delete failonerror="false" dir="${nuxeo.ear}" />
     <mkdir dir="${nuxeo.ear}" />
@@ -61,7 +61,6 @@
     </copy>
     <!-- Remove duplicates -->
     <nx:rmdups dir="${nuxeo.ear}/lib" />
-
   </target>
 
 </project>
