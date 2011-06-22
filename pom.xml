@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
@@ -53,7 +52,6 @@
     <module>nuxeo-platform-web-common</module>
     <module>nuxeo-platform-url-api</module>
     <module>nuxeo-platform-url-core</module>
-    <!-- NXP-5660 - temporary rollback because of Hudson issue -->
     <module>nuxeo-platform-api-test</module>
     <module>nuxeo-platform-search-api</module>
     <module>nuxeo-platform-search-core</module>
@@ -80,22 +78,6 @@
     <module>nuxeo-platform-query-api</module>
     <module>nuxeo-platform-oauth</module>
   </modules>
-
-  <profiles>
-    <!-- NXP-5660 - temporary rollback because of Hudson issue <profile> <id>no-osgi</id>
-      <activation> <file> <exists>pom.xml</exists> </file> </activation> <modules> <module>nuxeo-platform-api-test</module>
-      <module>nuxeo-platform-search-api</module> <module>nuxeo-platform-search-core</module>
-      <module>nuxeo-platform-search-facade</module> <module>nuxeo-platform-search-backend-core</module>
-      <module>nuxeo-platform-search-test</module> <module>nuxeo-platform-filemanager-facade</module>
-      <module>nuxeo-platform-login-jboss</module> <module>nuxeo-platform-auth-web-jboss</module>
-      <module>nuxeo-platform-mimetype-facade</module> <module>nuxeo-platform-placeful-api</module>
-      <module>nuxeo-platform-placeful-core</module> <module>nuxeo-platform-placeful-facade</module>
-      <module>nuxeo-platform-types-facade</module>
-      <module>nuxeo-platform-uidgen-core</module> <module>nuxeo-platform-url-facade</module>
-      <module>nuxeo-platform-usermanager-facade</module> <module>nuxeo-platform-ws</module>
-      <module>nuxeo-platform-htmlsanitizer</module> <module>nuxeo-platform-test</module>
-      </modules> </profile> -->
-  </profiles>
 
   <dependencyManagement>
     <dependencies>
