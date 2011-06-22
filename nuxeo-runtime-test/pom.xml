@@ -1,5 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
@@ -12,7 +11,8 @@
   <groupId>org.nuxeo.runtime</groupId>
   <artifactId>nuxeo-runtime-test</artifactId>
   <name>Nuxeo Runtime Tests</name>
-  <description>Nuxeo Runtime: Nuxeo Runtime Tests.</description>
+  <description>Nuxeo Runtime: Nuxeo Runtime Tests. This module must only be used
+  with a test scope (except in [module]-test where you may use compile scope).</description>
 
   <build>
     <plugins>
@@ -52,14 +52,13 @@
       <artifactId>nuxeo-runtime-osgi</artifactId>
     </dependency>
 
-     <dependency>
+    <dependency>
       <groupId>org.javasimon</groupId>
       <artifactId>javasimon-core</artifactId>
       <scope>test</scope>
     </dependency>
 
-    <!-- Use of compile scope for external dependencies because this module must only be used
-      with a test scope (except in [module]-test where you may use compile scope)-->
+    <!-- Use of compile scope for external dependencies -->
     <dependency>
       <groupId>jmock</groupId>
       <artifactId>jmock</artifactId>
@@ -144,14 +143,12 @@
       <artifactId>concordion</artifactId>
     </dependency>
 
-     <!--  nuxeo-distribution tools is generating classloader pb - we disabled it for now -->
-     <!--
-     <dependency>
-        <groupId>org.nuxeo.build</groupId>
-        <artifactId>nuxeo-distribution-tools</artifactId>
-        <classifier>all</classifier>
-      </dependency>
-      -->
+    <!-- disabled: nuxeo-distribution tools is generating classloader issue -->
+    <!-- <dependency> -->
+    <!-- <groupId>org.nuxeo.build</groupId> -->
+    <!-- <artifactId>nuxeo-distribution-tools</artifactId> -->
+    <!-- <classifier>all</classifier> -->
+    <!-- </dependency> -->
 
     <dependency>
       <groupId>org.slf4j</groupId>
@@ -172,6 +169,16 @@
     <dependency>
       <groupId>jboss</groupId>
       <artifactId>jboss-serialization</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.logging</groupId>
+      <artifactId>jboss-logging-spi</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss</groupId>
+      <artifactId>jboss-common-core</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
