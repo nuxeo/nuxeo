@@ -4,7 +4,6 @@
   debug="false">
 
   <appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
-    <errorHandler class="org.jboss.logging.util.OnlyOnceErrorHandler" />
     <param name="Target" value="System.out" />
     <param name="Threshold" value="WARN" />
     
@@ -14,7 +13,6 @@
   </appender>
 
   <appender name="FILE" class="org.apache.log4j.FileAppender">
-    <errorHandler class="org.jboss.logging.util.OnlyOnceErrorHandler" />
     <param name="File" value="target/trace.log" />
     <param name="Append" value="false" />
     <layout class="org.apache.log4j.PatternLayout">
