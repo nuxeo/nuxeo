@@ -1,5 +1,5 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>nuxeo-platform-login-deputy</artifactId>
@@ -31,8 +31,8 @@
       <artifactId>nuxeo-platform-directory-api</artifactId>
     </dependency>
     <dependency>
-    	<groupId>org.nuxeo.ecm.platform</groupId>
-    	<artifactId>nuxeo-platform-directory-core</artifactId>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-directory-core</artifactId>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
@@ -53,11 +53,21 @@
     </dependency>
 
     <dependency>
-       <groupId>org.nuxeo.runtime</groupId>
-       <artifactId>nuxeo-runtime-datasource</artifactId>
-       <scope>test</scope>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime</artifactId>
+      <scope>test</scope>
     </dependency>
-        <dependency>
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime-datasource</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime-jtajca</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>commons-dbcp</groupId>
       <artifactId>commons-dbcp</artifactId>
       <scope>test</scope>
@@ -79,8 +89,8 @@
       <scope>test</scope>
     </dependency>
     <!-- XXX JVM BUG ? No EJB3 annotations here
-      http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6550655
-    -->
+	 http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6550655
+      -->
     <dependency>
       <groupId>javax.ejb</groupId>
       <artifactId>ejb</artifactId>

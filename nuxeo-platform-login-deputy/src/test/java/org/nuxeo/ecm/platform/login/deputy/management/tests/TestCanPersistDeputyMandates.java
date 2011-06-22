@@ -19,9 +19,8 @@
 
 package org.nuxeo.ecm.platform.login.deputy.management.tests;
 
-import static org.hamcrest.Matchers.hasItems;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -31,17 +30,19 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.platform.login.deputy.management.DeputyManagementStorageService;
 import org.nuxeo.ecm.platform.login.deputy.management.DeputyManager;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
-@Features(CoreFeature.class)
+@Features({CoreFeature.class, TransactionalFeature.class})
 @Deploy( { 
 	"org.nuxeo.runtime.datasource",
 	"org.nuxeo.ecm.directory",
@@ -114,4 +115,18 @@ public class TestCanPersistDeputyMandates {
         assertThat(alternate, hasItems("adm"));
     }
 
+    @Test public void testRollback() throws Exception {
+        initStorage();
+        
+        dm.addMandate(dm.newMandate("adm", "titi"));
+        
+        List<String> alternate = dm.getPossiblesAlternateLogins("titi");  
+        assertThat(alternate, hasItems("adm")); // deputy is stored
+     
+        TransactionHelper.lookupUserTransaction().rollback();
+        
+        List<String> alternateAfterRollback = dm.getAvalaibleDeputyIds("titi");   
+        assertThat(alternateAfterRollback, not(hasItems("adm"))); // deputy is not stored
+    }
+    
 }
