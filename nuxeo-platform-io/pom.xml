@@ -18,24 +18,8 @@
   <modules>
     <module>nuxeo-platform-io-api</module>
     <module>nuxeo-platform-io-core</module>
-    <!-- NXP-5660 - temporary rollback because of Hudson issue -->
     <module>nuxeo-platform-io-client</module>
     <module>nuxeo-platform-io-facade</module>
   </modules>
-
-  <profiles>
-    <!-- NXP-5660 - temporary rollback because of Hudson issue
-    <profile>
-      <id>no-osgi</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
-      <modules>
-        <module>nuxeo-platform-io-client</module>
-        <module>nuxeo-platform-io-facade</module>
-      </modules>
-    </profile>
-    -->
-  </profiles>
 
 </project>
