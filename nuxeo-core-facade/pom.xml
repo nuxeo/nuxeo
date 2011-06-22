@@ -59,6 +59,10 @@
 	  <groupId>org.jboss.javaee</groupId>
 	  <artifactId>jboss-ejb-api</artifactId>
 	</exclusion>
+	<exclusion>
+	  <groupId>org.jboss.metadata</groupId>
+	  <artifactId>jboss-metadata</artifactId>
+	</exclusion>
       </exclusions>
     </dependency>
     <dependency>
@@ -113,11 +117,6 @@
       <artifactId>groovy-all</artifactId>
       <scope>test</scope>
     </dependency>
-    <dependency>
-        <groupId>org.jboss</groupId>
-        <artifactId>jboss-common-core</artifactId>
-        <scope>test</scope>
-     </dependency>
   </dependencies>
 
   <build>
