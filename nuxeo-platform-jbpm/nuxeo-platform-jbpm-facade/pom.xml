@@ -27,10 +27,6 @@
       <groupId>javax.ejb</groupId>
       <artifactId>ejb-api</artifactId>
     </dependency>
-    <dependency>
-      <groupId>javax.ejb</groupId>
-      <artifactId>ejb</artifactId>
-    </dependency>
 
   </dependencies>
 

@@ -31,10 +31,6 @@
       <artifactId>nuxeo-platform-audit-core</artifactId>
     </dependency>
     <dependency>
-      <groupId>javax.jms</groupId>
-      <artifactId>jms</artifactId>
-    </dependency>
-    <dependency>
       <groupId>javax.ejb</groupId>
       <artifactId>ejb-api</artifactId>
     </dependency>

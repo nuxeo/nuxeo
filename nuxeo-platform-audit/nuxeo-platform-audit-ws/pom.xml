@@ -40,20 +40,8 @@
     </dependency>
 
     <dependency>
-      <groupId>javax.ejb</groupId>
-      <artifactId>ejb-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>javax.jws</groupId>
-      <artifactId>jsr181</artifactId>
-    </dependency>
-    <dependency>
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>metro.webservices</groupId>
-      <artifactId>webservices-api</artifactId>
     </dependency>
 
     <!-- test scope -->

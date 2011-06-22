@@ -19,24 +19,8 @@
     <module>nuxeo-platform-comment-api</module>
     <module>nuxeo-platform-comment-core</module>
     <module>nuxeo-platform-comment</module>
-    <!-- NXP-5660 - temporary rollback because of Hudson issue -->
     <module>nuxeo-platform-comment-web</module>
     <module>nuxeo-platform-comment-workflow</module>
   </modules>
-
-  <profiles>
-    <!-- NXP-5660 - temporary rollback because of Hudson issue
-    <profile>
-      <id>no-osgi</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
-      <modules>
-    <module>nuxeo-platform-comment-web</module>
-    <module>nuxeo-platform-comment-workflow</module>
-      </modules>
-    </profile>
-    -->
-  </profiles>
 
 </project>
