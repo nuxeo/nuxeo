@@ -1,6 +1,4 @@
-<project
-  xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
@@ -115,20 +113,39 @@
       <artifactId>nuxeo-core-convert-plugins</artifactId>
       <scope>test</scope>
     </dependency>
+    <!-- needed for convert plugins -->
     <dependency>
-      <!-- needed for convert plugins -->
       <groupId>javax.mail</groupId>
       <artifactId>mail</artifactId>
       <scope>test</scope>
     </dependency>
 
-    <!-- needed for database-specific tests <dependency> <groupId>org.apache.derby</groupId>
-      <artifactId>derby</artifactId> <scope>test</scope> </dependency> <dependency> <groupId>postgresql</groupId>
-      <artifactId>postgresql</artifactId> <scope>test</scope> </dependency> <dependency>
-      <groupId>mysql</groupId> <artifactId>mysql-connector-java</artifactId> <scope>test</scope>
-      </dependency> <dependency> <groupId>net.sourceforge.jtds</groupId> <artifactId>jtds</artifactId>
-      <scope>test</scope> </dependency> <dependency> <groupId>com.oracle</groupId> <artifactId>ojdbc14</artifactId>
-      <scope>test</scope> </dependency> -->
+    <!-- needed for database-specific tests -->
+    <!-- <dependency> -->
+    <!-- <groupId>org.apache.derby</groupId> -->
+    <!-- <artifactId>derby</artifactId> -->
+    <!-- <scope>test</scope> -->
+    <!-- </dependency> -->
+    <!-- <dependency> -->
+    <!-- <groupId>postgresql</groupId> -->
+    <!-- <artifactId>postgresql</artifactId> -->
+    <!-- <scope>test</scope> -->
+    <!-- </dependency> -->
+    <!-- <dependency> -->
+    <!-- <groupId>mysql</groupId> -->
+    <!-- <artifactId>mysql-connector-java</artifactId> -->
+    <!-- <scope>test</scope> -->
+    <!-- </dependency> -->
+    <!-- <dependency> -->
+    <!-- <groupId>net.sourceforge.jtds</groupId> -->
+    <!-- <artifactId>jtds</artifactId> -->
+    <!-- <scope>test</scope> -->
+    <!-- </dependency> -->
+    <!-- <dependency> -->
+    <!-- <groupId>com.oracle</groupId> -->
+    <!-- <artifactId>ojdbc14</artifactId> -->
+    <!-- <scope>test</scope> -->
+    <!-- </dependency> -->
   </dependencies>
 
   <build>
