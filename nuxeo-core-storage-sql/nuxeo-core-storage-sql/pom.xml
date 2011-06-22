@@ -120,6 +120,19 @@
       <scope>test</scope>
     </dependency>
 
+    <!--fix test classpath in eclipse -->
+    <dependency>
+      <groupId>jotm</groupId>
+      <artifactId>jotm</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>javax.resource</groupId>
+          <artifactId>connector</artifactId>
+        </exclusion>
+      </exclusions>
+      <scope>test</scope>
+    </dependency>
+
     <!-- needed for database-specific tests -->
     <!-- <dependency> -->
     <!-- <groupId>org.apache.derby</groupId> -->
