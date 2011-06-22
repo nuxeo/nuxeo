@@ -1,6 +1,6 @@
 <projectDescription>
-  <name>nuxeo-distribution-cap</name>
-  <comment>Nuxeo CAP EAR</comment>
+  <name>nuxeo-distribution-coreserver</name>
+  <comment>Nuxeo CoreServer EAR</comment>
   <projects/>
   <buildSpec>
     <buildCommand>

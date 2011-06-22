@@ -8,7 +8,14 @@
 
   <target name="init" unless="init.done">
     <tstamp />
-    <condition property="build.ep">
+    <condition property="build.core">
+      <or>
+        <isset property="maven.profile.nuxeo-coreserver" />
+        <isset property="maven.profile.all" />
+        <isset property="maven.profile.all-distributions" />
+      </or>
+    </condition>
+    <condition property="build.cap">
       <or>
         <isset property="maven.profile.nuxeo-cap" />
         <isset property="maven.profile.all" />
@@ -29,8 +36,8 @@
   </target>
 
   <target name="expand" unless="no.build">
-    <artifact:nuxeo-expand/>
-    <artifact:print output="dependency-tree.log" /> 
+    <artifact:nuxeo-expand />
+    <!-- <artifact:print output="${basedir}/dependency-tree.log" /> -->
   </target>
 
   <target name="build" depends="init" unless="no.build">
@@ -112,7 +119,7 @@
   </target>
 
   <target name="build-nuxeo-coreserver"
-          if="build.dm"
+          if="build.core"
           description="Build Tomcat distribution with Nuxeo CoreServer">
     <property name="distribution.dir"
               value="${outdir}/nuxeo-coreserver-${maven.project.version}-tomcat" />
@@ -145,7 +152,7 @@
 
     <delete failonerror="false">
       <fileset dir="${distribution.dir}/nxserver/bundles">
-	<include name="nuxeo-*ws*"/>
+        <include name="nuxeo-*ws*" />
       </fileset>
       <fileset dir="${distribution.dir}/templates/common/config">
         <include name="commentService-config-bundle.xml" />
@@ -172,7 +179,7 @@
   </target>
 
   <target name="build-nuxeo-cap"
-          if="build.ep"
+          if="build.cap"
           description="Build Tomcat distribution with Nuxeo CAP">
     <property name="distribution.dir"
               value="${outdir}/nuxeo-cap-${maven.project.version}-tomcat" />

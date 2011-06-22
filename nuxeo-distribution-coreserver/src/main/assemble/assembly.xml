@@ -16,8 +16,8 @@
   </target>
 
   <target name="expand">
-    <artifact:nuxeo-expand/> 
-    <artifact:print output="dependency-tree.log"/>  
+    <artifact:nuxeo-expand />
+    <!-- <artifact:print output="${basedir}/dependency-tree.log" /> -->
   </target>
 
   <target name="build" depends="init" description="Build Nuxeo Core Server">
@@ -35,9 +35,9 @@
         <includes>
           <artifact groupId="org.nuxeo*" />
         </includes>
-	<excludes>
+        <excludes>
           <artifact groupId="org.nuxeo.ecm.distribution" />
-	</excludes>
+        </excludes>
       </artifact:set>
     </copy>
 

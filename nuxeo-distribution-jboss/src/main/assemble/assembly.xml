@@ -29,21 +29,21 @@
   </target>
 
   <target name="expand" unless="no.build">
-    <artifact:nuxeo-expand> 
+    <artifact:nuxeo-expand>
       <excludes>
-	<artifact artifactId="*-test"/>
-	<artifact artifactId="ejb-api"/>
-	<artifact artifactId="jboss-ejb3-ext-api"/>
-	<artifact artifactId="nuxeo-runtime-remoting"/>
-	<artifact artifactId="jboss-remoting"/>
-	<artifact artifactId="jboss-as-system"/>
-	<artifact artifactId="jboss-as-system-jmx"/>
-	<artifact artifactId="jboss-common-core"/>
-	<artifact artifactId="nuxeo-apt-extensions"/>
-	<artifact artifactId="nuxeo-webengine-apt"/>
+        <artifact artifactId="*-test" />
+        <artifact artifactId="ejb-api" />
+        <artifact artifactId="jboss-ejb3-ext-api" />
+        <artifact artifactId="nuxeo-runtime-remoting" />
+        <artifact artifactId="jboss-remoting" />
+        <artifact artifactId="jboss-as-system" />
+        <artifact artifactId="jboss-as-system-jmx" />
+        <artifact artifactId="jboss-common-core" />
+        <artifact artifactId="nuxeo-apt-extensions" />
+        <artifact artifactId="nuxeo-webengine-apt" />
       </excludes>
     </artifact:nuxeo-expand>
-    <!--artifact:print output="dependency-tree.log" /-->
+    <!-- <artifact:print output="${basedir}/dependency-tree.log" /> -->
   </target>
 
   <target name="build" depends="init" unless="no.build">

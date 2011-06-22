@@ -31,6 +31,12 @@
 
   <profiles>
     <profile>
+      <id>nuxeo-coreserver</id>
+      <modules>
+        <module>nuxeo-distribution-coreserver</module>
+      </modules>
+    </profile>
+    <profile>
       <id>nuxeo-cap</id>
       <modules>
         <module>nuxeo-distribution-coreserver</module>
@@ -71,7 +77,6 @@
         <activeByDefault>true</activeByDefault>
       </activation>
       <modules>
-        <module>nuxeo-distribution-base</module>
         <module>nuxeo-distribution-coreserver</module>
         <module>nuxeo-distribution-cap</module>
         <module>nuxeo-distribution-dm</module>
@@ -207,14 +212,14 @@
         <version>${nuxeo.opencmis.version}</version>
       </dependency>
       <dependency>
-	<groupId>org.nuxeo.ecm.automation</groupId>
-	<artifactId>nuxeo-automation-core</artifactId>
-	<version>${nuxeo.features.version}</version>
+        <groupId>org.nuxeo.ecm.automation</groupId>
+        <artifactId>nuxeo-automation-core</artifactId>
+        <version>${nuxeo.features.version}</version>
       </dependency>
       <dependency>
-	<groupId>org.nuxeo.ecm.automation</groupId>
-	<artifactId>nuxeo-automation-server</artifactId>
-	<version>${nuxeo.features.version}</version>
+        <groupId>org.nuxeo.ecm.automation</groupId>
+        <artifactId>nuxeo-automation-server</artifactId>
+        <version>${nuxeo.features.version}</version>
       </dependency>
 
       <!-- OpenSocial -->
