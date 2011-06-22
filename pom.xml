@@ -1099,11 +1099,12 @@
         <artifactId>jtds</artifactId>
         <version>1.2.4</version>
       </dependency>
-      <dependency>
-        <groupId>com.oracle</groupId>
-        <artifactId>ojdbc14</artifactId>
-        <version>10.2.0.3.0</version>
-      </dependency>
+      <!-- Informative comment, this driver isn't publicly available. -->
+      <!-- <dependency> -->
+      <!-- <groupId>com.oracle</groupId> -->
+      <!-- <artifactId>ojdbc14</artifactId> -->
+      <!-- <version>10.2.0.3.0</version> -->
+      <!-- </dependency> -->
       <dependency>
         <groupId>jmock</groupId>
         <artifactId>jmock</artifactId>
