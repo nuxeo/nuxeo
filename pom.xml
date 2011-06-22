@@ -35,16 +35,10 @@
     <module>nuxeo-runtime-management</module>
     <module>nuxeo-runtime-jtajca</module>
     <module>nuxeo-runtime-datasource</module>
-    <!-- NXP-5660 - temporary rollback because of Hudson issue -->
     <module>nuxeo-runtime-test</module>
     <module>nuxeo-launcher-commons</module>
   </modules>
 
-
-  <profiles>
-    <!-- NXP-5660 - temporary rollback because of Hudson issue <profile> <id>no-osgi</id>
-      <modules> <module>nuxeo-runtime-test</module> </modules> </profile> -->
-  </profiles>
 
   <dependencyManagement>
     <dependencies>
@@ -72,20 +66,20 @@
         <groupId>org.nuxeo.runtime</groupId>
         <artifactId>nuxeo-runtime-osgi</artifactId>
         <version>${nuxeo.runtime.version}</version>
-	<exclusions>
-	  <exclusion>
-	    <groupId>org.jboss.jbossas</groupId>
-	    <artifactId>jboss-as-system</artifactId>
-	  </exclusion>
-	  <exclusion>
-	    <groupId>org.jboss.jbossas</groupId>
-	    <artifactId>jboss-as-system-jmx</artifactId>
-	  </exclusion>
-	  <exclusion>
-	    <groupId>org.jboss</groupId>
-	    <artifactId>jboss-common-core</artifactId>
-	  </exclusion>
-	</exclusions>
+        <exclusions>
+          <exclusion>
+            <groupId>org.jboss.jbossas</groupId>
+            <artifactId>jboss-as-system</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.jboss.jbossas</groupId>
+            <artifactId>jboss-as-system-jmx</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.jboss</groupId>
+            <artifactId>jboss-common-core</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.runtime</groupId>
@@ -99,10 +93,10 @@
         <version>${nuxeo.runtime.version}</version>
         <scope>test</scope>
         <exclusions>
-	  <exclusion>
-	    <groupId>org.nuxeo.runtime</groupId>
-	    <artifactId>nuxeo-runtime-remoting</artifactId>
-	  </exclusion>
+          <exclusion>
+            <groupId>org.nuxeo.runtime</groupId>
+            <artifactId>nuxeo-runtime-remoting</artifactId>
+          </exclusion>
         </exclusions>
       </dependency>
       <dependency>
@@ -114,12 +108,12 @@
         <groupId>org.nuxeo.runtime</groupId>
         <artifactId>nuxeo-runtime-scripting</artifactId>
         <version>${nuxeo.runtime.version}</version>
-	<exclusions>
-	  <exclusion>
-	    <groupId>org.jboss.remoting</groupId>
+        <exclusions>
+          <exclusion>
+            <groupId>org.jboss.remoting</groupId>
             <artifactId>jboss-remoting</artifactId>
-	  </exclusion>
-	</exclusions>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.runtime</groupId>
