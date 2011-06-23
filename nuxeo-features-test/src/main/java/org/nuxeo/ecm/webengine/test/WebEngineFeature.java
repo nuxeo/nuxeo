@@ -52,8 +52,16 @@ import org.nuxeo.runtime.test.runner.web.WebDriverFeature;
 public class WebEngineFeature extends SimpleFeature implements
         WorkingDirectoryConfigurator {
 
+    protected URL config;
+
     @Override
     public void initialize(FeaturesRunner runner) throws Exception {
+        WebXml anno = FeaturesRunner.getScanner().getFirstAnnotation(runner.getTargetTestClass(), WebXml.class);
+        if (anno == null) {
+            config = getResource("webengine/web/WEB-INF/web.xml");
+        } else {
+            config = runner.getTargetTestClass().getClassLoader().getResource(anno.value());
+        }
         runner.getFeature(RuntimeFeature.class).getHarness().addWorkingDirectoryConfigurator(
                 this);
     }
@@ -64,7 +72,11 @@ public class WebEngineFeature extends SimpleFeature implements
         File dest = new File(workingDir, "web/root.war/WEB-INF/");
         dest.mkdirs();
 
-        InputStream in = getResource("webengine/web/WEB-INF/web.xml").openStream();
+        if (config == null) {
+            throw new java.lang.IllegalStateException("No custom web.xml was found. " +
+            		"Check your @WebXml annotation on the test class");
+        }
+        InputStream in = config.openStream();
         dest = new File(workingDir + "/web/root.war/WEB-INF/", "web.xml");
         try {
             FileUtils.copyToFile(in, dest);
