@@ -7,7 +7,7 @@
   <a4j:region>
     <a4j:outputPanel id="profilePanel">
 
-      <a4j:form>
+      <a4j:form id="userProfileButtons">
         <table class="dataInput">
           <tbody>
             <tr>
@@ -16,14 +16,14 @@
                 <a4j:commandButton
                   value="#{messages['label.userManager.editUser']}"
                   action="#{userProfileActions.setMode('edit')}"
-                  styleClass="button"
+                  styleClass="button" id="editUserButton"
                   rendered="#{userProfileActions.mode == 'view' and userManagementActions.allowEditUser and notReadOnly}"
                   reRender="profilePanel" />
                 <a4j:commandButton
                   value="#{messages['command.cancel']}"
                   actionListener="#{editableListBean.resetAllListsCachedModels}"
                   action="#{userProfileActions.setMode('view')}"
-                  styleClass="button"
+                  styleClass="button" id="viewUserButton"
                   rendered="#{userProfileActions.mode != 'view'}"
                   reRender="profilePanel" />
               </td>
@@ -31,7 +31,7 @@
                  <a4j:commandButton
                     value="#{messages['command.change.password']}"
                     action="#{userProfileActions.setMode('editPassword')}"
-                    styleClass="button"
+                    styleClass="button" id="editUserPasswordButton"
                     rendered="#{userProfileActions.mode == 'view' and userManagementActions.allowEditUser and notReadOnly}"
                     reRender="profilePanel" />
               </td>
@@ -40,36 +40,39 @@
         </table>
       </a4j:form>
 
-      <a4j:form id="viewUser" rendered="#{userProfileActions.mode == 'view'}">
-        <nxl:layout name="user" mode="view" value="#{userManagementActions.selectedUser}" />
-      </a4j:form>
+      <h:form id="viewUser" rendered="#{userProfileActions.mode == 'view'}">
+        <nxl:layout name="user" mode="#{userProfileActions.mode}" value="#{userManagementActions.selectedUser}" />
+        <nxl:layout name="userprofile" mode="#{userProfileActions.mode}" value="#{userProfileActions.userWorkspace}" />
+      </h:form>
 
-      <a4j:form id="editUser" rendered="#{userProfileActions.mode == 'edit' and userManagementActions.allowEditUser and notReadOnly}">
-        <nxl:layout name="user" mode="edit" value="#{userManagementActions.selectedUser}" />
+      <h:form id="editUser" enctype="multipart/form-data"
+        rendered="#{userProfileActions.mode == 'edit' and userManagementActions.allowEditUser and notReadOnly}">
+        <nxl:layout name="user" mode="#{userProfileActions.mode}" value="#{userManagementActions.selectedUser}" />
+        <nxl:layout name="userprofile" mode="#{userProfileActions.mode}" value="#{userProfileActions.userWorkspace}" />
         <table class="dataInput">
           <tbody>
             <tr>
               <td class="iconColumn"></td>
               <td class="labelColumn">
-                <a4j:commandButton
+                <h:commandButton id="saveUserButton"
                   value="#{messages['command.save']}"
                   action="#{userProfileActions.updateUser}"
-                  styleClass="button" reRender="profilePanel" />
+                  styleClass="button" />
               </td>
               <td class="fieldColumn"></td>
             </tr>
           </tbody>
         </table>
-      </a4j:form>
+      </h:form>
 
       <h:form id="editUserPassword" rendered="#{userProfileActions.mode == 'editPassword' and userManagementActions.allowEditUser and notReadOnly}">
-        <nxl:layout name="user" mode="editPassword" value="#{userManagementActions.selectedUser}" />
+        <nxl:layout name="user" mode="#{userProfileActions.mode}" value="#{userManagementActions.selectedUser}" />
         <table class="dataInput">
           <tbody>
             <tr>
               <td class="iconColumn"></td>
               <td class="labelColumn">
-                <h:commandButton
+                <h:commandButton id="saveUserPasswordButton"
                   value="#{messages['command.save']}"
                   action="#{userManagementActions.changePassword}"
                   styleClass="button" />
