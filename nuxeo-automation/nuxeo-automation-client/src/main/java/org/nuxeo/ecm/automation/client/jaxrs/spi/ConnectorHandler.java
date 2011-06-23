@@ -11,7 +11,7 @@
  */
 package org.nuxeo.ecm.automation.client.jaxrs.spi;
 
-import org.nuxeo.ecm.automation.client.jaxrs.RequestInterceptor;
+import org.nuxeo.ecm.automation.client.RequestInterceptor;
 
 public class ConnectorHandler implements Connector {
 

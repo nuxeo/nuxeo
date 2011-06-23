@@ -11,8 +11,8 @@
  */
 package org.nuxeo.ecm.automation.client.jaxrs.adapters;
 
-import org.nuxeo.ecm.automation.client.jaxrs.AdapterFactory;
-import org.nuxeo.ecm.automation.client.jaxrs.Session;
+import org.nuxeo.ecm.automation.client.AdapterFactory;
+import org.nuxeo.ecm.automation.client.Session;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>

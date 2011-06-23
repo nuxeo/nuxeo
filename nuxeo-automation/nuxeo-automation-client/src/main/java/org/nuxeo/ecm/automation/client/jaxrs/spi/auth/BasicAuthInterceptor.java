@@ -11,7 +11,7 @@
  */
 package org.nuxeo.ecm.automation.client.jaxrs.spi.auth;
 
-import org.nuxeo.ecm.automation.client.jaxrs.RequestInterceptor;
+import org.nuxeo.ecm.automation.client.RequestInterceptor;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.Connector;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.Request;
 import org.nuxeo.ecm.automation.client.jaxrs.util.Base64;

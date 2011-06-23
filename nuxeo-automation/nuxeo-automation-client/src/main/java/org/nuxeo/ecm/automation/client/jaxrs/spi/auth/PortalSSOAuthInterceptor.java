@@ -16,7 +16,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.Random;
 
-import org.nuxeo.ecm.automation.client.jaxrs.RequestInterceptor;
+import org.nuxeo.ecm.automation.client.RequestInterceptor;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.Connector;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.Request;
 import org.nuxeo.ecm.automation.client.jaxrs.util.Base64;

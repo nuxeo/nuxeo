@@ -14,7 +14,7 @@ package org.nuxeo.ecm.automation.client.jaxrs.spi.marshallers;
 import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.JsonToken;
-import org.nuxeo.ecm.automation.client.jaxrs.RemoteException;
+import org.nuxeo.ecm.automation.client.RemoteException;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.JsonMarshaller;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.JsonMarshalling;
 

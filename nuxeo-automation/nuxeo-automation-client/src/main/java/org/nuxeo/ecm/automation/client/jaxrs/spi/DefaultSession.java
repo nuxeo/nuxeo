@@ -11,17 +11,17 @@
  */
 package org.nuxeo.ecm.automation.client.jaxrs.spi;
 
-import static org.nuxeo.ecm.automation.client.jaxrs.Constants.CTYPE_REQUEST_NOCHARSET;
-import static org.nuxeo.ecm.automation.client.jaxrs.Constants.REQUEST_ACCEPT_HEADER;
+import static org.nuxeo.ecm.automation.client.Constants.CTYPE_REQUEST_NOCHARSET;
+import static org.nuxeo.ecm.automation.client.Constants.REQUEST_ACCEPT_HEADER;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import org.nuxeo.ecm.automation.client.jaxrs.AsyncCallback;
-import org.nuxeo.ecm.automation.client.jaxrs.AutomationClient;
-import org.nuxeo.ecm.automation.client.jaxrs.LoginInfo;
-import org.nuxeo.ecm.automation.client.jaxrs.OperationRequest;
-import org.nuxeo.ecm.automation.client.jaxrs.Session;
+import org.nuxeo.ecm.automation.client.AsyncCallback;
+import org.nuxeo.ecm.automation.client.AutomationClient;
+import org.nuxeo.ecm.automation.client.LoginInfo;
+import org.nuxeo.ecm.automation.client.OperationRequest;
+import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.jaxrs.model.Blob;
 import org.nuxeo.ecm.automation.client.jaxrs.model.Blobs;
 import org.nuxeo.ecm.automation.client.jaxrs.model.OperationDocumentation;

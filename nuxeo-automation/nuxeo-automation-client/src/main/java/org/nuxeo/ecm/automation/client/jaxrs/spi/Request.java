@@ -11,9 +11,9 @@
  */
 package org.nuxeo.ecm.automation.client.jaxrs.spi;
 
-import static org.nuxeo.ecm.automation.client.jaxrs.Constants.CTYPE_AUTOMATION;
-import static org.nuxeo.ecm.automation.client.jaxrs.Constants.CTYPE_ENTITY;
-import static org.nuxeo.ecm.automation.client.jaxrs.Constants.CTYPE_MULTIPART_MIXED;
+import static org.nuxeo.ecm.automation.client.Constants.CTYPE_AUTOMATION;
+import static org.nuxeo.ecm.automation.client.Constants.CTYPE_ENTITY;
+import static org.nuxeo.ecm.automation.client.Constants.CTYPE_MULTIPART_MIXED;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -25,7 +25,7 @@ import java.util.regex.Pattern;
 import javax.mail.BodyPart;
 import javax.mail.internet.MimeMultipart;
 
-import org.nuxeo.ecm.automation.client.jaxrs.RemoteException;
+import org.nuxeo.ecm.automation.client.RemoteException;
 import org.nuxeo.ecm.automation.client.jaxrs.model.Blob;
 import org.nuxeo.ecm.automation.client.jaxrs.model.Blobs;
 import org.nuxeo.ecm.automation.client.jaxrs.model.FileBlob;

@@ -9,7 +9,7 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.automation.client.jaxrs;
+package org.nuxeo.ecm.automation.client;
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -18,6 +18,7 @@ import java.util.Set;
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
+@SuppressWarnings("serial")
 public class LoginInfo implements Serializable {
 
     public static final LoginInfo ANONYNMOUS = new LoginInfo("Anonymous");

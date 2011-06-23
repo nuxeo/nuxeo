@@ -19,7 +19,7 @@ package org.nuxeo.ecm.automation.client.jaxrs.model;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.nuxeo.ecm.automation.client.jaxrs.Session;
+import org.nuxeo.ecm.automation.client.Session;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>

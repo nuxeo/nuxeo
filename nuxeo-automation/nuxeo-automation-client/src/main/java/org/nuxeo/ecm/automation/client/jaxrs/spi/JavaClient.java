@@ -21,12 +21,12 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
-import org.nuxeo.ecm.automation.client.jaxrs.AdapterFactory;
-import org.nuxeo.ecm.automation.client.jaxrs.AsyncCallback;
-import org.nuxeo.ecm.automation.client.jaxrs.AutomationClient;
-import org.nuxeo.ecm.automation.client.jaxrs.LoginCallback;
-import org.nuxeo.ecm.automation.client.jaxrs.LoginInfo;
-import org.nuxeo.ecm.automation.client.jaxrs.Session;
+import org.nuxeo.ecm.automation.client.AdapterFactory;
+import org.nuxeo.ecm.automation.client.AsyncCallback;
+import org.nuxeo.ecm.automation.client.AutomationClient;
+import org.nuxeo.ecm.automation.client.LoginCallback;
+import org.nuxeo.ecm.automation.client.LoginInfo;
+import org.nuxeo.ecm.automation.client.Session;
 
 /**
  * Abstract class for clients running on real JVMs.

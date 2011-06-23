@@ -11,21 +11,21 @@
  */
 package org.nuxeo.ecm.automation.client.jaxrs.spi;
 
-import static org.nuxeo.ecm.automation.client.jaxrs.Constants.CTYPE_AUTOMATION;
-import static org.nuxeo.ecm.automation.client.jaxrs.Constants.CTYPE_ENTITY;
+import static org.nuxeo.ecm.automation.client.Constants.CTYPE_AUTOMATION;
+import static org.nuxeo.ecm.automation.client.Constants.CTYPE_ENTITY;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.nuxeo.ecm.automation.client.jaxrs.AdapterFactory;
-import org.nuxeo.ecm.automation.client.jaxrs.AsyncCallback;
-import org.nuxeo.ecm.automation.client.jaxrs.AutomationClient;
-import org.nuxeo.ecm.automation.client.jaxrs.LoginCallback;
-import org.nuxeo.ecm.automation.client.jaxrs.LoginInfo;
-import org.nuxeo.ecm.automation.client.jaxrs.RequestInterceptor;
-import org.nuxeo.ecm.automation.client.jaxrs.Session;
+import org.nuxeo.ecm.automation.client.AdapterFactory;
+import org.nuxeo.ecm.automation.client.AsyncCallback;
+import org.nuxeo.ecm.automation.client.AutomationClient;
+import org.nuxeo.ecm.automation.client.LoginCallback;
+import org.nuxeo.ecm.automation.client.LoginInfo;
+import org.nuxeo.ecm.automation.client.RequestInterceptor;
+import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.auth.BasicAuthInterceptor;
 
 /**
