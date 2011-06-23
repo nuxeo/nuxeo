@@ -18,7 +18,6 @@
   <modules>
     <module>nuxeo-platform-relations-api</module>
     <module>nuxeo-platform-relations-core</module>
-    <!-- NXP-5660 - temporary rollback because of Hudson issue -->
     <module>nuxeo-platform-relations-core-listener</module>
     <module>nuxeo-platform-relations-default-config</module>
     <module>nuxeo-platform-relations-facade</module>
@@ -26,24 +25,5 @@
     <module>nuxeo-platform-relations-jena-plugin</module>
     <module>nuxeo-platform-relations-web</module>
   </modules>
-
-  <profiles>
-    <!-- NXP-5660 - temporary rollback because of Hudson issue
-    <profile>
-      <id>no-osgi</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
-      <modules>
-        <module>nuxeo-platform-relations-core-listener</module>
-        <module>nuxeo-platform-relations-default-config</module>
-        <module>nuxeo-platform-relations-facade</module>
-        <module>nuxeo-platform-relations-io</module>
-        <module>nuxeo-platform-relations-jena-plugin</module>
-        <module>nuxeo-platform-relations-web</module>
-      </modules>
-    </profile>
-    -->
-  </profiles>
 
 </project>

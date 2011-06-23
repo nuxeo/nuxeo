@@ -17,17 +17,18 @@
 
 package org.nuxeo.ecm.platform.publisher.test;
 
-import org.nuxeo.common.jndi.NamingContextFactory;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.platform.publisher.api.PublisherService;
-import org.nuxeo.runtime.api.Framework;
-import org.hsqldb.jdbc.jdbcDataSource;
+import java.util.List;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
-import java.util.List;
+
+import org.hsqldb.jdbc.jdbcDataSource;
+import org.nuxeo.common.jndi.NamingContextFactory;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.nuxeo.ecm.platform.publisher.api.PublisherService;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
