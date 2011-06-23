@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -13,6 +13,7 @@ package org.nuxeo.ecm.automation.client.jaxrs;
 
 import java.util.Map;
 
+import org.nuxeo.ecm.automation.client.jaxrs.model.OperationDocumentation;
 import org.nuxeo.ecm.automation.client.jaxrs.model.OperationInput;
 
 /**
@@ -25,21 +26,27 @@ public interface OperationRequest {
 
     String getUrl();
 
+    /**
+     * Get the ID of the operation to be invoked
+     * @return
+     */
+    OperationDocumentation getOperation();
+
     OperationRequest setInput(OperationInput input);
 
     OperationInput getInput();
 
     OperationRequest set(String key, Object value);
 
-    OperationRequest setContextProperty(String key, String value);
+    OperationRequest setContextProperty(String key, Object value);
 
     Object execute() throws Exception;
 
     void execute(AsyncCallback<Object> cb);
 
-    Map<String, String> getParameters();
+    Map<String, Object> getParameters();
 
-    Map<String, String> getContextParameters();
+    Map<String, Object> getContextParameters();
 
     OperationRequest setHeader(String key, String value);
 

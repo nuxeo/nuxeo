@@ -11,30 +11,15 @@
  */
 package org.nuxeo.ecm.automation.client.jaxrs.model;
 
+import java.util.List;
+
+
+
 /**
  * @author matic
  *
  */
 public class PaginableDocuments extends Documents {
-
-    public PaginableDocuments() {
-    }
-
-    public PaginableDocuments(int size) {
-        super (size);
-    }
-
-    /**
-     * @param size
-     */
-    public PaginableDocuments(int size, int totalSize, int pageSize, int pageCount, int pageIndex) {
-        super(size);
-        this.totalSize = totalSize;
-        this.pageSize = pageSize;
-        this.pageCount = pageCount;
-        this.pageIndex = pageIndex;
-    }
-
 
     private static final long serialVersionUID = 1L;
 
@@ -42,6 +27,20 @@ public class PaginableDocuments extends Documents {
     protected int pageSize;
     protected int pageCount;
     protected int pageIndex;
+
+    public PaginableDocuments() {
+    }
+
+    /**
+     * @param size
+     */
+    public PaginableDocuments(List<Document> docs, int totalSize, int pageSize, int pageCount, int pageIndex) {
+        super (docs);
+        this.totalSize = totalSize;
+        this.pageSize = pageSize;
+        this.pageCount = pageCount;
+        this.pageIndex = pageIndex;
+    }
 
     public int getTotalSize() {
         return totalSize;

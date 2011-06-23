@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -33,9 +33,9 @@ public class DefaultOperationRequest implements OperationRequest {
 
     protected final DefaultSession session;
 
-    protected final Map<String, String> params;
+    protected final Map<String, Object> params;
 
-    protected final Map<String, String> ctx;
+    protected final Map<String, Object> ctx;
 
     protected final Map<String, String> headers;
 
@@ -43,14 +43,14 @@ public class DefaultOperationRequest implements OperationRequest {
 
     public DefaultOperationRequest(DefaultSession session,
             OperationDocumentation op) {
-        this(session, op, new HashMap<String, String>());
+        this(session, op, new HashMap<String, Object>());
     }
 
     public DefaultOperationRequest(DefaultSession session,
-            OperationDocumentation op, Map<String, String> ctx) {
+            OperationDocumentation op, Map<String, Object> ctx) {
         this.session = session;
         this.op = op;
-        params = new HashMap<String, String>();
+        params = new HashMap<String, Object>();
         headers = new HashMap<String, String>();
         this.ctx = ctx;
     }
@@ -138,16 +138,16 @@ public class DefaultOperationRequest implements OperationRequest {
         return this;
     }
 
-    public OperationRequest setContextProperty(String key, String value) {
-        ctx.put(key, value);
+    public OperationRequest setContextProperty(String key, Object value) {
+        ctx.put(key, value != null ? value.toString() : null);
         return this;
     }
 
-    public Map<String, String> getContextParameters() {
+    public Map<String, Object> getContextParameters() {
         return ctx;
     }
 
-    public Map<String, String> getParameters() {
+    public Map<String, Object> getParameters() {
         return params;
     }
 
@@ -168,4 +168,8 @@ public class DefaultOperationRequest implements OperationRequest {
         return headers;
     }
 
+    @Override
+    public OperationDocumentation getOperation() {
+        return op;
+    }
 }

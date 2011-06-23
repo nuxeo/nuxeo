@@ -32,6 +32,8 @@ import java.util.Date;
  */
 public class Document extends DocRef {
 
+    private static final long serialVersionUID = 1L;
+
     protected final String repository;
 
     protected final String path;

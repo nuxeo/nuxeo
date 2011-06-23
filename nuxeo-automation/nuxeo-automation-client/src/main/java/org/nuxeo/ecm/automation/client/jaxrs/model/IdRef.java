@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -15,6 +15,8 @@ package org.nuxeo.ecm.automation.client.jaxrs.model;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class IdRef extends DocRef {
+
+    private static final long serialVersionUID = 1L;
 
     public IdRef(String path) {
         super(path);

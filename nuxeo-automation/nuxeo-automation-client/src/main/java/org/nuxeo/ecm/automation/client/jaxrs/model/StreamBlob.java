@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -17,6 +17,7 @@ import java.io.InputStream;
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
+@SuppressWarnings("serial")
 public class StreamBlob extends Blob {
 
     protected final InputStream in;

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -21,6 +21,8 @@ import java.io.InputStream;
  * @author bstefanescu
  */
 public class StringBlob extends Blob {
+
+    private static final long serialVersionUID = -7170366401800302228L;
 
     /** content */
     protected final String content;

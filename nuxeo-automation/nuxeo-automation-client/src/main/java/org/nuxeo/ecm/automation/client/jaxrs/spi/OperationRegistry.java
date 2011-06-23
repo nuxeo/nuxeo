@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -11,6 +11,7 @@
  */
 package org.nuxeo.ecm.automation.client.jaxrs.spi;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,7 +20,9 @@ import org.nuxeo.ecm.automation.client.jaxrs.model.OperationDocumentation;
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class OperationRegistry {
+public class OperationRegistry implements Serializable {
+
+    private static final long serialVersionUID = 7052919017498723129L;
 
     protected Map<String, String> paths;
 

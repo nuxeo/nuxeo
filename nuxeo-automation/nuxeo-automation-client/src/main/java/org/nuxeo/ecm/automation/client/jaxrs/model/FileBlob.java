@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -20,6 +20,8 @@ import java.io.InputStream;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class FileBlob extends Blob implements HasFile {
+
+    private static final long serialVersionUID = 1L;
 
     protected final File file;
 

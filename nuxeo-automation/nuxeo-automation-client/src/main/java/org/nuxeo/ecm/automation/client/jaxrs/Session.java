@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -53,7 +53,7 @@ public interface Session {
      *            the server.
      * @return the operation request
      */
-    OperationRequest newRequest(String id, Map<String, String> ctx)
+    OperationRequest newRequest(String id, Map<String, Object> ctx)
             throws Exception;
 
     Object execute(OperationRequest request) throws Exception;
@@ -96,4 +96,8 @@ public interface Session {
      */
     <T> T getAdapter(Class<T> type);
 
+    /**
+     * Remove any resources held by this session. The session will no more be used again.
+     */
+    void close();
 }

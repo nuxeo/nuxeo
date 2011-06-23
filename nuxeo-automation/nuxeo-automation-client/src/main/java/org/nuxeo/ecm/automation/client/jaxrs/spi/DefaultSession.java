@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -144,10 +144,10 @@ public class DefaultSession implements Session {
     }
 
     public OperationRequest newRequest(String id) throws Exception {
-        return newRequest(id, new HashMap<String, String>());
+        return newRequest(id, new HashMap<String, Object>());
     }
 
-    public OperationRequest newRequest(String id, Map<String, String> ctx)
+    public OperationRequest newRequest(String id, Map<String, Object> ctx)
             throws Exception {
         OperationDocumentation op = getOperation(id);
         if (op == null) {
@@ -164,4 +164,8 @@ public class DefaultSession implements Session {
         return client.getRegistry().getOperations();
     }
 
+    @Override
+    public void close() {
+        // do nothing
+    }
 }

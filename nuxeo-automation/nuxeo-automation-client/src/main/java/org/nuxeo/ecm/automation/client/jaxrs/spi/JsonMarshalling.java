@@ -154,19 +154,24 @@ public class JsonMarshalling {
             }
         }
         jg.writeObjectFieldStart("params");
-        writeStringMap(jg, req.getParameters());
+        writeMap(jg, req.getParameters());
         jg.writeEndObject();
         jg.writeObjectFieldStart("context");
-        writeStringMap(jg, req.getContextParameters());
+        writeMap(jg, req.getContextParameters());
         jg.writeEndObject();
         jg.writeEndObject();
         jg.close();
         return writer.toString();
     }
 
-    public static void writeStringMap(JsonGenerator jg, Map<String,String> map) throws Exception {
-        for (Map.Entry<String, String> entry : map.entrySet()) {
-            jg.writeStringField(entry.getKey(), entry.getValue());
+    public static void writeMap(JsonGenerator jg, Map<String,Object> map) throws Exception {
+        for (Map.Entry<String, Object> entry : map.entrySet()) {
+            Object obj = entry.getValue();
+            if (obj.getClass() == String.class) {
+                jg.writeStringField(entry.getKey(), (String)entry.getValue());
+            } else {
+                throw new UnsupportedOperationException("Not yet implemented"); //TODO
+            }
         }
     }
 

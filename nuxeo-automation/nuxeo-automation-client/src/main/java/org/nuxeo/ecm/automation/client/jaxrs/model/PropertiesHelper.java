@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -17,7 +17,7 @@ import java.util.Date;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class PropertiesHelper {
-	
+
 	private PropertiesHelper() {
 	}
 
@@ -83,8 +83,10 @@ public class PropertiesHelper {
         }
         if (v.getClass() == String.class) {
             return DateUtils.parseDate(v.toString());
+        } else {
+            return (Date)v;
         }
-        throw new IllegalArgumentException("Property is not a scalar: " + v);
+        //throw new IllegalArgumentException("Property is not a scalar: " + v);
     }
 
     public static PropertyList getList(Object v, PropertyList defValue) {

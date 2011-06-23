@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -25,14 +25,14 @@ public class RemoteException extends AutomationException {
 
     protected final String type;
 
-    protected final String stackTrace;
+    protected final String strace;
 
     public RemoteException(int status, String type, String message,
             String stackTrace) {
         super(message);
         this.status = status;
         this.type = type;
-        this.stackTrace = stackTrace;
+        this.strace = stackTrace;
     }
 
     public int getStatus() {
@@ -44,7 +44,7 @@ public class RemoteException extends AutomationException {
     }
 
     public String getRemoteStackTrace() {
-        return status + " - " + getMessage() + "\n" + stackTrace;
+        return status + " - " + getMessage() + "\n" + strace;
     }
 
     @Override
@@ -60,4 +60,23 @@ public class RemoteException extends AutomationException {
         s.println("====== Remote Stack Trace:");
         s.print(getRemoteStackTrace());
     }
+
+    public static RemoteException wrap(Throwable t) {
+        return wrap(t, 500);
+    }
+
+    public static RemoteException wrap(Throwable t, int status) {
+        return wrap(t.getMessage(), t, status);
+    }
+
+    public static RemoteException wrap(String message, Throwable t) {
+        return wrap(message, t, 500);
+    }
+
+    public static RemoteException wrap(String message, Throwable t, int status) {
+        RemoteException e = new RemoteException(status, t.getClass().getName(), message, "");
+        e.initCause(t);
+        return e;
+    }
+
 }

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -22,6 +22,7 @@ import java.util.Map;
 import org.nuxeo.ecm.automation.client.jaxrs.AdapterFactory;
 import org.nuxeo.ecm.automation.client.jaxrs.AsyncCallback;
 import org.nuxeo.ecm.automation.client.jaxrs.AutomationClient;
+import org.nuxeo.ecm.automation.client.jaxrs.LoginCallback;
 import org.nuxeo.ecm.automation.client.jaxrs.LoginInfo;
 import org.nuxeo.ecm.automation.client.jaxrs.RequestInterceptor;
 import org.nuxeo.ecm.automation.client.jaxrs.Session;
@@ -45,12 +46,18 @@ public abstract class AbstractAutomationClient implements AutomationClient {
         this.url = url.endsWith("/") ? url : url + "/";
     }
 
-    @Override
+
+    /**
+     * Can be used for intercepting requests before they are being sent
+     * to the server.
+     */
     public void setRequestInterceptor(RequestInterceptor interceptor) {
         requestInterceptor = interceptor;
     }
 
-    @Override
+    /**
+     * Gets access to this request interceptor
+     */
     public RequestInterceptor getRequestInterceptor() {
         return requestInterceptor;
     }
@@ -131,6 +138,16 @@ public abstract class AbstractAutomationClient implements AutomationClient {
             final AsyncCallback<Session> cb) {
         setBasicAuth(username, password);
         getSession(cb);
+    }
+
+    @Override
+    public Session getSession(LoginCallback loginCb) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void getSession(LoginCallback loginCb, AsyncCallback<Session> cb) {
+        throw new UnsupportedOperationException();
     }
 
     public void getSession(final AsyncCallback<Session> cb) {

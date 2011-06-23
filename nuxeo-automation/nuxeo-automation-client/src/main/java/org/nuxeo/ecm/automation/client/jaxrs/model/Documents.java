@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -11,24 +11,59 @@
  */
 package org.nuxeo.ecm.automation.client.jaxrs.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class Documents extends ArrayList<Document> implements OperationInput {
+public class Documents implements Serializable, OperationInput, Iterable<Document> {
 
     private static final long serialVersionUID = 1L;
 
+    protected List<Document> docs;
+
     public Documents() {
+        docs = new ArrayList<Document>();
     }
 
     public Documents(int size) {
-        super(size);
+        docs = new ArrayList<Document>(size);
     }
 
     public Documents(Documents docs) {
-        super(docs);
+        this(docs.list());
+    }
+
+    public Documents(List<Document> docs) {
+        this.docs = docs;
+    }
+
+    public final List<Document> list() {
+        return docs;
+    }
+
+    @Override
+    public Iterator<Document> iterator() {
+        return docs.iterator();
+    }
+
+    public void add(Document doc) {
+        docs.add(doc);
+    }
+
+    public int size() {
+        return docs.size();
+    }
+
+    public boolean isEmpty() {
+        return docs.isEmpty();
+    }
+
+    public Document get(int i) {
+        return docs.get(i);
     }
 
     public String getInputType() {

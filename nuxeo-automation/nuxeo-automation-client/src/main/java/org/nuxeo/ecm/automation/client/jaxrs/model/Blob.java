@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -21,6 +21,8 @@ import org.nuxeo.ecm.automation.client.jaxrs.util.Base64;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public abstract class Blob implements OperationInput {
+
+    private static final long serialVersionUID = 1L;
 
     public static Blob fromBase64String(String fileName, String content) {
         return fromBase64String(fileName, content, null);

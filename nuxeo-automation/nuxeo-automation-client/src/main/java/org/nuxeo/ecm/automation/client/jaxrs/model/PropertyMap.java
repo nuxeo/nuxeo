@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -11,6 +11,7 @@
  */
 package org.nuxeo.ecm.automation.client.jaxrs.model;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -22,7 +23,9 @@ import java.util.Set;
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class PropertyMap {
+public class PropertyMap implements Serializable {
+
+    private static final long serialVersionUID = -3260084599278006841L;
 
     protected final LinkedHashMap<String, Object> map;
 

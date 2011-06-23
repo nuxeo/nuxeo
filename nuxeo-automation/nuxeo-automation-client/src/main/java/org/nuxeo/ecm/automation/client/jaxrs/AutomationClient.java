@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -36,27 +36,28 @@ public interface AutomationClient {
     String getBaseUrl();
 
     /**
-     * Can be used for intercepting requests before they are being sent
-     * to the server.
-     */
-    void setRequestInterceptor(RequestInterceptor interceptor);
-
-    /**
-     * Gets access to this request interceptor
-     */
-    RequestInterceptor getRequestInterceptor();
-
-    /**
      * Creates a new session. If no interceptors configured connect
      * anonymously.
      */
     Session getSession();
 
     /**
-     * Creates asynchronously a new session. The given
-     * callback will be notified after the session is created.
+     * Creates a new session. If no interceptors configured connect
+     * anonymously.
      */
     void getSession(AsyncCallback<Session> cb);
+
+    /**
+     * Create a new session using the given login callback to gather login info.
+     * The given callback will be notified after the session is created.
+     */
+    Session getSession(LoginCallback loginCb);
+
+    /**
+     * Create asynchronously a new session using the given login callback to gather login info.
+     * The given callback will be notified after the session is created.
+     */
+    void getSession(LoginCallback loginCb, AsyncCallback<Session> cb);
 
     /**
      * Creates a new session using the given login.

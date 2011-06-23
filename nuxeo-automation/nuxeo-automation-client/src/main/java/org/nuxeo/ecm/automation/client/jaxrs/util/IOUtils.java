@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -56,17 +56,29 @@ public class IOUtils {
 
     public static File copyToTempFile(InputStream in) throws IOException {
         File file = File.createTempFile("nxautomation-", ".tmp");
-        copyToFile(in, file);
+        copyToFile(in, file, true);
+        return file;
+    }
+
+    public static File copyToTempFile(InputStream in, boolean closeIn) throws IOException {
+        File file = File.createTempFile("nxautomation-", ".tmp");
+        copyToFile(in, file, closeIn);
         return file;
     }
 
     public static void copyToFile(InputStream in, File file) throws IOException {
+        copyToFile(in, file, true);
+    }
+
+    public static void copyToFile(InputStream in, File file, boolean closeIn) throws IOException {
         FileOutputStream out = new FileOutputStream(file);
         try {
             copy(in, out);
         } finally {
             out.close();
-            in.close();
+            if (closeIn) {
+                in.close();
+            }
         }
     }
 
