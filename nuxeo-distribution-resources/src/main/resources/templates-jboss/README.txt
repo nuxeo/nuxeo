@@ -126,3 +126,13 @@ for details) using default values for database.
 
 Sample custom template. It's quite empty, feel free to play with it in order to
 create your own template.
+
+2.8) monitor
+
+Activate the JBoss LogginMonitor service to log miscellaneous MBean 
+information every 5s in the following log files:
+
+ - log/jvm.log: JBoss JVM information
+ - log/webthreads.log: JBoss thread pool
+ - log/vcs-ds.log: Nuxeo VCS datasource
+ - log/nuxeo-ds.log: Nuxeo unified datasource
