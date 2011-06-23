@@ -59,7 +59,7 @@ public class TestUserManager extends NXRuntimeTestCase {
 
         deployBundle("org.nuxeo.ecm.core.schema");
         deployBundle("org.nuxeo.ecm.core");
-         deployBundle("org.nuxeo.ecm.core.api");
+        deployBundle("org.nuxeo.ecm.core.api");
         deployBundle("org.nuxeo.ecm.directory.api");
         deployBundle("org.nuxeo.ecm.directory");
         deployBundle("org.nuxeo.ecm.directory.sql");
@@ -382,6 +382,9 @@ public class TestUserManager extends NXRuntimeTestCase {
 
         DocumentModel g1 = getGroup("test_g1");
         DocumentModel g2 = getGroup("test_g2");
+        DocumentModel g3 = getGroup("test_g3");
+        g3.setPropertyValue("group:grouplabel", "test_g3_label");
+
 
         List<String> g1Users = Arrays.asList("test_u1");
         List<String> g2Users = Arrays.asList("test_u1", "test_u2");
@@ -394,14 +397,23 @@ public class TestUserManager extends NXRuntimeTestCase {
         g2.setProperty("group", "subGroups", g2Groups);
         userManager.createGroup(g2);
 
+        //without users / groups
+        userManager.createGroup(g3);
+
         NuxeoGroup newG1 = userManager.getGroup("test_g1");
         NuxeoGroup newG2 = userManager.getGroup("test_g2");
+        NuxeoGroup newG3 = userManager.getGroup("test_g3");
 
         assertNotNull(newG1);
         assertNotNull(newG2);
+        assertNotNull(newG3);
 
         assertEquals("test_g1", newG1.getName());
         assertEquals("test_g2", newG2.getName());
+        assertEquals("test_g3", newG3.getName());
+        assertEquals("test_g1", newG1.getLabel());
+        assertEquals("test_g2", newG2.getLabel());
+        assertEquals("test_g3_label", newG3.getLabel());
         assertEquals(g1Users, newG1.getMemberUsers());
         assertEquals(g2Users, newG2.getMemberUsers());
         assertEquals(g2Groups, newG2.getMemberGroups());
@@ -631,6 +643,35 @@ public class TestUserManager extends NXRuntimeTestCase {
         String name2 = principals.get(1).getName();
         assertTrue("test_u1".equals(name1) && "test_u2".equals(name2)
                 || "test_u1".equals(name2) && "test_u2".equals(name1));
+    }
+
+    public void testSearchUser() throws Exception {
+        assertEquals(0, userManager.searchUsers("test").size());
+
+        DocumentModel doc = getUser("test");
+        userManager.createUser(doc);
+        doc = getUser("test_2");
+        userManager.createUser(doc);
+        assertEquals(2, userManager.searchUsers("test").size());
+
+        doc = getUser("else");
+        doc.setProperty("user", "firstName", "test");
+        userManager.createUser(doc);
+        assertEquals(3, userManager.searchUsers("test").size());
+
+        doc = getGroup("group");
+        userManager.createGroup(doc);
+        doc = getGroup("group_1");
+        userManager.createGroup(doc);
+
+        Map<String, Serializable> filters = new HashMap<String, Serializable>();
+        filters.put(userManager.getGroupIdField(), "group");
+        assertEquals(2, userManager.searchGroups("group").size());
+
+        doc = getGroup("else");
+        doc.setProperty("group","grouplabel","group");
+        userManager.createGroup(doc);
+        assertEquals(3, userManager.searchGroups("group").size());
     }
 
     public void testUpdatePrincipal() throws Exception {

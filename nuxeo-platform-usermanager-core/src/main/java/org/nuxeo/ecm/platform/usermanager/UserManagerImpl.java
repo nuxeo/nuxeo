@@ -39,7 +39,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelComparator;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -98,10 +97,9 @@ public class UserManagerImpl implements UserManager {
     protected final DirectoryService dirService;
 
     /**
-     * A structure used to inject field name configuration of users schema
-     * into a NuxeoPrincipalImpl instance.
-     * TODO not all fields inside are configurable for now -
-     * they will use default values
+     * A structure used to inject field name configuration of users schema into
+     * a NuxeoPrincipalImpl instance. TODO not all fields inside are
+     * configurable for now - they will use default values
      */
     protected UserConfig userConfig;
 
@@ -121,6 +119,8 @@ public class UserManagerImpl implements UserManager {
 
     protected String groupIdField;
 
+    protected String groupLabelField;
+
     protected String groupMembersField;
 
     protected String groupSubGroupsField;
@@ -128,6 +128,8 @@ public class UserManagerImpl implements UserManager {
     protected String groupParentGroupsField;
 
     protected String groupSortField;
+
+    protected Map<String, MatchType> groupSearchFields;
 
     protected String defaultGroup;
 
@@ -184,9 +186,11 @@ public class UserManagerImpl implements UserManager {
         userEmailField = descriptor.userEmailField;
         userSearchFields = descriptor.userSearchFields;
         userPasswordPattern = descriptor.userPasswordPattern;
+        groupLabelField = descriptor.groupLabelField;
         groupMembersField = descriptor.groupMembersField;
         groupSubGroupsField = descriptor.groupSubGroupsField;
         groupParentGroupsField = descriptor.groupParentGroupsField;
+        groupSearchFields = descriptor.groupSearchFields;
         anonymousUser = descriptor.anonymousUser;
 
         setUserDirectoryName(descriptor.userDirectoryName);
@@ -233,6 +237,10 @@ public class UserManagerImpl implements UserManager {
         return Collections.unmodifiableSet(userSearchFields.keySet());
     }
 
+    public Set<String> getGroupSearchFields() {
+        return Collections.unmodifiableSet(groupSearchFields.keySet());
+    }
+
     protected void setGroupDirectoryName(String groupDirectoryName) {
         this.groupDirectoryName = groupDirectoryName;
         try {
@@ -250,6 +258,10 @@ public class UserManagerImpl implements UserManager {
 
     public String getGroupIdField() throws ClientException {
         return groupIdField;
+    }
+
+    public String getGroupLabelField() throws ClientException {
+        return groupLabelField;
     }
 
     public String getGroupSchemaName() throws ClientException {
@@ -396,7 +408,7 @@ public class UserManagerImpl implements UserManager {
         } catch (DirectoryException e) {
             log.warn("Digest auth password not synchronized, check your configuration", e);
         } finally {
-            if (dir!=null) {
+            if (dir != null) {
                 dir.close();
             }
         }
@@ -599,6 +611,15 @@ public class UserManagerImpl implements UserManager {
         if (list != null) {
             group.setParentGroups(list);
         }
+        try {
+            String label = (String) groupEntry.getProperty(groupSchemaName,
+                    groupLabelField);
+            if (label != null) {
+                group.setLabel(label);
+            }
+        } catch (ClientException e) {
+            // Nothing to do.
+        }
         return group;
     }
 
@@ -711,29 +732,37 @@ public class UserManagerImpl implements UserManager {
         return principals;
     }
 
-    public List<NuxeoGroup> searchGroups(String pattern) throws ClientException {
-        Session groupDir = null;
-        try {
-            groupDir = dirService.open(groupDirectoryName);
-            Map<String, Serializable> filter = new HashMap<String, Serializable>();
-            if (pattern != null && pattern != "") {
-                filter.put(groupDir.getIdField(), pattern);
-            }
-            DocumentModelList groupEntries = searchGroups(filter,
-                    new HashSet<String>(filter.keySet()));
+    public DocumentModelList searchGroups(String pattern)
+            throws ClientException {
+        DocumentModelList entries = new DocumentModelListImpl();
+        if (pattern == null || pattern.length() == 0) {
+            entries = searchGroups(
+                    Collections.<String, Serializable> emptyMap(), null);
+        } else {
+            Map<String, DocumentModel> uniqueEntries = new HashMap<String, DocumentModel>();
 
-            List<NuxeoGroup> groups = new ArrayList<NuxeoGroup>(
-                    groupEntries.size());
-            for (DocumentModel groupEntry : groupEntries) {
-                groups.add(makeGroup(groupEntry));
+            for (Entry<String, MatchType> fieldEntry : groupSearchFields.entrySet()) {
+                Map<String, Serializable> filter = new HashMap<String, Serializable>();
+                filter.put(fieldEntry.getKey(), pattern);
+                DocumentModelList fetchedEntries;
+                if (fieldEntry.getValue() == MatchType.SUBSTRING) {
+                    fetchedEntries = searchGroups(filter, filter.keySet());
+                } else {
+                    fetchedEntries = searchGroups(filter, null);
+                }
+                for (DocumentModel entry : fetchedEntries) {
+                    uniqueEntries.put(entry.getId(), entry);
+                }
             }
-            return groups;
-
-        } finally {
-            if (groupDir != null) {
-                groupDir.close();
-            }
+            log.debug(String.format("found %d unique group entries",
+                    uniqueEntries.size()));
+            entries.addAll(uniqueEntries.values());
         }
+        // sort
+        Collections.sort(entries, new DocumentModelComparator(groupSchemaName,
+                getGroupSortMap()));
+
+        return entries;
     }
 
     public String getUserSortField() {
@@ -741,7 +770,17 @@ public class UserManagerImpl implements UserManager {
     }
 
     protected Map<String, String> getUserSortMap() {
-        String sortField = userSortField != null ? userSortField : userIdField;
+        return getDirectorySortMap(userSortField, userIdField);
+    }
+
+    protected Map<String, String> getGroupSortMap() {
+        return getDirectorySortMap(groupSortField, groupIdField);
+    }
+
+    protected Map<String, String> getDirectorySortMap(
+            String descriptorSortField, String fallBackField) {
+        String sortField = descriptorSortField != null ? descriptorSortField
+                : fallBackField;
         Map<String, String> orderBy = new HashMap<String, String>();
         orderBy.put(sortField, DocumentModelComparator.ORDER_ASC);
         return orderBy;
@@ -978,22 +1017,14 @@ public class UserManagerImpl implements UserManager {
     }
 
     public DocumentModelList searchGroups(Map<String, Serializable> filter,
-            HashSet<String> fulltext) throws ClientException {
+            Set<String> fulltext) throws ClientException {
         Session groupDir = null;
         try {
-
             removeVirtualFilters(filter);
             groupDir = dirService.open(groupDirectoryName);
 
-            String sortField = groupSortField != null ? groupSortField
-                    : groupDir.getIdField();
-            Map<String, String> orderBy = new HashMap<String, String>();
-            orderBy.put(sortField, DocumentModelComparator.ORDER_ASC);
-            // XXX: do not fetch references, can be costly
-            DocumentModelList entries = groupDir.query(filter, fulltext,
-                    orderBy, false);
-
-            return entries;
+            return groupDir.query(filter, fulltext,
+                    getGroupSortMap(), false);
         } finally {
             if (groupDir != null) {
                 groupDir.close();

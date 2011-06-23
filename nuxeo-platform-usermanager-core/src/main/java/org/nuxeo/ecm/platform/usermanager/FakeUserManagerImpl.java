@@ -23,7 +23,6 @@ import java.io.Serializable;
 import java.security.Principal;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -72,6 +71,8 @@ public class FakeUserManagerImpl implements UserManager {
     String groupDirectoryName;
 
     String groupMembersField;
+
+    Map<String, MatchType> groupSearchFields;
 
     String groupSubGroupsField;
 
@@ -150,6 +151,10 @@ public class FakeUserManagerImpl implements UserManager {
 
     public Set<String> getUserSearchFields() {
         return userSearchFields.keySet();
+    }
+
+    public Set<String> getGroupSearchFields() {
+        return groupSearchFields.keySet();
     }
 
     public void setGroupDirectoryName(String groupDirectoryName) {
@@ -232,7 +237,7 @@ public class FakeUserManagerImpl implements UserManager {
         throw new UnsupportedOperationException();
     }
 
-    public List<NuxeoGroup> searchGroups(String pattern) throws ClientException {
+    public DocumentModelList searchGroups(String pattern) throws ClientException {
         throw new UnsupportedOperationException();
     }
 
@@ -344,7 +349,7 @@ public class FakeUserManagerImpl implements UserManager {
     }
 
     public DocumentModelList searchGroups(Map<String, Serializable> filter,
-            HashSet<String> fulltext) throws ClientException {
+            Set<String> fulltext) throws ClientException {
         throw new UnsupportedOperationException();
     }
 
@@ -375,6 +380,10 @@ public class FakeUserManagerImpl implements UserManager {
 
     public String getGroupIdField() throws ClientException {
         return "groupname";
+    }
+
+    public String getGroupLabelField() throws ClientException {
+        return "grouplabel";
     }
 
     public String getGroupSchemaName() throws ClientException {

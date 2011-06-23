@@ -37,8 +37,8 @@ import org.nuxeo.ecm.platform.usermanager.UserManager.MatchType;
  * APG-240 All attributes are defined public because the user manager service do not get
  * access to the fields. OSGI don't allow splitted packages having access to public members defined
  * from an another package provider.
- * @author matic
  *
+ * @author matic
  */
 @XObject(value = "userManager")
 public class UserManagerDescriptor implements Serializable {
@@ -84,8 +84,8 @@ public class UserManagerDescriptor implements Serializable {
     public boolean userSearchFieldsPresent = false;
 
     @XNode("users/searchFields")
-    public void setUserSearchFieldsPresent(@SuppressWarnings("unused")
-    String text) {
+    public void setUserSearchFieldsPresent(
+            @SuppressWarnings("unused") String text) {
         userSearchFieldsPresent = true;
     }
 
@@ -94,7 +94,8 @@ public class UserManagerDescriptor implements Serializable {
 
     public Map<String, MatchType> userSearchFields = new LinkedHashMap<String, MatchType>();
 
-    @XNodeList(value = "users/searchFields/exactMatchSearchField", componentType = String.class, type = String[].class)
+    @XNodeList(value = "users/searchFields/exactMatchSearchField",
+            componentType = String.class, type = String[].class)
     public void setExactMatchUserSearchFields(String[] fields) {
         for (String field : fields) {
             userSearchFields.put(field, MatchType.EXACT);
@@ -136,6 +137,9 @@ public class UserManagerDescriptor implements Serializable {
     @XNode("groups/directory")
     public String groupDirectoryName;
 
+    @XNode("groups/groupLabelField")
+    public String groupLabelField;
+
     @XNode("groups/membersField")
     public String groupMembersField;
 
@@ -147,6 +151,35 @@ public class UserManagerDescriptor implements Serializable {
 
     @XNode("groups/listingMode")
     public String groupListingMode;
+
+    public boolean groupSearchFieldsPresent = false;
+
+    @XNode("users/searchFields")
+    public void setGroupSearchFieldsPresent(
+            @SuppressWarnings("unused") String text) {
+        groupSearchFieldsPresent = true;
+    }
+
+    @XNode("groups/searchFields@append")
+    public boolean groupSearchFieldsAppend;
+
+    public Map<String, MatchType> groupSearchFields = new LinkedHashMap<String, MatchType>();
+
+    @XNodeList(value = "groups/searchFields/exactMatchSearchField",
+            componentType = String.class, type = String[].class)
+    public void setExactMatchGroupSearchFields(String[] fields) {
+        for (String field : fields) {
+            groupSearchFields.put(field, MatchType.EXACT);
+        }
+    }
+
+    @XNodeList(value = "groups/searchFields/substringMatchSearchField",
+            componentType = String.class, type = String[].class)
+    public void setSubstringMatchGroupSearchFields(String[] fields) {
+        for (String field : fields) {
+            groupSearchFields.put(field, MatchType.SUBSTRING);
+        }
+    }
 
     @XNode("digestAuthDirectory")
     public String digestAuthDirectory;
@@ -218,6 +251,9 @@ public class UserManagerDescriptor implements Serializable {
         if (other.groupDirectoryName != null) {
             groupDirectoryName = other.groupDirectoryName;
         }
+        if (other.groupLabelField != null) {
+            groupLabelField = other.groupLabelField;
+        }
         if (other.groupMembersField != null) {
             groupMembersField = other.groupMembersField;
         }
@@ -226,6 +262,13 @@ public class UserManagerDescriptor implements Serializable {
         }
         if (other.groupParentGroupsField != null) {
             groupParentGroupsField = other.groupParentGroupsField;
+        }
+        if (other.groupSearchFieldsPresent) {
+            if (other.groupSearchFieldsAppend) {
+                groupSearchFields.putAll(other.groupSearchFields);
+            } else {
+                groupSearchFields = other.groupSearchFields;
+            }
         }
         if (other.anonymousUser != null) {
             if (other.anonymousUser.remove) {

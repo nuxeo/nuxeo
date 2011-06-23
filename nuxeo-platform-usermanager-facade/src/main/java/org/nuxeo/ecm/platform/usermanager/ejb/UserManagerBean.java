@@ -21,7 +21,6 @@ package org.nuxeo.ecm.platform.usermanager.ejb;
 
 import java.io.Serializable;
 import java.security.Principal;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -103,7 +102,7 @@ public class UserManagerBean implements UserManagerLocal {
         }
     }
 
-    public List<NuxeoGroup> searchGroups(String pattern) throws ClientException {
+    public DocumentModelList searchGroups(String pattern) throws ClientException {
         try {
             return getUserManager().searchGroups(pattern);
         } catch (Throwable e) {
@@ -166,6 +165,14 @@ public class UserManagerBean implements UserManagerLocal {
     public Set<String> getUserSearchFields() throws ClientException {
         try {
             return getUserManager().getUserSearchFields();
+        } catch (Throwable e) {
+            throw ClientException.wrap(e);
+        }
+    }
+
+    public Set<String> getGroupSearchFields() throws ClientException {
+        try {
+            return getUserManager().getGroupSearchFields();
         } catch (Throwable e) {
             throw ClientException.wrap(e);
         }
@@ -363,7 +370,7 @@ public class UserManagerBean implements UserManagerLocal {
     }
 
     public DocumentModelList searchGroups(Map<String, Serializable> filter,
-            HashSet<String> fulltext) throws ClientException {
+            Set<String> fulltext) throws ClientException {
         try {
             return getUserManager().searchGroups(filter, fulltext);
         } catch (Throwable e) {
@@ -439,6 +446,14 @@ public class UserManagerBean implements UserManagerLocal {
     public String getGroupIdField() throws ClientException {
         try {
             return getUserManager().getGroupIdField();
+        } catch (Throwable e) {
+            throw ClientException.wrap(e);
+        }
+    }
+
+    public String getGroupLabelField() throws ClientException {
+        try {
+            return getUserManager().getGroupLabelField();
         } catch (Throwable e) {
             throw ClientException.wrap(e);
         }

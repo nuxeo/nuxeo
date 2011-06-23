@@ -279,6 +279,19 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
         } finally {
             session.close();
         }
+
+        session = getSession("groupDirectory");
+        try {
+            DocumentModel doc = session.getEntry("administrators");
+            assertEquals("administrators", doc.getPropertyValue("group:groupname"));
+            assertEquals("Administrators group", doc.getPropertyValue("group:grouplabel"));
+
+            doc = session.getEntry("group_1");
+            assertEquals("group_1", doc.getPropertyValue("group:groupname"));
+            assertEquals("", doc.getPropertyValue("group:grouplabel"));
+        } finally {
+            session.close();
+        }
     }
 
     @SuppressWarnings("unchecked")

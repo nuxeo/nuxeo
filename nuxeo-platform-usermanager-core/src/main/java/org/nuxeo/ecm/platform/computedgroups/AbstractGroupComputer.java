@@ -20,9 +20,9 @@ package org.nuxeo.ecm.platform.computedgroups;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
@@ -44,7 +44,7 @@ public abstract class AbstractGroupComputer implements GroupComputer {
      * Default implementation that searches on all ids for a match.
      */
     public List<String> searchGroups(Map<String, Serializable> filter,
-            HashSet<String> fulltext) throws Exception {
+            Set<String> fulltext) throws Exception {
 
         List<String> result = new ArrayList<String>();
         String grpName = (String) filter.get(getUM().getGroupIdField());

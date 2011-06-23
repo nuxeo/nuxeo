@@ -20,9 +20,9 @@ package org.nuxeo.ecm.platform.computedgroups;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.nuxeo.common.collections.ScopedMap;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -145,7 +145,7 @@ public class UserManagerWithComputedGroups extends UserManagerImpl {
 
     @Override
     public DocumentModelList searchGroups(Map<String, Serializable> filter,
-            HashSet<String> fulltext) throws ClientException {
+            Set<String> fulltext) throws ClientException {
 
         boolean searchInVirtualGroups = activateComputedGroup();
         if (Boolean.FALSE.equals(filter.get(VIRTUAL_GROUP_MARKER))) {
