@@ -689,6 +689,7 @@ public class NuxeoAuthenticationFilter implements Filter {
                     requestedPage = cookie.getValue();
                     cookie.setPath("/"); // enforce cookie removing
                     cookie.setMaxAge(0);
+                    httpResponse.addCookie(cookie);
                 }
             }
         }
