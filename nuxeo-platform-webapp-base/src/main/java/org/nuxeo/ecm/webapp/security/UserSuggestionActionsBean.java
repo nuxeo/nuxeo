@@ -135,7 +135,7 @@ public class UserSuggestionActionsBean implements Serializable {
                 Map<String, Serializable> filter = new HashMap<String, Serializable>();
 
                 if (pattern != null && pattern != "") {
-                    filter.put(userManager.getGroupIdField(), pattern);
+                    filter.put(field, pattern);
                 }
                 if (Boolean.TRUE.equals(hideVirtualGroups)) {
                     filter.put("__virtualGroup", false);
