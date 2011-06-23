@@ -17,9 +17,9 @@ package org.nuxeo.ecm.core.api;
 import java.util.Arrays;
 import java.util.List;
 
-import junit.framework.TestCase;
-
 import org.nuxeo.ecm.core.api.impl.NuxeoGroupImpl;
+
+import junit.framework.TestCase;
 
 public class TestNuxeoGroupImpl extends TestCase {
 
@@ -50,13 +50,14 @@ public class TestNuxeoGroupImpl extends TestCase {
     public void testEquals() {
         NuxeoGroup group1 = new NuxeoGroupImpl("mygroup");
         NuxeoGroup group2 = new NuxeoGroupImpl("mygroup");
-        NuxeoGroup group3 = new NuxeoGroupImpl("yourgroup");
+        NuxeoGroup group3 = new NuxeoGroupImpl("yourgroup", "yourlabel");
 
         assertEquals(group1, group1);
         assertEquals(group1, group2);
         assertEquals(group1.hashCode(), group2.hashCode());
         assertFalse(group1.equals(null));
         assertFalse(group1.equals(group3));
+        assertEquals("mygroup", group2.getLabel());
 
         group3.setName("mygroup");
         assertEquals(group1, group3);

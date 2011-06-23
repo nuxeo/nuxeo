@@ -34,14 +34,22 @@ public class NuxeoGroupImpl implements NuxeoGroup {
 
     private String name;
 
+    private String label;
+
     public NuxeoGroupImpl(String name) {
         if (name == null) {
             throw new IllegalArgumentException("group name cannot be null");
         }
         this.name = name;
+        label = name;
         users = new ArrayList<String>();
         groups = new ArrayList<String>();
         parentGroups = new ArrayList<String>();
+    }
+
+    public NuxeoGroupImpl(String name, String label) {
+        this(name);
+        this.label = label;
     }
 
     @Override
@@ -94,6 +102,16 @@ public class NuxeoGroupImpl implements NuxeoGroup {
     @Override
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Override
+    public String getLabel() {
+        return this.label;
+    }
+
+    @Override
+    public void setLabel(String label) {
+        this.label = label;
     }
 
     @Override

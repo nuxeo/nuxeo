@@ -83,4 +83,18 @@ public interface NuxeoGroup extends Serializable {
      */
     void setName(String name);
 
+    /**
+     * Gets the label of the group
+     *
+     * @return the label of the group
+     */
+    String getLabel();
+
+    /**
+     * Sets the label of this group.
+     *
+     * @param label the label of the group
+     */
+    void setLabel(String label);
+
 }
