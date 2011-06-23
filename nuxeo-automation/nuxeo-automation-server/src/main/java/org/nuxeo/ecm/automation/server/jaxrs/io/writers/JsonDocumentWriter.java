@@ -167,7 +167,6 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
      * generate blob urls.
      */
     protected static void writePropertyValue(JsonGenerator jg, Property prop, String filesBaseUrl) throws Exception {
-        org.nuxeo.ecm.core.schema.types.Type type = prop.getType();
         if (prop.isScalar()) {
             writeScalarPropertyValue(jg, prop);
         } else if (prop.isList()) {
