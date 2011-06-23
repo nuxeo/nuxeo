@@ -1986,6 +1986,12 @@
         <version>3.0-b38-nxp-web-210</version>
       </dependency>
 
+      <dependency>
+        <groupId>firebug</groupId>
+        <artifactId>firebug</artifactId>
+        <version>1.6.2-fx</version>
+        <type>xpi</type>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
