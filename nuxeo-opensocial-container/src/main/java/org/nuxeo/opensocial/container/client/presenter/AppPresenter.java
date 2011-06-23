@@ -192,10 +192,12 @@ public class AppPresenter extends WidgetPresenter<AppPresenter.Display> {
         var items = [];
 
         $wnd.jQuery.each(childs, function(index, child) {
-        items.push({href:[child.path.value,"@view/Original.jpg"].join("")});
+        items.push({href:[child.path.value,"@view/Original.jpg"].join(""), title:child.description.value});
         });
 
         $wnd.jQuery.fancybox(items, {
+        'titleShow' : true,
+        'titlePosition' : 'inside',
         'zoomSpeedIn': 500,
         'zoomSpeedOut': 500,
         'overlayShow': false,
