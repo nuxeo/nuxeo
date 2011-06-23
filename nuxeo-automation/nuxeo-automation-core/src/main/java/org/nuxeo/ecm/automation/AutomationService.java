@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -12,6 +12,7 @@
 package org.nuxeo.ecm.automation;
 
 import java.util.List;
+import java.util.Map;
 
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 
@@ -85,6 +86,12 @@ public interface AutomationService {
      * will be faster
      */
     Object run(OperationContext ctx, String chainId) throws OperationException,
+            InvalidChainException, Exception;
+
+    /**
+     * Shortcut to execute a single operation described by the given ID and map of parameters
+     */
+    Object run(OperationContext ctx, String id, Map<String,Object> params) throws OperationException,
             InvalidChainException, Exception;
 
     /**

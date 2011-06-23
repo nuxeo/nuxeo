@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -107,6 +107,21 @@ public class OperationServiceImpl implements AutomationService {
         } finally {
             ctx.dispose();
         }
+    }
+
+    /**
+     * TODO avoid creating a temporary chain and then compile it.
+     *  try to find a way to execute the single operation without compiling it. (for optimization)
+     */
+    @Override
+    public Object run(OperationContext ctx, String id,
+            Map<String, Object> params) throws OperationException,
+            InvalidChainException, Exception {
+        OperationChain chain = new OperationChain("operation");
+        OperationParameters oparams = new OperationParameters(id,
+                params);
+        chain.add(oparams);
+        return run(ctx, chain);
     }
 
     public synchronized void putOperationChain(OperationChain chain)
