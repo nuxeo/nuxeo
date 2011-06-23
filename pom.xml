@@ -53,6 +53,7 @@
     <module>nuxeo-platform-forms-layout-export</module>
     <module>nuxeo-platform-localconfiguration</module>
     <module>nuxeo-platform-directory-web</module>
+    <module>nuxeo-platform-userpreferences</module>
   </modules>
 
   <dependencyManagement>
@@ -527,6 +528,11 @@
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-ui-web</artifactId>
         <version>${nuxeo.jsf.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-userpreferences</artifactId>
+        <version>${nuxeo.features.version}</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
