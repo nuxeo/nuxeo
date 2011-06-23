@@ -71,10 +71,9 @@ import org.nuxeo.ecm.automation.core.operations.document.UpdateDocument;
 import org.nuxeo.ecm.automation.core.operations.services.DocumentPageProviderOperation;
 import org.nuxeo.ecm.automation.server.AutomationServer;
 import org.nuxeo.ecm.automation.server.jaxrs.io.ObjectCodecService;
-import org.nuxeo.ecm.webengine.test.WebEngineFeature;
+import org.nuxeo.ecm.automation.test.RestFeature;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
-import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
@@ -86,11 +85,8 @@ import com.google.inject.Inject;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @RunWith(FeaturesRunner.class)
-@Features(WebEngineFeature.class)
+@Features(RestFeature.class)
 @Jetty(port = 18080)
-@Deploy({ "org.nuxeo.runtime.jtajca", "org.nuxeo.ecm.automation.core",
-        "org.nuxeo.ecm.automation.server", "org.nuxeo.ecm.automation.features",
-        "org.nuxeo.ecm.platform.query.api" })
 @LocalDeploy({ "org.nuxeo.ecm.automation.server:test-bindings.xml",
         "org.nuxeo.ecm.automation.server:test-mvalues.xml" })
 // @RepositoryConfig(cleanup=Granularity.METHOD)
