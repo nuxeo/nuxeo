@@ -9,10 +9,8 @@
  * Contributors:
  *     slacoin
  */
-package org.nuxeo.ecm.automation.client;
+package org.nuxeo.ecm.automation.client.jaxrs.spi;
 
-import org.nuxeo.ecm.automation.client.jaxrs.spi.Connector;
-import org.nuxeo.ecm.automation.client.jaxrs.spi.Request;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.auth.BasicAuthInterceptor;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.auth.PortalSSOAuthInterceptor;
 

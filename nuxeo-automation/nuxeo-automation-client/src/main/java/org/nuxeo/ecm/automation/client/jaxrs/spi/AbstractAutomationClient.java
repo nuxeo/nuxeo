@@ -24,7 +24,6 @@ import org.nuxeo.ecm.automation.client.AsyncCallback;
 import org.nuxeo.ecm.automation.client.AutomationClient;
 import org.nuxeo.ecm.automation.client.LoginCallback;
 import org.nuxeo.ecm.automation.client.LoginInfo;
-import org.nuxeo.ecm.automation.client.RequestInterceptor;
 import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.auth.BasicAuthInterceptor;
 
