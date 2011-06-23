@@ -100,6 +100,16 @@ public class TestHtmlSanitizerServiceImpl {
     }
 
     @Test
+    public void sanitizeNullFilterField() throws Exception {
+        DocumentModel doc = session.createDocumentModel("/", "n", "Note");
+        doc.setPropertyValue("note", BAD_XML);
+        doc.setPropertyValue("mime_type", null); // null filter field
+        doc = session.createDocument(doc);
+        String note = (String) doc.getPropertyValue("note");
+        assertEquals(SANITIZED_XML, note);
+    }
+
+    @Test
     public void sanitizeWebPage() throws Exception {
 
         // Html page that must be sanitized

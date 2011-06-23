@@ -207,7 +207,7 @@ public class HtmlSanitizerServiceImpl extends DefaultComponent implements
                         continue;
                     }
                     if (field.getFilterValue().equals(
-                            filterProp.getValue().toString()) != field.doSanitize()) {
+                            String.valueOf(filterProp.getValue())) != field.doSanitize()) {
                         continue;
                     }
                 }
