@@ -23,6 +23,7 @@ import org.nuxeo.ecm.automation.client.Constants;
 import org.nuxeo.ecm.automation.client.OperationRequest;
 import org.nuxeo.ecm.automation.client.jaxrs.model.OperationDocumentation;
 import org.nuxeo.ecm.automation.client.jaxrs.model.OperationInput;
+import org.nuxeo.ecm.automation.client.jaxrs.model.OperationRegistry;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.marshallers.DocumentMarshaller;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.marshallers.DocumentsMarshaller;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.marshallers.ExceptionMarshaller;

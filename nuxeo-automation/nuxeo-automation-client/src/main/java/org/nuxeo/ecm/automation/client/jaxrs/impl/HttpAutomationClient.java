@@ -15,7 +15,7 @@ import org.apache.http.HttpHost;
 import org.apache.http.client.HttpClient;
 import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.nuxeo.ecm.automation.client.jaxrs.adapters.DocumentServiceFactory;
+import org.nuxeo.ecm.automation.client.adapters.DocumentServiceFactory;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.AsyncAutomationClient;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.Connector;
 

@@ -9,13 +9,12 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.automation.client.jaxrs.spi;
+package org.nuxeo.ecm.automation.client.jaxrs.model;
 
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.nuxeo.ecm.automation.client.jaxrs.model.OperationDocumentation;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>

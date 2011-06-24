@@ -14,13 +14,12 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.automation.client.jaxrs.spi;
+package org.nuxeo.ecm.automation.client;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.nuxeo.ecm.automation.client.AdapterFactory;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>

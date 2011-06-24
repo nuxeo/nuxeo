@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -60,7 +60,6 @@ import java.nio.charset.Charset;
  * @author rob@iharder.net
  * @version 2.1
  */
-@SuppressWarnings({"ALL"})
 public class Base64
 {
 

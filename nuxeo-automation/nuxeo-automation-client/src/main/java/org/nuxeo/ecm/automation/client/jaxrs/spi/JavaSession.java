@@ -27,6 +27,7 @@ import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.jaxrs.model.Blob;
 import org.nuxeo.ecm.automation.client.jaxrs.model.Blobs;
 import org.nuxeo.ecm.automation.client.jaxrs.model.OperationDocumentation;
+import org.nuxeo.ecm.automation.client.jaxrs.model.OperationRegistry;
 
 /**
  * Abstract class for sessions running on real JVMs.

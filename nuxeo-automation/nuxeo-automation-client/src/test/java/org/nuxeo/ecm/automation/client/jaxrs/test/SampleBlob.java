@@ -16,7 +16,7 @@ import java.io.File;
 import org.nuxeo.ecm.automation.client.Constants;
 import org.nuxeo.ecm.automation.client.RemoteException;
 import org.nuxeo.ecm.automation.client.Session;
-import org.nuxeo.ecm.automation.client.jaxrs.adapters.DocumentService;
+import org.nuxeo.ecm.automation.client.adapters.DocumentService;
 import org.nuxeo.ecm.automation.client.jaxrs.impl.HttpAutomationClient;
 import org.nuxeo.ecm.automation.client.jaxrs.model.Blob;
 import org.nuxeo.ecm.automation.client.jaxrs.model.Document;

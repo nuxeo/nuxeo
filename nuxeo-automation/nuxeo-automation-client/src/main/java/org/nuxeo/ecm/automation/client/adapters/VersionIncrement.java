@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -9,21 +9,18 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.automation.client.jaxrs.adapters;
+package org.nuxeo.ecm.automation.client.adapters;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
-public class VersionIncrement {
+public interface VersionIncrement {
 
     public static final String MAJOR = "Major";
 
     public static final String MINOR = "Minor";
 
     public static final String NONE = "None";
-
-    private VersionIncrement() {
-    }
 
 }

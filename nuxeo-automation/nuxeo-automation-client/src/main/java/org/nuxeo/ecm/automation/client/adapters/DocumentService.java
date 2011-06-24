@@ -9,7 +9,7 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.automation.client.jaxrs.adapters;
+package org.nuxeo.ecm.automation.client.adapters;
 
 import org.nuxeo.ecm.automation.client.Constants;
 import org.nuxeo.ecm.automation.client.OperationRequest;

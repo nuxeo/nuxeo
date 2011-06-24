@@ -22,6 +22,7 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 import org.nuxeo.ecm.automation.client.AdapterFactory;
+import org.nuxeo.ecm.automation.client.AdapterManager;
 import org.nuxeo.ecm.automation.client.AsyncCallback;
 import org.nuxeo.ecm.automation.client.AutomationClient;
 import org.nuxeo.ecm.automation.client.LoginCallback;
@@ -158,6 +159,11 @@ public abstract class JavaClient implements AutomationClient {
             throw new RuntimeException("Failed to login as "+username);
         }
         return createSession(login);
+    }
+
+    @Override
+    public Session getSession() {
+        return getSession((String)null, (String)null);
     }
 
     @Override

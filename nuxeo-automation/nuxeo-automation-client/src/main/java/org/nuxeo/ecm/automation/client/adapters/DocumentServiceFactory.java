@@ -9,7 +9,7 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.automation.client.jaxrs.adapters;
+package org.nuxeo.ecm.automation.client.adapters;
 
 import org.nuxeo.ecm.automation.client.AdapterFactory;
 import org.nuxeo.ecm.automation.client.Session;
