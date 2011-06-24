@@ -30,17 +30,25 @@ import org.openqa.selenium.support.FindBy;
 
 public class AdminCenterBasePage extends AbstractPage {
 
+    // for ajax refresh wait until by adding required element
     @Required
+    @FindBy(linkText = "System information")
+    public WebElement systemInformationLink;
+
     @FindBy(linkText = "Users & groups")
     public WebElement userAndGroupsLink;
 
-    public static final String DOCUMENT_MANAGEMENT = "Document Management";
+    @FindBy(linkText = "Document Management")
+    public WebElement documentManagementLink;
 
-    public static final String SYSTEM_INFORMATION = "System information";
+    @FindBy(linkText = "Update Center")
+    public WebElement updateCenterLink;
 
-    public static final String UPDATE_CENTER = "Update Center";
+    @FindBy(linkText = "Nuxeo Connect")
+    public WebElement nuxeoConnectLink;
 
-    public static final String NUXEO_CONNECT = "Nuxeo Connect";
+    @FindBy(linkText = "Vocabularies")
+    public WebElement vocabulariesLink;
 
     public AdminCenterBasePage(WebDriver driver) {
         super(driver);
@@ -65,15 +73,18 @@ public class AdminCenterBasePage extends AbstractPage {
     }
 
     public ConnectHomePage getConnectHomePage() {
-        return nav(ConnectHomePage.class, NUXEO_CONNECT);
+        nuxeoConnectLink.click();
+        return asPage(ConnectHomePage.class);
     }
 
     public UpdateCenterPage getUpdateCenterHomePage() {
-        return nav(UpdateCenterPage.class, UPDATE_CENTER);
+        updateCenterLink.click();
+        return asPage(UpdateCenterPage.class);
     }
 
     public SystemHomePage getSystemHomePage() {
-        return nav(SystemHomePage.class, SYSTEM_INFORMATION);
+        systemInformationLink.click();
+        return asPage(SystemHomePage.class);
     }
 
     public String getSelectedSubTab() {
@@ -106,7 +117,7 @@ public class AdminCenterBasePage extends AbstractPage {
     }
 
     public DocumentBasePage exitAdminCenter() {
-        findElementWithTimeout(By.linkText(DOCUMENT_MANAGEMENT)).click();
+        documentManagementLink.click();
         return asPage(DocumentBasePage.class);
     }
 }
