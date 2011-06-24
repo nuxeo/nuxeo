@@ -52,13 +52,13 @@ class Nuxeo(NuxeoTestCase):
             # create a section, grant rights to members
             p = (p.getRootSections()
                  .createSection(self.section_title, 'A description')
-                 .rights().grant('ReadWrite', 'members'))
+                 .rights().grant('ReadWrite', 'Members group'))
         ret = p.viewDocumentPath(self.dir_path, raiseOn404=False)
         if ret is None:
             # create a workspace and a folder, grant rights to members
             p = (p.getRootWorkspaces()
                  .createWorkspace(self.ws_title, 'A description')
-                 .rights().grant('ReadWrite', 'members')
+                 .rights().grant('ReadWrite', 'Members group')
                  .view()
                  .createFolder(self.dir_title, 'A description'))
         # create users
