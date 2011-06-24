@@ -87,6 +87,11 @@ public class AdminCenterBasePage extends AbstractPage {
         return asPage(SystemHomePage.class);
     }
 
+    public VocabulariesPage getVocabulariesPage() {
+        vocabulariesLink.click();
+        return asPage(VocabulariesPage.class);
+    }
+
     public String getSelectedSubTab() {
         WebElement tab = findElementWithTimeout(By.xpath("//div[@class='tabsBar']//li[@class='selected']/a"));
         if (tab != null) {
