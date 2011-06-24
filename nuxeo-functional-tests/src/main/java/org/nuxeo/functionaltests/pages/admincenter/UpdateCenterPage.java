@@ -17,11 +17,17 @@
 
 package org.nuxeo.functionaltests.pages.admincenter;
 
+import org.nuxeo.functionaltests.Required;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
 
 public class UpdateCenterPage extends AdminCenterBasePage {
+
+    @Required
+    @FindBy(linkText = "Packages from Nuxeo Marketplace")
+    WebElement packagesFromNuxeoMarketPlaceLink;
 
     public UpdateCenterPage(WebDriver driver) {
         super(driver);
@@ -36,6 +42,11 @@ public class UpdateCenterPage extends AdminCenterBasePage {
         WebElement listing = findElementWithTimeout(By.xpath("//table[@class='packageListing']"));
         assert (listing != null);
         return page;
+    }
+
+    public UpdateCenterPage getPackagesFromNuxeoMarketPlace() {
+        packagesFromNuxeoMarketPlaceLink.click();
+        return asPage(UpdateCenterPage.class);
     }
 
 }

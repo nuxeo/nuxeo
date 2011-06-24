@@ -34,6 +34,7 @@ import java.util.jar.JarFile;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.nuxeo.functionaltests.pages.AbstractPage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedException;
 import org.nuxeo.functionaltests.pages.LoginPage;
@@ -361,6 +362,18 @@ public abstract class AbstractTest {
 
     public LoginPage getLoginPage() {
         return get(NUXEO_URL, LoginPage.class);
+    }
+
+    /**
+     * navigate to a link text. wait until the link is available and click on it.
+     */
+    public <T extends AbstractPage> T nav(Class<T> pageClass, String linkText) {
+        WebElement link = findElementWithTimeout(By.linkText(linkText));
+        if (link == null) {
+            return null;
+        }
+        link.click();
+        return asPage(pageClass);
     }
 
     /**

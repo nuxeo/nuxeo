@@ -314,8 +314,7 @@ public class ITWizardAndUpdateCenter extends AbstractTest {
 
         // Go to Update Center
         UpdateCenterPage updateCenterHome = systemPage.getUpdateCenterHomePage();
-        updateCenterHome = updateCenterHome.nav(UpdateCenterPage.class,
-                "Packages from Nuxeo Marketplace");
+        updateCenterHome = updateCenterHome.getPackagesFromNuxeoMarketPlace();
 
         // Get listing in IFrame
         PackageListingPage packageListing = updateCenterHome.getPackageListingPage();
