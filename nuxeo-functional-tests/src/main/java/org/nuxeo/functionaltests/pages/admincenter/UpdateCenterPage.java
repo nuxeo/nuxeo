@@ -34,9 +34,7 @@ public class UpdateCenterPage extends AdminCenterBasePage {
     }
 
     public PackageListingPage getPackageListingPage() {
-        System.out.println("Main page : " + driver.getCurrentUrl());
         IFrameHelper.focusOnWEIFrame(driver);
-        System.out.println("Switched to frame " + driver.getCurrentUrl());
         findElementWithTimeout(By.tagName("body")); // wait for IFrame Body
         PackageListingPage page = asPage(PackageListingPage.class);
         WebElement listing = findElementWithTimeout(By.xpath("//table[@class='packageListing']"));
