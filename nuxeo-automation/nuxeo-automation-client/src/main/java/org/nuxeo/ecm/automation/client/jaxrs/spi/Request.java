@@ -32,7 +32,6 @@ import org.nuxeo.ecm.automation.client.jaxrs.model.FileBlob;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.marshallers.ExceptionMarshaller;
 import org.nuxeo.ecm.automation.client.jaxrs.util.IOUtils;
 import org.nuxeo.ecm.automation.client.jaxrs.util.InputStreamDataSource;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -159,7 +158,6 @@ public class Request extends HashMap<String, String> {
         File file = IOUtils.copyToTempFile(in);
         file.deleteOnExit();
         FileBlob blob = new FileBlob(file);
-        Framework.trackFile(file, blob);
         blob.setMimeType(ctype);
         if (fileName != null) {
             blob.setFileName(fileName);
