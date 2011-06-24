@@ -54,6 +54,19 @@ public class AdminCenterBasePage extends AbstractPage {
         super(driver);
     }
 
+    public AdminCenterBasePage nav(String linkText) {
+        return nav(AdminCenterBasePage.class, linkText);
+    }
+
+    public <T extends AbstractPage> T nav(Class<T> pageClass, String linkText) {
+        WebElement link = findElementWithTimeout(By.linkText(linkText));
+        if (link == null) {
+            return null;
+        }
+        link.click();
+        return asPage(pageClass);
+    }
+
     public UsersGroupsBasePage getUsersGroupsHomePage() {
         userAndGroupsLink.click();
         return asPage(UsersGroupsBasePage.class);
