@@ -119,7 +119,7 @@
     <!-- should use same property name as JBoss to ease upgrades -->
     <jboss.ejb.version>3.0-RC8</jboss.ejb.version>
     <javax.ejb.version>3.0-RC8</javax.ejb.version>
-    <nuxeo.distribution.tools.version>1.10</nuxeo.distribution.tools.version>
+    <nuxeo.distribution.tools.version>1.10.1</nuxeo.distribution.tools.version>
     <!-- compliance property since removal of maven-nuxeo-plugin execution -->
     <eclipseVersion>${project.version}</eclipseVersion>
   </properties>
