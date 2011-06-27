@@ -323,6 +323,10 @@ public class SessionImpl implements Session, XAResource {
             String documentType = document.getPrimaryType();
             String[] mixinTypes = document.getMixinTypes();
 
+            if (repository.repositoryDescriptor.fulltextExcludedTypes.contains(documentType)) {
+                continue;
+            }
+
             for (String indexName : model.getFulltextInfo().indexNames) {
                 Set<String> paths;
                 if (model.getFulltextInfo().indexesAllSimple.contains(indexName)) {

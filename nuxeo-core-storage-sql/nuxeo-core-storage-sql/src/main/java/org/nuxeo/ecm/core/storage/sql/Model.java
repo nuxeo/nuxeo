@@ -45,6 +45,7 @@ import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.FieldDescriptor;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.FulltextIndexDescriptor;
 import org.nuxeo.ecm.core.storage.sql.RowMapper.IdWithTypes;
+import org.nuxeo.ecm.core.storage.sql.jdbc.SQLInfo;
 
 /**
  * The {@link Model} is the link between high-level types and SQL-level objects
@@ -630,6 +631,7 @@ public class Model {
     @SuppressWarnings("unchecked")
     private void inferFulltextInfo() {
         List<FulltextIndexDescriptor> descs = repositoryDescriptor.fulltextIndexes;
+        fulltextInfo.excludedTypes.addAll(repositoryDescriptor.fulltextExcludedTypes);
         if (descs == null) {
             descs = new ArrayList<FulltextIndexDescriptor>(1);
         }
@@ -1052,7 +1054,7 @@ public class Model {
             inferTypePropertyInfos(typeName, documentType.getSchemaNames());
             inferTypePropertyPaths(documentType);
 
-            for (String fragmentName : getCommonSimpleFragments()) {
+            for (String fragmentName : getCommonSimpleFragments(typeName)) {
                 addTypeSimpleFragment(typeName, fragmentName);
             }
             for (String fragmentName : COMMON_COLLECTION_FRAGMENTS) {
@@ -1157,9 +1159,10 @@ public class Model {
         }
     }
 
-    protected List<String> getCommonSimpleFragments() {
+    protected List<String> getCommonSimpleFragments(String typeName) {
         List<String> fragments = COMMON_SIMPLE_FRAGMENTS;
-        if (!repositoryDescriptor.fulltextDisabled) {
+        if (!repositoryDescriptor.fulltextDisabled
+                && !repositoryDescriptor.fulltextExcludedTypes.contains(typeName)) {
             fragments = new ArrayList<String>(fragments);
             fragments.add(FULLTEXT_TABLE_NAME);
         }

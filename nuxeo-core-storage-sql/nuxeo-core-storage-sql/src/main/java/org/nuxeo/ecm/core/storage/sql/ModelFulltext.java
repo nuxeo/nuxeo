@@ -66,4 +66,6 @@ public class ModelFulltext {
 
     public final Map<String, Set<String>> propPathsExcludedByIndexBinary = new HashMap<String, Set<String>>();
 
+    public final Set<String> excludedTypes = new HashSet<String>();
+
 }

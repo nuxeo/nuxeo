@@ -120,9 +120,14 @@ public class BinaryTextListener implements PostCommitEventListener {
                 continue;
             }
             DocumentModel indexedDoc = session.getDocument(docRef);
+
             if (indexedDoc.isProxy()) {
                 // proxies don't have any fulltext attached, it's
                 // the target document that carries it
+                continue;
+            }
+
+            if (fulltextInfo.excludedTypes.contains(indexedDoc.getType())){
                 continue;
             }
 
