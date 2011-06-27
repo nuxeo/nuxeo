@@ -11,12 +11,9 @@
         <rule grant="true">
           <condition>#{previewActions.hasPreview}</condition>
         </rule>
-        <rule grant="false">
-          <facet>Folderish</facet>
-        </rule>
       </filter>
     </action>
-    
+
     <action id="POPUP_PREVIEW" link="javascript:doPreview" order="130"
       enabled="true" label="label.document.preview" icon="/icons/view_pdf.gif">
       <category>POPUP</category>
