@@ -19,7 +19,11 @@ public class LayoutHelper {
                 "x-3-header2cols"), X_4_FOOTER_3COLS("x-4-footer3cols"), X_4_HEADER_3COLS(
                 "x-4-header3cols"), X_4_66_33_50_50("x-4-66-33-50-50"), X_4_50_50_66_33(
                 "x-4-50-50-66-33"), X_4_100_66_33_100("x-4-100-66-33-100"), X_4_100_33_66_100(
-                "x-4-100-33-66-100");
+                "x-4-100-33-66-100"), X_6_50_50_75_25_50_50(
+                "x-6-50-50-75-25-50-50"), X_7_33_33_33_75_25_50_50(
+                "x-7-33-33-33-75-25-50-50"), X_7_33_33_33_100_33_33_33(
+                "x-7-33-33-33-100-33-33-33"), X_7_75_25_50_50_33_33_33(
+                "x-7-75-25-50-50-33-33-33");
 
         private static final Map<String, Preset> stringToEnum = new HashMap<String, Preset>();
         static {
@@ -72,19 +76,35 @@ public class LayoutHelper {
         case X_3_HEADER_2COLS:
             return buildLayout(YUITemplate.YUI_ZT_100, YUITemplate.YUI_ZT_50_50);
         case X_4_FOOTER_3COLS:
-            return buildLayout(YUITemplate.YUI_ZT_33_33_33, YUITemplate.YUI_ZT_100);
+            return buildLayout(YUITemplate.YUI_ZT_33_33_33,
+                    YUITemplate.YUI_ZT_100);
         case X_4_HEADER_3COLS:
-            return buildLayout(YUITemplate.YUI_ZT_100, YUITemplate.YUI_ZT_33_33_33);
+            return buildLayout(YUITemplate.YUI_ZT_100,
+                    YUITemplate.YUI_ZT_33_33_33);
         case X_4_66_33_50_50:
-            return buildLayout(YUITemplate.YUI_ZT_66_33, YUITemplate.YUI_ZT_50_50);
+            return buildLayout(YUITemplate.YUI_ZT_66_33,
+                    YUITemplate.YUI_ZT_50_50);
         case X_4_50_50_66_33:
-            return buildLayout(YUITemplate.YUI_ZT_50_50, YUITemplate.YUI_ZT_66_33);
+            return buildLayout(YUITemplate.YUI_ZT_50_50,
+                    YUITemplate.YUI_ZT_66_33);
         case X_4_100_66_33_100:
-            return buildLayout(YUITemplate.YUI_ZT_100, YUITemplate.YUI_ZT_66_33,
-                    YUITemplate.YUI_ZT_100);
+            return buildLayout(YUITemplate.YUI_ZT_100,
+                    YUITemplate.YUI_ZT_66_33, YUITemplate.YUI_ZT_100);
         case X_4_100_33_66_100:
-            return buildLayout(YUITemplate.YUI_ZT_100, YUITemplate.YUI_ZT_33_66,
-                    YUITemplate.YUI_ZT_100);
+            return buildLayout(YUITemplate.YUI_ZT_100,
+                    YUITemplate.YUI_ZT_33_66, YUITemplate.YUI_ZT_100);
+        case X_6_50_50_75_25_50_50:
+            return buildLayout(YUITemplate.YUI_ZT_50_50,
+                    YUITemplate.YUI_ZT_75_25, YUITemplate.YUI_ZT_50_50);
+        case X_7_33_33_33_75_25_50_50:
+            return buildLayout(YUITemplate.YUI_ZT_33_33_33,
+                    YUITemplate.YUI_ZT_75_25, YUITemplate.YUI_ZT_50_50);
+        case X_7_33_33_33_100_33_33_33:
+            return buildLayout(YUITemplate.YUI_ZT_33_33_33,
+                    YUITemplate.YUI_ZT_100, YUITemplate.YUI_ZT_33_33_33);
+        case X_7_75_25_50_50_33_33_33:
+            return buildLayout(YUITemplate.YUI_ZT_75_25,
+                    YUITemplate.YUI_ZT_50_50, YUITemplate.YUI_ZT_33_33_33);
         default:
             return buildLayout(YUITemplate.YUI_ZT_100);
         }
