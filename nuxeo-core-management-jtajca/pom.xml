@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.core</groupId>
     <artifactId>nuxeo-core-parent</artifactId>
-    <version>5.4.3-SNAPSHOT</version>
+    <version>5.4.1.1-SNAPSHOT</version>
   </parent>
 
   <artifactId>nuxeo-core-management-jtajca</artifactId>
@@ -40,8 +40,24 @@
     </dependency>
 
     <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime-jtajca</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.javasimon</groupId>
+      <artifactId>javasimon-core</artifactId>
+    </dependency>
+
+    <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-storage-sql-test</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

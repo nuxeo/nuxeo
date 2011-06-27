@@ -116,16 +116,10 @@ public class DefaultTransactionMonitor implements TransactionManagerMonitor,
                 throw new Error("Cannot lookup tx manager", cause);
             }
         }
-        if (!(tm instanceof NuxeoContainer.TransactionManagerWrapper)) {
+        if (!(tm instanceof TransactionManagerImpl)) {
             throw new Error("Nuxeo container not installed");
         }
-        try {
-            Field f = NuxeoContainer.TransactionManagerWrapper.class.getDeclaredField("tm");
-            f.setAccessible(true);
-            return (TransactionManagerImpl) f.get(tm);
-        } catch (Exception cause) {
-            throw new Error("Cannot access to geronimo tx manager", cause);
-        }
+	return (TransactionManagerImpl) tm;
     }
 
     protected TransactionStatistics lastCommittedStatistics;
