@@ -37,4 +37,20 @@ public interface UserProfile extends UserPreferences<UserProfile> {
 
     String getPhoneNumber() throws ClientException;
 
+    /**
+     * @return {@code Boolean.FALSE} for Man or {@code Boolean.TRUE} for Woman
+     * @throws ClientException
+     */
+    Boolean getSex() throws ClientException;
+
+    String getSchoolWorkInfo() throws ClientException;
+
+    String getInterests() throws ClientException;
+
+    String getCareerObjective() throws ClientException;
+
+    String getSkills() throws ClientException;
+
+    Boolean getPublicProfile() throws ClientException;
+
 }

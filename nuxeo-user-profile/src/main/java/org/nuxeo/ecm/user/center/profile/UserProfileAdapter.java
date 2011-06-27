@@ -19,7 +19,13 @@ package org.nuxeo.ecm.user.center.profile;
 
 import static org.nuxeo.ecm.user.center.profile.UserProfileConstants.USER_PROFILE_AVATAR_FIELD;
 import static org.nuxeo.ecm.user.center.profile.UserProfileConstants.USER_PROFILE_BIRTHDATE_FIELD;
+import static org.nuxeo.ecm.user.center.profile.UserProfileConstants.USER_PROFILE_CAREEROBJECTIVE_FIELD;
+import static org.nuxeo.ecm.user.center.profile.UserProfileConstants.USER_PROFILE_INTERESTS_FIELD;
 import static org.nuxeo.ecm.user.center.profile.UserProfileConstants.USER_PROFILE_PHONENUMBER_FIELD;
+import static org.nuxeo.ecm.user.center.profile.UserProfileConstants.USER_PROFILE_PUBLICPROFILE_FIELD;
+import static org.nuxeo.ecm.user.center.profile.UserProfileConstants.USER_PROFILE_SCHOOLWORKINFO_FIELD;
+import static org.nuxeo.ecm.user.center.profile.UserProfileConstants.USER_PROFILE_SEX_FIELD;
+import static org.nuxeo.ecm.user.center.profile.UserProfileConstants.USER_PROFILE_SKILLS_FIELD;
 
 import java.util.Calendar;
 
@@ -63,6 +69,36 @@ public class UserProfileAdapter extends AbstractLocalConfiguration<UserProfile>
     @Override
     public String getPhoneNumber() throws ClientException {
         return (String) doc.getPropertyValue(USER_PROFILE_PHONENUMBER_FIELD);
+    }
+
+    @Override
+    public Boolean getSex() throws ClientException {
+        return (Boolean) doc.getPropertyValue(USER_PROFILE_SEX_FIELD);
+    }
+
+    @Override
+    public String getSchoolWorkInfo() throws ClientException {
+        return (String) doc.getPropertyValue(USER_PROFILE_SCHOOLWORKINFO_FIELD);
+    }
+
+    @Override
+    public String getInterests() throws ClientException {
+        return (String) doc.getPropertyValue(USER_PROFILE_INTERESTS_FIELD);
+    }
+
+    @Override
+    public String getCareerObjective() throws ClientException {
+        return (String) doc.getPropertyValue(USER_PROFILE_CAREEROBJECTIVE_FIELD);
+    }
+
+    @Override
+    public String getSkills() throws ClientException {
+        return (String) doc.getPropertyValue(USER_PROFILE_SKILLS_FIELD);
+    }
+
+    @Override
+    public Boolean getPublicProfile() throws ClientException {
+        return (Boolean) doc.getPropertyValue(USER_PROFILE_PUBLICPROFILE_FIELD);
     }
 
 }

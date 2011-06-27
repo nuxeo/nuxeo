@@ -34,4 +34,15 @@ public class UserProfileConstants {
 
     public static final String USER_PROFILE_PHONENUMBER_FIELD = "upro:phonenumber";
 
+    public static final String USER_PROFILE_SEX_FIELD = "upro:sex";
+
+    public static final String USER_PROFILE_SCHOOLWORKINFO_FIELD = "upro:schoolworkinfo";
+
+    public static final String USER_PROFILE_INTERESTS_FIELD = "upro:interests";
+
+    public static final String USER_PROFILE_CAREEROBJECTIVE_FIELD = "upro:careerobjective";
+
+    public static final String USER_PROFILE_SKILLS_FIELD = "upro:skills";
+
+    public static final String USER_PROFILE_PUBLICPROFILE_FIELD = "upro:publicprofile";
 }

@@ -20,6 +20,8 @@ package org.nuxeo.ecm.user.center.profile.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.util.Calendar;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -69,12 +71,28 @@ public class TestUserProfile {
     public void testGetUserProfile() throws Exception {
         DocumentModel userWorkspace = userWorkspaceService.getCurrentUserPersonalWorkspace(session, null);
         userWorkspace.addFacet(UserProfileConstants.USER_PROFILE_FACET);
+        Calendar birthday = Calendar.getInstance();
+        birthday.set(1982, 2, 25);
+        userWorkspace.setPropertyValue(UserProfileConstants.USER_PROFILE_BIRTHDATE_FIELD, birthday);
         userWorkspace.setPropertyValue(UserProfileConstants.USER_PROFILE_PHONENUMBER_FIELD, "555-1234");
+        userWorkspace.setPropertyValue(UserProfileConstants.USER_PROFILE_SEX_FIELD, Boolean.FALSE); // Man
+        userWorkspace.setPropertyValue(UserProfileConstants.USER_PROFILE_SCHOOLWORKINFO_FIELD, "Works at Nuxeo");
+        userWorkspace.setPropertyValue(UserProfileConstants.USER_PROFILE_INTERESTS_FIELD, "Music, photo");
+        userWorkspace.setPropertyValue(UserProfileConstants.USER_PROFILE_CAREEROBJECTIVE_FIELD, "Becoming famous");
+        userWorkspace.setPropertyValue(UserProfileConstants.USER_PROFILE_SKILLS_FIELD, "Hunting zombies");
+        userWorkspace.setPropertyValue(UserProfileConstants.USER_PROFILE_PUBLICPROFILE_FIELD, Boolean.TRUE);
         userWorkspace = session.saveDocument(userWorkspace);
         session.save();
         UserProfile userProfile = userPreferencesService.getUserPreferences(session, UserProfile.class, UserProfileConstants.USER_PROFILE_FACET);
         assertNotNull(userProfile);
+        assertEquals(birthday, userProfile.getBirthDate());
         assertEquals("555-1234", userProfile.getPhoneNumber());
+        assertEquals(Boolean.FALSE, userProfile.getSex());
+        assertEquals("Works at Nuxeo", userProfile.getSchoolWorkInfo());
+        assertEquals("Music, photo", userProfile.getInterests());
+        assertEquals("Becoming famous", userProfile.getCareerObjective());
+        assertEquals("Hunting zombies", userProfile.getSkills());
+        assertEquals(Boolean.TRUE, userProfile.getPublicProfile());
     }
 
 }
