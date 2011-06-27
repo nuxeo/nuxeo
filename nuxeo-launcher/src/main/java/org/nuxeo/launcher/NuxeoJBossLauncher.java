@@ -56,7 +56,6 @@ public class NuxeoJBossLauncher extends NuxeoLauncher {
     @Override
     protected void setServerStartCommand(List<String> command) {
         command.add(JBossConfigurator.STARTUP_CLASS);
-        command.add("start");
         command.add("-b");
         command.add(configurationGenerator.getUserConfig().getProperty(
                 BIND_ADDRESS_PARAM, BIND_ADDRESS_DEFAULT));
