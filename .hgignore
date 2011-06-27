@@ -28,3 +28,4 @@ nuxeo-*/OSGI-INF
 nuxeo-platform-jbpm/nuxeo-platform-jbpm-web/src/main/resources/nuxeo.war/linkXhtml.sh
 nuxeo-opensocial-features/maven-eclipse.xml
 nuxeo-opensocial-container/war/
+nuxeo-opensocial-container/.gwt
