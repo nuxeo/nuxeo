@@ -70,6 +70,11 @@ public class UserProfileActions implements Serializable {
         return mode;
     }
 
+    public boolean getCanEdit() throws ClientException {
+        userManagementActions.setSelectedUser(currentUser.getName());
+        return userManagementActions.getAllowEditUser() && userManagementActions.isNotReadOnly();
+    }
+
     public void setMode(String mode) {
         this.mode = mode;
     }
