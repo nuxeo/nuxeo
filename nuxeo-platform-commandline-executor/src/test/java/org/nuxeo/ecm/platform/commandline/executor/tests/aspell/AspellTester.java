@@ -58,7 +58,7 @@ public class AspellTester extends NXRuntimeTestCase {
         CommandAvailability ca = cles.getCommandAvailability("aspell");
 
         if (!ca.isAvailable()) {
-            log.warn("aspell is not avalaible, skipping test");
+            log.warn("aspell is not available, skipping test");
             return;
         }
 

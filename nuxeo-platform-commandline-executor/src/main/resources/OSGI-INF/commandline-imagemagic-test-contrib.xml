@@ -8,7 +8,7 @@
       <commandLine>identify</commandLine>
       <parameterString> -ping -format '%m %w %h' #{filePath}</parameterString>
       <winParameterString> -ping -format "%m %w %h" #{filePath}</winParameterString>
-      <installationDirective>You need to install ImageMagic.</installationDirective>
+      <installationDirective>You need to install ImageMagick.</installationDirective>
     </command>
 
   </extension>

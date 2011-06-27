@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2011 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -13,8 +13,6 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id$
  *
  */
 
@@ -46,6 +44,16 @@ public class CommandNotAvailable extends Exception {
 
     public String getErrorMessage() {
         return availability.getErrorMessage();
+    }
+
+    /**
+     * @since 5.4.3
+     */
+    @Override
+    public String getMessage() {
+        String msg = getErrorMessage() != null ? getErrorMessage() + ". " : "";
+        msg += getInstallMessage() != null ? getInstallMessage() + ". " : "";
+        return msg + super.getMessage();
     }
 
 }

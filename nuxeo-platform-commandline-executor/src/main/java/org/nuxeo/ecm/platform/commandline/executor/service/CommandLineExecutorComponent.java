@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2011 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -13,8 +13,6 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id$
  *
  */
 
@@ -50,10 +48,13 @@ public class CommandLineExecutorComponent extends DefaultComponent implements
         CommandLineExecutorService {
 
     public static final String EP_ENV = "environment";
+
     public static final String EP_CMD = "command";
+
     public static final String EP_CMDTESTER = "commandTester";
 
     public static final String DEFAULT_TESTER = "SystemPathTester";
+
     public static final String DEFAULT_EXECUTOR = "ShellExecutor";
 
     protected static Map<String, CommandLineDescriptor> commandDescriptors = new HashMap<String, CommandLineDescriptor>();
@@ -111,27 +112,27 @@ public class CommandLineExecutorComponent extends DefaultComponent implements
             CommandTester tester = testers.get(testerName);
             boolean cmdAvailable = false;
             if (tester == null) {
-                log.error("Unable to find tester '" + testerName +
-                        "', command will not be avalaible: " + name);
+                log.error("Unable to find tester '" + testerName
+                        + "', command will not be available: " + name);
             } else {
-                log.debug("Using tester '" + testerName + "' for command: " +
-                        name);
+                log.debug("Using tester '" + testerName + "' for command: "
+                        + name);
                 CommandTestResult testResult = tester.test(desc);
                 cmdAvailable = testResult.succeed();
                 if (cmdAvailable) {
                     log.info("Registered command: " + name);
                 } else {
-                    log.warn("Command not available: " + name + " (" +
-                            testResult.getErrorMessage() + ')');
                     desc.setInstallErrorMessage(testResult.getErrorMessage());
+                    log.warn("Command not available: " + name + " ("
+                            + desc.getInstallErrorMessage() + ". "
+                            + desc.getInstallationDirective() + ')');
                 }
             }
             desc.setAvalaible(cmdAvailable);
             commandDescriptors.put(name, desc);
         } else if (EP_CMDTESTER.equals(extensionPoint)) {
             CommandTesterDescriptor desc = (CommandTesterDescriptor) contribution;
-            CommandTester tester = (CommandTester) desc.getTesterClass()
-                    .newInstance();
+            CommandTester tester = (CommandTester) desc.getTesterClass().newInstance();
             testers.put(desc.getName(), tester);
         }
     }
