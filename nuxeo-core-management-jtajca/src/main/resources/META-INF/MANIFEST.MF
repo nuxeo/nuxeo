@@ -1,0 +1,2 @@
+Bundle-SymbolicName: org.nuxeo.runtime.jtajca.management
+Bundle-Activator: org.nuxeo.ecm.core.management.jtajca.internal.Activator

@@ -41,6 +41,7 @@
     <module>nuxeo-core-event-jms</module>
     <module>nuxeo-core-persistence</module>
     <module>nuxeo-core-management</module>
+    <module>nuxeo-core-management-jtajca</module>
     <module>nuxeo-core-management-test</module>
     <module>nuxeo-core-facade</module>
     <module>nuxeo-core-test</module>
@@ -224,6 +225,11 @@
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
         <artifactId>nuxeo-core-management</artifactId>
+        <version>${nuxeo.core.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.core</groupId>
+        <artifactId>nuxeo-core-management-jtajca</artifactId>
         <version>${nuxeo.core.version}</version>
       </dependency>
       <dependency>
