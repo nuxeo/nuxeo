@@ -809,22 +809,22 @@
         <artifactId>nuxeo-automation-client</artifactId>
         <version>${nuxeo.features.version}</version>
       </dependency>
-      <!--dependency>
-        <groupId>org.nuxeo.ecm.automation</groupId>
-        <artifactId>nuxeo-automation-client-common</artifactId>
-        <version>${nuxeo.features.version}</version>
-      </dependency-->
+      <!-- <dependency> -->
+      <!-- <groupId>org.nuxeo.ecm.automation</groupId> -->
+      <!-- <artifactId>nuxeo-automation-client-common</artifactId> -->
+      <!-- <version>${nuxeo.features.version}</version> -->
+      <!-- </dependency> -->
       <dependency>
         <groupId>org.nuxeo.ecm.automation</groupId>
         <artifactId>nuxeo-automation-test</artifactId>
         <version>${nuxeo.features.version}</version>
         <scope>test</scope>
       </dependency>
-      <!--dependency>
-        <groupId>org.nuxeo.ecm.automation</groupId>
-        <artifactId>nuxeo-automation-hessian</artifactId>
-        <version>${nuxeo.features.version}</version>
-      </dependency-->
+      <!-- <dependency> -->
+      <!-- <groupId>org.nuxeo.ecm.automation</groupId> -->
+      <!-- <artifactId>nuxeo-automation-hessian</artifactId> -->
+      <!-- <version>${nuxeo.features.version}</version> -->
+      <!-- </dependency> -->
 
       <!-- I/O feature -->
       <dependency>
