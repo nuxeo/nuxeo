@@ -13,18 +13,14 @@
   <name>Nuxeo Core Server EAR</name>
 
   <dependencies>
-
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>jstl</artifactId>
     </dependency>
-
     <dependency>
       <groupId>commons-el</groupId>
       <artifactId>commons-el</artifactId>
     </dependency>
-
-    <!-- nuxeo bundles -->
 
     <dependency>
       <groupId>org.nuxeo.common</groupId>
@@ -267,7 +263,6 @@
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-opencmis-impl</artifactId>
     </dependency>
-
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-opencmis-bindings</artifactId>
@@ -275,9 +270,7 @@
   </dependencies>
 
   <build>
-
     <plugins>
-
       <plugin>
         <groupId>org.nuxeo.build</groupId>
         <artifactId>nuxeo-distribution-tools</artifactId>
@@ -285,9 +278,7 @@
           <buildFile>${basedir}/src/main/assemble/assembly.xml</buildFile>
         </configuration>
       </plugin>
-
     </plugins>
-
   </build>
 
 </project>

@@ -35,13 +35,9 @@
         <includes>
           <artifact groupId="org.nuxeo*" />
         </includes>
-        <excludes>
-          <artifact groupId="org.nuxeo.ecm.distribution" />
-        </excludes>
       </artifact:set>
     </copy>
 
-    <!-- Third-party libraries -->
     <antcall target="third-party-libraries" />
 
     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}.zip"
@@ -59,7 +55,6 @@
         </includes>
       </artifact:set>
     </copy>
-    <!-- Remove duplicates -->
     <nx:rmdups dir="${nuxeo.ear}/lib" />
   </target>
 

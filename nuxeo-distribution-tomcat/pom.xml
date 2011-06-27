@@ -38,6 +38,10 @@
       </activation>
     </profile>
     <profile>
+      <id>nuxeo-coreserver</id>
+      <!-- profile for building Tomcat with only Nuxeo CoreServer -->
+    </profile>
+    <profile>
       <id>nuxeo-cap</id>
       <!-- profile for building Tomcat with only Nuxeo CAP -->
     </profile>

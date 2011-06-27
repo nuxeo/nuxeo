@@ -59,7 +59,6 @@
   </target>
 
   <target name="prepare-jboss">
-    <!-- unzip JBoss as ${outdir}/jboss-5.1.0.GA -->
     <unzip dest="${outdir}">
       <artifact:resolveFile key="org.jboss:jboss-as:5.1.0.GA:zip" />
       <!--
@@ -89,38 +88,37 @@
     <!-- prepare a skeleton without JBoss -->
     <mkdir dir="${jboss}" />
     <unzip dest="${jboss}">
-      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${nuxeo.distribution.version}:zip"
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources::zip"
                             classifier="doc" />
     </unzip>
     <copy todir="${jboss}">
       <fileset dir="src/main/resources" />
     </copy>
     <unzip dest="${jboss}">
-      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${nuxeo.distribution.version}:zip"
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources::zip"
                             classifier="root" />
     </unzip>
     <chmod dir="${jboss}" perm="ug+x" includes="*.command" />
     <unzip dest="${jboss}/bin">
-      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${nuxeo.distribution.version}:zip"
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources::zip"
                             classifier="bin" />
     </unzip>
-    <chmod dir="${jboss}/bin" perm="ug+x" includes="*.sh,*ctl,*.command" />
 
     <unzip dest="${jboss}/templates" overwrite="true">
-      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${maven.project.version}:zip"
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources::zip"
                             classifier="templates-common" />
-      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${maven.project.version}:zip"
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources::zip"
                             classifier="templates-jboss" />
     </unzip>
 
     <copy todir="${jboss}/server/default/deployers">
-      <artifact:resolveFile key="org.nuxeo.runtime:nuxeo-jboss-deployer:${nuxeo.runtime.version}" />
+      <artifact:resolveFile key="org.nuxeo.runtime:nuxeo-jboss-deployer" />
     </copy>
     <copy todir="${jboss}/server/default/lib">
-      <artifact:resolveFile key="org.jboss.services:logging-monitor:5.1.0.GA" />
+      <artifact:resolveFile key="org.jboss.jbossas:jboss-as-varia::jar:logging-monitor" />
     </copy>
     <copy tofile="${jboss}/common/lib/hibernate-core.jar">
-      <artifact:resolveFile key="org.hibernate:hibernate-core:3.3.2.GA" />
+      <artifact:resolveFile key="org.hibernate:hibernate-core" />
     </copy>
     <mkdir dir="${jboss}/client" />
     <copy todir="${jboss}/client">
@@ -143,12 +141,9 @@
 
     <!-- Nuxeo CAP -->
     <unzip dest="${distribution.dir}/server/default/deploy/nuxeo.ear">
-      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-cap:${nuxeo.features.version}:zip" />
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-cap::zip" />
     </unzip>
 
-    <antcall target="add-jbossws-bundle">
-      <param name="distribution.dir" value="${distribution.dir}" />
-    </antcall>
     <antcall target="reorganize-libs">
       <param name="distribution.dir" value="${distribution.dir}" />
     </antcall>
@@ -192,20 +187,15 @@
 
     <!-- Nuxeo DM Doc -->
     <unzip dest="${distribution.dir}">
-      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${nuxeo.distribution.version}:zip"
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources::zip"
                             classifier="doc-dm" />
     </unzip>
 
     <!-- Nuxeo DM -->
     <unzip dest="${distribution.dir}/server/default/deploy/nuxeo.ear">
-      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-dm:${nuxeo.distribution.version}:zip" />
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-dm::zip" />
     </unzip>
 
-    <antcall target="add-jbossws-bundle">
-      <param name="distribution.dir" value="${distribution.dir}" />
-    </antcall>
-
-    <!-- WSS specific BEGIN -->
     <!-- move WSS front filter as external lib  since it must be referenced from root Web context-->
     <move todir="${distribution.dir}/server/default/lib">
       <fileset dir="${distribution.dir}/server/default/deploy/nuxeo.ear/lib">
@@ -216,7 +206,6 @@
     <copy tofile="${distribution.dir}/server/default/deploy/ROOT.war/WEB-INF/web.xml"
           file="${maven.basedir}/src/main/resources/wss-rootweb.xml"
           overwrite="true" />
-    <!-- WSS specific END -->
 
     <antcall target="reorganize-libs">
       <param name="distribution.dir" value="${distribution.dir}" />
@@ -224,7 +213,7 @@
 
     <!-- Complementary templates for DM -->
     <unzip dest="${distribution.dir}/templates" overwrite="true">
-      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${maven.project.version}:zip"
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources::zip"
                             classifier="templates-common-dm" />
     </unzip>
     <antcall target="set-distribution-properties">
@@ -251,13 +240,6 @@
                      type="zip" />
   </target>
 
-  <target name="add-jbossws-bundle">
-    <!-- add JBossWS specific bundle -->
-    <copy todir="${distribution.dir}/server/default/deploy/nuxeo.ear/bundles">
-      <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-platform-ws-jbossws:${nuxeo.features.version}" />
-    </copy>
-  </target>
-
   <target name="reorganize-libs">
     <!-- Add JBoss specific requirements -->
     <copy todir="${distribution.dir}/server/default/deploy/nuxeo.ear/bundles"
@@ -277,7 +259,6 @@
       </artifact:set>
     </copy>
 
-    <!-- Remove duplicates -->
     <nx:rmdups dir="${distribution.dir}/server/default/deploy/nuxeo.ear/lib" />
 
     <!-- remove libraries already provided by JBoss or unneeded -->
@@ -307,13 +288,7 @@
         <include name="connector-api-*" />
         <include name="el-*" />
         <include name="catalina-*" />
-        <!-- should remove the following?
-        <include name="javacc-*" />
-        <include name="jaxb-api-*" />
-        <include name="jaxen-*" />
-        <include name="osgi-core-*" />
-        <include name="webservices-api-*" />
-        -->
+        <include name="quartz*" />
       </fileset>
     </delete>
 
@@ -325,6 +300,7 @@
         <include name="lucene-analyzers*" />
       </fileset>
     </move>
+    <nx:rmdups dir="${distribution.dir}/server/default/lib" />
   </target>
 
   <target name="set-distribution-properties">
