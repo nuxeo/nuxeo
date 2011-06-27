@@ -1,0 +1,16 @@
+--- TXSQLRepositoryTestCase.java
++++ TXSQLRepositoryTestCase.java
+@@ -12,8 +12,12 @@
+ 
+ package org.nuxeo.ecm.core.storage.sql;
+ 
++import javax.naming.Context;
++
++import org.nuxeo.common.jndi.InitContextAccessor;
++import org.nuxeo.common.jndi.NamingContext;
++import org.nuxeo.common.jndi.NamingContextFactory;
+ import org.nuxeo.runtime.jtajca.NuxeoContainer;
+-import org.nuxeo.runtime.jtajca.naming.NamingContextFactory;
+ import org.nuxeo.runtime.transaction.TransactionHelper;
+ 
+ /**
