@@ -16,7 +16,8 @@
 
       <h:commandLink action="#{userCenterViews.setCurrentViewId(userCenterTab.id)}" immediate="true">
         <nxu:graphicImage value="#{userCenterTab.icon}"
-              alt="#{messages[userCenterTab.label]}" />
+          rendered="#{not empty userCenterTab.icon}"
+          alt="#{messages[userCenterTab.label]}" />
         <h:outputText value="#{messages[userCenterTab.label]}" />
       </h:commandLink>
 
