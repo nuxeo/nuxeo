@@ -17,7 +17,8 @@
             id="removeStepListTable">
             <nxh:commandLink action="#{action.getLink()}"
               id="documentActionSubviewUpperListLink">
-              <nxu:graphicImage value="#{action.icon}"/>
+              <nxu:graphicImage value="#{action.icon}"
+                rendered="#{not empty action.icon}" />
               <h:outputText value="#{messages[action.label]}" />
               <f:param name="stepId" value="#{field_1}" />
             </nxh:commandLink>

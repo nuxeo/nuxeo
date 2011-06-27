@@ -50,9 +50,6 @@ import org.nuxeo.runtime.api.Framework;
 public class DocumentRoutingSuggestionActionsBean extends
         DocumentContextBoundActionBean implements Serializable {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 1L;
 
     public static final String CURRENT_DOC_ROUTING_SEARCH_ATTACHED_DOC = "CURRENT_DOC_ROUTING_SEARCH_ATTACHED_DOC";
