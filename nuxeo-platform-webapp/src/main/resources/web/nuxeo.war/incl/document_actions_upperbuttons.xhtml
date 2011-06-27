@@ -11,6 +11,7 @@
       <nxh:commandLink action="#{action.getLink()}"
         immediate="#{action.immediate}">
         <h:graphicImage value="#{action.icon}"
+          rendered="#{not empty action.icon}"
           title="#{messages[action.label]}"
           alt="#{messages[action.label]}"
           styleClass="smallIcon" />
@@ -24,6 +25,7 @@
         immediate="#{action.immediate}"
         target="_blank">
         <h:graphicImage value="#{action.icon}"
+          rendered="#{not empty action.icon}"
           title="#{messages[action.label]}"
           alt="#{messages[action.label]}"
           styleClass="smallIcon" />

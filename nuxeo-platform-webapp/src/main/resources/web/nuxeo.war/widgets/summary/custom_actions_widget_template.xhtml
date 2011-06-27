@@ -74,6 +74,7 @@
                 id="#{widget.id}_#{action.id}"
                 immediate="#{action.immediate}">
                 <h:graphicImage value="#{action.icon}"
+                  rendered="#{not empty action.icon}"
                   title="#{messages[action.label]}"
                   alt="#{messages[action.label]}"
                   styleClass="smallIcon" />
@@ -89,10 +90,10 @@
                 id="#{widget.id}_#{action.id}"
                 immediate="#{action.immediate}">
                 <h:graphicImage value="#{action.icon}"
+                  rendered="#{not empty action.icon}"
                   title="#{messages[action.label]}"
                   alt="#{messages[action.label]}"
-                  styleClass="smallIcon"
-                  rendered="#{not empty action.icon}" />
+                  styleClass="smallIcon" />
                 <h:outputText  value=" #{messages[action.label]}" />
               </nxh:commandLink>
             </div>

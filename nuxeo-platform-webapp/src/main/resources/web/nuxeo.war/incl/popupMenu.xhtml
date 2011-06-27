@@ -8,7 +8,8 @@
       <nxu:dataList var="action" layout="simple"
         value="#{popupHelper.unfiltredPopupActions}">
         <li id="ctxMenu_#{action.id}" action="#{action.link}">
-          <nxu:graphicImage value="#{action.icon}"/>
+          <nxu:graphicImage value="#{action.icon}"
+            rendered="#{not empty action.icon}" />
           <h:outputText value=" #{messages[action.label]}" />
         </li>
       </nxu:dataList>

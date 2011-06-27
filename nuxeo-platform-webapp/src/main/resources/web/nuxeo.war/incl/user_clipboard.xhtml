@@ -69,6 +69,7 @@
          <nxh:commandLink action="#{cb_action.getLink()}"
             immediate="#{cb_action.immediate}">
             <nxu:graphicImage value="#{cb_action.icon}"
+              rendered="#{not empty cb_action.icon}"
               styleClass="smallIcon" />
             <h:outputText value=" #{messages[cb_action.label]}" />
           </nxh:commandLink>
