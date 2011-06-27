@@ -61,7 +61,8 @@
                 title="#{messages[action.label]}"
                 alt="#{messages[action.label]}"
                 target="_blank">
-                <h:graphicImage value="#{action.icon}" />
+                <h:graphicImage value="#{action.icon}"
+                  rendered="#{not empty action.icon}" />
                 <h:outputText value=" #{messages[action.label]}" />
               </nxh:metaOutputLink>
               <br />
@@ -72,7 +73,8 @@
                   title="#{messages[action.label]}"
                   alt="#{messages[action.label]}"
                   immediate="#{action.immediate}">
-                  <h:graphicImage value="#{action.icon}" />
+                  <h:graphicImage value="#{action.icon}"
+                    rendered="#{not empty action.icon}" />
                   <h:outputText value=" #{messages[action.label]}" />
                 </nxh:commandLink>
                 <br />
