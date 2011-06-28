@@ -19,7 +19,12 @@ package org.nuxeo.ecm.core.storage.sql;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.AppenderSkeleton;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.spi.LoggingEvent;
 import org.nuxeo.ecm.core.NXCore;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -127,7 +132,8 @@ public class TestSQLRepositoryJTAJCA extends TXSQLRepositoryTestCase {
         TransactionHelper.startTransaction();
         openSession();
         assertTrue(TransactionHelper.isTransactionActive());
-        DocumentModel doc = new DocumentModelImpl("/nosuchdir", "doc", "Document");
+        DocumentModel doc = new DocumentModelImpl("/nosuchdir", "doc",
+                "Document");
         try {
             session.createDocument(doc);
             fail("Missing parent should throw");
@@ -139,7 +145,8 @@ public class TestSQLRepositoryJTAJCA extends TXSQLRepositoryTestCase {
         assertTrue(TransactionHelper.isTransactionMarkedRollback());
     }
 
-    protected static class HelperEventTransactionListener implements EventTransactionListener {
+    protected static class HelperEventTransactionListener implements
+            EventTransactionListener {
         public boolean committed;
 
         public void transactionStarted() {
@@ -160,9 +167,50 @@ public class TestSQLRepositoryJTAJCA extends TXSQLRepositoryTestCase {
         assertFalse(listener.committed);
         TransactionHelper.commitOrRollbackTransaction();
         assertTrue(listener.committed);
+        TransactionHelper.startTransaction();
     }
 
     protected static final Log log = LogFactory.getLog(TestSQLRepositoryJTAJCA.class);
+
+    protected static class TxWarnChecker extends AppenderSkeleton {
+
+        boolean seenWarn;
+
+        @Override
+        public void close() {
+
+        }
+
+        @Override
+        public boolean requiresLayout() {
+            return false;
+        }
+
+        /*
+         * (non-Javadoc)
+         * 
+         * @see org.apache.log4j.AppenderSkeleton#append(org.apache.log4j.spi.
+         * LoggingEvent)
+         */
+        @Override
+        protected void append(LoggingEvent event) {
+            if (!Level.WARN.equals(event.getLevel())) {
+                return;
+            }
+            if ("Session invoked in a container without a transaction active".equals(event.getMessage())) {
+                seenWarn = true;
+            }
+        }
+
+    }
+
+    public void testAccessWithoutTx() throws ClientException {
+        TransactionHelper.commitOrRollbackTransaction();
+        TxWarnChecker checker = new TxWarnChecker();
+        Logger.getRootLogger().addAppender(checker);
+        session.getRootDocument();
+        assertTrue(checker.seenWarn);
+    }
 
     /**
      * Testing that if 2 modifications are done at the same time on the same

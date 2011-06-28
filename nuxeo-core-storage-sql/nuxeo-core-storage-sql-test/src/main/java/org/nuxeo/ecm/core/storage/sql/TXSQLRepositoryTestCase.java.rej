@@ -1,16 +1,18 @@
 --- TXSQLRepositoryTestCase.java
 +++ TXSQLRepositoryTestCase.java
-@@ -12,8 +12,12 @@
+@@ -12,6 +12,7 @@
  
  package org.nuxeo.ecm.core.storage.sql;
  
-+import javax.naming.Context;
-+
-+import org.nuxeo.common.jndi.InitContextAccessor;
-+import org.nuxeo.common.jndi.NamingContext;
-+import org.nuxeo.common.jndi.NamingContextFactory;
++import org.nuxeo.common.Environment;
  import org.nuxeo.runtime.jtajca.NuxeoContainer;
--import org.nuxeo.runtime.jtajca.naming.NamingContextFactory;
  import org.nuxeo.runtime.transaction.TransactionHelper;
  
- /**
+@@ -26,6 +27,7 @@
+     public void setUp() throws Exception {
+         setUpContainer();
+         super.setUp(); // calls deployRepositoryConfig()
++        Environment.getDefault().setHostApplicationName(Environment.NXSERVER_HOST);
+         TransactionHelper.startTransaction();
+         openSession();
+     }

@@ -22,6 +22,8 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.naming.NamingException;
 import javax.transaction.Status;
@@ -30,6 +32,7 @@ import javax.transaction.Transaction;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.runtime.api.J2EEContainerDescriptor;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -74,25 +77,45 @@ public class TransactionalCoreSessionWrapper implements InvocationHandler,
         return (CoreSession) Proxy.newProxyInstance(cl, INTERFACES,
                 new TransactionalCoreSessionWrapper(session));
     }
+ 
+    protected void checkTxActiveRequired(Method m) {
+        if (threadBound.get() != null) { 
+            return; // tx is active, no ckeck needed
+        }
+        // TODO add annotation on core session api for marking non transactional API
+        final String name = m.getName();
+        if ("getId".equals(name)) {
+            return;
+        }
+        if ("disconnect".equals(name)) {
+            return;
+        }
+        log.warn("Session invoked in a container without a transaction active",
+                new Throwable());
+    }
 
-    public Object invoke(Object proxy, Method method, Object[] args)
+   public Object invoke(Object proxy, Method method, Object[] args)
             throws Throwable {
         Boolean b = threadBound.get();
         if (b == null) {
             // first call in thread
+            Transaction tx = null;
             try {
-                Transaction tx = TransactionHelper.lookupTransactionManager().getTransaction();
-                if (tx != null
-                        && tx.getStatus() != Status.STATUS_MARKED_ROLLBACK) {
-                    tx.registerSynchronization(this);
-                    session.afterBegin();
-                    threadBound.set(Boolean.TRUE);
+                tx = TransactionHelper.lookupTransactionManager().getTransaction();
+
+                if (tx != null) {
+                    if (tx.getStatus() != Status.STATUS_MARKED_ROLLBACK) {
+                        tx.registerSynchronization(this);
+                        session.afterBegin();
+                        threadBound.set(Boolean.TRUE);
+                    }
                 }
             } catch (NamingException e) {
                 // no transaction manager, ignore
             } catch (Exception e) {
                 log.error("Error on transaction synchronizer registration", e);
             }
+            checkTxActiveRequired(method);
         }
         try {
             return method.invoke(session, args);

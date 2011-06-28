@@ -61,11 +61,11 @@ public class TXSQLRepositoryTestCase extends SQLRepositoryTestCase {
     @Override
     public void tearDown() throws Exception {
         session.cancel();
+        closeSession();
         if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
             TransactionHelper.setTransactionRollbackOnly();
             TransactionHelper.commitOrRollbackTransaction();
         }
-        closeSession();
         super.tearDown();
         NamingContextFactory.revertSetAsInitial();
     }
