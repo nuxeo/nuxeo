@@ -680,6 +680,8 @@
 
     </widgetType>
 
+    <!-- Deprecated since NXP-6825 is fixed but still useful
+      for Studio configuration -->
     <widgetType name="listing_lifecycle">
       <configuration>
         <sinceVersion>5.4.0</sinceVersion>
@@ -932,7 +934,7 @@
       </fields>
     </widget>
 
-    <widget name="listing_lifecycle" type="listing_lifecycle">
+    <widget name="listing_lifecycle" type="text">
       <labels>
         <label mode="any">label.content.header.currentLifecycleState</label>
       </labels>
@@ -940,6 +942,9 @@
       <fields>
         <field>data.currentLifeCycleState</field>
       </fields>
+      <properties mode="view">
+        <property name="localize">true</property>
+      </properties>
     </widget>
 
     <widget name="listing_livedit_link" type="listing_livedit_link">
