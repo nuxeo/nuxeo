@@ -25,6 +25,7 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.log4j.MDC;
@@ -56,15 +57,17 @@ public class Log4jWebFilter implements Filter {
             putProperty(request, "RequestURL");
             putProperty(request, "ServletPath");
             putProperty(request, "UserPrincipal");
-            putProperty(((HttpServletRequest) request).getSession(false),
-                    "SessionID");
+            final HttpSession session = ((HttpServletRequest) request).getSession(false);
+            if (session != null) {
+                MDC.put("SessionID", session.getId());
+            }
             chain.doFilter(request, response);
         } finally {
             MDC.remove("RemoteAddr");
-            MDC.remove( "PathInfo");
-            MDC.remove( "RequestURL");
-            MDC.remove( "ServletPath");
-            MDC.remove( "UserPrincipal");
+            MDC.remove("PathInfo");
+            MDC.remove("RequestURL");
+            MDC.remove("ServletPath");
+            MDC.remove("UserPrincipal");
             MDC.remove("SessionID");
         }
 
