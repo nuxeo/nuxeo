@@ -115,8 +115,9 @@
                 </labels>
                 <helpLabels>
                   <label mode="any">
-                    If set to true, the held value will be translated. Defaults
-                    to false.
+                    If set to true, the held value will be translated. This
+                    property cannot be an EL expression, it will only resolve
+                    literal values 'true' or 'false'. Defaults to false.
                   </label>
                 </helpLabels>
                 <fields>
