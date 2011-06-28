@@ -256,6 +256,14 @@ public class NuxeoContainer {
         GenericConnectionManager cm = createConnectionManager(config);
         connectionManager = new ConnectionManagerWrapper(cm, config);
     }
+    
+   public static synchronized void resetConnectionManager() throws Exception {
+        ConnectionManagerWrapper cm = connectionManager;
+        if (cm == null) {
+            return;
+        }
+        cm.reset();
+    }
 
     protected static ConnectionManagerWrapper lookupConnectionManager() {
         ConnectionManager cm;
