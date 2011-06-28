@@ -109,8 +109,6 @@ public class DefaultTransactionStatistics implements TransactionStatistics {
     protected static String printCapturedContext(Throwable e) {
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw, false);
-        pw.print(e.getMessage());
-        pw.print('\n');
         e.printStackTrace(pw);
         pw.flush();
         return sw.toString();
@@ -124,10 +122,10 @@ public class DefaultTransactionStatistics implements TransactionStatistics {
         if (endTimestamp == 0) {
             return String.format(
                     "Transaction %s, has started at %s with a duration of %d ms and has %s\n%s%s",
-                    id.toString(), date, duration, status, getStartCapturedContext(), getEndCapturedContext());
+                    id.toString(), date, duration, status, getStartCapturedContextMessage(), getEndCapturedContextMessage());
         }
         return String.format(
                 "Transaction %s has started at %s and is still active after %d ms\n%s",
-                id.toString(), date, duration, getStartCapturedContext());
+                id.toString(), date, duration, getStartCapturedContextMessage());
     }
 }
