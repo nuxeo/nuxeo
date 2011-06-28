@@ -13,8 +13,8 @@ package org.nuxeo.ecm.automation.client;
 
 import java.util.Map;
 
-import org.nuxeo.ecm.automation.client.jaxrs.model.OperationDocumentation;
-import org.nuxeo.ecm.automation.client.jaxrs.model.OperationInput;
+import org.nuxeo.ecm.automation.client.model.OperationDocumentation;
+import org.nuxeo.ecm.automation.client.model.OperationInput;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>

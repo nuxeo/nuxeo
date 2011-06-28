@@ -1,4 +1,4 @@
-/*
+/* 
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -9,21 +9,39 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.automation.client.jaxrs.model;
+package org.nuxeo.ecm.automation.client.model;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class IdRef extends DocRef {
+public class Blobs extends ArrayList<Blob> implements OperationInput {
 
     private static final long serialVersionUID = 1L;
 
-    public IdRef(String path) {
-        super(path);
+    public Blobs() {
     }
 
-    public String value() {
-        return ref;
+    public Blobs(int size) {
+        super(size);
+    }
+
+    public Blobs(List<Blob> blobs) {
+        super(blobs);
+    }
+
+    public String getInputType() {
+        return "bloblist";
+    }
+
+    public String getInputRef() {
+        return null;
+    }
+
+    public boolean isBinary() {
+        return true;
     }
 
 }

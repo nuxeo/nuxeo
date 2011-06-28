@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -9,25 +9,24 @@
  * Contributors:
  *     matic
  */
-package org.nuxeo.ecm.automation.client.jaxrs.model;
+package org.nuxeo.ecm.automation.client.model;
 
-
+import java.util.Date;
 
 /**
  * @author matic
  *
  */
-public class PrimitiveInput<T> implements OperationInput {
+public class DateInput implements OperationInput {
 
-    public PrimitiveInput(T value) {
-        this.value = value;
-        this.type= value.getClass().getSimpleName().toLowerCase();
+    private static final long serialVersionUID = -240778472381265434L;
+
+    public DateInput(Date date) {
+        this.date = date;
     }
-    
-    protected final T value;
-    
-    protected final String type;
-    
+
+    protected final Date date;
+
     @Override
     public boolean isBinary() {
         return false;
@@ -35,12 +34,12 @@ public class PrimitiveInput<T> implements OperationInput {
 
     @Override
     public String getInputType() {
-        return type;
+        return "date";
     }
 
     @Override
     public String getInputRef() {
-        return String.format("%s:%s", type, value.toString());
+        return "date:"+DateUtils.formatDate(date);
     }
 
 }

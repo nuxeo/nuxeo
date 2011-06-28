@@ -9,26 +9,15 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.automation.client.jaxrs.model;
+package org.nuxeo.ecm.automation.client.model;
+
+import java.io.File;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class Expr {
+public interface HasFile {
 
-    protected final String value;
-
-    public Expr(String value) {
-        this.value = "expr:" + value;
-    }
-
-    @Override
-    public String toString() {
-        return value;
-    }
-
-    public static String from(String value) {
-        return "expr:" + value;
-    }
+    File getFile();
 
 }

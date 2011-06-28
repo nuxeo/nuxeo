@@ -1,4 +1,4 @@
-/*
+/* 
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -9,21 +9,26 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.automation.client.jaxrs.model;
-
-import java.io.Serializable;
+package org.nuxeo.ecm.automation.client.model;
 
 /**
- * Marker interface for objects that can be set as input on operations
- *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public interface OperationInput extends Serializable {
+public class Expr {
 
-    boolean isBinary();
+    protected final String value;
 
-    String getInputType();
+    public Expr(String value) {
+        this.value = "expr:" + value;
+    }
 
-    String getInputRef();
+    @Override
+    public String toString() {
+        return value;
+    }
+
+    public static String from(String value) {
+        return "expr:" + value;
+    }
 
 }

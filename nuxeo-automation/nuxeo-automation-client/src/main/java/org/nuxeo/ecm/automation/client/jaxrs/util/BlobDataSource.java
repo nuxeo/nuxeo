@@ -17,7 +17,7 @@ import java.io.OutputStream;
 
 import javax.activation.DataSource;
 
-import org.nuxeo.ecm.automation.client.jaxrs.model.Blob;
+import org.nuxeo.ecm.automation.client.model.Blob;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>

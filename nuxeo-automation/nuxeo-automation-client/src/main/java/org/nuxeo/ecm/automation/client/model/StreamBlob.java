@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -9,15 +9,27 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.automation.client.jaxrs.model;
+package org.nuxeo.ecm.automation.client.model;
 
-import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public interface HasFile {
+@SuppressWarnings("serial")
+public class StreamBlob extends Blob {
 
-    File getFile();
+    protected final InputStream in;
+
+    public StreamBlob(InputStream in, String name, String ctype) {
+        super(name, ctype);
+        this.in = in;
+    }
+
+    @Override
+    public InputStream getStream() throws IOException {
+        return in;
+    }
 
 }

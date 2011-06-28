@@ -9,27 +9,21 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.automation.client.jaxrs.model;
+package org.nuxeo.ecm.automation.client.model;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.Serializable;
 
 /**
+ * Marker interface for objects that can be set as input on operations
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@SuppressWarnings("serial")
-public class StreamBlob extends Blob {
+public interface OperationInput extends Serializable {
 
-    protected final InputStream in;
+    boolean isBinary();
 
-    public StreamBlob(InputStream in, String name, String ctype) {
-        super(name, ctype);
-        this.in = in;
-    }
+    String getInputType();
 
-    @Override
-    public InputStream getStream() throws IOException {
-        return in;
-    }
+    String getInputRef();
 
 }

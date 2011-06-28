@@ -9,7 +9,7 @@
  * Contributors:
  *     matic
  */
-package org.nuxeo.ecm.automation.client.jaxrs.model;
+package org.nuxeo.ecm.automation.client.model;
 
 import java.util.List;
 
