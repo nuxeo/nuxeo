@@ -26,6 +26,7 @@ import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.nuxeo.common.collections.PrimitiveArrays;
+import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.common.utils.Base64;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
@@ -50,6 +51,7 @@ import org.nuxeo.ecm.core.schema.types.JavaTypes;
 import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.Type;
+import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.streaming.ByteArraySource;
 
@@ -143,6 +145,11 @@ public abstract class AbstractDocumentModelWriter extends
         doc.putContextData("initialLifecycleState", lifeCycleState);
         // then load schemas data
         loadSchemas(xdoc, doc, xdoc.getDocument());
+
+        if (doc.hasSchema("uid")) {
+            doc.putContextData(ScopeType.REQUEST,
+                    VersioningService.SKIP_VERSIONING, true);
+        }
 
         doc = session.createDocument(doc);
 
