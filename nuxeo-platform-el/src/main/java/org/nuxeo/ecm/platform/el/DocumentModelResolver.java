@@ -41,8 +41,9 @@ import org.nuxeo.ecm.core.api.model.impl.ListProperty;
  * To specify a property on a document mode, the following syntax is available:
  * <code>myDocumentModel.dublincore.title</code> where 'dublincore' is the
  * schema name and 'title' is the field name. It can be used to get or set the
- * document title: {@code <h:outputText value="#{currentDocument.dublincore.title}" />}
- * or {@code <h:inputText value="#{currentDocument.dublincore.title}" />}.
+ * document title:
+ * {@code <h:outputText value="#{currentDocument.dublincore.title}" />} or
+ * {@code <h:inputText value="#{currentDocument.dublincore.title}" />}.
  * <p>
  * Simple document properties are get/set directly: for instance, the above
  * expression will return a String value on get, and set this String on the
@@ -104,13 +105,19 @@ public class DocumentModelResolver extends BeanELResolver {
             context.setPropertyResolved(true);
         } else if (base instanceof Property) {
             try {
-                Property docProperty = (Property) base;
-                Property subProperty = getDocumentProperty(docProperty,
-                        property);
-                value = getDocumentPropertyValue(subProperty);
-            } catch (PropertyException pe) {
-                // avoid errors, return null
-                log.warn(pe.getMessage());
+                // try property getters to resolve doc.schema.field.type for
+                // instance
+                value = super.getValue(context, base, property);
+            } catch (PropertyNotFoundException e) {
+                try {
+                    Property docProperty = (Property) base;
+                    Property subProperty = getDocumentProperty(docProperty,
+                            property);
+                    value = getDocumentPropertyValue(subProperty);
+                } catch (PropertyException pe) {
+                    // avoid errors, return null
+                    log.warn(pe.getMessage());
+                }
             }
             context.setPropertyResolved(true);
         }
@@ -196,14 +203,20 @@ public class DocumentModelResolver extends BeanELResolver {
             context.setPropertyResolved(true);
         } else if (base instanceof Property) {
             try {
-                Property docProperty = (Property) base;
-                Property subProperty = getDocumentProperty(docProperty,
-                        property);
-                value = FieldAdapterManager.getValueForStorage(value);
-                subProperty.setValue(value);
-            } catch (PropertyException pe) {
-                // avoid errors here too
-                log.warn(pe.getMessage());
+                // try property setters to resolve doc.schema.field.type for
+                // instance
+                super.setValue(context, base, property, value);
+            } catch (PropertyNotFoundException e) {
+                try {
+                    Property docProperty = (Property) base;
+                    Property subProperty = getDocumentProperty(docProperty,
+                            property);
+                    value = FieldAdapterManager.getValueForStorage(value);
+                    subProperty.setValue(value);
+                } catch (PropertyException pe) {
+                    // avoid errors here too
+                    log.warn(pe.getMessage());
+                }
             }
             context.setPropertyResolved(true);
         }
