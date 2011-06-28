@@ -59,7 +59,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ RuntimeFeature.class, TransactionalFeature.class })
-@Deploy("org.nuxeo.runtime.jtajca.management")
+@Deploy("org.nuxeo.ecm.core.management.jtajca")
 public class CanMonitorTransactions {
 
     protected TransactionMonitor monitor;
@@ -253,11 +253,18 @@ public class CanMonitorTransactions {
 
                 @Override
                 protected void append(LoggingEvent event) {
-                    String msg = (String) event.getMessage();
-                    final Level level = event.getLevel();
-                    if (level.equals(Level.TRACE) && msg.contains("rolled-back")) {
-                        seenTrace = true;
+                    if (event.getLevel() != Level.TRACE) {
+                        return;
                     }
+                    Object msg = event.getMessage();
+                    if (!(msg instanceof TransactionStatistics)) {
+                        return;
+                    }
+                    TransactionStatistics stats = (TransactionStatistics)msg;
+                    if (!TransactionStatistics.Status.ROLLEDBACK.equals(stats.getStatus())) {
+                        return;
+                    }
+                        seenTrace = true;
                 }
             };
             logger.addAppender(appender);

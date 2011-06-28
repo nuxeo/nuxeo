@@ -47,7 +47,7 @@ import com.google.inject.Inject;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ CoreFeature.class, TransactionalFeature.class })
-@Deploy("org.nuxeo.runtime.jtajca.management")
+@Deploy("org.nuxeo.ecm.core.management.jtajca")
 @RepositoryConfig(factory=PooledH2DatabaseFactory.class)
 public class CanMonitorConnections {
 

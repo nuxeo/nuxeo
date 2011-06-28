@@ -24,21 +24,29 @@ import java.util.Date;
  */
 public interface TransactionStatistics {
 
-    Date getStartDate();
+    enum Status {
+        ACTIVE,
+        COMMITTED,
+        ROLLEDBACK;
+    }
+    
+    String getId();
+    
+    String getThreadName();
+    
+    Status getStatus();
 
-//    StackTraceElement[] getStartStack();
+    Date getStartDate();
+    
+    String getStartCapturedContextMessage();
 
     Date getEndDate();
-
-  //  StackTraceElement[] getEndStack();
+    
+    String getEndCapturedContextMessage();
 
     long getDuration();
 
-     String getId();
-
-     String getThreadName();
      
      boolean isEnded();
-     
      
 }
