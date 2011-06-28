@@ -34,8 +34,8 @@ public class ImageRotater extends MagickExecutor {
             throws CommandNotAvailable {
         CmdParameters params = new CmdParameters();
         params.addNamedParameter("angle", String.valueOf(angle));
-        params.addNamedParameter("inputFilePath", inputFile);
-        params.addNamedParameter("outputFilePath", outputFile);
+        params.addNamedParameter("inputFilePath", formatFilePath(inputFile));
+        params.addNamedParameter("outputFilePath", formatFilePath(outputFile));
         execCommand("rotate", params);
     }
 
