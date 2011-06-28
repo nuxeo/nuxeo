@@ -55,9 +55,6 @@ import org.nuxeo.runtime.jtajca.NuxeoContainer;
 public class DefaultTransactionMonitor implements TransactionManagerMonitor,
         TransactionMonitor, Synchronization {
 
-    private static final String ROLLED_BACK = "rolled-back";
-    private static final String COMMITTED = "committed";
-
     protected TransactionManagerImpl tm;
 
     protected static MBeanServer mbs;
@@ -126,7 +123,7 @@ public class DefaultTransactionMonitor implements TransactionManagerMonitor,
 
     protected TransactionStatistics lastRollbackedStatistics;
 
-    protected final Map<Object, DefaultTransactionStatistic> activeStatistics = new HashMap<Object, DefaultTransactionStatistic>();
+    protected final Map<Object, DefaultTransactionStatistics> activeStatistics = new HashMap<Object, DefaultTransactionStatistics>();
 
     public static String id(Transaction tx) {
         return Integer.toHexString(System.identityHashCode(tx));
@@ -140,36 +137,39 @@ public class DefaultTransactionMonitor implements TransactionManagerMonitor,
         log.trace("associated tx with thread");
         Stopwatch sw = SimonManager.getStopwatch("tx");
         final Thread thread = Thread.currentThread();
-        DefaultTransactionStatistic info = new DefaultTransactionStatistic(key);
+        DefaultTransactionStatistics info = new DefaultTransactionStatistics(
+                key);
         info.split = sw.start();
-        info.startTimestamp = now;
         info.threadName = thread.getName();
-        synchronized (DefaultTransactionMonitor.class) {
+        info.status = TransactionStatistics.Status.ACTIVE;
+        info.startTimestamp = now;
+        info.startCapturedContext = new Throwable("** start invoke context **");
+        synchronized (this) {
             activeStatistics.put(key, info);
         }
         tm.registerInterposedSynchronization(monitor); // register end status
     }
 
     @Override
-    public void threadUnassociated(Transaction tx)  {
+    public void threadUnassociated(Transaction tx) {
         long now = System.currentTimeMillis();
-        Object key =((TransactionImpl)tx).getTransactionKey();
+        Object key = ((TransactionImpl) tx).getTransactionKey();
         MDC.remove("TX");
-        log.trace("unassociated tx on thread : " + key);
-        DefaultTransactionStatistic stats;
-          synchronized (DefaultTransactionMonitor.class) {
-            stats = (DefaultTransactionStatistic) activeStatistics.remove(key);
+        DefaultTransactionStatistics stats;
+        synchronized (DefaultTransactionMonitor.class) {
+            stats = (DefaultTransactionStatistics) activeStatistics.remove(key);
         }
         if (stats == null) {
             log.error(key + " not found in active statitics map");
             return;
         }
-       stats.split.stop();
+        stats.split.stop();
         stats.split = null;
         stats.endTimestamp = now;
-        if (COMMITTED.equals(stats.endStatus)) {
+        log.trace(stats);
+        if (TransactionStatistics.Status.COMMITTED.equals(stats.status)) {
             lastCommittedStatistics = stats;
-        } else if (ROLLED_BACK.equals(stats.endStatus)) {
+        } else if (TransactionStatistics.Status.ROLLEDBACK.equals(stats.status)) {
             lastRollbackedStatistics = stats;
         }
     }
@@ -213,32 +213,43 @@ public class DefaultTransactionMonitor implements TransactionManagerMonitor,
         return lastRollbackedStatistics;
     }
 
+    protected DefaultTransactionStatistics thisStatistics() {
+        Object key = tm.getTransactionKey();
+        DefaultTransactionStatistics stats;
+        synchronized (this) {
+            stats = (DefaultTransactionStatistics) activeStatistics.get(key);
+        }
+        if (stats == null) {
+            log.error(key + " not found in active statitics map");
+        }
+        return stats;
+    }
+
     @Override
     public void beforeCompletion() {
-
+        DefaultTransactionStatistics stats = thisStatistics();
+        if (stats == null) {
+            return;
+        }
+        stats.endCapturedContext = new Throwable("** end invoke context **");
     }
 
     @Override
     public void afterCompletion(int status) {
-        Object key = tm.getTransactionKey();
-        DefaultTransactionStatistic stats;
-        synchronized (DefaultTransactionMonitor.class) {
-            stats = (DefaultTransactionStatistic) activeStatistics.get(key);
-        }
+        DefaultTransactionStatistics stats = thisStatistics();
         if (stats == null) {
-            log.error(key + " not found in active statitics map");
             return;
         }
         switch (status) {
         case Status.STATUS_COMMITTED:
-            stats.endStatus = COMMITTED;
+            stats.status = TransactionStatistics.Status.COMMITTED;
             lastCommittedStatistics = stats;
             break;
         case Status.STATUS_ROLLEDBACK:
-            stats.endStatus = ROLLED_BACK;
+            stats.status = TransactionStatistics.Status.ROLLEDBACK;
+            ;
             lastRollbackedStatistics = stats;
-            Throwable t = new Throwable(); // print rollback stack trace in log
-            log.trace("transaction has rolled-back", t);
+            stats.endCapturedContext = new Throwable(); 
             break;
         }
     }
