@@ -125,7 +125,9 @@
 				s.theme_advanced_statusbar_location = 0;
 
 			if (ed.settings.content_css !== false)
-				ed.contentCSS.push(ed.baseURI.toAbsolute(url + "/skins/" + ed.settings.skin + "/content.css"));
+				// NXP-6990: patch generated URL for webengine
+				ed.contentCSS.push(url + "/skins/" + ed.settings.skin + "/content.css");
+				// ed.contentCSS.push(ed.baseURI.toAbsolute(url + "/skins/" + ed.settings.skin + "/content.css"));
 
 			// Init editor
 			ed.onInit.add(function() {
