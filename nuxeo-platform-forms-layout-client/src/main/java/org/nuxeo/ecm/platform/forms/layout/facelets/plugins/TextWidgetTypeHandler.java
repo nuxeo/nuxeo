@@ -19,14 +19,22 @@
 
 package org.nuxeo.ecm.platform.forms.layout.facelets.plugins;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import javax.faces.component.html.HtmlInputText;
 import javax.faces.component.html.HtmlOutputText;
 
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinWidgetModes;
+import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
 import org.nuxeo.ecm.platform.forms.layout.api.exceptions.WidgetException;
 import org.nuxeo.ecm.platform.forms.layout.facelets.FaceletHandlerHelper;
 import org.nuxeo.ecm.platform.forms.layout.facelets.LeafFaceletHandler;
+import org.nuxeo.ecm.platform.forms.layout.facelets.ValueExpressionHelper;
 import org.nuxeo.ecm.platform.ui.web.component.seam.UIHtmlText;
 
 import com.sun.facelets.FaceletContext;
@@ -55,15 +63,9 @@ public class TextWidgetTypeHandler extends AbstractWidgetTypeHandler {
         String widgetId = widget.getId();
         String widgetName = widget.getName();
         String widgetTagConfigId = widget.getTagConfigId();
-        TagAttributes attributes;
-        if (BuiltinWidgetModes.isLikePlainMode(mode)) {
-            // use attributes without id
-            attributes = helper.getTagAttributes(widget);
-        } else {
-            attributes = helper.getTagAttributes(widgetId, widget);
-        }
         FaceletHandler leaf = new LeafFaceletHandler();
         if (BuiltinWidgetModes.EDIT.equals(mode)) {
+            TagAttributes attributes = helper.getTagAttributes(widgetId, widget);
             ComponentHandler input = helper.getHtmlComponentHandler(
                     widgetTagConfigId, attributes, leaf,
                     HtmlInputText.COMPONENT_TYPE, null);
@@ -73,6 +75,8 @@ public class TextWidgetTypeHandler extends AbstractWidgetTypeHandler {
             FaceletHandler[] handlers = { input, message };
             return new CompositeFaceletHandler(handlers);
         } else {
+            TagAttributes attributes = getViewTagAttributes(ctx, helper,
+                    widgetId, widget, !BuiltinWidgetModes.isLikePlainMode(mode));
             // default on text for other modes
             ComponentHandler output = helper.getHtmlComponentHandler(
                     widgetTagConfigId, attributes, leaf,
@@ -87,4 +91,51 @@ public class TextWidgetTypeHandler extends AbstractWidgetTypeHandler {
             }
         }
     }
+
+    /**
+     * Return tag attributes after having replaced the usual value expression
+     * for the 'value' field by a specific expression to display the translated
+     * value if set as is in the widget properties.
+     */
+    protected TagAttributes getViewTagAttributes(FaceletContext ctx,
+            FaceletHandlerHelper helper, String id, Widget widget, boolean addId) {
+        List<TagAttribute> attrs = new ArrayList<TagAttribute>();
+        FieldDefinition[] fields = widget.getFieldDefinitions();
+        if (fields != null && fields.length > 0) {
+            FieldDefinition field = fields[0];
+            String bareExpression = ValueExpressionHelper.createBareExpressionString(
+                    widget.getValueName(), field);
+            String bundleName = ctx.getFacesContext().getApplication().getMessageBundle();
+            String localizedExpression = String.format("%s[%s]", bundleName,
+                    bareExpression);
+            String expression = String.format("#{%s ? %s : %s}",
+                    "widget.properties.localize", localizedExpression,
+                    bareExpression);
+            TagAttribute valueAttr = helper.createAttribute("value", expression);
+            attrs.add(valueAttr);
+        }
+        // fill with widget properties
+        Map<String, Serializable> widgetPropsClone = new HashMap<String, Serializable>();
+        Map<String, Serializable> widgetProps = widget.getProperties();
+        if (widgetProps != null) {
+            widgetPropsClone.putAll(widgetProps);
+            // remove localize property
+            widgetPropsClone.remove("localize");
+        }
+        List<TagAttribute> propertyAttrs = helper.getTagAttributes(
+                widgetPropsClone, true);
+        if (propertyAttrs != null) {
+            attrs.addAll(propertyAttrs);
+        }
+        TagAttributes widgetAttrs = FaceletHandlerHelper.getTagAttributes(attrs);
+        // handle id
+        if (!addId) {
+            return widgetAttrs;
+        } else {
+            return FaceletHandlerHelper.addTagAttribute(widgetAttrs,
+                    helper.createAttribute("id", id));
+        }
+
+    }
+
 }
