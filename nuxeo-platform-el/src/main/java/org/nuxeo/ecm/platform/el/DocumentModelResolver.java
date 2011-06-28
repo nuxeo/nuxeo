@@ -105,17 +105,17 @@ public class DocumentModelResolver extends BeanELResolver {
             context.setPropertyResolved(true);
         } else if (base instanceof Property) {
             try {
-                // try property getters to resolve doc.schema.field.type for
-                // instance
-                value = super.getValue(context, base, property);
-            } catch (PropertyNotFoundException e) {
+                Property docProperty = (Property) base;
+                Property subProperty = getDocumentProperty(docProperty,
+                        property);
+                value = getDocumentPropertyValue(subProperty);
+            } catch (PropertyException pe) {
                 try {
-                    Property docProperty = (Property) base;
-                    Property subProperty = getDocumentProperty(docProperty,
-                            property);
-                    value = getDocumentPropertyValue(subProperty);
-                } catch (PropertyException pe) {
-                    // avoid errors, return null
+                    // try property getters to resolve doc.schema.field.type
+                    // for instance
+                    value = super.getValue(context, base, property);
+                } catch (PropertyNotFoundException e) {
+                    // avoid errors, log original error and return null
                     log.warn(pe.getMessage());
                 }
             }
@@ -203,18 +203,18 @@ public class DocumentModelResolver extends BeanELResolver {
             context.setPropertyResolved(true);
         } else if (base instanceof Property) {
             try {
-                // try property setters to resolve doc.schema.field.type for
-                // instance
-                super.setValue(context, base, property, value);
-            } catch (PropertyNotFoundException e) {
+                Property docProperty = (Property) base;
+                Property subProperty = getDocumentProperty(docProperty,
+                        property);
+                value = FieldAdapterManager.getValueForStorage(value);
+                subProperty.setValue(value);
+            } catch (PropertyException pe) {
                 try {
-                    Property docProperty = (Property) base;
-                    Property subProperty = getDocumentProperty(docProperty,
-                            property);
-                    value = FieldAdapterManager.getValueForStorage(value);
-                    subProperty.setValue(value);
-                } catch (PropertyException pe) {
-                    // avoid errors here too
+                    // try property setters to resolve doc.schema.field.type
+                    // for instance
+                    super.setValue(context, base, property, value);
+                } catch (PropertyNotFoundException e) {
+                    // log original error and avoid errors here too
                     log.warn(pe.getMessage());
                 }
             }
