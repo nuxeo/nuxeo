@@ -94,6 +94,16 @@
         <module>nuxeo-distribution-tomcat-tests</module>
       </modules>
     </profile>
+    <profile>
+      <id>ftest</id>
+      <modules>
+        <module>nuxeo-distribution-coreserver</module>
+        <module>nuxeo-distribution-cap</module>
+        <module>nuxeo-distribution-dm</module>
+        <module>nuxeo-distribution-tomcat</module>
+        <module>nuxeo-distribution-dm/ftest/selenium</module>
+      </modules>
+    </profile>
   </profiles>
 
   <dependencyManagement>
