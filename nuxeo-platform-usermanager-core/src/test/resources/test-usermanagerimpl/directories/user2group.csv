@@ -1,2 +1,3 @@
 userId, groupId
-"Administrator","administrators"
+"Administrator@tenantb","administrators-tenantb"
+"Administrator@tenanta","administrators-tenanta"

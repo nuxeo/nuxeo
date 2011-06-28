@@ -37,6 +37,7 @@ import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.platform.usermanager.exceptions.GroupAlreadyExistsException;
 
 /**
  * @author Florent Guillaume
@@ -453,5 +454,40 @@ public class FakeUserManagerImpl implements UserManager {
     @Override
     public Principal authenticate(String name, String password) throws ClientException {
         return checkUsernamePassword(name, password) ? getPrincipal(name) : null;
+    }
+
+	@Override
+	public DocumentModel createGroupWithContext(DocumentModel arg0, DocumentModel arg1)
+			throws ClientException, GroupAlreadyExistsException {
+        throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public List<String> getGroupIdsWithContext(DocumentModel arg0) throws ClientException {
+        throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public DocumentModelList searchGroupsWithContext(Map<String, Serializable> arg0,
+			Set<String> arg1, DocumentModel arg2) throws ClientException {
+        throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public DocumentModelList searchUsersWithContext(String arg0, DocumentModel arg1)
+			throws ClientException {
+        throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public DocumentModelList searchUsersWithContext(Map<String, Serializable> arg0,
+			Set<String> arg1, DocumentModel arg2) throws ClientException {
+        throw new UnsupportedOperationException();
+	}
+
+    @Override
+    public DocumentModel getGroupModelWithContext(String arg0,
+            DocumentModel arg1) throws ClientException {
+        throw new UnsupportedOperationException();
     }
 }

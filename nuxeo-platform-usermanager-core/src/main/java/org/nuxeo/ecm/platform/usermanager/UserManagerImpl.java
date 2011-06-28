@@ -19,6 +19,8 @@
  */
 package org.nuxeo.ecm.platform.usermanager;
 
+import static org.nuxeo.ecm.directory.localconfiguration.DirectoryConfigurationConstants.DIRECTORY_CONFIGURATION_FACET;
+
 import java.io.Serializable;
 import java.security.Principal;
 import java.util.ArrayList;
@@ -46,6 +48,7 @@ import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.impl.NuxeoGroupImpl;
+import org.nuxeo.ecm.core.api.localconfiguration.LocalConfigurationService;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
@@ -55,6 +58,7 @@ import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
+import org.nuxeo.ecm.directory.localconfiguration.DirectoryConfiguration;
 import org.nuxeo.ecm.platform.usermanager.exceptions.GroupAlreadyExistsException;
 import org.nuxeo.ecm.platform.usermanager.exceptions.UserAlreadyExistsException;
 import org.nuxeo.runtime.api.Framework;
@@ -95,6 +99,8 @@ public class UserManagerImpl implements UserManager {
     public static final String VIRTUAL_FIELD_FILTER_PREFIX = "__";
 
     protected final DirectoryService dirService;
+
+    public UserMultiTenantManagement multiTenantManagement = new DefaultUserMultiTenantManagement();
 
     /**
      * A structure used to inject field name configuration of users schema into
@@ -406,7 +412,9 @@ public class UserManagerImpl implements UserManager {
                 }
             }
         } catch (DirectoryException e) {
-            log.warn("Digest auth password not synchronized, check your configuration", e);
+            log.warn(
+                    "Digest auth password not synchronized, check your configuration",
+                    e);
         } finally {
             if (dir != null) {
                 dir.close();
@@ -569,15 +577,7 @@ public class UserManagerImpl implements UserManager {
     }
 
     public DocumentModel getGroupModel(String groupName) throws ClientException {
-        Session groupDir = null;
-        try {
-            groupDir = dirService.open(groupDirectoryName);
-            return groupDir.getEntry(groupName);
-        } finally {
-            if (groupDir != null) {
-                groupDir.close();
-            }
-        }
+        return getGroupModelWithContext(groupName, null);
     }
 
     @SuppressWarnings("unchecked")
@@ -1016,6 +1016,7 @@ public class UserManagerImpl implements UserManager {
         }
     }
 
+    @Override
     public DocumentModelList searchGroups(Map<String, Serializable> filter,
             Set<String> fulltext) throws ClientException {
         Session groupDir = null;
@@ -1033,11 +1034,11 @@ public class UserManagerImpl implements UserManager {
     }
 
     protected DocumentModelList searchUsers(Map<String, Serializable> filter,
-            Set<String> fulltext, Map<String, String> orderBy)
-            throws ClientException {
+            Set<String> fulltext, Map<String, String> orderBy,
+            DocumentModel context) throws ClientException {
         Session userDir = null;
         try {
-            userDir = dirService.open(userDirectoryName);
+            userDir = dirService.open(userDirectoryName, context);
 
             removeVirtualFilters(filter);
 
@@ -1066,40 +1067,12 @@ public class UserManagerImpl implements UserManager {
     }
 
     public DocumentModelList searchUsers(String pattern) throws ClientException {
-        DocumentModelList entries = new DocumentModelListImpl();
-        if (pattern == null || pattern.length() == 0) {
-            entries = searchUsers(
-                    Collections.<String, Serializable> emptyMap(), null);
-        } else {
-            Map<String, DocumentModel> uniqueEntries = new HashMap<String, DocumentModel>();
-
-            for (Entry<String, MatchType> fieldEntry : userSearchFields.entrySet()) {
-                Map<String, Serializable> filter = new HashMap<String, Serializable>();
-                filter.put(fieldEntry.getKey(), pattern);
-                DocumentModelList fetchedEntries;
-                if (fieldEntry.getValue() == MatchType.SUBSTRING) {
-                    fetchedEntries = searchUsers(filter, filter.keySet(), null);
-                } else {
-                    fetchedEntries = searchUsers(filter, null, null);
-                }
-                for (DocumentModel entry : fetchedEntries) {
-                    uniqueEntries.put(entry.getId(), entry);
-                }
-            }
-            log.debug(String.format("found %d unique entries",
-                    uniqueEntries.size()));
-            entries.addAll(uniqueEntries.values());
-        }
-        // sort
-        Collections.sort(entries, new DocumentModelComparator(userSchemaName,
-                getUserSortMap()));
-
-        return entries;
+        return searchUsersWithContext(pattern, null);
     }
 
     public DocumentModelList searchUsers(Map<String, Serializable> filter,
             Set<String> fulltext) throws ClientException {
-        return searchUsers(filter, fulltext, getUserSortMap());
+        return searchUsers(filter, fulltext, getUserSortMap(), null);
     }
 
     public void updateGroup(DocumentModel groupModel) throws ClientException {
@@ -1360,8 +1333,110 @@ public class UserManagerImpl implements UserManager {
     }
 
     @Override
-    public Principal authenticate(String name, String password) throws ClientException {
-        return checkUsernamePassword(name, password) ? getPrincipal(name) : null;
+    public Principal authenticate(String name, String password)
+            throws ClientException {
+        return checkUsernamePassword(name, password) ? getPrincipal(name)
+                : null;
+    }
+
+    @Override
+    public DocumentModelList searchUsersWithContext(String pattern,
+            DocumentModel context) throws ClientException {
+        DocumentModelList entries = new DocumentModelListImpl();
+        if (pattern == null || pattern.length() == 0) {
+            entries = searchUsers(
+                    Collections.<String, Serializable> emptyMap(), null);
+        } else {
+            Map<String, DocumentModel> uniqueEntries = new HashMap<String, DocumentModel>();
+
+            for (Entry<String, MatchType> fieldEntry : userSearchFields.entrySet()) {
+                Map<String, Serializable> filter = new HashMap<String, Serializable>();
+                filter.put(fieldEntry.getKey(), pattern);
+                DocumentModelList fetchedEntries;
+                if (fieldEntry.getValue() == MatchType.SUBSTRING) {
+                    fetchedEntries = searchUsers(filter, filter.keySet(), null,
+                            context);
+                } else {
+                    fetchedEntries = searchUsers(filter, null, null, context);
+                }
+                for (DocumentModel entry : fetchedEntries) {
+                    uniqueEntries.put(entry.getId(), entry);
+                }
+            }
+            log.debug(String.format("found %d unique entries",
+                    uniqueEntries.size()));
+            entries.addAll(uniqueEntries.values());
+        }
+        // sort
+        Collections.sort(entries, new DocumentModelComparator(userSchemaName,
+                getUserSortMap()));
+
+        return entries;
+    }
+
+    @Override
+    public DocumentModelList searchUsersWithContext(
+            Map<String, Serializable> filter, Set<String> fulltext,
+            DocumentModel context) throws ClientException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public List<String> getGroupIdsWithContext(DocumentModel context)
+            throws ClientException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public DocumentModelList searchGroupsWithContext(
+            Map<String, Serializable> filter, Set<String> fulltext,
+            DocumentModel context) throws ClientException {
+        filter = cloneMap(filter);
+        HashSet<String> fulltextClone = cloneSet(fulltext);
+        multiTenantManagement.queryTransformer(this, filter, fulltextClone,
+                context);
+        return searchGroups(filter, fulltextClone);
+    }
+
+    protected Map<String, Serializable> cloneMap(Map<String, Serializable> map) {
+        Map<String, Serializable> result = new HashMap<String, Serializable>();
+        for (String key : map.keySet()) {
+            result.put(key, map.get(key));
+        }
+        return result;
+    }
+
+    protected HashSet<String> cloneSet(Set<String> set) {
+        HashSet<String> result = new HashSet<String>();
+        for (String key : set) {
+            result.add(key);
+        }
+        return result;
+    }
+
+    @Override
+    public DocumentModel createGroupWithContext(DocumentModel groupModel,
+            DocumentModel context) throws ClientException,
+            GroupAlreadyExistsException {
+        groupModel = multiTenantManagement.groupTransformer(this, groupModel,
+                context);
+        return createGroup(groupModel);
+    }
+
+    @Override
+    public DocumentModel getGroupModelWithContext(String groupIdValue,
+            DocumentModel context) throws ClientException {
+        String groupName = multiTenantManagement.groupnameTranformer(this,
+                groupIdValue, context);
+        Session groupDir = null;
+        try {
+            groupDir = dirService.open(groupDirectoryName);
+            return groupDir.getEntry(groupName);
+        } finally {
+            if (groupDir != null) {
+                groupDir.close();
+            }
+        }
     }
 
 }

@@ -1,0 +1,5 @@
+groupname, description
+"members-tenanta","Group of users with read access rights"
+"administrators-tenanta","Group of users with administrative rights"
+"members-tenantb","Group of users with read access rights"
+"administrators-tenantb","Group of users with administrative rights"
