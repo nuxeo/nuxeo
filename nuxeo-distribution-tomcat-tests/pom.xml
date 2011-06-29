@@ -69,19 +69,13 @@
         <artifactId>maven-failsafe-plugin</artifactId>
         <executions>
           <execution>
-            <id>integration-test</id>
             <goals>
               <goal>integration-test</goal>
+              <goal>verify</goal>
             </goals>
             <configuration>
               <argLine>-Dlog4j.configuration=${maven.project.build.directory}/tomcat/lib/log4j.xml -DconnectPassword=${connect.password}</argLine>
             </configuration>
-          </execution>
-          <execution>
-            <id>verify</id>
-            <goals>
-              <goal>verify</goal>
-            </goals>
           </execution>
         </executions>
       </plugin>
