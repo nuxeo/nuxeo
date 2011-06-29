@@ -45,7 +45,11 @@ public class JbpmTaskListServiceTest extends SQLRepositoryTestCase {
         JbpmServiceImpl.contexts.set(null);
 
         super.setUp();
-
+        deployBundle("org.nuxeo.ecm.platform.usermanager");
+        deployBundle("org.nuxeo.ecm.platform.usermanager.api");
+        deployBundle("org.nuxeo.ecm.directory.api");
+        deployBundle("org.nuxeo.ecm.directory");
+        deployBundle("org.nuxeo.ecm.directory.sql");
         deployBundle("org.nuxeo.ecm.core.api");
         deployBundle("org.nuxeo.ecm.platform.content.template");
         deployBundle("org.nuxeo.ecm.platform.userworkspace.api");
