@@ -32,7 +32,6 @@ import org.openqa.selenium.support.FindBy;
  */
 public abstract class AbstractPage {
 
-
     @FindBy(name = "userServicesForm")
     public WebElement userServicesForm;
 
@@ -58,7 +57,8 @@ public abstract class AbstractPage {
     public String getFeedbackMessage() {
         String ret;
         try {
-            ret = findElementWithTimeout(By.xpath("//li[@class=\"errorFeedback\"]")).getText();
+            ret = findElementWithTimeout(
+                    By.xpath("//li[@class=\"errorFeedback\"]")).getText();
         } catch (NoSuchElementException e) {
             ret = "";
         }
@@ -95,12 +95,42 @@ public abstract class AbstractPage {
      *
      * @param by the locating mechanism
      * @param timeout the timeout in milliseconds
+     * @param parentElement find from the element
+     * @return the first matching element on the current page, if found
+     * @throws NoSuchElementException when not found
+     */
+    public WebElement findElementWithTimeout(By by, int timeout,
+            WebElement parentElement) throws NoSuchElementException {
+        return AbstractTest.findElementWithTimeout(by, timeout, parentElement);
+    }
+
+    /**
+     * Finds the first {@link WebElement} using the given method, with a
+     * timeout.
+     *
+     * @param by the locating mechanism
+     * @param timeout the timeout in milliseconds
      * @return the first matching element on the current page, if found
      * @throws NoSuchElementException when not found
      */
     public static WebElement findElementWithTimeout(By by)
             throws NoSuchElementException {
         return AbstractTest.findElementWithTimeout(by);
+    }
+
+    /**
+     * Finds the first {@link WebElement} using the given method, with a
+     * timeout.
+     *
+     * @param by the locating mechanism
+     * @param timeout the timeout in milliseconds
+     * @param parentElement find from the element
+     * @return the first matching element on the current page, if found
+     * @throws NoSuchElementException when not found
+     */
+    public static WebElement findElementWithTimeout(By by,
+            WebElement parentElement) throws NoSuchElementException {
+        return AbstractTest.findElementWithTimeout(by, parentElement);
     }
 
     /**

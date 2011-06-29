@@ -181,8 +181,8 @@ public abstract class AbstractTest {
             // try to guess the location in the M2 repo
             for (String f : clf) {
                 if (f.contains(M2_REPO)) {
-                    String m2 = f.substring(0, f.indexOf(M2_REPO)
-                            + M2_REPO.length());
+                    String m2 = f.substring(0,
+                            f.indexOf(M2_REPO) + M2_REPO.length());
                     xpi = new File(m2 + FIREBUG_M2 + "/" + FIREBUG_XPI);
                     break;
                 }
@@ -290,12 +290,32 @@ public abstract class AbstractTest {
      */
     public static WebElement findElementWithTimeout(By by, int timeout)
             throws NoSuchElementException {
+        return findElementWithTimeout(by, timeout, null);
+    }
+
+    /**
+     * Finds the first {@link WebElement} using the given method, with a
+     * timeout.
+     *
+     * @param by the locating mechanism
+     * @param timeout the timeout in milliseconds
+     * @param parentElement find from the element
+     * @return the first matching element on the current page, if found
+     * @throws NoSuchElementException when not found
+     */
+    public static WebElement findElementWithTimeout(By by, int timeout,
+            WebElement parentElement) throws NoSuchElementException {
         Clock clock = new SystemClock();
         long end = clock.laterBy(timeout);
         NoSuchElementException lastException = null;
         while (clock.isNowBefore(end)) {
             try {
-                WebElement element = driver.findElement(by);
+                WebElement element;
+                if (parentElement == null) {
+                    element = driver.findElement(by);
+                } else {
+                    element = parentElement.findElement(by);
+                }
                 if (element != null) {
                     return element;
                 }
@@ -324,6 +344,22 @@ public abstract class AbstractTest {
     public static WebElement findElementWithTimeout(By by)
             throws NoSuchElementException {
         return findElementWithTimeout(by, LOAD_TIMEOUT_SECONDS * 1000);
+    }
+
+    /**
+     * Finds the first {@link WebElement} using the given method, with a
+     * timeout.
+     *
+     * @param by the locating mechanism
+     * @param timeout the timeout in milliseconds
+     * @param parentElement find from the element
+     * @return the first matching element on the current page, if found
+     * @throws NoSuchElementException when not found
+     */
+    public static WebElement findElementWithTimeout(By by,
+            WebElement parentElement) throws NoSuchElementException {
+        return findElementWithTimeout(by, LOAD_TIMEOUT_SECONDS * 1000,
+                parentElement);
     }
 
     /**
@@ -365,7 +401,8 @@ public abstract class AbstractTest {
     }
 
     /**
-     * navigate to a link text. wait until the link is available and click on it.
+     * navigate to a link text. wait until the link is available and click on
+     * it.
      */
     public <T extends AbstractPage> T nav(Class<T> pageClass, String linkText) {
         WebElement link = findElementWithTimeout(By.linkText(linkText));
