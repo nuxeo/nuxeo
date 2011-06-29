@@ -284,6 +284,9 @@ public class DefaultUserWorkspaceServiceImpl implements UserWorkspaceService {
     }
 
     static String buildUserWorkspaceTitle(String userName) {
+        if ( userName == null ){
+            return null;
+        }
 
         // get the user service
         UserManager userManager = null;
