@@ -50,6 +50,11 @@ import com.google.inject.Inject;
         "org.nuxeo.ecm.platform.userworkspace.api",
         "org.nuxeo.ecm.platform.userworkspace.core",
         "org.nuxeo.ecm.platform.localconfiguration.simple",
+        "org.nuxeo.ecm.platform.usermanager",
+        "org.nuxeo.ecm.platform.usermanager.api",
+        "org.nuxeo.ecm.directory.api",
+        "org.nuxeo.ecm.directory",
+        "org.nuxeo.ecm.directory.sql",
         "org.nuxeo.ecm.platform.userpreferences" })
 public class TestUserPreferencesService {
 
