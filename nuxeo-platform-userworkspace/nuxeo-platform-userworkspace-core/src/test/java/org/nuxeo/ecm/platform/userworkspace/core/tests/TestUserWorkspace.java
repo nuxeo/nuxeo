@@ -46,6 +46,11 @@ public class TestUserWorkspace extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.platform.userworkspace.api");
         deployBundle("org.nuxeo.ecm.platform.dublincore");
         deployBundle("org.nuxeo.ecm.platform.userworkspace.types");
+        deployBundle("org.nuxeo.ecm.platform.usermanager");
+        deployBundle("org.nuxeo.ecm.platform.usermanager.api");
+        deployBundle("org.nuxeo.ecm.directory.api");
+        deployBundle("org.nuxeo.ecm.directory");
+        deployBundle("org.nuxeo.ecm.directory.sql");
         deployContrib("org.nuxeo.ecm.platform.userworkspace.core", "OSGI-INF/userworkspace-framework.xml");
         deployContrib("org.nuxeo.ecm.platform.userworkspace.core", "OSGI-INF/userWorkspaceImpl.xml");
         openSession();
