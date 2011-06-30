@@ -41,8 +41,9 @@ import org.nuxeo.ecm.core.api.model.impl.ListProperty;
  * To specify a property on a document mode, the following syntax is available:
  * <code>myDocumentModel.dublincore.title</code> where 'dublincore' is the
  * schema name and 'title' is the field name. It can be used to get or set the
- * document title: {@code <h:outputText value="#{currentDocument.dublincore.title}" />}
- * or {@code <h:inputText value="#{currentDocument.dublincore.title}" />}.
+ * document title:
+ * {@code <h:outputText value="#{currentDocument.dublincore.title}" />} or
+ * {@code <h:inputText value="#{currentDocument.dublincore.title}" />}.
  * <p>
  * Simple document properties are get/set directly: for instance, the above
  * expression will return a String value on get, and set this String on the
@@ -109,8 +110,14 @@ public class DocumentModelResolver extends BeanELResolver {
                         property);
                 value = getDocumentPropertyValue(subProperty);
             } catch (PropertyException pe) {
-                // avoid errors, return null
-                log.warn(pe.getMessage());
+                try {
+                    // try property getters to resolve doc.schema.field.type
+                    // for instance
+                    value = super.getValue(context, base, property);
+                } catch (PropertyNotFoundException e) {
+                    // avoid errors, log original error and return null
+                    log.warn(pe.getMessage());
+                }
             }
             context.setPropertyResolved(true);
         }
@@ -202,8 +209,14 @@ public class DocumentModelResolver extends BeanELResolver {
                 value = FieldAdapterManager.getValueForStorage(value);
                 subProperty.setValue(value);
             } catch (PropertyException pe) {
-                // avoid errors here too
-                log.warn(pe.getMessage());
+                try {
+                    // try property setters to resolve doc.schema.field.type
+                    // for instance
+                    super.setValue(context, base, property, value);
+                } catch (PropertyNotFoundException e) {
+                    // log original error and avoid errors here too
+                    log.warn(pe.getMessage());
+                }
             }
             context.setPropertyResolved(true);
         }
