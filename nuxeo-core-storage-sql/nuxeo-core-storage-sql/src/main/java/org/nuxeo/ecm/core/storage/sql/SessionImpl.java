@@ -359,6 +359,9 @@ public class SessionImpl implements Session, XAResource {
         // mark indexation in progress
         for (Node node : getNodesByIds(new ArrayList<Serializable>(
                 dirtyBinaries))) {
+            if (repository.repositoryDescriptor.fulltextExcludedTypes.contains(node.getPrimaryType())) {
+                continue;
+            }
             node.getSimpleProperty(Model.FULLTEXT_JOBID_PROP).setValue(
                     node.getId());
         }
