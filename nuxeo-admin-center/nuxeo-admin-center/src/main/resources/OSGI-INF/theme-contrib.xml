@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<component name="org.nuxeo.theme.nuxeo.connect">
+<component name="org.nuxeo.ecm.admin.center.theme">
 
   <require>org.nuxeo.theme.core</require>
   <require>org.nuxeo.theme.fragments</require>
