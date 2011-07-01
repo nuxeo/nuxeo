@@ -101,12 +101,7 @@ public class PictureGadget extends AbstractGadget implements
         modifPanel.setWidth("100%");
         modifPanel.setVisible(false);
 
-        Label source = new Label(constants.source());
-        sourceUpload = new SimpleUpload(baseUrl + "gwtContainer/upload");
-
-        modifPanel.setWidget(0, 0, source);
-        modifPanel.setWidget(0, 1, sourceUpload);
-        modifPanel.getRowFormatter().setStyleName(0, "gadget-form-line");
+        initializeUploadSource(baseUrl);
 
         Label title = new Label(constants.title());
         titleTextBox = new TextBox();
@@ -204,6 +199,15 @@ public class PictureGadget extends AbstractGadget implements
     }
 
     public void stopProcessing() {
+    }
+
+    public void initializeUploadSource(String baseUrl) {
+        Label source = new Label(constants.source());
+        sourceUpload = new SimpleUpload(baseUrl + "gwtContainer/upload");
+
+        modifPanel.setWidget(0, 0, source);
+        modifPanel.setWidget(0, 1, sourceUpload);
+        modifPanel.getRowFormatter().setStyleName(0, "gadget-form-line");
     }
 
 }

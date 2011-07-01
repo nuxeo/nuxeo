@@ -74,13 +74,11 @@ public class PicturePresenter extends WidgetPresenter<PicturePresenter.Display> 
         void switchToMainPanel();
 
         void enableFacets();
+
+        void initializeUploadSource(String baseUrl);
     }
 
     public static final Place PLACE = null;
-
-    private static final String AUTOMATION_FILES_URL = "site/automation/files/";
-
-    private static final String AUTOMATION_FILES_PATH_ATTR = "?path=%2Fcontent";
 
     protected static final String HTTP_PREFIX = "http://";
 
@@ -196,8 +194,8 @@ public class PicturePresenter extends WidgetPresenter<PicturePresenter.Display> 
         registerHandler(display.getSaveButton().addClickHandler(
                 new ClickHandler() {
                     public void onClick(ClickEvent event) {
-
                         PictureData picData = model.getData();
+
                         List<FileRef> fileRefList = display.getUploadedFiles().getAddedFiles();
                         List<String> files = new ArrayList<String>();
 
@@ -212,6 +210,8 @@ public class PicturePresenter extends WidgetPresenter<PicturePresenter.Display> 
                             link = HTTP_PREFIX + link;
                         }
                         picData.setPictureLink(link);
+
+                        display.initializeUploadSource(FileUtils.getBaseUrl());
 
                         eventBus.fireEvent(new UpdateWebContentEvent(
                                 model.getData().getId(), files));
