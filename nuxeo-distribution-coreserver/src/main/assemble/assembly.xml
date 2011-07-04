@@ -55,6 +55,12 @@
         </includes>
       </artifact:set>
     </copy>
+    <move todir="${nuxeo.ear}/lib">
+      <fileset dir="${nuxeo.ear}/bundles">
+        <include name="nuxeo-generic-wss-front*" />
+        <include name="nuxeo-generic-wss-handler*" />
+      </fileset>
+    </move>
     <nx:rmdups dir="${nuxeo.ear}/lib" />
   </target>
 

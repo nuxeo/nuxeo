@@ -196,12 +196,6 @@
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-dm::zip" />
     </unzip>
 
-    <!-- move WSS front filter as external lib  since it must be referenced from root Web context-->
-    <move todir="${distribution.dir}/server/default/lib">
-      <fileset dir="${distribution.dir}/server/default/deploy/nuxeo.ear/lib">
-        <include name="nuxeo-generic-wss-front*" />
-      </fileset>
-    </move>
     <!-- add WSS filter binding in ROOT.WAR -->
     <copy tofile="${distribution.dir}/server/default/deploy/ROOT.war/WEB-INF/web.xml"
           file="${maven.basedir}/src/main/resources/wss-rootweb.xml"
@@ -298,6 +292,11 @@
         <include name="freemarker*" />
         <include name="lucene-core*" />
         <include name="lucene-analyzers*" />
+        <!-- move WSS front filter as external lib since it must be referenced from root Web context-->
+        <include name="nuxeo-generic-wss-front*" />
+      </fileset>
+      <fileset dir="${distribution.dir}/server/default/deploy/nuxeo.ear/bundles">
+        <include name="nuxeo-core-storage-sql-extensions-*" />
       </fileset>
     </move>
     <nx:rmdups dir="${distribution.dir}/server/default/lib" />

@@ -208,13 +208,6 @@
       <param name="distribution.dir" value="${distribution.dir}" />
     </antcall>
 
-    <!-- move WSS front filter as external lib since it must be referenced from root Web context-->
-    <move todir="${distribution.dir}/lib">
-      <fileset dir="${distribution.dir}/nxserver/lib">
-        <include name="nuxeo-generic-wss-front*" />
-      </fileset>
-    </move>
-
     <!-- Complementary templates for DM -->
     <unzip dest="${distribution.dir}/templates" overwrite="true">
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources::zip"
@@ -280,10 +273,11 @@
         <include name="commons-lang-*" />
         <include name="freemarker-*" />
         <include name="mail-*" />
+        <!-- move WSS front filter as external lib since it must be referenced from root Web context-->
+        <include name="nuxeo-generic-wss-front*" />
       </fileset>
       <fileset dir="${distribution.dir}/nxserver/bundles">
         <include name="nuxeo-core-storage-sql-extensions-*" />
-        <include name="nuxeo-generic-wss-handler-*" />
       </fileset>
     </move>
     <nx:rmdups dir="${distribution.dir}/lib" />
