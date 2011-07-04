@@ -16,6 +16,9 @@
 
 package org.nuxeo.ecm.platform.ui.web.component.tree;
 
+import static org.jboss.seam.ScopeType.CONVERSATION;
+import static org.jboss.seam.annotations.Install.FRAMEWORK;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -34,9 +37,6 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.platform.ui.web.component.list.UIEditableList;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
-
-import static org.jboss.seam.ScopeType.CONVERSATION;
-import static org.jboss.seam.annotations.Install.FRAMEWORK;
 
 /**
  * Action to handle tree widget.
@@ -80,11 +80,16 @@ public class TreeWidgetActions implements Serializable {
     }
 
     /**
-     * Returns the {@code DocumentModel} referenced by the given path if exists,
-     * {@code null} otherwise.
+     * Returns the {@code DocumentModel} referenced by the given path if
+     * exists, {@code null} otherwise.
      */
     public DocumentModel getDocumentFromPath(String path)
             throws ClientException {
+        // handle root document differently has user may not have browse rights
+        // on it
+        if ("/".equals(path)) {
+            return documentManager.getRootDocument();
+        }
         DocumentRef ref = new PathRef(path);
         return documentManager.exists(ref) ? documentManager.getDocument(new PathRef(
                 path))

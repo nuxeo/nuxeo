@@ -149,8 +149,6 @@ public class TreeActionsBean implements TreeActions, Serializable {
                     } else {
                         if (showRoot) {
                             firstAccessibleParent = currentDocument;
-                            firstAccessibleParent.setPropertyValue("dc:title",
-                                    "/");
                         }
                     }
 

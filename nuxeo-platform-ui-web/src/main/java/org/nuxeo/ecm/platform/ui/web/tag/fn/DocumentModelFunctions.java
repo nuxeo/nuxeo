@@ -290,9 +290,15 @@ public final class DocumentModelFunctions implements LiveEditConstants {
                 title = null;
             }
             if (title == null || title.length() == 0) {
-                title = document.getId();
+                // handle root document title
+                if ("/".equals(document.getPathAsString())) {
+                    title = "/";
+                } else {
+                    title = document.getId();
+                }
             }
         }
+
         if (title == null) {
             title = "<Unknown>";
         }
@@ -300,7 +306,7 @@ public final class DocumentModelFunctions implements LiveEditConstants {
         if (title.startsWith(i18n_prefix)) {
             String i18nTitle = title.substring(i18n_prefix.length());
             FacesContext context = FacesContext.getCurrentInstance();
-            title = ComponentUtils.translate(context, i18nTitle, null);
+            title = ComponentUtils.translate(context, i18nTitle);
         }
         return title;
     }
