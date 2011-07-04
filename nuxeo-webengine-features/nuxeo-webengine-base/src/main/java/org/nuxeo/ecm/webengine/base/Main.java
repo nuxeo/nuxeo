@@ -75,18 +75,6 @@ public class Main extends ModuleRoot {
         return getView("index").arg("moduleLinks", list);
     }
 
-    @GET
-    @Path("help")
-    public Object getHelp() {
-        return getTemplate("help/help.ftl");
-    }
-
-    @GET
-    @Path("about")
-    public Object getAbout() {
-        return getTemplate("help/about.ftl");
-    }
-
     // handle errors
     @Override
     public Object handleError(WebApplicationException e) {
