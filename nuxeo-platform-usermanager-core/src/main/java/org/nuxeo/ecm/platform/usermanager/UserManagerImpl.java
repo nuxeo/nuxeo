@@ -19,8 +19,6 @@
  */
 package org.nuxeo.ecm.platform.usermanager;
 
-import static org.nuxeo.ecm.directory.localconfiguration.DirectoryConfigurationConstants.DIRECTORY_CONFIGURATION_FACET;
-
 import java.io.Serializable;
 import java.security.Principal;
 import java.util.ArrayList;
@@ -48,7 +46,6 @@ import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.impl.NuxeoGroupImpl;
-import org.nuxeo.ecm.core.api.localconfiguration.LocalConfigurationService;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
@@ -58,7 +55,6 @@ import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
-import org.nuxeo.ecm.directory.localconfiguration.DirectoryConfiguration;
 import org.nuxeo.ecm.platform.usermanager.exceptions.GroupAlreadyExistsException;
 import org.nuxeo.ecm.platform.usermanager.exceptions.UserAlreadyExistsException;
 import org.nuxeo.runtime.api.Framework;
@@ -68,7 +64,7 @@ import org.nuxeo.runtime.services.event.EventService;
 /**
  * Standard implementation of the Nuxeo UserManager.
  */
-public class UserManagerImpl implements UserManager {
+public class UserManagerImpl implements UserManager, MultiTenantUserManager {
 
     private static final long serialVersionUID = 1L;
 
@@ -531,36 +527,12 @@ public class UserManagerImpl implements UserManager {
     }
 
     public NuxeoPrincipal getPrincipal(String username) throws ClientException {
-        if (username == null) {
-            return null;
-        }
-        String anonymousUserId = getAnonymousUserId();
-        if (username.equals(anonymousUserId)) {
-            return makeAnonymousPrincipal();
-        }
-        if (virtualUsers.containsKey(username)) {
-            return makeVirtualPrincipal(virtualUsers.get(username));
-        }
-        DocumentModel userModel = getUserModel(username);
-        if (userModel != null) {
-            return makePrincipal(userModel);
-        }
-        return null;
+        return getPrincipal(username, null);
     }
 
+    @Override
     public DocumentModel getUserModel(String userName) throws ClientException {
-        if (userName == null) {
-            return null;
-        }
-        Session userDir = null;
-        try {
-            userDir = dirService.open(userDirectoryName);
-            return userDir.getEntry(userName);
-        } finally {
-            if (userDir != null) {
-                userDir.close();
-            }
-        }
+        return getUserModel(userName, null);
     }
 
     public DocumentModel getBareUserModel() throws ClientException {
@@ -569,15 +541,21 @@ public class UserManagerImpl implements UserManager {
     }
 
     public NuxeoGroup getGroup(String groupName) throws ClientException {
-        DocumentModel groupEntry = getGroupModel(groupName);
+        return getGroup(groupName, null);
+    }
+
+    protected NuxeoGroup getGroup(String groupName, DocumentModel context)
+            throws ClientException {
+        DocumentModel groupEntry = getGroupModel(groupName, context);
         if (groupEntry != null) {
             return makeGroup(groupEntry);
         }
         return null;
+
     }
 
     public DocumentModel getGroupModel(String groupName) throws ClientException {
-        return getGroupModelWithContext(groupName, null);
+        return getGroupModel(groupName, null);
     }
 
     @SuppressWarnings("unchecked")
@@ -623,35 +601,14 @@ public class UserManagerImpl implements UserManager {
         return group;
     }
 
-    @SuppressWarnings("unchecked")
+    @Override
     public List<String> getTopLevelGroups() throws ClientException {
-        Session groupDir = null;
-        try {
-            List<String> topLevelGroups = new LinkedList<String>();
-            groupDir = dirService.open(groupDirectoryName);
-            // XXX retrieve all entries with references, can be costly.
-            DocumentModelList groups = groupDir.query(
-                    Collections.<String, Serializable> emptyMap(), null, null,
-                    true);
-            for (DocumentModel group : groups) {
-                List<String> parents = (List<String>) group.getProperty(
-                        groupSchemaName, groupParentGroupsField);
-
-                if (parents == null || parents.isEmpty()) {
-                    topLevelGroups.add(group.getId());
-                }
-            }
-            return topLevelGroups;
-        } finally {
-            if (groupDir != null) {
-                groupDir.close();
-            }
-        }
+        return getTopLevelGroups(null);
     }
 
     public List<String> getGroupsInGroup(String parentId)
             throws ClientException {
-        return getGroup(parentId).getMemberGroups();
+        return getGroupsInGroup(parentId, null);
     }
 
     public List<String> getUsersInGroup(String groupId) throws ClientException {
@@ -660,27 +617,18 @@ public class UserManagerImpl implements UserManager {
 
     public List<String> getUsersInGroupAndSubGroups(String groupId)
             throws ClientException {
-        Set<String> groups = new HashSet<String>();
-        groups.add(groupId);
-        appendSubgroups(groupId, groups);
-
-        Set<String> users = new HashSet<String>();
-        for (String groupid : groups) {
-            users.addAll(getGroup(groupid).getMemberUsers());
-        }
-
-        return new ArrayList<String>(users);
+        return getUsersInGroupAndSubGroups(groupId, null);
     }
 
-    protected void appendSubgroups(String groupId, Set<String> groups)
-            throws ClientException {
-        List<String> groupsToAppend = getGroupsInGroup(groupId);
+    protected void appendSubgroups(String groupId, Set<String> groups,
+            DocumentModel context) throws ClientException {
+        List<String> groupsToAppend = getGroupsInGroup(groupId, context);
         groups.addAll(groupsToAppend);
         for (String subgroupId : groupsToAppend) {
             groups.add(subgroupId);
             // avoiding infinite loop
             if (!groups.contains(subgroupId)) {
-                appendSubgroups(subgroupId, groups);
+                appendSubgroups(subgroupId, groups, context);
             }
         }
 
@@ -734,35 +682,7 @@ public class UserManagerImpl implements UserManager {
 
     public DocumentModelList searchGroups(String pattern)
             throws ClientException {
-        DocumentModelList entries = new DocumentModelListImpl();
-        if (pattern == null || pattern.length() == 0) {
-            entries = searchGroups(
-                    Collections.<String, Serializable> emptyMap(), null);
-        } else {
-            Map<String, DocumentModel> uniqueEntries = new HashMap<String, DocumentModel>();
-
-            for (Entry<String, MatchType> fieldEntry : groupSearchFields.entrySet()) {
-                Map<String, Serializable> filter = new HashMap<String, Serializable>();
-                filter.put(fieldEntry.getKey(), pattern);
-                DocumentModelList fetchedEntries;
-                if (fieldEntry.getValue() == MatchType.SUBSTRING) {
-                    fetchedEntries = searchGroups(filter, filter.keySet());
-                } else {
-                    fetchedEntries = searchGroups(filter, null);
-                }
-                for (DocumentModel entry : fetchedEntries) {
-                    uniqueEntries.put(entry.getId(), entry);
-                }
-            }
-            log.debug(String.format("found %d unique group entries",
-                    uniqueEntries.size()));
-            entries.addAll(uniqueEntries.values());
-        }
-        // sort
-        Collections.sort(entries, new DocumentModelComparator(groupSchemaName,
-                getGroupSortMap()));
-
-        return entries;
+        return searchGroups(pattern, null);
     }
 
     public String getUserSortField() {
@@ -869,102 +789,24 @@ public class UserManagerImpl implements UserManager {
 
     public DocumentModel createGroup(DocumentModel groupModel)
             throws ClientException {
-        Session groupDir = null;
-        try {
-            groupDir = dirService.open(groupDirectoryName);
-            String groupId = getGroupId(groupModel);
-
-            // check the group does not exist
-            if (groupDir.hasEntry(groupId)) {
-                throw new GroupAlreadyExistsException();
-            }
-            groupModel = groupDir.createEntry(groupModel);
-            groupDir.commit();
-            notifyGroupChanged(groupId);
-            notify(groupId, GROUPCREATED_EVENT_ID);
-            return groupModel;
-
-        } finally {
-            if (groupDir != null) {
-                groupDir.close();
-            }
-        }
+        return createGroup(groupModel, null);
     }
 
     public DocumentModel createUser(DocumentModel userModel)
             throws ClientException {
-        Session userDir = null;
-        try {
-            userDir = dirService.open(userDirectoryName);
-            String userId = getUserId(userModel);
-
-            // check the user does not exist
-            if (userDir.hasEntry(userId)) {
-                throw new UserAlreadyExistsException();
-            }
-
-            String schema = dirService.getDirectorySchema(userDirectoryName);
-            String clearUsername = (String) userModel.getProperty(schema,
-                    userDir.getIdField());
-            String clearPassword = (String) userModel.getProperty(schema,
-                    userDir.getPasswordField());
-
-            userModel = userDir.createEntry(userModel);
-            userDir.commit();
-
-            syncDigestAuthPassword(clearUsername, clearPassword);
-
-            notifyUserChanged(userId);
-            notify(userId, USERCREATED_EVENT_ID);
-            return userModel;
-
-        } finally {
-            if (userDir != null) {
-                userDir.close();
-            }
-        }
+        return createUser(userModel, null);
     }
 
     public void deleteGroup(String groupId) throws ClientException {
-        Session groupDir = null;
-        try {
-            groupDir = dirService.open(groupDirectoryName);
-            if (!groupDir.hasEntry(groupId)) {
-                throw new DirectoryException("Group does not exist: " + groupId);
-            }
-            groupDir.deleteEntry(groupId);
-            groupDir.commit();
-            notifyGroupChanged(groupId);
-            notify(groupId, GROUPDELETED_EVENT_ID);
-        } finally {
-            if (groupDir != null) {
-                groupDir.close();
-            }
-        }
+        deleteGroup(groupId, null);
     }
 
     public void deleteGroup(DocumentModel groupModel) throws ClientException {
-        String groupId = getGroupId(groupModel);
-        deleteGroup(groupId);
+        deleteGroup(groupModel, null);
     }
 
     public void deleteUser(String userId) throws ClientException {
-        Session userDir = null;
-        try {
-            userDir = dirService.open(userDirectoryName);
-            if (!userDir.hasEntry(userId)) {
-                throw new DirectoryException("User does not exist: " + userId);
-            }
-            userDir.deleteEntry(userId);
-            userDir.commit();
-            notifyUserChanged(userId);
-            notify(userId, USERDELETED_EVENT_ID);
-
-        } finally {
-            if (userDir != null) {
-                userDir.close();
-            }
-        }
+        deleteUser(userId, null);
     }
 
     public void deleteUser(DocumentModel userModel) throws ClientException {
@@ -989,19 +831,7 @@ public class UserManagerImpl implements UserManager {
     }
 
     public List<String> getUserIds() throws ClientException {
-        Session userDir = null;
-        try {
-            userDir = dirService.open(userDirectoryName);
-            List<String> userIds = userDir.getProjection(
-                    Collections.<String, Serializable> emptyMap(),
-                    userDir.getIdField());
-            Collections.sort(userIds);
-            return userIds;
-        } finally {
-            if (userDir != null) {
-                userDir.close();
-            }
-        }
+        return getUserIds(null);
     }
 
     protected void removeVirtualFilters(Map<String, Serializable> filter) {
@@ -1019,55 +849,11 @@ public class UserManagerImpl implements UserManager {
     @Override
     public DocumentModelList searchGroups(Map<String, Serializable> filter,
             Set<String> fulltext) throws ClientException {
-        Session groupDir = null;
-        try {
-            removeVirtualFilters(filter);
-            groupDir = dirService.open(groupDirectoryName);
-
-            return groupDir.query(filter, fulltext,
-                    getGroupSortMap(), false);
-        } finally {
-            if (groupDir != null) {
-                groupDir.close();
-            }
-        }
-    }
-
-    protected DocumentModelList searchUsers(Map<String, Serializable> filter,
-            Set<String> fulltext, Map<String, String> orderBy,
-            DocumentModel context) throws ClientException {
-        Session userDir = null;
-        try {
-            userDir = dirService.open(userDirectoryName, context);
-
-            removeVirtualFilters(filter);
-
-            // XXX: do not fetch references, can be costly
-            DocumentModelList entries = userDir.query(filter, fulltext, null,
-                    false);
-            if (isAnonymousMatching(filter, fulltext)) {
-                entries.add(makeVirtualUserEntry(getAnonymousUserId(),
-                        anonymousUser));
-            }
-
-            // TODO: match searchable virtual users
-
-            if (orderBy != null && !orderBy.isEmpty()) {
-                // sort: cannot sort before virtual users are added
-                Collections.sort(entries, new DocumentModelComparator(
-                        userSchemaName, orderBy));
-            }
-
-            return entries;
-        } finally {
-            if (userDir != null) {
-                userDir.close();
-            }
-        }
+        return searchGroups(filter, fulltext, null);
     }
 
     public DocumentModelList searchUsers(String pattern) throws ClientException {
-        return searchUsersWithContext(pattern, null);
+        return searchUsers(pattern, null);
     }
 
     public DocumentModelList searchUsers(Map<String, Serializable> filter,
@@ -1076,53 +862,11 @@ public class UserManagerImpl implements UserManager {
     }
 
     public void updateGroup(DocumentModel groupModel) throws ClientException {
-        Session groupDir = null;
-        try {
-            groupDir = dirService.open(groupDirectoryName);
-            String groupId = getGroupId(groupModel);
-
-            if (!groupDir.hasEntry(groupId)) {
-                throw new DirectoryException("group does not exist: " + groupId);
-            }
-            groupDir.updateEntry(groupModel);
-            groupDir.commit();
-            notifyGroupChanged(groupId);
-            notify(groupId, GROUPMODIFIED_EVENT_ID);
-        } finally {
-            if (groupDir != null) {
-                groupDir.close();
-            }
-        }
+        updateGroup(groupModel, null);
     }
 
     public void updateUser(DocumentModel userModel) throws ClientException {
-        Session userDir = null;
-        try {
-            userDir = dirService.open(userDirectoryName);
-            String userId = getUserId(userModel);
-
-            if (!userDir.hasEntry(userId)) {
-                throw new DirectoryException("user does not exist: " + userId);
-            }
-
-            String schema = dirService.getDirectorySchema(userDirectoryName);
-            String clearUsername = (String) userModel.getProperty(schema,
-                    userDir.getIdField());
-            String clearPassword = (String) userModel.getProperty(schema,
-                    userDir.getPasswordField());
-
-            userDir.updateEntry(userModel);
-            userDir.commit();
-
-            syncDigestAuthPassword(clearUsername, clearPassword);
-
-            notifyUserChanged(userId);
-            notify(userId, USERMODIFIED_EVENT_ID);
-        } finally {
-            if (userDir != null) {
-                userDir.close();
-            }
-        }
+        updateUser(userModel, null);
     }
 
     public DocumentModel getBareGroupModel() throws ClientException {
@@ -1249,6 +993,479 @@ public class UserManagerImpl implements UserManager {
 
     @Override
     public String[] getUsersForPermission(String perm, ACP acp) {
+        return getUsersForPermission(perm, acp, null);
+    }
+
+    @Override
+    public Principal authenticate(String name, String password)
+            throws ClientException {
+        return checkUsernamePassword(name, password) ? getPrincipal(name)
+                : null;
+    }
+
+    /*************** MULTI-TENANT-IMPLEMENTATION ************************/
+
+    public DocumentModelList searchUsers(Map<String, Serializable> filter,
+            Set<String> fulltext, Map<String, String> orderBy,
+            DocumentModel context) throws ClientException {
+        Session userDir = null;
+        try {
+            userDir = dirService.open(userDirectoryName, context);
+
+            removeVirtualFilters(filter);
+
+            // XXX: do not fetch references, can be costly
+            DocumentModelList entries = userDir.query(filter, fulltext, null,
+                    false);
+            if (isAnonymousMatching(filter, fulltext)) {
+                entries.add(makeVirtualUserEntry(getAnonymousUserId(),
+                        anonymousUser));
+            }
+
+            // TODO: match searchable virtual users
+
+            if (orderBy != null && !orderBy.isEmpty()) {
+                // sort: cannot sort before virtual users are added
+                Collections.sort(entries, new DocumentModelComparator(
+                        userSchemaName, orderBy));
+            }
+
+            return entries;
+        } finally {
+            if (userDir != null) {
+                userDir.close();
+            }
+        }
+    }
+
+    @Override
+    public List<String> getUsersInGroup(String groupId, DocumentModel context)
+            throws ClientException {
+        String storeGroupId = multiTenantManagement.groupnameTranformer(this,
+                groupId, context);
+        return getGroup(storeGroupId).getMemberUsers();
+    }
+
+    @Override
+    public DocumentModelList searchUsers(String pattern, DocumentModel context)
+            throws ClientException {
+        DocumentModelList entries = new DocumentModelListImpl();
+        if (pattern == null || pattern.length() == 0) {
+            entries = searchUsers(
+                    Collections.<String, Serializable> emptyMap(), null);
+        } else {
+            Map<String, DocumentModel> uniqueEntries = new HashMap<String, DocumentModel>();
+
+            for (Entry<String, MatchType> fieldEntry : userSearchFields.entrySet()) {
+                Map<String, Serializable> filter = new HashMap<String, Serializable>();
+                filter.put(fieldEntry.getKey(), pattern);
+                DocumentModelList fetchedEntries;
+                if (fieldEntry.getValue() == MatchType.SUBSTRING) {
+                    fetchedEntries = searchUsers(filter, filter.keySet(), null,
+                            context);
+                } else {
+                    fetchedEntries = searchUsers(filter, null, null, context);
+                }
+                for (DocumentModel entry : fetchedEntries) {
+                    uniqueEntries.put(entry.getId(), entry);
+                }
+            }
+            log.debug(String.format("found %d unique entries",
+                    uniqueEntries.size()));
+            entries.addAll(uniqueEntries.values());
+        }
+        // sort
+        Collections.sort(entries, new DocumentModelComparator(userSchemaName,
+                getUserSortMap()));
+
+        return entries;
+    }
+
+    @Override
+    public DocumentModelList searchUsers(Map<String, Serializable> filter,
+            Set<String> fulltext, DocumentModel context) throws ClientException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public List<String> getGroupIds(DocumentModel context)
+            throws ClientException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public DocumentModelList searchGroups(Map<String, Serializable> filter,
+            Set<String> fulltext, DocumentModel context) throws ClientException {
+        filter = filter != null ? cloneMap(filter)
+                : new HashMap<String, Serializable>();
+        HashSet<String> fulltextClone = fulltext != null ? cloneSet(fulltext)
+                : new HashSet<String>();
+        multiTenantManagement.queryTransformer(this, filter, fulltextClone,
+                context);
+
+        Session groupDir = null;
+        try {
+            removeVirtualFilters(filter);
+            groupDir = dirService.open(groupDirectoryName, context);
+
+            return groupDir.query(filter, fulltextClone, getGroupSortMap(),
+                    false);
+        } finally {
+            if (groupDir != null) {
+                groupDir.close();
+            }
+        }
+    }
+
+    @Override
+    public DocumentModel createGroup(DocumentModel groupModel,
+            DocumentModel context) throws ClientException,
+            GroupAlreadyExistsException {
+        groupModel = multiTenantManagement.groupTransformer(this, groupModel,
+                context);
+
+        Session groupDir = null;
+        try {
+            groupDir = dirService.open(groupDirectoryName, context);
+            String groupId = getGroupId(groupModel);
+
+            // check the group does not exist
+            if (groupDir.hasEntry(groupId)) {
+                throw new GroupAlreadyExistsException();
+            }
+            groupModel = groupDir.createEntry(groupModel);
+            groupDir.commit();
+            notifyGroupChanged(groupId);
+            notify(groupId, GROUPCREATED_EVENT_ID);
+            return groupModel;
+
+        } finally {
+            if (groupDir != null) {
+                groupDir.close();
+            }
+        }
+    }
+
+    @Override
+    public DocumentModel getGroupModel(String groupIdValue,
+            DocumentModel context) throws ClientException {
+        String groupName = multiTenantManagement.groupnameTranformer(this,
+                groupIdValue, context);
+        Session groupDir = null;
+        try {
+            groupDir = dirService.open(groupDirectoryName, context);
+            return groupDir.getEntry(groupName);
+        } finally {
+            if (groupDir != null) {
+                groupDir.close();
+            }
+        }
+    }
+
+    @Override
+    public DocumentModel getUserModel(String userName, DocumentModel context)
+            throws ClientException {
+        if (userName == null) {
+            return null;
+        }
+        Session userDir = null;
+        try {
+            userDir = dirService.open(userDirectoryName, context);
+            return userDir.getEntry(userName);
+        } finally {
+            if (userDir != null) {
+                userDir.close();
+            }
+        }
+    }
+
+    protected Map<String, Serializable> cloneMap(Map<String, Serializable> map) {
+        Map<String, Serializable> result = new HashMap<String, Serializable>();
+        for (String key : map.keySet()) {
+            result.put(key, map.get(key));
+        }
+        return result;
+    }
+
+    protected HashSet<String> cloneSet(Set<String> set) {
+        HashSet<String> result = new HashSet<String>();
+        for (String key : set) {
+            result.add(key);
+        }
+        return result;
+    }
+
+    @Override
+    public NuxeoPrincipal getPrincipal(String username, DocumentModel context)
+            throws ClientException {
+        if (username == null) {
+            return null;
+        }
+        String anonymousUserId = getAnonymousUserId();
+        if (username.equals(anonymousUserId)) {
+            return makeAnonymousPrincipal();
+        }
+        if (virtualUsers.containsKey(username)) {
+            return makeVirtualPrincipal(virtualUsers.get(username));
+        }
+        DocumentModel userModel = getUserModel(username, context);
+        if (userModel != null) {
+            return makePrincipal(userModel);
+        }
+        return null;
+    }
+
+    @Override
+    public DocumentModelList searchGroups(String pattern, DocumentModel context)
+            throws ClientException {
+        DocumentModelList entries = new DocumentModelListImpl();
+        if (pattern == null || pattern.length() == 0) {
+            entries = searchGroups(
+                    Collections.<String, Serializable> emptyMap(), null);
+        } else {
+            Map<String, DocumentModel> uniqueEntries = new HashMap<String, DocumentModel>();
+
+            for (Entry<String, MatchType> fieldEntry : groupSearchFields.entrySet()) {
+                Map<String, Serializable> filter = new HashMap<String, Serializable>();
+                filter.put(fieldEntry.getKey(), pattern);
+                DocumentModelList fetchedEntries;
+                if (fieldEntry.getValue() == MatchType.SUBSTRING) {
+                    fetchedEntries = searchGroups(filter, filter.keySet(),
+                            context);
+                } else {
+                    fetchedEntries = searchGroups(filter, null, context);
+                }
+                for (DocumentModel entry : fetchedEntries) {
+                    uniqueEntries.put(entry.getId(), entry);
+                }
+            }
+            log.debug(String.format("found %d unique group entries",
+                    uniqueEntries.size()));
+            entries.addAll(uniqueEntries.values());
+        }
+        // sort
+        Collections.sort(entries, new DocumentModelComparator(groupSchemaName,
+                getGroupSortMap()));
+
+        return entries;
+    }
+
+    @Override
+    public List<String> getUserIds(DocumentModel context)
+            throws ClientException {
+        Session userDir = null;
+        try {
+            userDir = dirService.open(userDirectoryName, context);
+            List<String> userIds = userDir.getProjection(
+                    Collections.<String, Serializable> emptyMap(),
+                    userDir.getIdField());
+            Collections.sort(userIds);
+            return userIds;
+        } finally {
+            if (userDir != null) {
+                userDir.close();
+            }
+        }
+    }
+
+    @Override
+    public DocumentModel createUser(DocumentModel userModel,
+            DocumentModel context) throws ClientException,
+            UserAlreadyExistsException {
+        Session userDir = null;
+        try {
+            userDir = dirService.open(userDirectoryName, context);
+            String userId = getUserId(userModel);
+
+            // check the user does not exist
+            if (userDir.hasEntry(userId)) {
+                throw new UserAlreadyExistsException();
+            }
+
+            String schema = dirService.getDirectorySchema(userDirectoryName);
+            String clearUsername = (String) userModel.getProperty(schema,
+                    userDir.getIdField());
+            String clearPassword = (String) userModel.getProperty(schema,
+                    userDir.getPasswordField());
+
+            userModel = userDir.createEntry(userModel);
+            userDir.commit();
+
+            syncDigestAuthPassword(clearUsername, clearPassword);
+
+            notifyUserChanged(userId);
+            notify(userId, USERCREATED_EVENT_ID);
+            return userModel;
+
+        } finally {
+            if (userDir != null) {
+                userDir.close();
+            }
+        }
+    }
+
+    @Override
+    public void updateUser(DocumentModel userModel, DocumentModel context)
+            throws ClientException {
+        Session userDir = null;
+        try {
+            userDir = dirService.open(userDirectoryName, context);
+            String userId = getUserId(userModel);
+
+            if (!userDir.hasEntry(userId)) {
+                throw new DirectoryException("user does not exist: " + userId);
+            }
+
+            String schema = dirService.getDirectorySchema(userDirectoryName);
+            String clearUsername = (String) userModel.getProperty(schema,
+                    userDir.getIdField());
+            String clearPassword = (String) userModel.getProperty(schema,
+                    userDir.getPasswordField());
+
+            userDir.updateEntry(userModel);
+            userDir.commit();
+
+            syncDigestAuthPassword(clearUsername, clearPassword);
+
+            notifyUserChanged(userId);
+            notify(userId, USERMODIFIED_EVENT_ID);
+        } finally {
+            if (userDir != null) {
+                userDir.close();
+            }
+        }
+
+    }
+
+    @Override
+    public void deleteUser(DocumentModel userModel, DocumentModel context)
+            throws ClientException {
+        String userId = getUserId(userModel);
+        deleteUser(userId, context);
+    }
+
+    @Override
+    public void deleteUser(String userId, DocumentModel context)
+            throws ClientException {
+        Session userDir = null;
+        try {
+            userDir = dirService.open(userDirectoryName, context);
+            if (!userDir.hasEntry(userId)) {
+                throw new DirectoryException("User does not exist: " + userId);
+            }
+            userDir.deleteEntry(userId);
+            userDir.commit();
+            notifyUserChanged(userId);
+            notify(userId, USERDELETED_EVENT_ID);
+
+        } finally {
+            if (userDir != null) {
+                userDir.close();
+            }
+        }
+    }
+
+    @Override
+    public void updateGroup(DocumentModel groupModel, DocumentModel context)
+            throws ClientException {
+        Session groupDir = null;
+        try {
+            groupDir = dirService.open(groupDirectoryName, context);
+            String groupId = getGroupId(groupModel);
+
+            if (!groupDir.hasEntry(groupId)) {
+                throw new DirectoryException("group does not exist: " + groupId);
+            }
+            groupDir.updateEntry(groupModel);
+            groupDir.commit();
+            notifyGroupChanged(groupId);
+            notify(groupId, GROUPMODIFIED_EVENT_ID);
+        } finally {
+            if (groupDir != null) {
+                groupDir.close();
+            }
+        }
+    }
+
+    @Override
+    public void deleteGroup(DocumentModel groupModel, DocumentModel context)
+            throws ClientException {
+        String groupId = getGroupId(groupModel);
+        deleteGroup(groupId, context);
+    }
+
+    @Override
+    public void deleteGroup(String groupId, DocumentModel context)
+            throws ClientException {
+        Session groupDir = null;
+        try {
+            groupDir = dirService.open(groupDirectoryName, context);
+            if (!groupDir.hasEntry(groupId)) {
+                throw new DirectoryException("Group does not exist: " + groupId);
+            }
+            groupDir.deleteEntry(groupId);
+            groupDir.commit();
+            notifyGroupChanged(groupId);
+            notify(groupId, GROUPDELETED_EVENT_ID);
+        } finally {
+            if (groupDir != null) {
+                groupDir.close();
+            }
+        }
+    }
+
+    @Override
+    public List<String> getGroupsInGroup(String parentId, DocumentModel context)
+            throws ClientException {
+        return getGroup(parentId, null).getMemberGroups();
+    }
+
+    @Override
+    public List<String> getTopLevelGroups(DocumentModel context)
+            throws ClientException {
+        Session groupDir = null;
+        try {
+            List<String> topLevelGroups = new LinkedList<String>();
+            groupDir = dirService.open(groupDirectoryName, context);
+            // XXX retrieve all entries with references, can be costly.
+            DocumentModelList groups = groupDir.query(
+                    Collections.<String, Serializable> emptyMap(), null, null,
+                    true);
+            for (DocumentModel group : groups) {
+                @SuppressWarnings("unchecked")
+                List<String> parents = (List<String>) group.getProperty(
+                        groupSchemaName, groupParentGroupsField);
+
+                if (parents == null || parents.isEmpty()) {
+                    topLevelGroups.add(group.getId());
+                }
+            }
+            return topLevelGroups;
+        } finally {
+            if (groupDir != null) {
+                groupDir.close();
+            }
+        }
+    }
+
+    @Override
+    public List<String> getUsersInGroupAndSubGroups(String groupId,
+            DocumentModel context) throws ClientException {
+        Set<String> groups = new HashSet<String>();
+        groups.add(groupId);
+        appendSubgroups(groupId, groups, context);
+
+        Set<String> users = new HashSet<String>();
+        for (String groupid : groups) {
+            users.addAll(getGroup(groupid, context).getMemberUsers());
+        }
+
+        return new ArrayList<String>(users);
+    }
+
+    @Override
+    public String[] getUsersForPermission(String perm, ACP acp,
+            DocumentModel context) {
         // using a hashset to avoid duplicates
         HashSet<String> usernames = new HashSet<String>();
 
@@ -1306,9 +1523,10 @@ public class UserManagerImpl implements UserManager {
                 // subgroups)
                 if (users == null) {
                     NuxeoGroup group;
-                    group = getGroup(aceUsername);
+                    group = getGroup(aceUsername, context);
                     if (group != null) {
-                        users = getUsersInGroupAndSubGroups(aceUsername);
+                        users = getUsersInGroupAndSubGroups(aceUsername,
+                                context);
                     }
 
                 }
@@ -1330,113 +1548,6 @@ public class UserManagerImpl implements UserManager {
 
         }
         return usernames.toArray(new String[usernames.size()]);
-    }
-
-    @Override
-    public Principal authenticate(String name, String password)
-            throws ClientException {
-        return checkUsernamePassword(name, password) ? getPrincipal(name)
-                : null;
-    }
-
-    @Override
-    public DocumentModelList searchUsersWithContext(String pattern,
-            DocumentModel context) throws ClientException {
-        DocumentModelList entries = new DocumentModelListImpl();
-        if (pattern == null || pattern.length() == 0) {
-            entries = searchUsers(
-                    Collections.<String, Serializable> emptyMap(), null);
-        } else {
-            Map<String, DocumentModel> uniqueEntries = new HashMap<String, DocumentModel>();
-
-            for (Entry<String, MatchType> fieldEntry : userSearchFields.entrySet()) {
-                Map<String, Serializable> filter = new HashMap<String, Serializable>();
-                filter.put(fieldEntry.getKey(), pattern);
-                DocumentModelList fetchedEntries;
-                if (fieldEntry.getValue() == MatchType.SUBSTRING) {
-                    fetchedEntries = searchUsers(filter, filter.keySet(), null,
-                            context);
-                } else {
-                    fetchedEntries = searchUsers(filter, null, null, context);
-                }
-                for (DocumentModel entry : fetchedEntries) {
-                    uniqueEntries.put(entry.getId(), entry);
-                }
-            }
-            log.debug(String.format("found %d unique entries",
-                    uniqueEntries.size()));
-            entries.addAll(uniqueEntries.values());
-        }
-        // sort
-        Collections.sort(entries, new DocumentModelComparator(userSchemaName,
-                getUserSortMap()));
-
-        return entries;
-    }
-
-    @Override
-    public DocumentModelList searchUsersWithContext(
-            Map<String, Serializable> filter, Set<String> fulltext,
-            DocumentModel context) throws ClientException {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public List<String> getGroupIdsWithContext(DocumentModel context)
-            throws ClientException {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public DocumentModelList searchGroupsWithContext(
-            Map<String, Serializable> filter, Set<String> fulltext,
-            DocumentModel context) throws ClientException {
-        filter = cloneMap(filter);
-        HashSet<String> fulltextClone = cloneSet(fulltext);
-        multiTenantManagement.queryTransformer(this, filter, fulltextClone,
-                context);
-        return searchGroups(filter, fulltextClone);
-    }
-
-    protected Map<String, Serializable> cloneMap(Map<String, Serializable> map) {
-        Map<String, Serializable> result = new HashMap<String, Serializable>();
-        for (String key : map.keySet()) {
-            result.put(key, map.get(key));
-        }
-        return result;
-    }
-
-    protected HashSet<String> cloneSet(Set<String> set) {
-        HashSet<String> result = new HashSet<String>();
-        for (String key : set) {
-            result.add(key);
-        }
-        return result;
-    }
-
-    @Override
-    public DocumentModel createGroupWithContext(DocumentModel groupModel,
-            DocumentModel context) throws ClientException,
-            GroupAlreadyExistsException {
-        groupModel = multiTenantManagement.groupTransformer(this, groupModel,
-                context);
-        return createGroup(groupModel);
-    }
-
-    @Override
-    public DocumentModel getGroupModelWithContext(String groupIdValue,
-            DocumentModel context) throws ClientException {
-        String groupName = multiTenantManagement.groupnameTranformer(this,
-                groupIdValue, context);
-        Session groupDir = null;
-        try {
-            groupDir = dirService.open(groupDirectoryName);
-            return groupDir.getEntry(groupName);
-        } finally {
-            if (groupDir != null) {
-                groupDir.close();
-            }
-        }
     }
 
 }

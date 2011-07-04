@@ -39,7 +39,6 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.platform.usermanager.UserManagerDescriptor;
-import org.nuxeo.ecm.platform.usermanager.exceptions.GroupAlreadyExistsException;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -103,7 +102,8 @@ public class UserManagerBean implements UserManagerLocal {
         }
     }
 
-    public DocumentModelList searchGroups(String pattern) throws ClientException {
+    public DocumentModelList searchGroups(String pattern)
+            throws ClientException {
         try {
             return getUserManager().searchGroups(pattern);
         } catch (Throwable e) {
@@ -577,76 +577,14 @@ public class UserManagerBean implements UserManagerLocal {
     }
 
     @Override
-    public Principal authenticate(String name, String password) throws ClientException {
+    public Principal authenticate(String name, String password)
+            throws ClientException {
         try {
             return getUserManager().authenticate(name, password);
         } catch (ClientException e) {
             throw e;
         } catch (Throwable t) {
             throw new ClientException(t);
-        }
-    }
-
-    @Override
-    public DocumentModelList searchUsersWithContext(String pattern,
-            DocumentModel context) throws ClientException {
-        try {
-            return getUserManager().searchUsers(pattern);
-        } catch (Throwable e) {
-            throw ClientException.wrap(e);
-        }
-    }
-
-    @Override
-    public DocumentModelList searchUsersWithContext(
-            Map<String, Serializable> filter, Set<String> fulltext,
-            DocumentModel context) throws ClientException {
-        try {
-            return getUserManager().searchGroupsWithContext(filter, fulltext, context);
-        } catch (Throwable e) {
-            throw ClientException.wrap(e);
-        }
-    }
-
-    @Override
-    public List<String> getGroupIdsWithContext(DocumentModel context)
-            throws ClientException {
-        try {
-            return getUserManager().getGroupIdsWithContext(context);
-        } catch (Throwable e) {
-            throw ClientException.wrap(e);
-        }
-    }
-
-    @Override
-    public DocumentModelList searchGroupsWithContext(
-            Map<String, Serializable> filter, Set<String> fulltext,
-            DocumentModel context) throws ClientException {
-        try {
-            return getUserManager().searchGroupsWithContext(filter, fulltext, context);
-        } catch (Throwable e) {
-            throw ClientException.wrap(e);
-        }
-    }
-
-    @Override
-    public DocumentModel createGroupWithContext(DocumentModel groupModel,
-            DocumentModel context) throws ClientException,
-            GroupAlreadyExistsException {
-        try {
-            return getUserManager().createGroupWithContext(groupModel, context);
-        } catch (Throwable e) {
-            throw ClientException.wrap(e);
-        }
-    }
-
-    @Override
-    public DocumentModel getGroupModelWithContext(String groupName,
-            DocumentModel context) throws ClientException {
-        try {
-            return getUserManager().getGroupModelWithContext(groupName, context);
-        } catch (Throwable e) {
-            throw ClientException.wrap(e);
         }
     }
 

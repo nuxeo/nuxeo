@@ -26,9 +26,9 @@ import java.util.Map;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
 import org.nuxeo.ecm.platform.usermanager.DefaultUserMultiTenantManagementMock;
-import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.platform.usermanager.UserManagerImpl;
 import org.nuxeo.ecm.platform.usermanager.UserMultiTenantManagement;
 import org.nuxeo.ecm.platform.usermanager.UserService;
@@ -55,7 +55,7 @@ public class TestUserManagerWithContext extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.core.api");
         deployBundle("org.nuxeo.ecm.core");
         deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
-                "test-usermanagerimpl/DirectoryServiceMock.xml");
+                "test-usermanagerimpl-multitenant/DirectoryServiceMock.xml");
         deployBundle("org.nuxeo.ecm.directory.api");
         deployBundle("org.nuxeo.ecm.directory");
         deployBundle("org.nuxeo.ecm.directory.sql");
@@ -64,11 +64,9 @@ public class TestUserManagerWithContext extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.platform.usermanager");
 
         deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
-                "test-usermanagerimpl/directory-for-context-config.xml");
+                "test-usermanagerimpl-multitenant/directory-for-context-config.xml");
         deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
                 "test-usermanagerimpl/userservice-config.xml");
-        deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
-        "test-usermanagerimpl/UserManagerMock.xml");
 
         userService = (UserService) Framework.getRuntime().getComponent(
                 UserService.NAME);
@@ -79,18 +77,23 @@ public class TestUserManagerWithContext extends NXRuntimeTestCase {
         userManager.multiTenantManagement = umtm;
     }
 
-    public void testConnect() {
-        assertNotNull(userManager);
+    public void testGetAdministratorTenanta() throws Exception {
+        NuxeoPrincipal principal = userManager.getPrincipal("Administrator@tenanta");
+        assertNotNull(principal);
+        assertTrue(principal.isMemberOf("administrators-tenanta"));
+        assertFalse(principal.isMemberOf("administrators-tenantb"));
     }
+
+    
 
     public void testShouldReturnOnlyUserFromTenantA() throws Exception {
 
-        DocumentModelList users = userManager.searchUsersWithContext("%%", null);
+        DocumentModelList users = userManager.searchUsers("%%", null);
 
         assertEquals(2, users.size());
 
         DocumentModel fakeDoc = new SimpleDocumentModel();
-        users = userManager.searchUsersWithContext("Administrator", fakeDoc);
+        users = userManager.searchUsers("Administrator", fakeDoc);
 
         assertEquals(1, users.size());
         assertEquals("Administrator@tenanta",
@@ -103,33 +106,33 @@ public class TestUserManagerWithContext extends NXRuntimeTestCase {
         HashSet<String> fulltext = new HashSet<String>();
         DocumentModel fakeDoc = new SimpleDocumentModel();
 
-        DocumentModelList groups = userManager.searchGroupsWithContext(filter,
+        DocumentModelList groups = userManager.searchGroups(filter,
                 fulltext, null);
         assertEquals(4, groups.size());
 
-        groups = userManager.searchGroupsWithContext(filter, fulltext, fakeDoc);
+        groups = userManager.searchGroups(filter, fulltext, fakeDoc);
         assertEquals(2, groups.size());
 
         filter.put("groupname", "administrators%");
         fulltext.add("groupname");
-        groups = userManager.searchGroupsWithContext(filter, fulltext, fakeDoc);
+        groups = userManager.searchGroups(filter, fulltext, fakeDoc);
         assertEquals(1, groups.size());
         assertEquals("administrators-tenanta",
                 groups.get(0).getPropertyValue("groupname"));
     }
 
-//    public void testShouldAddPrefixToIdWhenGroupCreated() throws Exception {
-//
-//        DocumentModel fakeDoc = new SimpleDocumentModel();
-//
-//        DocumentModel newGroup = userManager.getBareGroupModel();
-//        newGroup.setPropertyValue("groupname", "test");
-//        userManager.createGroupWithContext(newGroup, fakeDoc);
-//        
-//        DocumentModel group = userManager.getGroupModelWithContext("test", fakeDoc);
-//        String groupIdValue = (String) group.getPropertyValue("groupname");
-//        assertTrue(groupIdValue.endsWith("_tenanta"));
-//
-//    }
+    public void testShouldAddPrefixToIdWhenGroupCreated() throws Exception {
+
+        DocumentModel fakeDoc = new SimpleDocumentModel();
+
+        DocumentModel newGroup = userManager.getBareGroupModel();
+        newGroup.setPropertyValue("groupname", "test");
+        userManager.createGroup(newGroup, fakeDoc);
+        
+        DocumentModel group = userManager.getGroupModel("test", fakeDoc);
+        String groupIdValue = (String) group.getPropertyValue("groupname");
+        assertTrue(groupIdValue.endsWith("-tenanta"));
+
+    }
 
 }

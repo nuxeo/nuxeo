@@ -162,36 +162,6 @@ public interface UserManager extends Authenticator, Serializable {
     DocumentModelList searchUsers(String pattern) throws ClientException;
 
     /**
-     * Returns users matching given pattern with the given context. if the
-     * Document Context have a directory local configuration, the service try to
-     * open the directory with directory suffix set into the local configuration
-     * <p>
-     * Pattern is used to fill a filter and fulltext map according to users
-     * search fields configuration. Search is performed on each of these fields
-     * (OR).
-     * 
-     * @since 5.4.3
-     * @throws ClientException
-     */
-    DocumentModelList searchUsersWithContext(String pattern,
-            DocumentModel context) throws ClientException;
-
-    /**
-     * Returns users matching given criteria and with the given context. if the
-     * Document Context have a directory local configuration, the service try to
-     * open the user directory with directory suffix set into the local
-     * configuration
-     * 
-     * @param filter filter with field names as keys
-     * @param fulltext field names used for fulltext match
-     * @param context
-     * @since 5.4.3
-     * @throws ClientException
-     */
-    DocumentModelList searchUsersWithContext(Map<String, Serializable> filter,
-            Set<String> fulltext, DocumentModel context) throws ClientException;
-
-    /**
      * Returns users matching given criteria.
      * 
      * @param filter filter with field names as keys
@@ -217,18 +187,6 @@ public interface UserManager extends Authenticator, Serializable {
     List<String> getGroupIds() throws ClientException;
 
     /**
-     * Returns the list of all groups ids with the given context. if the
-     * Document Context have a directory local configuration, the service try to
-     * open the user directory with directory suffix set into the local
-     * configuration
-     * 
-     * @since 5.4.3
-     * @throws ClientException
-     */
-    List<String> getGroupIdsWithContext(DocumentModel context)
-            throws ClientException;
-
-    /**
      * Returns groups matching given criteria.
      * 
      * @param filter filter with field names as keys
@@ -238,36 +196,6 @@ public interface UserManager extends Authenticator, Serializable {
      */
     DocumentModelList searchGroups(Map<String, Serializable> filter,
             Set<String> fulltext) throws ClientException;
-
-    /**
-     * Returns groups matching given criteria with the given context. if the
-     * Document Context have a directory local configuration, the service try to
-     * open the user directory with directory suffix set into the local
-     * configuration
-     * 
-     * @param filter filter with field names as keys
-     * @param fulltext field names used for fulltext match
-     * @param context
-     * @since 5.4.3
-     * @throws ClientException
-     */
-    DocumentModelList searchGroupsWithContext(Map<String, Serializable> filter,
-            Set<String> fulltext, DocumentModel context) throws ClientException;
-
-    /**
-     * Creates a group from given model with the given context. If the Document
-     * Context have a directory local configuration, the service will append at
-     * the end of the groupname the directory suffix set into the local
-     * configuration of the context document.
-     * 
-     * @return the created group model
-     * @since 5.4.3
-     * @throws ClientException
-     * @throws GroupAlreadyExistsException
-     */
-    DocumentModel createGroupWithContext(DocumentModel groupModel,
-            DocumentModel context) throws ClientException,
-            GroupAlreadyExistsException;
 
     /**
      * Creates a group from given model
@@ -328,17 +256,6 @@ public interface UserManager extends Authenticator, Serializable {
      * @throws ClientException
      */
     DocumentModel getGroupModel(String groupName) throws ClientException;
-
-    /**
-     * Return the group document model with this id concatenated with the
-     * directory local config (if not null) or null if group does not exist.
-     * 
-     * @param groupName the group identifier
-     * @since 5.4.3
-     * @throws ClientException
-     */
-    DocumentModel getGroupModelWithContext(String groupName,
-            DocumentModel context) throws ClientException;
 
     String getDefaultGroup();
 

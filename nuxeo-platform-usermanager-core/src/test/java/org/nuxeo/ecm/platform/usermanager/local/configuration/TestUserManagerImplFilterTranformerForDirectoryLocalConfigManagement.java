@@ -14,7 +14,7 @@
  * Contributors:
  *     bjalon
  */
-package org.nuxeo.ecm.platform.usermanager;
+package org.nuxeo.ecm.platform.usermanager.local.configuration;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -24,6 +24,10 @@ import java.util.Map;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
+import org.nuxeo.ecm.platform.usermanager.DefaultUserMultiTenantManagementMock;
+import org.nuxeo.ecm.platform.usermanager.UserManagerImpl;
+import org.nuxeo.ecm.platform.usermanager.UserMultiTenantManagement;
+import org.nuxeo.ecm.platform.usermanager.UserService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
@@ -43,7 +47,7 @@ public class TestUserManagerImplFilterTranformerForDirectoryLocalConfigManagemen
     protected UserManagerImpl userManager;
 
     protected UserService userService;
-    
+
     protected UserMultiTenantManagement umtm;
 
     @Override
@@ -61,18 +65,16 @@ public class TestUserManagerImplFilterTranformerForDirectoryLocalConfigManagemen
         deployBundle("org.nuxeo.ecm.platform.usermanager");
 
         deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
-                "test-usermanagerimpl/directory-for-context-config.xml");
+                "test-usermanagerimpl-multitenant/directory-for-context-config.xml");
         deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
                 "test-usermanagerimpl/userservice-config.xml");
-        deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
-                "test-usermanagerimpl/UserManagerMock.xml");
 
         userService = (UserService) Framework.getRuntime().getComponent(
                 UserService.NAME);
 
         userManager = (UserManagerImpl) userService.getUserManager();
         umtm = new DefaultUserMultiTenantManagementMock();
-        // to simulate the directory local configuration
+        // needed   to simulate the directory local configuration
         userManager.multiTenantManagement = umtm;
     }
 
@@ -80,26 +82,26 @@ public class TestUserManagerImplFilterTranformerForDirectoryLocalConfigManagemen
             throws ClientException {
         Map<String, Serializable> filter = new HashMap<String, Serializable>();
         HashSet<String> fulltext = new HashSet<String>();
-        
+
         try {
             umtm.queryTransformer(userManager, null, null, null);
             fail();
         } catch (ClientException e) {
-            
+
         }
 
         try {
             umtm.queryTransformer(userManager, filter, null, null);
             fail();
         } catch (ClientException e) {
-            
+
         }
 
         try {
             umtm.queryTransformer(userManager, null, fulltext, null);
             fail();
         } catch (ClientException e) {
-            
+
         }
     }
 
@@ -111,7 +113,7 @@ public class TestUserManagerImplFilterTranformerForDirectoryLocalConfigManagemen
         umtm.queryTransformer(userManager, filter, fulltext, null);
         assertEquals(0, filter.size());
         assertEquals(0, fulltext.size());
-        
+
         filter.put("groupname", "test");
         fulltext.add("groupname");
         umtm.queryTransformer(userManager, filter, fulltext, null);
@@ -133,7 +135,7 @@ public class TestUserManagerImplFilterTranformerForDirectoryLocalConfigManagemen
         assertEquals(1, filter.size());
         assertEquals("test", filter.get("groupname"));
         assertEquals(2, fulltext.size());
-}
+    }
 
     public void testShouldReturnAFilterWithSuffixAdded() throws ClientException {
         DocumentModel fakeDoc = new SimpleDocumentModel();
@@ -146,7 +148,7 @@ public class TestUserManagerImplFilterTranformerForDirectoryLocalConfigManagemen
         assertEquals("%-tenanta", filter.get("groupname"));
         assertEquals(1, fulltext.size());
         assertTrue(fulltext.contains("groupname"));
-        
+
         filter = new HashMap<String, Serializable>();
         fulltext = new HashSet<String>();
 
@@ -163,5 +165,5 @@ public class TestUserManagerImplFilterTranformerForDirectoryLocalConfigManagemen
         assertEquals("test%-tenanta", filter.get("groupname"));
         assertEquals(1, fulltext.size());
         assertTrue(fulltext.contains("groupname"));
-}
+    }
 }

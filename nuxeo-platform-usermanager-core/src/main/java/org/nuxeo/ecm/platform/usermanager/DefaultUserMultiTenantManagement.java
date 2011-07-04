@@ -102,6 +102,9 @@ public class DefaultUserMultiTenantManagement implements
     @Override
     public DocumentModel groupTransformer(UserManager um,
             DocumentModel group, DocumentModel context) throws ClientException {
+        if (context == null) {
+            return group;
+        }
         String groupIdValue = group.getPropertyValue(um.getGroupIdField())
                 + getDirectorySuffix(context);
         group.setPropertyValue(um.getGroupIdField(), groupIdValue);
