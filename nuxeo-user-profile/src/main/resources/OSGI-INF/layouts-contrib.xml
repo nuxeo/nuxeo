@@ -25,12 +25,21 @@
         <label mode="any">label.userprofile.birthdate</label>
       </labels>
       <translated>true</translated>
+      <helpLabels>
+        <label mode="edit">
+          helplabel.userprofile.birthdate
+        </label>
+      </helpLabels>
       <fields>
         <field>upro:birthdate</field>
       </fields>
       <properties widgetMode="any">
         <property name="pattern">#{nxu:basicDateFormater()}</property>
       </properties>
+      <properties widgetMode="edit">
+        <property name="format">#{nxu:basicDateFormater()}</property>
+      </properties>
+
     </widget>
 
     <widget name="phonenumber" type="text">
