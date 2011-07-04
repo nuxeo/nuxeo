@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2011 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -14,7 +14,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id$
  */
 
 package org.nuxeo.ecm.platform.convert.ooomanager;
@@ -97,9 +96,9 @@ public class OOoManagerComponent extends DefaultComponent implements
     public void stopOOoManager() {
         if (started) {
             officeManager.stop();
-            log.debug("Stoping ooo manager.");
+            log.debug("Stopping ooo manager.");
         } else {
-            log.debug("OOoManager already stoped..");
+            log.debug("OOoManager already stopped..");
         }
     }
 
