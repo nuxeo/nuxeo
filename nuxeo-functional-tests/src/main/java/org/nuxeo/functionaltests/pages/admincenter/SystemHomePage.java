@@ -17,6 +17,7 @@
 
 package org.nuxeo.functionaltests.pages.admincenter;
 
+import org.nuxeo.functionaltests.WaitUntil;
 import org.nuxeo.functionaltests.pages.LoginPage;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
@@ -40,8 +41,17 @@ public class SystemHomePage extends AdminCenterBasePage {
         WebElement restartButton = findElementWithTimeout(By.xpath("//input[@type='submit' and @value='Restart server']"));
         if (restartButton != null) {
             restartButton.click();
-            Alert alert = driver.switchTo().alert();
-            alert.accept();
+            final Alert alert = driver.switchTo().alert();
+            // Trying wait until on failing alert.accept on some machine:
+            // org.openqa.selenium.WebDriverException:
+            // a.document.getElementsByTagName("dialog")[0] is undefined
+            new WaitUntil(4000) {
+                @Override
+                public boolean condition() {
+                    alert.accept();
+                    return true;
+                }
+            }.waitUntil();
         } else {
             return null;
         }
