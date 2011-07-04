@@ -90,14 +90,15 @@ public abstract class AbstractTest {
         driver = new FirefoxDriver(profile);
     }
 
+
     @AfterClass
     public static void quitDriver() throws InterruptedException {
         // Temporary code to take snapshots of the last page
         // TODO: snapshots only test on failure, prefix using the test name
         Thread.sleep(250);
-        driver.saveScreenshot(new File("/tmp/screenshot-lastpage.png"));
+        driver.getScreenshotAs(new ScreenShotFileOutput("screenshot1-lastpage"));
         Thread.sleep(250);
-        driver.saveScreenshot(new File("/tmp/screenshot-lastpage2.png"));
+        driver.getScreenshotAs(new ScreenShotFileOutput("screenshot2-lastpage"));
 
         if (driver != null) {
             driver.close();
