@@ -212,8 +212,10 @@
     <Set name="sendDateHeader">true</Set>
     <Set name="gracefulShutdown">1000</Set>
 
+	<!-- Configure Nuxeo Tx Manager -->
+    <Call class="org.nuxeo.runtime.jtajca.NuxeoContainer" name="install"/>
 
-    <!-- ======== Nuxeo Directory Data Source ========= -->
+<!--
     <New id="nxsqldirectory" class="org.mortbay.jetty.plus.naming.Resource">
       <Arg>jdbc/nxsqldirectory</Arg>
       <Arg>
@@ -224,8 +226,6 @@
       </Arg>
     </New>
 
-
-    <!-- ======== Nuxeo Relations Data Source ========= -->
     <New id="nxrelations" class="org.mortbay.jetty.plus.naming.Resource">
       <Arg>jdbc/nxrelations-default-jena</Arg>
       <Arg>
@@ -236,8 +236,6 @@
       </Arg>
     </New>
 
-
-    <!-- ======== Nuxeo Comments Data Source ========= -->
     <New id="nxcomments" class="org.mortbay.jetty.plus.naming.Resource">
       <Arg>jdbc/comment-relations</Arg>
       <Arg>
@@ -248,7 +246,6 @@
       </Arg>
     </New>
 
-    <!-- ======== Nuxeo Audits Data Source ========= -->
     <New id="nxaudits" class="org.mortbay.jetty.plus.naming.Resource">
       <Arg>jdbc/nxaudit-logs</Arg>
       <Arg>
@@ -259,7 +256,6 @@
       </Arg>
     </New>
 
-     <!-- ======== Nuxeo JBPM Data Source ========= -->
     <New id="nxjbpm" class="org.mortbay.jetty.plus.naming.Resource">
       <Arg>jdbc/nxjbpm</Arg>
       <Arg>
@@ -270,7 +266,6 @@
       </Arg>
     </New>
 
-     <!-- ======== Nuxeo Placeful config Data Source ========= -->
     <New id="placeful_service_ds" class="org.mortbay.jetty.plus.naming.Resource">
       <Arg>jdbc/placeful_service_ds</Arg>
       <Arg>
@@ -281,7 +276,6 @@
       </Arg>
     </New>
 
-     <!-- ======== Nuxeo Web Widgets Data Source ========= -->
     <New id="nxwebwidgets" class="org.mortbay.jetty.plus.naming.Resource">
       <Arg>jdbc/nxwebwidgets</Arg>
       <Arg>
@@ -291,8 +285,6 @@
         </New>
       </Arg>
     </New>
-
-	<!-- Configure Nuxeo Tx Manager -->
-    <Call class="org.nuxeo.runtime.jtajca.NuxeoContainer" name="install"/>
+-->
 
 </Configure>
