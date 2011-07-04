@@ -31,6 +31,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.ACP;
+import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.platform.usermanager.exceptions.GroupAlreadyExistsException;
 import org.nuxeo.ecm.platform.usermanager.exceptions.UserAlreadyExistsException;
 import org.nuxeo.runtime.api.login.Authenticator;
@@ -38,7 +39,8 @@ import org.nuxeo.runtime.api.login.Authenticator;
 /**
  * @author Anahide Tchertchian
  * @author Sun Seng David TAN <stan@nuxeo.com>
- *
+ * @author Benjamin Jalon <bjalon@nuxeo.com>
+ * 
  */
 public interface UserManager extends Authenticator, Serializable {
 
@@ -57,14 +59,14 @@ public interface UserManager extends Authenticator, Serializable {
      * <p>
      * Can build principals for anonymous and virtual users as well as for users
      * defined in the users directory.
-     *
+     * 
      * @throws ClientException
      */
     NuxeoPrincipal getPrincipal(String username) throws ClientException;
 
     /**
      * Returns the nuxeo group with given name or null if it does not exist.
-     *
+     * 
      * @throws ClientException
      */
     NuxeoGroup getGroup(String groupName) throws ClientException;
@@ -85,7 +87,7 @@ public interface UserManager extends Authenticator, Serializable {
 
     /**
      * Returns the list of all user ids.
-     *
+     * 
      * @since 5.2M4
      * @throws ClientException
      */
@@ -93,7 +95,7 @@ public interface UserManager extends Authenticator, Serializable {
 
     /**
      * Creates user from given model.
-     *
+     * 
      * @since 5.2M4
      * @throws ClientException
      * @throws UserAlreadyExistsException
@@ -103,7 +105,7 @@ public interface UserManager extends Authenticator, Serializable {
 
     /**
      * Updates user represented by given model.
-     *
+     * 
      * @param userModel
      * @since 5.2M4
      * @throws ClientException
@@ -112,7 +114,7 @@ public interface UserManager extends Authenticator, Serializable {
 
     /**
      * Deletes user represented by given model.
-     *
+     * 
      * @since 5.2M4
      * @throws DirectoryException if given entry does not exist
      * @throws ClientException
@@ -121,7 +123,7 @@ public interface UserManager extends Authenticator, Serializable {
 
     /**
      * Deletes user with given id.
-     *
+     * 
      * @since 5.2M4
      * @throws DirectoryException if given entry does not exist
      * @throws ClientException
@@ -132,7 +134,7 @@ public interface UserManager extends Authenticator, Serializable {
      * Returns a bare user model.
      * <p>
      * Can be used for user creation/search screens.
-     *
+     * 
      * @since 5.2M4
      * @throws ClientException
      */
@@ -141,7 +143,7 @@ public interface UserManager extends Authenticator, Serializable {
     /**
      * Returns the document model representing user with given id or null if it
      * does not exist.
-     *
+     * 
      * @since 5.2M4
      * @throws ClientException
      */
@@ -153,7 +155,7 @@ public interface UserManager extends Authenticator, Serializable {
      * Pattern is used to fill a filter and fulltext map according to users
      * search fields configuration. Search is performed on each of these fields
      * (OR).
-     *
+     * 
      * @since 5.2M4
      * @throws ClientException
      */
@@ -161,7 +163,7 @@ public interface UserManager extends Authenticator, Serializable {
 
     /**
      * Returns users matching given criteria.
-     *
+     * 
      * @param filter filter with field names as keys
      * @param fulltext field names used for fulltext match
      * @since 5.2M4
@@ -178,7 +180,7 @@ public interface UserManager extends Authenticator, Serializable {
 
     /**
      * Returns the list of all groups ids.
-     *
+     * 
      * @since 5.2M4
      * @throws ClientException
      */
@@ -186,7 +188,7 @@ public interface UserManager extends Authenticator, Serializable {
 
     /**
      * Returns groups matching given criteria.
-     *
+     * 
      * @param filter filter with field names as keys
      * @param fulltext field names used for fulltext match
      * @since 5.2M4
@@ -196,8 +198,8 @@ public interface UserManager extends Authenticator, Serializable {
             Set<String> fulltext) throws ClientException;
 
     /**
-     * Creates a group from given model.
-     *
+     * Creates a group from given model
+     * 
      * @return the created group model
      * @since 5.2M4
      * @throws ClientException
@@ -208,7 +210,7 @@ public interface UserManager extends Authenticator, Serializable {
 
     /**
      * Updates group represented by given model.
-     *
+     * 
      * @since 5.2M4
      * @throws DirectoryException if given entry does not exist
      * @throws ClientException
@@ -217,7 +219,7 @@ public interface UserManager extends Authenticator, Serializable {
 
     /**
      * Deletes group represented by given model.
-     *
+     * 
      * @param groupModel
      * @since 5.2M4
      * @throws DirectoryException if given entry does not exist
@@ -227,7 +229,7 @@ public interface UserManager extends Authenticator, Serializable {
 
     /**
      * Deletes group with given id.
-     *
+     * 
      * @param groupId
      * @since 5.2M4
      * @throws DirectoryException if given entry does not exist
@@ -239,7 +241,7 @@ public interface UserManager extends Authenticator, Serializable {
      * Returns a bare group model.
      * <p>
      * Can be used for group creation/search screens.
-     *
+     * 
      * @since 5.2M4
      * @throws ClientException
      */
@@ -248,7 +250,7 @@ public interface UserManager extends Authenticator, Serializable {
     /**
      * Return the group document model with this id or null if group does not
      * exist.
-     *
+     * 
      * @param groupName the group identifier
      * @since 5.2M4
      * @throws ClientException
@@ -261,7 +263,7 @@ public interface UserManager extends Authenticator, Serializable {
 
     /**
      * Returns the list of groups that belong to this group.
-     *
+     * 
      * @param parentId the name of the parent group.
      * @return
      * @throws ClientException
@@ -270,7 +272,7 @@ public interface UserManager extends Authenticator, Serializable {
 
     /**
      * Returns the list of groups that are not members of other groups.
-     *
+     * 
      * @return
      * @throws ClientException
      */
@@ -278,7 +280,7 @@ public interface UserManager extends Authenticator, Serializable {
 
     /**
      * Returns the list of users that belong to this group.
-     *
+     * 
      * @param groupId ID of the group
      * @return
      */
@@ -286,7 +288,7 @@ public interface UserManager extends Authenticator, Serializable {
 
     /**
      * Get users from a group and its subgroups.
-     *
+     * 
      * @param groupId ID of the group
      * @return
      */
@@ -307,7 +309,7 @@ public interface UserManager extends Authenticator, Serializable {
 
     /**
      * Gets the user directory name.
-     *
+     * 
      * @return the user directory name.
      * @throws ClientException
      */
@@ -315,7 +317,7 @@ public interface UserManager extends Authenticator, Serializable {
 
     /**
      * Returns the user directory schema name.
-     *
+     * 
      * @since 5.2M4
      * @throws ClientException
      */
@@ -323,7 +325,7 @@ public interface UserManager extends Authenticator, Serializable {
 
     /**
      * Returns the user directory id field.
-     *
+     * 
      * @since 5.2M4
      * @throws ClientException
      */
@@ -331,7 +333,7 @@ public interface UserManager extends Authenticator, Serializable {
 
     /**
      * Gets the user email field.
-     *
+     * 
      * @return the user email field.
      * @throws ClientException
      */
@@ -340,7 +342,7 @@ public interface UserManager extends Authenticator, Serializable {
     /**
      * Gets the user search fields, the fields to use when a principal search is
      * done.
-     *
+     * 
      * @return the search fields.
      * @throws ClientException
      */
@@ -353,7 +355,7 @@ public interface UserManager extends Authenticator, Serializable {
 
     /**
      * Gets the group directory name.
-     *
+     * 
      * @return the group directory name.
      * @throws ClientException
      */
@@ -361,7 +363,7 @@ public interface UserManager extends Authenticator, Serializable {
 
     /**
      * Returns the group directory schema name.
-     *
+     * 
      * @since 5.2M4
      * @throws ClientException
      */
@@ -369,7 +371,7 @@ public interface UserManager extends Authenticator, Serializable {
 
     /**
      * Returns the group directory id field.
-     *
+     * 
      * @since 5.2M4
      * @throws ClientException
      */
@@ -385,7 +387,7 @@ public interface UserManager extends Authenticator, Serializable {
 
     /**
      * Gets the group members field.
-     *
+     * 
      * @return the group members field.
      * @throws ClientException
      */
@@ -393,7 +395,7 @@ public interface UserManager extends Authenticator, Serializable {
 
     /**
      * Gets the group sub-groups field.
-     *
+     * 
      * @return the sub-groups field.
      * @throws ClientException
      */
@@ -401,7 +403,7 @@ public interface UserManager extends Authenticator, Serializable {
 
     /**
      * Gets the group parent-groups field.
-     *
+     * 
      * @return the parent-groups field.
      * @throws ClientException
      */
@@ -409,7 +411,7 @@ public interface UserManager extends Authenticator, Serializable {
 
     /**
      * Gets the anonymous user id.
-     *
+     * 
      * @return the anonymous user id, or the default one if none is defined.
      * @throws ClientException
      */
@@ -423,7 +425,7 @@ public interface UserManager extends Authenticator, Serializable {
 
     /**
      * Sets the given configuration on the service.
-     *
+     * 
      * @param descriptor the descriptor as parsed from xml, merged from the
      *            previous one if it exists.
      */
@@ -432,7 +434,7 @@ public interface UserManager extends Authenticator, Serializable {
 
     /**
      * Returns the list of administrators groups.
-     *
+     * 
      * @since 5.3 GA
      */
     List<String> getAdministratorsGroups();
@@ -504,7 +506,7 @@ public interface UserManager extends Authenticator, Serializable {
      * For an ACP, get the list of user that has a permission. This method
      * should be use with care as it can cause performance issues while getting
      * the list of users.
-     *
+     * 
      * @since 5.4.2
      * @param perm the permission
      * @param acp The access control policy of the document

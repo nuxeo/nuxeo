@@ -8,6 +8,7 @@
   <implementation class="org.nuxeo.ecm.platform.usermanager.UserService" />
 
   <service>
+    <provide interface="org.nuxeo.ecm.platform.usermanager.MultiTenantUserManager" />
     <provide interface="org.nuxeo.ecm.platform.usermanager.UserManager" />
     <provide interface="org.nuxeo.runtime.api.login.Authenticator" />
   </service>

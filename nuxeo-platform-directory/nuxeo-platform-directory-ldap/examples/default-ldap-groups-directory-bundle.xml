@@ -46,15 +46,18 @@
 
       <rdnAttribute>cn</rdnAttribute>
       <fieldMapping name="groupname">cn</fieldMapping>
+      <!-- Add another field to map reel group label
+      <fieldMapping name="grouplabel">sn</fieldMapping>
+      -->
 
       <references>
 
 
         <!-- LDAP reference resolve DNs embedded in uniqueMember attributes
-          
+
           If the target directory has no specific filtering policy, it is most
           of the time not necessary to enable the 'forceDnConsistencyCheck' policy.
-          
+
           Enabling this option will fetch each reference entry to ensure its
           existence in the target directory.
         -->
@@ -72,13 +75,13 @@
 
         <!-- LDAP tree reference resolves children following the ldap tree
           structure.
-          
+
           Available scopes are "onelevel" (default), "subtree". Children with
           same id than parent will be filtered.
-          
+
           Enabling this option will fetch each reference entry to ensure its
           existence in the target directory.
-          
+
           WARNING: Edit is NOT IMPLEMENTED: modifications to this field will be
           ignored when saving the entry.
         -->

@@ -164,6 +164,8 @@ public class TestUserManager extends NXRuntimeTestCase {
         assertFalse(principal.isAdministrator());
 
         principal = userManager.getPrincipal("MyCustomMember");
+        // error in logs normal, we check an extra field do not compromise the
+        // main action
         assertNotNull(principal);
         assertEquals("MyCustomMember", principal.getName());
         assertEquals("My Custom", principal.getFirstName());
@@ -385,7 +387,6 @@ public class TestUserManager extends NXRuntimeTestCase {
         DocumentModel g3 = getGroup("test_g3");
         g3.setPropertyValue("group:grouplabel", "test_g3_label");
 
-
         List<String> g1Users = Arrays.asList("test_u1");
         List<String> g2Users = Arrays.asList("test_u1", "test_u2");
         List<String> g2Groups = Arrays.asList("test_g1");
@@ -397,7 +398,7 @@ public class TestUserManager extends NXRuntimeTestCase {
         g2.setProperty("group", "subGroups", g2Groups);
         userManager.createGroup(g2);
 
-        //without users / groups
+        // without users / groups
         userManager.createGroup(g3);
 
         NuxeoGroup newG1 = userManager.getGroup("test_g1");
@@ -469,7 +470,7 @@ public class TestUserManager extends NXRuntimeTestCase {
     /**
      * Test the method getUsersInGroup, making sure it does return only the
      * users of the group (and not the subgroups ones)
-     *
+     * 
      * @throws Exception
      */
     public void testGetUsersInGroup() throws Exception {
@@ -510,7 +511,7 @@ public class TestUserManager extends NXRuntimeTestCase {
     /**
      * Test the method getUsersInGroupAndSubgroups, making sure it does return
      * all the users from a group and its subgroups.
-     *
+     * 
      * @throws Exception
      */
     public void testGetUsersInGroupAndSubgroups() throws Exception {
@@ -555,7 +556,7 @@ public class TestUserManager extends NXRuntimeTestCase {
     /**
      * Test the method getUsersInGroupAndSubgroups making sure it's not going
      * into an infinite loop when a subgroup is also parent of a group.
-     *
+     * 
      * @throws Exception
      */
     public void testGetUsersInGroupAndSubgroupsWithoutInfiniteLoop()
@@ -669,7 +670,7 @@ public class TestUserManager extends NXRuntimeTestCase {
         assertEquals(2, userManager.searchGroups("group").size());
 
         doc = getGroup("else");
-        doc.setProperty("group","grouplabel","group");
+        doc.setProperty("group", "grouplabel", "group");
         userManager.createGroup(doc);
         assertEquals(3, userManager.searchGroups("group").size());
     }
@@ -765,7 +766,7 @@ public class TestUserManager extends NXRuntimeTestCase {
     /**
      * common init method for initialising tests for the method
      * getUsernamesForPermission
-     *
+     * 
      * @throws Exception
      */
     private void initTestGetUsernamesForPermission() throws Exception {
@@ -798,7 +799,7 @@ public class TestUserManager extends NXRuntimeTestCase {
 
     /**
      * Testing the method getUsernamesForPermission for a simple case.
-     *
+     * 
      * @throws Exception
      */
     public void testGetUsernamesForPermission() throws Exception {
@@ -827,7 +828,7 @@ public class TestUserManager extends NXRuntimeTestCase {
 
     /**
      * Testing the method getUsernamesForPermission for a simple case.
-     *
+     * 
      * @throws Exception
      */
     public void testGetUsernamesForPermission2() throws Exception {
@@ -856,7 +857,7 @@ public class TestUserManager extends NXRuntimeTestCase {
     /**
      * Same test as before but without the first ace (default value: everyone,
      * everything false)
-     *
+     * 
      * @throws Exception
      */
     public void testGetUsernamesForPermissionWithoutEveryoneEverythingACE()
@@ -884,7 +885,7 @@ public class TestUserManager extends NXRuntimeTestCase {
 
     /**
      * Testing getUsernamesForPermission with a user in 2 groups
-     *
+     * 
      * @throws Exception
      */
     public void testGetUsernamesForPermissionIn2Groups() throws Exception {

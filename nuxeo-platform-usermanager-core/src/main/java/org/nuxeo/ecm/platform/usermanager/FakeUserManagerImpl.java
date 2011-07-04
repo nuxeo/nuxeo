@@ -454,4 +454,5 @@ public class FakeUserManagerImpl implements UserManager {
     public Principal authenticate(String name, String password) throws ClientException {
         return checkUsernamePassword(name, password) ? getPrincipal(name) : null;
     }
+
 }

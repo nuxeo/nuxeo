@@ -102,7 +102,8 @@ public class UserManagerBean implements UserManagerLocal {
         }
     }
 
-    public DocumentModelList searchGroups(String pattern) throws ClientException {
+    public DocumentModelList searchGroups(String pattern)
+            throws ClientException {
         try {
             return getUserManager().searchGroups(pattern);
         } catch (Throwable e) {
@@ -576,7 +577,8 @@ public class UserManagerBean implements UserManagerLocal {
     }
 
     @Override
-    public Principal authenticate(String name, String password) throws ClientException {
+    public Principal authenticate(String name, String password)
+            throws ClientException {
         try {
             return getUserManager().authenticate(name, password);
         } catch (ClientException e) {

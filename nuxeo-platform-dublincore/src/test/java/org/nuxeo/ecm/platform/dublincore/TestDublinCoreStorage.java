@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
+import org.junit.Before;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DataModel;
@@ -29,6 +30,7 @@ import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.event.EventProducer;
+import org.nuxeo.ecm.core.event.EventServiceAdmin;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.dublincore.service.DublinCoreStorageService;
@@ -51,6 +53,11 @@ public class TestDublinCoreStorage extends SQLRepositoryTestCase {
                 "OSGI-INF/nxdublincore-service.xml");
         deployBundle("org.nuxeo.ecm.core.event");
         openSession();
+        
+        EventServiceAdmin eventAdmin = Framework.getService(EventServiceAdmin.class);
+        eventAdmin.setBulkModeEnabled(true);
+        eventAdmin.setListenerEnabledFlag("sql-storage-binary-text", false);
+
 
         root = session.getRootDocument();
     }
@@ -273,4 +280,14 @@ public class TestDublinCoreStorage extends SQLRepositoryTestCase {
         }
 
     }
+    
+    @Override
+    public void tearDown() throws Exception {
+        if (session != null) {
+            closeSession();
+        }
+        
+        super.tearDown();
+    }
+    
 }

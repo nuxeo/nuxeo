@@ -22,6 +22,7 @@ import static org.junit.Assert.assertNull;
 import static org.nuxeo.ecm.directory.localconfiguration.DirectoryConfigurationConstants.DIRECTORY_CONFIGURATION_FACET;
 import static org.nuxeo.ecm.directory.localconfiguration.DirectoryConfigurationConstants.DIRECTORY_CONFIGURATION_FIELD;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -30,6 +31,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.localconfiguration.LocalConfigurationService;
+import org.nuxeo.ecm.core.event.EventServiceAdmin;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.BackendType;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
@@ -70,6 +72,13 @@ public class TestDirectoryLocalConfigurationDefinition {
 
     @Inject
     protected LocalConfigurationService localConfigurationService;
+    
+    @Before
+    public void disableListeners() throws Exception {
+        EventServiceAdmin eventAdmin = Framework.getService(EventServiceAdmin.class);
+        eventAdmin.setBulkModeEnabled(true);
+        eventAdmin.setListenerEnabledFlag("sql-storage-binary-text", false);
+    }
 
     @Test
     public void shouldReturnANullSuffixValueIfLocalConfigurationNotSet()

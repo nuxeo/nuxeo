@@ -53,6 +53,11 @@ public class DirectoryServiceImpl extends DefaultComponent implements
 
         try {
             LocalConfigurationService localConfigurationService = Framework.getService(LocalConfigurationService.class);
+            
+            if (localConfigurationService == null) {
+                log.info("Local configuration not deployed, will use default configuration");
+                return null;
+            }
 
             configuration = localConfigurationService.getConfiguration(
                     DirectoryConfiguration.class,
