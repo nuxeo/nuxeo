@@ -17,6 +17,10 @@
 
 package org.nuxeo.ecm.platform.publisher.impl.core;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
@@ -26,15 +30,14 @@ import org.nuxeo.ecm.platform.publisher.api.AbstractPublicationNode;
 import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocumentFactory;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import org.nuxeo.ecm.platform.query.nxql.NXQLQueryBuilder;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  */
 public class VirtualCoreFolderPublicationNode extends AbstractPublicationNode {
+
+    private static final long serialVersionUID = 1L;
 
     protected static String ACCESSIBLE_CHILDREN_QUERY = "SELECT * FROM Document"
             + " WHERE ecm:primaryType = 'Section' AND ecm:path STARTSWITH '%s'"
@@ -77,7 +80,8 @@ public class VirtualCoreFolderPublicationNode extends AbstractPublicationNode {
         List<PublicationNode> childrenNodes = new ArrayList<PublicationNode>();
         CoreSession session = getCoreSession();
         if (session != null) {
-            String query = String.format(ACCESSIBLE_CHILDREN_QUERY, path);
+            String query = String.format(ACCESSIBLE_CHILDREN_QUERY,
+                    NXQLQueryBuilder.prepareStringLiteral(path, false, true));
             List<DocumentModel> docs = session.query(query);
             for (DocumentModel doc : docs) {
                 Path path = doc.getPath().removeLastSegments(1);

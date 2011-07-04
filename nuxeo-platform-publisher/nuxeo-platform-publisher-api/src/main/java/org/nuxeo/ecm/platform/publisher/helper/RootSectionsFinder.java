@@ -17,6 +17,12 @@
 
 package org.nuxeo.ecm.platform.publisher.helper;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -35,12 +41,6 @@ import org.nuxeo.ecm.core.api.impl.FacetFilter;
 import org.nuxeo.ecm.core.api.impl.LifeCycleFilter;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.schema.FacetNames;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
 
 /**
  * Helper class to manage:
@@ -206,9 +206,11 @@ public class RootSectionsFinder extends UnrestrictedSessionRunner {
 
     protected String buildQuery(String path) {
         // SELECT * FROM Document WHERE ecm:path STARTSWITH '/default-domain'
-        // and (ecm:primaryType = 'Section' or ecm:primaryType = 'SectionRoot' )
+        // and (ecm:primaryType = 'Section' or ecm:primaryType = 'SectionRoot'
+        // )
+        String pathForQuery = path.replaceAll("'", "\\\\'");
         String query = "SELECT * FROM Document WHERE ecm:path STARTSWITH '"
-                + path + "' and (";
+                + pathForQuery + "' and (";
 
         int i = 0;
         for (String type : sectionTypes) {
@@ -229,8 +231,8 @@ public class RootSectionsFinder extends UnrestrictedSessionRunner {
 
         if (currentDocument != null) {
             /*
-             * Get the first parent having "publishing" schema. In order to void
-             * infinite loop, if the parent is 'Root' type just break
+             * Get the first parent having "publishing" schema. In order to
+             * void infinite loop, if the parent is 'Root' type just break
              * (NXP-3359).
              */
             DocumentModel parentDocumentModel = currentDocument;
