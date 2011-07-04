@@ -16,7 +16,12 @@
  */
 package org.nuxeo.functionaltests;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 public abstract class WaitUntil {
+
+    public static final Log log = LogFactory.getLog(WaitUntil.class);
 
     long timeout;
 
@@ -41,6 +46,7 @@ public abstract class WaitUntil {
                 Thread.sleep(100);
                 lastException = null;
             } catch (Exception e) {
+                log.warn("An exception while testing condition", e);
                 lastException = e;
             }
 

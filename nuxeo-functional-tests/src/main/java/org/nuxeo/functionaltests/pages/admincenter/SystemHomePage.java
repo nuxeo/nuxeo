@@ -41,13 +41,13 @@ public class SystemHomePage extends AdminCenterBasePage {
         WebElement restartButton = findElementWithTimeout(By.xpath("//input[@type='submit' and @value='Restart server']"));
         if (restartButton != null) {
             restartButton.click();
-            final Alert alert = driver.switchTo().alert();
             // Trying wait until on failing alert.accept on some machine:
             // org.openqa.selenium.WebDriverException:
             // a.document.getElementsByTagName("dialog")[0] is undefined
             new WaitUntil(4000) {
                 @Override
                 public boolean condition() {
+                    Alert alert = driver.switchTo().alert();
                     alert.accept();
                     return true;
                 }
