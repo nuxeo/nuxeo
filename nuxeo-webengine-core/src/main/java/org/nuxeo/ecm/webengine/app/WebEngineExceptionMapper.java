@@ -24,6 +24,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.webengine.WebException;
 
+import com.sun.jersey.api.NotFoundException;
+
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -32,8 +34,14 @@ public class WebEngineExceptionMapper implements ExceptionMapper<Throwable> {
 
     protected static final Log log = LogFactory.getLog(WebEngineExceptionMapper.class);
 
+    @Override
     public Response toResponse(Throwable t) {
-        log.error("Exception in JAX-RS processing", t);
+        if (t instanceof NotFoundException) {
+            NotFoundException nfe = (NotFoundException) t;
+            log.error("JAX-RS 404 Not Found: " + nfe.getNotFoundUri());
+        } else {
+            log.error("Exception in JAX-RS processing", t);
+        }
         return WebException.wrap(t).getResponse();
     }
 
