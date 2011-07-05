@@ -8,6 +8,8 @@
 
   <h1><h:outputText value="#{messages['label.my.subscriptions']}" /></h1>
   
+  <h:form>
+  
   <nxu:dataTable id="dataTable" value="#{userSubscriptions}" var="row"
       rowClasses="dataRowEven,dataRowOdd" styleClass="dataOutput">
       
@@ -34,13 +36,28 @@
         <f:facet name="header">
           <h:outputText value="#{messages['label.on.document']}"/>
         </f:facet>
-        <nxd:restDocumentLink title="#{nxd:titleOrId(doc)}" document="#{doc}">
+        <h:outputText value="#{messages['label.deleted.document']} #{row.docId}" rendered="#{doc == null}"/>
+        <nxd:restDocumentLink title="#{nxd:titleOrId(doc)}" document="#{doc}" rendered="#{doc != null}">
           <span id="title_#{row.docId}">
           <h:outputText value="#{nxd:titleOrId(doc)}" />
           </span>
         </nxd:restDocumentLink>
-        <br /><h:outputText value="#{doc.getPathAsString()}"/>
+        <br />
+        <h:outputText value="#{doc.getPathAsString()}" rendered="#{doc != null}"/>
+      </nxu:column>
+      
+      <!--  Document -->
+      <nxu:column>
+        <f:facet name="controls">
+          <h:outputText value="#{messages['label.on.document']}"/>
+        </f:facet>
+        <h:commandButton rendered="#{userNotificationActions.getCanRemoveNotification(row.userId)}"
+          value="${messages['action.user.unsubscribe']}"
+          styleClass="button"
+          action="${notificationManager.removeSubscription(row.userId, row.notification, row.docId)}" />
       </nxu:column>
   </nxu:dataTable>
+  
+  </h:form>
 
 </div>

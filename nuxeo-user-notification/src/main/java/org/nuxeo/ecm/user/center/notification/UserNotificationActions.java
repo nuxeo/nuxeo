@@ -17,6 +17,7 @@ import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -25,6 +26,7 @@ import org.nuxeo.ecm.platform.ec.notification.service.NotificationService;
 import org.nuxeo.ecm.platform.ec.notification.service.NotificationServiceHelper;
 import org.nuxeo.ecm.platform.ec.placeful.Annotation;
 import org.nuxeo.ecm.platform.ec.placeful.interfaces.PlacefulService;
+import org.nuxeo.ecm.platform.notification.api.NotificationManager;
 
 @Name("userNotificationActions")
 @Scope(ScopeType.CONVERSATION)
@@ -34,10 +36,13 @@ public class UserNotificationActions implements Serializable {
 
     @In(create = true)
     protected NuxeoPrincipal currentUser;
-    
+
     @In(create = true)
     protected CoreSession documentManager;
-    
+
+    @In(create = true)
+    protected transient NotificationManager notificationManager;
+
     private List<UserSubscription> subscriptions;
 
     @Factory(value = "userSubscriptions", scope = ScopeType.EVENT)
@@ -73,7 +78,7 @@ public class UserNotificationActions implements Serializable {
                     paramMap, shortClassName));
         }
         reorderSubscriptions(tempSubscriptions);
-        
+
         return subscriptions;
     }
 
@@ -81,7 +86,13 @@ public class UserNotificationActions implements Serializable {
         Map<String, List<UserSubscription>> unsortedSubscriptions = new HashMap<String, List<UserSubscription>>();
         for (Object obj : allSubscriptions ) {
             UserSubscription us = (UserSubscription) obj;
-            String path = getDocument(us.getDocId()).getPathAsString();
+            DocumentModel doc = getDocument(us.getDocId());
+            String path;
+            if (doc == null) {
+                path = us.getDocId();
+            } else {
+                path = getDocument(us.getDocId()).getPathAsString();
+            }
             if (!unsortedSubscriptions.containsKey(path)) {
                 unsortedSubscriptions.put(path, new ArrayList<UserSubscription>());
             }
@@ -97,7 +108,21 @@ public class UserNotificationActions implements Serializable {
 
     public DocumentModel getDocument(String docId) throws ClientException {
         // test if user has READ right
-        return documentManager.getDocument(new IdRef(docId));
+        DocumentRef ref = new IdRef(docId);
+        if (documentManager.exists(ref)) {
+            return documentManager.getDocument(ref);
+        }
+        return null;
     }
-    
+
+    public boolean getCanRemoveNotification(String userId) {
+        // Do not allow removing for group subscription
+        if (userId != null
+                && userId.equals(NuxeoPrincipal.PREFIX
+                        + currentUser.getName())) {
+            return true;
+        }
+        return false;
+    }
+
 }
