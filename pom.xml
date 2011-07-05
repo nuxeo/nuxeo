@@ -2302,7 +2302,7 @@
           </dependencies>
           <configuration>
             <aggregate>true</aggregate>
-            <targetJdk>1.5</targetJdk>
+            <targetJdk>1.6</targetJdk>
             <excludes>
               <exclude>**/parser.java</exclude>
               <exclude>**/Base64.java</exclude>
@@ -2353,7 +2353,7 @@
           <configuration>
             <generated>/target/generated/</generated>
             <nocompile>true</nocompile>
-            <target>1.5</target>
+            <target>1.6</target>
           </configuration>
         </plugin>
         <plugin>
@@ -2448,7 +2448,7 @@
                 <version>[2.2.1,)</version>
               </requireMavenVersion>
               <requireJavaVersion>
-                <version>[1.5,)</version>
+                <version>[1.6,)</version>
               </requireJavaVersion>
             </rules>
           </configuration>
@@ -2642,8 +2642,8 @@
               </doctitle>
               <header>${pom.name} ${pom.version}</header>
               <links>
-                <link>http://java.sun.com/j2se/1.5.0/docs/api/</link>
-                <link>http://java.sun.com/javaee/5/docs/api/</link>
+                <link>http://download.oracle.com/javase/6/docs/api/</link>
+                <link>http://download.oracle.com/javaee/6/api/</link>
                 <link>
                   http://jakarta.apache.org/commons/collections/apidocs-COLLECTIONS_3_0/
                 </link>
