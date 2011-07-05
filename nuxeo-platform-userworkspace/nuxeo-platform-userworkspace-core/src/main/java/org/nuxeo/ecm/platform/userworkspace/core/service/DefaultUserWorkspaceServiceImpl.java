@@ -283,7 +283,10 @@ public class DefaultUserWorkspaceServiceImpl implements UserWorkspaceService {
         return doc;
     }
 
-    static String buildUserWorkspaceTitle(String userName) {
+    public static String buildUserWorkspaceTitle(String userName) {
+        if ( userName == null ) {// avoid looking for UserManager for nothing
+            return null;
+        }
         // get the user service
         UserManager userManager = null;
         try {
@@ -306,10 +309,22 @@ public class DefaultUserWorkspaceServiceImpl implements UserWorkspaceService {
         }
 
         // compute the title
+        StringBuilder title = new StringBuilder();;
         String firstName = principal.getFirstName();
+        if ( firstName != null && firstName.trim().length() > 0 ) {
+            title.append(firstName);
+        }
+
         String lastName = principal.getLastName();
-        if (firstName != null && lastName != null) {
-            return firstName + " " + lastName;
+        if ( lastName != null && lastName.trim().length() > 0 ){
+            if  ( title.length() > 0 ) {
+                title.append(" ");
+            }
+            title.append(lastName);
+        }
+
+        if ( title.length() > 0 ) {
+            return title.toString();
         }
 
         return userName;
