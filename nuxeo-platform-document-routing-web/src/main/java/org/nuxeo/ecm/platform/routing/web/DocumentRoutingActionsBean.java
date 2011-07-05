@@ -624,10 +624,16 @@ public class DocumentRoutingActionsBean implements Serializable {
                                 "feedback.casemanagement.document.route.already.first.step.in.container"));
                 return null;
             }
+            DocumentRouteElement currentElementToMove = routeElementDocToMove.getAdapter(DocumentRouteElement.class);
             DocumentModel stepMoveBefore = orderedChilds.get(selectedDocumentIndex - 1);
-            // if this step is already done or ready ( not modifiable, can't
-            // move before it)
             DocumentRouteElement stepElementMoveBefore = stepMoveBefore.getAdapter(DocumentRouteElement.class);
+            if (stepElementMoveBefore.isRunning()) {
+                facesMessages.add(
+                        FacesMessage.SEVERITY_WARN,
+                        resourcesAccessor.getMessages().get(
+                                "feedback.casemanagement.document.route.cant.move.step.before.already.running.step"));
+                return null;
+            }
             if (!stepElementMoveBefore.isModifiable()) {
                 facesMessages.add(
                         FacesMessage.SEVERITY_WARN,
@@ -644,6 +650,16 @@ public class DocumentRoutingActionsBean implements Serializable {
                         FacesMessage.SEVERITY_WARN,
                         resourcesAccessor.getMessages().get(
                                 "feedback.casemanagement.document.already.last.step.in.container"));
+                return null;
+            }
+            DocumentRouteElement currentElementToMove = routeElementDocToMove.getAdapter(DocumentRouteElement.class);
+            DocumentModel stepMoveAfter = orderedChilds.get(selectedDocumentIndex + 1);
+            DocumentRouteElement stepElementMoveAfter = stepMoveAfter.getAdapter(DocumentRouteElement.class);
+            if (stepElementMoveAfter.isRunning()) {
+                facesMessages.add(
+                        FacesMessage.SEVERITY_WARN,
+                        resourcesAccessor.getMessages().get(
+                                "feedback.casemanagement.document.route.cant.move.step.after.already.running.step"));
                 return null;
             }
             documentManager.orderBefore(parentDoc.getRef(), orderedChilds.get(
