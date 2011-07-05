@@ -14,7 +14,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id$
  */
 
 package org.nuxeo.ecm.platform.content.template.tests;
@@ -24,9 +23,10 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
 
 /**
-*   Simple test class for ContentCreationListener
-* @ JULIEN THIMONIER < jt@nuxeo.com >
-**/
+ * Simple test class for ContentCreationListener
+ *
+ * @author JULIEN THIMONIER < jt@nuxeo.com >
+ **/
 public class ContentCreationListenerTest extends RepositoryOSGITestCase {
 
     @Override

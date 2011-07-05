@@ -17,9 +17,10 @@
 
 package org.nuxeo.ecm.platform.login;
 
-import java.util.*;
-import java.security.*;
-import java.security.acl.*;
+import java.security.Principal;
+import java.security.acl.Group;
+import java.util.Enumeration;
+import java.util.Vector;
 
 /**
  * This class implements a group of principals.
@@ -65,8 +66,8 @@ public class GroupImpl implements Group {
      * Removes the specified member from the group.
      *
      * @param user The principal to remove from the group.
-     * @param true if the principal was removed false if the principal was not a
-     *        member
+     * @return true if the principal was removed false if the principal was not
+     *         a member
      */
     public boolean removeMember(Principal user) {
         return groupMembers.removeElement(user);
@@ -156,7 +157,7 @@ public class GroupImpl implements Group {
         Enumeration<? extends Principal> e = members();
         while (e.hasMoreElements()) {
             boolean mem = false;
-            Principal p = (Principal) e.nextElement();
+            Principal p = e.nextElement();
 
             // if the member is in this collection, return true
             if (p.equals(member)) {
