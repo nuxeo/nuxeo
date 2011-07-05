@@ -17,25 +17,30 @@
 
 package org.nuxeo.ecm.platform.publisher.web;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.jboss.seam.ScopeType;
-import org.jboss.seam.annotations.*;
-import org.nuxeo.ecm.core.api.*;
-import org.nuxeo.ecm.platform.publisher.helper.RootSectionsFinder;
-import org.nuxeo.ecm.platform.publisher.helper.RootSectionsFinderHelper;
-import org.nuxeo.ecm.platform.publisher.helper.RootSectionsManager;
-import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
-import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
-import org.nuxeo.ecm.webapp.tree.DocumentTreeNode;
-import org.nuxeo.ecm.webapp.tree.DocumentTreeNodeImpl;
-import org.nuxeo.ecm.webapp.tree.TreeActions;
-import org.nuxeo.ecm.webapp.tree.TreeManager;
-import org.nuxeo.runtime.api.Framework;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.jboss.seam.ScopeType;
+import org.jboss.seam.annotations.Create;
+import org.jboss.seam.annotations.Factory;
+import org.jboss.seam.annotations.Name;
+import org.jboss.seam.annotations.Scope;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.Filter;
+import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.Sorter;
+import org.nuxeo.ecm.platform.publisher.helper.RootSectionsFinder;
+import org.nuxeo.ecm.platform.publisher.helper.RootSectionsFinderHelper;
+import org.nuxeo.ecm.platform.publisher.helper.RootSectionsManager;
+import org.nuxeo.ecm.webapp.tree.DocumentTreeNode;
+import org.nuxeo.ecm.webapp.tree.DocumentTreeNodeImpl;
+import org.nuxeo.ecm.webapp.tree.TreeManager;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
@@ -47,6 +52,8 @@ public class AdministrationPublishActions extends AbstractPublishActions impleme
     private static final long serialVersionUID = 1L;
 
     private static final Log log = LogFactory.getLog(AdministrationPublishActions.class);
+
+    public static final String PUBLICATION_TREE_PLUGIN_NAME = "publication";
 
     protected transient RootSectionsFinder rootFinder;
 
@@ -110,9 +117,9 @@ public class AdministrationPublishActions extends AbstractPublishActions impleme
             Sorter sorter = null;
             try {
                 filter = getTreeManager().getFilter(
-                        TreeActions.DEFAULT_TREE_PLUGIN_NAME);
+                        PUBLICATION_TREE_PLUGIN_NAME);
                 sorter = getTreeManager().getSorter(
-                        TreeActions.DEFAULT_TREE_PLUGIN_NAME);
+                        PUBLICATION_TREE_PLUGIN_NAME);
             } catch (Exception e) {
                 log.error(
                         "Could not fetch filter, sorter or node type for tree ",
