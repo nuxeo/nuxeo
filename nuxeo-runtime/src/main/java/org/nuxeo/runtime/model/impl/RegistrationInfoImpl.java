@@ -30,7 +30,6 @@ import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.runtime.ComponentEvent;
 import org.nuxeo.runtime.Version;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.api.J2EEContainerDescriptor;
 import org.nuxeo.runtime.model.Component;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentManager;
@@ -41,11 +40,10 @@ import org.nuxeo.runtime.model.ExtensionPoint;
 import org.nuxeo.runtime.model.Property;
 import org.nuxeo.runtime.model.RegistrationInfo;
 import org.nuxeo.runtime.model.RuntimeContext;
-import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 @XObject("component")
 public class RegistrationInfoImpl implements RegistrationInfo {
@@ -103,7 +101,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
     /**
      * To be set when deploying configuration components that are not in a
      * bundle (e.g. from config. dir).
-     * 
+     *
      * Represent the bundle that will be assumed to be the owner of the
      * component.
      */
@@ -131,7 +129,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
 
     /**
      * Useful when dynamically registering components
-     * 
+     *
      * @param name the component name
      */
     public RegistrationInfoImpl(ComponentName name) {
@@ -203,7 +201,6 @@ public class RegistrationInfoImpl implements RegistrationInfo {
 
     /**
      * Reload the underlying component if reload is supported
-     * 
      * @throws Exception
      */
     public synchronized void reload() throws Exception {
@@ -321,19 +318,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
         if (component != null) {
             Object ci = component.getInstance();
             if (ci instanceof Component) {
-                if (J2EEContainerDescriptor.getSelected() != null) {
-                    TransactionHelper.startTransaction();
-                    try {
-                        ((Component) ci).applicationStarted(component);
-                    } catch (Throwable e) {
-                        TransactionHelper.setTransactionRollbackOnly();
-                        log.error("Rollbacking transaction, got error from " + ci, e);
-                    } finally {
-                        TransactionHelper.commitOrRollbackTransaction();
-                    }
-                } else {
-                    ((Component) ci).applicationStarted(component);
-                }
+                ((Component) ci).applicationStarted(component);
             }
         }
     }
