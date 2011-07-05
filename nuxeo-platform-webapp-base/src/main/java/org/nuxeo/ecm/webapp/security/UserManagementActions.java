@@ -75,6 +75,8 @@ public class UserManagementActions extends AbstractUserGroupManagement
 
     public static final String USERS_SEARCH_CHANGED = "usersSearchChanged";
 
+    public static final String USER_SELECTED_CHANGED = "selectedUserChanged";
+
     public static final String SELECTED_LETTER_CHANGED = "selectedLetterChanged";
 
     protected String selectedLetter = "";
@@ -99,7 +101,9 @@ public class UserManagementActions extends AbstractUserGroupManagement
 
     // refresh to get references
     protected DocumentModel refreshUser(String userName) throws ClientException {
-        return userManager.getUserModel(userName);
+        DocumentModel user = userManager.getUserModel(userName);
+        fireSeamEvent(USER_SELECTED_CHANGED);
+        return user;
     }
 
     public String getSelectedLetter() {
