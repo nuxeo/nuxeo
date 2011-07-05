@@ -103,7 +103,6 @@ public interface VersionableDocument {
      * Checks whether or not this doc is a version document.
      *
      * @return true if it's a version, false otherwise
-     * @return
      */
     boolean isVersion();
 

@@ -146,7 +146,7 @@ public interface Session extends Connection {
      * Checks if a child node with the given name exists.
      * <p>
      * There are two kinds of children, the regular children documents and the
-     * complex properties. The {@code boolean} {@value complexProp} allows a
+     * complex properties. The {@code boolean} {@value #complexProp} allows a
      * choice between those.
      *
      * @param parent the parent node

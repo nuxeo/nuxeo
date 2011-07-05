@@ -38,7 +38,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
  * contexts.
  * <p>
  * An event context also acts as an event factory. See {@link #newEvent(String)}
- * and {@link #newEvent(String, int>)} methods. Events created by an event
+ * and {@link #newEvent(String, int)} methods. Events created by an event
  * context are automatically mapped to that context.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
