@@ -97,16 +97,6 @@
             </#if>
           </@block>
         </div>
-        <!-- content -->
-        <div class="sideblock general">
-          <@block name="sidebar-footer">
-            <h3>Help</h3>
-            <ul>
-              <li><a href="${basePath}/about">About</a></li>
-              <li><a href="${basePath}/help">Documentation</a></li>
-            </ul>
-          </@block>
-        </div>
 
       </div>
     </div>
