@@ -83,7 +83,7 @@ public interface IOResourceAdapter extends Serializable {
     /**
      * Export resources as XML.
      *
-     * @param out: stream where export will be written.
+     * @param out stream where export will be written.
      * @param newResources resources previously extracted thanks to
      *            {@link IOResourceAdapter#extractResources(String, Collection)}
      *            or
