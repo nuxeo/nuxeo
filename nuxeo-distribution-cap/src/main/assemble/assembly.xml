@@ -56,6 +56,9 @@
         <includes>
           <artifact groupId="!org.nuxeo*" />
         </includes>
+        <excludes>
+          <artifact artifactId="h2" />
+        </excludes>
       </artifact:set>
     </copy>
     <move todir="${nuxeo.ear}/lib">
@@ -65,7 +68,6 @@
       </fileset>
     </move>
     <nx:rmdups dir="${nuxeo.ear}/lib" />
-
   </target>
 
 </project>
