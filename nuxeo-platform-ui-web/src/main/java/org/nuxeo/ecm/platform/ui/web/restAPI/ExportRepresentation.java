@@ -63,7 +63,8 @@ public abstract class ExportRepresentation extends OutputRepresentation {
         this(mediaType, root, false);
     }
 
-    protected ExportRepresentation(MediaType mediaType, DocumentModel root, boolean unrestricted) {
+    protected ExportRepresentation(MediaType mediaType, DocumentModel root,
+            boolean unrestricted) {
         super(mediaType);
         repositoryName = root.getRepositoryName();
         rootId = root.getId();
@@ -79,7 +80,7 @@ public abstract class ExportRepresentation extends OutputRepresentation {
     protected abstract DocumentPipe makePipe();
 
     /**
-     * Create a {@ DocumentReader} for the export.
+     * Create a {@link DocumentReader} for the export.
      *
      * @param documentManager a session
      * @param root the root of the export
@@ -90,7 +91,7 @@ public abstract class ExportRepresentation extends OutputRepresentation {
             CoreSession documentManager, DocumentModel root) throws Exception;
 
     /**
-     * Create a {@ DocumentWriter} for the export.
+     * Create a {@link DocumentWriter} for the export.
      *
      * @param outputStream the stream to use
      * @return the document writer

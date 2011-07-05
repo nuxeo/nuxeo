@@ -30,9 +30,9 @@ import org.nuxeo.ecm.platform.query.api.PageProvider;
  * A content view is a notion to handle lists of objects rendering, as well as
  * query filters to build the list.
  * <p>
- * It has a name that will be the resulting page provider name too. It handles
- * a page provider and accepts configuration needed to handle rendering, like
- * the search layout (for filtering options), the result layout (for results
+ * It has a name that will be the resulting page provider name too. It handles a
+ * page provider and accepts configuration needed to handle rendering, like the
+ * search layout (for filtering options), the result layout (for results
  * rendering), actions (for buttons available when selecting result objects),
  * the selection list name...
  * <p>
@@ -217,7 +217,7 @@ public interface ContentView extends Serializable {
     /**
      * Gets page provider according to given parameters
      *
-     * @see #getPageProvider(DocumentModel, List, Long, Long, Object...), using
+     * @see #getPageProvider(DocumentModel, List, Long, Long, Object...) , using
      *      null as every argument
      * @throws ClientException
      */
@@ -235,8 +235,8 @@ public interface ContentView extends Serializable {
      * Resets the page provider.
      * <p>
      * A new page provider will be computed next time
-     * {@link #getPageProviderWithParams(Object...)} is called. Sort
-     * information and query parameters will have to be re-generated.
+     * {@link #getPageProviderWithParams(Object...)} is called. Sort information
+     * and query parameters will have to be re-generated.
      */
     void resetPageProvider();
 
@@ -280,9 +280,9 @@ public interface ContentView extends Serializable {
     /**
      * Returns true is the filter form should be displayed.
      * <p>
-     * Filter form is displayed on top of content view results, using the
-     * search document model and search layout if they have been set on the
-     * content view.
+     * Filter form is displayed on top of content view results, using the search
+     * document model and search layout if they have been set on the content
+     * view.
      *
      * @since 5.4.2
      */
