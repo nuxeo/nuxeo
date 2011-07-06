@@ -32,6 +32,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Begin;
 import org.jboss.seam.annotations.Factory;
@@ -114,7 +115,7 @@ public class RestHelper implements Serializable {
         this.docView = docView;
     }
 
-    public DocumentView getNewDocumentView() {
+    public DocumentView getNewDocumentView(String mainTabId) {
         DocumentView docView = null;
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         if (currentDocument != null) {
@@ -124,13 +125,19 @@ public class RestHelper implements Serializable {
             if (currentDocument.isVersion()) {
                 params.put("version", "true");
             }
-            params.put("mainTabId", "MAIN_TABS:documents");
+            if (!StringUtils.isEmpty(mainTabId)) {
+                params.put("mainTabId", "MAIN_TABS:" + mainTabId);
+            }
             // additional params will be set according to the url pattern,
             // calling getters on bindings.
             docView = new DocumentViewImpl(docLoc, typeInfo.getDefaultView(),
                     params);
         }
         return docView;
+    }
+
+    public DocumentView getNewDocumentView() {
+        return getNewDocumentView("documents");
     }
 
     public DocumentView getDocumentView() {

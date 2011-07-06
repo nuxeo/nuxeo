@@ -58,6 +58,7 @@ public class URLPolicyServiceImpl implements URLPolicyService {
     }
 
     protected List<URLPatternDescriptor> getURLPatternDescriptors() {
+        // TODO: add cache
         List<URLPatternDescriptor> lst = new ArrayList<URLPatternDescriptor>();
         for (URLPatternDescriptor desc : descriptors.values()) {
             if (desc.getEnabled()) {
@@ -103,7 +104,7 @@ public class URLPolicyServiceImpl implements URLPolicyService {
     protected URLPatternDescriptor getURLPatternDescriptor(String patternName) {
         URLPatternDescriptor desc = descriptors.get(patternName);
         if (desc == null) {
-            throw new IllegalArgumentException("Unknow pattern " + patternName);
+            throw new IllegalArgumentException("Unknown pattern " + patternName);
         }
         return desc;
     }
@@ -130,7 +131,7 @@ public class URLPolicyServiceImpl implements URLPolicyService {
     }
 
     public boolean isCandidateForEncoding(HttpServletRequest httpRequest) {
-        Boolean forceEncoding = false;
+        Boolean forceEncoding = Boolean.FALSE;
         Object forceEncodingValue = httpRequest.getAttribute(FORCE_URL_ENCODING_REQUEST_KEY);
         if (forceEncodingValue instanceof Boolean) {
             forceEncoding = (Boolean) forceEncodingValue;
@@ -139,12 +140,14 @@ public class URLPolicyServiceImpl implements URLPolicyService {
         // only POST access need a redirect,unless with force encoding (this
         // happens when redirect is triggered after a seam page has been
         // processed)
-        if (!forceEncoding && !httpRequest.getMethod().equals("POST")) {
+        if (!forceEncoding.booleanValue()
+                && !httpRequest.getMethod().equals("POST")) {
             return false;
         }
 
         Object skipRedirect = httpRequest.getAttribute(NXAuthConstants.DISABLE_REDIRECT_REQUEST_KEY);
-        if (skipRedirect instanceof Boolean && (Boolean) skipRedirect) {
+        if (skipRedirect instanceof Boolean
+                && ((Boolean) skipRedirect).booleanValue()) {
             return false;
         }
 
@@ -267,12 +270,23 @@ public class URLPolicyServiceImpl implements URLPolicyService {
 
     public String getUrlFromDocumentView(DocumentView docView, String baseUrl) {
         String url = null;
-        String docViewId = docView.getViewId();
-        List<URLPatternDescriptor> descs = getSortedURLPatternDescriptorsFor(docViewId);
-        for (URLPatternDescriptor desc : descs) {
-            url = getUrlFromDocumentView(desc.getName(), docView, baseUrl);
-            if (url != null) {
-                break;
+        String patternName = docView.getPatternName();
+        if (patternName != null) {
+            // try with original document view pattern
+            URLPatternDescriptor desc = getURLPatternDescriptor(patternName);
+            if (desc != null) {
+                // return corresponding url
+                url = getUrlFromDocumentView(desc.getName(), docView, baseUrl);
+            }
+        }
+        if (url == null) {
+            // take first matching pattern
+            List<URLPatternDescriptor> descs = getURLPatternDescriptors();
+            for (URLPatternDescriptor desc : descs) {
+                url = getUrlFromDocumentView(desc.getName(), docView, baseUrl);
+                if (url != null) {
+                    break;
+                }
             }
         }
         // if (url == null && log.isDebugEnabled()) {
@@ -281,6 +295,19 @@ public class URLPolicyServiceImpl implements URLPolicyService {
         return url;
     }
 
+    /**
+     * Returns patterns sorted according to:
+     * <ul>
+     * <li>First patterns holding the given view id</li>
+     * <li>The default pattern if it does not hold this view id</li>
+     * <li>Other patterns not holding this view id</li>
+     * </ul>
+     *
+     * @since 5.4.2
+     * @param viewId
+     * @deprecated since 5.4.3
+     */
+    @Deprecated
     protected List<URLPatternDescriptor> getSortedURLPatternDescriptorsFor(
             String viewId) {
         List<URLPatternDescriptor> sortedDescriptors = new ArrayList<URLPatternDescriptor>();
@@ -382,11 +409,35 @@ public class URLPolicyServiceImpl implements URLPolicyService {
         HttpServletRequest httpRequest = (HttpServletRequest) facesContext.getExternalContext().getRequest();
 
         // get existing document view from given pattern, else create it
-        URLPatternDescriptor patternDesc;
+        URLPatternDescriptor patternDesc = null;
         if (pattern != null && !"".equals(pattern)) {
             patternDesc = getURLPatternDescriptor(pattern);
         } else {
-            patternDesc = getDefaultPatternDescriptor();
+            // iterate over pattern descriptors, and take the first one that
+            // applies, or use the default one
+            List<URLPatternDescriptor> descs = getURLPatternDescriptors();
+            boolean applies = false;
+            for (URLPatternDescriptor desc : descs) {
+                String documentViewAppliesExpr = desc.getDocumentViewApplies();
+                if (documentViewAppliesExpr != null
+                        && !"".equals(documentViewAppliesExpr)) {
+                    // TODO: maybe put view id to the request to help writing
+                    // the EL expression
+                    ValueExpression ve = ef.createValueExpression(context,
+                            documentViewAppliesExpr, Object.class);
+                    if (Boolean.TRUE.equals(ve.getValue(context))) {
+                        applies = true;
+                    }
+                }
+                if (applies) {
+                    patternDesc = desc;
+                    break;
+                }
+            }
+            if (patternDesc == null) {
+                // default on the default pattern desc
+                patternDesc = getDefaultPatternDescriptor();
+            }
         }
         if (patternDesc != null) {
             // resolved doc view values thanks to bindings
