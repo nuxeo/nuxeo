@@ -32,9 +32,9 @@ import org.nuxeo.runtime.api.Framework;
 public class PlatformFunctions extends CoreFunctions {
 
 
-    protected volatile DirectoryService dirService;
+    private volatile DirectoryService dirService;
 
-    protected volatile UserManager userMgr;
+    private volatile UserManager userMgr;
 
     public UserManager getUserManager() throws Exception {
         if (userMgr == null) {
@@ -90,7 +90,7 @@ public class PlatformFunctions extends CoreFunctions {
     }
 
     public Set<NuxeoPrincipal> getPrincipalsFromGroup(String group, boolean ignoreGroups) throws Exception {
-        PrincipalHelper ph = new PrincipalHelper(userMgr, null);
+        PrincipalHelper ph = new PrincipalHelper(getUserManager(), null);
         return ph.getPrincipalsFromGroup(group, !ignoreGroups);
     }
 
@@ -99,7 +99,7 @@ public class PlatformFunctions extends CoreFunctions {
     }
 
     public StringList getEmailsFromGroup(String group, boolean ignoreGroups) throws Exception {
-        PrincipalHelper ph = new PrincipalHelper(userMgr, null);
+        PrincipalHelper ph = new PrincipalHelper(getUserManager(), null);
         Set<String> emails = ph.getEmailsFromGroup(group, !ignoreGroups);
         return new StringList(emails);
     }
@@ -107,8 +107,8 @@ public class PlatformFunctions extends CoreFunctions {
     public StringList getPrincipalEmails(List<NuxeoPrincipal> principals)
             throws Exception {
         StringList result = new StringList(principals.size());
-        String schemaName = userMgr.getUserSchemaName();
-        String fieldName = userMgr.getUserEmailField();
+        String schemaName = getUserManager().getUserSchemaName();
+        String fieldName = getUserManager().getUserEmailField();
         for (NuxeoPrincipal principal : principals) {
             String email = getEmail(principal, schemaName, fieldName);
             if (!StringUtils.isEmpty(email)) {
@@ -121,8 +121,8 @@ public class PlatformFunctions extends CoreFunctions {
     public StringList getEmails(List<String> usernames) throws Exception {
         UserManager userManager = getUserManager();
         StringList result = new StringList(usernames.size());
-        String schemaName = userMgr.getUserSchemaName();
-        String fieldName = userMgr.getUserEmailField();
+        String schemaName = getUserManager().getUserSchemaName();
+        String fieldName = getUserManager().getUserEmailField();
         for (String username : usernames) {
             NuxeoPrincipal principal = userManager.getPrincipal(username);
             if (principal != null) {
