@@ -39,9 +39,6 @@
           #{restHelper.localeString}
         </binding>
       </bindings>
-      <viewIds>
-        <viewId>view_home</viewId>
-      </viewIds>
     </urlPattern>
 
   </extension>
