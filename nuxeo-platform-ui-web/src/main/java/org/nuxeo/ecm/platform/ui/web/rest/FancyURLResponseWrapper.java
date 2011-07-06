@@ -35,9 +35,8 @@ import org.nuxeo.ecm.platform.url.api.DocumentView;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Used in post methods to rewrite the url with needed get params.
- *
- * Encapsulates response into a wrapper.
+ * Used in post methods to rewrite the url with needed get params. Encapsulates
+ * response into a wrapper.
  */
 public class FancyURLResponseWrapper extends HttpServletResponseWrapper {
 
@@ -45,18 +44,26 @@ public class FancyURLResponseWrapper extends HttpServletResponseWrapper {
 
     protected HttpServletRequest request = null;
 
-    protected StaticNavigationHandler navigationHandler;
-
     public FancyURLResponseWrapper(HttpServletResponse response) {
         super(response);
     }
 
+    /**
+     * @deprecated since 5.4.3: use constructor without the
+     *             {@link StaticNavigationHandler} that is now wrapped into the
+     *             {@link URLPolicyService}
+     */
+    @Deprecated
     public FancyURLResponseWrapper(HttpServletResponse response,
             HttpServletRequest request,
             StaticNavigationHandler navigationHandler) {
+        this(response, request);
+    }
+
+    public FancyURLResponseWrapper(HttpServletResponse response,
+            HttpServletRequest request) {
         super(response);
         this.request = request;
-        this.navigationHandler = navigationHandler;
     }
 
     protected String getViewId(String url, HttpServletRequest request) {
@@ -72,25 +79,10 @@ public class FancyURLResponseWrapper extends HttpServletResponseWrapper {
         // try to get outcome that was saved in request by
         // FancyNavigationHandler
         String newViewId = (String) request.getAttribute(URLPolicyService.POST_OUTCOME_REQUEST_KEY);
-        String baseUrl = BaseURL.getBaseURL(request);
         if (newViewId != null) {
             docView.setViewId(newViewId);
         } else {
-            // parse url to get outcome from view id
-            String viewId = url;
-            String webAppName = "/" + BaseURL.getWebAppName();
-            if (viewId.startsWith(baseUrl)) {
-                // url is absolute
-                viewId = '/' + viewId.substring(baseUrl.length());
-            } else if (viewId.startsWith(webAppName)) {
-                // url is relative to the web app
-                viewId = viewId.substring(webAppName.length());
-            }
-            int index = viewId.indexOf('?');
-            if (index != -1) {
-                viewId = viewId.substring(0, index);
-            }
-            String jsfOutcome = navigationHandler.getOutcomeFromViewId(viewId);
+            String jsfOutcome = service.getOutcomeFromUrl(url, request);
             docView.setViewId(jsfOutcome);
         }
 
@@ -104,6 +96,7 @@ public class FancyURLResponseWrapper extends HttpServletResponseWrapper {
                 }
             }
         }
+        String baseUrl = BaseURL.getBaseURL(request);
         url = service.getUrlFromDocumentView(docView, baseUrl);
         return url;
     }

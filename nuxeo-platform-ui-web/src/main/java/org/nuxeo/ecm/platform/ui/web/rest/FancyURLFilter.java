@@ -25,6 +25,7 @@ import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
 import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -49,13 +50,12 @@ public class FancyURLFilter implements Filter {
 
     protected URLPolicyService urlService;
 
-    protected StaticNavigationHandler dummyNavigationHandler;
+    protected ServletContext servletContext;
 
     public void init(FilterConfig conf) throws ServletException {
         log.debug("Nuxeo5 URLFilter started");
-        dummyNavigationHandler = new StaticNavigationHandler(
-                conf.getServletContext());
         getUrlService(true);
+        this.servletContext = conf.getServletContext();
     }
 
     protected URLPolicyService getUrlService() {
@@ -81,11 +81,14 @@ public class FancyURLFilter implements Filter {
 
     public void doFilter(ServletRequest request, ServletResponse response,
             FilterChain chain) throws IOException, ServletException {
+
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
         try {
 
             getUrlService();
+            // initialize its view id manager if necessary
+            urlService.initViewIdManager(servletContext);
 
             // check if this is an URL that needs to be parsed
             if (urlService.isCandidateForDecoding(httpRequest)) {
@@ -99,14 +102,15 @@ public class FancyURLFilter implements Filter {
                     String jsfOutcome = docView.getViewId();
 
                     // get target page according to navigation rules
-                    String target = dummyNavigationHandler.getViewIdFromOutcome(jsfOutcome);
+                    String target = urlService.getViewIdFromOutcome(jsfOutcome,
+                            httpRequest);
 
                     // dispatch
                     RequestDispatcher dispatcher;
                     if (target != null) {
                         dispatcher = httpRequest.getRequestDispatcher(target);
                     } else {
-                        // Use a dummy dispactcher if the target is not needed.
+                        // Use a dummy dispatcher if the target is not needed.
                         // This comes handy for instance for nxfile url
                         dispatcher = httpRequest.getRequestDispatcher("/malformed_url_error_page.faces");
                     }
@@ -114,7 +118,7 @@ public class FancyURLFilter implements Filter {
                     // redirect (when a seam page is processed for instance).
                     request.setAttribute(
                             URLPolicyService.FORCE_URL_ENCODING_REQUEST_KEY,
-                            true);
+                            Boolean.TRUE);
                     // forward request to the target viewId
                     dispatcher.forward(new FancyURLRequestWrapper(httpRequest,
                             docView), wrapResponse(httpRequest, httpResponse));
@@ -137,7 +141,6 @@ public class FancyURLFilter implements Filter {
 
     private ServletResponse wrapResponse(HttpServletRequest request,
             HttpServletResponse response) {
-        return new FancyURLResponseWrapper(response, request,
-                dummyNavigationHandler);
+        return new FancyURLResponseWrapper(response, request);
     }
 }

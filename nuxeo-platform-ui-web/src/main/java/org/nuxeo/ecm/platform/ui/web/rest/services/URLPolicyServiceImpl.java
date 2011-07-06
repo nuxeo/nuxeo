@@ -29,6 +29,7 @@ import javax.el.ExpressionFactory;
 import javax.el.MethodExpression;
 import javax.el.ValueExpression;
 import javax.faces.context.FacesContext;
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
@@ -36,6 +37,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
 import org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter;
+import org.nuxeo.ecm.platform.ui.web.rest.StaticNavigationHandler;
 import org.nuxeo.ecm.platform.ui.web.rest.api.URLPolicyService;
 import org.nuxeo.ecm.platform.ui.web.rest.descriptors.URLPatternDescriptor;
 import org.nuxeo.ecm.platform.ui.web.rest.descriptors.ValueBindingDescriptor;
@@ -43,6 +45,7 @@ import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
 import org.nuxeo.ecm.platform.url.api.DocumentViewCodecManager;
+import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.runtime.api.Framework;
 
 public class URLPolicyServiceImpl implements URLPolicyService {
@@ -52,6 +55,8 @@ public class URLPolicyServiceImpl implements URLPolicyService {
     private static final Log log = LogFactory.getLog(URLPolicyServiceImpl.class);
 
     protected final Map<String, URLPatternDescriptor> descriptors;
+
+    protected StaticNavigationHandler viewIdManager;
 
     public URLPolicyServiceImpl() {
         descriptors = new HashMap<String, URLPatternDescriptor>();
@@ -541,8 +546,61 @@ public class URLPolicyServiceImpl implements URLPolicyService {
         log.debug("Removed URLPatternDescriptor: " + name);
     }
 
+    @Override
+    public void initViewIdManager(ServletContext context) {
+        if (viewIdManager == null) {
+            viewIdManager = new StaticNavigationHandler(context);
+        }
+    }
+
+    StaticNavigationHandler getViewIdManager() {
+        if (viewIdManager == null) {
+            throw new RuntimeException("View id manager is not initialized: "
+                    + "URLPolicyService#initViewIdManager should "
+                    + "have been called first");
+        }
+        return viewIdManager;
+    }
+
+    @Override
+    public String getOutcomeFromViewId(String viewId,
+            HttpServletRequest httpRequest) {
+        return getViewIdManager().getOutcomeFromViewId(viewId);
+    }
+
+    @Override
+    public String getOutcomeFromUrl(String url, HttpServletRequest request) {
+        String baseUrl = BaseURL.getBaseURL(request);
+        // parse url to get outcome from view id
+        String viewId = url;
+        String webAppName = "/" + VirtualHostHelper.getWebAppName(request);
+        if (viewId.startsWith(baseUrl)) {
+            // url is absolute
+            viewId = '/' + viewId.substring(baseUrl.length());
+        } else if (viewId.startsWith(webAppName)) {
+            // url is relative to the web app
+            viewId = viewId.substring(webAppName.length());
+        }
+        int index = viewId.indexOf('?');
+        if (index != -1) {
+            viewId = viewId.substring(0, index);
+        }
+        return getOutcomeFromViewId(viewId, request);
+    }
+
+    @Override
+    public String getViewIdFromOutcome(String outcome,
+            HttpServletRequest httpRequest) {
+        return getViewIdManager().getViewIdFromOutcome(outcome);
+    }
+
     public void clear() {
         descriptors.clear();
+    }
+
+    @Override
+    public void flushCache() {
+        viewIdManager = null;
     }
 
 }

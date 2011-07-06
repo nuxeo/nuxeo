@@ -33,6 +33,10 @@ import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import org.jboss.seam.util.DTDEntityResolver;
 
+/**
+ * View id helper that matches view ids and outcomes thanks to navigation cases
+ * defined in a faces-config.xml file.
+ */
 public class StaticNavigationHandler {
 
     private static final Log log = LogFactory.getLog(StaticNavigationHandler.class);

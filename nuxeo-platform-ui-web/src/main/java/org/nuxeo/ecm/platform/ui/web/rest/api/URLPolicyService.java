@@ -20,9 +20,11 @@
 package org.nuxeo.ecm.platform.ui.web.rest.api;
 
 import javax.faces.context.FacesContext;
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
 import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
+import org.nuxeo.ecm.platform.ui.web.rest.StaticNavigationHandler;
 import org.nuxeo.ecm.platform.ui.web.rest.descriptors.URLPatternDescriptor;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
 import org.nuxeo.ecm.platform.url.api.DocumentViewCodecManager;
@@ -135,8 +137,8 @@ public interface URLPolicyService {
      * Extract it using an EL action binding described on URL pattern
      * descriptors.
      * <p>
-     * The action binding is called using given document view as parameter. If a
-     * sub URI is found, do nothing (may be an invalid resource URL).
+     * The action binding is called using given document view as parameter. If
+     * a sub URI is found, do nothing (may be an invalid resource URL).
      */
     String navigate(FacesContext context);
 
@@ -149,5 +151,54 @@ public interface URLPolicyService {
     void removePatternDescriptor(URLPatternDescriptor pattern);
 
     void clear();
+
+    /**
+     * Initializes the view id manager {@link StaticNavigationHandler} using
+     * the given servlet context.
+     *
+     * @since 5.4.3
+     */
+    void initViewIdManager(ServletContext context);
+
+    /**
+     * Returns the view id given an outcome, to dispatch to the right view
+     * given an outcome.
+     * <p>
+     * For instance, will return "/view_documents.xhtml" given
+     * "view_documents".
+     *
+     * @since 5.4.3
+     */
+    String getViewIdFromOutcome(String outcome, HttpServletRequest httpRequest);
+
+    /**
+     * Returns an outcome given a view id, to fill a document view when parsing
+     * a standard JSF URL.
+     * <p>
+     * For instance, will return "view_documents" given "/view_documents.xhtml"
+     * or "/view_documents.faces".
+     *
+     * @since 5.4.3
+     */
+    String getOutcomeFromViewId(String viewId, HttpServletRequest httpRequest);
+
+    /**
+     * Returns an outcome given a url, to fill a document view when parsing a
+     * standard JSF URL.
+     * <p>
+     * It parses the given url to extract the outcome, and then calls
+     * {@link #getOutcomeFromViewId(String, HttpServletRequest)}
+     *
+     * @since 5.4.3
+     */
+    String getOutcomeFromUrl(String url, HttpServletRequest httpRequest);
+
+    /**
+     * Flushes the URLPolicyService cache, to be called when hot reload is
+     * performed for instance.
+     *
+     * @since 5.4.3
+     */
+    void flushCache();
 
 }
