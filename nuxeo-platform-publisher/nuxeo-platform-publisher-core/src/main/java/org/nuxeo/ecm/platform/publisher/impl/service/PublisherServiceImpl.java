@@ -49,6 +49,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * POJO implementation of the publisher service Implements both
@@ -87,6 +88,20 @@ public class PublisherServiceImpl extends DefaultComponent implements
 
     @Override
     public void applicationStarted(ComponentContext context) throws Exception {
+        if (TransactionHelper.startTransaction()) {
+            try {
+                doApplicationStarted();
+            } catch (Throwable e) {
+                TransactionHelper.setTransactionRollbackOnly();
+            } finally {
+                TransactionHelper.commitOrRollbackTransaction();
+            }
+        } else {
+            doApplicationStarted();
+        }
+    }
+
+    protected void doApplicationStarted() {
         ClassLoader jbossCL = Thread.currentThread().getContextClassLoader();
         ClassLoader nuxeoCL = PublisherServiceImpl.class.getClassLoader();
         try {
