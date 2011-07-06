@@ -142,7 +142,7 @@ public interface JbpmService {
      * used as an argument to the filter.
      *
      * @param processInstanceId the id of the process instance.
-     * @param principal.
+     * @param principal
      * @return
      */
     List<TaskInstance> getTaskInstances(Long processInstanceId,
