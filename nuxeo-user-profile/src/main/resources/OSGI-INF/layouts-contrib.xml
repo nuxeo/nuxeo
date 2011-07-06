@@ -11,6 +11,11 @@
         <label mode="any">label.userprofile.avatar</label>
       </labels>
       <translated>true</translated>
+      <helpLabels>
+        <label mode="edit">
+          helplabel.userprofile.avatar
+        </label>
+      </helpLabels>
       <fields>
         <field>upro:avatar</field>
       </fields>

@@ -43,14 +43,14 @@ import com.google.inject.Inject;
 
 /**
  * Tests for {@link UserProfile}
- *
+ * 
  * @author <a href="mailto:qlamerand@nuxeo.com">Quentin Lamerand</a>
  * @since 5.4.3
  */
 @RunWith(FeaturesRunner.class)
 @Features(PlatformFeature.class)
 @RepositoryConfig(repositoryName = "default", type = BackendType.H2, init = DefaultRepositoryInit.class, user = "Administrator", cleanup = Granularity.METHOD)
-@Deploy( { "org.nuxeo.ecm.platform.userworkspace.types",
+@Deploy({ "org.nuxeo.ecm.platform.userworkspace.types",
         "org.nuxeo.ecm.platform.userworkspace.api",
         "org.nuxeo.ecm.platform.userworkspace.core",
         "org.nuxeo.ecm.platform.localconfiguration.simple",
@@ -69,21 +69,37 @@ public class TestUserProfile {
 
     @Test
     public void testGetUserProfile() throws Exception {
-        DocumentModel userWorkspace = userWorkspaceService.getCurrentUserPersonalWorkspace(session, null);
+        DocumentModel userWorkspace = userWorkspaceService.getCurrentUserPersonalWorkspace(
+                session, null);
         userWorkspace.addFacet(UserProfileConstants.USER_PROFILE_FACET);
         Calendar birthday = Calendar.getInstance();
         birthday.set(1982, 2, 25);
-        userWorkspace.setPropertyValue(UserProfileConstants.USER_PROFILE_BIRTHDATE_FIELD, birthday);
-        userWorkspace.setPropertyValue(UserProfileConstants.USER_PROFILE_PHONENUMBER_FIELD, "555-1234");
-        userWorkspace.setPropertyValue(UserProfileConstants.USER_PROFILE_SEX_FIELD, Boolean.FALSE); // Man
-        userWorkspace.setPropertyValue(UserProfileConstants.USER_PROFILE_SCHOOLWORKINFO_FIELD, "Works at Nuxeo");
-        userWorkspace.setPropertyValue(UserProfileConstants.USER_PROFILE_INTERESTS_FIELD, "Music, photo");
-        userWorkspace.setPropertyValue(UserProfileConstants.USER_PROFILE_CAREEROBJECTIVE_FIELD, "Becoming famous");
-        userWorkspace.setPropertyValue(UserProfileConstants.USER_PROFILE_SKILLS_FIELD, "Hunting zombies");
-        userWorkspace.setPropertyValue(UserProfileConstants.USER_PROFILE_PUBLICPROFILE_FIELD, Boolean.TRUE);
+        userWorkspace.setPropertyValue(
+                UserProfileConstants.USER_PROFILE_BIRTHDATE_FIELD, birthday);
+        userWorkspace.setPropertyValue(
+                UserProfileConstants.USER_PROFILE_PHONENUMBER_FIELD, "555-1234");
+        userWorkspace.setPropertyValue(
+                UserProfileConstants.USER_PROFILE_SEX_FIELD, Boolean.FALSE); // Man
+        userWorkspace.setPropertyValue(
+                UserProfileConstants.USER_PROFILE_SCHOOLWORKINFO_FIELD,
+                "Works at Nuxeo");
+        userWorkspace.setPropertyValue(
+                UserProfileConstants.USER_PROFILE_INTERESTS_FIELD,
+                "Music, photo");
+        userWorkspace.setPropertyValue(
+                UserProfileConstants.USER_PROFILE_CAREEROBJECTIVE_FIELD,
+                "Becoming famous");
+        userWorkspace.setPropertyValue(
+                UserProfileConstants.USER_PROFILE_SKILLS_FIELD,
+                "Hunting zombies");
+        userWorkspace.setPropertyValue(
+                UserProfileConstants.USER_PROFILE_PUBLICPROFILE_FIELD,
+                Boolean.TRUE);
         userWorkspace = session.saveDocument(userWorkspace);
         session.save();
-        UserProfile userProfile = userPreferencesService.getUserPreferences(session, UserProfile.class, UserProfileConstants.USER_PROFILE_FACET);
+        UserProfile userProfile = userPreferencesService.getUserPreferences(
+                session, UserProfile.class,
+                UserProfileConstants.USER_PROFILE_FACET);
         assertNotNull(userProfile);
         assertEquals(birthday, userProfile.getBirthDate());
         assertEquals("555-1234", userProfile.getPhoneNumber());
