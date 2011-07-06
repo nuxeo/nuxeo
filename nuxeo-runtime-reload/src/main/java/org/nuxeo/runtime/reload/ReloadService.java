@@ -39,4 +39,12 @@ public interface ReloadService {
 
     void removeJar(File file) throws Exception;
 
+    /**
+     * Sends a flush event so that listeners can be notified that a reload has
+     * been done.
+     *
+     * @since 5.4.3
+     */
+    void sendFlushEvent();
+
 }

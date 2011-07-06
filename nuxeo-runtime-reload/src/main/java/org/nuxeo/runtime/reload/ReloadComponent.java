@@ -44,6 +44,8 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
 
     public static final String RELOAD_TOPIC = "org.nuxeo.runtime.reload";
 
+    public static final String FLUSH_EVENT_ID = "flush";
+
     protected static Bundle bundle;
 
     public static BundleContext getBundleContext() {
@@ -77,6 +79,13 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
     public void reloadRepository() throws Exception {
         Framework.getLocalService(EventService.class).sendEvent(
                 new Event(RELOAD_TOPIC, "reloadRepositories", this, null));
+    }
+
+    @Override
+    public void sendFlushEvent() {
+        EventService eventService = Framework.getLocalService(EventService.class);
+        eventService.sendEvent(new Event(RELOAD_TOPIC, FLUSH_EVENT_ID, this,
+                null));
     }
 
     /**
