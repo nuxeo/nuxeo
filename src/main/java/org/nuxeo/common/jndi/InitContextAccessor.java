@@ -59,8 +59,8 @@ public class InitContextAccessor extends InitialContext {
     
     public static boolean isWritable(Context ctx) {
         try {
-            ctx.bind("java:comp/IsWritable", "is-writable");
-            ctx.unbind("java:comp/IsWritable");
+            ctx.bind("IsWritable", "is-writable");
+            ctx.unbind("IsWritable");
         } catch (NamingException e) {
             return false;
         }
