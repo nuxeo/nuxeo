@@ -15,6 +15,10 @@
   if (nbActiveSessions>1) {
     restartMessage = restartMessage + "\n( " + (nbActiveSessions-1) + " " + "<h:outputText value="#{messages['label.restart.connectedusers']}" />" + ' )';
   }
+  if (navigator.userAgent.indexOf("Nuxeo-Selenium-Tester") != -1) {
+    // webdriver sometimes has problems giving focus to alerts
+    return true;
+  }
   return window.confirm(restartMessage);
  }
  </script>
