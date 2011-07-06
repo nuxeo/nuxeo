@@ -82,7 +82,13 @@ public class TransactionalCoreSessionWrapper implements InvocationHandler,
         if ("getId".equals(name)) {
             return;
         }
+        if ("connect".equals(name)) {
+            return;
+        }
         if ("disconnect".equals(name)) {
+            return;
+        }
+        if ("close".equals(name)) {
             return;
         }
         log.warn("Session invoked in a container without a transaction active",
