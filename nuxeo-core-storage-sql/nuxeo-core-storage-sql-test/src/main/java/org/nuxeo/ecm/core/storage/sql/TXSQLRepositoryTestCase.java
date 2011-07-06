@@ -12,6 +12,7 @@
 
 package org.nuxeo.ecm.core.storage.sql;
 
+import org.nuxeo.common.Environment;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -26,6 +27,7 @@ public class TXSQLRepositoryTestCase extends SQLRepositoryTestCase {
     public void setUp() throws Exception {
         setUpContainer();
         super.setUp(); // calls deployRepositoryConfig()
+        Environment.getDefault().setHostApplicationName(Environment.NXSERVER_HOST);
         TransactionHelper.startTransaction();
         openSession();
     }
@@ -59,11 +61,11 @@ public class TXSQLRepositoryTestCase extends SQLRepositoryTestCase {
     @Override
     public void tearDown() throws Exception {
         session.cancel();
+        closeSession();
         if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
             TransactionHelper.setTransactionRollbackOnly();
             TransactionHelper.commitOrRollbackTransaction();
         }
-        closeSession();
         super.tearDown();
         NuxeoContainer.uninstall();
    }

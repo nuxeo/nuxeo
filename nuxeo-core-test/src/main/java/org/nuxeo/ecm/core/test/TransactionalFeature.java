@@ -11,6 +11,7 @@
  */
 package org.nuxeo.ecm.core.test;
 
+import org.nuxeo.common.Environment;
 import org.nuxeo.common.jndi.NamingContextFactory;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -29,6 +30,11 @@ public class TransactionalFeature extends SimpleFeature {
         NuxeoContainer.install();
     }
 
+    @Override
+    public void start(FeaturesRunner runner) throws Exception {
+         Environment.getDefault().setHostApplicationName(Environment.NXSERVER_HOST);
+    }
+    
     @Override
     public void beforeRun(FeaturesRunner runner) throws Exception {
         TransactionHelper.startTransaction();

@@ -28,6 +28,7 @@ import org.nuxeo.ecm.core.event.EventStats;
 import org.nuxeo.ecm.core.event.ReconnectedEventBundle;
 import org.nuxeo.ecm.core.event.tx.EventBundleTransactionHandler;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * ThreadPoolExecutor of listeners for event bundles.
@@ -152,26 +153,26 @@ public class AsyncEventExecutor {
         @Override
         public void run() {
             EventBundleTransactionHandler txh = new EventBundleTransactionHandler();
+            long t0 = System.currentTimeMillis();
+            txh.beginNewTransaction(listener.getTransactionTimeout());
             try {
-                long t0 = System.currentTimeMillis();
-                txh.beginNewTransaction(listener.getTransactionTimeout());
                 listener.asPostCommitListener().handleEvent(bundle);
-                txh.commitOrRollbackTransaction();
-                EventStats stats = getEventStats();
-                if (stats != null) {
-                    stats.logAsyncExec(listener, System.currentTimeMillis()-t0);
-                }
-                log.debug("Async listener executed, commited tx");
             } catch (Throwable t) {
                 log.error("Failed to execute async event " + bundle.getName()
                         + " on listener " + listener.getName(), t);
-                txh.rollbackTransaction();
+                txh.setTransactionRollbackOnly();
             } finally {
                 bundle.disconnect();
             }
-
-            //Thread.currentThread().interrupt();
+            txh.commitOrRollbackTransaction();
+            EventStats stats = getEventStats();
+            if (stats != null) {
+                stats.logAsyncExec(listener, System.currentTimeMillis() - t0);
+            }
+            log.debug("Async listener executed, commited tx");
         }
+
+        // Thread.currentThread().interrupt();
     }
 
     /**

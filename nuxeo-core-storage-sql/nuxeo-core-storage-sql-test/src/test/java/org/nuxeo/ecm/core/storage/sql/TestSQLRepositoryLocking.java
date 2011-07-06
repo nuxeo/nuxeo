@@ -15,6 +15,7 @@ import java.util.concurrent.CountDownLatch;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
@@ -42,6 +43,7 @@ public class TestSQLRepositoryLocking extends TXSQLRepositoryTestCase {
     public void setUp() throws Exception {
         super.setUp();
         if (!useTX()) {
+            Environment.getDefault().setHostApplicationName(null);
             closeSession();
             TransactionHelper.commitOrRollbackTransaction();
             openSession();
@@ -172,6 +174,7 @@ public class TestSQLRepositoryLocking extends TXSQLRepositoryTestCase {
             @Override
             public void run() {
                 CoreSession session2 = null;
+                TransactionHelper.startTransaction();
                 try {
                     session2 = openSessionAs(ADMINISTRATOR);
                     DocumentModel root2 = session2.getRootDocument();
@@ -188,6 +191,7 @@ public class TestSQLRepositoryLocking extends TXSQLRepositoryTestCase {
                     if (session2 != null) {
                         closeSession(session2);
                     }
+                    TransactionHelper.commitOrRollbackTransaction();
                 }
             }
         };

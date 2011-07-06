@@ -693,12 +693,14 @@ IS
 BEGIN
   --
   -- 1/ New documents, no new ACL
-  INSERT INTO hierarchy_read_acl
-    SELECT id, nx_get_read_acl_id(id)
-    FROM (SELECT DISTINCT(m.hierarchy_id) id
+  MERGE INTO hierarchy_read_acl t
+    USING (SELECT DISTINCT(m.hierarchy_id) id
             FROM aclr_modified m
             JOIN hierarchy h ON m.hierarchy_id = h.id
-            WHERE m.is_new = 1);
+            WHERE m.is_new = 1) s
+    ON (t.id = s.id)
+    WHEN NOT MATCHED THEN 
+      INSERT (id, acl_id) VALUES (s.id, nx_get_read_acl_id(s.id));
   DELETE FROM aclr_modified WHERE is_new = 1;
   --
   -- 2/ Handles new ACLs, marking read acl with a NULL marker

@@ -180,5 +180,16 @@ public class EventBundleTransactionHandler {
             tx = null;
         }
     }
+    
+    /**
+     * @since 5.4.3
+     */
+    public void setTransactionRollbackOnly() {
+        try {
+            tx.setRollbackOnly();
+        } catch (Exception e) {
+           log.error("Exception caught while setting the transaction as rollback only", e);
+        }
+    }
 
 }
