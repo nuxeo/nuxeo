@@ -13,11 +13,9 @@
   <artifactId>nuxeo-webengine-management</artifactId>
   <name>Nuxeo WebEngine Server Management</name>
   <description>Nuxeo WebEngine Server Management</description>
-   <packaging>jar</packaging>
+  <packaging>jar</packaging>
 
   <dependencies>
-
-    <!-- bundles -->
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-management</artifactId>
@@ -30,13 +28,13 @@
       <groupId>org.nuxeo.ecm.webengine</groupId>
       <artifactId>nuxeo-webengine-core</artifactId>
     </dependency>
-   <dependency>
+    <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-core</artifactId>
     </dependency>
     <dependency>
-        <groupId>javax.ws.rs</groupId>
-        <artifactId>jsr311-api</artifactId>
+      <groupId>javax.ws.rs</groupId>
+      <artifactId>jsr311-api</artifactId>
     </dependency>
     <dependency>
       <groupId>com.h2database</groupId>
@@ -70,41 +68,11 @@
     <dependency>
       <groupId>com.thoughtworks.xstream</groupId>
       <artifactId>xstream</artifactId>
-  	</dependency>
-
+    </dependency>
   </dependencies>
 
- <build>
+  <build>
     <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <source>1.5</source>
-          <target>1.5</target>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-source-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>attach-sources</id>
-            <goals>
-              <goal>jar</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <configuration>
-          <archive>
-            <manifestFile>src/main/resources/META-INF/MANIFEST.MF</manifestFile>
-          </archive>
-        </configuration>
-      </plugin>
       <!-- APT plugin for annotation preprocessing -->
       <plugin>
         <groupId>org.apache.myfaces.tobago</groupId>
@@ -118,7 +86,6 @@
           </execution>
         </executions>
       </plugin>
-      <!-- end APT plugin -->
     </plugins>
   </build>
 
