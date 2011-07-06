@@ -52,6 +52,7 @@ public class Flush extends PostInstallCommand {
         ReloadService deployer = Framework.getLocalService(ReloadService.class);
         deployer.flushJaasCache();
         deployer.reloadRepository();
+        deployer.sendFlushEvent();
     }
 
     @Override
