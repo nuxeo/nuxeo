@@ -172,8 +172,8 @@ public class MainTabsActions implements Serializable {
             // FIXME: find some way to reference the pattern in the action,
             // assume the pattern will be the same than the default one for
             // now, or use the default one.
-            if (!DOCUMENT_MANAGEMENT_ACTION.equals(mainTabId)) {
-                // FIXME: may return a pattern that does not exist
+            if (!DOCUMENT_MANAGEMENT_ACTION.equals(mainTabId)
+                    && service.hasPattern(mainTabId)) {
                 return mainTabId;
             }
             return service.getDefaultPatternName();

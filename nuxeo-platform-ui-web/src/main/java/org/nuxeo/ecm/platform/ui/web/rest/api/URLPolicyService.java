@@ -144,7 +144,17 @@ public interface URLPolicyService {
 
     // registry of pattern descriptors
 
+    /**
+     * Returns the default pattern descriptor name
+     */
     String getDefaultPatternName();
+
+    /**
+     * Returns true if the service holds a pattern descriptor with given name
+     *
+     * @since 5.4.3
+     */
+    boolean hasPattern(String name);
 
     void addPatternDescriptor(URLPatternDescriptor pattern);
 

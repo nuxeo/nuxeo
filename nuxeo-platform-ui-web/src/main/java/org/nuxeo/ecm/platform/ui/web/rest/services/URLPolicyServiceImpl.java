@@ -97,6 +97,12 @@ public class URLPolicyServiceImpl implements URLPolicyService {
         return null;
     }
 
+    @Override
+    public boolean hasPattern(String name) {
+        URLPatternDescriptor desc = descriptors.get(name);
+        return desc != null;
+    }
+
     protected static DocumentViewCodecManager getDocumentViewCodecService() {
         try {
             return Framework.getService(DocumentViewCodecManager.class);
