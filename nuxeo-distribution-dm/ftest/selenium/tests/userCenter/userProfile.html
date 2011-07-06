@@ -47,6 +47,31 @@
 	<td></td>
 </tr>
 <tr>
+	<td>retrieveTestFolderPath</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>storeExpression</td>
+	<td>javascript{storedVars.testfolderpath + 'BigAvatar.png';}</td>
+	<td>big_avatar</td>
+</tr>
+<tr>
+	<td>storeExpression</td>
+	<td>javascript{storedVars.testfolderpath + 'SmallAvatar.png';}</td>
+	<td>small_avatar</td>
+</tr>
+<tr>
+	<td>echo</td>
+	<td>${big_avatar}</td>
+	<td></td>
+</tr>
+<tr>
+	<td>echo</td>
+	<td>${small_avatar}</td>
+	<td></td>
+</tr>
+<tr>
 	<td>clickAndWait</td>
 	<td>link=Home</td>
 	<td></td>
@@ -77,6 +102,21 @@
 	<td></td>
 </tr>
 <tr>
+	<td>click</td>
+	<td>editUser:nxl_userprofile_1:nxw_avatar_1:nxw_avatar_1_file:choiceupload</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>editUser:nxl_userprofile_1:nxw_avatar_1:nxw_avatar_1_file:upload</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>editUser:nxl_userprofile_1:nxw_avatar_1:nxw_avatar_1_file:upload</td>
+	<td>${big_avatar}</td>
+</tr>
+<tr>
 	<td>type</td>
 	<td>editUser:nxl_userprofile_1:nxw_birthdate_1InputDate</td>
 	<td>3/25/82</td>
@@ -100,6 +140,66 @@
 	<td>verifyTextPresent</td>
 	<td>555-4321</td>
 	<td></td>
+</tr>
+<tr>
+	<td>verifyElementWidth</td>
+	<td>//*[@id=&quot;viewUser&quot;]/table[2]/tbody/tr/td[3]/img</td>
+	<td>188</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>userProfileButtons:editUserButton</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>editUser:nxl_userprofile_1:nxw_avatar_1:nxw_avatar_1_file:choiceupload</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>editUser:nxl_userprofile_1:nxw_avatar_1:nxw_avatar_1_file:upload</td>
+	<td>${small_avatar}</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>editUser:nxl_userprofile_1:nxw_birthdate_1InputDate</td>
+	<td>3/25/82</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>editUser:nxl_userprofile_1:nxw_phonenumber_1</td>
+	<td>555-4321</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>editUser:saveUserButton</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>3/25/82</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>555-4321</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementWidth</td>
+	<td>//*[@id=&quot;viewUser&quot;]/table[2]/tbody/tr/td[3]/img</td>
+	<td>90</td>
 </tr>
 <tr>
 	<td>open</td>
