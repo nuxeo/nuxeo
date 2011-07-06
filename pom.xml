@@ -15,6 +15,7 @@
 
   <properties>
     <nuxeo.wss.version>5.4.3-SNAPSHOT</nuxeo.wss.version>
+    <nuxeo.login.digest.version>5.4.3-SNAPSHOT</nuxeo.login.digest.version>
     <jersey.version>1.1.5</jersey.version>
   </properties>
 
@@ -46,6 +47,11 @@
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-wi-backend</artifactId>
         <version>${nuxeo.wss.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-login-digest</artifactId>
+        <version>${nuxeo.login.digest.version}</version>
       </dependency>
 
       <dependency>
