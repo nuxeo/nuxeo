@@ -99,11 +99,15 @@ public class EventJob implements Job {
             // send event
             log.info("Sending scheduled event id=" + eventId + ", category="
                     + eventCategory + ", username=" + username);
-            eventService.fireEvent(event);
+            try {
+                eventService.fireEvent(event);
+            } catch (Throwable e) {
+                log.error("Roll-backing tx, got error while processing scheduled event id " + eventId, e);
+                TransactionHelper.setTransactionRollbackOnly();
+            } finally {
+                TransactionHelper.commitOrRollbackTransaction();                
+            }
         } finally {
-            // finish transaction
-            TransactionHelper.commitOrRollbackTransaction();
-
             // logout
             if (loginContext != null) {
                 loginContext.logout();
