@@ -44,14 +44,18 @@ public class SystemHomePage extends AdminCenterBasePage {
             // Trying wait until on failing alert.accept on some machine:
             // org.openqa.selenium.WebDriverException:
             // a.document.getElementsByTagName("dialog")[0] is undefined
-            new WaitUntil(4000) {
-                @Override
-                public boolean condition() {
-                    Alert alert = driver.switchTo().alert();
-                    alert.accept();
-                    return true;
-                }
-            }.waitUntil();
+
+            // Confirmation alert is disabled during integration tests (hostInfo.xhtml),
+            // because sometimes webdriver fails to focus on it.
+
+            // new WaitUntil(4000) {
+            // @Override
+            // public boolean condition() {
+            // Alert alert = driver.switchTo().alert();
+            // alert.accept();
+            // return true;
+            // }
+            // }.waitUntil();
         } else {
             return null;
         }
