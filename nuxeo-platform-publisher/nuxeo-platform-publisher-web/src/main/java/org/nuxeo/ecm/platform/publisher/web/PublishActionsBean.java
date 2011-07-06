@@ -22,13 +22,13 @@ package org.nuxeo.ecm.platform.publisher.web;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Map.Entry;
 
 import javax.faces.context.FacesContext;
 
@@ -147,21 +147,35 @@ public class PublishActionsBean extends AbstractPublishActions implements
 
     protected Map<String, String> filterEmptyTrees(Map<String, String> trees) throws PublicationTreeNotAvailable, ClientException {
 
-        Map<String, String> filtredTrees = new HashMap<String, String>();
+        Map<String, String> filteredTrees = new HashMap<String, String>();
 
-        for (Entry<String, String> tree : trees.entrySet()) {
-            PublicationTree pTree = publisherService.getPublicationTree(tree.getKey(), documentManager, null, navigationContext.getCurrentDocument());
-            if (pTree!=null) {
+        List<String> prefilteredTrees = filterEmptyTrees(trees.keySet());
+
+        for (String ptree : prefilteredTrees) {
+            filteredTrees.put(ptree, trees.get(ptree));
+        }
+
+        return filteredTrees;
+    }
+
+    protected List<String> filterEmptyTrees(Collection<String> trees) throws PublicationTreeNotAvailable, ClientException {
+        List<String> filteredTrees = new ArrayList<String>();
+
+        for (String tree : trees) {
+            PublicationTree pTree = publisherService.getPublicationTree(tree,
+                    documentManager, null,
+                    navigationContext.getCurrentDocument());
+            if (pTree != null) {
                 if (pTree.getTreeType().equals("RootSectionsPublicationTree")) {
-                    if (pTree.getChildrenNodes().size()>0) {
-                        filtredTrees.put(tree.getKey(), tree.getValue());
+                    if (pTree.getChildrenNodes().size() > 0) {
+                        filteredTrees.add(tree);
                     }
                 } else {
-                    filtredTrees.put(tree.getKey(), tree.getValue());
+                    filteredTrees.add(tree);
                 }
             }
         }
-        return filtredTrees;
+        return filteredTrees;
     }
 
     @Factory(value = "availablePublicationTrees", scope = ScopeType.EVENT)
@@ -252,6 +266,7 @@ public class PublishActionsBean extends AbstractPublishActions implements
         if (currentPublicationTreeNameForPublishing == null) {
             List<String> publicationTrees = new ArrayList<String>(
                     publisherService.getAvailablePublicationTree());
+            publicationTrees = filterEmptyTrees(publicationTrees);
             if (!publicationTrees.isEmpty()) {
                 currentPublicationTreeNameForPublishing = publicationTrees.get(0);
             }
