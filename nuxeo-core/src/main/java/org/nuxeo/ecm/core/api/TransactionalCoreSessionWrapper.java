@@ -82,9 +82,12 @@ public class TransactionalCoreSessionWrapper implements InvocationHandler,
         if (threadBound.get() != null) { 
             return; // tx is active, no ckeck needed
         }
+        if (J2EEContainerDescriptor.getSelected() == null) {
+            return; // not in container
+        }
         // TODO add annotation on core session api for marking non transactional API
         final String name = m.getName();
-        if ("getId".equals(name)) {
+        if ("getSessionId".equals(name)) {
             return;
         }
         if ("connect".equals(name)) {
@@ -94,6 +97,9 @@ public class TransactionalCoreSessionWrapper implements InvocationHandler,
             return;
         }
         if ("close".equals(name)) {
+            return;
+        }
+       if ("destroy".equals(name)) {
             return;
         }
         log.warn("Session invoked in a container without a transaction active",
