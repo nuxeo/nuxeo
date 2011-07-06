@@ -72,7 +72,7 @@ public class MainTabsActions implements Serializable {
 
     protected Map<String, DocumentModel> documentsByMainTabs = new HashMap<String, DocumentModel>();
 
-    @Observer({ NAVIGATE_TO_DOCUMENT })
+    @Observer( { NAVIGATE_TO_DOCUMENT })
     public void updateContextualDocument() {
         if (!shouldHandleRequest()) {
             return;
@@ -164,6 +164,30 @@ public class MainTabsActions implements Serializable {
     public String getViewFor(String mainTabId) throws ClientException {
         Action mainTabAction = actionManager.getAction(mainTabId);
         return mainTabAction != null ? getViewFor(mainTabAction) : null;
+    }
+
+    public String getPatternFor(String mainTabId) throws ClientException {
+        try {
+            URLPolicyService service = Framework.getService(URLPolicyService.class);
+            // FIXME: find some way to reference the pattern in the action,
+            // assume the pattern will be the same than the default one for
+            // now, or use the default one.
+            if (!DOCUMENT_MANAGEMENT_ACTION.equals(mainTabId)) {
+                // FIXME: may return a pattern that does not exist
+                return mainTabId;
+            }
+            return service.getDefaultPatternName();
+        } catch (Exception e) {
+            throw new ClientException(e);
+        }
+    }
+
+    public boolean isOnMainTab(String mainTabId) {
+        if (mainTabId != null
+                && mainTabId.equals(webActions.getCurrentTabId(MAIN_TABS_CATEGORY))) {
+            return true;
+        }
+        return false;
     }
 
 }

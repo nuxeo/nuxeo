@@ -50,6 +50,14 @@ public class URLPatternDescriptor {
     @XNode("actionBinding")
     private String actionBinding;
 
+    /**
+     * EL expression resolving to a boolean value, and determines if
+     * {@link #documentViewBinding} and {@link #newDocumentViewBinding} will
+     * attempt to be resolved using this descriptor
+     */
+    @XNode("documentViewApplies")
+    private String documentViewApplies;
+
     @XNode("documentViewBinding")
     private String documentViewBinding;
 
@@ -59,6 +67,11 @@ public class URLPatternDescriptor {
     @XNodeList(value = "bindings/binding", type = ValueBindingDescriptor[].class, componentType = ValueBindingDescriptor.class)
     private ValueBindingDescriptor[] valueBindings;
 
+    /**
+     * @deprecated since 5.4.3: use {@link #documentViewApplies} binding
+     *             instead
+     */
+    @Deprecated
     @XNodeList(value = "viewIds/viewId", type = ArrayList.class, componentType = String.class)
     List<String> viewIds;
 
@@ -137,6 +150,14 @@ public class URLPatternDescriptor {
         this.valueBindings = valueBindings;
     }
 
+    public String getDocumentViewApplies() {
+        return documentViewApplies;
+    }
+
+    public void setDocumentViewApplies(String documentViewApplies) {
+        this.documentViewApplies = documentViewApplies;
+    }
+
     public String getDocumentViewBinding() {
         return documentViewBinding;
     }
@@ -153,6 +174,11 @@ public class URLPatternDescriptor {
         this.newDocumentViewBinding = newDocumentViewBinding;
     }
 
+    /**
+     * @deprecated since 5.4.3: use {@link #getDocumentViewApplies()} binding
+     *             instead
+     */
+    @Deprecated
     public List<String> getViewIds() {
         return viewIds;
     }
