@@ -20,9 +20,9 @@
       <needFilterPreprocessing>true</needFilterPreprocessing>
       <codecName>docpathadmin</codecName>
       <actionBinding>#{restHelper.initContextFromRestRequest}</actionBinding>
-      <documentViewApplies>
+      <documentViewBindingApplies>
         #{mainTabsActions.isOnMainTab('admin')}
-      </documentViewApplies>
+      </documentViewBindingApplies>
       <documentViewBinding>#{restHelper.documentView}</documentViewBinding>
       <newDocumentViewBinding>
         #{restHelper.getNewDocumentView(null)}
