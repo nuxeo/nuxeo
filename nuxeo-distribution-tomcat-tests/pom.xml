@@ -10,7 +10,7 @@
 
   <groupId>org.nuxeo.ecm.distribution</groupId>
   <artifactId>nuxeo-distribution-tomcat-tests</artifactId>
-  <name>Tomcat integration tests</name>
+  <name>Nuxeo Tomcat Integration Tests</name>
   <description>Nuxeo Functional Tests on Tomcat distributions</description>
 
   <properties>
