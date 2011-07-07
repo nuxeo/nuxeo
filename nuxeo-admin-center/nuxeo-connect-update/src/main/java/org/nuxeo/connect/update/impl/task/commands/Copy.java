@@ -24,6 +24,7 @@ import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.ValidationStatus;
 import org.nuxeo.connect.update.impl.task.AbstractCommand;
 import org.nuxeo.connect.update.impl.task.Command;
+import org.nuxeo.connect.update.impl.task.UninstallTask;
 import org.nuxeo.connect.update.impl.xml.XmlWriter;
 import org.nuxeo.connect.update.task.Task;
 import org.nuxeo.connect.update.util.FileRef;
@@ -96,7 +97,11 @@ public class Copy extends AbstractCommand {
                             "Copy command has override flag on false but destination file exists: "
                                     + tofile);
                 }
-                bak = IOUtils.backup(task.getPackage(), tofile);
+                if (task instanceof UninstallTask) {
+                    // no backup for uninstall task
+                } else {
+                    bak = IOUtils.backup(task.getPackage(), tofile);
+                }
                 dst = tofile;
             } else if (tofile.isDirectory()) {
                 dst = new File(tofile, file.getName());
@@ -113,7 +118,9 @@ public class Copy extends AbstractCommand {
             if (content != null) {
                 FileUtils.writeFile(dst, content);
             } else {
-                FileUtils.copy(file, dst);
+                File tmp = new File(dst.getPath()+"tmp");
+                FileUtils.copy(file, tmp);
+                tmp.renameTo(dst);
             }
             // get the md5 of the copied file.
             md5 = IOUtils.createMd5(dst);
@@ -143,12 +150,9 @@ public class Copy extends AbstractCommand {
         }
         if (md5 != null) {
             try {
-                if (tofile.isFile() && !md5.equals(IOUtils.createMd5(file))) {
+                if (tofile.isFile() && !md5.equals(IOUtils.createMd5(tofile))) {
                     status.addError("Cannot copy file to: " + tofile.getName()
                             + ". The md5 check failed");
-                } else {
-                    status.addError("MD5 set but tofile doesn't exists. Cannot perform copy over: "
-                            + tofile.getName());
                 }
             } catch (Exception e) {
                 throw new PackageException(e);
