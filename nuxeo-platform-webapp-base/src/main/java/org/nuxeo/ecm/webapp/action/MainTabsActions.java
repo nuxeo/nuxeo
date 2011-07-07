@@ -140,7 +140,7 @@ public class MainTabsActions implements Serializable {
         if (doc == null
                 || !documentManager.exists(doc.getRef())
                 || !documentManager.hasPermission(doc.getRef(),
-                        SecurityConstants.READ_CHILDREN)) {
+                        SecurityConstants.READ)) {
             documentsByMainTabs.put(mainTabId, defaultDocument);
             doc = null;
         }
