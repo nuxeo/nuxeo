@@ -46,6 +46,8 @@ public class Delete extends AbstractCommand {
 
     protected String md5;
 
+    protected boolean onExit = false;
+
     public Delete() {
         super(ID);
     }
@@ -74,7 +76,11 @@ public class Delete extends AbstractCommand {
                     // match
                 }
                 File bak = IOUtils.backup(task.getPackage(), file);
-                file.delete();
+                if (onExit) {
+                    file.deleteOnExit();
+                } else {
+                    file.delete();
+                }
                 return new Copy(bak, file, md5, false);
             } else {
                 return null;
@@ -97,6 +103,10 @@ public class Delete extends AbstractCommand {
         if (v.length() > 0) {
             md5 = v;
         }
+        v = element.getAttribute("onExit");
+        if (v.length() > 0) {
+            onExit = Boolean.parseBoolean(v);
+        }
     }
 
     public void writeTo(XmlWriter writer) {
@@ -106,6 +116,9 @@ public class Delete extends AbstractCommand {
         }
         if (md5 != null) {
             writer.attr("md5", md5);
+        }
+        if (onExit) {
+            writer.attr("onExit", "true");
         }
         writer.end();
     }
