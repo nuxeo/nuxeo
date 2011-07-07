@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component name="org.nuxeo.ecm.platform.forum.actions">
 
+  <require>org.nuxeo.ecm.platform.actions</require>
+  <require>org.nuxeo.ecm.platform.actions.relations.web</require>
+  <require>org.nuxeo.ecm.platform.audit.web</require>
+  <require>org.nuxeo.ecm.platform.comment.actions</require>
+
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="actions">
 
