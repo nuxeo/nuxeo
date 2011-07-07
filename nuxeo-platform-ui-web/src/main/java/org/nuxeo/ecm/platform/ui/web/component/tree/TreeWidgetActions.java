@@ -85,7 +85,7 @@ public class TreeWidgetActions implements Serializable {
      */
     public DocumentModel getDocumentFromPath(String path)
             throws ClientException {
-        // handle root document differently has user may not have browse rights
+        // handle root document differently as user may not have browse rights
         // on it
         if ("/".equals(path)) {
             return documentManager.getRootDocument();
