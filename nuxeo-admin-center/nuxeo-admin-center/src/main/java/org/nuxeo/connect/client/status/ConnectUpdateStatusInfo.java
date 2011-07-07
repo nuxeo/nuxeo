@@ -145,8 +145,8 @@ public class ConnectUpdateStatusInfo {
     }
 
 
-    protected int compluteAvailableUpdateCount() {
-        if (!ConnectStatusHolder.instance().getStatus().isConnectServerUnreachable()) {
+    protected int computeAvailableUpdateCount() {
+        if (ConnectStatusHolder.instance().getStatus().isConnectServerUnreachable()) {
             return 0;
         }
         PackageManager pm = Framework.getLocalService(PackageManager.class);
@@ -192,7 +192,7 @@ public class ConnectUpdateStatusInfo {
 
     public int getAvailableUpdateCount() {
         if (availableUpdateCount==null) {
-            availableUpdateCount = compluteAvailableUpdateCount();
+            availableUpdateCount = computeAvailableUpdateCount();
         }
         return availableUpdateCount;
     }
