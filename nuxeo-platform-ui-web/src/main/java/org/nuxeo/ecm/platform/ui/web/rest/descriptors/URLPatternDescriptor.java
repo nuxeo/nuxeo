@@ -55,8 +55,8 @@ public class URLPatternDescriptor {
      * {@link #documentViewBinding} and {@link #newDocumentViewBinding} will
      * attempt to be resolved using this descriptor
      */
-    @XNode("documentViewApplies")
-    private String documentViewApplies;
+    @XNode("documentViewBindingApplies")
+    private String documentViewBindingApplies;
 
     @XNode("documentViewBinding")
     private String documentViewBinding;
@@ -68,7 +68,7 @@ public class URLPatternDescriptor {
     private ValueBindingDescriptor[] valueBindings;
 
     /**
-     * @deprecated since 5.4.3: use {@link #documentViewApplies} binding
+     * @deprecated since 5.4.3: use {@link #documentViewBindingApplies} binding
      *             instead
      */
     @Deprecated
@@ -150,12 +150,12 @@ public class URLPatternDescriptor {
         this.valueBindings = valueBindings;
     }
 
-    public String getDocumentViewApplies() {
-        return documentViewApplies;
+    public String getDocumentViewBindingApplies() {
+        return documentViewBindingApplies;
     }
 
-    public void setDocumentViewApplies(String documentViewApplies) {
-        this.documentViewApplies = documentViewApplies;
+    public void setDocumentViewApplies(String documentViewBindingApplies) {
+        this.documentViewBindingApplies = documentViewBindingApplies;
     }
 
     public String getDocumentViewBinding() {
@@ -175,7 +175,7 @@ public class URLPatternDescriptor {
     }
 
     /**
-     * @deprecated since 5.4.3: use {@link #getDocumentViewApplies()} binding
+     * @deprecated since 5.4.3: use {@link #getDocumentViewBindingApplies()} binding
      *             instead
      */
     @Deprecated

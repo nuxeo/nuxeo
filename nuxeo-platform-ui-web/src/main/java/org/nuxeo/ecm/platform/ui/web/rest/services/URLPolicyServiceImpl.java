@@ -32,6 +32,7 @@ import javax.faces.context.FacesContext;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.URIUtils;
@@ -429,9 +430,8 @@ public class URLPolicyServiceImpl implements URLPolicyService {
             List<URLPatternDescriptor> descs = getURLPatternDescriptors();
             boolean applies = false;
             for (URLPatternDescriptor desc : descs) {
-                String documentViewAppliesExpr = desc.getDocumentViewApplies();
-                if (documentViewAppliesExpr != null
-                        && !"".equals(documentViewAppliesExpr)) {
+                String documentViewAppliesExpr = desc.getDocumentViewBindingApplies();
+                if (!StringUtils.isBlank(documentViewAppliesExpr)) {
                     // TODO: maybe put view id to the request to help writing
                     // the EL expression
                     ValueExpression ve = ef.createValueExpression(context,
@@ -454,18 +454,17 @@ public class URLPolicyServiceImpl implements URLPolicyService {
             // resolved doc view values thanks to bindings
             Object docViewValue = null;
             String documentViewBinding = patternDesc.getDocumentViewBinding();
-            if (documentViewBinding != null && !"".equals(documentViewBinding)) {
+            if (!StringUtils.isBlank(documentViewBinding)) {
                 ValueExpression ve = ef.createValueExpression(context,
                         documentViewBinding, Object.class);
                 docViewValue = ve.getValue(context);
-                if (docViewValue == null) {
-                    documentViewBinding = patternDesc.getNewDocumentViewBinding();
-                    if (documentViewBinding != null
-                            && !"".equals(documentViewBinding)) {
-                        ve = ef.createValueExpression(context,
-                                documentViewBinding, Object.class);
-                        docViewValue = ve.getValue(context);
-                    }
+            }
+            if (docViewValue == null) {
+                documentViewBinding = patternDesc.getNewDocumentViewBinding();
+                if (!StringUtils.isBlank(documentViewBinding)) {
+                    ValueExpression ve = ef.createValueExpression(context,
+                            documentViewBinding, Object.class);
+                    docViewValue = ve.getValue(context);
                 }
             }
             if (docViewValue instanceof DocumentView) {
