@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.platform.ui.web.tag.fn;
 
-import java.security.Principal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
@@ -222,21 +221,18 @@ public final class Functions {
     }
 
     /**
-     * Returns the full name of a user.
-     *
-     * @param username the user id, or null or empty for the current user.
-     * @return the full user name.
+     * Returns the full name of a user, or its username if user if not found.
+     * <p>
+     * Since 5.4.3, returns null if given username is null (instead of
+     * returning the cureent user full name).
      */
     @SuppressWarnings("unchecked")
     public static String userFullName(String username) {
         ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
 
         // empty user name is current user
-        if (username == null || username.length() == 0) {
-            Principal pal = externalContext.getUserPrincipal();
-            if (pal != null) {
-                username = pal.getName();
-            }
+        if (StringUtils.isBlank(username)) {
+            return null;
         }
         // check cache
         Map<String, Object> session = externalContext.getSessionMap();
