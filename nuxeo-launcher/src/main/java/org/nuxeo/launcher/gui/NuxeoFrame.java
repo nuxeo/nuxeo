@@ -106,6 +106,7 @@ public class NuxeoFrame extends JFrame {
             add(new JLabel(image));
         }
 
+        @Override
         public void paintComponent(Graphics g) {
             super.paintComponent(g);
             g.drawImage(backgroundImage, 0, 0, this);
@@ -266,7 +267,7 @@ public class NuxeoFrame extends JFrame {
     }
 
     private JComponent buildLogsTab() {
-        JTabbedPane logsTabbedPane = new JTabbedPane(JTabbedPane.TOP);
+        JTabbedPane logsTabbedPane = new JTabbedPane(SwingConstants.TOP);
         // Get Launcher log file(s)
         ArrayList<String> logFiles = Log4JHelper.getFileAppendersFiles(LogManager.getLoggerRepository());
         // Get server log file(s)
@@ -342,7 +343,7 @@ public class NuxeoFrame extends JFrame {
     }
 
     private JComponent buildTabbedPanel() {
-        tabbedPanel = new JTabbedPane(JTabbedPane.TOP);
+        tabbedPanel = new JTabbedPane(SwingConstants.TOP);
         tabbedPanel.addTab(NuxeoLauncherGUI.getMessage("tab.summary.title"),
                 buildSummaryPanel());
         tabbedPanel.addTab(NuxeoLauncherGUI.getMessage("tab.logs.title"),

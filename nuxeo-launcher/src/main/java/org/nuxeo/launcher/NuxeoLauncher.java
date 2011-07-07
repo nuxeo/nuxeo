@@ -377,6 +377,7 @@ public abstract class NuxeoLauncher {
             commandSucceeded = launcher.doStartAndWait();
         } else if ("console".equalsIgnoreCase(command)) {
             launcher.executor.execute(new Runnable() {
+                @Override
                 public void run() {
                     launcher.addShutdownHook();
                     if (!launcher.doStart(true)) {
@@ -526,8 +527,9 @@ public abstract class NuxeoLauncher {
             boolean countActive = false;
             String line;
             // Go to end of file
-            while (in.readLine() != null)
+            while (in.readLine() != null) {
                 ;
+            }
             int startMaxWait = Integer.parseInt(configurationGenerator.getUserConfig().getProperty(
                     START_MAX_WAIT_PARAM, getDefaultMaxWait()));
             log.debug("Will wait for effective start during " + startMaxWait
@@ -870,8 +872,7 @@ public abstract class NuxeoLauncher {
 
     /**
      * Return process status (running or not) as String, depending on OS
-     * capability to manage processes.
-     * Set status value following
+     * capability to manage processes. Set status value following
      * "http://refspecs.freestandards.org/LSB_4.1.0/LSB-Core-generic/LSB-Core-generic/iniscrptact.html"
      *
      * @see #status

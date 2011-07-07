@@ -78,6 +78,7 @@ public class NuxeoLauncherGUI {
 
     private void initFrame(final NuxeoLauncherGUI controller) {
         SwingUtilities.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 try {
                     nuxeoFrame = new NuxeoFrame(controller);
@@ -111,8 +112,9 @@ public class NuxeoLauncherGUI {
                 start();
             } else if ("stop".equalsIgnoreCase(command)) {
                 stop();
-            } else
+            } else {
                 return command;
+            }
         }
         return null;
     }
