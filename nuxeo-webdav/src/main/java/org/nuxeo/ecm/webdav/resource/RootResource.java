@@ -26,10 +26,10 @@ import javax.ws.rs.OPTIONS;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-import javax.ws.rs.WebApplicationException;
 
 import net.java.dev.webdav.jaxrs.methods.PROPFIND;
 
@@ -37,16 +37,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.webdav.backend.Backend;
 import org.nuxeo.ecm.webdav.backend.WebDavBackend;
 
-import com.sun.jersey.spi.CloseableService;
-
-@Path("dav")
+//path is set at the servlet level, see the deployment-fragment file
+@Path("")
 public class RootResource {
 
     private static final Log log = LogFactory.getLog(RootResource.class);
