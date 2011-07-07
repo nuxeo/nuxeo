@@ -76,7 +76,7 @@ import org.nuxeo.shell.swing.ConsolePanel;
  */
 public class NuxeoFrame extends JFrame {
 
-    private class LogsPanelListener extends ComponentAdapter {
+    protected class LogsPanelListener extends ComponentAdapter {
         private String logFile;
 
         public LogsPanelListener(String logFile) {
@@ -113,7 +113,7 @@ public class NuxeoFrame extends JFrame {
         }
     }
 
-    private Action startAction = new AbstractAction() {
+    protected Action startAction = new AbstractAction() {
         private static final long serialVersionUID = 1L;
 
         @Override
@@ -123,7 +123,7 @@ public class NuxeoFrame extends JFrame {
         }
     };
 
-    private Action stopAction = new AbstractAction() {
+    protected Action stopAction = new AbstractAction() {
         private static final long serialVersionUID = 1L;
 
         @Override
@@ -151,19 +151,19 @@ public class NuxeoFrame extends JFrame {
 
     protected JButton logsButton;
 
-    private GridBagConstraints constraints;
+    protected GridBagConstraints constraints;
 
     protected NuxeoFrame contentPane;
 
     protected Component filler;
 
-    private JTabbedPane tabbedPanel;
+    protected JTabbedPane tabbedPanel;
 
     protected ConsolePanel consolePanel;
 
-    private JLabel summaryStatus;
+    protected JLabel summaryStatus;
 
-    private JLabel summaryURL;
+    protected JLabel summaryURL;
 
     public NuxeoFrame(NuxeoLauncherGUI controller) throws HeadlessException {
         super("NuxeoCtl");
@@ -203,7 +203,7 @@ public class NuxeoFrame extends JFrame {
         // debug((JComponent) this.getContentPane());
     }
 
-    private Component buildConsolePanel() {
+    protected Component buildConsolePanel() {
         try {
             consolePanel = new ConsolePanel();
         } catch (Exception e) {
@@ -243,7 +243,7 @@ public class NuxeoFrame extends JFrame {
         return consolePanel;
     }
 
-    private JComponent buildFooter() {
+    protected JComponent buildFooter() {
         JLabel label = new JLabel(NuxeoLauncherGUI.getMessage("footer.label"));
         label.setForeground(Color.WHITE);
         label.setPreferredSize(new Dimension(470, 16));
@@ -253,7 +253,7 @@ public class NuxeoFrame extends JFrame {
         return label;
     }
 
-    private JComponent buildHeader() {
+    protected JComponent buildHeader() {
         ImagePanel headerLogo = new ImagePanel(
                 getImageIcon("img/nuxeo_control_panel_logo.png"),
                 getImageIcon("img/nuxeo_control_panel_bg.png"));
@@ -266,24 +266,37 @@ public class NuxeoFrame extends JFrame {
         return headerLogo;
     }
 
-    private JComponent buildLogsTab() {
+    protected JComponent buildLogsTab() {
         JTabbedPane logsTabbedPane = new JTabbedPane(SwingConstants.TOP);
         // Get Launcher log file(s)
         ArrayList<String> logFiles = Log4JHelper.getFileAppendersFiles(LogManager.getLoggerRepository());
         // Get server log file(s)
         logFiles.addAll(controller.getConfigurationGenerator().getLogFiles());
         for (String logFile : logFiles) {
-            logsTabbedPane.addTab(new File(logFile).getName(),
-                    buildLogPanel(logFile));
+            if (!hideLogTab(logFile)) {
+                logsTabbedPane.addTab(new File(logFile).getName(),
+                        buildLogPanel(logFile));
+            }
         }
         return logsTabbedPane;
+    }
+
+    /**
+     * Called by buildLogsTab to know if a logfile should be display. Can be
+     * overriden. Return false by default.
+     *
+     * @param logFile
+     * @return
+     */
+    protected boolean hideLogTab(String logFile) {
+        return false;
     }
 
     /**
      * @param logFile
      * @return
      */
-    private JComponent buildLogPanel(String logFile) {
+    protected JComponent buildLogPanel(String logFile) {
         ColoredTextPane textArea = new ColoredTextPane();
         textArea.setEditable(false);
         textArea.setAutoscrolls(true);
@@ -302,13 +315,13 @@ public class NuxeoFrame extends JFrame {
         return logsScroller;
     }
 
-    private JComponent buildMainButton() {
+    protected JComponent buildMainButton() {
         mainButton = createButton(null);
         updateMainButton();
         return mainButton;
     }
 
-    private Component buildSummaryPanel() {
+    protected Component buildSummaryPanel() {
         JPanel summaryPanel = new JPanel();
         summaryPanel.setLayout(new BoxLayout(summaryPanel, BoxLayout.PAGE_AXIS));
         summaryPanel.setBackground(new Color(55, 55, 55));
@@ -342,7 +355,7 @@ public class NuxeoFrame extends JFrame {
         return summaryPanel;
     }
 
-    private JComponent buildTabbedPanel() {
+    protected JComponent buildTabbedPanel() {
         tabbedPanel = new JTabbedPane(SwingConstants.TOP);
         tabbedPanel.addTab(NuxeoLauncherGUI.getMessage("tab.summary.title"),
                 buildSummaryPanel());
@@ -362,7 +375,7 @@ public class NuxeoFrame extends JFrame {
         return tabbedPanel;
     }
 
-    private JButton createButton(ImageIcon icon) {
+    protected JButton createButton(ImageIcon icon) {
         JButton button = new JButton();
         button.setIcon(icon);
         return button;

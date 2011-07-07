@@ -76,12 +76,12 @@ public class NuxeoLauncherGUI {
         }
     }
 
-    private void initFrame(final NuxeoLauncherGUI controller) {
+    protected void initFrame(final NuxeoLauncherGUI controller) {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
                 try {
-                    nuxeoFrame = new NuxeoFrame(controller);
+                    nuxeoFrame = createNuxeoFrame(controller);
                     nuxeoFrame.pack();
                     // Center frame
                     Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -95,6 +95,16 @@ public class NuxeoLauncherGUI {
                 }
             }
         });
+    }
+
+    /**
+     * Instantiate a new {@link NuxeoFrame}. Can be overridden if needed.
+     *
+     * @param controller
+     * @return
+     */
+    protected NuxeoFrame createNuxeoFrame(NuxeoLauncherGUI controller) {
+        return new NuxeoFrame(controller);
     }
 
     /**

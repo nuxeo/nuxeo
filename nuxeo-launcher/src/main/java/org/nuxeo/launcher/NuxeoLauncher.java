@@ -131,6 +131,10 @@ public abstract class NuxeoLauncher {
 
     private boolean useGui = false;
 
+    public boolean isUsingGui() {
+        return useGui;
+    }
+
     private boolean reloadConfiguration = false;
 
     private int status = 4;
@@ -364,6 +368,15 @@ public abstract class NuxeoLauncher {
             launcherGUI = new NuxeoLauncherGUI(launcher);
             command = launcherGUI.execute();
         }
+        // this method has been externalize so it is possible to call it from
+        // another main method in case some wants to customize the launcher and
+        // or the gui launcher
+        launch(exitStatus, launcher, launcherGUI, command, commandSucceeded);
+    }
+
+    public static void launch(int exitStatus, final NuxeoLauncher launcher,
+            NuxeoLauncherGUI launcherGUI, String command,
+            boolean commandSucceeded) {
         if (command == null) {
             // Nothing to do
         } else if ("help".equalsIgnoreCase(command)) {
@@ -916,7 +929,7 @@ public abstract class NuxeoLauncher {
      *         Tomcat or Jetty).
      * @throws ConfigurationException If server cannot be identified
      */
-    private static NuxeoLauncher createLauncher(String[] args)
+    public static NuxeoLauncher createLauncher(String[] args)
             throws ConfigurationException {
         NuxeoLauncher launcher;
         ConfigurationGenerator configurationGenerator = new ConfigurationGenerator();
