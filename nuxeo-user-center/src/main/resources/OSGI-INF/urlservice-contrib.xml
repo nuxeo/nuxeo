@@ -20,9 +20,9 @@
       <needFilterPreprocessing>true</needFilterPreprocessing>
       <codecName>docpathhome</codecName>
       <actionBinding>#{restHelper.initContextFromRestRequest}</actionBinding>
-      <documentViewApplies>
+      <documentViewBindingApplies>
         #{mainTabsActions.isOnMainTab('home')}
-      </documentViewApplies>
+      </documentViewBindingApplies>
       <documentViewBinding>#{restHelper.documentView}</documentViewBinding>
       <newDocumentViewBinding>
         #{restHelper.getNewDocumentView(null)}
