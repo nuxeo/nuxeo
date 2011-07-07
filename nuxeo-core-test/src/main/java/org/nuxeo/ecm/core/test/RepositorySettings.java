@@ -11,13 +11,21 @@
  */
 package org.nuxeo.ecm.core.test;
 
+import java.io.Serializable;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.runner.Description;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.impl.UserPrincipal;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.core.test.annotations.BackendType;
 import org.nuxeo.ecm.core.test.annotations.DatabaseHelperFactory;
@@ -25,6 +33,7 @@ import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.test.annotations.RepositoryInit;
 import org.nuxeo.osgi.OSGiAdapter;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.persistence.Contribution;
 import org.nuxeo.runtime.model.persistence.fs.ContributionLocation;
 import org.nuxeo.runtime.test.runner.Defaults;
@@ -57,6 +66,11 @@ public class RepositorySettings implements Provider<CoreSession> {
     protected DatabaseHelperFactory databaseFactory;
     protected TestRepositoryHandler repo;
     protected CoreSession session;
+
+    /**
+     * workaround to switch users at runtime i a test method
+     */
+    private Map<String,Serializable> sessionContext;
 
     /**
      * Do not use this ctor - it will be used by {@link MultiNuxeoCoreRunner}.
@@ -204,7 +218,7 @@ public class RepositorySettings implements Provider<CoreSession> {
     public CoreSession getSession() {
         if (session == null) {
             try {
-                session = getRepositoryHandler().openSessionAs(getUsername());
+                session = openSessionAs(getUsername());
             } catch (Exception e) {
                 log.error(e.toString(), e);
                 return null;
@@ -212,6 +226,40 @@ public class RepositorySettings implements Provider<CoreSession> {
         }
         return session;
     }
+
+    public CoreSession openSessionAs(String userName) throws ClientException {
+        sessionContext = new Hashtable<String, Serializable>();
+        sessionContext.put("username", userName);
+        return getRepositoryHandler().openSession(sessionContext);
+    }
+
+    public void switchUser(String username) {
+        switchUser(username, false, false);
+    }
+
+    public void switchToAdminUser(String username) {
+        switchUser(username, true, false);
+    }
+
+    public void switchToAnonymousUser(String username) {
+        switchUser(username, false, true);
+    }
+
+    public void switchToSystemUser() {
+        switchUser(SecurityConstants.SYSTEM_USERNAME, true, false);
+    }
+
+    public void switchUser(String username, boolean isAdmin, boolean isAnonymous) {
+        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
+        if (sessionContext == null) {
+            throw new java.lang.IllegalStateException("session was not yet opened!");
+        }
+        UserPrincipal principal = new UserPrincipal(username,
+                new ArrayList<String>(), isAnonymous, isAdmin);
+        sessionContext.put("username", username);
+        sessionContext.put("principal", principal);
+    }
+
 
     @Override
     public CoreSession get() {

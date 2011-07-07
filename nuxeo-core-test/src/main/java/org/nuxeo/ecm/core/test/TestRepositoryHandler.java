@@ -45,6 +45,15 @@ public class TestRepositoryHandler {
         return session;
     }
 
+    public CoreSession openSession(Map<String,Serializable> ctx) throws ClientException {
+        if (ctx  == null) {
+            throw new IllegalArgumentException("The session context cannot be null");
+        }
+        CoreSession session = LocalSession.createInstance();
+        session.connect(repositoryName, ctx);
+        return session;
+    }
+
     public CoreSession changeUser(CoreSession session, String newUser)
             throws ClientException {
         releaseSession(session);
