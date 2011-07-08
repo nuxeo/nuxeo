@@ -1,11 +1,6 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.platform.login.digest">
 
-  <require>org.nuxeo.ecm.platform.ui.web.auth.defaultConfig</require>
-  <require>org.nuxeo.ecm.automation.server.auth.config</require>
-  <require>org.nuxeo.ecm.webengine.blogs.authConfig</require>
-  <require>org.nuxeo.ecm.platform.ui.web.auth.WebEngineConfig</require>
-
   <documentation>
     This authentication plugin processes HTTP Digest Access Authentication
     (RFC 2617).
