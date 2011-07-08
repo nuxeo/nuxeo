@@ -35,6 +35,10 @@ public class TestHelpers extends TestCase {
                 // windows absolute paths with a drive are returned
                 expected = expected.substring(1);
             }
+            if (expected.startsWith("\\")) {
+                // TODO does the drive letter depend on current working dir?
+                expected = "C:" + expected;
+            }
         }
         assertEquals(expected, actual);
     }
