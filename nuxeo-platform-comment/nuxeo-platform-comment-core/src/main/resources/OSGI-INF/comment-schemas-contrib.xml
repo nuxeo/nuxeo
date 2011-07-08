@@ -24,9 +24,6 @@
       </prefetch>
     </doctype>
 
-    <doctype name="HiddenFolder" extends="Folder">
-      <facet name="HiddenInNavigation" />
-    </doctype>
   </extension>
 
   <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService"
