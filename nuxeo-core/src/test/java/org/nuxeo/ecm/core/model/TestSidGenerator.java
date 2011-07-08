@@ -28,17 +28,23 @@ public class TestSidGenerator extends TestCase {
         for (int i = 0; i < 1000; i++) {
             long id = SIDGenerator.next();
             if (!ids.add(id)) {
-                fail("ID already generated");
+                fail("ID already generated: " + id);
             }
         }
     }
 
     public void testGeneratorReset() throws Exception {
+        if (System.getProperty("os.name").startsWith("Windows")) {
+            // windows doesn't have enough time granularity for such
+            // a high-speed test
+            return;
+        }
+
         Set<Long> ids = new HashSet<Long>();
         for (int i = 0; i < 1000; i++) {
             long id = SIDGenerator.next();
             if (!ids.add(id)) {
-                fail("ID already generated");
+                fail("ID already generated: " + id);
             }
         }
 
@@ -50,7 +56,7 @@ public class TestSidGenerator extends TestCase {
         for (int i = 0; i < 3000; i++) {
             long id = SIDGenerator.next();
             if (!ids.add(id)) {
-                fail("ID already generated");
+                fail("ID already generated: " + id);
             }
         }
 
