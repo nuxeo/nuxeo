@@ -96,14 +96,17 @@ public class UserManagementActions extends AbstractUserGroupManagement
     }
 
     public void setSelectedUser(String userName) throws ClientException {
-        this.selectedUser = refreshUser(userName);
+        setSelectedUser(refreshUser(userName));
+    }
+
+    public void setSelectedUser(DocumentModel user) {
+        fireSeamEvent(USER_SELECTED_CHANGED);
+        this.selectedUser = user;
     }
 
     // refresh to get references
     protected DocumentModel refreshUser(String userName) throws ClientException {
-        DocumentModel user = userManager.getUserModel(userName);
-        fireSeamEvent(USER_SELECTED_CHANGED);
-        return user;
+        return userManager.getUserModel(userName);
     }
 
     public String getSelectedLetter() {
@@ -175,7 +178,7 @@ public class UserManagementActions extends AbstractUserGroupManagement
 
     public void createUser(boolean createAnotherUser) throws ClientException {
         try {
-            selectedUser = userManager.createUser(newUser);
+            setSelectedUser(userManager.createUser(newUser));
             newUser = null;
             facesMessages.add(
                     StatusMessage.Severity.INFO,
