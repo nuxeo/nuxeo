@@ -77,6 +77,8 @@
       <resource>utils.js</resource>
       <!-- include JS for contextual menu -->
       <resource>jquery.js</resource>
+      <resource>jquery.fancybox.js</resource>
+      <resource>jquery.fancybox.style.css</resource>
       <resource>contextmenu.js</resource>
       <resource>jquery.tools.tooltip.min.js</resource>
     </view>
@@ -165,6 +167,13 @@
     </resource>
     <resource name="jquery.tools.tooltip.min.js">
       <path>scripts/jquery/jquery.tools.tooltip.min.js</path>
+    </resource>
+    <!-- Fancybox -->
+    <resource name="jquery.fancybox.js">
+      <path>scripts/jquery/jquery.fancybox.pack.js</path>
+    </resource>
+    <resource name="jquery.fancybox.style.css">
+      <path>css/jquery.fancybox.css</path>
     </resource>
   </extension>
 
