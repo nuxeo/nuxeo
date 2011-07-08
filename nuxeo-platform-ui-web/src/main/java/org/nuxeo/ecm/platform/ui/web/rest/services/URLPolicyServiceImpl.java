@@ -434,7 +434,7 @@ public class URLPolicyServiceImpl implements URLPolicyService {
                         log.warn(String.format(
                                 "Error executing expression '%s' for "
                                         + "url pattern '%s': %s",
-                                documentViewAppliesExpr, patternDesc.getName(),
+                                documentViewAppliesExpr, desc.getName(),
                                 e.getMessage()));
                     }
                 }
