@@ -425,8 +425,17 @@ public class URLPolicyServiceImpl implements URLPolicyService {
                     // the EL expression
                     ValueExpression ve = ef.createValueExpression(context,
                             documentViewAppliesExpr, Object.class);
-                    if (Boolean.TRUE.equals(ve.getValue(context))) {
-                        applies = true;
+                    try {
+                        Object res = ve.getValue(context);
+                        if (Boolean.TRUE.equals(res)) {
+                            applies = true;
+                        }
+                    } catch (Exception e) {
+                        log.warn(String.format(
+                                "Error executing expression '%s' for "
+                                        + "url pattern '%s': %s",
+                                documentViewAppliesExpr, patternDesc.getName(),
+                                e.getMessage()));
                     }
                 }
                 if (applies) {
