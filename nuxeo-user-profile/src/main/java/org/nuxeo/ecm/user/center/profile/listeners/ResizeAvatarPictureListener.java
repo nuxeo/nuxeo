@@ -30,7 +30,7 @@
  * Contributors:
  *     rlegall
  */
-package org.nuxeo.ecm.user.center.profile.liseteners;
+package org.nuxeo.ecm.user.center.profile.listeners;
 
 import static org.nuxeo.ecm.user.center.profile.UserProfileConstants.USER_PROFILE_AVATAR_FIELD;
 import static org.nuxeo.ecm.user.center.profile.UserProfileConstants.USER_PROFILE_FACET;
@@ -55,9 +55,9 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class ResizeAvatarPictureListener implements EventListener {
 
-    private static final int RESIZED_IMAGE_WIDTH = 300;
+    protected static final int RESIZED_IMAGE_WIDTH = 300;
 
-    private static final int RESIZED_IMAGE_HEIGHT = 200;
+    protected static final int RESIZED_IMAGE_HEIGHT = 200;
 
     @Override
     public void handleEvent(Event event) throws ClientException {

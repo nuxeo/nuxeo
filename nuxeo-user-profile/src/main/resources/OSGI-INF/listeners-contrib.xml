@@ -5,7 +5,7 @@
 
     <listener name="resizeArticlePictureListener" async="false"
       postCommit="false"
-      class="org.nuxeo.ecm.user.center.profile.liseteners.ResizeAvatarPictureListener"
+      class="org.nuxeo.ecm.user.center.profile.listeners.ResizeAvatarPictureListener"
       priority="200">
       <event>beforeDocumentModification</event>
     </listener>
