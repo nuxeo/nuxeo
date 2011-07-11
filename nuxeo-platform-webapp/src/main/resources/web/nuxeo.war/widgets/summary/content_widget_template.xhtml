@@ -9,7 +9,7 @@
   <c:set var="hasMainBlob" value="#{!empty currentDocumentAsBlobHolder.blob}" />
   <c:set var="hasOtherBlobs" value="#{currentDocument.hasSchema('files') and !empty currentDocument.files.files}" />
 
-  <c:if test="#{hasMainBlob || hasOtherBlobs} || canHaveMainBlob ">
+  <c:if test="#{hasMainBlob || hasOtherBlobs || canHaveMainBlob}">
     <h3 class="summaryTitle">
       <h:outputText value="#{messages['action.view.content']}" />
     </h3>
