@@ -49,6 +49,17 @@ public class TestCounters {
         tpe.awaitTermination(120, TimeUnit.SECONDS);
     }
 
+
+    protected String getCountersSnapshot() {
+        StringBuffer sb = new StringBuffer();
+        CounterManager cm = Framework.getLocalService(CounterManager.class);
+        for (int i = 0; i<9; i++) {
+            String snapshot = cm.getCounterHistory("org.nuxeo.counter" + i).toString();
+            sb.append(snapshot);
+        }
+        return sb.toString();
+    }
+
     @Test
     public void verifyConcurrency() throws InterruptedException {
 
@@ -60,13 +71,13 @@ public class TestCounters {
             //System.out.print(cm.getCounterHistory("org.nuxeo.counter" + i));
         }
 
-        String snapshot = cm.getCounterHistory("org.nuxeo.counter5").toString();
+        String snapshot = getCountersSnapshot();
 
         cm.disableCounters();
 
         doRandomCounters();
 
-        String snapshot2 = cm.getCounterHistory("org.nuxeo.counter5").toString();
+        String snapshot2 = getCountersSnapshot();
 
         Assert.assertEquals(snapshot, snapshot2);
 
@@ -74,7 +85,7 @@ public class TestCounters {
 
         doRandomCounters();
 
-        String snapshot3 = cm.getCounterHistory("org.nuxeo.counter5").toString();
+        String snapshot3 = getCountersSnapshot();
 
         Assert.assertFalse(snapshot3.equals(snapshot));
 
