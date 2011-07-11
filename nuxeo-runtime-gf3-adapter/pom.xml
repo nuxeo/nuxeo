@@ -18,31 +18,26 @@
     <dependency>
       <groupId>org.nuxeo.common</groupId>
       <artifactId>nuxeo-common</artifactId>
-      <scope>provided</scope>
     </dependency>
 
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime-osgi</artifactId>
-      <scope>provided</scope>
     </dependency>
 
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime</artifactId>
-      <scope>provided</scope>
     </dependency>
 
     <dependency>
       <groupId>org.osgi</groupId>
       <artifactId>osgi-core</artifactId>
-      <scope>provided</scope>
     </dependency>
 
     <dependency>
       <groupId>org.glassfish.embedded</groupId>
       <artifactId>glassfish-embedded-all</artifactId>
-      <version>3.0-b38-nxp-web-210</version>
       <type>jar</type>
     </dependency>
 
@@ -60,42 +55,4 @@
 
   </dependencies>
 
-  <build>
-    <plugins>
-      <!-- TODO: use gf3 maven distribution plugin? -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>copy-installed</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>copy</goal>
-            </goals>
-            <configuration>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>org.glassfish.embedded</groupId>
-                  <artifactId>glassfish-embedded-all</artifactId>
-                  <version>3.0-b38</version>
-                </artifactItem>
-                <!--artifactItem>
-                  <groupId>javax.xml.stream</groupId>
-                  <artifactId>stax-api</artifactId>
-                  <version>1.0-2</version>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>org.codehaus.woodstox</groupId>
-                  <artifactId>wstx-asl</artifactId>
-                  <version>3.2.7</version>
-                </artifactItem-->
-              </artifactItems>
-              <outputDirectory>${project.build.outputDirectory}</outputDirectory>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
 </project>

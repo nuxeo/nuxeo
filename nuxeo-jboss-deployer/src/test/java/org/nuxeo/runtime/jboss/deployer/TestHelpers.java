@@ -16,6 +16,7 @@
  */
 package org.nuxeo.runtime.jboss.deployer;
 
+import java.io.File;
 import java.net.URL;
 
 import junit.framework.TestCase;
@@ -26,26 +27,46 @@ import junit.framework.TestCase;
  */
 public class TestHelpers extends TestCase {
 
+    public static void assertPathEquals(String expected, String actual) {
+        if (File.separatorChar == '\\') { // windows
+            expected = expected.replace('/', '\\');
+            if (expected.startsWith("\\c:")) {
+                // strip starting backslash as this is how
+                // windows absolute paths with a drive are returned
+                expected = expected.substring(1);
+            }
+            if (expected.startsWith("\\")) {
+                // TODO does the drive letter depend on current working dir?
+                expected = "C:" + expected;
+            }
+        }
+        assertEquals(expected, actual);
+    }
+
     public void testFileConvertor() throws Exception {
-        URL url = new URL("file:///c:/Documents and Settings/test");
-        assertEquals("/c:/Documents and Settings/test",
+        URL url;
+        url = new URL("file:/foo/bar");
+        assertPathEquals("/foo/bar",
+                Utils.tryGetFile(url).getAbsolutePath());
+        url = new URL("file:///c:/Documents and Settings/test");
+        assertPathEquals("/c:/Documents and Settings/test",
                 Utils.tryGetFile(url).getAbsolutePath());
         url = new URL("file:///c:/Documents%20and%20Settings/test");
-        assertEquals("/c:/Documents and Settings/test",
+        assertPathEquals("/c:/Documents and Settings/test",
                 Utils.tryGetFile(url).getAbsolutePath());
         url = new URL(
                 "jar:file:/opt/jboss5/jboss-5.1.0.GA/server/default/tmp/x/nuxeo.ear!/");
-        assertEquals(
+        assertPathEquals(
                 "/opt/jboss5/jboss-5.1.0.GA/server/default/tmp/x/nuxeo.ear",
                 Utils.tryGetFile(url).getAbsolutePath());
         url = new URL(
                 "jar:file:/opt/jboss5/jboss-5.1.0.GA/my server/default/tmp/x/nuxeo.ear!/");
-        assertEquals(
+        assertPathEquals(
                 "/opt/jboss5/jboss-5.1.0.GA/my server/default/tmp/x/nuxeo.ear",
                 Utils.tryGetFile(url).getAbsolutePath());
         url = new URL(
                 "jar:file:/opt/jboss5/jboss-5.1.0.GA/my%20server/default/tmp/x/nuxeo.ear!/");
-        assertEquals(
+        assertPathEquals(
                 "/opt/jboss5/jboss-5.1.0.GA/my server/default/tmp/x/nuxeo.ear",
                 Utils.tryGetFile(url).getAbsolutePath());
     }

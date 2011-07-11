@@ -28,3 +28,4 @@ Import-Package: javax.annotation,
  org.nuxeo.runtime.transaction,
  org.osgi.framework
 Bundle-SymbolicName: org.nuxeo.runtime.jtajca;singleton:=true
+Nuxeo-Component: OSGI-INF/JtaActivator.xml 

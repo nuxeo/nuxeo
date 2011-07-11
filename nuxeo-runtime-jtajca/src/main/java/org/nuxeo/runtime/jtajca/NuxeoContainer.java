@@ -12,16 +12,29 @@
 
 package org.nuxeo.runtime.jtajca;
 
+import java.util.Hashtable;
+
+import javax.naming.Context;
 import javax.naming.InitialContext;
+import javax.naming.Name;
 import javax.naming.NamingException;
+import javax.naming.Reference;
 import javax.resource.ResourceException;
 import javax.resource.spi.ConnectionManager;
 import javax.resource.spi.ConnectionRequestInfo;
 import javax.resource.spi.ManagedConnectionFactory;
 import javax.security.auth.Subject;
+import javax.transaction.HeuristicMixedException;
+import javax.transaction.HeuristicRollbackException;
+import javax.transaction.InvalidTransactionException;
+import javax.transaction.RollbackException;
+import javax.transaction.SystemException;
+import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 import javax.transaction.UserTransaction;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.geronimo.connector.outbound.AbstractConnectionManager;
 import org.apache.geronimo.connector.outbound.GenericConnectionManager;
 import org.apache.geronimo.connector.outbound.SubjectSource;
@@ -31,8 +44,11 @@ import org.apache.geronimo.connector.outbound.connectionmanagerconfig.Transactio
 import org.apache.geronimo.connector.outbound.connectionmanagerconfig.XATransactions;
 import org.apache.geronimo.connector.outbound.connectiontracking.ConnectionTrackingCoordinator;
 import org.apache.geronimo.transaction.GeronimoUserTransaction;
+import org.apache.geronimo.transaction.manager.NamedXAResource;
 import org.apache.geronimo.transaction.manager.RecoverableTransactionManager;
 import org.apache.geronimo.transaction.manager.TransactionManagerImpl;
+import org.nuxeo.common.jndi.InitContextAccessor;
+import org.nuxeo.common.jndi.NamingContextFactory;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -44,20 +60,26 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 public class NuxeoContainer {
 
+    protected static final Log log = LogFactory.getLog(NuxeoContainer.class);
+
     public static final String JNDI_TRANSACTION_MANAGER = "java:comp/TransactionManager";
 
     public static final String JNDI_USER_TRANSACTION = "java:comp/UserTransaction";
 
     public static final String JNDI_NUXEO_CONNECTION_MANAGER = "java:comp/NuxeoConnectionManager";
 
-    private static RecoverableTransactionManager transactionManager;
+    private static TransactionManagerWrapper transactionManager;
 
     private static UserTransaction userTransaction;
 
     private static ConnectionManagerWrapper connectionManager;
 
-    private static boolean isInstalled = false;
-
+    private static boolean isInstalled;
+    
+    private static boolean isNamingOwner;
+    
+    private static Context namingContext;
+    
     private NuxeoContainer() {
     }
 
@@ -73,34 +95,41 @@ public class NuxeoContainer {
     /**
      * Install transaction and connection management "by hand" if the container
      * didn't do it using file-based configuration. Binds the names in JNDI.
-     *
+     * 
      * @param txconfig the transaction manager configuration
      * @param cmconfig the connection manager configuration
-     *
+     * 
      * @since 5.4.2
      */
-    public static synchronized void install(TransactionManagerConfiguration txconfig,
+    public static synchronized void install(
+            TransactionManagerConfiguration txconfig,
             ConnectionManagerConfiguration cmconfig) throws NamingException {
-        initTransactionManager(txconfig);
-        initConnectionManager(cmconfig);
-        jndiBind();
         isInstalled = true;
+        transactionManager = lookupTransactionManager();
+        if (transactionManager == null) {
+            initTransactionManager(txconfig);
+            bind(JNDI_TRANSACTION_MANAGER, getTransactionManagerReference());
+            bind(JNDI_USER_TRANSACTION, getUserTransactionReference());
+        }
+        connectionManager = lookupConnectionManager();
+        if (connectionManager == null) {
+            initConnectionManager(cmconfig);
+            bind(JNDI_NUXEO_CONNECTION_MANAGER, getConnectionManagerReference());
+        }
     }
 
     public static synchronized boolean isInstalled() {
         return isInstalled;
     }
 
-    public static synchronized void uninstall() {
+    public static synchronized void uninstall() throws NamingException {
         if (!isInstalled) {
-            return;
+            throw new Error("Nuxeo container not installed");
         }
-        isInstalled = false;
         try {
-            InitialContext context = new InitialContext();
-            context.unbind(JNDI_TRANSACTION_MANAGER);
-            context.unbind(JNDI_USER_TRANSACTION);
-            context.unbind(JNDI_NUXEO_CONNECTION_MANAGER);
+            unbind(JNDI_TRANSACTION_MANAGER);
+            unbind(JNDI_USER_TRANSACTION);
+            unbind(JNDI_NUXEO_CONNECTION_MANAGER);
         } catch (Exception e) {
             // do nothing
         } finally {
@@ -108,77 +137,127 @@ public class NuxeoContainer {
             userTransaction = null;
             connectionManager = null;
         }
+        uninstallNaming();
     }
 
-    protected static void jndiBind() throws NamingException {
-        InitialContext context = new InitialContext();
-        context.rebind(JNDI_TRANSACTION_MANAGER, getTransactionManager());
-        context.rebind(JNDI_USER_TRANSACTION, getUserTransaction());
-        context.rebind(JNDI_NUXEO_CONNECTION_MANAGER, getConnectionManager());
+    
+    private static void installNaming() throws NamingException {
+        Context ctx = InitContextAccessor.getInitCtx();
+        if (ctx != null) {
+            NamingContextFactory.setDelegateContext(ctx);
+            NamingContextFactory.setDelegateEnvironment(ctx.getEnvironment());
+            log.warn("Chaining naming spaces, can break your application server");
+        }
+        NamingContextFactory.install();
+        isNamingOwner = true;
+        namingContext = new InitialContext();
     }
 
-    /** @deprecated use {@link #install} instead. */
-    @Deprecated
-    public static void initTransactionManagement() throws NamingException {
-        install();
+    private static void uninstallNaming() throws NamingException {
+        namingContext = null;
+        if (isNamingOwner == false) {
+            return;
+        }
+        NamingContextFactory.revertSetAsInitial();
+        isNamingOwner = false;
+    }
+
+    protected static void bind(String name, Reference ref)
+            throws NamingException {
+        if (namingContext == null) {
+            namingContext = new InitialContext();
+        }
+        try {
+            namingContext.rebind(name, ref);
+        } catch (NamingException error) {
+            installNaming();
+            namingContext.bind(name, ref);
+        }
+    }
+
+    protected static void unbind(String name) throws NamingException {
+          namingContext.unbind(name);
+    }
+    
+    @SuppressWarnings("unchecked")
+    protected static <T> T jndiLookup(String name) throws NamingException {
+        InitialContext ctx = new InitialContext();
+        return (T) ctx.lookup(name);
     }
 
     /**
      * Gets the transaction manager used by the container.
-     *
+     * 
      * @return the transaction manager
      */
     public static TransactionManager getTransactionManager() {
         return transactionManager;
     }
 
+    protected static Reference getTransactionManagerReference() {
+        return new Reference(TransactionManager.class.getName(),
+                NuxeoTransactionManagerFactory.class.getName(), null);
+    }
+
     /**
      * Gets the user transaction used by the container.
-     *
+     * 
      * @return the user transaction
      */
     public static UserTransaction getUserTransaction() throws NamingException {
         if (transactionManager == null) {
-            initTransactionManager();
+            initTransactionManager(new TransactionManagerConfiguration());
         }
         return userTransaction;
     }
 
+    protected static Reference getUserTransactionReference() {
+        return new Reference(UserTransaction.class.getName(),
+                NuxeoUserTransactionFactory.class.getName(), null);
+    }
+
     /**
      * Gets the Nuxeo connection manager used by the container.
-     *
+     * 
      * @return the connection manager
      */
     public static ConnectionManager getConnectionManager() {
         return connectionManager;
     }
 
-    protected static void initTransactionManager() throws NamingException {
-        // doing a lookup will initialize it with its configuration parameters
-        TransactionHelper.lookupTransactionManager();
+    protected static Reference getConnectionManagerReference() {
+        return new Reference(ConnectionManager.class.getName(),
+                NuxeoConnectionManagerFactory.class.getName(), null);
     }
 
     public static synchronized void initTransactionManager(
-            TransactionManagerConfiguration config) {
-        if (transactionManager == null) {
-            transactionManager = createTransactionManager(config);
-            userTransaction = createUserTransaction(transactionManager);
+            TransactionManagerConfiguration config) throws NamingException {
+        TransactionManager tm = createTransactionManager(config);
+        transactionManager = new TransactionManagerWrapper(tm);
+        userTransaction = createUserTransaction();
+    }
+
+    protected static TransactionManagerWrapper lookupTransactionManager()
+            throws NamingException {
+        TransactionManager tm;
+        try {
+            tm = TransactionHelper.lookupTransactionManager();
+        } catch (NamingException e) {
+            return null;
         }
+        if (tm instanceof TransactionManagerWrapper) {
+            return (TransactionManagerWrapper) tm;
+        }
+        return new TransactionManagerWrapper(tm);
     }
 
     public static synchronized void initConnectionManager(
             ConnectionManagerConfiguration config) throws NamingException {
-        if (transactionManager == null) {
-            initTransactionManager();
-        }
-        if (connectionManager == null) {
-            AbstractConnectionManager cm = createConnectionManager(
-                    transactionManager, config);
-            connectionManager = new ConnectionManagerWrapper(cm, config);
-        }
+        GenericConnectionManager cm = createConnectionManager(config);
+        connectionManager = new ConnectionManagerWrapper(cm, config);
     }
-
-    public static synchronized void resetConnectionManager() throws Exception {
+    
+   public static synchronized void resetConnectionManager() throws Exception {
         ConnectionManagerWrapper cm = connectionManager;
         if (cm == null) {
             return;
@@ -186,7 +265,21 @@ public class NuxeoContainer {
         cm.reset();
     }
 
-    protected static RecoverableTransactionManager createTransactionManager(
+    protected static ConnectionManagerWrapper lookupConnectionManager() {
+        ConnectionManager cm;
+        try {
+            cm = jndiLookup(JNDI_NUXEO_CONNECTION_MANAGER);
+        } catch (NamingException e) {
+            return null;
+        }
+        if (cm instanceof ConnectionManagerWrapper) {
+            return (ConnectionManagerWrapper) cm;
+        }
+        log.warn("Connection manager not a wrapper, check your configuration");
+        return null;
+    }
+
+    protected static TransactionManager createTransactionManager(
             TransactionManagerConfiguration config) {
         try {
             return new TransactionManagerImpl(config.transactionTimeoutSeconds);
@@ -196,8 +289,7 @@ public class NuxeoContainer {
         }
     }
 
-    protected static UserTransaction createUserTransaction(
-            TransactionManager transactionManager) {
+    protected static UserTransaction createUserTransaction() {
         return new GeronimoUserTransaction(transactionManager);
     }
 
@@ -207,10 +299,11 @@ public class NuxeoContainer {
      * <p>
      * The pool uses the transaction manager for recovery, and when using
      * XATransactions for cache + enlist/delist.
+     * 
+     * @throws NamingException
      */
-    protected static AbstractConnectionManager createConnectionManager(
-            RecoverableTransactionManager transactionManager,
-            ConnectionManagerConfiguration config) {
+    protected static GenericConnectionManager createConnectionManager(
+            ConnectionManagerConfiguration config) throws NamingException {
         TransactionSupport transactionSupport = new XATransactions(
                 config.useTransactionCaching, config.useThreadCaching);
         // note: XATransactions -> TransactionCachingInterceptor ->
@@ -231,6 +324,7 @@ public class NuxeoContainer {
         };
         ConnectionTrackingCoordinator connectionTracker = new ConnectionTrackingCoordinator();
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader(); // NuxeoContainer.class.getClassLoader();
+
         return new GenericConnectionManager(transactionSupport, poolingSupport,
                 subjectSource, connectionTracker, transactionManager,
                 config.name, classLoader);
@@ -241,6 +335,86 @@ public class NuxeoContainer {
 
         public void setTransactionTimeoutSeconds(int transactionTimeoutSeconds) {
             this.transactionTimeoutSeconds = transactionTimeoutSeconds;
+        }
+    }
+
+    /**
+     * Wraps a transaction manager for providing a dummy recoverable interface.
+     * 
+     * @author matic
+     * 
+     */
+    public static class TransactionManagerWrapper implements
+            RecoverableTransactionManager {
+
+        protected TransactionManager tm;
+
+        public TransactionManagerWrapper(TransactionManager tm) {
+            this.tm = tm;
+        }
+
+        @Override
+        public Transaction suspend() throws SystemException {
+            return tm.suspend();
+        }
+
+        @Override
+        public void setTransactionTimeout(int seconds) throws SystemException {
+            tm.setTransactionTimeout(seconds);
+        }
+
+        @Override
+        public void setRollbackOnly() throws IllegalStateException,
+                SystemException {
+            tm.setRollbackOnly();
+        }
+
+        @Override
+        public void rollback() throws IllegalStateException, SecurityException,
+                SystemException {
+            tm.rollback();
+        }
+
+        @Override
+        public void resume(Transaction tobj) throws IllegalStateException,
+                InvalidTransactionException, SystemException {
+            tm.resume(tobj);
+        }
+
+        @Override
+        public Transaction getTransaction() throws SystemException {
+            return tm.getTransaction();
+        }
+
+        @Override
+        public int getStatus() throws SystemException {
+            return tm.getStatus();
+        }
+
+        @Override
+        public void commit() throws HeuristicMixedException,
+                HeuristicRollbackException, IllegalStateException,
+                RollbackException, SecurityException, SystemException {
+            tm.commit();
+        }
+
+        @Override
+        public void begin() throws SystemException {
+            try {
+                tm.begin();
+            } catch (javax.transaction.NotSupportedException e) {
+                new RuntimeException(e);
+            }
+        }
+
+        @Override
+        public void recoveryError(Exception e) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void recoverResourceManager(NamedXAResource xaResource) {
+            throw new UnsupportedOperationException();
         }
     }
 
@@ -272,7 +446,7 @@ public class NuxeoContainer {
 
         public void reset() throws Exception {
             cm.doStop();
-            cm = createConnectionManager(transactionManager, config);
+            cm = createConnectionManager(config);
         }
     }
 

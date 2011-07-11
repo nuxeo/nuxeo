@@ -18,6 +18,7 @@ package org.nuxeo.osgi.application;
 
 import java.lang.reflect.Method;
 import java.net.URL;
+import java.net.URLClassLoader;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -25,29 +26,33 @@ import java.net.URL;
  */
 public class MutableClassLoaderDelegate implements MutableClassLoader {
 
-    protected final ClassLoader cl;
+    protected ClassLoader cl;
 
     protected Method addURL;
 
-    public MutableClassLoaderDelegate(ClassLoader cl) {
-        this.cl = cl;
+    public MutableClassLoaderDelegate(ClassLoader delegate) {
+        addURL = urlSetter(delegate);
+        if (addURL == null) {
+            delegate = new URLClassLoader(new URL[0], delegate);
+            addURL = urlSetter(delegate);
+        }
+        addURL.setAccessible(true);
+        cl = delegate;
+    }
+
+    private Method urlSetter(ClassLoader cl) {
         Class<?> clazz = cl.getClass();
         do {
             try {
-                addURL = clazz.getDeclaredMethod("addURL", URL.class);
+                return clazz.getDeclaredMethod("addURL", URL.class);
             } catch (NoSuchMethodException e) {
                 clazz = clazz.getSuperclass();
             } catch (Exception e) {
                 throw new IllegalArgumentException(
                         "Failed to adapt class loader: " + cl.getClass(), e);
             }
-        } while (addURL == null && clazz != null);
-        if (addURL == null) {
-            throw new IllegalArgumentException("Incompatible class loader: "
-                    + cl.getClass()
-                    + ". ClassLoader must provide a method: addURL(URL url)");
-        }
-        addURL.setAccessible(true);
+        } while (clazz != null);
+        return null;
     }
 
     @Override
