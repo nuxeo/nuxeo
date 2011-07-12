@@ -75,8 +75,12 @@ public class MultiDirectory extends AbstractDirectory {
 
     public Session getSession() throws DirectoryException {
         MultiDirectorySession session = new MultiDirectorySession(this);
-        sessions.add(session);
+        addSession(session);
         return session;
+    }
+
+    protected void addSession(MultiDirectorySession session) {
+        sessions.add(session);
     }
 
     /**

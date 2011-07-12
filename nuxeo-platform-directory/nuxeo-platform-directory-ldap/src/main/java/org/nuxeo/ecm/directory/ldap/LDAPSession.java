@@ -622,9 +622,10 @@ public class LDAPSession extends BaseSession implements EntrySource {
     public void close() throws DirectoryException {
         try {
             dirContext.close();
-            directory.removeSession(this);
         } catch (NamingException e) {
             throw new DirectoryException("close failed", e);
+        } finally {
+            directory.removeSession(this);
         }
     }
 
