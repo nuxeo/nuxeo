@@ -1,11 +1,11 @@
 <!--
   (C) Copyright 2006 Nuxeo SAS <http://nuxeo.com> and others
-
+  
   All rights reserved. This program and the accompanying materials
   are made available under the terms of the Eclipse Public License v1.0
   which accompanies this distribution, and is available at
   http://www.eclipse.org/legal/epl-v10.html
-
+  
   Contributors:
   Nuxeo - initial API and implementation
 -->
@@ -21,7 +21,6 @@
   <short-name>nxu</short-name>
   <uri>http://nuxeo.org/nxweb/util</uri>
   <description>
-    <![CDATA[
     <p>The NXWebPlatform (re)definition of basic tags.</p>
     <p>
       Basic tags can be seen as useful tags which are still not really specific
@@ -34,12 +33,26 @@
         operation.
       </li>
       <li>
+        indentString(Integer, String): returns a String with given String
+        appended as many times as given integer.
+      </li>
+      <li>
         join(String[], String): performs a join on given array using given
         separator.
       </li>
       <li>
+        joinArrayWithFinalDelimiter(Object[], String, String): performs a join
+        on given array using given separator and given final delimiter for last
+        item.
+      </li>
+      <li>
         joinCollection(Collection, String): performs a join on given collection
         using given separator.
+      </li>
+      <li>
+        joinCollectionWithFinalDelimiter(Collection, String, String): performs a
+        join on given collection using given separator and given final delimiter
+        for last item.
       </li>
       <li>
         userIsMemberOf(String): tests if the user belongs to the named group.
@@ -52,19 +65,17 @@
         given its id, first name and last name.
       </li>
       <li>
-        groupDisplayName(String, String): returns the label of a group
-        given its id, label.
+        groupDisplayName(String, String): returns the label of a group given its
+        id, label.
       </li>
-      <li>
-        groupFullName(String): returns the label of a group from its id.
-      </li>
+      <li>groupFullName(String): returns the label of a group from its id.</li>
       <li>
         htmlEscape(String): returns html escaped string (can be use to do safe
         h:outputText in scripts).
       </li>
       <li>
-        javaScriptEscape(String): returns escaped string for use in
-        JavaScript code (excapes single quote characters for instance).
+        javaScriptEscape(String): returns escaped string for use in JavaScript
+        code (excapes single quote characters for instance).
       </li>
       <li>
         printFileSize(String size): same as printFormatedFileSize( size, "SI",
@@ -80,9 +91,9 @@
         for more information on those format.
       </li>
       <li>
-        printFormattedDuration(Object durationInSeconds, Map<String , String>
-        messages): pretty print raw duration measured in seconds as "1 hr 23
-        min" or "31 min 29 sec" or "3 sec" for instance
+        printFormattedDuration(Object durationInSeconds, Map &lt;String ,
+        String&gt; messages): pretty print raw duration measured in seconds as
+        "1 hr 23 min" or "31 min 29 sec" or "3 sec" for instance
       </li>
       <li>
         printFormattedDuration(Object durationInSeconds): same as
@@ -98,8 +109,24 @@
         client ids starting with given string (if not null). If given String is
         null, returns true if there are any kind of messages.
       </li>
+      <li>
+        dateFormater(String): returns a date format pattern using format given
+        in parameter. Accepted values: short, medium, long, full.
+      </li>
+      <li>
+        basicDateFormater(String): returns a date format pattern using the
+        default format "short".
+      </li>
+      <li>
+        dateAndTimeFormater(String): returns a date and time format pattern
+        using format given in parameter. Accepted values: short, medium, long,
+        full.
+      </li>
+      <li>
+        basicDateAndTimeFormater(String): returns a date and time format pattern
+        using the default format "short".
+      </li>
     </ul>
-    ]]>
   </description>
 
   <tag>

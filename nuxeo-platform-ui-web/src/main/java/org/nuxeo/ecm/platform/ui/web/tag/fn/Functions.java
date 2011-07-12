@@ -321,6 +321,7 @@ public final class Functions {
         FacesContext context = FacesContext.getCurrentInstance();
         Locale locale = context.getViewRoot().getLocale();
 
+        int style = Integer.parseInt(mapOfDateLength.get(formatLength.toLowerCase()));
         DateFormat aDateFormat = DateFormat.getDateInstance(
                 Integer.parseInt(mapOfDateLength.get(formatLength.toLowerCase())),
                 locale);
@@ -329,7 +330,13 @@ public final class Functions {
         SimpleDateFormat format = (SimpleDateFormat) aDateFormat;
 
         // return the date pattern
-        return format.toPattern();
+        String pattern = format.toPattern();
+
+        if (style == DateFormat.SHORT) {
+            // hack to add century on generated pattern
+            pattern = pattern.replace("yy", "yyyy");
+        }
+        return pattern;
     }
 
     // method to format date in the standard short format
@@ -345,16 +352,21 @@ public final class Functions {
         FacesContext context = FacesContext.getCurrentInstance();
         Locale locale = context.getViewRoot().getLocale();
 
-        DateFormat aDateFormat = DateFormat.getDateTimeInstance(
-                Integer.parseInt(mapOfDateLength.get(formatLength.toLowerCase())),
-                Integer.parseInt(mapOfDateLength.get(formatLength.toLowerCase())),
+        int style = Integer.parseInt(mapOfDateLength.get(formatLength.toLowerCase()));
+        DateFormat aDateFormat = DateFormat.getDateTimeInstance(style, style,
                 locale);
 
         // Cast to SimpleDateFormat to make "toPattern" method available
         SimpleDateFormat format = (SimpleDateFormat) aDateFormat;
 
         // return the date pattern
-        return format.toPattern();
+        String pattern = format.toPattern();
+
+        if (style == DateFormat.SHORT) {
+            // hack to add century on generated pattern
+            pattern = pattern.replace("yy", "yyyy");
+        }
+        return pattern;
     }
 
     // method to format date and time in the standard short format
