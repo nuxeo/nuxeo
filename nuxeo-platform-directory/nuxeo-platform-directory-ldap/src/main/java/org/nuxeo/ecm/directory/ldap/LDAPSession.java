@@ -266,7 +266,9 @@ public class LDAPSession extends BaseSession implements EntrySource {
     protected SearchResult getLdapEntry(String id, boolean fetchAllAttributes)
             throws NamingException {
         if (StringUtils.isEmpty(id)) {
-            log.warn("the application should not queries for entries with empty id");
+            log.warn("The application should not "
+                    + "query for entries with an empty id "
+                    + "=> return no results");
             return null;
         }
         String filterExpr;
