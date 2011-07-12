@@ -163,7 +163,7 @@ public final class URIUtils {
         // FIXME: find a better way to do this...
         r = r.replace(";", "%3B");
         r = r.replace(":", "%3A");
-        r = r.replace("$", "%25");
+        r = r.replace("$", "%24");
         r = r.replace("&", "%26");
         r = r.replace("+", "%2B");
         r = r.replace("=", "%3D");
