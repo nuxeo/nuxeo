@@ -244,8 +244,12 @@ public class SQLDirectory extends AbstractDirectory {
     public Session getSession() throws DirectoryException {
         Session session = new SQLSession(this, config, idGenerator,
                 managedSQLSession);
-        sessions.add(session);
+        addSession(session);
         return session;
+    }
+
+    protected synchronized void addSession(Session session) {
+        sessions.add(session);
     }
 
     void removeSession(Session session) {

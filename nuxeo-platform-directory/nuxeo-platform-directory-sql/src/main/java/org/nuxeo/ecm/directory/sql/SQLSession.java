@@ -892,9 +892,10 @@ public class SQLSession extends BaseSession implements EntrySource {
     public void close() throws DirectoryException {
         try {
             sqlConnection.close();
-            directory.removeSession(this);
         } catch (SQLException e) {
             throw new DirectoryException("close failed", e);
+        } finally {
+            directory.removeSession(this);
         }
     }
 

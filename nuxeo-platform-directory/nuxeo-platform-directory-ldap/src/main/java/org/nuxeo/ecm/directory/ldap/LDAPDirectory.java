@@ -294,7 +294,7 @@ public class LDAPDirectory extends AbstractDirectory {
             context = createContext();
         }
         Session session = new LDAPSession(this, context);
-        sessions.add(session);
+        addSession(session);
         return session;
     }
 
