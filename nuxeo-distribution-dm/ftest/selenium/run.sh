@@ -28,7 +28,8 @@ fi
 CMD_END="-firefoxProfileTemplate ffprofile -userExtensions user-extensions.js"
 
 # Clean old results
-rm -rf $HERE/result-*.html
+[ -e "$HERE/results" ] || mkdir $HERE/results
+rm -f $HERE/result-*.html $HERE/results/*
 
 cd $HERE
 # Update path in user-extensions.js
@@ -47,7 +48,7 @@ exit_code=0
 # Launch suites
 for suite in $SUITES; do
     echo "### [INFO] Running test suite $suite ..."
-    $CMD "$PWD/tests/$suite.html" "$PWD/result-$suite.html" $CMD_END
+    $CMD "$HERE/tests/$suite.html" "$HERE/results/result-$suite.html" $CMD_END
     if [ $? != 0 ]; then
         echo "### [ERROR] $suite TEST FAILURE"
         exit_code=9
