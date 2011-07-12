@@ -32,6 +32,7 @@
  */
 package org.nuxeo.ecm.user.center.profile.listeners;
 
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BEFORE_DOC_UPDATE;
 import static org.nuxeo.ecm.user.center.profile.UserProfileConstants.USER_PROFILE_AVATAR_FIELD;
 import static org.nuxeo.ecm.user.center.profile.UserProfileConstants.USER_PROFILE_FACET;
 
@@ -40,7 +41,6 @@ import java.io.Serializable;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventListener;
@@ -50,8 +50,12 @@ import org.nuxeo.ecm.platform.picture.api.ImagingService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * @author rlegall
- * 
+ * @author rlegall Listener to handle the maximum dimensions of the avatar
+ *         picture. This listener is triggered on
+ *         UserProfileConstants.USER_PROFILE_FACET events. It verifies if the
+ *         picture width is above 300 pixels and its height above 200. In that
+ *         case, the picture saved in the rich profile is a resized version of
+ *         it which fits those constrains.
  */
 public class ResizeAvatarPictureListener implements EventListener {
 
@@ -62,7 +66,7 @@ public class ResizeAvatarPictureListener implements EventListener {
     @Override
     public void handleEvent(Event event) throws ClientException {
 
-        if (isBeforeUpDateDocEvent(event)) {
+        if (isBeforeUpdate(event)) {
 
             DocumentEventContext ctx = (DocumentEventContext) event.getContext();
             DocumentModel doc = ctx.getSourceDocument();
@@ -76,8 +80,8 @@ public class ResizeAvatarPictureListener implements EventListener {
         }
     }
 
-    protected boolean isBeforeUpDateDocEvent(Event event) {
-        return event.getName().equals(DocumentEventTypes.BEFORE_DOC_UPDATE)
+    protected boolean isBeforeUpdate(Event event) {
+        return BEFORE_DOC_UPDATE.equals(event.getName())
                 && (event.getContext() instanceof DocumentEventContext);
     }
 
