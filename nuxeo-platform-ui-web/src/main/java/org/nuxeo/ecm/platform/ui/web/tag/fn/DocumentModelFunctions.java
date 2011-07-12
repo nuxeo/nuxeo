@@ -877,6 +877,9 @@ public final class DocumentModelFunctions implements LiveEditConstants {
      * @return the current JSESSIONID string
      */
     public static String extractJSessionId(HttpServletRequest request) {
+        if (request.getCookies() == null && request.getSession() != null) {
+            return request.getSession().getId();
+        }
         for (Cookie cookie : request.getCookies()) {
             if (cookie.getName().equalsIgnoreCase("jsessionid")) {
                 return cookie.getValue();
