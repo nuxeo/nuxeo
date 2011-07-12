@@ -150,7 +150,7 @@ public class PDF2TextConverter implements Converter {
             }
         } catch (Exception e) {
             throw new ConversionException(
-                    "Error dring text extraction with PDFBox", e);
+                    "Error during text extraction with PDFBox", e);
         } finally {
             if (document != null) {
                 try {
