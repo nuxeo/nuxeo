@@ -64,6 +64,7 @@
           }
 
           gadgets.container.setLanguage(settings.language);
+          gadgets.container.setParentUrl(settings.baseURL);
           var gadget = gadgets.container.createGadget({specUrl: gadgetSpecs[index]});
           gadget.serverBase_ = settings.baseURL + settings.shindigServerSuffix;
           gadget.secureToken = secureTokens[index];
