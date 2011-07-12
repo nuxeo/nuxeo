@@ -100,7 +100,7 @@ public class NuxeoFrame extends JFrame {
 
         private Image backgroundImage;
 
-        ImagePanel(Icon image, ImageIcon backgroundImage) {
+        public ImagePanel(Icon image, ImageIcon backgroundImage) {
             this.backgroundImage = backgroundImage.getImage();
             setOpaque(false);
             add(new JLabel(image));
