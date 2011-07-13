@@ -8,19 +8,19 @@
   <c:if test="#{not layoutColumn.properties.isHidden}">
     <nxe:column>
       <f:facet name="header">
-        <e:cell>
+        <nxe:cell>
           <c:if test="#{layoutColumn.properties.useFirstWidgetLabelAsColumnHeader}">
             <h:outputText value="#{layoutColumn.widgets[0].label}"
               rendered="#{!layoutColumn.widgets[0].translated}" />
             <h:outputText value="#{messages[layoutColumn.widgets[0].label]}"
               rendered="#{layoutColumn.widgets[0].translated}" />
           </c:if>
-        </e:cell>
+        </nxe:cell>
       </f:facet>
       <nxl:layoutColumnWidget>
-        <e:cell>
+        <nxe:cell>
           <nxl:widget widget="#{widget}" value="#{value}"/>
-        </e:cell>
+        </nxe:cell>
       </nxl:layoutColumnWidget>
     </nxe:column>
   </c:if>

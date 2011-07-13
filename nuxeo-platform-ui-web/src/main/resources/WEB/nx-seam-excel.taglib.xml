@@ -13,4 +13,12 @@
       </component-type>
     </component>
   </tag>
+  <tag>
+    <tag-name>cell</tag-name>
+    <component>
+      <component-type>
+        org.nuxeo.ecm.platform.ui.web.component.seam.UICellExcel
+      </component-type>
+    </component>
+  </tag>
 </facelet-taglib>
