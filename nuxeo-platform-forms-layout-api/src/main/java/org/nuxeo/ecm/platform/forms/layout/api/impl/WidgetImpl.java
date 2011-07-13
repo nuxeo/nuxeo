@@ -123,14 +123,16 @@ public class WidgetImpl implements Widget {
         }
         builder.append(";");
         builder.append(helpLabel).append(";");
-        if (subWidgets != null) {
-            for (Widget widget : subWidgets) {
-                if (widget != null) {
-                    builder.append(widget.getTagConfigId()).append(",");
-                }
-            }
-        }
-        builder.append(";");
+        // NXP-7251: let subwidgets handle their tag config
+        // if (subWidgets != null) {
+        // for (Widget widget : subWidgets) {
+        // if (widget != null) {
+        // builder.append(widget.getTagConfigId()).append(",");
+        // }
+        // }
+        // }
+        // builder.append(";");
+
         if (properties != null) {
             builder.append(properties.toString());
         }
