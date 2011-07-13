@@ -442,11 +442,13 @@ public class URLPolicyServiceImpl implements URLPolicyService {
                             applies = true;
                         }
                     } catch (Exception e) {
-                        log.warn(String.format(
-                                "Error executing expression '%s' for "
-                                        + "url pattern '%s': %s",
-                                documentViewAppliesExpr, desc.getName(),
-                                e.getMessage()));
+                        if (log.isDebugEnabled()) {
+                            log.debug(String.format(
+                                    "Error executing expression '%s' for "
+                                            + "url pattern '%s': %s",
+                                    documentViewAppliesExpr, desc.getName(),
+                                    e.getMessage()));
+                        }
                     }
                 }
                 if (applies) {
