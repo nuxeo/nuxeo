@@ -35,7 +35,7 @@ public class PresetManager {
     static final Log log = LogFactory.getLog(PresetManager.class);
 
     private static final Pattern manyPresetNamePattern = Pattern.compile(
-            "^.*?\"(.*?)\".*?", Pattern.DOTALL);
+            ".*?\"(.*?)\".*?", Pattern.DOTALL);
 
     private static final Pattern presetNamePattern = Pattern.compile(
             "^\"(.*?)\"$", Pattern.DOTALL);
@@ -146,8 +146,8 @@ public class PresetManager {
             PresetType preset = getPresetByName(presetName);
             if (preset == null) {
                 log.warn(String.format(
-                        "Preset named '%s' not resolved for theme '%s'",
-                        presetName, themeName, presetStr));
+                        "Preset '%s' could not be resolved in theme '%s'",
+                        presetName, themeName));
                 sb.append(presetStr);
                 continue;
             }
