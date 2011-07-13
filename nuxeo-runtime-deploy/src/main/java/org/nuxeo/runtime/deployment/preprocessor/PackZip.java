@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2011 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -25,7 +25,10 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.nuxeo.common.utils.FileUtils;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.ZipUtils;
 import org.nuxeo.launcher.config.ConfigurationException;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
@@ -40,6 +43,12 @@ import org.xml.sax.SAXException;
  *
  */
 public class PackZip {
+
+    private static Log log = LogFactory.getLog(PackZip.class);
+
+    public static final String ORDER_PREPROCESSING = "preprocessing";
+
+    public static final String ORDER_PACKAGING = "packaging";
 
     protected File nuxeoEar;
 
@@ -87,12 +96,15 @@ public class PackZip {
         }
     }
 
-    public void execute() throws ConfigurationException, IOException,
-            ParserConfigurationException, SAXException {
+    protected void executePreprocessing() throws ConfigurationException {
         // configure from templates
         new ConfigurationGenerator().run();
         // run preprocessor
         runPreprocessor();
+    }
+
+    protected void executePackaging() throws IOException, SAXException,
+            ParserConfigurationException {
         // move non ejb jars to nuxeo.ear/lib
         moveNonEjbsToLib(nuxeoEar);
         // replace nuxeo-structure.xml with nuxeo-structure-zip.xml
@@ -100,11 +112,26 @@ public class PackZip {
         // move libs in jboss/lib to nuxeo.ear/lib
         moveJarsFromJbossLib();
         // move nuxeo jboss deployer to nuxeo.ear/lib
-        deployerJar.renameTo(new File(nuxeoEar, "lib/" + deployerJar.getName()));
+        FileUtils.moveFile(deployerJar, new File(nuxeoEar, "lib"
+                + File.separator + deployerJar.getName()));
         // zip the ear into target directory
         ZipUtils.zip(nuxeoEar.listFiles(), new File(target, "nuxeo.ear"));
         // copy nuxeo-ds.xml to target dir
-        FileUtils.copy(dsFile, target);
+        FileUtils.copyFileToDirectory(dsFile, target);
+    }
+
+    public void execute(String order) throws ConfigurationException,
+            IOException, ParserConfigurationException, SAXException {
+        if (ORDER_PREPROCESSING.equals(order) || StringUtils.isBlank(order)) {
+            executePreprocessing();
+        }
+        if (ORDER_PACKAGING.equals(order) || StringUtils.isBlank(order)) {
+            executePackaging();
+        }
+        if (!(ORDER_PREPROCESSING.equals(order) || StringUtils.isBlank(order) || ORDER_PACKAGING.equals(order))) {
+            fail("Order param should be " + ORDER_PREPROCESSING + " or "
+                    + ORDER_PACKAGING);
+        }
     }
 
     protected void runPreprocessor() {
@@ -114,20 +141,22 @@ public class PackZip {
     }
 
     protected void replaceStructureFile() {
-        File oldf = new File(nuxeoEar, "META-INF/nuxeo-structure.xml");
-        File newf = new File(nuxeoEar, "META-INF/nuxeo-structure-zip.xml");
+        File oldf = new File(nuxeoEar, "META-INF" + File.separator
+                + "nuxeo-structure.xml");
+        File newf = new File(nuxeoEar, "META-INF" + File.separator
+                + "nuxeo-structure-zip.xml");
         newf.renameTo(oldf);
     }
 
     protected void moveJarsFromJbossLib() {
-        // TODO do we really need that?
     }
 
     protected void moveNonEjbsToLib(File wd)
             throws ParserConfigurationException, SAXException, IOException {
-        File file = new File(wd, "META-INF/application.xml");
+        File file = new File(wd, "META-INF" + File.separator
+                + "application.xml");
         if (!file.isFile()) {
-            System.err.println("You should run this tool from a preprocessed nuxeo.ear folder");
+            log.error("You should run this tool from a preprocessed nuxeo.ear folder");
         }
         DocumentBuilder docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
         FileInputStream in = new FileInputStream(file);
@@ -155,54 +184,59 @@ public class PackZip {
         File ejbs = new File(wd, "tmp-ejbs");
         ejbs.mkdirs();
         for (String path : paths) {
-            System.out.println("Move EAR module " + path + " to "
-                    + ejbs.getName());
+            log.info("Move EAR module " + path + " to " + ejbs.getName());
             File f = new File(wd, path);
-            f.renameTo(new File(ejbs, f.getName()));
+            if (f.getName().endsWith(".txt")) {
+                continue;
+            }
+            FileUtils.moveToDirectory(f, ejbs, false);
         }
         File lib = new File(wd, "lib");
         File[] files = new File(wd, "bundles").listFiles();
         if (files != null) {
             for (File f : files) {
-                System.out.println("Move POJO bundle " + f.getName()
-                        + " to lib");
-                f.renameTo(new File(lib, f.getName()));
+                if (f.getName().endsWith(".txt")) {
+                    continue;
+                }
+                log.info("Move POJO bundle " + f.getName() + " to lib");
+                FileUtils.moveToDirectory(f, lib, false);
             }
         }
         File bundles = new File(wd, "bundles");
         files = ejbs.listFiles();
         if (files != null) {
             for (File f : files) {
-                System.out.println("Move back EAR module " + f.getName()
-                        + " to bundles");
-                f.renameTo(new File(bundles, f.getName()));
+                if (f.getName().endsWith(".txt")) {
+                    continue;
+                }
+                log.info("Move back EAR module " + f.getName() + " to bundles");
+                FileUtils.moveToDirectory(f, bundles, false);
             }
         }
     }
 
     protected static void fail(String message) {
-        System.err.println(message);
+        log.error(message);
         System.exit(1);
     }
 
     public static void main(String[] args) throws IOException,
             ConfigurationException, ParserConfigurationException, SAXException {
-        if (args.length != 2) {
-            fail("Usage: PackZip nuxeo_ear_directory target_directory");
-            System.err.println();
+        if (args.length < 2) {
+            fail("Usage: PackZip nuxeo_ear_directory target_directory [order]");
         }
         String v = args[0];
-        File ear = v.startsWith("/") ? new File(v) : new File(".", v);
+        File ear = new File(v);
         if (!ear.isDirectory()) {
             fail("Invalid build - no exploded nuxeo.ear found at "
                     + ear.getAbsolutePath());
         }
         v = args[1];
-        File target = v.startsWith("/") ? new File(v) : new File(".", v);
+        File target = new File(v);
         ear = ear.getCanonicalFile();
         target = target.getCanonicalFile();
         if (target.exists()) {
-            FileUtils.deleteTree(target);
+            FileUtils.deleteDirectory(target);
         }
         target.mkdirs();
         if (!target.isDirectory()) {
@@ -210,9 +244,14 @@ public class PackZip {
                     + ". Not a directory or directory could not be created");
         }
 
-        System.out.println("Packing nuxeo.ear at " + ear.getAbsolutePath()
-                + " into " + target.getAbsolutePath());
+        log.info("Packing nuxeo.ear at " + ear.getAbsolutePath() + " into "
+                + target.getAbsolutePath());
 
-        new PackZip(ear, target).execute();
+        PackZip pack = new PackZip(ear, target);
+        if (args.length >= 3) {
+            pack.execute(args[2]);
+        } else {
+            pack.execute(null);
+        }
     }
 }
