@@ -35,8 +35,10 @@ import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.elements.ThemeElement;
 import org.nuxeo.theme.formats.styles.Style;
 import org.nuxeo.theme.presets.PresetManager;
+import org.nuxeo.theme.presets.PresetType;
 import org.nuxeo.theme.properties.OrderedProperties;
 import org.nuxeo.theme.resources.ImageInfo;
+import org.nuxeo.theme.resources.PresetInfo;
 import org.nuxeo.theme.resources.ResourceBank;
 import org.nuxeo.theme.themes.ThemeDescriptor;
 import org.nuxeo.theme.themes.ThemeException;
@@ -405,25 +407,46 @@ public final class CSSUtils {
 
         String contextPath = VirtualHostHelper.getContextPathProperty();
 
-        // Replace presets
-        text = PresetManager.resolvePresets(themeName, text);
+        // Replace global presets
+        for (PresetType preset : PresetManager.getGlobalPresets(null, null)) {
+            text = text.replaceAll(Pattern.quote(String.format("\"%s\"",
+                    preset.getTypeName())),
+                    Matcher.quoteReplacement(preset.getValue()));
+        }
 
-        // Replace images from resource banks
+        // Replace custom presets
+        for (PresetType preset : PresetManager.getCustomPresets(themeName)) {
+            text = text.replaceAll(Pattern.quote(String.format("\"%s\"",
+                    preset.getTypeName())),
+                    Matcher.quoteReplacement(preset.getValue()));
+        }
+
+        // Replace presets and images from resource banks
         String resourceBankName = themeDescriptor.getResourceBankName();
         if (resourceBankName != null) {
             ResourceBank resourceBank;
             try {
                 resourceBank = ThemeManager.getResourceBank(resourceBankName);
+
+                for (PresetInfo preset : resourceBank.getPresets()) {
+                    text = text.replaceAll(
+                            Pattern.quote(String.format("\"%s\"",
+                                    preset.getTypeName())),
+                            Matcher.quoteReplacement(PresetManager.resolvePresets(
+                                    themeName, preset.getValue())));
+                }
+
                 for (ImageInfo image : resourceBank.getImages()) {
                     String path = image.getPath();
                     text = text.replaceAll(
-                            Matcher.quoteReplacement(path),
+                            path,
                             Matcher.quoteReplacement(String.format(
                                     "%s/nxthemes-images/%s/%s", contextPath,
                                     resourceBankName, path.replace(" ", "%20"))));
                 }
+
             } catch (ThemeException e) {
-                log.warn("Could not get the list of bank images in: "
+                log.warn("Could not get resources from theme bank: "
                         + resourceBankName);
             }
         }

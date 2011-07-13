@@ -227,7 +227,8 @@ public class ResourceBank implements Type {
                     presetInfo.getCategory());
             String value = presetInfo.getValue();
 
-            String typeName = String.format("%s (%s)", name, group);
+            String typeName = presetInfo.getTypeName();
+
             PresetType preset = PresetManager.getPresetByName(typeName);
             if (preset == null) {
                 preset = new PresetType();
@@ -267,10 +268,7 @@ public class ResourceBank implements Type {
     private void unloadRemotePresets() throws ThemeException {
         TypeRegistry typeRegistry = Manager.getTypeRegistry();
         for (PresetInfo presetInfo : getPresets()) {
-            String name = presetInfo.getName();
-            String group = String.format("%s %s", presetInfo.getCollection(),
-                    presetInfo.getCategory());
-            String typeName = String.format("%s (%s)", name, group);
+            String typeName = presetInfo.getTypeName();
             PresetType preset = PresetManager.getPresetByName(typeName);
             if (preset != null) {
                 typeRegistry.unregister(preset);
