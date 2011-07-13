@@ -60,7 +60,7 @@
 
   <Resource name="TransactionManager" auth="Container"
     type="javax.transaction.TransactionManager" factory="org.nuxeo.runtime.jtajca.NuxeoTransactionManagerFactory"
-    transactionTimeoutSeconds="300" />
+    transactionTimeoutSeconds="${nuxeo.db.transactiontimeout}" />
   <Transaction factory="org.nuxeo.runtime.jtajca.NuxeoUserTransactionFactory" />
   <Resource name="NuxeoConnectionManager" auth="Container"
     type="javax.resource.spi.ConnectionManager" factory="org.nuxeo.runtime.jtajca.NuxeoConnectionManagerFactory"
