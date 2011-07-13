@@ -35,7 +35,7 @@ public class PresetManager {
     static final Log log = LogFactory.getLog(PresetManager.class);
 
     private static final Pattern manyPresetNamePattern = Pattern.compile(
-            ".*?\"(.*?)\".*?", Pattern.DOTALL);
+            "^.*?\"(.*?)\".*?", Pattern.DOTALL);
 
     private static final Pattern presetNamePattern = Pattern.compile(
             "^\"(.*?)\"$", Pattern.DOTALL);
