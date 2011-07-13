@@ -6,6 +6,13 @@
   <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
   <taskdef resource="org/nuxeo/build/artifact/antlib.xml"
            uri="urn:nuxeo-artifact" />
+  <condition property="osfamily-unix">
+    <os family="unix" />
+  </condition>
+  <condition property="osfamily-windows">
+    <os family="windows" />
+  </condition>
+  
   <target name="init">
     <property name="outdir" value="${maven.project.build.directory}" />
     <available file="${custom.pack.config}" property="isCustomPack" />
@@ -16,10 +23,12 @@
     <!-- load default properties -->
     <loadproperties srcFile="${maven.basedir}/default.properties" />
   </target>
+  
   <target name="clean">
     <delete dir="${outdir}" failonerror="false" />
     <mkdir dir="${outdir}" />
   </target>
+  
   <target depends="init,clean" name="build">
     <unzip dest="${outdir}">
       <artifact:resolveFile key="${NX_DISTRIBUTION}" />
@@ -32,6 +41,7 @@
     <property name="stage" value="${outdir}/stage" />
     <antcall target="pack" />
   </target>
+  
   <target name="pack">
     <echo>Packing distribution: ${NX_DISTRIBUTION}</echo>
     <chmod dir="${stage}/bin" includes="*.sh,*ctl,*.command" perm="ug+x" />
@@ -52,7 +62,7 @@
 
 #nuxeo.templates.parsing.extensions=null
 
-		</echo>
+        </echo>
     <concat append="true" destfile="${stage}/bin/nuxeo.conf">
       <fileset file="${maven.basedir}/default.properties" />
     </concat>
@@ -64,10 +74,20 @@
 
     <!-- run the pack command -->
     <echo>Executing pack command</echo>
-    <exec executable="${stage}/bin/nuxeoctl">
-      <arg value="pack" />
-      <arg value="${outdir}/deploy" />
-    </exec>
+    <antcall target="run-pack" />
     <delete dir="${stage}" />
   </target>
+  
+  <target name="run-pack" depends="run-pack-windows,run-pack-unix" />
+  <target name="run-pack-windows" if="osfamily-windows">
+    <exec executable="${stage}/bin/pack.bat">
+       <arg value="${outdir}/deploy" />
+    </exec>
+  </target>
+  <target name="run-pack-unix" if="osfamily-unix">
+     <exec executable="${stage}/bin/pack">
+       <arg value="${outdir}/deploy" />
+     </exec>
+  </target>
+
 </project>
