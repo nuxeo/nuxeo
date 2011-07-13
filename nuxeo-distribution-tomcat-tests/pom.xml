@@ -74,7 +74,9 @@
               <goal>verify</goal>
             </goals>
             <configuration>
-              <argLine>-Dlog4j.configuration=${maven.project.build.directory}/tomcat/lib/log4j.xml -DconnectPassword=${connect.password}</argLine>
+              <argLine>-Dlog4j.configuration=file://${build.directory}/tomcat/lib/log4j.xml
+                -Dnuxeo.log.dir=${build.directory}/tomcat/log
+                -DconnectPassword=${connect.password}</argLine>
             </configuration>
           </execution>
         </executions>
