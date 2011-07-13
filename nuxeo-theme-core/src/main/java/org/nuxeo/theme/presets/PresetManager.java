@@ -34,17 +34,13 @@ public class PresetManager {
 
     static final Log log = LogFactory.getLog(PresetManager.class);
 
-    private static final Pattern manyPresetNamePattern = Pattern.compile(
-            ".*?\"(.*?)\".*?", Pattern.DOTALL);
+    private static final Pattern manyPresetNamePattern = Pattern.compile(".*?\"(.*?)\".*?");
 
-    private static final Pattern presetNamePattern = Pattern.compile(
-            "^\"(.*?)\"$", Pattern.DOTALL);
+    private static final Pattern presetNamePattern = Pattern.compile("^\"(.*?)\"$");
 
-    private static final Pattern globalPresetNamePattern = Pattern.compile(
-            "^\".*?\\((.*?)\\)\"$", Pattern.DOTALL);
+    private static final Pattern globalPresetNamePattern = Pattern.compile("^\".*?\\((.*?)\\)\"$");
 
-    private static final Pattern customPresetNamePattern = Pattern.compile(
-            "^\"(.*?)\"$", Pattern.DOTALL);
+    private static final Pattern customPresetNamePattern = Pattern.compile("^\"(.*?)\"$");
 
     public static String extractPresetName(final String themeName,
             final String str) {
@@ -121,12 +117,13 @@ public class PresetManager {
         return presets;
     }
 
-    public static String resolvePresets(final String themeName, String text) {
+    public static String resolvePresets(final String themeName,
+            String propertyValue) {
         // first-pass
-        text = resolveVariables(themeName, text);
+        propertyValue = resolveVariables(themeName, propertyValue);
         // second-pass
-        text = resolveVariables(themeName, text);
-        return text;
+        propertyValue = resolveVariables(themeName, propertyValue);
+        return propertyValue;
     }
 
     private static String resolveVariables(final String themeName,

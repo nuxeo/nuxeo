@@ -61,4 +61,8 @@ public class PresetInfo {
         this.value = value;
     }
 
+    public String getTypeName() {
+        return String.format("%s (%s %s)", name, collection, category);
+    }
+
 }
