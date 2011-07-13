@@ -298,7 +298,7 @@ function DropZoneUIHandler(idx, dropZoneId, options,targetSelectedCB) {
     if (panel.width() > 0.8*body.width()) {
       panel.css("width",0.8*body.width());
     }
-    panelPosition.top = panelPosition.top + body.height()/2 - panel.height()/2;
+    panelPosition.top = panelPosition.top + jQuery(window).height()/2 - panel.height()/2 + jQuery(window).scrollTop();
     panelPosition.left = panelPosition.left + body.width()/2 - panel.width()/2;
     if (panelPosition.top<10) {
       panelPosition.top=10;
