@@ -81,7 +81,7 @@
           </property>
         </properties>
       </widget>
-      <widget name="enabled" type="template">
+      <widget name="enabled" type="checkbox">
         <labels>
           <label mode="any">Enabled</label>
         </labels>
@@ -90,9 +90,6 @@
           <field>oauthConsumer.enabled</field>
         </fields>
         <properties mode="any">
-        <property name="template">
-          /widgets/integer_yes_no_widget_template.xhtml
-        </property>
           <property name="help">
           label.oauth.help.enabled
           </property>
@@ -144,7 +141,7 @@
           </property>
         </properties>
       </widget>
-      <widget name="allowBypassVerifier" type="template">
+      <widget name="allowBypassVerifier" type="checkbox">
         <labels>
           <label mode="any">Allow OAuth verifier check bypass</label>
         </labels>
@@ -153,9 +150,6 @@
           <field>oauthConsumer.allowBypassVerifier</field>
         </fields>
         <properties mode="any">
-        <property name="template">
-          /widgets/integer_yes_no_widget_template.xhtml
-        </property>
           <property name="help">
           label.oauth.help.enabled
           </property>
@@ -246,18 +240,15 @@
           </property>
         </properties>
       </widget>
-      <widget name="enabled" type="template">
+      <widget name="enabled" type="checkbox">
         <labels>
           <label mode="any">Enabled</label>
         </labels>
         <translated>true</translated>
         <fields>
-          <field>oauthConsumer.enabled</field>
+          <field>oauthServiceProvider.enabled</field>
         </fields>
         <properties mode="any">
-        <property name="template">
-          /widgets/integer_yes_no_widget_template.xhtml
-        </property>
           <property name="help">
           label.oauth.help.enabled
           </property>
