@@ -516,6 +516,15 @@
 
     <component>
       <component-type>
+        org.nuxeo.ecm.platform.ui.web.component.seam.UICellExcel
+      </component-type>
+      <component-class>
+        org.nuxeo.ecm.platform.ui.web.component.seam.UICellExcel
+      </component-class>
+    </component>
+
+    <component>
+      <component-type>
         org.nuxeo.ecm.platform.ui.web.component.seam.UIHtmlText
       </component-type>
       <component-class>
