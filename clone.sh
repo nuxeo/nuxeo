@@ -2,6 +2,8 @@
 
 VERSION=`hg id -b`
 
+echo "Updating for version: " $VERSION
+
 for x in nuxeo-common nuxeo-runtime nuxeo-core \
     nuxeo-services nuxeo-theme nuxeo-webengine nuxeo-jsf \
     nuxeo-gwt nuxeo-features nuxeo-dm \
