@@ -1,6 +1,11 @@
 # This script will check out the needed sources from mercurial.
 
 VERSION=`hg id -b`
+VERSION=""
+if [ ! $VERSION ]
+then
+    VERSION=5.4
+fi
 
 echo "Updating for version: " $VERSION
 
