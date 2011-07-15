@@ -74,7 +74,7 @@ public class TestUserManagerImplFilterTranformerForDirectoryLocalConfigManagemen
 
         userManager = (UserManagerImpl) userService.getUserManager();
         umtm = new DefaultUserMultiTenantManagementMock();
-        // needed   to simulate the directory local configuration
+        // needed to simulate the directory local configuration
         userManager.multiTenantManagement = umtm;
     }
 
