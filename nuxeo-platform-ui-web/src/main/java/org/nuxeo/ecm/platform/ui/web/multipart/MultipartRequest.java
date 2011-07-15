@@ -45,7 +45,7 @@ import org.nuxeo.ecm.platform.ui.web.multipart.ByteSequenceMatcher.BytesHandler;
 
 /**
  * Request wrapper for supporting multipart requests, used for file uploading.
- *
+ * 
  * @author Shane Bryzak
  */
 public class MultipartRequest extends org.jboss.seam.web.MultipartRequestImpl {
@@ -206,7 +206,8 @@ public class MultipartRequest extends org.jboss.seam.web.MultipartRequestImpl {
         Param param = null;
         String paramName = headers.get(PARAM_NAME);
         if (paramName != null) {
-            if (headers.containsKey(PARAM_FILENAME)) {
+            if (headers.containsKey(PARAM_FILENAME)
+                    && !"".equals(headers.get(PARAM_FILENAME).trim())) {
                 FileParam fp = new FileParam(paramName);
                 this.keys.add(paramName);
 
