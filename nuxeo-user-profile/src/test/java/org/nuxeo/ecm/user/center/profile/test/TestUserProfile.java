@@ -79,7 +79,7 @@ public class TestUserProfile {
         userWorkspace.setPropertyValue(
                 UserProfileConstants.USER_PROFILE_PHONENUMBER_FIELD, "555-1234");
         userWorkspace.setPropertyValue(
-                UserProfileConstants.USER_PROFILE_SEX_FIELD, Boolean.FALSE); // Man
+                UserProfileConstants.USER_PROFILE_GENDER_FIELD, Boolean.FALSE); // Man
         userWorkspace.setPropertyValue(
                 UserProfileConstants.USER_PROFILE_SCHOOLWORKINFO_FIELD,
                 "Works at Nuxeo");
@@ -103,7 +103,7 @@ public class TestUserProfile {
         assertNotNull(userProfile);
         assertEquals(birthday, userProfile.getBirthDate());
         assertEquals("555-1234", userProfile.getPhoneNumber());
-        assertEquals(Boolean.FALSE, userProfile.getSex());
+        assertEquals(Boolean.FALSE, userProfile.getGender());
         assertEquals("Works at Nuxeo", userProfile.getSchoolWorkInfo());
         assertEquals("Music, photo", userProfile.getInterests());
         assertEquals("Becoming famous", userProfile.getCareerObjective());

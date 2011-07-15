@@ -8,7 +8,7 @@
       <category>USER_CENTER</category>
     </action>
 
-    <action id="ProfileView" link="/incl/profile/user_profile.xhtml" label="user.center.profile.tab.view" order="10">
+    <action id="ProfileView" link="/incl/userprofile/user_profile.xhtml" label="user.center.profile.tab.view" order="10">
       <category>Profile_sub_tab</category>
     </action>
 

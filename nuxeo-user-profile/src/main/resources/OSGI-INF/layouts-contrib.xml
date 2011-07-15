@@ -17,7 +17,7 @@
         </label>
       </helpLabels>
       <fields>
-        <field>upro:avatar</field>
+        <field>userprofile:avatar</field>
       </fields>
       <properties mode="any">
         <property name="template">/widgets/image_widget_template.xhtml
@@ -36,7 +36,7 @@
         </label>
       </helpLabels>
       <fields>
-        <field>upro:birthdate</field>
+        <field>userprofile:birthdate</field>
       </fields>
       <properties widgetMode="any">
         <property name="pattern">#{nxu:basicDateFormater()}</property>
@@ -53,23 +53,23 @@
       </labels>
       <translated>true</translated>
       <fields>
-        <field>upro:phonenumber</field>
+        <field>userprofile:phonenumber</field>
       </fields>
       <properties widgetMode="edit">
         <property name="styleClass">dataInputText</property>
       </properties>
     </widget>
 
-    <widget name="sex" type="template">
+    <widget name="gender" type="template">
       <labels>
-        <label mode="any">label.userprofile.sex</label>
+        <label mode="any">label.userprofile.gender</label>
       </labels>
       <translated>true</translated>
       <fields>
-        <field>upro:sex</field>
+        <field>userprofile:gender</field>
       </fields>
       <properties mode="any">
-        <property name="template">/widgets/sex_widget_template.xhtml
+        <property name="template">/widgets/gender_widget_template.xhtml
         </property>
       </properties>
     </widget>
@@ -80,7 +80,7 @@
       </labels>
       <translated>true</translated>
       <fields>
-        <field>upro:schoolworkinfo</field>
+        <field>userprofile:schoolworkinfo</field>
       </fields>
       <properties widgetMode="edit">
         <property name="styleClass">dataInputText</property>
@@ -93,7 +93,7 @@
       </labels>
       <translated>true</translated>
       <fields>
-        <field>upro:interests</field>
+        <field>userprofile:interests</field>
       </fields>
       <properties widgetMode="edit">
         <property name="styleClass">dataInputText</property>
@@ -106,7 +106,7 @@
       </labels>
       <translated>true</translated>
       <fields>
-        <field>upro:careerobjective</field>
+        <field>userprofile:careerobjective</field>
       </fields>
       <properties widgetMode="edit">
         <property name="styleClass">dataInputText</property>
@@ -119,7 +119,7 @@
       </labels>
       <translated>true</translated>
       <fields>
-        <field>upro:skills</field>
+        <field>userprofile:skills</field>
       </fields>
       <properties widgetMode="edit">
         <property name="styleClass">dataInputText</property>
@@ -132,7 +132,7 @@
       </labels>
       <translated>true</translated>
       <fields>
-        <field>upro:publicprofile</field>
+        <field>userprofile:publicprofile</field>
       </fields>
       <properties widgetMode="edit">
         <property name="styleClass">dataInputText</property>
@@ -161,7 +161,7 @@
           <widget>phonenumber</widget>
         </row>
         <row>
-          <widget>sex</widget>
+          <widget>gender</widget>
         </row>
         <row>
           <widget>schoolworkinfo</widget>

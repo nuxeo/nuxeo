@@ -8,7 +8,7 @@
   <xs:element name="avatar" type="nxs:content" />
   <xs:element name="birthdate" type="xs:date" />
   <xs:element name="phonenumber" type="xs:string" />
-  <xs:element name="sex" type="xs:boolean" default="false" />
+  <xs:element name="gender" type="xs:boolean" default="false" />
   <xs:element name="schoolworkinfo" type="xs:string" />
   <xs:element name="interests" type="xs:string" />
   <xs:element name="careerobjective" type="xs:string" />

@@ -42,13 +42,13 @@
 
       <h:form id="viewUser" rendered="#{userProfileActions.mode == 'view'}">
         <nxl:layout name="user" mode="view" value="#{userManagementActions.selectedUser}" />
-        <nxl:layout name="userprofile" mode="view" value="#{userProfileActions.userWorkspace}" />
+        <nxl:layout name="userprofile" mode="view" value="#{userProfileActions.userProfileDocument}" />
       </h:form>
 
       <h:form id="editUser" enctype="multipart/form-data"
         rendered="#{userProfileActions.mode == 'edit'}">
         <nxl:layout name="user" mode="#{userProfileActions.canEdit ? 'edit' : 'view'}" value="#{userManagementActions.selectedUser}" />
-        <nxl:layout name="userprofile" mode="edit" value="#{userProfileActions.userWorkspace}" />
+        <nxl:layout name="userprofile" mode="edit" value="#{userProfileActions.userProfileDocument}" />
         <table class="dataInput">
           <tbody>
             <tr>

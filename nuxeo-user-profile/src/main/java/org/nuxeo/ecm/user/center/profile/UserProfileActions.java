@@ -33,6 +33,12 @@ import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
 import org.nuxeo.ecm.webapp.security.UserManagementActions;
 import org.nuxeo.runtime.api.Framework;
 
+/**
+ * Seam component to manage user profile editing
+ *
+ * @author <a href="mailto:qlamerand@nuxeo.com">Quentin Lamerand</a>
+ * @since 5.4.3
+ */
 @Name("userProfileActions")
 @Scope(ScopeType.CONVERSATION)
 public class UserProfileActions implements Serializable {
@@ -56,11 +62,11 @@ public class UserProfileActions implements Serializable {
 
     protected String mode = PROFILE_VIEW_MODE;
 
-    protected DocumentModel userWorkspace;
+    protected DocumentModel userProfileDocument;
 
     public void updateUser() throws ClientException {
         userManagementActions.updateUser();
-        documentManager.saveDocument(userWorkspace);
+        documentManager.saveDocument(userProfileDocument);
         documentManager.save();
         mode = PROFILE_VIEW_MODE;
     }
@@ -79,12 +85,12 @@ public class UserProfileActions implements Serializable {
         this.mode = mode;
     }
 
-    public DocumentModel getUserWorkspace() throws ClientException {
-        if (userWorkspace == null) {
+    public DocumentModel getUserProfileDocument() throws ClientException {
+        if (userProfileDocument == null) {
             try {
                 UserWorkspaceService userWorkspaceService = Framework.getService(UserWorkspaceService.class);
                 if (userWorkspaceService != null) {
-                    userWorkspace = userWorkspaceService.getCurrentUserPersonalWorkspace(
+                    userProfileDocument = userWorkspaceService.getCurrentUserPersonalWorkspace(
                             documentManager, null);
 
                 }
@@ -93,15 +99,15 @@ public class UserProfileActions implements Serializable {
                         e);
             }
         }
-        if (!userWorkspace.hasFacet(USER_PROFILE_FACET)) {
-            userWorkspace.addFacet(USER_PROFILE_FACET);
-            userWorkspace = documentManager.saveDocument(userWorkspace);
+        if (!userProfileDocument.hasFacet(USER_PROFILE_FACET)) {
+            userProfileDocument.addFacet(USER_PROFILE_FACET);
+            userProfileDocument = documentManager.saveDocument(userProfileDocument);
         }
-        return userWorkspace;
+        return userProfileDocument;
     }
 
-    public void setUserWorkspace(DocumentModel userWorkspace) {
-        this.userWorkspace = userWorkspace;
+    public void setUserProfileDocument(DocumentModel userProfileDocument) {
+        this.userProfileDocument = userProfileDocument;
     }
 
 }
