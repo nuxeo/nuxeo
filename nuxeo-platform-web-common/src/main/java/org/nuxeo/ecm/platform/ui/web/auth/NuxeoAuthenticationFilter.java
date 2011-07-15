@@ -29,8 +29,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import javax.security.auth.callback.CallbackHandler;
@@ -75,7 +73,7 @@ import org.nuxeo.runtime.api.Framework;
  * Servlet filter handling Nuxeo authentication (JAAS + EJB).
  * <p>
  * Also handles logout and identity switch.
- *
+ * 
  * @author Thierry Delprat
  * @author Bogdan Stefanescu
  * @author Anahide Tchertchian
@@ -97,6 +95,8 @@ public class NuxeoAuthenticationFilter implements Filter {
     protected static final String XMLHTTP_REQUEST_TYPE = "XMLHttpRequest";
 
     protected static final String LOGIN_JMS_CATEGORY = "NuxeoAuthentication";
+
+    public static final String IS_LOGIN_NOT_SYNCHRONIZED_PROPERTY_KEY = "org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter.isLoginNotSynchronized";
 
     private static String anonymous;
 
@@ -217,8 +217,12 @@ public class NuxeoAuthenticationFilter implements Filter {
             CallbackHandler handler = service.getCallbackHandler(cachableUserIdent.getUserInfo());
             loginContext = new LoginContext(securityDomain, handler);
 
-            synchronized (NuxeoAuthenticationFilter.class) {
+            if (Boolean.parseBoolean(Framework.getProperty(IS_LOGIN_NOT_SYNCHRONIZED_PROPERTY_KEY))) {
                 loginContext.login();
+            } else {
+                synchronized (NuxeoAuthenticationFilter.class) {
+                    loginContext.login();
+                }
             }
 
             Principal principal = (Principal) loginContext.getSubject().getPrincipals().toArray()[0];
@@ -286,8 +290,8 @@ public class NuxeoAuthenticationFilter implements Filter {
             log.error("Error while logout from main identity", e1);
         }
 
-        HttpSession session = httpRequest.getSession(false);
-        session = service.reinitSession(httpRequest);
+        httpRequest.getSession(false);
+        service.reinitSession(httpRequest);
 
         CachableUserIdentificationInfo newCachableUserIdent = new CachableUserIdentificationInfo(
                 deputyLogin, deputyLogin);
@@ -964,7 +968,7 @@ public class NuxeoAuthenticationFilter implements Filter {
     /**
      * Does a forced login as the given user. Bypasses all authentication
      * checks.
-     *
+     * 
      * @param username the user name
      * @return the login context, which MUST be used for logout in a
      *         {@code finally} block
@@ -985,8 +989,13 @@ public class NuxeoAuthenticationFilter implements Filter {
         }
         LoginContext loginContext = new LoginContext(LOGIN_DOMAIN,
                 callbackHandler);
-        synchronized (NuxeoAuthenticationFilter.class) {
+
+        if (Boolean.parseBoolean(Framework.getProperty(IS_LOGIN_NOT_SYNCHRONIZED_PROPERTY_KEY))) {
             loginContext.login();
+        } else {
+            synchronized (NuxeoAuthenticationFilter.class) {
+                loginContext.login();
+            }
         }
         return loginContext;
     }
