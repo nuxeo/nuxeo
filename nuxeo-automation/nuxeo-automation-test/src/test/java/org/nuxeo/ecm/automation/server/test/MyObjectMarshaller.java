@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.automation.server.test;
 
+import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.JsonMarshaller;
@@ -47,5 +48,7 @@ public class MyObjectMarshaller implements JsonMarshaller<MyObject> {
         return jp.readValueAs(MyObject.class);
     }
 
-    public void write(org.codehaus.jackson.JsonGenerator jg, MyObject value) throws Exception {};
+    public void write(JsonGenerator jg, MyObject value) throws Exception {
+    }
+
 }

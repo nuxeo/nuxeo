@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -22,68 +22,67 @@ import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
  *
  */
 @Operation(id = ReturnOperation.ID, category = Constants.CAT_EXECUTION, label = "True")
-public class ReturnOperation
- {
-    
+public class ReturnOperation {
+
     public static final String ID = "TestReturn";
-    
+
     @OperationMethod
     public Date dateValue(Date v) {
         return v;
     }
-    
-    @OperationMethod() 
+
+    @OperationMethod
     public Boolean booleanValue(Boolean v) {
         return v;
     }
-    
-    @OperationMethod()
+
+    @OperationMethod
     public String stringValue(String v) {
         return v;
     }
 
-    @OperationMethod()
+    @OperationMethod
     public Integer integerValue(Integer i) {
         return i;
     }
 
-    @OperationMethod()
+    @OperationMethod
     public Long longValue(Long l) {
         return l;
     }
-    
-    @OperationMethod()
+
+    @OperationMethod
     public Number integerValue(Number n) {
         return n;
     }
-        
-    @OperationMethod()
+
+    @OperationMethod
     public Short shortValue(Short s) {
         return s;
     }
-    
-    @OperationMethod()
+
+    @OperationMethod
     public Double doubleValue(Double d) {
         return d;
     }
-    
-        
-    @OperationMethod()
+
+
+    @OperationMethod
     public Float floatValue(Float f) {
         return f;
     }
-    
-    @OperationMethod()
+
+    @OperationMethod
     public Byte byteValue(Byte b) {
         return b;
     }
-    
-    @OperationMethod()
+
+    @OperationMethod
     public String[] strings(String[] a) {
         return a;
     }
-    
-    @OperationMethod()
+
+    @OperationMethod
     public MyObject bean(MyObject b) {
         return b;
     }

@@ -152,8 +152,7 @@ public class JavaOperationRequest implements OperationRequest {
     }
 
     public Object execute() throws Exception {
-        Object o = session.execute(this);
-        return o;
+        return session.execute(this);
     }
 
     public void execute(AsyncCallback<Object> cb) {

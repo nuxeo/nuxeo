@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -23,7 +23,7 @@ import org.nuxeo.ecm.core.api.Blob;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class ResponseHelper {
-    
+
     private ResponseHelper() {
     }
 

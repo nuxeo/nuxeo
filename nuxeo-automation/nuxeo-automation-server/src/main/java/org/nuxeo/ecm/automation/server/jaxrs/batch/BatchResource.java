@@ -64,7 +64,7 @@ public class BatchResource {
 
     @POST
     @Produces("text/html")
-    @Path(value = "upload")
+    @Path("upload")
     public Object doPost(@Context HttpServletRequest request) throws Exception {
         String fileName = request.getHeader("X-File-Name");
         String fileSize = request.getHeader("X-File-Size");
@@ -83,7 +83,7 @@ public class BatchResource {
 
     @POST
     @Produces("application/json")
-    @Path(value = "execute")
+    @Path("execute")
     public Object exec(@Context HttpServletRequest request,
             ExecutionRequest xreq) throws Exception {
 
@@ -141,7 +141,7 @@ public class BatchResource {
 
     @GET
     @Produces("text/html")
-    @Path(value = "drop/{batchId}")
+    @Path("drop/{batchId}")
     public String dropBatch(@PathParam(REQUEST_BATCH_ID) String batchId)
             throws Exception {
         BatchManager bm = Framework.getLocalService(BatchManager.class);

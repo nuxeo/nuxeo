@@ -123,7 +123,7 @@ public class JsonWriter {
     private static void writeChains(JsonGenerator jg, AutomationInfo info) throws IOException {
         jg.writeArrayFieldStart("chains");
         for (OperationDocumentation op : info.getChains()) {
-            writeOperation(jg, op, "Chain.".concat(op.id));
+            writeOperation(jg, op, "Chain." + op.id);
         }
         jg.writeEndArray();
     }

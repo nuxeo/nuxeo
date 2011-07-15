@@ -277,7 +277,11 @@ public class RestTest {
         assertEquals("updated", doc.getString("dc:description"));
 
         String now = DateUtils.formatDate(new Date());
-        doc = (Document)session.newRequest(UpdateDocument.ID).setHeader(Constants.HEADER_NX_SCHEMAS, "*").setInput(new DocRef("/docsInput/note1")).set("properties", "dc:valid=".concat(now)).execute();
+        doc = (Document) session.newRequest(UpdateDocument.ID)
+                .setHeader(Constants.HEADER_NX_SCHEMAS, "*")
+                .setInput(new DocRef("/docsInput/note1"))
+                .set("properties", "dc:valid=" + now)
+                .execute();
         assertThat(doc.getDate("dc:valid"), is(DateUtils.parseDate(now)));
     }
 

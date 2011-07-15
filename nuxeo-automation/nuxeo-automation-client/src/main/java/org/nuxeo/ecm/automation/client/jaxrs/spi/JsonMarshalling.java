@@ -35,42 +35,42 @@ import org.nuxeo.ecm.automation.client.model.OperationRegistry;
  */
 public class JsonMarshalling {
 
-	private JsonMarshalling() {
-	}
+    private JsonMarshalling() {
+    }
 
-	protected static JsonFactory factory = new JsonFactory();
+    protected static JsonFactory factory = new JsonFactory();
 
-	protected static final HashMap<String,JsonMarshaller<?>> marshallersByType =
-	        new HashMap<String,JsonMarshaller<?>>();
+    protected static final HashMap<String,JsonMarshaller<?>> marshallersByType =
+            new HashMap<String,JsonMarshaller<?>>();
 
-	protected static final HashMap<Class<?>,JsonMarshaller<?>> marshallersByJavaType =
-	        new HashMap<Class<?>,JsonMarshaller<?>>();
+    protected static final HashMap<Class<?>,JsonMarshaller<?>> marshallersByJavaType =
+            new HashMap<Class<?>,JsonMarshaller<?>>();
 
-	public static JsonFactory getFactory() {
-	    return factory;
-	}
+    public static JsonFactory getFactory() {
+        return factory;
+    }
 
-	static {
-	    addMarshaller(new DocumentMarshaller());
-	    addMarshaller(new DocumentsMarshaller());
-	    addMarshaller(new ExceptionMarshaller());
-	    addMarshaller(new LoginMarshaller());
-	}
+    static {
+        addMarshaller(new DocumentMarshaller());
+        addMarshaller(new DocumentsMarshaller());
+        addMarshaller(new ExceptionMarshaller());
+        addMarshaller(new LoginMarshaller());
+    }
 
-	public static void addMarshaller(JsonMarshaller<?> marshaller) {
-	    marshallersByType.put(marshaller.getType(), marshaller);
-	    marshallersByJavaType.put(marshaller.getJavaType(), marshaller);
-	}
+    public static void addMarshaller(JsonMarshaller<?> marshaller) {
+        marshallersByType.put(marshaller.getType(), marshaller);
+        marshallersByJavaType.put(marshaller.getJavaType(), marshaller);
+    }
 
-	@SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked")
     public static <T> JsonMarshaller<T> getMarshaller(String type) {
-	    return (JsonMarshaller<T>)marshallersByType.get(type);
-	}
+        return (JsonMarshaller<T>)marshallersByType.get(type);
+    }
 
-	@SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked")
     public static <T> JsonMarshaller<T> getMarshaller(Class<T> clazz) {
-	    return (JsonMarshaller<T>)marshallersByJavaType.get(clazz);
-	}
+        return (JsonMarshaller<T>)marshallersByJavaType.get(clazz);
+    }
 
     public static OperationRegistry readRegistry(String content) throws Exception {
         HashMap<String, OperationDocumentation> ops = new HashMap<String, OperationDocumentation>();

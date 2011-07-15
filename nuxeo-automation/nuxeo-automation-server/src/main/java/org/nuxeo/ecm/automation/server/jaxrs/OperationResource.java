@@ -39,8 +39,7 @@ public class OperationResource extends ExecutableResource {
     @Override
     public Object execute(ExecutionRequest xreq) throws Exception {
         OperationContext ctx = xreq.createContext(request, getCoreSession());
-        Object result = service.run(ctx, xreq.createChain(type));
-        return result;
+        return service.run(ctx, xreq.createChain(type));
     }
 
     protected static String entityType(Class<?> clazz) {

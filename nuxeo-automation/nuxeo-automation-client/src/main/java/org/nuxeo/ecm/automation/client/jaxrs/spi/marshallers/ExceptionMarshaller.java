@@ -77,4 +77,3 @@ public class ExceptionMarshaller implements JsonMarshaller<RemoteException> {
     }
 
 }
-

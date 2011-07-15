@@ -66,8 +66,7 @@ public class FileManagerImport {
     @OperationMethod
     public DocumentModel run(Blob blob) throws Exception {
         DocumentModel currentDocument = getCurrentDocument();
-        DocumentModel doc = fileManager.createDocumentFromBlob(session, blob, currentDocument.getPathAsString(),overwite , blob.getFilename());
-        return doc;
+        return fileManager.createDocumentFromBlob(session, blob, currentDocument.getPathAsString(),overwite , blob.getFilename());
     }
 
     @OperationMethod

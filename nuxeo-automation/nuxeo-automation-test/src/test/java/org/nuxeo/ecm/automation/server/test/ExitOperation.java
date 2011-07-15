@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -37,9 +37,9 @@ public class ExitOperation {
     protected boolean rollback = false;
 
     @OperationMethod
-    public void run() throws java.lang.Exception {
+    public void run() throws Exception {
         if (error && rollback) {
-            throw new java.lang.Exception("termination error");
+            throw new Exception("termination error");
         }
         throw new ExitException(ctx.getInput(), rollback);
     }

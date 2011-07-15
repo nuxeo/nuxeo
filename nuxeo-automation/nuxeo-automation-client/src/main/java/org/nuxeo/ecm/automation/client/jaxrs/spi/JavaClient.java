@@ -45,7 +45,7 @@ public abstract class JavaClient implements AutomationClient {
     protected AdapterManager adapters;
     protected ExecutorService async;
 
-    public JavaClient(String url) {
+    protected JavaClient(String url) {
         this(url, null);
     }
 
@@ -186,6 +186,5 @@ public abstract class JavaClient implements AutomationClient {
             adapters = null;
         }
     }
-
 
 }

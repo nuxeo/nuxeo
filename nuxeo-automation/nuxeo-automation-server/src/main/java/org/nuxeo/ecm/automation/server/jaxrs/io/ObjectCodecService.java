@@ -235,9 +235,9 @@ public class ObjectCodecService {
         if (jg.getCodec() == null) {
             jg.setCodec(new ObjectMapper());
         }
-        if (object instanceof Iterable && (clazz.getName().startsWith("java."))) {
+        if (object instanceof Iterable && clazz.getName().startsWith("java.")) {
             jg.writeStringField("entity-type", "list");
-        } else if (object instanceof Map && (clazz.getName().startsWith("java."))) {
+        } else if (object instanceof Map && clazz.getName().startsWith("java.")) {
             if (object instanceof LinkedHashMap) {
                 jg.writeStringField("entity-type", "orderedMap");
             } else {

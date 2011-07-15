@@ -43,8 +43,6 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 import com.google.inject.Inject;
 
-;
-
 /**
  * @author <a href="mailto:qlamerand@nuxeo.com">Quentin Lamerand</a>
  */
@@ -102,7 +100,6 @@ public class DirectoryEntriesTest {
                 GetDirectoryEntries.ID, params);
         chain.add(oparams);
 
-        StringBlob result = (StringBlob) service.run(ctx, chain);
-        return result;
+        return (StringBlob) service.run(ctx, chain);
     }
 }

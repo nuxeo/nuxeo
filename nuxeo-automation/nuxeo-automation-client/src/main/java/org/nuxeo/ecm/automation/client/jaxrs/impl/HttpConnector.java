@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -36,7 +36,7 @@ import org.nuxeo.ecm.automation.client.jaxrs.spi.Request;
 
 /**
  * Connector wrapping a {@link HttpClient} instance.
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class HttpConnector implements Connector {

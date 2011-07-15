@@ -153,7 +153,7 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
         if (prefix == null || prefix.length() == 0) {
             prefix = schema;
         }
-        prefix = prefix.concat(":");
+        prefix = prefix + ":";
         String filesBaseUrl = "files/" + doc.getId() + "?path=";
         for (Property p : part.getChildren()) {
             jg.writeFieldName(prefix + p.getField().getName().getLocalName());

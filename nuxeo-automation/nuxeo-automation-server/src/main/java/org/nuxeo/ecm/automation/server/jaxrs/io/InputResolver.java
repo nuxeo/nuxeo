@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -18,6 +18,6 @@ package org.nuxeo.ecm.automation.server.jaxrs.io;
 public interface InputResolver<T> {
 
     String getType();
-    
+
     T getInput(String content);
 }

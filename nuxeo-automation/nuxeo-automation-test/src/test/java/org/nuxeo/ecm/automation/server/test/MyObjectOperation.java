@@ -27,12 +27,11 @@ import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 @Operation(id = MyObjectOperation.ID, category = Constants.CAT_EXECUTION, label = "MyObject")
 public class MyObjectOperation {
 
-    public final static String ID = "Operation.MyObjectTest";
+    public static final String ID = "Operation.MyObjectTest";
 
     @OperationMethod
     public MyObject run() {
         return new MyObject();
     }
-
 
 }

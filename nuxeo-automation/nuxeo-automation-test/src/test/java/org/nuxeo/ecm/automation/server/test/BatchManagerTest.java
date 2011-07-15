@@ -17,6 +17,10 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @Deploy( { "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.server" })
@@ -25,24 +29,22 @@ public class BatchManagerTest {
     @Test
     public void testServiceRegistred() {
         BatchManager bm = Framework.getLocalService(BatchManager.class);
-        Assert.assertNotNull(bm);
+        assertNotNull(bm);
     }
-
 
     @Test
     public void testBatchCleanup() throws IOException {
-
         BatchManager bm = Framework.getLocalService(BatchManager.class);
 
         String batchId = bm.initBatch(null, null);
-        Assert.assertNotNull(batchId);
+        assertNotNull(batchId);
 
         for (int i = 0; i<10; i++) {
             bm.addStream(batchId, ""+i, new ByteArrayInputStream(("SomeContent" + i).getBytes()), i+".txt", "text/plain");
         }
 
         List<Blob> blobs = bm.getBlobs(batchId);
-        Assert.assertNotNull(blobs);
+        assertNotNull(blobs);
         Assert.assertEquals(10, blobs.size());
 
         Assert.assertEquals("4.txt", blobs.get(4).getFilename());
@@ -50,12 +52,11 @@ public class BatchManagerTest {
 
         FileBlob fileBlob = (FileBlob) blobs.get(9);
         File tmplFile = fileBlob.getFile();
-        Assert.assertNotNull(tmplFile);
-        Assert.assertTrue(tmplFile.exists());
+        assertNotNull(tmplFile);
+        assertTrue(tmplFile.exists());
 
         bm.clean(batchId);
-
-        Assert.assertFalse(tmplFile.exists());
-
+        assertFalse(tmplFile.exists());
     }
+
 }

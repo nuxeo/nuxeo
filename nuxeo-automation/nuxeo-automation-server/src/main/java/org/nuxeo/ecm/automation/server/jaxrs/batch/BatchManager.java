@@ -45,7 +45,7 @@ public interface BatchManager {
      * @param mime
      * @throws IOException
      */
-    public void addStream(String batchId, String idx, InputStream is,
+    void addStream(String batchId, String idx, InputStream is,
             String name, String mime) throws IOException;
 
     /**
@@ -55,14 +55,14 @@ public interface BatchManager {
      * @param batchId
      * @return
      */
-    public List<Blob> getBlobs(String batchId);
+    List<Blob> getBlobs(String batchId);
 
     /**
      * Cleanup the temporary storage associated to the batch
      *
      * @param batchId
      */
-    public void clean(String batchId);
+    void clean(String batchId);
 
     /**
      * Initialize a batch with a given batchId and Context Name If batchId is
@@ -72,6 +72,6 @@ public interface BatchManager {
      * @param contextName
      * @return the batchId
      */
-    public String initBatch(String batchId, String contextName);
+    String initBatch(String batchId, String contextName);
 
 }

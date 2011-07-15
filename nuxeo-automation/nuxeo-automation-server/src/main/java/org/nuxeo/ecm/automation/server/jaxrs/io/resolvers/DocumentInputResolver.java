@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -31,7 +31,7 @@ public class DocumentInputResolver implements InputResolver<DocumentRef> {
     public DocumentRef getInput(String content) {
         return docRefFromString(content);
     }
-    
+
      public static DocumentRef docRefFromString(String input) {
         if (input.startsWith("/")) {
             return new PathRef(input);

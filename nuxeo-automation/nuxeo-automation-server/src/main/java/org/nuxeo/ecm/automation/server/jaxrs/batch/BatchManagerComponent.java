@@ -38,7 +38,7 @@ public class BatchManagerComponent extends DefaultComponent implements
 
     protected Map<String, Batch> batches = new ConcurrentHashMap<String, Batch>();
 
-    protected final static String DEFAULT_CONTEXT = "None";
+    protected static final String DEFAULT_CONTEXT = "None";
 
     public String initBatch(String batchId, String contextName) {
 

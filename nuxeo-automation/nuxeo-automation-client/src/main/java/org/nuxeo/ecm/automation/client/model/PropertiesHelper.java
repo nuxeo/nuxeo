@@ -18,8 +18,8 @@ import java.util.Date;
  */
 public class PropertiesHelper {
 
-	private PropertiesHelper() {
-	}
+    private PropertiesHelper() {
+    }
 
     public static boolean isBlob(Object v) {
         return v instanceof Blob;

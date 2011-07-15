@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -39,7 +39,6 @@ public class RenderingService {
         //map.put("DocUrl", MailTemplateHelper.getDocumentUrl(doc, viewId));
         return getRenderer(type).render(uriOrContent, map);
     }
-
 
     public Renderer getRenderer(String type) {
         if ("mvel".equals(type)) {

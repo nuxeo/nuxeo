@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -28,7 +28,7 @@ import org.nuxeo.runtime.api.Framework;
  *
  */
 public class MailTemplateHelper {
-    
+
     private MailTemplateHelper() {
     }
 
