@@ -55,6 +55,7 @@ public class ComputedGroupsServiceImpl extends DefaultComponent implements
 
     protected static Log log = LogFactory.getLog(ComputedGroupsServiceImpl.class);
 
+    @Override
     public void activate(ComponentContext context) throws Exception {
         super.activate(context);
         computers = new HashMap<String, GroupComputerDescriptor>();
@@ -225,6 +226,7 @@ public class ComputedGroupsServiceImpl extends DefaultComponent implements
         return foundGroups;
     }
 
+    @Override
     public void deactivate(ComponentContext context) throws Exception {
         super.deactivate(context);
 

@@ -29,7 +29,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  * to DocumentModel so that Token can be stored in a SQL Directory
  *
  * @author tiry
- *
  */
 public class NuxeoOAuthToken implements OAuthToken {
 
@@ -57,7 +56,7 @@ public class NuxeoOAuthToken implements OAuthToken {
 
     protected boolean clientToken = false;
 
-    protected String clientId = null;
+    protected String clientId;
 
     public NuxeoOAuthToken(String consumerKey, String callBack) {
         this.appId = consumerKey;
@@ -86,7 +85,6 @@ public class NuxeoOAuthToken implements OAuthToken {
         this.token = (String) entry.getProperty(SCHEMA, "token");
         this.tokenSecret = (String) entry.getProperty(SCHEMA, "tokenSecret");
         this.consumerKey = (String) entry.getProperty(SCHEMA, "consumerKey");
-        ;
         this.type = OAuthToken.Type.ACCESS;
         this.verifier = (String) entry.getProperty(SCHEMA, "verifier");
         this.durationInMinutes = (Long) entry.getProperty(SCHEMA,
@@ -181,6 +179,5 @@ public class NuxeoOAuthToken implements OAuthToken {
     public String getClientId() {
         return clientId;
     }
-
 
 }

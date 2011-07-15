@@ -52,7 +52,7 @@ public class BuiltinWidgetModes {
     private BuiltinWidgetModes() {
     }
 
-    public static final boolean isModeSupported(String widgetMode,
+    public static boolean isModeSupported(String widgetMode,
             List<String> supportedModes) {
         if (BuiltinWidgetModes.HIDDEN.equals(widgetMode)) {
             // always supported
@@ -68,7 +68,7 @@ public class BuiltinWidgetModes {
      *
      * @since 5.4.2
      */
-    public static final boolean isLikePlainMode(String widgetMode) {
+    public static boolean isLikePlainMode(String widgetMode) {
         if (widgetMode != null) {
             if (PLAIN.equals(widgetMode) || CSV.equals(widgetMode)) {
                 return true;
@@ -85,7 +85,7 @@ public class BuiltinWidgetModes {
      * @param widgetMode
      * @return
      */
-    public static final boolean isLikeViewMode(String widgetMode) {
+    public static boolean isLikeViewMode(String widgetMode) {
         if (widgetMode == null) {
             return false;
         }

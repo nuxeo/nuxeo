@@ -42,7 +42,7 @@ public abstract class BaseConverterTest extends Assert {
 
     private static final Log log = LogFactory.getLog(BaseConverterTest.class);
 
-    NXRuntimeTestCase tc = new NXRuntimeTestCase();
+    final NXRuntimeTestCase tc = new NXRuntimeTestCase();
 
     OOoManagerService oooManagerService;
 

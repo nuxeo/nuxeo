@@ -22,29 +22,21 @@ import java.util.Set;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.platform.usermanager.UserManager;
 
 /**
- * Implemenetations of this interface manages the multi-tenant behavior for
+ * Implementations of this interface manages the multi-tenant behavior for
  * UserManager. This class will be used to fetch the User Directory and the
  * Group characteristics
  * 
  * @author bjalon
- * 
  */
 public interface UserMultiTenantManagement {
 
     /**
      * Transform filter and fulltext to fetch Groups for the given context and
-     * the query specified with the given filter and fulltext. Becareful the
+     * the query specified with the given filter and fulltext. Be careful the
      * filter map and the fulltext set object will be modified so copy them
      * before.
-     * 
-     * @param um
-     * @param filter
-     * @param fulltext
-     * @param context
-     * @throws ClientException
      */
     void queryTransformer(UserManager um, Map<String, Serializable> filter,
             Set<String> fulltext, DocumentModel context) throws ClientException;
@@ -62,7 +54,7 @@ public interface UserMultiTenantManagement {
             DocumentModel context) throws ClientException;
     
     /**
-     * Transform the GroupName to add to tenant characteristic
+     * Transform the GroupName to add to tenant characteristic.
      * 
      * @param um
      * @param group to modified

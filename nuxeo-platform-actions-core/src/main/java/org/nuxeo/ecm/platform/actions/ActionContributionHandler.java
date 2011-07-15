@@ -34,9 +34,9 @@ public class ActionContributionHandler extends ContributionFragmentRegistry<Acti
     protected ActionRegistry actionReg;
     protected ActionFilterRegistry filterReg;
 
-    public ActionContributionHandler(ActionFilterRegistry fitlerReg) {
+    public ActionContributionHandler(ActionFilterRegistry filterReg) {
         actionReg = new ActionRegistry();
-        this.filterReg = fitlerReg;
+        this.filterReg = filterReg;
     }
 
     public ActionRegistry getRegistry() {

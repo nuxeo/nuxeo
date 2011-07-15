@@ -45,10 +45,8 @@ import org.nuxeo.ecm.platform.url.service.AbstractDocumentViewCodec;
  */
 public class DocumentPathCodec extends AbstractDocumentViewCodec {
 
-    private static final Log log = LogFactory.getLog(DocumentPathCodec.class);
-
     // The maximum length of an url for Internet Explorer.
-    public static int URL_MAX_LENGTH = 2000;
+    public static final int URL_MAX_LENGTH = 2000;
 
     public static final String PREFIX = "nxpath";
 
@@ -59,6 +57,8 @@ public class DocumentPathCodec extends AbstractDocumentViewCodec {
             + "@([\\w\\-\\.]+)" // view id (group 3)
             + "/?" // final slash (optional)
             + "(?:\\?(.*)?)?"; // query (group 4) (optional)
+
+    private static final Log log = LogFactory.getLog(DocumentPathCodec.class);
 
     public DocumentPathCodec() {
     }

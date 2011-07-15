@@ -56,17 +56,17 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class AjaxProxyServlet extends HttpServlet {
 
-    private static final long serialVersionUID = 1L;
-
-    public static String X_METHOD_HEADER = "X-Requested-Method";
-
-    private static final Log log = LogFactory.getLog(AjaxProxyServlet.class);
+    public static final String X_METHOD_HEADER = "X-Requested-Method";
 
     protected static AjaxProxyService service;
 
     protected static Map<String, String> requestsCache = new LRUCachingMap<String, String>(250);
 
     protected static final ReentrantReadWriteLock cacheLock = new ReentrantReadWriteLock();
+
+    private static final long serialVersionUID = 1L;
+
+    private static final Log log = LogFactory.getLog(AjaxProxyServlet.class);
 
     protected static AjaxProxyService getService() {
         if (service == null) {
@@ -110,7 +110,6 @@ public class AjaxProxyServlet extends HttpServlet {
         }
 
         String body = null;
-        boolean foundInCache = true;
         String cacheKey = targetURL;
 
         if (entry.useCache()) {
@@ -125,6 +124,7 @@ public class AjaxProxyServlet extends HttpServlet {
             }
         }
 
+        boolean foundInCache = true;
         if (body == null) {
             foundInCache = false;
             body = doRequest(method, targetURL, req);

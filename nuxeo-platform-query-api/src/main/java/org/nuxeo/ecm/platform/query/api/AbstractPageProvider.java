@@ -96,6 +96,7 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
     /**
      * @deprecated: use {@link #firstPage()} instead
      */
+    @Deprecated
     public void rewind() {
         firstPage();
     }
@@ -294,6 +295,7 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
     /**
      * @deprecated: use {@link #lastPage()} instead
      */
+    @Deprecated
     public void last() {
         lastPage();
     }
@@ -310,6 +312,7 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
     /**
      * @deprecated: use {@link #nextPage()} instead
      */
+    @Deprecated
     public void next() {
         nextPage();
     }
@@ -328,6 +331,7 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
     /**
      * @deprecated: use {@link #previousPage()} instead
      */
+    @Deprecated
     public void previous() {
         previousPage();
     }

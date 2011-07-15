@@ -27,6 +27,7 @@ package org.nuxeo.ecm.platform.uidgen;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
+@Deprecated
 public interface UIDSequencerFactory {
 
     UIDSequencer createUIDSequencer();

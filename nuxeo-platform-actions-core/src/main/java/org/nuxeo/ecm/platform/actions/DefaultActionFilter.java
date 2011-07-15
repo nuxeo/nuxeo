@@ -95,9 +95,6 @@ public class DefaultActionFilter implements ActionFilter, Cloneable {
      * In other words: OR between granting rules, AND between denying rules,
      * denial is favored (also if exceptions occur), AND inside of rules, OR
      * inside or rule items (type, facet,...).
-     *
-     * @param action
-     * @return
      */
     public boolean accept(Action action, ActionContext context) {
         // no context: reject
@@ -329,7 +326,7 @@ public class DefaultActionFilter implements ActionFilter, Cloneable {
         this.append = append;
     }
 
-    // overriden to be public
+    // overridden to be public
     @Override
     public DefaultActionFilter clone() throws CloneNotSupportedException {
         return (DefaultActionFilter) super.clone();

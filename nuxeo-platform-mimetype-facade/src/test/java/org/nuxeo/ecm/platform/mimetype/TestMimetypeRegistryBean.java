@@ -77,32 +77,30 @@ public class TestMimetypeRegistryBean extends NXRuntimeTestCase {
     }
 
     public void testGetExtensionsFromMimetype() {
-        org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry mimetype = getMimetypeSample();
+        MimetypeEntry mimetype = getMimetypeSample();
         mimetypeRegistry.registerMimetype(mimetype);
 
-        assertEquals(mimetypeRegistry.getExtensionsFromMimetypeName(mimetype
-                .getNormalized()), mimetype.getExtensions());
+        assertEquals(mimetypeRegistry.getExtensionsFromMimetypeName(
+                mimetype.getNormalized()), mimetype.getExtensions());
 
         mimetypeRegistry.unregisterMimetype(mimetype.getNormalized());
     }
 
     public void testMimetypeRegistration() {
-        org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry mimetype = getMimetypeSample();
+        MimetypeEntry mimetype = getMimetypeSample();
         mimetypeRegistry.registerMimetype(mimetype);
-        assertNotNull(mimetypeRegistry.getMimetypeEntryByName(mimetype
-                .getNormalized()));
+        assertNotNull(mimetypeRegistry.getMimetypeEntryByName(mimetype.getNormalized()));
 
         // Second registration
         mimetypeRegistry.registerMimetype(mimetype);
-        assertNotNull(mimetypeRegistry.getMimetypeEntryByName(mimetype
-                .getNormalized()));
+        assertNotNull(mimetypeRegistry.getMimetypeEntryByName(mimetype.getNormalized()));
 
         mimetypeRegistry.unregisterMimetype(mimetype.getNormalized());
         assertNull(mimetypeRegistry.getMimetypeEntryByName(mimetype.getNormalized()));
     }
 
     public void testSniffWordFromFile() throws Exception {
-        org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry mimetypeEntry = getMimetypeSample();
+        MimetypeEntry mimetypeEntry = getMimetypeSample();
         mimetypeRegistry.registerMimetype(mimetypeEntry);
 
         File file = FileUtils.getResourceFileFromContext("test-data/hello.doc");
@@ -116,7 +114,7 @@ public class TestMimetypeRegistryBean extends NXRuntimeTestCase {
     }
 
     public void testSniffWordFromStream() throws Exception {
-        org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry mimetypeEntry = getMimetypeSample();
+        MimetypeEntry mimetypeEntry = getMimetypeSample();
         mimetypeRegistry.registerMimetype(mimetypeEntry);
 
         InputStream istream = new FileInputStream(FileUtils.getResourceFileFromContext("test-data/hello.doc"));
@@ -130,7 +128,7 @@ public class TestMimetypeRegistryBean extends NXRuntimeTestCase {
     }
 
     public void getMimetypeEntryByMimetype() {
-        org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry mimetypeEntry = getMimetypeSample();
+        MimetypeEntry mimetypeEntry = getMimetypeSample();
         mimetypeRegistry.registerMimetype(mimetypeEntry);
 
         // Using getNormalized name.

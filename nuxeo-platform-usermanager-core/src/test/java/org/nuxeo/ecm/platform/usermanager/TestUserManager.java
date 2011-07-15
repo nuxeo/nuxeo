@@ -245,6 +245,7 @@ public class TestUserManager extends NXRuntimeTestCase {
 
         users = userManager.searchUsers("Gu");
         assertEquals(1, users.size());
+
         principal = users.get(0);
         assertEquals("Guest", principal.getId());
         assertEquals("Anonymous", principal.getProperty("user", "firstName"));
@@ -255,17 +256,21 @@ public class TestUserManager extends NXRuntimeTestCase {
         filter.put("lastName", "Cow");
         users = userManager.searchUsers(filter, filter.keySet());
         assertEquals(1, users.size());
+
         principal = users.get(0);
         assertEquals("Guest", principal.getId());
+
         // with a non-matching criterion
         filter.put("firstName", "Bob");
         users = userManager.searchUsers(filter, filter.keySet());
         assertEquals(0, users.size());
+
         // another search
         filter.clear();
         filter.put("username", "Gue");
         users = userManager.searchUsers(filter, filter.keySet());
         assertEquals(1, users.size());
+
         principal = users.get(0);
         assertEquals("Guest", principal.getId());
 
@@ -274,6 +279,7 @@ public class TestUserManager extends NXRuntimeTestCase {
         userManager.createUser(newUser);
         users = userManager.searchUsers("Gu");
         assertEquals(2, users.size());
+
         String name1 = users.get(0).getId();
         String name2 = users.get(1).getId();
         if (!name1.equals("Guest")) {
@@ -361,6 +367,7 @@ public class TestUserManager extends NXRuntimeTestCase {
         assertEquals("fname1", newPrincipal.getFirstName());
         assertEquals("lname1", newPrincipal.getLastName());
         assertEquals("company1", newPrincipal.getCompany());
+
         List<String> groups = newPrincipal.getGroups();
         Collections.sort(groups);
         assertEquals(groupNamesWithDefault, groups);
@@ -469,9 +476,7 @@ public class TestUserManager extends NXRuntimeTestCase {
 
     /**
      * Test the method getUsersInGroup, making sure it does return only the
-     * users of the group (and not the subgroups ones)
-     * 
-     * @throws Exception
+     * users of the group (and not the subgroups ones).
      */
     public void testGetUsersInGroup() throws Exception {
         deleteTestObjects();
@@ -511,8 +516,6 @@ public class TestUserManager extends NXRuntimeTestCase {
     /**
      * Test the method getUsersInGroupAndSubgroups, making sure it does return
      * all the users from a group and its subgroups.
-     * 
-     * @throws Exception
      */
     public void testGetUsersInGroupAndSubgroups() throws Exception {
         deleteTestObjects();
@@ -550,14 +553,11 @@ public class TestUserManager extends NXRuntimeTestCase {
         Collections.sort(expectedUsersInGroup2);
         Collections.sort(usersInGroupAndSubGroups2);
         assertEquals(expectedUsersInGroup2, usersInGroupAndSubGroups2);
-
     }
 
     /**
      * Test the method getUsersInGroupAndSubgroups making sure it's not going
      * into an infinite loop when a subgroup is also parent of a group.
-     * 
-     * @throws Exception
      */
     public void testGetUsersInGroupAndSubgroupsWithoutInfiniteLoop()
             throws Exception {
@@ -593,7 +593,6 @@ public class TestUserManager extends NXRuntimeTestCase {
         Collections.sort(expectedUsersInGroup2);
         Collections.sort(usersInGroupAndSubGroups2);
         assertEquals(expectedUsersInGroup2, usersInGroupAndSubGroups2);
-
     }
 
     public void testDeletePrincipal() throws Exception {
@@ -765,9 +764,7 @@ public class TestUserManager extends NXRuntimeTestCase {
 
     /**
      * common init method for initialising tests for the method
-     * getUsernamesForPermission
-     * 
-     * @throws Exception
+     * getUsernamesForPermission.
      */
     private void initTestGetUsernamesForPermission() throws Exception {
         deleteTestObjects();
@@ -794,13 +791,10 @@ public class TestUserManager extends NXRuntimeTestCase {
         g3.setProperty("group", "members", g3Users);
         g3.setProperty("group", "subGroups", g3SubGroups);
         userManager.createGroup(g3);
-
     }
 
     /**
      * Testing the method getUsernamesForPermission for a simple case.
-     * 
-     * @throws Exception
      */
     public void testGetUsernamesForPermission() throws Exception {
         initTestGetUsernamesForPermission();
@@ -816,20 +810,17 @@ public class TestUserManager extends NXRuntimeTestCase {
         List<String> users = Arrays.asList(userManager.getUsersForPermission(
                 SecurityConstants.READ, acp));
 
-        List<String> expectedUsers = Arrays.asList(new String[] { "alex",
-                "jdoe", "bree" });
+        List<String> expectedUsers = Arrays.asList("alex",
+                "jdoe", "bree");
         Collections.sort(users);
         Collections.sort(expectedUsers);
 
         assertEquals("Expected users having read access are ", expectedUsers,
                 users);
-
     }
 
     /**
      * Testing the method getUsernamesForPermission for a simple case.
-     * 
-     * @throws Exception
      */
     public void testGetUsernamesForPermission2() throws Exception {
         initTestGetUsernamesForPermission();
@@ -845,20 +836,17 @@ public class TestUserManager extends NXRuntimeTestCase {
         List<String> users = Arrays.asList(userManager.getUsersForPermission(
                 SecurityConstants.READ, acp));
 
-        List<String> expectedUsers = Arrays.asList(new String[] { "alex" });
+        List<String> expectedUsers = Arrays.asList("alex");
         Collections.sort(users);
         Collections.sort(expectedUsers);
 
         assertEquals("Expected users having read access are ", expectedUsers,
                 users);
-
     }
 
     /**
      * Same test as before but without the first ace (default value: everyone,
-     * everything false)
-     * 
-     * @throws Exception
+     * everything false).
      */
     public void testGetUsernamesForPermissionWithoutEveryoneEverythingACE()
             throws Exception {
@@ -874,19 +862,16 @@ public class TestUserManager extends NXRuntimeTestCase {
         List<String> users = Arrays.asList(userManager.getUsersForPermission(
                 SecurityConstants.READ, acp));
 
-        List<String> expectedUsers = Arrays.asList(new String[] { "alex" });
+        List<String> expectedUsers = Arrays.asList("alex");
         Collections.sort(users);
         Collections.sort(expectedUsers);
 
         assertEquals("Expected users having read access are ", expectedUsers,
                 users);
-
     }
 
     /**
-     * Testing getUsernamesForPermission with a user in 2 groups
-     * 
-     * @throws Exception
+     * Testing getUsernamesForPermission with a user in 2 groups.
      */
     public void testGetUsernamesForPermissionIn2Groups() throws Exception {
         initTestGetUsernamesForPermission();
@@ -905,19 +890,18 @@ public class TestUserManager extends NXRuntimeTestCase {
         // Should contain alex and stef (in group1) and jdoe (in none of these
         // groups) but not bree (in group2)
 
-        List<String> expectedUsers = Arrays.asList(new String[] { "alex",
-                "stef", "jdoe" });
+        List<String> expectedUsers = Arrays.asList("alex",
+                "stef", "jdoe");
         Collections.sort(users);
         Collections.sort(expectedUsers);
 
         assertEquals("Expected users having read access are ", expectedUsers,
                 users);
-
     }
 
     /**
      * Testing getUsernamesForPermission with compound permission. For example,
-     * READ_WRITE contains READ
+     * READ_WRITE contains READ.
      */
     public void testGetUsernamesForPermissionWithCompoundPermission()
             throws Exception {
@@ -935,14 +919,13 @@ public class TestUserManager extends NXRuntimeTestCase {
                 SecurityConstants.READ, acp));
         // Should contain alex and stef (in group1) and jdoe (in none of these
         // groups) but not bree (in group2)
-        List<String> expectedUsers = Arrays.asList(new String[] { "alex",
-                "stef", "jdoe" });
+        List<String> expectedUsers = Arrays.asList("alex",
+                "stef", "jdoe");
         Collections.sort(users);
         Collections.sort(expectedUsers);
 
         assertEquals("Expected users having read access are ", expectedUsers,
                 users);
-
     }
 
     /**
@@ -966,8 +949,8 @@ public class TestUserManager extends NXRuntimeTestCase {
                 SecurityConstants.READ, acp));
         // Should contain alex and stef (in group1) and jdoe (in none of these
         // groups) but not bree (in group2)
-        List<String> expectedUsers = Arrays.asList(new String[] { "alex",
-                "stef", "jdoe" });
+        List<String> expectedUsers = Arrays.asList("alex",
+                "stef", "jdoe");
         Collections.sort(users);
         Collections.sort(expectedUsers);
         assertEquals("Expected users having read access are ", expectedUsers,
@@ -975,7 +958,7 @@ public class TestUserManager extends NXRuntimeTestCase {
     }
 
     /**
-     * Testing getUsernamesForPermission with subgroups
+     * Testing getUsernamesForPermission with subgroups.
      */
     public void testGetUsernamesForPermissionWithSubGroups() throws Exception {
         initTestGetUsernamesForPermission();
@@ -989,12 +972,12 @@ public class TestUserManager extends NXRuntimeTestCase {
         List<String> users = Arrays.asList(userManager.getUsersForPermission(
                 SecurityConstants.READ, acp));
         // group3 and group2 but alex should have read access
-        List<String> expectedUsers = Arrays.asList(new String[] { "bree",
-                "jdoe" });
+        List<String> expectedUsers = Arrays.asList("bree",
+                "jdoe");
         Collections.sort(users);
         Collections.sort(expectedUsers);
         assertEquals("Expected users having read access are ", expectedUsers,
                 users);
-
     }
+
 }

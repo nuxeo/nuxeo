@@ -343,7 +343,7 @@ public class SQLHelper {
                         if (SQL_NULL_MARKER.equals(value)) {
                             value = null;
                         }
-                        values.add((Serializable) value);
+                        values.add(value);
                     }
                     logger.logSQL(insertSql, values);
                 }

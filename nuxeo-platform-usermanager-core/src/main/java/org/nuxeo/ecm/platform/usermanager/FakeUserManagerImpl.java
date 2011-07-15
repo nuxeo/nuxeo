@@ -219,7 +219,7 @@ public class FakeUserManagerImpl implements UserManager {
     public NuxeoPrincipal getPrincipal(String username) throws ClientException {
         NuxeoPrincipalImpl principal = new NuxeoPrincipalImpl(
                 SecurityConstants.ADMINISTRATOR, false, true);
-        principal.setGroups(Arrays.asList(new String[] { SecurityConstants.ADMINISTRATORS }));
+        principal.setGroups(Arrays.asList(SecurityConstants.ADMINISTRATORS));
         principal.setEmail("admin@example.com");
         return principal;
     }

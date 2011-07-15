@@ -23,7 +23,9 @@ package org.nuxeo.ecm.platform.ws.delegate;
  * Holds JNDI locations of the EJBs.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
+ * @deprecated will be removed in 5.5.
  */
+@Deprecated
 public interface JNDILocations {
 
     String nxRemotingLocalLocation = "nuxeo/NuxeoRemotingBean/local";

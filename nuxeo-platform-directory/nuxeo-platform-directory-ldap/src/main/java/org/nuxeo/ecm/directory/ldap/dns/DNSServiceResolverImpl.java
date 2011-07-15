@@ -57,7 +57,7 @@ public class DNSServiceResolverImpl implements DNSServiceResolver {
 
     protected static DirContext context;
 
-    public static final synchronized DNSServiceResolver getInstance() {
+    public static synchronized DNSServiceResolver getInstance() {
         if (instance == null) {
             instance = new DNSServiceResolverImpl();
         }

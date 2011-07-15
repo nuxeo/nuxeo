@@ -75,7 +75,7 @@ public class BuiltinModes {
      * Returns true if given layout mode is mapped by default to the edit
      * widget mode.
      */
-    public static final boolean isBoundToEditMode(String layoutMode) {
+    public static boolean isBoundToEditMode(String layoutMode) {
         if (layoutMode != null) {
             if (layoutMode.startsWith(CREATE) || layoutMode.startsWith(EDIT)
                     || layoutMode.startsWith(SEARCH)
@@ -98,7 +98,7 @@ public class BuiltinModes {
      * <p>
      * This method is not called when mode is explicitely set on the widget.
      */
-    public static final String getWidgetModeFromLayoutMode(String layoutMode) {
+    public static String getWidgetModeFromLayoutMode(String layoutMode) {
         if (layoutMode != null) {
             if (BuiltinModes.isBoundToEditMode(layoutMode)) {
                 return BuiltinWidgetModes.EDIT;

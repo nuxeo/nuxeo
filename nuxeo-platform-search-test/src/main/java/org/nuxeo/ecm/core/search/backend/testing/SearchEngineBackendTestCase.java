@@ -111,8 +111,6 @@ public abstract class SearchEngineBackendTestCase extends NXRuntimeTestCase {
 
     /**
      * A full cycle on one document.
-     *
-     * @throws Exception
      */
     public void testOneDoc() throws Exception {
         SearchEngineBackend backend = getBackend();
@@ -164,6 +162,7 @@ public abstract class SearchEngineBackendTestCase extends NXRuntimeTestCase {
         assertEquals(100, replayed.getRange());
         assertFalse(replayed.hasNextPage());
         assertTrue(replayed.isFirstPage());
+
         backend.index(resources);
 
         // Recreate
@@ -344,8 +343,6 @@ public abstract class SearchEngineBackendTestCase extends NXRuntimeTestCase {
 
     /**
      * Test on several documents: "About Life" 12 variations on "Revelations".
-     *
-     * @throws Exception
      */
     public void testBunch() throws Exception {
         SearchEngineBackend backend = getBackend();

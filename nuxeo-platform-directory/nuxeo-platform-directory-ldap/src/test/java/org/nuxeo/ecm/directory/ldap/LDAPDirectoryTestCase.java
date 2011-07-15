@@ -38,7 +38,6 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
  * @author <a href="ogrisel@nuxeo.com">Olivier Grisel</a>
- *
  */
 public abstract class LDAPDirectoryTestCase extends NXRuntimeTestCase {
 
@@ -57,6 +56,9 @@ public abstract class LDAPDirectoryTestCase extends NXRuntimeTestCase {
     // http://www.ldap.org.br/modules/ldap/files/files///dyngroup.schema
     public static final boolean HAS_DYNGROUP_SCHEMA = false;
 
+    public static final String INTERNAL_SERVER_SETUP_UPPER_ID = "TestDirectoriesWithInternalApacheDS-override-upper-id.xml";
+
+    // These variables are changed in subclasses
     public String EXTERNAL_SERVER_SETUP = "TestDirectoriesWithExternalOpenLDAP.xml";
 
     public String INTERNAL_SERVER_SETUP = "TestDirectoriesWithInternalApacheDS.xml";
@@ -74,8 +76,6 @@ public abstract class LDAPDirectoryTestCase extends NXRuntimeTestCase {
         }
         return ldifFiles;
     }
-
-    public static final String INTERNAL_SERVER_SETUP_UPPER_ID = "TestDirectoriesWithInternalApacheDS-override-upper-id.xml";
 
     @Override
     public void setUp() throws Exception {

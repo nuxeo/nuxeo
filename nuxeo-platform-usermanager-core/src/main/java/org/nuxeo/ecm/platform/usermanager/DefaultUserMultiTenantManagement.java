@@ -28,7 +28,6 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.localconfiguration.LocalConfigurationService;
 import org.nuxeo.ecm.directory.localconfiguration.DirectoryConfiguration;
-import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -38,7 +37,7 @@ import org.nuxeo.runtime.api.Framework;
 public class DefaultUserMultiTenantManagement implements
         UserMultiTenantManagement {
 
-    protected final static Log log = LogFactory.getLog(DefaultUserMultiTenantManagement.class);
+    protected static final Log log = LogFactory.getLog(DefaultUserMultiTenantManagement.class);
 
     protected static final String SUFFIX_SEPARATOR = "-";
 
@@ -115,7 +114,7 @@ public class DefaultUserMultiTenantManagement implements
     public String groupnameTranformer(UserManager um, String groupname, DocumentModel context) {
         String suffix = getDirectorySuffix(context);
         if (suffix != null) {
-            groupname = groupname + suffix;
+            groupname += suffix;
         }
         return groupname;
     }

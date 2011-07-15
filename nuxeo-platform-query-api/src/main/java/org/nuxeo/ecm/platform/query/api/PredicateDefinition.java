@@ -21,9 +21,9 @@ import org.nuxeo.common.xmap.annotation.XNode;
 
 public interface PredicateDefinition {
 
-    static final String ATOMIC_PREDICATE = "atomic";
+    String ATOMIC_PREDICATE = "atomic";
 
-    static final String SUB_CLAUSE_PREDICATE = "subClause";
+    String SUB_CLAUSE_PREDICATE = "subClause";
 
     @XNode("@operator")
     void setOperator(String operator);

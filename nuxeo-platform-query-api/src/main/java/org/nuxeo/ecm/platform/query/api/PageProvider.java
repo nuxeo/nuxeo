@@ -40,12 +40,12 @@ public interface PageProvider<T> extends Serializable {
     /**
      * Constant to express that the total number of result elements is unknown.
      */
-    public static final long UNKNOWN_SIZE = -1;
+    long UNKNOWN_SIZE = -1;
 
     /**
      * Default maximum page size value.
      */
-    public static final long DEFAULT_MAX_PAGE_SIZE = 100;
+    long DEFAULT_MAX_PAGE_SIZE = 100;
 
     /**
      * Returns the provider identifier

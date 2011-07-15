@@ -96,7 +96,6 @@ public interface DirectoryService {
      * If the directoryName is null, return null.
      *
      * @param directoryName
-     * @param documentContext
      * @return the directory, if the factory of the directory or the directory
      *         itself is not found return null
      * @throws DirectoryException

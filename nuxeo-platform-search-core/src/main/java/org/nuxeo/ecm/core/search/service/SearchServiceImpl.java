@@ -106,21 +106,13 @@ public class SearchServiceImpl extends DefaultComponent implements
     public static final int DEFAULT_DOC_BATCH_SIZE = 1;
 
     private static final String PT_BACKEND = "searchEngineBackend";
-
     private static final String PT_RESOURCE = "resource";
-
     private static final String PT_RESOURCE_TYPE = "resourceType";
-
     private static final String PT_DOCTYPE_INDEX = "indexableDocType";
-
     private static final String PT_BLOB_EXTRACTOR_DESC = "blobExtractor";
-
     private static final String PT_FULLTEXT = "fullTextField";
-
     private static final String PT_EVENTS = "indexingEvent";
-
     private static final String PT_INDEXING_THREAD_POOL = "indexingThreadPool";
-
     private static final String PT_POLICIES = "policies";
 
     /** Is the search service enabled ? */

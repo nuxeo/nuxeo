@@ -43,8 +43,8 @@ public class AggregatedJSProvider extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
 
-    protected static ReadWriteLock cacheLock = new ReentrantReadWriteLock();
-    protected static Map<String, String> cachedResponses = new HashMap<String, String>();
+    protected static final ReadWriteLock cacheLock = new ReentrantReadWriteLock();
+    protected static final Map<String, String> cachedResponses = new HashMap<String, String>();
 
     private static final Log log = LogFactory
             .getLog(AggregatedJSProvider.class);

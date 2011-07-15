@@ -195,6 +195,7 @@ public class ActionService extends DefaultComponent implements ActionManager {
      * @deprecated seems not used in Nuxeo - should be removed - and anyway the merge is not done
      * @param ff
      */
+    @Deprecated
     protected void registerFilterFactory(FilterFactory ff) {
         getFilterRegistry().removeFilter(ff.id);
         try {
@@ -211,6 +212,7 @@ public class ActionService extends DefaultComponent implements ActionManager {
      * @deprecated seems not used in Nuxeo - should be removed - and anyway the merge is not done
      * @param ff
      */
+    @Deprecated
     public void unregisterFilterFactory(FilterFactory ff) {
         getFilterRegistry().removeFilter(ff.id);
     }

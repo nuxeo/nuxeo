@@ -55,8 +55,9 @@ public interface ResultSet extends List<ResultItem> {
 
     /**
      * Returns the amount of actual matching results.
-     * <p>This is in contrast to getRange() that returns the maximum
-     * number of results per page. </p>
+     * <p>
+     * This is in contrast to getRange() that returns the maximum
+     * number of results per page.
      *
      * @return the amount of actual matching results.
      */

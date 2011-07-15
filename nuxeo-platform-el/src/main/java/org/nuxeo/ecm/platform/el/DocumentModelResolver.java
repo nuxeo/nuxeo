@@ -194,7 +194,7 @@ public class DocumentModelResolver extends BeanELResolver {
             DocumentPropertyContext ctx = (DocumentPropertyContext) base;
             value = FieldAdapterManager.getValueForStorage(value);
             try {
-                ctx.doc.setPropertyValue(ctx.schema + ":" + (String) property,
+                ctx.doc.setPropertyValue(ctx.schema + ":" + property,
                         (Serializable) value);
             } catch (ClientException e) {
                 // avoid errors here too

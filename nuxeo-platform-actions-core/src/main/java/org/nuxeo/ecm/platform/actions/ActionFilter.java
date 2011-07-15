@@ -23,7 +23,6 @@ import java.io.Serializable;
 
 /**
  * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public interface ActionFilter extends Serializable {
 

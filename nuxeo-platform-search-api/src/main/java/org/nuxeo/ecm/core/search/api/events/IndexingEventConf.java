@@ -27,12 +27,10 @@ import java.util.Set;
  * <p>
  * Stores index related operations that are to be performed for the given
  * event. These operations typically apply to a document that is passed along
- * with the event, although instances of this class don't handle it.</p>
+ * with the event, although instances of this class don't handle it.
  *
  * @author <a href="mailto:gr@nuxeo.com">Georges Racinet</a>
- *
  */
-
 public interface IndexingEventConf extends Serializable {
 
     String INDEX = "Index";
@@ -51,27 +49,22 @@ public interface IndexingEventConf extends Serializable {
 
 
     /**
-     * Get the action to perform.
-     *
-     * @return a string
+     * Gets the action to perform.
      */
     String getAction();
 
     /**
      * Must the operation recurse on documents ?
-     *
-     * @return a boolean
      */
     boolean isRecursive();
 
     /**
      * Lists the resources that are impacted by the event.
-     *
-     * <p>This allows to restrict the event to some resources. For instance,
+     * <p>
+     * This allows to restrict the event to some resources. For instance,
      * the actions that the event signals can require a reindexing of security
      * policies without changing other resources, e.g, the full text, whose
      * indexing can be very costly.
-     * </p>
      *
      * @return the set of resource names, as registered against the Search
      * Service, or null to mean all.
@@ -80,13 +73,12 @@ public interface IndexingEventConf extends Serializable {
     Set<String> getRelevantResources();
 
     /**
-     * Define the mode used to perform the operation
+     * Define the mode used to perform the operation:
      *
      * ONLY_ASYNC ="Asynchronous"
      * ONLY_SYNC ="Synchronous"
      * SYNC_ASYNC ="Both"
-     *
-     * @return a String
      */
     String getMode();
+
 }

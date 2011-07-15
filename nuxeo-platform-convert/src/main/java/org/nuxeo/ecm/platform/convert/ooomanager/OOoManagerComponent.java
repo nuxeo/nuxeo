@@ -57,7 +57,7 @@ public class OOoManagerComponent extends DefaultComponent implements
 
     private static final String DEFAULT_LINUX_OO_HOME = "/usr/lib/openoffice/";
 
-    protected static String CONFIG_EP = "oooManagerConfig";
+    protected static final String CONFIG_EP = "oooManagerConfig";
 
     private static OfficeManager officeManager;
 

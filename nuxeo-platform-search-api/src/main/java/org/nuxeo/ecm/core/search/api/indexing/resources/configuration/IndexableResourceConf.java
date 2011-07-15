@@ -33,12 +33,11 @@ import java.util.Set;
  * @see org.nuxeo.ecm.core.search.api.client.indexing.resources.IndexableResource
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
  */
 public interface IndexableResourceConf extends Serializable {
 
     /**
-     * Returns the name of the indexable resource c onfiguration.
+     * Returns the name of the indexable resource configuration.
      *
      * @return the name of the indexable resource configuration.
      */
@@ -74,11 +73,9 @@ public interface IndexableResourceConf extends Serializable {
 
     /**
      * Returns the indexable resource type.
-     *
      * <p>
      * The type will be use for further indexing resource introspection if
      * needed.
-     * </p>
      *
      * @return a string identifier.
      */

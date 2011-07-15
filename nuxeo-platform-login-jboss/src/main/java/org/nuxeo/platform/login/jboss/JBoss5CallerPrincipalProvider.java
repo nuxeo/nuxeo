@@ -36,6 +36,7 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
  */
 public class JBoss5CallerPrincipalProvider extends CallerPrincipalProvider {
 
+    @Override
     public NuxeoPrincipal getCallerPrincipal() {
         SecurityContext secContext = SecurityContextAssociation.getSecurityContext();
         if (secContext != null) {

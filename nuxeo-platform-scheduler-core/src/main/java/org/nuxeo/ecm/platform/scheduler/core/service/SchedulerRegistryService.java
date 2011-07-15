@@ -136,8 +136,8 @@ public class SchedulerRegistryService extends DefaultComponent implements
         try {
             scheduler.scheduleJob(job, trigger);
         } catch (ObjectAlreadyExistsException e) {
-            ; // when jobs are persisted in a database, the job should already
-              // be there
+            // when jobs are persisted in a database, the job should already
+            // be there
         } catch (SchedulerException e) {
             log.error(String.format("failed to schedule job with id '%s': %s",
                     schedule.getId(), e.getMessage()), e);

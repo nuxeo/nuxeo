@@ -31,7 +31,7 @@ import org.nuxeo.ecm.core.schema.FacetNames;
 
 /**
  * Base class to build views for Document oriented contexts (contexts that are
- * bound to a document)
+ * bound to a document).
  * <p>
  * Note that this class cannot be used with contexts for which the
  * {@link RenderingContext#getDocument()} method is returning null.

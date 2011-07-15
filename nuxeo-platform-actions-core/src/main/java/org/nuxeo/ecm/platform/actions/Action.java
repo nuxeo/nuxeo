@@ -204,8 +204,9 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
     public String getConfirm() {
         if (confirm == null) {
             return "";
+        } else {
+            return confirm;
         }
-        return confirm;
     }
 
     public void setConfirm(String confirm) {
@@ -243,8 +244,9 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
     public String getHelp() {
         if (help == null) {
             return "";
+        } else {
+            return help;
         }
-        return help;
     }
 
     public void setHelp(String title) {
@@ -331,7 +333,7 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
         }
     }
 
-    // overriden to be public
+    // overridden to be public
     @Override
     public Action clone() throws CloneNotSupportedException {
         return (Action) super.clone();

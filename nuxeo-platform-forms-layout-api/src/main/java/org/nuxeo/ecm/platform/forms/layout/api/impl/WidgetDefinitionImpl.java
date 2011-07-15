@@ -257,7 +257,7 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
         if (props != null && props.containsKey(REQUIRED_PROPERTY_NAME)) {
             Object value = props.get(REQUIRED_PROPERTY_NAME);
             if (value instanceof Boolean) {
-                res = ((Boolean) value).toString();
+                res = value.toString();
             } else if (value instanceof String) {
                 res = (String) value;
             }
@@ -280,7 +280,7 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
         return translated;
     }
 
-    public static final Map<String, Serializable> getProperties(
+    public static Map<String, Serializable> getProperties(
             Map<String, Map<String, Serializable>> properties, String mode) {
         Map<String, Serializable> res = new HashMap<String, Serializable>();
         if (properties != null) {
