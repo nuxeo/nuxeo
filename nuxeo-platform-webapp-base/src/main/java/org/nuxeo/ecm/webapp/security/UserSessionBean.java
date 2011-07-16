@@ -56,7 +56,7 @@ public class UserSessionBean implements Serializable, UserSession {
                         "Can not fetch user principal from FacesContext: "
                         + "there is no FacesContext attached to the current request");
             } else {
-        	// if seam identify filter is available, we can not get the UserPrincipal directly from the request
+                // if seam identify filter is available, we can not get the UserPrincipal directly from the request
                 //currentUser = ((HttpServletRequest)((HttpServletRequestWrapper)(fContext.getExternalContext().getRequest())).getRequest()).getUserPrincipal();
                 currentUser = fContext.getExternalContext().getUserPrincipal();
             }

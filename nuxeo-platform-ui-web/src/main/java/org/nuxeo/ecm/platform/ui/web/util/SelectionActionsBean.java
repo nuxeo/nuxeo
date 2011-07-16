@@ -201,7 +201,7 @@ public class SelectionActionsBean implements Serializable {
         }
     }
 
-    public void addAllToSelection(ActionEvent event) throws ClientException {
+    public void addAllToSelection(ActionEvent event) {
         if (!checkLeftComponents() || !checkRightComponents()
                 || !checkSubmittedList()) {
             return;

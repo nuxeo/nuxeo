@@ -33,8 +33,6 @@ import org.w3c.dom.Element;
 
 /**
  * Restlet returning the locking information on a document.
- * <p>
- *
  */
 public class LockingRestlet extends BaseStatelessNuxeoRestlet {
 

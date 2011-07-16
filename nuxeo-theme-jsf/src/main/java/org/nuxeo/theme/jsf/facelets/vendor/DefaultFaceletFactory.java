@@ -166,11 +166,13 @@ public class DefaultFaceletFactory extends FaceletFactory {
      */
     protected boolean needsToBeRefreshed(DefaultFacelet facelet) {
         // if set to 0, constantly reload-- nocache
-        if (this.refreshPeriod == 0)
+        if (this.refreshPeriod == 0) {
             return true;
+        }
         // if set to -1, never reload
-        if (this.refreshPeriod == -1)
+        if (this.refreshPeriod == -1) {
             return false;
+        }
         long ttl = facelet.getCreateTime() + this.refreshPeriod;
         URL url = facelet.getSource();
         InputStream is = null;

@@ -61,12 +61,10 @@ public class UIHtmlText extends org.jboss.seam.pdf.ui.UIHtmlText {
         if (value != null) {
             addFromHtml(convert(context, value), context);
         }
-
         super.encodeEnd(context);
     }
 
-    private void addFromHtml(String html, FacesContext context)
-            throws IOException {
+    private void addFromHtml(String html, FacesContext context) {
         HashMap<String, Object> interfaceProps = new HashMap<String, Object>();
         interfaceProps.put("img_provider", new NuxeoITextImageProvider(
                 (HttpServletRequest) context.getExternalContext().getRequest()));

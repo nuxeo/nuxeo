@@ -347,8 +347,9 @@ final class DefaultFaceletContext extends FaceletContext {
 
         for (int i = 0, size = this.clients.size(); i < size && !found; i++) {
             client = ((TemplateManager) this.clients.get(i));
-            if (client.equals(this.facelet))
+            if (client.equals(this.facelet)) {
                 continue;
+            }
             found = client.apply(this, parent, name);
         }
 

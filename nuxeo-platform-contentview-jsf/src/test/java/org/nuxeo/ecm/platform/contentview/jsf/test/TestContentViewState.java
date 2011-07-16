@@ -117,11 +117,13 @@ public class TestContentViewState extends SQLRepositoryTestCase {
         assertEquals("CURRENT_DOCUMENT_CHILDREN", state.getContentViewName());
         assertNull(state.getCurrentPage());
         assertNull(state.getPageSize());
+
         Object[] queryParams = state.getQueryParameters();
         assertNotNull(queryParams);
         assertEquals(1, queryParams.length);
         assertEquals(currentDocument.getId(), queryParams[0]);
         assertNull(state.getResultColumns());
+
         ContentViewLayout resultLayout = state.getResultLayout();
         assertNotNull(resultLayout);
         assertEquals("document_listing", resultLayout.getName());
@@ -144,14 +146,17 @@ public class TestContentViewState extends SQLRepositoryTestCase {
         assertEquals("CURRENT_DOCUMENT_CHILDREN", state.getContentViewName());
         assertEquals(new Long(0), state.getCurrentPage());
         assertEquals(new Long(2), state.getPageSize());
+
         Object[] queryParams = state.getQueryParameters();
         assertNotNull(queryParams);
         assertEquals(1, queryParams.length);
         assertEquals("test_parent_id", queryParams[0]);
+
         List<String> resultColumns = state.getResultColumns();
         assertNotNull(resultColumns);
         assertEquals(1, resultColumns.size());
         assertEquals("column_1", resultColumns.get(0));
+
         ContentViewLayout resultLayout = state.getResultLayout();
         assertNotNull(resultLayout);
         assertEquals("document_listing", resultLayout.getName());
@@ -160,6 +165,7 @@ public class TestContentViewState extends SQLRepositoryTestCase {
         assertEquals("/icons/myicon.png", resultLayout.getIconPath());
         assertTrue(resultLayout.getShowCSVExport());
         assertNull(state.getSearchDocumentModel());
+
         List<SortInfo> sortInfos = state.getSortInfos();
         assertNotNull(sortInfos);
         assertEquals(1, sortInfos.size());
@@ -199,17 +205,19 @@ public class TestContentViewState extends SQLRepositoryTestCase {
 
         ContentView contentView = service.restoreContentView(state);
         assertNotNull(contentView);
-
         assertEquals("CURRENT_DOCUMENT_CHILDREN", contentView.getName());
         assertEquals(new Long(2), contentView.getCurrentPageSize());
+
         PageProvider<?> pp = contentView.getCurrentPageProvider();
         assertNotNull(pp);
         assertNull(pp.getSearchDocumentModel());
         assertEquals(new Long(0), new Long(pp.getCurrentPageIndex()));
+
         queryParams = pp.getParameters();
         assertNotNull(queryParams);
         assertEquals(1, queryParams.length);
         assertEquals("test_parent_id", queryParams[0]);
+
         sortInfos = pp.getSortInfos();
         assertNotNull(sortInfos);
         assertEquals(1, sortInfos.size());
@@ -290,11 +298,13 @@ public class TestContentViewState extends SQLRepositoryTestCase {
                 state.getContentViewName());
         assertNull(state.getCurrentPage());
         assertNull(state.getPageSize());
+
         Object[] queryParams = state.getQueryParameters();
         assertNotNull(queryParams);
         assertEquals(0, queryParams.length);
         assertNull(state.getResultColumns());
         assertNull(state.getResultLayout());
+
         DocumentModel searchDoc = state.getSearchDocumentModel();
         assertNotNull(searchDoc);
         assertEquals("search keywords", searchDoc.getPropertyValue("dc:title"));
@@ -316,14 +326,17 @@ public class TestContentViewState extends SQLRepositoryTestCase {
                 state.getContentViewName());
         assertEquals(new Long(0), state.getCurrentPage());
         assertEquals(new Long(2), state.getPageSize());
+
         Object[] queryParams = state.getQueryParameters();
         assertNotNull(queryParams);
         assertEquals(0, queryParams.length);
+
         List<String> resultColumns = state.getResultColumns();
         assertNotNull(resultColumns);
         assertEquals(1, resultColumns.size());
         assertEquals("column_1", resultColumns.get(0));
         assertNull(state.getResultLayout());
+
         DocumentModel searchDoc = state.getSearchDocumentModel();
         assertNotNull(searchDoc);
         assertEquals("search keywords", searchDoc.getPropertyValue("dc:title"));
@@ -362,16 +375,20 @@ public class TestContentViewState extends SQLRepositoryTestCase {
         assertEquals("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT",
                 contentView.getName());
         assertEquals(new Long(2), contentView.getCurrentPageSize());
+
         PageProvider<?> pp = contentView.getCurrentPageProvider();
         assertNotNull(pp);
+
         DocumentModel searchDoc = pp.getSearchDocumentModel();
         assertNotNull(searchDoc);
         assertEquals("search keywords", searchDoc.getPropertyValue("dc:title"));
         assertNull(searchDoc.getPropertyValue("dc:description"));
         assertEquals(new Long(0), new Long(pp.getCurrentPageIndex()));
+
         Object[] queryParams = pp.getParameters();
         assertNotNull(queryParams);
         assertEquals(0, queryParams.length);
+
         sortInfos = pp.getSortInfos();
         assertNotNull(sortInfos);
         assertEquals(1, sortInfos.size());

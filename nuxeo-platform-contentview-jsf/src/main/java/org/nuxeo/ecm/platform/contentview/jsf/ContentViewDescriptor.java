@@ -35,8 +35,6 @@ import org.nuxeo.ecm.platform.query.core.ReferencePageProviderDescriptor;
 @XObject("contentView")
 public class ContentViewDescriptor {
 
-    private static final long serialVersionUID = 1L;
-
     @XNode("@name")
     String name;
 
