@@ -32,7 +32,7 @@ import org.nuxeo.ecm.directory.EntryAdaptor;
  * Simple entry adaptor implementation that leaves the entry as editable if the
  * specified field value matches the provided regexp or set the readonly flag of
  * the entry to true if the value of the field does not match the regexp.
- *
+ * <p>
  * In any case, if the readonly flag of the adapted entry is already set to
  * true, this value is kept unchanged.
  */
@@ -74,9 +74,9 @@ public class WritePolicyEntryAdaptor implements EntryAdaptor {
 
     public void setParameter(String name, String value) {
         if ("fieldName".equals(name)) {
-            this.fieldName = value;
+            fieldName = value;
         } else if ("regexp".equals(name)) {
-            this.pattern = Pattern.compile(value);
+            pattern = Pattern.compile(value);
         } else {
             log.warn("unexpected parameter " + name + " for class "
                     + getClass().getName());

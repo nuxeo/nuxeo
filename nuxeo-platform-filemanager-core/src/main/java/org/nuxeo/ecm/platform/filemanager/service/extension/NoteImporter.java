@@ -36,7 +36,6 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * Imports the string content of a blob as text for the content of the "note"
  * field of a new Note document.
- *
  * <p>
  * If an existing document with the same title is found the existing Note
  * document is updated instead.
@@ -46,19 +45,12 @@ import org.nuxeo.runtime.api.Framework;
 public class NoteImporter extends AbstractFileImporter {
 
     private static final String ICON_FIELD = "icon";
-
     private static final String COMMON_SCHEMA = "common";
-
     private static final String NOTE_FIELD = "note";
-
     private static final String MT_FIELD = "mime_type";
-
     private static final String NOTE_SCHEMA = NOTE_FIELD;
-
     private static final String TITLE_FIELD = "title";
-
     private static final String DUBLINCORE_SCHEMA = "dublincore";
-
     private static final String NOTE_TYPE = "Note";
 
     private static final long serialVersionUID = 1073550562485540108L;

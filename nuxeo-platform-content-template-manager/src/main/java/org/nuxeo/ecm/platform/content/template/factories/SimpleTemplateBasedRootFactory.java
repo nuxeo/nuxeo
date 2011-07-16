@@ -61,9 +61,6 @@ public class SimpleTemplateBasedRootFactory extends SimpleTemplateBasedFactory {
     /**
      * Returns {@code false} if the type of one of the children documents
      * matches a template item type, {@code true} otherwise.
-     *
-     * @param eventDoc
-     * @throws ClientException
      */
     protected boolean shouldCreateContent(DocumentModel eventDoc)
             throws ClientException {

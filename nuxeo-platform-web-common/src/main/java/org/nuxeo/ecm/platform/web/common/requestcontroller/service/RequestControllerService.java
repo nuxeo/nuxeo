@@ -56,7 +56,6 @@ public class RequestControllerService extends DefaultComponent implements
             String extensionPoint, ComponentInstance contributor)
             throws Exception {
         if (FILTER_CONFIG_EP.equals(extensionPoint)) {
-
             FilterConfigDescriptor desc = (FilterConfigDescriptor) contribution;
             registerFilterConfig(desc);
         }

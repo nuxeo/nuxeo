@@ -96,6 +96,7 @@ public class DefaultActionFilter implements ActionFilter, Cloneable {
      * denial is favored (also if exceptions occur), AND inside of rules, OR
      * inside or rule items (type, facet,...).
      */
+    // FIXME: the parameter 'action' is not used!
     public boolean accept(Action action, ActionContext context) {
         // no context: reject
         if (context == null) {
@@ -108,7 +109,7 @@ public class DefaultActionFilter implements ActionFilter, Cloneable {
         boolean existsGrantRule = false;
         boolean grantApply = false;
         for (FilterRule rule : rules) {
-            boolean ruleApplies = checkRule(rule, action, context);
+            boolean ruleApplies = checkRule(rule, context);
             if (!rule.grant) {
                 if (ruleApplies) {
                     return false;
@@ -133,29 +134,22 @@ public class DefaultActionFilter implements ActionFilter, Cloneable {
      * Returns true if all conditions defined in the rule are true.
      */
     @SuppressWarnings("unchecked")
-    protected final boolean checkRule(FilterRule rule, Action action,
-            ActionContext context) {
+    protected final boolean checkRule(FilterRule rule, ActionContext context) {
         // check cache
         Map<FilterRule, Boolean> precomputed = (Map<FilterRule, Boolean>) context.get(PRECOMPUTED_KEY);
         if (precomputed == null) {
             precomputed = new HashMap<FilterRule, Boolean>();
             context.put(PRECOMPUTED_KEY, precomputed);
         } else if (precomputed.containsKey(rule)) {
-            return precomputed.get(rule).booleanValue();
+            return precomputed.get(rule);
         }
         // compute filter result
-        boolean result = (rule.facets == null || rule.facets.length == 0 || checkFacets(
-                action, context, rule.facets))
-                && (rule.types == null || rule.types.length == 0 || checkTypes(
-                        action, context, rule.types))
-                && (rule.schemas == null || rule.schemas.length == 0 || checkSchemas(
-                        action, context, rule.schemas))
-                && (rule.permissions == null || rule.permissions.length == 0 || checkPermissions(
-                        action, context, rule.permissions))
-                && (rule.groups == null || rule.groups.length == 0 || checkGroups(
-                        action, context, rule.groups))
-                && (rule.conditions == null || rule.conditions.length == 0 || checkConditions(
-                        action, context, rule.conditions));
+        boolean result = (rule.facets == null || rule.facets.length == 0 || checkFacets(context, rule.facets))
+                && (rule.types == null || rule.types.length == 0 || checkTypes(context, rule.types))
+                && (rule.schemas == null || rule.schemas.length == 0 || checkSchemas(context, rule.schemas))
+                && (rule.permissions == null || rule.permissions.length == 0 || checkPermissions(context, rule.permissions))
+                && (rule.groups == null || rule.groups.length == 0 || checkGroups(context, rule.groups))
+                && (rule.conditions == null || rule.conditions.length == 0 || checkConditions(context, rule.conditions));
         // put in cache
         precomputed.put(rule, Boolean.valueOf(result));
         return result;
@@ -166,8 +160,7 @@ public class DefaultActionFilter implements ActionFilter, Cloneable {
      *
      * @return true if document has one of the given facets, else false.
      */
-    protected final boolean checkFacets(Action action, ActionContext context,
-            String[] facets) {
+    protected final boolean checkFacets(ActionContext context, String[] facets) {
         DocumentModel doc = context.getCurrentDocument();
         if (doc == null) {
             return false;
@@ -188,8 +181,7 @@ public class DefaultActionFilter implements ActionFilter, Cloneable {
      * @return true if given document has one of the given permissions, else
      *         false
      */
-    protected final boolean checkPermissions(Action action,
-            ActionContext context, String[] permissions) {
+    protected final boolean checkPermissions(ActionContext context, String[] permissions) {
         DocumentModel doc = context.getCurrentDocument();
         if (doc == null) {
             NuxeoPrincipal principal = context.getCurrentPrincipal();
@@ -218,8 +210,7 @@ public class DefaultActionFilter implements ActionFilter, Cloneable {
         return false;
     }
 
-    protected final boolean checkGroups(Action action, ActionContext context,
-            String[] groups) {
+    protected final boolean checkGroups(ActionContext context, String[] groups) {
         NuxeoPrincipal principal = context.getCurrentPrincipal();
         if (principal == null) {
             return false;
@@ -240,11 +231,11 @@ public class DefaultActionFilter implements ActionFilter, Cloneable {
      *
      * @return true if one of the conditions is verified, else false.
      */
-    protected final boolean checkConditions(Action action,
-            ActionContext context, String[] conditions) {
+    protected final boolean checkConditions(ActionContext context, String[] conditions) {
         DocumentModel doc = context.getCurrentDocument();
         NuxeoPrincipal currentPrincipal = context.getCurrentPrincipal();
 
+        // FIXME: this loop doesn't loop, so this function doesn't behave as advertised.
         for (String condition : conditions) {
             try {
                 JexlExpression exp = CachedJEXLManager.getExpression(condition);
@@ -252,8 +243,8 @@ public class DefaultActionFilter implements ActionFilter, Cloneable {
                 ctx.put("document", doc);
                 ctx.put("principal", currentPrincipal);
                 // get custom context from ActionContext
-                for (String k : context.keySet()) {
-                    ctx.put(k, context.get(k));
+                for (String key : context.keySet()) {
+                    ctx.put(key, context.get(key));
                 }
                 ctx.put("SeamContext", context.get("SeamContext"));
 
@@ -280,8 +271,7 @@ public class DefaultActionFilter implements ActionFilter, Cloneable {
      *
      * @return true if document type is one of the given types, else false.
      */
-    protected final boolean checkTypes(Action action, ActionContext context,
-            String[] types) {
+    protected final boolean checkTypes(ActionContext context, String[] types) {
         DocumentModel doc = context.getCurrentDocument();
         String docType;
         if (doc == null) {
@@ -304,8 +294,7 @@ public class DefaultActionFilter implements ActionFilter, Cloneable {
      *
      * @return true if document has one of the given schemas, else false
      */
-    protected final boolean checkSchemas(Action action, ActionContext context,
-            String[] schemas) {
+    protected final boolean checkSchemas(ActionContext context, String[] schemas) {
         DocumentModel doc = context.getCurrentDocument();
         if (doc == null) {
             return false;
@@ -320,10 +309,6 @@ public class DefaultActionFilter implements ActionFilter, Cloneable {
 
     public boolean getAppend() {
         return append;
-    }
-
-    public void setAppend(boolean append) {
-        this.append = append;
     }
 
     // overridden to be public

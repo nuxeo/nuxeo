@@ -30,9 +30,6 @@ import org.nuxeo.ecm.core.api.DocumentSecurityException;
 
 public class ExceptionHelper {
 
-    /**
-     * 
-     */
     private static final String CLIENT_ABORT_EXCEPTION = "ClientAbortException";
 
     private ExceptionHelper() {

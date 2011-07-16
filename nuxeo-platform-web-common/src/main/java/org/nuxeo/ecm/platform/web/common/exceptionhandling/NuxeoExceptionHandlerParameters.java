@@ -26,10 +26,8 @@ import org.nuxeo.ecm.platform.web.common.exceptionhandling.service.RequestDumper
 
 /**
  * @author arussel, Benjamin JALON
- *
  */
 public class NuxeoExceptionHandlerParameters {
-
 
     protected String bundleName;
 
@@ -90,6 +88,5 @@ public class NuxeoExceptionHandlerParameters {
     public void setDefaultErrorPage(String defaultErrorPage) {
         this.defaultErrorPage = defaultErrorPage;
     }
-
 
 }

@@ -69,7 +69,6 @@ public interface CreationContainerListProvider {
      * @param documentManager the current session context
      * @param docType the type of document to create
      * @return the list of candidate containers
-     * @throws Exception
      */
     DocumentModelList getCreationContainerList(CoreSession documentManager,
             String docType) throws Exception;

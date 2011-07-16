@@ -107,8 +107,9 @@ public abstract class LDAPDirectoryTestCase extends NXRuntimeTestCase {
         LDAPSession session = (LDAPSession) getLDAPDirectory("userDirectory").getSession();
         try {
             DirContext ctx = session.getContext();
-            for (String ldifFile : getLdifFiles())
+            for (String ldifFile : getLdifFiles()) {
                 loadDataFromLdif(ldifFile, ctx);
+            }
         } finally {
             session.close();
         }

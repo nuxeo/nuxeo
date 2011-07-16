@@ -59,14 +59,14 @@ public class OpenUrlDescriptor implements Serializable {
     }
 
     public Pattern getCompiledGrantPattern() {
-        if (compiledGrantPattern == null && (grantPattern!=null && grantPattern.length()>0)) {
+        if (compiledGrantPattern == null && grantPattern!=null && grantPattern.length()>0) {
             compiledGrantPattern = Pattern.compile(grantPattern);
         }
         return compiledGrantPattern;
     }
 
     public Pattern getCompiledDenyPattern() {
-        if (compiledDenyPattern == null && (denyPattern!=null && denyPattern.length()>0)) {
+        if (compiledDenyPattern == null && denyPattern!=null && denyPattern.length()>0) {
             compiledDenyPattern = Pattern.compile(denyPattern);
         }
         return compiledDenyPattern;
@@ -82,7 +82,6 @@ public class OpenUrlDescriptor implements Serializable {
     }
 
     public boolean allowByPassAuth(HttpServletRequest httpRequest) {
-
         String uri = httpRequest.getRequestURI();
         String method = httpRequest.getMethod();
 
@@ -109,4 +108,5 @@ public class OpenUrlDescriptor implements Serializable {
         }
         return false;
     }
+
 }

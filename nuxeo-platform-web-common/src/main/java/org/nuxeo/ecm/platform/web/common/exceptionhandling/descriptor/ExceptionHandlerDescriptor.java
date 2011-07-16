@@ -22,7 +22,6 @@ import org.nuxeo.ecm.platform.web.common.exceptionhandling.NuxeoExceptionHandler
 
 /**
  * @author arussel
- *
  */
 @XObject("exceptionHandler")
 public class ExceptionHandlerDescriptor {

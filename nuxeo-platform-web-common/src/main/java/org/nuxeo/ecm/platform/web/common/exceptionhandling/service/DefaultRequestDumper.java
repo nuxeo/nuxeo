@@ -27,7 +27,6 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * @author arussel
- *
  */
 public class DefaultRequestDumper implements RequestDumper {
 

@@ -90,7 +90,6 @@ public class AjaxProxyServlet extends HttpServlet {
     }
 
     protected void handleProxy(String method, HttpServletRequest req, HttpServletResponse resp) throws IOException {
-
         // fetch parameters
         String requestType = req.getParameter("type");
         if (requestType == null) {
@@ -114,7 +113,7 @@ public class AjaxProxyServlet extends HttpServlet {
 
         if (entry.useCache()) {
             if (entry.useCache()) {
-                cacheKey = cacheKey + getSessionId(req);
+                cacheKey += getSessionId(req);
             }
             try {
                 cacheLock.readLock().lock();

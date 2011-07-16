@@ -44,23 +44,18 @@ public class ContentTemplateServiceImpl extends DefaultComponent implements
 
     private static final Log log = LogFactory.getLog(ContentTemplateServiceImpl.class);
 
-    private Map<String, ContentFactoryDescriptor> factories;
+    private final Map<String, ContentFactoryDescriptor> factories = new HashMap<String, ContentFactoryDescriptor>();
 
-    private Map<String, FactoryBindingDescriptor> factoryBindings;
+    private final Map<String, FactoryBindingDescriptor> factoryBindings = new HashMap<String, FactoryBindingDescriptor>();
 
-    private Map<String, ContentFactory> factoryInstancesByType;
+    private final Map<String, ContentFactory> factoryInstancesByType = new HashMap<String, ContentFactory>();
 
-    private Map<String, ContentFactory> factoryInstancesByFacet;
+    private final Map<String, ContentFactory> factoryInstancesByFacet = new HashMap<String, ContentFactory>();
 
     private RepositoryInitializationHandler initializationHandler;
 
     @Override
     public void activate(ComponentContext context) {
-        factories = new HashMap<String, ContentFactoryDescriptor>();
-        factoryBindings = new HashMap<String, FactoryBindingDescriptor>();
-        factoryInstancesByType = new HashMap<String, ContentFactory>();
-        factoryInstancesByFacet = new HashMap<String, ContentFactory>();
-
         // register our Repo init listener
         initializationHandler = new RepositoryInitializationListener();
         initializationHandler.install();

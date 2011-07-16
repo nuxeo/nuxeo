@@ -25,7 +25,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  * executing a query on a Directory.
  *
  * @author glefter@nuxeo.com
- * @Deprecated
+ * @deprecated will be removed in 5.5
  */
 //FIXME: not used, remove?
 @Deprecated

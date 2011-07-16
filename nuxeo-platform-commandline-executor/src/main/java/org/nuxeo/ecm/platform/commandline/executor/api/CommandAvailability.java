@@ -33,26 +33,26 @@ public class CommandAvailability implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    protected String installMessage;
+    protected final String installMessage;
 
-    protected String errorMessage;
+    protected final String errorMessage;
 
     protected final boolean available;
-
-
-    public CommandAvailability() {
-        available = true;
-    }
-
-    public CommandAvailability(String errorMessage) {
-        available = false;
-        this.errorMessage = errorMessage;
-    }
 
     public CommandAvailability(String installMessage, String errorMessage) {
         available = false;
         this.installMessage = installMessage;
         this.errorMessage = errorMessage;
+    }
+
+    public CommandAvailability(String errorMessage) {
+        this(null, errorMessage);
+    }
+
+    public CommandAvailability() {
+        available = true;
+        installMessage = null;
+        errorMessage = null;
     }
 
     public String getInstallMessage() {

@@ -68,12 +68,12 @@ public class FilterConfigDescriptor implements Serializable {
     }
 
     public FilterConfigDescriptor(String name, String pattern, boolean grant,
-            boolean tx, boolean sync, boolean cached, boolean isPrivate, String cacheTime) {
+            boolean useTx, boolean useSync, boolean cached, boolean isPrivate, String cacheTime) {
         this.name = name;
         this.pattern = Framework.expandVars(pattern);
         this.grant = grant;
-        this.useSync = sync;
-        this.useTx = tx;
+        this.useSync = useSync;
+        this.useTx = useTx;
         this.cached = cached;
         this.isPrivate = isPrivate;
         this.cacheTime = cacheTime;

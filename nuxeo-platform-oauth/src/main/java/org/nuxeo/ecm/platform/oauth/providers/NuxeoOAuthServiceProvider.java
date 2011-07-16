@@ -53,15 +53,15 @@ public class NuxeoOAuthServiceProvider extends OAuthServiceProvider {
         super(requestTokenURL, userAuthorizationURL, accessTokenURL);
     }
 
-    public NuxeoOAuthServiceProvider(Long id, String gadgetUrl, String serviceName, String consumerKey, String consumerSecret, String publicKey ) {
-        super(null,null,null);
-        this.id=id;
-        this.gadgetUrl=gadgetUrl;
+    public NuxeoOAuthServiceProvider(Long id, String gadgetUrl, String serviceName, String consumerKey, String consumerSecret, String publicKey) {
+        super(null, null, null);
+        this.id = id;
+        this.gadgetUrl = gadgetUrl;
         this.serviceName = serviceName;
         this.consumerKey = consumerKey;
         this.consumerSecret = consumerSecret;
         this.publicKey = publicKey;
-        this.readOnly=true;
+        this.readOnly = true;
     }
 
     public static NuxeoOAuthServiceProvider createFromDirectoryEntry(DocumentModel entry) throws ClientException {
@@ -81,7 +81,7 @@ public class NuxeoOAuthServiceProvider extends OAuthServiceProvider {
         provider.serviceName = (String) entry.getProperty(SCHEMA, "serviceName");
         Boolean enabledFlag = (Boolean) entry.getProperty(SCHEMA, "enabled");
         if (Boolean.FALSE.equals(enabledFlag)) {
-            provider.enabled=false;
+            provider.enabled = false;
         }
         return provider;
     }
@@ -132,6 +132,7 @@ public class NuxeoOAuthServiceProvider extends OAuthServiceProvider {
     public String getRequestTokenUR() {
         return requestTokenURL;
     }
+
     public String getUserAuthorizationURL() {
         return userAuthorizationURL;
     }

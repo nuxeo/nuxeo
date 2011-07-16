@@ -53,7 +53,7 @@ public class DirectoryServiceImpl extends DefaultComponent implements
 
         try {
             LocalConfigurationService localConfigurationService = Framework.getService(LocalConfigurationService.class);
-            
+
             if (localConfigurationService == null) {
                 log.info("Local configuration not deployed, will use default configuration");
                 return null;
@@ -75,10 +75,6 @@ public class DirectoryServiceImpl extends DefaultComponent implements
      * the directoryName given in parameter. If not this is directoryName +
      * DELIMITER_BETWEEN_DIRECTORY_NAME_AND_SUFFIX + suffix.
      * if directoryName is null, return null.
-     *
-     * @param directoryName
-     * @param configuration
-     * @return
      */
     protected String getWaitingLocalDirectoryName(String directoryName,
             DirectoryConfiguration configuration) {
@@ -98,7 +94,6 @@ public class DirectoryServiceImpl extends DefaultComponent implements
         }
 
         return directoryName;
-
     }
 
     public Directory getDirectory(String directoryName)
@@ -119,7 +114,6 @@ public class DirectoryServiceImpl extends DefaultComponent implements
             }
         }
         return dir;
-
     }
 
     public Directory getDirectory(String name, DocumentModel documentContext)
@@ -128,14 +122,13 @@ public class DirectoryServiceImpl extends DefaultComponent implements
             return null;
         }
 
-        Directory directory = null;
         String localDirectoryName = getWaitingLocalDirectoryName(name, getDirectoryConfiguration(documentContext));
 
-        directory = getDirectory(localDirectoryName);
+        Directory directory = getDirectory(localDirectoryName);
 
-        if (directory == null && (!name.equals(localDirectoryName))) {
-                log.debug("The local directory name " + localDirectoryName + " not found. Look for the default one : " + name);
-                directory = getDirectory(name);
+        if (directory == null && !name.equals(localDirectoryName)) {
+            log.debug("The local directory name " + localDirectoryName + " not found. Look for the default one : " + name);
+            directory = getDirectory(name);
         }
 
         return directory;

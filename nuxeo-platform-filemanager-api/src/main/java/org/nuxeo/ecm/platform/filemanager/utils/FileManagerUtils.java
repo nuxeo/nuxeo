@@ -41,10 +41,6 @@ public final class FileManagerUtils {
 
     /**
      * Returns the contents of the file in a byte array.
-     *
-     * @param file
-     * @return the byte array
-     * @throws IOException
      */
     public static byte[] getBytesFromFile(File file) throws IOException {
 
@@ -75,9 +71,6 @@ public final class FileManagerUtils {
 
     /**
      * Returns the fileName of a file.
-     *
-     * @param file
-     * @return the FileName String
      */
     public static String fetchFileName(File file) throws MalformedURLException {
         // Fetching filename

@@ -41,18 +41,17 @@ import org.nuxeo.common.utils.Path;
 
 public class AggregatedJSProvider extends HttpServlet {
 
-    private static final long serialVersionUID = 1L;
+    public static final String MINIMIZER_IMPL_KEY = "org.nuxeo.ecm.platform.web.common.resources.JSMinimizer";
 
     protected static final ReadWriteLock cacheLock = new ReentrantReadWriteLock();
     protected static final Map<String, String> cachedResponses = new HashMap<String, String>();
 
-    private static final Log log = LogFactory
-            .getLog(AggregatedJSProvider.class);
-
-    protected static JSMinimizer minimizer = null;
-    public static final String MINIMIZER_IMPL_KEY = "org.nuxeo.ecm.platform.web.common.resources.JSMinimizer";
+    protected static JSMinimizer minimizer;
 
     protected static final String SCRIPT_SEP = "\\|";
+
+    private static final long serialVersionUID = 1L;
+    private static final Log log = LogFactory.getLog(AggregatedJSProvider.class);
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -111,22 +110,19 @@ public class AggregatedJSProvider extends HttpServlet {
             File scriptFile = new File(scriptPath.toString());
             if (scriptFile.exists()) {
                 buf.append("// *******************************\n");
-                buf.append("// include script " + script);
-                buf.append("\n");
+                buf.append("// include script " + script + "\n");
 
                 InputStream is = new FileInputStream(scriptFile);
-                if (is != null) {
-                    BufferedReader reader = new BufferedReader(
-                            new InputStreamReader(is));
-                    String line = null;
-                    StringBuilder sb = new StringBuilder();
-                    while ((line = reader.readLine()) != null) {
-                        sb.append(line + "\n");
-                    }
-                    is.close();
-                    buf.append(sb.toString());
-                    buf.append("\n");
+                BufferedReader reader = new BufferedReader(
+                        new InputStreamReader(is));
+                String line = null;
+                StringBuilder sb = new StringBuilder();
+                while ((line = reader.readLine()) != null) {
+                    sb.append(line + "\n");
                 }
+                is.close();
+                buf.append(sb.toString());
+                buf.append("\n");
             }
         }
         if (minimize) {
@@ -170,7 +166,7 @@ public class AggregatedJSProvider extends HttpServlet {
     protected class DummyMinimizer implements JSMinimizer {
 
         public String minimize(String jsScriptContent) {
-            StringBuffer sb = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
             sb.append("// No (correct) JSMinimizer implementation class was defined\n");
             sb.append("please check web.xml to set init parameter\n");
             sb.append(jsScriptContent);

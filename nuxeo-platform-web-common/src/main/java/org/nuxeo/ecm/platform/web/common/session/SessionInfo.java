@@ -53,7 +53,7 @@ public class SessionInfo implements Comparable<SessionInfo> {
     }
 
     public void updateLastAccessTime() {
-        this.lastAccessTime = System.currentTimeMillis();
+        lastAccessTime = System.currentTimeMillis();
     }
 
     public String getLastAccessUrl() {
@@ -62,7 +62,7 @@ public class SessionInfo implements Comparable<SessionInfo> {
 
     public void setLastAccessUrl(String lastAccessUrl) {
         this.lastAccessUrl = lastAccessUrl;
-        nbAccess+=1;
+        nbAccess += 1;
     }
 
     public long getCreationTime() {
@@ -131,7 +131,7 @@ public class SessionInfo implements Comparable<SessionInfo> {
 
     @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append("Sid=");
         sb.append(sessionId);
         sb.append(" : login=");

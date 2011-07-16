@@ -37,11 +37,8 @@ import net.oauth.signature.pem.PEMReader;
  * storage in SQL Directory easier.
  *
  * @author tiry
- *
  */
 public class NuxeoOAuthConsumer extends OAuthConsumer {
-
-    private static final long serialVersionUID = 1L;
 
     public static final String ALLOW_SIGNEDFETCH = "allowSignedFetch";
 
@@ -50,18 +47,20 @@ public class NuxeoOAuthConsumer extends OAuthConsumer {
     public static final String SIGNEDFETCH_OPENSOCIAL_OWNER = "opensocial:owner";
     public static final String SIGNEDFETCH_DEDICATED_USER = "nuxeo:user";
 
-    protected String publicKey = null;
-    protected String description = null;
+    public static final String SCHEMA = "oauthConsumer";
+
+    protected static final Log log = LogFactory.getLog(NuxeoOAuthConsumer.class);
+
+    private static final long serialVersionUID = 1L;
+
+    protected String publicKey;
+    protected String description;
     protected String signedFetchSupport = SIGNEDFETCH_NONE;
-    protected String dedicatedLogin = null;
+    protected String dedicatedLogin;
 
     protected boolean enabled = true;
 
     protected boolean allowBypassVerifier = false;
-
-    public static final String SCHEMA = "oauthConsumer";
-
-    protected static final Log log = LogFactory.getLog(NuxeoOAuthConsumer.class);
 
     public static NuxeoOAuthConsumer createFromDirectoryEntry(
             DocumentModel entry, String keyType) throws ClientException {
@@ -71,10 +70,10 @@ public class NuxeoOAuthConsumer extends OAuthConsumer {
                 "consumerSecret");
         String rsaKey = (String) entry.getProperty(SCHEMA, "publicKey");
 
-        NuxeoOAuthConsumer consumer = new NuxeoOAuthConsumer(callbackURL, consumerKey, consumerSecret,null);
+        NuxeoOAuthConsumer consumer = new NuxeoOAuthConsumer(callbackURL, consumerKey, consumerSecret, null);
 
         if (OAuth.RSA_SHA1.equals(keyType)) {
-            if (rsaKey!=null) {
+            if (rsaKey != null) {
                 if (rsaKey.contains(PEMReader.PUBLIC_X509_MARKER)) {
                     consumer.setProperty(RSA_SHA1.PUBLIC_KEY, rsaKey);
                 } else {
@@ -89,12 +88,12 @@ public class NuxeoOAuthConsumer extends OAuthConsumer {
 
         Boolean enabledFlag = (Boolean) entry.getProperty(SCHEMA, "enabled");
         if (Boolean.FALSE.equals(enabledFlag)) {
-            consumer.enabled=false;
+            consumer.enabled = false;
         }
 
         Boolean allowBypassVerifierFlag = (Boolean) entry.getProperty(SCHEMA, "allowBypassVerifier");
         if (Boolean.TRUE.equals(allowBypassVerifierFlag)) {
-            consumer.allowBypassVerifier=true;
+            consumer.allowBypassVerifier = true;
         }
 
         return consumer;
@@ -139,11 +138,10 @@ public class NuxeoOAuthConsumer extends OAuthConsumer {
     }
 
     public boolean allowSignedFetch() {
-
-        if (signedFetchSupport==null || SIGNEDFETCH_NONE.equals(signedFetchSupport)) {
+        if (signedFetchSupport == null || SIGNEDFETCH_NONE.equals(signedFetchSupport)) {
             return false;
         }
-        if (SIGNEDFETCH_DEDICATED_USER.equals(signedFetchSupport) && dedicatedLogin==null) {
+        if (SIGNEDFETCH_DEDICATED_USER.equals(signedFetchSupport) && dedicatedLogin == null) {
             return false;
         }
         return true;
@@ -165,12 +163,12 @@ public class NuxeoOAuthConsumer extends OAuthConsumer {
     }
 
     public String getSecret(String type) {
-        if (type==null || OAuth.HMAC_SHA1.equals(type)) {
+        if (type == null || OAuth.HMAC_SHA1.equals(type)) {
             return consumerSecret;
         } else if (OAuth.RSA_SHA1.equals(type)) {
             return "";
         } else {
-            log.error("Unknonw type of key :" + type);
+            log.error("Unknown type of key :" + type);
             return null;
         }
     }

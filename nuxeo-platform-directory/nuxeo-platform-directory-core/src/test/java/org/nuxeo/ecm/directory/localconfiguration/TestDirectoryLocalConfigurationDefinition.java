@@ -45,8 +45,6 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 import com.google.inject.Inject;
 
-;
-
 /**
  * @author <a href="mailto:bjalon@nuxeo.com">Benjamin JALON</a>
  * @since 5.4.2
@@ -91,7 +89,6 @@ public class TestDirectoryLocalConfigurationDefinition {
                 workspace);
 
         assertNull(configuration.getDirectorySuffix());
-
     }
 
     @Test
@@ -125,7 +122,6 @@ public class TestDirectoryLocalConfigurationDefinition {
         assertNotNull(configuration);
         assertEquals("suffix", configuration.getDirectorySuffix());
     }
-
 
     protected void setDirectorySuffix(DocumentModel doc, String directorySuffix)
             throws ClientException {

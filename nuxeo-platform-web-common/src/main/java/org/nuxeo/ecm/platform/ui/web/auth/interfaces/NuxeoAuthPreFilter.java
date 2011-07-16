@@ -27,32 +27,25 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
 /**
- * The Authentication filter already provides a complexe plugin model.
- * Unfortunatly in some cases, it's easier to have a dedciated filter to
- * implment the custom auth logic. But in this case, you have to configure the
+ * The Authentication filter already provides a complex plugin model.
+ * Unfortunately in some cases, it's easier to have a dedicated filter to
+ * implement the custom auth logic. But in this case, you have to configure the
  * new filter for each url pattern that is already protected by
  * NuxeoAuthenticationFilter.
  *
  * In order to avoid that you can run your Filter as a pre-Filter for the
- * NuxeoAUthenticationFilter. For that you need to implement this interface and
+ * NuxeoAuthenticationFilter. For that you need to implement this interface and
  * register your implementation via the preFilter extension point.
  *
  * @author tiry
- *
  */
 public interface NuxeoAuthPreFilter {
 
     /**
-     * Main Filter method @See {@see Filter}
+     * Main Filter method @See {@see Filter}.
      *
      * The FilterChain is only composed of the preFilters and the
-     * NuxeoAuthenticationFilter
-     *
-     * @param request
-     * @param response
-     * @return
-     * @throws IOException
-     * @throws ServletException
+     * NuxeoAuthenticationFilter.
      */
     void doFilter(ServletRequest request, ServletResponse response,
             FilterChain chain) throws IOException, ServletException;

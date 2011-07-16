@@ -33,10 +33,11 @@ public class CommandTestResult implements Serializable {
 
     protected final boolean testSuccess;
 
-    protected String errorMessage;
+    protected final String errorMessage;
 
     public CommandTestResult() {
         testSuccess = true;
+        errorMessage = null;
     }
 
     public CommandTestResult(String error) {

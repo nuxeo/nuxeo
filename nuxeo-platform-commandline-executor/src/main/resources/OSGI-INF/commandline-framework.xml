@@ -29,7 +29,7 @@
     @author Thierry Delprat (td@nuxeo.com)
     </documentation>
     <object
-      class="org.nuxeo.ecm.platform.commandline.executor.service.EnvironementDescriptor" />
+      class="org.nuxeo.ecm.platform.commandline.executor.service.EnvironmentDescriptor" />
   </extension-point>
 
   <extension-point name="command">

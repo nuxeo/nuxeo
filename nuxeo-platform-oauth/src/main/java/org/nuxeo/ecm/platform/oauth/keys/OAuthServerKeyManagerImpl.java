@@ -25,29 +25,28 @@ import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
  * Implements the {@link OAuthServerKeyManager} interface.
- * Manage on extensition point to configure RSA Key Pair.
+ * Manages an extention point to configure RSA Key Pair.
  * Shindig/Nuxeo HMAC shared secret is dynamically generated at startup time
- * (and shared between Nuxeo OAUth Filter and Shindig directly in memory)
+ * (and shared between Nuxeo OAUth Filter and Shindig directly in memory).
  *
  * @author tiry
- *
  */
 public class OAuthServerKeyManagerImpl extends DefaultComponent implements OAuthServerKeyManager {
 
-    protected ServerKeyDescriptor serverKeyDescriptor=null;
+    protected ServerKeyDescriptor serverKeyDescriptor;
 
-    public static final String XP_SERVER_KEY ="serverKeyPair";
+    public static final String XP_SERVER_KEY = "serverKeyPair";
 
-    protected NuxeoOAuthConsumer consumer =null;
+    protected NuxeoOAuthConsumer consumer;
 
-    protected String internalKey=null;
+    protected String internalKey;
 
-    protected String internalSecret=null;
+    protected String internalSecret;
 
     @Override
     public void activate(ComponentContext context) throws Exception {
         // generate the random secret used between Shindig and Nuxeo
-        internalKey = "nuxeo4shindig-"+ UUID.randomUUID().toString();
+        internalKey = "nuxeo4shindig-" + UUID.randomUUID().toString();
         internalSecret = UUID.randomUUID().toString();
     }
 
@@ -71,7 +70,7 @@ public class OAuthServerKeyManagerImpl extends DefaultComponent implements OAuth
 
     @Override
     public String getPublicKeyCertificate() {
-        if (serverKeyDescriptor!=null) {
+        if (serverKeyDescriptor != null) {
             return serverKeyDescriptor.externalPublicCertificate;
         }
         return null;
@@ -84,7 +83,7 @@ public class OAuthServerKeyManagerImpl extends DefaultComponent implements OAuth
 
     @Override
     public String getPrivateKey() {
-        if (serverKeyDescriptor!=null) {
+        if (serverKeyDescriptor != null) {
             return serverKeyDescriptor.externalPrivateKey;
         }
         return null;
@@ -97,14 +96,14 @@ public class OAuthServerKeyManagerImpl extends DefaultComponent implements OAuth
 
     @Override
     public String getKeyName() {
-        if (serverKeyDescriptor!=null) {
+        if (serverKeyDescriptor != null) {
             return serverKeyDescriptor.externalPrivateKeyName;
         }
         return null;
     }
 
     protected String stripOpenSSL(String key) {
-        if (key==null) {
+        if (key == null) {
             return null;
         }
         return key.replaceAll("-----[A-Z ]*-----", "").replace("\n", "");
@@ -122,7 +121,7 @@ public class OAuthServerKeyManagerImpl extends DefaultComponent implements OAuth
 
     @Override
     public NuxeoOAuthConsumer getInternalConsumer() {
-        if (consumer==null) {
+        if (consumer == null) {
             consumer = new InternalNuxeoOAuthConsumer(internalKey, internalSecret);
         }
         return consumer;

@@ -104,7 +104,6 @@ public class TestService extends NXRuntimeTestCase {
         assertTrue(config.isCached());
         assertTrue(config.isPrivate());
         assertEquals("3000", config.getCacheTime());
-
     }
 
 }

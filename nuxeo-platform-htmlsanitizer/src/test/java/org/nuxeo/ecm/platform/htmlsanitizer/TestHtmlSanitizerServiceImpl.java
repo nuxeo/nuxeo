@@ -61,6 +61,7 @@ public class TestHtmlSanitizerServiceImpl {
         doc = session.createDocument(doc);
         String note = (String) doc.getPropertyValue("note");
         assertEquals(SANITIZED_HTML, note);
+
         session.save();
         doc.setPropertyValue("note", BAD_HTML);
         doc = session.saveDocument(doc);
@@ -76,6 +77,7 @@ public class TestHtmlSanitizerServiceImpl {
         doc = session.createDocument(doc);
         String note = (String) doc.getPropertyValue("note");
         assertEquals(SANITIZED_XML, note);
+
         session.save();
         doc.setPropertyValue("note", BAD_XML);
         doc = session.saveDocument(doc);
@@ -83,8 +85,8 @@ public class TestHtmlSanitizerServiceImpl {
         assertEquals(SANITIZED_XML, note);
     }
 
-    @Test
     // but text/plain notes must not be sanitized
+    @Test
     public void sanitizeNoteText() throws Exception {
         DocumentModel doc = session.createDocumentModel("/", "n", "Note");
         doc.setPropertyValue("note", NORMAL_TEXT);
@@ -92,6 +94,7 @@ public class TestHtmlSanitizerServiceImpl {
         doc = session.createDocument(doc);
         String note = (String) doc.getPropertyValue("note");
         assertEquals(NORMAL_TEXT, note);
+
         session.save();
         doc.setPropertyValue("note", NORMAL_TEXT);
         doc = session.saveDocument(doc);

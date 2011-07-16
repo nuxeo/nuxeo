@@ -35,7 +35,6 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.management.counters.CounterHelper;
 
 /**
- *
  * Singleton used to keep track of all HttpSessions. This Singleton is
  * populated/updated either via the HttpSessionListener or via directedly via
  * the Authentication filter
@@ -45,15 +44,15 @@ import org.nuxeo.runtime.management.counters.CounterHelper;
  */
 public class NuxeoHttpSessionMonitor {
 
-    protected static Log log = LogFactory.getLog(NuxeoHttpSessionMonitor.class);
-
-    protected static NuxeoHttpSessionMonitor instance = new NuxeoHttpSessionMonitor();
-
     public static final String REQUEST_COUNTER = "org.nuxeo.web.requests";
 
     public static final String SESSION_COUNTER = "org.nuxeo.web.sessions";
 
     public static final long REQUEST_COUNTER_STEP = 5;
+
+    protected static final Log log = LogFactory.getLog(NuxeoHttpSessionMonitor.class);
+
+    protected static NuxeoHttpSessionMonitor instance = new NuxeoHttpSessionMonitor();
 
     protected long globalRequestCounter;
 
@@ -64,14 +63,14 @@ public class NuxeoHttpSessionMonitor {
     protected Map<String, SessionInfo> sessionTracker = new ConcurrentHashMap<String, SessionInfo>();
 
     protected void increaseRequestCounter() {
-        globalRequestCounter+=1;
-        if (globalRequestCounter==1 || globalRequestCounter%REQUEST_COUNTER_STEP==0) {
+        globalRequestCounter += 1;
+        if (globalRequestCounter == 1 || globalRequestCounter % REQUEST_COUNTER_STEP == 0) {
             CounterHelper.setCounterValue(REQUEST_COUNTER, globalRequestCounter);
         }
     }
 
     public SessionInfo addEntry(HttpSession session) {
-        if (session == null || session.getId()==null) {
+        if (session == null || session.getId() == null) {
             return null;
         }
         SessionInfo si = new SessionInfo(session.getId());
@@ -81,12 +80,12 @@ public class NuxeoHttpSessionMonitor {
 
     public SessionInfo associatedUser(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
-        if (session != null && session.getId()!=null) {
+        if (session != null && session.getId() != null) {
             SessionInfo si = sessionTracker.get(session.getId());
             if (si == null) {
                 si = addEntry(session);
             }
-            if (request.getUserPrincipal() != null && si.getLoginName()==null) {
+            if (request.getUserPrincipal() != null && si.getLoginName() == null) {
                 si.setLoginName(request.getUserPrincipal().getName());
                 CounterHelper.increaseCounter(SESSION_COUNTER);
             }
@@ -98,14 +97,14 @@ public class NuxeoHttpSessionMonitor {
     }
 
     public SessionInfo associatedUser(HttpSession session, String userName) {
-        if (session == null || session.getId()==null) {
+        if (session == null || session.getId() == null) {
             return null;
         }
         SessionInfo si = sessionTracker.get(session.getId());
         if (si == null) {
             si = addEntry(session);
         }
-        if (si.getLoginName()==null) {
+        if (si.getLoginName() == null) {
             si.setLoginName(userName);
             CounterHelper.increaseCounter(SESSION_COUNTER);
         }
@@ -114,7 +113,7 @@ public class NuxeoHttpSessionMonitor {
 
     public SessionInfo updateEntry(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
-        if (session != null && session.getId()!=null) {
+        if (session != null && session.getId() != null) {
             SessionInfo si = sessionTracker.get(session.getId());
             if (si != null) {
                 si.updateLastAccessTime();
@@ -130,7 +129,7 @@ public class NuxeoHttpSessionMonitor {
 
     public void removeEntry(String sid) {
         SessionInfo si = sessionTracker.remove(sid);
-        if (si!=null && si.getLoginName()!=null) {
+        if (si != null && si.getLoginName() != null) {
             CounterHelper.decreaseCounter(SESSION_COUNTER);
         }
     }
@@ -143,7 +142,7 @@ public class NuxeoHttpSessionMonitor {
 
         List<SessionInfo> sortedSessions = new ArrayList<SessionInfo>();
         for (SessionInfo si : getTrackedSessions()) {
-            if (si.getLoginName()!=null) {
+            if (si.getLoginName() != null) {
                 sortedSessions.add(si);
             }
         }
@@ -152,16 +151,14 @@ public class NuxeoHttpSessionMonitor {
     }
 
     public List<SessionInfo> getSortedSessions(long maxInactivity) {
-
         List<SessionInfo> sortedSessions = new ArrayList<SessionInfo>();
         for (SessionInfo si : getTrackedSessions()) {
-            if (si.getLoginName()!=null && si.getInactivityInS() < maxInactivity) {
+            if (si.getLoginName() != null && si.getInactivityInS() < maxInactivity) {
                 sortedSessions.add(si);
             }
         }
         Collections.sort(sortedSessions);
         return sortedSessions;
-
     }
 
     public long getGlobalRequestCounter() {

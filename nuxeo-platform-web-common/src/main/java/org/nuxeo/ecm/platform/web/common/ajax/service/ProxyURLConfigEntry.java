@@ -20,10 +20,7 @@
 package org.nuxeo.ecm.platform.web.common.ajax.service;
 
 /**
- *
- *
  * @author tiry
- *
  */
 public class ProxyURLConfigEntry {
 
@@ -37,12 +34,12 @@ public class ProxyURLConfigEntry {
 
 
     public ProxyURLConfigEntry() {
-        this.granted=false;
+        granted = false;
     }
 
-    public ProxyURLConfigEntry( boolean granted, ProxyableURLDescriptor desc) {
-        this.granted=granted;
-        this.descriptorName=desc.getName();
+    public ProxyURLConfigEntry(boolean granted, ProxyableURLDescriptor desc) {
+        this.granted = granted;
+        descriptorName = desc.getName();
         useCache = desc.useCache;
         cachePerSession = desc.cachePerSession;
     }
@@ -65,8 +62,5 @@ public class ProxyURLConfigEntry {
         }
         return cachePerSession;
     }
-
-
-
 
 }

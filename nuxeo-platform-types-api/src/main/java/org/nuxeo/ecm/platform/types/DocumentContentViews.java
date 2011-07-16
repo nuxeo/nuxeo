@@ -63,9 +63,9 @@ public class DocumentContentViews implements Serializable {
     public String[] getContentViewNamesForExport() {
         List<String> res = new ArrayList<String>();
         if (contentViews != null) {
-            for (int i = 0; i < contentViews.length; i++) {
-                if (contentViews[i].getShowInExportView()) {
-                    res.add(contentViews[i].getContentViewName());
+            for (DocumentContentView contentView : contentViews) {
+                if (contentView.getShowInExportView()) {
+                    res.add(contentView.getContentViewName());
                 }
             }
         }

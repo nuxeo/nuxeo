@@ -26,23 +26,20 @@ import org.nuxeo.ecm.platform.query.api.PageProvider;
  * @since 5.4.2
  */
 public abstract class AbstractGroupsPageProvider extends
-        AbstractPageProvider<DocumentModel> implements
-        PageProvider<DocumentModel> {
-    protected abstract List<DocumentModel> searchAllGroups() throws Exception;
+        AbstractPageProvider<DocumentModel> {
 
-    protected abstract List<DocumentModel> searchGroups() throws Exception;
+    protected static final String GROUPS_LISTING_MODE_PROPERTY = "groupsListingMode";
+    protected static final String ALL_MODE = "all";
+    protected static final String SEARCH_ONLY_MODE = "search_only";
+    protected static final String SEARCH_OVERFLOW_ERROR_MESSAGE = "label.security.searchOverFlow";
 
     private static final Log log = LogFactory.getLog(AbstractGroupsPageProvider.class);
 
     private static final long serialVersionUID = 1L;
 
-    protected static final String GROUPS_LISTING_MODE_PROPERTY = "groupsListingMode";
+    protected abstract List<DocumentModel> searchAllGroups() throws Exception;
 
-    protected static final String ALL_MODE = "all";
-
-    protected static final String SEARCH_ONLY_MODE = "search_only";
-
-    protected static final String SEARCH_OVERFLOW_ERROR_MESSAGE = "label.security.searchOverFlow";
+    protected abstract List<DocumentModel> searchGroups() throws Exception;
 
     protected List<DocumentModel> pageGroups;
 
@@ -130,4 +127,5 @@ public abstract class AbstractGroupsPageProvider extends
         super.refresh();
         pageGroups = null;
     }
+
 }

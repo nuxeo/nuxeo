@@ -23,8 +23,9 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @author <a href="mailto:andreas.kalogeropoulos@nuxeo.com">Andreas
  *         kalogeropoulos</a>
- *
+ * @deprecated not used, will be removed in 5.5
  */
+@Deprecated
 public final class NXFileManager {
 
     private NXFileManager() {

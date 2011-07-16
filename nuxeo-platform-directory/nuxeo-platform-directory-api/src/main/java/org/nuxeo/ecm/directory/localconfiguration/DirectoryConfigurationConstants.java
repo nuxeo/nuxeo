@@ -26,4 +26,7 @@ public class DirectoryConfigurationConstants {
 
     public static final String DIRECTORY_CONFIGURATION_FIELD = "dirconf:suffix";
 
+    private DirectoryConfigurationConstants() {
+    }
+
 }

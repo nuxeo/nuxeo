@@ -26,7 +26,6 @@ import org.nuxeo.ecm.platform.web.common.exceptionhandling.service.RequestDumper
 
 /**
  * @author arussel
- *
  */
 @XObject("requestdump")
 public class RequestDumpDescriptor {

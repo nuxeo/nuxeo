@@ -230,7 +230,6 @@ public class DownloadServlet extends HttpServlet {
             Blob blob, String fileName) throws IOException, ServletException {
         InputStream in = null;
         try {
-
             if (fileName == null || fileName.length() == 0) {
                 if (blob.getFilename() != null
                         && blob.getFilename().length() > 0) {

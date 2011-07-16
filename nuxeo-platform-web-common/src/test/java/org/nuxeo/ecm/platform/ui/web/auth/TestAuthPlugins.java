@@ -26,11 +26,11 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestAuthPlugins extends NXRuntimeTestCase {
 
-    private PluggableAuthenticationService authService;
-
     private static final String WEB_BUNDLE = "org.nuxeo.ecm.platform.web.common";
 
     private static final String WEB_BUNDLE_TEST = "org.nuxeo.ecm.platform.web.common.test";
+
+    private PluggableAuthenticationService authService;
 
     @Override
     public void setUp() throws Exception {
@@ -72,7 +72,7 @@ public class TestAuthPlugins extends NXRuntimeTestCase {
         assertFalse(plugin.getStateful());
         assertTrue(plugin.getNeedStartingURLSaving());
         assertEquals("Dummy_LM", plugin.getLoginModulePlugin());
-        assertEquals(
+        assertSame(
                 Class.forName("org.nuxeo.ecm.platform.ui.web.auth.DummyAuthenticator"),
                 plugin.getClassName());
     }

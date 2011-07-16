@@ -46,16 +46,14 @@ import org.nuxeo.ecm.platform.query.api.PageSelections;
  * @since 5.4
  */
 public class CoreQueryAndFetchPageProvider extends
-        AbstractPageProvider<Map<String, Serializable>> implements
-        PageProvider<Map<String, Serializable>> {
+        AbstractPageProvider<Map<String, Serializable>> {
+
+    public static final String CORE_SESSION_PROPERTY = "coreSession";
+    public static final String CHECK_QUERY_CACHE_PROPERTY = "checkQueryCache";
 
     private static final long serialVersionUID = 1L;
 
     private static final Log log = LogFactory.getLog(CoreQueryDocumentPageProvider.class);
-
-    public static final String CORE_SESSION_PROPERTY = "coreSession";
-
-    public static final String CHECK_QUERY_CACHE_PROPERTY = "checkQueryCache";
 
     protected String query;
 

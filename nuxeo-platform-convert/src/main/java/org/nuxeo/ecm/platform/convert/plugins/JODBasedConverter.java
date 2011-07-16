@@ -81,9 +81,7 @@ public class JODBasedConverter implements ExternalConverter {
      * <p>
      * We will ask the mimetype registry service to sniff its mimetype.
      *
-     * @param file
      * @return DocumentFormat for the given file
-     * @throws Exception
      */
     private static DocumentFormat getSourceFormat(File file) throws Exception {
         MimetypeRegistry mimetypeRegistry = Framework.getService(MimetypeRegistry.class);

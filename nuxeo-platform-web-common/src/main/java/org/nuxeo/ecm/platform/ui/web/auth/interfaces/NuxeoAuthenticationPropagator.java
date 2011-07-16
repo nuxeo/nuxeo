@@ -25,8 +25,6 @@ public interface NuxeoAuthenticationPropagator {
 
     /**
      * Propagates userIdentification information from the web context to the ejb context.
-     *
-     * @param cachableUserIdent
      */
     void propagateUserIdentificationInformation(CachableUserIdentificationInfo cachableUserIdent);
 

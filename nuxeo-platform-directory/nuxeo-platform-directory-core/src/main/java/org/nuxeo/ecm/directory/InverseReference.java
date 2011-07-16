@@ -59,7 +59,7 @@ public class InverseReference extends AbstractReference {
         }
         if (dualReference instanceof InverseReference) {
             throw new DirectoryException(String.format(
-                    "InverseReference %s cannot refere to InverseReference %s",
+                    "InverseReference %s cannot refer to InverseReference %s",
                     getFieldName(), dualReferenceName));
         }
     }

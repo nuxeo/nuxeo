@@ -35,6 +35,9 @@ import org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter;
 import org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService;
 import org.nuxeo.runtime.api.Framework;
 
+import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.*;
+import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.DISABLE_REDIRECT_REQUEST_KEY;
+
 /**
  * This exception handler adds security error flag in the URL parameters to
  * ensure the anonymous user will get appropriate error message when being
@@ -63,9 +66,8 @@ public class NuxeoSecurityExceptionHandler extends DefaultNuxeoExceptionHandler 
         }
 
         Principal principal = request.getUserPrincipal();
-        NuxeoPrincipal nuxeoPrincipal;
         if (principal instanceof NuxeoPrincipal) {
-            nuxeoPrincipal = (NuxeoPrincipal) principal;
+            NuxeoPrincipal nuxeoPrincipal = (NuxeoPrincipal) principal;
             if (nuxeoPrincipal.isAnonymous()) {
                 // redirect to login than to requested page
                 if (handleAnonymousException(request, response)) {
@@ -87,22 +89,20 @@ public class NuxeoSecurityExceptionHandler extends DefaultNuxeoExceptionHandler 
     protected boolean handleAnonymousException(HttpServletRequest request,
             HttpServletResponse response) throws IOException, ServletException {
         Map<String, String> urlParameters = new HashMap<String, String>();
-        urlParameters.put(NXAuthConstants.SECURITY_ERROR, "true");
-        urlParameters.put(NXAuthConstants.FORCE_ANONYMOUS_LOGIN, "true");
-        if (request.getAttribute(NXAuthConstants.REQUESTED_URL) != null) {
-            urlParameters.put(
-                    NXAuthConstants.REQUESTED_URL,
-                    (String) request.getAttribute(NXAuthConstants.REQUESTED_URL));
+        urlParameters.put(SECURITY_ERROR, "true");
+        urlParameters.put(FORCE_ANONYMOUS_LOGIN, "true");
+        if (request.getAttribute(REQUESTED_URL) != null) {
+            urlParameters.put(REQUESTED_URL,
+                    (String) request.getAttribute(REQUESTED_URL));
         } else {
-            urlParameters.put(NXAuthConstants.REQUESTED_URL,
+            urlParameters.put(REQUESTED_URL,
                     NuxeoAuthenticationFilter.getRequestedUrl(request));
         }
         // Redirect to login with urlParameters
         if (!response.isCommitted()) {
             String baseURL = initAuthenticationService().getBaseURL(request)
-                    + NXAuthConstants.LOGOUT_PAGE;
-            request.setAttribute(NXAuthConstants.DISABLE_REDIRECT_REQUEST_KEY,
-                    true);
+                    + LOGOUT_PAGE;
+            request.setAttribute(DISABLE_REDIRECT_REQUEST_KEY, true);
             baseURL = URIUtils.addParametersToURIQuery(baseURL, urlParameters);
             response.sendRedirect(baseURL);
             FacesContext fContext = FacesContext.getCurrentInstance();

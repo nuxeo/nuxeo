@@ -34,16 +34,12 @@ public interface NuxeoAuthenticationSessionManager {
     /**
      * Checks whether or not this request was made to perform login.
      * This is tested by the authentication filter to decide if a switch user is needed.
-     *
-     * @param req
-     * @return
      */
     boolean needResetLogin(ServletRequest req);
 
     /**
      * Returns true if request does not require to be authenticated
      *
-     * @param request
      * @return true if request does not require to be authenticated
      */
     boolean canBypassRequest(ServletRequest request);

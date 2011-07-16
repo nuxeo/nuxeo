@@ -48,18 +48,14 @@ public class CommandLineExecutorComponent extends DefaultComponent implements
         CommandLineExecutorService {
 
     public static final String EP_ENV = "environment";
-
     public static final String EP_CMD = "command";
-
     public static final String EP_CMDTESTER = "commandTester";
-
     public static final String DEFAULT_TESTER = "SystemPathTester";
-
     public static final String DEFAULT_EXECUTOR = "ShellExecutor";
 
     protected static Map<String, CommandLineDescriptor> commandDescriptors = new HashMap<String, CommandLineDescriptor>();
 
-    protected static EnvironementDescriptor env = new EnvironementDescriptor();
+    protected static EnvironmentDescriptor env = new EnvironmentDescriptor();
 
     protected static Map<String, CommandTester> testers = new HashMap<String, CommandTester>();
 
@@ -70,7 +66,7 @@ public class CommandLineExecutorComponent extends DefaultComponent implements
     @Override
     public void activate(ComponentContext context) throws Exception {
         commandDescriptors = new HashMap<String, CommandLineDescriptor>();
-        env = new EnvironementDescriptor();
+        env = new EnvironmentDescriptor();
         testers = new HashMap<String, CommandTester>();
         executors = new HashMap<String, Executor>();
         executors.put(DEFAULT_EXECUTOR, new ShellExecutor());
@@ -90,7 +86,7 @@ public class CommandLineExecutorComponent extends DefaultComponent implements
             throws Exception {
 
         if (EP_ENV.equals(extensionPoint)) {
-            env.merge((EnvironementDescriptor) contribution);
+            env.merge((EnvironmentDescriptor) contribution);
         } else if (EP_CMD.equals(extensionPoint)) {
             CommandLineDescriptor desc = (CommandLineDescriptor) contribution;
             String name = desc.getName();
@@ -128,7 +124,7 @@ public class CommandLineExecutorComponent extends DefaultComponent implements
                             + desc.getInstallationDirective() + ')');
                 }
             }
-            desc.setAvalaible(cmdAvailable);
+            desc.setAvailable(cmdAvailable);
             commandDescriptors.put(name, desc);
         } else if (EP_CMDTESTER.equals(extensionPoint)) {
             CommandTesterDescriptor desc = (CommandTesterDescriptor) contribution;
@@ -154,9 +150,7 @@ public class CommandLineExecutorComponent extends DefaultComponent implements
         }
 
         CommandLineDescriptor cmdDesc = commandDescriptors.get(commandName);
-
         Executor executor = executors.get(cmdDesc.getExecutor());
-
         return executor.exec(cmdDesc, params);
     }
 
@@ -167,7 +161,7 @@ public class CommandLineExecutorComponent extends DefaultComponent implements
         }
 
         CommandLineDescriptor desc = commandDescriptors.get(commandName);
-        if (desc.isAvalaible()) {
+        if (desc.isAvailable()) {
             return new CommandAvailability();
         } else {
             return new CommandAvailability(desc.getInstallationDirective(),
@@ -186,7 +180,7 @@ public class CommandLineExecutorComponent extends DefaultComponent implements
 
         for (String cmdName : commandDescriptors.keySet()) {
             CommandLineDescriptor cmd = commandDescriptors.get(cmdName);
-            if (cmd.isAvalaible()) {
+            if (cmd.isAvailable()) {
                 cmds.add(cmdName);
             }
         }

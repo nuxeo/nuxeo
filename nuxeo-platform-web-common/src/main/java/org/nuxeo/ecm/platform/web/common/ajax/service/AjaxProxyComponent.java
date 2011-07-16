@@ -64,7 +64,6 @@ public class AjaxProxyComponent extends DefaultComponent implements AjaxProxySer
     }
 
     protected void registerProxyURL(ProxyableURLDescriptor desc) {
-
         if (urlDescriptors.containsKey(desc.getName())) {
             urlDescriptors.get(desc.getName()).merge(desc);
         } else {
@@ -73,7 +72,6 @@ public class AjaxProxyComponent extends DefaultComponent implements AjaxProxySer
     }
 
     public ProxyURLConfigEntry getConfigForURL(String targetUrl) {
-
         ProxyURLConfigEntry entry = null;
 
         try {
@@ -95,7 +93,6 @@ public class AjaxProxyComponent extends DefaultComponent implements AjaxProxySer
     }
 
     public ProxyURLConfigEntry computeConfigForURL(String targetUrl) {
-
         for (ProxyableURLDescriptor desc : urlDescriptors.values()) {
 
             if (desc.isEnabled()) {

@@ -24,7 +24,7 @@ import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 
 /**
- * Listen to HttpSession events to update the {@link NuxeoHttpSessionMonitor}
+ * Listen to HttpSession events to update the {@link NuxeoHttpSessionMonitor}.
  *
  * @author Tiry (tdelprat@nuxeo.com)
  * @since 5.4.2
@@ -34,7 +34,6 @@ public class NuxeoSessionListener implements HttpSessionListener {
     @Override
     public void sessionCreated(HttpSessionEvent se) {
         NuxeoHttpSessionMonitor.instance().addEntry(se.getSession());
-
     }
 
     @Override

@@ -229,9 +229,11 @@ public class TestMemoryDirectory extends NXRuntimeTestCase {
         filter.put("a", "AAA");
         entries = dir.query(filter);
         assertEquals(1, entries.size());
+
         e = entries.get(0);
         assertEquals("1", e.getId());
         assertEquals("BCD", e.getProperty(SCHEMA_NAME, "b"));
+
         // add unknown field
         filter.put("bobo", "bibi");
         entries = dir.query(filter);
@@ -244,6 +246,7 @@ public class TestMemoryDirectory extends NXRuntimeTestCase {
         filter.put("b", "BCD");
         entries = dir.query(filter);
         assertEquals(1, entries.size());
+
         e = entries.get(0);
         assertEquals("1", e.getId());
         assertEquals("secr", e.getProperty(SCHEMA_NAME, "pw"));
@@ -315,6 +318,7 @@ public class TestMemoryDirectory extends NXRuntimeTestCase {
         list = dir.getProjection(filter, "b");
         assertEquals(1, list.size());
         assertEquals("BCD", list.get(0));
+
         // add unknown field
         filter.put("bobo", "bibi");
         list = dir.getProjection(filter, "a");
@@ -356,8 +360,6 @@ public class TestMemoryDirectory extends NXRuntimeTestCase {
         Map<String, Serializable> filter = Collections.emptyMap();
         Set<String> fulltext = Collections.emptySet();
         Map<String, String> orderBy = new LinkedHashMap<String, String>();
-        DocumentModelList entries;
-        DocumentModel entry;
 
         // our data:
         // 1 -> AAA, BCD
@@ -367,8 +369,9 @@ public class TestMemoryDirectory extends NXRuntimeTestCase {
 
         orderBy.clear();
         orderBy.put("a", "asc");
-        entries = dir.query(filter, fulltext, orderBy);
+        DocumentModelList entries = dir.query(filter, fulltext, orderBy);
         assertEquals(Arrays.asList("1", "2"), entryIds(entries));
+
         orderBy.put("a", "desc");
         entries = dir.query(filter, fulltext, orderBy);
         assertEquals(Arrays.asList("2", "1"), entryIds(entries));
@@ -379,6 +382,7 @@ public class TestMemoryDirectory extends NXRuntimeTestCase {
         orderBy.put("b", "asc");
         entries = dir.query(filter, fulltext, orderBy);
         assertEquals(Arrays.asList("2", "1"), entryIds(entries));
+
         orderBy.put("b", "desc");
         entries = dir.query(filter, fulltext, orderBy);
         assertEquals(Arrays.asList("1", "2"), entryIds(entries));
@@ -437,7 +441,7 @@ public class TestMemoryDirectory extends NXRuntimeTestCase {
 
         // with an equality case
 
-        entry = dir.getEntry("2");
+        DocumentModel entry = dir.getEntry("2");
         entry.setProperty(SCHEMA_NAME, "a", "AAA");
         dir.updateEntry(entry);
 

@@ -41,26 +41,18 @@ public interface OAuthTokenStore {
     OAuthToken createRequestToken(String consumerKey, String callBack);
 
     /**
-     * Generates a verification code and attache it to the REQUEST Token
-     *
-     * @param token
-     * @return
+     * Generates a verification code and attache it to the REQUEST Token.
      */
     OAuthToken addVerifierToRequestToken(String token,Long duration);
 
     /**
      * Retrieves a REQUEST Token given a Token string (extracted from the
-     * Request)
-     *
-     * @param token
-     * @return
+     * Request).
      */
     OAuthToken getRequestToken(String token);
 
     /**
-     * Deletes a REQUEST Token
-     *
-     * @param token
+     * Deletes a REQUEST Token.
      */
     void removeRequestToken(String token);
 
@@ -68,69 +60,45 @@ public interface OAuthTokenStore {
 
     /**
      * Exchanges the REQUEST Token witha Real ACCESS Token (persistent)
-     * Token/TocketSecret Strings are regerated during the exchange
-     *
+     * Token/TocketSecret Strings are regerated during the exchange.
      */
     OAuthToken createAccessTokenFromRequestToken(OAuthToken requestToken);
 
     /**
-     * Retrieves an ACCESS from the store
-     *
-     * @param token
-     * @return
+     * Retrieves an ACCESS from the store.
      */
     OAuthToken getAccessToken(String token);
 
     /**
-     * Deletes an ACCESS Token from the storage
-     *
-     * @param token
-     * @throws Exception
+     * Deletes an ACCESS Token from the storage.
      */
     void removeAccessToken(String token) throws Exception;
 
     /**
-     * Lists ACCESS Token associated to a User
-     *
-     * @param login
-     * @return
+     * Lists ACCESS Token associated to a User.
      */
     List<OAuthToken> listAccessTokenForUser(String login);
 
     /**
-     * Lists ACCESS Token associated to a Consumer application
-     *
-     * @param consumerKey
-     * @return
+     * Lists ACCESS Token associated to a Consumer application.
      */
     List<OAuthToken> listAccessTokenForConsumer(String consumerKey);
 
     // Client Token
 
     /**
-     * Stores a Access token generated fro Shindig client
-     *
+     * Stores a Access token generated fro Shindig client.
      */
     void storeClientAccessToken(String consumerKey, String callBack, String token, String tokenSecret, String appId, String owner);
 
     /**
-     * Get a Access token for the Shindig Client
-     *
-     * @param appId
-     * @param owner
-     * @return
-     * @throws Exception
+     * Get a Access token for the Shindig Client.
      */
     NuxeoOAuthToken getClientAccessToken(String appId, String owner) throws Exception;
 
     /**
-     * Delete a Client side Access Token
-     *
-     * @param appId
-     * @param owner
-     * @throws Exception
+     * Deletes a Client side Access Token.
      */
-    public void removeClientAccessToken(String appId, String owner) throws Exception;
-
+    void removeClientAccessToken(String appId, String owner) throws Exception;
 
 }

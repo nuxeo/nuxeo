@@ -20,7 +20,7 @@ package org.nuxeo.ecm.directory.constants;
 
 /**
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
- *
+ * @deprecated will be removed in 5.5
  */
 @Deprecated
 public class User2GroupDirectory {

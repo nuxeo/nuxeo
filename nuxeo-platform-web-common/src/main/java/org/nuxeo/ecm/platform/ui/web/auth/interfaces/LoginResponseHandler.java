@@ -37,8 +37,8 @@ public interface LoginResponseHandler {
     /**
      * Handles the login error response.
      *
-     * @param request the http request
-     * @param response the http response
+     * @param request the HTTP request
+     * @param response the HTTP response
      * @return true if error was handled, false otherwise
      */
     boolean onError(HttpServletRequest request, HttpServletResponse response);
@@ -46,8 +46,8 @@ public interface LoginResponseHandler {
     /**
      * Handles login success response.
      *
-     * @param request
-     * @param response
+     * @param request the HTTP request
+     * @param response the HTTP response
      * @return true if response was handled, false otherwise
      */
     boolean onSuccess(HttpServletRequest request, HttpServletResponse response);

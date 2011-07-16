@@ -29,7 +29,6 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestSpecificChainSetting extends NXRuntimeTestCase {
 
-
     private static final String WEB_BUNDLE = "org.nuxeo.ecm.platform.web.common";
 
     private static final String WEB_BUNDLE_TEST = "org.nuxeo.ecm.platform.web.common.test";
@@ -70,7 +69,7 @@ public class TestSpecificChainSetting extends NXRuntimeTestCase {
     }
 
     public void testSpecificChain() {
-        List<String> chain = null;
+        List<String> chain;
 
         PluggableAuthenticationService authService = getAuthService();
         assertNotNull(authService);

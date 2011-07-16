@@ -50,7 +50,6 @@ public class ImageMagickTester extends NXRuntimeTestCase {
         assertNotNull(cles);
 
         CommandAvailability ca = cles.getCommandAvailability("identify");
-
         if (!ca.isAvailable()) {
             System.out.println("ImageMagick is not available, skipping test");
             return;

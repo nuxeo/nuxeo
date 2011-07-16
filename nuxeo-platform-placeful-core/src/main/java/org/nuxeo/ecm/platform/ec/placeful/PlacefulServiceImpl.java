@@ -49,9 +49,9 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class PlacefulServiceImpl extends DefaultComponent implements PlacefulService {
 
-    protected final Map<String, String> registry = new HashMap<String, String>();
-
     protected static final Log log = LogFactory.getLog(PlacefulServiceImpl.class);
+
+    protected final Map<String, String> registry = new HashMap<String, String>();
 
     protected PersistenceProvider persistenceProvider;
 

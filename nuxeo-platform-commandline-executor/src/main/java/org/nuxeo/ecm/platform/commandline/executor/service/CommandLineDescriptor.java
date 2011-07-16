@@ -41,7 +41,7 @@ public class CommandLineDescriptor implements Serializable {
     @XNode("@enabled")
     protected boolean enabled;
 
-    protected boolean avalaible;
+    protected boolean available;
 
     @XNode("commandLine")
     protected String command;
@@ -110,12 +110,12 @@ public class CommandLineDescriptor implements Serializable {
         return tester;
     }
 
-    public boolean isAvalaible() {
-        return avalaible;
+    public boolean isAvailable() {
+        return available;
     }
 
-    public void setAvalaible(boolean avalaible) {
-        this.avalaible = avalaible;
+    public void setAvailable(boolean available) {
+        this.available = available;
     }
 
     public boolean getReadOutput() {

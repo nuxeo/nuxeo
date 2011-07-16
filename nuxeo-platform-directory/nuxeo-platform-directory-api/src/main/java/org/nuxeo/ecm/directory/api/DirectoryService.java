@@ -103,7 +103,7 @@ public interface DirectoryService {
     Directory getDirectory(String directoryName) throws DirectoryException;
 
     /**
-     * Return all the directories registred into the service.
+     * Return all the directories registered into the service.
      * <p>
      *
      * @throws DirectoryException

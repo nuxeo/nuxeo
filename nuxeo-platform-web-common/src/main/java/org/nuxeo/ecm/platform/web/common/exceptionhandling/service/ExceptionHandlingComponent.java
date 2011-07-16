@@ -91,6 +91,4 @@ public class ExceptionHandlingComponent extends DefaultComponent implements
         return exceptionHandler;
     }
 
-
-
 }

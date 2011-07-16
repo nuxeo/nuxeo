@@ -32,7 +32,7 @@ import org.nuxeo.ecm.platform.oauth.consumers.OAuthConsumerRegistry;
  */
 public interface OAuthToken {
 
-    public static enum Type {
+    enum Type {
         REQUEST, ACCESS
     }
 

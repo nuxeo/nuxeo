@@ -39,7 +39,6 @@ import org.nuxeo.ecm.platform.interfaces.local.ECContentRootLocal;
  * Workspace implementation class.
  *
  * @author Razvan Caraghin
- *
  */
 @Stateless
 public class ECContentRootBean implements ECContentRoot, ECContentRootLocal {

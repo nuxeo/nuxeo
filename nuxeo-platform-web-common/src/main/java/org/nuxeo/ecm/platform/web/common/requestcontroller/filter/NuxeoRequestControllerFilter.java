@@ -334,7 +334,7 @@ public class NuxeoRequestControllerFilter implements Filter {
     }
 
     private static DateFormat httpExpiresDateFormat() {
-        // formated http Expires: Thu, 01 Dec 1994 16:00:00 GMT
+        // formatted http Expires: Thu, 01 Dec 1994 16:00:00 GMT
         DateFormat df = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z",
                 Locale.US);
         df.setTimeZone(TimeZone.getTimeZone("GMT"));

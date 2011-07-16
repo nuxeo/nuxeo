@@ -26,19 +26,22 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.event.Event;
 import org.nuxeo.runtime.services.event.EventListener;
 
+import static org.nuxeo.ecm.core.management.api.AdministrativeStatusManager.ACTIVATED_EVENT;
+import static org.nuxeo.ecm.core.management.api.AdministrativeStatusManager.GLOBAL_INSTANCE_AVAILABILITY;
+import static org.nuxeo.ecm.core.management.api.AdministrativeStatusManager.PASSIVATED_EVENT;
+
 
 /**
  * Listen for {@link AdministrativeStatus} changes and set the necessary flag in {@link AdminStatusHelper}
  * so that web infrastructure can directly use the Helper.
  *
  * @author tiry
- *
  */
 public class AdministrativeStatusListener implements EventListener {
 
     public static final String ADM_MESSAGE_SERVICE = "org.nuxeo.ecm.administrator.message";
 
-    protected static String localInstanceId = null;
+    protected static String localInstanceId;
 
     @Override
     public boolean aboutToHandleEvent(Event event) {
@@ -46,7 +49,7 @@ public class AdministrativeStatusListener implements EventListener {
     }
 
     protected String getLocalInstanceId() {
-        if (localInstanceId==null) {
+        if (localInstanceId == null) {
             GlobalAdministrativeStatusManager gasm = Framework.getLocalService(GlobalAdministrativeStatusManager.class);
             localInstanceId = gasm.getLocalNuxeoInstanceIdentifier();
         }
@@ -55,39 +58,38 @@ public class AdministrativeStatusListener implements EventListener {
 
     @Override
     public void handleEvent(Event event) {
+        String eventId = event.getId();
+        String instanceId = (String) event.getSource();
+        String serviceId = (String) event.getData();
 
-          String eventId = event.getId();
-          String instanceId = (String) event.getSource();
-          String serviceId = (String) event.getData();
+        if (!getLocalInstanceId().equals(instanceId)) {
+            return;
+        }
 
-          if (!getLocalInstanceId().equals(instanceId)) {
-              return;
-          }
+        AdministrativeStatusManager asm = Framework.getLocalService(AdministrativeStatusManager.class);
 
-          AdministrativeStatusManager asm = Framework.getLocalService(AdministrativeStatusManager.class);
+        if (serviceId.equals(GLOBAL_INSTANCE_AVAILABILITY)) {
+            if (eventId.equals(ACTIVATED_EVENT)) {
+                AdminStatusHelper.instanceInMaintenanceMode = false;
+                RestrictedLoginHelper.setRestrictedModeActivated(false);
+            }
+            if (eventId.equals(PASSIVATED_EVENT)) {
+                AdminStatusHelper.instanceInMaintenanceMode = true;
+                RestrictedLoginHelper.setRestrictedModeActivated(true);
+            }
 
-          if (serviceId.equals(AdministrativeStatusManager.GLOBAL_INSTANCE_AVAILABILITY)) {
-              if (eventId.equals(AdministrativeStatusManager.ACTIVATED_EVENT)) {
-                  AdminStatusHelper.instanceInMaintenanceMode=false;
-                  RestrictedLoginHelper.setRestrictedModeActivated(false);
-              }
-              if (eventId.equals(AdministrativeStatusManager.PASSIVATED_EVENT)) {
-                  AdminStatusHelper.instanceInMaintenanceMode=true;
-                  RestrictedLoginHelper.setRestrictedModeActivated(true);
-              }
+            AdminStatusHelper.maintenanceMessage = asm.getStatus(GLOBAL_INSTANCE_AVAILABILITY).getMessage();
+        }
 
-              AdminStatusHelper.maintenanceMessage = asm.getStatus(AdministrativeStatusManager.GLOBAL_INSTANCE_AVAILABILITY).getMessage();
-          }
-
-          if (serviceId.equals(ADM_MESSAGE_SERVICE)) {
-              if (eventId.equals(AdministrativeStatusManager.ACTIVATED_EVENT)) {
-                  AdminStatusHelper.adminMessageActivated=true;
-              }
-              if (eventId.equals(AdministrativeStatusManager.PASSIVATED_EVENT)) {
-                  AdminStatusHelper.adminMessageActivated=false;
-              }
-              AdminStatusHelper.adminMessage = asm.getStatus(ADM_MESSAGE_SERVICE).getMessage();
-          }
+        if (serviceId.equals(ADM_MESSAGE_SERVICE)) {
+            if (eventId.equals(ACTIVATED_EVENT)) {
+                AdminStatusHelper.adminMessageActivated = true;
+            }
+            if (eventId.equals(PASSIVATED_EVENT)) {
+                AdminStatusHelper.adminMessageActivated = false;
+            }
+            AdminStatusHelper.adminMessage = asm.getStatus(ADM_MESSAGE_SERVICE).getMessage();
+        }
     }
 
 }

@@ -35,6 +35,8 @@ import org.nuxeo.ecm.core.api.WrappedException;
 import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.descriptor.ErrorHandler;
 
+import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.DISABLE_REDIRECT_REQUEST_KEY;
+
 /**
  * @author arussel
  */
@@ -65,8 +67,7 @@ public class DefaultNuxeoExceptionHandler implements NuxeoExceptionHandler {
             // looping over it
             request.setAttribute(EXCEPTION_HANDLER_MARKER, true);
             // disable further redirect by nuxeo url system
-            request.setAttribute(NXAuthConstants.DISABLE_REDIRECT_REQUEST_KEY,
-                    true);
+            request.setAttribute(DISABLE_REDIRECT_REQUEST_KEY, true);
         } else {
             // avoid looping over exception mechanism
             throw new ServletException(t);

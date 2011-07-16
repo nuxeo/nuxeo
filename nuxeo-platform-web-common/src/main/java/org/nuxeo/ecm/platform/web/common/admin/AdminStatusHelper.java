@@ -21,21 +21,19 @@ package org.nuxeo.ecm.platform.web.common.admin;
 import org.nuxeo.ecm.core.management.api.AdministrativeStatus;
 
 /**
- *
- * Simple Helper class to hold {@link AdministrativeStatus} flags used by the Web Layer
+ * Simple Helper class to hold {@link AdministrativeStatus} flags used by the Web Layer.
  *
  * @author tiry
- *
  */
 public class AdminStatusHelper {
 
-    static boolean adminMessageActivated=false;
+    static boolean adminMessageActivated;
 
-    static String adminMessage = null;
+    static String adminMessage;
 
-    static boolean instanceInMaintenanceMode = false;
+    static boolean instanceInMaintenanceMode;
 
-    static String maintenanceMessage = null;
+    static String maintenanceMessage;
 
     public static boolean isAdminMessageActivated() {
         return adminMessageActivated;
@@ -53,9 +51,8 @@ public class AdminStatusHelper {
         return maintenanceMessage;
     }
 
-
     public static boolean displayAdminMessage() {
-        return adminMessageActivated && (adminMessage!=null) && (adminMessage.length()>0);
+        return adminMessageActivated && adminMessage!=null && adminMessage.length()>0;
     }
 
     public static boolean accessRestrictedToAdministrators() {

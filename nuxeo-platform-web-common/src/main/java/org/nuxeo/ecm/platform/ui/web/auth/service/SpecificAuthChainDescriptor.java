@@ -84,13 +84,13 @@ public class SpecificAuthChainDescriptor {
             return replacementChain;
         }
 
-        List<String> filtredChain = new ArrayList<String>();
+        List<String> filteredChain = new ArrayList<String>();
         for (String pluginName : defaultChain) {
             if (allowedPlugins.contains(pluginName)) {
-                filtredChain.add(pluginName);
+                filteredChain.add(pluginName);
             }
         }
-        return filtredChain;
+        return filteredChain;
     }
 
 }

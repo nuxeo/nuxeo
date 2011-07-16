@@ -43,9 +43,8 @@ public interface NuxeoAuthenticationPlugin {
     /**
      * Retrieves user identification information from the request.
      *
-     * @param httpRequest
-     * @param httpResponse
-     * @return UserIdentificationInfo
+     * @param httpRequest the request
+     * @param httpResponse the response
      */
     UserIdentificationInfo handleRetrieveIdentity(
             HttpServletRequest httpRequest, HttpServletResponse httpResponse);
@@ -60,16 +59,12 @@ public interface NuxeoAuthenticationPlugin {
 
     /**
      * Initializes the Plugin from parameters set in the XML descriptor.
-     *
-     * @param parameters
      */
     void initPlugin(Map<String, String> parameters);
 
     /**
      * Returns the list of prefix for unauthenticated URLs,
      * typically the URLs associated to login prompt.
-     *
-     *  @return
      */
     List<String> getUnAuthenticatedURLPrefix();
 

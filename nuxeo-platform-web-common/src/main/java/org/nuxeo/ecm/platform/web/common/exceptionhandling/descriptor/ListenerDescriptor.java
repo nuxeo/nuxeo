@@ -22,7 +22,6 @@ import org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHand
 
 /**
  * @author arussel
- *
  */
 @XObject("listener")
 public class ListenerDescriptor {

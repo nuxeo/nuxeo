@@ -294,8 +294,9 @@ public class LDAPReference extends AbstractReference {
                         }
                     } else {
                         if (storedAttr == null
-                                || !storedAttr.contains(targetId))
+                                || !storedAttr.contains(targetId)) {
                             attrToAdd.add(targetId);
+                        }
                     }
                 }
                 if (attrToAdd.size() > 0) {

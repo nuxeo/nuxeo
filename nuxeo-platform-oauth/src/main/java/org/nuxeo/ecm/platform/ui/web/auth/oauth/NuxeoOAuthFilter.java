@@ -63,7 +63,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
 
-    protected static Log log = LogFactory.getLog(NuxeoOAuthFilter.class);
+    protected static final Log log = LogFactory.getLog(NuxeoOAuthFilter.class);
 
     protected static OAuthValidator validator;
 
@@ -135,12 +135,12 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
                 return;
             }
             // Signed request (simple 2 legged OAuth call or signed request
-            // after a 3 ledged nego)
+            // after a 3 legged nego)
             else if (isOAuthSignedRequest(httpRequest)) {
 
                 LoginContext loginContext = processSignedRequest(httpRequest,
                         httpResponse);
-                // foward the call if authenticated
+                // forward the call if authenticated
                 if (loginContext != null) {
                     Principal principal = (Principal) loginContext.getSubject().getPrincipals().toArray()[0];
                     try {

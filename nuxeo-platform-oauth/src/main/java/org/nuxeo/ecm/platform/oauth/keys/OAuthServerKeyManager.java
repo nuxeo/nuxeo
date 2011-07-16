@@ -21,70 +21,56 @@ import org.nuxeo.ecm.platform.oauth.consumers.NuxeoOAuthConsumer;
 
 /**
  * Service to manage the key and shared secret used by Nuxeo server :
+ * <ul>
+ * <li>private/public key pair used by Nuxeo to use Signed request with RSA
  *
- *  - private/public key pair used by Nuxeo to use Signed request with RSA
- *
- *  - shared key between Nuxeo and Shindig to manage Signed Fetch
- *
+ * <li> shared key between Nuxeo and Shindig to manage Signed Fetch
+ * </ul>
  * @author tiry
  *
  */
 public interface OAuthServerKeyManager {
 
     /**
-     * Return the Public Key certificate used by Nuxeo server to do RSA Signing
-     *
-     * @return
+     * Returns the Public Key certificate used by Nuxeo server to do RSA Signing.
      */
-    public String getPublicKeyCertificate();
+    String getPublicKeyCertificate();
 
     /**
-     * Return the Public Key certificate used by Nuxeo server to do RSA Signing
-     * (Removes OpenSSL decorators)
-     * @return
+     * Returns the Public Key certificate used by Nuxeo server to do RSA Signing.
+     * (Removes OpenSSL decorators).
      */
-    public String getBarePublicCertificate();
+    String getBarePublicCertificate();
 
     /**
-     * Return the Private Key used by Nuxeo server to do RSA Signing
-     *
-     * @return
+     * Returns the Private Key used by Nuxeo server to do RSA Signing.
      */
-    public String getPrivateKey();
+    String getPrivateKey();
 
     /**
-     * Return the Private Key used by Nuxeo server to do RSA Signing
-     * (Removes OpenSSL decorators)
-     * @return
+     * Returns the Private Key used by Nuxeo server to do RSA Signing.
+     * (Removes OpenSSL decorators).
      */
-    public String getBarePrivateKey();
+    String getBarePrivateKey();
 
     /**
-     * Return key name (not really used)
-     *
-     * @return
+     * Returns key name (not really used).
      */
-    public String getKeyName();
+    String getKeyName();
 
     /**
-     * Return the consumerKey used in Shindig => Nuxeo sign fetch
-     *
-     * @return
+     * Returns the consumerKey used in Shindig => Nuxeo sign fetch.
      */
-    public String getInternalKey();
+    String getInternalKey();
 
     /**
-     * Return the consumerSecret (HMAC) used in Shindig => Nuxeo sign fetch
-     *
-     * @return
+     * Returns the consumerSecret (HMAC) used in Shindig => Nuxeo sign fetch.
      */
-    public String getInternalSecret();
+    String getInternalSecret();
 
     /**
-     * Return the {@link NuxeoOAuthConsumer} representing local (embeded) Shindig instance
-     *
-     * @return
+     * Returns the {@link NuxeoOAuthConsumer} representing local (embedded) Shindig instance.
      */
-    public NuxeoOAuthConsumer getInternalConsumer();
+    NuxeoOAuthConsumer getInternalConsumer();
 
 }

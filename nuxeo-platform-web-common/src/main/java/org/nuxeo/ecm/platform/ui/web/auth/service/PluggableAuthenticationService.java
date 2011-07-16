@@ -54,21 +54,13 @@ public class PluggableAuthenticationService extends DefaultComponent {
     public static final String NAME = "org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService";
 
     public static final String EP_AUTHENTICATOR = "authenticators";
-
     public static final String EP_SESSIONMANAGER = "sessionManager";
-
     public static final String EP_CHAIN = "chain";
-
     public static final String EP_SPECIFIC_CHAINS = "specificChains";
-
     public static final String EP_PROPAGATOR = "propagator";
-
     public static final String EP_CBFACTORY = "JbossCallbackfactory";
-
     public static final String EP_STARTURL = "startURL";
-
     public static final String EP_OPENURL = "openUrl";
-
     public static final String EP_PREFILTER = "preFilter";
 
     private static final Log log = LogFactory
@@ -483,7 +475,7 @@ public class PluggableAuthenticationService extends DefaultComponent {
     @Override
     public <T> T getAdapter(Class<T> adapter) {
         if (LoginAs.class == adapter) {
-            return (T)new LoginAsImpl();
+            return (T) new LoginAsImpl();
         }
         return super.getAdapter(adapter);
     }

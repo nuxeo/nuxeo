@@ -21,8 +21,9 @@ package org.nuxeo.ecm.directory;
 
 /**
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
- *
+ * @deprecated not used, will be removed in 5.5
  */
+@Deprecated
 public class UniqueResultException extends DirectoryException {
 
     private static final long serialVersionUID = -7829002156098504381L;

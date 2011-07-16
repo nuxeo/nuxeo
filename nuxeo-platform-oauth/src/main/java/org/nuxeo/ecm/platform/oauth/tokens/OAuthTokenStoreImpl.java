@@ -38,14 +38,12 @@ import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
  * Service implementation for {@link OAuthTokenStore}.
- *
+ * <p>
  * This service is responsible for managing storage of the {@link OAuthToken}. A
  * simple SQL Directory is used for ACCESS Token whereas a simple in memory
  * storage is used for REQUEST Tokens.
  *
- *
  * @author tiry
- *
  */
 public class OAuthTokenStoreImpl extends DefaultComponent implements
         OAuthTokenStore {
@@ -58,19 +56,16 @@ public class OAuthTokenStoreImpl extends DefaultComponent implements
 
     @Override
     public OAuthToken addVerifierToRequestToken(String token, Long duration) {
-
         NuxeoOAuthToken rToken = (NuxeoOAuthToken) getRequestToken(token);
         if (rToken != null) {
             rToken.verifier = "NX-VERIF-" + UUID.randomUUID().toString();
-            rToken.durationInMinutes=duration;
+            rToken.durationInMinutes = duration;
         }
         return rToken;
-
     }
 
     @Override
     public OAuthToken createAccessTokenFromRequestToken(OAuthToken requestToken) {
-
         NuxeoOAuthToken aToken = new NuxeoOAuthToken(
                 (NuxeoOAuthToken) requestToken);
         String token = "NX-AT-" + UUID.randomUUID().toString();
@@ -98,10 +93,10 @@ public class OAuthTokenStoreImpl extends DefaultComponent implements
             filter.put("clientId", owner);
             filter.put("clientToken", 1);
             DocumentModelList entries = session.query(filter);
-            if (entries.size()==0) {
-                return  null;
+            if (entries.size() == 0) {
+                return null;
             }
-            if (entries.size()>1) {
+            if (entries.size() > 1) {
                 log.error("Found several tokens");
             }
             return getTokenFromDirectoryEntry(entries.get(0));
@@ -119,10 +114,10 @@ public class OAuthTokenStoreImpl extends DefaultComponent implements
             filter.put("clientId", owner);
             filter.put("clientToken", 1);
             DocumentModelList entries = session.query(filter);
-            if (entries.size()==0) {
+            if (entries.size() == 0) {
                 return;
             }
-            if (entries.size()>1) {
+            if (entries.size() > 1) {
                 log.error("Found several tokens");
             }
             session.deleteEntry(entries.get(0));
@@ -132,24 +127,21 @@ public class OAuthTokenStoreImpl extends DefaultComponent implements
 
     }
 
-
-
     public void storeClientAccessToken(String consumerKey, String callBack, String token, String tokenSecret, String appId, String owner) {
-        NuxeoOAuthToken aToken= new NuxeoOAuthToken(consumerKey,callBack);
+        NuxeoOAuthToken aToken = new NuxeoOAuthToken(consumerKey, callBack);
         aToken.token = token;
         aToken.tokenSecret = tokenSecret;
-        if (appId!=null) {
+        if (appId != null) {
             aToken.appId = appId;
         }
 
-        aToken.clientToken=true;
+        aToken.clientToken = true;
         aToken.clientId = owner;
         try {
             aToken = storeAccessTokenAsDirectoryEntry(aToken);
         } catch (Exception e) {
             log.error("Error during directory persistence", e);
         }
-
     }
 
     protected NuxeoOAuthToken getTokenFromDirectory(String token)

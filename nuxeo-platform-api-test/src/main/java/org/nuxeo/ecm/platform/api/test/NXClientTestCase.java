@@ -56,8 +56,6 @@ public abstract class NXClientTestCase extends TestCase {
     /**
      * Subclasses may override this method to create a repository at a specific
      * location.
-     *
-     * @return null
      */
     protected File getHomeDir() {
         return null;
