@@ -101,7 +101,6 @@ public class TestWSRemotingSessionManager extends SQLRepositoryTestCase {
         assertTrue(raises);
     }
 
-
     public void testSnapshotProperties() throws ClientException {
         openSession();
         DocumentModel rootDocument = session.getRootDocument();
@@ -127,12 +126,12 @@ public class TestWSRemotingSessionManager extends SQLRepositoryTestCase {
         // check for system properties
         int lci = Arrays.binarySearch(props, new DocumentProperty("lifeCycleState", null), propsComparator); 
         assertTrue(lci > 0);
-        assertEquals(props[lci].toString(), "lifeCycleState:project");
+        assertEquals("lifeCycleState:project", props[lci].toString());
+
         // check for dublin core properties
         int tti =  Arrays.binarySearch(props, new DocumentProperty("dc:title", null), propsComparator);
         assertTrue(tti > 0);
-        assertEquals(props[tti].toString(), "dc:title:huum");
-
+        assertEquals("dc:title:huum", props[tti].toString());
     }
     
 }

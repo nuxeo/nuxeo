@@ -29,7 +29,7 @@ import org.wikimodel.wem.WikiParserException;
 /** @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a> */
 public class TestWiki extends TestCase {
 
-    public void test() throws IOException, WikiParserException {
+    public void test() throws Exception {
         double s = System.currentTimeMillis();
         InputStream in = TestWiki.class.getResourceAsStream("/testdata/test.wiki");
         Reader reader = new InputStreamReader(in);
@@ -63,7 +63,7 @@ public class TestWiki extends TestCase {
         // System.out.println(writer.getBuffer());
     }
 
-    public void test3() throws IOException, WikiParserException {
+    public void test3() throws Exception {
         InputStream in = TestWiki.class.getResourceAsStream("/testdata/test3.wiki");
         Reader reader = new InputStreamReader(in);
 
@@ -83,6 +83,5 @@ public class TestWiki extends TestCase {
 
         System.out.println(out);
     }
-
 
 }

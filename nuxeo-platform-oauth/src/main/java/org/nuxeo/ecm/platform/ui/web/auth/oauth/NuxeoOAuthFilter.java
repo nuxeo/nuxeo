@@ -56,8 +56,10 @@ import org.nuxeo.runtime.api.Framework;
  * This Filter is registered as a pre-Filter of NuxeoAuthenticationFilter.
  * <p>
  * It is used to handle OAuth Authentication :
- *
- * - 3 legged OAuth negociation - 2 legged OAuth (Signed fetch)
+ * <ul>
+ * <li>3 legged OAuth negociation
+ * <li>2 legged OAuth (Signed fetch)
+ * </ul>
  *
  * @author tiry
  */
@@ -290,7 +292,6 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
         log.debug("returning : " + sb.toString());
 
         httpResponse.getWriter().write(sb.toString());
-
     }
 
     protected void processAccessToken(HttpServletRequest httpRequest,
@@ -358,7 +359,7 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
             httpResponse.setContentType("application/x-www-form-urlencoded");
             httpResponse.setStatus(HttpServletResponse.SC_OK);
 
-            StringBuffer sb = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
             sb.append(OAuth.OAUTH_TOKEN);
             sb.append("=");
             sb.append(aToken.getToken());
@@ -370,13 +371,10 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
             log.debug("returning : " + sb.toString());
 
             httpResponse.getWriter().write(sb.toString());
-
         } else {
-
             log.error("Verifier does not match : can not continue");
             httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED,
                     "Verifier is not correct");
-            return;
         }
     }
 
@@ -406,7 +404,7 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
         if (consumer == null) {
             int errCode = OAuth.Problems.TO_HTTP_CODE.get(OAuth.Problems.CONSUMER_KEY_UNKNOWN);
             log.error("Consumer " + consumerKey
-                    + " is unknow, can not authenticated");
+                    + " is unknown, can not authenticated");
             httpResponse.sendError(errCode, "Consumer " + consumerKey
                     + " is not registered");
             return null;
@@ -418,7 +416,7 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
             OAuthToken aToken = getOAuthTokenStore().getAccessToken(
                     message.getToken());
 
-            String targetLogin = null;
+            String targetLogin;
             if (aToken != null) {
                 // Auth was done via 3 legged
                 accessor.accessToken = aToken.getToken();

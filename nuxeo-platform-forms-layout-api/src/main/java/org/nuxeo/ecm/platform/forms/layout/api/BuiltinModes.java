@@ -100,7 +100,7 @@ public class BuiltinModes {
      */
     public static String getWidgetModeFromLayoutMode(String layoutMode) {
         if (layoutMode != null) {
-            if (BuiltinModes.isBoundToEditMode(layoutMode)) {
+            if (isBoundToEditMode(layoutMode)) {
                 return BuiltinWidgetModes.EDIT;
             } else if (layoutMode.startsWith(VIEW)
                     || layoutMode.startsWith(SUMMARY)

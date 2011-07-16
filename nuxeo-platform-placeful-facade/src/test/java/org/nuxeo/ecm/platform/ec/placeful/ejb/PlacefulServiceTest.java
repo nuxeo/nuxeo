@@ -35,6 +35,7 @@ import org.nuxeo.ecm.platform.ec.placeful.interfaces.PlacefulService;
  * @author <a href="mailto:rspivak@nuxeo.com">Ruslan Spivak</a>
  */
 public class PlacefulServiceTest extends TestCase {
+
     private static final String ID = "0000-1111-2222-3333";
     private static final String EVENT = "publish";
     private static final String ID_1 = "4444-5555-6666-7777";

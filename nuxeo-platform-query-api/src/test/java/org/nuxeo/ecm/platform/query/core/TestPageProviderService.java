@@ -78,8 +78,10 @@ public class TestPageProviderService extends SQLRepositoryTestCase {
                 ppd, null, Long.valueOf(1), Long.valueOf(0), props);
 
         assertNotNull(pp);
+
         List<?> p = pp.getCurrentPage();
         assertNotNull(p);
-        assertEquals(p.size(), 0);
+        assertEquals(0, p.size());
     }
+
 }
