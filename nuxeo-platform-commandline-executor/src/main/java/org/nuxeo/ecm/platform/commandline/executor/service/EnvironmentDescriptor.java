@@ -28,7 +28,7 @@ import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 @XObject(value = "environment")
-public class EnvironementDescriptor implements Serializable {
+public class EnvironmentDescriptor implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -49,13 +49,11 @@ public class EnvironementDescriptor implements Serializable {
         return workingDirectory;
     }
 
-
-    public void merge(EnvironementDescriptor other) {
+    public void merge(EnvironmentDescriptor other) {
         if (other.workingDirectory != null) {
             workingDirectory = other.workingDirectory;
         }
         parameters.putAll(other.parameters);
     }
-
 
 }
