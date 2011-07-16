@@ -26,11 +26,11 @@ import org.nuxeo.runtime.model.ComponentName;
 public class ExtensionInfoImpl extends BaseNuxeoArtifact implements
         ExtensionInfo {
 
-    protected String id;
+    protected final String id;
 
-    protected ComponentInfoImpl component;
+    protected final ComponentInfoImpl component;
 
-    protected String extensionPoint;
+    protected final String extensionPoint;
 
     protected String documentation;
 

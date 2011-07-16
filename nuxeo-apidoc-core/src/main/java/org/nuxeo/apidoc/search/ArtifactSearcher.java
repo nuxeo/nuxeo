@@ -20,7 +20,6 @@ import java.util.List;
 
 import org.nuxeo.apidoc.api.DocumentationItem;
 import org.nuxeo.apidoc.api.NuxeoArtifact;
-import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.ecm.core.api.CoreSession;
 
 public interface ArtifactSearcher {

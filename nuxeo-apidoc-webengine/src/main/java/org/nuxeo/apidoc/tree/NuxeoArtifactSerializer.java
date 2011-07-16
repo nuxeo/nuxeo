@@ -51,10 +51,7 @@ public class NuxeoArtifactSerializer extends JSonTreeSerializer {
 
         NuxeoArtifact obj = (NuxeoArtifact) item.getObject();
 
-        String url = "";
-
-        String distId;
-        distId = ds.getKey().replace(" ", "%20");
+        String distId = ds.getKey().replace(" ", "%20");
         if (ds.isLive()) {
             if (useEmbededMode(ctx)) {
                 distId = "adm";
@@ -62,7 +59,7 @@ public class NuxeoArtifactSerializer extends JSonTreeSerializer {
                 distId = "current";
             }
         }
-        url = ctx.getRoot().getURL() + "/" + distId + "/";
+        String url = ctx.getRoot().getURL() + "/" + distId + "/";
 
         if (obj.getArtifactType().equals(DistributionSnapshot.TYPE_NAME)) {
             return url;
@@ -83,7 +80,7 @@ public class NuxeoArtifactSerializer extends JSonTreeSerializer {
         }
 
         if (url != null) {
-            url = url + obj.getId();
+            url += obj.getId();
         } else {
             if (obj instanceof VirtualNode) {
                 VirtualNode vn = (VirtualNode) obj;

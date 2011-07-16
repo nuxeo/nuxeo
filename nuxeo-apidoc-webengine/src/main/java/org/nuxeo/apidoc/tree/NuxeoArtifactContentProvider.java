@@ -53,11 +53,11 @@ public class NuxeoArtifactContentProvider implements ContentProvider {
 
         if (obj.getArtifactType().equals(DistributionSnapshot.TYPE_NAME)) {
             for (BundleGroup bg : ds.getBundleGroups()) {
-                result.add((NuxeoArtifact) bg);
+                result.add(bg);
             }
         } else if (obj.getArtifactType().equals(BundleInfo.TYPE_NAME)) {
             for (ComponentInfo ci : ds.getBundle(obj.getId()).getComponents()) {
-                result.add((NuxeoArtifact) ci);
+                result.add(ci);
             }
         } else if (obj.getArtifactType().equals(BundleGroup.TYPE_NAME)) {
             for (String bid : ds.getBundleGroup(obj.getId()).getBundleIds()) {
@@ -95,18 +95,18 @@ public class NuxeoArtifactContentProvider implements ContentProvider {
             String cid = ((VirtualNode) obj).getComponentId();
             ComponentInfo ci = ds.getComponent(cid);
             for (ExtensionInfo ei : ci.getExtensions()) {
-                result.add((NuxeoArtifact) ei);
+                result.add(ei);
             }
         } else if (obj.getArtifactType().equals(
                 VirtualNodesConsts.Services_VNODE)) {
             String cid = ((VirtualNode) obj).getComponentId();
             ComponentInfo ci = ds.getComponent(cid);
             for (ServiceInfo si : ci.getServices()) {
-                result.add((NuxeoArtifact) si);
+                result.add(si);
             }
         }
 
-        return result.toArray(new NuxeoArtifact[(result.size())]);
+        return result.toArray(new NuxeoArtifact[result.size()]);
     }
 
     @Override

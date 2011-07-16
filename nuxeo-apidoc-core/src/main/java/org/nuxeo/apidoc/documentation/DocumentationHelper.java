@@ -75,10 +75,10 @@ public class DocumentationHelper {
         }
 
         LinkedList<String> lines = new LinkedList<String>();
-        boolean firstcode = false;
-        boolean code = false;
         lines.add(P);
         boolean newline = true;
+        boolean firstcode = false;
+        boolean code = false;
         for (String line : doc.split("\n")) {
             if (!code) {
                 line = line.trim();

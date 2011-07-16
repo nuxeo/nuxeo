@@ -31,11 +31,11 @@ import org.nuxeo.runtime.api.Framework;
 
 public abstract class BaseApiDocFilter implements Filter {
 
-    public static String APIDOC_FILTERS_ACTIVATED = "org.nuxeo.apidoc.activatefilter";
+    public static final String APIDOC_FILTERS_ACTIVATED = "org.nuxeo.apidoc.activatefilter";
 
     protected List<String> allowedConnectUrls = new ArrayList<String>();
 
-    protected Boolean activated = null;
+    protected Boolean activated;
 
     protected boolean isFilterActivated() {
         if (activated == null) {

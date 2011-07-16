@@ -37,7 +37,7 @@ public abstract class BaseNuxeoArtifactDocAdapter extends BaseNuxeoArtifact {
 
     protected final DocumentModel doc;
 
-    protected static ThreadLocal<CoreSession> localCoreSession = new ThreadLocal<CoreSession>();
+    protected static final ThreadLocal<CoreSession> localCoreSession = new ThreadLocal<CoreSession>();
 
     public static void setLocalCoreSession(CoreSession session) {
         localCoreSession.set(session);

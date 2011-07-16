@@ -37,7 +37,7 @@ public class CacheAndAuthFilter extends BaseApiDocFilter {
 
     public static final DateFormat HTTP_EXPIRES_DATE_FORMAT = httpExpiresDateFormat();
 
-    protected Boolean forceAnonymous = null;
+    protected Boolean forceAnonymous;
 
     protected boolean forceAnonymous() {
         if (forceAnonymous == null) {
@@ -61,7 +61,7 @@ public class CacheAndAuthFilter extends BaseApiDocFilter {
             // activate cache
             activateCaching = true;
         } else {
-            // desactivate anonymous login
+            // deactivate anonymous login
             httpRequest.setAttribute(
                     AnonymousAuthenticator.BLOCK_ANONYMOUS_LOGIN_KEY,
                     Boolean.TRUE);
@@ -76,7 +76,7 @@ public class CacheAndAuthFilter extends BaseApiDocFilter {
     }
 
     private static DateFormat httpExpiresDateFormat() {
-        // formated http Expires: Thu, 01 Dec 1994 16:00:00 GMT
+        // formatted http Expires: Thu, 01 Dec 1994 16:00:00 GMT
         DateFormat df = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z",
                 Locale.US);
         df.setTimeZone(TimeZone.getTimeZone("GMT"));

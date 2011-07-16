@@ -34,7 +34,7 @@ public class BundleGroupImpl extends BaseNuxeoArtifact implements BundleGroup {
 
     protected final String version;
 
-    protected List<String> parentIds = new ArrayList<String>();
+    protected final List<String> parentIds = new ArrayList<String>();
 
     public BundleGroupImpl(String key, String version) {
         this.key = key;

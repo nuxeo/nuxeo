@@ -35,9 +35,9 @@ public class AssociatedDocumentsImpl implements AssociatedDocuments {
 
     protected String id;
 
-    protected NuxeoArtifact item;
+    protected final NuxeoArtifact item;
 
-    protected CoreSession session;
+    protected final CoreSession session;
 
     public AssociatedDocumentsImpl(NuxeoArtifact item, CoreSession session) {
         this.item = item;
@@ -125,7 +125,7 @@ public class AssociatedDocumentsImpl implements AssociatedDocuments {
                         ExtensionInfo.TYPE_NAME)) {
                     return ((ExtensionInfo) item).getExtensionPoint();
                 } else if (item.getArtifactType().equals(ServiceInfo.TYPE_NAME)) {
-                    String id = ((ServiceInfo) item).getId();
+                    String id = item.getId();
                     String[] parts = id.split("\\.");
                     if (parts.length > 1) {
                         String name = parts[parts.length - 1];

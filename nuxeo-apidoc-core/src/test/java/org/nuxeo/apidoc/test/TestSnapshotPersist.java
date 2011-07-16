@@ -61,7 +61,7 @@ public class TestSnapshotPersist extends SQLRepositoryTestCase {
 
     protected String dumpSnapshot(DistributionSnapshot snap) {
 
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 
         BundleGroupTreeHelper bgth = new BundleGroupTreeHelper(snap);
 
@@ -69,13 +69,12 @@ public class TestSnapshotPersist extends SQLRepositoryTestCase {
         for (BundleGroupFlatTree info : tree) {
             String pad = " ";
             for (int i = 0; i <= info.getLevel(); i++) {
-                pad = pad + " ";
+                pad += " ";
             }
             sb.append(pad + "- " + info.getGroup().getName() + "("
                     + info.getGroup().getId() + ")");
             sb.append(" *** ");
             sb.append(info.getGroup().getHierarchyPath());
-            ;
             sb.append("\n");
         }
 
@@ -165,7 +164,6 @@ public class TestSnapshotPersist extends SQLRepositoryTestCase {
         log.info(pDump);
 
         assertEquals(rtDump, pDump);
-
     }
 
 }

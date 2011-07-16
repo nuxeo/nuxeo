@@ -33,14 +33,14 @@ public interface SeamComponentInfo extends NuxeoArtifact,
 
     String PROP_PRECEDENCE = "nxseam:precedence";
 
-    public String getName();
+    String getName();
 
-    public String getScope();
+    String getScope();
 
-    public String getPrecedence();
+    String getPrecedence();
 
-    public String getClassName();
+    String getClassName();
 
-    public List<String> getInterfaceNames();
+    List<String> getInterfaceNames();
 
 }

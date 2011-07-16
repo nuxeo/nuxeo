@@ -79,7 +79,7 @@ public class DocumentationComponent extends DefaultComponent implements
 
     protected static final Log log = LogFactory.getLog(DocumentationComponent.class);
 
-    protected ArtifactSearcher searcher = new ArtifactSearcherImpl();
+    protected final ArtifactSearcher searcher = new ArtifactSearcherImpl();
 
     class UnrestrictedRootCreator extends UnrestrictedSessionRunner {
 
@@ -186,11 +186,9 @@ public class DocumentationComponent extends DefaultComponent implements
         }
 
         Map<String, List<DocumentationItem>> sortedResult = new HashMap<String, List<DocumentationItem>>();
-
         Map<String, String> categories = getCategories();
 
         for (DocumentationItem item : result) {
-
             String key = item.getType();
             String label = categories.get(key);
 

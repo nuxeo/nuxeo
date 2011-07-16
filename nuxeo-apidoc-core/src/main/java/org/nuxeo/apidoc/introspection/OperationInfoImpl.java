@@ -29,9 +29,9 @@ import org.nuxeo.ecm.automation.OperationDocumentation.Param;
 public class OperationInfoImpl extends BaseNuxeoArtifact implements
         OperationInfo {
 
-    public OperationDocumentation op;
+    public final OperationDocumentation op;
 
-    public String version;
+    public final String version;
 
     public OperationInfoImpl(OperationDocumentation op, String version) {
         this.op = op;

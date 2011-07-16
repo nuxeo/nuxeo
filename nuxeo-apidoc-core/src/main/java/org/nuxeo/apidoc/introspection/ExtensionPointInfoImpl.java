@@ -30,17 +30,17 @@ import org.nuxeo.apidoc.documentation.DocumentationHelper;
 public class ExtensionPointInfoImpl extends BaseNuxeoArtifact implements
         ExtensionPointInfo {
 
-    protected ComponentInfoImpl component;
+    protected final ComponentInfoImpl component;
 
-    protected String name;
+    protected final String name;
+
+    protected final Collection<ExtensionInfo> extensions = new ArrayList<ExtensionInfo>();
+
+    protected final List<Class<?>> spi = new ArrayList<Class<?>>();
 
     protected String[] descriptors;
 
-    protected Collection<ExtensionInfo> extensions = new ArrayList<ExtensionInfo>();
-
     protected String documentation;
-
-    protected List<Class<?>> spi = new ArrayList<Class<?>>();
 
     public ExtensionPointInfoImpl(ComponentInfoImpl component, String name) {
         this.name = name;

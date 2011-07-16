@@ -42,17 +42,17 @@ import org.nuxeo.common.utils.Path;
 public class ComponentInfoImpl extends BaseNuxeoArtifact implements
         ComponentInfo {
 
-    protected BundleInfoImpl bundle;
+    protected final BundleInfoImpl bundle;
 
-    protected String name;
+    protected final String name;
 
-    protected Map<String, ExtensionPointInfo> extensionPoints;
+    protected final Map<String, ExtensionPointInfo> extensionPoints;
 
-    protected Collection<ExtensionInfo> extensions;
+    protected final Collection<ExtensionInfo> extensions;
 
-    protected List<String> serviceNames = new ArrayList<String>();
+    protected final List<String> serviceNames = new ArrayList<String>();
 
-    protected List<ServiceInfo> services = new ArrayList<ServiceInfo>();
+    protected final List<ServiceInfo> services = new ArrayList<ServiceInfo>();
 
     protected URL xmlFileUrl;
 
@@ -60,7 +60,7 @@ public class ComponentInfoImpl extends BaseNuxeoArtifact implements
 
     protected String documentation; // TODO
 
-    protected static Log log = LogFactory.getLog(ComponentInfoImpl.class);
+    protected static final Log log = LogFactory.getLog(ComponentInfoImpl.class);
 
     public ComponentInfoImpl(BundleInfoImpl bundleInfo, String name) {
         this.bundle = bundleInfo;

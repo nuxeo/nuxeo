@@ -26,7 +26,6 @@ import java.io.Reader;
 import java.io.Writer;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -305,7 +304,7 @@ public class ServerInfo {
                     log.error("No symbolic name found for bundle " + cname);
                     continue;
                 }
-                // avoids duplicating/overiding the bundles
+                // avoids duplicating/overriding the bundles
                 if (server.bundles.containsKey(bundle.getSymbolicName())) {
                     binfo = server.bundles.get(bundle.getSymbolicName());
                 } else {

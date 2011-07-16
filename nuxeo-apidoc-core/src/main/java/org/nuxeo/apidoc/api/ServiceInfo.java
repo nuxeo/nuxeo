@@ -24,5 +24,6 @@ public interface ServiceInfo extends NuxeoArtifact {
 
     String PROP_COMPONENT_ID = "nxservice:componentId";
 
-    public String getComponentId();
+    String getComponentId();
+
 }

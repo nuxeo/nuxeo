@@ -45,6 +45,8 @@ import org.nuxeo.runtime.api.Framework;
 public class RuntimeSnapshot extends BaseNuxeoArtifact implements
         DistributionSnapshot {
 
+    public static final String VIRTUAL_BUNDLE_GROUP = "grp:org.nuxeo.misc";
+
     protected ServerInfo serverInfo;
 
     protected Date created;
@@ -73,11 +75,9 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements
 
     protected boolean opsInitialized = false;
 
-    protected List<OperationInfo> operations = new ArrayList<OperationInfo>();
+    protected final List<OperationInfo> operations = new ArrayList<OperationInfo>();
 
-    public final static String VIRTUAL_BUNDLE_GROUP = "grp:org.nuxeo.misc";
-
-    protected JavaDocHelper jdocHelper = null;
+    protected JavaDocHelper jdocHelper;
 
     protected final List<Class<?>> spi = new ArrayList<Class<?>>();
 
