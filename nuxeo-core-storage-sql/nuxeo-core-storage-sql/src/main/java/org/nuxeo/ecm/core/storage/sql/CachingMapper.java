@@ -49,6 +49,7 @@ public class CachingMapper extends CachingRowMapper implements Mapper {
 
     @Override
     public void close() throws StorageException {
+        super.close();
         mapper.close();
     }
 
