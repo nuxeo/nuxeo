@@ -46,11 +46,18 @@ public class LayoutRowImpl implements LayoutRow {
 
     protected Map<String, Serializable> properties;
 
+    protected String definitionId;
+
     // needed by GWT serialization
     protected LayoutRowImpl() {
         super();
     }
 
+    /**
+     * @deprecated since 5.4.3: use
+     *             {@link #LayoutRowImpl(String, boolean, boolean, List, Map, String)}
+     */
+    @Deprecated
     public LayoutRowImpl(List<Widget> widgets,
             Map<String, Serializable> properties) {
         this.widgets = widgets.toArray(new Widget[] {});
@@ -60,14 +67,29 @@ public class LayoutRowImpl implements LayoutRow {
         alwaysSelected = false;
     }
 
+    /**
+     * @deprecated since 5.4.3: use
+     *             {@link #LayoutRowImpl(String, boolean, boolean, List, Map, String)}
+     */
+    @Deprecated
     public LayoutRowImpl(String name, boolean selectedByDefault,
             boolean alwaysSelected, List<Widget> widgets,
             Map<String, Serializable> properties) {
+        this(name, selectedByDefault, alwaysSelected, widgets, properties, null);
+    }
+
+    /**
+     * @since 5.4.3
+     */
+    public LayoutRowImpl(String name, boolean selectedByDefault,
+            boolean alwaysSelected, List<Widget> widgets,
+            Map<String, Serializable> properties, String definitionId) {
         this.name = name;
         this.selectedByDefault = selectedByDefault;
         this.alwaysSelected = alwaysSelected;
         this.widgets = widgets.toArray(new Widget[] {});
         this.properties = properties;
+        this.definitionId = definitionId;
     }
 
     public String getName() {
@@ -76,25 +98,8 @@ public class LayoutRowImpl implements LayoutRow {
 
     @Override
     public String getTagConfigId() {
-        StringBuffer builder = new StringBuffer();
-        builder.append(name).append(";");
-        builder.append(selectedByDefault).append(";");
-        builder.append(alwaysSelected).append(";");
-        if (widgets != null) {
-            for (Widget widget : widgets) {
-                if (widget != null) {
-                    builder.append(widget.getTagConfigId()).append(",");
-                }
-            }
-        }
-        builder.append(";");
-        if (properties != null) {
-            builder.append(properties.toString());
-        }
-        builder.append(";");
-
-        Integer intValue = new Integer(builder.toString().hashCode());
-        return intValue.toString();
+        // TODO: take widget instances into account?
+        return definitionId;
     }
 
     public boolean isAlwaysSelected() {

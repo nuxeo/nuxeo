@@ -67,16 +67,49 @@ public class WidgetImpl implements Widget {
 
     protected WidgetSelectOption[] selectOptions;
 
+    protected String definitionId;
+
     // needed by GWT serialization
     protected WidgetImpl() {
         super();
+    }
+
+    /**
+     * @deprecated since 5.4.3: use
+     *             {@link #WidgetImpl(String, String, String, String, String, FieldDefinition[], String, String, boolean, Map, boolean, Widget[], int, WidgetSelectOption[], String)}
+     */
+    @Deprecated
+    public WidgetImpl(String layoutName, String name, String mode, String type,
+            String valueName, FieldDefinition[] fields, String label,
+            String helpLabel, boolean translated,
+            Map<String, Serializable> properties, boolean required,
+            Widget[] subWidgets, int level) {
+        this(layoutName, name, mode, type, valueName, fields, label, helpLabel,
+                translated, properties, required, subWidgets, level, null, null);
+    }
+
+    /**
+     * @since 5.4.2
+     * @deprecated since 5.4.3: use
+     *             {@link #WidgetImpl(String, String, String, String, String, FieldDefinition[], String, String, boolean, Map, boolean, Widget[], int, WidgetSelectOption[], String)}
+     */
+    @Deprecated
+    public WidgetImpl(String layoutName, String name, String mode, String type,
+            String valueName, FieldDefinition[] fields, String label,
+            String helpLabel, boolean translated,
+            Map<String, Serializable> properties, boolean required,
+            Widget[] subWidgets, int level, WidgetSelectOption[] selectOptions) {
+        this(layoutName, name, mode, type, valueName, fields, label, helpLabel,
+                translated, properties, required, subWidgets, level,
+                selectOptions, null);
     }
 
     public WidgetImpl(String layoutName, String name, String mode, String type,
             String valueName, FieldDefinition[] fields, String label,
             String helpLabel, boolean translated,
             Map<String, Serializable> properties, boolean required,
-            Widget[] subWidgets, int level) {
+            Widget[] subWidgets, int level, WidgetSelectOption[] selectOptions,
+            String definitionId) {
         this.layoutName = layoutName;
         this.name = name;
         this.mode = mode;
@@ -90,19 +123,8 @@ public class WidgetImpl implements Widget {
         this.required = required;
         this.subWidgets = subWidgets;
         this.level = level;
-    }
-
-    /**
-     * @since 5.4.2
-     */
-    public WidgetImpl(String layoutName, String name, String mode, String type,
-            String valueName, FieldDefinition[] fields, String label,
-            String helpLabel, boolean translated,
-            Map<String, Serializable> properties, boolean required,
-            Widget[] subWidgets, int level, WidgetSelectOption[] selectOptions) {
-        this(layoutName, name, mode, type, valueName, fields, label, helpLabel,
-                translated, properties, required, subWidgets, level);
         this.selectOptions = selectOptions;
+        this.definitionId = definitionId;
     }
 
     public String getId() {
@@ -111,45 +133,11 @@ public class WidgetImpl implements Widget {
 
     @Override
     public String getTagConfigId() {
-        StringBuffer builder = new StringBuffer();
+        StringBuilder builder = new StringBuilder();
+        builder.append(definitionId).append(";");
         builder.append(layoutName).append(";");
-        builder.append(name).append(";");
         builder.append(mode).append(";");
-        builder.append(type).append(";");
-        if (fields != null) {
-            for (FieldDefinition fieldDef : fields) {
-                builder.append(fieldDef.getPropertyName() + ",");
-            }
-        }
-        builder.append(";");
-        builder.append(helpLabel).append(";");
-        // NXP-7251: let subwidgets handle their tag config
-        // if (subWidgets != null) {
-        // for (Widget widget : subWidgets) {
-        // if (widget != null) {
-        // builder.append(widget.getTagConfigId()).append(",");
-        // }
-        // }
-        // }
-        // builder.append(";");
-
-        if (properties != null) {
-            builder.append(properties.toString());
-        }
-        builder.append(";");
-        builder.append(label).append(";");
-        builder.append(translated).append(";");
         builder.append(level).append(";");
-        if (selectOptions != null) {
-            for (WidgetSelectOption option : selectOptions) {
-                if (option != null) {
-                    builder.append(option.getTagConfigId()).append(",");
-                }
-            }
-        }
-        builder.append(";");
-        // valueName and required are generated => no other impact on
-        // definition id
 
         Integer intValue = new Integer(builder.toString().hashCode());
         return intValue.toString();

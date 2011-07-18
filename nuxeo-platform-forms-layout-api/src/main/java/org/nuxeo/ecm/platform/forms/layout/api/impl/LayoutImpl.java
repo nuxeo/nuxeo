@@ -54,31 +54,49 @@ public class LayoutImpl implements Layout {
 
     protected Map<String, Serializable> properties;
 
+    protected String definitionId;
+
     // needed by GWT serialization
     protected LayoutImpl() {
         super();
     }
 
-    private LayoutImpl(String name, String mode, String template, int columns) {
-        this.name = name;
-        this.mode = mode;
-        this.template = template;
-        this.columns = columns;
-        this.widgetMap = new HashMap<String, Widget>();
-    }
-
+    /**
+     * @deprecated since 5.4.3: use
+     *             {@link #LayoutImpl(String, String, String, List, int, Map, String)}
+     */
+    @Deprecated
     public LayoutImpl(String name, String mode, String template,
             List<LayoutRow> rows, int columns) {
-        this(name, mode, template, columns);
-        this.rows = rows.toArray(new LayoutRow[] {});
-        computeWidgetMap();
+        this(name, mode, template, rows, columns, null);
     }
 
+    /**
+     * @deprecated since 5.4.3: use
+     *             {@link #LayoutImpl(String, String, String, List, int, Map, String)}
+     */
+    @Deprecated
     public LayoutImpl(String name, String mode, String template,
             List<LayoutRow> rows, int columns,
             Map<String, Serializable> properties) {
-        this(name, mode, template, rows, columns);
+        this(name, mode, template, rows, columns, properties, null);
+    }
+
+    /**
+     * @since 5.4.3
+     */
+    public LayoutImpl(String name, String mode, String template,
+            List<LayoutRow> rows, int columns,
+            Map<String, Serializable> properties, String definitionId) {
+        this.name = name;
+        this.mode = mode;
+        this.template = template;
+        this.rows = rows.toArray(new LayoutRow[] {});
+        this.columns = columns;
         this.properties = properties;
+        this.widgetMap = new HashMap<String, Widget>();
+        computeWidgetMap();
+        this.definitionId = definitionId;
     }
 
     protected void computeWidgetMap() {
@@ -105,21 +123,8 @@ public class LayoutImpl implements Layout {
     @Override
     public String getTagConfigId() {
         StringBuilder builder = new StringBuilder();
-        builder.append(name).append(";");
+        builder.append(definitionId).append(";");
         builder.append(mode).append(";");
-        builder.append(template).append(";");
-        if (rows != null) {
-            for (LayoutRow row : rows) {
-                if (row != null) {
-                    builder.append(row.getTagConfigId()).append(",");
-                }
-            }
-        }
-        builder.append(";");
-        if (properties != null) {
-            builder.append(properties.toString());
-        }
-        builder.append(";");
 
         Integer intValue = new Integer(builder.toString().hashCode());
         return intValue.toString();
