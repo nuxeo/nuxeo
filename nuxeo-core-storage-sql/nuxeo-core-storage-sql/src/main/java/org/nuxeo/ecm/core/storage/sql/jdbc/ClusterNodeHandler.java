@@ -22,6 +22,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Invalidations;
 import org.nuxeo.ecm.core.storage.sql.InvalidationsPropagator;
+import org.nuxeo.ecm.core.storage.sql.InvalidationsQueue;
 import org.nuxeo.ecm.core.storage.sql.Mapper;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
 
@@ -43,7 +44,7 @@ public class ClusterNodeHandler {
     private long clusterNodeLastInvalidationTimeMillis;
 
     /** Propagator of invalidations to the cluster node's mappers. */
-    public final InvalidationsPropagator propagator;
+    private final InvalidationsPropagator propagator;
 
     public ClusterNodeHandler(Mapper clusterNodeMapper,
             RepositoryDescriptor repositoryDescriptor) throws StorageException {
@@ -69,6 +70,28 @@ public class ClusterNodeHandler {
     public void processClusterInvalidationsNext() {
         clusterNodeLastInvalidationTimeMillis = System.currentTimeMillis()
                 - clusteringDelay - 1;
+    }
+
+    /**
+     * Adds an invalidation queue to this cluster node.
+     */
+    public void addQueue(InvalidationsQueue queue) {
+        propagator.addQueue(queue);
+    }
+
+    /**
+     * Removes an invalidation queue from this cluster node.
+     */
+    public void removeQueue(InvalidationsQueue queue) {
+        propagator.removeQueue(queue);
+    }
+
+    /**
+     * Propagates invalidations to all the queues of this cluster node.
+     */
+    public void propagateInvalidations(Invalidations invalidations,
+            InvalidationsQueue skipQueue) {
+        propagator.propagateInvalidations(invalidations, null);
     }
 
     /**

@@ -80,7 +80,15 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
         this.clusterNodeHandler = clusterNodeHandler;
         queue = new InvalidationsQueue("cluster");
         if (clusterNodeHandler != null) {
-            clusterNodeHandler.propagator.addQueue(queue);
+            clusterNodeHandler.addQueue(queue);
+        }
+    }
+
+    @Override
+    public void close() {
+        super.close();
+        if (clusterNodeHandler != null) {
+            clusterNodeHandler.removeQueue(queue);
         }
     }
 
@@ -99,8 +107,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
         Invalidations invalidations = clusterNodeHandler.receiveClusterInvalidations();
         // send received invalidations to all mappers
         if (invalidations != null && !invalidations.isEmpty()) {
-            clusterNodeHandler.propagator.propagateInvalidations(invalidations,
-                    null);
+            clusterNodeHandler.propagateInvalidations(invalidations, null);
         }
     }
 
