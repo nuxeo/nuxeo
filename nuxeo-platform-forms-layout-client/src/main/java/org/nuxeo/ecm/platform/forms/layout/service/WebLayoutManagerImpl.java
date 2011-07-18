@@ -44,6 +44,7 @@ import org.nuxeo.ecm.platform.forms.layout.api.LayoutRow;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutRowDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
+import org.nuxeo.ecm.platform.forms.layout.api.WidgetSelectOption;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetType;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.exceptions.LayoutException;
@@ -51,6 +52,7 @@ import org.nuxeo.ecm.platform.forms.layout.api.exceptions.WidgetException;
 import org.nuxeo.ecm.platform.forms.layout.api.impl.LayoutImpl;
 import org.nuxeo.ecm.platform.forms.layout.api.impl.LayoutRowComparator;
 import org.nuxeo.ecm.platform.forms.layout.api.impl.LayoutRowImpl;
+import org.nuxeo.ecm.platform.forms.layout.api.impl.WidgetDefinitionImpl;
 import org.nuxeo.ecm.platform.forms.layout.api.impl.WidgetImpl;
 import org.nuxeo.ecm.platform.forms.layout.api.impl.WidgetTypeImpl;
 import org.nuxeo.ecm.platform.forms.layout.descriptors.WidgetTypeDescriptor;
@@ -396,7 +398,7 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
                 wDef.getLabel(layoutMode), wDef.getHelpLabel(layoutMode),
                 wDef.isTranslated(), wDef.getProperties(layoutMode, wMode),
                 required, subWidgets.toArray(new Widget[] {}), level,
-                wDef.getSelectOptions());
+                wDef.getSelectOptions(), computeWidgetDefinitionId(wDef));
         return widget;
     }
 
@@ -483,7 +485,8 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
                 rows.add(new LayoutRowImpl(rowName,
                         rowDef.isSelectedByDefault(),
                         rowDef.isAlwaysSelected(), widgets,
-                        rowDef.getProperties(mode)));
+                        rowDef.getProperties(mode),
+                        computeLayoutRowDefinitionId(rowDef)));
             }
             foundRowNames.add(rowName);
         }
@@ -501,7 +504,8 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
         int columns = layoutDef.getColumns();
         Layout layout = new LayoutImpl(layoutDef.getName(), mode,
                 layoutDef.getTemplate(mode), rows, columns,
-                layoutDef.getProperties(mode));
+                layoutDef.getProperties(mode),
+                computeLayoutDefinitionId(layoutDef));
         return layout;
     }
 
@@ -546,19 +550,164 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
         boolean required = false;
         if (requiredProp != null) {
             if (requiredProp instanceof Boolean) {
-                required = Boolean.valueOf((Boolean) requiredProp);
+                required = ((Boolean) requiredProp).booleanValue();
             } else if (requiredProp instanceof String) {
-                required = getBooleanValue(ctx, (String) requiredProp);
+                required = getBooleanValue(ctx, (String) requiredProp).booleanValue();
             } else {
                 log.error(String.format(
                         "Invalid property \"%s\" on widget: %s",
                         WidgetDefinition.REQUIRED_PROPERTY_NAME, requiredProp));
             }
         }
-        Widget widget = new WidgetImpl("layout", "widget", mode, type,
-                valueName, fieldDefinitions.toArray(new FieldDefinition[] {}),
-                label, helpLabel, Boolean.TRUE.equals(translated), properties,
-                required, subWidgets, 0);
+        WidgetDefinitionImpl wDef = new WidgetDefinitionImpl("widget", type,
+                label, helpLabel, Boolean.TRUE.equals(translated), null,
+                fieldDefinitions, properties, null);
+        Widget widget = new WidgetImpl("layout", wDef.getName(), mode,
+                wDef.getType(), valueName, wDef.getFieldDefinitions(), label,
+                helpLabel, wDef.isTranslated(), properties, required,
+                subWidgets, 0, null, computeWidgetDefinitionId(wDef));
         return widget;
     }
+
+    /**
+     * Returns an identifier computed from this definition so that an identical
+     * definition will have the same id.
+     *
+     * @since 5.4.3
+     */
+    protected String computeLayoutDefinitionId(LayoutDefinition layoutDef) {
+        StringBuilder builder = new StringBuilder();
+        builder.append(layoutDef.getName()).append(";");
+        Map<String, String> templates = layoutDef.getTemplates();
+        if (templates != null) {
+            builder.append(templates.toString());
+        }
+        builder.append(";");
+        LayoutRowDefinition[] rows = layoutDef.getRows();
+        if (rows != null) {
+            for (LayoutRowDefinition row : rows) {
+                if (row != null) {
+                    builder.append(computeLayoutRowDefinitionId(row)).append(
+                            ",");
+                }
+            }
+        }
+        builder.append(";");
+        Map<String, Map<String, Serializable>> properties = layoutDef.getProperties();
+        if (properties != null) {
+            builder.append(properties.toString());
+        }
+        builder.append(";");
+
+        Integer intValue = new Integer(builder.toString().hashCode());
+        return intValue.toString();
+    }
+
+    /**
+     * Returns an identifier computed from this definition so that an identical
+     * definition will have the same id.
+     *
+     * @since 5.4.3
+     */
+    protected String computeLayoutRowDefinitionId(
+            LayoutRowDefinition layoutRowDef) {
+        StringBuffer builder = new StringBuffer();
+        builder.append(layoutRowDef.getName()).append(";");
+        builder.append(layoutRowDef.isSelectedByDefault()).append(";");
+        builder.append(layoutRowDef.isAlwaysSelected()).append(";");
+        String[] widgets = layoutRowDef.getWidgets();
+        if (widgets != null) {
+            for (String widget : widgets) {
+                if (widget != null) {
+                    builder.append(widget).append(",");
+                }
+            }
+        }
+        builder.append(";");
+
+        Map<String, Map<String, Serializable>> properties = layoutRowDef.getProperties();
+        if (properties != null) {
+            builder.append(properties.toString());
+        }
+        builder.append(";");
+
+        Integer intValue = new Integer(builder.toString().hashCode());
+        return intValue.toString();
+
+    }
+
+    /**
+     * Returns an identifier computed from this definition so that an identical
+     * definition will have the same id.
+     *
+     * @since 5.4.3
+     */
+    protected String computeWidgetDefinitionId(WidgetDefinition widgetDef) {
+        StringBuffer builder = new StringBuffer();
+        builder.append(widgetDef.getName()).append(";");
+        builder.append(widgetDef.getType()).append(";");
+
+        FieldDefinition[] fieldDefinitions = widgetDef.getFieldDefinitions();
+        if (fieldDefinitions != null) {
+            for (FieldDefinition fieldDef : fieldDefinitions) {
+                builder.append(fieldDef.getPropertyName() + ",");
+            }
+        }
+        builder.append(";");
+
+        Map<String, String> labels = widgetDef.getLabels();
+        if (labels != null) {
+            builder.append(labels.toString());
+        }
+        builder.append(";");
+        Map<String, String> helpLabels = widgetDef.getHelpLabels();
+        if (helpLabels != null) {
+            builder.append(helpLabels.toString());
+        }
+        builder.append(";");
+
+        WidgetDefinition[] subWidgets = widgetDef.getSubWidgetDefinitions();
+        if (subWidgets != null) {
+            for (WidgetDefinition widget : subWidgets) {
+                if (widget != null) {
+                    builder.append(computeWidgetDefinitionId(widget)).append(
+                            ",");
+                }
+            }
+        }
+        builder.append(";");
+
+        Map<String, Map<String, Serializable>> properties = widgetDef.getProperties();
+        if (properties != null) {
+            builder.append(properties.toString());
+        }
+        builder.append(";");
+        Map<String, Map<String, Serializable>> widgetModeProperties = widgetDef.getWidgetModeProperties();
+        if (widgetModeProperties != null) {
+            builder.append(widgetModeProperties.toString());
+        }
+        builder.append(";");
+
+        builder.append(widgetDef.isTranslated()).append(";");
+
+        Map<String, String> modes = widgetDef.getModes();
+        if (modes != null) {
+            builder.append(modes.toString());
+        }
+        builder.append(";");
+
+        WidgetSelectOption[] selectOptions = widgetDef.getSelectOptions();
+        if (selectOptions != null) {
+            for (WidgetSelectOption option : selectOptions) {
+                if (option != null) {
+                    builder.append(option.getTagConfigId()).append(",");
+                }
+            }
+        }
+        builder.append(";");
+
+        Integer intValue = new Integer(builder.toString().hashCode());
+        return intValue.toString();
+    }
+
 }
