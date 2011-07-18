@@ -433,6 +433,11 @@ public class TestSQLBackend extends SQLBackendTestCase {
                 || this instanceof ITSQLBackendNet) {
             return;
         }
+        if (System.getProperty("os.name").startsWith("Windows")) {
+            // windows doesn't have enough time granularity for such a test
+            return;
+        }
+
         Session session = repository.getConnection();
 
         // store some binaries
@@ -736,6 +741,10 @@ public class TestSQLBackend extends SQLBackendTestCase {
         if (!DatabaseHelper.DATABASE.supportsClustering()) {
             System.out.println("Skipping clustering test for unsupported database: "
                     + DatabaseHelper.DATABASE.getClass().getName());
+            return;
+        }
+        if (System.getProperty("os.name").startsWith("Windows")) {
+            // windows doesn't have enough time granularity for such a test
             return;
         }
 
