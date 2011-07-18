@@ -80,12 +80,7 @@
   <target name="run-pack" depends="run-pack-windows,run-pack-unix" />
   <target name="run-pack-windows" if="osfamily-windows">
     <exec executable="${stage}/bin/pack.bat">
-      <arg value="deploy" />
-	  <arg value="preprocessing" />
-    </exec>
-	<exec executable="${stage}/bin/pack.bat">
-      <arg value="deploy" />
-	  <arg value="packaging" />
+      <arg value="${outdir}/deploy" />
     </exec>
   </target>
   <target name="run-pack-unix" if="osfamily-unix">
