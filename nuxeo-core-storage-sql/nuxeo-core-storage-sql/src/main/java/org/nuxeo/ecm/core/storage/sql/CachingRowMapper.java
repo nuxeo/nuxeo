@@ -104,11 +104,16 @@ public class CachingRowMapper implements RowMapper {
         localInvalidations = new Invalidations();
         cacheQueue = new InvalidationsQueue("mapper-" + this);
         this.cachePropagator = cachePropagator;
-        cachePropagator.addQueue(cacheQueue); // TODO when to remove?
+        cachePropagator.addQueue(cacheQueue);
         eventQueue = repositoryEventQueue;
         this.eventPropagator = eventPropagator;
         eventPropagator.addQueue(repositoryEventQueue);
         forRemoteClient = false;
+    }
+
+    public void close() throws StorageException {
+        cachePropagator.removeQueue(cacheQueue);
+        eventPropagator.removeQueue(eventQueue); // TODO can be overriden
     }
 
     /*
