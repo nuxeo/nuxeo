@@ -26,7 +26,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.ZipUtils;
@@ -122,13 +121,13 @@ public class PackZip {
 
     public void execute(String order) throws ConfigurationException,
             IOException, ParserConfigurationException, SAXException {
-        if (ORDER_PREPROCESSING.equals(order) || StringUtils.isBlank(order)) {
+        if (ORDER_PREPROCESSING.equals(order) || null == order) {
             executePreprocessing();
         }
-        if (ORDER_PACKAGING.equals(order) || StringUtils.isBlank(order)) {
+        if (ORDER_PACKAGING.equals(order) || null == order) {
             executePackaging();
         }
-        if (!(ORDER_PREPROCESSING.equals(order) || StringUtils.isBlank(order) || ORDER_PACKAGING.equals(order))) {
+        if (!(ORDER_PREPROCESSING.equals(order) || null == order || ORDER_PACKAGING.equals(order))) {
             fail("Order param should be " + ORDER_PREPROCESSING + " or "
                     + ORDER_PACKAGING);
         }
