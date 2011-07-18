@@ -22,6 +22,7 @@ target*
 dependency-tree.log
 nuxeo-distribution-dm/ftest/funkload/log/*
 nuxeo-distribution-dm/ftest/selenium/result-*.html
+nuxeo-distribution-dm/ftest/selenium/results
 nuxeo-distribution-dm/ftest/selenium/run.conf
 nuxeo-distribution-dm/ftest/selenium/user-extensions.js
 nuxeo-distribution-dm/ftest/selenium/ffprofile/prefs.js
