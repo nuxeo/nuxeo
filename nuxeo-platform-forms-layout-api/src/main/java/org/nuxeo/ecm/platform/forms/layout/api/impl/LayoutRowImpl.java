@@ -98,7 +98,7 @@ public class LayoutRowImpl implements LayoutRow {
 
     @Override
     public String getTagConfigId() {
-        // TODO: take widget instances into account?
+        // XXX check if widget instances should be taken into account.
         return definitionId;
     }
 
