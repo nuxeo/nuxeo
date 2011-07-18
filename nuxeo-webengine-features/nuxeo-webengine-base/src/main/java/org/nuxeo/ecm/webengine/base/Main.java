@@ -83,20 +83,6 @@ public class Main extends ModuleRoot {
         return getView("index");
     }
 
-    @GET
-    @Path("help")
-    public Object getHelp() {
-        init();
-        return getTemplate("help/help.ftl");
-    }
-
-    @GET
-    @Path("about")
-    public Object getAbout() {
-        init();
-        return getTemplate("help/about.ftl");
-    }
-
     @Path("{path}")
     public Object dispatch(@PathParam("path") String path) {
         ModuleConfiguration md = mgr.getModuleByPath(path);
