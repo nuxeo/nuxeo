@@ -4,7 +4,7 @@
   <extension target="org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService"
     point="filterConfig">
     <filterConfig name="GWTContainerTransactional" transactional="true" synchonize="false">
-      <pattern>${org.nuxeo.ecm.contextPath}/gwtContainer</pattern>
+      <pattern>${org.nuxeo.ecm.contextPath}/gwtContainer.*</pattern>
     </filterConfig>
   </extension>
 
