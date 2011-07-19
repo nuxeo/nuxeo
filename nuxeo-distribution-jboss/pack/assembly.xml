@@ -75,6 +75,7 @@
     <!-- run the pack command -->
     <echo>Executing pack command</echo>
     <antcall target="run-pack" />
+    <antcall target="libs" />
     <delete dir="${stage}" />
   </target>
   
@@ -90,4 +91,11 @@
      </exec>
   </target>
 
+  <target name="libs">
+    <delete dir="${outdir}/lib" failonerror="false" />
+    <mkdir dir="${outdir}/lib" />
+    <move todir="${outdir}/lib">
+      <fileset dir="${stage}/server/default/lib" />
+    </move>
+  </target>
 </project>
