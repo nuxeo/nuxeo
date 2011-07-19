@@ -39,20 +39,8 @@ import org.jboss.seam.contexts.Contexts;
 @Scope(ScopeType.EVENT)
 public class DndConfigurationHelper {
 
-    protected static final String UA_PATTERN_FF36 = "Firefox/3.6";
-
-    protected static final String UA_PATTERN_FF4 = "Firefox/4";
-
-    protected static final String UA_PATTERN_CHROME = "Chrome/";
-
-    protected static final String UA_PATTERN_CHROMIUM = "Chromium/";
-
-    protected static final String UA_PATTERN_SAFARI = "Safari/";
-
-    protected static final String UA_PATTERN_SAFARI_5 = "Version/5";
-
     /**
-     * Factiry method used to push into the Session context a flag indicating if
+     * Factory method used to push into the Session context a flag indicating if
      * HTML5 Drag&Drop can be used
      *
      * @return
@@ -66,20 +54,7 @@ public class DndConfigurationHelper {
 
         String ua = request.getHeader("User-Agent");
 
-        if (ua == null) {
-            return false;
-        }
-        if (ua.contains(UA_PATTERN_FF36) || ua.contains(UA_PATTERN_FF4)) {
-            return true;
-        }
-        if (ua.contains(UA_PATTERN_CHROME) || ua.contains(UA_PATTERN_CHROMIUM)) {
-            return true;
-        }
-        if (ua.contains(UA_PATTERN_SAFARI) && ua.contains(UA_PATTERN_SAFARI_5)) {
-            return true;
-        }
-
-        return false;
+        return UserAgentMatcher.html5DndIsSupported(ua);
     }
 
     public void setHtml5DndEnabled(boolean enabled) {
