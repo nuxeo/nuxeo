@@ -112,8 +112,10 @@ public class DocumentTemplatesActionsBean extends InputController implements
             log.error("Unable to access documentManager");
             return null;
         }
-        DocumentModelList tl = documentManager.getChildren(
-                navigationContext.getCurrentDomain().getRef(), TemplateRoot);
+
+        String query = "SELECT * FROM Document where ecm:primaryType = '%s' AND ecm:path STARTSWITH '%s'";
+        DocumentModelList tl = documentManager.query(String.format(query,
+                TemplateRoot, navigationContext.getCurrentDomainPath()));
 
         if (tl.isEmpty()) {
             templates = tl;
