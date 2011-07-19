@@ -108,32 +108,31 @@ public class WebLayoutResource {
         return res;
     }
 
-    @GET
-    @Path("widgetTypes")
-    public Object getWidgetTypeDefinitions(@Context
-    HttpServletRequest request, @QueryParam("all")
-    Boolean all) {
-        return getWidgetTypeDefinitions(request, null, null, all);
-    }
-
     /**
-     * Returns widget types definitions for given category.
+     * Returns widget types definitions for given categories
      * <p>
      * If the category is null, the filter does not check the category. Widget
      * types without a configuration are included if boolean 'all' is set to
-     * true.
+     * true. Mutliple categories are extracted from the query parameter by
+     * splitting on the space character.
      * <p>
-     * If not null, the version parameter will exlude all widget types that did
-     * not exist before this version.
+     * If not null, the version parameter will exclude all widget types that
+     * did not exist before this version.
      */
     @GET
-    @Path("widgetTypes/{category}")
+    @Path("widgetTypes")
     public Object getWidgetTypeDefinitions(@Context
-    HttpServletRequest request, @PathParam("category")
-    String category, @QueryParam("version")
+    HttpServletRequest request, @QueryParam("categories")
+    String categories, @QueryParam("version")
     String version, @QueryParam("all")
     Boolean all) {
         // TODO: refactor so that's cached
+        List<String> catsList = new ArrayList<String>();
+        if (categories != null) {
+            for (String cat : categories.split(" ")) {
+                catsList.add(cat);
+            }
+        }
         WidgetTypeDefinitions res = new WidgetTypeDefinitions();
         for (WidgetTypeDefinition def : widgetTypes) {
             WidgetTypeConfiguration conf = def.getConfiguration();
@@ -146,19 +145,20 @@ public class WebLayoutResource {
                     continue;
                 }
             }
-            if (category != null) {
+            if (catsList != null && !catsList.isEmpty()) {
                 boolean hasCats = false;
                 if (conf != null) {
                     // filter on category
-                    List<String> categories = conf.getCategories();
-                    if (categories != null) {
+                    List<String> confCats = conf.getCategories();
+                    if (confCats != null) {
                         hasCats = true;
-                        if (categories.contains(category)) {
+                        if (confCats.containsAll(catsList)) {
                             res.add(def);
                         }
                     }
                 }
-                if (!hasCats && "unknown".equals(category)) {
+                if (!hasCats && catsList.size() == 1
+                        && catsList.contains("unknown")) {
                     res.add(def);
                 }
             } else {
@@ -169,6 +169,26 @@ public class WebLayoutResource {
             }
         }
         return res;
+    }
+
+    /**
+     * Returns widget types definitions for given category.
+     * <p>
+     * If the category is null, the filter does not check the category. Widget
+     * types without a configuration are included if boolean 'all' is set to
+     * true.
+     * <p>
+     * If not null, the version parameter will exclude all widget types that
+     * did not exist before this version.
+     */
+    @GET
+    @Path("widgetTypes/{category}")
+    public Object getWidgetTypeDefinitionsForCategory(@Context
+    HttpServletRequest request, @PathParam("category")
+    String category, @QueryParam("version")
+    String version, @QueryParam("all")
+    Boolean all) {
+        return getWidgetTypeDefinitions(request, category, version, all);
     }
 
     @GET
