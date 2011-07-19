@@ -28,44 +28,53 @@ import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class ContributionFragmentTest extends TestCase {
 
     static class MyContrib {
         protected String id;
+
         protected String title;
+
         protected List<String> args;
+
         public MyContrib(String id) {
             this.id = id;
         }
+
         public String getId() {
             return id;
         }
+
         public String getTitle() {
             return title;
         }
+
         public List<String> getArgs() {
             return args;
         }
     }
 
     static class MyRegistry extends ContributionFragmentRegistry<MyContrib> {
+
         Map<String, MyContrib> registry = new HashMap<String, MyContrib>();
+
         @Override
         public String getContributionId(MyContrib contrib) {
             return contrib.getId();
         }
+
         @Override
-        public void contributionUpdated(
-                String id,
-                MyContrib contrib, MyContrib origContrib) {
+        public void contributionUpdated(String id, MyContrib contrib,
+                MyContrib origContrib) {
             registry.put(id, contrib);
         }
+
         @Override
         public void contributionRemoved(String id, MyContrib origContrib) {
             registry.remove(id);
         }
+
         @Override
         public MyContrib clone(MyContrib object) {
             MyContrib clone = new MyContrib(object.getId());
@@ -75,6 +84,7 @@ public class ContributionFragmentTest extends TestCase {
             }
             return clone;
         }
+
         @Override
         public void merge(MyContrib src, MyContrib dst) {
             dst.title = src.title;
@@ -85,15 +95,15 @@ public class ContributionFragmentTest extends TestCase {
                 dst.args.addAll(src.args);
             }
         }
+
         public Map<String, MyContrib> getRegistry() {
             return registry;
         }
     }
 
-    public static List<String> newList(String ... args) {
+    public static List<String> newList(String... args) {
         return Arrays.asList(args);
     }
-
 
     public void testRegistry() throws Exception {
         MyRegistry reg = new MyRegistry();
@@ -102,15 +112,18 @@ public class ContributionFragmentTest extends TestCase {
         reg.addContribution(c1);
         MyContrib c11 = new MyContrib("c1");
         c11.title = "c11 title";
-        c11.args = new ArrayList<String>(Arrays.asList(new String[]{"a", "b"}));
+        c11.args = new ArrayList<String>(
+                Arrays.asList(new String[] { "a", "b" }));
         reg.addContribution(c11);
 
         MyContrib c2 = new MyContrib("c2");
         c2.title = "c2 title";
-        c2.args = new ArrayList<String>(Arrays.asList(new String[]{"a", "b"}));
+        c2.args = new ArrayList<String>(
+                Arrays.asList(new String[] { "a", "b" }));
         reg.addContribution(c2);
         MyContrib c21 = new MyContrib("c2");
-        c21.args = new ArrayList<String>(Arrays.asList(new String[]{"c", "d"}));
+        c21.args = new ArrayList<String>(
+                Arrays.asList(new String[] { "c", "d" }));
         reg.addContribution(c21);
 
         assertEquals("c1", reg.getRegistry().get("c1").getId());
@@ -119,7 +132,8 @@ public class ContributionFragmentTest extends TestCase {
 
         assertEquals("c2", reg.getRegistry().get("c2").getId());
         assertNull(reg.getRegistry().get("c2").getTitle());
-        assertEquals(newList("a", "b", "c", "d"), reg.getRegistry().get("c2").getArgs());
+        assertEquals(newList("a", "b", "c", "d"),
+                reg.getRegistry().get("c2").getArgs());
 
         reg.removeContribution(c21);
 
