@@ -106,10 +106,10 @@ public class TestAction extends NXRuntimeTestCase {
         assertEquals(3, filters.size());
 
         ActionFilter f1 = as.getFilterRegistry().getFilter("MyCustomFilter");
-        DefaultActionFilter f2 = (DefaultActionFilter) as.getFilterRegistry()
-                .getFilter("theFilter");
-        DefaultActionFilter f3 = (DefaultActionFilter) as.getFilterRegistry()
-                .getFilter("createChild");
+        DefaultActionFilter f2 = (DefaultActionFilter) as.getFilterRegistry().getFilter(
+                "theFilter");
+        DefaultActionFilter f3 = (DefaultActionFilter) as.getFilterRegistry().getFilter(
+                "createChild");
 
         assertSame(DummyFilter.class, f1.getClass());
         assertSame(DefaultActionFilter.class, f2.getClass());
@@ -181,10 +181,32 @@ public class TestAction extends NXRuntimeTestCase {
         assertEquals(3, act1.getCategories().length);
         assertTrue(Arrays.asList(act1.getCategories()).contains("OVERRIDE"));
         assertTrue(Arrays.asList(act1.getCategories()).contains("view"));
-        assertEquals(3, act1.getFilterIds().size());
-        assertTrue(act1.getFilterIds().contains("MyCustomFilter"));
-        assertTrue(act1.getFilterIds().contains("newFilter"));
-        assertTrue(act1.getFilterIds().contains("otherNewFilter"));
+        List<String> filterIds = act1.getFilterIds();
+        assertNotNull(filterIds);
+        assertEquals(5, filterIds.size());
+        assertEquals("MyCustomFilter", filterIds.get(0));
+        assertEquals("newFilterId1", filterIds.get(1));
+        // filter 4 is not embedded => comes first
+        assertEquals("newFilterId4", filterIds.get(2));
+        assertEquals("newFilter2", filterIds.get(3));
+        assertEquals("newFilter3", filterIds.get(4));
+
+        // check corresponding filters are registered correctly
+        ActionFilter filter = as.getFilterRegistry().getFilter("foo");
+        assertNull(filter);
+        filter = as.getFilterRegistry().getFilter("MyCustomFilter");
+        assertNotNull(filter);
+        // no filter by that name
+        filter = as.getFilterRegistry().getFilter("newFilterId1");
+        assertNull(filter);
+        // no filter by that name
+        filter = as.getFilterRegistry().getFilter("newFilterId4");
+        assertNull(filter);
+        filter = as.getFilterRegistry().getFilter("newFilter2");
+        assertNotNull(filter);
+        filter = as.getFilterRegistry().getFilter("newFilter3");
+        assertNotNull(filter);
+
     }
 
     public void testFilter() {

@@ -17,7 +17,10 @@
 package org.nuxeo.ecm.platform.actions;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -25,13 +28,14 @@ import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-public class ActionContributionHandler extends ContributionFragmentRegistry<Action> {
+public class ActionContributionHandler extends
+        ContributionFragmentRegistry<Action> {
 
     private final Log log = LogFactory.getLog(ActionContributionHandler.class);
 
     protected ActionRegistry actionReg;
+
     protected ActionFilterRegistry filterReg;
 
     public ActionContributionHandler(ActionFilterRegistry fitlerReg) {
@@ -58,46 +62,42 @@ public class ActionContributionHandler extends ContributionFragmentRegistry<Acti
     }
 
     @Override
-    public void contributionUpdated(String actionId, Action action, Action origAction) {
-        // given action contribution is already merged
+    public void contributionUpdated(String actionId, Action action,
+            Action origAction) {
+        // given action is already merged, do nothing with origAction
 
-        // store locally filters of new action since if action is
-        // merged we will lose these filters - we should use the origAction
-        // to retrieve the filters since the merged operation remove the filters.
-        ActionFilter[] filters = origAction.getFilters();
-        Action existingAction = actionReg.getAction(actionId);
-        if (existingAction != null) {
+        Action registeredAction = actionReg.getAction(actionId);
+        if (registeredAction != null) {
             log.debug("Upgrading web action with id " + actionId);
             actionReg.removeAction(actionId);
         }
 
-        // Register action's filter ids.
-        List<String> filterIds = new ArrayList<String>();
-        // now register embedded filters to filter registry and update the
-        // filterIds list
-        if (filters != null) {
-            // register filters and save corresponding filter ids
-            for (ActionFilter filter : filters) {
-                filterReg.removeFilter(filter.getId());
+        List<String> newFilterIds = new ArrayList<String>();
+        ActionFilter[] newFilters = action.getFilters();
+        if (newFilters != null) {
+            // register embedded filters and save corresponding filter ids
+            for (ActionFilter filter : newFilters) {
+                String filterId = filter.getId();
+                filterReg.removeFilter(filterId);
                 filterReg.addFilter(filter);
-                filterIds.add(filter.getId());
+                newFilterIds.add(filterId);
             }
             // XXX: Remove filters from action as it was just temporary,
             // filters are now in their own registry.
-            // XXX: let the filters as is - required to be able to reload the
-            // component action.setFilters(null);
+            action.setFilters(null);
         }
 
         List<String> actionFilterIds = action.getFilterIds();
         if (actionFilterIds == null) {
-            action.setFilterIds(filterIds);
+            action.setFilterIds(newFilterIds);
         } else {
-            actionFilterIds.addAll(filterIds);
+            actionFilterIds.addAll(newFilterIds);
             action.setFilterIds(actionFilterIds);
         }
 
+        // set a default label
         if (action.getLabel() == null) {
-            action.setLabel(actionId);
+            action.setLabel(action.getId());
         }
 
         actionReg.addAction(action);
@@ -109,8 +109,73 @@ public class ActionContributionHandler extends ContributionFragmentRegistry<Acti
     }
 
     @Override
-    public void merge(Action src, Action dst) {
-        dst.mergeWith(src);
-    }
+    public void merge(Action source, Action dest) {
+        // Icon
+        String newIcon = source.getIcon();
+        if (newIcon != null && !newIcon.equals(dest.getIcon())) {
+            dest.setIcon(newIcon);
+        }
 
+        // Enabled ?
+        if (source.isEnabled() != dest.isEnabled()) {
+            dest.setEnabled(source.isEnabled());
+        }
+
+        // Merge categories without duplicates
+        Set<String> mergedCategories = new HashSet<String>(
+                Arrays.asList(dest.getCategories()));
+        mergedCategories.addAll(new HashSet<String>(
+                Arrays.asList(source.getCategories())));
+        dest.setCategories(mergedCategories.toArray(new String[mergedCategories.size()]));
+
+        // label
+        String newLabel = source.getLabel();
+        if (newLabel != null && !newLabel.equals(dest.getLabel())) {
+            dest.setLabel(newLabel);
+        }
+
+        // link
+        String newLink = source.getLink();
+        if (newLink != null && !newLink.equals(dest.getLink())) {
+            dest.setLink(newLink);
+        }
+
+        // confirm
+        String newConfirm = source.getConfirm();
+        if (newConfirm != null && !"".equals(newConfirm)
+                && !newConfirm.equals(dest.getConfirm())) {
+            dest.setConfirm(newConfirm);
+        }
+
+        // title (tooltip)
+        String tooltip = source.getHelp();
+        if (tooltip != null && !tooltip.equals(dest.getHelp())) {
+            dest.setHelp(tooltip);
+        }
+
+        // order
+        int newOrder = source.getOrder();
+        if (newOrder > 0 && newOrder != dest.getOrder()) {
+            dest.setOrder(newOrder);
+        }
+
+        // filter ids
+        List<String> newFilterIds = new ArrayList<String>();
+        newFilterIds.addAll(dest.getFilterIds());
+        newFilterIds.addAll(source.getFilterIds());
+        dest.setFilterIds(newFilterIds);
+
+        // filters
+        ActionFilter[] existingFilters = dest.getFilters();
+        ActionFilter[] newFilters = source.getFilters();
+        List<ActionFilter> filters = new ArrayList<ActionFilter>();
+        if (existingFilters != null) {
+            filters.addAll(Arrays.asList(existingFilters));
+        }
+        if (newFilters != null) {
+            filters.addAll(Arrays.asList(newFilters));
+        }
+        dest.setFilters(filters.toArray(new ActionFilter[] {}));
+
+    }
 }
