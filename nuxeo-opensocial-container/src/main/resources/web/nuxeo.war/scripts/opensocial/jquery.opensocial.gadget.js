@@ -69,12 +69,16 @@
           gadget.serverBase_ = settings.baseURL + settings.shindigServerSuffix;
           gadget.secureToken = secureTokens[index];
 
-          $.each(settings.gadgetDefs[index], function (name,value)
-              {
-                if (name!='specUrl') {
-                  gadget[name]=value;
-                }
-              });
+          var element = $(this);
+          $.each(settings.gadgetDefs[index], function (name,value) {
+            if (name === 'displayBorder') {
+              if (!value) {
+                element.addClass('no-border')
+              }
+            } else if (name != 'specUrl') {
+              gadget[name]=value;
+            }
+          });
 
           gadgets.container.addGadget(gadget);
           createdGadgets.push(gadget);
@@ -98,3 +102,4 @@
     return this;
   };
 })(jQuery);
+

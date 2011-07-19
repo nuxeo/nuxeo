@@ -22,6 +22,11 @@
  * Updated by Nuxeo:
  *   - added method gadgets.StaticLayoutManager.prototype.pushGadgetChromeIds
  * to be able to push new gadgets chrome ids to the existing ones.
+ *   - properties added on a gadget to handle how the title bar is displayed:
+ *     - displayTitleBar: true (default) | false
+ *     - displayButtons: true (default) | false
+ *     - displaySettingsButton: true (default) | false
+ *     - displayToggleButton: true (default) | false
  *
  */
 
@@ -402,6 +407,13 @@ gadgets.FloatLeftLayoutManager.prototype.getGadgetChrome =
 gadgets.Gadget = function(params) {
   this.userPrefs = {};
 
+  // used to configure the title bar display
+  this.displayTitleBar = true;
+  this.displayTitle = true;
+  this.displayButtons = true;
+  this.displaySettingsButton = true;
+  this.displayToggleButton = true;
+
   if (params) {
     for (var name in params)  if (params.hasOwnProperty(name)) {
       this[name] = params[name];
@@ -511,19 +523,36 @@ gadgets.IfrGadget.prototype.rpcToken = (0x7FFFFFFF * Math.random()) | 0;
 gadgets.IfrGadget.prototype.rpcRelay = 'files/container/rpc_relay.html';
 
 gadgets.IfrGadget.prototype.getTitleBarContent = function(continuation) {
-  var settingsButton = this.hasViewablePrefs_() ?
-      '<a href="#" onclick="gadgets.container.getGadget(' + this.id +
-          ').handleOpenUserPrefsDialog();return false;" class="' + this.cssClassTitleButton +
-          '">settings</a> '
+  if (!this.displayTitleBar) {
+    return  continuation();
+  }
+
+  var title = this.displayTitle ?
+      '<span id="' +
+        this.getIframeId() + '_title" class="' +
+        this.cssClassTitle + '">' + (this.title ? this.title : 'Title') + '</span>'
       : '';
-  continuation('<div id="' + this.cssClassTitleBar + '-' + this.id +
-      '" class="' + this.cssClassTitleBar + '"><span id="' +
-      this.getIframeId() + '_title" class="' +
-      this.cssClassTitle + '">' + (this.title ? this.title : 'Title') + '</span> <span class="' +
-      this.cssClassTitleButtonBar + '">' + settingsButton +
+
+  var settingsButton = (this.hasViewablePrefs_() && this.displaySettingsButton) ?
       '<a href="#" onclick="gadgets.container.getGadget(' + this.id +
-      ').handleToggle();return false;" class="' + this.cssClassTitleButton +
-      '">toggle</a></span><div style="clear:both"></div></div>');
+        ').handleOpenUserPrefsDialog();return false;" class="' + this.cssClassTitleButton +
+        '">settings</a> '
+      : '';
+
+  var toggleButton =  this.displayToggleButton ?
+      '<a href="#" onclick="gadgets.container.getGadget(' + this.id +
+        ').handleToggle();return false;" class="' + this.cssClassTitleButton +
+        '">toggle</a>'
+      : '';
+
+  var buttonBar = this.displayButtons ?
+      '<span class="' +
+        this.cssClassTitleButtonBar + '">' + settingsButton + toggleButton +
+        '</span>'
+      : '';
+
+  continuation('<div id="' + this.cssClassTitleBar + '-' + this.id +
+      '" class="' + this.cssClassTitleBar + '">' + title + buttonBar + '<div style="clear:both"></div></div>');
 };
 
 gadgets.IfrGadget.prototype.getUserPrefsDialogContent = function(continuation) {
@@ -833,3 +862,4 @@ gadgets.IfrContainer.prototype.renderGadget = function(gadget) {
  * Default container.
  */
 gadgets.container = new gadgets.IfrContainer();
+

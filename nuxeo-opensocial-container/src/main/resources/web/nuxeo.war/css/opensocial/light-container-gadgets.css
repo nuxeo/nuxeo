@@ -16,11 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
- 
+
 .gadgets-gadget-chrome {
   float: left;
   margin: 4px;
   border: 1px solid #ddd;
+}
+
+.no-border {
+  border-color: transparent;
 }
 
 .gadgets-gadget {
@@ -59,3 +63,4 @@ div.gadgets-gadget-content {
 
 .gadgets-log-entry {
 }
+
