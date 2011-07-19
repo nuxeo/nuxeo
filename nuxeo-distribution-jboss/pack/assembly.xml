@@ -62,7 +62,7 @@
 
 #nuxeo.templates.parsing.extensions=null
 
-		</echo>
+    </echo>
     <concat append="true" destfile="${stage}/bin/nuxeo.conf">
       <fileset file="${maven.basedir}/default.properties" />
     </concat>
@@ -71,9 +71,9 @@
         <fileset file="${custom.pack.config}" />
       </concat>
     </nx:if>
-	<!-- run the pack command -->
+    <!-- run the pack command -->
     <echo>Executing pack command</echo>
-	<antcall target="run-pack" />
+    <antcall target="run-pack" />
     <antcall target="libs" />
     <delete dir="${stage}" />
   </target>
