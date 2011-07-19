@@ -151,6 +151,35 @@ INSERT INTO hierarchy (id, parentid, name, isproperty, primarytype, majorversion
 INSERT INTO versions (id, versionableid, created)
   VALUES ('11111111-0000-0000-3333-000000000001', '11111111-0000-0000-3333-000000000000', '2010-01-03')
 
+# fake doc 2
+#IF: testUpgradeLastContributor
+INSERT INTO hierarchy (id, parentid, name, isproperty, primarytype)
+  VALUES ('12121212-dddd-dddd-dddd-000000000000', null, 'mynddoc', 0, 'Tag')
+
+# fake doc 2 dublincore
+#IF: testUpgradeLastContributor
+INSERT INTO dublincore (id, creator, title) VALUES ('12121212-dddd-dddd-dddd-000000000000', 'Administrator', 'othertag')
+
+# fake doc 2 contributors
+#IF: testUpgradeLastContributor
+INSERT INTO dc_contributors (id, pos, item) VALUES ('12121212-dddd-dddd-dddd-000000000000', 0, 'Administrator')
+
+# fake doc 3
+#IF: testUpgradeLastContributor
+INSERT INTO hierarchy (id, parentid, name, isproperty, primarytype)
+  VALUES ('12121212-dddd-dddd-dddd-000000000001', null, 'myrddoc', 0, 'Tag')
+
+# fake doc 3 dublincore
+#IF: testUpgradeLastContributor
+INSERT INTO dublincore (id, creator, title) VALUES ('12121212-dddd-dddd-dddd-000000000001', 'Administrator', 'othertag')
+
+# fake doc 3 contributors
+#IF: testUpgradeLastContributor
+INSERT INTO dc_contributors (id, pos, item) VALUES ('12121212-dddd-dddd-dddd-000000000001', 0, 'Administrator')
+
+#IF: testUpgradeLastContributor
+INSERT INTO dc_contributors (id, pos, item) VALUES ('12121212-dddd-dddd-dddd-000000000001', 1, 'FakeOne')
+
 # lock doc
 #IF: testUpgradeLocks
 INSERT INTO locks (id, lock)
