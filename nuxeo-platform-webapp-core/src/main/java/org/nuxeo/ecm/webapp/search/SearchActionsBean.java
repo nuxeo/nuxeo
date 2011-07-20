@@ -52,10 +52,7 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.query.QueryParseException;
-import org.nuxeo.ecm.core.search.api.client.IndexingException;
 import org.nuxeo.ecm.core.search.api.client.SearchException;
-import org.nuxeo.ecm.core.search.api.client.SearchService;
-import org.nuxeo.ecm.core.search.api.client.common.SearchServiceDelegate;
 import org.nuxeo.ecm.core.search.api.client.querymodel.QueryModel;
 import org.nuxeo.ecm.core.search.api.client.search.results.ResultItem;
 import org.nuxeo.ecm.core.search.api.client.search.results.ResultSet;
@@ -458,20 +455,7 @@ public class SearchActionsBean extends InputController implements
 
     @Deprecated
     public void reindexDocuments(String path) throws ClientException {
-        SearchService service = SearchServiceDelegate.getRemoteSearchService();
-
-        // Reindex from path with fulltext
-        if (documentManager != null) {
-            try {
-                service.reindexAll(documentManager.getRepositoryName(), path,
-                        true);
-            } catch (IndexingException e) {
-                throw new ClientException(e);
-            }
-        } else {
-            throw new ClientException(
-                    "DocumentManager not found in Seam context...");
-        }
+        return;
     }
 
     public String reset() throws ClientException {
@@ -532,8 +516,7 @@ public class SearchActionsBean extends InputController implements
     }
 
     public boolean isReindexingAll() {
-        SearchService service = SearchServiceDelegate.getRemoteSearchService();
-        return service.isReindexingAll();
+        return false;
     }
 
 }
