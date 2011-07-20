@@ -12,15 +12,18 @@
 #
 # Contributors:
 #     Florent Guillaume
+#     Benoit Delbosc
 
 # Variables used:
 # ${idType} NVARCHAR(36)
 # ${fulltextCatalog} configured catalog
 # ${fulltextTriggerStatements} repeated for all suffixes SFX:
 #   :NEW.fulltextSFX := :NEW.simpletextSFX || :NEW.binarytextSFX;
+# ${readPermissions} SELECT 'Browse'  UNION ALL   SELECT 'Read'  UNION ALL   SELECT 'ReadProperties'  UNION ALL   SELECT 'ReadRemove'  UNION ALL   SELECT 'ReadWrite'  UNION ALL   SELECT 'Everything' ;
 
 # Conditions used:
 # fulltextEnabled
+# aclOptimizationsEnabled
 
 ############################################################
 
@@ -190,6 +193,210 @@ END;
 #IF: ! emptyResult
 EXEC NX_UPGRADE_TAGS
 
+
+
+
+
+# ------------------------------------------------------------
+# -- ACLR (aka READ ACL) OPTIMIZATIONS
+
+# ------------------------------------------------------------
+# -- Read acls table
+# -- acl ex: jsmith,administrators,-Everyone
+# -- acl_id = md5(acl)
+#TEST:
+SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'aclr' AND TABLE_CATALOG = db_name();
+
+#IF: emptyResult
+CREATE TABLE aclr (
+  acl_id VARCHAR(34) NOT NULL,
+  acl NVARCHAR(4000)
+)
+
+#TEST:
+SELECT 1 FROM sysindexes WHERE name = 'aclr_acl_id_idx'
+
+#IF: emptyResult
+CREATE INDEX [aclr_acl_id_idx] ON [dbo].[aclr] ([acl_id])
+
+
+# -- Known users table
+# -- users ex: {members,jsmith,Everyone}
+# -- user_id = md5(users)
+#TEST:
+SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'aclr_user' AND TABLE_CATALOG = db_name();
+
+#IF: emptyResult
+CREATE TABLE aclr_user (
+  user_id VARCHAR(34) NOT NULL,
+  user_name NVARCHAR(64),
+)
+
+
+#TEST:
+SELECT 1 FROM sysindexes WHERE name = 'aclr_user_user_id_idx'
+
+#IF: emptyResult
+CREATE INDEX [aclr_user_user_id_idx] ON [dbo].[aclr_user] ([user_id])
+
+
+# -- Jonction between aclr and aclr_user
+#TEST:
+SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME =  'aclr_user_map' AND TABLE_CATALOG = db_name();
+
+#IF: emptyResult
+CREATE TABLE aclr_user_map (
+  user_id VARCHAR(34) NOT NULL,
+  acl_id VARCHAR(34) NOT NULL
+)
+
+
+#TEST:
+SELECT 1 FROM sysindexes WHERE name = 'aclr_user_map_user_id_idx'
+
+#IF: emptyResult
+CREATE INDEX [aclr_user_map_user_id_idx] ON [dbo].[aclr_user_map] ([user_id])
+
+
+#TEST:
+SELECT 1 FROM sysindexes WHERE name = 'ACLR_USER_MAP_ACL_ID_IDX'
+
+#IF: emptyResult
+CREATE INDEX [aclr_user_map_acl_id_idx] ON [dbo].[aclr_user_map] ([acl_id], [user_id])
+
+
+# -- Associate a read acl for each hierarchy entry
+#TEST:
+SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME =  'hierarchy_read_acl' AND TABLE_CATALOG = db_name();
+
+#IF: emptyResult
+CREATE TABLE hierarchy_read_acl (
+  id ${idType} PRIMARY KEY, -- doc id
+  acl_id VARCHAR(34),      -- acl id in ACLR
+  CONSTRAINT hierarchy_read_acl_id_fk FOREIGN KEY (id) REFERENCES hierarchy (id) ON DELETE CASCADE
+)
+
+# add index
+#TEST:
+SELECT 1 FROM sysindexes WHERE name = 'hierarchy_read_acl_acl_id_idx'
+
+#IF: emptyResult
+CREATE INDEX [hierarchy_read_acl_acl_id_idx] ON [dbo].[hierarchy_read_acl] ([acl_id])
+
+
+# -- Log modified document that require an aclr update
+#TEST:
+SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'aclr_modified' AND TABLE_CATALOG = db_name();
+
+#IF: emptyResult
+CREATE TABLE aclr_modified (
+  hierarchy_id VARCHAR(36),
+  is_new TINYINT
+)
+
+
+#-- List of permission that grant the read access
+#TEST:
+SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME =  'aclr_permission' AND TABLE_CATALOG = db_name();
+
+#IF: emptyResult
+CREATE TABLE aclr_permission (
+  permission VARCHAR(250)
+)
+
+
+# dump browse permissions into table
+#TEST:
+SELECT 1 FROM aclr_permission
+
+#IF: emptyResult
+INSERT INTO aclr_permission ${readPermissions};
+
+
+# -- FUNCTIONS --------------------------------------------------
+
+# -- CREATE OR REPLACE FUNCTION nx_get_read_acl(id NVARCHAR)
+# -- RETURN NVARCHAR
+# -- Compute the merged read acl for a doc id
+
+# -- CREATE OR REPLACE FUNCTION nx_list_read_acls_for(users NX_STRING_TABLE)
+# -- RETURN NX_STRING_TABLE
+# -- List matching read acl ids for a list of user/groups
+
+
+# -- CREATE OR REPLACE FUNCTION nx_get_read_acls_for(users NX_STRING_TABLE)
+# -- RETURN NX_STRING_TABLE
+# -- List read acl ids for a list of user/groups, using the cache
+
+# -- TRIGGERS --------------------------------------------------
+
+# -- PROCEDURES --------------------------------------------------
+#IF: aclOptimizationsEnabled
+IF OBJECT_ID('dbo.nx_rebuild_read_acls', 'P') IS NOT NULL
+  DROP PROCEDURE dbo.nx_rebuild_read_acls;
+
+#IF: aclOptimizationsEnabled
+CREATE PROCEDURE nx_rebuild_read_acls
+  -- Rebuild the read acls tables
+AS
+BEGIN
+  SELECT * FROM aclr;
+END;
+
+
+#IF: aclOptimizationsEnabled
+IF OBJECT_ID('dbo.nx_vacuum_read_acls', 'P') IS NOT NULL
+  DROP PROCEDURE dbo.nx_vacuum_read_acls;
+
+#IF: aclOptimizationsEnabled
+CREATE PROCEDURE nx_vacuum_read_acls
+  -- Remove unused read acls entries
+AS
+BEGIN
+  SELECT * FROM aclr;
+END;
+
+
+#IF: aclOptimizationsEnabled
+IF OBJECT_ID('dbo.nx_update_read_acls', 'P') IS NOT NULL
+  DROP PROCEDURE dbo.nx_update_read_acls;
+
+
+#IF: aclOptimizationsEnabled
+CREATE PROCEDURE nx_update_read_acls
+  -- Rebuild only necessary read acls
+AS
+BEGIN
+  SELECT * FROM aclr;
+END;
+
+
+# -- INIT --------------------------------------------------
+# build the read acls if empty, this takes care of the upgrade
+#IF: aclOptimizationsEnabled
+#TEST:
+SELECT 1 FROM (
+    SELECT acl_id, ROW_NUMBER() OVER (ORDER BY acl_id) AS rownum FROM aclr
+) AS foo WHERE foo.rownum = 1
+
+
+#IF: aclOptimizationsEnabled
+#IF: emptyResult
+LOG.INFO Upgrading to optimized acls
+
+#IF: aclOptimizationsEnabled
+#IF: emptyResult
+EXEC nx_rebuild_read_acls
+
+#IF: aclOptimizationsEnabled
+LOG.INFO Vacuuming tables used by optimized acls
+
+# Vacuum the read acls tables
+#IF: aclOptimizationsEnabled
+EXEC nx_vacuum_read_acls
+
+
+# -- END OF ACLR ------------------------------------------------------------
 
 ############################################################
 

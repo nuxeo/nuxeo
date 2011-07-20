@@ -437,7 +437,6 @@ public class DialectOracle extends Dialect {
     @Override
     public boolean supportsWith() {
         return false;
-        // return !aclOptimizationsEnabled;
     }
 
     @Override

@@ -8,6 +8,7 @@
  *
  * Contributors:
  *     Florent Guillaume
+ *     Benoit Delbosc
  */
 
 package org.nuxeo.ecm.core.storage.sql.jdbc.dialect;
@@ -22,9 +23,13 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.nuxeo.common.utils.StringUtils;
+import org.nuxeo.ecm.core.NXCore;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.BinaryManager;
 import org.nuxeo.ecm.core.storage.sql.ColumnType;
@@ -369,7 +374,39 @@ public class DialectSQLServer extends Dialect {
         properties.put("idType", "VARCHAR(36)");
         properties.put("fulltextEnabled", Boolean.valueOf(!fulltextDisabled));
         properties.put("fulltextCatalog", fulltextCatalog);
+        properties.put("aclOptimizationsEnabled",
+                Boolean.valueOf(aclOptimizationsEnabled));
+        String[] permissions = NXCore.getSecurityService().getPermissionsToCheck(
+                SecurityConstants.BROWSE);
+        List<String> permsList = new LinkedList<String>();
+        for (String perm : permissions) {
+            permsList.add(String.format(
+                    "  SELECT '%s' ", perm));
+        }
+        properties.put("readPermissions", StringUtils.join(permsList, " UNION ALL "));
         return properties;
+    }
+
+    @Override
+    public boolean supportsReadAcl() {
+        return aclOptimizationsEnabled;
+    }
+
+    @Override
+    public String getReadAclsCheckSql(String idColumnName) {
+        return String.format(
+                "%s IN (SELECT COLUMN_VALUE FROM TABLE(nx_get_read_acls_for(?)))",
+                idColumnName);
+    }
+
+    @Override
+    public String getUpdateReadAclsSql() {
+        return "EXEC dbo.nx_update_read_acls";
+    }
+
+    @Override
+    public String getRebuildReadAclsSql() {
+        return "EXEC dbo.nx_rebuild_read_acls";
     }
 
     @Override
