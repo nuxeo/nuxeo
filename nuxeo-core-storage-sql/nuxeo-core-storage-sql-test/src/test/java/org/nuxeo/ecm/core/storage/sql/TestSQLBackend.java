@@ -1813,11 +1813,9 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
         assertEquals(0, getClusterInvalidationsPropagatorSize());
         Session session = repository.getConnection();
-        // lock manager + session
-        assertEquals(1 + 1, getClusterInvalidationsPropagatorSize());
-        session.close();
-        // 1 connection remains for the lock manager
         assertEquals(1, getClusterInvalidationsPropagatorSize());
+        session.close();
+        assertEquals(0, getClusterInvalidationsPropagatorSize());
     }
 
     protected int getClusterInvalidationsPropagatorSize() throws Exception {
