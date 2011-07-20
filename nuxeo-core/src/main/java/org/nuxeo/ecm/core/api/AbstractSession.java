@@ -1897,7 +1897,7 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
                     VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY));
             docModel.putContextData(ScopeType.REQUEST,
                     VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, null);
-            boolean dirty = isDirty(docModel);
+            boolean dirty = docModel.isDirty();
             if (versioningOption == null && snapshot && dirty) {
                 String key = String.valueOf(docModel.getContextData(
                         ScopeType.REQUEST,
@@ -1949,21 +1949,6 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
         } catch (DocumentException e) {
             throw new ClientException(e);
         }
-    }
-
-    /**
-     * Checks if the document has actual data to write (dirty parts).
-     * <p>
-     * Used to avoid doing an auto-checkout if there's nothing to update.
-     */
-    protected boolean isDirty(DocumentModel doc) throws ClientException {
-        // get loaded data models
-        for (DocumentPart part : doc.getParts()) {
-            if (part.isDirty()) {
-                return true;
-            }
-        }
-        return false;
     }
 
     @Override

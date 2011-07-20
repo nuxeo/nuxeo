@@ -370,6 +370,11 @@ public class ShallowDocumentModel implements DocumentModel {
     }
 
     @Override
+    public boolean isDirty() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public boolean isVersionable() {
         throw new UnsupportedOperationException();
     }

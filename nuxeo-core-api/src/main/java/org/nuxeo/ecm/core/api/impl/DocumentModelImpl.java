@@ -82,19 +82,9 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     public static final String STRICT_LAZY_LOADING_POLICY_KEY = "org.nuxeo.ecm.core.strictlazyloading";
 
-    public static final long F_STORED = 1L;
-
-    public static final long F_DETACHED = 2L;
-
-    // reserved: 4, 8
-
     public static final long F_VERSION = 16L;
 
     public static final long F_PROXY = 32L;
-
-    public static final long F_LOCKED = 64L;
-
-    public static final long F_DIRTY = 128L;
 
     public static final long F_IMMUTABLE = 256L;
 
@@ -174,15 +164,11 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     // the adapters registered for this document - only valid on client
     protected transient ArrayMap<Class<?>, Object> adapters;
 
-    // flags : TODO
-    // bit 0 - IS_STORED (1 if stored in repo, 0 otherwise)
-    // bit 1 - IS_DETACHED (1 after deserialization, 0 otherwise)
-    // bit 2 - 3: reserved for future use
-    // bit 4: IS_VERSION (true if set)
-    // bit 5: IS_PROXY (true if set)
-    // bit 6: IS_LOCKED (true if set)
-    // bit 7: IS_DIRTY (true if set)
-    protected long flags = 0L;
+    /**
+     * Flags: bitwise combination of {@link #F_VERSION}, {@link #F_PROXY},
+     * {@link #F_IMMUTABLE}.
+     */
+    private long flags = 0L;
 
     protected String repositoryName;
 
@@ -1141,6 +1127,17 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     }
 
     @Override
+    public boolean isDirty() {
+        for (DataModel dm : dataModels.values()) {
+            DocumentPart part = ((DataModelImpl) dm).getDocumentPart();
+            if (part.isDirty()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
     public ScopedMap getContextData() {
         return contextData;
     }
@@ -1337,14 +1334,20 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         this.lifeCyclePolicy = lifeCyclePolicy;
     }
 
+    /** @deprecated unused */
+    @Deprecated
     public void setFlags(long flags) {
         this.flags |= flags;
     }
 
+    /** @deprecated unused */
+    @Deprecated
     public void clearFlags(long flags) {
         this.flags &= ~flags;
     }
 
+    /** @deprecated unused */
+    @Deprecated
     public void clearFlags() {
         flags = 0L;
     }
@@ -1354,6 +1357,8 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         return flags;
     }
 
+    /** @deprecated unused */
+    @Deprecated
     public boolean hasFlags(long flags) {
         return (this.flags & flags) == flags;
     }

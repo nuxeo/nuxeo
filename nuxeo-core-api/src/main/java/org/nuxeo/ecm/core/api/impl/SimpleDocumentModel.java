@@ -477,6 +477,11 @@ public class SimpleDocumentModel implements DocumentModel {
     }
 
     @Override
+    public boolean isDirty() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public <T> T getAdapter(Class<T> itf) {
         throw new UnsupportedOperationException();
     }

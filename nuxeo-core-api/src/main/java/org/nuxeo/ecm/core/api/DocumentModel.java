@@ -624,6 +624,13 @@ public interface DocumentModel extends Serializable {
     boolean isImmutable();
 
     /**
+     * Checks if the document has actual data to write (dirty parts).
+     *
+     * @since 5.4.3
+     */
+    boolean isDirty();
+
+    /**
      * Adapts the document to the given interface.
      *
      * <p>
@@ -828,7 +835,10 @@ public interface DocumentModel extends Serializable {
 
     /**
      * Returns the flags set on the document model.
+     *
+     * @deprecated unused
      */
+    @Deprecated
     long getFlags();
 
     /**
