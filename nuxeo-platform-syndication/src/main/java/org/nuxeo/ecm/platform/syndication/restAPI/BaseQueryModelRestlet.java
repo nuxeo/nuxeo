@@ -46,7 +46,6 @@ import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Schema;
-import org.nuxeo.ecm.core.search.api.client.query.QueryException;
 import org.nuxeo.ecm.core.search.api.client.querymodel.QueryModel;
 import org.nuxeo.ecm.core.search.api.client.querymodel.QueryModelService;
 import org.nuxeo.ecm.core.search.api.client.querymodel.descriptor.QueryModelDescriptor;
@@ -235,7 +234,7 @@ public abstract class BaseQueryModelRestlet extends BaseStatelessNuxeoRestlet {
 
     protected PagedDocumentsProvider getPageDocumentsProvider(
             CoreSession session, QueryModelDescriptor qmd, Request request)
-            throws ClientException, QueryException {
+            throws ClientException {
 
         Object[] parameters = null;
         List<Object> strParams = extractQueryParameters(request);

@@ -11,7 +11,6 @@ Bundle-Vendor: Nuxeo
 Bundle-Version: 0.0.0.SNAPSHOT
 Nuxeo-Component: OSGI-INF/core-types-contrib.xml,
  OSGI-INF/permissions-contrib.xml,
- OSGI-INF/webengine-nxsearch-contrib.xml,
  OSGI-INF/webengine-sites-listener-contrib.xml,
  OSGI-INF/webengine-sites-relation-contrib.xml
 Bundle-ManifestVersion: 2
