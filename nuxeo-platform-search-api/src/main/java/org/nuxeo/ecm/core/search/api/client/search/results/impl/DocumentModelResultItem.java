@@ -37,6 +37,7 @@ public class DocumentModelResultItem extends HashMap<String, Serializable>
         this.doc = doc;
     }
 
+    @Override
     public String getName() {
         return doc.getName();
     }

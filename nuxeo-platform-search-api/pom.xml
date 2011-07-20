@@ -10,8 +10,7 @@
 
   <artifactId>nuxeo-platform-search-api</artifactId>
   <name>Nuxeo Search Service - API</name>
-  <description>Nuxeo Enterprise Platform: API for the Indexing and Search
-    Service.</description>
+  <description>Nuxeo Enterprise Platform: API for Search</description>
 
   <dependencies>
     <dependency>
@@ -30,19 +29,6 @@
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-schema</artifactId>
     </dependency>
-
-    <!-- UNIT TEST DEPENDENCIES -->
-    <dependency>
-      <groupId>org.nuxeo.runtime</groupId>
-      <artifactId>nuxeo-runtime-osgi</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>javax.transaction</groupId>
-      <artifactId>jta</artifactId>
-      <scope>test</scope>
-    </dependency>
-
   </dependencies>
 
 </project>

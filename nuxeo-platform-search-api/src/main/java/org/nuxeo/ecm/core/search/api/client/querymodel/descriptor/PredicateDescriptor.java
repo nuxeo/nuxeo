@@ -36,8 +36,6 @@ public class PredicateDescriptor {
 
     private static final String SUB_CLAUSE_PREDICATE = "subClause";
 
-    private static final String STATIC_PREDICATE = "static";
-
     @XNode("@parameter")
     protected String parameter;
 

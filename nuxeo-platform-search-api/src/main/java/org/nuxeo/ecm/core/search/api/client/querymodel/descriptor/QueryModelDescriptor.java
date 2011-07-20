@@ -58,6 +58,7 @@ public class QueryModelDescriptor {
         }
     }
 
+    @SuppressWarnings("deprecation")
     @XNode("whereClause")
     protected WhereClauseDescriptor whereClause;
 
@@ -73,6 +74,7 @@ public class QueryModelDescriptor {
     @XNode("batchLength/field")
     protected FieldDescriptor batchLength;
 
+    @SuppressWarnings("deprecation")
     @XNodeList(value = "facet-filter/facet", type = ArrayList.class, componentType = FacetDescriptor.class)
     public List<FacetDescriptor> filterFacets;
 
@@ -136,7 +138,7 @@ public class QueryModelDescriptor {
     }
 
     @XNode("sortable@defaultSortAscending")
-    protected Boolean defaultSortAscending = true;
+    protected Boolean defaultSortAscending = Boolean.TRUE;
 
     /**
      * used for stateless qm a sortable qm is one that does not have an ORDER BY
@@ -147,7 +149,7 @@ public class QueryModelDescriptor {
      */
     @Deprecated
     @XNode("sortable@value")
-    Boolean sortable = false;
+    Boolean sortable = Boolean.FALSE;
 
     @XNode("max")
     // TODO tie page length to a field and use this one as default for BBB
@@ -157,6 +159,7 @@ public class QueryModelDescriptor {
     public QueryModelDescriptor() {
     }
 
+    @SuppressWarnings("deprecation")
     public QueryModelDescriptor(String name, String docType, String pattern,
             List<FacetDescriptor> filterFacets,
             WhereClauseDescriptor whereClause) {
@@ -167,6 +170,7 @@ public class QueryModelDescriptor {
         this.whereClause = whereClause;
     }
 
+    @SuppressWarnings("deprecation")
     public QueryModelDescriptor(String name, String docType, Integer max,
             WhereClauseDescriptor whereClause, FieldDescriptor sortColumnField,
             FieldDescriptor sortAscendingField) {
@@ -194,6 +198,7 @@ public class QueryModelDescriptor {
         return getQuery(model, null);
     }
 
+    @SuppressWarnings("boxing")
     public SortInfo getDefaultSortInfo(DocumentModel model) {
         if (isStateful()) {
             if (sortColumnField == null || sortAscendingField == null) {
@@ -216,6 +221,7 @@ public class QueryModelDescriptor {
         }
     }
 
+    @SuppressWarnings("deprecation")
     public String getQuery(DocumentModel model, SortInfo sortInfo)
             throws ClientException {
         if (!isStateful()) {
@@ -331,6 +337,7 @@ public class QueryModelDescriptor {
         return name;
     }
 
+    @SuppressWarnings("deprecation")
     public Filter getFilter() {
         if (filterFacets == null || filterFacets.isEmpty()) {
             return null;
@@ -347,10 +354,12 @@ public class QueryModelDescriptor {
         return new FacetFilter(requiredFacets, excludedFacets);
     }
 
+    @SuppressWarnings("deprecation")
     public WhereClauseDescriptor getWhereClause() {
         return whereClause;
     }
 
+    @SuppressWarnings("deprecation")
     public void setWhereClause(WhereClauseDescriptor whereClause) {
         this.whereClause = whereClause;
     }
@@ -380,6 +389,7 @@ public class QueryModelDescriptor {
      *
      * @param context surrounding context, used to load the correct class.
      */
+    @SuppressWarnings("deprecation")
     public void initEscaper(RuntimeContext context) {
         whereClause.initEscaper(context);
     }

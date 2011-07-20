@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2007-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,11 +12,9 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id: ResultSetImpl.java 28480 2008-01-04 14:04:49Z sfermigier $
+ *     Julien Anguenot
+ *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.core.search.api.client.search.results.impl;
 
 import java.util.ArrayList;
@@ -30,20 +28,12 @@ import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.ecm.core.search.api.client.SearchException;
-import org.nuxeo.ecm.core.search.api.client.SearchService;
-import org.nuxeo.ecm.core.search.api.client.common.SearchServiceDelegate;
-import org.nuxeo.ecm.core.search.api.client.query.QueryException;
-import org.nuxeo.ecm.core.search.api.client.query.SearchPrincipal;
-import org.nuxeo.ecm.core.search.api.client.query.impl.ComposedNXQueryImpl;
 import org.nuxeo.ecm.core.search.api.client.search.results.ResultItem;
 import org.nuxeo.ecm.core.search.api.client.search.results.ResultSet;
 import org.nuxeo.runtime.api.Framework;
 
 /**
  * Result set implementation.
- *
- * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
  */
 public class ResultSetImpl extends ArrayList<ResultItem> implements ResultSet {
 
@@ -62,8 +52,6 @@ public class ResultSetImpl extends ArrayList<ResultItem> implements ResultSet {
 
     protected final SQLQuery sqlQuery;
 
-    protected final SearchPrincipal principal;
-
     protected final CoreSession session;
 
     protected Boolean detachResultsFlag;
@@ -76,29 +64,6 @@ public class ResultSetImpl extends ArrayList<ResultItem> implements ResultSet {
         this.query = query;
         sqlQuery = null;
         this.session = session;
-        principal = null;
-        this.offset = offset;
-        this.range = range;
-        this.totalHits = totalHits;
-        this.pageHits = pageHits;
-        if (resultItems != null) {
-            addAll(resultItems);
-        }
-    }
-
-    /**
-     * Constructor used for compatibility, using the SearchService.
-     *
-     * @deprecated use the constructor taking a {@link CoreSession} instead
-     */
-    @Deprecated
-    public ResultSetImpl(SQLQuery sqlQuery, SearchPrincipal principal,
-            int offset, int range, List<ResultItem> resultItems, int totalHits,
-            int pageHits) {
-        this.sqlQuery = sqlQuery;
-        query = null;
-        this.principal = principal;
-        session = null;
         this.offset = offset;
         this.range = range;
         this.totalHits = totalHits;
@@ -116,14 +81,17 @@ public class ResultSetImpl extends ArrayList<ResultItem> implements ResultSet {
         return detachResultsFlag.booleanValue();
     }
 
+    @Override
     public int getOffset() {
         return offset;
     }
 
+    @Override
     public int getRange() {
         return range;
     }
 
+    @Override
     public ResultSet nextPage() throws SearchException {
         if (!hasNextPage()) {
             return null;
@@ -131,6 +99,7 @@ public class ResultSetImpl extends ArrayList<ResultItem> implements ResultSet {
         return replay(offset + range, range);
     }
 
+    @Override
     public ResultSet goToPage(int page) throws SearchException {
         int newOffset = range * (page - 1);
         if (newOffset >= 0 && newOffset < totalHits) {
@@ -139,14 +108,17 @@ public class ResultSetImpl extends ArrayList<ResultItem> implements ResultSet {
         return null;
     }
 
+    @Override
     public int getTotalHits() {
         return totalHits;
     }
 
+    @Override
     public int getPageHits() {
         return pageHits;
     }
 
+    @Override
     public boolean hasNextPage() {
         if (range == 0) {
             return false;
@@ -157,14 +129,17 @@ public class ResultSetImpl extends ArrayList<ResultItem> implements ResultSet {
         return (offset + range) < totalHits;
     }
 
+    @Override
     public boolean isFirstPage() {
         return range == 0 ? true : offset < range;
     }
 
+    @Override
     public ResultSet replay() throws SearchException {
         return replay(offset, range);
     }
 
+    @Override
     public ResultSet replay(int offset, int range) throws SearchException {
         if (session != null) {
             try {
@@ -194,22 +169,10 @@ public class ResultSetImpl extends ArrayList<ResultItem> implements ResultSet {
                 throw new SearchException("QueryException for: " + query, e);
             }
         }
-
-        // compat code, loopback through search service
-        if (sqlQuery == null) {
-            throw new SearchException("Replay is not supported");
-        }
-        SearchService service = SearchServiceDelegate.getRemoteSearchService();
-        try {
-            return service.searchQuery(new ComposedNXQueryImpl(sqlQuery,
-                    principal), offset, range);
-        } catch (QueryException e) {
-            // should really not happen
-            throw new SearchException("QueryException for "
-                    + sqlQuery.toString());
-        }
+        throw new SearchException("No session");
     }
 
+    @Override
     public int getPageNumber() {
         if (range == 0) {
             return 1;

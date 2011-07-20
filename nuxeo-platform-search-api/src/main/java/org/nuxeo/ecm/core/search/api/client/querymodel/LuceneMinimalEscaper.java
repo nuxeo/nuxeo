@@ -28,6 +28,7 @@ package org.nuxeo.ecm.core.search.api.client.querymodel;
 // XXX this escaper does not seem to be doing an accurate job for VCS
 public class LuceneMinimalEscaper implements Escaper {
 
+    @Override
     public String escape(String s) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < s.length(); i++) {

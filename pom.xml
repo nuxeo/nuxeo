@@ -54,10 +54,6 @@
     <module>nuxeo-platform-url-core</module>
     <module>nuxeo-platform-api-test</module>
     <module>nuxeo-platform-search-api</module>
-    <module>nuxeo-platform-search-core</module>
-    <module>nuxeo-platform-search-facade</module>
-    <module>nuxeo-platform-search-backend-core</module>
-    <module>nuxeo-platform-search-test</module>
     <module>nuxeo-platform-filemanager-facade</module>
     <module>nuxeo-platform-login-default</module>
     <module>nuxeo-platform-login-jboss</module>
@@ -393,21 +389,6 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-search-backend-core</artifactId>
-        <version>${nuxeo.services.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-search-core</artifactId>
-        <version>${nuxeo.services.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-search-facade</artifactId>
-        <version>${nuxeo.services.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-syndication</artifactId>
         <version>${nuxeo.services.version}</version>
       </dependency>
@@ -665,12 +646,6 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-api-test</artifactId>
-        <version>${nuxeo.services.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-search-test</artifactId>
         <version>${nuxeo.services.version}</version>
         <scope>test</scope>
       </dependency>
