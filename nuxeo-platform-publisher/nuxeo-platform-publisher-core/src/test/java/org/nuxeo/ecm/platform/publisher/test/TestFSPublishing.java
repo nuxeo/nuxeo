@@ -17,6 +17,14 @@
 
 package org.nuxeo.ecm.platform.publisher.test;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.io.FilenameUtils;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
@@ -26,18 +34,15 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
-import org.nuxeo.ecm.platform.publisher.api.*;
+import org.nuxeo.ecm.platform.publisher.api.AbstractBasePublicationTree;
+import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
+import org.nuxeo.ecm.platform.publisher.api.PublicationTree;
+import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
+import org.nuxeo.ecm.platform.publisher.api.PublisherService;
 import org.nuxeo.ecm.platform.publisher.descriptors.PublicationTreeConfigDescriptor;
 import org.nuxeo.ecm.platform.publisher.impl.localfs.LocalFSPublicationTree;
 import org.nuxeo.ecm.platform.publisher.impl.service.PublisherServiceImpl;
 import org.nuxeo.runtime.api.Framework;
-
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class TestFSPublishing extends SQLRepositoryTestCase {
 
@@ -149,7 +154,9 @@ public class TestFSPublishing extends SQLRepositoryTestCase {
 
         PublicationNode section2 = sectionsNodes.get(1);
         assertEquals("section2", section2.getName());
-        assertEquals(rootFolder + "/section2", section2.getPath());
+        assertEquals(
+                FilenameUtils.separatorsToSystem(rootFolder + "/section2"),
+                FilenameUtils.separatorsToSystem(section2.getPath()));
 
         List<PublicationNode> subSectionsNodes = section2.getChildrenNodes();
         assertNotNull(subSectionsNodes);
@@ -157,7 +164,10 @@ public class TestFSPublishing extends SQLRepositoryTestCase {
 
         PublicationNode section22 = subSectionsNodes.get(1);
         assertEquals("section22", section22.getName());
-        assertEquals(rootFolder + "/section2/section22", section22.getPath());
+        assertEquals(
+                FilenameUtils.separatorsToSystem(rootFolder
+                        + "/section2/section22"),
+                FilenameUtils.separatorsToSystem(section22.getPath()));
 
         // check treeconfigName propagation
         assertEquals(tree.getConfigName(), tree.getTreeConfigName());

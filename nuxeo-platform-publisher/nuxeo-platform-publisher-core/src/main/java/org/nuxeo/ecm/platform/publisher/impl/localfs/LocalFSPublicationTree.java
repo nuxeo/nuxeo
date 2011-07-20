@@ -17,16 +17,26 @@
 
 package org.nuxeo.ecm.platform.publisher.impl.localfs;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.io.FileUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.platform.publisher.api.*;
-
-import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import org.nuxeo.ecm.platform.publisher.api.AbstractBasePublicationTree;
+import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
+import org.nuxeo.ecm.platform.publisher.api.PublicationTree;
+import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
+import org.nuxeo.ecm.platform.publisher.api.PublishedDocumentFactory;
 
 public class LocalFSPublicationTree extends AbstractBasePublicationTree
         implements PublicationTree {
@@ -94,8 +104,8 @@ public class LocalFSPublicationTree extends AbstractBasePublicationTree
         return pubDocs;
     }
 
-    private List<PublishedDocument> loadExistingPublishedDocumentFromIndex(DocumentLocation docLoc)
-            throws ClientException {
+    private List<PublishedDocument> loadExistingPublishedDocumentFromIndex(
+            DocumentLocation docLoc) throws ClientException {
         File indexFile = new File(rootPath, INDEX_FILENAME);
         if (!indexFile.exists() || !indexFile.isFile()) {
             return null;
@@ -182,9 +192,6 @@ public class LocalFSPublicationTree extends AbstractBasePublicationTree
                 writer.write(pathToAdd);
                 writer.newLine();
             }
-            if (fileIndex.delete()) {
-                fileIndexTmp.renameTo(fileIndex);
-            }
         } catch (IOException e) {
             throw new ClientException(e);
         } finally {
@@ -202,6 +209,19 @@ public class LocalFSPublicationTree extends AbstractBasePublicationTree
                 } catch (IOException e) {
                 }
             }
+        }
+
+        // move the tmp index file to the index file after closing both stream
+        if (fileIndex.delete()) {
+            moveFile(fileIndexTmp, fileIndex);
+        }
+    }
+
+    private void moveFile(File srcFile, File destFile) throws ClientException {
+        try {
+            FileUtils.moveFile(srcFile, destFile);
+        } catch (IOException e) {
+            throw new ClientException(e);
         }
     }
 
@@ -223,9 +243,6 @@ public class LocalFSPublicationTree extends AbstractBasePublicationTree
                     writer.newLine();
                 }
             }
-            if (fileIndex.delete()) {
-                fileIndexTmp.renameTo(fileIndex);
-            }
         } catch (IOException e) {
             throw new ClientException(e);
         } finally {
@@ -243,6 +260,11 @@ public class LocalFSPublicationTree extends AbstractBasePublicationTree
                 } catch (IOException e) {
                 }
             }
+        }
+
+        // move the tmp index file to the index file after closing both stream
+        if (fileIndex.delete()) {
+            moveFile(fileIndexTmp, fileIndex);
         }
     }
 

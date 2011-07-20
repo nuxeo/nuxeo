@@ -100,11 +100,9 @@ public class FSPublishedDocument implements PublishedDocument {
     }
 
     public void persist(String containerPath) throws Exception {
-        String filePath = new Path(containerPath).append(
-                sourceDocumentRef.toString()).toString();
-        File output = new File(filePath);
+        File output = new File(containerPath, sourceDocumentRef.toString());
         FileUtils.writeFile(output, xmlRepresentation);
-        persistPath = filePath;
+        persistPath = output.getAbsolutePath();
     }
 
     public FSPublishedDocument(String server, DocumentModel doc)
