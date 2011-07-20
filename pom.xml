@@ -24,6 +24,7 @@
     <module>nuxeo-platform-lang-ext</module>
     <module>nuxeo-chemistry</module>
     <module>nuxeo-core-binarymanager-sql</module>
+    <module>nuxeo-jboss-jca-configurator</module>
     <module>nuxeo-correspondence-marianne</module>
     <module>nuxeo-http-client</module>
     <module>nuxeo-platform-classification</module>
