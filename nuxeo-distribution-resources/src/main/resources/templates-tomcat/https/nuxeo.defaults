@@ -11,6 +11,5 @@ nuxeo.server.tomcat-admin.port=8005
 nuxeo.server.jvmRoute=nuxeo
 
 nuxeo.url=https://localhost/nuxeo
-nuxeo.loopback.url=http://localhost:8080/nuxeo
 
 nuxeo.server.emptySessionPath=false
