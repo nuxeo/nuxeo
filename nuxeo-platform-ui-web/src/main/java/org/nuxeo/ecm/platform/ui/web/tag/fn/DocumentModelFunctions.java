@@ -312,14 +312,7 @@ public final class DocumentModelFunctions implements LiveEditConstants {
     }
 
     public static boolean isDirty(DocumentModel doc) throws ClientException {
-        if (doc != null) {
-            for (DocumentPart part : doc.getParts()) {
-                if (part.isDirty()) {
-                    return true;
-                }
-            }
-        }
-        return false;
+        return doc == null ? false : doc.isDirty();
     }
 
     public static boolean hasPermission(DocumentModel document,
