@@ -131,13 +131,17 @@ function mkCell(colDef, dashBoardItem) {
             html += "\"/>";
         }
         else if (colDef.field == "titleWithLink") {
+            var  view = "view_documents";
+            if (colDef.view){
+                view = colDef.view;
+            }
             html += "<td><a target = \"_top\" title=\"";
             html += dashBoardItem.title;
             html += "\" href=\"";
             html += NXGadgetContext.clientSideBaseUrl;
             html += "nxpath/default";
             html += dashBoardItem.path;
-            html += "@view_documents";
+            html += "@"+view;
             html += "\" />";
             html += dashBoardItem.title;
             html += "</a></td>";
