@@ -33,6 +33,8 @@
 
   %{SECURITY-CONSTRAINT}%
 
+  %{LAST-SERVLET}%
+
   <security-role>
     <description>The role required to access restricted content</description>
     <role-name>admin</role-name>
