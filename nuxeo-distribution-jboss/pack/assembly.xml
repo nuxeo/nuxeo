@@ -62,7 +62,7 @@
 
 #nuxeo.templates.parsing.extensions=null
 
-		</echo>
+    </echo>
     <concat append="true" destfile="${stage}/bin/nuxeo.conf">
       <fileset file="${maven.basedir}/default.properties" />
     </concat>
@@ -71,26 +71,30 @@
         <fileset file="${custom.pack.config}" />
       </concat>
     </nx:if>
-	<!-- run the pack command -->
+    <!-- run the pack command -->
     <echo>Executing pack command</echo>
-	<antcall target="run-pack" />
+    <antcall target="run-pack" />
+    <antcall target="libs" />
     <delete dir="${stage}" />
   </target>
   
   <target name="run-pack" depends="run-pack-windows,run-pack-unix" />
   <target name="run-pack-windows" if="osfamily-windows">
     <exec executable="${stage}/bin/pack.bat">
-      <arg value="deploy" />
-	  <arg value="preprocessing" />
-    </exec>
-	<exec executable="${stage}/bin/pack.bat">
-      <arg value="deploy" />
-	  <arg value="packaging" />
+      <arg value="${outdir}/deploy" />
     </exec>
   </target>
   <target name="run-pack-unix" if="osfamily-unix">
     <exec executable="${stage}/bin/pack">
       <arg value="${outdir}/deploy" />
     </exec>
+  </target>
+
+  <target name="libs">
+    <delete dir="${outdir}/lib" failonerror="false" />
+    <mkdir dir="${outdir}/lib" />
+    <move todir="${outdir}/lib">
+      <fileset dir="${stage}/server/default/lib" />
+    </move>
   </target>
 </project>
