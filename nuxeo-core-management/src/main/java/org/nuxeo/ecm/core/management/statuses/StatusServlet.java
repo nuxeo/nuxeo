@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.osgi.OSGiRuntimeService;
 
@@ -40,36 +41,74 @@ public class StatusServlet extends HttpServlet {
 
     private static final Log log = LogFactory.getLog(StatusServlet.class);
 
+    public static final String PARAM = "info";
+
+    public static final String PARAM_STARTED = "started";
+
+    public static final String PARAM_SUMMARY = "summary";
+
+    private OSGiRuntimeService runtimeService;
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        String pathInfo = req.getPathInfo();
-        OSGiRuntimeService runtimeService;
-        try {
-            runtimeService = (OSGiRuntimeService) Framework.getRuntime();
-        } catch (Exception e) {
-            return;
+        String param = req.getParameter(PARAM);
+        if (param != null) {
+            doPost(req, resp);
+        } else {
+            sendResponse(resp, "Ok");
         }
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+        String requestedInfo = req.getParameter(PARAM);
         StringBuilder response = new StringBuilder();
-        if (pathInfo.contains("runtime")) {
-            response.append(
-                    runtimeService != null && runtimeService.isStarted()).toString();
-        } else if (pathInfo.contains("summary")) {
-            if (runtimeService != null && runtimeService.isStarted()) {
-                StringBuilder msg = new StringBuilder();
-                boolean isError = runtimeService.getStatusMessage(msg);
-                response.append(isError).append("\n");
-                response.append(msg);
-            } else {
-                response.append(false).append("\n");
-                response.append("Runtime failed to start");
+        if (requestedInfo.equals(PARAM_STARTED)) {
+            getStartedInfo(response);
+        } else if (requestedInfo.equals(PARAM_SUMMARY)) {
+            getSummaryInfo(response);
+        }
+        sendResponse(resp, response.toString());
+    }
+
+    protected void sendResponse(HttpServletResponse resp, String response)
+            throws IOException {
+        resp.setContentType("text/plain");
+        resp.setContentLength(response.getBytes().length);
+        OutputStream out = resp.getOutputStream();
+        out.write(response.getBytes());
+        out.close();
+    }
+
+    private RuntimeService getRuntimeService() {
+        if (runtimeService == null) {
+            try {
+                runtimeService = (OSGiRuntimeService) Framework.getRuntime();
+            } catch (Exception e) {
+                log.error(e);
             }
         }
-        resp.setContentType("text/plain");
-        resp.setContentLength(response.toString().getBytes().length);
-        OutputStream out = resp.getOutputStream();
-        out.write(response.toString().getBytes());
-        out.close();
+        return runtimeService;
+    }
+
+    protected void getSummaryInfo(StringBuilder response) {
+        if (getRuntimeService() != null && runtimeService.isStarted()) {
+            StringBuilder msg = new StringBuilder();
+            boolean isFine = runtimeService.getStatusMessage(msg);
+            response.append(isFine).append("\n");
+            response.append(msg);
+        } else {
+            response.append(false).append("\n");
+            response.append("Runtime failed to start");
+        }
+    }
+
+    protected void getStartedInfo(StringBuilder response) {
+        getRuntimeService();
+        response.append(
+                getRuntimeService() != null && runtimeService.isStarted()).toString();
     }
 
     @Override
