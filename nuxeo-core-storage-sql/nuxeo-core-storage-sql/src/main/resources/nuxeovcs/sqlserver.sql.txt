@@ -315,9 +315,89 @@ INSERT INTO aclr_permission ${readPermissions};
 
 # -- FUNCTIONS --------------------------------------------------
 
-# -- CREATE OR REPLACE FUNCTION nx_get_read_acl(id NVARCHAR)
-# -- RETURN NVARCHAR
-# -- Compute the merged read acl for a doc id
+IF OBJECT_ID('dbo.nx_get_local_read_acl', 'FN') IS NOT NULL
+  DROP FUNCTION dbo.nx_get_local_read_acl;
+
+CREATE FUNCTION nx_get_local_read_acl(@id NVARCHAR(36))
+RETURNS VARCHAR(4000) AS
+-- Compute the read acl for hierarchy id using a local acl
+BEGIN
+  DECLARE @curid NVARCHAR(36);
+  DECLARE @op VARCHAR(1000);
+  DECLARE @read_acl VARCHAR(4000);
+  DECLARE @cur CURSOR;
+  SET @curid = @id;
+  SET @cur = CURSOR FAST_FORWARD FOR
+    SELECT CASE
+       WHEN ([grant] = 0) THEN '-'
+       WHEN ([grant] = 1) THEN ''
+       ELSE '+'
+      END + [user] AS op
+    FROM acls
+    WHERE [id] = @curid AND
+      [permission] IN (SELECT [permission] FROM aclr_permission)
+    ORDER BY [pos];
+  OPEN @cur;
+  FETCH FROM @cur INTO @op;
+  WHILE @@FETCH_STATUS = 0 BEGIN
+    IF @op IS NULL
+      CONTINUE;
+    IF @read_acl IS NULL 
+      SET @read_acl = @op;
+    ELSE
+      SET @read_acl = @read_acl + N'|' + @op;
+    FETCH FROM @cur INTO @op;
+  END;
+  CLOSE @cur;
+  RETURN @read_acl;
+END;
+
+
+IF OBJECT_ID('dbo.nx_get_read_acl', 'FN') IS NOT NULL
+  DROP FUNCTION dbo.nx_get_read_acl;
+
+CREATE FUNCTION nx_get_read_acl(@id NVARCHAR(36))
+RETURNS VARCHAR(4000) AS
+-- Compute the merged read acl for a doc id
+BEGIN
+  DECLARE @curid NVARCHAR(36);
+  DECLARE @newid NVARCHAR(36);
+  DECLARE @read_acl VARCHAR(4000);
+  DECLARE @ret VARCHAR(4000);
+  DECLARE @first TINYINT;
+  SET @curid = @id;
+  SET @first = 1;
+  WHILE @curid IS NOT NULL BEGIN
+    SET @read_acl = (SELECT dbo.nx_get_local_read_acl(@id));
+    IF @read_acl IS NOT NULL
+      IF @ret IS NULL
+        SET @ret = @read_acl;
+      ELSE
+        SET @ret = @ret + N'|' + @read_acl;
+    SET @newid = (SELECT parentid FROM hierarchy WHERE [id] = @curid);
+    IF @first = 1 AND @newid IS NULL
+      SET @newid = (SELECT versionableid FROM versions WHERE [id] = @curid)
+    SET @first = 0;
+    SET @curid = @newid;
+  END;
+  IF @ret IS NULL
+    SET @ret = '_empty';
+  RETURN @read_acl;
+END;
+
+
+IF OBJECT_ID('dbo.nx_get_read_acl_id', 'FN') IS NOT NULL
+  DROP FUNCTION dbo.nx_get_read_acl_id;
+
+#IF: aclOptimizationsEnabled
+CREATE FUNCTION nx_get_read_acl_id(@id NVARCHAR(36))
+RETURNS VARCHAR(32) AS
+BEGIN
+  DECLARE @hash VARCHAR(32);
+  SET @hash = (SELECT SUBSTRING(master.dbo.fn_varbintohexstr(HashBytes('MD5', dbo.nx_get_read_acl(@id))), 3, 32));
+  RETURN @hash;
+END;
+
 
 # -- CREATE OR REPLACE FUNCTION nx_list_read_acls_for(users NX_STRING_TABLE)
 # -- RETURN NX_STRING_TABLE
@@ -340,7 +420,14 @@ CREATE PROCEDURE nx_rebuild_read_acls
   -- Rebuild the read acls tables
 AS
 BEGIN
-  SELECT * FROM aclr;
+  TRUNCATE TABLE aclr;
+  TRUNCATE TABLE aclr_user;
+  TRUNCATE TABLE aclr_user_map;
+  TRUNCATE TABLE hierarchy_read_acl;
+  TRUNCATE TABLE aclr_modified;
+  INSERT INTO hierarchy_read_acl
+    SELECT id, dbo.nx_get_read_acl_id(id)
+      FROM (SELECT id FROM hierarchy WHERE isproperty = 0) AS foo;
 END;
 
 
