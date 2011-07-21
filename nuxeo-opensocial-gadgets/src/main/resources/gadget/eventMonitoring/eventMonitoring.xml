@@ -4,6 +4,7 @@
     description="Displays a graph of Nuxeo repository activity"
     author="tdeprat" author_email="tdelprat@nuxeo.com">
     <Require feature="setprefs"/>
+    <Require feature="jquery" />
     <#include "dynamic-translations.ftl"/>
     <Require feature="dynamic-height" />
     <#include "default-oauth-prefs.ftl"/>
@@ -19,8 +20,7 @@
   ${jsContext}
 
   <script src="${specDirectoryUrl}default-automation-request.js"></script>
-  <script src="${clientSideBaseUrl}site/skin/base/script/jquery/jquery.js"></script>
-  <script src="${clientSideBaseUrl}site/skin/base/script/jquery/flot/jquery.flot.min.js"></script>
+  <script src="${clientSideBaseUrl}scripts/jquery/flot/jquery.flot.min.js"></script>
 
   <script>
    var prefs = new gadgets.Prefs();
@@ -54,7 +54,7 @@
 
          // Padd to have both series with the same end
 
-         $.plot($("#chart"),
+         jQuery.plot(jQuery("#chart"),
            [ { data: createStats, label: "Document creations" , lines: { show: true}, points: { show: true }},
              { data: updateStats, label: "Document updates" , lines: { show: true}, points: { show: true }},
              { data: removeStats, label: "Document removal" , lines: { show: true}, points: { show: true }}],

@@ -4,6 +4,7 @@
     description="Displays a graph of front-end HTTP activity"
     author="tdeprat" author_email="tdelprat@nuxeo.com">
     <Require feature="setprefs"/>
+    <Require feature="jquery" />
     <#include "dynamic-translations.ftl"/>
     <Require feature="dynamic-height" />
     <#include "default-oauth-prefs.ftl"/>
@@ -20,8 +21,7 @@
   ${jsContext}
 
   <script src="${specDirectoryUrl}default-automation-request.js"></script>
-  <script src="${clientSideBaseUrl}site/skin/base/script/jquery/jquery.js"></script>
-  <script src="${clientSideBaseUrl}site/skin/base/script/jquery/flot/jquery.flot.min.js"></script>
+  <script src="${clientSideBaseUrl}scripts/jquery/flot/jquery.flot.min.js"></script>
 
   <script>
    var prefs = new gadgets.Prefs();
@@ -62,7 +62,7 @@
            reqStats.push([lastSessionTime,reqStats[nbRItems-1][1]]);
          }
 
-         $.plot($("#chart"),
+         jQuery.plot(jQuery("#chart"),
            [ { data: sessionStats, label: "Nb Sessions", yaxis: 2, lines: { show: true, fill:true }},
              { data: reqStats, label: "Requests/minutes", lines: { show: true }, points: { show: true } }],
            {
