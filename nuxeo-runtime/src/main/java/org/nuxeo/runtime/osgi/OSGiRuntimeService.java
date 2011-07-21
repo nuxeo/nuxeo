@@ -493,6 +493,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
 
     private void printStatusMessage() {
         StringBuilder msg = new StringBuilder();
+        msg.append("Nuxeo EP Started\n"); // greppable
         if (getStatusMessage(msg)) {
             log.info(msg);
         } else {
@@ -502,12 +503,11 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
 
     /**
      * @since 5.4.3
-     * @param msg
-     * @return summary message about all components loading status
+     * @param msg summary message about all components loading status
+     * @return true if there was no detected error, else return false
      */
     public boolean getStatusMessage(StringBuilder msg) {
         String hr = "======================================================================";
-        msg.append("Nuxeo EP Started\n"); // greppable
         msg.append(hr).append("\n= Nuxeo EP Started\n");
         if (!warnings.isEmpty()) {
             msg.append(hr).append("\n= Component Loading Errors:\n");

@@ -100,6 +100,8 @@ public class ConfigurationGenerator {
 
     public static final String PARAM_FAKE_WINDOWS = "org.nuxeo.fake.vindoz";
 
+    public static final String PARAM_LOOPBACK_URL = "nuxeo.loopback.url";
+
     private final File nuxeoHome;
 
     // User configuration file
