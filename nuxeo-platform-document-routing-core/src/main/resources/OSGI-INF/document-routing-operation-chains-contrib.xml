@@ -14,6 +14,9 @@
     </chain>
     <chain id="simpleUndo">
       <operation id="Document.Routing.BackToReady" />
+    </chain>  
+    <chain id="updateCommentsOnDoc">
+      <operation id="Document.Routing.UpdateCommentsInfoOnDocument" />  
     </chain>
   </extension>
 

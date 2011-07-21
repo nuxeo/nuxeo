@@ -9,11 +9,17 @@
     <schema name="document_route_model" prefix="docrm"
       src="schemas/document_route_model.xsd" />
     <schema name="step_folder" prefix="stepf" src="schemas/step_folder.xsd" />
+    <schema name="info_comments" src="schemas/info_comments.xsd" prefix="infocom" />
+  
   </extension>
 
   <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
 
     <facet name="Routable" />
+
+    <facet name="CommentsInfoHolder">
+      <schema name="info_comments" />
+    </facet>
 
     <doctype name="DocumentRouteInstancesRoot" extends="Folder">
       <subtypes>
@@ -49,6 +55,7 @@
       <schema name="dublincore" />
       <facet name="RouteStep" />
       <facet name="Commentable" />
+      <facet name="CommentsInfoHolder"/>
     </doctype>
 
   </extension>
