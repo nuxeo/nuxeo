@@ -242,6 +242,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
                     + env.getHostApplicationName());
         } else {
             log.warn("Configuration: no host application");
+            return;
         }
 
         File blacklistFile = new File(env.getConfig(), "blacklist");
@@ -264,10 +265,6 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
             URL url = new URL(configDir);
             log.debug("Configuration:   loading properties url: " + configDir);
             loadProperties(url);
-            return;
-        }
-
-        if (env == null) {
             return;
         }
 
@@ -442,8 +439,22 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
     }
 
     private void printStatusMessage() {
+        StringBuilder msg = new StringBuilder();
+        if (getStatusMessage(msg)) {
+            log.info(msg);
+        } else {
+            log.error(msg);
+        }
+    }
+
+    /**
+     * @since 5.4.3
+     * @param msg
+     * @return summary message about all components loading status
+     */
+    public boolean getStatusMessage(StringBuilder msg) {
         String hr = "======================================================================";
-        StringBuilder msg = new StringBuilder("Nuxeo EP Started\n"); // greppable
+        msg.append("Nuxeo EP Started\n"); // greppable
         msg.append(hr).append("\n= Nuxeo EP Started\n");
         if (!warnings.isEmpty()) {
             msg.append(hr).append("\n= Component Loading Errors:\n");
@@ -451,7 +462,6 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
                 msg.append("  * ").append(warning).append('\n');
             }
         }
-
         Map<ComponentName, Set<ComponentName>> pendingRegistrations = manager.getPendingRegistrations();
         Collection<ComponentName> activatingRegistrations = manager.getActivatingRegistrations();
         msg.append(hr).append("\n= Component Loading Status: Pending: ").append(
@@ -466,13 +476,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
             msg.append("  - ").append(componentName).append('\n');
         }
         msg.append(hr);
-
-        if (warnings.isEmpty() && pendingRegistrations.isEmpty()
-                && activatingRegistrations.isEmpty()) {
-            log.info(msg);
-        } else {
-            log.error(msg);
-        }
+        return (warnings.isEmpty() && pendingRegistrations.isEmpty() && activatingRegistrations.isEmpty());
     }
 
     protected void deployFrameworkStartedComponent() {
