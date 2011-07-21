@@ -21,7 +21,7 @@
   %{FILTER-MAPPING}%
 
   %{CONTEXT-PARAM}%
-  
+
   %{CONTEXT-PARAM-RICHFACES}%
 
   %{LOGIN-CONFIG}%
@@ -35,6 +35,8 @@
   %{ERROR-PAGE}%
 
   %{SECURITY-CONSTRAINT}%
+
+  %{LAST-SERVLET}%
 
   <security-role>
     <description>The role required to access restricted content</description>
