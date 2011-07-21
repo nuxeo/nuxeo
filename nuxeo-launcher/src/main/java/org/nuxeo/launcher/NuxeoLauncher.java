@@ -19,13 +19,11 @@
 
 package org.nuxeo.launcher;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,7 +36,6 @@ import java.util.concurrent.Executors;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.impl.SimpleLog;
@@ -53,6 +50,7 @@ import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.launcher.config.Environment;
 import org.nuxeo.launcher.daemon.DaemonThreadFactory;
 import org.nuxeo.launcher.gui.NuxeoLauncherGUI;
+import org.nuxeo.launcher.monitoring.StatusServletClient;
 import org.nuxeo.log4j.ThreadedStreamGobbler;
 
 /**
@@ -96,8 +94,6 @@ public abstract class NuxeoLauncher {
 
     private static final int STOP_SECONDS_BEFORE_NEXT_TRY = 2;
 
-    private static final int MAX_WAIT_LOGFILE = 20;
-
     private static final String PARAM_NUXEO_URL = "nuxeo.url";
 
     private static final String INSTALLER_CLASS = "org.nuxeo.ecm.admin.offline.update.Main";
@@ -140,6 +136,8 @@ public abstract class NuxeoLauncher {
     private int status = 4;
 
     private int errorValue = 0;
+
+    private StatusServletClient statusServletClient;
 
     public NuxeoLauncher(ConfigurationGenerator configurationGenerator) {
         // super("Nuxeo");
@@ -512,81 +510,59 @@ public abstract class NuxeoLauncher {
         }
     }
 
+    /**
+     * @return true if Nuxeo is ready
+     */
     protected boolean waitForEffectiveStart() {
         long startTime = new Date().getTime();
-        Pattern nuxeoStartedPattern = Pattern.compile(".*OSGiRuntimeService.*Nuxeo EP Started");
-        Pattern separatorPattern = Pattern.compile("======================================================================");
-        File logFile = new File(configurationGenerator.getLogDir(),
-                "server.log");
+        int startMaxWait = Integer.parseInt(configurationGenerator.getUserConfig().getProperty(
+                START_MAX_WAIT_PARAM, getDefaultMaxWait()));
+        log.debug("Will wait for effective start during " + startMaxWait
+                + " seconds.");
         final StringBuilder startSummary = new StringBuilder();
         final String newLine = System.getProperty("line.separator");
-        BufferedReader in = null;
+        boolean isReady = false;
+        int count = 0;
         try {
-            // Wait for logfile creation
-            int notfound = 0;
-            while (notfound++ < MAX_WAIT_LOGFILE && !logFile.exists()) {
-                System.out.print(".");
-                Thread.sleep(1000);
-            }
-            try {
-                in = new BufferedReader(new FileReader(logFile));
-            } catch (FileNotFoundException e) {
-                log.error("Waited for " + MAX_WAIT_LOGFILE + "s but "
-                        + e.getMessage());
-                return false;
-            }
-            int count = 0;
-            int countStatus = 0;
-            boolean countActive = false;
-            String line;
-            // Go to end of file
-            while (in.readLine() != null) {
-                ;
-            }
-            int startMaxWait = Integer.parseInt(configurationGenerator.getUserConfig().getProperty(
-                    START_MAX_WAIT_PARAM, getDefaultMaxWait()));
-            log.debug("Will wait for effective start during " + startMaxWait
-                    + " seconds.");
             do {
-                // Wait for something to read
-                while (!in.ready() && count < startMaxWait && isRunning()) {
+                try {
+                    isReady = statusServletClient.init();
+                } catch (SocketTimeoutException e) {
                     System.out.print(".");
                     count++;
-                    Thread.sleep(1000);
+                    // Thread.sleep(1000);
                 }
-                line = in.readLine();
-                if (line != null && nuxeoStartedPattern.matcher(line).matches()) {
-                    countActive = true;
+            } while (!isReady && count < startMaxWait && isRunning());
+            isReady = false;
+            do {
+                try {
+                    isReady = statusServletClient.isStarted();
+                } catch (SocketTimeoutException e) {
+                    System.out.print(".");
+                    count++;
+                    // Thread.sleep(1000);
                 }
-                if (countActive) {
-                    if (line != null
-                            && separatorPattern.matcher(line).matches()) {
-                        countStatus++;
-                    }
-                    if (countStatus > 0) {
-                        startSummary.append(newLine + line);
-                    }
-                }
-            } while (countStatus < 3 && count < startMaxWait && isRunning());
-            if (countStatus == 3) {
-                long duration = (new Date().getTime() - startTime) / 1000;
+            } while (!isReady && count < startMaxWait && isRunning());
+            if (isReady) {
                 startSummary.append(newLine
-                        + "Started in "
+                        + statusServletClient.getStartupSummary());
+                long duration = (new Date().getTime() - startTime) / 1000;
+                startSummary.append("Started in "
                         + String.format("%dmin%02ds", new Long(duration / 60),
                                 new Long(duration % 60)));
-                System.out.println(startSummary);
-                return true;
+                if (statusServletClient.isFine()) {
+                    System.out.println(startSummary);
+                } else {
+                    System.err.println(startSummary);
+                }
+                return statusServletClient.isFine();
             } else {
                 log.error("Starting process is taking too long - giving up.");
             }
-        } catch (FileNotFoundException e) {
-            log.error("Unable to open " + logFile.getPath(), e);
-        } catch (IOException e) {
-            log.error(e);
-        } catch (InterruptedException e) {
+            // } catch (InterruptedException e) {
+            // log.debug(e);
+        } catch (SocketTimeoutException e) {
             log.debug(e);
-        } finally {
-            IOUtils.closeQuietly(in);
         }
         return false;
     }
@@ -944,6 +920,8 @@ public abstract class NuxeoLauncher {
         }
         launcher.setArgs(args);
         configurationGenerator.init();
+        launcher.statusServletClient = new StatusServletClient(
+                configurationGenerator);
         return launcher;
     }
 
@@ -1031,6 +1009,20 @@ public abstract class NuxeoLauncher {
         } catch (IllegalThreadStateException exception) {
             return true;
         }
+    }
+
+    /**
+     * @since 5.4.3
+     * @return true if Nuxeo finished starting
+     */
+    public boolean isStarted() {
+        boolean isStarted;
+        try {
+            isStarted = isRunning() && statusServletClient.isStarted();
+        } catch (SocketTimeoutException e) {
+            isStarted = false;
+        }
+        return isStarted;
     }
 
     /**
