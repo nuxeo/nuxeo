@@ -12,7 +12,7 @@
     </servlet>
     <servlet-mapping>
       <servlet-name>Nuxeo Status Servlet</servlet-name>
-      <url-pattern>/runningstatus/*</url-pattern>
+      <url-pattern>/runningstatus</url-pattern>
     </servlet-mapping>
 
   </extension>
