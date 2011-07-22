@@ -557,6 +557,7 @@ public abstract class NuxeoLauncher {
                 }
                 return statusServletClient.isFine();
             } else {
+                System.out.println();
                 log.error("Starting process is taking too long - giving up.");
             }
             // } catch (InterruptedException e) {
