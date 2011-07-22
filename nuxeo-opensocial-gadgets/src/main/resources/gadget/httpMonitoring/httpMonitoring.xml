@@ -4,7 +4,6 @@
     description="Displays a graph of front-end HTTP activity"
     author="tdeprat" author_email="tdelprat@nuxeo.com">
     <Require feature="setprefs"/>
-    <Require feature="jquery" />
     <#include "dynamic-translations.ftl"/>
     <Require feature="dynamic-height" />
     <#include "default-oauth-prefs.ftl"/>
@@ -21,6 +20,7 @@
   ${jsContext}
 
   <script src="${specDirectoryUrl}default-automation-request.js"></script>
+  <script src="${clientSideBaseUrl}nxthemes-lib/jquery.js"></script>
   <script src="${clientSideBaseUrl}scripts/jquery/flot/jquery.flot.min.js"></script>
 
   <script>
