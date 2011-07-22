@@ -26,8 +26,6 @@ public interface PropertyVisitor {
 
     boolean acceptPhantoms();
 
-    Object visit(DocumentPart property, Object arg) throws PropertyException;
-
     Object visit(MapProperty property, Object arg) throws PropertyException;
 
     Object visit(ListProperty property, Object arg) throws PropertyException;

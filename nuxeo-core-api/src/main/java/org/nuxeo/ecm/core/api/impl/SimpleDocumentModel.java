@@ -39,6 +39,7 @@ import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
+import org.nuxeo.ecm.core.api.model.PropertyVisitor;
 import org.nuxeo.ecm.core.api.model.impl.DefaultPropertyFactory;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.schema.DocumentType;
@@ -478,6 +479,12 @@ public class SimpleDocumentModel implements DocumentModel {
 
     @Override
     public boolean isDirty() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void accept(PropertyVisitor visitor, Object arg)
+            throws ClientException {
         throw new UnsupportedOperationException();
     }
 

@@ -31,6 +31,7 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyException;
+import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.runtime.api.Framework;
@@ -95,10 +96,13 @@ public class PropertyURLConnection extends URLConnection {
     public long getLastModified() {
         try {
             connect();
-            DocumentPart part = getDocument().getPart("dublincore");
-            if (part != null) {
-                Calendar cal = (Calendar)part.getValue("modified");
-                return cal.getTimeInMillis();
+            try {
+                Calendar cal = (Calendar) getDocument().getPropertyValue("dc:modified");
+                if (cal != null) {
+                    return cal.getTimeInMillis();
+                }
+            } catch (PropertyNotFoundException e) {
+                // ignore
             }
             return -1L;
         } catch (Exception e) {

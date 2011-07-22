@@ -54,6 +54,8 @@ import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
+import org.nuxeo.ecm.core.api.model.PropertyVisitor;
+import org.nuxeo.ecm.core.api.model.impl.DocumentPartImpl;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.api.security.ACP;
@@ -958,6 +960,14 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
             }
         }
         return false;
+    }
+
+    @Override
+    public void accept(PropertyVisitor visitor, Object arg)
+            throws ClientException {
+        for (DocumentPart dp : getParts()) {
+            ((DocumentPartImpl) dp).visitChildren(visitor, arg);
+        }
     }
 
     @Override

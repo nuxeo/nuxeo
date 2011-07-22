@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.model.Property;
@@ -204,6 +205,20 @@ public class TestPropertyModel extends NXRuntimeTestCase {
                 }
             }
         }
+    }
+
+    protected static Map<String, Serializable> unPrefixedMap(
+            Map<String, Serializable> map) {
+        Map<String, Serializable> res = new HashMap<String, Serializable>();
+        for (Entry<String, Serializable> e : map.entrySet()) {
+            String key = e.getKey();
+            int pos = key.indexOf(':');
+            if (pos > -1) {
+                key = key.substring(pos + 1);
+            }
+            res.put(key, e.getValue());
+        }
+        return res;
     }
 
     @SuppressWarnings("unchecked")
@@ -725,13 +740,16 @@ public class TestPropertyModel extends NXRuntimeTestCase {
 
         dp.init(map);
 
-        // double s = System.currentTimeMillis();
-        ValueExporter me = new ValueExporter();
-        Map<String, Serializable> export = me.run(dp);
-        // double e = System.currentTimeMillis();
-        // System.out.println("#########visitor >>>> "+((e-s)/1000));
-
+        // prefixed export
+        ValueExporter ve = new ValueExporter(true);
+        Map<String, Serializable> export = ve.run(dp);
         assertEquals(map, export);
+        assertEquals(map, dp.getValue());
+
+        // now unprefixed
+        ve = new ValueExporter(false);
+        export = ve.run(dp);
+        assertEquals(unPrefixedMap(map), export);
     }
 
 }

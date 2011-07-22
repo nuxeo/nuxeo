@@ -24,6 +24,7 @@ import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyException;
+import org.nuxeo.ecm.core.api.model.PropertyVisitor;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.schema.DocumentType;
 
@@ -629,6 +630,21 @@ public interface DocumentModel extends Serializable {
      * @since 5.4.3
      */
     boolean isDirty();
+
+    /**
+     * Method that implement the visitor pattern.
+     * <p>
+     * The visitor must return null to stop visiting children otherwise a
+     * context object that will be passed as the arg argument to children
+     *
+     * @param visitor the visitor to accept
+     * @param arg an argument passed to the visitor. This should be used by the
+     *            visitor to carry on the visiting context.
+     * @throws ClientException
+     *
+     * @since 5.4.3
+     */
+    void accept(PropertyVisitor visitor, Object arg) throws ClientException;
 
     /**
      * Adapts the document to the given interface.

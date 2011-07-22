@@ -98,33 +98,12 @@ public class DocumentPartImpl extends ComplexProperty implements DocumentPart {
 
     @Override
     public Object clone() throws CloneNotSupportedException {
-        try {
-            Map<String, Serializable> value = exportValues();
-            DocumentPartImpl dp = new DocumentPartImpl(schema);
-            dp.importValues(value); //TODO: should preserve property flags?
-            return dp;
-        } catch (PropertyException e) {
-            throw new PropertyRuntimeException("clone failed", e);
-        }
-    }
-
-    @Override
-    public Map<String, Serializable> exportValues() throws PropertyException {
-        ValueExporter exporter = new ValueExporter();
-        return exporter.run(this);
-    }
-
-    @Override
-    public void importValues(Map<String, Serializable> values) throws PropertyException {
-        init((Serializable) values);
+        return super.clone();
     }
 
     @Override
     public void accept(PropertyVisitor visitor, Object arg) throws PropertyException {
-        arg = visitor.visit(this, arg);
-        if (arg != null) {
-            visitChildren(visitor, arg);
-        }
+        visitChildren(visitor, arg);
     }
 
     @Override

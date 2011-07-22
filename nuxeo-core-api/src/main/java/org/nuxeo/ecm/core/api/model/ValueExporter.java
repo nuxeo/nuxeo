@@ -7,11 +7,9 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *     bstefanescu
- *
- * $Id$
+ *     Bogdan Stefanescu
+ *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.core.api.model;
 
 import java.io.Serializable;
@@ -24,15 +22,29 @@ import org.nuxeo.ecm.core.api.model.impl.ListProperty;
 import org.nuxeo.ecm.core.api.model.impl.MapProperty;
 import org.nuxeo.ecm.core.api.model.impl.ScalarProperty;
 import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
+import org.nuxeo.ecm.core.schema.types.QName;
 
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * Exporter for a document's values into a map.
+ * <p>
+ * The values of the first-level keys of the map may be prefixed (standard
+ * prefix:name naming) or not.
  */
 @SuppressWarnings("unchecked")
 public class ValueExporter implements PropertyVisitor {
 
     private final Map<String, Serializable> result = new HashMap<String, Serializable>();
+
+    private final boolean prefixed;
+
+    /**
+     * Constructs an exporter.
+     *
+     * @param prefixed whether first-level keys of the map are prefixed
+     */
+    public ValueExporter(boolean prefixed) {
+        this.prefixed = prefixed;
+    }
 
     public Map<String, Serializable> getResult() {
         return result;
@@ -44,15 +56,14 @@ public class ValueExporter implements PropertyVisitor {
         return result;
     }
 
-    @Override
-    public boolean acceptPhantoms() {
-        return false;
+    protected String getName(Property property) {
+        QName name = property.getField().getName();
+        return prefixed ? name.getPrefixedName() : name.getLocalName();
     }
 
     @Override
-    public Object visit(DocumentPart property, Object arg)
-            throws PropertyException {
-        return arg;
+    public boolean acceptPhantoms() {
+        return false;
     }
 
     @Override
@@ -71,15 +82,13 @@ public class ValueExporter implements PropertyVisitor {
             if (property.getParent().isList()) {
                 ((Collection<Serializable>) arg).add(value);
             } else {
-                ((Map<String, Serializable>) arg).put(property.getName(),
-                        value);
+                ((Map<String, Serializable>) arg).put(getName(property), value);
             }
             return null;
         } else if (property.getParent().isList()) {
-            // if (arg instanceof Collection) {
             ((Collection<Serializable>) arg).add(value);
         } else {
-            ((Map<String, Serializable>) arg).put(property.getName(), value);
+            ((Map<String, Serializable>) arg).put(getName(property), value);
         }
         return value;
     }
@@ -94,10 +103,9 @@ public class ValueExporter implements PropertyVisitor {
             value = property.getValue();
         }
         if (property.getParent().isList()) {
-            // if (arg instanceof Collection) {
             ((Collection<Serializable>) arg).add(value);
         } else {
-            ((Map<String, Serializable>) arg).put(property.getName(), value);
+            ((Map<String, Serializable>) arg).put(getName(property), value);
         }
         return value;
     }
@@ -105,13 +113,11 @@ public class ValueExporter implements PropertyVisitor {
     @Override
     public Object visit(ScalarProperty property, Object arg)
             throws PropertyException {
-
+        Serializable value = property.getValue();
         if (property.getParent().isList()) {
-            // if (arg instanceof Collection) {
-            ((Collection<Serializable>) arg).add(property.getValue());
+            ((Collection<Serializable>) arg).add(value);
         } else {
-            ((Map<String, Serializable>) arg).put(property.getName(), property
-                    .getValue());
+            ((Map<String, Serializable>) arg).put(getName(property), value);
         }
         return null;
     }

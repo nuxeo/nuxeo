@@ -36,6 +36,7 @@ import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyException;
+import org.nuxeo.ecm.core.api.model.PropertyVisitor;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
@@ -152,6 +153,12 @@ public class ShallowDocumentModel implements DocumentModel {
 
     @Override
     public ACP getACP() throws ClientException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void accept(PropertyVisitor visitor, Object arg)
+            throws ClientException {
         throw new UnsupportedOperationException();
     }
 

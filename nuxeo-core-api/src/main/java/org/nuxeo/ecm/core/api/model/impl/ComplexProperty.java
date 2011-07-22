@@ -241,7 +241,7 @@ public abstract class ComplexProperty extends AbstractProperty implements
                 "add() operation not supported on map properties");
     }
 
-    protected void visitChildren(PropertyVisitor visitor, Object arg)
+    public void visitChildren(PropertyVisitor visitor, Object arg)
             throws PropertyException {
         boolean includePhantoms = visitor.acceptPhantoms();
         if (includePhantoms) {

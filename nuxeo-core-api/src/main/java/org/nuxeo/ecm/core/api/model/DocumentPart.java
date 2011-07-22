@@ -39,15 +39,6 @@ public interface DocumentPart extends Property {
 
     Property createProperty(Property parent, Field field, int flags);
 
-    /**
-     * Exports as a map the document values. Only the non phantom properties are exported.
-     *
-     * @return
-     */
-    Map<String, Serializable> exportValues() throws PropertyException;
-
-    void importValues(Map<String, Serializable> values)  throws PropertyException;
-
     PropertyDiff exportDiff() throws PropertyException;
 
     void importDiff(PropertyDiff diff) throws PropertyException;
