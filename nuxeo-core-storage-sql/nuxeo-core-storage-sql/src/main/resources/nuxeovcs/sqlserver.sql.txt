@@ -1,4 +1,4 @@
-# (C) Copyright 2008-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
+ (C) Copyright 2008-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
 #
 # All rights reserved. This program and the accompanying materials
 # are made available under the terms of the GNU Lesser General Public License
@@ -97,11 +97,13 @@ BEGIN
       IF @allusers LIKE (N'%|' + @us + N'|%') AND @allperms LIKE (N'%|' + @pe + N'|%')
       BEGIN
         CLOSE @cur;
+	DEALLOCATE @cur;
         RETURN @gr;
       END;
       FETCH FROM @cur INTO @gr, @pe, @us;
     END;
     CLOSE @cur;
+    DEALLOCATE @cur;
     SET @newid = (SELECT [parentid] FROM [hierarchy] WHERE [id] = @curid);
     IF @first = 1 AND @newid IS NULL BEGIN
       SET @newid = (SELECT [versionableid] FROM [versions] WHERE [id] = @curid);
@@ -147,6 +149,7 @@ BEGIN
     FETCH FROM @cur INTO @nid;
   END;
   CLOSE @cur;
+  DEALLOCATE @cur;
 END;
 
 
@@ -349,6 +352,7 @@ BEGIN
     FETCH FROM @cur INTO @op;
   END;
   CLOSE @cur;
+  DEALLOCATE @cur;
   RETURN @read_acl;
 END;
 
@@ -409,6 +413,82 @@ END;
 # -- List read acl ids for a list of user/groups, using the cache
 
 # -- TRIGGERS --------------------------------------------------
+IF OBJECT_ID('dbo.nx_trig_acls_modified', 'TR') IS NOT NULL
+  DROP TRIGGER dbo.nx_trig_acls_modified;
+
+CREATE TRIGGER nx_trig_acls_modified ON [acls]
+AFTER INSERT, UPDATE, DELETE AS
+BEGIN
+  SET NOCOUNT ON;
+  INSERT INTO aclr_modified (hierarchy_id, is_new) 
+    SELECT DISTINCT(id), 0 FROM inserted;
+  INSERT INTO aclr_modified (hierarchy_id, is_new) 
+    SELECT DISTINCT(id), 0 FROM deleted;
+END;
+
+#IF: ! aclOptimizationsEnabled
+ALTER TABLE [acls] DISABLE TRIGGER nx_trig_acls_modified
+
+IF OBJECT_ID('dbo.nx_trig_hierarchy_insert', 'TR') IS NOT NULL
+  DROP TRIGGER dbo.nx_trig_hierarchy_insert;
+
+CREATE TRIGGER nx_trig_hierarchy_insert ON [hierarchy]
+AFTER INSERT AS
+BEGIN
+  SET NOCOUNT ON;
+  INSERT INTO aclr_modified (hierarchy_id, is_new) 
+    SELECT DISTINCT(id), 1 FROM inserted;
+END;
+
+#IF: ! aclOptimizationsEnabled
+ALTER TABLE [hierarchy] DISABLE TRIGGER nx_trig_hierarchy_insert
+
+IF OBJECT_ID('dbo.nx_trig_hierarchy_update', 'TR') IS NOT NULL
+  DROP TRIGGER dbo.nx_trig_hierarchy_update;
+
+CREATE TRIGGER nx_trig_hierarchy_update ON [hierarchy]
+AFTER UPDATE AS
+BEGIN
+  SET NOCOUNT ON;
+  INSERT INTO aclr_modified (hierarchy_id, is_new) 
+    SELECT DISTINCT(id), 0 FROM inserted;
+END;
+
+#IF: ! aclOptimizationsEnabled
+ALTER TABLE [hierarchy] DISABLE TRIGGER nx_trig_hierarchy_update
+
+IF OBJECT_ID('dbo.nx_trig_aclr_modified', 'TR') IS NOT NULL
+  DROP TRIGGER dbo.nx_trig_aclr_modified;
+
+CREATE TRIGGER nx_trig_aclr_modified ON [aclr]
+AFTER INSERT AS
+BEGIN
+  SET NOCOUNT ON;
+  -- TODO: impl
+END;
+
+#IF: ! aclOptimizationsEnabled
+ALTER TABLE [aclr] DISABLE TRIGGER nx_trig_aclr_modified
+
+IF OBJECT_ID('dbo.nx_trig_hier_read_acl_mod', 'TR') IS NOT NULL
+  DROP TRIGGER dbo.nx_trig_hier_read_acl_mod;
+
+CREATE TRIGGER nx_trig_hier_read_acl_mod ON [hierarchy_read_acl]
+AFTER INSERT, UPDATE AS
+BEGIN
+  SET NOCOUNT ON;
+  -- SQLServer does not support "For Each Row"
+  INSERT INTO aclr
+    SELECT NEW.acl_id, dbo.nx_get_read_acl(NEW.id) FROM
+    (SELECT acl_id, max(id) AS id FROM inserted AS i
+     WHERE acl_id IS NOT NULL AND
+       NOT EXISTS(SELECT 1 FROM aclr AS r WHERE r.acl_id = i.acl_id)
+     GROUP BY acl_id) AS NEW;
+END;
+
+#IF: ! aclOptimizationsEnabled
+ALTER TABLE [hierarchy_read_acl] DISABLE TRIGGER nx_trig_hier_read_acl_mod
+
 
 # -- PROCEDURES --------------------------------------------------
 #IF: aclOptimizationsEnabled
@@ -440,7 +520,12 @@ CREATE PROCEDURE nx_vacuum_read_acls
   -- Remove unused read acls entries
 AS
 BEGIN
-  SELECT * FROM aclr;
+  DELETE FROM aclr WHERE acl_id IN (SELECT r.acl_id FROM aclr r
+    JOIN hierarchy_read_acl h ON r.acl_id=h.acl_id
+    WHERE h.acl_id IS NULL);
+  TRUNCATE TABLE aclr_user;
+  TRUNCATE TABLE aclr_user_map;
+  TRUNCATE TABLE aclr_modified;
 END;
 
 
@@ -454,8 +539,36 @@ CREATE PROCEDURE nx_update_read_acls
   -- Rebuild only necessary read acls
 AS
 BEGIN
-  SELECT * FROM aclr;
-END;
+  SET NOCOUNT ON;
+  --
+  -- 1/ New documents, no new ACL
+  INSERT INTO hierarchy_read_acl
+    SELECT id, dbo.nx_get_read_acl_id(id)
+    FROM (SELECT DISTINCT(hierarchy_id) AS id
+        FROM aclr_modified
+        WHERE is_new = 1 AND
+            EXISTS (SELECT 1 FROM hierarchy WHERE aclr_modified.hierarchy_id=hierarchy.id)) AS uids;
+  DELETE FROM aclr_modified WHERE is_new = 1;
+  --
+  -- 2/ Handles new ACLs, marking read acl with a NULL marker
+  UPDATE hierarchy_read_acl SET acl_id = NULL WHERE id IN (
+    SELECT DISTINCT(hierarchy_id) AS hierarchy_id FROM aclr_modified WHERE is_new = 0)
+;
+  DELETE FROM aclr_modified WHERE is_new = 0;
+  --
+  -- 3/ Mark all children with the NULL marker
+  WHILE @@rowcount > 0 BEGIN
+    UPDATE hierarchy_read_acl SET acl_id = NULL WHERE id IN (
+      SELECT h.id
+      FROM hierarchy AS h
+      JOIN hierarchy_read_acl AS r ON h.id = r.id
+      WHERE r.acl_id IS NOT NULL
+        AND h.parentid IN (SELECT id FROM hierarchy_read_acl WHERE acl_id IS NULL));
+  END;
+  --
+  -- 4/ Compute the new read ACLs for updated documents
+  UPDATE hierarchy_read_acl SET acl_id = dbo.nx_get_read_acl_id(id) WHERE acl_id IS NULL;
+ END;
 
 
 # -- INIT --------------------------------------------------
@@ -538,6 +651,7 @@ BEGIN
     FETCH FROM @cur INTO @curid, @curvid, @curmaj, @curmin;
   END;
   CLOSE @cur;
+  DEALLOCATE @cur;
 END;
 
 EXEC NX_UPGRADE_VERSIONS
