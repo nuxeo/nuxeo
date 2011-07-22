@@ -1406,6 +1406,28 @@
       <selector path=".metadata_block .dataInput td">
         <padding>3px</padding>
       </selector>
+      <selector path=".surveyStatusLabel, .surveyStatus">
+        <float>left</float>
+      </selector>
+      <selector path=".surveyStatusLabel">
+        <padding>0px 10px 5px 0</padding>
+      </selector>
+      <selector path=".surveyStatus span, .surveyStatus a">
+        <padding>1px 5px</padding>
+      </selector>
+      <selector path=".surveyStatus .status">
+        <font-weight>bold</font-weight>
+        <background-color preset="taglike (Galaxy backgrounds)"/>
+      </selector>
+      <selector path=".surveyStatus .project">
+        <color preset="summary.surveyproject (Galaxy colors)" />
+      </selector>
+      <selector path=".surveyStatus .open">
+        <color preset="summary.surveyopen (Galaxy colors)" />
+      </selector>
+      <selector path=".surveyStatus .closed">
+        <color preset="summary.surveyclosed (Galaxy colors)" />
+      </selector>
       <selector path=".layoutViewMode">
         <margin>0px</margin>
         <padding>0px</padding>
