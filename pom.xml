@@ -94,7 +94,6 @@
     <module>nuxeo-theme</module>
     <module>nuxeo-webengine</module>
     <module>nuxeo-dm</module>
-    <module>nuxeo-gwt</module>
   </modules>
 
   <properties>
