@@ -26,6 +26,9 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.ServerSocket;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -102,6 +105,16 @@ public class ConfigurationGenerator {
 
     public static final String PARAM_LOOPBACK_URL = "nuxeo.loopback.url";
 
+    public static final int MIN_PORT = 1;
+
+    public static final int MAX_PORT = 49151;
+
+    public static final int ADDRESS_PING_TIMEOUT = 1000;
+
+    public static final String PARAM_BIND_ADDRESS = "nuxeo.bind.address";
+
+    public static final String PARAM_HTTP_PORT = "nuxeo.server.http.port";
+
     private final File nuxeoHome;
 
     // User configuration file
@@ -140,6 +153,8 @@ public class ConfigurationGenerator {
     private boolean setFalseToOnce = false;
 
     private String wizardParam = null;
+
+    private InetAddress bindAddress;
 
     public boolean isConfigurable() {
         return configurable;
@@ -757,6 +772,88 @@ public class ConfigurationGenerator {
         ifNotExistsAndIsDirectoryThenCreate(getTmpDir());
         serverConfigurator.checkPaths();
         serverConfigurator.removeExistingLocks();
+        checkAddressesAndPorts();
+    }
+
+    /**
+     * Will check the configured addresses are reachable and Nuxeo required
+     * ports are available on those addresses.
+     * Server specific implementations should override this method in order to
+     * check for server specific ports. {@link #bindAddress} must be set
+     * before.
+     *
+     * @throws ConfigurationException
+     *
+     * @since 5.4.3
+     */
+    public void checkAddressesAndPorts() throws ConfigurationException {
+        try {
+            bindAddress = InetAddress.getByName(userConfig.getProperty(PARAM_BIND_ADDRESS));
+        } catch (UnknownHostException e) {
+            throw new ConfigurationException(e);
+        }
+        checkAddressReachable(bindAddress);
+        checkPortAvailable(bindAddress,
+                Integer.parseInt(userConfig.getProperty(PARAM_HTTP_PORT)));
+    }
+
+    /**
+     * @param address address to check for availability
+     * @throws ConfigurationException
+     * @since 5.4.3
+     */
+    public static void checkAddressReachable(InetAddress address)
+            throws ConfigurationException {
+        try {
+            if ("0.0.0.0".equals(address.getHostAddress())) {
+                address = InetAddress.getLocalHost();
+            }
+            log.debug("Checking availability of " + address);
+            address.isReachable(ADDRESS_PING_TIMEOUT);
+        } catch (IOException e) {
+            throw new ConfigurationException("Unreachable binded address "
+                    + address);
+        }
+    }
+
+    /**
+     * Checks if port is available on given address.
+     *
+     * @param port port to check for availability
+     * @throws ConfigurationException Throws an exception if address is
+     *             unavailable.
+     * @since 5.4.3
+     */
+    public static void checkPortAvailable(InetAddress address, int port)
+            throws ConfigurationException {
+        if (port < MIN_PORT || port > MAX_PORT) {
+            throw new IllegalArgumentException("Invalid port: " + port);
+        }
+        ServerSocket socketTCP = null;
+        // DatagramSocket socketUDP = null;
+        try {
+            log.debug("Checking availability of port " + port + " on address "
+                    + address);
+            socketTCP = new ServerSocket(port, 0, address);
+            socketTCP.setReuseAddress(true);
+            // socketUDP = new DatagramSocket(port, address);
+            // socketUDP.setReuseAddress(true);
+            // return true;
+        } catch (IOException e) {
+            throw new ConfigurationException("Port is unavailable: " + port
+                    + " on address " + address + " (" + e.getMessage() + ")", e);
+        } finally {
+            // if (socketUDP != null) {
+            // socketUDP.close();
+            // }
+            if (socketTCP != null) {
+                try {
+                    socketTCP.close();
+                } catch (IOException e) {
+                    // Do not throw
+                }
+            }
+        }
     }
 
     /**
