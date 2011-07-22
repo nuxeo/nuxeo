@@ -25,12 +25,15 @@ public class WikiTypes {
     public static final String WIKIPAGE = "WikiPage";
     public static final String BLOGPOST = "BlogPost";
     public static final String BLOGSITE = "BlogSite";
+    @Deprecated
     public static final String SCHEMA_WIKIPAGE = "wikiPage";
     public static final String SCHEMA_WIKISITE = "wikiSite";
     public static final String SCHEMA_BLOGSITE = "blogSite";
     public static final String SCHEMA_BLOGPOST = "blogPost";
     public static final String SCHEMA_SITE = "site";
+    @Deprecated
     public static final String FIELD_CONTENT = "content";
+    public static final String PROP_WIKI_CONTENT = "wp:content";
 
     // Constant utility class
     private WikiTypes() {

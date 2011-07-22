@@ -22,13 +22,16 @@ package org.nuxeo.ecm.platform.rendering.template;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.PropertyException;
+import org.nuxeo.ecm.core.api.model.ValueExporter;
 
 import freemarker.template.AdapterTemplateModel;
 import freemarker.template.ObjectWrapper;
@@ -69,7 +72,7 @@ public class DocumentModelAdapter implements TemplateHashModelEx, AdapterTemplat
         if (accessor != null) {
             return wrapper.wrap(accessor.getValue(doc));
         }
-        // may be a schema name
+        // may be a schema name (doc.dublincore.title)
         DocumentPart part;
         try {
             part = doc.getPart(key);
@@ -80,15 +83,28 @@ public class DocumentModelAdapter implements TemplateHashModelEx, AdapterTemplat
             // TODO it is easier for now to export the part as a map
             // may be in future we may want to implement a property template model
             try {
-                DocumentValueExporter exporter = new DocumentValueExporter();
-                Map<String, Serializable> map = exporter.run(part);
-                return wrapper.wrap(map);
+                Map<String, Serializable> map = (Map<String, Serializable>) part.getValue();
+                return wrapper.wrap(unPrefixedMap(map));
             } catch (PropertyException e) {
                 throw new TemplateModelException(
                         "Failed to get value for schema root property: "+key, e);
             }
         }
         return wrapper.wrap(null);
+    }
+
+    private static Map<String, Serializable> unPrefixedMap(
+            Map<String, Serializable> map) {
+        Map<String, Serializable> res = new HashMap<String, Serializable>();
+        for (Entry<String, Serializable> e : map.entrySet()) {
+            String key = e.getKey();
+            int pos = key.indexOf(':');
+            if (pos > -1) {
+                key = key.substring(pos + 1);
+            }
+            res.put(key, e.getValue());
+        }
+        return res;
     }
 
     /**
@@ -117,7 +133,7 @@ public class DocumentModelAdapter implements TemplateHashModelEx, AdapterTemplat
         }
         try {
             for (DocumentPart part : doc.getParts()) {
-                values.add(part.getValue());
+                values.add(unPrefixedMap((Map<String, Serializable>) part.getValue()));
             }
         } catch (PropertyException e) {
             throw new TemplateModelException("failed to fetch a document", e);
