@@ -403,14 +403,31 @@ BEGIN
 END;
 
 
-# -- CREATE OR REPLACE FUNCTION nx_list_read_acls_for(users NX_STRING_TABLE)
-# -- RETURN NX_STRING_TABLE
-# -- List matching read acl ids for a list of user/groups
+IF OBJECT_ID('dbo.nx_get_read_acls_for', 'TF') IS NOT NULL
+  DROP FUNCTION dbo.nx_get_read_acls_for;
+
+#IF: aclOptimizationsEnabled
+CREATE FUNCTION nx_get_read_acls_for(@users NVARCHAR(4000))
+RETURNS @output TABLE (acl_id CHAR(32)) AS
+  -- List matching read acl ids for a list of user/groups
+BEGIN
+  DECLARE @tempo TABLE (acl_id VARCHAR(32));
+  -- temporary solution using nx_access_allowed
+  -- TODO add cache + handles list of permissions
+  INSERT INTO @output (acl_id)
+    SELECT acl_id FROM hierarchy_read_acl
+    GROUP BY acl_id
+    HAVING dbo.NX_ACCESS_ALLOWED(max(id), @users, 'Browse|Read|ReadRemove|ReadWrite|View|Everything') = 1;
+  RETURN;
+END;
+
 
 
 # -- CREATE OR REPLACE FUNCTION nx_get_read_acls_for(users NX_STRING_TABLE)
 # -- RETURN NX_STRING_TABLE
 # -- List read acl ids for a list of user/groups, using the cache
+
+
 
 # -- TRIGGERS --------------------------------------------------
 IF OBJECT_ID('dbo.nx_trig_acls_modified', 'TR') IS NOT NULL
@@ -663,7 +680,7 @@ DROP PROCEDURE dbo.NX_UPGRADE_VERSIONS;
 
 #CATEGORY: addClusterNode
 
-# delete nodes for sessions that don't exist anymore
+# -- delete nodes for sessions that don't exist anymore
 DELETE FROM N FROM cluster_nodes N WHERE
   HAS_PERMS_BY_NAME(null, null, 'VIEW SERVER STATE') = 1
   AND NOT EXISTS(
