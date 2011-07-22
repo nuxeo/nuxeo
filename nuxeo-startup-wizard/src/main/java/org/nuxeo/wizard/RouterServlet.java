@@ -22,7 +22,9 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.net.InetAddress;
 import java.net.URLEncoder;
+import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -375,6 +377,17 @@ public class RouterServlet extends HttpServlet {
         if (bindAddress != null && !bindAddress.isEmpty()) {
             if (!IPValidator.validate(bindAddress)) {
                 ctx.trackError("nuxeo.bind.address", "error.invalid.ip");
+            }
+            try {
+                InetAddress inetAddress = InetAddress.getByName(bindAddress);
+                ConfigurationGenerator.checkAddressReachable(inetAddress);
+                ConfigurationGenerator.checkPortAvailable(
+                        inetAddress,
+                        Integer.parseInt(collector.getConfigurationParam(ConfigurationGenerator.PARAM_HTTP_PORT)));
+            } catch (UnknownHostException e) {
+                ctx.trackError("nuxeo.bind.address", "error.invalid.ip");
+            } catch (ConfigurationException e) {
+                ctx.trackError("nuxeo.bind.address", "error.already.used.ip");
             }
         }
 

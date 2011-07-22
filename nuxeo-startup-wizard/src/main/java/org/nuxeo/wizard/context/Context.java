@@ -77,7 +77,7 @@ public class Context {
 
     public String getDistributionKey() {
 
-        if (distributionKey==null) {
+        if (distributionKey == null) {
 
             ConfigurationGenerator configurationGenerator = new ConfigurationGenerator();
             configurationGenerator.init();
@@ -86,12 +86,17 @@ public class Context {
                 distribution.load(new FileInputStream(new File(
                         configurationGenerator.getConfigDir(),
                         "distribution.properties")));
-                String name = distribution.getProperty("org.nuxeo.distribution.name", "unknow").toLowerCase();
-                String server = distribution.getProperty("org.nuxeo.distribution.server", "unknown").toLowerCase();
-                String version = distribution.getProperty("org.nuxeo.distribution.version", "unknow").toLowerCase();
-                String pkg = distribution.getProperty("org.nuxeo.distribution.package", "unknow").toLowerCase();
+                String name = distribution.getProperty(
+                        "org.nuxeo.distribution.name", "unknown").toLowerCase();
+                String server = distribution.getProperty(
+                        "org.nuxeo.distribution.server", "unknown").toLowerCase();
+                String version = distribution.getProperty(
+                        "org.nuxeo.distribution.version", "unknown").toLowerCase();
+                String pkg = distribution.getProperty(
+                        "org.nuxeo.distribution.package", "unknown").toLowerCase();
 
-                distributionKey = name + "-" + server + "-" + version + "-" + pkg;
+                distributionKey = name + "-" + server + "-" + version + "-"
+                        + pkg;
 
             } catch (Exception e) {
                 distributionKey = "unknown";
