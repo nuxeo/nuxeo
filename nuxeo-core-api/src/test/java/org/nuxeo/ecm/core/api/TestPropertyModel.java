@@ -744,7 +744,12 @@ public class TestPropertyModel extends NXRuntimeTestCase {
         ValueExporter ve = new ValueExporter(true);
         Map<String, Serializable> export = ve.run(dp);
         assertEquals(map, export);
-        assertEquals(map, dp.getValue());
+
+        Map<String, Serializable> value = (Map<String, Serializable>) dp.getValue();
+        clearMap(value);
+        HashMap<String, Serializable> m = new HashMap<String, Serializable>(map);
+        m.put("book:price", Long.valueOf(111)); // default value exported too
+        assertEquals(m, value);
 
         // now unprefixed
         ve = new ValueExporter(false);
