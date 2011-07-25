@@ -30,9 +30,9 @@
     </layout>
   </appender>
 
-  <!-- <logger name="org.nuxeo.launcher"> -->
-  <!-- <level value="DEBUG" /> -->
-  <!-- </logger> -->
+  <logger name="org.nuxeo.launcher">
+    <level value="INFO" />
+  </logger>
 
   <!-- ======================= -->
   <!-- Setup the Root category -->

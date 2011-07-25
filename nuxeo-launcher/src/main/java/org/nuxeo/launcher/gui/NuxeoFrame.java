@@ -76,6 +76,9 @@ import org.nuxeo.shell.swing.ConsolePanel;
  */
 public class NuxeoFrame extends JFrame {
 
+    /**
+     * @since 5.4.3
+     */
     protected class LogsPanelListener extends ComponentAdapter {
         private String logFile;
 
@@ -85,12 +88,12 @@ public class NuxeoFrame extends JFrame {
 
         @Override
         public void componentHidden(ComponentEvent e) {
-            controller.notifyLogsObserver(logFile, false);
+            getController().notifyLogsObserver(logFile, false);
         }
 
         @Override
         public void componentShown(ComponentEvent e) {
-            controller.notifyLogsObserver(logFile, true);
+            getController().notifyLogsObserver(logFile, true);
         }
 
     }
@@ -113,23 +116,29 @@ public class NuxeoFrame extends JFrame {
         }
     }
 
+    /**
+     * @since 5.4.3
+     */
     protected Action startAction = new AbstractAction() {
         private static final long serialVersionUID = 1L;
 
         @Override
         public void actionPerformed(ActionEvent e) {
             mainButton.setEnabled(false);
-            controller.start();
+            getController().start();
         }
     };
 
+    /**
+     * @since 5.4.3
+     */
     protected Action stopAction = new AbstractAction() {
         private static final long serialVersionUID = 1L;
 
         @Override
         public void actionPerformed(ActionEvent e) {
             mainButton.setEnabled(false);
-            controller.stop();
+            getController().stop();
         }
     };
 
@@ -145,7 +154,7 @@ public class NuxeoFrame extends JFrame {
 
     protected JButton mainButton = null;
 
-    protected NuxeoLauncherGUI controller;
+    private NuxeoLauncherGUI controller;
 
     protected boolean logsShown = false;
 
@@ -167,7 +176,7 @@ public class NuxeoFrame extends JFrame {
 
     public NuxeoFrame(NuxeoLauncherGUI controller) throws HeadlessException {
         super("NuxeoCtl");
-        this.controller = controller;
+        this.setController(controller);
 
         // Main frame
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -233,7 +242,7 @@ public class NuxeoFrame extends JFrame {
             public void run() {
                 try {
                     Shell.get().main(
-                            new String[] { controller.launcher.getURL()
+                            new String[] { getController().launcher.getURL()
                                     + "site/automation" });
                 } catch (Exception e) {
                     log.error(e);
@@ -271,7 +280,7 @@ public class NuxeoFrame extends JFrame {
         // Get Launcher log file(s)
         ArrayList<String> logFiles = Log4JHelper.getFileAppendersFiles(LogManager.getLoggerRepository());
         // Get server log file(s)
-        logFiles.addAll(controller.getConfigurationGenerator().getLogFiles());
+        logFiles.addAll(getController().getConfigurationGenerator().getLogFiles());
         for (String logFile : logFiles) {
             if (!hideLogTab(logFile)) {
                 logsTabbedPane.addTab(new File(logFile).getName(),
@@ -282,8 +291,8 @@ public class NuxeoFrame extends JFrame {
     }
 
     /**
-     * Called by buildLogsTab to know if a logfile should be display. Can be
-     * overriden. Return false by default.
+     * Called by buildLogsTab to know if a log file should be display. Can be
+     * overridden. Return false by default.
      *
      * @param logFile
      * @return
@@ -310,7 +319,7 @@ public class NuxeoFrame extends JFrame {
         logsScroller.setWheelScrollingEnabled(true);
         logsScroller.setPreferredSize(new Dimension(450, 160));
 
-        controller.initLogsManagement(logFile, textArea);
+        getController().initLogsManagement(logFile, textArea);
         logsScroller.addComponentListener(new LogsPanelListener(logFile));
         return logsScroller;
     }
@@ -329,17 +338,17 @@ public class NuxeoFrame extends JFrame {
 
         summaryPanel.add(new JLabel("<html><font color=#ffffdd>"
                 + NuxeoLauncherGUI.getMessage("summary.status.label")));
-        summaryStatus = new JLabel(controller.launcher.status());
+        summaryStatus = new JLabel(getController().launcher.status());
         summaryStatus.setForeground(Color.WHITE);
         summaryPanel.add(summaryStatus);
         summaryPanel.add(new JLabel("<html><font color=#ffffdd>"
                 + NuxeoLauncherGUI.getMessage("summary.url.label")));
-        summaryURL = new JLabel(controller.launcher.getURL());
+        summaryURL = new JLabel(getController().launcher.getURL());
         summaryURL.setForeground(Color.WHITE);
         summaryPanel.add(summaryURL);
 
         summaryPanel.add(new JSeparator());
-        ConfigurationGenerator config = controller.launcher.getConfigurationGenerator();
+        ConfigurationGenerator config = getController().launcher.getConfigurationGenerator();
         summaryPanel.add(new JLabel("<html><font color=#ffffdd>"
                 + NuxeoLauncherGUI.getMessage("summary.homedir.label")));
         summaryPanel.add(new JLabel("<html><font color=white>"
@@ -405,9 +414,14 @@ public class NuxeoFrame extends JFrame {
     }
 
     protected void updateMainButton() {
-        if (controller.launcher.isRunning()) {
+        if (getController().launcher.isStarted()) {
             mainButton.setAction(stopAction);
             mainButton.setText(NuxeoLauncherGUI.getMessage("mainbutton.stop.text"));
+            mainButton.setToolTipText(NuxeoLauncherGUI.getMessage("mainbutton.stop.tooltip"));
+            mainButton.setIcon(stopIcon);
+        } else if (getController().launcher.isRunning()) {
+            mainButton.setAction(stopAction);
+            mainButton.setText(NuxeoLauncherGUI.getMessage("mainbutton.start.inprogress"));
             mainButton.setToolTipText(NuxeoLauncherGUI.getMessage("mainbutton.stop.tooltip"));
             mainButton.setIcon(stopIcon);
         } else {
@@ -424,8 +438,20 @@ public class NuxeoFrame extends JFrame {
      * Update information displayed in summary tab
      */
     public void updateSummary() {
-        summaryStatus.setText(controller.launcher.status());
-        summaryURL.setText(controller.launcher.getURL());
+        summaryStatus.setText(getController().launcher.status());
+        summaryURL.setText(getController().launcher.getURL());
+    }
+
+    /**
+     * @since 5.4.3
+     * @return GUI controller
+     */
+    public NuxeoLauncherGUI getController() {
+        return controller;
+    }
+
+    public void setController(NuxeoLauncherGUI controller) {
+        this.controller = controller;
     }
 
 }

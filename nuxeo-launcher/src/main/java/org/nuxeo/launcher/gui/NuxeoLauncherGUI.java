@@ -74,6 +74,7 @@ public class NuxeoLauncherGUI {
             System.setProperty("com.apple.mrj.application.live-resize", "true");
             System.setProperty("com.apple.macos.smallTabs", "true");
         }
+        initFrame(this);
     }
 
     protected void initFrame(final NuxeoLauncherGUI controller) {
@@ -95,6 +96,19 @@ public class NuxeoLauncherGUI {
                 }
             }
         });
+        new Thread() {
+            @Override
+            public void run() {
+                while (true) {
+                    updateServerStatus();
+                    try {
+                        Thread.sleep(5000);
+                    } catch (InterruptedException e) {
+                        break;
+                    }
+                }
+            }
+        }.start();
     }
 
     /**
@@ -105,28 +119,6 @@ public class NuxeoLauncherGUI {
      */
     protected NuxeoFrame createNuxeoFrame(NuxeoLauncherGUI controller) {
         return new NuxeoFrame(controller);
-    }
-
-    /**
-     * Starts GUI, automatically running command passed in parameter after "gui"
-     * option.
-     *
-     * @return Either null or a command delegated by GUI launcher to console
-     *         launcher.
-     */
-    public String execute() {
-        initFrame(this);
-        String command = launcher.getCommand();
-        if (command != null) {
-            if ("start".equalsIgnoreCase(command)) {
-                start();
-            } else if ("stop".equalsIgnoreCase(command)) {
-                stop();
-            } else {
-                return command;
-            }
-        }
-        return null;
     }
 
     public void initLogsManagement(String logFile, ColoredTextPane textArea) {
@@ -233,6 +225,14 @@ public class NuxeoLauncherGUI {
                     key);
         }
         return message;
+    }
+
+    /**
+     * @return the NuxeoLauncher managed by the current GUI
+     * @since 5.4.3
+     */
+    public NuxeoLauncher getLauncher() {
+        return launcher;
     }
 
 }
