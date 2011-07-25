@@ -305,9 +305,8 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                 log.warn("Database contains additional unused columns for table "
                         + table.getQuotedName()
                         + ": "
-                        + StringUtils.join(
-                                new ArrayList<String>(columnTypes.keySet()),
-                                ", "));
+                        + StringUtils.join(new ArrayList<String>(
+                                columnTypes.keySet()), ", "));
             }
             if (!addedColumns.isEmpty()) {
                 if (added.containsKey(table.getKey())) {
@@ -635,10 +634,41 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         return null;
     }
 
+    protected void prepareUserReadAcls(QueryFilter queryFilter)
+            throws StorageException {
+        String sql = sqlInfo.dialect.getPrepareUserReadAclsSql(queryFilter.getPrincipals());
+        if (sql == null) {
+            return;
+        }
+        Statement st = null;
+        try {
+            st = connection.createStatement();
+            if (logger.isLogEnabled()) {
+                logger.log(sql);
+            }
+            st.execute(sql);
+        } catch (Exception e) {
+            checkConnectionReset(e);
+            throw new StorageException("Failed to prepare user read acl cache",
+                    e);
+        } finally {
+            if (st != null) {
+                try {
+                    closeStatement(st);
+                } catch (SQLException e) {
+                    log.error(e.getMessage(), e);
+                }
+            }
+        }
+    }
+
     @Override
     public PartialList<Serializable> query(String query,
             QueryFilter queryFilter, boolean countTotal)
             throws StorageException {
+        if (sqlInfo.dialect.needsPrepareUserReadAcls()) {
+            prepareUserReadAcls(queryFilter);
+        }
         QueryMaker queryMaker = findQueryMaker(query);
         if (queryMaker == null) {
             throw new StorageException("No QueryMaker accepts query: " + query);

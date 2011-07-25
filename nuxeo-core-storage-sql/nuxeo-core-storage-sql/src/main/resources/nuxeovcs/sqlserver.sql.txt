@@ -390,6 +390,18 @@ BEGIN
 END;
 
 
+IF OBJECT_ID('dbo.nx_md5', 'FN') IS NOT NULL
+  DROP FUNCTION dbo.nx_md5;
+
+CREATE FUNCTION nx_md5(@string NVARCHAR(4000))
+RETURNS CHAR(32) AS
+BEGIN
+  DECLARE @hash CHAR(32);
+  SET @hash = (SELECT SUBSTRING(master.dbo.fn_varbintohexstr(HashBytes('MD5', @string)), 3, 32));
+  RETURN @hash;
+END;
+
+
 IF OBJECT_ID('dbo.nx_get_read_acl_id', 'FN') IS NOT NULL
   DROP FUNCTION dbo.nx_get_read_acl_id;
 
@@ -397,9 +409,44 @@ IF OBJECT_ID('dbo.nx_get_read_acl_id', 'FN') IS NOT NULL
 CREATE FUNCTION nx_get_read_acl_id(@id NVARCHAR(36))
 RETURNS VARCHAR(32) AS
 BEGIN
-  DECLARE @hash VARCHAR(32);
-  SET @hash = (SELECT SUBSTRING(master.dbo.fn_varbintohexstr(HashBytes('MD5', dbo.nx_get_read_acl(@id))), 3, 32));
+  DECLARE @hash CHAR(32);
+  SET @hash = dbo.nx_md5(dbo.nx_get_read_acl(@id));
   RETURN @hash;
+END;
+
+
+IF OBJECT_ID('dbo.nx_prepare_user_read_acls', 'P') IS NOT NULL
+  DROP PROCEDURE dbo.nx_prepare_user_read_acls;
+
+#IF: aclOptimizationsEnabled
+CREATE PROCEDURE nx_prepare_user_read_acls @users NVARCHAR(4000) AS
+  -- prepare the read aclr for the user
+BEGIN
+    DECLARE @user_md5 CHAR(32);
+    SET @user_md5 = dbo.nx_md5(@users);
+    IF NOT EXISTS (SELECT 1 FROM aclr_user WHERE user_id = @user_md5) BEGIN
+      INSERT INTO aclr_user VALUES (@user_md5, @users);
+      INSERT INTO aclr_user_map SELECT @user_md5, acl_id FROM dbo.nx_list_read_acls_for(@users) AS acl_id;
+    END;
+END;
+
+
+IF OBJECT_ID('dbo.nx_list_read_acls_for', 'TF') IS NOT NULL
+  DROP FUNCTION dbo.nx_list_read_acls_for;
+
+#IF: aclOptimizationsEnabled
+CREATE FUNCTION nx_list_read_acls_for(@users NVARCHAR(4000))
+RETURNS @output TABLE (acl_id CHAR(32)) AS
+  -- List matching read acl ids for a list of user/groups
+BEGIN
+  DECLARE @tempo TABLE (acl_id VARCHAR(32));
+  -- temporary solution using nx_access_allowed
+  -- TODO list of permissions
+  INSERT INTO @output (acl_id)
+    SELECT acl_id FROM hierarchy_read_acl
+    GROUP BY acl_id
+    HAVING dbo.NX_ACCESS_ALLOWED(max(id), @users, 'Browse|Read|ReadRemove|ReadWrite|View|Everything') = 1;
+  RETURN;
 END;
 
 
@@ -409,24 +456,16 @@ IF OBJECT_ID('dbo.nx_get_read_acls_for', 'TF') IS NOT NULL
 #IF: aclOptimizationsEnabled
 CREATE FUNCTION nx_get_read_acls_for(@users NVARCHAR(4000))
 RETURNS @output TABLE (acl_id CHAR(32)) AS
-  -- List matching read acl ids for a list of user/groups
+ -- List read acl ids for a list of user/groups, using the cache
 BEGIN
-  DECLARE @tempo TABLE (acl_id VARCHAR(32));
-  -- temporary solution using nx_access_allowed
-  -- TODO add cache + handles list of permissions
+  DECLARE @user_md5 CHAR(32);
+  SET @user_md5 = dbo.nx_md5(@users);
+  IF NOT EXISTS(SELECT 1 FROM aclr_user WHERE user_id = @user_md5)
+    EXEC nx_udpate_aclr_user @users, @user_md5;
   INSERT INTO @output (acl_id)
-    SELECT acl_id FROM hierarchy_read_acl
-    GROUP BY acl_id
-    HAVING dbo.NX_ACCESS_ALLOWED(max(id), @users, 'Browse|Read|ReadRemove|ReadWrite|View|Everything') = 1;
+    SELECT acl_id FROM aclr_user_map WHERE user_id = @user_md5;
   RETURN;
 END;
-
-
-
-# -- CREATE OR REPLACE FUNCTION nx_get_read_acls_for(users NX_STRING_TABLE)
-# -- RETURN NX_STRING_TABLE
-# -- List read acl ids for a list of user/groups, using the cache
-
 
 
 # -- TRIGGERS --------------------------------------------------

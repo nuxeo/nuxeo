@@ -395,7 +395,7 @@ public class DialectSQLServer extends Dialect {
     @Override
     public String getReadAclsCheckSql(String idColumnName) {
         return String.format(
-                "%s IN (SELECT COLUMN_VALUE FROM TABLE(nx_get_read_acls_for(?)))",
+                "%s IN (SELECT ACL_ID FROM dbo.nx_get_read_acls_for(?))",
                 idColumnName);
     }
 
@@ -445,6 +445,16 @@ public class DialectSQLServer extends Dialect {
     @Override
     public String getBlobLengthFunction() {
         return "DATALENGTH";
+    }
+
+    @Override
+    public String getPrepareUserReadAclsSql(String[] principals) {
+        return "EXEC nx_prepare_user_read_acls '" + StringUtils.join(principals, ARRAY_SEP) + "'";
+    }
+
+    @Override
+    public boolean needsPrepareUserReadAcls() {
+        return true;
     }
 
 }
