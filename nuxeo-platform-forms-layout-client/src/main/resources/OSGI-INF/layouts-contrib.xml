@@ -104,7 +104,7 @@
                 <helpLabels>
                   <label mode="any">
                     This attribute controls the possibility to order the items.
-                    Available since 5.4.3.
+                    Backported from 5.4.3.
                   </label>
                 </helpLabels>
                 <fields>
