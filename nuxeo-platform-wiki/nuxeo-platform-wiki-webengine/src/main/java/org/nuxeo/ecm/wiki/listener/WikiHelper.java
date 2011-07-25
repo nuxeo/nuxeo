@@ -57,10 +57,9 @@ public class WikiHelper {
     private WikiHelper() {
     }
 
-    // FIXME: properly handle exceptions
     public static List<String> getWordLinks(DocumentModel doc) {
         try {
-            String content = (String) doc.getPart(WikiTypes.SCHEMA_WIKIPAGE).get(WikiTypes.FIELD_CONTENT).getValue();
+            String content = (String) doc.getPropertyValue(WikiTypes.PROP_WIKI_CONTENT);
             StringBuffer collector = new StringBuffer();
             WordExtractor extractor = new WordExtractor(collector);
             CommonWikiParser parser = new CommonWikiParser();
@@ -71,11 +70,9 @@ public class WikiHelper {
             }
             return getWordLinks(collector.toString());
         } catch (PropertyNotFoundException e) {
-            e.printStackTrace();
-        } catch (PropertyException e) {
-            e.printStackTrace();
+            // ignore
         } catch (ClientException e) {
-            e.printStackTrace();
+            // ignore
         }
         return null;
     }

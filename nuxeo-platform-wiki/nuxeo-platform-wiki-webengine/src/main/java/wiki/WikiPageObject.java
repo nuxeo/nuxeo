@@ -30,6 +30,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.rest.DocumentObject;
 import org.nuxeo.ecm.webengine.model.WebObject;
+import org.nuxeo.ecm.wiki.WikiTypes;
 
 @WebObject(type = "WikiPage", superType="Document")
 @Produces("text/html;charset=UTF-8")
@@ -46,9 +47,10 @@ public class WikiPageObject extends DocumentObject {
     public Response createPage(@PathParam("segment") String segment)
             throws ClientException {
         CoreSession session = ctx.getCoreSession();
-        DocumentModel newDoc = session.createDocumentModel(doc.getPathAsString(), segment, "WikiPage");
+        DocumentModel newDoc = session.createDocumentModel(
+                doc.getPathAsString(), segment, WikiTypes.WIKIPAGE);
         if (newDoc.getTitle().length() == 0) {
-            newDoc.getPart("dublincore").get("title").setValue(newDoc.getName());
+            newDoc.setPropertyValue("dc:title", newDoc.getName());
         }
         newDoc = session.createDocument(newDoc);
         session.save();

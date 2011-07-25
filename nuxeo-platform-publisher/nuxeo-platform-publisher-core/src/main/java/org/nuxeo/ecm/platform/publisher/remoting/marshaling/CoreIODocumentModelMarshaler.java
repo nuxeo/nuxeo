@@ -62,7 +62,6 @@ public class CoreIODocumentModelMarshaler implements DocumentModelMarshaler {
              */
             String source = new ExtendedDocumentLocation(originatingServer, doc).toString();
             try {
-                doc.getPart("dublincore");
                 doc.setProperty("dublincore", "source", source);
             } catch (ClientException e) {
                 throw new PublishingMarshalingException(e);

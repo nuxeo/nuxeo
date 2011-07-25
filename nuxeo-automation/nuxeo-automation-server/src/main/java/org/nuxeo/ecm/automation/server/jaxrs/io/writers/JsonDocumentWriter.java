@@ -40,6 +40,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
+import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.api.model.impl.ArrayProperty;
 import org.nuxeo.ecm.core.api.model.impl.ComplexProperty;
 import org.nuxeo.ecm.core.api.model.impl.ListProperty;
@@ -118,10 +119,14 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
             jg.writeStringField("lock", doc.getLock()); // old
         }
         jg.writeStringField("title", doc.getTitle());
-        Calendar cal = (Calendar) doc.getPart("dublincore").getValue("modified");
-        if (cal != null) {
-            jg.writeStringField("lastModified",
-                    DateParser.formatW3CDateTime(cal.getTime()));
+        try {
+            Calendar cal = (Calendar) doc.getPropertyValue("dc:modified");
+            if (cal != null) {
+                jg.writeStringField("lastModified",
+                        DateParser.formatW3CDateTime(cal.getTime()));
+            }
+        } catch (PropertyNotFoundException e) {
+            // ignore
         }
 
 
