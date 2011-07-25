@@ -288,6 +288,7 @@ public class DialectOracle extends Dialect {
     @Override
     public String getDialectFulltextQuery(String query) {
         query = query.replace("*", "%");
+        query = query.replace("_", "\\_");
         FulltextQuery ft = analyzeFulltextQuery(query);
         if (ft == null) {
             return "DONTMATCHANYTHINGFOREMPTYQUERY";
