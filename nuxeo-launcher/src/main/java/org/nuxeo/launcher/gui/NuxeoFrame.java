@@ -21,6 +21,7 @@ package org.nuxeo.launcher.gui;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -129,6 +130,8 @@ public class NuxeoFrame extends JFrame {
         }
     };
 
+    protected boolean stopping = false;
+
     /**
      * @since 5.4.3
      */
@@ -141,6 +144,46 @@ public class NuxeoFrame extends JFrame {
             getController().stop();
         }
     };
+
+    protected Action launchBrowserAction = new AbstractAction() {
+        private static final long serialVersionUID = 1L;
+
+        @Override
+        public void actionPerformed(ActionEvent event) {
+            try {
+                Desktop.getDesktop().browse(
+                        java.net.URI.create(getController().getLauncher().getURL()));
+            } catch (Exception e) {
+                setError("An error occurred while launching browser", e);
+            }
+        }
+
+    };
+
+    /**
+     * Log error and display its message in {@link #errorMessageLabel}
+     *
+     * @since 5.4.3
+     * @param message Message to log
+     * @param e Caught exception
+     */
+    public void setError(String message, Exception e) {
+        log.error(message, e);
+        errorMessageLabel.setText(NuxeoLauncherGUI.getMessage("error.occurred")
+                + " <<" + e.getMessage() + ">>.");
+    }
+
+    /**
+     * Log error and display its message in {@link #errorMessageLabel}
+     *
+     * @since 5.4.3
+     * @param e Caught exception
+     */
+    public void setError(Exception e) {
+        log.error(e);
+        errorMessageLabel.setText(NuxeoLauncherGUI.getMessage("error.occurred")
+                + " <<" + e.getMessage() + ">>.");
+    }
 
     protected static final Log log = LogFactory.getLog(NuxeoFrame.class);
 
@@ -173,6 +216,18 @@ public class NuxeoFrame extends JFrame {
     protected JLabel summaryStatus;
 
     protected JLabel summaryURL;
+
+    protected JButton launchBrowserButton;
+
+    protected JLabel errorMessageLabel;
+
+    /**
+     * @return JLabel for error display
+     * @since 5.4.3
+     */
+    public JLabel getErrorMessageLabel() {
+        return errorMessageLabel;
+    }
 
     public NuxeoFrame(NuxeoLauncherGUI controller) throws HeadlessException {
         super("NuxeoCtl");
@@ -245,7 +300,7 @@ public class NuxeoFrame extends JFrame {
                             new String[] { getController().launcher.getURL()
                                     + "site/automation" });
                 } catch (Exception e) {
-                    log.error(e);
+                    setError(e);
                 }
             }
         }.start();
@@ -272,7 +327,16 @@ public class NuxeoFrame extends JFrame {
         GridBagConstraints headerConstraints = new GridBagConstraints();
         headerConstraints.gridx = 0;
         headerLogo.add(buildMainButton(), headerConstraints);
+        headerLogo.add(buildLaunchBrowserButton(), headerConstraints);
         return headerLogo;
+    }
+
+    protected JComponent buildLaunchBrowserButton() {
+        launchBrowserButton = createButton(null);
+        launchBrowserButton.setAction(launchBrowserAction);
+        launchBrowserButton.setText(NuxeoLauncherGUI.getMessage("browser.button.text"));
+        updateLaunchBrowserButton();
+        return launchBrowserButton;
     }
 
     protected JComponent buildLogsTab() {
@@ -340,12 +404,20 @@ public class NuxeoFrame extends JFrame {
                 + NuxeoLauncherGUI.getMessage("summary.status.label")));
         summaryStatus = new JLabel(getController().launcher.status());
         summaryStatus.setForeground(Color.WHITE);
+        // summaryStatus.setBackground(Color.BLACK);
+        // summaryStatus.setEditable(false);
+        // summaryStatus.setRows(5);
         summaryPanel.add(summaryStatus);
+
         summaryPanel.add(new JLabel("<html><font color=#ffffdd>"
                 + NuxeoLauncherGUI.getMessage("summary.url.label")));
         summaryURL = new JLabel(getController().launcher.getURL());
         summaryURL.setForeground(Color.WHITE);
         summaryPanel.add(summaryURL);
+
+        errorMessageLabel = new JLabel();
+        errorMessageLabel.setForeground(Color.RED);
+        summaryPanel.add(errorMessageLabel);
 
         summaryPanel.add(new JSeparator());
         ConfigurationGenerator config = getController().launcher.getConfigurationGenerator();
@@ -420,8 +492,13 @@ public class NuxeoFrame extends JFrame {
             mainButton.setToolTipText(NuxeoLauncherGUI.getMessage("mainbutton.stop.tooltip"));
             mainButton.setIcon(stopIcon);
         } else if (getController().launcher.isRunning()) {
-            mainButton.setAction(stopAction);
-            mainButton.setText(NuxeoLauncherGUI.getMessage("mainbutton.start.inprogress"));
+            if (stopping) {
+                mainButton.setAction(stopAction);
+                mainButton.setText(NuxeoLauncherGUI.getMessage("mainbutton.stop.inprogress"));
+            } else {
+                mainButton.setAction(stopAction);
+                mainButton.setText(NuxeoLauncherGUI.getMessage("mainbutton.start.inprogress"));
+            }
             mainButton.setToolTipText(NuxeoLauncherGUI.getMessage("mainbutton.stop.tooltip"));
             mainButton.setIcon(stopIcon);
         } else {
@@ -435,10 +512,29 @@ public class NuxeoFrame extends JFrame {
     }
 
     /**
+     * @since 5.4.3
+     */
+    protected void updateLaunchBrowserButton() {
+        launchBrowserButton.setEnabled(getController().launcher.isStarted());
+    }
+
+    /**
      * Update information displayed in summary tab
      */
     public void updateSummary() {
-        summaryStatus.setText(getController().launcher.status());
+        String summaryStatusText = getController().launcher.status();
+        if (getController().launcher.isStarted()) {
+            // summaryStatusText += "\n"
+            // + getController().launcher.getStartupSummary();
+            if (getController().launcher.wasStartupFine()) {
+                errorMessageLabel.setText("");
+                summaryStatus.setForeground(Color.WHITE);
+            } else {
+                errorMessageLabel.setText("An error was detected during startup.");
+                summaryStatus.setForeground(Color.RED);
+            }
+        }
+        summaryStatus.setText(summaryStatusText);
         summaryURL.setText(getController().launcher.getURL());
     }
 

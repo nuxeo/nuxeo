@@ -52,6 +52,8 @@ import org.nuxeo.launcher.gui.logs.LogsSourceThread;
 public class NuxeoLauncherGUI {
     static final Log log = LogFactory.getLog(NuxeoLauncherGUI.class);
 
+    protected static final long UPDATE_FREQUENCY = 3000;
+
     private final ExecutorService executor = Executors.newFixedThreadPool(5,
             new DaemonThreadFactory("NuxeoLauncherGUITask"));
 
@@ -102,7 +104,7 @@ public class NuxeoLauncherGUI {
                 while (true) {
                     updateServerStatus();
                     try {
-                        Thread.sleep(5000);
+                        Thread.sleep(UPDATE_FREQUENCY);
                     } catch (InterruptedException e) {
                         break;
                     }
@@ -135,12 +137,16 @@ public class NuxeoLauncherGUI {
      */
     public void stop() {
         waitForFrameLoaded();
+        nuxeoFrame.stopping = true;
         nuxeoFrame.mainButton.setText(getMessage("mainbutton.stop.inprogress"));
+        nuxeoFrame.mainButton.setToolTipText(NuxeoLauncherGUI.getMessage("mainbutton.stop.tooltip"));
+        nuxeoFrame.mainButton.setIcon(nuxeoFrame.stopIcon);
         executor.execute(new Runnable() {
 
             @Override
             public void run() {
                 launcher.stop();
+                nuxeoFrame.stopping = false;
                 updateServerStatus();
             }
         });
@@ -155,6 +161,7 @@ public class NuxeoLauncherGUI {
     public void updateServerStatus() {
         waitForFrameLoaded();
         nuxeoFrame.updateMainButton();
+        nuxeoFrame.updateLaunchBrowserButton();
         nuxeoFrame.updateSummary();
     }
 
@@ -178,7 +185,10 @@ public class NuxeoLauncherGUI {
      */
     public void start() {
         waitForFrameLoaded();
+        nuxeoFrame.stopping = false;
         nuxeoFrame.mainButton.setText(NuxeoLauncherGUI.getMessage("mainbutton.start.inprogress"));
+        nuxeoFrame.mainButton.setToolTipText(NuxeoLauncherGUI.getMessage("mainbutton.stop.tooltip"));
+        nuxeoFrame.mainButton.setIcon(nuxeoFrame.stopIcon);
         executor.execute(new Runnable() {
 
             @Override

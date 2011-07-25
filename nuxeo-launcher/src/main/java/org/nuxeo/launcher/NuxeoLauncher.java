@@ -417,6 +417,9 @@ public abstract class NuxeoLauncher {
             printHelp();
         } else if ("status".equalsIgnoreCase(launcher.command)) {
             log.info(launcher.status());
+            if (launcher.isStarted()) {
+                log.info(launcher.getStartupSummary());
+            }
             exitStatus = launcher.status;
         } else if ("startbg".equalsIgnoreCase(launcher.command)) {
             commandSucceeded = launcher.doStart();
@@ -564,47 +567,59 @@ public abstract class NuxeoLauncher {
         final String newLine = System.getProperty("line.separator");
         boolean isReady = false;
         int count = 0;
-        try {
-            do {
-                try {
-                    isReady = statusServletClient.init();
-                } catch (SocketTimeoutException e) {
-                    System.out.print(".");
-                    count++;
-                }
-            } while (!isReady && count < startMaxWait && isRunning());
-            isReady = false;
-            do {
-                try {
-                    isReady = statusServletClient.isStarted();
-                } catch (SocketTimeoutException e) {
-                    // Nothing to do
-                } finally {
-                    System.out.print(".");
-                    count++;
-                }
-            } while (!isReady && count < startMaxWait && isRunning());
-            if (isReady) {
-                startSummary.append(newLine
-                        + statusServletClient.getStartupSummary());
-                long duration = (new Date().getTime() - startTime) / 1000;
-                startSummary.append("Started in "
-                        + String.format("%dmin%02ds", new Long(duration / 60),
-                                new Long(duration % 60)));
-                if (statusServletClient.isFine()) {
-                    System.out.println(startSummary);
-                } else {
-                    System.err.println(startSummary);
-                }
-                return statusServletClient.isFine();
-            } else {
-                System.out.println();
-                log.error("Starting process is taking too long - giving up.");
+        do {
+            try {
+                isReady = statusServletClient.init();
+            } catch (SocketTimeoutException e) {
+                System.out.print(".");
+                count++;
             }
-        } catch (SocketTimeoutException e) {
-            log.debug(e);
+        } while (!isReady && count < startMaxWait && isRunning());
+        isReady = false;
+        do {
+            isReady = isStarted();
+            System.out.print(".");
+            count++;
+        } while (!isReady && count < startMaxWait && isRunning());
+        if (isReady) {
+            startSummary.append(newLine + getStartupSummary());
+            long duration = (new Date().getTime() - startTime) / 1000;
+            startSummary.append("Started in "
+                    + String.format("%dmin%02ds", new Long(duration / 60),
+                            new Long(duration % 60)));
+            if (wasStartupFine()) {
+                System.out.println(startSummary);
+            } else {
+                System.err.println(startSummary);
+            }
+            return wasStartupFine();
+        } else {
+            System.out.println();
+            log.error("Starting process is taking too long - giving up.");
         }
         return false;
+    }
+
+    /**
+     * @since 5.4.3
+     * @return last detected status of running Nuxeo server
+     */
+    public boolean wasStartupFine() {
+        return statusServletClient.isFine();
+    }
+
+    /**
+     * @since 5.4.3
+     * @return Nuxeo startup summary
+     * @throws SocketTimeoutException if Nuxeo server is not responding
+     */
+    public String getStartupSummary() {
+        try {
+            return statusServletClient.getStartupSummary();
+        } catch (SocketTimeoutException e) {
+            log.warn("Failed to contact Nuxeo for getting startup summary", e);
+            return "";
+        }
     }
 
     /**

@@ -53,11 +53,15 @@ public class StatusServletClient {
 
     private static final int TIMEOUT = 1000;
 
+    private static final int SUMMARY_TIMEOUT = 2000;
+
     private URL url;
 
     private HttpURLConnection server;
 
     private boolean isFine = false;
+
+    private int timeout;
 
     /**
      * @param configurationGenerator
@@ -78,6 +82,7 @@ public class StatusServletClient {
      * @throws SocketTimeoutException
      */
     public boolean isStarted() throws SocketTimeoutException {
+        timeout = TIMEOUT;
         post(POST_PARAM, POST_PARAM_STARTED);
         return isFine;
     }
@@ -88,6 +93,7 @@ public class StatusServletClient {
      */
     public boolean init() throws SocketTimeoutException {
         try {
+            timeout = TIMEOUT;
             connect("GET");
         } catch (SocketTimeoutException e) {
             throw e;
@@ -99,16 +105,25 @@ public class StatusServletClient {
         return true;
     }
 
-    protected void disconnect() {
+    protected synchronized void disconnect() {
         if (server != null) {
             server.disconnect();
+            server = null;
         }
+        notifyAll();
     }
 
-    protected void connect(String method) throws IOException {
+    protected synchronized void connect(String method) throws IOException {
+        while (server != null) {
+            try {
+                wait();
+            } catch (InterruptedException e) {
+                // do nothing
+            }
+        }
         server = (HttpURLConnection) url.openConnection();
-        server.setConnectTimeout(TIMEOUT);
-        server.setReadTimeout(TIMEOUT);
+        server.setConnectTimeout(timeout);
+        server.setReadTimeout(timeout);
         server.setDoInput(true);
         server.setDoOutput(true);
         server.setRequestMethod(method);
@@ -122,6 +137,7 @@ public class StatusServletClient {
      * @throws SocketTimeoutException
      */
     public String getStartupSummary() throws SocketTimeoutException {
+        timeout = SUMMARY_TIMEOUT;
         return post(POST_PARAM, POST_PARAM_SUMMARY);
     }
 
