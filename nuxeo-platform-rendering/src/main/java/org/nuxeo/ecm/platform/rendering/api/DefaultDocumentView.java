@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -27,6 +27,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
+import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.schema.FacetNames;
 
 /**
@@ -75,7 +76,6 @@ public class DefaultDocumentView implements DocumentView {
         addField(NAME);
         addField(PATH);
         addField(TYPE);
-        addField(PARTS);
         addField(SID);
         addField(REPOSITORY);
 
@@ -300,7 +300,12 @@ public class DefaultDocumentView implements DocumentView {
         }
 
         public Object getValue(DocumentModel doc) throws Exception {
-            return doc.getPart("dublincore").get("creator").getValue();
+            try {
+                return doc.getPropertyValue("dc:creator");
+            } catch (PropertyNotFoundException e) {
+                // ignore
+            }
+            return null;
         }
     };
 
@@ -310,8 +315,15 @@ public class DefaultDocumentView implements DocumentView {
         }
 
         public Object getValue(DocumentModel doc) throws Exception {
-            Calendar cal = (Calendar) doc.getPart("dublincore").get("created").getValue();
-            return cal == null ? null : cal.getTime();
+            try {
+                Calendar cal = (Calendar) doc.getPropertyValue("dc:created");
+                if (cal != null) {
+                    return cal.getTime();
+                }
+            } catch (PropertyNotFoundException e) {
+                // ignore
+            }
+            return null;
         }
     };
 
@@ -321,8 +333,15 @@ public class DefaultDocumentView implements DocumentView {
         }
 
         public Object getValue(DocumentModel doc) throws Exception {
-            Calendar cal = (Calendar) doc.getPart("dublincore").get("modified").getValue();
-            return cal == null ? null : cal.getTime();
+            try {
+                Calendar cal = (Calendar) doc.getPropertyValue("dc:modified");
+                if (cal != null) {
+                    return cal.getTime();
+                }
+            } catch (PropertyNotFoundException e) {
+                // ignore
+            }
+            return null;
         }
     };
 
@@ -332,22 +351,15 @@ public class DefaultDocumentView implements DocumentView {
         }
 
         public Object getValue(DocumentModel doc) throws Exception {
-            DocumentPart part = doc.getPart("file");
-            Blob blob = null;
-            if (part != null) {
-                blob = (Blob) part.get("content").getValue();
+            try {
+                Blob blob = (Blob) doc.getPropertyValue("file:content");
+                if (blob != null) {
+                    return blob;
+                }
+            } catch (PropertyNotFoundException e) {
+                // ignore
             }
-            return blob != null ? blob : new StringBlob("", "text/plain");
-        }
-    };
-
-    protected static final Field PARTS = new Field() {
-        public String getName() {
-            return "parts";
-        }
-
-        public Object getValue(DocumentModel doc) throws Exception {
-            return doc.getParts();
+            return new StringBlob("", "text/plain");
         }
     };
 
