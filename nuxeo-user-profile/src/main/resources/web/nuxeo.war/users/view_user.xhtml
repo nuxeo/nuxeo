@@ -79,7 +79,7 @@
   <div class="tabsContent">
 
       <a4j:form id="viewUser" rendered="#{userManagementActions.detailsMode == 'view'}">
-        <nxl:layout name="user" mode="view" value="#{userManagementActions.selectedUser}" />
+        <nxl:layout name="summary_user_profile_layout" mode="view" value="#{userManagementActions.selectedUser}" />
       </a4j:form>
 
       <a4j:form id="editUser" rendered="#{userManagementActions.detailsMode == 'edit' and userManagementActions.allowEditUser and notReadOnly}">

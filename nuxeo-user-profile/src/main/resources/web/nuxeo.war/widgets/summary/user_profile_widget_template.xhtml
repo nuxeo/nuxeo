@@ -1,0 +1,14 @@
+<div class="description_block"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+
+  <c:if test="#{!empty layoutValue}">
+    <h3 class="summaryTitle">
+      <h:outputText value="#{messages['user.center.profile']}" />
+    </h3>
+    <nxl:layout name="user" mode="view" value="#{userManagementActions.selectedUser}" />
+    <nxl:layout name="userprofile" mode="view" value="#{userManagementActions.selectedUser}" />
+  </c:if>
+
+</div>
