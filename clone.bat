@@ -1,7 +1,7 @@
 @echo off
 rem This script will checkout the needed sources
 
-set VERSION=5.4.1
+set VERSION=release-5.4.1-HF08
 
 hg clone http://hg.nuxeo.org/nuxeo/nuxeo-common
 hg clone http://hg.nuxeo.org/nuxeo/nuxeo-runtime
