@@ -317,6 +317,15 @@ public class FrameworkLoader {
     }
 
     protected static void printStartMessage() {
+        StringBuilder msg = getStartMessage();
+        log.info(msg);
+    }
+
+    /**
+     * @since 5.4.3
+     * @return Environment summary
+     */
+    protected static StringBuilder getStartMessage() {
         String newline = System.getProperty("line.separator");
         Environment env = Environment.getDefault();
         String hr = newline
@@ -334,7 +343,7 @@ public class FrameworkLoader {
         // System.out.println("  * System Bundle = "+systemBundle);
         // System.out.println("  * Command Line Args = "+Arrays.asList(env.getCommandLineArguments()));
         msg.append(hr);
-        log.info(msg);
+        return msg;
     }
 
 }

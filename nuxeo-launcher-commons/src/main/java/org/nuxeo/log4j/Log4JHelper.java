@@ -29,6 +29,7 @@ import org.apache.log4j.Appender;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Hierarchy;
 import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.apache.log4j.spi.DefaultRepositorySelector;
 import org.apache.log4j.spi.LoggerRepository;
 import org.apache.log4j.spi.RootLogger;
@@ -82,7 +83,7 @@ public class Log4JHelper {
             new DOMConfigurator().doConfigure(
                     log4jConfigurationFile.toURI().toURL(), loggerRepository);
             log.debug("Log4j configuration " + log4jConfigurationFile
-                    + " succesfully loaded.");
+                    + " successfully loaded.");
         } catch (MalformedURLException e) {
             log.error("Could not load " + log4jConfigurationFile, e);
         }
@@ -98,4 +99,20 @@ public class Log4JHelper {
             File log4jConfigurationFile) {
         return getFileAppendersFiles(getNewLoggerRepository(log4jConfigurationFile));
     }
+
+    /**
+     * @since 5.4.3
+     * @param category Log4J category for which to switch debug log level
+     * @param debug set debug log level to true or false
+     */
+    public static void setDebug(String category, boolean debug) {
+        if (debug) {
+            Logger.getLogger(category).setLevel(Level.DEBUG);
+            log.info("Log level set to DEBUG");
+        } else {
+            Logger.getLogger(category).setLevel(Level.INFO);
+            log.info("Log level reset to INFO for console");
+        }
+    }
+
 }
