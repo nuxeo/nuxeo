@@ -59,9 +59,9 @@ public class StatusServletClient {
 
     private HttpURLConnection server;
 
-    private boolean isFine = false;
-
     private int timeout;
+
+    private boolean startupFine = false;
 
     /**
      * @param configurationGenerator
@@ -83,8 +83,18 @@ public class StatusServletClient {
      */
     public boolean isStarted() throws SocketTimeoutException {
         timeout = TIMEOUT;
-        post(POST_PARAM, POST_PARAM_STARTED);
-        return isFine;
+        return post(POST_PARAM, POST_PARAM_STARTED);
+    }
+
+    /**
+     * @param postParam
+     * @param postParamStarted
+     * @return
+     * @throws SocketTimeoutException
+     */
+    private boolean post(String postParam, String postParamStarted)
+            throws SocketTimeoutException {
+        return post(postParam, postParamStarted, null);
     }
 
     /**
@@ -138,10 +148,12 @@ public class StatusServletClient {
      */
     public String getStartupSummary() throws SocketTimeoutException {
         timeout = SUMMARY_TIMEOUT;
-        return post(POST_PARAM, POST_PARAM_SUMMARY);
+        StringBuilder sb = new StringBuilder();
+        startupFine = post(POST_PARAM, POST_PARAM_SUMMARY, sb);
+        return sb.toString();
     }
 
-    protected String post(String param, String value)
+    protected boolean post(String param, String value, StringBuilder response)
             throws SocketTimeoutException {
         String post = param + "=" + value;
         try {
@@ -150,34 +162,35 @@ public class StatusServletClient {
                     server.getOutputStream()));
             bw.write(post, 0, post.length());
             bw.close();
-            return getResponse();
+            return getResponse(response);
         } catch (SocketTimeoutException e) {
             throw e;
         } catch (IOException e) {
-            return null;
+            return false;
         } finally {
             disconnect();
         }
     }
 
-    protected String getResponse() throws IOException {
+    protected boolean getResponse(StringBuilder response) throws IOException {
         String line;
-        StringBuffer sb = new StringBuffer();
+        boolean answer;
         BufferedReader s = null;
         try {
             s = new BufferedReader(new InputStreamReader(
                     server.getInputStream()));
             // First line is a status (true or false)
-            isFine = Boolean.parseBoolean(s.readLine());
+            answer = Boolean.parseBoolean(s.readLine());
+            // Next (if exists) is a response body
             while ((line = s.readLine()) != null) {
-                sb.append(line + "\n");
+                response.append(line + "\n");
             }
         } catch (IOException e) {
             throw e;
         } finally {
             IOUtils.closeQuietly(s);
         }
-        return sb.toString();
+        return answer;
     }
 
     /**
@@ -185,7 +198,7 @@ public class StatusServletClient {
      *
      * @return true if everything is fine; false is there was any error
      */
-    public boolean isFine() {
-        return isFine;
+    public boolean isStartupFine() {
+        return startupFine;
     }
 }

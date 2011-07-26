@@ -605,7 +605,7 @@ public abstract class NuxeoLauncher {
      * @return last detected status of running Nuxeo server
      */
     public boolean wasStartupFine() {
-        return statusServletClient.isFine();
+        return statusServletClient.isStartupFine();
     }
 
     /**
@@ -1094,25 +1094,27 @@ public abstract class NuxeoLauncher {
     }
 
     /**
-     * Work best with current nuxeoProcess. If nuxeoProcess is null, will try to
-     * get process ID (so, result in that case depends on OS capabilities).
+     * Work best with current nuxeoProcess. If nuxeoProcess is null or has
+     * exited, then will try to get process ID (so, result in that case depends
+     * on OS capabilities).
      *
      * @return true if current process is running or if a running PID is found
      */
     public boolean isRunning() {
-        if (nuxeoProcess == null) {
+        if (nuxeoProcess != null) {
             try {
-                return (getPid() != null);
-            } catch (IOException e) {
-                log.error(e);
-                return false;
+                nuxeoProcess.exitValue();
+                // Previous process has exited
+                nuxeoProcess = null;
+            } catch (IllegalThreadStateException exception) {
+                return true;
             }
         }
         try {
-            nuxeoProcess.exitValue();
+            return (getPid() != null);
+        } catch (IOException e) {
+            log.error(e);
             return false;
-        } catch (IllegalThreadStateException exception) {
-            return true;
         }
     }
 

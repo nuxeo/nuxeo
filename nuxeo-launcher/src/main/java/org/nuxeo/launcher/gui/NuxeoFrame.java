@@ -533,8 +533,8 @@ public class NuxeoFrame extends JFrame {
                         break;
                     }
                 }
-                errorMessageLabel.setText("An error was detected during startup ("
-                        + startupSummary + ").");
+                errorMessageLabel.setText("An error was detected during startup "
+                        + startupSummary + ".");
                 summaryStatus.setForeground(Color.RED);
             }
         }
