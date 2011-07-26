@@ -14,6 +14,22 @@
       </property>
     </widgetType>
     <widgetType name="summary_document_route_action">
+     <configuration>
+        <sinceVersion>1.8</sinceVersion>
+        <title>Related route summary</title>
+        <description>
+          This widgets allows to view/start a route related to the current Case.
+        </description>
+        <categories>
+          <category>summary</category>
+          <category>cmf</category>
+        </categories>
+        <supportedModes>
+          <mode>view</mode>
+          <mode>edit</mode>
+        </supportedModes>
+        <!-- no configurable properties -->
+      </configuration>
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
       </handler-class>
