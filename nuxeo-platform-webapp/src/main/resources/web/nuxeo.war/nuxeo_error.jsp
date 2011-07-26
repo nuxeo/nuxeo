@@ -117,7 +117,7 @@ a:hover {
   String pageTitle="An error occurred";
   if ((securityError!=null) && (securityError.booleanValue()==true))
   {
-    pageTitle = "You don't have the neccessary permission to do the requested action";
+    pageTitle = "You don't have the necessary permission to do the requested action";
   }
   boolean isAnonymous = AnonymousAuthenticator.isAnonymousRequest(request);
 
