@@ -52,4 +52,14 @@ public interface UserWorkspaceService extends Serializable {
     DocumentModel getCurrentUserPersonalWorkspace(CoreSession userCoreSession, DocumentModel context)
             throws ClientException;
 
+    /**
+     * Gets a detached user workspace of a specified user.
+     *
+     * @param userName is the username of the wanted user's workspace owner
+     * @param context is a document to determine the domain
+     * @return the DocumentModel for the personal workspace
+     * @since 5.4.3
+     */
+    DocumentModel getUserPersonalWorkspace(String userName, DocumentModel context)
+            throws ClientException;
 }

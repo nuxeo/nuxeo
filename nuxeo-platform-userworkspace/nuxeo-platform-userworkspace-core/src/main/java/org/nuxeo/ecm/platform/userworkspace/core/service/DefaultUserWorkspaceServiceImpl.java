@@ -31,6 +31,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
+import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
@@ -283,6 +284,19 @@ public class DefaultUserWorkspaceServiceImpl implements UserWorkspaceService {
         return doc;
     }
 
+    public DocumentModel getUserPersonalWorkspace(String userName,
+            DocumentModel context) throws ClientException {
+        try {
+            UnrestrictedUserWorkspaceFinder finder = new UnrestrictedUserWorkspaceFinder(
+                    userName, context);
+            finder.runUnrestricted();
+            return finder.getDetachedUserWorkspace();
+        } catch (Exception e) {
+            log.warn("Error while trying to get user workspace unrestricted");
+            throw new ClientException(e);
+        }
+    }
+
     public static String buildUserWorkspaceTitle(String userName) {
         if (userName == null) {// avoid looking for UserManager for nothing
             return null;
@@ -330,6 +344,36 @@ public class DefaultUserWorkspaceServiceImpl implements UserWorkspaceService {
 
         return userName;
 
+    }
+
+    protected class UnrestrictedUserWorkspaceFinder extends
+            UnrestrictedSessionRunner {
+
+        protected DocumentModel userWorkspace;
+
+        protected String userName;
+
+        protected DocumentModel context;
+
+        public UnrestrictedUserWorkspaceFinder(String userName,
+                DocumentModel context) throws Exception {
+            super(context.getCoreSession());
+            this.userName = userName;
+            this.context = context;
+        }
+
+        @Override
+        public void run() throws ClientException {
+            userWorkspace = getCurrentUserPersonalWorkspace(userName, session,
+                    context);
+        }
+
+        public DocumentModel getDetachedUserWorkspace() throws ClientException {
+            if (userWorkspace != null) {
+                ((DocumentModelImpl) userWorkspace).detach(true);
+            }
+            return userWorkspace;
+        }
     }
 
 }

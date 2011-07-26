@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.platform.userworkspace.core.tests;
 
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
@@ -51,8 +52,10 @@ public class TestUserWorkspace extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.directory.api");
         deployBundle("org.nuxeo.ecm.directory");
         deployBundle("org.nuxeo.ecm.directory.sql");
-        deployContrib("org.nuxeo.ecm.platform.userworkspace.core", "OSGI-INF/userworkspace-framework.xml");
-        deployContrib("org.nuxeo.ecm.platform.userworkspace.core", "OSGI-INF/userWorkspaceImpl.xml");
+        deployContrib("org.nuxeo.ecm.platform.userworkspace.core",
+                "OSGI-INF/userworkspace-framework.xml");
+        deployContrib("org.nuxeo.ecm.platform.userworkspace.core",
+                "OSGI-INF/userWorkspaceImpl.xml");
         openSession();
     }
 
@@ -82,14 +85,17 @@ public class TestUserWorkspace extends SQLRepositoryTestCase {
         ACP acp = new ACPImpl();
         acp.addACL(acl);
 
-        DocumentModel ws1 = session.createDocumentModel("/default-domain/workspaces", "ws1", "Workspace");
+        DocumentModel ws1 = session.createDocumentModel(
+                "/default-domain/workspaces", "ws1", "Workspace");
         ws1 = session.createDocument(ws1);
         ws1.setACP(acp, true);
         ws1 = session.saveDocument(ws1);
 
-        DocumentModel alternate = session.createDocumentModel("/", "alternate-domain", "Domain");
+        DocumentModel alternate = session.createDocumentModel("/",
+                "alternate-domain", "Domain");
         alternate = session.createDocument(alternate);
-        DocumentModel ws2 = session.createDocumentModel("/alternate-domain/workspaces", "ws2", "Workspace");
+        DocumentModel ws2 = session.createDocumentModel(
+                "/alternate-domain/workspaces", "ws2", "Workspace");
         ws2 = session.createDocument(ws2);
         ws2.setACP(acp, true);
         ws2 = session.saveDocument(ws2);
@@ -103,7 +109,8 @@ public class TestUserWorkspace extends SQLRepositoryTestCase {
 
         // access from root
         DocumentModel context = userSession.getRootDocument();
-        DocumentModel uw = uwm.getCurrentUserPersonalWorkspace(userSession, null);
+        DocumentModel uw = uwm.getCurrentUserPersonalWorkspace(userSession,
+                null);
         assertNotNull(uw);
         assertTrue(uw.getPathAsString().startsWith("/default-domain"));
 
@@ -129,7 +136,8 @@ public class TestUserWorkspace extends SQLRepositoryTestCase {
     }
 
     public void testMultiDomainsCompat() throws Exception {
-        deployContrib("org.nuxeo.ecm.platform.userworkspace.core", "OSGI-INF/compatUserWorkspaceImpl.xml");
+        deployContrib("org.nuxeo.ecm.platform.userworkspace.core",
+                "OSGI-INF/compatUserWorkspaceImpl.xml");
 
         ACE ace = new ACE("Everyone", "Read", true);
         ACL acl = new ACLImpl();
@@ -137,14 +145,17 @@ public class TestUserWorkspace extends SQLRepositoryTestCase {
         ACP acp = new ACPImpl();
         acp.addACL(acl);
 
-        DocumentModel ws1 = session.createDocumentModel("/default-domain/workspaces", "ws1", "Workspace");
+        DocumentModel ws1 = session.createDocumentModel(
+                "/default-domain/workspaces", "ws1", "Workspace");
         ws1 = session.createDocument(ws1);
         ws1.setACP(acp, true);
         ws1 = session.saveDocument(ws1);
 
-        DocumentModel alternate = session.createDocumentModel("/", "alternate-domain", "Domain");
+        DocumentModel alternate = session.createDocumentModel("/",
+                "alternate-domain", "Domain");
         alternate = session.createDocument(alternate);
-        DocumentModel ws2 = session.createDocumentModel("/alternate-domain/workspaces", "ws2", "Workspace");
+        DocumentModel ws2 = session.createDocumentModel(
+                "/alternate-domain/workspaces", "ws2", "Workspace");
         ws2 = session.createDocument(ws2);
         ws2.setACP(acp, true);
         ws2 = session.saveDocument(ws2);
@@ -160,7 +171,8 @@ public class TestUserWorkspace extends SQLRepositoryTestCase {
 
         // access from root
         DocumentModel context = userSession.getRootDocument();
-        DocumentModel uw = uwm.getCurrentUserPersonalWorkspace(userSession, null);
+        DocumentModel uw = uwm.getCurrentUserPersonalWorkspace(userSession,
+                null);
         assertNotNull(uw);
         assertTrue(uw.getPathAsString().startsWith("/default-domain"));
 
@@ -185,4 +197,53 @@ public class TestUserWorkspace extends SQLRepositoryTestCase {
         assertTrue(uw.getPathAsString().startsWith("/alternate-domain"));
     }
 
+    public void testAnotherUserWorkspaceFinder() throws ClientException {
+        UserWorkspaceService service = Framework.getLocalService(UserWorkspaceService.class);
+        assertNotNull(service);
+
+        DocumentModel context = session.getRootDocument();
+        DocumentModel uw = service.getCurrentUserPersonalWorkspace("user1",
+                context);
+        session.save();
+
+        assertNotNull(uw);
+        String user1WorkspacePath = uw.getPathAsString();
+        assertTrue(user1WorkspacePath.contains("user1"));
+
+        session.save();
+        CoreSession userSession = openSessionAs("user2");
+        context = userSession.getRootDocument();
+        try {
+            // Assert that it throw a ClientException
+            service.getCurrentUserPersonalWorkspace("user1", context);
+            assertTrue("user2 is not allow to read user1 workspace", false);
+        } catch (ClientException e) {
+            // Nothing to do
+        }
+
+        uw = service.getUserPersonalWorkspace("user1", context);
+        assertNotNull(uw);
+        assertTrue(uw.getPathAsString().contains("user1"));
+        assertEquals(user1WorkspacePath, uw.getPathAsString());
+        assertNull("Document is correctly detached", uw.getSessionId());
+    }
+
+    public void testUnrestrictedFinderCorrectlyCreateWorkspace()
+            throws ClientException {
+        UserWorkspaceService service = Framework.getLocalService(UserWorkspaceService.class);
+        assertNotNull(service);
+
+        DocumentModel context = session.getRootDocument();
+        DocumentModel uw = service.getUserPersonalWorkspace("user1", context);
+        assertNotNull(uw);
+        String user1WorkspacePath = uw.getPathAsString();
+
+        session.save();
+        CoreSession session = openSessionAs("user1");
+        context = session.getRootDocument();
+
+        uw = service.getCurrentUserPersonalWorkspace(session, context);
+        assertNotNull(uw);
+        assertEquals(user1WorkspacePath, uw.getPathAsString());
+    }
 }
