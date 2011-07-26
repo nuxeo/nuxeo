@@ -1122,10 +1122,14 @@ public abstract class NuxeoLauncher {
      */
     public boolean isStarted() {
         boolean isStarted;
-        try {
-            isStarted = isRunning() && statusServletClient.isStarted();
-        } catch (SocketTimeoutException e) {
-            isStarted = false;
+        if (configurationGenerator.isWizardRequired()) {
+            isStarted = isRunning();
+        } else {
+            try {
+                isStarted = isRunning() && statusServletClient.isStarted();
+            } catch (SocketTimeoutException e) {
+                isStarted = false;
+            }
         }
         return isStarted;
     }

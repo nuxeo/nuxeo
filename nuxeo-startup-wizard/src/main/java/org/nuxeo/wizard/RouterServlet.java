@@ -381,9 +381,6 @@ public class RouterServlet extends HttpServlet {
             try {
                 InetAddress inetAddress = InetAddress.getByName(bindAddress);
                 ConfigurationGenerator.checkAddressReachable(inetAddress);
-                ConfigurationGenerator.checkPortAvailable(
-                        inetAddress,
-                        Integer.parseInt(collector.getConfigurationParam(ConfigurationGenerator.PARAM_HTTP_PORT)));
             } catch (UnknownHostException e) {
                 ctx.trackError("nuxeo.bind.address", "error.invalid.ip");
             } catch (ConfigurationException e) {
@@ -452,7 +449,7 @@ public class RouterServlet extends HttpServlet {
     }
 
     public void handleResetGET(Page currentPage, HttpServletRequest req,
-            HttpServletResponse resp) throws ServletException, IOException {
+            HttpServletResponse resp) throws IOException {
 
         // reset
         Context.reset();

@@ -404,9 +404,6 @@ public class NuxeoFrame extends JFrame {
                 + NuxeoLauncherGUI.getMessage("summary.status.label")));
         summaryStatus = new JLabel(getController().launcher.status());
         summaryStatus.setForeground(Color.WHITE);
-        // summaryStatus.setBackground(Color.BLACK);
-        // summaryStatus.setEditable(false);
-        // summaryStatus.setRows(5);
         summaryPanel.add(summaryStatus);
 
         summaryPanel.add(new JLabel("<html><font color=#ffffdd>"
@@ -522,19 +519,26 @@ public class NuxeoFrame extends JFrame {
      * Update information displayed in summary tab
      */
     public void updateSummary() {
-        String summaryStatusText = getController().launcher.status();
         if (getController().launcher.isStarted()) {
-            // summaryStatusText += "\n"
-            // + getController().launcher.getStartupSummary();
-            if (getController().launcher.wasStartupFine()) {
+            if (getController().getConfigurationGenerator().isWizardRequired()
+                    || getController().launcher.wasStartupFine()) {
                 errorMessageLabel.setText("");
                 summaryStatus.setForeground(Color.WHITE);
             } else {
-                errorMessageLabel.setText("An error was detected during startup.");
+                String startupSummary = getController().launcher.getStartupSummary();
+                String[] lines = startupSummary.split("\n");
+                for (String line : lines) {
+                    if (line.contains("Component Loading Status")) {
+                        startupSummary = line;
+                        break;
+                    }
+                }
+                errorMessageLabel.setText("An error was detected during startup ("
+                        + startupSummary + ").");
                 summaryStatus.setForeground(Color.RED);
             }
         }
-        summaryStatus.setText(summaryStatusText);
+        summaryStatus.setText(getController().launcher.status());
         summaryURL.setText(getController().launcher.getURL());
     }
 
