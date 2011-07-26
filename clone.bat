@@ -11,7 +11,6 @@ hg clone http://hg.nuxeo.org/nuxeo/nuxeo-services
 hg clone http://hg.nuxeo.org/nuxeo/nuxeo-theme
 hg clone http://hg.nuxeo.org/nuxeo/nuxeo-webengine
 hg clone http://hg.nuxeo.org/nuxeo/nuxeo-jsf
-hg clone http://hg.nuxeo.org/nuxeo/nuxeo-gwt
 hg clone http://hg.nuxeo.org/nuxeo/nuxeo-features
 hg clone http://hg.nuxeo.org/nuxeo/nuxeo-dm
 
