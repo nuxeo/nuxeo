@@ -448,8 +448,8 @@ public class DialectSQLServer extends Dialect {
     }
 
     @Override
-    public String getPrepareUserReadAclsSql(String[] principals) {
-        return "EXEC nx_prepare_user_read_acls '" + StringUtils.join(principals, ARRAY_SEP) + "'";
+    public String getPrepareUserReadAclsSql() {
+        return "EXEC nx_prepare_user_read_acls ?";
     }
 
     @Override

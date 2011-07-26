@@ -415,22 +415,6 @@ BEGIN
 END;
 
 
-IF OBJECT_ID('dbo.nx_prepare_user_read_acls', 'P') IS NOT NULL
-  DROP PROCEDURE dbo.nx_prepare_user_read_acls;
-
-#IF: aclOptimizationsEnabled
-CREATE PROCEDURE nx_prepare_user_read_acls @users NVARCHAR(4000) AS
-  -- prepare the read aclr for the user
-BEGIN
-    DECLARE @user_md5 CHAR(32);
-    SET @user_md5 = dbo.nx_md5(@users);
-    IF NOT EXISTS (SELECT 1 FROM aclr_user WHERE user_id = @user_md5) BEGIN
-      INSERT INTO aclr_user VALUES (@user_md5, @users);
-      INSERT INTO aclr_user_map SELECT @user_md5, acl_id FROM dbo.nx_list_read_acls_for(@users) AS acl_id;
-    END;
-END;
-
-
 IF OBJECT_ID('dbo.nx_list_read_acls_for', 'TF') IS NOT NULL
   DROP FUNCTION dbo.nx_list_read_acls_for;
 
@@ -439,13 +423,23 @@ CREATE FUNCTION nx_list_read_acls_for(@users NVARCHAR(4000))
 RETURNS @output TABLE (acl_id CHAR(32)) AS
   -- List matching read acl ids for a list of user/groups
 BEGIN
-  DECLARE @tempo TABLE (acl_id VARCHAR(32));
-  -- temporary solution using nx_access_allowed
-  -- TODO list of permissions
+  -- build the list of read permissions
+  DECLARE @permissions VARCHAR(4000);
+  SET @permissions = '';
+  DECLARE @cur CURSOR;
+  SET @cur = CURSOR FAST_FORWARD FOR
+    SELECT permission  FROM aclr_permission;
+  OPEN @cur;
+  DECLARE @perm VARCHAR(250);
+  FETCH FROM @cur INTO @perm;
+  WHILE @@FETCH_STATUS = 0 BEGIN
+    SET @permissions = @permissions + '|' + @perm;
+    FETCH FROM @cur INTO @perm;
+  END;
   INSERT INTO @output (acl_id)
     SELECT acl_id FROM hierarchy_read_acl
     GROUP BY acl_id
-    HAVING dbo.NX_ACCESS_ALLOWED(max(id), @users, 'Browse|Read|ReadRemove|ReadWrite|View|Everything') = 1;
+    HAVING dbo.NX_ACCESS_ALLOWED(max(id), @users, @permissions) = 1;
   RETURN;
 END;
 
@@ -460,8 +454,6 @@ RETURNS @output TABLE (acl_id CHAR(32)) AS
 BEGIN
   DECLARE @user_md5 CHAR(32);
   SET @user_md5 = dbo.nx_md5(@users);
-  IF NOT EXISTS(SELECT 1 FROM aclr_user WHERE user_id = @user_md5)
-    EXEC nx_udpate_aclr_user @users, @user_md5;
   INSERT INTO @output (acl_id)
     SELECT acl_id FROM aclr_user_map WHERE user_id = @user_md5;
   RETURN;
@@ -547,7 +539,22 @@ ALTER TABLE [hierarchy_read_acl] DISABLE TRIGGER nx_trig_hier_read_acl_mod
 
 
 # -- PROCEDURES --------------------------------------------------
+IF OBJECT_ID('dbo.nx_prepare_user_read_acls', 'P') IS NOT NULL
+  DROP PROCEDURE dbo.nx_prepare_user_read_acls;
+
 #IF: aclOptimizationsEnabled
+CREATE PROCEDURE nx_prepare_user_read_acls @users NVARCHAR(4000) AS
+  -- prepare the read aclr for the user
+BEGIN
+    DECLARE @user_md5 CHAR(32);
+    SET @user_md5 = dbo.nx_md5(@users);
+    IF NOT EXISTS (SELECT 1 FROM aclr_user WHERE user_id = @user_md5) BEGIN
+      INSERT INTO aclr_user VALUES (@user_md5, @users);
+      INSERT INTO aclr_user_map SELECT @user_md5, acl_id FROM dbo.nx_list_read_acls_for(@users) AS acl_id;
+    END;
+END;
+
+
 IF OBJECT_ID('dbo.nx_rebuild_read_acls', 'P') IS NOT NULL
   DROP PROCEDURE dbo.nx_rebuild_read_acls;
 
@@ -567,7 +574,6 @@ BEGIN
 END;
 
 
-#IF: aclOptimizationsEnabled
 IF OBJECT_ID('dbo.nx_vacuum_read_acls', 'P') IS NOT NULL
   DROP PROCEDURE dbo.nx_vacuum_read_acls;
 
@@ -585,10 +591,8 @@ BEGIN
 END;
 
 
-#IF: aclOptimizationsEnabled
 IF OBJECT_ID('dbo.nx_update_read_acls', 'P') IS NOT NULL
   DROP PROCEDURE dbo.nx_update_read_acls;
-
 
 #IF: aclOptimizationsEnabled
 CREATE PROCEDURE nx_update_read_acls

@@ -1048,10 +1048,9 @@ public abstract class Dialect {
      *
      * This can be used to populate a table cache.
      *
-     * @param principals
-     * @return and SQL expression ready to be executed.
+     * @return and SQL expression with one parameter (principals)
      */
-    public String getPrepareUserReadAclsSql(String[] principals) {
+    public String getPrepareUserReadAclsSql() {
         return null;
     }
 

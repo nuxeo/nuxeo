@@ -14,6 +14,7 @@ package org.nuxeo.ecm.core.storage.sql.jdbc;
 import java.io.Serializable;
 import java.security.MessageDigest;
 import java.sql.Array;
+import java.sql.CallableStatement;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -636,25 +637,27 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
 
     protected void prepareUserReadAcls(QueryFilter queryFilter)
             throws StorageException {
-        String sql = sqlInfo.dialect.getPrepareUserReadAclsSql(queryFilter.getPrincipals());
+        String sql = sqlInfo.dialect.getPrepareUserReadAclsSql();
         if (sql == null) {
             return;
         }
-        Statement st = null;
+        String principals = StringUtils.join(queryFilter.getPrincipals(), Dialect.ARRAY_SEP);
+        CallableStatement cs = null;
         try {
-            st = connection.createStatement();
+            cs = connection.prepareCall(sql);
             if (logger.isLogEnabled()) {
-                logger.log(sql);
+                logger.log(sql + " " + principals);
             }
-            st.execute(sql);
+            cs.setString(1, principals);
+            cs.executeUpdate();
         } catch (Exception e) {
             checkConnectionReset(e);
             throw new StorageException("Failed to prepare user read acl cache",
                     e);
         } finally {
-            if (st != null) {
+            if (cs != null) {
                 try {
-                    closeStatement(st);
+                    closeStatement(cs);
                 } catch (SQLException e) {
                     log.error(e.getMessage(), e);
                 }
