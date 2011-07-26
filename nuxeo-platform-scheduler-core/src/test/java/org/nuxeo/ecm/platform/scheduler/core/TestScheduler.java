@@ -166,4 +166,5 @@ public class TestScheduler extends NXRuntimeTestCase {
         // unregistered
         assertFalse(unregistered);
     }
+
 }

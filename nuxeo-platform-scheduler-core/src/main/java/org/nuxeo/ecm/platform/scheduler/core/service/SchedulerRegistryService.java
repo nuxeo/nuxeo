@@ -55,14 +55,14 @@ public class SchedulerRegistryService extends DefaultComponent implements
 
     private Scheduler scheduler;
 
-    @Override
     public void activate(ComponentContext context) throws Exception {
         log.debug("Activate");
         bundle = context.getRuntimeContext();
 
         // Find a scheduler
         StdSchedulerFactory schedulerFactory = new StdSchedulerFactory();
-        URL cfg = context.getRuntimeContext().getResource("config/quartz.properties");
+        URL cfg = context.getRuntimeContext().getResource(
+                "config/quartz.properties");
         if (cfg != null) {
             schedulerFactory.initialize(cfg.openStream());
         }
@@ -71,6 +71,13 @@ public class SchedulerRegistryService extends DefaultComponent implements
         // server = MBeanServerFactory.createMBeanServer();
         // server.createMBean("org.quartz.ee.jmx.jboss.QuartzService",
         // quartzObjectName);
+
+        // clean up all nuxeo jobs
+        // https://jira.nuxeo.com/browse/NXP-7303
+        String[] jobs = scheduler.getJobNames("nuxeo");
+        for (String job : jobs) {
+            unregisterSchedule(job);
+        }
     }
 
     @Override
@@ -90,11 +97,15 @@ public class SchedulerRegistryService extends DefaultComponent implements
 
     @Override
     public void unregisterExtension(Extension extension) {
-        Object[] contribs = extension.getContributions();
-        for (Object contrib : contribs) {
-            Schedule schedule = (Schedule) contrib;
-            unregisterSchedule(schedule);
-        }
+        // do nothing to do ;
+        // clean up will be done when service is activated
+        // see https://jira.nuxeo.com/browse/NXP-7303
+
+        // Object[] contribs = extension.getContributions();
+        // for (Object contrib : contribs) {
+        // Schedule schedule = (Schedule) contrib;
+        // unregisterSchedule(schedule);
+        // }
     }
 
     public RuntimeContext getContext() {
