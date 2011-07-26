@@ -55,4 +55,10 @@ public class UserWorkspaceManagerBean implements UserWorkspaceService {
             throws ClientException {
          return userWorkspaceService.getCurrentUserPersonalWorkspace(userCoreSession, context);
     }
+
+    @Override
+    public DocumentModel getUserPersonalWorkspace(String userName,
+            DocumentModel context) throws ClientException {
+        return userWorkspaceService.getUserPersonalWorkspace(userName, context);
+    }
 }
