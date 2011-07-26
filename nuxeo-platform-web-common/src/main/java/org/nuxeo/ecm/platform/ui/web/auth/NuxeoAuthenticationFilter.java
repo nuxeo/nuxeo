@@ -87,6 +87,8 @@ public class NuxeoAuthenticationFilter implements Filter {
 
     private static final Log log = LogFactory.getLog(NuxeoAuthenticationFilter.class);
 
+    public static final String IS_LOGIN_NOT_SYNCHRONIZED_PROPERTY_KEY = "org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter.isLoginNotSynchronized";
+
     private static String anonymous;
 
     protected final boolean avoidReauthenticate = true;
@@ -204,8 +206,12 @@ public class NuxeoAuthenticationFilter implements Filter {
             CallbackHandler handler = service.getCallbackHandler(cachableUserIdent.getUserInfo());
             loginContext = new LoginContext(securityDomain, handler);
 
-            synchronized (NuxeoAuthenticationFilter.class) {
+            if (Boolean.parseBoolean(Framework.getProperty(IS_LOGIN_NOT_SYNCHRONIZED_PROPERTY_KEY))) {
                 loginContext.login();
+            } else {
+                synchronized (NuxeoAuthenticationFilter.class) {
+                    loginContext.login();
+                }
             }
 
             Principal principal = (Principal) loginContext.getSubject().getPrincipals().toArray()[0];
@@ -272,8 +278,8 @@ public class NuxeoAuthenticationFilter implements Filter {
             log.error("Error while logout from main identity", e1);
         }
 
-        HttpSession session = httpRequest.getSession(false);
-        session = service.reinitSession(httpRequest);
+        httpRequest.getSession(false);
+        service.reinitSession(httpRequest);
 
         CachableUserIdentificationInfo newCachableUserIdent = new CachableUserIdentificationInfo(
                 deputyLogin, deputyLogin);
