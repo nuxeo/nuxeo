@@ -51,6 +51,8 @@ public class UserProfileActions implements Serializable {
 
     public static final String PROFILE_EDIT_PASSWORD_MODE = "editPassword";
 
+    protected transient UserWorkspaceService userWorkspaceService;
+
     @In(create = true)
     protected transient UserManagementActions userManagementActions;
 
@@ -87,17 +89,8 @@ public class UserProfileActions implements Serializable {
 
     public DocumentModel getUserProfileDocument() throws ClientException {
         if (userProfileDocument == null) {
-            try {
-                UserWorkspaceService userWorkspaceService = Framework.getService(UserWorkspaceService.class);
-                if (userWorkspaceService != null) {
-                    userProfileDocument = userWorkspaceService.getCurrentUserPersonalWorkspace(
-                            documentManager, null);
-
-                }
-            } catch (Exception e) {
-                throw new ClientException("Failed to get UserWorkspaceService",
-                        e);
-            }
+            userProfileDocument = getUserWorkspaceService().getCurrentUserPersonalWorkspace(
+                    documentManager, null);
         }
         if (!userProfileDocument.hasFacet(USER_PROFILE_FACET)) {
             userProfileDocument.addFacet(USER_PROFILE_FACET);
@@ -106,8 +99,32 @@ public class UserProfileActions implements Serializable {
         return userProfileDocument;
     }
 
-    public void setUserProfileDocument(DocumentModel userProfileDocument) {
-        this.userProfileDocument = userProfileDocument;
+    public DocumentModel getUserProfileDocument(String userName)
+            throws ClientException {
+        DocumentModel userProfileDocument = getUserWorkspaceService().getUserPersonalWorkspace(
+                    userName, documentManager.getRootDocument());
+        if (!userProfileDocument.hasFacet(USER_PROFILE_FACET)) {
+            userProfileDocument.addFacet(USER_PROFILE_FACET);
+            userProfileDocument = documentManager.saveDocument(userProfileDocument);
+        }
+        return userProfileDocument;
+    }
+
+    public DocumentModel getSelectedUserProfileDocument() throws ClientException {
+        return getUserProfileDocument(userManagementActions.getSelectedUser().getId());
+    }
+
+    protected UserWorkspaceService getUserWorkspaceService()
+            throws ClientException {
+        if (userWorkspaceService == null) {
+            try {
+                userWorkspaceService = Framework.getService(UserWorkspaceService.class);
+            } catch (Exception e) {
+                throw new ClientException("Failed to get UserWorkspaceService",
+                        e);
+            }
+        }
+        return userWorkspaceService;
     }
 
 }
