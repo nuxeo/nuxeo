@@ -1,4 +1,4 @@
- (C) Copyright 2008-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
+# (C) Copyright 2008-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
 #
 # All rights reserved. This program and the accompanying materials
 # are made available under the terms of the GNU Lesser General Public License
@@ -15,7 +15,7 @@
 #     Benoit Delbosc
 
 # Variables used:
-# ${idType} NVARCHAR(36)
+# ${idType} VARCHAR(36)
 # ${fulltextCatalog} configured catalog
 # ${fulltextTriggerStatements} repeated for all suffixes SFX:
 #   :NEW.fulltextSFX := :NEW.simpletextSFX || :NEW.binarytextSFX;
@@ -212,7 +212,7 @@ SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'aclr' AND TABLE_CATA
 
 #IF: emptyResult
 CREATE TABLE aclr (
-  acl_id VARCHAR(34) NOT NULL,
+  acl_id CHAR(32) NOT NULL,
   acl NVARCHAR(4000)
 )
 
@@ -224,15 +224,15 @@ CREATE INDEX [aclr_acl_id_idx] ON [dbo].[aclr] ([acl_id])
 
 
 # -- Known users table
-# -- users ex: {members,jsmith,Everyone}
-# -- user_id = md5(users)
+# -- principals ex: {members,jsmith,Everyone}
+# -- user_id = md5(principals)
 #TEST:
 SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'aclr_user' AND TABLE_CATALOG = db_name();
 
 #IF: emptyResult
 CREATE TABLE aclr_user (
-  user_id VARCHAR(34) NOT NULL,
-  user_name NVARCHAR(64),
+  user_id CHAR(32) NOT NULL,
+  principals NVARCHAR(4000),
 )
 
 
@@ -249,8 +249,8 @@ SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME =  'aclr_user_map' AND 
 
 #IF: emptyResult
 CREATE TABLE aclr_user_map (
-  user_id VARCHAR(34) NOT NULL,
-  acl_id VARCHAR(34) NOT NULL
+  user_id CHAR(32) NOT NULL,
+  acl_id CHAR(32) NOT NULL
 )
 
 
@@ -275,7 +275,7 @@ SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME =  'hierarchy_read_acl'
 #IF: emptyResult
 CREATE TABLE hierarchy_read_acl (
   id ${idType} PRIMARY KEY, -- doc id
-  acl_id VARCHAR(34),      -- acl id in ACLR
+  acl_id CHAR(32),      -- acl id in ACLR
   CONSTRAINT hierarchy_read_acl_id_fk FOREIGN KEY (id) REFERENCES hierarchy (id) ON DELETE CASCADE
 )
 
@@ -293,7 +293,7 @@ SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'aclr_modified' AND T
 
 #IF: emptyResult
 CREATE TABLE aclr_modified (
-  hierarchy_id VARCHAR(36),
+  hierarchy_id ${idType},
   is_new TINYINT
 )
 
@@ -304,7 +304,7 @@ SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME =  'aclr_permission' AN
 
 #IF: emptyResult
 CREATE TABLE aclr_permission (
-  permission VARCHAR(250)
+  permission NVARCHAR(250)
 )
 
 
@@ -321,19 +321,19 @@ INSERT INTO aclr_permission ${readPermissions};
 IF OBJECT_ID('dbo.nx_get_local_read_acl', 'FN') IS NOT NULL
   DROP FUNCTION dbo.nx_get_local_read_acl;
 
-CREATE FUNCTION nx_get_local_read_acl(@id NVARCHAR(36))
-RETURNS VARCHAR(4000) AS
+CREATE FUNCTION nx_get_local_read_acl(@id ${idType})
+RETURNS NVARCHAR(4000) AS
 -- Compute the read acl for hierarchy id using a local acl
 BEGIN
-  DECLARE @curid NVARCHAR(36);
-  DECLARE @op VARCHAR(1000);
-  DECLARE @read_acl VARCHAR(4000);
+  DECLARE @curid ${idType};
+  DECLARE @op NVARCHAR(250);
+  DECLARE @read_acl NVARCHAR(4000);
   DECLARE @cur CURSOR;
   SET @curid = @id;
   SET @cur = CURSOR FAST_FORWARD FOR
     SELECT CASE
-       WHEN ([grant] = 0) THEN '-'
-       WHEN ([grant] = 1) THEN ''
+       WHEN ([grant] = 0) THEN N'-'
+       WHEN ([grant] = 1) THEN N''
        ELSE NULL
       END + [user] AS op
     FROM acls
@@ -360,19 +360,19 @@ END;
 IF OBJECT_ID('dbo.nx_get_read_acl', 'FN') IS NOT NULL
   DROP FUNCTION dbo.nx_get_read_acl;
 
-CREATE FUNCTION nx_get_read_acl(@id NVARCHAR(36))
-RETURNS VARCHAR(4000) AS
+CREATE FUNCTION nx_get_read_acl(@id ${idType})
+RETURNS NVARCHAR(4000) AS
 -- Compute the merged read acl for a doc id
 BEGIN
-  DECLARE @curid NVARCHAR(36);
-  DECLARE @newid NVARCHAR(36);
-  DECLARE @read_acl VARCHAR(4000);
-  DECLARE @ret VARCHAR(4000);
+  DECLARE @curid ${idType};
+  DECLARE @newid ${idType};
+  DECLARE @read_acl NVARCHAR(4000);
+  DECLARE @ret NVARCHAR(4000);
   DECLARE @first TINYINT;
   SET @curid = @id;
   SET @first = 1;
   WHILE @curid IS NOT NULL BEGIN
-    SET @read_acl = (SELECT dbo.nx_get_local_read_acl(@id));
+    SET @read_acl = (SELECT dbo.nx_get_local_read_acl(@curid));
     IF @read_acl IS NOT NULL
       IF @ret IS NULL
         SET @ret = @read_acl;
@@ -385,8 +385,8 @@ BEGIN
     SET @curid = @newid;
   END;
   IF @ret IS NULL
-    SET @ret = '_empty';
-  RETURN @read_acl;
+    SET @ret = N'_empty';
+  RETURN @ret;
 END;
 
 
@@ -407,11 +407,11 @@ IF OBJECT_ID('dbo.nx_get_read_permissions', 'FN') IS NOT NULL
 
 #IF: aclOptimizationsEnabled
 CREATE FUNCTION nx_get_read_permissions()
-RETURNS VARCHAR(4000) AS
+RETURNS NVARCHAR(4000) AS
 BEGIN
   -- build the list of read permissions
-  DECLARE @ret VARCHAR(4000);
-  SET @ret = '';
+  DECLARE @ret NVARCHAR(4000);
+  SET @ret = N'';
   DECLARE @cur CURSOR;
   SET @cur = CURSOR FAST_FORWARD FOR
     SELECT permission  FROM aclr_permission;
@@ -419,7 +419,7 @@ BEGIN
   DECLARE @perm VARCHAR(250);
   FETCH FROM @cur INTO @perm;
   WHILE @@FETCH_STATUS = 0 BEGIN
-    SET @ret = @ret + '|' + @perm;
+    SET @ret = @ret + N'|' + @perm;
     FETCH FROM @cur INTO @perm;
   END;
   CLOSE @cur;
@@ -432,8 +432,8 @@ IF OBJECT_ID('dbo.nx_get_read_acl_id', 'FN') IS NOT NULL
   DROP FUNCTION dbo.nx_get_read_acl_id;
 
 #IF: aclOptimizationsEnabled
-CREATE FUNCTION nx_get_read_acl_id(@id NVARCHAR(36))
-RETURNS VARCHAR(32) AS
+CREATE FUNCTION nx_get_read_acl_id(@id ${idType})
+RETURNS CHAR(32) AS
 BEGIN
   DECLARE @hash CHAR(32);
   SET @hash = dbo.nx_md5(dbo.nx_get_read_acl(@id));
@@ -500,7 +500,8 @@ AFTER INSERT AS
 BEGIN
   SET NOCOUNT ON;
   INSERT INTO aclr_modified (hierarchy_id, is_new) 
-    SELECT DISTINCT(id), 1 FROM inserted;
+    SELECT DISTINCT(id), 1 FROM inserted 
+    WHERE isproperty = 0;
 END;
 
 #IF: ! aclOptimizationsEnabled
@@ -533,8 +534,8 @@ BEGIN
     SELECT u.user_id, NEW.acl_id
     FROM aclr_user AS u, inserted AS NEW
     LEFT JOIN hierarchy_read_acl AS h ON NEW.acl_id = h.acl_id
-    GROUP BY u.user_id, u.user_name, NEW.acl_id
-    HAVING dbo.NX_ACCESS_ALLOWED(max(h.id), u.user_name, @permissions) = 1
+    GROUP BY u.user_id, u.principals, NEW.acl_id
+    HAVING dbo.NX_ACCESS_ALLOWED(max(h.id), u.principals, @permissions) = 1
 END;
 
 
@@ -695,13 +696,13 @@ IF OBJECT_ID('dbo.NX_UPGRADE_VERSIONS', 'P') IS NOT NULL
 CREATE PROCEDURE NX_UPGRADE_VERSIONS
 AS
 BEGIN
-  DECLARE @series NVARCHAR(36);
+  DECLARE @series ${idType};
   DECLARE @latest TINYINT;
   DECLARE @latestmajor TINYINT;
   DECLARE @major TINYINT;
   DECLARE @cur CURSOR;
-  DECLARE @curid NVARCHAR(36);
-  DECLARE @curvid NVARCHAR(36);
+  DECLARE @curid ${idType};
+  DECLARE @curvid ${idType};
   DECLARE @curmaj BIGINT;
   DECLARE @curmin BIGINT;
   SET @series = '-';
