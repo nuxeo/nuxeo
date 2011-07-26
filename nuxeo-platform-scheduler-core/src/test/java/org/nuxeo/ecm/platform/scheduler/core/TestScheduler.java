@@ -138,4 +138,5 @@ public class TestScheduler extends NXRuntimeTestCase {
         // schedule should happen only one time, it has already been unregistered
         assertFalse(unregistered);
     }
+
 }
