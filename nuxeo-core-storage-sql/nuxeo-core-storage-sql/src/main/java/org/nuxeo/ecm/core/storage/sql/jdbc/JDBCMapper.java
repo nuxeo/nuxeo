@@ -638,10 +638,10 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
     protected void prepareUserReadAcls(QueryFilter queryFilter)
             throws StorageException {
         String sql = sqlInfo.dialect.getPrepareUserReadAclsSql();
-        if (sql == null) {
+        String principals = StringUtils.join(queryFilter.getPrincipals(), Dialect.ARRAY_SEP);
+        if (sql == null || principals == null) {
             return;
         }
-        String principals = StringUtils.join(queryFilter.getPrincipals(), Dialect.ARRAY_SEP);
         CallableStatement cs = null;
         try {
             cs = connection.prepareCall(sql);

@@ -334,7 +334,7 @@ BEGIN
     SELECT CASE
        WHEN ([grant] = 0) THEN '-'
        WHEN ([grant] = 1) THEN ''
-       ELSE '+'
+       ELSE NULL
       END + [user] AS op
     FROM acls
     WHERE [id] = @curid AND
@@ -343,12 +343,12 @@ BEGIN
   OPEN @cur;
   FETCH FROM @cur INTO @op;
   WHILE @@FETCH_STATUS = 0 BEGIN
-    IF @op IS NULL
-      CONTINUE;
-    IF @read_acl IS NULL 
-      SET @read_acl = @op;
-    ELSE
-      SET @read_acl = @read_acl + N'|' + @op;
+    IF @op IS NOT NULL BEGIN
+      IF @read_acl IS NULL 
+        SET @read_acl = @op;
+      ELSE
+        SET @read_acl = @read_acl + N'|' + @op;
+    END;
     FETCH FROM @cur INTO @op;
   END;
   CLOSE @cur;
@@ -402,6 +402,32 @@ BEGIN
 END;
 
 
+IF OBJECT_ID('dbo.nx_get_read_permissions', 'FN') IS NOT NULL
+  DROP FUNCTION dbo.nx_get_read_permissions;
+
+#IF: aclOptimizationsEnabled
+CREATE FUNCTION nx_get_read_permissions()
+RETURNS VARCHAR(4000) AS
+BEGIN
+  -- build the list of read permissions
+  DECLARE @ret VARCHAR(4000);
+  SET @ret = '';
+  DECLARE @cur CURSOR;
+  SET @cur = CURSOR FAST_FORWARD FOR
+    SELECT permission  FROM aclr_permission;
+  OPEN @cur;
+  DECLARE @perm VARCHAR(250);
+  FETCH FROM @cur INTO @perm;
+  WHILE @@FETCH_STATUS = 0 BEGIN
+    SET @ret = @ret + '|' + @perm;
+    FETCH FROM @cur INTO @perm;
+  END;
+  CLOSE @cur;
+  DEALLOCATE @cur;
+  RETURN @ret;
+END;
+
+
 IF OBJECT_ID('dbo.nx_get_read_acl_id', 'FN') IS NOT NULL
   DROP FUNCTION dbo.nx_get_read_acl_id;
 
@@ -423,19 +449,8 @@ CREATE FUNCTION nx_list_read_acls_for(@users NVARCHAR(4000))
 RETURNS @output TABLE (acl_id CHAR(32)) AS
   -- List matching read acl ids for a list of user/groups
 BEGIN
-  -- build the list of read permissions
   DECLARE @permissions VARCHAR(4000);
-  SET @permissions = '';
-  DECLARE @cur CURSOR;
-  SET @cur = CURSOR FAST_FORWARD FOR
-    SELECT permission  FROM aclr_permission;
-  OPEN @cur;
-  DECLARE @perm VARCHAR(250);
-  FETCH FROM @cur INTO @perm;
-  WHILE @@FETCH_STATUS = 0 BEGIN
-    SET @permissions = @permissions + '|' + @perm;
-    FETCH FROM @cur INTO @perm;
-  END;
+  SET @permissions = dbo.nx_get_read_permissions();
   INSERT INTO @output (acl_id)
     SELECT acl_id FROM hierarchy_read_acl
     GROUP BY acl_id
@@ -512,8 +527,16 @@ CREATE TRIGGER nx_trig_aclr_modified ON [aclr]
 AFTER INSERT AS
 BEGIN
   SET NOCOUNT ON;
-  -- TODO: impl
+  DECLARE @permissions VARCHAR(4000);
+  SET @permissions = dbo.nx_get_read_permissions();
+  INSERT INTO aclr_user_map 
+    SELECT u.user_id, NEW.acl_id
+    FROM aclr_user AS u, inserted AS NEW
+    LEFT JOIN hierarchy_read_acl AS h ON NEW.acl_id = h.acl_id
+    GROUP BY u.user_id, u.user_name, NEW.acl_id
+    HAVING dbo.NX_ACCESS_ALLOWED(max(h.id), u.user_name, @permissions) = 1
 END;
+
 
 #IF: ! aclOptimizationsEnabled
 ALTER TABLE [aclr] DISABLE TRIGGER nx_trig_aclr_modified
