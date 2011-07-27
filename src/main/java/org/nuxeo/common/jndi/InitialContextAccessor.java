@@ -20,43 +20,48 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
-public class InitContextAccessor extends InitialContext {
+/**
+ * Utility class used for testing JNDI space provider.
+ * 
+ * @author Stephane Lacoin (aka matic)
+ * @since 5.4.3
+ * 
+ */
+public class InitialContextAccessor extends InitialContext {
 
-    protected InitContextAccessor() throws NamingException {
+    public static final String ENV_CTX_NAME = "java:comp/env";
+
+    protected InitialContextAccessor() throws NamingException {
         super(false); // lazy mode is breaking jboss
     }
 
-    public boolean isAvailable() {
+    protected Context _getInitCtx() {
         try {
-            return getDefaultInitCtx() != null;
+            return new InitialContextAccessor().getDefaultInitCtx();
+        } catch (NamingException e) {
+            return null;
+        }
+    }
+
+    /**
+     * Check for JNDI space availability
+     * 
+     * @return true if JNDI space exists
+     */
+    public static boolean isAvailable() {
+        try {
+            return new InitialContextAccessor().getDefaultInitCtx() != null;
         } catch (NamingException e) {
             return false;
         }
     }
 
-    protected Context _getWritableInitCtx() {
-        
-        return _getInitCtx();
-    }
-
-    protected Context _getInitCtx() {
-        try {
-            return new InitContextAccessor().getDefaultInitCtx();
-        } catch (NamingException e) {
-            return null;
-        }
-    }
-
-    public static final String ENV_CTX_NAME = "java:comp/env";
-
-    public static Context getInitCtx() {
-        try {
-            return new InitContextAccessor()._getInitCtx();
-        } catch (NamingException e) {
-            return null;
-        }
-    }
-    
+    /**
+     *  Try writing in JNDI space
+     *  
+     * @param ctx
+     * @return true if JNDI space is writable
+     */
     public static boolean isWritable(Context ctx) {
         try {
             ctx.bind("IsWritable", "is-writable");
@@ -66,5 +71,18 @@ public class InitContextAccessor extends InitialContext {
         }
         return true;
     }
-    
+
+    /**
+     * Get access to the default initial context implementation
+     * 
+     * @return the initial context implementation
+     */
+    public static Context getInitialContext() {
+        try {
+            return new InitialContextAccessor()._getInitCtx();
+        } catch (NamingException e) {
+            return null;
+        }
+    }
+
 }
