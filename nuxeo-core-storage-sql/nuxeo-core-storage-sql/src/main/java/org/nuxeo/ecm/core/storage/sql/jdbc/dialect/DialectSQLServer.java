@@ -55,6 +55,10 @@ public class DialectSQLServer extends Dialect {
 
     protected final String fulltextCatalog;
 
+    private static final String DEFAULT_USERS_SEPARATOR = "|";
+
+    protected final String usersSeparator;
+
     public DialectSQLServer(DatabaseMetaData metadata,
             BinaryManager binaryManager,
             RepositoryDescriptor repositoryDescriptor) throws StorageException {
@@ -65,6 +69,9 @@ public class DialectSQLServer extends Dialect {
         fulltextCatalog = repositoryDescriptor == null ? null
                 : repositoryDescriptor.fulltextCatalog == null ? DEFAULT_FULLTEXT_CATALOG
                         : repositoryDescriptor.fulltextCatalog;
+        usersSeparator = repositoryDescriptor == null ? null
+                : repositoryDescriptor.usersSeparatorKey == null ? DEFAULT_USERS_SEPARATOR
+                        : repositoryDescriptor.usersSeparatorKey;
 
     }
 
@@ -384,6 +391,7 @@ public class DialectSQLServer extends Dialect {
                     "  SELECT '%s' ", perm));
         }
         properties.put("readPermissions", StringUtils.join(permsList, " UNION ALL "));
+        properties.put("usersSeparator", getUsersSeparator());
         return properties;
     }
 
@@ -395,7 +403,7 @@ public class DialectSQLServer extends Dialect {
     @Override
     public String getReadAclsCheckSql(String idColumnName) {
         return String.format(
-                "%s IN (SELECT ACL_ID FROM dbo.nx_get_read_acls_for(?))",
+                "%s IN (SELECT acl_id FROM dbo.nx_get_read_acls_for(?))",
                 idColumnName);
     }
 
@@ -455,6 +463,13 @@ public class DialectSQLServer extends Dialect {
     @Override
     public boolean needsPrepareUserReadAcls() {
         return true;
+    }
+
+    public String getUsersSeparator() {
+        if (usersSeparator == null) {
+            return DEFAULT_USERS_SEPARATOR;
+        }
+        return usersSeparator;
     }
 
 }

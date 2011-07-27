@@ -20,7 +20,7 @@
 # ${fulltextTriggerStatements} repeated for all suffixes SFX:
 #   :NEW.fulltextSFX := :NEW.simpletextSFX || :NEW.binarytextSFX;
 # ${readPermissions} SELECT 'Browse'  UNION ALL   SELECT 'Read'  UNION ALL   SELECT 'ReadProperties'  UNION ALL   SELECT 'ReadRemove'  UNION ALL   SELECT 'ReadWrite'  UNION ALL   SELECT 'Everything' ;
-
+# ${usersSeparator} default is "|", but it depends on the configuration
 # Conditions used:
 # fulltextEnabled
 # aclOptimizationsEnabled
@@ -82,8 +82,8 @@ BEGIN
   DECLARE @gr TINYINT;
   DECLARE @pe VARCHAR(1000);
   DECLARE @us VARCHAR(1000);
-  SET @allusers = N'|' + @users + N'|';
-  SET @allperms = N'|' + @perms + N'|';
+  SET @allusers = N'${usersSeparator}' + @users + N'${usersSeparator}';
+  SET @allperms = N'${usersSeparator}' + @perms + N'${usersSeparator}';
   SET @first = 1;
   SET @curid = @id;
   WHILE @curid IS NOT NULL BEGIN
@@ -94,7 +94,7 @@ BEGIN
     OPEN @cur;
     FETCH FROM @cur INTO @gr, @pe, @us;
     WHILE @@FETCH_STATUS = 0 BEGIN
-      IF @allusers LIKE (N'%|' + @us + N'|%') AND @allperms LIKE (N'%|' + @pe + N'|%')
+      IF @allusers LIKE (N'%${usersSeparator}' + @us + N'${usersSeparator}%') AND @allperms LIKE (N'%${usersSeparator}' + @pe + N'${usersSeparator}%')
       BEGIN
         CLOSE @cur;
 	DEALLOCATE @cur;
@@ -347,7 +347,7 @@ BEGIN
       IF @read_acl IS NULL 
         SET @read_acl = @op;
       ELSE
-        SET @read_acl = @read_acl + N'|' + @op;
+        SET @read_acl = @read_acl + N'${usersSeparator}' + @op;
     END;
     FETCH FROM @cur INTO @op;
   END;
@@ -377,7 +377,7 @@ BEGIN
       IF @ret IS NULL
         SET @ret = @read_acl;
       ELSE
-        SET @ret = @ret + N'|' + @read_acl;
+        SET @ret = @ret + N'${usersSeparator}' + @read_acl;
     SET @newid = (SELECT parentid FROM hierarchy WHERE [id] = @curid);
     IF @first = 1 AND @newid IS NULL
       SET @newid = (SELECT versionableid FROM versions WHERE [id] = @curid)
@@ -419,7 +419,7 @@ BEGIN
   DECLARE @perm VARCHAR(250);
   FETCH FROM @cur INTO @perm;
   WHILE @@FETCH_STATUS = 0 BEGIN
-    SET @ret = @ret + N'|' + @perm;
+    SET @ret = @ret + N'${usersSeparator}' + @perm;
     FETCH FROM @cur INTO @perm;
   END;
   CLOSE @cur;
