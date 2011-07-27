@@ -42,6 +42,13 @@ import org.quartz.impl.StdSchedulerFactory;
 
 /**
  * Schedule registry service.
+ * 
+ * Since the cleanup of the quartz job is done when service is activated, ( see
+ * see https://jira.nuxeo.com/browse/NXP-7303 ) in cluster mode, the schedules
+ * contributions MUST be the same on all nodes. Due the fact that all jobs are
+ * removed when service starts on a node it may be a short period with no
+ * schedules in quartz table even other node is running.
+ * 
  */
 public class SchedulerRegistryService extends DefaultComponent implements
         SchedulerRegistry {
@@ -100,12 +107,6 @@ public class SchedulerRegistryService extends DefaultComponent implements
         // do nothing to do ;
         // clean up will be done when service is activated
         // see https://jira.nuxeo.com/browse/NXP-7303
-
-        // Object[] contribs = extension.getContributions();
-        // for (Object contrib : contribs) {
-        // Schedule schedule = (Schedule) contrib;
-        // unregisterSchedule(schedule);
-        // }
     }
 
     public RuntimeContext getContext() {
