@@ -601,6 +601,8 @@ public abstract class NuxeoLauncher {
     }
 
     /**
+     * Must be called after {@link #getStartupSummary()}
+     *
      * @since 5.4.3
      * @return last detected status of running Nuxeo server
      */

@@ -189,6 +189,8 @@ public class NuxeoFrame extends JFrame {
 
     private static final long serialVersionUID = 1L;
 
+    private static final int LOG_MAX_SIZE = 200000;
+
     protected final ImageIcon startIcon = getImageIcon("icons/start.png");
 
     protected final ImageIcon stopIcon = getImageIcon("icons/stop.png");
@@ -374,6 +376,7 @@ public class NuxeoFrame extends JFrame {
         textArea.setEditable(false);
         textArea.setAutoscrolls(true);
         textArea.setBackground(new Color(64, 64, 64));
+        textArea.setMaxSize(LOG_MAX_SIZE);
 
         JScrollPane logsScroller = new JScrollPane(textArea);
         logsScroller.setVisible(true);
@@ -519,14 +522,14 @@ public class NuxeoFrame extends JFrame {
      * Update information displayed in summary tab
      */
     public void updateSummary() {
-        if (getController().launcher.isStarted()) {
-            if (getController().getConfigurationGenerator().isWizardRequired()
-                    || getController().launcher.wasStartupFine()) {
-                errorMessageLabel.setText("");
-                summaryStatus.setForeground(Color.WHITE);
-            } else {
-                String startupSummary = getController().launcher.getStartupSummary();
+        errorMessageLabel.setText("");
+        summaryStatus.setForeground(Color.WHITE);
+        if (!getController().getConfigurationGenerator().isWizardRequired()
+                && getController().launcher.isStarted()) {
+            String startupSummary = getController().launcher.getStartupSummary();
+            if (!getController().launcher.wasStartupFine()) {
                 String[] lines = startupSummary.split("\n");
+                // extract line with summary informations
                 for (String line : lines) {
                     if (line.contains("Component Loading Status")) {
                         startupSummary = line;

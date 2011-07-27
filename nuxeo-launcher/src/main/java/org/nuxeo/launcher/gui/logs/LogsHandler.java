@@ -66,6 +66,5 @@ public class LogsHandler implements Observer {
             color = new Color(234, 234, 234);
         }
         textArea.append(logLine, color);
-        textArea.setCaretPosition(textArea.getDocument().getLength());
     }
 }

@@ -194,9 +194,11 @@ public class StatusServletClient {
     }
 
     /**
-     * Return last detected status of Nuxeo server
+     * Return detected status of Nuxeo server by last call to
+     * {@link #getStartupSummary()}
      *
-     * @return true if everything is fine; false is there was any error
+     * @return true if everything is fine; false is there was any error or
+     *         status is unknown
      */
     public boolean isStartupFine() {
         return startupFine;
