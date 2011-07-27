@@ -593,7 +593,7 @@ public abstract class NuxeoLauncher {
                 System.err.println(startSummary);
             }
             return wasStartupFine();
-        } else {
+        } else if (count == startMaxWait) {
             System.out.println();
             log.error("Starting process is taking too long - giving up.");
         }
