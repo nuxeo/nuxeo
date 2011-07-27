@@ -33,9 +33,12 @@ public class OperationInfoImpl extends BaseNuxeoArtifact implements
 
     public final String version;
 
-    public OperationInfoImpl(OperationDocumentation op, String version) {
+    protected String operationClass;
+
+    public OperationInfoImpl(OperationDocumentation op, String version, String operationClass) {
         this.op = op;
         this.version = version;
+        this.operationClass=operationClass;
     }
 
     @Override
@@ -108,6 +111,10 @@ public class OperationInfoImpl extends BaseNuxeoArtifact implements
         String s1 = getLabel() == null ? getId() : getLabel();
         String s2 = o.getLabel() == null ? o.getId() : o.getLabel();
         return s1.compareTo(s2);
+    }
+
+    public String getOperationClass() {
+        return operationClass;
     }
 
 }

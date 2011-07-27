@@ -40,6 +40,7 @@ import org.nuxeo.apidoc.seam.SeamRuntimeIntrospector;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationDocumentation;
+import org.nuxeo.ecm.automation.OperationType;
 import org.nuxeo.runtime.api.Framework;
 
 public class RuntimeSnapshot extends BaseNuxeoArtifact implements
@@ -423,14 +424,14 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements
         if (opsInitialized) {
             return;
         }
-        List<OperationDocumentation> ops;
+        OperationType[] ops;
         try {
-            ops = Framework.getService(AutomationService.class).getDocumentation();
+            ops = Framework.getService(AutomationService.class).getOperations();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        for (OperationDocumentation op : ops) {
-            operations.add(new OperationInfoImpl(op, getVersion()));
+        for (OperationType op : ops) {
+            operations.add(new OperationInfoImpl(op.getDocumentation(), getVersion(), op.getType().getCanonicalName()));
         }
         opsInitialized = true;
     }

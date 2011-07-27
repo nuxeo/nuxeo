@@ -37,10 +37,12 @@ import org.nuxeo.apidoc.documentation.DocumentationService;
 import org.nuxeo.apidoc.export.ArchiveFile;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshotDesc;
+import org.nuxeo.apidoc.snapshot.SnapshotFilter;
 import org.nuxeo.apidoc.snapshot.SnapshotManager;
 import org.nuxeo.apidoc.snapshot.SnapshotManagerComponent;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.webengine.forms.FormData;
 import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
@@ -178,6 +180,62 @@ public class Distribution extends ModuleRoot {
         try {
             getSnapshotManager().persistRuntimeSnapshot(
                     getContext().getCoreSession());
+        } catch (Exception e) {
+            log.error("Error during storage", e);
+            if (tx != null) {
+                tx.rollback();
+            }
+            return getView("index");
+        }
+        log.info("Snapshot saved.");
+        if (tx != null && startedTx) {
+            tx.commit();
+        }
+        return getView("index");
+    }
+
+    @POST
+    @Path(value = "saveExtended")
+    @Produces("text/html")
+    public Object doSaveExtended() throws Exception {
+        if (!isEditor()) {
+            return null;
+        }
+
+        FormData formData = getContext().getForm();
+
+        String distribLabel = formData.getString("name");
+        String bundleList = formData.getString("bundles");
+        String pkgList = formData.getString("packages");
+        SnapshotFilter filter = new SnapshotFilter(distribLabel);
+
+        String[] bundles= null;
+        if (bundleList!=null) {
+            bundles = bundleList.split("\n");
+            for (String bundleId : bundles) {
+                filter.addBundlePrefix(bundleId);
+            }
+        }
+
+        String[] packages= null;
+        if (pkgList!=null) {
+            packages = pkgList.split("\n");
+            for (String pkg : packages) {
+                filter.addPackagesPrefix(pkg);
+            }
+        }
+
+        log.info("Start Snapshot...");
+        boolean startedTx = false;
+        UserTransaction tx = TransactionHelper.lookupUserTransaction();
+        if (tx != null
+                && !TransactionHelper.isTransactionActiveOrMarkedRollback()) {
+            tx.begin();
+            startedTx = true;
+        }
+        try {
+            getSnapshotManager().persistRuntimeSnapshot(
+                    getContext().getCoreSession(),distribLabel,filter);
         } catch (Exception e) {
             log.error("Error during storage", e);
             if (tx != null) {

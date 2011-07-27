@@ -15,7 +15,7 @@
   <tr>
    <tr>
     <td colspan="2">
-    
+
 <h2>Nuxeo EP Distributions</h2>
 
 <p>
@@ -27,7 +27,6 @@ Here are the currently available distributions:
 
 <table class="tablesorter distributions">
 <tr>
-<th> Distribution name</th>
 <th> Version</th>
 <th> Creation date</th>
 <th></th>
@@ -43,9 +42,32 @@ Here are the currently available distributions:
 
 <td>
 <#if Root.isEditor()>
+  <div id="stdSave">
   <form method="POST" action="${Root.path}/save">
   <input type="submit" value="Save">
+  <input type="button" value="Save Partial Snapshot" onclick="$('#extendedSave').css('display','block');$('#stdSave').css('display','none')">
   </form>
+  </div>
+  <div style="display:none" id="extendedSave">
+  <form  method="POST" action="${Root.path}/saveExtended">
+    <table>
+    <tr>
+      <td>name : </td>
+      <td><input type="text" name="name"/> </td>
+    </tr>
+    <tr>
+      <td>bundle prefixes : </td>
+      <td><textarea rows="4" cols="30" name="bundles"></textarea></td>
+    </tr>
+    <tr>
+      <td>packages prefixes : </td>
+      <td><textarea rows="4" cols="30" name="packages"></textarea></td>
+    </tr>
+    </table>
+  <input type="submit" value="Save"/>
+  </form>
+  </div>
+
 </#if>
 </td>
 
@@ -86,7 +108,7 @@ Here are the currently available distributions:
 </#if>
 
     </td>
-  </tr> 
+  </tr>
     <td width="50%">
       <h2>What is Nuxeo Platform Explorer?</h2>
       <p>
@@ -100,7 +122,7 @@ Here are the currently available distributions:
       </p>
     </td>
     <td width="50%">
-    
+
 <h2>Documentation</h2>
 
 <p>
@@ -122,7 +144,7 @@ You can use the form below to upload a documentation pack (zip):<br/>
   <input type="submit" value="Upload doc pack">
 </form>
 </#if>
-    
+
     </td>
   </tr>
 </table>

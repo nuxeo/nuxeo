@@ -48,9 +48,12 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter
 
     public static RepositoryDistributionSnapshot create(
             DistributionSnapshot distrib, CoreSession session,
-            String containerPath) throws ClientException {
+            String containerPath, String label) throws ClientException {
         DocumentModel doc = session.createDocumentModel(TYPE_NAME);
         String name = computeDocumentName(distrib.getKey());
+        if (label!=null) {
+            name = computeDocumentName(label);
+        }
         String targetPath = new Path(containerPath).append(name).toString();
 
         boolean exist = false;
@@ -60,7 +63,11 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter
         }
 
         doc.setPathInfo(containerPath, name);
-        doc.setPropertyValue("dc:title", distrib.getKey());
+        if (label==null) {
+            doc.setPropertyValue("dc:title", distrib.getKey());
+        } else {
+            doc.setPropertyValue("dc:title", label);
+        }
         doc.setPropertyValue(PROP_NAME, distrib.getName());
         doc.setPropertyValue(PROP_VERSION, distrib.getVersion());
         doc.setPropertyValue(PROP_KEY, distrib.getKey());

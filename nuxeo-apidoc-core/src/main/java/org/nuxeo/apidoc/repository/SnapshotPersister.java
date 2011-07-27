@@ -36,7 +36,10 @@ import org.nuxeo.apidoc.api.ExtensionPointInfo;
 import org.nuxeo.apidoc.api.OperationInfo;
 import org.nuxeo.apidoc.api.SeamComponentInfo;
 import org.nuxeo.apidoc.api.ServiceInfo;
+import org.nuxeo.apidoc.introspection.BundleGroupImpl;
+import org.nuxeo.apidoc.introspection.OperationInfoImpl;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
+import org.nuxeo.apidoc.snapshot.SnapshotFilter;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -112,7 +115,7 @@ public class SnapshotPersister {
     }
 
     public DistributionSnapshot persist(DistributionSnapshot snapshot,
-            CoreSession session, String label) throws ClientException {
+            CoreSession session, String label, SnapshotFilter filter) throws ClientException {
         if (label == null || "".equals(label.trim())) {
             label = snapshot.getName() + "-" + snapshot.getVersion();
         }
@@ -120,25 +123,40 @@ public class SnapshotPersister {
         RepositoryDistributionSnapshot distribContainer = createDistributionDoc(
                 snapshot, session, label);
 
-        List<BundleGroup> bundleGroups = snapshot.getBundleGroups();
-        for (BundleGroup bundleGroup : bundleGroups) {
-            persistBundleGroup(snapshot, bundleGroup, session, label,
+        if (filter!=null) {
+            // create VGroup that contain,s only the target bundles
+            BundleGroupImpl vGroup = new BundleGroupImpl(filter.getBundleGroupName(), snapshot.getVersion());
+            for (String bundleId : snapshot.getBundleIds()) {
+                if (filter.includeBundleId(bundleId)) {
+                    vGroup.add(bundleId);
+                }
+            }
+            persistBundleGroup(snapshot, vGroup, session, label + "-bundles",
                     distribContainer.getDoc());
+        } else {
+            List<BundleGroup> bundleGroups = snapshot.getBundleGroups();
+            for (BundleGroup bundleGroup : bundleGroups) {
+                persistBundleGroup(snapshot, bundleGroup, session, label,
+                        distribContainer.getDoc());
+            }
         }
         persistSeamComponents(snapshot, snapshot.getSeamComponents(), session,
-                label, distribContainer.getDoc());
+                label, distribContainer.getDoc(), filter);
+
         persistOperations(snapshot, snapshot.getOperations(), session, label,
-                distribContainer.getDoc());
+                distribContainer.getDoc(), filter);
 
         return distribContainer;
     }
 
     public void persistSeamComponents(DistributionSnapshot snapshot,
             List<SeamComponentInfo> seamComponents, CoreSession session,
-            String label, DocumentModel parent) throws ClientException {
+            String label, DocumentModel parent, SnapshotFilter filter) throws ClientException {
         for (SeamComponentInfo seamComponent : seamComponents) {
-            persistSeamComponent(snapshot, seamComponent, session, label,
+            if (filter==null || filter.includeSeamComponent(seamComponent)) {
+                persistSeamComponent(snapshot, seamComponent, session, label,
                     parent);
+            }
         }
     }
 
@@ -156,9 +174,11 @@ public class SnapshotPersister {
 
     public void persistOperations(DistributionSnapshot snapshot,
             List<OperationInfo> operations, CoreSession session, String label,
-            DocumentModel parent) throws ClientException {
+            DocumentModel parent,SnapshotFilter filter) throws ClientException {
         for (OperationInfo op : operations) {
-            persistOperation(snapshot, op, session, label, parent);
+            if (filter==null || (op instanceof OperationInfoImpl && filter.includeOpertation((OperationInfoImpl)op))) {
+                persistOperation(snapshot, op, session, label, parent);
+            }
         }
     }
 
@@ -284,7 +304,7 @@ public class SnapshotPersister {
             DistributionSnapshot snapshot, CoreSession session, String label)
             throws ClientException {
         return RepositoryDistributionSnapshot.create(snapshot, session,
-                getDistributionRoot(session).getPathAsString());
+                getDistributionRoot(session).getPathAsString(), label);
     }
 
     protected DocumentModel createBundleGroupDoc(BundleGroup bundleGroup,

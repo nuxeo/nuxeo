@@ -58,4 +58,7 @@ public interface SnapshotManager {
     DistributionSnapshot persistRuntimeSnapshot(CoreSession session, String name)
             throws ClientException;
 
+    DistributionSnapshot persistRuntimeSnapshot(CoreSession session,
+            String name, SnapshotFilter filter) throws ClientException;
+
 }

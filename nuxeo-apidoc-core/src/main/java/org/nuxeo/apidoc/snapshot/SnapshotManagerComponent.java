@@ -125,9 +125,15 @@ public class SnapshotManagerComponent extends DefaultComponent implements
     @Override
     public DistributionSnapshot persistRuntimeSnapshot(CoreSession session,
             String name) throws ClientException {
+        return persistRuntimeSnapshot(session, name, null);
+    }
+
+    @Override
+    public DistributionSnapshot persistRuntimeSnapshot(CoreSession session,
+            String name, SnapshotFilter filter) throws ClientException {
         DistributionSnapshot liveSnapshot = getRuntimeSnapshot();
         DistributionSnapshot snap = persister.persist(liveSnapshot, session,
-                name);
+                name, filter);
         addPersistentSnapshot(snap.getKey(), snap);
         return snap;
     }
