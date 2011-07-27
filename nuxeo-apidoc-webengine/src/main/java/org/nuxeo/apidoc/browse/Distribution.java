@@ -219,7 +219,7 @@ public class Distribution extends ModuleRoot {
 
         String[] packages= null;
         if (pkgList!=null) {
-            packages = pkgList.split("\n");
+            packages = pkgList.split("\\r?\\n");;
             for (String pkg : packages) {
                 filter.addPackagesPrefix(pkg);
             }

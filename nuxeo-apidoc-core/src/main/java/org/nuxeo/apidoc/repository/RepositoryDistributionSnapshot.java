@@ -65,12 +65,15 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter
         doc.setPathInfo(containerPath, name);
         if (label==null) {
             doc.setPropertyValue("dc:title", distrib.getKey());
+            doc.setPropertyValue(PROP_KEY, distrib.getKey());
+            doc.setPropertyValue(PROP_NAME, distrib.getName());
+            doc.setPropertyValue(PROP_VERSION, distrib.getVersion());
         } else {
             doc.setPropertyValue("dc:title", label);
+            doc.setPropertyValue(PROP_KEY, label);
+            doc.setPropertyValue(PROP_NAME, label + "-" + distrib.getVersion());
+            doc.setPropertyValue(PROP_VERSION, distrib.getVersion());
         }
-        doc.setPropertyValue(PROP_NAME, distrib.getName());
-        doc.setPropertyValue(PROP_VERSION, distrib.getVersion());
-        doc.setPropertyValue(PROP_KEY, distrib.getKey());
 
         if (exist) {
             doc = session.saveDocument(doc);
