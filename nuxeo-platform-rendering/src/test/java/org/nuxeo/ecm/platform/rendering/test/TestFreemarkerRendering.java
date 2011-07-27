@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.DataModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
@@ -84,8 +85,9 @@ public class TestFreemarkerRendering extends NXRuntimeTestCase {
     }
 
     public void testRendering() throws Exception {
-        final DocumentModelImpl doc1 = new DocumentModelImpl(
-                "/root/folder/wiki1", "Test Doc 1", "File");
+        DocumentModelImpl doc1 = new DocumentModelImpl(null, "File", null,
+                new Path("/root/folder/wiki1"), null, null, null, new String[] {
+                        "dublincore", "file" }, null, null, "default");
         doc1.addDataModel(new DataModelImpl("dublincore"));
         DocumentPart documentPart = doc1.getPart("dublincore");
         documentPart.get("title").setValue("The dublincore title for doc1");
@@ -95,6 +97,8 @@ public class TestFreemarkerRendering extends NXRuntimeTestCase {
                 TestFreemarkerRendering.class.getClassLoader().getResource(
                         "testdata/blob.wiki")));
         doc1.getPart("dublincore").get("content").setValue(blob);
+        // also add something prefetched (dm not loaded)
+        doc1.prefetchProperty("file.filename", "somefile");
 
         DocumentModelImpl doc2 = new DocumentModelImpl("/root/folder/wiki2",
                 "Test Doc 2", "File");
