@@ -124,7 +124,9 @@ public class NuxeoLauncherGUI {
     }
 
     public void initLogsManagement(String logFile, ColoredTextPane textArea) {
-        LogsSource logsSource = new LogsSource(new File(logFile));
+        File file = new File(logFile);
+        LogsSource logsSource = new LogsSource(file);
+        logsSource.skip(file.length() - NuxeoFrame.LOG_MAX_SIZE);
         logsSource.addObserver(new LogsHandler(textArea));
         LogsSourceThread logsSourceThread = new LogsSourceThread(logsSource);
         logsSourceThread.setDaemon(true);

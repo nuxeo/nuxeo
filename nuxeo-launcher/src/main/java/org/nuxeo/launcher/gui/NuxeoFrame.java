@@ -189,7 +189,7 @@ public class NuxeoFrame extends JFrame {
 
     private static final long serialVersionUID = 1L;
 
-    private static final int LOG_MAX_SIZE = 200000;
+    protected static final int LOG_MAX_SIZE = 200000;
 
     protected final ImageIcon startIcon = getImageIcon("icons/start.png");
 
