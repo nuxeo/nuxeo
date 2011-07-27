@@ -47,7 +47,7 @@ import org.apache.geronimo.transaction.GeronimoUserTransaction;
 import org.apache.geronimo.transaction.manager.NamedXAResource;
 import org.apache.geronimo.transaction.manager.RecoverableTransactionManager;
 import org.apache.geronimo.transaction.manager.TransactionManagerImpl;
-import org.nuxeo.common.jndi.InitContextAccessor;
+import org.nuxeo.common.jndi.InitialContextAccessor;
 import org.nuxeo.common.jndi.NamingContextFactory;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -142,7 +142,7 @@ public class NuxeoContainer {
 
     
     private static void installNaming() throws NamingException {
-        Context ctx = InitContextAccessor.getInitCtx();
+        Context ctx = InitialContextAccessor.getInitialContext();
         if (ctx != null) {
             NamingContextFactory.setDelegateContext(ctx);
             NamingContextFactory.setDelegateEnvironment(ctx.getEnvironment());

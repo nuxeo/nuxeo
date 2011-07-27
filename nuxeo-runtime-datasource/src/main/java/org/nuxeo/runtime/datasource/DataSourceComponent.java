@@ -25,7 +25,7 @@ import javax.naming.NamingException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.jndi.InitContextAccessor;
+import org.nuxeo.common.jndi.InitialContextAccessor;
 import org.nuxeo.common.jndi.NamingContextFactory;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -49,9 +49,9 @@ public class DataSourceComponent extends DefaultComponent {
 
     @Override
     public void activate(ComponentContext context) throws Exception {
-        Context ctx = InitContextAccessor.getInitCtx();
+        Context ctx = InitialContextAccessor.getInitialContext();
         if (ctx != null) {
-            if (InitContextAccessor.isWritable(ctx)) {
+            if (InitialContextAccessor.isWritable(ctx)) {
                 return;
             }
             NamingContextFactory.setDelegateContext(ctx);
