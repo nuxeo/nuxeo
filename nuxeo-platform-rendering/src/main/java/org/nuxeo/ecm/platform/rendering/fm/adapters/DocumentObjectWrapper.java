@@ -47,6 +47,8 @@ public class DocumentObjectWrapper extends DefaultObjectWrapper {
         }
         if (obj instanceof DocumentModel) {
             return new DocumentTemplate(this, (DocumentModel) obj);
+        } else if (obj instanceof SchemaTemplate.DocumentSchema) {
+            return new SchemaTemplate(this, (SchemaTemplate.DocumentSchema) obj);
         } else if (obj instanceof Property) {
             Property p = (Property) obj;
             if (p.isScalar()) {
