@@ -76,6 +76,8 @@ import org.nuxeo.shell.swing.ConsolePanel;
  */
 public class NuxeoFrame extends JFrame {
 
+    protected static final int LOG_MAX_SIZE = 200000;
+
     private class LogsPanelListener extends ComponentAdapter {
         private String logFile;
 
