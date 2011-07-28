@@ -23,6 +23,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -42,13 +43,13 @@ public class DeputyManagementStorageService implements DeputyManager {
     private static final String DIR_NAME = "deputies";
 
     private static final String DIR_COL_ID = "id";
-    
+
     private static final String DIR_COL_USERID = "userid";
 
     private static final String DIR_COL_DEPUTY = "deputy";
 
     private static final String DIR_COL_VALIDATE_DATE = "validateDate";
-    
+
     private static final String DIR_COL_START_VALIDITY = "validityStartDate";
 
     private static final String DIR_COL_END_VALIDITY = "validityEndDate";
@@ -227,8 +228,9 @@ public class DeputyManagementStorageService implements DeputyManager {
             throws ClientException {
         DataModel data = new DataModelImpl(directorySchema,
                 new HashMap<String, Object>());
-        DocumentModelImpl entry = new DocumentModelImpl("0", directorySchema,
-                null, null, null, null, new String[] { directorySchema }, null);
+        DocumentModelImpl entry = new DocumentModelImpl(null, directorySchema,
+                "0", null, null, null, null, new String[] { directorySchema },
+                null, null, null);
         entry.addDataModel(data);
         entry.setProperty(directorySchema, DIR_COL_ID, id(username, deputy));
         entry.setProperty(directorySchema, DIR_COL_USERID, username);
