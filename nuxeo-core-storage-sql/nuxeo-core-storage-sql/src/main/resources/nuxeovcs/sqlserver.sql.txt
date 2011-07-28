@@ -271,7 +271,7 @@ SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME =  'hierarchy_read_acl'
 
 #IF: emptyResult
 CREATE TABLE hierarchy_read_acl (
-  id ${idType} NOT NULL, -- doc id
+  id ${idType} COLLATE Latin1_General_BIN NOT NULL, -- doc id
   acl_id CHAR(32),      -- acl id in ACLR
   CONSTRAINT hierarchy_read_acl_id_fk FOREIGN KEY (id) REFERENCES hierarchy (id) ON DELETE CASCADE
 )
@@ -291,7 +291,7 @@ SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'aclr_modified' AND T
 #IF: emptyResult
 CREATE TABLE aclr_modified (
   id INT NOT NULL IDENTITY,
-  hierarchy_id ${idType},
+  hierarchy_id ${idType} COLLATE Latin1_General_BIN,
   is_new TINYINT
 )
 
@@ -315,7 +315,7 @@ SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME =  'aclr_permission' AN
 
 #IF: emptyResult
 CREATE TABLE aclr_permission (
-  permission NVARCHAR(250)
+  permission VARCHAR(256) COLLATE Latin1_General_BIN
 )
 
 
