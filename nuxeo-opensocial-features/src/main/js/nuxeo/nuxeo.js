@@ -90,3 +90,7 @@ gadgets.nuxeo.refreshGadget = function(){
   gadgets.rpc.call("", "refresh", null, "");
 };
 
+gadgets.nuxeo.getNuxeoContainerContext = function() {
+  return window.parent.nuxeo;
+};
+
