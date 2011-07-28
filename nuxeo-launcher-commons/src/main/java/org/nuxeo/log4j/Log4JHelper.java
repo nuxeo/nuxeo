@@ -30,9 +30,12 @@ import org.apache.log4j.FileAppender;
 import org.apache.log4j.Hierarchy;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
 import org.apache.log4j.spi.DefaultRepositorySelector;
+import org.apache.log4j.spi.Filter;
 import org.apache.log4j.spi.LoggerRepository;
 import org.apache.log4j.spi.RootLogger;
+import org.apache.log4j.varia.LevelRangeFilter;
 import org.apache.log4j.xml.DOMConfigurator;
 
 /**
@@ -43,6 +46,12 @@ import org.apache.log4j.xml.DOMConfigurator;
  */
 public class Log4JHelper {
     private static final Log log = LogFactory.getLog(Log4JHelper.class);
+
+    public static final String CONSOLE_APPENDER_NAME = "CONSOLE";
+
+    protected static final String FULL_PATTERN_LAYOUT = "%d{HH:mm:ss,SSS} %-5p [%C{1}] %m%n";
+
+    protected static final String LIGHT_PATTERN_LAYOUT = "%m%n";
 
     /**
      * Returns list of files produced by {@link FileAppender}s defined in a
@@ -106,12 +115,44 @@ public class Log4JHelper {
      * @param debug set debug log level to true or false
      */
     public static void setDebug(String category, boolean debug) {
+        Appender consoleAppender = Logger.getLogger(category).getAppender(
+                CONSOLE_APPENDER_NAME);
         if (debug) {
             Logger.getLogger(category).setLevel(Level.DEBUG);
-            log.info("Log level set to DEBUG");
+            if (consoleAppender != null) {
+                consoleAppender.setLayout(new PatternLayout(FULL_PATTERN_LAYOUT));
+            }
+            log.info("Log level set to DEBUG for: " + category);
         } else {
+            if (consoleAppender != null) {
+                consoleAppender.setLayout(new PatternLayout(
+                        LIGHT_PATTERN_LAYOUT));
+            }
             Logger.getLogger(category).setLevel(Level.INFO);
-            log.info("Log level reset to INFO for console");
+            log.info("Log level reset to INFO for: " + category);
+        }
+    }
+
+    /**
+     * Set "quiet" mode: set log level to WARN for the given Log4J appender.
+     *
+     * @param appenderName Log4J appender to switch to WARN
+     * @since 5.4.3
+     */
+    public static void setQuiet(String appenderName) {
+        Appender appender = Logger.getRootLogger().getAppender(appenderName);
+        if (appender == null) {
+            return;
+        }
+        Filter filter = appender.getFilter();
+        while (filter != null && !(filter instanceof LevelRangeFilter)) {
+            filter = filter.getNext();
+        }
+        if (filter != null) {
+            LevelRangeFilter levelRangeFilter = (LevelRangeFilter) filter;
+            levelRangeFilter.setLevelMin(Level.WARN);
+            log.debug("Log level filter set to WARN for appender "
+                    + appenderName);
         }
     }
 
