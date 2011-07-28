@@ -18,6 +18,9 @@
  - spaceProviderName: the name of the SpaceProvider to use to get the Space document
  - documentContextId: the id of the DocumentModel considered as context, if any, optional
  - spaceName: the Space name to use, optional
+ - applicationContextPath: the application context path, could be a document
+   different from the documentContext.
+   This path could be use for doing query for instance.
 </c:if>
 
   <link rel="stylesheet" type="text/css" href="${baseURL}opensocial/css/reset-fonts-grids.css" />
@@ -50,7 +53,8 @@
         parameters: {
           showPreferencesAfterAddingGadget: false,
           userLanguage: "#{localeSelector.language}",
-          generateTitle: true
+          generateTitle: true,
+          applicationContextPath: "#{applicationContextPath}"
         }
       }
 
