@@ -391,10 +391,6 @@ public abstract class NuxeoLauncher {
     }
 
     public static void main(String[] args) throws ConfigurationException {
-        if (args.length == 0) {
-            printHelp();
-            return;
-        }
         final NuxeoLauncher launcher = createLauncher(args);
         if (launcher.useGui && launcher.getGUI() == null) {
             launcher.setGUI(new NuxeoLauncherGUI(launcher));
@@ -582,7 +578,10 @@ public abstract class NuxeoLauncher {
             count++;
         } while (!isReady && count < startMaxWait && isRunning());
         if (isReady) {
-            startSummary.append(newLine + getStartupSummary());
+            String startupSummary = getStartupSummary();
+            if (!quiet) {
+                startSummary.append(newLine + startupSummary);
+            }
             long duration = (new Date().getTime() - startTime) / 1000;
             startSummary.append("Started in "
                     + String.format("%dmin%02ds", new Long(duration / 60),
@@ -992,6 +991,10 @@ public abstract class NuxeoLauncher {
      */
     private void setArgs(String[] args) {
         args = readOptions(args);
+        if (args.length == 0) {
+            printHelp();
+            System.exit(2);
+        }
         command = args[0];
         int firstParamToKeep = 1;
         if ("gui".equalsIgnoreCase(command)
@@ -1021,7 +1024,7 @@ public abstract class NuxeoLauncher {
                     setDebug(true);
                 } else if ("-q".equalsIgnoreCase(arg)
                         || "--quiet".equalsIgnoreCase(arg)) {
-                    setQuiet(true);
+                    setQuiet();
                 } else {
                     log.error("Unknown option " + arg);
                 }
@@ -1036,8 +1039,9 @@ public abstract class NuxeoLauncher {
      * @param beQuiet if true, launcher will be in quiet mode
      * @since 5.4.3
      */
-    protected void setQuiet(boolean beQuiet) {
-        quiet = beQuiet;
+    protected void setQuiet() {
+        quiet = true;
+        Log4JHelper.setQuiet(Log4JHelper.CONSOLE_APPENDER_NAME);
     }
 
     /**
@@ -1075,7 +1079,7 @@ public abstract class NuxeoLauncher {
                 + "\t\tPath to nuxeo.conf file (default is $NUXEO_HOME/bin/nuxeo.conf).");
         log.error("\t\t jvmcheck\t\tWill continue execution if equals to \"nofail\", else will exit.");
         log.error("\n\t Options:");
-        log.error("\t\t -d, --debug\t\tActivate DEBUG logs.");
+        log.error("\t\t -d, --debug\t\tActivate Launcher DEBUG logs.");
         log.error("\t\t -q, --quiet\t\tActivate quiet mode.");
         log.error("\n\t GUI options:");
         log.error("\t\t gui\t\t\tLauncher with a graphical user interface (default is headless/console mode except under Windows).");

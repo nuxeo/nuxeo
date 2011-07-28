@@ -149,9 +149,7 @@ fi
 ## Launcher
 NUXEO_LAUNCHER="$NUXEO_HOME"/bin/nuxeo-launcher.jar
 if [ ! -e "$NUXEO_LAUNCHER" ]; then
-    echo Could not locate $NUXEO_LAUNCHER
-    # echo Please check that you are in the bin directory when running this script.
-    exit 1
+    die "Could not locate $NUXEO_LAUNCHER"
 fi
 
 [ -d "$LOG_DIR" ] || mkdir -p "$LOG_DIR"
@@ -159,6 +157,6 @@ echo "[`date`] Command: $0 $@" >> $LOG_DIR/nuxeoctl.log
 
 #LAUNCHER_DEBUG="-Xdebug -Xrunjdwp:transport=dt_socket,address=8787,server=y,suspend=y"
 
-echo Launcher command: $JAVA $LAUNCHER_DEBUG -Dlauncher.java.opts="$JAVA_OPTS" -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" -Dnuxeo.log.dir="$LOG_DIR" -jar $NUXEO_LAUNCHER $@
+[[ "x$@" =~ -q || "x$@" =~ --quiet ]] || echo Launcher command: $JAVA $LAUNCHER_DEBUG -Dlauncher.java.opts="$JAVA_OPTS" -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" -Dnuxeo.log.dir="$LOG_DIR" -jar $NUXEO_LAUNCHER $@
 echo [`date`] Launcher command: $JAVA $LAUNCHER_DEBUG -Dlauncher.java.opts="$JAVA_OPTS" -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" -Dnuxeo.log.dir="$LOG_DIR" -jar $NUXEO_LAUNCHER $@ >> $LOG_DIR/nuxeoctl.log
 exec "$JAVA" $LAUNCHER_DEBUG -Dlauncher.java.opts="$JAVA_OPTS" -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" -Dnuxeo.log.dir="$LOG_DIR" -jar "$NUXEO_LAUNCHER" "$@"
