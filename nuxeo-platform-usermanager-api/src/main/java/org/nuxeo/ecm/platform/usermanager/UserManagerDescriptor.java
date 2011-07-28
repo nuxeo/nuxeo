@@ -154,7 +154,7 @@ public class UserManagerDescriptor implements Serializable {
 
     public boolean groupSearchFieldsPresent = false;
 
-    @XNode("users/searchFields")
+    @XNode("groups/searchFields")
     public void setGroupSearchFieldsPresent(
             @SuppressWarnings("unused") String text) {
         groupSearchFieldsPresent = true;
