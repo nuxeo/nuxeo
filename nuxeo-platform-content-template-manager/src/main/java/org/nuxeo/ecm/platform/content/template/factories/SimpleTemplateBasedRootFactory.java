@@ -17,8 +17,6 @@
 
 package org.nuxeo.ecm.platform.content.template.factories;
 
-import java.util.Calendar;
-
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.content.template.listener.RepositoryInitializationListener;
@@ -67,7 +65,7 @@ public class SimpleTemplateBasedRootFactory extends SimpleTemplateBasedFactory {
     protected boolean shouldCreateContent(DocumentModel eventDoc)
             throws ClientException {
         for (TemplateItemDescriptor item : template) {
-            if (session.getChildren(eventDoc.getRef(), item.getTypeName()).size() > 0) {
+            if (!session.getChildren(eventDoc.getRef(), item.getTypeName()).isEmpty()) {
                 return false;
             }
         }
