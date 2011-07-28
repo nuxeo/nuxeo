@@ -567,33 +567,38 @@ public abstract class NuxeoLauncher {
             try {
                 isReady = statusServletClient.init();
             } catch (SocketTimeoutException e) {
-                System.out.print(".");
+                if (!quiet) {
+                    System.out.print(".");
+                }
                 count++;
             }
         } while (!isReady && count < startMaxWait && isRunning());
         isReady = false;
         do {
             isReady = isStarted();
-            System.out.print(".");
+            if (!quiet) {
+                System.out.print(".");
+            }
             count++;
         } while (!isReady && count < startMaxWait && isRunning());
         if (isReady) {
-            String startupSummary = getStartupSummary();
-            if (!quiet) {
-                startSummary.append(newLine + startupSummary);
-            }
+            startSummary.append(newLine + getStartupSummary());
             long duration = (new Date().getTime() - startTime) / 1000;
             startSummary.append("Started in "
                     + String.format("%dmin%02ds", new Long(duration / 60),
                             new Long(duration % 60)));
             if (wasStartupFine()) {
-                System.out.println(startSummary);
+                if (!quiet) {
+                    System.out.println(startSummary);
+                }
             } else {
                 System.err.println(startSummary);
             }
             return wasStartupFine();
         } else if (count == startMaxWait) {
-            System.out.println();
+            if (!quiet) {
+                System.out.println();
+            }
             log.error("Starting process is taking too long - giving up.");
         }
         return false;
@@ -812,7 +817,9 @@ public abstract class NuxeoLauncher {
                 log.info("Server is not running.");
                 return;
             }
-            System.out.print("Stopping server...");
+            if (!quiet) {
+                System.out.print("Stopping server...");
+            }
             int nbTry = 0;
             boolean retry = false;
             do {
@@ -844,14 +851,18 @@ public abstract class NuxeoLauncher {
                             } else {
                                 // Failed to call for server stop
                                 retry = ++nbTry < STOP_NB_TRY;
-                                System.out.print(".");
+                                if (!quiet) {
+                                    System.out.print(".");
+                                }
                                 Thread.sleep(STOP_SECONDS_BEFORE_NEXT_TRY * 1000);
                             }
                             wait = false;
                         } catch (IllegalThreadStateException e) {
                             // Stop call is still running
                             wait = true;
-                            System.out.print(".");
+                            if (!quiet) {
+                                System.out.print(".");
+                            }
                             Thread.sleep(1000);
                         }
                     }
@@ -863,7 +874,9 @@ public abstract class NuxeoLauncher {
                     // Wait a few seconds for effective stop
                     for (int i = 0; !retry && getPid() != null
                             && i < STOP_MAX_WAIT; i++) {
-                        System.out.print(".");
+                        if (!quiet) {
+                            System.out.print(".");
+                        }
                         Thread.sleep(1000);
                     }
                 } catch (InterruptedException e) {
