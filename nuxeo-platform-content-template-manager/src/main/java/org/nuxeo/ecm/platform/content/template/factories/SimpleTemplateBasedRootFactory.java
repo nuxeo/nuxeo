@@ -28,7 +28,7 @@ import org.nuxeo.ecm.platform.content.template.service.TemplateItemDescriptor;
  * Specific factory for Root. Since some other
  * {@link RepositoryInitializationListener} have run before, root won't be empty
  * but we may still have to run this initializer.
- * 
+ *
  * @author Thierry Delprat
  */
 public class SimpleTemplateBasedRootFactory extends SimpleTemplateBasedFactory {
@@ -58,8 +58,6 @@ public class SimpleTemplateBasedRootFactory extends SimpleTemplateBasedFactory {
         }
         // init root ACL if really empty
         setAcl(acl, eventDoc.getRef());
-
-        createdContent();
     }
 
     /**
@@ -71,15 +69,11 @@ public class SimpleTemplateBasedRootFactory extends SimpleTemplateBasedFactory {
      */
     protected boolean shouldCreateContent(DocumentModel eventDoc)
             throws ClientException {
-        Boolean issued = (Boolean)session.getRootDocument().getProperty("dc","issued");
-        return issued == null;
-    }
-
-    /**
-     * Handles  completion, update processing status
-     * @throws ClientException
-     */
-    protected void createdContent() throws ClientException {
-        session.getRootDocument().setProperty("dc", "issued", Calendar.getInstance().getTime());
+        for (TemplateItemDescriptor item : template) {
+            if (session.getChildren(eventDoc.getRef(), item.getTypeName()).size() > 0) {
+                return false;
+            }
+        }
+        return true;
     }
 }
