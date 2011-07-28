@@ -1683,7 +1683,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
 
         DocumentModelList dml = session.query("SELECT * FROM File");
         assertEquals(1, dml.size());
-        // with MySQL and SQL Server was logging:
+        // Case insensitive databases may fail with:
         // ERROR Unknown document type: file
         // due to its case-insensitivity in = and IN tests...
         // and returning an empty query, cf SQLQueryResult.getDocumentModels

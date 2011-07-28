@@ -8,6 +8,7 @@
  *
  * Contributors:
  *     Florent Guillaume
+ *     Benoit Delbosc
  */
 
 package org.nuxeo.ecm.core.storage.sql.jdbc.dialect;
@@ -22,9 +23,13 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.nuxeo.common.utils.StringUtils;
+import org.nuxeo.ecm.core.NXCore;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.BinaryManager;
 import org.nuxeo.ecm.core.storage.sql.ColumnType;
@@ -50,6 +55,10 @@ public class DialectSQLServer extends Dialect {
 
     protected final String fulltextCatalog;
 
+    private static final String DEFAULT_USERS_SEPARATOR = "|";
+
+    protected final String usersSeparator;
+
     public DialectSQLServer(DatabaseMetaData metadata,
             BinaryManager binaryManager,
             RepositoryDescriptor repositoryDescriptor) throws StorageException {
@@ -60,6 +69,9 @@ public class DialectSQLServer extends Dialect {
         fulltextCatalog = repositoryDescriptor == null ? null
                 : repositoryDescriptor.fulltextCatalog == null ? DEFAULT_FULLTEXT_CATALOG
                         : repositoryDescriptor.fulltextCatalog;
+        usersSeparator = repositoryDescriptor == null ? null
+                : repositoryDescriptor.usersSeparatorKey == null ? DEFAULT_USERS_SEPARATOR
+                        : repositoryDescriptor.usersSeparatorKey;
 
     }
 
@@ -369,7 +381,40 @@ public class DialectSQLServer extends Dialect {
         properties.put("idType", "VARCHAR(36)");
         properties.put("fulltextEnabled", Boolean.valueOf(!fulltextDisabled));
         properties.put("fulltextCatalog", fulltextCatalog);
+        properties.put("aclOptimizationsEnabled",
+                Boolean.valueOf(aclOptimizationsEnabled));
+        String[] permissions = NXCore.getSecurityService().getPermissionsToCheck(
+                SecurityConstants.BROWSE);
+        List<String> permsList = new LinkedList<String>();
+        for (String perm : permissions) {
+            permsList.add(String.format(
+                    "  SELECT '%s' ", perm));
+        }
+        properties.put("readPermissions", StringUtils.join(permsList, " UNION ALL "));
+        properties.put("usersSeparator", getUsersSeparator());
         return properties;
+    }
+
+    @Override
+    public boolean supportsReadAcl() {
+        return aclOptimizationsEnabled;
+    }
+
+    @Override
+    public String getReadAclsCheckSql(String idColumnName) {
+        return String.format(
+                "%s IN (SELECT acl_id FROM dbo.nx_get_read_acls_for(?))",
+                idColumnName);
+    }
+
+    @Override
+    public String getUpdateReadAclsSql() {
+        return "EXEC dbo.nx_update_read_acls";
+    }
+
+    @Override
+    public String getRebuildReadAclsSql() {
+        return "EXEC dbo.nx_rebuild_read_acls";
     }
 
     @Override
@@ -408,6 +453,23 @@ public class DialectSQLServer extends Dialect {
     @Override
     public String getBlobLengthFunction() {
         return "DATALENGTH";
+    }
+
+    @Override
+    public String getPrepareUserReadAclsSql() {
+        return "EXEC nx_prepare_user_read_acls ?";
+    }
+
+    @Override
+    public boolean needsPrepareUserReadAcls() {
+        return true;
+    }
+
+    public String getUsersSeparator() {
+        if (usersSeparator == null) {
+            return DEFAULT_USERS_SEPARATOR;
+        }
+        return usersSeparator;
     }
 
 }
