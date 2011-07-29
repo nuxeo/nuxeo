@@ -24,6 +24,7 @@ import java.awt.HeadlessException;
 import java.awt.Toolkit;
 import java.io.File;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
@@ -33,6 +34,7 @@ import javax.swing.SwingUtilities;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.artofsolving.jodconverter.util.PlatformUtils;
 import org.nuxeo.launcher.NuxeoLauncher;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.launcher.daemon.DaemonThreadFactory;
@@ -44,11 +46,13 @@ import org.nuxeo.launcher.gui.logs.LogsSourceThread;
  * Launcher controller for graphical user interface
  *
  * @author jcarsique
- * @since 5.4.1
+ * @since 5.4.2
  * @see NuxeoLauncher
  */
 public class NuxeoLauncherGUI {
     static final Log log = LogFactory.getLog(NuxeoLauncherGUI.class);
+
+    protected static final long UPDATE_FREQUENCY = 3000;
 
     private final ExecutorService executor = Executors.newFixedThreadPool(5,
             new DaemonThreadFactory("NuxeoLauncherGUITask"));
@@ -64,13 +68,23 @@ public class NuxeoLauncherGUI {
      */
     public NuxeoLauncherGUI(NuxeoLauncher launcher) {
         this.launcher = launcher;
+        // Set OS-specific decorations
+        if (PlatformUtils.isMac()) {
+            System.setProperty("apple.laf.useScreenMenuBar", "true");
+            System.setProperty("com.apple.mrj.application.growbox.intrudes",
+                    "false");
+            System.setProperty("com.apple.mrj.application.live-resize", "true");
+            System.setProperty("com.apple.macos.smallTabs", "true");
+        }
+        initFrame(this);
     }
 
-    private void initFrame(final NuxeoLauncherGUI controller) {
+    protected void initFrame(final NuxeoLauncherGUI controller) {
         SwingUtilities.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 try {
-                    nuxeoFrame = new NuxeoFrame(controller);
+                    nuxeoFrame = createNuxeoFrame(controller);
                     nuxeoFrame.pack();
                     // Center frame
                     Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -84,31 +98,35 @@ public class NuxeoLauncherGUI {
                 }
             }
         });
+        new Thread() {
+            @Override
+            public void run() {
+                while (true) {
+                    updateServerStatus();
+                    try {
+                        Thread.sleep(UPDATE_FREQUENCY);
+                    } catch (InterruptedException e) {
+                        break;
+                    }
+                }
+            }
+        }.start();
     }
 
     /**
-     * Starts GUI, automatically running command passed in parameter after "gui"
-     * option.
+     * Instantiate a new {@link NuxeoFrame}. Can be overridden if needed.
      *
-     * @return Either null or a command delegated by GUI launcher to console
-     *         launcher.
+     * @param controller
+     * @return
      */
-    public String execute() {
-        initFrame(this);
-        String command = launcher.getCommand();
-        if (command != null) {
-            if ("start".equalsIgnoreCase(command)) {
-                start();
-            } else if ("stop".equalsIgnoreCase(command)) {
-                stop();
-            } else
-                return command;
-        }
-        return null;
+    protected NuxeoFrame createNuxeoFrame(NuxeoLauncherGUI controller) {
+        return new NuxeoFrame(controller);
     }
 
     public void initLogsManagement(String logFile, ColoredTextPane textArea) {
-        LogsSource logsSource = new LogsSource(new File(logFile));
+        File file = new File(logFile);
+        LogsSource logsSource = new LogsSource(file);
+        logsSource.skip(file.length() - NuxeoFrame.LOG_MAX_SIZE);
         logsSource.addObserver(new LogsHandler(textArea));
         LogsSourceThread logsSourceThread = new LogsSourceThread(logsSource);
         logsSourceThread.setDaemon(true);
@@ -120,16 +138,20 @@ public class NuxeoLauncherGUI {
      * @see NuxeoLauncher#stop()
      */
     public void stop() {
+        waitForFrameLoaded();
+        nuxeoFrame.stopping = true;
+        nuxeoFrame.mainButton.setText(getMessage("mainbutton.stop.inprogress"));
+        nuxeoFrame.mainButton.setToolTipText(NuxeoLauncherGUI.getMessage("mainbutton.stop.tooltip"));
+        nuxeoFrame.mainButton.setIcon(nuxeoFrame.stopIcon);
         executor.execute(new Runnable() {
 
             @Override
             public void run() {
                 launcher.stop();
+                nuxeoFrame.stopping = false;
                 updateServerStatus();
             }
         });
-        waitForFrameLoaded();
-        nuxeoFrame.mainButton.setText(getMessage("mainbutton.stop.inprogress"));
     }
 
     /**
@@ -141,6 +163,7 @@ public class NuxeoLauncherGUI {
     public void updateServerStatus() {
         waitForFrameLoaded();
         nuxeoFrame.updateMainButton();
+        nuxeoFrame.updateLaunchBrowserButton();
         nuxeoFrame.updateSummary();
     }
 
@@ -163,6 +186,11 @@ public class NuxeoLauncherGUI {
      * @see NuxeoLauncher#doStart() NuxeoLauncher#doStartAndWait()
      */
     public void start() {
+        waitForFrameLoaded();
+        nuxeoFrame.stopping = false;
+        nuxeoFrame.mainButton.setText(NuxeoLauncherGUI.getMessage("mainbutton.start.inprogress"));
+        nuxeoFrame.mainButton.setToolTipText(NuxeoLauncherGUI.getMessage("mainbutton.stop.tooltip"));
+        nuxeoFrame.mainButton.setIcon(nuxeoFrame.stopIcon);
         executor.execute(new Runnable() {
 
             @Override
@@ -171,8 +199,6 @@ public class NuxeoLauncherGUI {
                 updateServerStatus();
             }
         });
-        waitForFrameLoaded();
-        nuxeoFrame.mainButton.setText(NuxeoLauncherGUI.getMessage("mainbutton.start.inprogress"));
     }
 
     /**
@@ -206,10 +232,19 @@ public class NuxeoLauncherGUI {
         try {
             message = ResourceBundle.getBundle("i18n/messages").getString(key);
         } catch (MissingResourceException e) {
-            log.error(e);
-            message = getMessage("missing.translation") + key;
+            log.info(getMessage("missing.translation") + key);
+            message = ResourceBundle.getBundle("i18n/messages", Locale.ENGLISH).getString(
+                    key);
         }
         return message;
+    }
+
+    /**
+     * @return the NuxeoLauncher managed by the current GUI
+     * @since 5.4.3
+     */
+    public NuxeoLauncher getLauncher() {
+        return launcher;
     }
 
 }

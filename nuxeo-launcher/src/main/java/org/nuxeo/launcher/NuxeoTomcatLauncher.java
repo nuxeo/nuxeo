@@ -31,7 +31,7 @@ import org.nuxeo.launcher.config.TomcatConfigurator;
  * Main Nuxeo server thread
  *
  * @author jcarsique
- * @since 5.4.1
+ * @since 5.4.2
  */
 public class NuxeoTomcatLauncher extends NuxeoLauncher {
 

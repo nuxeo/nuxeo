@@ -20,7 +20,6 @@ package org.nuxeo.launcher.gui.logs;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Observable;
@@ -31,7 +30,7 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * @author jcarsique
- * @since 5.4.1
+ * @since 5.4.2
  */
 public class LogsSource extends Observable implements Runnable {
     static final Log log = LogFactory.getLog(LogsSource.class);
@@ -43,6 +42,8 @@ public class LogsSource extends Observable implements Runnable {
     private File logFile;
 
     private boolean pause = true;
+
+    private long charsToSkip = 0;
 
     /**
      * @param logFile Log file to manage
@@ -58,25 +59,33 @@ public class LogsSource extends Observable implements Runnable {
             while (!logFile.exists()) {
                 Thread.sleep(WAIT_FOR_FILE_EXISTS);
             }
-            try {
-                in = new BufferedReader(new FileReader(logFile));
-            } catch (FileNotFoundException e) {
-                log.error(e.getMessage());
+            in = new BufferedReader(new FileReader(logFile));
+            // Avoid reading and formating chars which won't be displayed
+            if (charsToSkip > 0) {
+                in.skip(charsToSkip);
             }
-            String line;
+            // marker for detecting log rotate
+            long lastModified = logFile.lastModified();
             while (true) {
-                line = in.readLine();
-                if (line != null) {
-                    setChanged();
-                    notifyObservers(line);
-                } else {
-                    synchronized (this) {
-                        wait(WAIT_FOR_READING_CONTENT);
-                    }
-                }
                 if (pause) {
                     synchronized (this) {
                         wait();
+                    }
+                }
+                String line = in.readLine();
+                if (line != null) {
+                    lastModified = logFile.lastModified();
+                    setChanged();
+                    notifyObservers(line);
+                } else {
+                    if (logFile.lastModified() > lastModified) {
+                        log.debug("File rotation detected");
+                        IOUtils.closeQuietly(in);
+                        in = new BufferedReader(new FileReader(logFile));
+                    } else {
+                        synchronized (this) {
+                            wait(WAIT_FOR_READING_CONTENT);
+                        }
                     }
                 }
             }
@@ -104,6 +113,13 @@ public class LogsSource extends Observable implements Runnable {
         synchronized (this) {
             notify();
         }
+    }
+
+    /**
+     * @param i
+     */
+    public void skip(long length) {
+        charsToSkip = length;
     }
 
 }

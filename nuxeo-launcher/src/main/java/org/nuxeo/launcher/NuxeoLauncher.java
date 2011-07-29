@@ -19,26 +19,25 @@
 
 package org.nuxeo.launcher;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.impl.SimpleLog;
@@ -53,11 +52,13 @@ import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.launcher.config.Environment;
 import org.nuxeo.launcher.daemon.DaemonThreadFactory;
 import org.nuxeo.launcher.gui.NuxeoLauncherGUI;
+import org.nuxeo.launcher.monitoring.StatusServletClient;
+import org.nuxeo.log4j.Log4JHelper;
 import org.nuxeo.log4j.ThreadedStreamGobbler;
 
 /**
  * @author jcarsique
- * @since 5.4.1
+ * @since 5.4.2
  */
 public abstract class NuxeoLauncher {
     static final Log log = LogFactory.getLog(NuxeoLauncher.class);
@@ -96,8 +97,6 @@ public abstract class NuxeoLauncher {
 
     private static final int STOP_SECONDS_BEFORE_NEXT_TRY = 2;
 
-    private static final int MAX_WAIT_LOGFILE = 10;
-
     private static final String PARAM_NUXEO_URL = "nuxeo.url";
 
     private static final String INSTALLER_CLASS = "org.nuxeo.ecm.admin.offline.update.Main";
@@ -131,11 +130,52 @@ public abstract class NuxeoLauncher {
 
     private boolean useGui = false;
 
+    /**
+     * @since 5.4.3
+     */
+    public boolean isUsingGui() {
+        return useGui;
+    }
+
     private boolean reloadConfiguration = false;
 
     private int status = 4;
 
     private int errorValue = 0;
+
+    private StatusServletClient statusServletClient;
+
+    private boolean quiet = false;
+
+    /**
+     * @since 5.4.3
+     * @return true if quiet mode is active
+     */
+    public boolean isQuiet() {
+        return quiet;
+    }
+
+    private static Map<String, NuxeoLauncherGUI> guis;
+
+    /**
+     * @since 5.4.3
+     */
+    public NuxeoLauncherGUI getGUI() {
+        if (guis == null) {
+            return null;
+        }
+        return guis.get(configurationGenerator.getNuxeoConf().toString());
+    }
+
+    /**
+     * @since 5.4.3
+     */
+    public void setGUI(NuxeoLauncherGUI gui) {
+        if (guis == null) {
+            guis = new HashMap<String, NuxeoLauncherGUI>();
+        }
+        guis.put(configurationGenerator.getNuxeoConf().toString(), gui);
+    }
 
     public NuxeoLauncher(ConfigurationGenerator configurationGenerator) {
         // super("Nuxeo");
@@ -143,6 +183,12 @@ public abstract class NuxeoLauncher {
         processManager = getOSProcessManager();
         processRegex = Pattern.quote(configurationGenerator.getNuxeoConf().getPath())
                 + ".*" + Pattern.quote(getServerPrint());
+        // Set OS-specific decorations
+        if (PlatformUtils.isMac()) {
+            System.setProperty(
+                    "com.apple.mrj.application.apple.menu.about.name",
+                    "NuxeoCtl");
+        }
     }
 
     private ProcessManager getOSProcessManager() {
@@ -345,32 +391,43 @@ public abstract class NuxeoLauncher {
     }
 
     public static void main(String[] args) throws ConfigurationException {
-        int exitStatus = 0;
-        if (args.length == 0) {
-            printHelp();
-            return;
-        }
         final NuxeoLauncher launcher = createLauncher(args);
-        NuxeoLauncherGUI launcherGUI = null;
-        String command = launcher.command;
-        boolean commandSucceeded = true;
-        if (launcher.useGui) {
-            launcherGUI = new NuxeoLauncherGUI(launcher);
-            command = launcherGUI.execute();
+        if (launcher.useGui && launcher.getGUI() == null) {
+            launcher.setGUI(new NuxeoLauncherGUI(launcher));
         }
-        if (command == null) {
+        launch(launcher);
+    }
+
+    /**
+     * @since 5.4.3
+     * @param launcher
+     * @param launcherGUI
+     * @param command
+     */
+    public static void launch(final NuxeoLauncher launcher) {
+        int exitStatus = 0;
+        boolean commandSucceeded = true;
+        if (launcher.command == null) {
             // Nothing to do
-        } else if ("help".equalsIgnoreCase(command)) {
+        } else if ("help".equalsIgnoreCase(launcher.command)) {
             printHelp();
-        } else if ("status".equalsIgnoreCase(command)) {
+        } else if ("status".equalsIgnoreCase(launcher.command)) {
             log.info(launcher.status());
+            if (launcher.isStarted()) {
+                log.info(launcher.getStartupSummary());
+            }
             exitStatus = launcher.status;
-        } else if ("startbg".equalsIgnoreCase(command)) {
+        } else if ("startbg".equalsIgnoreCase(launcher.command)) {
             commandSucceeded = launcher.doStart();
-        } else if ("start".equalsIgnoreCase(command)) {
-            commandSucceeded = launcher.doStartAndWait();
-        } else if ("console".equalsIgnoreCase(command)) {
+        } else if ("start".equalsIgnoreCase(launcher.command)) {
+            if (launcher.useGui) {
+                launcher.getGUI().start();
+            } else {
+                commandSucceeded = launcher.doStartAndWait();
+            }
+        } else if ("console".equalsIgnoreCase(launcher.command)) {
             launcher.executor.execute(new Runnable() {
+                @Override
                 public void run() {
                     launcher.addShutdownHook();
                     if (!launcher.doStart(true)) {
@@ -379,31 +436,32 @@ public abstract class NuxeoLauncher {
                     }
                 }
             });
-        } else if ("stop".equalsIgnoreCase(command)) {
-            launcher.stop();
-        } else if ("restartbg".equalsIgnoreCase(command)) {
+        } else if ("stop".equalsIgnoreCase(launcher.command)) {
+            if (launcher.useGui) {
+                launcher.getGUI().stop();
+            } else {
+                launcher.stop();
+            }
+        } else if ("restartbg".equalsIgnoreCase(launcher.command)) {
             launcher.stop();
             commandSucceeded = launcher.doStart();
-        } else if ("restart".equalsIgnoreCase(command)) {
+        } else if ("restart".equalsIgnoreCase(launcher.command)) {
             launcher.stop();
             commandSucceeded = launcher.doStartAndWait();
-        } else if ("wizard".equalsIgnoreCase(command)) {
+        } else if ("wizard".equalsIgnoreCase(launcher.command)) {
             commandSucceeded = launcher.startWizard();
-        } else if ("configure".equalsIgnoreCase(command)) {
+        } else if ("configure".equalsIgnoreCase(launcher.command)) {
             try {
                 launcher.configure();
             } catch (ConfigurationException e) {
                 log.error(e);
                 commandSucceeded = false;
             }
-        } else if ("pack".equalsIgnoreCase(command)) {
+        } else if ("pack".equalsIgnoreCase(launcher.command)) {
             exitStatus = 3;
         } else {
             printHelp();
             commandSucceeded = false;
-        }
-        if (launcher.useGui) {
-            launcherGUI.updateServerStatus();
         }
         if (!commandSucceeded) {
             exitStatus = launcher.errorValue;
@@ -492,81 +550,82 @@ public abstract class NuxeoLauncher {
         }
     }
 
+    /**
+     * @return true if Nuxeo is ready
+     */
     protected boolean waitForEffectiveStart() {
         long startTime = new Date().getTime();
-        Pattern nuxeoStartedPattern = Pattern.compile(".*OSGiRuntimeService.*Nuxeo EP Started");
-        Pattern separatorPattern = Pattern.compile("======================================================================");
-        File logFile = new File(configurationGenerator.getLogDir(),
-                "server.log");
+        int startMaxWait = Integer.parseInt(configurationGenerator.getUserConfig().getProperty(
+                START_MAX_WAIT_PARAM, getDefaultMaxWait()));
+        log.debug("Will wait for effective start during " + startMaxWait
+                + " seconds.");
         final StringBuilder startSummary = new StringBuilder();
         final String newLine = System.getProperty("line.separator");
-        BufferedReader in = null;
-        try {
-            // Wait for logfile creation
-            int notfound = 0;
-            while (notfound++ < MAX_WAIT_LOGFILE && !logFile.exists()) {
-                System.out.print(".");
-                Thread.sleep(1000);
-            }
+        boolean isReady = false;
+        int count = 0;
+        do {
             try {
-                in = new BufferedReader(new FileReader(logFile));
-            } catch (FileNotFoundException e) {
-                log.error(e.getMessage());
-                return false;
-            }
-            int count = 0;
-            int countStatus = 0;
-            boolean countActive = false;
-            String line;
-            // Go to end of file
-            while (in.readLine() != null)
-                ;
-            int startMaxWait = Integer.parseInt(configurationGenerator.getUserConfig().getProperty(
-                    START_MAX_WAIT_PARAM, getDefaultMaxWait()));
-            log.debug("Will wait for effective start during " + startMaxWait
-                    + " seconds.");
-            do {
-                // Wait for something to read
-                while (!in.ready() && count < startMaxWait && isRunning()) {
+                isReady = statusServletClient.init();
+            } catch (SocketTimeoutException e) {
+                if (!quiet) {
                     System.out.print(".");
-                    count++;
-                    Thread.sleep(1000);
                 }
-                line = in.readLine();
-                if (line != null && nuxeoStartedPattern.matcher(line).matches()) {
-                    countActive = true;
-                }
-                if (countActive) {
-                    if (line != null
-                            && separatorPattern.matcher(line).matches()) {
-                        countStatus++;
-                    }
-                    if (countStatus > 0) {
-                        startSummary.append(newLine + line);
-                    }
-                }
-            } while (countStatus < 3 && count < startMaxWait && isRunning());
-            if (countStatus == 3) {
-                long duration = (new Date().getTime() - startTime) / 1000;
-                startSummary.append(newLine
-                        + "Started in "
-                        + String.format("%dmin%02ds", new Long(duration / 60),
-                                new Long(duration % 60)));
-                System.out.println(startSummary);
-                return true;
-            } else {
-                log.error("Starting process is taking too long - giving up.");
+                count++;
             }
-        } catch (FileNotFoundException e) {
-            log.error("Unable to open " + logFile.getPath(), e);
-        } catch (IOException e) {
-            log.error(e);
-        } catch (InterruptedException e) {
-            log.debug(e);
-        } finally {
-            IOUtils.closeQuietly(in);
+        } while (!isReady && count < startMaxWait && isRunning());
+        isReady = false;
+        do {
+            isReady = isStarted();
+            if (!quiet) {
+                System.out.print(".");
+            }
+            count++;
+        } while (!isReady && count < startMaxWait && isRunning());
+        if (isReady) {
+            startSummary.append(newLine + getStartupSummary());
+            long duration = (new Date().getTime() - startTime) / 1000;
+            startSummary.append("Started in "
+                    + String.format("%dmin%02ds", new Long(duration / 60),
+                            new Long(duration % 60)));
+            if (wasStartupFine()) {
+                if (!quiet) {
+                    System.out.println(startSummary);
+                }
+            } else {
+                System.err.println(startSummary);
+            }
+            return wasStartupFine();
+        } else if (count == startMaxWait) {
+            if (!quiet) {
+                System.out.println();
+            }
+            log.error("Starting process is taking too long - giving up.");
         }
         return false;
+    }
+
+    /**
+     * Must be called after {@link #getStartupSummary()}
+     *
+     * @since 5.4.3
+     * @return last detected status of running Nuxeo server
+     */
+    public boolean wasStartupFine() {
+        return statusServletClient.isStartupFine();
+    }
+
+    /**
+     * @since 5.4.3
+     * @return Nuxeo startup summary
+     * @throws SocketTimeoutException if Nuxeo server is not responding
+     */
+    public String getStartupSummary() {
+        try {
+            return statusServletClient.getStartupSummary();
+        } catch (SocketTimeoutException e) {
+            log.warn("Failed to contact Nuxeo for getting startup summary", e);
+            return "";
+        }
     }
 
     /**
@@ -758,7 +817,9 @@ public abstract class NuxeoLauncher {
                 log.info("Server is not running.");
                 return;
             }
-            System.out.print("Stopping server...");
+            if (!quiet) {
+                System.out.print("Stopping server...");
+            }
             int nbTry = 0;
             boolean retry = false;
             do {
@@ -790,14 +851,18 @@ public abstract class NuxeoLauncher {
                             } else {
                                 // Failed to call for server stop
                                 retry = ++nbTry < STOP_NB_TRY;
-                                System.out.print(".");
+                                if (!quiet) {
+                                    System.out.print(".");
+                                }
                                 Thread.sleep(STOP_SECONDS_BEFORE_NEXT_TRY * 1000);
                             }
                             wait = false;
                         } catch (IllegalThreadStateException e) {
                             // Stop call is still running
                             wait = true;
-                            System.out.print(".");
+                            if (!quiet) {
+                                System.out.print(".");
+                            }
                             Thread.sleep(1000);
                         }
                     }
@@ -809,7 +874,9 @@ public abstract class NuxeoLauncher {
                     // Wait a few seconds for effective stop
                     for (int i = 0; !retry && getPid() != null
                             && i < STOP_MAX_WAIT; i++) {
-                        System.out.print(".");
+                        if (!quiet) {
+                            System.out.print(".");
+                        }
                         Thread.sleep(1000);
                     }
                 } catch (InterruptedException e) {
@@ -863,8 +930,7 @@ public abstract class NuxeoLauncher {
 
     /**
      * Return process status (running or not) as String, depending on OS
-     * capability to manage processes.
-     * Set status value following
+     * capability to manage processes. Set status value following
      * "http://refspecs.freestandards.org/LSB_4.1.0/LSB-Core-generic/LSB-Core-generic/iniscrptact.html"
      *
      * @see #status
@@ -907,8 +973,9 @@ public abstract class NuxeoLauncher {
      * @return a NuxeoLauncher instance specific to current server (JBoss,
      *         Tomcat or Jetty).
      * @throws ConfigurationException If server cannot be identified
+     * @since 5.4.3
      */
-    private static NuxeoLauncher createLauncher(String[] args)
+    public static NuxeoLauncher createLauncher(String[] args)
             throws ConfigurationException {
         NuxeoLauncher launcher;
         ConfigurationGenerator configurationGenerator = new ConfigurationGenerator();
@@ -923,6 +990,8 @@ public abstract class NuxeoLauncher {
         }
         launcher.setArgs(args);
         configurationGenerator.init();
+        launcher.statusServletClient = new StatusServletClient(
+                configurationGenerator);
         return launcher;
     }
 
@@ -934,10 +1003,16 @@ public abstract class NuxeoLauncher {
      *            Must not be null or empty.
      */
     private void setArgs(String[] args) {
+        args = readOptions(args);
+        if (args.length == 0) {
+            printHelp();
+            System.exit(2);
+        }
         command = args[0];
         int firstParamToKeep = 1;
-        if ("gui".equalsIgnoreCase(command)) {
-            useGui = true;
+        if ("gui".equalsIgnoreCase(command)
+                || "nogui".equalsIgnoreCase(command)) {
+            useGui = "gui".equalsIgnoreCase(command);
             command = args.length > 1 ? args[1] : null;
             firstParamToKeep = 2;
         }
@@ -946,12 +1021,57 @@ public abstract class NuxeoLauncher {
     }
 
     /**
+     * Read options (i.e. parameters starting with one or two dashes)
+     *
+     * @param args arguments to read
+     * @return the passed arguments without the options
+     * @since 5.4.3
+     */
+    protected String[] readOptions(String[] args) {
+        int nbOptions = 0;
+        for (String arg : args) {
+            if (arg.startsWith("-") || arg.startsWith("--")) {
+                nbOptions++;
+                if ("-d".equalsIgnoreCase(arg)
+                        || "--debug".equalsIgnoreCase(arg)) {
+                    setDebug(true);
+                } else if ("-q".equalsIgnoreCase(arg)
+                        || "--quiet".equalsIgnoreCase(arg)) {
+                    setQuiet();
+                } else {
+                    log.error("Unknown option " + arg);
+                }
+            } else {
+                break;
+            }
+        }
+        return Arrays.copyOfRange(args, nbOptions, args.length);
+    }
+
+    /**
+     * @param beQuiet if true, launcher will be in quiet mode
+     * @since 5.4.3
+     */
+    protected void setQuiet() {
+        quiet = true;
+        Log4JHelper.setQuiet(Log4JHelper.CONSOLE_APPENDER_NAME);
+    }
+
+    /**
+     * @param activateDebug if true, will activate the DEBUG logs
+     * @since 5.4.3
+     */
+    protected void setDebug(boolean activateDebug) {
+        Log4JHelper.setDebug("org.nuxeo.launcher", activateDebug);
+    }
+
+    /**
      * Print class usage on standard system output.
      *
      * @throws URISyntaxException
      */
     public static void printHelp() {
-        log.error("\nnuxeoctl usage:\n\tnuxeoctl [gui|nogui] (help|start|stop|restart|configure|wizard|console|status|startbg|restartbg|pack) [additional parameters]");
+        log.error("\nnuxeoctl usage:\n\tnuxeoctl [options] [gui|nogui] [help|start|stop|restart|configure|wizard|console|status|startbg|restartbg|pack] [additional parameters]");
         log.error("\njava usage:\n\tjava [-D"
                 + JAVA_OPTS_PROPERTY
                 + "=\"JVM options\"] [-D"
@@ -959,8 +1079,8 @@ public abstract class NuxeoLauncher {
                 + "=\"/path/to/nuxeo\"] [-D"
                 + ConfigurationGenerator.NUXEO_CONF
                 + "=\"/path/to/nuxeo.conf\"] [-Djvmcheck=nofail] -jar \"path/to/nuxeo-launcher.jar\""
-                + " \\ \n\t\t[gui] (help|start|stop|restart|configure|wizard|console|status|startbg|restartbg|pack) [additional parameters]");
-        log.error("\n\t Options:");
+                + " \\ \n\t\t[options] [gui] [help|start|stop|restart|configure|wizard|console|status|startbg|restartbg|pack] [additional parameters]");
+        log.error("\n\t Java parameters:");
         log.error("\t\t " + JAVA_OPTS_PROPERTY
                 + "\tParameters for the server JVM (default are "
                 + JAVA_OPTS_DEFAULT + ").");
@@ -971,44 +1091,68 @@ public abstract class NuxeoLauncher {
                 + ConfigurationGenerator.NUXEO_CONF
                 + "\t\tPath to nuxeo.conf file (default is $NUXEO_HOME/bin/nuxeo.conf).");
         log.error("\t\t jvmcheck\t\tWill continue execution if equals to \"nofail\", else will exit.");
-        log.error("\t\t gui\t\t\tLauncher with a graphical user interface (default is headless/console mode).");
-        log.error("\t\t nogui\t\t\tWindows only. Deactivate gui option which is set by default under Windows.");
+        log.error("\n\t Options:");
+        log.error("\t\t -d, --debug\t\tActivate Launcher DEBUG logs.");
+        log.error("\t\t -q, --quiet\t\tActivate quiet mode.");
+        log.error("\n\t GUI options:");
+        log.error("\t\t gui\t\t\tLauncher with a graphical user interface (default is headless/console mode except under Windows).");
+        log.error("\t\t nogui\t\t\tDeactivate gui option which is set by default under Windows.");
         log.error("\n\t Commands:");
-        log.error("\t\t help\t\tPrint this message.");
-        log.error("\t\t start\t\tStart Nuxeo server in background, waiting for effective start. Useful for batch executions requiring the server being immediatly available after the script returned.");
-        log.error("\t\t stop\t\tStop any Nuxeo server started with the same nuxeo.conf file.");
-        log.error("\t\t restart\tRestart Nuxeo server.");
-        log.error("\t\t configure\tConfigure Nuxeo server with parameters from nuxeo.conf.");
-        log.error("\t\t wizard\tEnable the wizard (force the wizard to be played again in case the wizard configuration has already been done).");
-        log.error("\t\t console\tStart Nuxeo server in a console mode. Ctrl-C will stop it.");
-        log.error("\t\t status\t\tPrint server status (running or not).");
-        log.error("\t\t startbg\tStart Nuxeo server in background, without waiting for effective start. Useful for starting Nuxeo as a service.");
-        log.error("\t\t restartbg\tRestart Nuxeo server with a call to \"startbg\" after \"stop\".");
-        log.error("\t\t pack\t\tNot implemented. Use \"pack\" Shell script.");
+        log.error("\t\t help\t\t\tPrint this message.");
+        log.error("\t\t start\t\t\tStart Nuxeo server in background, waiting for effective start. Useful for batch executions requiring the server being immediately available after the script returned.");
+        log.error("\t\t stop\t\t\tStop any Nuxeo server started with the same nuxeo.conf file.");
+        log.error("\t\t restart\t\tRestart Nuxeo server.");
+        log.error("\t\t configure\t\tConfigure Nuxeo server with parameters from nuxeo.conf.");
+        log.error("\t\t wizard\t\t\tEnable the wizard (force the wizard to be played again in case the wizard configuration has already been done).");
+        log.error("\t\t console\t\tStart Nuxeo server in a console mode. Ctrl-C will stop it.");
+        log.error("\t\t status\t\t\tPrint server status (running or not).");
+        log.error("\t\t startbg\t\tStart Nuxeo server in background, without waiting for effective start. Useful for starting Nuxeo as a service.");
+        log.error("\t\t restartbg\t\tRestart Nuxeo server with a call to \"startbg\" after \"stop\".");
+        log.error("\t\t pack\t\t\tNot implemented. Use \"pack\" Shell script.");
         log.error("\n\t Additional parameters: All parameters following a command are passed to the java process when executing the command.");
     }
 
     /**
-     * Work best with current nuxeoProcess. If nuxeoProcess is null, will try to
-     * get process ID (so, result in that case depends on OS capabilities).
+     * Work best with current nuxeoProcess. If nuxeoProcess is null or has
+     * exited, then will try to get process ID (so, result in that case depends
+     * on OS capabilities).
      *
      * @return true if current process is running or if a running PID is found
      */
     public boolean isRunning() {
-        if (nuxeoProcess == null) {
+        if (nuxeoProcess != null) {
             try {
-                return (getPid() != null);
-            } catch (IOException e) {
-                log.error(e);
-                return false;
+                nuxeoProcess.exitValue();
+                // Previous process has exited
+                nuxeoProcess = null;
+            } catch (IllegalThreadStateException exception) {
+                return true;
             }
         }
         try {
-            nuxeoProcess.exitValue();
+            return (getPid() != null);
+        } catch (IOException e) {
+            log.error(e);
             return false;
-        } catch (IllegalThreadStateException exception) {
-            return true;
         }
+    }
+
+    /**
+     * @since 5.4.3
+     * @return true if Nuxeo finished starting
+     */
+    public boolean isStarted() {
+        boolean isStarted;
+        if (configurationGenerator.isWizardRequired()) {
+            isStarted = isRunning();
+        } else {
+            try {
+                isStarted = isRunning() && statusServletClient.isStarted();
+            } catch (SocketTimeoutException e) {
+                isStarted = false;
+            }
+        }
+        return isStarted;
     }
 
     /**

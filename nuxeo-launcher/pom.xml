@@ -11,10 +11,11 @@
   <artifactId>nuxeo-launcher</artifactId>
   <name>Nuxeo multi-OS startup</name>
   <description>Build a Nuxeo launcher working with all Nuxeo products</description>
+  <version>5.4.3-20110729</version>
 
   <properties>
-    <nuxeo.runtime.version>5.4.1-HF09</nuxeo.runtime.version>
-    <nuxeo.shell.version>5.4.1-HF09</nuxeo.shell.version>
+    <nuxeo.runtime.version>5.4.3-20110729</nuxeo.runtime.version>
+    <nuxeo.shell.version>5.4.2</nuxeo.shell.version>
   </properties>
 
   <dependencyManagement>

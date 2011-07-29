@@ -31,7 +31,7 @@ import org.nuxeo.launcher.config.JBossConfigurator;
  * Main Nuxeo server thread
  *
  * @author jcarsique
- * @since 5.4.1
+ * @since 5.4.2
  */
 public class NuxeoJBossLauncher extends NuxeoLauncher {
 
@@ -56,7 +56,6 @@ public class NuxeoJBossLauncher extends NuxeoLauncher {
     @Override
     protected void setServerStartCommand(List<String> command) {
         command.add(JBossConfigurator.STARTUP_CLASS);
-        command.add("start");
         command.add("-b");
         command.add(configurationGenerator.getUserConfig().getProperty(
                 BIND_ADDRESS_PARAM, BIND_ADDRESS_DEFAULT));

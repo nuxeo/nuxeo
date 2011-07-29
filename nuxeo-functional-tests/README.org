@@ -1,0 +1,362 @@
+#    -*- mode: org -*-
+#+TITLE: WebDriver Sprint
+#+AUTHOR: ben
+#+DATE: 2011-02-17
+
+* Administration
+** Sprint goals [0/5]
+  - [ ] Same coverage than selenium suite
+  - [ ] Faster than selenium tests
+    - Use an import xml or sql to init the doc layout
+    - Use htmlunit on suite setup ?
+  - [ ] Modular tests
+    - PageObject, @beforeClass setup
+  - [ ] Easier to read and maintain
+    - PageObject fluent interface
+  - [ ] More robust to UI change
+    - PageObject
+** Risks [2/3]
+  - [X] ajax call, handling wait
+  - [X] file upload
+  - [ ] opensocial dashboard
+** Plan
+  - Initial plan: 
+    1. migration to webdriver
+    2. new webdriver pageobject framework
+    3. migration to the new framwork 
+  - New plan:
+    1. start webdriver pageobject framework
+    2. keep selenium test until good coverage of wd test
+    3. replace selenium tests 
+** Docs & links
+  - [[http://code.google.com/p/selenium/wiki/PageObjects][Page Objects]]
+  - [[http://code.google.com/p/selenium/wiki/PageFactory][Page Factory]]
+  - [[http://web-qualite.over-blog.com/article-tester-avec-watir-webdriver-64478109.html][Watir vs webdriver]] interesting limitation
+  - [[http://wiki.github.com/aslakhellesoy/cuke4duke/][Cuke4Duke wiki]] Cuke4Duke is hub for java that rely on
+    Jruby/cucumber gem Cucumber is just a test framework defining a
+    simple DSL not tied to WebDriver
+  - [[http://www.slideshare.net/bmabey/cucumber-automating-the-requirements-language-you-already-speak][Cucumber pres]]
+  - [[../nuxeo-distribution-dm/ftest/funkload/test_nuxeo.py][Funkload page object tests]]
+** SF scripts
+   - [[/home/ben/dev/tools/webdriver/nuxeo-cuke-tests/README.markdown][Nuxeo cuke readme]] 
+   - [[/home/ben/dev/tools/webdriver/nuxeo-cuke-tests/src/test/java/org/nuxeo/dm/cuketest/MigratedTests.java][Migrated selenium test into webdriver]]
+   - [[/home/ben/dev/tools/webdriver/nuxeo-cuke-tests/features/10create_docs.feature][Cucumber scripts]]
+* Todo
+** User and groups
+*** DONE UserEditFormPage
+    CLOSED: [2011-02-21 lun. 13:32]
+    :LOGBOOK:
+    - State "DONE"       from "TODO"       [2011-02-21 lun. 13:32]
+    :END:
+*** TODO UserChangePasswordFormPage
+*** TODO TestGroups
+*** TODO GroupsTabSubPage
+*** TODO GroupCreationFormPage
+*** TODO GroupEditFormPage
+*** TODO GroupViewTabSubPage
+** Abstract page
+*** TODO logout
+*** TODO viewDocumentByPath, viewDocumentByUid
+** Document page
+*** TODO creationFolder
+*** TODO createNote
+*** TODO delDocument
+*** TODO addComment
+*** TODO replyComment
+*** TODO delComment
+** TODO Rigths page
+** TODO test dashboard
+** TODO migrate suite1
+
+* Existing Selenium tests
+
+  [[../nuxeo-distribution-dm/ftest/selenium/tests][Selenium test directory]]
+
+#+begin_src sh
+cd ../nuxeo-distribution/nuxeo-distribution-dm/ftest/selenium/tests
+LC_ALL=C lynx -dump -listonly suite-publication.html  | grep localhost | sed 's,^.*/localhost,,g' | while read f ;do echo "  - [ ] [[$f][`basename $f`]]"; done
+#+end_src
+  
+** Suite 1 [0/29]
+   :CLOCK:
+   CLOCK: [2011-02-17 jeu. 14:13]
+   :END:
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/createStructure.html][createStructure.html]] Create ws/folder/section
+    - loginAs admin
+    - followLink workspace
+    - createWorkspace testWorkspace1
+    - createFolder testFolder1 testFilesFolder
+    - createWorkspace testWorkspace2
+    - followLink section
+    - createSection testSection1, testSection2, testSection3
+    - logout admin
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/createUsers.html][createUsers.html]] Create users, change pwd, search user
+    - loginAs admin
+    - followLink "Create a new user"
+    - createUser with invalid pwd jdoe group members
+    - createUser with valid pwd jdoe
+    - createUser with jdoe check than "user exsits"
+    - createUser jsmith, bree
+    - searchUser bree
+    - changePassword bree
+    - createUser lbrammard
+    - createUser linnet
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/createGroup.html][createGroup.html]] Create groups
+    - loginAs admin
+    - followLinks "Users & groups" then "Groups"
+    - createGroup Johns with users: bree, jdoe, jsmith
+    - createGroup Johns check 'Group already exists" message
+    - createGroups Suppr: jdoe, jsmith, lbramard
+    - logout
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/manageRightsUsersByAdmin.html][manageRightsUsersByAdmin.html]] admin grants perms to jsmith
+    - loginAs admin
+    - followLink "Workspaces/testWorkspace1/Manage/Access rights"
+    - Grant jsmith "Manage everything"
+    - logout
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/manageRightsUsersByManager.html][manageRightsUsersByManager.html]] jsmith grants perms to users
+    - loginsAs jsmith
+    - followLink "Workspaces/testWorkspace1/Manage/Access rights"
+    - Grants jdoe "Write"
+    - Grants bree "Read"
+    - Grants lbramard "Read"
+    - Grant linnet "Write"
+    - savePerms
+    - logout
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/verifyReadOnWorkspaces.html][verifyReadOnWorkspaces.html]] Login as bree check access
+    - loginAs bree
+    - followLink "Workspaces/testWorkspace1"
+    - CheckNoLink "Modification" "Access rights" "New"
+    - logout
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/verifyManageOnWorkspaces.html][verifyManageOnWorkspaces.html]] login as jsmith
+    - loginAs jsmith
+    - followLink "Workspaces/testWorkspace1"
+    - checkLink Manage, Edit, New
+    - editWorkspace
+    - saveWorkspace
+    - logout Login as
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/manageRightsInSectionsByAdmin.html][manageRightsInSectionsByAdmin.html]] admin grants perms on sections
+    - loginAs admin
+    - followLink Sections/Manage
+    - Grants jdoe "Manage everything"
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/manageRightsInSectionsByManager.html][manageRightsInSectionsByManager.html]] jdoe grants perms on sections
+    - login as jdoe
+    - followLink "Sections"
+    - checkLink "Create New section"
+    - Grants bree "Read"
+    - Grants jsmith "Write"
+    - Grants lbramard "Read"
+    - Grants linnet "Read" "Can ask for publishing"
+    - savePerm
+    - logout
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/verifyReadOnSections.html][verifyReadOnSections.html]] As bree check perms
+    - loginAs bree
+    - followLink "Section"
+    - checkNoLink "Access rights", "Modification"
+    - logout
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/verifyManageOnSections.html][verifyManageOnSections.html]] As jdoe check perms
+    - loginAs jdoe
+    - followLink "Section"
+    - checkNoLink "email"
+    - checkLink "Manage", "Edit"
+    - logout
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/manageRightsGroups.html][manageRightsGroups.html]] Change perms and checks per user
+    - loginAs admin
+    - followLink "Workspaces/testWorkspace2/Manage/Access right"
+    - Grants johns "Manage everything"
+    - logout
+    - loginAs bree
+    - followLink "Workspaces/testWorkspace2/Manage/Access right"
+    - Add group Suppr
+    - Grants lbramard Write
+    - logout
+    - loginAs lbramard
+    - followLink "Workspace/testWorkspace2"
+    - checkLink
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/modifyGroup.html][modifyGroup.html]] Change Johns group
+    - loginAs admin
+    - followLink users & group/Group
+    - searchGroup Johns
+    - deleteFromGroup bree
+    - logout
+    - loginAs bree
+    - followLink testWorkspace2
+    - checkNoLink "Access right"
+    - logout
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/deleteGroup.html][deleteGroup.html]] Remove a "suppr" group
+    - loginAs admin
+    - searchGroup Suppr
+    - detete group
+    - loginAs lbramard
+    - checkNoLink "Modification" on testWorkspace2
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/modifyWorkspace.html][modifyWorkspace.html]] Modify a ws description
+    - loginAs jsmith
+    - followLink to testWorkspace1
+    - modifyWorkspaceDescription
+    - logout
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/createNote.html][createNote.html]] Create a note
+    - loginAs jdoe andGo workspaces/testWorkspace1/testFolder1
+    - createNote testNote1
+    - logout
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/consultHistory.html][consultHistory.html]] Check history tab of a note
+    - loginAs linnet andGo workspaces/testWorkspace1/testFolder1/testNote1
+    - followLink hitory
+    - followLink "Archived versions"
+    - followLink "Event log"
+    - logout
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/verifyReadOnDocuments.html][verifyReadOnDocuments.html]] Check read actions on a document
+    - loginAs bree
+    - followLink to testNote1
+    - checkNoLink lock
+    - click on publish, summary, comment, alerts
+    - logout
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/verifyWriteOnDocuments.html][verifyWriteOnDocuments.html]] Check actions on a writable document
+    - loginAs jdoe and goto testNote1
+    - click on publish, edit, summary, workflow, relation, comment, alerts
+    - logout
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/verifyManageOnDocuments.html][verifyManageOnDocuments.html]] Check actions as manager
+    - loginAs jsmith and goto testNote1
+    - click on all actions
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/changeMetadataFolder.html][changeMetadataFolder.html]] Edit folder metadata
+    - loginAs jdoe
+    - followLink to testFolder1
+    - edit copyright/language
+    - save
+    - loginAs bree
+    - checkNo edit link on testFolder1
+    - logout
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/modifyNote.html][modifyNote.html]] Create a note and edit udating minor version
+    - loginAs jdoe and go to testFolder1
+    - createNote "Note to be modified"
+    - editNote modify description and country
+    - save and increment minor version
+    - logout
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/addComment.html][addComment.html]] Comment on testNote1
+    - loginAs jdoe and go to testNote1
+    - addComment "Comment number 1"
+    - logout
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/replyComment.html][replyComment.html]] Reply to comment add a new one
+    - loginAs bree and go to testNote1
+    - addAnswer "Answer number 1"
+    - addComment "Comment number 2 to be erased"
+    - logout
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/deleteComment.html][deleteComment.html]] Remove a comment
+    - loginAs lbramard and go to testNote1
+    - deleteComment "Comment number 2 to be erased"
+    - addComment "Comment number 3"
+    - logout
+    - loginAs jsmith
+    - checkNoLink Delete
+    - logout
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/createSubGroupAdmin.html][createSubGroupAdmin.html]] Create a sub group
+    - loginAs admin
+    - followLink to User & Group
+    - createUser susan
+    - createGroup sub-admins with susan and sub group of administrators
+    - logout
+    - loginAs susan
+    - check she has admin rights
+    - logout
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/createSubGroupMembers.html][createSubGroupMembers.html]]
+    - loginAs admin
+    - createUser gabrielle
+    - creatGroup sub-members with gabriel and sub group members
+    - logout
+    - loginAs gabrielle
+    - check all the members rights
+    - logout
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/testRequestEncoding.html][testRequestEncoding.html]] seach with accentued char
+    - loginAs admin
+    - search "héhé"
+    - logout
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/testAdvancedSearch.html][testAdvancedSearch.html]] advanced search test
+    - misc search as admin
+    - select a search result
+    - deleteSelection
+    - logout
+    - loginAs admin go to testFolder1
+    - followLink "Trash"
+    - deletePermanantly
+    - logout
+** Suite 2  [0/55]
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/parallelReviewAbandon.html][parallelReviewAbandon.html]]
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/taskLists.html][taskLists.html]]
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/taskOnDeletedDocument.html][taskOnDeletedDocument.html]]
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/parallelReviewNoAddReviewers.html][parallelReviewNoAddReviewers.html]]
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/parallelReviewNotOK.html][parallelReviewNotOK.html]]
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/parallelReviewOK.html][parallelReviewOK.html]]
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/approbationReviewAfterParallel.html][approbationReviewAfterParallel.html]]
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/approbationReviewAbandon.html][approbationReviewAbandon.html]]
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/approbationReviewAddReviewers.html][approbationReviewAddReviewers.html]]
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/approbationReviewNoAddReviewers.html][approbationReviewNoAddReviewers.html]]
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/approbationReviewOK.html][approbationReviewOK.html]]
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/createWSToDelete.html][createWSToDelete.html]]
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/deleteWorkspace.html][deleteWorkspace.html]]
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/verifyDeletedDocumentContent.html][verifyDeletedDocumentContent.html]]
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/searchUsers.html][searchUsers.html]]
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/searchGroup.html][searchGroup.html]]
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/lockDocument.html][lockDocument.html]]
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/addCommentOnLockedDocument.html][addCommentOnLockedDocument.html]]
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/unlockDocumentByLocker.html][unlockDocumentByLocker.html]]
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/unlockDocumentByWSManager.html][unlockDocumentByWSManager.html]]
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/blockRights.html][blockRights.html]]
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/unblockRights.html][unblockRights.html]]
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/removeLocalRights.html][removeLocalRights.html]]
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/deleteUser.html][deleteUser.html]]
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/createForum.html][createForum.html]]
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/verifyRightsForum.html][verifyRightsForum.html]]
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/createTopicWithoutModeration.html][createTopicWithoutModeration.html]]
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/verifyRightsOnTopicWithoutModeration.html][verifyRightsOnTopicWithoutModeration.html]]
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/addCommentsOnTopicWithoutModeration.html][addCommentsOnTopicWithoutModeration.html]]
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/answerToCommentOnTopicWithoutModeration.html][answerToCommentOnTopicWithoutModeration.html]]
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/deleteCommentByAuthorOnTopicWithoutModeration.html][deleteCommentByAuthorOnTopicWithoutModeration.html]]
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/deleteCommentByAdministratorOnTopicWithoutModeration.html][deleteCommentByAdministratorOnTopicWithoutModeration.html]]
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/createTopicWithModeration.html][createTopicWithModeration.html]]
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/verifyRightsOnTopicWithModeration.html][verifyRightsOnTopicWithModeration.html]]
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/addCommentToBeApproved.html][addCommentToBeApproved.html]]
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/approveCommentOnTopicWithModeration.html][approveCommentOnTopicWithModeration.html]]
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/addCommentToBeRejected.html][addCommentToBeRejected.html]]
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/rejectCommentOnTopicWithModeration.html][rejectCommentOnTopicWithModeration.html]]
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/simpleSearch.html][simpleSearch.html]]
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/publication/publishDocumentBySectionManager.html][publishDocumentBySectionManager.html]]
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/publication/PublishDocumentBySectionReaderForSectionManagerApproval.html][PublishDocumentBySectionReaderForSectionManagerApproval.html]]
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/publication/publishingApprovalBySectionManager.html][publishingApprovalBySectionManager.html]]
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/publication/PublishDocumentBySectionReaderForSectionWriterApproval.html][PublishDocumentBySectionReaderForSectionWriterApproval.html]]
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/publication/publishingApprovalBySectionWriter.html][publishingApprovalBySectionWriter.html]]
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/publication/PublishDocumentBySectionReaderForSectionWriterReject.html][PublishDocumentBySectionReaderForSectionWriterReject.html]]
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/publication/publishingRejectBySectionWriter.html][publishingRejectBySectionWriter.html]]
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/publication/PublishDocumentBySectionReaderForSectionManagerReject.html][PublishDocumentBySectionReaderForSectionManagerReject.html]]
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/publication/publishingRejectBySectionManager.html][publishingRejectBySectionManager.html]]
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/publication/unpublishBySectionManager.html][unpublishBySectionManager.html]]
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/publication/unpublishBySectionWriter.html][unpublishBySectionWriter.html]]
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/publication/multiplePublication.html][multiplePublication.html]]
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/publication/multipleVersionPublication.html][multipleVersionPublication.html]]
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/publication/publishingTearDown.html][publishingTearDown.html]]
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/testVocabulariesManagement.html][testVocabulariesManagement.html]]
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/testMultipleDomainsDashboard.html][testMultipleDomainsDashboard.html]]
+
+** Suite DM [0/4]
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/cancelNote.html][cancelNote.html]]
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/createNote.html][createNote.html]]
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/modifyNote.html][modifyNote.html]]
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/verifyCoverageNavigation.html][verifyCoverageNavigation.html]]
+
+** Suite publication [0/12]
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/publication/publishDocumentBySectionManager.html][publishDocumentBySectionManager.html]]
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/publication/PublishDocumentBySectionReaderForSectionManagerApproval.html][PublishDocumentBySectionReaderForSectionManagerApproval.html]]
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/publication/publishingApprovalBySectionManager.html][publishingApprovalBySectionManager.html]]
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/publication/PublishDocumentBySectionReaderForSectionWriterApproval.html][PublishDocumentBySectionReaderForSectionWriterApproval.html]]
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/publication/publishingApprovalBySectionWriter.html][publishingApprovalBySectionWriter.html]]
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/publication/PublishDocumentBySectionReaderForSectionWriterReject.html][PublishDocumentBySectionReaderForSectionWriterReject.html]]
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/publication/publishingRejectBySectionWriter.html][publishingRejectBySectionWriter.html]]
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/publication/PublishDocumentBySectionReaderForSectionManagerReject.html][PublishDocumentBySectionReaderForSectionManagerReject.html]]
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/publication/publishingRejectBySectionManager.html][publishingRejectBySectionManager.html]]
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/publication/unpublishBySectionManager.html][unpublishBySectionManager.html]]
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/publication/unpublishBySectionWriter.html][unpublishBySectionWriter.html]]
+  - [ ] [[../nuxeo-distribution-dm/ftest/selenium/tests/publication/publishingTearDown.html][publishingTearDown.html]]
+
+
+
+  
+
+
+   

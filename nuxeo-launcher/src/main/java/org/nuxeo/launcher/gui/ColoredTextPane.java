@@ -21,6 +21,7 @@ package org.nuxeo.launcher.gui;
 import java.awt.Color;
 
 import javax.swing.JTextPane;
+import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
@@ -33,6 +34,7 @@ import org.apache.commons.logging.LogFactory;
  * Colored text pane. Allow to choose the style when appending some text.
  *
  * @author jcarsique
+ * @since 5.4.2
  */
 public class ColoredTextPane extends JTextPane {
 
@@ -43,6 +45,38 @@ public class ColoredTextPane extends JTextPane {
     private SimpleAttributeSet style;
 
     private Document doc;
+
+    private int maxSize = 0;
+
+    private boolean follow = true;
+
+    /**
+     * @since 5.4.3
+     * @return true if caret will follow additions
+     */
+    public boolean isFollow() {
+        return follow;
+    }
+
+    /**
+     * Whether to make the caret follow or not the additions (pin/unpin)
+     *
+     * @since 5.4.3
+     * @param follow true to make the caret follow additions
+     */
+    public void setFollow(boolean follow) {
+        this.follow = follow;
+    }
+
+    /**
+     * Limits the size of the text. 0 means no limit (default value).
+     *
+     * @since 5.4.3
+     * @param maxSize maximum number of character kept
+     */
+    public void setMaxSize(int maxSize) {
+        this.maxSize = maxSize;
+    }
 
     public ColoredTextPane() {
         style = new SimpleAttributeSet();
@@ -67,8 +101,14 @@ public class ColoredTextPane extends JTextPane {
         int len = doc.getLength();
         try {
             doc.insertString(len, text + "\n", style);
-        } catch (Exception e) {
+            if (maxSize > 0 && len > maxSize) {
+                doc.remove(0, len - maxSize);
+            }
+        } catch (BadLocationException e) {
             log.error(e);
+        }
+        if (follow) {
+            setCaretPosition(doc.getLength());
         }
     }
 
