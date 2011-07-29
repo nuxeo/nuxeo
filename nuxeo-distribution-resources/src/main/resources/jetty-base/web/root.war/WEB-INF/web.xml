@@ -4,7 +4,7 @@
   xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
   version="2.4">
 
-  <filter>
+  <!--filter>
     <display-name>LoginStackCleaner</display-name>
     <filter-name>LoginStackCleaner</filter-name>
     <filter-class>
@@ -14,7 +14,7 @@
   <filter-mapping>
     <filter-name>LoginStackCleaner</filter-name>
     <url-pattern>/*</url-pattern>
-  </filter-mapping>
+  </filter-mapping-->
 
 
   <filter>
@@ -38,6 +38,18 @@
   </filter-mapping>
 
   <filter>
+    <display-name>RequestContextFilter</display-name>
+    <filter-name>RequestContextFilter</filter-name>
+    <filter-class>
+      org.nuxeo.ecm.webengine.jaxrs.context.RequestContextFilter
+    </filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>RequestContextFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+
+  <filter>
     <display-name>WebEngineFilter</display-name>
     <filter-name>WebEngineFilter</filter-name>
     <filter-class>
@@ -50,17 +62,25 @@
   </filter-mapping>
   <servlet>
     <servlet-name>Nuxeo WebEngine Servlet</servlet-name>
-    <!--servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class-->
-	<servlet-class>org.nuxeo.ecm.webengine.app.jersey.ReloadingJerseyServlet</servlet-class>
-    <init-param>
-      <param-name>javax.ws.rs.Application</param-name>
-      <param-value>org.nuxeo.ecm.webengine.app.WebEngineApplication</param-value>
-    </init-param>
+    <servlet-class>org.nuxeo.ecm.webengine.app.jersey.WebEngineServlet</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>Nuxeo WebEngine Servlet</servlet-name>
     <url-pattern>/*</url-pattern>
   </servlet-mapping>
+
+  <filter>
+    <display-name>SessionCleanupFilter</display-name>
+    <filter-name>SessionCleanupFilter</filter-name>
+    <filter-class>
+      org.nuxeo.ecm.webengine.jaxrs.session.SessionCleanupFilter
+    </filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>SessionCleanupFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+
 
   <servlet>
     <servlet-name>Nuxeo Resource Servlet</servlet-name>

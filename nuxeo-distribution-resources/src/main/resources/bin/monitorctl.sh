@@ -166,30 +166,37 @@ SAR_INTERVAL=5
 SAR_COUNT=1440
 
 ###
+# jmxstat
+JMXSTAT=`which jmxstat`
+JMXSTAT_LOG="$LOG_DIR"/jmxstat.log
+JMXSTAT_PID="$PID_DIR"/jmxstat.pid
+JMXSTAT_INTERVAL=$SAR_INTERVAL
+JMXSTAT_COUNT=$SAR_COUNT
+JMXSTAT_OPTS="localhost:1089 --contention Catalina:type=DataSource,path=/nuxeo,host=localhost,class=javax.sql.DataSource,name=\"jdbc/nxsqldirectory\"[numActive,numIdle]"
+[ -z $JMXSTAT ] && echo "You can install jmxstat from https://github.com/bdelbosc/jmxstat"
+
+JMX_LISTENING=`netstat -ltn | grep 1089`
+[ $? != 0 ] && unset JMXSTAT
+
+###
 # PostgreSQL and logtail
 LOGTAIL=`which logtail`
 if [ -z $LOGTAIL ]; then
     if [ -e /usr/sbin/logtail ]; then
-	LOGTAIL='/usr/sbin/logtail'
+        LOGTAIL='/usr/sbin/logtail'
     else
-	echo "No logtail package, won't monitor PostgreSQL log."
+        echo "No logtail package, won't monitor PostgreSQL log."
     fi
 fi
 if [ ! -z $LOGTAIL ]; then
     if [ ! -z $PG_LOG ]; then
-	if [ -r $PG_LOG ]; then
-	    pglog=true
-	    PG_LOG_OFFSET="$PID_DIR"/pgsql.offset
-	    PG_MON_LOG="$LOG_DIR"/pgsql.log
-	fi 
+        if [ -r $PG_LOG ]; then
+            pglog=true
+            PG_LOG_OFFSET="$PID_DIR"/pgsql.offset
+            PG_MON_LOG="$LOG_DIR"/pgsql.log
+        fi 
     fi
 fi
-
-
-
-
-# Layout setup
-
 
 
 
@@ -208,22 +215,11 @@ checkalive() {
   if [ ! -r "$PID" ]; then
     return 1
   fi
-  MYPID=`cat "$PID"`
-  JPS=`jps -v | grep "nuxeo.home=$NUXEO_HOME" | cut -f1 -d" " | grep $MYPID`
-  if [ "x$JPS" = "x" ]; then
-    return 1
-  else
-    return 0
-  fi
-}
-
-checkalive() {
-  if [ ! -r "$PID" ]; then
-    return 1
-  fi
-  MYPID=`cat "$PID"`
-  JPS=`jps -v | grep "nuxeo.home=$NUXEO_HOME" | cut -f1 -d" " | grep $MYPID`
-  if [ "x$JPS" = "x" ]; then
+  # NXP-6636
+  #MYPID=`cat "$PID"`
+  PID=`jps -v | grep "nuxeo.home=$NUXEO_HOME" | cut -f1 -d" "`
+  #PS=`ps aux | grep java | grep "nuxeo.home=$NUXEO_HOME" | grep $MYPID`
+  if [ "x$PID" = "x" ]; then
     return 1
   else
     return 0
@@ -233,9 +229,9 @@ checkalive() {
 moncheckalive() {
     if [ ! -r "$SAR_PID" ]; then
     # we don't mind if sar has terminated
-	return 1
+        return 1
     else
-	return 0
+        return 0
     fi
 }
 
@@ -263,36 +259,41 @@ log_misc() {
     $JAVA_HOME/bin/java -version >> $file 2>&1
     echo "## jps -v" >> $file
     $JAVA_HOME/bin/jps -v >> $file
+    echo "## ps aux | grep java" >> $file
+    ps aux | grep java >> $file
     if checkalive; then
-	NXPID=`cat "$PID"`
-	echo "## jmap -v" >> $file
-	$JAVA_HOME/bin/jmap -heap $NXPID >> $file 2> /dev/null
-	echo "## jstat -gc" >> $file
-	$JAVA_HOME/bin/jstat -gc $NXPID >> $file
-	if [ -e $HERE/twiddle.sh ]; then
-	    echo "## twiddle.sh get 'jboss.system:type=ServerInfo'" >> $file
-	    $HERE/twiddle.sh get "jboss.system:type=ServerInfo" >> $file
-	fi
+        # NXP-6636
+        #NXPID=`cat "$PID"`
+        NXPID=`jps -v | grep "nuxeo.home=$NUXEO_HOME" | cut -f1 -d" "`
+        echo "## jmap -v" >> $file
+        $JAVA_HOME/bin/jmap -heap $NXPID >> $file 2> /dev/null
+        echo "## jstat -gc" >> $file
+        $JAVA_HOME/bin/jstat -gc $NXPID >> $file
+        echo "## jstat counter" >> $file
+        $JAVA_HOME/bin/jstat -J-Djstat.showUnsupported=true -snap $NXPID >> $file
+        if [ -e $HERE/twiddle.sh ]; then
+            echo "## twiddle.sh get 'jboss.system:type=ServerInfo'" >> $file
+            $HERE/twiddle.sh get "jboss.system:type=ServerInfo" >> $file
+        fi
     fi
 }
 
 
 get_pgconf() {
-    CONF=$HERE/nuxeo.conf
-    TEMPLATE=`grep "^nuxeo.templates" $CONF | grep postgresql | cut -d= -f2`
+    TEMPLATE=`grep "^nuxeo.templates" $NUXEO_CONF | grep postgresql | cut -d= -f2`
     if [ -z $TEMPLATE ]; then
-	return
+        return
     fi
-    DBPORT=`grep "^nuxeo.db.port" $CONF| cut -d= -f2`
-    DBHOST=`grep "^nuxeo.db.host" $CONF | cut -d= -f2`
-    DBNAME=`grep "^nuxeo.db.name" $CONF | cut -d= -f2`
-    DBUSER=`grep "^nuxeo.db.user" $CONF | cut -d= -f2`
-    DBPWD=`grep "^nuxeo.db.password" $CONF | cut -d= -f2`
+    DBPORT=`grep "^nuxeo.db.port" $NUXEO_CONF| cut -d= -f2`
+    DBHOST=`grep "^nuxeo.db.host" $NUXEO_CONF | cut -d= -f2`
+    DBNAME=`grep "^nuxeo.db.name" $NUXEO_CONF | cut -d= -f2`
+    DBUSER=`grep "^nuxeo.db.user" $NUXEO_CONF | cut -d= -f2`
+    DBPWD=`grep "^nuxeo.db.password" $NUXEO_CONF | cut -d= -f2`
     if [ -z $DBHOST ]; then 
-	DBHOST=localhost
+        DBHOST=localhost
     fi
     if [ -z $DBPORT ]; then 
-	DBPORT=5432
+        DBPORT=5432
     fi
     PGDB="true"
 }
@@ -348,7 +349,7 @@ vacuum() {
     get_pgconf
     rm -f "$LOG_DIR"/vacuum.log
     if [ -z $PGDB ]; then
-	die "No PostgreSQL configuration found."
+        die "No PostgreSQL configuration found."
     fi
     echo "Vacuuming $DBNAME `date --rfc-3339=second` ..."
     PGPASSWORD=$DBPWD LC_ALL=C vacuumdb -fzv $DBNAME -U $DBUSER -h $DBHOST -p $DBPORT &> "$LOG_DIR"/vacuum.log
@@ -360,7 +361,7 @@ vacuum() {
 start() {
     # start sar
     if moncheckalive; then
-	die "Monitoring is already running with pid `cat $SAR_PID`"
+        die "Monitoring is already running with pid `cat $SAR_PID`"
     fi
     echo "Starting monitoring `date --rfc-3339=second` ..."
     [ -r "$SAR_DATA" ] && rm -f $SAR_DATA
@@ -368,11 +369,17 @@ start() {
     $SAR -d -o $SAR_DATA $SAR_INTERVAL $SAR_COUNT >/dev/null 2>&1 &
     echo $! > $SAR_PID
 
+    [ -r "$JMXSTAT_LOG" ] && rm -f $JMXSTAT_LOG
+    if [ ! -z $JMXSTAT ]; then
+        $JMXSTAT $JMXSTAT_OPTS $JMXSTAT_INTERVAL $JMXSTAT_COUNT > $JMXSTAT_LOG 2>&1 &
+        echo $! > $JMXSTAT_PID
+    fi
+
     # logtail on pg log
     if [ "$pglog" = "true" ]; then
-	[ -r $PG_LOG_OFFSET ] && rm -f $PG_LOG_OFFSET
-	[ -r $PG_MON_LOG ] && rm -f $PG_MON_LOG
-	$LOGTAIL -f $PG_LOG -o $PG_LOG_OFFSET > /dev/null
+        [ -r $PG_LOG_OFFSET ] && rm -f $PG_LOG_OFFSET
+        [ -r $PG_MON_LOG ] && rm -f $PG_MON_LOG
+        $LOGTAIL -f $PG_LOG -o $PG_LOG_OFFSET > /dev/null
     fi
 
     # misc
@@ -380,7 +387,7 @@ start() {
     log_misc $LOG_DIR/misc-start.txt
     
     # get a copy of nuxeo.conf
-    grep -Ev '^$|^#' $HERE/nuxeo.conf | sed "s/\(password\=\).*$/\1******/g" > $LOG_DIR/nuxeo-conf.txt
+    grep -Ev '^$|^#' $NUXEO_CONF | sed "s/\(password\=\).*$/\1******/g" > $LOG_DIR/nuxeo-conf.txt
 
     # pg stats
     rm -f $LOG_DIR/pgstat-*.txt
@@ -389,58 +396,62 @@ start() {
     # cpu by thread
     rm -f $LOG_DIR/thread-usage-*.html
     if checkalive; then
-	if [ -e $HERE/twiddle.sh ]; then
-	    $HERE/twiddle.sh invoke 'jboss.system:type=ServerInfo' listThreadCpuUtilization > $LOG_DIR/thread-usage-start.html
+        if [ -e $HERE/twiddle.sh ]; then
+            $HERE/twiddle.sh invoke 'jboss.system:type=ServerInfo' listThreadCpuUtilization > $LOG_DIR/thread-usage-start.html
             # mem pool info
-	    $HERE/twiddle.sh invoke "jboss.system:type=ServerInfo" listMemoryPools true >> $LOG_DIR/thread-usage-start.html
-	fi
+            $HERE/twiddle.sh invoke "jboss.system:type=ServerInfo" listMemoryPools true >> $LOG_DIR/thread-usage-start.html
+        fi
     fi
     echo "[`cat $SAR_PID`] Monitoring started."
 }
 
 stop() {
     if moncheckalive; then
-	echo "Stopping monitoring `date --rfc-3339=second` ..."
-	kill -9 `cat "$SAR_PID"`
-	sleep 1
-	rm -f $SAR_PID
-	if [ "$pglog" = "true" ]; then
-	    $LOGTAIL -f $PG_LOG -o $PG_LOG_OFFSET > $PG_MON_LOG
-	    rm -f $PG_LOG_OFFSET
-	fi
-        # Convert sar log into text
-	LC_ALL=C sar -Ap -f $SAR_DATA > $SAR_LOG
-	[ $? ] && rm -f $SAR_DATA
-	log_misc $LOG_DIR/misc-end.txt
-	log_pgstat $LOG_DIR/pgstat-end.txt
+        echo "Stopping monitoring `date --rfc-3339=second` ..."
+        kill -9 `cat "$SAR_PID"`
+        sleep 1
+        rm -f $SAR_PID
+        kill -9 `cat "$JMXSTAT_PID"`
+        sleep 1
+        rm -f $JMXSTAT_PID
 
-	if [ -e $HERE/twiddle.sh ]; then
+        if [ "$pglog" = "true" ]; then
+            $LOGTAIL -f $PG_LOG -o $PG_LOG_OFFSET > $PG_MON_LOG
+            rm -f $PG_LOG_OFFSET
+        fi
+        # Convert sar log into text
+        LC_ALL=C sar -Ap -f $SAR_DATA > $SAR_LOG
+        [ $? ] && rm -f $SAR_DATA
+        log_misc $LOG_DIR/misc-end.txt
+        log_pgstat $LOG_DIR/pgstat-end.txt
+
+        if [ -e $HERE/twiddle.sh ]; then
             # get cpu and pool info    
-	    $HERE/twiddle.sh invoke 'jboss.system:type=ServerInfo' listThreadCpuUtilization > $LOG_DIR/thread-usage-end.html
-	    $HERE/twiddle.sh invoke "jboss.system:type=ServerInfo" listMemoryPools true >> $LOG_DIR/thread-usage-end.html
-	fi
-	echo "Monitoring stopped."
-	archive
-	return 0
+            $HERE/twiddle.sh invoke 'jboss.system:type=ServerInfo' listThreadCpuUtilization > $LOG_DIR/thread-usage-end.html
+            $HERE/twiddle.sh invoke "jboss.system:type=ServerInfo" listMemoryPools true >> $LOG_DIR/thread-usage-end.html
+        fi
+        echo "Monitoring stopped."
+        archive
+        return 0
     else
-	echo "Monitoring is not running."
+        echo "Monitoring is not running."
     fi
 }
 
 status() {
     if moncheckalive; then
-	echo "Monitoring is running with pid `cat $SAR_PID`"
+        echo "Monitoring is running with pid `cat $SAR_PID`"
     else
-	echo "Monitoring is not running."
+        echo "Monitoring is not running."
     fi
 }
 
 archive() {
     echo "Archiving log ..."
     if [ ! -z "$1" ]; then
-	TAG=$1 
+        TAG=$1 
     else
-	TAG=`date -u '+%Y%m%d-%H%M%S'`
+        TAG=`date -u '+%Y%m%d-%H%M%S'`
     fi
     ARCH_FILE=$LOG_DIR/log-$TAG.tgz
     logdir=`basename $LOG_DIR`
@@ -450,71 +461,97 @@ archive() {
 
 case "$1" in
     status)
-	status
-	;;
+        status
+        ;;
     start)
-	start
-	;;
+        start
+        ;;
     stop)
-	stop
-	;;
+        stop
+        ;;
     restart)
-	stop
-	start
-	;;
+        stop
+        start
+        ;;
     status)
-	status
-	;;
+        status
+        ;;
     archive)
-	shift
-	archive $@
-	;;
+        shift
+        archive $@
+        ;;
     heapdump)
-	if ! checkalive; then
-	    die "No Nuxeo DM running."
-	fi
-	shift
-	if [ ! -z "$1" ]; then
-	    TAG=$1 
-	else
-	    TAG=`date -u '+%Y%m%d-%H%M%S'`
-	fi   
-	NXPID=`cat "$PID"`
-	$JAVA_HOME/bin/jmap -dump:format=b,file=$LOG_DIR/heap-$TAG.bin $NXPID
-	echo "You can use the following command to browse the dump:"
-	echo " $JAVA_HOME/bin/jhat -J-mx3g -J-ms3g $LOG_DIR/heap-$TAG.bin"
-	;;
+        if ! checkalive; then
+            die "No Nuxeo DM running."
+        fi
+        shift
+        if [ ! -z "$1" ]; then
+            TAG=$1 
+        else
+            TAG=`date -u '+%Y%m%d-%H%M%S'`
+        fi   
+        # NXP-6636
+        #NXPID=`cat "$PID"`
+        NXPID=`jps -v | grep "nuxeo.home=$NUXEO_HOME" | cut -f1 -d" "`
+        $JAVA_HOME/bin/jmap -dump:format=b,file=$LOG_DIR/heap-$TAG.bin $NXPID
+        echo "You can use the following command to browse the dump:"
+        echo " $JAVA_HOME/bin/jhat -J-mx3g -J-ms3g $LOG_DIR/heap-$TAG.bin"
+        ;;
     info)
-	if ! checkalive; then
-	    die "No Nuxeo DM running."
-	fi
-	NXPID=`cat "$PID"`
-	set -x
-	$JAVA_HOME/bin/jps -v | grep $NXPID
-	$JAVA_HOME/bin/jmap -heap $NXPID
-	$JAVA_HOME/bin/jstat -gc $NXPID
-	;;
+        if ! checkalive; then
+            die "No Nuxeo DM running."
+        fi
+        # NXP-6636
+        #NXPID=`cat "$PID"`
+        NXPID=`jps -v | grep "nuxeo.home=$NUXEO_HOME" | cut -f1 -d" "`
+        set -x
+        $JAVA_HOME/bin/jps -v | grep $NXPID
+        $JAVA_HOME/bin/jmap -heap $NXPID
+        $JAVA_HOME/bin/jstat -gc $NXPID
+        ;;
     vacuumdb)
-	vacuum
-	;;
+        vacuum
+        ;;
     heap-histo)
-	NXPID=`cat "$PID"`
-	$JAVA_HOME/bin/jmap -histo $NXPID
-	;;
+        # NXP-6636
+        #NXPID=`cat "$PID"`
+        NXPID=`jps -v | grep "nuxeo.home=$NUXEO_HOME" | cut -f1 -d" "`
+        $JAVA_HOME/bin/jmap -histo $NXPID
+        ;;
     invoke-fgc)
-	[ -z $JMXSH ] && die "You need to enable JMX and install JMXSH"
-	cat <<EOF |  $JAVA_HOME/bin/java -jar $JMXSH 
+        [ -z $JMXSH ] && die "You need to enable JMX and install JMXSH"
+        cat <<EOF |  $JAVA_HOME/bin/java -jar $JMXSH 
 jmx_connect -h localhost -p 1089
 set MBEAN java.lang:type=Memory
 set ATTROP gc
 jmx_invoke
 jmx_close
 EOF
-	;;
+        ;;
+    disable-cm|disable-contention-monitoring)
+        [ -z $JMXSH ] && die "You need to enable JMX and install JMXSH"
+        cat <<EOF |  $JAVA_HOME/bin/java -jar $JMXSH 
+jmx_connect -h localhost -p 1089
+set MBEAN java.lang:type=Threading
+set ATTROP ThreadContentionMonitoringEnabled
+jmx_set false
+jmx_close
+EOF
+        ;;
+    enable-cm|enable-contention-monitoring)
+        [ -z $JMXSH ] && die "You need to enable JMX and install JMXSH"
+        cat <<EOF |  $JAVA_HOME/bin/java -jar $JMXSH 
+jmx_connect -h localhost -p 1089
+set MBEAN java.lang:type=Threading
+set ATTROP ThreadContentionMonitoringEnabled
+jmx_set true
+jmx_close
+EOF
+        ;;
     help)
-	help
-	;;
+        help
+        ;;
     *)
-	echo "Usage: monitorctl.sh (start|stop|status|archive [TAG]|heapdump [TAG]|info|vacuumdb|help)"
-	;;
+        echo "Usage: monitorctl.sh (start|stop|status|archive [TAG]|heapdump [TAG]|info|vacuumdb|help)"
+        ;;
 esac

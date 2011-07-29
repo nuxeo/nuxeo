@@ -60,7 +60,7 @@
 
   <Resource name="TransactionManager" auth="Container"
     type="javax.transaction.TransactionManager" factory="org.nuxeo.runtime.jtajca.NuxeoTransactionManagerFactory"
-    transactionTimeoutSeconds="300" />
+    transactionTimeoutSeconds="${nuxeo.db.transactiontimeout}" />
   <Transaction factory="org.nuxeo.runtime.jtajca.NuxeoUserTransactionFactory" />
   <Resource name="NuxeoConnectionManager" auth="Container"
     type="javax.resource.spi.ConnectionManager" factory="org.nuxeo.runtime.jtajca.NuxeoConnectionManagerFactory"
@@ -68,10 +68,15 @@
     idleTimeoutMinutes="0" />
 
   <Resource auth="Container" name="Mail" type="javax.mail.Session"
-    mail.store.protocol="${mail.store.protocol}" mail.transport.protocol="${mail.transport.protocol}"
-    mail.user="${mail.user}" mail.pop3.host="${mail.pop3.host}" mail.smtp.host="${mail.smtp.host}"
-    mail.smtp.port="${mail.smtp.port}" mail.smtp.username="${mail.smtp.username}"
-    mail.smtp.password="${mail.smtp.password}" mail.from="${mail.from}"
-    mail.debug="${mail.debug}" />
+	mail.store.protocol="${mail.store.protocol}"
+	mail.pop3.host="${mail.pop3.host}"
+	mail.pop3.user="${mail.user}"
+	mail.transport.protocol="${mail.transport.protocol}"
+	mail.smtp.host="${mail.smtp.host}" mail.smtp.port="${mail.smtp.port}"
+	mail.smtp.starttls.enable="${mail.smtp.usetls}"
+	mail.smtp.auth="${mail.smtp.auth}"
+	mail.smtp.user="${mail.smtp.username}"
+	password="${mail.smtp.password}" mail.from="${mail.from}"
+	mail.debug="${mail.debug}" />
 
 </Context>

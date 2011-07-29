@@ -69,7 +69,8 @@
     <Connector port="${nuxeo.server.http.port}" protocol="HTTP/1.1"
                address="${nuxeo.bind.address}"
                connectionTimeout="20000"
-               redirectPort="${nuxeo.server.https.port}" />
+               redirectPort="${nuxeo.server.https.port}"
+               emptySessionPath="${tomcat.emptySessionPath}" />
     <!-- A "Connector" using the shared thread pool-->
     <!--
     <Connector executor="tomcatThreadPool"
@@ -86,7 +87,8 @@
     <Connector port="${nuxeo.server.https.port}" protocol="HTTP/1.1" SSLEnabled="true"
                address="${nuxeo.bind.address}"
                maxThreads="150" scheme="https" secure="true"
-               clientAuth="false" sslProtocol="TLS" />
+               clientAuth="false" sslProtocol="TLS"
+               emptySessionPath="${tomcat.emptySessionPath}" />
     -->
 
     <!-- Define an AJP 1.3 Connector on port ${nuxeo.server.ajp.port} -->
@@ -104,7 +106,7 @@
     <!-- You should set jvmRoute to support load-balancing via AJP ie :
     <Engine name="Catalina" defaultHost="localhost" jvmRoute="jvm1">
     -->
-    <Engine name="Catalina" defaultHost="localhost">
+    <Engine name="Catalina" defaultHost="localhost" jvmRoute="${nuxeo.server.jvmRoute}">
 
 
       <!--For clustering, please take a look at documentation at:

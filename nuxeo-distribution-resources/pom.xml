@@ -1,4 +1,6 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
@@ -15,6 +17,7 @@
   <description>
     Resources files for Nuxeo distributions
   </description>
+  <version>5.4.3-20110729</version>
 
   <profiles>
     <profile>
@@ -32,6 +35,28 @@
       <groupId>org.nuxeo</groupId>
       <artifactId>nuxeo-launcher</artifactId>
       <classifier>jar-with-dependencies</classifier>
+      <version>5.4.3-20110729</version>
+    </dependency>
+    <dependency>
+      <groupId>net.sourceforge.jtds</groupId>
+      <artifactId>jtds</artifactId>
+       <version>1.2.4</version>
+    </dependency>
+    <dependency>
+      <groupId>postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>mysql</groupId>
+      <artifactId>mysql-connector-java</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.derby</groupId>
+      <artifactId>derby</artifactId>
     </dependency>
   </dependencies>
 
@@ -45,9 +70,7 @@
             <id>assemble</id>
             <phase>package</phase>
             <configuration>
-              <buildFiles>
-                <buildFile>${basedir}/src/main/assemble/assembly.xml</buildFile>
-              </buildFiles>
+              <buildFile>${basedir}/src/main/assemble/assembly.xml</buildFile>
             </configuration>
             <goals>
               <goal>build</goal>

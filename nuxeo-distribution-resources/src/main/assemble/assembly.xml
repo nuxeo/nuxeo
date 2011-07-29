@@ -10,6 +10,7 @@
     <property name="outdir" value="${maven.project.build.directory}" />
     <property name="stagedir" value="${outdir}/stage" />
     <property name="init.done" value="true" />
+    <artifact:nuxeo-expand />
   </target>
 
   <target name="build" depends="init" unless="no.build">
@@ -30,6 +31,9 @@
       <param name="distribution" value="bin" />
     </antcall>
     <antcall target="build-resources">
+      <param name="distribution" value="root" />
+    </antcall>
+    <antcall target="build-resources">
       <param name="distribution" value="jetty-base" />
     </antcall>
     <antcall target="build-resources">
@@ -38,14 +42,21 @@
     <antcall target="build-resources">
       <param name="distribution" value="templates-common-dm" />
     </antcall>
-    <antcall target="build-resources">
+    <antcall target="copy-resources-with-jdbc-lib">
       <param name="distribution" value="templates-jboss" />
+      <param name="h2-lib-dir" value="lib" />
+      <param name="derby-lib-dir" value="lib" />
     </antcall>
-    <antcall target="build-resources">
+    <antcall target="copy-resources-with-jdbc-lib">
       <param name="distribution" value="templates-tomcat" />
+      <param name="h2-lib-dir" value="lib" />
+      <param name="derby-lib-dir" value="lib" />
     </antcall>
     <antcall target="build-resources">
       <param name="distribution" value="templates-tomcat-dm" />
+    </antcall>
+    <antcall target="build-resources">
+      <param name="distribution" value="templates-tomcat-coreserver" />
     </antcall>
     <antcall target="build-resources">
       <param name="distribution" value="templates-jetty" />
@@ -76,6 +87,30 @@
                      classifier="${distribution}"
                      type="zip"
                      target="${maven.project.groupId}:${maven.project.artifactId}" />
+  </target>
+  <target name="copy-resources-with-jdbc-lib" depends="init"
+          unless="no.alternate.build">
+    <antcall target="copy-resources">
+      <param name="distribution" value="${distribution}" />
+    </antcall>
+    <copy todir="${outdir}/${distribution}/mssql/lib">
+      <artifact:file artifactId="jtds" />
+    </copy>
+    <copy todir="${outdir}/${distribution}/mysql/lib">
+      <artifact:file artifactId="mysql-connector-java" />
+    </copy>
+    <copy todir="${outdir}/${distribution}/postgresql/lib">
+      <artifact:file artifactId="postgresql" />
+    </copy>
+    <copy todir="${outdir}/${distribution}/default/${h2-lib-dir}">
+      <artifact:file artifactId="h2" />
+    </copy>
+    <copy todir="${outdir}/${distribution}/default/${derby-lib-dir}">
+      <artifact:file artifactId="derby" />
+    </copy>
+    <antcall target="zip-resources">
+      <param name="distribution" value="${distribution}" />
+    </antcall>
   </target>
 
 </project>

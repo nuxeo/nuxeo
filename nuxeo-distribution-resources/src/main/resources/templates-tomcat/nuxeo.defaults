@@ -10,13 +10,16 @@ nuxeo.templates=default
 # Default IP address binding
 nuxeo.bind.address=0.0.0.0
 
-nuxeo.url=http://localhost:8080/nuxeo/
+# publicly visible URL
+nuxeo.url=http://localhost:8080/nuxeo
+# internally visible URL (server-to-server)
+nuxeo.loopback.url=http://localhost:8080/nuxeo
 
 # Application context path
 org.nuxeo.ecm.contextPath=/nuxeo
 
 org.nuxeo.ecm.product.name=Nuxeo DM
-org.nuxeo.ecm.product.version=5.4.1-HF09
+org.nuxeo.ecm.product.version=5.4.3-SNAPSHOT
 
 # Various other default values
 #nuxeo.db.host=
@@ -28,6 +31,9 @@ org.nuxeo.ecm.product.version=5.4.1-HF09
 nuxeo.db.max-pool-size=20
 nuxeo.vcs.min-pool-size=0
 nuxeo.vcs.max-pool-size=20
+
+# Database transaction timeout in seconds
+nuxeo.db.transactiontimeout=300
 
 nuxeo.notification.eMailSubjectPrefix=[Nuxeo]
 
@@ -51,13 +57,16 @@ jod.office.home=
 jod.jpipe.lib.path=
 jod.template.profile.dir=
 
+opensocial.gadgets.embeddedServer=true
 opensocial.gadgets.host=localhost
 opensocial.gadgets.port=8080
+opensocial.gadgets.path=/site/gadgets
 opensocial.proxy.proxySet=false
 opensocial.proxy.proxyHost=
 opensocial.proxy.proxyPort=
 opensocial.proxy.user=
 opensocial.proxy.password=
+opensocial.trusted.hosts=
 
 # Clustering
 repository.clustering.enabled=false
@@ -65,4 +74,4 @@ repository.clustering.delay=1000
 # If clustering is activated, set repository.binary.store=/path/to/some/shared/folder/for/binaries
 repository.binary.store=
 
-nuxeo.templates.parsing.extensions=xml,properties,nx
+nuxeo.templates.parsing.extensions=xml,properties,nx,html

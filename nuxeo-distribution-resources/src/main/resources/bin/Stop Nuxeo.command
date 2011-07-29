@@ -2,4 +2,4 @@
 
 # Convenience script for Mac OS X
 BIN_DIR=`dirname "$0"`
-$BIN_DIR/nuxeoctl gui stop
+exec "$BIN_DIR"/nuxeoctl gui stop

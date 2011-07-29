@@ -8,8 +8,8 @@
 
   <mbean code="org.jboss.mail.MailService" name="jboss:service=Mail">
     <attribute name="JNDIName">java:/Mail</attribute>
-    <attribute name="User">${mailservice.user}</attribute>
-    <attribute name="Password">${mailservice.password}</attribute>
+    <attribute name="User">${mail.smtp.username}</attribute>
+    <attribute name="Password">${mail.smtp.password}</attribute>
     <attribute name="Configuration">
       <configuration>
         <property name="mail.store.protocol" value="${mail.store.protocol}" />
@@ -18,6 +18,8 @@
         <property name="mail.pop3.host" value="${mail.pop3.host}" />
         <property name="mail.smtp.host" value="${mail.smtp.host}" />
         <property name="mail.smtp.port" value="${mail.smtp.port}" />
+        <property name="mail.smtp.starttls.enable" value="${mail.smtp.usetls}" />
+        <property name="mail.smtp.auth" value="${mail.smtp.auth}" />
         <property name="mail.from" value="${mail.from}" />
         <property name="mail.debug" value="${mail.debug}" />
       </configuration>

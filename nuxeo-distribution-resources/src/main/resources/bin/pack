@@ -313,4 +313,4 @@ pack() {
       org.nuxeo.runtime.deployment.preprocessor.PackZip $1 $2
 }
 
-pack $NUXEO_EAR $2
+pack $NUXEO_EAR $1

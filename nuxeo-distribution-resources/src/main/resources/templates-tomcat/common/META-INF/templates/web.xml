@@ -15,7 +15,7 @@
 
   %{STD-AUTH-FILTER}%
 
-  <!-- XXX AT: for org.nuxeo.ecm.platform.ui.web module: order of filters matters. 
+  <!-- XXX AT: for org.nuxeo.ecm.platform.ui.web module: order of filters matters.
     Others modules should use FILTER. -->
   %{FIRST-FILTER}%
 
