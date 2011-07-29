@@ -67,7 +67,8 @@ public class UserRegistrationComponent extends DefaultComponent implements
     protected UserRegistrationConfiguration configuration;
 
     protected String getRootPath() {
-        if (Framework.isTestModeSet() || StringUtils.isBlank(configuration.getContainerParentPath())) {
+        if (Framework.isTestModeSet()
+                || StringUtils.isBlank(configuration.getContainerParentPath())) {
             return "/";
         } else {
             return configuration.getContainerParentPath();
@@ -80,28 +81,30 @@ public class UserRegistrationComponent extends DefaultComponent implements
 
     protected String getTargetRepositoryName() {
 
-        if (repoName==null) {
+        if (repoName == null) {
             try {
                 RepositoryManager rm = Framework.getService(RepositoryManager.class);
                 repoName = rm.getDefaultRepository().getName();
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 log.error("Error while getting default repository name", e);
-                repoName="default";
+                repoName = "default";
             }
         }
         return repoName;
     }
 
     protected String getJavaMailJndiName() {
-        return Framework.getProperty("jndi.java.mail","java:/Mail");
+        return Framework.getProperty("jndi.java.mail", "java:/Mail");
     }
 
     protected class RegistrationCreator extends UnrestrictedSessionRunner {
 
         protected UserRegistrationInfo userInfo;
+
         protected Map<String, Serializable> additionnalInfo;
+
         protected String registrationUuid;
+
         protected ValidationMethod validationMethod;
 
         public String getRegistrationUuid() {
@@ -119,13 +122,16 @@ public class UserRegistrationComponent extends DefaultComponent implements
 
         protected String getOrCreateRootPath() throws ClientException {
 
-            String targetPath = getRootPath() + configuration.getContainerName();
+            String targetPath = getRootPath()
+                    + configuration.getContainerName();
             DocumentRef targetRef = new PathRef(targetPath);
 
             if (!session.exists(targetRef)) {
                 DocumentModel root = session.createDocumentModel(configuration.getContainerDocType());
-                root.setPathInfo(getRootPath(), configuration.getContainerName());
-                root.setPropertyValue("dc:title", configuration.getContainerTitle());
+                root.setPathInfo(getRootPath(),
+                        configuration.getContainerName());
+                root.setPropertyValue("dc:title",
+                        configuration.getContainerTitle());
                 // XXX ACLs ?!!!
                 root = session.createDocument(root);
             }
@@ -135,7 +141,9 @@ public class UserRegistrationComponent extends DefaultComponent implements
         @Override
         public void run() throws ClientException {
 
-            String title = "registration request for " + userInfo.getLogin() + " (" + userInfo.getEmail() + " " + userInfo.getCompany() + ") ";
+            String title = "registration request for " + userInfo.getLogin()
+                    + " (" + userInfo.getEmail() + " " + userInfo.getCompany()
+                    + ") ";
             String name = IdUtils.generateId(title + "-"
                     + System.currentTimeMillis());
 
@@ -146,12 +154,18 @@ public class UserRegistrationComponent extends DefaultComponent implements
             doc.setPropertyValue("dc:title", title);
 
             // store userinfo
-            doc.setPropertyValue(UserRegistrationInfo.USERNAME_FIELD, userInfo.getLogin());
-            doc.setPropertyValue(UserRegistrationInfo.PASSWORD_FIELD, userInfo.getPassword());
-            doc.setPropertyValue(UserRegistrationInfo.FIRSTNAME_FIELD, userInfo.getFirstName());
-            doc.setPropertyValue(UserRegistrationInfo.LASTNAME_FIELD, userInfo.getLastName());
-            doc.setPropertyValue(UserRegistrationInfo.EMAIL_FIELD, userInfo.getEmail());
-            doc.setPropertyValue(UserRegistrationInfo.COMPANY_FIELD, userInfo.getCompany());
+            doc.setPropertyValue(UserRegistrationInfo.USERNAME_FIELD,
+                    userInfo.getLogin());
+            doc.setPropertyValue(UserRegistrationInfo.PASSWORD_FIELD,
+                    userInfo.getPassword());
+            doc.setPropertyValue(UserRegistrationInfo.FIRSTNAME_FIELD,
+                    userInfo.getFirstName());
+            doc.setPropertyValue(UserRegistrationInfo.LASTNAME_FIELD,
+                    userInfo.getLastName());
+            doc.setPropertyValue(UserRegistrationInfo.EMAIL_FIELD,
+                    userInfo.getEmail());
+            doc.setPropertyValue(UserRegistrationInfo.COMPANY_FIELD,
+                    userInfo.getCompany());
 
             // validation method
             doc.setPropertyValue("registration:validationMethod",
@@ -161,8 +175,7 @@ public class UserRegistrationComponent extends DefaultComponent implements
             for (String key : additionnalInfo.keySet()) {
                 try {
                     doc.setPropertyValue(key, additionnalInfo.get(key));
-                }
-                catch (PropertyException e) {
+                } catch (PropertyException e) {
                     // skip silently
                 }
             }
@@ -171,7 +184,8 @@ public class UserRegistrationComponent extends DefaultComponent implements
 
             registrationUuid = doc.getId();
 
-            sendEvent(session, doc, UserRegistrationService.REGISTRATION_SUBMITTED_EVENT);
+            sendEvent(session, doc,
+                    UserRegistrationService.REGISTRATION_SUBMITTED_EVENT);
 
             session.save();
         }
@@ -181,12 +195,14 @@ public class UserRegistrationComponent extends DefaultComponent implements
     protected class RegistrationAcceptor extends UnrestrictedSessionRunner {
 
         protected String uuid;
+
         protected Map<String, Serializable> additionnalInfo;
 
-        public RegistrationAcceptor(String registrationUuid, Map<String, Serializable> additionnalInfo) {
+        public RegistrationAcceptor(String registrationUuid,
+                Map<String, Serializable> additionnalInfo) {
             super(getTargetRepositoryName());
-            this.uuid=registrationUuid;
-            this.additionnalInfo=additionnalInfo;
+            this.uuid = registrationUuid;
+            this.additionnalInfo = additionnalInfo;
         }
 
         @Override
@@ -206,19 +222,22 @@ public class UserRegistrationComponent extends DefaultComponent implements
             doc = session.saveDocument(doc);
             session.save();
 
-            sendEvent(session, doc, UserRegistrationService.REGISTRATION_ACCEPTED_EVENT);
+            sendEvent(session, doc,
+                    UserRegistrationService.REGISTRATION_ACCEPTED_EVENT);
         }
     }
 
     protected class RegistrationRejector extends UnrestrictedSessionRunner {
 
         protected String uuid;
+
         protected Map<String, Serializable> additionnalInfo;
 
-        public RegistrationRejector(String registrationUuid, Map<String, Serializable> additionnalInfo) {
+        public RegistrationRejector(String registrationUuid,
+                Map<String, Serializable> additionnalInfo) {
             super(getTargetRepositoryName());
-            this.uuid=registrationUuid;
-            this.additionnalInfo=additionnalInfo;
+            this.uuid = registrationUuid;
+            this.additionnalInfo = additionnalInfo;
         }
 
         @Override
@@ -233,7 +252,8 @@ public class UserRegistrationComponent extends DefaultComponent implements
             doc = session.saveDocument(doc);
             session.save();
 
-            sendEvent(session, doc, UserRegistrationService.REGISTRATION_REJECTED_EVENT);
+            sendEvent(session, doc,
+                    UserRegistrationService.REGISTRATION_REJECTED_EVENT);
         }
     }
 
@@ -248,8 +268,8 @@ public class UserRegistrationComponent extends DefaultComponent implements
         }
 
         public RegistrationValidator(String uuid) {
-             super(getTargetRepositoryName());
-             this.uuid=uuid;
+            super(getTargetRepositoryName());
+            this.uuid = uuid;
         }
 
         @Override
@@ -257,71 +277,80 @@ public class UserRegistrationComponent extends DefaultComponent implements
             DocumentRef idRef = new IdRef(uuid);
 
             if (!session.exists(idRef)) {
-                throw new UserRegistrationException("There is no existing registration request with id " + uuid);
+                throw new UserRegistrationException(
+                        "There is no existing registration request with id "
+                                + uuid);
             }
 
             DocumentModel registrationDoc = session.getDocument(idRef);
 
-            if (registrationDoc.getLifeCyclePolicy().equals("registrationRequest")) {
-                if (registrationDoc.getCurrentLifeCycleState().equals("accepted")) {
+            if (registrationDoc.getLifeCyclePolicy().equals(
+                    "registrationRequest")) {
+                if (registrationDoc.getCurrentLifeCycleState().equals(
+                        "accepted")) {
                     registrationDoc.followTransition("validate");
                 } else {
-                    if (registrationDoc.getCurrentLifeCycleState().equals("validated"))
-                    {
-                        throw new UserRegistrationException("Registration request has already been processed.");
+                    if (registrationDoc.getCurrentLifeCycleState().equals(
+                            "validated")) {
+                        throw new UserRegistrationException(
+                                "Registration request has already been processed.");
                     } else {
-                        throw new UserRegistrationException("Registration request has not been accepted yet.");
+                        throw new UserRegistrationException(
+                                "Registration request has not been accepted yet.");
                     }
                 }
             }
 
             session.saveDocument(registrationDoc);
             session.save();
-            EventContext evContext = sendEvent(session, registrationDoc, UserRegistrationService.REGISTRATION_VALIDATED_EVENT);
+            EventContext evContext = sendEvent(session, registrationDoc,
+                    UserRegistrationService.REGISTRATION_VALIDATED_EVENT);
 
             ((DocumentModelImpl) registrationDoc).detach(sessionIsAlreadyUnrestricted);
             registrationData.put("registrationDoc", registrationDoc);
-            registrationData.put("registeredUser", evContext.getProperty("registeredUser"));
+            registrationData.put("registeredUser",
+                    evContext.getProperty("registeredUser"));
         }
 
     }
 
-
-    protected EventContext sendEvent(CoreSession session, DocumentModel source, String evName) throws UserRegistrationException {
+    protected EventContext sendEvent(CoreSession session, DocumentModel source,
+            String evName) throws UserRegistrationException {
         try {
             EventService evService = Framework.getService(EventService.class);
-            EventContext evContext = new DocumentEventContext(session, session.getPrincipal(), source);
+            EventContext evContext = new DocumentEventContext(session,
+                    session.getPrincipal(), source);
 
-            Event event =  evContext.newEvent(evName);
+            Event event = evContext.newEvent(evName);
 
             evService.fireEvent(event);
 
             return evContext;
-        }
-        catch (UserRegistrationException ue) {
+        } catch (UserRegistrationException ue) {
             log.warn("Error during event processing", ue);
             throw ue;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             log.error("Error while sending event", e);
             return null;
         }
 
     }
 
-    protected void sendValidationEmail(Map<String, Serializable> additionnalInfo, DocumentModel registrationDoc) throws ClientException {
+    protected void sendValidationEmail(
+            Map<String, Serializable> additionnalInfo,
+            DocumentModel registrationDoc) throws ClientException {
 
         String emailAdress = (String) registrationDoc.getPropertyValue(UserRegistrationInfo.EMAIL_FIELD);
 
         Map<String, Serializable> input = new HashMap<String, Serializable>();
         input.put("registration", registrationDoc);
         input.put("info", (Serializable) additionnalInfo);
-        StringWriter writer= new StringWriter();
+        StringWriter writer = new StringWriter();
 
         try {
-            rh.getRenderingEngine().render(configuration.getValidationEmailTemplate(), input, writer);
-        }
-        catch (Exception e) {
+            rh.getRenderingEngine().render(
+                    configuration.getValidationEmailTemplate(), input, writer);
+        } catch (Exception e) {
             throw new ClientException("Error during rendering email", e);
         }
 
@@ -329,7 +358,7 @@ public class UserRegistrationComponent extends DefaultComponent implements
         String title = configuration.getValidationEmailTitle();
         if (!Framework.isTestModeSet()) {
             try {
-                generateMail(emailAdress, title, body );
+                generateMail(emailAdress, title, body);
             } catch (Exception e) {
                 throw new ClientException("Error while sending mail : ", e);
             }
@@ -339,7 +368,8 @@ public class UserRegistrationComponent extends DefaultComponent implements
 
     }
 
-    protected void generateMail(String address, String title, String content) throws Exception {
+    protected void generateMail(String address, String title, String content)
+            throws Exception {
 
         InitialContext ic = new InitialContext();
         Session session = (Session) ic.lookup(getJavaMailJndiName());
@@ -347,7 +377,8 @@ public class UserRegistrationComponent extends DefaultComponent implements
         MimeMessage msg = new MimeMessage(session);
         msg.setFrom(new InternetAddress(session.getProperty("mail.from")));
         Object to = address;
-        msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse((String) to, false));
+        msg.setRecipients(Message.RecipientType.TO,
+                InternetAddress.parse((String) to, false));
 
         msg.setSubject(title, "UTF-8");
         msg.setSentDate(new Date());
@@ -373,21 +404,28 @@ public class UserRegistrationComponent extends DefaultComponent implements
         return registrationUuid;
     }
 
-    public void acceptRegistrationRequest(String requestId, Map<String, Serializable> additionnalInfo) throws ClientException, UserRegistrationException {
+    public void acceptRegistrationRequest(String requestId,
+            Map<String, Serializable> additionnalInfo) throws ClientException,
+            UserRegistrationException {
 
-        RegistrationAcceptor acceptor = new RegistrationAcceptor(requestId, additionnalInfo);
+        RegistrationAcceptor acceptor = new RegistrationAcceptor(requestId,
+                additionnalInfo);
         acceptor.runUnrestricted();
 
     }
 
-    public void rejectRegistrationRequest(String requestId, Map<String, Serializable> additionnalInfo) throws ClientException, UserRegistrationException {
+    public void rejectRegistrationRequest(String requestId,
+            Map<String, Serializable> additionnalInfo) throws ClientException,
+            UserRegistrationException {
 
-        RegistrationRejector rejector = new RegistrationRejector(requestId, additionnalInfo);
+        RegistrationRejector rejector = new RegistrationRejector(requestId,
+                additionnalInfo);
         rejector.runUnrestricted();
 
     }
 
-    public Map<String, Serializable> validateRegistration(String requestId) throws ClientException, UserRegistrationException {
+    public Map<String, Serializable> validateRegistration(String requestId)
+            throws ClientException, UserRegistrationException {
 
         RegistrationValidator validator = new RegistrationValidator(requestId);
         validator.runUnrestricted();
@@ -398,27 +436,26 @@ public class UserRegistrationComponent extends DefaultComponent implements
             String requestId, Map<String, Serializable> additionnalInfo)
             throws ClientException, UserRegistrationException {
 
-
         Map<String, Serializable> registrationInfo = validateRegistration(requestId);
 
         Map<String, Serializable> input = new HashMap<String, Serializable>();
         input.putAll(registrationInfo);
         input.put("info", (Serializable) additionnalInfo);
-        StringWriter writer= new StringWriter();
+        StringWriter writer = new StringWriter();
 
         try {
-            rh.getRenderingEngine().render(configuration.getSuccessEmailTemplate(), input, writer);
-        }
-        catch (Exception e) {
+            rh.getRenderingEngine().render(
+                    configuration.getSuccessEmailTemplate(), input, writer);
+        } catch (Exception e) {
             throw new ClientException("Error during rendering email", e);
         }
 
-        String emailAdress =((NuxeoPrincipalImpl)registrationInfo.get("registeredUser")).getEmail();
+        String emailAdress = ((NuxeoPrincipalImpl) registrationInfo.get("registeredUser")).getEmail();
         String body = writer.getBuffer().toString();
         String title = configuration.getSuccessEmailTitle();
         if (!Framework.isTestModeSet()) {
             try {
-                generateMail(emailAdress, title, body );
+                generateMail(emailAdress, title, body);
             } catch (Exception e) {
                 throw new ClientException("Error while sending mail : ", e);
             }
@@ -440,7 +477,8 @@ public class UserRegistrationComponent extends DefaultComponent implements
 
     @Override
     public NuxeoPrincipal createUser(CoreSession session,
-            DocumentModel registrationDoc) throws ClientException, UserRegistrationException {
+            DocumentModel registrationDoc) throws ClientException,
+            UserRegistrationException {
         RegistrationUserFactory factory = null;
         Class<? extends RegistrationUserFactory> factoryClass = configuration.getRegistrationUserFactory();
         if (factoryClass != null) {
