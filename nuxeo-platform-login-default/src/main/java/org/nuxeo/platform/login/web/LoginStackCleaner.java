@@ -48,7 +48,7 @@ public class LoginStackCleaner implements Filter {
         try {
             chain.doFilter(arg0, arg1);
         } finally {
-            ClientLoginModule.getThreadLocalLogin().clear();
+            ClientLoginModule.removeThreadLocalLogin();
         }
     }
 
