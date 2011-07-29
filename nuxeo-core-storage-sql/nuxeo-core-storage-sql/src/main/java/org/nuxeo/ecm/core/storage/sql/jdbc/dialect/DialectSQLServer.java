@@ -125,7 +125,7 @@ public class DialectSQLServer extends Dialect {
         case TIMESTAMP:
             return jdbcInfo("DATETIME", Types.TIMESTAMP);
         case BLOBID:
-            return jdbcInfo("VARCHAR(40) COLLATE Latin1_General_BIN", Types.VARCHAR);
+            return jdbcInfo("VARCHAR(40)", Types.VARCHAR);
             // -----
         case NODEID:
         case NODEIDFK:
@@ -134,10 +134,10 @@ public class DialectSQLServer extends Dialect {
         case NODEIDFKNULL:
         case NODEIDPK:
         case NODEVAL:
-            return jdbcInfo("VARCHAR(36) COLLATE Latin1_General_BIN", Types.VARCHAR);
+            return jdbcInfo("VARCHAR(36)", Types.VARCHAR);
         case SYSNAME:
         case SYSNAMEARRAY:
-            return jdbcInfo("VARCHAR(256) COLLATE Latin1_General_BIN", Types.VARCHAR);
+            return jdbcInfo("VARCHAR(256)", Types.VARCHAR);
         case TINYINT:
             return jdbcInfo("TINYINT", Types.TINYINT);
         case INTEGER:
