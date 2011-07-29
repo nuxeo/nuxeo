@@ -15,6 +15,23 @@
 
     <extension target="web#EXCEPTION-FILTER">
 
+    <!-- put encoding filter with expection filter to make sure it's
+      registered first -->
+    <filter>
+      <display-name>Nuxeo Encoding Filter</display-name>
+      <filter-name>NuxeoEncodingFilter</filter-name>
+      <filter-class>
+        org.nuxeo.ecm.platform.web.common.encoding.NuxeoEncodingFilter
+      </filter-class>
+    </filter>
+    <!-- make it match every request -->
+    <filter-mapping>
+      <filter-name>NuxeoEncodingFilter</filter-name>
+      <url-pattern>/*</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+
         <filter>
             <display-name>Nuxeo Exception Filter</display-name>
             <filter-name>NuxeoExceptionFilter</filter-name>
@@ -43,7 +60,7 @@
         </filter>
 
         <filter>
-            <display-name>Nuxeo Security Filter</display-name>
+            <display-name>Nuxeo Authentication Filter</display-name>
             <filter-name>NuxeoAuthenticationFilter
             </filter-name>
             <filter-class>

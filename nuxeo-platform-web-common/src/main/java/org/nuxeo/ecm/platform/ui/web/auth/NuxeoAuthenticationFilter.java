@@ -315,16 +315,6 @@ public class NuxeoAuthenticationFilter implements Filter {
 
         doInitIfNeeded();
 
-        // NXP-5555: set encoding to UTF-8 in case this method is called before
-        // encoding is set to UTF-8 on the request
-        if (request.getCharacterEncoding() == null) {
-            try {
-                request.setCharacterEncoding("UTF-8");
-            } catch (UnsupportedEncodingException e) {
-                log.error(e, e);
-            }
-        }
-
         String tokenPage = getRequestedPage(request);
         if (tokenPage.equals(NXAuthConstants.SWITCH_USER_PAGE)) {
             boolean result = switchUser(request, response, chain);
