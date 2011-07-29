@@ -594,7 +594,7 @@ public abstract class NuxeoLauncher {
             } else {
                 System.err.println(startSummary);
             }
-            return wasStartupFine();
+            return true;
         } else if (count == startMaxWait) {
             if (!quiet) {
                 System.out.println();
