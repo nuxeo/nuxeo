@@ -11,6 +11,7 @@
   <artifactId>nuxeo-launcher-commons</artifactId>
   <name>Nuxeo Launcher Commons</name>
   <description>Utility classes for Nuxeo launchers</description>
+  <version>5.4.3-20110729</version>
 
   <dependencies>
     <dependency>

@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.util.HashMap;
 import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
@@ -78,7 +79,7 @@ public class JBossConfiguratorTest {
         // Windows path
         propertyToGenerate2 = "<config-property name=\""
                 + "property\" type=\"java.lang.String\">URL=jdbc:h2:"
-                + "C:\\nuxeo-dm-5.4.1-SNAPSHOT-jboss\\server\\default\\data\\NXRuntime\\data"
+                + "C:\\nuxeo-dm-jboss\\server\\default\\data\\NXRuntime\\data"
                 + File.separator + "h2" + File.separator
                 + "testinclude;AUTO_SERVER=true</config-property>";
 
@@ -96,6 +97,7 @@ public class JBossConfiguratorTest {
     @Test
     public void testConfiguration() throws Exception {
         configGenerator.init();
+        assertTrue(configGenerator.isConfigurable());
         log.debug(configGenerator.getIncludedTemplates());
         Properties config = configGenerator.getUserConfig();
         assertEquals("default,testinclude",
@@ -228,4 +230,36 @@ public class JBossConfiguratorTest {
         assertEquals(generatedProperty, propertyToGenerate, generatedProperty);
     }
 
+    @Test
+    public void testSaveFilteredConfiguration() throws ConfigurationException {
+        String propToSave1 = "nuxeo.notification.eMailSubjectPrefix";
+        String valueToSave1 = "[Nuxeo test]";
+        String propToSave2 = "mail.smtp.username";
+        String valueToSave2 = "tester";
+        configGenerator.init();
+        assertTrue(configGenerator.isConfigurable());
+        HashMap<String, String> parameters = new HashMap<String, String>();
+        parameters.put(propToSave1, valueToSave1);
+        configGenerator.saveFilteredConfiguration(parameters);
+
+        File nuxeoConf = getResourceFile("configurator/nuxeo.conf");
+        System.setProperty(ConfigurationGenerator.NUXEO_CONF,
+                nuxeoConf.getPath());
+        configGenerator = new ConfigurationGenerator();
+        configGenerator.init();
+        Properties userConfig = configGenerator.getUserConfig();
+        assertEquals("Save fail", valueToSave1,
+                userConfig.getProperty(propToSave1));
+        parameters.clear();
+        parameters.put(propToSave2, valueToSave2);
+        configGenerator.saveFilteredConfiguration(parameters);
+
+        configGenerator = new ConfigurationGenerator();
+        configGenerator.init();
+        userConfig = configGenerator.getUserConfig();
+        assertEquals("Save fail", valueToSave2,
+                userConfig.getProperty(propToSave2));
+        assertEquals("Save fail", valueToSave1,
+                userConfig.getProperty(propToSave1));
+    }
 }

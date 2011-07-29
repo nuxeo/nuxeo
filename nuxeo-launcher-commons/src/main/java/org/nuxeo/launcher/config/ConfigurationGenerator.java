@@ -26,6 +26,9 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.ServerSocket;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -100,6 +103,18 @@ public class ConfigurationGenerator {
 
     public static final String PARAM_FAKE_WINDOWS = "org.nuxeo.fake.vindoz";
 
+    public static final String PARAM_LOOPBACK_URL = "nuxeo.loopback.url";
+
+    public static final int MIN_PORT = 1;
+
+    public static final int MAX_PORT = 49151;
+
+    public static final int ADDRESS_PING_TIMEOUT = 1000;
+
+    public static final String PARAM_BIND_ADDRESS = "nuxeo.bind.address";
+
+    public static final String PARAM_HTTP_PORT = "nuxeo.server.http.port";
+
     private final File nuxeoHome;
 
     // User configuration file
@@ -139,6 +154,8 @@ public class ConfigurationGenerator {
 
     private String wizardParam = null;
 
+    private InetAddress bindAddress;
+
     public boolean isConfigurable() {
         return configurable;
     }
@@ -164,16 +181,6 @@ public class ConfigurationGenerator {
         }
         nuxeoDefaultConf = new File(nuxeoHome, TEMPLATES + File.separator
                 + NUXEO_DEFAULT_CONF);
-        // File confCheck = new File(System.getProperty("user.home"),
-        // ".nuxeoconf");
-        // if (confCheck.exists()) {
-        // BufferedReader in = new BufferedReader(new FileReader(confCheck));
-        // String previousNuxeoConfPath=in.readLine();
-        // ...
-        // } else {
-        // log.info("This is the first time Nuxeo is started by user "
-        // + System.getProperty("user.name"));
-        // }
 
         // detect server type based on System properties
         isJBoss = System.getProperty("jboss.home.dir") != null;
@@ -216,7 +223,7 @@ public class ConfigurationGenerator {
     /**
      * @see #PARAM_FORCE_GENERATION
      * @return true if configuration will be generated from templates
-     * @since 5.4.1
+     * @since 5.4.2
      */
     public boolean isForceGeneration() {
         return forceGeneration;
@@ -227,7 +234,7 @@ public class ConfigurationGenerator {
     }
 
     /**
-     * @since 5.4.1
+     * @since 5.4.2
      */
     public final ServerConfigurator getServerConfigurator() {
         return serverConfigurator;
@@ -296,7 +303,7 @@ public class ConfigurationGenerator {
      * Change templates using given database template
      *
      * @param dbTemplate new database template
-     * @since 5.4.1
+     * @since 5.4.2
      */
     public void changeDBTemplate(String dbTemplate) {
         changeTemplates(rebuildTemplatesStr(dbTemplate));
@@ -345,7 +352,6 @@ public class ConfigurationGenerator {
             }
             extractDatabaseTemplateName();
             includeTemplates(templates);
-            log.debug("Loaded configuration: " + userConfig);
         } catch (FileNotFoundException e) {
             throw new ConfigurationException("Missing file", e);
         } catch (IOException e) {
@@ -354,9 +360,11 @@ public class ConfigurationGenerator {
     }
 
     /**
-     * Read nuxeo.conf, replace backslashes in paths and write new nuxeo.conf
+     * Read nuxeo.conf, replace backslashes in paths and write new
+     * nuxeo.conf
      *
-     * @throws ConfigurationException if any error reading or writing nuxeo.conf
+     * @throws ConfigurationException if any error reading or writing
+     *             nuxeo.conf
      * @since 5.4.1
      */
     protected void replaceBackslashes() throws ConfigurationException {
@@ -402,7 +410,7 @@ public class ConfigurationGenerator {
     }
 
     /**
-     * @since 5.4.1
+     * @since 5.4.2
      * @param key Directory system key
      * @see Environment
      */
@@ -441,6 +449,10 @@ public class ConfigurationGenerator {
         } catch (IOException e) {
             throw new ConfigurationException("Configuration failure", e);
         }
+    }
+
+    private StringBuffer loadConfiguration() throws ConfigurationException {
+        return loadConfiguration(null);
     }
 
     private void writeConfiguration(StringBuffer configuration)
@@ -522,19 +534,26 @@ public class ConfigurationGenerator {
         setFalseToOnce = true;
         // Will change wizardParam value instead of appending it
         wizardParam = changedParameters.remove(PARAM_WIZARD_DONE);
-        writeConfiguration(loadConfiguration(), changedParameters);
+        writeConfiguration(loadConfiguration(changedParameters),
+                changedParameters);
     }
 
     /**
      * Save changed parameters in {@code nuxeo.conf}, filtering parameters with
-     * {@link #getChangedParametersMap(Map, Map)}
+     * {@link #getChangedParametersMap(Map, Map)} and calculating templates if
+     * changedParameters contains a value for {@link #PARAM_TEMPLATE_DBNAME}
      *
-     * @param changedParametersMaps Maps of modified parameters
-     * @since 5.4.1
+     * @param changedParameters Maps of modified parameters
+     * @since 5.4.2
      * @see #getChangedParameters(Map)
      */
     public void saveFilteredConfiguration(Map<String, String> changedParameters)
             throws ConfigurationException {
+        String newDbTemplate = changedParameters.remove(PARAM_TEMPLATE_DBNAME);
+        if (newDbTemplate != null) {
+            changedParameters.put(PARAM_TEMPLATES_NAME,
+                    rebuildTemplatesStr(newDbTemplate));
+        }
         saveConfiguration(getChangedParameters(changedParameters));
     }
 
@@ -545,7 +564,7 @@ public class ConfigurationGenerator {
      *
      * @param changedParameters parameters to be filtered
      * @return filtered map
-     * @since 5.4.1
+     * @since 5.4.2
      */
     public Map<String, String> getChangedParameters(
             Map<String, String> changedParameters) {
@@ -596,7 +615,8 @@ public class ConfigurationGenerator {
         }
     }
 
-    private StringBuffer loadConfiguration() throws ConfigurationException {
+    private StringBuffer loadConfiguration(Map<String, String> changedParameters)
+            throws ConfigurationException {
         StringBuffer newContent = new StringBuffer();
         BufferedReader reader = null;
         try {
@@ -625,8 +645,23 @@ public class ConfigurationGenerator {
                     }
                 } else {
                     if (!line.startsWith(BOUNDARY_END)) {
-                        // ignore previously generated content
-                        continue;
+                        if (changedParameters == null) {
+                            newContent.append(line
+                                    + System.getProperty("line.separator"));
+                        } else {
+                            int equalIdx = line.indexOf("=");
+                            if (line.trim().startsWith("#")) {
+                                String key = line.substring(1, equalIdx).trim();
+                                String value = line.substring(equalIdx + 1).trim();
+                                userConfig.setProperty(key, value);
+                            } else {
+                                String key = line.substring(0, equalIdx).trim();
+                                if (!changedParameters.containsKey(key)) {
+                                    String value = line.substring(equalIdx + 1).trim();
+                                    changedParameters.put(key, value);
+                                }
+                            }
+                        }
                     } else {
                         onConfiguratorContent = false;
                     }
@@ -680,7 +715,7 @@ public class ConfigurationGenerator {
     /**
      * Delegate logs initialization to serverConfigurator instance
      *
-     * @since 5.4.1
+     * @since 5.4.2
      */
     public void initLogs() {
         serverConfigurator.initLogs();
@@ -688,7 +723,7 @@ public class ConfigurationGenerator {
 
     /**
      * @return log directory
-     * @since 5.4.1
+     * @since 5.4.2
      */
     public File getLogDir() {
         return serverConfigurator.getLogDir();
@@ -696,7 +731,7 @@ public class ConfigurationGenerator {
 
     /**
      * @return pid directory
-     * @since 5.4.1
+     * @since 5.4.2
      */
     public File getPidDir() {
         return serverConfigurator.getPidDir();
@@ -704,7 +739,7 @@ public class ConfigurationGenerator {
 
     /**
      * @return Data directory
-     * @since 5.4.1
+     * @since 5.4.2
      */
     public File getDataDir() {
         return serverConfigurator.getDataDir();
@@ -719,7 +754,7 @@ public class ConfigurationGenerator {
      * @throws ConfigurationException If a deprecated directory has been
      *             detected.
      *
-     * @since 5.4.1
+     * @since 5.4.2
      */
     public void verifyInstallation() throws ConfigurationException {
         if (!System.getProperty("java.version").startsWith("1.6")) {
@@ -737,6 +772,88 @@ public class ConfigurationGenerator {
         ifNotExistsAndIsDirectoryThenCreate(getTmpDir());
         serverConfigurator.checkPaths();
         serverConfigurator.removeExistingLocks();
+        checkAddressesAndPorts();
+    }
+
+    /**
+     * Will check the configured addresses are reachable and Nuxeo required
+     * ports are available on those addresses.
+     * Server specific implementations should override this method in order to
+     * check for server specific ports. {@link #bindAddress} must be set
+     * before.
+     *
+     * @throws ConfigurationException
+     *
+     * @since 5.4.3
+     */
+    public void checkAddressesAndPorts() throws ConfigurationException {
+        try {
+            bindAddress = InetAddress.getByName(userConfig.getProperty(PARAM_BIND_ADDRESS));
+        } catch (UnknownHostException e) {
+            throw new ConfigurationException(e);
+        }
+        checkAddressReachable(bindAddress);
+        checkPortAvailable(bindAddress,
+                Integer.parseInt(userConfig.getProperty(PARAM_HTTP_PORT)));
+    }
+
+    /**
+     * @param address address to check for availability
+     * @throws ConfigurationException
+     * @since 5.4.3
+     */
+    public static void checkAddressReachable(InetAddress address)
+            throws ConfigurationException {
+        try {
+            if ("0.0.0.0".equals(address.getHostAddress())) {
+                address = InetAddress.getLocalHost();
+            }
+            log.debug("Checking availability of " + address);
+            address.isReachable(ADDRESS_PING_TIMEOUT);
+        } catch (IOException e) {
+            throw new ConfigurationException("Unreachable binded address "
+                    + address);
+        }
+    }
+
+    /**
+     * Checks if port is available on given address.
+     *
+     * @param port port to check for availability
+     * @throws ConfigurationException Throws an exception if address is
+     *             unavailable.
+     * @since 5.4.3
+     */
+    public static void checkPortAvailable(InetAddress address, int port)
+            throws ConfigurationException {
+        if (port < MIN_PORT || port > MAX_PORT) {
+            throw new IllegalArgumentException("Invalid port: " + port);
+        }
+        ServerSocket socketTCP = null;
+        // DatagramSocket socketUDP = null;
+        try {
+            log.debug("Checking availability of port " + port + " on address "
+                    + address);
+            socketTCP = new ServerSocket(port, 0, address);
+            socketTCP.setReuseAddress(true);
+            // socketUDP = new DatagramSocket(port, address);
+            // socketUDP.setReuseAddress(true);
+            // return true;
+        } catch (IOException e) {
+            throw new ConfigurationException("Port is unavailable: " + port
+                    + " on address " + address + " (" + e.getMessage() + ")", e);
+        } finally {
+            // if (socketUDP != null) {
+            // socketUDP.close();
+            // }
+            if (socketTCP != null) {
+                try {
+                    socketTCP.close();
+                } catch (IOException e) {
+                    // Do not throw
+                }
+            }
+        }
     }
 
     /**
@@ -755,7 +872,7 @@ public class ConfigurationGenerator {
     /**
      * @return Log files produced by Log4J configuration without loading this
      *         configuration instead of current active one.
-     * @since 5.4.1
+     * @since 5.4.2
      */
     public ArrayList<String> getLogFiles() {
         File log4jConfFile = serverConfigurator.getLogConfFile();
@@ -767,7 +884,7 @@ public class ConfigurationGenerator {
      * Check if wizard must and can be ran
      *
      * @return true if configuration wizard is required before starting Nuxeo
-     * @since 5.4.1
+     * @since 5.4.2
      */
     public boolean isWizardRequired() {
         return !"true".equalsIgnoreCase(getUserConfig().getProperty(
@@ -780,7 +897,7 @@ public class ConfigurationGenerator {
      *
      * @param dbTemplate database template to use instead of current one
      * @return new templates string using given dbTemplate
-     * @since 5.4.1
+     * @since 5.4.2
      * @see #extractDatabaseTemplateName()
      * @see {@link #changeDBTemplate(String)}
      * @see {@link #changeTemplates(String)}
@@ -798,7 +915,7 @@ public class ConfigurationGenerator {
 
     /**
      * @return Nuxeo config directory
-     * @since 5.4.1
+     * @since 5.4.2
      */
     public File getConfigDir() {
         return serverConfigurator.getConfigDir();
@@ -807,7 +924,7 @@ public class ConfigurationGenerator {
     /**
      * Ensure the server will start only wizard application, not Nuxeo
      *
-     * @since 5.4.1
+     * @since 5.4.2
      */
     public void prepareWizardStart() {
         serverConfigurator.prepareWizardStart();
@@ -816,7 +933,7 @@ public class ConfigurationGenerator {
     /**
      * Ensure the wizard won't be started and nuxeo is ready for use
      *
-     * @since 5.4.1
+     * @since 5.4.2
      */
     public void cleanupPostWizard() {
         serverConfigurator.cleanupPostWizard();
@@ -830,7 +947,7 @@ public class ConfigurationGenerator {
     }
 
     /**
-     * @since 5.4.1
+     * @since 5.4.2
      * @return true if there's an install in progress
      */
     public boolean isInstallInProgress() {

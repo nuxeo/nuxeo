@@ -36,12 +36,12 @@ public class JBossConfigurator extends ServerConfigurator {
     public static final String DEFAULT_CONFIGURATION = "default";
 
     /**
-     * @since 5.4.1
+     * @since 5.4.2
      */
     public static final String STARTUP_CLASS = "org.jboss.Main";
 
     /**
-     * @since 5.4.1
+     * @since 5.4.2
      */
     public static final String SHUTDOWN_CLASS = "org.jboss.Shutdown";
 

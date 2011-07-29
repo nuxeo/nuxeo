@@ -40,12 +40,12 @@ public class TomcatConfigurator extends ServerConfigurator {
             + "data";
 
     /**
-     * @since 5.4.1
+     * @since 5.4.2
      */
     public static final String DEFAULT_TMP_DIR = "tmp";
 
     /**
-     * @since 5.4.1
+     * @since 5.4.2
      */
     public static final String STARTUP_CLASS = "org.apache.catalina.startup.Bootstrap";
 
@@ -79,8 +79,8 @@ public class TomcatConfigurator extends ServerConfigurator {
     @Override
     public void checkPaths() throws ConfigurationException {
         super.checkPaths();
-        File oldPath = new File(generator.getNuxeoHome(), "nxserver"
-                + File.separator + "data" + File.separator + "vcsh2repo");
+        File oldPath = new File(getRuntimeHome(), "data" + File.separator
+                + "vcsh2repo");
         String message = "Please rename 'vcsh2repo' directory from "
                 + oldPath
                 + "to "
@@ -88,8 +88,7 @@ public class TomcatConfigurator extends ServerConfigurator {
                         + "nuxeo");
         checkPath(oldPath, message);
 
-        oldPath = new File(generator.getNuxeoHome(), "nxserver"
-                + File.separator + "data" + File.separator + "derby"
+        oldPath = new File(getRuntimeHome(), "data" + File.separator + "derby"
                 + File.separator + "nxsqldirectory");
         message = "It is not possible to migrate Derby data."
                 + System.getProperty("line.separator")
@@ -110,18 +109,16 @@ public class TomcatConfigurator extends ServerConfigurator {
 
     @Override
     public File getLogConfFile() {
-        return new File(generator.getNuxeoHome(), "lib" + File.separator
-                + "log4j.xml");
+        return new File(getServerLibDir(), "log4j.xml");
     }
 
     @Override
     public File getConfigDir() {
-        return new File(generator.getNuxeoHome(), "nxserver" + File.separator
-                + "config");
+        return new File(getRuntimeHome(), "config");
     }
 
     /**
-     * @since 5.4.1
+     * @since 5.4.2
      * @return Path to Tomcat configuration of Nuxeo context
      */
     public String getTomcatConfig() {
@@ -131,7 +128,7 @@ public class TomcatConfigurator extends ServerConfigurator {
 
     /**
      * @return Configured context name
-     * @since 5.4.1
+     * @since 5.4.2
      */
     private String getContextName() {
         if (contextName == null) {
