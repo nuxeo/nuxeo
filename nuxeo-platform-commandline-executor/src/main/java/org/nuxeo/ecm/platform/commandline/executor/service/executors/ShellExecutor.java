@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2011 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -13,25 +13,25 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     tdelprat, jcarsique
  *
  */
 
 package org.nuxeo.ecm.platform.commandline.executor.service.executors;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.impl.SimpleLog;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
 import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
 import org.nuxeo.ecm.platform.commandline.executor.service.CommandLineDescriptor;
+import org.nuxeo.log4j.ThreadedStreamGobbler;
 
 /**
  * Default implementation of the {@link Executor} interface. Use simple shell
@@ -48,41 +48,33 @@ public class ShellExecutor extends AbstractExecutor implements Executor {
         long t0 = System.currentTimeMillis();
         List<String> output = new ArrayList<String>();
 
-        String paramString = getParametersString(cmdDesc, params);
-
-        if (!isWindows()) {
-            paramString += " 2>&1";
-        }
-        String[] cmd = { "/bin/sh", "-c",
-                cmdDesc.getCommand() + " " + paramString };
-
+        String[] cmd;
         if (isWindows()) {
-            cmd[0] = "cmd";
-            cmd[1] = "/C";
+            String[] paramsArray = getParametersArray(cmdDesc, params);
+            cmd = new String[] { "cmd", "/C", cmdDesc.getCommand() };
+            cmd = (String[]) ArrayUtils.addAll(cmd, paramsArray);
+        } else {
+            String paramsString = getParametersString(cmdDesc, params)
+                    + " 2>&1";
+            cmd = new String[] { "/bin/sh", "-c",
+                    cmdDesc.getCommand() + " " + paramsString };
         }
 
         Process p1;
         try {
-            if(log.isDebugEnabled()) {
-                log.debug("Running system command: " + StringUtils.join(cmd, " "));
+            if (log.isDebugEnabled()) {
+                log.debug("Running system command: "
+                        + StringUtils.join(cmd, " "));
             }
             p1 = Runtime.getRuntime().exec(cmd);
         } catch (IOException e) {
             return new ExecResult(e);
         }
 
-        if (cmdDesc.getReadOutput()) {
-            BufferedReader stdInput = new BufferedReader(new InputStreamReader(
-                    p1.getInputStream()));
-            try {
-                String strLine;
-                while ((strLine = stdInput.readLine()) != null) {
-                    output.add(strLine);
-                }
-            } catch (IOException e) {
-                return new ExecResult(e);
-            }
-        }
+        new ThreadedStreamGobbler(p1.getInputStream(),
+                cmdDesc.getReadOutput() ? output : null).start();
+        new ThreadedStreamGobbler(p1.getErrorStream(),
+                SimpleLog.LOG_LEVEL_ERROR).start();
 
         int exitCode = 0;
         try {

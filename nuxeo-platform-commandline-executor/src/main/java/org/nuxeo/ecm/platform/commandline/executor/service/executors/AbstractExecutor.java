@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2011 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -13,8 +13,7 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     tdelprat, jcarsique
  *
  */
 
@@ -37,12 +36,47 @@ public abstract class AbstractExecutor {
         return osName.toLowerCase().contains("windows");
     }
 
-    public static String getParametersString(CommandLineDescriptor cmdDesc, CmdParameters params) {
+    /**
+     * Returns parameters as a String after having replaced parameterized values
+     * inside.
+     *
+     * @param cmdDesc CommandLineDescriptor containing parameters
+     * @param params parameterized values
+     * @return Parameters as a String
+     */
+    public static String getParametersString(CommandLineDescriptor cmdDesc,
+            CmdParameters params) {
         String paramString = cmdDesc.getParametersString();
         Map<String, String> paramsValues = params.getParameters();
+        paramString = replaceParams(paramsValues, paramString);
+        return paramString;
+    }
 
+    /**
+     * Returns parameters as a String array after having replaced parameterized
+     * values
+     * inside.
+     *
+     * @param cmdDesc CommandLineDescriptor containing parameters
+     * @param params parameterized values
+     * @return Parameters as a String array
+     * @since 5.4.3
+     */
+    public static String[] getParametersArray(CommandLineDescriptor cmdDesc,
+            CmdParameters params) {
+        String[] paramsArray = cmdDesc.getParametersString().split(" ");
+        Map<String, String> paramsValues = params.getParameters();
+        for (String paramString : paramsArray) {
+            paramString = replaceParams(paramsValues, paramString);
+        }
+        return paramsArray;
+    }
+
+    private static String replaceParams(Map<String, String> paramsValues,
+            String paramString) {
         for (String pname : paramsValues.keySet()) {
-            paramString = paramString.replace("#{" + pname + "}", paramsValues.get(pname));
+            paramString = paramString.replace("#{" + pname + "}",
+                    paramsValues.get(pname));
         }
         return paramString;
     }
