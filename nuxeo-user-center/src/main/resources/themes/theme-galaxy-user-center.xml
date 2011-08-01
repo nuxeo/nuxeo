@@ -1081,6 +1081,24 @@
         <color preset="buttons.hover (Galaxy User Center colors)" />
         <border preset="buttons.hover (Galaxy User Center borders)" />
       </selector>
+      <!-- custom style for nuxeo relationship -->
+       <selector path=".summary_div_1 .action_bar">
+        <margin>10px 0</margin>
+        <width>100%</width>
+        <display>block</display>
+      </selector>
+      <selector path=".summary_div_1 .action_bar a">
+        <float>right</float>
+        <margin>0 0 0 10px</margin>
+      </selector>
+      <selector path=".relationship_label">
+        <float>left</float>
+        <width>75%</width>
+      </selector>
+      <selector path=".relationList">
+        <clear>both</clear>
+      </selector>
+      <!-- end -->
       <selector path=".tabsContent">
         <margin>0px</margin>
         <padding>5px 10px 10px 10px</padding>
