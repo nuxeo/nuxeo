@@ -23,6 +23,7 @@ import java.io.IOException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.impl.SimpleLog;
+import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.log4j.ThreadedStreamGobbler;
 import org.nuxeo.runtime.api.Framework;
 
@@ -45,24 +46,20 @@ public class NuxeoCtlManager {
     }
 
     protected static boolean doExec(String path) {
-        // paramString += System.getProperty(
-        // ConfigurationGenerator.PARAM_WIZARD_RESTART_PARAMS, "");
-
         String[] cmd;
         if (isWindows()) {
             cmd = new String[] { "cmd", "/C",
                     new File(path, CMD_WIN).getPath(), "nogui", "restartbg" };
-            log.debug("Restart command: " + cmd[0] + " " + cmd[1] + " "
-                    + cmd[2] + " " + cmd[3] + " " + cmd[4]);
         } else {
             cmd = new String[] { "/bin/sh", "-c",
                     new File(path, CMD_POSIX).getPath() + " restartbg" };
-            log.debug("Restart command: " + cmd[0] + " " + cmd[1] + " "
-                    + cmd[2]);
         }
 
         Process p1;
         try {
+            if (log.isDebugEnabled()) {
+                log.debug("Restart command: " + StringUtils.join(cmd, " "));
+            }
             p1 = Runtime.getRuntime().exec(cmd);
         } catch (IOException e) {
             log.error("Unable to restart server", e);
