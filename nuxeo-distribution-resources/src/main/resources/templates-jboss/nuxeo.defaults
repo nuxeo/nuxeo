@@ -75,3 +75,5 @@ nuxeo.templates.parsing.extensions=xml,properties,nx
 
 # JBoss configuration to run
 org.nuxeo.ecm.jboss.configuration=default
+
+server.status.key=9z3x8R73

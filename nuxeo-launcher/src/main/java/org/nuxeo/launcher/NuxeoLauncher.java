@@ -992,6 +992,8 @@ public abstract class NuxeoLauncher {
         configurationGenerator.init();
         launcher.statusServletClient = new StatusServletClient(
                 configurationGenerator);
+        launcher.statusServletClient.setKey(configurationGenerator.getUserConfig().getProperty(
+                ConfigurationGenerator.PARAM_STATUS_KEY));
         return launcher;
     }
 

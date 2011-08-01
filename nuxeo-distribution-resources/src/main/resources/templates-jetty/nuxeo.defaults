@@ -58,3 +58,5 @@ opensocial.proxy.password=
 opensocial.trusted.hosts=
 
 nuxeo.templates.parsing.extensions=xml,properties,nx
+
+server.status.key=9z3x8R73

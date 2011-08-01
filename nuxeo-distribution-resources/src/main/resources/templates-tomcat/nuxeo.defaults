@@ -75,3 +75,5 @@ repository.clustering.delay=1000
 repository.binary.store=
 
 nuxeo.templates.parsing.extensions=xml,properties,nx,html
+
+server.status.key=9z3x8R73

@@ -63,6 +63,17 @@ public class StatusServletClient {
 
     private boolean startupFine = false;
 
+    private String key;
+
+    /**
+     * Set secure key used for connection
+     *
+     * @param key server.status.key configured on Server
+     */
+    public void setKey(String key) {
+        this.key = key;
+    }
+
     /**
      * @param configurationGenerator
      */
@@ -156,6 +167,7 @@ public class StatusServletClient {
     protected boolean post(String param, String value, StringBuilder response)
             throws SocketTimeoutException {
         String post = param + "=" + value;
+        post += "&key=" + key;
         try {
             connect("POST");
             BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(
