@@ -522,8 +522,8 @@ public class NuxeoFrame extends JFrame {
      * Update information displayed in summary tab
      */
     public void updateSummary() {
-        errorMessageLabel.setText("");
-        summaryStatus.setForeground(Color.WHITE);
+        String errorMessageLabelStr = "";
+        Color summaryStatusFgColor = Color.WHITE;
         if (!getController().getConfigurationGenerator().isWizardRequired()
                 && getController().launcher.isStarted()) {
             String startupSummary = getController().launcher.getStartupSummary();
@@ -536,11 +536,13 @@ public class NuxeoFrame extends JFrame {
                         break;
                     }
                 }
-                errorMessageLabel.setText("An error was detected during startup "
-                        + startupSummary + ".");
-                summaryStatus.setForeground(Color.RED);
+                errorMessageLabelStr = "An error was detected during startup "
+                        + startupSummary + ".";
+                summaryStatusFgColor = Color.RED;
             }
         }
+        errorMessageLabel.setText(errorMessageLabelStr);
+        summaryStatus.setForeground(summaryStatusFgColor);
         summaryStatus.setText(getController().launcher.status());
         summaryURL.setText(getController().launcher.getURL());
     }
