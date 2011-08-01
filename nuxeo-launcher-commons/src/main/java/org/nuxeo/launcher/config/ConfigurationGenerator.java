@@ -115,6 +115,8 @@ public class ConfigurationGenerator {
 
     public static final String PARAM_HTTP_PORT = "nuxeo.server.http.port";
 
+    public static final String PARAM_STATUS_KEY = "server.status.key";
+
     private final File nuxeoHome;
 
     // User configuration file
