@@ -138,12 +138,15 @@ public class PackZip {
         DeploymentPreprocessor.main(new String[] { nuxeoEar.getAbsolutePath() });
     }
 
-    protected void replaceStructureFile() {
+    protected void replaceStructureFile() throws IOException {
         File oldf = new File(nuxeoEar, "META-INF" + File.separator
                 + "nuxeo-structure.xml");
         File newf = new File(nuxeoEar, "META-INF" + File.separator
                 + "nuxeo-structure-zip.xml");
-        newf.renameTo(oldf);
+        if (oldf.exists() && !FileUtils.deleteQuietly(oldf)) {
+            log.warn("Cannot delete " + oldf.getName() + ", it may not replace it with the new file.");
+        }
+        FileUtils.moveFile(newf, oldf);
     }
 
     protected void moveJarsFromJbossLib() {
