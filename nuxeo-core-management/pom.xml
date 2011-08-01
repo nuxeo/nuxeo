@@ -15,8 +15,6 @@
   <description>Nuxeo Core Management</description>
 
   <dependencies>
-
-    <!-- bundles -->
     <dependency>
       <groupId>org.osgi</groupId>
       <artifactId>osgi-core</artifactId>
@@ -38,9 +36,12 @@
       <artifactId>nuxeo-core-api</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-launcher-commons</artifactId>
+    </dependency>
+    <dependency>
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
     </dependency>
-
-    </dependencies>
+  </dependencies>
 </project>
