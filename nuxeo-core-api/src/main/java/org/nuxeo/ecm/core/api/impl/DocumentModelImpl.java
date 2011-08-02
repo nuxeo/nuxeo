@@ -238,7 +238,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         if (getDocumentType() != null) {
             facets.addAll(getDocumentType().getFacets());
         }
-        recomputeSchemas();
+        schemas = computeSchemas(getDocumentType(), instanceFacets);
         schemasOrig = new HashSet<String>(schemas);
     }
 
@@ -267,7 +267,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
             this.facets.addAll(getDocumentType().getFacets());
         }
         if (schemas == null) {
-            recomputeSchemas();
+            this.schemas = computeSchemas(getDocumentType(), instanceFacets);
         } else {
             this.schemas = new HashSet<String>(Arrays.asList(schemas));
         }
@@ -277,12 +277,13 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     }
 
     /**
-     * Recompute all schemas from type + instance facets.
+     * Recomputes effective schemas from a type + instance facets.
      */
-    protected void recomputeSchemas() {
-        schemas = new HashSet<String>();
-        if (getDocumentType() != null) {
-            schemas.addAll(Arrays.asList(getDocumentType().getSchemaNames()));
+    public static Set<String> computeSchemas(DocumentType type,
+            Collection<String> instanceFacets) {
+        Set<String> schemas = new HashSet<String>();
+        if (type != null) {
+            schemas.addAll(Arrays.asList(type.getSchemaNames()));
         }
         TypeProvider typeProvider = Framework.getLocalService(SchemaManager.class);
         for (String facet : instanceFacets) {
@@ -291,6 +292,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
                 schemas.addAll(Arrays.asList(facetType.getSchemaNames()));
             }
         }
+        return schemas;
     }
 
     /**
@@ -633,7 +635,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
         // find the schemas that were dropped
         Set<String> droppedSchemas = new HashSet<String>(schemas);
-        recomputeSchemas();
+        schemas = computeSchemas(getDocumentType(), instanceFacets);
         droppedSchemas.removeAll(schemas);
 
         // clear these datamodels
@@ -1470,7 +1472,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         if (xpath.isEmpty()) {
             throw new PropertyNotFoundException(xpath, "Schema not specified");
         }
-        String schemaName = getXPathSchemaName(xpath, getDocumentType(), null);
+        String schemaName = getXPathSchemaName(xpath, schemas, null);
         if (schemaName == null) {
             throw new PropertyNotFoundException(xpath, "No such schema");
 
@@ -1483,8 +1485,9 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         return part.resolvePath(partPath);
     }
 
-    public static String getXPathSchemaName(String xpath, DocumentType type,
-            String[] returnName) {
+    public static String getXPathSchemaName(String xpath,
+            Set<String> docSchemas, String[] returnName) {
+        SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
         // find first segment
         int i = xpath.indexOf('/');
         String prop = i == -1 ? xpath : xpath.substring(0, i);
@@ -1492,7 +1495,6 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         if (p != -1) {
             // prefixed
             String prefix = prop.substring(0, p);
-            SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
             Schema schema = schemaManager.getSchemaFromPrefix(prefix);
             if (schema == null) {
                 // try directly with prefix as a schema name
@@ -1509,8 +1511,9 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
             // unprefixed
             // search for the first matching schema having a property
             // with the same name as the first path segment
-            for (Schema schema: type.getSchemas()) {
-                if (schema.hasField(prop)) {
+            for (String schemaName: docSchemas) {
+                Schema schema = schemaManager.getSchema(schemaName);
+                if (schema != null && schema.hasField(prop)) {
                     if (returnName != null) {
                         returnName[0] = prop;
                     }

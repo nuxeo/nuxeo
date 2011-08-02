@@ -175,7 +175,9 @@ public class DocumentModelFactory {
         Prefetch prefetch;
         String[] prefetchSchemas;
         if (prefetchInfo != null) {
-            prefetch = getPrefetch(doc, prefetchInfo);
+            Set<String> docSchemas = new HashSet<String>(
+                    Arrays.asList(docModel.getSchemas()));
+            prefetch = getPrefetch(doc, prefetchInfo, docSchemas);
             prefetchSchemas = prefetchInfo.getSchemas();
         } else {
             prefetch = null;
@@ -183,26 +185,34 @@ public class DocumentModelFactory {
         }
 
         // populate datamodels
-        List<Schema> loadSchemas = new LinkedList<Schema>();
+        List<String> loadSchemas = new LinkedList<String>();
         if (schemas == null) {
             schemas = prefetchSchemas;
         }
         if (schemas != null) {
+            Set<String> validSchemas = new HashSet<String>(
+                    Arrays.asList(docModel.getSchemas()));
             for (String schemaName : schemas) {
-                Schema schema = type.getSchema(schemaName);
-                if (schema != null) {
-                    loadSchemas.add(schema);
+                if (validSchemas.contains(schemaName)) {
+                    loadSchemas.add(schemaName);
                 }
             }
         }
-        for (Schema schema : loadSchemas) {
+        SchemaManager schemaManager;
+        try {
+            schemaManager = Framework.getService(SchemaManager.class);
+        } catch (Exception e) {
+            throw new ClientRuntimeException(e);
+        }
+        for (String schemaName : loadSchemas) {
+            Schema schema = schemaManager.getSchema(schemaName);
             docModel.addDataModel(createDataModel(doc, schema));
         }
 
         if (prefetch != null) {
             // ignore prefetches already loaded as datamodels
-            for (Schema schema : loadSchemas) {
-                prefetch.clearPrefetch(schema.getName());
+            for (String schemaName : loadSchemas) {
+                prefetch.clearPrefetch(schemaName);
             }
             // set prefetch
             docModel.setPrefetch(prefetch);
@@ -378,7 +388,9 @@ public class DocumentModelFactory {
         if ((flags & DocumentModel.REFRESH_PREFETCH) != 0) {
             PrefetchInfo prefetchInfo = doc.getType().getPrefetchInfo();
             if (prefetchInfo != null) {
-                refresh.prefetch = getPrefetch(doc, prefetchInfo);
+                Set<String> docSchemas = DocumentModelImpl.computeSchemas(
+                        doc.getType(), Arrays.asList(doc.getFacets()));
+                refresh.prefetch = getPrefetch(doc, prefetchInfo, docSchemas);
             }
         }
 
@@ -396,6 +408,7 @@ public class DocumentModelFactory {
 
         if ((flags & DocumentModel.REFRESH_CONTENT) != 0) {
             if (schemas == null) {
+                // TODO include facets
                 schemas = doc.getType().getSchemaNames();
             }
             DocumentType type = doc.getType();
@@ -415,7 +428,15 @@ public class DocumentModelFactory {
     /**
      * Prefetches from a document.
      */
-    private static Prefetch getPrefetch(Document doc, PrefetchInfo prefetchInfo) {
+    private static Prefetch getPrefetch(Document doc,
+            PrefetchInfo prefetchInfo, Set<String> docSchemas) {
+        SchemaManager schemaManager;
+        try {
+            schemaManager = Framework.getService(SchemaManager.class);
+        } catch (Exception e) {
+            throw new ClientRuntimeException(e);
+        }
+
         // individual fields
         Set<String> fieldNames = new HashSet<String>();
         String[] prefetchFields = prefetchInfo.getFields();
@@ -426,13 +447,14 @@ public class DocumentModelFactory {
         // whole schemas (but NOT their complex properties)
         String[] prefetchSchemas = prefetchInfo.getSchemas();
         if (prefetchSchemas != null) {
-            DocumentType type = doc.getType();
             for (String schemaName : prefetchSchemas) {
-                Schema schema = type.getSchema(schemaName);
-                if (schema != null) {
-                    for (Field field : schema.getFields()) {
-                        if (isScalarField(field)) {
-                            fieldNames.add(field.getName().getPrefixedName());
+                if (docSchemas.contains(schemaName)) {
+                    Schema schema = schemaManager.getSchema(schemaName);
+                    if (schema != null) {
+                        for (Field field : schema.getFields()) {
+                            if (isScalarField(field)) {
+                                fieldNames.add(field.getName().getPrefixedName());
+                            }
                         }
                     }
                 }
@@ -443,7 +465,7 @@ public class DocumentModelFactory {
         Prefetch prefetch = new Prefetch();
         for (String prefixedName : fieldNames) {
             prefetchValues((Property) doc, null, prefixedName, prefetch,
-                    doc.getType());
+                    docSchemas);
         }
 
         return prefetch;
@@ -461,10 +483,11 @@ public class DocumentModelFactory {
      * @param start the xpath that led to this property
      * @param xpath the canonical xpath with allowed list wildcards
      * @param prefetch the prefetch to fill
+     * @param docSchemas the available schemas on the document
      * @return {@code true} if the xpath was valid
      */
     public static void prefetchValues(Property property, String start,
-            String xpath, Prefetch prefetch, DocumentType docType) {
+            String xpath, Prefetch prefetch, Set<String> docSchemas) {
         Property p = property;
         while (xpath != null) {
             int i = xpath.indexOf('/');
@@ -497,8 +520,8 @@ public class DocumentModelFactory {
                                 String startBase = start.substring(0,
                                         start.length() - 1);
                                 for (Property subProp : props) {
-                                    prefetchValues(subProp, startBase
-                                            + n++, xpath, prefetch, docType);
+                                    prefetchValues(subProp, startBase + n++,
+                                            xpath, prefetch, docSchemas);
                                 }
                                 return; // xpath consumed, return now
                             } else {
@@ -547,7 +570,8 @@ public class DocumentModelFactory {
         xpath = start;
 
         String[] returnName = new String[1];
-        String schemaName = DocumentModelImpl.getXPathSchemaName(xpath, docType, returnName);
+        String schemaName = DocumentModelImpl.getXPathSchemaName(xpath,
+                docSchemas, returnName);
         String name = returnName[0]; // call me when java gets tuples
         prefetch.put(xpath, schemaName, name, value);
     }
