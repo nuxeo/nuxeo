@@ -28,6 +28,7 @@ import org.nuxeo.ecm.core.api.impl.DataModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
+import org.nuxeo.ecm.core.schema.Prefetch;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.SchemaManagerImpl;
 import org.nuxeo.ecm.core.schema.XSDLoader;
@@ -50,9 +51,10 @@ public class TestFreemarkerRendering extends NXRuntimeTestCase {
     public static void initSchemaManager() throws Exception {
         SchemaManagerImpl mgr = new SchemaManagerImpl();
         XSDLoader loader = new XSDLoader(mgr);
+        ClassLoader cl = TestFreemarkerRendering.class.getClassLoader();
         loader.loadSchema("dublincore", "dc",
-                TestFreemarkerRendering.class.getClassLoader().getResource(
-                        "schemas/mySchema.xsd"));
+                cl.getResource("schemas/mySchema.xsd"));
+        loader.loadSchema("file", "", cl.getResource("schemas/myFile.xsd"));
         // set a custom service provider to be able to lookup services without
         // loading the framework
         DefaultServiceProvider provider = new DefaultServiceProvider();
@@ -98,7 +100,9 @@ public class TestFreemarkerRendering extends NXRuntimeTestCase {
                         "testdata/blob.wiki")));
         doc1.getPart("dublincore").get("content").setValue(blob);
         // also add something prefetched (dm not loaded)
-        doc1.prefetchProperty("file.filename", "somefile");
+        Prefetch prefetch = new Prefetch();
+        prefetch.put("filename", "file", "filename", "somefile");
+        doc1.prefetch = prefetch;
 
         DocumentModelImpl doc2 = new DocumentModelImpl("/root/folder/wiki2",
                 "Test Doc 2", "File");

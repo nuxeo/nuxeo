@@ -12,15 +12,8 @@
 
 package org.nuxeo.ecm.platform.rendering.fm.adapters;
 
-import java.io.Serializable;
-import java.lang.reflect.Field;
-import java.util.Map;
-
-import org.nuxeo.common.utils.Null;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
-import org.nuxeo.ecm.platform.rendering.fm.adapters.SchemaTemplate.DocumentSchema;
 
 import freemarker.template.TemplateHashModel;
 import freemarker.template.TemplateModel;
@@ -57,17 +50,13 @@ public class SchemaTemplate extends PropertyWrapper implements
     @Override
     public TemplateModel get(String name) throws TemplateModelException {
         try {
-            // check prefetch
-            // TODO add doc.isPrefetched(name) or something equivalent
-            Field prefetchField = DocumentModelImpl.class.getDeclaredField("prefetch");
-            prefetchField.setAccessible(true);
-            @SuppressWarnings("unchecked")
-            Map<String, Serializable> prefetch = (Map<String, Serializable>) prefetchField.get(doc);
-            if (prefetch.containsKey(schemaName + '.' + name)) {
+            if (doc.isPrefetched(schemaName, name)) {
+                // simple value already available, don't load DocumentPart
                 return wrapper.wrap(doc.getProperty(schemaName, name));
+            } else {
+                // use normal Property lookup in Part
+                return wrap(doc.getPart(schemaName).get(name));
             }
-            // else use normal Property lookup in Part
-            return wrap(doc.getPart(schemaName).get(name));
         } catch (ClientException e) {
             throw new TemplateModelException(e);
         } catch (Exception e) {
