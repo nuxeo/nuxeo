@@ -550,13 +550,13 @@ public class SimpleDocumentModel implements DocumentModel {
     }
 
     @Override
-    public Map<String, Serializable> getPrefetch() {
-        throw new UnsupportedOperationException();
+    public boolean isPrefetched(String xpath) {
+        return false;
     }
 
     @Override
-    public void prefetchProperty(String id, Object value) {
-        throw new UnsupportedOperationException();
+    public boolean isPrefetched(String schemaName, String name) {
+        return false;
     }
 
     @Override

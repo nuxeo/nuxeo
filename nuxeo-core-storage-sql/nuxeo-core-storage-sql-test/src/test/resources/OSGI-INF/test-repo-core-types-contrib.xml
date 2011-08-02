@@ -24,7 +24,11 @@
       <schema name="myschema" />
       <schema name="dublincore" />
       <schema name="testList" />
-      <prefetch>common.icon</prefetch>
+      <schema name="book" />
+      <prefetch>uid, common.icon, dc:title
+        testList.participants, attachments/0/name, attachments/item[1]/name,
+        book:author/pJob, book:author/pName/FirstName
+        </prefetch>
     </doctype>
     <doctype name="Book" extends="Folder">
       <schema name="common" />

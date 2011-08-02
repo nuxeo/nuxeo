@@ -12,6 +12,9 @@
  */
 package org.nuxeo.ecm.core.api.impl;
 
+import static org.apache.commons.lang.ObjectUtils.NULL;
+import static org.nuxeo.ecm.core.schema.types.ComplexTypeImpl.canonicalXPath;
+
 import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.text.DateFormat;
@@ -33,7 +36,6 @@ import org.nuxeo.common.collections.ArrayMap;
 import org.nuxeo.common.collections.PrimitiveArrays;
 import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.common.collections.ScopedMap;
-import org.nuxeo.common.utils.Null;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -61,6 +63,7 @@ import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.FacetNames;
+import org.nuxeo.ecm.core.schema.Prefetch;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.SchemaNames;
 import org.nuxeo.ecm.core.schema.TypeConstants;
@@ -178,7 +181,8 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     private ScopedMap contextData;
 
-    protected Map<String, Serializable> prefetch;
+    // public for unit tests
+    public Prefetch prefetch;
 
     protected static Boolean strictSessionManagement;
 
@@ -482,8 +486,8 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
      * Detaches the documentImpl from its existing session, so that it can
      * survive beyond the session's closing.
      *
-     * @param loadAll if {@code true}, load all data and ACP from the session before
-     *            detaching
+     * @param loadAll if {@code true}, load all data and ACP from the session
+     *            before detaching
      */
     public void detach(boolean loadAll) throws ClientException {
         if (sid == null) {
@@ -679,29 +683,19 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         return dm == null ? null : dm.getMap();
     }
 
-    /**
-     * Gets property.
-     * <p>
-     * Get property is also consulting the prefetched properties.
-     *
-     * @see DocumentModel#getProperty(String, String)
-     */
     @Override
     public Object getProperty(String schemaName, String name)
             throws ClientException {
+        // look in prefetch
+        if (prefetch != null) {
+            Serializable value = prefetch.get(schemaName, name);
+            if (value != NULL) {
+                return value;
+            }
+        }
+        // look in datamodels
         DataModel dm = dataModels.get(schemaName);
-        if (dm == null) { // no data model loaded
-            // try prefetched props
-            if (prefetch != null) {
-                Object value = prefetch.get(schemaName + '.' + name);
-                if (value != null) {
-                    return value == Null.VALUE ? null : value;
-                }
-            }
-            if (log.isTraceEnabled()) {
-                log.trace("Property not in prefetch: " + schemaName + '.'
-                        + name);
-            }
+        if (dm == null) {
             dm = getDataModel(schemaName);
         }
         return dm == null ? null : dm.getData(name);
@@ -917,6 +911,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         DataModel dm = getDataModel(schemaName);
         if (dm != null) {
             dm.setMap(data);
+            clearPrefetch(schemaName);
         }
     }
 
@@ -924,9 +919,11 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     public void setProperty(String schemaName, String name, Object value)
             throws ClientException {
         DataModel dm = getDataModel(schemaName);
-        if (dm != null) {
-            dm.setData(name, value);
+        if (dm == null) {
+            return;
         }
+        dm.setData(name, value);
+        clearPrefetch(schemaName);
     }
 
     @Override
@@ -1324,14 +1321,25 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         return dataModels.containsKey(name);
     }
 
-    // TODO: id is schema.field and not prefix:field
     @Override
-    public void prefetchProperty(String id, Object value) {
-        if (prefetch == null) {
-            prefetch = new HashMap<String, Serializable>();
-        }
-        Serializable sValue = (Serializable) value;
-        prefetch.put(id, value == null ? Null.VALUE : sValue);
+    public boolean isPrefetched(String xpath) {
+        return prefetch != null && prefetch.isPrefetched(xpath);
+    }
+
+    @Override
+    public boolean isPrefetched(String schemaName, String name) {
+        return prefetch != null && prefetch.isPrefetched(schemaName, name);
+    }
+
+    /**
+     * Sets prefetch information.
+     * <p>
+     * INTERNAL: This method is not in the public interface.
+     *
+     * @since 5.4.3
+     */
+    public void setPrefetch(Prefetch prefetch) {
+        this.prefetch = prefetch;
     }
 
     @Override
@@ -1407,11 +1415,6 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     }
 
     @Override
-    public Map<String, Serializable> getPrefetch() {
-        return prefetch;
-    }
-
-    @Override
     public <T extends Serializable> T getSystemProp(
             final String systemProperty, final Class<T> type)
             throws ClientException, DocumentException {
@@ -1460,68 +1463,100 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     @Override
     public Property getProperty(String xpath) throws ClientException {
-        Path path = new Path(xpath);
-        if (path.segmentCount() == 0) {
+        if (xpath == null) {
+            throw new PropertyNotFoundException("null", "Invalid null xpath");
+        }
+        xpath = canonicalXPath(xpath);
+        if (xpath.isEmpty()) {
             throw new PropertyNotFoundException(xpath, "Schema not specified");
         }
-        String segment = path.segment(0);
-        int p = segment.indexOf(':');
-        if (p == -1) { // support also other schema paths? like schema.property
-            // allow also unprefixed schemas -> make a search for the first
-            // matching schema having a property with same name as path segment
-            // 0
-            DocumentPart[] parts = getParts();
-            for (DocumentPart part : parts) {
-                if (part.getSchema().hasField(segment)) {
-                    return part.resolvePath(path.toString());
+        String schemaName = getXPathSchemaName(xpath, getDocumentType(), null);
+        if (schemaName == null) {
+            throw new PropertyNotFoundException(xpath, "No such schema");
+
+        }
+        DocumentPart part = getPart(schemaName);
+        if (part == null) {
+            throw new PropertyNotFoundException(xpath);
+        }
+        String partPath = xpath.substring(xpath.indexOf(':') + 1); // cut prefix
+        return part.resolvePath(partPath);
+    }
+
+    public static String getXPathSchemaName(String xpath, DocumentType type,
+            String[] returnName) {
+        // find first segment
+        int i = xpath.indexOf('/');
+        String prop = i == -1 ? xpath : xpath.substring(0, i);
+        int p = prop.indexOf(':');
+        if (p != -1) {
+            // prefixed
+            String prefix = prop.substring(0, p);
+            SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
+            Schema schema = schemaManager.getSchemaFromPrefix(prefix);
+            if (schema == null) {
+                // try directly with prefix as a schema name
+                schema = schemaManager.getSchema(prefix);
+                if (schema == null) {
+                    return null;
                 }
             }
-            // could not find any matching schema
-            throw new PropertyNotFoundException(xpath, "Schema not specified");
+            if (returnName != null) {
+                returnName[0] = prop.substring(p + 1);
+            }
+            return schema.getName();
+        } else {
+            // unprefixed
+            // search for the first matching schema having a property
+            // with the same name as the first path segment
+            for (Schema schema: type.getSchemas()) {
+                if (schema.hasField(prop)) {
+                    if (returnName != null) {
+                        returnName[0] = prop;
+                    }
+                    return schema.getName();
+                }
+            }
+            return null;
         }
-        String prefix = segment.substring(0, p);
-        SchemaManager mgr = Framework.getLocalService(SchemaManager.class);
-        Schema schema = mgr.getSchemaFromPrefix(prefix);
-        if (schema == null) {
-            schema = mgr.getSchema(prefix);
-            if (schema == null) {
-                throw new PropertyNotFoundException(xpath,
-                        "Could not find registered schema with prefix: "
-                                + prefix);
+    }
+
+    @Override
+    public Serializable getPropertyValue(String xpath)
+            throws PropertyException, ClientException {
+        if (prefetch != null) {
+            Serializable value = prefetch.get(xpath);
+            if (value != NULL) {
+                return value;
             }
         }
-        // workaround for a schema prefix bug -> XPATH lookups in
-        // DocumentPart must use prefixed
-        // names for schema with prefixes and non prefixed names for the
-        // rest o schemas.
-        // Until then we used the name as the prefix but we must remove it
-        // since it is not a valid prefix:
-        // NXP-1913
-        String[] segments = path.segments();
-        segments[0] = segments[0].substring(p + 1);
-        path = Path.createFromSegments(segments);
-
-        DocumentPart part = getPart(schema.getName());
-        if (part == null) {
-            throw new PropertyNotFoundException(
-                    xpath,
-                    String.format(
-                            "Document '%s' with title '%s' and type '%s' does not have any schema with prefix '%s'",
-                            getRef(), getTitle(), getType(), prefix));
-        }
-        return part.resolvePath(path.toString());
+        return getProperty(xpath).getValue();
     }
 
     @Override
-    public Serializable getPropertyValue(String path) throws PropertyException,
-            ClientException {
-        return getProperty(path).getValue();
-    }
-
-    @Override
-    public void setPropertyValue(String path, Serializable value)
+    public void setPropertyValue(String xpath, Serializable value)
             throws PropertyException, ClientException {
-        getProperty(path).setValue(value);
+        getProperty(xpath).setValue(value);
+        clearPrefetchXPath(xpath);
+    }
+
+    private void clearPrefetch(String schemaName) {
+        if (prefetch != null) {
+            prefetch.clearPrefetch(schemaName);
+            if (prefetch.isEmpty()) {
+                prefetch = null;
+            }
+        }
+    }
+
+    protected void clearPrefetchXPath(String xpath) {
+        if (prefetch != null) {
+            String schemaName = prefetch.getXPathSchema(xpath,
+                    getDocumentType());
+            if (schemaName != null) {
+                clearPrefetch(schemaName);
+            }
+        }
     }
 
     @Override
@@ -1573,9 +1608,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         if (dataModels != null) {
             dataModels.clear();
         }
-        if (prefetch != null) {
-            prefetch.clear();
-        }
+        prefetch = null;
         isACPLoaded = false;
         acp = null;
         currentLifeCycleState = null;

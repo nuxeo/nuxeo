@@ -27,6 +27,7 @@ import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.PropertyVisitor;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.schema.DocumentType;
+import org.nuxeo.ecm.core.schema.Prefetch;
 
 /**
  * The document model is a serializable representation of a core document.
@@ -785,16 +786,25 @@ public interface DocumentModel extends Serializable {
     String getSourceId();
 
     /**
-     * Returns the map of prefetched values.
+     * Checks if a property is prefetched.
      *
-     * @return the map of prefetched values.
+     * @param xpath the property xpath
+     * @return {@code true} if it is prefetched
+     *
+     * @since 5.4.3
      */
-    Map<String, Serializable> getPrefetch();
+    boolean isPrefetched(String xpath);
 
     /**
-     * Store a value in the prefetched inner map.
+     * Checks if a property is prefetched.
+     *
+     * @param schemaName the schema name
+     * @param name the property name
+     * @return {@code true} if it is prefetched
+     *
+     * @since 5.4.3
      */
-    void prefetchProperty(String id, Object value);
+    boolean isPrefetched(String schemaName, String name);
 
     /**
      * Used to set lifecycle state along with prefetching other properties.
@@ -833,12 +843,30 @@ public interface DocumentModel extends Serializable {
 
     /**
      * Gets a property given a xpath.
+     * <p>
+     * Note that what's called xpath in this context is not an actual XPath as
+     * specified by the w3c. Main differences are that in our xpath:
+     * <ul>
+     * <li>Indexes start at 0 instead of 1</li>
+     * <li>You can express {@code foo/bar[i]/baz} as {@code foo/i/baz}</li>
+     * </ul>
+     * The latter is possible because in Nuxeo lists of complex elements are
+     * homogenous, so the name of the second-level element is implied.
      */
     Property getProperty(String xpath) throws PropertyException,
             ClientException;
 
     /**
      * Gets a property value given a xpath.
+     * <p>
+     * Note that what's called xpath in this context is not an actual XPath as
+     * specified by the w3c. Main differences are that in our xpath:
+     * <ul>
+     * <li>Indexes start at 0 instead of 1</li>
+     * <li>You can express {@code foo/bar[i]/baz} as {@code foo/i/baz}</li>
+     * </ul>
+     * The latter is possible because in Nuxeo lists of complex elements are
+     * homogenous, so the name of the second-level element is implied.
      */
     Serializable getPropertyValue(String xpath) throws PropertyException,
             ClientException;
@@ -926,7 +954,7 @@ public interface DocumentModel extends Serializable {
 
         public ACP acp;
 
-        public Map<String, Serializable> prefetch;
+        public Prefetch prefetch;
 
         public DocumentPart[] documentParts;
     }

@@ -7,9 +7,8 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *     <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
- * $Id$
+ *     Anahide Tchertchian
+ *     Florent Guillaume
  */
 
 package org.nuxeo.ecm.core.storage.sql;
@@ -22,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -30,19 +30,17 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolderAdapterService;
 import org.nuxeo.ecm.core.api.externalblob.ExternalBlobAdapter;
 import org.nuxeo.ecm.core.api.externalblob.FileSystemExternalBlobAdapter;
+import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.impl.primitives.ExternalBlobProperty;
 import org.nuxeo.ecm.core.schema.SchemaManager;
+import org.nuxeo.ecm.core.schema.types.ComplexTypeImpl;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.runtime.api.Framework;
 
-/**
- * @author Anahide Tchertchian
- *
- */
 @SuppressWarnings("unchecked")
 public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
 
@@ -80,6 +78,7 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
         doc = session.createDocument(doc);
     }
 
+    @Override
     public void tearDown() throws Exception {
         closeSession();
         super.tearDown();
@@ -383,8 +382,8 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
         assertTrue(actualBlob instanceof Blob);
         assertEquals("Hello External Blob", ((Blob) actualBlob).getString());
         assertEquals("hello.txt", ((Blob) actualBlob).getFilename());
-        assertEquals("hello.txt", doc.getPropertyValue(propName
-                + "/0/blob/name"));
+        assertEquals("hello.txt",
+                doc.getPropertyValue(propName + "/0/blob/name"));
         assertEquals(uri, doc.getPropertyValue(propName + "/0/blob/uri"));
     }
 
@@ -412,4 +411,118 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
         // check that the minimal number of updates are done in the db
     }
 
+    // toplevel complex list
+    public void testXPath1() throws Exception {
+        DocumentModel doc = new DocumentModelImpl("/", "doc", "File");
+        List<Object> files = new ArrayList<Object>(2);
+        Map<String, Object> f = new HashMap<String, Object>();
+        f.put("filename", "f1");
+        files.add(f);
+        doc.setProperty("files", "files", files);
+        assertEquals("f1", doc.getPropertyValue("files/0/filename"));
+        assertEquals("f1", doc.getPropertyValue("files/item[0]/filename"));
+    }
+
+    // other complex list
+    public void testXPath2() throws Exception {
+        DocumentModel doc = new DocumentModelImpl("/", "doc", "ComplexDoc");
+        HashMap<String, Object> attachedFile = new HashMap<String, Object>();
+        List<Map<String, Object>> vignettes = new ArrayList<Map<String, Object>>();
+        attachedFile.put("vignettes", vignettes);
+        Map<String, Object> vignette = new HashMap<String, Object>();
+        Long width = Long.valueOf(123);
+        vignette.put("width", width);
+        vignettes.add(vignette);
+        doc.setPropertyValue("cmpf:attachedFile", attachedFile);
+        assertEquals(width,
+                doc.getPropertyValue("cmpf:attachedFile/vignettes/0/width"));
+        assertEquals(
+                width,
+                doc.getPropertyValue("cmpf:attachedFile/vignettes/vignette[0]/width"));
+    }
+
+    private static String canonXPath(String xpath) {
+        return ComplexTypeImpl.canonicalXPath(xpath);
+    }
+
+    public void testCanonicalizeXPath() throws Exception {
+        assertEquals("foo", canonXPath("foo"));
+        assertEquals("foo", canonXPath("/foo"));
+        assertEquals("foo", canonXPath("//foo"));
+        assertEquals("foo/bar", canonXPath("foo/bar"));
+        assertEquals("foo/bar", canonXPath("/foo/bar"));
+        assertEquals("foo/bar/baz", canonXPath("foo/bar/baz"));
+        assertEquals("foo/0/bar", canonXPath("foo/0/bar"));
+        assertEquals("foo/bar/0", canonXPath("foo/bar/0"));
+        assertEquals("foo/0/bar", canonXPath("foo/gee[0]/bar"));
+        assertEquals("foo/*/bar", canonXPath("foo/gee[*]/bar"));
+        assertEquals("foo/bar/0", canonXPath("foo/bar/gee[0]"));
+        assertEquals("foo/0/bar/123/moo",
+                canonXPath("foo/gee[0]/bar/baz[123]/moo"));
+        assertEquals("foo/0/bar/*/moo",
+                canonXPath("foo/gee[0]/bar/baz[*]/moo"));
+    }
+
+    public void testPrefetchDefault() throws Exception {
+        doc = session.createDocument(session.createDocumentModel("/", "doc2",
+                "TestDocumentWithDefaultPrefetch"));
+        assertTrue(doc.isPrefetched("dc:title"));
+        assertTrue(doc.isPrefetched("dc:modified"));
+        assertTrue(doc.isPrefetched("dc:creator"));
+        assertTrue(doc.isPrefetched("dc:contributors"));
+        assertTrue(doc.isPrefetched("icon"));
+        assertTrue(doc.isPrefetched("dublincore", "title"));
+        assertTrue(doc.isPrefetched("common", "icon"));
+        assertFalse(doc.isPrefetched("dc:description"));
+        assertNull(doc.getPropertyValue("dc:title"));
+        assertNull(doc.getProperty("dublincore", "title"));
+
+        doc.setPropertyValue("dc:title", "foo");
+        assertFalse(doc.isPrefetched("dc:title"));
+        assertFalse(doc.isPrefetched("dublincore", "title"));
+        assertEquals("foo", doc.getPropertyValue("dc:title"));
+        assertEquals("foo", doc.getProperty("dublincore", "title"));
+
+        // set using schema + name
+        Calendar cal = Calendar.getInstance();
+        doc.setProperty("dublincore", "modified", cal);
+        assertFalse(doc.isPrefetched("dc:modified"));
+        assertFalse(doc.isPrefetched("dublincore", "modified"));
+        assertEquals(cal, doc.getPropertyValue("dc:modified"));
+        assertEquals(cal, doc.getProperty("dublincore", "modified"));
+
+        // with no schema prefix
+        doc.setPropertyValue("icon", "myicon");
+        assertFalse(doc.isPrefetched("icon"));
+        assertFalse(doc.isPrefetched("common", "icon"));
+        assertEquals("myicon", doc.getPropertyValue("icon"));
+        assertEquals("myicon", doc.getProperty("common", "icon"));
+    }
+
+    public void testPrefetchComplexProperty() throws Exception {
+        doc = session.createDocumentModel("/", "doc2", "MyDocType");
+
+        doc.setPropertyValue("book:author/pJob", "somejob");
+        StringBlob blob = new StringBlob("foo");
+        blob.setFilename("fooname");
+        LinkedList<Object> blobs = new LinkedList<Object>();
+        blobs.add(blob);
+        doc.setPropertyValue("attachments", blobs);
+
+        doc = session.createDocument(doc);
+        doc = session.getDocument(doc.getRef());
+
+        assertTrue(doc.isPrefetched("dc:title"));
+        assertTrue(doc.isPrefetched("attachments/0/name"));
+        assertTrue(doc.isPrefetched("book:author/pJob"));
+        assertEquals("fooname", doc.getPropertyValue("attachments/0/name"));
+        assertEquals("somejob", doc.getPropertyValue("book:author/pJob"));
+
+        // set another prop in same schema
+        doc.setPropertyValue("book:author/pAge", null);
+        // not prefetched anymore as schema was loaded
+        assertFalse(doc.isPrefetched("book:author/pJob"));
+
+
+    }
 }

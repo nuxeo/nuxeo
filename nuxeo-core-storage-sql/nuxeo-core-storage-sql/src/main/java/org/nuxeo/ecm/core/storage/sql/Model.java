@@ -957,8 +957,8 @@ public class Model {
         return mixinFragments.get(mixin);
     }
 
-    protected Set<String> getFieldFragments(Field field) {
-        return fieldFragments.get(field.getName().toString());
+    protected Set<String> getFieldFragments(String fieldName) {
+        return fieldFragments.get(fieldName);
     }
 
     public Set<String> getTypePrefetchedFragments(String typeName) {
@@ -1080,9 +1080,10 @@ public class Model {
             PrefetchInfo prefetch = documentType.getPrefetchInfo();
             if (prefetch != null) {
                 Set<String> typeFragments = getTypeFragments(typeName);
-                for (Field field : prefetch.getFields()) {
+                for (String fieldName : prefetch.getFields()) {
                     // prefetch all the relevant fragments
-                    Set<String> fragments = getFieldFragments(field);
+                    // TODO deal with full xpath
+                    Set<String> fragments = getFieldFragments(fieldName);
                     if (fragments != null) {
                         for (String fragment : fragments) {
                             if (typeFragments.contains(fragment)) {
@@ -1091,8 +1092,8 @@ public class Model {
                         }
                     }
                 }
-                for (Schema schema : prefetch.getSchemas()) {
-                    String fragment = schemaFragment.get(schema.getName());
+                for (String schemaName : prefetch.getSchemas()) {
+                    String fragment = schemaFragment.get(schemaName);
                     if (fragment != null) {
                         addTypePrefetchedFragment(typeName, fragment);
                     }

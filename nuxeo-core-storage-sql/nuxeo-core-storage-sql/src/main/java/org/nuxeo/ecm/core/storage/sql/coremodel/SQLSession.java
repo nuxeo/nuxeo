@@ -1022,22 +1022,45 @@ public class SQLSession implements Session {
             } catch (StorageException e) {
                 throw new DocumentException(e);
             }
-            ComplexType complexType = (ComplexType) type;
             List<Property> properties = new ArrayList<Property>(
                     childNodes.size());
             for (Node childNode : childNodes) {
-                Property property;
-                // TODO use a better switch
-                if (TypeConstants.isContentType(type)) {
-                    property = new SQLContentProperty(childNode, complexType,
-                            this, readonly);
-                } else {
-                    property = new SQLComplexProperty(childNode, complexType,
-                            this, readonly);
-                }
+                Property property = newSQLComplexProperty(childNode,
+                        (ComplexType) type, readonly);
                 properties.add(property);
             }
             return properties;
+        }
+    }
+
+    /**
+     * Makes a property from a complex list element.
+     *
+     * @since 5.4.3
+     */
+    protected Property makeProperty(Node node, String name, Type parentType,
+            boolean readonly, int pos) throws DocumentException {
+        Type type = ((ListType) parentType).getField().getType();
+        List<Node> childNodes;
+        try {
+            childNodes = session.getChildren(node, name, true);
+        } catch (StorageException e) {
+            throw new DocumentException(e);
+        }
+        if (pos < 0 || pos >= childNodes.size()) {
+            throw new NoSuchPropertyException(name + '/' + pos);
+        }
+        Node childNode = childNodes.get(pos);
+        return newSQLComplexProperty(childNode, (ComplexType) type, readonly);
+    }
+
+    protected Property newSQLComplexProperty(Node childNode, ComplexType type,
+            boolean readonly) {
+        // TODO use a better switch
+        if (TypeConstants.isContentType(type)) {
+            return new SQLContentProperty(childNode, type, this, readonly);
+        } else {
+            return new SQLComplexProperty(childNode, type, this, readonly);
         }
     }
 

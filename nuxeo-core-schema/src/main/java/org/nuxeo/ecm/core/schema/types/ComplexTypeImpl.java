@@ -246,4 +246,26 @@ public class ComplexTypeImpl extends AbstractType implements ComplexType {
     public TypeRef<? extends ComplexType> getRef() {
         return new TypeRef<ComplexType>(schema, name, this);
     }
+
+    /**
+     * Canonicalizes a Nuxeo-xpath.
+     * <p>
+     * Replaces {@code a/foo[123]/b} with {@code a/123/b}
+     * <p>
+     * A star can be used instead of the digits as well (for configuration).
+     *
+     * @param xpath the xpath
+     * @return the canonicalized xpath.
+     */
+    public static String canonicalXPath(String xpath) {
+        while (xpath.length() > 0 && xpath.charAt(0) == '/') {
+            xpath = xpath.substring(1);
+        }
+        if (xpath.indexOf('[') == -1) {
+            return xpath;
+        } else {
+            return xpath.replaceAll("[^/\\[\\]]+\\[(\\d+|\\*)\\]", "$1");
+        }
+    }
+
 }

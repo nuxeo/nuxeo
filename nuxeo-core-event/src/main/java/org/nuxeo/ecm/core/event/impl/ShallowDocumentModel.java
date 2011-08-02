@@ -272,11 +272,6 @@ public class ShallowDocumentModel implements DocumentModel {
     }
 
     @Override
-    public Map<String, Serializable> getPrefetch() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public Map<String, Object> getProperties(String schemaName)
             throws ClientException {
         throw new UnsupportedOperationException();
@@ -387,17 +382,22 @@ public class ShallowDocumentModel implements DocumentModel {
     }
 
     @Override
+    public boolean isPrefetched(String xpath) {
+        return false;
+    }
+
+    @Override
+    public boolean isPrefetched(String schemaName, String name) {
+        return false;
+    }
+
+    @Override
     public void prefetchCurrentLifecycleState(String lifecycle) {
         throw new UnsupportedOperationException();
     }
 
     @Override
     public void prefetchLifeCyclePolicy(String lifeCyclePolicy) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void prefetchProperty(String id, Object value) {
         throw new UnsupportedOperationException();
     }
 
