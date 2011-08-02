@@ -178,7 +178,6 @@ public abstract class NuxeoLauncher {
     }
 
     public NuxeoLauncher(ConfigurationGenerator configurationGenerator) {
-        // super("Nuxeo");
         this.configurationGenerator = configurationGenerator;
         processManager = getOSProcessManager();
         processRegex = Pattern.quote(configurationGenerator.getNuxeoConf().getPath())
@@ -317,7 +316,13 @@ public abstract class NuxeoLauncher {
                 }
                 linearizedCommand += " " + commandToken;
             }
-            osCommand.add("/bin/sh");
+            String shellPath;
+            if (new File("/bin/bash").exists()) {
+                shellPath = "/bin/bash";
+            } else {
+                shellPath = "/bin/sh";
+            }
+            osCommand.add(shellPath);
             osCommand.add("-c");
             osCommand.add(linearizedCommand);
             // osCommand.add("&");
