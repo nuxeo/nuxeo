@@ -16,7 +16,7 @@
   <nxp:html>
     <c:forEach var="username" items="#{field}" varStatus="status">
       <c:if test="#{!status.first}">#{status.last ? andLabel : ', '}</c:if>
-      <h:outputText value="#{nxu:userFullName(username)}" />
+      <h:outputText value="#{nxu:userFullName(username)}" title="#{username}" />
     </c:forEach>
   </nxp:html>
 </c:if>
@@ -25,7 +25,7 @@
     <c:forEach var="username" items="#{field}" varStatus="status">
       <c:if test="#{!status.first}">#{status.last ? andLabel : ', '}</c:if>
       <div class="#{widget.id}_#{status.index}">
-        <h:outputText value="#{nxu:userFullName(username)}" 
+        <h:outputText value="#{nxu:userFullName(username)}"
           title="#{username}" />
         <script>
           jQuery(".#{widget.id}_#{status.index} span").tooltip();
