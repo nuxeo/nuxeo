@@ -15,7 +15,7 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- * $Id$
+ *     bstefanescu, atchertchian, jcarsique
  */
 
 package org.nuxeo.osgi;
@@ -191,9 +191,10 @@ public class BundleRegistry {
                 if (reg.bundle != null) {
                     reg.bundle.shutdown();
                 }
-            } catch (BundleException e) {
-                log.error("Failed to stop bundle "
-                        + reg.bundle.getSymbolicName(), e);
+            } catch (Throwable e) {
+                log.error(
+                        "Failed to stop bundle " + reg.bundle.getSymbolicName(),
+                        e);
             }
         }
     }

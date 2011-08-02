@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2011 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,14 +12,20 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     bstefanescu
+ *     bstefanescu, jcarsique
  */
 package org.nuxeo.runtime.tomcat;
 
 import java.io.File;
 
-import org.apache.catalina.*;
+import org.apache.catalina.Container;
+import org.apache.catalina.Lifecycle;
+import org.apache.catalina.LifecycleEvent;
+import org.apache.catalina.LifecycleListener;
+import org.apache.catalina.Loader;
 import org.apache.catalina.core.ContainerBase;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.osgi.application.FrameworkBootstrap;
 import org.nuxeo.osgi.application.MutableClassLoader;
 
@@ -28,6 +34,8 @@ import org.nuxeo.osgi.application.MutableClassLoader;
  *
  */
 public class NuxeoLauncher implements LifecycleListener {
+
+    static final Log log = LogFactory.getLog(NuxeoLauncher.class);
 
     protected boolean shared; // TODO
 
@@ -77,8 +85,8 @@ public class NuxeoLauncher implements LifecycleListener {
             } else if (type == Lifecycle.STOP_EVENT) {
                 bootstrap.stop();
             }
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to handle event", e);
+        } catch (Throwable e) {
+            log.error("Failed to handle event", e);
         }
     }
 
