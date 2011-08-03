@@ -10,6 +10,7 @@
   </parent>
 
   <artifactId>nuxeo-core-management-jtajca</artifactId>
+  <name>Nuxeo Core Management JTA/JCA</name>
 
   <dependencies>
     <dependency>
