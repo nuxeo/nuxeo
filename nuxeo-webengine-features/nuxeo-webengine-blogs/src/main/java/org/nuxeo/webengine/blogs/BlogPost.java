@@ -47,7 +47,7 @@ import org.nuxeo.webengine.sites.utils.SiteUtils;
 public class BlogPost extends Page {
 
     @Override
-    @Path(value = "{path}")
+    @Path("{path}")
     public Resource traverse(@PathParam("path") String path) {
         return super.traverse(path);
     }

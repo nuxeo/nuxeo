@@ -45,7 +45,7 @@ import org.nuxeo.webengine.sites.utils.SiteUtils;
 public class TagAdapter extends DefaultAdapter {
 
     @GET
-    @Path(value = "{id}")
+    @Path("{id}")
     public Object changePerspective(@PathParam("id") String tagId) {
         try {
             DocumentObject documentObject = (DocumentObject) getTarget();

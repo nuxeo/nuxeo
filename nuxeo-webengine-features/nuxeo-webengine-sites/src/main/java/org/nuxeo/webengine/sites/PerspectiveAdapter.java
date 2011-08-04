@@ -36,7 +36,7 @@ import org.nuxeo.webengine.sites.utils.SiteConstants;
 public class PerspectiveAdapter extends DefaultAdapter {
 
     @POST
-    @Path(value = "{path}")
+    @Path("{path}")
     public Object changePerspective(@PathParam("path") String perspective) {
         try {
             DocumentObject documentObject = (DocumentObject) getTarget();

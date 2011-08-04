@@ -49,7 +49,7 @@ public class UserService extends DefaultObject {
     @GET
     public Object getIndex(@QueryParam("query") String query,
             @QueryParam("group") String group) throws Exception {
-        if (query != null && !query.equals("")) {
+        if (query != null && !query.isEmpty()) {
             UserManager userManager = Framework.getService(UserManager.class);
             if (group != null) {
                 DocumentModelList results = userManager.searchGroups(query);
@@ -89,8 +89,8 @@ public class UserService extends DefaultObject {
         HttpServletRequest req = ctx.getRequest();
         String username = req.getParameter("username");
         UserManager userManager = Framework.getService(UserManager.class);
-        if (username != null && !username.equals("")) {
-            NuxeoPrincipalImpl user = (NuxeoPrincipalImpl)userManager.getPrincipal(username);
+        if (username != null && !username.isEmpty()) {
+            NuxeoPrincipalImpl user = (NuxeoPrincipalImpl) userManager.getPrincipal(username);
             String[] selectedGroups;
             if (user != null) {
                 // update

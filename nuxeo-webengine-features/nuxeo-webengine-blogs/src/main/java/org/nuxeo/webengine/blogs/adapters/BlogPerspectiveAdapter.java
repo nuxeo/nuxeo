@@ -34,7 +34,7 @@ import org.nuxeo.webengine.sites.PerspectiveAdapter;
 public class BlogPerspectiveAdapter extends PerspectiveAdapter {
 
     @POST
-    @Path(value = "{path}")
+    @Path("{path}")
     @Override
     public Object changePerspective(@PathParam("path") String perspective) {
         try {

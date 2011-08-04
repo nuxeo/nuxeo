@@ -128,7 +128,7 @@ public class TestWebengineQuerySiteUtils extends SQLRepositoryTestCase {
         webPageForWorkspaceSite = session.createDocumentModel(
                 workspaceSite.getPathAsString(),
                 IdUtils.generatePathSegment(pageForWorkspaceSiteTitle
-                        + System.currentTimeMillis()), SiteConstants.WEBPAGE);
+                        + System.currentTimeMillis()), WEBPAGE);
         assertNotNull(webPageForWorkspaceSite);
         webPageForWorkspaceSite = session.createDocument(webPageForWorkspaceSite);
         webPageForWorkspaceSite = session.saveDocument(webPageForWorkspaceSite);
@@ -139,7 +139,7 @@ public class TestWebengineQuerySiteUtils extends SQLRepositoryTestCase {
         webPageForWebSite = session.createDocumentModel(
                 webSite.getPathAsString(),
                 IdUtils.generatePathSegment(pageForWebSiteTitle
-                        + System.currentTimeMillis()), SiteConstants.WEBPAGE);
+                        + System.currentTimeMillis()), WEBPAGE);
         assertNotNull(webPageForWebSite);
         webPageForWebSite = session.createDocument(webPageForWebSite);
         //webPageForWebSite = session.saveDocument(webPageForWebSite);

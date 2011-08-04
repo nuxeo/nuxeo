@@ -17,16 +17,16 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 @Produces("text/html;charset=UTF-8")
 public class HelloObject extends DefaultObject {
 
-  @GET
-  public String doGet() {
-    return "Hello World!";
-  }
+    @GET
+    public String doGet() {
+        return "Hello World!";
+    }
 
-  @GET
-  @Path("{name}")
-  public String doGet(@PathParam("name") String name) {
-    return "Hello "+name+"!";
-  }
+    @GET
+    @Path("{name}")
+    public String doGet(@PathParam("name") String name) {
+        return "Hello " + name + "!";
+    }
 
 }
 

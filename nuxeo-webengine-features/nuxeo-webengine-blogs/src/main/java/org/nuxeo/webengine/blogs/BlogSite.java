@@ -46,7 +46,7 @@ import org.nuxeo.webengine.sites.Site;
 public class BlogSite extends Site {
 
     @Override
-    @Path(value = "{path}")
+    @Path("{path}")
     public Resource traverse(@PathParam("path") String path) {
         return super.traverse(path);
     }

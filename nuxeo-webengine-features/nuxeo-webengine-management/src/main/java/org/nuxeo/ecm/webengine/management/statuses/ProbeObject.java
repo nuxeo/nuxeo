@@ -59,8 +59,7 @@ public class ProbeObject extends DefaultObject {
     }
 
     /**
-     * For easier invocation using links
-     * @return
+     * For easier invocation using links.
      */
     @GET
     @Path("/@run")

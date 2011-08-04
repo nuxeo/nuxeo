@@ -17,9 +17,6 @@
  */
 package org.nuxeo.webengine.sites.listeners;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-
 import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -29,7 +26,6 @@ import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.ABOUT_TO_CREATE;
-import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BEFORE_DOC_UPDATE;
 import static org.nuxeo.webengine.sites.utils.SiteConstants.*;
 
 /**

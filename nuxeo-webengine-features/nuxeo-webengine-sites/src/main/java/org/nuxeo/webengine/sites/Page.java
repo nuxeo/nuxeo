@@ -79,7 +79,7 @@ public class Page extends AbstractSiteDocumentObject {
     }
 
     @Override
-    @Path(value = "{path}")
+    @Path("{path}")
     public Resource traverse(@PathParam("path") String path) {
         return super.traverse(path);
     }

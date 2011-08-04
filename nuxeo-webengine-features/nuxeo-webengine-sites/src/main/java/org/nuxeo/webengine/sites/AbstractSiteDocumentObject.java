@@ -73,7 +73,7 @@ import org.nuxeo.webengine.sites.utils.SiteConstants;
 import org.nuxeo.webengine.sites.utils.SiteUtils;
 
 /**
- * The basic web object implementation.It holds the web object back methods.
+ * The basic web object implementation. It holds the web object back methods.
  *
  * @author rux
  */
@@ -215,7 +215,7 @@ public abstract class AbstractSiteDocumentObject extends DocumentObject {
     }
 
     @Override
-    @Path(value = "{path}")
+    @Path("{path}")
     public Resource traverse(@PathParam("path") String path) {
         try {
             return newDocument(path);

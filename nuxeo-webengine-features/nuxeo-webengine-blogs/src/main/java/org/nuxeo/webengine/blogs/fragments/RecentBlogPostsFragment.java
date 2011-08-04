@@ -48,7 +48,7 @@ public class RecentBlogPostsFragment extends AbstractFragment {
     public static final int noForBlogSite = 15;
     public static final int noForBlogPost = 5;
 
-    private static String weekDays[];
+    private static String[] weekDays;
 
     /**
      * Retrieves a certain number of blog posts with information about the last

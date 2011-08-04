@@ -32,12 +32,11 @@ import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @Path("/shell")
 @WebObject(type = "Shell")
 public class Shell extends ModuleRoot {
-    private static Log log = LogFactory.getLog(Shell.class);
+    private static final Log log = LogFactory.getLog(Shell.class);
 
     @GET
     @Produces("text/html;charset=UTF-8")

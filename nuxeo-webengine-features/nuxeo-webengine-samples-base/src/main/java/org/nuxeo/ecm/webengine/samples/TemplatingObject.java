@@ -36,13 +36,13 @@ import org.nuxeo.ecm.webengine.model.WebObject;
  * even if you are using absolute paths.
  * The following variables are accessible from a template when rendered at rendering time:
  * <ul>
- * <li> <code>Context</code>  - the WebContext instance
- * <li> <code>Engine</code>   - the WebEngine instance
- * <li> <code>This</code>     - the target Web Object.
- * <li> <code>Root</code>     - the root WebObject.
- * <li> <code>Document</code> - the target Document if any otherwise null.
- * <li> <code>Session</code>  - the Repository Session. (aka Core Session)
- * <li> <code>basePath</code> - the request base path (context path + servlet path)
+ * <li> {@code Context}  - the WebContext instance
+ * <li> {@code Engine}   - the WebEngine instance
+ * <li> {@code This}     - the target Web Object.
+ * <li> {@code Root}     - the root WebObject.
+ * <li> {@code Document} - the target Document if any otherwise null.
+ * <li> {@code Session}  - the Repository Session. (aka Core Session)
+ * <li> {@code basePath} - the request base path (context path + servlet path)
  * </ul>
  * To render a template as a response you need to instantiate it and then return it from the resource method.
  * The template will be processed by the corresponding MessageBodyWriter and rendered on the client stream.
@@ -53,43 +53,43 @@ import org.nuxeo.ecm.webengine.model.WebObject;
 @Produces("text/html;charset=UTF-8")
 public class TemplatingObject extends HelloObject {
 
-  /**
-   * Return the template index.ftl from 'skin' directory
-   */
-  @GET
-  @Path("index1")
-  public Object getIndex1() {
-    return getTemplate("index1.ftl");
-  }
+    /**
+     * Return the template index.ftl from 'skin' directory
+     */
+    @GET
+    @Path("index1")
+    public Object getIndex1() {
+        return getTemplate("index1.ftl");
+    }
 
 
-  /**
-   * Inject the variable 'name' in the template context and then return the template.
-   */
-  @GET
-  @Path("index1/{name}")
-  public Object getIndex1(@PathParam("name") String name) {
-    return getTemplate("index1.ftl").arg("name", name);
-  }
+    /**
+     * Inject the variable 'name' in the template context and then return the template.
+     */
+    @GET
+    @Path("index1/{name}")
+    public Object getIndex1(@PathParam("name") String name) {
+        return getTemplate("index1.ftl").arg("name", name);
+    }
 
-  /**
-   * Render the index2 template
-   */
-  @GET
-  @Path("index2")
-  public Object getIndex2() {
-    return getTemplate("index2.ftl");
-  }
+    /**
+     * Render the index2 template
+     */
+    @GET
+    @Path("index2")
+    public Object getIndex2() {
+        return getTemplate("index2.ftl");
+    }
 
-  /**
-   * Example of using redirect.
-   * The redirect method inherited from DefaultModule is returning a Response object that is doing a redirect
-   */
-  @GET
-  @Path("redirect/{whereToRedirect}")
-  public Response doRedirect(@PathParam("whereToRedirect") String path) {
-    return redirect(ctx.getModulePath() + "/"+ path);
-  }
+    /**
+     * Example of using redirect.
+     * The redirect method inherited from DefaultModule is returning a Response object that is doing a redirect
+     */
+    @GET
+    @Path("redirect/{whereToRedirect}")
+    public Response doRedirect(@PathParam("whereToRedirect") String path) {
+        return redirect(ctx.getModulePath() + "/" + path);
+    }
 
 }
 

@@ -34,7 +34,7 @@ import org.nuxeo.webengine.sites.TagAdapter;
 public class BlogTagAdapter extends TagAdapter {
 
     @GET
-    @Path(value = "{id}")
+    @Path("{id}")
     @Override
     public Object changePerspective(@PathParam("id") String tagId) {
         return super.changePerspective(tagId);

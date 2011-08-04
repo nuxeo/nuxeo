@@ -46,7 +46,7 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @WebObject(type = "Document")
-@Produces({"text/html; charset=UTF-8"})
+@Produces("text/html; charset=UTF-8")
 public class DocumentObject extends DefaultObject {
 
     protected DocumentModel doc;
@@ -150,7 +150,7 @@ public class DocumentObject extends DefaultObject {
         return null; //TODO
     }
 
-    @Path(value = "{path}")
+    @Path("{path}")
     public Resource traverse(@PathParam("path") String path) {
         return newDocument(path);
     }

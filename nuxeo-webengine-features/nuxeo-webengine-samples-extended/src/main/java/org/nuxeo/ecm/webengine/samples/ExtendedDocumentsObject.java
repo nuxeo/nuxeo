@@ -8,10 +8,10 @@ import org.nuxeo.ecm.webengine.model.WebObject;
 
 /**
  * <h1>Web Module Extensibility.</h1>
- * 
+ *
  * This sample is demonstrating how existing web modules can be extended. To
- * extend another module you should use the <code>base=BaseModule</code> in the
- * <code>NuxeoWebModule</code> directive in <code>MANIFEST.MF</code> file. This
+ * extend another module you should use the {@code base=BaseModule} in the
+ * {@code NuxeoWebModule} directive in {@code MANIFEST.MF} file. This
  * way the new module will inherit all templates and resources defined in the
  * base module. You can thus create a chain of inherited web modules.
  * <p>
@@ -19,7 +19,7 @@ import org.nuxeo.ecm.webengine.model.WebObject;
  * <i>If a template T is not found in skin directory of derived module then
  * search the template inside the base module and so on until a template is
  * found or no more base module exists.</i> The view resolution is similar to
- * the template one but it will use the <code>WebObject</code> inheritance too:
+ * the template one but it will use the {@code WebObject} inheritance too:
  * <br>
  * <i></i> <br>
  * <b>Note</b> that only the <i>skin</i> directory is stacked over the one in
@@ -32,21 +32,21 @@ import org.nuxeo.ecm.webengine.model.WebObject;
  * builtin <b>view service adapter</b>. This adapter can be used on any web
  * object to locate any view declared on that object. Let's say we define a view
  * named <i>info</i> for the <i>Document</i> WebObject type. And the following
- * request path will point to a Document WebObject: <code>/my/doc</code>. Then
+ * request path will point to a Document WebObject: {@code /my/doc}. Then
  * to display the <i>info</i> view we can use the builtin views adapter this
- * way: <code>/my/doc/@views/info</code>.
+ * way: {@code /my/doc/@views/info}.
  * <p>
  * Obviously, you can redefine the WebObject corresponding to your document type
  * and add a new method that will dispatch the view <info>info</info> using a
- * pretty path like <code>/my/doc/info</code>. But this involves changing code.
+ * pretty path like {@code /my/doc/info}. But this involves changing code.
  * If you don't want this then the views adapter will be your friend.
- * 
+ *
  * <p>
  * <p>
  * This example will extend the resource defined in sample4 and will reuse and
  * add more templates. Look into template files to see how base module templates
  * are reused.
- * 
+ *
  * <h1> Managing links.</h1>
  * <p>
  * Almost any template page will contain links to other pages in your
@@ -70,7 +70,7 @@ import org.nuxeo.ecm.webengine.model.WebObject;
  * <li>guard - a guard to be tested in order to enable the link. This is using
  * the guard mechanism of WebEngine.
  * </ul>
- * If several conditions are specified an <code>AND</code> will be used between
+ * If several conditions are specified an {@code AND} will be used between
  * them.
  * <p>
  * Apart conditions you can <i>group</i> links in categories. Using categories
@@ -84,9 +84,9 @@ import org.nuxeo.ecm.webengine.model.WebObject;
  * <ul>
  * You have two choices in specifying such a target URL:
  * <li>define a custom link handler using the
- * <code>handler</handler> link attribute.
+ * {@code handler</handler> link attribute.}
  * The handler will be invoked each time the link code need to be written in the output stream so that it can programatically generate the link code.
- * <li> use the builtin link handler. The builtin link handler will append the <code>path</code>
+ * <li> use the builtin link handler. The builtin link handler will append the {@code path}
  * attribute you specified in link definition to the current WebObject path on
  * the request. This behavior is good enough for most of the use cases.
  * <li>
@@ -94,10 +94,10 @@ import org.nuxeo.ecm.webengine.model.WebObject;
  * <p>
  * <p>
  * This example will demonstrate how links work. Look into
- * <code>module.xml</code> for link definitions and then in
- * <code>skin/views/Document/index.ftl</code> on how they are used in the
+ * {@code module.xml} for link definitions and then in
+ * {@code skin/views/Document/index.ftl} on how they are used in the
  * template.
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @WebObject(type = "Repository")
