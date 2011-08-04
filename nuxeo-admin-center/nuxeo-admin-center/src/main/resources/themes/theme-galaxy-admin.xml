@@ -52,6 +52,7 @@
     <layout element="page[1]/section[1]/cell[2]">
       <width>82%</width>
       <padding>0px 10px 0px 0px</padding>
+      <vertical-align>bottom</vertical-align>
     </layout>
     <layout element="page[1]/section[1]/cell[3]">
       <width>0%</width>
