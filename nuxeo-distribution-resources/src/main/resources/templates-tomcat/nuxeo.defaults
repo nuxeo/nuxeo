@@ -12,8 +12,6 @@ nuxeo.bind.address=0.0.0.0
 
 # publicly visible URL
 nuxeo.url=http://localhost:8080/nuxeo
-# internally visible URL (server-to-server)
-nuxeo.loopback.url=http://localhost:8080/nuxeo
 
 # Application context path
 org.nuxeo.ecm.contextPath=/nuxeo
