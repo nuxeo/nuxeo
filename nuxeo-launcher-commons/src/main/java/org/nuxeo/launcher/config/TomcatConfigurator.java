@@ -49,8 +49,6 @@ public class TomcatConfigurator extends ServerConfigurator {
      */
     public static final String STARTUP_CLASS = "org.apache.catalina.startup.Bootstrap";
 
-    private static final String DEFAULT_CONTEXT_NAME = "/nuxeo";
-
     private String contextName = null;
 
     public TomcatConfigurator(ConfigurationGenerator configurationGenerator) {
@@ -135,8 +133,8 @@ public class TomcatConfigurator extends ServerConfigurator {
             Properties userConfig = generator.getUserConfig();
             if (userConfig != null) {
                 contextName = generator.getUserConfig().getProperty(
-                        "org.nuxeo.ecm.contextPath", DEFAULT_CONTEXT_NAME).substring(
-                        1);
+                        ConfigurationGenerator.PARAM_CONTEXT_PATH,
+                        DEFAULT_CONTEXT_NAME).substring(1);
             } else {
                 contextName = DEFAULT_CONTEXT_NAME.substring(1);
             }

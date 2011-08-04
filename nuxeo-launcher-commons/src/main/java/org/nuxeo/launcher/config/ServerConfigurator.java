@@ -61,6 +61,8 @@ public abstract class ServerConfigurator {
     public static final String[] NUXEO_SYSTEM_PROPERTIES = new String[] {
             "nuxeo.conf", "nuxeo.home" };
 
+    protected static final String DEFAULT_CONTEXT_NAME = "/nuxeo";
+
     public ServerConfigurator(ConfigurationGenerator configurationGenerator) {
         generator = configurationGenerator;
     }

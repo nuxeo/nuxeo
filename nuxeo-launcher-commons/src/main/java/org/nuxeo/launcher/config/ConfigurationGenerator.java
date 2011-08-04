@@ -26,6 +26,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.Inet4Address;
+import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.UnknownHostException;
@@ -117,6 +119,8 @@ public class ConfigurationGenerator {
 
     public static final String PARAM_STATUS_KEY = "server.status.key";
 
+    public static final String PARAM_CONTEXT_PATH = "org.nuxeo.ecm.contextPath";
+
     private final File nuxeoHome;
 
     // User configuration file
@@ -155,8 +159,6 @@ public class ConfigurationGenerator {
     private boolean setFalseToOnce = false;
 
     private String wizardParam = null;
-
-    private InetAddress bindAddress;
 
     public boolean isConfigurable() {
         return configurable;
@@ -359,6 +361,65 @@ public class ConfigurationGenerator {
         } catch (IOException e) {
             throw new ConfigurationException("Error reading " + nuxeoConf, e);
         }
+
+        evalDynamicProperties();
+    }
+
+    /**
+     * Generate properties which values are based on others
+     *
+     * @throws ConfigurationException
+     *
+     * @since 5.4.3
+     */
+    protected void evalDynamicProperties() throws ConfigurationException {
+        evalLoopbackURL();
+    }
+
+    private void evalLoopbackURL() throws ConfigurationException {
+        String loopbackURL = userConfig.getProperty(PARAM_LOOPBACK_URL);
+        if (loopbackURL != null) {
+            log.debug("Using configured loop back url: " + loopbackURL);
+            return;
+        }
+        InetAddress bindAddress = getBindAddress();
+        // Address and ports already checked by #checkAddressesAndPorts
+        try {
+            if (bindAddress.isAnyLocalAddress()) {
+                boolean preferIPv6 = "false".equals(System.getProperty("java.net.preferIPv4Stack"))
+                        && "true".equals(System.getProperty("java.net.preferIPv6Addresses"));
+                bindAddress = preferIPv6 ? Inet6Address.getByName("::1")
+                        : Inet4Address.getByName("127.0.0.1");
+                log.debug("Bind address is \"ANY\", using local address instead: "
+                        + bindAddress);
+                // InetAddress[] inetAdresses = preferIPv6 ?
+                // Inet6Address.getAllByName("::1")
+                // : Inet4Address.getAllByName("127.0.0.1");
+                // for (InetAddress inetAddress : inetAdresses) {
+                // if (inetAddress.isLoopbackAddress()) {
+                // bindAddress = inetAddress;
+                // log.debug("Bind address is \"ANY\", using local address instead: "
+                // + bindAddress);
+                // break;
+                // }
+                // }
+            }
+        } catch (UnknownHostException e) {
+            log.error(e);
+        }
+
+        String httpPort = userConfig.getProperty(PARAM_HTTP_PORT);
+        String contextPath = userConfig.getProperty(PARAM_CONTEXT_PATH);
+        // Is IPv6 or IPv4 ?
+        if (bindAddress instanceof Inet6Address) {
+            loopbackURL = "http://[" + bindAddress.getHostAddress() + "]:"
+                    + httpPort + contextPath;
+        } else {
+            loopbackURL = "http://" + bindAddress.getHostAddress() + ":"
+                    + httpPort + contextPath;
+        }
+        log.debug("Set as loop back URL: " + loopbackURL);
+        userConfig.setProperty(PARAM_LOOPBACK_URL, loopbackURL);
     }
 
     /**
@@ -789,14 +850,26 @@ public class ConfigurationGenerator {
      * @since 5.4.3
      */
     public void checkAddressesAndPorts() throws ConfigurationException {
-        try {
-            bindAddress = InetAddress.getByName(userConfig.getProperty(PARAM_BIND_ADDRESS));
-        } catch (UnknownHostException e) {
-            throw new ConfigurationException(e);
+        InetAddress bindAddress = getBindAddress();
+        // Sanity check
+        if (bindAddress.isMulticastAddress()) {
+            throw new ConfigurationException("Multicast address won't work: "
+                    + bindAddress);
         }
         checkAddressReachable(bindAddress);
         checkPortAvailable(bindAddress,
                 Integer.parseInt(userConfig.getProperty(PARAM_HTTP_PORT)));
+    }
+
+    private InetAddress getBindAddress() throws ConfigurationException {
+        InetAddress bindAddress;
+        try {
+            bindAddress = InetAddress.getByName(userConfig.getProperty(PARAM_BIND_ADDRESS));
+            log.debug("Configured bind address: " + bindAddress);
+        } catch (UnknownHostException e) {
+            throw new ConfigurationException(e);
+        }
+        return bindAddress;
     }
 
     /**
@@ -807,13 +880,10 @@ public class ConfigurationGenerator {
     public static void checkAddressReachable(InetAddress address)
             throws ConfigurationException {
         try {
-            if ("0.0.0.0".equals(address.getHostAddress())) {
-                address = InetAddress.getLocalHost();
-            }
             log.debug("Checking availability of " + address);
             address.isReachable(ADDRESS_PING_TIMEOUT);
         } catch (IOException e) {
-            throw new ConfigurationException("Unreachable binded address "
+            throw new ConfigurationException("Unreachable bind address "
                     + address);
         }
     }

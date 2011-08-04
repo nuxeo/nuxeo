@@ -10,3 +10,5 @@ test.nuxeo.defaults.template.2 = true
 test.nuxeo.conf.override.defaults.template = default.nuxeo.defaults
 
 nuxeo.data.dir_2 = C:\\nuxeo-dm-jboss\\server\\default\\data\\NXRuntime\\data
+
+nuxeo.server.http.port=8080

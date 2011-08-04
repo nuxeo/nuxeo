@@ -26,15 +26,10 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URL;
-import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -42,15 +37,9 @@ import org.junit.Test;
  * @author jcarsique
  *
  */
-public class JBossConfiguratorTest {
-
-    private static final Log log = LogFactory.getLog(JBossConfiguratorTest.class);
-
-    private ConfigurationGenerator configGenerator;
+public class JBossConfiguratorTest extends AbstractConfigurationTest {
 
     private ConfigurationGenerator configGenerator2;
-
-    private File nuxeoHome;
 
     String propertyToGenerate;
 
@@ -58,24 +47,12 @@ public class JBossConfiguratorTest {
 
     @Before
     public void setUp() throws Exception {
-        File nuxeoConf = getResourceFile("configurator/nuxeo.conf");
-        System.setProperty(ConfigurationGenerator.NUXEO_CONF,
-                nuxeoConf.getPath());
-        nuxeoHome = File.createTempFile("nuxeo", null);
-        nuxeoHome.delete();
-        nuxeoHome.mkdirs();
-        System.setProperty(ConfigurationGenerator.NUXEO_HOME,
-                nuxeoHome.getPath());
-        System.setProperty(Environment.NUXEO_DATA_DIR, new File(nuxeoHome,
-                "data").getPath());
+        super.setUp();
         propertyToGenerate = "<config-property name=\""
                 + "property\" type=\"java.lang.String\">URL=jdbc:h2:"
                 + System.getProperty(Environment.NUXEO_DATA_DIR)
                 + File.separator + "h2" + File.separator
                 + "testinclude;AUTO_SERVER=true</config-property>";
-        System.setProperty(Environment.NUXEO_LOG_DIR,
-                new File(nuxeoHome, "log").getPath());
-
         // Windows path
         propertyToGenerate2 = "<config-property name=\""
                 + "property\" type=\"java.lang.String\">URL=jdbc:h2:"
@@ -88,7 +65,7 @@ public class JBossConfiguratorTest {
         System.setProperty("jboss.home.dir", nuxeoHome.getPath());
         configGenerator = new ConfigurationGenerator();
 
-        nuxeoConf = getResourceFile("configurator/nuxeo.conf2");
+        File nuxeoConf = getResourceFile("configurator/nuxeo.conf2");
         System.setProperty(ConfigurationGenerator.NUXEO_CONF,
                 nuxeoConf.getPath());
         configGenerator2 = new ConfigurationGenerator();
@@ -96,7 +73,7 @@ public class JBossConfiguratorTest {
 
     @Test
     public void testConfiguration() throws Exception {
-        configGenerator.init();
+        assertTrue(configGenerator.init());
         assertTrue(configGenerator.isConfigurable());
         log.debug(configGenerator.getIncludedTemplates());
         Properties config = configGenerator.getUserConfig();
@@ -201,16 +178,6 @@ public class JBossConfiguratorTest {
         assertTrue(testFile.exists());
     }
 
-    public File getResourceFile(String resource) {
-        URL url = getClass().getClassLoader().getResource(resource);
-        try {
-            return new File(URLDecoder.decode(url.getPath(), "UTF-8"));
-        } catch (UnsupportedEncodingException e) {
-            log.error(e);
-            return null;
-        }
-    }
-
     @Test
     public void testReplaceBackslashes() throws ConfigurationException,
             IOException {
@@ -236,7 +203,7 @@ public class JBossConfiguratorTest {
         String valueToSave1 = "[Nuxeo test]";
         String propToSave2 = "mail.smtp.username";
         String valueToSave2 = "tester";
-        configGenerator.init();
+        assertTrue(configGenerator.init());
         assertTrue(configGenerator.isConfigurable());
         HashMap<String, String> parameters = new HashMap<String, String>();
         parameters.put(propToSave1, valueToSave1);
@@ -246,7 +213,7 @@ public class JBossConfiguratorTest {
         System.setProperty(ConfigurationGenerator.NUXEO_CONF,
                 nuxeoConf.getPath());
         configGenerator = new ConfigurationGenerator();
-        configGenerator.init();
+        assertTrue(configGenerator.init());
         Properties userConfig = configGenerator.getUserConfig();
         assertEquals("Save fail", valueToSave1,
                 userConfig.getProperty(propToSave1));
@@ -255,7 +222,7 @@ public class JBossConfiguratorTest {
         configGenerator.saveFilteredConfiguration(parameters);
 
         configGenerator = new ConfigurationGenerator();
-        configGenerator.init();
+        assertTrue(configGenerator.init());
         userConfig = configGenerator.getUserConfig();
         assertEquals("Save fail", valueToSave2,
                 userConfig.getProperty(propToSave2));
