@@ -58,7 +58,7 @@ public class SlideShowManagerBean implements SlideShowManager, Serializable {
 
     protected List<DocumentModel> children;
 
-    protected Integer childrenSize = null;
+    protected Integer childrenSize;
 
     protected DocumentModel child;
 

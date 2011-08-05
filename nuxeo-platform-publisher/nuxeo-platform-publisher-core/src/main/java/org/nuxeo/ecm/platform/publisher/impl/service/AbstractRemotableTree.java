@@ -41,7 +41,7 @@ public abstract class AbstractRemotableTree implements PublicationTree {
 
     private static final Log log = LogFactory.getLog(AbstractRemotableTree.class);
 
-    protected RemotePublicationTreeManager treeService = null;
+    protected RemotePublicationTreeManager treeService;
 
     protected String sessionId;
 

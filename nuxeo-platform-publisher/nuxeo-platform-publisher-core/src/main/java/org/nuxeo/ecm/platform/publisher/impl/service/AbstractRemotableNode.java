@@ -42,7 +42,7 @@ public abstract class AbstractRemotableNode implements PublicationNode {
 
     protected String sessionId;
 
-    protected RemotePublicationTreeManager service = null;
+    protected RemotePublicationTreeManager service;
 
     protected abstract String getTargetTreeName();
 

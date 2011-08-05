@@ -44,22 +44,17 @@ import org.nuxeo.ecm.platform.userworkspace.constants.UserWorkspaceConstants;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- *
- * Default implementation of the {@link UserWorkspaceService}
+ * Default implementation of the {@link UserWorkspaceService}.
  *
  * @author tiry
- *
  */
 public class DefaultUserWorkspaceServiceImpl implements UserWorkspaceService {
 
     private static final Log log = LogFactory.getLog(DefaultUserWorkspaceServiceImpl.class);
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 1L;
 
-    protected String targetDomainName = null;
+    protected String targetDomainName;
 
     // try to use configured domain
     // use first domain available otherwise
@@ -79,11 +74,11 @@ public class DefaultUserWorkspaceServiceImpl implements UserWorkspaceService {
     }
 
     // get the name of the UserWorkspace given the user name
-    protected String getUserWorkspaceNameForUser(String userName) {
+    protected static String getUserWorkspaceNameForUser(String userName) {
         return IdUtils.generateId(userName, "-", false, 30);
     }
 
-    // compute the path of the Root of all userWorspaces
+    // compute the path of the Root of all userWorkspaces
     protected String computePathUserWorkspaceRoot(CoreSession userCoreSession,
             DocumentModel currentDocument) throws ClientException {
         String domainName = getDomainName(userCoreSession, currentDocument);
@@ -181,7 +176,7 @@ public class DefaultUserWorkspaceServiceImpl implements UserWorkspaceService {
             // configured domain does not exist !!!
             DocumentModelList domains = session.query("select * from Domain order by dc:created");
 
-            if (domains.size() > 0) {
+            if (!domains.isEmpty()) {
                 domaineName = domains.get(0).getName();
             }
         }

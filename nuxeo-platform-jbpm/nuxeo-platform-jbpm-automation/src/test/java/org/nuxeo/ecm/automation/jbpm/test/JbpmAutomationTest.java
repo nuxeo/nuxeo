@@ -181,7 +181,7 @@ public class JbpmAutomationTest {
     }
 
     @Test
-    public void testGetUserTasks() throws InvalidChainException, Exception {
+    public void testGetUserTasks() throws Exception {
         OperationContext ctx = new OperationContext(coreSession);
         ctx.setInput(document);
        automationService.run(ctx, "createSingleTaskChain");

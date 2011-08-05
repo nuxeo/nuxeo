@@ -25,25 +25,20 @@ import org.nuxeo.ecm.platform.publisher.impl.service.ProxyNode;
 import org.nuxeo.ecm.platform.publisher.remoting.marshaling.basic.BasicPublicationNode;
 
 /**
- *
- * {@link PublicationNode} implementation that point to a remote tree on a
+ * {@link PublicationNode} implementation that points to a remote tree on a
  * remote server.
  *
  * @author tiry
- *
  */
 public class ClientRemotePublicationNode extends AbstractRemotableNode {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 1L;
 
-    protected String targetTreeName = null;
+    protected String targetTreeName;
 
     protected String name;
 
-    protected String serverSessionId = null;
+    protected String serverSessionId;
 
     protected String path;
 

@@ -35,7 +35,7 @@ import java.io.IOException;
  */
 public class SingleXMlDocumentReader extends AbstractDocumentReader {
 
-    protected Document xmldoc = null;
+    protected Document xmldoc;
 
     public SingleXMlDocumentReader(String data) throws DocumentException {
         xmldoc = DocumentHelper.parseText(data);

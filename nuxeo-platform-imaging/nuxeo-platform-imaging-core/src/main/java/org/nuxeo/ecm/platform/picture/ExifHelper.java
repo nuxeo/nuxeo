@@ -37,13 +37,13 @@ public class ExifHelper {
     public static final Log log = LogFactory.getLog(ExifHelper.class);
 
     // the ASCII data format
-    public static final byte[] ASCII = new byte[] { 65, 83, 67, 73, 73, 0, 0, 0 };
+    public static final byte[] ASCII = { 65, 83, 67, 73, 73, 0, 0, 0 };
 
     // the JIS data format
-    public static final byte[] JIS = new byte[] { 74, 73, 83, 0, 0, 0, 0, 0 };
+    public static final byte[] JIS = { 74, 73, 83, 0, 0, 0, 0, 0 };
 
     // the UNDEFINED data format
-    public static final byte[] UNDEFINED = new byte[] { 0, 0, 0, 0, 0, 0, 0, 0 };
+    public static final byte[] UNDEFINED = { 0, 0, 0, 0, 0, 0, 0, 0 };
     
     private ExifHelper() {
     }

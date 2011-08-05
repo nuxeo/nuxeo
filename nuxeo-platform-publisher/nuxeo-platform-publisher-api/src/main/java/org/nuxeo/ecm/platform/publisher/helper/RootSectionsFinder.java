@@ -57,9 +57,9 @@ public class RootSectionsFinder extends UnrestrictedSessionRunner {
 
     protected static final String SECTIONS_PROPERTY_NAME = "publish:sections";
 
-    protected Set<String> sectionRootTypes = null;
+    protected Set<String> sectionRootTypes;
 
-    protected Set<String> sectionTypes = null;
+    protected Set<String> sectionTypes;
 
     protected CoreSession userSession;
 

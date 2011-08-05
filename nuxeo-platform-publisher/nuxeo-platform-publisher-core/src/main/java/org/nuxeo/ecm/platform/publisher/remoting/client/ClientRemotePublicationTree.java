@@ -87,7 +87,7 @@ public class ClientRemotePublicationTree extends AbstractRemotableTree
 
     protected ClientRemotePublicationNode rootNode;
 
-    protected CoreSession coreSession = null;
+    protected CoreSession coreSession;
 
     public ClientRemotePublicationTree() {
         // empty

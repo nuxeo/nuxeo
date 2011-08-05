@@ -203,14 +203,14 @@ public class TestStatement extends TestCase {
         Statement st = new StatementImpl(subject, predicate, literal);
         Node godProperty = NodeFactory.createResource("http://God");
         st.setProperty(propertyResource, godProperty);
-        Node[] values = new Node[] { godProperty };
+        Node[] values = { godProperty };
         assertEquals(values.length, st.getProperties(propertyResource).length);
         for (int i = 0; i < values.length; i++) {
             assertEquals(values[i], st.getProperties(propertyResource)[i]);
         }
         Node echoProperty = NodeFactory.createLiteral("echo");
         st.setProperty(propertyResource, echoProperty);
-        Node[] newValues = new Node[] { echoProperty };
+        Node[] newValues = { echoProperty };
         assertEquals(newValues.length, st.getProperties(propertyResource).length);
         for (int i = 0; i < newValues.length; i++) {
             assertEquals(newValues[i], st.getProperties(propertyResource)[i]);
@@ -221,7 +221,7 @@ public class TestStatement extends TestCase {
         Statement st = new StatementImpl(subject, predicate, literal);
         st.setProperties(propertyResource, propertyValues);
         assertEquals(propertyValues, st.getProperties(propertyResource));
-        Node[] otherValues = new Node[] { NodeFactory.createResource("http://foo") };
+        Node[] otherValues = { NodeFactory.createResource("http://foo") };
         st.setProperties(propertyResource, otherValues);
         assertEquals(otherValues, st.getProperties(propertyResource));
     }
@@ -261,10 +261,10 @@ public class TestStatement extends TestCase {
         assertEquals(properties, st.getProperties());
         st.deleteProperties(null, propertyValues);
         assertEquals(properties, st.getProperties());
-        Node[] deleteValues = new Node[] {
+        Node[] deleteValues = {
                 NodeFactory.createResource("http://God") };
         st.deleteProperties(propertyResource, deleteValues);
-        Node[] newValues = new Node[] { NodeFactory.createLiteral("echo") };
+        Node[] newValues = { NodeFactory.createLiteral("echo") };
         assertEquals(newValues.length, st.getProperties(propertyResource).length);
         for (int i = 0; i < newValues.length; i++) {
             assertEquals(newValues[i], st.getProperties(propertyResource)[i]);
@@ -283,7 +283,7 @@ public class TestStatement extends TestCase {
         // set duplicates
         newProperties.putAll(properties);
         Resource otherPropertyResource = NodeFactory.createResource("http://foo");
-        Node[] otherValues = new Node[] { NodeFactory.createLiteral("http://bar") };
+        Node[] otherValues = { NodeFactory.createLiteral("http://bar") };
         newProperties.put(otherPropertyResource, otherValues);
         st.addProperties(newProperties);
         assertEquals(newProperties, st.getProperties());
@@ -305,7 +305,7 @@ public class TestStatement extends TestCase {
         assertEquals(properties, st.getProperties());
         st.addProperty(otherPropertyResource, newValue);
         assertEquals(propertyValues, st.getProperties(propertyResource));
-        Node[] otherValues = new Node[] { newValue };
+        Node[] otherValues = { newValue };
         assertEquals(otherValues.length, st.getProperties(otherPropertyResource).length);
         for (int i = 0; i < otherValues.length; i++) {
             assertEquals(otherValues[i], st.getProperties(otherPropertyResource)[i]);
@@ -319,7 +319,7 @@ public class TestStatement extends TestCase {
         assertEquals(propertyValues, st.getProperties(propertyResource));
         assertNull(st.getProperties(otherPropertyResource));
         Literal newValue = NodeFactory.createLiteral("http://bar");
-        Node[] otherValues = new Node[] { newValue };
+        Node[] otherValues = { newValue };
         st.addProperties(otherPropertyResource, otherValues);
         assertEquals(otherValues, st.getProperties(otherPropertyResource));
         assertEquals(propertyValues, st.getProperties(propertyResource));
@@ -335,7 +335,7 @@ public class TestStatement extends TestCase {
 
         // add new properties to clone
         Map<Resource, Node[]> newProperties = new HashMap<Resource, Node[]>();
-        Node[] newValues = new Node[] { NodeFactory.createLiteral("http://bar") };
+        Node[] newValues = { NodeFactory.createLiteral("http://bar") };
         newProperties.put(propertyResource, newValues);
         clone.setProperties(newProperties);
 

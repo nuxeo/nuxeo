@@ -37,7 +37,7 @@ public class AnnotatedEventListener implements EventListener {
 
     private final AnnotationController controller;
 
-    private Annotater lastUsedAnnotater = null;
+    private Annotater lastUsedAnnotater;
 
     public AnnotatedEventListener(AnnotationController controller) {
         this.imageAnnotater = new ImageAnnotater(controller);

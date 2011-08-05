@@ -60,10 +60,10 @@ public class MailServiceImpl extends DefaultComponent implements MailService {
 
     private final Map<String, MessageActionPipe> actionPipesRegistry = new HashMap<String, MessageActionPipe>();
 
-    private final Map<String, MessageActionPipeDescriptor> actionPipeDecriptorsRegistry = new HashMap<String, MessageActionPipeDescriptor>();
+    private final Map<String, MessageActionPipeDescriptor> actionPipeDescriptorsRegistry = new HashMap<String, MessageActionPipeDescriptor>();
 
     static {
-        setDeocodeUTFFileNamesSystemProperty();
+        setDecodeUTFFileNamesSystemProperty();
     }
 
     @Override
@@ -101,16 +101,16 @@ public class MailServiceImpl extends DefaultComponent implements MailService {
     private void registerActionPipe(MessageActionPipeDescriptor descriptor)
             throws Exception {
         if (!descriptor.getOverride()) {
-            MessageActionPipeDescriptor existingDescriptor = actionPipeDecriptorsRegistry.get(descriptor.getName());
+            MessageActionPipeDescriptor existingDescriptor = actionPipeDescriptorsRegistry.get(descriptor.getName());
             if (existingDescriptor != null) {
                 descriptor.merge(existingDescriptor);
             }
         }
-        actionPipeDecriptorsRegistry.put(descriptor.getName(), descriptor);
+        actionPipeDescriptorsRegistry.put(descriptor.getName(), descriptor);
         actionPipesRegistry.put(descriptor.getName(), descriptor.getPipe());
     }
 
-    private static void setDeocodeUTFFileNamesSystemProperty() {
+    private static void setDecodeUTFFileNamesSystemProperty() {
         String toDecodeTheFilenames = Framework.getRuntime().getProperty(
                 "mail.mime.decodefilename");
         if (toDecodeTheFilenames == null) {

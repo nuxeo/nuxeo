@@ -56,7 +56,7 @@ public class SetupWizardActionBean implements Serializable {
 
     protected static final Log log = LogFactory.getLog(SetupWizardActionBean.class);
 
-    private static final String[] managedKeyParameters = new String[] {
+    private static final String[] managedKeyParameters = {
             "nuxeo.bind.address", "nuxeo.url", "nuxeo.data.dir",
             "nuxeo.log.dir", "org.nuxeo.ecm.product.name",
             "org.nuxeo.ecm.product.version", "nuxeo.conf",
@@ -75,9 +75,9 @@ public class SetupWizardActionBean implements Serializable {
     @In(create = true, required = false)
     protected FacesMessages facesMessages;
 
-    protected Map<String, String> parameters = null;
+    protected Map<String, String> parameters;
 
-    protected Map<String, String> advancedParameters = null;
+    protected Map<String, String> advancedParameters;
 
     protected static final String PROXY_NONE = "none";
 

@@ -37,22 +37,16 @@ import java.io.File;
 import java.io.FileReader;
 
 /**
- *
- * DocumentModel marsheler using Core IO services
+ * DocumentModel marshaler using Core IO services.
  *
  * @author tiry
- *
  */
 public class CoreIODocumentModelMarshaler implements DocumentModelMarshaler {
 
-    protected String originatingServer = null;
+    protected String originatingServer;
 
     public String marshalDocument(DocumentModel doc)
             throws PublishingMarshalingException {
-
-        DocumentWriter writer = null;
-        DocumentReader reader = null;
-        File tmpFile = null;
 
         // load the datamodel
         if (originatingServer != null) {
@@ -71,13 +65,14 @@ public class CoreIODocumentModelMarshaler implements DocumentModelMarshaler {
 
         CoreSession coreSession = CoreInstance.getInstance().getSession(
                 doc.getSessionId());
-        reader = new SingleDocumentReaderWithInLineBlobs(coreSession, doc);
+        DocumentReader reader = new SingleDocumentReaderWithInLineBlobs(coreSession, doc);
 
+        File tmpFile = null;
         try {
 
             tmpFile = File.createTempFile("io-marshaling-", "xml");
             tmpFile.deleteOnExit();
-            writer = new XMLDocumentWriter(tmpFile);
+            DocumentWriter writer = new XMLDocumentWriter(tmpFile);
             DocumentPipe pipe = new DocumentPipeImpl();
             pipe.setReader(reader);
             pipe.setWriter(writer);
@@ -85,7 +80,7 @@ public class CoreIODocumentModelMarshaler implements DocumentModelMarshaler {
             FileReader freader = new FileReader(tmpFile);
 
             BufferedReader br = new BufferedReader(freader);
-            StringBuffer sb = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
             String line;
             while ((line = br.readLine()) != null) {
                 sb.append(line).append("\n");
@@ -107,12 +102,9 @@ public class CoreIODocumentModelMarshaler implements DocumentModelMarshaler {
     public DocumentModel unMarshalDocument(String data, CoreSession coreSession)
             throws PublishingMarshalingException {
 
-        DocumentWriter writer = null;
-        DocumentReader reader = null;
-
         try {
-            reader = new SingleXMlDocumentReader(data);
-            writer = new SingleShadowDocumentWriter(coreSession, null);
+            DocumentReader reader = new SingleXMlDocumentReader(data);
+            DocumentWriter writer = new SingleShadowDocumentWriter(coreSession, null);
             DocumentPipe pipe = new DocumentPipeImpl();
             pipe.setReader(reader);
             pipe.setWriter(writer);

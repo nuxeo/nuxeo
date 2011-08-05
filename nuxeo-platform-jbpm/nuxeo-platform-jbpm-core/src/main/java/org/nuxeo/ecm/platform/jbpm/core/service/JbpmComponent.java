@@ -61,6 +61,8 @@ public class JbpmComponent extends DefaultComponent {
 
     public static final String RUNTIME_CONFIGURATION = "runtime";
 
+    private static final Log log = LogFactory.getLog(JbpmComponent.class);
+
     private JbpmConfiguration jbpmConfiguration;
 
     private final Map<String, List<String>> typeFiltersContrib = new HashMap<String, List<String>>();
@@ -76,8 +78,6 @@ public class JbpmComponent extends DefaultComponent {
     private final JbpmServiceImpl service = new JbpmServiceImpl();
 
     private final JbpmTaskServiceImpl taskService = new JbpmTaskServiceImpl();
-
-    private static final Log log = LogFactory.getLog(JbpmComponent.class);
 
     private final HashMap<String, ProcessDefinitionDeployer> deployerDesc = new HashMap<String, ProcessDefinitionDeployer>();
 
@@ -183,7 +183,7 @@ public class JbpmComponent extends DefaultComponent {
 
     private JbpmConfiguration getConfiguration() {
         if (jbpmConfiguration == null) {
-            URL url = null;
+            URL url;
             if (RUNTIME_CONFIGURATION.equals(activeConfigurationName)) {
                 String configurationName = selector.getConfigurationName();
                 url = paths.get(configurationName);

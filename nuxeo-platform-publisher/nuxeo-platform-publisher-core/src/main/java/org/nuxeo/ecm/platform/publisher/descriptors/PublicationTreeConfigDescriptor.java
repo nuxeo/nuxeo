@@ -48,7 +48,7 @@ public class PublicationTreeConfigDescriptor implements Serializable {
     private String validatorsRule;
 
     @XNode("@factory")
-    private String factory = null;
+    private String factory;
 
     @XNode("@localSectionTree")
     private boolean localSectionTree = false;

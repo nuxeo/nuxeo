@@ -111,7 +111,7 @@ public class TesteMailInjection extends
         initialExecutionContext.put(PARENT_PATH_KEY,
                 parentPath);
 
-        Message[] messages = new Message[] { getSampleMessage(filePath) };
+        Message[] messages = { getSampleMessage(filePath) };
 
         visitor.visit(messages, initialExecutionContext);
     }

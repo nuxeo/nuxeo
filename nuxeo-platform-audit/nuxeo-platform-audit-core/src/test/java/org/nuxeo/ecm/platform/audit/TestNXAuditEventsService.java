@@ -187,7 +187,7 @@ public class TestNXAuditEventsService extends RepositoryOSGITestCase {
         assertEquals(n + 1, eventIds.size());
     }
 
-    public void testsyncLogCreation() throws AuditException, ClientException {
+    public void testsyncLogCreation() throws Exception {
         doCreateDocument();
         DocumentModel rootDocument = coreSession.getRootDocument();
         long count = serviceUnderTest.syncLogCreationEntries(

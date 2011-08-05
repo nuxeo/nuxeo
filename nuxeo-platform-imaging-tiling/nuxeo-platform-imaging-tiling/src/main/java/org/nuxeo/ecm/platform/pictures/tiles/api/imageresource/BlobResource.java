@@ -39,9 +39,9 @@ public class BlobResource implements ImageResource {
 
     protected Blob blob;
 
-    protected String hash = null;
+    protected String hash;
 
-    protected Calendar modified = null;
+    protected Calendar modified;
 
     public BlobResource(Blob blob) {
         this.blob = blob;

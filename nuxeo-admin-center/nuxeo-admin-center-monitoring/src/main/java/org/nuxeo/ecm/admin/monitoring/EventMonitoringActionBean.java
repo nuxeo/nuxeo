@@ -42,7 +42,7 @@ public class EventMonitoringActionBean implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    protected EventMonitoring monitor = null;
+    protected EventMonitoring monitor;
 
     protected EventMonitoring getEventMonitoring() {
         if (monitor == null) {
@@ -96,7 +96,7 @@ public class EventMonitoringActionBean implements Serializable {
     }
 
     public String getEventStatistics() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 
         sb.append("Active Threads : ");
         sb.append(getEventMonitoring().getActiveThreadsCount());

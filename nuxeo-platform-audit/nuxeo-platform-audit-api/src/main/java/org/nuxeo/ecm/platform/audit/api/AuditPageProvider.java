@@ -213,7 +213,7 @@ public class AuditPageProvider extends AbstractPageProvider<LogEntry> implements
             for (PredicateDefinition predicate : predicates) {
 
                 // extract data from DocumentModel
-                Object val[];
+                Object[] val;
                 try {
                     PredicateFieldDefinition[] fieldDef = predicate.getValues();
                     val = new Object[fieldDef.length];

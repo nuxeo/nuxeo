@@ -53,7 +53,7 @@ public class TestExifHelper extends TestCase {
 
     public void testExtractBytes() {
         // ASCII string as an byte array
-        byte[] bytes = new byte[] { 65, 83, 67, 73, 73, 0, 0, 0 };
+        byte[] bytes = { 65, 83, 67, 73, 73, 0, 0, 0 };
         byte[] extractedBytes = ExifHelper.extractBytes(bytes, 0, 3);
         String s = new String(new byte[] { 65, 83, 67, 73, 73 });
         assertEquals("ASCII", s);
@@ -61,8 +61,7 @@ public class TestExifHelper extends TestCase {
     }
 
     public void testDecodeUndefined() {
-        byte[] rawBytes = new byte[] { 65, 83, 67, 73, 73, 0, 0, 0, 66, 65, 66,
-                65 };
+        byte[] rawBytes = { 65, 83, 67, 73, 73, 0, 0, 0, 66, 65, 66, 65 };
         String decodedString = ExifHelper.decodeUndefined(rawBytes);
         String rawString = new String(rawBytes);
         assertNotSame(decodedString, rawString);

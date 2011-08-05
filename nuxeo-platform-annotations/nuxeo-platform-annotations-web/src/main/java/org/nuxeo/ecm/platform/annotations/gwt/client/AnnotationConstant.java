@@ -23,23 +23,24 @@ package org.nuxeo.ecm.platform.annotations.gwt.client;
  * @author Alexandre Russel
  *
  */
-public interface AnnotationConstant {
-    String DECORATE_CLASS_NAME = "decorate";
+public final class AnnotationConstant {
 
-    String DECORATE_NOT_CLASS_NAME = "decorateNot";
+    public static final String DECORATE_CLASS_NAME = "decorate";
 
-    String DECORATE_AREA_CLASS_NAME = "decorateArea";
+    public static final String DECORATE_NOT_CLASS_NAME = "decorateNot";
 
-    String SELECTED_CLASS_NAME = "selectedAnnotation";
+    public static final String DECORATE_AREA_CLASS_NAME = "decorateArea";
 
-    String SELECTED_NOT_CLASS_NAME = "selectedAnnotationNot";
+    public static final String SELECTED_CLASS_NAME = "selectedAnnotation";
 
-    String SELECTED_TEXT_CLASS_NAME = "selectedText";
+    public static final String SELECTED_NOT_CLASS_NAME = "selectedAnnotationNot";
 
-    int POPUP_PANEL_BLINK_TIMEOUT_MILI = 1000;
+    public static final String SELECTED_TEXT_CLASS_NAME = "selectedText";
 
-    int MAX_ANNOTATION_TEXT_LENGTH = 2000;
+    public static final int POPUP_PANEL_BLINK_TIMEOUT_MILI = 1000;
 
-    String IGNORED_ELEMENT = "ignoredElement";
+    public static final int MAX_ANNOTATION_TEXT_LENGTH = 2000;
+
+    public static final String IGNORED_ELEMENT = "ignoredElement";
 
 }

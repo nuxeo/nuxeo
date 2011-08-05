@@ -21,17 +21,16 @@ import org.nuxeo.ecm.core.api.*;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 
 /**
- * Extension to {@link DocumentLocation} to provide informations about source
- * server
+ * Extension to {@link DocumentLocation} to provide information about source
+ * server.
  *
  * @author tiry
  */
-public class ExtendedDocumentLocation extends DocumentLocationImpl implements
-        DocumentLocation {
+public class ExtendedDocumentLocation extends DocumentLocationImpl {
 
     private static final long serialVersionUID = 1L;
 
-    protected String originalServer = null;
+    protected String originalServer;
 
     public ExtendedDocumentLocation(String serverName, DocumentRef docRef) {
         super(serverName, docRef);

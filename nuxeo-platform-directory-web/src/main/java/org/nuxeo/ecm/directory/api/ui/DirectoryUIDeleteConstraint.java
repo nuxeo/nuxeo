@@ -25,18 +25,14 @@ import org.nuxeo.ecm.directory.api.DirectoryService;
 
 /**
  * Interface for delete constraint on a directory, dependent to another
- * directory
+ * directory.
  *
  * @author Anahide Tchertchian
- *
  */
 public interface DirectoryUIDeleteConstraint extends Serializable {
 
     /**
-     * Sets properties that may depend on the directory configuration
-     *
-     * @param properties
-     * @throws DirectoryException
+     * Sets properties that may depend on the directory configuration.
      */
     void setProperties(Map<String, String> properties)
             throws DirectoryException;

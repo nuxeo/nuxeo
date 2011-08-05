@@ -36,13 +36,13 @@ public class DocumentImageResource implements ImageResource {
 
     private static final long serialVersionUID = 1L;
 
-    protected Blob blob = null;
-    protected String hash = null;
-    protected Calendar modified = null;
+    protected Blob blob;
+    protected String hash;
+    protected Calendar modified;
 
-    protected DocumentModel doc = null;
-    protected String xPath = null;
-    protected String fileName = null;
+    protected DocumentModel doc;
+    protected String xPath;
+    protected String fileName;
 
     public DocumentImageResource(DocumentModel doc, String xPath) {
         this.doc = doc;

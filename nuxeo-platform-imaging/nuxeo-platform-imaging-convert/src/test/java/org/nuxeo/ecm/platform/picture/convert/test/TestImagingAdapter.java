@@ -46,7 +46,7 @@ public class TestImagingAdapter extends RepositoryOSGITestCase {
         openRepository();
     }
 
-    public void testAdapter() throws ClientException, IOException {
+    public void testAdapter() throws Exception {
 
         ArrayList<Map<String, Object>> pictureTemplates = new ArrayList<Map<String, Object>>();
         Map<String, Object> view = new HashMap<String, Object>();
