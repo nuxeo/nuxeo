@@ -270,8 +270,7 @@ public class SiteUtils {
     }
 
     /**
-     * This method is used to retrieve the <b>WebPage</b> where this
-     * <b>WebComment</b> was published.
+     * Retrieves the <b>WebPage</b> where this <b>WebComment</b> was published.
      *
      * @param comment
      * @return the <b>WebPage</b>

@@ -40,10 +40,10 @@ public class WizardPage implements Serializable {
     public static final int LAST = OK | BACK | CANCEL;
 
     protected int index;
-    protected String nextPageId;
-    protected Class<? extends Form> formType;
-    protected String id;
-    protected int style;
+    protected final String nextPageId;
+    protected final Class<? extends Form> formType;
+    protected final String id;
+    protected final int style;
     protected Form form; // the submitted form if any
 
     protected WizardPage prev; // to implement a stack of pages

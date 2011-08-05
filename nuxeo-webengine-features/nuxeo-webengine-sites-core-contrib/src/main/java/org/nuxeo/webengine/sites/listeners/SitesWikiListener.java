@@ -100,7 +100,7 @@ public class SitesWikiListener implements EventListener {
 
     public class WikiProcessingResult {
 
-        protected List<String> relationLinks = new ArrayList<String>();
+        protected final List<String> relationLinks = new ArrayList<String>();
 
         protected String wikiContent;
 

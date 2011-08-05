@@ -14,6 +14,7 @@
  */
 package org.nuxeo.webengine.sites;
 
+import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.*;
 import static org.nuxeo.webengine.sites.utils.SiteConstants.MIME_TYPE_RSS_FEED;
 import static org.nuxeo.webengine.sites.utils.SiteConstants.WEBPAGE_DESCRIPTION;
 
@@ -33,7 +34,6 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
-import org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.Template;
@@ -134,16 +134,16 @@ public class RssAdapter extends DefaultAdapter {
             }
 
             for (DocumentModel documentModel : comments) {
-                if (CommentsConstants.PUBLISHED_STATE.equals(documentModel.getCurrentLifeCycleState())) {
+                if (PUBLISHED_STATE.equals(documentModel.getCurrentLifeCycleState())) {
                     GregorianCalendar modificationDate = (GregorianCalendar) documentModel.getProperty(
-                            CommentsConstants.COMMENT_CREATION_DATE).getValue();
+                            COMMENT_CREATION_DATE).getValue();
                     SimpleDateFormat simpleDateFormat = new SimpleDateFormat(
                             "dd MMMM", WebEngine.getActiveContext().getLocale());
                     String creationDate = simpleDateFormat.format(modificationDate.getTime());
                     String author = (String) documentModel.getProperty(
-                            CommentsConstants.COMMENT_AUTHOR).getValue();
+                            COMMENT_AUTHOR).getValue();
                     String commentText = (String) documentModel.getProperty(
-                            CommentsConstants.COMMENT_TEXT).getValue();
+                            COMMENT_TEXT).getValue();
                     CommentModel commentModel = new CommentModel(creationDate,
                             author, commentText,
                             documentModel.getRef().toString(), false);

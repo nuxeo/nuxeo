@@ -50,7 +50,6 @@ import org.nuxeo.webengine.sites.utils.SiteQueriesCollection;
  * Web object implementation corresponding to Site. It is resolved from module
  * root web object. It holds the site fragments back methods.
  */
-
 @WebObject(type = WEBSITE, superType = "AbstractSiteDocumentObject", facets = { WEBSITE })
 @Produces("text/html;charset=UTF-8")
 public class Site extends AbstractSiteDocumentObject {

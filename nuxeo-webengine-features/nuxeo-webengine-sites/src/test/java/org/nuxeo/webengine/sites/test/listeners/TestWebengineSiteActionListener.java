@@ -69,11 +69,11 @@ public class TestWebengineSiteActionListener extends SQLRepositoryTestCase {
         assertFalse("No name in document?", StringUtils.isBlank(documentName));
         assertFalse("No title in document?", StringUtils.isBlank(documentTitle));
         //name contains the title
-        assertTrue("Name not valid for web container: " + siteName,
-                documentTitle.equals(siteName));
+        assertEquals("Name not valid for web container: " + siteName,
+                documentTitle, siteName);
         //url contains the name
-        assertTrue("URL not valid for web container: " + siteUrl,
-                siteUrl.equals(URIUtils.quoteURIPathComponent(documentName, false)));
+        assertEquals("URL not valid for web container: " + siteUrl,
+                siteUrl, URIUtils.quoteURIPathComponent(documentName, false));
     }
 
     public void testSiteActionListenerWebSite() throws Exception {
@@ -97,11 +97,11 @@ public class TestWebengineSiteActionListener extends SQLRepositoryTestCase {
         assertFalse("No name in document?", StringUtils.isBlank(documentName));
         assertFalse("No title in document?", StringUtils.isBlank(documentTitle));
         //name contains the title
-        assertTrue("Name not valid for web container: " + siteName,
-                documentTitle.equals(siteName));
+        assertEquals("Name not valid for web container: " + siteName,
+                documentTitle, siteName);
         //url contains the name
-        assertTrue("URL not valid for web container: " + siteUrl,
-                siteUrl.equals(URIUtils.quoteURIPathComponent(documentName, false)));
+        assertEquals("URL not valid for web container: " + siteUrl,
+                siteUrl, URIUtils.quoteURIPathComponent(documentName, false));
     }
 
 }

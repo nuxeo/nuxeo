@@ -29,28 +29,21 @@ import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.comment.service.CommentService;
 import org.nuxeo.ecm.platform.comment.service.CommentServiceHelper;
-import org.nuxeo.webengine.sites.utils.SiteConstants;
 import org.nuxeo.webengine.sites.utils.SiteQueriesCollection;
 
 /**
  * Unit tests for the query site utils methods.
  *
  * @author mcedica
- *
  */
 public class TestWebengineQuerySiteUtils extends SQLRepositoryTestCase {
 
-    private final String workspaceSiteTitle = "Test Mini Site";
-
-    private final String webSiteTitle = "Test Web Site";
-
-    private final String pageForWorkspaceSiteTitle = "Test WebPage for Workspace Site";
-
-    private final String pageForWebSiteTitle = "Test WebPage for Web Site";
-
-    private final String workspaceSiteUrl = "testMiniSiteUrl";
-
-    private final String webSiteUrl = "testWebSiteUrl";
+    private static final String workspaceSiteTitle = "Test Mini Site";
+    private static final String webSiteTitle = "Test Web Site";
+    private static final String pageForWorkspaceSiteTitle = "Test WebPage for Workspace Site";
+    private static final String pageForWebSiteTitle = "Test WebPage for Web Site";
+    private static final String workspaceSiteUrl = "testMiniSiteUrl";
+    private static final String webSiteUrl = "testWebSiteUrl";
 
     private DocumentModel workspaceSite;
 
@@ -102,8 +95,7 @@ public class TestWebengineQuerySiteUtils extends SQLRepositoryTestCase {
         assertNotNull(workspaceSite);
         workspaceSite.setPropertyValue("dc:title", workspaceSiteTitle);
         workspaceSite.setPropertyValue("webc:url", workspaceSiteUrl);
-        workspaceSite.setPropertyValue("webcontainer:isWebContainer",
-                new Boolean(true));
+        workspaceSite.setPropertyValue("webcontainer:isWebContainer", true);
         workspaceSite = session.createDocument(workspaceSite);
         //workspaceSite = session.saveDocument(workspaceSite);
         session.save();
@@ -115,8 +107,7 @@ public class TestWebengineQuerySiteUtils extends SQLRepositoryTestCase {
         assertNotNull(webSite);
         webSite.setPropertyValue("dc:title", webSiteTitle);
         webSite.setPropertyValue("webc:url", webSiteUrl);
-        webSite.setPropertyValue("webcontainer:isWebContainer", new Boolean(
-                true));
+        webSite.setPropertyValue("webcontainer:isWebContainer", true);
         webSite = session.createDocument(webSite);
         //webSite = session.saveDocument(webSite);
         session.save();
@@ -206,7 +197,7 @@ public class TestWebengineQuerySiteUtils extends SQLRepositoryTestCase {
         assertEquals(1, lastWebSiteComments.size());
     }
 
-    protected CommentManager getCommentManager() {
+    protected static CommentManager getCommentManager() {
         CommentService commentService = CommentServiceHelper.getCommentService();
         CommentManager commentManager = commentService.getCommentManager();
         assertNotNull(commentManager);

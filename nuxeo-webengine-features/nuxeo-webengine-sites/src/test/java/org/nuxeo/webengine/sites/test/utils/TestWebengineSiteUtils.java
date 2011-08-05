@@ -63,8 +63,7 @@ public class TestWebengineSiteUtils extends RepositoryOSGITestCase {
         String id = IdUtils.generatePathSegment(webSiteTitle);
         webSite = session.createDocumentModel("/", id, "WebSite");
         webSite.setPropertyValue("dc:title", webSiteTitle);
-        webSite.setPropertyValue("webcontainer:isWebContainer", new Boolean(
-                true));
+        webSite.setPropertyValue("webcontainer:isWebContainer", true);
         webSite = session.createDocument(webSite);
         webSite = session.saveDocument(webSite);
         session.save();
@@ -97,7 +96,7 @@ public class TestWebengineSiteUtils extends RepositoryOSGITestCase {
 
         DocumentModelList cLinks = session.getChildren(webSite.getRef(),
                 SiteConstants.CONTEXTUAL_LINK);
-        assertTrue("Don't have 2 links?", cLinks.size() == 2);
+        assertEquals("Don't have 2 links?", 2, cLinks.size());
         for (DocumentModel linkObject : cLinks) {
             String linkTitle = SiteUtils.getString(linkObject, "dc:title");
             String description = SiteUtils.getString(linkObject,
@@ -112,7 +111,6 @@ public class TestWebengineSiteUtils extends RepositoryOSGITestCase {
             assertTrue("Link not correct: " + description,
                     "http://link1".equals(link) || "http://link2".equals(link));
         }
-
     }
 
 }

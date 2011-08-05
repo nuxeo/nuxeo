@@ -169,9 +169,9 @@ public class SiteQueriesCollection {
 
         DocumentModelList results;
 
-        String queryString;
+        final String queryString;
 
-        public UnrestrictedQueryRunner(CoreSession session, String queryString) {
+        UnrestrictedQueryRunner(CoreSession session, String queryString) {
             super(session);
             this.queryString = queryString;
         }
