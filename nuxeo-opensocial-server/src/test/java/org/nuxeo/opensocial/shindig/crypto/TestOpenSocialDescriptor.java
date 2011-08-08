@@ -39,12 +39,12 @@ public class TestOpenSocialDescriptor {
         Framework.getProperties().put(NUXEO_BIND_ADDRESS_PROPERTY, "0.0.0.0");
         OpenSocialDescriptor openSocialDescriptor = new OpenSocialDescriptor();
         String trustedHost = openSocialDescriptor.getTrustedHostForNuxeoBindAddress();
-        assertEquals("localhost", trustedHost);
+        assertEquals("127.0.0.1", trustedHost);
 
         // IPv6
         Framework.getProperties().put(NUXEO_BIND_ADDRESS_PROPERTY, "000:0000::0:0000:00");
         trustedHost = openSocialDescriptor.getTrustedHostForNuxeoBindAddress();
-        assertEquals("localhost", trustedHost);
+        assertEquals("127.0.0.1", trustedHost);
     }
 
     @Test
