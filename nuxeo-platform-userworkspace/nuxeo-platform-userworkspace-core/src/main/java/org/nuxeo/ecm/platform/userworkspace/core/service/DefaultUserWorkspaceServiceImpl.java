@@ -361,12 +361,12 @@ public class DefaultUserWorkspaceServiceImpl implements UserWorkspaceService {
         public void run() throws ClientException {
             userWorkspace = getCurrentUserPersonalWorkspace(userName, session,
                     context);
-        }
-
-        public DocumentModel getDetachedUserWorkspace() throws ClientException {
             if (userWorkspace != null) {
                 ((DocumentModelImpl) userWorkspace).detach(true);
             }
+        }
+
+        public DocumentModel getDetachedUserWorkspace() throws ClientException {
             return userWorkspace;
         }
     }
