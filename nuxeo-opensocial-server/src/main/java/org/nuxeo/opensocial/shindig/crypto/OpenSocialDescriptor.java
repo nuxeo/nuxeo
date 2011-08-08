@@ -47,7 +47,7 @@ public class OpenSocialDescriptor {
 
     public static final String NUXEO_BIND_ADDRESS_PROPERTY = "nuxeo.bind.address";
 
-    public static final String LOCALHOST_BIND_ADDRESS = "localhost";
+    public static final String LOCALHOST_BIND_ADDRESS = "127.0.0.1";
 
     // match IPv5 and IPv6 address of the form "0.0.0.0" or "000:0000::0:0000:00"
     public static final Pattern DEFAULT_BIND_ADDRESS_PATTERN = Pattern.compile("[0:]*|[0.]*");
@@ -131,7 +131,7 @@ public class OpenSocialDescriptor {
 
     /**
      * Returns the default trusted host computed from the Nuxeo bind address. If
-     * Nuxeo listens on all IPs, returns "localhost", otherwise returns the
+     * Nuxeo listens on all IPs, returns "127.0.0.1", otherwise returns the
      * Nuxeo bind address.
      *
      * @since 5.4.2
@@ -151,7 +151,7 @@ public class OpenSocialDescriptor {
 
     public boolean isTrustedHost(String host) {
         // special case
-        if (host.equals(LOCALHOST_BIND_ADDRESS) || host.startsWith("127.")) {
+        if (host.startsWith("127.")) {
             if (trustedHosts.contains(LOCALHOST_BIND_ADDRESS)) {
                 return true;
             }
