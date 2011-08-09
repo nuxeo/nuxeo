@@ -71,13 +71,9 @@ public class ClearTrustAuthenticator implements NuxeoAuthenticationPlugin,
             HttpServletResponse response, String baseURL) {
         log.debug("handleLoginPrompt ...");
         log.debug("handleLoginPrompt requestURL = " + request.getRequestURL());
-        Cookie[] cookies = request.getCookies();
-        List<Cookie> cookieList = new ArrayList<Cookie>();
-        for (Cookie cookie : cookies) {
-            cookieList.add(cookie);
-        }
+        Cookie[] cookies = getCookies(request);
         displayRequestInformation(request);
-        displayCookieInformation(cookieList);
+        displayCookieInformation(cookies);
         String ctSession = getCookieValue(CLEARTRUST_COOKIE_SESSION, cookies);
         String ctSessionA = getCookieValue(CLEARTRUST_COOKIE_SESSION_A, cookies);
         log.debug("ctSession = " + ctSession);
@@ -124,13 +120,9 @@ public class ClearTrustAuthenticator implements NuxeoAuthenticationPlugin,
     public UserIdentificationInfo handleRetrieveIdentity(
             HttpServletRequest request, HttpServletResponse httpResponse) {
         log.debug("handleRetrieveIdentity ...");
+        Cookie[] cookies = getCookies(request);
         displayRequestInformation(request);
-        Cookie[] cookies = request.getCookies();
-        List<Cookie> cookieList = new ArrayList<Cookie>();
-        for (Cookie cookie : cookies) {
-            cookieList.add(cookie);
-        }
-        displayCookieInformation(cookieList);
+        displayCookieInformation(cookies);
 
         String ctUid = request.getHeader(CLEARTRUST_HEADER_UID);
         log.debug("handleRetrieveIdentity ctUid = [" + ctUid + "]");
@@ -173,6 +165,14 @@ public class ClearTrustAuthenticator implements NuxeoAuthenticationPlugin,
         }
     }
 
+    protected Cookie[] getCookies(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies == null) {
+           cookies = new Cookie[0];
+        }
+        return cookies;
+    }
+    
     private String getCookieValue(String cookieName, Cookie[] cookies) {
         String cookieValue = null;
         for (Cookie cookie : cookies) {
@@ -193,7 +193,7 @@ public class ClearTrustAuthenticator implements NuxeoAuthenticationPlugin,
         response.addCookie(cookie);
     }
 
-    protected void displayCookieInformation(List<Cookie> cookies) {
+    protected void displayCookieInformation(Cookie[] cookies) {
         log.debug(">>>>>>>>>>>>> Here are the cookies: ");
         for (Cookie cookie : cookies) {
             log.debug("displayCookieInformation cookie name: ["
