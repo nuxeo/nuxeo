@@ -9,6 +9,40 @@
 
 <ui:insert name="user">
 
+  <div class="userSearchBlock">
+  <h:form id="userServicesSearchForm">
+   <div class="searchService">
+
+     <c:if test="#{userServicesContext.searchEnabled}">
+       <h:inputText value="#{documentSearchActions.simpleSearchKeywords}" size="15"
+         class="directoryFilter"
+         onkeydown="if (event.keyCode == 13) {Element.next(Element.next(this)).select();} else return true;"
+         id="simpleSearchKeywordsInput"
+         required="true" requiredMessage="#{messages['feedback.search.noKeywords']}"
+         validator="#{documentSearchActions.validateSimpleSearchKeywords}" />
+       <h:commandButton action="search_results_simple"
+         value="#{messages['command.search']}" styleClass="button"
+         id="simpleSearchSubmitButton" />
+
+       <nxu:set var="actions"
+         value="#{webActions.getActionsList('SEARCH_ACTIONS')}"
+         cache="true">
+         <nxu:dataList layout="simple"
+           var="action"
+           value="#{actions}"
+           id="searchActionsTable">
+           <span class="advancedSearchLink">
+             <nxh:commandLink action="#{action.getLink()}"
+               value="#{messages[action.label]}"
+               immediate="true"
+               id="searchActionsButton" />
+           </span>
+         </nxu:dataList>
+       </nxu:set>
+     </c:if>
+   </div>
+  </h:form>
+  </div>
   <div class="userServicesBlock">
   <h:form id="userServicesForm">
 
@@ -151,40 +185,6 @@
   </h:form>
   </div>
 
-  <div class="userSearchBlock">
-  <h:form id="userServicesSearchForm">
-   <div class="searchService">
-
-     <c:if test="#{userServicesContext.searchEnabled}">
-       <h:inputText value="#{documentSearchActions.simpleSearchKeywords}" size="15"
-         class="directoryFilter"
-         onkeydown="if (event.keyCode == 13) {Element.next(Element.next(this)).select();} else return true;"
-         id="simpleSearchKeywordsInput"
-         required="true" requiredMessage="#{messages['feedback.search.noKeywords']}"
-         validator="#{documentSearchActions.validateSimpleSearchKeywords}" />
-       <h:commandButton action="search_results_simple"
-         value="#{messages['command.search']}" styleClass="button"
-         id="simpleSearchSubmitButton" />
-
-       <nxu:set var="actions"
-         value="#{webActions.getActionsList('SEARCH_ACTIONS')}"
-         cache="true">
-         <nxu:dataList layout="simple"
-           var="action"
-           value="#{actions}"
-           id="searchActionsTable">
-           <span class="advancedSearchLink">
-             <nxh:commandLink action="#{action.getLink()}"
-               value="#{messages[action.label]}"
-               immediate="true"
-               id="searchActionsButton" />
-           </span>
-         </nxu:dataList>
-       </nxu:set>
-     </c:if>
-   </div>
-  </h:form>
-  </div>
 
 <c:if test="#{currentNuxeoPrincipal!=null and currentNuxeoPrincipal.isAdministrator()}">
   <c:if test="#{connectUpdateStatusInfo.availableUpdateCount>0}">
