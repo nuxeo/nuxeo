@@ -180,8 +180,9 @@ public abstract class NuxeoLauncher {
     public NuxeoLauncher(ConfigurationGenerator configurationGenerator) {
         this.configurationGenerator = configurationGenerator;
         processManager = getOSProcessManager();
-        processRegex = Pattern.quote(configurationGenerator.getNuxeoConf().getPath())
-                + ".*" + Pattern.quote(getServerPrint());
+        processRegex = "^(?!/bin/sh).*"
+                + Pattern.quote(configurationGenerator.getNuxeoConf().getPath())
+                + ".*" + Pattern.quote(getServerPrint()) + ".*$";
         // Set OS-specific decorations
         if (PlatformUtils.isMac()) {
             System.setProperty(
@@ -316,13 +317,7 @@ public abstract class NuxeoLauncher {
                 }
                 linearizedCommand += " " + commandToken;
             }
-            String shellPath;
-            if (new File("/bin/bash").exists()) {
-                shellPath = "/bin/bash";
-            } else {
-                shellPath = "/bin/sh";
-            }
-            osCommand.add(shellPath);
+            osCommand.add("/bin/sh");
             osCommand.add("-c");
             osCommand.add(linearizedCommand);
             // osCommand.add("&");
