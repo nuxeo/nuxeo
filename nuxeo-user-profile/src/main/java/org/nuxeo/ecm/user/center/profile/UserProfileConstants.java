@@ -28,6 +28,8 @@ public class UserProfileConstants {
 
     public static final String USER_PROFILE_FACET = "UserProfile";
 
+    public static final String USER_PROFILE_DOCTYPE = "UserProfile";
+
     public static final String USER_PROFILE_BIRTHDATE_FIELD = "userprofile:birthdate";
 
     public static final String USER_PROFILE_AVATAR_FIELD = "userprofile:avatar";
@@ -36,13 +38,4 @@ public class UserProfileConstants {
 
     public static final String USER_PROFILE_GENDER_FIELD = "userprofile:gender";
 
-    public static final String USER_PROFILE_SCHOOLWORKINFO_FIELD = "userprofile:schoolworkinfo";
-
-    public static final String USER_PROFILE_INTERESTS_FIELD = "userprofile:interests";
-
-    public static final String USER_PROFILE_CAREEROBJECTIVE_FIELD = "userprofile:careerobjective";
-
-    public static final String USER_PROFILE_SKILLS_FIELD = "userprofile:skills";
-
-    public static final String USER_PROFILE_PUBLICPROFILE_FIELD = "userprofile:publicprofile";
 }

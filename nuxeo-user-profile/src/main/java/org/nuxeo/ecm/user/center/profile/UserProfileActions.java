@@ -17,8 +17,6 @@
 
 package org.nuxeo.ecm.user.center.profile;
 
-import static org.nuxeo.ecm.user.center.profile.UserProfileConstants.USER_PROFILE_FACET;
-
 import java.io.Serializable;
 
 import org.jboss.seam.ScopeType;
@@ -29,7 +27,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
+import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.webapp.security.UserManagementActions;
 import org.nuxeo.runtime.api.Framework;
 
@@ -51,7 +49,7 @@ public class UserProfileActions implements Serializable {
 
     public static final String PROFILE_EDIT_PASSWORD_MODE = "editPassword";
 
-    protected transient UserWorkspaceService userWorkspaceService;
+    protected transient UserProfileService userProfileService;
 
     @In(create = true)
     protected transient UserManagementActions userManagementActions;
@@ -61,6 +59,9 @@ public class UserProfileActions implements Serializable {
 
     @In(create = true)
     protected transient CoreSession documentManager;
+
+    @In(create = true)
+    protected transient NavigationContext navigationContext;
 
     protected String mode = PROFILE_VIEW_MODE;
 
@@ -80,7 +81,8 @@ public class UserProfileActions implements Serializable {
 
     public boolean getCanEdit() throws ClientException {
         userManagementActions.setSelectedUser(currentUser.getName());
-        return userManagementActions.getAllowEditUser() && userManagementActions.isNotReadOnly();
+        return userManagementActions.getAllowEditUser()
+                && userManagementActions.isNotReadOnly();
     }
 
     public void setMode(String mode) {
@@ -89,42 +91,32 @@ public class UserProfileActions implements Serializable {
 
     public DocumentModel getUserProfileDocument() throws ClientException {
         if (userProfileDocument == null) {
-            userProfileDocument = getUserWorkspaceService().getCurrentUserPersonalWorkspace(
-                    documentManager, null);
-        }
-        if (!userProfileDocument.hasFacet(USER_PROFILE_FACET)) {
-            userProfileDocument.addFacet(USER_PROFILE_FACET);
-            userProfileDocument = documentManager.saveDocument(userProfileDocument);
+            userProfileDocument = getUserProfileService().getUserProfileDocument(
+                    documentManager);
         }
         return userProfileDocument;
     }
 
     public DocumentModel getUserProfileDocument(String userName)
             throws ClientException {
-        DocumentModel userProfileDocument = getUserWorkspaceService().getUserPersonalWorkspace(
-                    userName, documentManager.getRootDocument());
-        if (!userProfileDocument.hasFacet(USER_PROFILE_FACET)) {
-            userProfileDocument.addFacet(USER_PROFILE_FACET);
-            userProfileDocument = documentManager.saveDocument(userProfileDocument);
-        }
-        return userProfileDocument;
+        return getUserProfileService().getUserProfileDocument(userName,
+                documentManager);
     }
 
-    public DocumentModel getSelectedUserProfileDocument() throws ClientException {
+    public DocumentModel getSelectedUserProfileDocument()
+            throws ClientException {
         return getUserProfileDocument(userManagementActions.getSelectedUser().getId());
     }
 
-    protected UserWorkspaceService getUserWorkspaceService()
-            throws ClientException {
-        if (userWorkspaceService == null) {
+    protected UserProfileService getUserProfileService() throws ClientException {
+        if (userProfileService == null) {
             try {
-                userWorkspaceService = Framework.getService(UserWorkspaceService.class);
+                userProfileService = Framework.getService(UserProfileService.class);
             } catch (Exception e) {
-                throw new ClientException("Failed to get UserWorkspaceService",
-                        e);
+                throw new ClientException("Failed to get UserProfileService", e);
             }
         }
-        return userWorkspaceService;
+        return userProfileService;
     }
 
 }

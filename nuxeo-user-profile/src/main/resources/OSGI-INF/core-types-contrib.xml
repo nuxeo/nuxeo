@@ -12,6 +12,14 @@
     <facet name="UserProfile">
       <schema name="userprofile" />
     </facet>
+
+    <doctype name="UserProfile" extends="Document">
+      <schema name="common" />
+      <schema name="dublincore" />
+      <facet name="UserProfile" />
+      <facet name="HiddenInNavigation" />
+    </doctype>
+
   </extension>
 
 </component>

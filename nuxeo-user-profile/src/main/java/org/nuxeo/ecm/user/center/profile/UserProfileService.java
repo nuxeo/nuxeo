@@ -17,40 +17,37 @@
 
 package org.nuxeo.ecm.user.center.profile;
 
-import java.util.Calendar;
-
-import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.platform.userpreferences.UserPreferences;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
- * An object to store additional user information
+ * A service to manage user profiles
  *
  * @author <a href="mailto:qlamerand@nuxeo.com">Quentin Lamerand</a>
  * @since 5.4.3
  */
-public interface UserProfile extends UserPreferences<UserProfile> {
-
-    Calendar getBirthDate() throws ClientException;
-
-    Blob getAvatar() throws ClientException;
-
-    String getPhoneNumber() throws ClientException;
+public interface UserProfileService {
 
     /**
-     * @return {@code Boolean.FALSE} for Man or {@code Boolean.TRUE} for Woman
+     * Get the current user profile. It's stored in its user workspace.
+     *
+     * @param the current CoreSession
+     * @return the user profile DocumentModel
      * @throws ClientException
      */
-    Boolean getGender() throws ClientException;
+    DocumentModel getUserProfileDocument(CoreSession session)
+            throws ClientException;
 
-    String getSchoolWorkInfo() throws ClientException;
-
-    String getInterests() throws ClientException;
-
-    String getCareerObjective() throws ClientException;
-
-    String getSkills() throws ClientException;
-
-    Boolean getPublicProfile() throws ClientException;
+    /**
+     * Get the profile of a specific user. It's stored in its user workspace.
+     *
+     * @param the user name
+     * @param the current CoreSession
+     * @return the user profile DocumentModel
+     * @throws ClientException
+     */
+    DocumentModel getUserProfileDocument(String userName, CoreSession session)
+            throws ClientException;
 
 }

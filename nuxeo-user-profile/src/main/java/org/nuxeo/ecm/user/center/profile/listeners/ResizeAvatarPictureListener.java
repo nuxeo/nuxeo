@@ -52,7 +52,7 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * @author rlegall Listener to handle the maximum dimensions of the avatar
  *         picture. This listener is triggered on
- *         UserProfileConstants.USER_PROFILE_FACET events. It verifies if the
+ *         DocumentEventTypes.BEFORE_DOC_UPDATE events. It verifies if the
  *         picture width is above 300 pixels and its height above 200. In that
  *         case, the picture saved in the rich profile is a resized version of
  *         it which fits those constrains.
