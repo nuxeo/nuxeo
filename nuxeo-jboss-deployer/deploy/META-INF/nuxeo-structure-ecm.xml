@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<structure bundles="bundles/*.jar:bundles/*.rar:plugins/*.jar" children="nuxeo.ear">
-    <context path="" metaDataPath="META-INF:datasources" classpath="lib/*.jar" />
-    <context path="nuxeo-core-storage-sql-ra-*.rar" metaDataPath="META-INF" />
-    <context path="datasources" metaDataPath="" />
-</structure>

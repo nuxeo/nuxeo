@@ -1,9 +1,0 @@
-<scanning xmlns="urn:jboss:scanning:1.0">
-<!-- see ScanningDeploymentUnitFilter and ScanningMetaDataDeployer on how to create a custom scanning filter -->
-  <path name="nuxeo-platform">
-    <!--include name="com.acme.foo"/>
-    <exclude name="com.acme.foo.bar"/-->
-  </path>
-  <path name="nuxeo-core-facade" />
-  <path name="nuxeo-core-storage-sql-ra" />
-</scanning>

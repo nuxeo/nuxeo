@@ -1,2 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<structure bundles="lib/nuxeo-*.jar:bundles/*.jar:bundles/*.rar" preprocess="false" />
