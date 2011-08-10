@@ -1,11 +1,11 @@
 <?xml version="1.0"?>
 <fragment version="1">
   <require>org.nuxeo.ecm.platform.lang</require>
-  <!-- 
+  <!--
     Template:   nuxeo.ear/OSGI-INF/templates/faces-config.xml
-    End Result: nuxeo.ear/META-INF/faces-config.xml 
+    End Result: nuxeo.ear/META-INF/faces-config.xml
   -->
-  <extension target="faces-config#APPLICATION">
+  <extension target="faces-config#APPLICATION_LOCALE">
     <locale-config>
       <supported-locale>ar</supported-locale>
       <supported-locale>ca</supported-locale>
