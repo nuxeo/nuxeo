@@ -392,17 +392,6 @@ public class ConfigurationGenerator {
                         : Inet4Address.getByName("127.0.0.1");
                 log.debug("Bind address is \"ANY\", using local address instead: "
                         + bindAddress);
-                // InetAddress[] inetAdresses = preferIPv6 ?
-                // Inet6Address.getAllByName("::1")
-                // : Inet4Address.getAllByName("127.0.0.1");
-                // for (InetAddress inetAddress : inetAdresses) {
-                // if (inetAddress.isLoopbackAddress()) {
-                // bindAddress = inetAddress;
-                // log.debug("Bind address is \"ANY\", using local address instead: "
-                // + bindAddress);
-                // break;
-                // }
-                // }
             }
         } catch (UnknownHostException e) {
             log.error(e);
