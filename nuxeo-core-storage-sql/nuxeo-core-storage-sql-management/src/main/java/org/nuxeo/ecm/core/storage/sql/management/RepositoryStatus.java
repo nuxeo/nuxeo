@@ -52,17 +52,25 @@ public class RepositoryStatus implements RepositoryStatusMBean {
             } catch (NamingException e) {
                 continue;
             }
-            for (NamingEnumeration<Binding> e = bindings; e.hasMore();) {
-                Binding binding = e.nextElement();
-                String name = binding.getName();
-                if (binding.isRelative()) {
-                    name = prefix + '/' + name;
+            NamingEnumeration<Binding> e = null;
+            try {
+                for (e = bindings; e.hasMore();) {
+                    Binding binding = e.nextElement();
+                    String name = binding.getName();
+                    if (binding.isRelative()) {
+                        name = prefix + '/' + name;
+                    }
+                    Object object = context.lookup(name);
+                    if (!(object instanceof RepositoryManagement)) {
+                        continue;
+                    }
+                    list.add((RepositoryManagement) object);
                 }
-                Object object = context.lookup(name);
-                if (!(object instanceof RepositoryManagement)) {
-                    continue;
+            }
+            finally {
+                if (e != null) {
+                    e.close();
                 }
-                list.add((RepositoryManagement) object);
             }
         }
         if (list.size() == 0) {
