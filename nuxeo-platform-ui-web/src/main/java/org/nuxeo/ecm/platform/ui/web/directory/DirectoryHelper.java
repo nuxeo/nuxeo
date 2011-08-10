@@ -124,6 +124,8 @@ public final class DirectoryHelper {
             }
 
             // adding sorting support
+            // XXX It seems that this ordering is obsolete as
+            // DirectoryAwareComponent made it's own (NXP-7349)
             if (schema.equals(VOCABULARY_TYPES[0])
                     || schema.equals(VOCABULARY_TYPES[1])) {
                 orderBy.put("ordering", "asc");
@@ -136,11 +138,12 @@ public final class DirectoryHelper {
             for (DocumentModel docModel : docModelList) {
                 String id = (String) docModel.getProperty(schema, "id");
                 String label = (String) docModel.getProperty(schema, "label");
+                long ordering = (Long)docModel.getProperty(schema, "ordering");
 
                 if (Boolean.TRUE.equals(localize)) {
                     label = translate(context, label);
                 }
-                DirectorySelectItem item = new DirectorySelectItem(id, label);
+                DirectorySelectItem item = new DirectorySelectItem(id, label, ordering);
                 list.add(item);
             }
 
