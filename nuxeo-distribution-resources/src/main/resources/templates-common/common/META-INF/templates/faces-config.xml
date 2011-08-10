@@ -21,6 +21,8 @@
 
     %{APPLICATION}%
 
+    %{APPLICATION_LOCALE}%
+
   </application>
 
   <lifecycle>
