@@ -730,6 +730,14 @@ public class LDAPSession extends BaseSession implements EntrySource {
                         fieldName, typeName, values != null ? values.toString()
                                 : trimmedValue));
                 return defaultValue;
+            } finally {
+                if (values != null) {
+                    try {
+                        values.close();
+                    } catch (NamingException e) {
+                        log.error(e, e);
+                    }
+                }
             }
         } else if ("date".equals(typeName)) {
             if ("".equals(trimmedValue)) {
@@ -800,13 +808,17 @@ public class LDAPSession extends BaseSession implements EntrySource {
             NamingEnumeration<SearchResult> results, boolean fetchReferences)
             throws DirectoryException, NamingException {
         DocumentModelList list = new DocumentModelListImpl();
-        while (results.hasMore()) {
-            SearchResult result = results.next();
-            DocumentModel entry = ldapResultToDocumentModel(result, null,
-                    fetchReferences);
-            if (entry != null) {
-                list.add(entry);
+        try {
+            while (results.hasMore()) {
+                SearchResult result = results.next();
+                DocumentModel entry = ldapResultToDocumentModel(result, null,
+                        fetchReferences);
+                if (entry != null) {
+                    list.add(entry);
+                }
             }
+        } finally {
+            results.close();
         }
         log.debug("LDAP search returned " + list.size() + " results");
         return list;
@@ -1007,6 +1019,10 @@ public class LDAPSession extends BaseSession implements EntrySource {
                     }
                 } catch (NamingException e) {
                     throw new DirectoryException(e);
+                } finally {
+                    if (values != null) {
+                        values.close();
+                    }
                 }
             }
             objectClasses.remove("top");
@@ -1016,9 +1032,14 @@ public class LDAPSession extends BaseSession implements EntrySource {
                 Attribute attribute = attributes.get("MUST");
                 if (attribute != null) {
                     NamingEnumeration<String> values = (NamingEnumeration<String>) attribute.getAll();
-                    while (values.hasMore()) {
-                        String value = values.next();
-                        mandatoryAttributes.add(value);
+                    try {
+                        while (values.hasMore()) {
+                            String value = values.next();
+                            mandatoryAttributes.add(value);
+                        }
+                    }
+                    finally {
+                        values.close();
                     }
                 }
             }

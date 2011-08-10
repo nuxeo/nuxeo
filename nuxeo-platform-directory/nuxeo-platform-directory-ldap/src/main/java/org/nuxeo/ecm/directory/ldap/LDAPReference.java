@@ -551,16 +551,20 @@ public class LDAPReference extends AbstractReference {
                 NamingEnumeration<SearchResult> results = sourceSession.dirContext.search(
                         searchBaseDn, filterExpr, filterArgs, sctls);
 
-                while (results.hasMore()) {
-                    Attributes attributes = results.next().getAttributes();
-                    // NXP-2461: check that id field is filled
-                    Attribute attr = attributes.get(sourceSession.idAttribute);
-                    if (attr != null) {
-                        Object value = attr.get();
-                        if (value != null) {
-                            sourceIds.add(value.toString());
+                try {
+                    while (results.hasMore()) {
+                        Attributes attributes = results.next().getAttributes();
+                        // NXP-2461: check that id field is filled
+                        Attribute attr = attributes.get(sourceSession.idAttribute);
+                        if (attr != null) {
+                            Object value = attr.get();
+                            if (value != null) {
+                                sourceIds.add(value.toString());
+                            }
                         }
                     }
+                } finally {
+                    results.close();
                 }
             } catch (NamingException e) {
                 throw new DirectoryException(
@@ -614,43 +618,52 @@ public class LDAPReference extends AbstractReference {
                 }
                 NamingEnumeration<SearchResult> results = sourceSession.dirContext.search(
                         searchBaseDn, filterExpr, sctls);
-                while (results.hasMore()) {
-                    // step #2.3: for each sourceId and each ldapUrl test
-                    // whether the current target entry matches the collected
-                    // URL
-                    Attributes sourceAttributes = results.next().getAttributes();
+                try {
+                    while (results.hasMore()) {
+                        // step #2.3: for each sourceId and each ldapUrl test
+                        // whether the current target entry matches the collected
+                        // URL
+                        Attributes sourceAttributes = results.next().getAttributes();
 
-                    NamingEnumeration<?> ldapUrls = sourceAttributes.get(
-                            dynamicAttributeId).getAll();
-                    while (ldapUrls.hasMore()) {
-                        LdapURL ldapUrl = new LdapURL(
-                                ldapUrls.next().toString());
-                        String candidateDN = pseudoNormalizeDn(ldapUrl.getDN());
-                        // check base URL
-                        if (!targetDn.endsWith(candidateDN)) {
-                            continue;
-                        }
+                        NamingEnumeration<?> ldapUrls = sourceAttributes.get(
+                                dynamicAttributeId).getAll();
+                        try {
+                            while (ldapUrls.hasMore()) {
+                                LdapURL ldapUrl = new LdapURL(
+                                        ldapUrls.next().toString());
+                                String candidateDN = pseudoNormalizeDn(ldapUrl.getDN());
+                                // check base URL
+                                if (!targetDn.endsWith(candidateDN)) {
+                                    continue;
+                                }
 
-                        // check onelevel scope constraints
-                        if ("onelevel".equals(ldapUrl.getScope())) {
-                            int targetDnSize = targetDn.split(",").length;
-                            int urlDnSize = candidateDN.split(",").length;
-                            if (targetDnSize - urlDnSize > 1) {
-                                // target is not a direct child of the DN of the
-                                // LDAP URL
-                                continue;
+                                // check onelevel scope constraints
+                                if ("onelevel".equals(ldapUrl.getScope())) {
+                                    int targetDnSize = targetDn.split(",").length;
+                                    int urlDnSize = candidateDN.split(",").length;
+                                    if (targetDnSize - urlDnSize > 1) {
+                                        // target is not a direct child of the DN of the
+                                        // LDAP URL
+                                        continue;
+                                    }
+                                }
+
+                                // check that the target entry matches the filter
+                                if (getFilterMatcher().match(targetAttributes,
+                                        ldapUrl.getFilter())) {
+                                    // the target match the source url, add it to the
+                                    // collected ids
+                                    sourceIds.add(sourceAttributes.get(
+                                            sourceSession.idAttribute).get().toString());
+                                }
                             }
                         }
-
-                        // check that the target entry matches the filter
-                        if (getFilterMatcher().match(targetAttributes,
-                                ldapUrl.getFilter())) {
-                            // the target match the source url, add it to the
-                            // collected ids
-                            sourceIds.add(sourceAttributes.get(
-                                    sourceSession.idAttribute).get().toString());
+                        finally {
+                            ldapUrls.close();
                         }
                     }
+                } finally {
+                    results.close();
                 }
             } catch (Exception e) {
                 throw new DirectoryException(
@@ -748,67 +761,75 @@ public class LDAPReference extends AbstractReference {
 
             if (staticAttribute != null && !staticAttributeIdIsDn) {
                 NamingEnumeration<?> staticContent = staticAttribute.getAll();
-                while (staticContent.hasMore()) {
-                    String value = staticContent.next().toString();
-                    if (!emptyRefMarker.equals(value)) {
-                        targetIds.add(value);
+                try {
+                    while (staticContent.hasMore()) {
+                        String value = staticContent.next().toString();
+                        if (!emptyRefMarker.equals(value)) {
+                            targetIds.add(value);
+                        }
                     }
+                } finally {
+                    staticContent.close();
                 }
             }
 
             if (staticAttribute != null && staticAttributeIdIsDn) {
                 NamingEnumeration<?> targetDns = staticAttribute.getAll();
+                try {
+                    while (targetDns.hasMore()) {
+                        String targetDn = targetDns.next().toString();
 
-                while (targetDns.hasMore()) {
-                    String targetDn = targetDns.next().toString();
-
-                    if (!pseudoNormalizeDn(targetDn).endsWith(baseDn)) {
-                        // optim: avoid network connections when obvious
-                        if (log.isTraceEnabled()) {
-                            log.trace(String.format(
-                                    "ignoring: dn='%s' (does not match '%s') for '%s'",
-                                    targetDn, baseDn, this));
-                        }
-                        continue;
-                    }
-                    // find the id of the referenced entry
-                    String id = null;
-
-                    if (targetSession.rdnMatchesIdField()) {
-                        // optim: do not fetch the entry to get its true id but
-                        // guess it by reading the targetDn
-                        final int beginIndex = targetDn.indexOf('=') + 1;
-                        final int endIndex = targetDn.indexOf(',');
-                        id = targetDn.substring(beginIndex, endIndex).trim();
-                    } else {
-                        id = getIdForDn(targetSession, targetDn);
-                        if (id == null) {
-                            log.warn(String.format(
-                                    "ignoring target '%s' (missing attribute '%s') while resolving reference '%s'",
-                                    targetDn, targetSession.idAttribute, this));
-                            continue;
-                        }
-                    }
-                    if (forceDnConsistencyCheck) {
-                        // check that the referenced entry is actually part of
-                        // the target directory (takes care of the filters and
-                        // the scope)
-                        // this check can be very expensive on large groups
-                        // and thus not enabled by default
-                        if (!targetSession.hasEntry(id)) {
+                        if (!pseudoNormalizeDn(targetDn).endsWith(baseDn)) {
+                            // optim: avoid network connections when obvious
                             if (log.isTraceEnabled()) {
                                 log.trace(String.format(
-                                        "ignoring target '%s' when resolving '%s' (not part of target"
-                                                + " directory by forced DN consistency check)",
-                                        targetDn, this));
+                                        "ignoring: dn='%s' (does not match '%s') for '%s'",
+                                        targetDn, baseDn, this));
                             }
                             continue;
                         }
+                        // find the id of the referenced entry
+                        String id = null;
+
+                        if (targetSession.rdnMatchesIdField()) {
+                            // optim: do not fetch the entry to get its true id but
+                            // guess it by reading the targetDn
+                            final int beginIndex = targetDn.indexOf('=') + 1;
+                            final int endIndex = targetDn.indexOf(',');
+                            id = targetDn.substring(beginIndex, endIndex).trim();
+                        } else {
+                            id = getIdForDn(targetSession, targetDn);
+                            if (id == null) {
+                                log.warn(String.format(
+                                        "ignoring target '%s' (missing attribute '%s') while resolving reference '%s'",
+                                        targetDn, targetSession.idAttribute, this));
+                                continue;
+                            }
+                        }
+                        if (forceDnConsistencyCheck) {
+                            // check that the referenced entry is actually part of
+                            // the target directory (takes care of the filters and
+                            // the scope)
+                            // this check can be very expensive on large groups
+                            // and thus not enabled by default
+                            if (!targetSession.hasEntry(id)) {
+                                if (log.isTraceEnabled()) {
+                                    log.trace(String.format(
+                                            "ignoring target '%s' when resolving '%s' (not part of target"
+                                                    + " directory by forced DN consistency check)",
+                                            targetDn, this));
+                                }
+                                continue;
+                            }
+                        }
+                        // NXP-2461: check that id field is filled
+                        if (id != null) {
+                            targetIds.add(id);
+                        }
                     }
-                    // NXP-2461: check that id field is filled
-                    if (id != null) {
-                        targetIds.add(id);
-                    }
+                }
+                finally {
+                    targetDns.close();
                 }
             }
             // step #2: fetched dynamically referenced ids
@@ -819,33 +840,37 @@ public class LDAPReference extends AbstractReference {
             }
             if (dynamicAttribute != null) {
                 NamingEnumeration<?> rawldapUrls = dynamicAttribute.getAll();
-                while (rawldapUrls.hasMore()) {
-                    LdapURL ldapUrl = new LdapURL(rawldapUrls.next().toString());
-                    String linkDn = pseudoNormalizeDn(ldapUrl.getDN());
-                    String directoryDn = pseudoNormalizeDn(targetDirconfig.getSearchBaseDn());
-                    int scope = SearchControls.ONELEVEL_SCOPE;
-                    String scopePart = ldapUrl.getScope();
-                    if (scopePart != null
-                            && scopePart.toLowerCase().startsWith("sub")) {
-                        scope = SearchControls.SUBTREE_SCOPE;
-                    }
-                    if (!linkDn.endsWith(directoryDn)
-                            && !directoryDn.endsWith(linkDn)) {
-                        // optim #1: if the dns do not match, abort
-                        continue;
-                    } else if (directoryDn.endsWith(linkDn)
-                            && linkDn.length() < directoryDn.length()
-                            && scope == SearchControls.ONELEVEL_SCOPE) {
-                        // optim #2: the link dn is pointing to elements that at
-                        // upperlevel than directory elements
-                        continue;
-                    } else {
+                try {
+                    while (rawldapUrls.hasMore()) {
+                        LdapURL ldapUrl = new LdapURL(rawldapUrls.next().toString());
+                        String linkDn = pseudoNormalizeDn(ldapUrl.getDN());
+                        String directoryDn = pseudoNormalizeDn(targetDirconfig.getSearchBaseDn());
+                        int scope = SearchControls.ONELEVEL_SCOPE;
+                        String scopePart = ldapUrl.getScope();
+                        if (scopePart != null
+                                && scopePart.toLowerCase().startsWith("sub")) {
+                            scope = SearchControls.SUBTREE_SCOPE;
+                        }
+                        if (!linkDn.endsWith(directoryDn)
+                                && !directoryDn.endsWith(linkDn)) {
+                            // optim #1: if the dns do not match, abort
+                            continue;
+                        } else if (directoryDn.endsWith(linkDn)
+                                && linkDn.length() < directoryDn.length()
+                                && scope == SearchControls.ONELEVEL_SCOPE) {
+                            // optim #2: the link dn is pointing to elements that at
+                            // upperlevel than directory elements
+                            continue;
+                        } else {
 
-                        // Search for references elements
-                        targetIds.addAll(getReferencedElements(attributes,
-                                directoryDn, linkDn, ldapUrl.getFilter(), scope));
+                            // Search for references elements
+                            targetIds.addAll(getReferencedElements(attributes,
+                                    directoryDn, linkDn, ldapUrl.getFilter(), scope));
 
+                        }
                     }
+                } finally {
+                    rawldapUrls.close();
                 }
             }
 
@@ -860,35 +885,50 @@ public class LDAPReference extends AbstractReference {
 
                 if (baseDnsAttribute != null && filterAttribute != null) {
 
-                    // Get the BaseDN value from the descriptor
-                    NamingEnumeration<?> baseDns = baseDnsAttribute.getAll();
-                    String linkDnValue = baseDns.next().toString();
-                    linkDnValue = pseudoNormalizeDn(linkDnValue);
+                    NamingEnumeration<?> baseDns = null;
+                    NamingEnumeration<?> filters = null;
 
-                    // Get the filter value from the descriptor
-                    NamingEnumeration<?> filters = filterAttribute.getAll();
-                    String filterValue = filters.next().toString();
+                    try {
+                        // Get the BaseDN value from the descriptor
+                        baseDns = baseDnsAttribute.getAll();
+                        String linkDnValue = baseDns.next().toString();
+                        baseDns.close();
+                        linkDnValue = pseudoNormalizeDn(linkDnValue);
 
-                    // Get the scope value from the descriptor
-                    int scope = "subtree".equalsIgnoreCase(dynAtt.type) ? SearchControls.SUBTREE_SCOPE
-                            : SearchControls.ONELEVEL_SCOPE;
+                        // Get the filter value from the descriptor
+                        filters = filterAttribute.getAll();
+                        String filterValue = filters.next().toString();
+                        filters.close();
 
-                    String directoryDn = pseudoNormalizeDn(targetDirconfig.getSearchBaseDn());
+                        // Get the scope value from the descriptor
+                        int scope = "subtree".equalsIgnoreCase(dynAtt.type) ? SearchControls.SUBTREE_SCOPE
+                                : SearchControls.ONELEVEL_SCOPE;
 
-                    // if the dns match, and if the link dn is pointing to
-                    // elements that at upperlevel than directory elements
-                    if ((linkDnValue.endsWith(directoryDn) || directoryDn.endsWith(linkDnValue))
-                            && !(directoryDn.endsWith(linkDnValue)
-                                    && linkDnValue.length() < directoryDn.length() && scope == SearchControls.ONELEVEL_SCOPE)) {
+                        String directoryDn = pseudoNormalizeDn(targetDirconfig.getSearchBaseDn());
 
-                        // Correct the filter expression
-                        filterValue = FilterExpressionCorrector.correctFilter(
-                                filterValue, FilterJobs.CORRECT_NOT);
+                        // if the dns match, and if the link dn is pointing to
+                        // elements that at upperlevel than directory elements
+                        if ((linkDnValue.endsWith(directoryDn) || directoryDn.endsWith(linkDnValue))
+                                && !(directoryDn.endsWith(linkDnValue)
+                                        && linkDnValue.length() < directoryDn.length() && scope == SearchControls.ONELEVEL_SCOPE)) {
 
-                        // Search for references elements
-                        targetIds.addAll(getReferencedElements(attributes,
-                                directoryDn, linkDnValue, filterValue, scope));
+                            // Correct the filter expression
+                            filterValue = FilterExpressionCorrector.correctFilter(
+                                    filterValue, FilterJobs.CORRECT_NOT);
 
+                            // Search for references elements
+                            targetIds.addAll(getReferencedElements(attributes,
+                                    directoryDn, linkDnValue, filterValue, scope));
+
+                        }
+                    } finally {
+                        if (baseDns != null) {
+                            baseDns.close();
+                        }
+
+                        if (filters != null) {
+                            filters.close();
+                        }
                     }
 
                 }
@@ -993,17 +1033,21 @@ public class LDAPReference extends AbstractReference {
         Name name = new CompositeName().add(dn);
         NamingEnumeration<SearchResult> results = targetSession.dirContext.search(
                 name, filter, scts);
-        while (results.hasMore()) {
-            // NXP-2461: check that id field is filled
-            Attribute attr = results.next().getAttributes().get(
-                    targetSession.idAttribute);
-            if (attr != null) {
-                String collectedId = attr.get().toString();
-                if (collectedId != null) {
-                    targetIds.add(collectedId);
+        try {
+            while (results.hasMore()) {
+                // NXP-2461: check that id field is filled
+                Attribute attr = results.next().getAttributes().get(
+                        targetSession.idAttribute);
+                if (attr != null) {
+                    String collectedId = attr.get().toString();
+                    if (collectedId != null) {
+                        targetIds.add(collectedId);
+                    }
                 }
-            }
 
+            }
+        } finally {
+            results.close();
         }
 
         return targetIds;
@@ -1048,24 +1092,29 @@ public class LDAPReference extends AbstractReference {
 
             NamingEnumeration<?> oldAttrs = oldAttr.getAll();
             String targetBaseDn = pseudoNormalizeDn(targetDirectory.getConfig().getSearchBaseDn());
-            while (oldAttrs.hasMore()) {
-                String targetKeyAttr = oldAttrs.next().toString();
+            try {
+                while (oldAttrs.hasMore()) {
+                    String targetKeyAttr = oldAttrs.next().toString();
 
-                if (staticAttributeIdIsDn) {
-                    String dn = pseudoNormalizeDn(targetKeyAttr);
-                    if (forceDnConsistencyCheck) {
-                        String id = getIdForDn(targetSession, dn);
-                        if (id != null && targetSession.hasEntry(id)) {
+                    if (staticAttributeIdIsDn) {
+                        String dn = pseudoNormalizeDn(targetKeyAttr);
+                        if (forceDnConsistencyCheck) {
+                            String id = getIdForDn(targetSession, dn);
+                            if (id != null && targetSession.hasEntry(id)) {
+                                // this is an entry managed by the current reference
+                                attrToRemove.add(dn);
+                            }
+                        } else if (dn.endsWith(targetBaseDn)) {
                             // this is an entry managed by the current reference
                             attrToRemove.add(dn);
                         }
-                    } else if (dn.endsWith(targetBaseDn)) {
-                        // this is an entry managed by the current reference
-                        attrToRemove.add(dn);
+                    } else {
+                        attrToRemove.add(targetKeyAttr);
                     }
-                } else {
-                    attrToRemove.add(targetKeyAttr);
                 }
+            }
+            finally {
+                oldAttrs.close();
             }
             try {
                 if (attrToRemove.size() == oldAttr.size()) {
@@ -1186,59 +1235,62 @@ public class LDAPReference extends AbstractReference {
                 }
                 NamingEnumeration<SearchResult> results = sourceSession.dirContext.search(
                         sourceSession.searchBaseDn, searchFilter, scts);
-
                 String emptyRefMarker = sourceDirectory.getConfig().getEmptyRefMarker();
                 Attributes emptyAttribute = new BasicAttributes(attributeId,
                         emptyRefMarker);
 
-                while (results.hasMore()) {
-                    SearchResult result = results.next();
-                    Attributes attrs = result.getAttributes();
-                    Attribute attr = attrs.get(attributeId);
-                    try {
-                        if (attr.size() == 1) {
-                            // the attribute holds the last reference, put the
-                            // empty ref. marker before removing the attribute
-                            // since empty attribute are often not allowed by
-                            // the server schema
+                try {
+                    while (results.hasMore()) {
+                        SearchResult result = results.next();
+                        Attributes attrs = result.getAttributes();
+                        Attribute attr = attrs.get(attributeId);
+                        try {
+                            if (attr.size() == 1) {
+                                // the attribute holds the last reference, put the
+                                // empty ref. marker before removing the attribute
+                                // since empty attribute are often not allowed by
+                                // the server schema
+                                if (log.isDebugEnabled()) {
+                                    log.debug(String.format(
+                                            "LDAPReference.removeLinksForTarget(%s): LDAP modifyAttributes key='%s' "
+                                                    + "mod_op='ADD_ATTRIBUTE' attrs='%s' [%s]",
+                                            targetId, result.getNameInNamespace(),
+                                            attrs, this));
+                                }
+                                sourceSession.dirContext.modifyAttributes(
+                                        result.getNameInNamespace(),
+                                        DirContext.ADD_ATTRIBUTE, emptyAttribute);
+                            }
+                            // remove the reference to the target key
+                            attrs = new BasicAttributes();
+                            attr = new BasicAttribute(attributeId);
+                            attr.add(targetAttributeValue);
+                            attrs.put(attr);
                             if (log.isDebugEnabled()) {
                                 log.debug(String.format(
                                         "LDAPReference.removeLinksForTarget(%s): LDAP modifyAttributes key='%s' "
-                                                + "mod_op='ADD_ATTRIBUTE' attrs='%s' [%s]",
+                                                + "mod_op='REMOVE_ATTRIBUTE' attrs='%s' [%s]",
                                         targetId, result.getNameInNamespace(),
                                         attrs, this));
                             }
                             sourceSession.dirContext.modifyAttributes(
                                     result.getNameInNamespace(),
-                                    DirContext.ADD_ATTRIBUTE, emptyAttribute);
-                        }
-                        // remove the reference to the target key
-                        attrs = new BasicAttributes();
-                        attr = new BasicAttribute(attributeId);
-                        attr.add(targetAttributeValue);
-                        attrs.put(attr);
-                        if (log.isDebugEnabled()) {
-                            log.debug(String.format(
-                                    "LDAPReference.removeLinksForTarget(%s): LDAP modifyAttributes key='%s' "
-                                            + "mod_op='REMOVE_ATTRIBUTE' attrs='%s' [%s]",
-                                    targetId, result.getNameInNamespace(),
-                                    attrs, this));
-                        }
-                        sourceSession.dirContext.modifyAttributes(
-                                result.getNameInNamespace(),
-                                DirContext.REMOVE_ATTRIBUTE, attrs);
-                    } catch (SchemaViolationException e) {
-                        if (isDynamic()) {
-                            // we are editing an entry that has no static part
-                            log.warn(String.format(
-                                    "cannot remove dynamic reference in field %s for target %s",
-                                    getFieldName(), targetId));
-                        } else {
-                            // this is a real schema configuration problem,
-                            // wrapup the exception
-                            throw new DirectoryException(e);
+                                    DirContext.REMOVE_ATTRIBUTE, attrs);
+                        } catch (SchemaViolationException e) {
+                            if (isDynamic()) {
+                                // we are editing an entry that has no static part
+                                log.warn(String.format(
+                                        "cannot remove dynamic reference in field %s for target %s",
+                                        getFieldName(), targetId));
+                            } else {
+                                // this is a real schema configuration problem,
+                                // wrapup the exception
+                                throw new DirectoryException(e);
+                            }
                         }
                     }
+                } finally {
+                    results.close();
                 }
             }
         } catch (NamingException e) {

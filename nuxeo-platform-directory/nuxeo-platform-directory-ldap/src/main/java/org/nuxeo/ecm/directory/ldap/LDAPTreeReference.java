@@ -204,18 +204,22 @@ public class LDAPTreeReference extends AbstractReference {
             NamingEnumeration<SearchResult> results = sourceSession.dirContext.search(
                     parentDn, filterExpr, filterArgs, sctls);
 
-            while (results.hasMore()) {
-                Attributes attributes = results.next().getAttributes();
-                // NXP-2461: check that id field is filled
-                Attribute attr = attributes.get(sourceSession.idAttribute);
-                if (attr != null) {
-                    Object value = attr.get();
-                    if (value != null) {
-                        sourceIds.add(value.toString());
-                        // only supposed to get one result anyway
-                        break;
+            try {
+                while (results.hasMore()) {
+                    Attributes attributes = results.next().getAttributes();
+                    // NXP-2461: check that id field is filled
+                    Attribute attr = attributes.get(sourceSession.idAttribute);
+                    if (attr != null) {
+                        Object value = attr.get();
+                        if (value != null) {
+                            sourceIds.add(value.toString());
+                            // only supposed to get one result anyway
+                            break;
+                        }
                     }
                 }
+            } finally {
+                results.close();
             }
         } catch (NamingException e) {
             throw new DirectoryException("error during reference search for "
@@ -280,20 +284,25 @@ public class LDAPTreeReference extends AbstractReference {
             NamingEnumeration<SearchResult> results = targetSession.dirContext.search(
                     sourceDn, filterExpr, filterArgs, sctls);
 
-            while (results.hasMore()) {
-                Attributes attributes = results.next().getAttributes();
-                // NXP-2461: check that id field is filled
-                Attribute attr = attributes.get(targetSession.idAttribute);
-                if (attr != null) {
-                    Object value = attr.get();
-                    if (value != null) {
-                        // always remove self as child
-                        String targetId = value.toString();
-                        if (!sourceId.equals(targetId)) {
-                            targetIds.add(targetId);
+            try {
+                while (results.hasMore()) {
+                    Attributes attributes = results.next().getAttributes();
+                    // NXP-2461: check that id field is filled
+                    Attribute attr = attributes.get(targetSession.idAttribute);
+                    if (attr != null) {
+                        Object value = attr.get();
+                        if (value != null) {
+                            // always remove self as child
+                            String targetId = value.toString();
+                            if (!sourceId.equals(targetId)) {
+                                targetIds.add(targetId);
+                            }
                         }
                     }
                 }
+            }
+            finally {
+                results.close();
             }
         } catch (NamingException e) {
             throw new DirectoryException("error during reference search for "

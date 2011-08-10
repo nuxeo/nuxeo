@@ -120,11 +120,15 @@ public class LDAPFilterMatcher {
         }
         try {
             NamingEnumeration<?> rawValues = attribute.getAll();
-            while (rawValues.hasMore()) {
-                String rawValue = rawValues.next().toString();
-                if (simpleElement.getValue().equals(rawValue)) {
-                    return true;
+            try {
+                while (rawValues.hasMore()) {
+                    String rawValue = rawValues.next().toString();
+                    if (simpleElement.getValue().equals(rawValue)) {
+                        return true;
+                    }
                 }
+            } finally {
+                rawValues.close();
             }
         } catch (NamingException e) {
             throw new DirectoryException(
@@ -149,20 +153,24 @@ public class LDAPFilterMatcher {
                 return false;
             }
             NamingEnumeration<?> rawValues = attribute.getAll();
-            while (rawValues.hasMore()) {
-                String rawValue = rawValues.next().toString();
-                Normalizer normalizer = getNormalizer();
-                Pattern pattern;
-                try {
-                    pattern = substringElement.getRegex(normalizer);
-                } catch (Exception e) {
-                    throw new DirectoryException(
-                            "could not build regexp for substring: "
-                                    + substringElement.toString());
+            try {
+                while (rawValues.hasMore()) {
+                    String rawValue = rawValues.next().toString();
+                    Normalizer normalizer = getNormalizer();
+                    Pattern pattern;
+                    try {
+                        pattern = substringElement.getRegex(normalizer);
+                    } catch (Exception e) {
+                        throw new DirectoryException(
+                                "could not build regexp for substring: "
+                                        + substringElement.toString());
+                    }
+                    if (pattern.matcher(rawValue).matches()) {
+                        return true;
+                    }
                 }
-                if (pattern.matcher(rawValue).matches()) {
-                    return true;
-                }
+            } finally {
+                rawValues.close();
             }
             return false;
         } catch (NamingException e1) {
