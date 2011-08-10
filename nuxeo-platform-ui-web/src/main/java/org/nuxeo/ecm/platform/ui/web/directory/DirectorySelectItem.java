@@ -21,6 +21,8 @@ package org.nuxeo.ecm.platform.ui.web.directory;
 
 import javax.faces.model.SelectItem;
 
+import org.apache.commons.lang.StringUtils;
+
 /**
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
  *
@@ -31,13 +33,26 @@ public class DirectorySelectItem extends SelectItem {
     private String localizedLabel;
 
     private String displayedLabel;
+
+    private long ordering;
+
     public DirectorySelectItem(Object value, String label) {
+        this(value, label, 0);
+    }
+
+    public DirectorySelectItem(Object value, String label, long ordering) {
         super(value, label);
         if(value == null) {
             throw new IllegalArgumentException("value is null");
         }
         if(label == null) {
             throw new IllegalArgumentException("label is null");
+        }
+
+        try {
+            this.ordering = ordering;
+        } catch(NumberFormatException nfe) {
+            this.ordering = 0;
         }
     }
 
@@ -60,5 +75,13 @@ public class DirectorySelectItem extends SelectItem {
 
     public void setLocalizedLabel(String localizedLabel) {
         this.localizedLabel = localizedLabel;
+    }
+
+    public long getOrdering() {
+        return ordering;
+    }
+
+    public String getSortLabel() {
+        return StringUtils.isBlank(localizedLabel) ? displayedLabel : localizedLabel;
     }
 }
