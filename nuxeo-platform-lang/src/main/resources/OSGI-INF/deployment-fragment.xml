@@ -4,7 +4,7 @@
     Template:   nuxeo.ear/OSGI-INF/templates/faces-config.xml
     End Result: nuxeo.ear/META-INF/faces-config.xml
   -->
-  <extension target="faces-config#APPLICATION">
+  <extension target="faces-config#APPLICATION_LOCALE">
     <locale-config>
       <default-locale>en</default-locale>
       <supported-locale>en_GB</supported-locale>
