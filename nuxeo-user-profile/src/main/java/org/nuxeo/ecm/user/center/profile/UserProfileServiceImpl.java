@@ -17,20 +17,26 @@
 
 package org.nuxeo.ecm.user.center.profile;
 
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.ADD_CHILDREN;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.EVERYONE;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ;
+import static org.nuxeo.ecm.user.center.profile.UserProfileConstants.USER_PROFILE_DOCTYPE;
+
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
-import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
- *  Implementation of {@code UserProfileService}.
+ * Implementation of {@code UserProfileService}.
  *
  * @see UserProfileService
  * @author <a href="mailto:qlamerand@nuxeo.com">Quentin Lamerand</a>
@@ -46,7 +52,7 @@ public class UserProfileServiceImpl extends DefaultComponent implements
             throws ClientException {
         DocumentModel userWorkspace = getUserWorkspaceService().getCurrentUserPersonalWorkspace(
                 session, null);
-        return getOrCreateUserProfileDocument(session, userWorkspace);
+        return new UserProfileDocumentGetter(session, userWorkspace).getOrCreate();
     }
 
     @Override
@@ -54,35 +60,7 @@ public class UserProfileServiceImpl extends DefaultComponent implements
             CoreSession session) throws ClientException {
         DocumentModel userWorkspace = getUserWorkspaceService().getUserPersonalWorkspace(
                 userName, session.getRootDocument());
-        return getOrCreateUserProfileDocument(session, userWorkspace);
-    }
-
-    private DocumentModel getOrCreateUserProfileDocument(CoreSession session,
-            DocumentModel userWorkspace) throws ClientException {
-        DocumentModelList children = session.getChildren(
-                userWorkspace.getRef(),
-                UserProfileConstants.USER_PROFILE_DOCTYPE);
-        DocumentModel userProfileDoc;
-        if (!children.isEmpty()) {
-            userProfileDoc = children.get(0);
-        } else {
-            userProfileDoc = session.createDocumentModel(
-                    userWorkspace.getPathAsString(),
-                    String.valueOf(System.currentTimeMillis()),
-                    UserProfileConstants.USER_PROFILE_DOCTYPE);
-            if (session.hasPermission(userWorkspace.getRef(),
-                    SecurityConstants.ADD_CHILDREN)) {
-                userProfileDoc = session.createDocument(userProfileDoc);
-                ACP acp = session.getACP(userProfileDoc.getRef());
-                ACL acl = acp.getOrCreateACL();
-                acl.add(new ACE(SecurityConstants.EVERYONE,
-                        SecurityConstants.READ, true));
-                acp.addACL(acl);
-                session.setACP(userProfileDoc.getRef(), acp, true);
-                session.save();
-            }
-        }
-        return userProfileDoc;
+        return new UserProfileDocumentGetter(session, userWorkspace).getOrCreate();
     }
 
     private UserWorkspaceService getUserWorkspaceService() {
@@ -90,6 +68,51 @@ public class UserProfileServiceImpl extends DefaultComponent implements
             userWorkspaceService = Framework.getLocalService(UserWorkspaceService.class);
         }
         return userWorkspaceService;
+    }
+
+    private class UserProfileDocumentGetter extends UnrestrictedSessionRunner {
+
+        private DocumentModel userWorkspace;
+
+        private DocumentRef userProfileDocRef;
+
+        public UserProfileDocumentGetter(CoreSession session,
+                DocumentModel userWorkspace) {
+            super(session);
+            this.userWorkspace = userWorkspace;
+        }
+
+        @Override
+        public void run() throws ClientException {
+            DocumentModelList children = session.getChildren(
+                    userWorkspace.getRef(), USER_PROFILE_DOCTYPE);
+            if (!children.isEmpty()) {
+                userProfileDocRef = children.get(0).getRef();
+            } else {
+                DocumentModel userProfileDoc = session.createDocumentModel(
+                        userWorkspace.getPathAsString(),
+                        String.valueOf(System.currentTimeMillis()),
+                        USER_PROFILE_DOCTYPE);
+                userProfileDoc = session.createDocument(userProfileDoc);
+                userProfileDocRef = userProfileDoc.getRef();
+                ACP acp = session.getACP(userProfileDocRef);
+                ACL acl = acp.getOrCreateACL();
+                acl.add(new ACE(EVERYONE, READ, true));
+                acp.addACL(acl);
+                session.setACP(userProfileDocRef, acp, true);
+                session.save();
+            }
+        }
+
+        public DocumentModel getOrCreate() throws ClientException {
+            if (session.hasPermission(userWorkspace.getRef(), ADD_CHILDREN)) {
+                run();
+            } else {
+                runUnrestricted();
+            }
+            return session.getDocument(userProfileDocRef);
+        }
+
     }
 
 }
