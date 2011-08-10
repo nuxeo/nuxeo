@@ -189,7 +189,7 @@ public abstract class DirectoryAwareComponent extends UIInput {
         String ordering = getOrdering();
         Boolean caseSensitive = getCaseSensitive();
         if (ordering != null && !"".equals(ordering)) {
-            Collections.sort(optionList, new SelectItemComparator(ordering,
+            Collections.sort(optionList, new DirectorySelectItemComparator(ordering,
                     caseSensitive));
         }
 
