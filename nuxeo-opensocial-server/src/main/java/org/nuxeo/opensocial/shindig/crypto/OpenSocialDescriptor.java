@@ -20,11 +20,13 @@ package org.nuxeo.opensocial.shindig.crypto;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -45,11 +47,19 @@ public class OpenSocialDescriptor {
 
     public static final String TRUSTED_HOSTS_SEPARATOR = ",";
 
+    public static final Pattern LOOPBACK_IP_PATTERN = Pattern.compile("http://\\[?([\\w:.]*)\\]?:.*");
+
+    public static final String LOCALHOST = "localhost";
+
+    @Deprecated
     public static final String NUXEO_BIND_ADDRESS_PROPERTY = "nuxeo.bind.address";
 
+    @Deprecated
     public static final String LOCALHOST_BIND_ADDRESS = "127.0.0.1";
 
-    // match IPv5 and IPv6 address of the form "0.0.0.0" or "000:0000::0:0000:00"
+    // match IPv5 and IPv6 address of the form "0.0.0.0" or
+    // "000:0000::0:0000:00"
+    @Deprecated
     public static final Pattern DEFAULT_BIND_ADDRESS_PATTERN = Pattern.compile("[0:]*|[0.]*");
 
     /**
@@ -122,11 +132,17 @@ public class OpenSocialDescriptor {
     @XNode("trustedHosts")
     public void setTrustedHosts(String trustedHosts) {
         // Add the nuxeo bind address as default trusted host
-        String allTrustedHosts = getTrustedHostForNuxeoBindAddress();
+        String allTrustedHosts = getTrustedHostFromLoopbackURL();
         if (trustedHosts != null && !trustedHosts.isEmpty()) {
             allTrustedHosts += TRUSTED_HOSTS_SEPARATOR + trustedHosts;
         }
         this.trustedHosts.addAll(Arrays.asList(allTrustedHosts.split(TRUSTED_HOSTS_SEPARATOR)));
+    }
+
+    protected String getTrustedHostFromLoopbackURL() {
+        String loopbackURL = Framework.getProperty(ConfigurationGenerator.PARAM_LOOPBACK_URL);
+        Matcher m = LOOPBACK_IP_PATTERN.matcher(loopbackURL);
+        return m.matches() ? m.group(1) : "";
     }
 
     /**
@@ -135,7 +151,10 @@ public class OpenSocialDescriptor {
      * Nuxeo bind address.
      *
      * @since 5.4.2
+     * @deprecated the loopback URL isn ow used to defined the default trusted
+     *             host
      */
+    @Deprecated
     protected String getTrustedHostForNuxeoBindAddress() {
         String nuxeoBindAddress = Framework.getProperty(
                 NUXEO_BIND_ADDRESS_PROPERTY, LOCALHOST_BIND_ADDRESS);
@@ -150,13 +169,8 @@ public class OpenSocialDescriptor {
     }
 
     public boolean isTrustedHost(String host) {
-        // special case
-        if (host.startsWith("127.")) {
-            if (trustedHosts.contains(LOCALHOST_BIND_ADDRESS)) {
-                return true;
-            }
-        }
-        return trustedHosts.contains(host);
+        return host.startsWith("127.") || LOCALHOST.equals(host)
+                || trustedHosts.contains(host);
     }
 
     /**

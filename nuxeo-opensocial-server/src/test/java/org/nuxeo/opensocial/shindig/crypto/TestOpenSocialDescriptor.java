@@ -17,7 +17,7 @@
 package org.nuxeo.opensocial.shindig.crypto;
 
 import static org.junit.Assert.assertEquals;
-import static org.nuxeo.opensocial.shindig.crypto.OpenSocialDescriptor.NUXEO_BIND_ADDRESS_PROPERTY;
+import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_LOOPBACK_URL;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,38 +34,41 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 public class TestOpenSocialDescriptor {
 
     @Test
-    public void trustedHostShouldBeLocalhostWhenListeningOnAllIPs() {
-        // IPv5
-        Framework.getProperties().put(NUXEO_BIND_ADDRESS_PROPERTY, "0.0.0.0");
+    public void trustedHostShouldBeEqualsToLoopbackIP() {
+        Framework.getProperties().put(PARAM_LOOPBACK_URL,
+                "http://127.0.0.1:8080/nuxeo");
         OpenSocialDescriptor openSocialDescriptor = new OpenSocialDescriptor();
-        String trustedHost = openSocialDescriptor.getTrustedHostForNuxeoBindAddress();
+        String trustedHost = openSocialDescriptor.getTrustedHostFromLoopbackURL();
         assertEquals("127.0.0.1", trustedHost);
 
-        // IPv6
-        Framework.getProperties().put(NUXEO_BIND_ADDRESS_PROPERTY, "000:0000::0:0000:00");
-        trustedHost = openSocialDescriptor.getTrustedHostForNuxeoBindAddress();
-        assertEquals("127.0.0.1", trustedHost);
+        Framework.getProperties().put(PARAM_LOOPBACK_URL,
+                "http://10.213.2.105:8080/nuxeo");
+        trustedHost = openSocialDescriptor.getTrustedHostFromLoopbackURL();
+        assertEquals("10.213.2.105", trustedHost);
+
+        Framework.getProperties().put(PARAM_LOOPBACK_URL,
+                "http://[0:0:0:0:0:0:0:1]:8080/nuxeo");
+        trustedHost = openSocialDescriptor.getTrustedHostFromLoopbackURL();
+        assertEquals("0:0:0:0:0:0:0:1", trustedHost);
+
+        Framework.getProperties().put(PARAM_LOOPBACK_URL,
+                "http://[2a01:240:fe8e:0:226:bbff:fe09:55cd]:8080/nuxeo");
+        trustedHost = openSocialDescriptor.getTrustedHostFromLoopbackURL();
+        assertEquals("2a01:240:fe8e:0:226:bbff:fe09:55cd", trustedHost);
     }
 
     @Test
-    public void trustedHostShouldBeEqualsToNuxeoBindAddress() {
-        Framework.getProperties().put(NUXEO_BIND_ADDRESS_PROPERTY, "127.0.0.45");
+    public void loopbackIPShouldBeAddedTotheConfiguredListOfTrustedHosts() {
+        Framework.getProperties().put(PARAM_LOOPBACK_URL,
+                "http://10.213.2.105:8080/nuxeo");
         OpenSocialDescriptor openSocialDescriptor = new OpenSocialDescriptor();
-        String trustedHost = openSocialDescriptor.getTrustedHostForNuxeoBindAddress();
-        assertEquals("127.0.0.45", trustedHost);
-    }
-
-    @Test
-    public void nuxeoBindAddressShouldBeAddedTotheConfiguredListOfTrustedHosts() {
-        Framework.getProperties().put(NUXEO_BIND_ADDRESS_PROPERTY, "127.0.0.45");
-        OpenSocialDescriptor openSocialDescriptor = new OpenSocialDescriptor();
-        String trustedHost = openSocialDescriptor.getTrustedHostForNuxeoBindAddress();
-        assertEquals("127.0.0.45", trustedHost);
+        String trustedHost = openSocialDescriptor.getTrustedHostFromLoopbackURL();
+        assertEquals("10.213.2.105", trustedHost);
 
         openSocialDescriptor.setTrustedHosts("host1,host2,10.0.40.40");
         String[] trustedHosts = openSocialDescriptor.getTrustedHosts();
         assertEquals(4, trustedHosts.length);
-        assertEquals("127.0.0.45", trustedHosts[0]);
+        assertEquals("10.213.2.105", trustedHosts[0]);
         assertEquals("host1", trustedHosts[1]);
         assertEquals("host2", trustedHosts[2]);
         assertEquals("10.0.40.40", trustedHosts[3]);
