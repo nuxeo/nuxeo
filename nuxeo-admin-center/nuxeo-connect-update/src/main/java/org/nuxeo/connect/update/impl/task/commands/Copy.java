@@ -19,6 +19,8 @@ package org.nuxeo.connect.update.impl.task.commands;
 import java.io.File;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.ValidationStatus;
@@ -45,10 +47,12 @@ import org.w3c.dom.Element;
  * Copy command has an inverse another copy command with the md5 to the one of
  * the copied file and the overwrite flag to true. The file to copy will be the
  * backup of the overwritten file.
- *
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class Copy extends AbstractCommand {
+
+    private static final Log log = LogFactory.getLog(Copy.class);
 
     public static final String ID = "copy";
 
@@ -118,9 +122,14 @@ public class Copy extends AbstractCommand {
             if (content != null) {
                 FileUtils.writeFile(dst, content);
             } else {
-                File tmp = new File(dst.getPath()+"tmp");
+                File tmp = new File(dst.getPath() + ".tmp");
                 FileUtils.copy(file, tmp);
-                tmp.renameTo(dst);
+                if (!tmp.renameTo(dst)) {
+                    dst.delete();
+                    if (!tmp.renameTo(dst)) {
+                        log.error("CANNOT OVERWRITE FILE: " + dst);
+                    }
+                }
             }
             // get the md5 of the copied file.
             md5 = IOUtils.createMd5(dst);
