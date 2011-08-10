@@ -43,6 +43,7 @@
       <properties mode="any">
         <property name="directoryName">nature</property>
         <property name="localize">true</property>
+        <property name="ordering">ordering,label</property>
       </properties>
     </widget>
 
