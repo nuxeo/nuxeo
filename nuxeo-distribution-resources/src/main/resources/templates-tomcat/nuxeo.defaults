@@ -75,3 +75,5 @@ repository.binary.store=
 nuxeo.templates.parsing.extensions=xml,properties,nx,html
 
 server.status.key=9z3x8R73
+
+session.timeout=60

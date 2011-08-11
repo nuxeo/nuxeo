@@ -21,7 +21,7 @@
   %{FILTER-MAPPING}%
 
   %{CONTEXT-PARAM}%
-  
+
   %{CONTEXT-PARAM-RICHFACES}%
 
   %{LOGIN-CONFIG}%
@@ -45,7 +45,7 @@
   </security-role>
 
   <session-config>
-    <session-timeout>60</session-timeout>
+    <session-timeout>${session.timeout}</session-timeout>
   </session-config>
 
 </web-app>

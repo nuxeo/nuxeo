@@ -58,3 +58,5 @@ opensocial.trusted.hosts=
 nuxeo.templates.parsing.extensions=xml,properties,nx
 
 server.status.key=9z3x8R73
+
+session.timeout=60
