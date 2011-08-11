@@ -44,6 +44,13 @@ import org.quartz.impl.StdSchedulerFactory;
 
 /**
  * Schedule registry service.
+ * 
+ * Since the cleanup of the quartz job is done when service is activated, ( see
+ * see https://jira.nuxeo.com/browse/NXP-7303 ) in cluster mode, the schedules
+ * contributions MUST be the same on all nodes. Due the fact that all jobs are
+ * removed when service starts on a node it may be a short period with no
+ * schedules in quartz table even other node is running.
+ * 
  *
  * @author <a href="mailto:fg@nuxeo.com">Florent Guillaume</a>
  */
@@ -59,14 +66,14 @@ public class SchedulerRegistryService extends DefaultComponent implements
 
     private Scheduler scheduler;
 
-    @Override
     public void activate(ComponentContext context) throws Exception {
         log.debug("Activate");
         bundle = context.getRuntimeContext();
 
         // Find a scheduler
         StdSchedulerFactory schedulerFactory = new StdSchedulerFactory();
-        URL cfg = context.getRuntimeContext().getResource("config/quartz.properties");
+        URL cfg = context.getRuntimeContext().getResource(
+                "config/quartz.properties");
         if (cfg != null) {
             schedulerFactory.initialize(cfg.openStream());
         }
@@ -75,6 +82,13 @@ public class SchedulerRegistryService extends DefaultComponent implements
         // server = MBeanServerFactory.createMBeanServer();
         // server.createMBean("org.quartz.ee.jmx.jboss.QuartzService",
         // quartzObjectName);
+
+        // clean up all nuxeo jobs
+        // https://jira.nuxeo.com/browse/NXP-7303
+        String[] jobs = scheduler.getJobNames("nuxeo");
+        for (String job : jobs) {
+            unregisterSchedule(job);
+        }
     }
 
     @Override
@@ -94,11 +108,9 @@ public class SchedulerRegistryService extends DefaultComponent implements
 
     @Override
     public void unregisterExtension(Extension extension) {
-        Object[] contribs = extension.getContributions();
-        for (Object contrib : contribs) {
-            Schedule schedule = (Schedule) contrib;
-            unregisterSchedule(schedule);
-        }
+        // do nothing to do ;
+        // clean up will be done when service is activated
+        // see https://jira.nuxeo.com/browse/NXP-7303
     }
 
     public RuntimeContext getContext() {

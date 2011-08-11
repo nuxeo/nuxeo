@@ -32,6 +32,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
+import org.nuxeo.ecm.platform.rendering.fm.adapters.SchemaTemplate;
 
 /**
  * Base class to build views for Document oriented contexts (contexts that are
@@ -133,9 +134,8 @@ public class DefaultDocumentView implements DocumentView {
             return doc.getProperty(name);
         }
         // may be a schema name
-        DocumentPart part = doc.getPart(name);
-        if (part != null) {
-            return part;
+        if (doc.hasSchema(name)) {
+            return new SchemaTemplate.DocumentSchema(doc, name);
         }
         return UNKNOWN;
     }

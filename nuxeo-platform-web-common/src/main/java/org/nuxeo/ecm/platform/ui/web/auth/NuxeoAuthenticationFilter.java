@@ -87,6 +87,8 @@ public class NuxeoAuthenticationFilter implements Filter {
 
     private static final Log log = LogFactory.getLog(NuxeoAuthenticationFilter.class);
 
+    public static final String IS_LOGIN_NOT_SYNCHRONIZED_PROPERTY_KEY = "org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter.isLoginNotSynchronized";
+
     private static String anonymous;
 
     protected final boolean avoidReauthenticate = true;
@@ -204,8 +206,12 @@ public class NuxeoAuthenticationFilter implements Filter {
             CallbackHandler handler = service.getCallbackHandler(cachableUserIdent.getUserInfo());
             loginContext = new LoginContext(securityDomain, handler);
 
-            synchronized (NuxeoAuthenticationFilter.class) {
+            if (Boolean.parseBoolean(Framework.getProperty(IS_LOGIN_NOT_SYNCHRONIZED_PROPERTY_KEY))) {
                 loginContext.login();
+            } else {
+                synchronized (NuxeoAuthenticationFilter.class) {
+                    loginContext.login();
+                }
             }
 
             Principal principal = (Principal) loginContext.getSubject().getPrincipals().toArray()[0];
@@ -272,8 +278,8 @@ public class NuxeoAuthenticationFilter implements Filter {
             log.error("Error while logout from main identity", e1);
         }
 
-        HttpSession session = httpRequest.getSession(false);
-        session = service.reinitSession(httpRequest);
+        httpRequest.getSession(false);
+        service.reinitSession(httpRequest);
 
         CachableUserIdentificationInfo newCachableUserIdent = new CachableUserIdentificationInfo(
                 deputyLogin, deputyLogin);
@@ -308,16 +314,6 @@ public class NuxeoAuthenticationFilter implements Filter {
             FilterChain chain) throws IOException, ServletException {
 
         doInitIfNeeded();
-
-        // NXP-5555: set encoding to UTF-8 in case this method is called before
-        // encoding is set to UTF-8 on the request
-        if (request.getCharacterEncoding() == null) {
-            try {
-                request.setCharacterEncoding("UTF-8");
-            } catch (UnsupportedEncodingException e) {
-                log.error(e, e);
-            }
-        }
 
         String tokenPage = getRequestedPage(request);
         if (tokenPage.equals(NXAuthConstants.SWITCH_USER_PAGE)) {
