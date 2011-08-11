@@ -162,30 +162,18 @@ public interface RowMapper {
     Serializable[] readCollectionRowArray(RowId rowId) throws StorageException;
 
     /**
-     * Reads the hierarchy row for a child, given its parent id and the child
-     * name.
+     * Reads the rows corresponding to a selection.
      *
-     * @param parentId the parent id
-     * @param childName the child name
-     * @param complexProp whether to get complex properties ({@code true}) or
-     *            regular children({@code false})
-     * @return the child hierarchy row, or {@code null}
+     * @param selType the selection type
+     * @param selId the selection id (parent id for a hierarchy selection)
+     * @param filter the filter value (name for a hierarchy selection)
+     * @param criterion an optional additional criterion depending on the
+     *            selection type (complex prop flag for a hierarchy selection)
+     * @param limitToOne whether to stop after one row retrieved
+     * @return the list of rows
      */
-    Row readChildHierRow(Serializable parentId, String childName,
-            boolean complexProp) throws StorageException;
-
-    /**
-     * Reads the hierarchy rows for all the children of parent.
-     * <p>
-     * Depending on the boolean {@literal complexProp}, only the complex
-     * properties or only the regular children are returned.
-     *
-     * @param parentId the parent id
-     * @param complexProp whether to get complex properties ({@code true}) or
-     *            regular children({@code false})
-     * @return the child hierarchy rows
-     */
-    List<Row> readChildHierRows(Serializable parentId, boolean complexProp)
+    List<Row> readSelectionRows(SelectionType selType, Serializable selId,
+            Serializable filter, Serializable criterion, boolean limitToOne)
             throws StorageException;
 
     /**

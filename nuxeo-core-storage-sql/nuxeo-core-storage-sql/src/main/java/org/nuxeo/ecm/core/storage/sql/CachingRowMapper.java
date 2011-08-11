@@ -385,22 +385,12 @@ public class CachingRowMapper implements RowMapper {
         }
     }
 
-    // TODO this API isn't cached well...
     @Override
-    public Row readChildHierRow(Serializable parentId, String childName,
-            boolean complexProp) throws StorageException {
-        Row row = rowMapper.readChildHierRow(parentId, childName, complexProp);
-        if (row != null) {
-            cachePut(row);
-        }
-        return row;
-    }
-
-    // TODO this API isn't cached well...
-    @Override
-    public List<Row> readChildHierRows(Serializable parentId,
-            boolean complexProp) throws StorageException {
-        List<Row> rows = rowMapper.readChildHierRows(parentId, complexProp);
+    public List<Row> readSelectionRows(SelectionType selType,
+            Serializable selId, Serializable filter, Serializable criterion,
+            boolean limitToOne) throws StorageException {
+        List<Row> rows = rowMapper.readSelectionRows(selType, selId, filter,
+                criterion, limitToOne);
         for (Row row : rows) {
             cachePut(row);
         }

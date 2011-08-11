@@ -87,7 +87,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
     }
 
     protected int getChildrenHardSize(Session session) {
-        return ((SessionImpl) session).context.hierContext.childrenRegularHard.size();
+        return ((SessionImpl) session).context.hierNonComplex.hardMap.size();
     }
 
     public void testChildren() throws Exception {

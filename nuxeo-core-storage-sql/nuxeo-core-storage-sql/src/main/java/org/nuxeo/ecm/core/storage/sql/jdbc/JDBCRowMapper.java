@@ -43,8 +43,10 @@ import org.nuxeo.ecm.core.storage.sql.PropertyType;
 import org.nuxeo.ecm.core.storage.sql.Row;
 import org.nuxeo.ecm.core.storage.sql.RowId;
 import org.nuxeo.ecm.core.storage.sql.RowMapper;
+import org.nuxeo.ecm.core.storage.sql.SelectionType;
 import org.nuxeo.ecm.core.storage.sql.SimpleFragment;
 import org.nuxeo.ecm.core.storage.sql.jdbc.SQLInfo.SQLInfoSelect;
+import org.nuxeo.ecm.core.storage.sql.jdbc.SQLInfo.SQLInfoSelection;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Update;
@@ -409,7 +411,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                 }
             }
             if (limitToOne) {
-                return null;
+                return Collections.emptyList();
             }
             return list;
         } catch (Exception e) {
@@ -721,7 +723,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                 model.MAIN_KEY, rowId.id);
         List<Row> maps = getSelectRows(rowId.tableName, select, criteriaMap,
                 null, true);
-        return maps == null ? null : maps.get(0);
+        return maps.isEmpty() ? null : maps.get(0);
     }
 
     @Override
@@ -767,108 +769,24 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
     }
 
     @Override
-    public Row readChildHierRow(Serializable parentId, String childName,
-            boolean complexProp) throws StorageException {
-        String sql = sqlInfo.getSelectByChildNameSql(complexProp);
-        try {
-            // XXX statement should be already prepared
-            List<Serializable> debugValues = null;
-            if (logger.isLogEnabled()) {
-                debugValues = new ArrayList<Serializable>(2);
-            }
-            PreparedStatement ps = connection.prepareStatement(sql);
-            try {
-                // compute where part
-                int i = 0;
-                for (Column column : sqlInfo.getSelectByChildNameWhereColumns(complexProp)) {
-                    i++;
-                    String key = column.getKey();
-                    Serializable v;
-                    if (key.equals(model.HIER_PARENT_KEY)) {
-                        v = parentId;
-                    } else if (key.equals(model.HIER_CHILD_NAME_KEY)) {
-                        v = childName;
-                    } else {
-                        throw new RuntimeException("Invalid hier column: "
-                                + key);
-                    }
-                    if (v == null) {
-                        throw new IllegalStateException("Null value for key: "
-                                + key);
-                    }
-                    column.setToPreparedStatement(ps, i, v);
-                    if (debugValues != null) {
-                        debugValues.add(v);
-                    }
-                }
-                if (debugValues != null) {
-                    logger.logSQL(sql, debugValues);
-                }
-                ResultSet rs = ps.executeQuery();
-                if (!rs.next()) {
-                    // no match, row doesn't exist
-                    return null;
-                }
-                // construct the row from the results
-                Row row = new Row(model.HIER_TABLE_NAME, (Serializable) null);
-                i = 1;
-                List<Column> columns = sqlInfo.getSelectByChildNameWhatColumns(complexProp);
-                for (Column column : columns) {
-                    row.put(column.getKey(), column.getFromResultSet(rs, i++));
-                }
-                row.put(model.HIER_PARENT_KEY, parentId);
-                row.put(model.HIER_CHILD_NAME_KEY, childName);
-                row.put(model.HIER_CHILD_ISPROPERTY_KEY,
-                        Boolean.valueOf(complexProp));
-                if (logger.isLogEnabled()) {
-                    logger.logResultSet(rs, columns);
-                }
-                // check that we didn't get several rows
-                while (rs.next()) {
-                    // detected a duplicate name, which means that user code
-                    // wasn't careful enough. We can't go back but at least we
-                    // can make the duplicate available under a different name.
-                    String newName = childName + '.'
-                            + System.currentTimeMillis();
-                    i = 0;
-                    Serializable childId = null;
-                    for (Column column : columns) {
-                        i++;
-                        if (column.getKey().equals(model.MAIN_KEY)) {
-                            childId = column.getFromResultSet(rs, i);
-                        }
-                    }
-                    logger.error(String.format(
-                            "Child '%s' appeared twice as child of %s "
-                                    + "(%s and %s), renaming second to '%s'",
-                            childName, parentId, row.id, childId, newName));
-                    Row rename = new Row(model.HIER_TABLE_NAME, childId);
-                    rename.putNew(model.HIER_CHILD_NAME_KEY, newName);
-                    updateSimpleRowWithValues(model.HIER_TABLE_NAME, rename);
-                }
-                return row;
-            } finally {
-                closeStatement(ps);
-            }
-        } catch (Exception e) {
-            checkConnectionReset(e);
-            throw new StorageException("Could not select: " + sql, e);
-        }
-    }
-
-    @Override
-    public List<Row> readChildHierRows(Serializable parentId,
-            boolean complexProp) throws StorageException {
-        if (parentId == null) {
-            throw new IllegalArgumentException("Illegal null parentId");
-        }
-        SQLInfoSelect select = sqlInfo.selectChildrenByIsProperty;
+    public List<Row> readSelectionRows(SelectionType selType, Serializable selId,
+            Serializable filter, Serializable criterion, boolean limitToOne)
+            throws StorageException {
+        SQLInfoSelection selInfo = sqlInfo.getSelection(selType);
         Map<String, Serializable> criteriaMap = new HashMap<String, Serializable>();
-        criteriaMap.put(model.HIER_PARENT_KEY, parentId);
-        criteriaMap.put(model.HIER_CHILD_ISPROPERTY_KEY,
-                Boolean.valueOf(complexProp));
-        return getSelectRows(model.HIER_TABLE_NAME, select, criteriaMap, null,
-                false);
+        criteriaMap.put(selType.selKey, selId);
+        SQLInfoSelect select;
+        if (filter == null) {
+            select = selInfo.selectAll;
+        } else {
+            select = selInfo.selectFiltered;
+            criteriaMap.put(selType.filterKey, filter);
+        }
+        if (selType.criterionKey != null) {
+            criteriaMap.put(selType.criterionKey, criterion);
+        }
+        return getSelectRows(selType.tableName, select, criteriaMap, null,
+                limitToOne);
     }
 
     @Override

@@ -24,17 +24,23 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.storage.StorageException;
 
 /**
- * Holds information about the children of a given parent node. The internal
- * state reflects:
- * <ul>
- * <li>children known to exist in the database,</li>
- * <li>created children not yet flushed to database,</li>
- * <li>deleted children not yet flushed to database.</li>
- * </ul>
- * Information about children in the database may be complete, or just partial
- * if only individual children have been retrieved from the database.
+ * A {@link Selection} holds information about row ids corresponding to a fixed
+ * clause for a given table.
  * <p>
- * Children are stored in no particular order.
+ * A clause has the form: column = fixed value. The column can be the parent id,
+ * the versionable id, the target id.
+ * <p>
+ * The internal state of a {@link Selection} instance reflects:
+ * <ul>
+ * <li>corresponding rows known to exist in the database,</li>
+ * <li>corresponding created rows not yet flushed to database,</li>
+ * <li>corresponding rows not yet flushed to database.</li>
+ * </ul>
+ * Information about rows in the database may be complete, or just partial if
+ * only individual rows corresponding to the clause have been retrieved from the
+ * database.
+ * <p>
+ * Row ids are stored in no particular order.
  * <p>
  * When this structure holds information all flushed to the database, then it
  * can safely be GC'ed, so it lives in a memory-sensitive map (softMap),
@@ -43,70 +49,93 @@ import org.nuxeo.ecm.core.storage.StorageException;
  * This class is not thread-safe and should be used only from a single-threaded
  * session.
  */
-public class Children {
+public class Selection {
 
-    private static final Log log = LogFactory.getLog(Children.class);
-
-    /** The context from which to fetch hierarchy fragments. */
-    protected final HierarchyContext hierContext;
-
-    /** The key to use to filter on names. */
-    protected final String filterKey;
+    private static final Log log = LogFactory.getLog(Selection.class);
 
     /**
-     * This is {@code true} when complete information about the existing
-     * children is known.
+     * The selection id, also the key which this instance has in the map holding
+     * it.
+     * <p>
+     * For instance for a children selection this is the parent id.
+     */
+    private final Serializable selId;
+
+    /**
+     * The table name to fetch fragment.
+     */
+    private final String tableName;
+
+    /**
+     * The context used to fetch fragments.
+     */
+    protected final PersistenceContext context;
+
+    /**
+     * The key to use to filter.
+     * <p>
+     * For instance for a children selection this is the child name.
+     */
+    protected final String filterKey;
+
+    /** The map where this is stored when GCable. */
+    private final Map<Serializable, Selection> softMap;
+
+    /** The map where this is stored when not GCable. */
+    private final Map<Serializable, Selection> hardMap;
+
+    /**
+     * This is {@code true} when complete information about the existing ids is
+     * known.
      * <p>
      * This is the case when a query to the database has been made to fetch all
-     * children, or when a new parent node with no children has been created.
+     * rows with the clause, or when a new value for the clause has been created
+     * (applies for instance to a new parent id appearing when a folder is
+     * created).
      */
     protected boolean complete;
 
-    /** The ids known in the database and not deleted. This list is not ordered. */
+    /**
+     * The row ids known in the database and not deleted. This list is not
+     * ordered.
+     */
     protected List<Serializable> existing;
 
-    /** The ids created and not yet flushed to database. */
+    /** The row ids created and not yet flushed to database. */
     protected List<Serializable> created;
 
     /**
-     * The ids deleted (or which changed parents) and not yet flushed to
-     * database.
+     * The row ids deleted (or for which the clause column changed value) and
+     * not yet flushed to database.
      */
     protected Set<Serializable> deleted;
 
-    /** The key which this has in the map holding it. */
-    private final Serializable mapKey;
-
-    /** The map where this is stored when GCable. */
-    private final Map<Serializable, Children> softMap;
-
-    /** The map where this is stored when not GCable. */
-    private final Map<Serializable, Children> hardMap;
-
     /**
-     * Constructs a Children cache.
+     * Constructs a {@link Selection} for the given selection id.
      * <p>
      * It is automatically put in the soft map.
      *
-     * @param hierContext the context from which to fetch hierarchy fragments
-     * @param filterKey the key to use to filter on names
+     * @param selId the selection key (used in the soft/hard maps)
+     * @param tableName the table name to fetch fragments
      * @param empty if the new instance is created empty
-     * @param mapKey the key to use in the following maps
-     * @param softMap the soft map, when the children are pristine
+     * @param filterKey the key to use to additionally filter on fragment values
+     * @param context the context from which to fetch fragments
+     * @param softMap the soft map, when the selection is pristine
      * @param hardMap the hard map, when there are modifications to flush
      */
-    public Children(HierarchyContext hierContext, String filterKey,
-            boolean empty, Serializable mapKey,
-            Map<Serializable, Children> softMap,
-            Map<Serializable, Children> hardMap) {
-        this.hierContext = hierContext;
+    public Selection(Serializable selId, String tableName, boolean empty,
+            String filterKey, PersistenceContext context,
+            Map<Serializable, Selection> softMap,
+            Map<Serializable, Selection> hardMap) {
+        this.selId = selId;
+        this.tableName = tableName;
+        this.context = context;
         this.filterKey = filterKey;
-        complete = empty;
-        this.mapKey = mapKey;
         this.softMap = softMap;
         this.hardMap = hardMap;
+        complete = empty;
         // starts its life in the soft map (no created or deleted)
-        softMap.put(mapKey, this);
+        softMap.put(selId, this);
     }
 
     protected Serializable fragmentValue(SimpleFragment fragment) {
@@ -119,7 +148,7 @@ public class Children {
     }
 
     /**
-     * Adds a known child.
+     * Adds a known row corresponding to the clause.
      *
      * @param id the fragment id
      */
@@ -136,7 +165,7 @@ public class Children {
     }
 
     /**
-     * Adds a created child.
+     * Adds a created row corresponding to the clause.
      *
      * @param id the fragment id
      */
@@ -144,8 +173,8 @@ public class Children {
         if (created == null) {
             created = new LinkedList<Serializable>();
             // move to hard map
-            softMap.remove(mapKey);
-            hardMap.put(mapKey, this);
+            softMap.remove(selId);
+            hardMap.put(selId, this);
         }
         if ((existing != null && existing.contains(id)) || created.contains(id)) {
             // TODO remove sanity check if ok
@@ -173,8 +202,8 @@ public class Children {
     /**
      * Marks as incomplete.
      * <p>
-     * Called after a database operation added children with unknown ids
-     * (restore of complex properties).
+     * Called after a database operation added rows corresponding to the clause
+     * with unknown ids (restore of complex properties).
      */
     public void setIncomplete() {
         complete = false;
@@ -196,8 +225,8 @@ public class Children {
         if (deleted == null) {
             deleted = new HashSet<Serializable>();
             // move to hard map
-            softMap.remove(mapKey);
-            hardMap.put(mapKey, this);
+            softMap.remove(selId);
+            hardMap.put(selId, this);
         }
         deleted.add(id);
     }
@@ -218,29 +247,39 @@ public class Children {
         deleted = null;
         // move to soft map
         // caller responsible for removing from hard map
-        softMap.put(mapKey, this);
+        softMap.put(selId, this);
     }
 
     public boolean isFlushed() {
         return created == null && deleted == null;
     }
 
+    private SimpleFragment getFragmentIfPresent(Serializable id) {
+        RowId rowId = new RowId(tableName, id);
+        return (SimpleFragment) context.getIfPresent(rowId);
+    }
+
+    private SimpleFragment getFragment(Serializable id) throws StorageException {
+        RowId rowId = new RowId(tableName, id);
+        return (SimpleFragment) context.get(rowId, false);
+    }
+
     /**
-     * Gets a fragment given its name.
+     * Gets a fragment given its filtered value.
      * <p>
-     * Returns {@code null} if there is no such child.
+     * Returns {@code null} if there is no such fragment.
      * <p>
      * Returns {@link SimpleFragment#UNKNOWN} if there's no info about it.
      *
-     * @param value the name
+     * @param filter the value to filter on (cannot be {@code null})
      * @return the fragment, or {@code null}, or {@link SimpleFragment#UNKNOWN}
      */
-    public SimpleFragment getFragmentByValue(Serializable value) {
+    public SimpleFragment getFragmentByValue(Serializable filter) {
         if (existing != null) {
             for (Serializable id : existing) {
                 SimpleFragment fragment;
                 try {
-                    fragment = hierContext.getHier(id, false);
+                    fragment = getFragment(id);
                 } catch (StorageException e) {
                     log.warn("Failed refetch for: " + id, e);
                     continue;
@@ -249,31 +288,31 @@ public class Children {
                     log.warn("Existing fragment missing: " + id);
                     continue;
                 }
-                if (value.equals(fragmentValue(fragment))) {
+                if (filter.equals(fragmentValue(fragment))) {
                     return fragment;
                 }
             }
         }
         if (created != null) {
             for (Serializable id : created) {
-                SimpleFragment fragment = hierContext.getHierIfPresent(id);
+                SimpleFragment fragment = getFragmentIfPresent(id);
                 if (fragment == null) {
                     log.warn("Created fragment missing: " + id);
                     continue;
                 }
-                if (value.equals(fragmentValue(fragment))) {
+                if (filter.equals(fragmentValue(fragment))) {
                     return fragment;
                 }
             }
         }
         if (deleted != null) {
             for (Serializable id : deleted) {
-                SimpleFragment fragment = hierContext.getHierIfPresent(id);
+                SimpleFragment fragment = getFragmentIfPresent(id);
                 if (fragment == null) {
                     log.warn("Deleted fragment missing: " + id);
                     continue;
                 }
-                if (value.equals(fragmentValue(fragment))) {
+                if (filter.equals(fragmentValue(fragment))) {
                     return null;
                 }
             }
@@ -282,23 +321,24 @@ public class Children {
     }
 
     /**
-     * Gets all the fragments, if the list of children is complete.
+     * Gets all the fragments, if the selection is complete.
      *
-     * @param value the name to filter on, or {@code null} for all children
+     * @param filter the value to filter on, or {@code null} for the whole
+     *            selection
      * @return the fragments, or {@code null} if the list is not known to be
      *         complete
      */
-    public List<SimpleFragment> getFragmentsByValue(Serializable value) {
+    public List<SimpleFragment> getFragmentsByValue(Serializable filter) {
         if (!complete) {
             return null;
         }
-        // fetch fragments and maybe filter by name
+        // fetch fragments and maybe filter
         List<SimpleFragment> filtered = new LinkedList<SimpleFragment>();
         if (existing != null) {
             for (Serializable id : existing) {
                 SimpleFragment fragment;
                 try {
-                    fragment = hierContext.getHier(id, false);
+                    fragment = getFragment(id);
                 } catch (StorageException e) {
                     log.warn("Failed refetch for: " + id, e);
                     continue;
@@ -307,19 +347,19 @@ public class Children {
                     log.warn("Existing fragment missing: " + id);
                     continue;
                 }
-                if (value == null || value.equals(fragmentValue(fragment))) {
+                if (filter == null || filter.equals(fragmentValue(fragment))) {
                     filtered.add(fragment);
                 }
             }
         }
         if (created != null) {
             for (Serializable id : created) {
-                SimpleFragment fragment = hierContext.getHierIfPresent(id);
+                SimpleFragment fragment = getFragmentIfPresent(id);
                 if (fragment == null) {
                     log.warn("Created fragment missing: " + id);
                     continue;
                 }
-                if (value == null || value.equals(fragmentValue(fragment))) {
+                if (filter == null || filter.equals(fragmentValue(fragment))) {
                     filtered.add(fragment);
                 }
             }
