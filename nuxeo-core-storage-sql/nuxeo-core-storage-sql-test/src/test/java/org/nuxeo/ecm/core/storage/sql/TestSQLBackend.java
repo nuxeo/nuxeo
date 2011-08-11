@@ -46,6 +46,7 @@ import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.FulltextIndexDescriptor;
+import org.nuxeo.ecm.core.storage.sql.jdbc.ClusterNodeHandler;
 import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCBackend;
 import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCConnectionPropagator;
 import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCMapper;
@@ -1765,6 +1766,72 @@ public class TestSQLBackend extends SQLBackendTestCase {
         propagatorField.setAccessible(true);
         JDBCConnectionPropagator propagator = (JDBCConnectionPropagator) propagatorField.get(backend);
         return propagator.connections.size();
+    }
+
+    public void testCacheInvalidationsPropagatorLeak() throws Exception {
+        if (this instanceof TestSQLBackendNet
+                || this instanceof ITSQLBackendNet) {
+            return;
+        }
+        assertEquals(0, getCacheInvalidationsPropagatorSize());
+        Session session = repository.getConnection();
+        assertEquals(1, getCacheInvalidationsPropagatorSize());
+        session.close();
+        assertEquals(0, getCacheInvalidationsPropagatorSize());
+        Session s1 = repository.getConnection();
+        Session s2 = repository.getConnection();
+        Session s3 = repository.getConnection();
+        assertEquals(3, getCacheInvalidationsPropagatorSize());
+        s1.close();
+        s2.close();
+        s3.close();
+        assertEquals(0, getCacheInvalidationsPropagatorSize());
+    }
+
+    protected int getCacheInvalidationsPropagatorSize() throws Exception {
+        Field propagatorField = RepositoryImpl.class.getDeclaredField("cachePropagator");
+        propagatorField.setAccessible(true);
+        InvalidationsPropagator propagator = (InvalidationsPropagator) propagatorField.get(repository);
+        return propagator.queues.size();
+    }
+
+    public void testClusterInvalidationsPropagatorLeak() throws Exception {
+        if (this instanceof TestSQLBackendNet
+                || this instanceof ITSQLBackendNet) {
+            return;
+        }
+        if (!DatabaseHelper.DATABASE.supportsClustering()) {
+            System.out.println("Skipping clustering test for unsupported database: "
+                    + DatabaseHelper.DATABASE.getClass().getName());
+            return;
+        }
+        repository.close();
+
+        // get a clustered repository
+        long DELAY = 500; // ms
+        repository = newRepository(DELAY, false);
+
+        assertEquals(0, getClusterInvalidationsPropagatorSize());
+        Session session = repository.getConnection();
+        assertEquals(1, getClusterInvalidationsPropagatorSize());
+        session.close();
+        assertEquals(0, getClusterInvalidationsPropagatorSize());
+    }
+
+    protected int getClusterInvalidationsPropagatorSize() throws Exception {
+        Field backendField = RepositoryImpl.class.getDeclaredField("backend");
+        backendField.setAccessible(true);
+        JDBCBackend backend = (JDBCBackend) backendField.get(repository);
+        Field handlerField = JDBCBackend.class.getDeclaredField("clusterNodeHandler");
+        handlerField.setAccessible(true);
+        ClusterNodeHandler clusterNodeHandler = (ClusterNodeHandler) handlerField.get(backend);
+        if (clusterNodeHandler == null) {
+            return 0;
+        }
+        Field propagatorField = ClusterNodeHandler.class.getDeclaredField("propagator");
+        propagatorField.setAccessible(true);
+        InvalidationsPropagator propagator = (InvalidationsPropagator) propagatorField.get(clusterNodeHandler);
+        return propagator.queues.size();
     }
 
 }

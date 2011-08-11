@@ -712,11 +712,6 @@ SELECT 1 WHERE EXISTS(SELECT 1 FROM pg_tables WHERE tablename = 'dublincore')
 #IF: ! emptyResult
 CREATE INDEX dublincore_modified_idx ON dublincore USING btree(modified);
 
-# Remove orphan invalidations
-DELETE FROM CLUSTER_INVALS
-  USING CLUSTER_INVALS i LEFT JOIN CLUSTER_NODES n ON i.NODEID=n.NODEID
-  WHERE n.NODEID IS NULL
-
 
 ############################################################
 
@@ -785,3 +780,8 @@ INSERT INTO cluster_nodes (nodeid, created) VALUES (pg_backend_pid(), CURRENT_TI
 #CATEGORY: removeClusterNode
 
 DELETE FROM cluster_nodes WHERE nodeid = pg_backend_pid();
+
+# Remove orphan invalidations
+DELETE FROM CLUSTER_INVALS
+  USING CLUSTER_INVALS i LEFT JOIN CLUSTER_NODES n ON i.NODEID=n.NODEID
+  WHERE n.NODEID IS NULL
