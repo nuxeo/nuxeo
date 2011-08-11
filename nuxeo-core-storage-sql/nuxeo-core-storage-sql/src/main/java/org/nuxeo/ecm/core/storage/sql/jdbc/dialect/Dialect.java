@@ -1125,5 +1125,15 @@ public abstract class Dialect {
         // the SQL-standard function (PostgreSQL, MySQL)
         return "OCTET_LENGTH";
     }
+    
+    /**
+     * Let the dialect perform additional statements just after the connection is opened
+     * 
+     * @param connection
+     * @throws SQLException 
+     */
+    public void performPostOpenStatements(Connection connection) throws SQLException {
+        
+    }
 
 }

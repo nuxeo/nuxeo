@@ -186,6 +186,8 @@ public class DefaultBinaryManager implements BinaryManager {
     public Binary getBinary(String digest) {
         File file = getFileForDigest(digest, false);
         if (file == null || !file.exists()) {
+            log.warn("cannot fetch content at " + file.getPath()
+                    + " (file does not exist), check your configuration");
             return null;
         }
         return getBinaryScrambler().getUnscrambledBinary(file, digest,

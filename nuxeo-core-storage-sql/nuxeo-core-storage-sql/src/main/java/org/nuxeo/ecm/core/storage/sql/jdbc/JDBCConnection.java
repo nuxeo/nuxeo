@@ -93,6 +93,7 @@ public class JDBCConnection {
             connection = xaconnection.getConnection();
             supportsBatchUpdates = connection.getMetaData().supportsBatchUpdates();
             xaresource = xaconnection.getXAResource();
+            sqlInfo.dialect.performPostOpenStatements(connection);
         } catch (SQLException e) {
             throw new StorageException(e);
         }

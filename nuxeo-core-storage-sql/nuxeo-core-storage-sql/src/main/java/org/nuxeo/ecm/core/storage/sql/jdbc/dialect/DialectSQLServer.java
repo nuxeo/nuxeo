@@ -15,10 +15,12 @@ package org.nuxeo.ecm.core.storage.sql.jdbc.dialect;
 
 import java.io.Serializable;
 import java.net.SocketException;
+import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -470,6 +472,21 @@ public class DialectSQLServer extends Dialect {
             return DEFAULT_USERS_SEPARATOR;
         }
         return usersSeparator;
+    }
+
+    /**
+     *  Set transaction isolation level to snapshot
+     *    
+     */
+    @Override
+    public void performPostOpenStatements(Connection connection)
+            throws SQLException {
+        Statement stmt = connection.createStatement();
+        try {
+            stmt.execute("SET TRANSACTION ISOLATION LEVEL SNAPSHOT;");
+        } finally {
+            stmt.close();
+        }
     }
 
 }
