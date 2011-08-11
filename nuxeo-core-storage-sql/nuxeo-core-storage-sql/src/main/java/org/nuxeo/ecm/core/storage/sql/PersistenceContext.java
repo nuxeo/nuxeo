@@ -102,6 +102,8 @@ public class PersistenceContext {
      */
     private final Set<Serializable> createdIds;
 
+    private boolean isAllowedDeleteNonHierarchyFragments = true;
+
     @SuppressWarnings("unchecked")
     public PersistenceContext(Model model, RowMapper mapper, SessionImpl session)
             throws StorageException {
@@ -118,8 +120,17 @@ public class PersistenceContext {
         // this has to be linked to keep creation order, as foreign keys
         // are used and need this
         createdIds = new LinkedHashSet<Serializable>();
+        isAllowedDeleteNonHierarchyFragments = detectAllowedDeleteNonHierarchyFragments();
     }
 
+    protected boolean detectAllowedDeleteNonHierarchyFragments() {
+        String value = System.getProperty("nuxeo.vcs.isAllowedDeleteNonHierarchyFragments");
+        if (value == null) {
+            return true;
+        }
+        return Boolean.parseBoolean(value);
+    }
+   
     protected int clearCaches() {
         mapper.clearCache();
         hierContext.clearCaches();
@@ -640,6 +651,9 @@ public class PersistenceContext {
     protected void removeNode(Fragment hierFragment) throws StorageException {
         hierContext.removeNode(hierFragment);
 
+        if (!isAllowedDeleteNonHierarchyFragments) {
+        	return;
+        }
         // find all the fragments with this id in the maps
         Serializable id = hierFragment.getId();
         List<Fragment> fragments = new LinkedList<Fragment>();

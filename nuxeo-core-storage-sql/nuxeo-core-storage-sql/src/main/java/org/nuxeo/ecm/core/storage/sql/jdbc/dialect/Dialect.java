@@ -985,5 +985,15 @@ public abstract class Dialect {
     public String getValidationQuery() {
         return "SELECT 1";
     }
+    
+    /**
+     * Let the dialect perform additional statements just after the connection is opened
+     * 
+     * @param connection
+     * @throws SQLException 
+     */
+    public void performPostOpenStatements(Connection connection) throws SQLException {
+        
+    }
 
 }
