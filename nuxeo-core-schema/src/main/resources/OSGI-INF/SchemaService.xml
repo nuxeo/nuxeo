@@ -21,11 +21,11 @@
       Type manager configuration.
       <p/>
       For now this contains default prefetch options. For example:
-      <code>
+      <pre>
         <configuration>
           <prefetch>common.icon, dc:title, dc:modified, dc:contributors, dc:creator</prefetch>
         </configuration>
-      </code>
+      </pre>
     </documentation>
 
     <object
@@ -48,7 +48,7 @@
       A doctype XML extension may contain several 'doctype' elements.
       A doctype element may look like this:
 
-      <code>
+      <pre>
         <doctype name="File" extends="Document">
           <schema name="common" />
           <schema name="file" />
@@ -58,7 +58,7 @@
           <facet name="Versionable" />
           <prefetch>dc:title, dc:modified, uid.uid</prefetch>
         </doctype>
-      </code>
+      </pre>
     </documentation>
 
     <object
@@ -75,10 +75,10 @@
       Schemas are defined using XSD files.
       The schema extension XML may containg  several 'schema' objects as
       the following ones:
-      <code>
+      <pre>
         <schema name="common" src="schema/common.xsd" />
         <schema name="dublincore" prefix="dc" src="schema/dublincore.xsd" />
-      </code>
+      </pre>
       The <i>name</i> attribute uniquely identify the schema, the <i>src</i> attribute specify
       the path to that schema (relative to the bundle root) and the <i>prefix</i> is used as
       a prefix (short name) of the schema namespace.
@@ -97,9 +97,9 @@
       type handling like encondig, decodig values etc.
       <p/>
       A contribution example:
-      <code>
+      <pre>
         <helper schema="file" type="content" class="BlobHelper"/>
-      </code>
+      </pre>
     </documentation>
     <object class="org.nuxeo.ecm.core.schema.TypeHelperDescriptor" />
   </extension-point>
