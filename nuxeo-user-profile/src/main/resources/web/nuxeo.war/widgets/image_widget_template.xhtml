@@ -1,33 +1,36 @@
-<f:subview id="#{widget.id}"
-  xmlns:c="http://java.sun.com/jstl/core"
+<f:subview id="#{widget.id}" xmlns:c="http://java.sun.com/jstl/core"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:h="http://java.sun.com/jsf/html">
 
-<c:if test="#{widget.mode == 'edit'}">
+  <c:if test="#{widget.mode == 'edit'}">
 
-  <nxu:inputFile id="#{widget.id}_file" value="#{field}"
-    filename="#{field.filename}" required="#{widget.required}"
-    editFilename="false">
-    <nxu:validateFileMimetype extensions=".jpg, .png, .gif" />
-  </nxu:inputFile>
-  <h:message for="#{widget.id}_file" id="#{widget.id}_message"
-    styleClass="errorMessage" />
+    <nxu:inputFile id="#{widget.id}_file" value="#{field}"
+      filename="#{field.filename}" required="#{widget.required}"
+      editFilename="false">
+      <nxu:validateFileMimetype extensions=".jpg, .png, .gif" />
+    </nxu:inputFile>
+    <h:message for="#{widget.id}_file" id="#{widget.id}_message"
+      styleClass="errorMessage" />
 
-</c:if>
+  </c:if>
 
-<c:if test="#{widget.mode != 'edit'}">
+  <c:if test="#{widget.mode != 'edit'}">
 
-  <nxu:set var="image_url"
-   value="#{nxd:fileUrl('downloadFile', value, widget.fieldDefinitions[0].propertyName, field.filename)}">
-    <f:subview rendered="#{not empty image_url}">
-      <img src="#{image_url}"
-        title="#{field.filename}" alt="#{field.filename}"
-        width="#{widget.properties['width']}" />
-    </f:subview>
-  </nxu:set>
+    <c:if test="#{empty field}">
+      <h:graphicImage value="/icons/missing_avatar.png"
+        title="Missing profile avatar" alt="Missing profile avatar" />
+    </c:if>
 
-</c:if>
+    <c:if test="#{not empty field}">
+      <nxu:set var="image_url"
+        value="#{nxd:fileUrl('downloadFile', value, widget.fieldDefinitions[0].propertyName, field.filename)}">
+        <img src="#{image_url}" title="#{field.filename}"
+          alt="#{field.filename}" width="#{widget.properties['width']}" />
+      </nxu:set>
+    </c:if>
+
+  </c:if>
 
 </f:subview>

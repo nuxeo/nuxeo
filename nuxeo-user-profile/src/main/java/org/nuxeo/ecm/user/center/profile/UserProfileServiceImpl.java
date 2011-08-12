@@ -28,6 +28,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
+import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
@@ -61,6 +62,16 @@ public class UserProfileServiceImpl extends DefaultComponent implements
         DocumentModel userWorkspace = getUserWorkspaceService().getUserPersonalWorkspace(
                 userName, session.getRootDocument());
         return new UserProfileDocumentGetter(session, userWorkspace).getOrCreate();
+    }
+
+    @Override
+    public DocumentModel getUserProfile(DocumentModel userModel,
+            CoreSession session) throws ClientException {
+        DocumentModel userProfileDoc = getUserProfileDocument(
+                userModel.getId(), session);
+        ((DocumentModelImpl) userProfileDoc).detach(true);
+        userProfileDoc.getDataModels().putAll(userModel.getDataModels());
+        return userProfileDoc;
     }
 
     private UserWorkspaceService getUserWorkspaceService() {

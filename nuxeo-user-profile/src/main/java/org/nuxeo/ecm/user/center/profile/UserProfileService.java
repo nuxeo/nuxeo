@@ -50,4 +50,15 @@ public interface UserProfileService {
     DocumentModel getUserProfileDocument(String userName, CoreSession session)
             throws ClientException;
 
+    /**
+     * Get a DocumentModel containing both user and user profile schemas
+     *
+     * @param the user DocumentModel
+     * @param the current CoreSession
+     * @return a SimpleDocumentModel with the two schemas
+     * @throws ClientException
+     */
+    DocumentModel getUserProfile(DocumentModel userModel, CoreSession session)
+            throws ClientException;
+
 }

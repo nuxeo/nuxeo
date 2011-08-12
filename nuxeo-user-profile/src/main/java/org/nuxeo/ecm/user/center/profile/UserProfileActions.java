@@ -105,7 +105,11 @@ public class UserProfileActions implements Serializable {
 
     public DocumentModel getSelectedUserProfileDocument()
             throws ClientException {
-        return getUserProfileDocument(userManagementActions.getSelectedUser().getId());
+        DocumentModel selectedUser = userManagementActions.getSelectedUser();
+        if (selectedUser == null) {
+            return null;
+        }
+        return getUserProfileService().getUserProfile(selectedUser, documentManager);
     }
 
     protected UserProfileService getUserProfileService() throws ClientException {
