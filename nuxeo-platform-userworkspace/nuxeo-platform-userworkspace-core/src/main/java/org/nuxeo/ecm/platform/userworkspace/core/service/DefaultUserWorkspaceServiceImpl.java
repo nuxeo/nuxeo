@@ -91,7 +91,7 @@ public class DefaultUserWorkspaceServiceImpl implements UserWorkspaceService {
         return path.toString();
     }
 
-    // compute the path of the userWorspace
+    // compute the path of the userWorkspace
     protected String computePathForUserWorkspace(CoreSession userCoreSession,
             String userName, DocumentModel currentDocument)
             throws ClientException {
@@ -319,7 +319,6 @@ public class DefaultUserWorkspaceServiceImpl implements UserWorkspaceService {
 
         // compute the title
         StringBuilder title = new StringBuilder();
-        ;
         String firstName = principal.getFirstName();
         if (firstName != null && firstName.trim().length() > 0) {
             title.append(firstName);
@@ -350,7 +349,7 @@ public class DefaultUserWorkspaceServiceImpl implements UserWorkspaceService {
 
         protected DocumentModel context;
 
-        public UnrestrictedUserWorkspaceFinder(String userName,
+        protected UnrestrictedUserWorkspaceFinder(String userName,
                 DocumentModel context) throws Exception {
             super(context.getCoreSession());
             this.userName = userName;

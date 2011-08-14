@@ -33,10 +33,9 @@ import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
 
 /**
- * Uses {@link FileManager} to import files inside the User's personal workspace
+ * Uses {@link FileManager} to import files inside the User's personal workspace.
  *
  * @author Tiry (tdelprat@nuxeo.com)
- *
  */
 @Operation(id = UserWorkspaceCreateFromBlob.ID, category = Constants.CAT_SERVICES, label = "Create Document from file in User's workspace", description = "Create Document(s) in the user's workspace from Blob(s) using the FileManagerService.")
 public class UserWorkspaceCreateFromBlob {

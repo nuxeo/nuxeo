@@ -30,7 +30,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  * personal workspace of the current user.
  *
  * @author btatar
- *
  */
 public interface UserWorkspaceService extends Serializable {
 

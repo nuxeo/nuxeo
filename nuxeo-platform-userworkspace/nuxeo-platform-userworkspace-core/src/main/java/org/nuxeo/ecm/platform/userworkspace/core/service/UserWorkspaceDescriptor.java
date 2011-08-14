@@ -26,7 +26,6 @@ import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
 @XObject("userWorkspace")
 public class UserWorkspaceDescriptor {
 
-
     @XNode("@targetDomainName")
     private String targetDomainName = "default-domain";
 
@@ -37,8 +36,8 @@ public class UserWorkspaceDescriptor {
         return userWorkspaceClass;
     }
 
-
     public String getTargetDomainName() {
         return targetDomainName;
     }
+
 }

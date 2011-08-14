@@ -93,9 +93,7 @@ public class UserWorkspaceServiceImplComponent extends DefaultComponent {
     public void registerContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor)
             throws ClientException {
-
         descriptor = (UserWorkspaceDescriptor) contribution;
-
     }
 
     @Override
@@ -105,7 +103,6 @@ public class UserWorkspaceServiceImplComponent extends DefaultComponent {
         descriptor = null;
     }
 
-
     public static String getTargetDomainName() {
         return descriptor.getTargetDomainName();
     }
@@ -113,4 +110,5 @@ public class UserWorkspaceServiceImplComponent extends DefaultComponent {
     public static void reset() {
         userWorkspaceService = null;
     }
+
 }

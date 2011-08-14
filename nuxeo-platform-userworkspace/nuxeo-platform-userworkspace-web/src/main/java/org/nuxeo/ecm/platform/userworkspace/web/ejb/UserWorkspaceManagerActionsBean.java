@@ -50,7 +50,6 @@ import org.nuxeo.runtime.api.Framework;
  * Personal user workspace manager actions bean.
  *
  * @author btatar
- *
  */
 @Name("userWorkspaceManagerActions")
 @Scope(SESSION)
@@ -59,13 +58,12 @@ import org.nuxeo.runtime.api.Framework;
 public class UserWorkspaceManagerActionsBean implements
         UserWorkspaceManagerActions {
 
+    public static final String DOCUMENT_VIEW = "view_documents";
+    public static final String DOCUMENT_MANAGEMENT_ACTION = "documents";
+
     private static final long serialVersionUID = 1828552026739219850L;
 
     private static final Log log = LogFactory.getLog(UserWorkspaceManagerActions.class);
-
-    public static final String DOCUMENT_VIEW = "view_documents";
-
-    public static final String DOCUMENT_MANAGEMENT_ACTION = "documents";
 
     protected boolean showingPersonalWorkspace;
 

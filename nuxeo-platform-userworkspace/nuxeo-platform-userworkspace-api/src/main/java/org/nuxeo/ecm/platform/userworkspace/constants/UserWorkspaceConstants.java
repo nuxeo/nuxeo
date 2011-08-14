@@ -21,7 +21,6 @@ package org.nuxeo.ecm.platform.userworkspace.constants;
 
 /**
  * @author btatar
- *
  */
 public final class UserWorkspaceConstants {
 
