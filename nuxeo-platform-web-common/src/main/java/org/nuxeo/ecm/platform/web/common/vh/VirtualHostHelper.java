@@ -136,7 +136,6 @@ public class VirtualHostHelper {
      * Returns the context path of the application. Try to get it from the {@code ServletRequest}
      * and then from the {@code org.nuxeo.ecm.contextPath} system property.
      * Fallback on default context path {@code /nuxeo}.
-     * @param request
      */
     public static String getContextPath(ServletRequest request) {
         HttpServletRequest httpRequest = getHttpServletRequest(request);

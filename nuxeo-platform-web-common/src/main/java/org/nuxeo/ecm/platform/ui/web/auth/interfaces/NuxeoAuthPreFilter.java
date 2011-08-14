@@ -13,8 +13,6 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id$
  */
 
 package org.nuxeo.ecm.platform.ui.web.auth.interfaces;
@@ -32,7 +30,7 @@ import javax.servlet.ServletResponse;
  * implement the custom auth logic. But in this case, you have to configure the
  * new filter for each url pattern that is already protected by
  * NuxeoAuthenticationFilter.
- *
+ * <p>
  * In order to avoid that you can run your Filter as a pre-Filter for the
  * NuxeoAuthenticationFilter. For that you need to implement this interface and
  * register your implementation via the preFilter extension point.
@@ -42,10 +40,12 @@ import javax.servlet.ServletResponse;
 public interface NuxeoAuthPreFilter {
 
     /**
-     * Main Filter method @See {@see Filter}.
+     * Main Filter method {@see Filter}.
      *
      * The FilterChain is only composed of the preFilters and the
-     * NuxeoAuthenticationFilter.
+     * NuxeoAuthenticationFilter
+     *
+     * @see FilterChain
      */
     void doFilter(ServletRequest request, ServletResponse response,
             FilterChain chain) throws IOException, ServletException;

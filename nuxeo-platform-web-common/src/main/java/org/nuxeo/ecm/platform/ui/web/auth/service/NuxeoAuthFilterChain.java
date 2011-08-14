@@ -22,13 +22,13 @@ public class NuxeoAuthFilterChain implements FilterChain {
 
     public NuxeoAuthFilterChain(List<NuxeoAuthPreFilter> preFilters,FilterChain standardFilterChain, NuxeoAuthenticationFilter mainFilter ) {
         this.preFilters.addAll(preFilters);
-        this.mainFilter=mainFilter;
+        this.mainFilter = mainFilter;
         this.standardFilterChain = standardFilterChain;
     }
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response) throws IOException, ServletException {
-        if (preFilters!=null && ! preFilters.isEmpty()) {
+        if (preFilters != null && !preFilters.isEmpty()) {
             NuxeoAuthPreFilter preFilter = preFilters.remove(0);
             preFilter.doFilter(request, response, this);
         } else {

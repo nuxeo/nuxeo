@@ -26,7 +26,7 @@ import java.util.List;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 
-@XObject(value = "authenticationChain")
+@XObject("authenticationChain")
 public class AuthenticationChainDescriptor implements Serializable {
 
     private static final long serialVersionUID = 276543987313289764L;

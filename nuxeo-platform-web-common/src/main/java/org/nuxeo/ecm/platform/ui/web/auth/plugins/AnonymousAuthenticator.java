@@ -43,9 +43,9 @@ import org.nuxeo.runtime.api.Framework;
 public class AnonymousAuthenticator implements NuxeoAuthenticationPlugin,
         NuxeoAuthenticationPluginLogoutExtension {
 
-    private static final Log log = LogFactory.getLog(AnonymousAuthenticator.class);
-
     public static final String BLOCK_ANONYMOUS_LOGIN_KEY = "org.nuxeo.ecm.platform.ui.web.auth.anonymous.block";
+
+    private static final Log log = LogFactory.getLog(AnonymousAuthenticator.class);
 
     protected boolean initialized;
 

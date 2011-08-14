@@ -66,16 +66,15 @@ public class BasicAuthenticator implements NuxeoAuthenticationPlugin {
 
         if (auth != null && auth.toLowerCase().startsWith("basic")) {
             int idx = auth.indexOf(' ');
-            String b64userpassword = auth.substring(idx + 1);
-            byte[] clearUp = Base64.decode(b64userpassword);
-            String userpassword = new String(clearUp);
-            String[] up = userpassword.split(":");
+            String b64userPassword = auth.substring(idx + 1);
+            byte[] clearUp = Base64.decode(b64userPassword);
+            String userPassword = new String(clearUp);
+            String[] up = userPassword.split(":");
             if (up.length==2) {
                 String username = up[0];
                 String password = up[1];
                 return new UserIdentificationInfo(username, password);
-            }
-            else {
+            } else {
                 return null;
             }
         }

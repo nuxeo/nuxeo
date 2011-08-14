@@ -13,8 +13,6 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id: JOOoConvertPluginImpl.java 18651 2007-05-13 20:28:53Z sfermigier $
  */
 
 package org.nuxeo.ecm.platform.ui.web.auth.service;
@@ -27,7 +25,7 @@ import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
 
-@XObject(value = "authenticationPlugin")
+@XObject("authenticationPlugin")
 public class AuthenticationPluginDescriptor implements Serializable {
 
     private static final long serialVersionUID = 237654398643289764L;

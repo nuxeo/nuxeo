@@ -27,7 +27,7 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.runtime.api.Framework;
 
-@XObject(value = "openUrl")
+@XObject("openUrl")
 public class OpenUrlDescriptor implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -59,7 +59,7 @@ public class OpenUrlDescriptor implements Serializable {
     }
 
     public Pattern getCompiledGrantPattern() {
-        if (compiledGrantPattern == null && grantPattern!=null && grantPattern.length()>0) {
+        if (compiledGrantPattern == null && (grantPattern != null && grantPattern.length()>0)) {
             compiledGrantPattern = Pattern.compile(grantPattern);
         }
         return compiledGrantPattern;
@@ -83,12 +83,10 @@ public class OpenUrlDescriptor implements Serializable {
 
     public boolean allowByPassAuth(HttpServletRequest httpRequest) {
         String uri = httpRequest.getRequestURI();
-        String method = httpRequest.getMethod();
+        String requestMethod = httpRequest.getMethod();
 
-        if (getMethod() != null) {
-            if (!getMethod().equals(method)) {
-                return false;
-            }
+        if (!requestMethod.equals(method)) {
+            return false;
         }
 
         Pattern deny = getCompiledDenyPattern();

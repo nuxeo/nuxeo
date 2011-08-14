@@ -58,8 +58,7 @@ public class RequestControllerService extends DefaultComponent implements
         if (FILTER_CONFIG_EP.equals(extensionPoint)) {
             FilterConfigDescriptor desc = (FilterConfigDescriptor) contribution;
             registerFilterConfig(desc);
-        }
-        else {
+        } else {
             log.error("Unknown ExtensionPoint " + extensionPoint);
         }
     }

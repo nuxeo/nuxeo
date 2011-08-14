@@ -49,7 +49,7 @@ public class DefaultRequestDumper implements RequestDumper {
             try {
                 Object obj = request.getAttribute(name);
                 builder.append(obj.toString());
-            } catch (Exception error) {
+            } catch (Exception exc) {
                 // avoid errors when printing the error dump
                 log.error("ERROR TRYING TO GET THIS REQUEST ATTRIBUTE VALUE: "
                         + name);

@@ -67,7 +67,7 @@ public class DownloadServlet extends HttpServlet {
 
     private static final long serialVersionUID = 986876871L;
 
-    public static final Log log = LogFactory.getLog(DownloadServlet.class);
+    private static final Log log = LogFactory.getLog(DownloadServlet.class);
 
     private static CoreSession getCoreSession(String repoName) throws Exception {
         RepositoryManager rm = Framework.getService(RepositoryManager.class);

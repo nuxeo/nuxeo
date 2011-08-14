@@ -28,10 +28,10 @@ import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
 
-@XObject(value = "specificAuthenticationChain")
+@XObject("specificAuthenticationChain")
 public class SpecificAuthChainDescriptor {
 
-    @XNode(value="@name")
+    @XNode("@name")
     protected String name;
 
     @XNodeList(value = "replacementChain/plugin", type = ArrayList.class, componentType = String.class)

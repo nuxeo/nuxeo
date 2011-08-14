@@ -32,8 +32,6 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id$
  */
 
 package org.nuxeo.ecm.platform.ui.web.auth.service;
@@ -44,7 +42,7 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoCallbackHandlerFactory;
 
-@XObject(value = "callbackHandlerFactory")
+@XObject("callbackHandlerFactory")
 public class CallbackHandlerFactoryDescriptor implements Serializable {
 
     private static final long serialVersionUID = 237654398643289764L;

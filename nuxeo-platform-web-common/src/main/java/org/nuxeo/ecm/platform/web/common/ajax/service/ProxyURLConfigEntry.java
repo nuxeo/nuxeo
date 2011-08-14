@@ -32,7 +32,6 @@ public class ProxyURLConfigEntry {
 
     protected boolean cachePerSession;
 
-
     public ProxyURLConfigEntry() {
         granted = false;
     }
@@ -48,19 +47,8 @@ public class ProxyURLConfigEntry {
         return granted;
     }
 
-    public String getDescriptorName() {
-        return descriptorName;
-    }
-
     public boolean useCache() {
         return useCache;
-    }
-
-    public boolean isCachePerSession() {
-        if (!useCache) {
-            return false;
-        }
-        return cachePerSession;
     }
 
 }

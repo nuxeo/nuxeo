@@ -13,8 +13,6 @@
  *
  * Contributors:
  *     bstefanescu
- *
- * $Id$
  */
 
 package org.nuxeo.ecm.platform.ui.web.auth.interfaces;

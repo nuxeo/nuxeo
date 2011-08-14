@@ -72,7 +72,6 @@ public class AjaxProxyServlet extends HttpServlet {
         if (service == null) {
             service = Framework.getLocalService(AjaxProxyService.class);
         }
-
         return service;
     }
 
@@ -80,16 +79,18 @@ public class AjaxProxyServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         handleProxy(req.getMethod(), req, resp);
     }
+
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         handleProxy(req.getHeader(X_METHOD_HEADER), req, resp);
     }
+
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         handleProxy(req.getMethod(), req, resp);
     }
 
-    protected void handleProxy(String method, HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    protected static void handleProxy(String method, HttpServletRequest req, HttpServletResponse resp) throws IOException {
         // fetch parameters
         String requestType = req.getParameter("type");
         if (requestType == null) {
@@ -152,7 +153,7 @@ public class AjaxProxyServlet extends HttpServlet {
         resp.setStatus(HttpServletResponse.SC_OK);
     }
 
-    protected String getSessionId(HttpServletRequest req) {
+    protected static String getSessionId(HttpServletRequest req) {
         String jSessionId = null;
         for (Cookie cookie : req.getCookies()) {
             if ("JSESSIONID".equalsIgnoreCase(cookie.getName())) {
@@ -163,10 +164,9 @@ public class AjaxProxyServlet extends HttpServlet {
         return jSessionId;
     }
 
-    protected String doRequest(String method, String targetURL, HttpServletRequest req) throws IOException {
-
+    protected static String doRequest(String method, String targetURL, HttpServletRequest req) throws IOException {
         HttpClient client = new HttpClient();
-        HttpMethod httpMethod = null;
+        HttpMethod httpMethod;
 
         if ("GET".equals(method)) {
             httpMethod = new GetMethod(targetURL);
@@ -176,6 +176,8 @@ public class AjaxProxyServlet extends HttpServlet {
         } else if ("PUT".equals(method)) {
             httpMethod = new PutMethod(targetURL);
             ((PutMethod) httpMethod).setRequestEntity(new InputStreamRequestEntity(req.getInputStream()));
+        } else {
+            throw new IllegalStateException("Unknown HTTP method: " + method);
         }
 
         @SuppressWarnings("unchecked")

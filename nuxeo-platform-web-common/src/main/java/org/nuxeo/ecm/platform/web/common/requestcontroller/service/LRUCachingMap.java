@@ -23,9 +23,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * @param <K>
- * @param <V>
- *
  * @author tiry
  */
 public class LRUCachingMap<K, V> extends LinkedHashMap<K, V> {

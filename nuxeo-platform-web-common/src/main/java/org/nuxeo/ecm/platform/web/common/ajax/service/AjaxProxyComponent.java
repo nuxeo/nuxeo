@@ -32,17 +32,13 @@ import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
- *
  * Simple Runtime component to manage proxyable url configuration via Extension Points
  *
  * @author tiry
- *
  */
 public class AjaxProxyComponent extends DefaultComponent implements AjaxProxyService {
 
     public static final String PROXY_URL_EP = "proxyableURL";
-
-    private static final Log log = LogFactory.getLog(AjaxProxyComponent.class);
 
     protected static final Map<String, ProxyableURLDescriptor> urlDescriptors = new HashMap<String, ProxyableURLDescriptor>();
 
@@ -50,6 +46,8 @@ public class AjaxProxyComponent extends DefaultComponent implements AjaxProxySer
             250);
 
     protected static final ReentrantReadWriteLock cacheLock = new ReentrantReadWriteLock();
+
+    private static final Log log = LogFactory.getLog(AjaxProxyComponent.class);
 
     @Override
     public void registerContribution(Object contribution,
@@ -59,7 +57,7 @@ public class AjaxProxyComponent extends DefaultComponent implements AjaxProxySer
             ProxyableURLDescriptor desc = (ProxyableURLDescriptor) contribution;
             registerProxyURL(desc);
         } else {
-            log.error("Unknow ExtensionPoint " + extensionPoint);
+            log.error("Unknown ExtensionPoint " + extensionPoint);
         }
     }
 
@@ -94,7 +92,6 @@ public class AjaxProxyComponent extends DefaultComponent implements AjaxProxySer
 
     public ProxyURLConfigEntry computeConfigForURL(String targetUrl) {
         for (ProxyableURLDescriptor desc : urlDescriptors.values()) {
-
             if (desc.isEnabled()) {
                 Pattern pat = desc.getCompiledPattern();
                 Matcher m = pat.matcher(targetUrl);

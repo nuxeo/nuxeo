@@ -48,7 +48,7 @@ import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.*;
  */
 public class NuxeoSecurityExceptionHandler extends DefaultNuxeoExceptionHandler {
 
-    protected static final Log log = LogFactory.getLog(NuxeoSecurityExceptionHandler.class);
+    private static final Log log = LogFactory.getLog(NuxeoSecurityExceptionHandler.class);
 
     protected PluggableAuthenticationService service;
 
@@ -98,7 +98,7 @@ public class NuxeoSecurityExceptionHandler extends DefaultNuxeoExceptionHandler 
         }
         // Redirect to login with urlParameters
         if (!response.isCommitted()) {
-            String baseURL = initAuthenticationService().getBaseURL(request)
+            String baseURL = getAuthenticationService().getBaseURL(request)
                     + LOGOUT_PAGE;
             request.setAttribute(DISABLE_REDIRECT_REQUEST_KEY, true);
             baseURL = URIUtils.addParametersToURIQuery(baseURL, urlParameters);
@@ -110,20 +110,22 @@ public class NuxeoSecurityExceptionHandler extends DefaultNuxeoExceptionHandler 
                 log.error("Cannot set response complete: faces context is null");
             }
         } else {
-            log.error("Cannot redirect to login page: response is already commited");
+            log.error("Cannot redirect to login page: response is already committed");
         }
         return true;
     }
 
-    protected PluggableAuthenticationService initAuthenticationService()
+    protected PluggableAuthenticationService getAuthenticationService()
             throws ServletException {
+        if (service != null) {
+            return service;
+        }
         service = (PluggableAuthenticationService) Framework.getRuntime().getComponent(
                 PluggableAuthenticationService.NAME);
         if (service == null) {
-            log.error("Unable to get Service "
-                    + PluggableAuthenticationService.NAME);
             throw new ServletException(
-                    "Can't initialize Nuxeo Pluggable Authentication Service");
+                    "Can't initialize Nuxeo Pluggable Authentication Service: "
+                    + PluggableAuthenticationService.NAME);
         }
         return service;
     }

@@ -23,10 +23,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Listener doing nothing
+ * Listener doing nothing.
  *
  * @author arussel
- *
  */
 public class NullExceptionHandlingListener implements ExceptionHandlingListener {
 

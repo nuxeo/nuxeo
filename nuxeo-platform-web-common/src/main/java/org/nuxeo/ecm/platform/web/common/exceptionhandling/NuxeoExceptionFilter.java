@@ -57,9 +57,8 @@ public class NuxeoExceptionFilter implements Filter {
 
     protected NuxeoExceptionHandler getHandler() throws ServletException {
         if (exceptionHandler == null) {
-            ExceptionHandlingService service;
             try {
-                service = Framework.getService(ExceptionHandlingService.class);
+                ExceptionHandlingService service = Framework.getService(ExceptionHandlingService.class);
                 exceptionHandler = service.getExceptionHandler();
             } catch (Exception e) {
                 throw new ServletException(e);

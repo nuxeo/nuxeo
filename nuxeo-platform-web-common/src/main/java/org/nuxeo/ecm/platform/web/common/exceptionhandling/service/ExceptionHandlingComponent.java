@@ -81,8 +81,8 @@ public class ExceptionHandlingComponent extends DefaultComponent implements
         }
     }
 
-    public void forwardToErrorPage(final HttpServletRequest request,
-            final HttpServletResponse response, final Throwable t)
+    public void forwardToErrorPage(HttpServletRequest request,
+            HttpServletResponse response, Throwable t)
             throws IOException, ServletException {
         exceptionHandler.handleException(request, response, t);
     }

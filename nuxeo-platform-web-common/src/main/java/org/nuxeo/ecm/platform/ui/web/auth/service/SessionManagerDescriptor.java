@@ -25,7 +25,7 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationSessionManager;
 
-@XObject(value = "sessionManager")
+@XObject("sessionManager")
 public class SessionManagerDescriptor implements Serializable {
 
     private static final long serialVersionUID = 1L;

@@ -4,7 +4,7 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter;
 
-@XObject(value = "preFilter")
+@XObject("preFilter")
 public class AuthPreFilterDescriptor implements Comparable<AuthPreFilterDescriptor> {
 
     private static final long serialVersionUID = 237654398643289764L;

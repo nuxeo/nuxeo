@@ -41,7 +41,7 @@ import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.DISABLE_REDIREC
  */
 public class DefaultNuxeoExceptionHandler implements NuxeoExceptionHandler {
 
-    protected static final Log log = LogFactory.getLog(DefaultNuxeoExceptionHandler.class);
+    private static final Log log = LogFactory.getLog(DefaultNuxeoExceptionHandler.class);
 
     protected NuxeoExceptionHandlerParameters parameters;
 
@@ -132,7 +132,7 @@ public class DefaultNuxeoExceptionHandler implements NuxeoExceptionHandler {
                 // called, and sometimes the initial error is a
                 // ClientAbortException
                 log.error("Cannot forward to error page: "
-                        + "response is already commited");
+                        + "response is already committed");
             }
             parameters.getListener().afterDispatch(unwrappedException, request,
                     response);

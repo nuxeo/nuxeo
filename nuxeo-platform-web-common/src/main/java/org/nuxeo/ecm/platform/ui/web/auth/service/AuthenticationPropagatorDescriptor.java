@@ -44,7 +44,7 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPropagator;
 
-@XObject(value = "propagationHandler")
+@XObject("propagationHandler")
 public class AuthenticationPropagatorDescriptor implements Serializable {
 
     private static final long serialVersionUID = 237654398643289764L;

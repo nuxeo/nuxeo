@@ -26,7 +26,7 @@ import java.util.List;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 
-@XObject(value = "startURLPattern")
+@XObject("startURLPattern")
 public class StartURLPatternDescriptor implements Serializable {
 
     private static final long serialVersionUID = 1771173219325532841L;

@@ -24,7 +24,6 @@ import org.nuxeo.runtime.api.login.LoginAs;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class LoginAsImpl implements LoginAs {
 

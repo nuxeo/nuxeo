@@ -52,8 +52,4 @@ public class NuxeoSecuredRequestWrapper extends HttpServletRequestWrapper {
         }
     }
 
-    /*public boolean isUserInRole(String arg0)
-     {
-         principal.
-     }*/
 }

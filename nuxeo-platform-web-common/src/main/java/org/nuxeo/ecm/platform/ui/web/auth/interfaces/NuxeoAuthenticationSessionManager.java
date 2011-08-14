@@ -13,8 +13,6 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id$
  */
 
 package org.nuxeo.ecm.platform.ui.web.auth.interfaces;
@@ -38,9 +36,7 @@ public interface NuxeoAuthenticationSessionManager {
     boolean needResetLogin(ServletRequest req);
 
     /**
-     * Returns true if request does not require to be authenticated
-     *
-     * @return true if request does not require to be authenticated
+     * Returns true if request does not require to be authenticated.
      */
     boolean canBypassRequest(ServletRequest request);
 

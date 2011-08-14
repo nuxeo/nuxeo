@@ -30,7 +30,6 @@ import static org.nuxeo.ecm.core.management.api.AdministrativeStatusManager.ACTI
 import static org.nuxeo.ecm.core.management.api.AdministrativeStatusManager.GLOBAL_INSTANCE_AVAILABILITY;
 import static org.nuxeo.ecm.core.management.api.AdministrativeStatusManager.PASSIVATED_EVENT;
 
-
 /**
  * Listen for {@link AdministrativeStatus} changes and set the necessary flag in {@link AdminStatusHelper}
  * so that web infrastructure can directly use the Helper.
@@ -48,7 +47,7 @@ public class AdministrativeStatusListener implements EventListener {
         return false;
     }
 
-    protected String getLocalInstanceId() {
+    protected static String getLocalInstanceId() {
         if (localInstanceId == null) {
             GlobalAdministrativeStatusManager gasm = Framework.getLocalService(GlobalAdministrativeStatusManager.class);
             localInstanceId = gasm.getLocalNuxeoInstanceIdentifier();

@@ -260,19 +260,15 @@ public class PluggableAuthenticationService extends DefaultComponent {
         String specificAuthChainName = getSpecificAuthChainName(request);
         SpecificAuthChainDescriptor desc = specificAuthChains.get(specificAuthChainName);
 
-
-        if (desc!=null) {
+        if (desc != null) {
             return desc.computeResultingChain(authChain);
-        }
-        else {
+        } else {
             return authChain;
         }
     }
 
     public String getSpecificAuthChainName(HttpServletRequest request) {
-
         for (String specificAuthChainName : specificAuthChains.keySet()) {
-
             SpecificAuthChainDescriptor desc = specificAuthChains.get(specificAuthChainName);
 
             List<Pattern> urlPatterns = desc.getUrlPatterns();
@@ -290,7 +286,6 @@ public class PluggableAuthenticationService extends DefaultComponent {
             Map<String, Pattern> headerPattern = desc.getHeaderPatterns();
 
             for (String headerName : headerPattern.keySet()) {
-
                 String headerValue = request.getHeader(headerName);
                 if (headerValue != null) {
                     Matcher m = headerPattern.get(headerName).matcher(
@@ -465,7 +460,7 @@ public class PluggableAuthenticationService extends DefaultComponent {
     }
 
     public List<NuxeoAuthPreFilter> getPreFilters() {
-        if (preFilters==null || preFilters.size()==0) {
+        if (preFilters == null || preFilters.isEmpty()) {
             return null;
         }
         return preFilters;
