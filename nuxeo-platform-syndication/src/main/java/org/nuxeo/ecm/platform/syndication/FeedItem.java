@@ -36,8 +36,6 @@ public class FeedItem extends SyndEntryImpl implements Comparable<FeedItem> {
      * <p>
      * This overloads {@link SyndEntryImpl#setDescription} in order to avoid a
      * NPE when description is null.
-     *
-     * @param description the description
      */
     public void setDescription(String description) {
         SyndContentImpl content = new SyndContentImpl();

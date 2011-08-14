@@ -14,7 +14,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id: JOOoConvertPluginImpl.java 18651 2007-05-13 20:28:53Z sfermigier $
  */
 
 package org.nuxeo.ecm.platform.syndication.restAPI;
@@ -52,7 +51,7 @@ public class VocabularyRestlet extends BaseStatelessNuxeoRestlet {
     // XXX TODO : add an API to be able to get one entry ?
     // XXX TODO : add an API to browse hierarchical voc
 
-    private String getTranslation(String key, Locale local) {
+    private static String getTranslation(String key, Locale local) {
         try {
             ResourceBundle bundle = ResourceBundle.getBundle("messages", local,
                     Thread.currentThread().getContextClassLoader());
@@ -119,18 +118,18 @@ public class VocabularyRestlet extends BaseStatelessNuxeoRestlet {
                     current.appendChild(el);
                 }
             } else if (directorySchema.equals("xvocabulary")) {
-                final Tree.Builder treeBuilder = new Tree.Builder();
+                Tree.Builder treeBuilder = new Tree.Builder();
 
-                for (final DocumentModel doc : dirSession.getEntries()) {
-                    final String id = doc.getId();
-                    final String label = (String) doc.getProperty(
+                for (DocumentModel doc : dirSession.getEntries()) {
+                    String id = doc.getId();
+                    String label = (String) doc.getProperty(
                             "xvocabulary", "label");
-                    final String translatedLabel = getTranslation(label,
+                    String translatedLabel = getTranslation(label,
                             translationLocal);
-                    final String parent = (String) doc.getProperty(
+                    String parent = (String) doc.getProperty(
                             "xvocabulary", "parent");
 
-                    final SimpleVocabulary voca = new SimpleVocabulary(id,
+                    SimpleVocabulary voca = new SimpleVocabulary(id,
                             label, translatedLabel, vocName);
 
 
@@ -140,7 +139,7 @@ public class VocabularyRestlet extends BaseStatelessNuxeoRestlet {
                         handleError(result, res, "Problems when listing all the entries from vocabulary");
                     }
                 }
-                final Tree tree = treeBuilder.build();
+                Tree tree = treeBuilder.build();
                 tree.buildXML(result);
             } else {
                 handleError(result, res,
@@ -167,7 +166,7 @@ public class VocabularyRestlet extends BaseStatelessNuxeoRestlet {
      * constructs the Hierarchical parent for a given parentId going up in the hierarchy until
      * the first parent with no parent is found
      * */
-    private HierarchicalVocabulary constructHierarchicalParent(
+    private static HierarchicalVocabulary constructHierarchicalParent(
             String vocabularyName, String parentId) throws Exception {
         DirectoryService directoryService;
         try {
@@ -181,6 +180,8 @@ public class VocabularyRestlet extends BaseStatelessNuxeoRestlet {
         HierarchicalVocabulary parentVoca1 = null;
 
         String parentVocabulary = directoryService.getParentDirectoryName(vocabularyName);
+
+        // FIXME: this loop doesn't loop.
         while (parentVocabulary != null) {
             Session parentDirSession = directoryService.open(parentVocabulary);
             String parentDirectorySchema = directoryService.getDirectorySchema(parentVocabulary);

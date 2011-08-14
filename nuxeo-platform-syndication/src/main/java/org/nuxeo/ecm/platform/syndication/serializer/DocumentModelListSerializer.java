@@ -14,7 +14,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id: JOOoConvertPluginImpl.java 18651 2007-05-13 20:28:53Z sfermigier $
  */
 
 package org.nuxeo.ecm.platform.syndication.serializer;
@@ -53,9 +52,11 @@ public interface DocumentModelListSerializer {
 
     DateFormat DATE_PARSER = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-    String serialize(DocumentModelList docList, List<String> columnsDefinition, HttpServletRequest req) throws ClientException;
+    String serialize(DocumentModelList docList, List<String> columnsDefinition,
+            HttpServletRequest req) throws ClientException;
 
-    String serialize(DocumentModelList docList, String columnsDefinition, HttpServletRequest req) throws ClientException;
+    String serialize(DocumentModelList docList, String columnsDefinition,
+            HttpServletRequest req) throws ClientException;
 
     String serialize(ResultSummary summary, DocumentModelList docList,
             String columnsDefinition, HttpServletRequest req) throws ClientException;

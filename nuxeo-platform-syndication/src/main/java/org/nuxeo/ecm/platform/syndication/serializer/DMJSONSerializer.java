@@ -14,7 +14,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id: JOOoConvertPluginImpl.java 18651 2007-05-13 20:28:53Z sfermigier $
  */
 
 package org.nuxeo.ecm.platform.syndication.serializer;
@@ -129,7 +128,7 @@ public class DMJSONSerializer extends AbstractDocumentModelSerializer implements
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat(
             "yyyy-MM-dd HH:mm:ss");
 
-    protected String serialize(ResultSummary summary,
+    protected static String serialize(ResultSummary summary,
             List<DashBoardItem> workItems, String columnsDefinition,
             List<String> labels, String lang) throws ClientException {
         if (workItems == null) {

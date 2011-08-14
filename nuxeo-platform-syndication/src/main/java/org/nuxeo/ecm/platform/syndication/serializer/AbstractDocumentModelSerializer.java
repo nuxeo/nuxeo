@@ -14,7 +14,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id: JOOoConvertPluginImpl.java 18651 2007-05-13 20:28:53Z sfermigier $
  */
 
 package org.nuxeo.ecm.platform.syndication.serializer;
@@ -151,7 +150,6 @@ public abstract class AbstractDocumentModelSerializer implements
                     }
                     return null;
                 } else {
-
                     Object property = doc.getProperty(schemaName, fieldName);
                     if (property instanceof String) {
                         res = new ResultField(fieldName,
@@ -174,7 +172,6 @@ public abstract class AbstractDocumentModelSerializer implements
                     } else {
                         res = new ResultField(fieldName, null);
                     }
-
                 }
 
             } else {

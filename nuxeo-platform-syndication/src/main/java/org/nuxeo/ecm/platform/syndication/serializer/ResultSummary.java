@@ -14,7 +14,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id: JOOoConvertPluginImpl.java 18651 2007-05-13 20:28:53Z sfermigier $
  */
 
 package org.nuxeo.ecm.platform.syndication.serializer;
@@ -81,7 +80,7 @@ public class ResultSummary {
         return pages;
     }
 
-    public void setPages(final int pages) {
+    public void setPages(int pages) {
         this.pages = pages;
     }
 
@@ -89,7 +88,7 @@ public class ResultSummary {
         return pageNumber;
     }
 
-    public void setPageNumber(final int pageNumber) {
+    public void setPageNumber(int pageNumber) {
         this.pageNumber = pageNumber;
     }
 

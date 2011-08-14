@@ -14,18 +14,13 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id: JOOoConvertPluginImpl.java 18651 2007-05-13 20:28:53Z sfermigier $
  */
 
 package org.nuxeo.ecm.platform.syndication.restAPI;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.restlet.data.Request;
 
 public class QueryModelRestlet extends BaseQueryModelRestlet {
-
-    private static final Log log = LogFactory.getLog(QueryModelRestlet.class);
 
     @Override
     protected String getQueryModelName(Request req) {

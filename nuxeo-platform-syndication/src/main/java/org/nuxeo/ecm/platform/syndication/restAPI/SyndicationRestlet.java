@@ -14,7 +14,6 @@
  * Contributors:
  *     bchaffangeon
  *
- * $Id: SyndicationRestlet.java 30155 2008-02-13 18:38:48Z troger $
  */
 
 package org.nuxeo.ecm.platform.syndication.restAPI;
@@ -71,7 +70,7 @@ public class SyndicationRestlet extends BaseStatelessNuxeoRestlet {
             currentDocumentChildren.addAll(
                     getChildrenDocument(session.getChildren(currentDocument.getRef())));
             SerializerHelper.formatResult(summary, currentDocumentChildren,
-                    response, syndicationFormat, null,getHttpRequest(request));
+                    response, syndicationFormat, null, getHttpRequest(request));
         } catch (Exception e) {
             response.setEntity(e.getMessage(), MediaType.TEXT_PLAIN);
         }

@@ -14,7 +14,6 @@
  * Contributors:
  *     bchaffangeon
  *
- * $Id: AbstractSyndicationSerializer.java 31022 2008-03-28 11:12:59Z fguillaume $
  */
 
 package org.nuxeo.ecm.platform.syndication.serializer;
@@ -37,7 +36,6 @@ import com.sun.syndication.io.SyndFeedOutput;
 
 /**
  * @author bchaffangeon
- *
  */
 public class AbstractSyndicationSerializer extends
         AbstractDocumentModelSerializer {
@@ -113,7 +111,7 @@ public class AbstractSyndicationSerializer extends
         return url;
     }
 
-    public String serialize(List<DashBoardItem> workItems,
+    public static String serialize(List<DashBoardItem> workItems,
             String columnsDefinition, Map<String, String> options, Response res, HttpServletRequest req) {
         // To be overridden
         return null;

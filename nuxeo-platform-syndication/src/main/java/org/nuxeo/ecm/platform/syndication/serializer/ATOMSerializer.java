@@ -14,7 +14,6 @@
  * Contributors:
  *     bchaffangeon
  *
- * $Id$
  */
 
 package org.nuxeo.ecm.platform.syndication.serializer;
@@ -91,11 +90,8 @@ public class ATOMSerializer extends AbstractSyndicationSerializer implements
             response.setEntity(output.outputString(atomFeed),
                     MediaType.TEXT_XML);
             response.getEntity().setCharacterSet(CharacterSet.UTF_8);
-            return;
         } catch (FeedException fe) {
-            return;
         }
-
     }
 
     /**

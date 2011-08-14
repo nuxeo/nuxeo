@@ -14,7 +14,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id$
  */
 
 package org.nuxeo.ecm.platform.syndication.restAPI;
@@ -60,7 +59,7 @@ public class DashBoardRestlet extends BaseQueryModelRestlet {
         return "ATOM";
     }
 
-    protected String getDomainPath(Request req) {
+    protected static String getDomainPath(Request req) {
         String domain = req.getResourceRef().getQueryAsForm().getFirstValue(
                 "domain");
         if (domain == null) {
@@ -85,7 +84,7 @@ public class DashBoardRestlet extends BaseQueryModelRestlet {
      */
     // TODO have different HQL queries depending on request params
     @SuppressWarnings("unchecked")
-    protected List<String> getRelevantDocuments(Request req) {
+    protected static List<String> getRelevantDocuments(Request req) {
         AuditReader auditReader;
         try {
             auditReader = Framework.getService(AuditReader.class);

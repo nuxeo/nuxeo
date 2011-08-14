@@ -25,7 +25,6 @@ import com.sun.syndication.feed.module.ModuleImpl;
 
 /**
  * @author bchaffangeon
- *
  */
 @SuppressWarnings("serial")
 public class TaskModuleImpl extends ModuleImpl implements TaskModule {

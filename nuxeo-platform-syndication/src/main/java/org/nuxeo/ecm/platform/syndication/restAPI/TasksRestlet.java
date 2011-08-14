@@ -14,7 +14,6 @@
  * Contributors:
  *     bchaffangeon
  *
- * $Id: TasksRestlet.java 30155 2008-02-13 18:38:48Z troger $
  */
 
 package org.nuxeo.ecm.platform.syndication.restAPI;
@@ -55,11 +54,11 @@ import org.restlet.data.Response;
  */
 public class TasksRestlet extends BaseStatelessNuxeoRestlet {
 
-    private JbpmService jbpmService;
-
-    private final Log log = LogFactory.getLog(TasksRestlet.class);
+    private static final Log log = LogFactory.getLog(TasksRestlet.class);
 
     private static final String defaultFormat = "XML";
+
+    private JbpmService jbpmService;
 
     public JbpmService getJbpmService() throws Exception {
         if (jbpmService == null) {
@@ -89,8 +88,7 @@ public class TasksRestlet extends BaseStatelessNuxeoRestlet {
         String myTasksRequested = request.getResourceRef().getQueryAsForm().getFirstValue(
                 "mytasks");
         boolean wantMyTasks = true;
-        if (myTasksRequested != null
-                && myTasksRequested.equalsIgnoreCase("false")) {
+        if ("false".equalsIgnoreCase(myTasksRequested)) {
             wantMyTasks = false;
         }
 
@@ -229,7 +227,7 @@ public class TasksRestlet extends BaseStatelessNuxeoRestlet {
         return currentUserTasks;
     }
 
-    public JbpmListFilter getFilter() {
+    public static JbpmListFilter getFilter() {
         return null;
     }
 

@@ -44,17 +44,16 @@ public final class Tree {
                 = new HashMap<String, HierarchicalVocabulary>();
 
 
-        public void addElement(final String parent,
-                HierarchicalVocabulary parentVoca1,
-                final SimpleVocabulary voca) {
+        public void addElement(String parent, HierarchicalVocabulary parentVoca1,
+                SimpleVocabulary voca) {
             if (null == parent) {
-                final HierarchicalVocabulary newVoca = new HierarchicalVocabulary(
+                HierarchicalVocabulary newVoca = new HierarchicalVocabulary(
                         null, voca);
                 addNewVocabulary(newVoca);
             } else {
-                final HierarchicalVocabulary parentVoca = mapVocabularies.get(parent.toLowerCase());
+                HierarchicalVocabulary parentVoca = mapVocabularies.get(parent.toLowerCase());
                 if (null != parentVoca) {
-                    final HierarchicalVocabulary newVoca = new HierarchicalVocabulary(
+                    HierarchicalVocabulary newVoca = new HierarchicalVocabulary(
                             parentVoca, voca);
                     parentVoca.addChild(newVoca);
                     addNewVocabulary(newVoca);
@@ -66,26 +65,25 @@ public final class Tree {
             }
         }
 
-        private void addNewVocabulary(final HierarchicalVocabulary voca) {
-            final String id = voca.getVocabulary().getId().toLowerCase();
+        private void addNewVocabulary(HierarchicalVocabulary voca) {
+            String id = voca.getVocabulary().getId().toLowerCase();
             mapVocabularies.put(id, voca);
-            addWaitingChilds(voca);
+            addWaitingChildren(voca);
         }
 
-        private void addWaitingChilds(final HierarchicalVocabulary voca) {
-            final String id = voca.getVocabulary().getId().toLowerCase();
-            final List<SimpleVocabulary> childs = pendingVocabularies.remove(id);
-            if (null != childs) {
-                for (final SimpleVocabulary child : childs) {
-                    final HierarchicalVocabulary newVoca = new HierarchicalVocabulary(
+        private void addWaitingChildren(HierarchicalVocabulary voca) {
+            String id = voca.getVocabulary().getId().toLowerCase();
+            List<SimpleVocabulary> children = pendingVocabularies.remove(id);
+            if (null != children) {
+                for (SimpleVocabulary child : children) {
+                    HierarchicalVocabulary newVoca = new HierarchicalVocabulary(
                             voca, child);
                     voca.addChild(newVoca);
                 }
             }
         }
 
-        private void addPendingVocabulary(final String parent,
-                final SimpleVocabulary dir) {
+        private void addPendingVocabulary(String parent, SimpleVocabulary dir) {
             List<SimpleVocabulary> dirs = pendingVocabularies.get(parent.toLowerCase());
             if (null == dirs) {
                 dirs = new ArrayList<SimpleVocabulary>();
@@ -95,18 +93,18 @@ public final class Tree {
         }
 
         public Tree build() {
-            final List<HierarchicalVocabulary> rootNodes = new ArrayList<HierarchicalVocabulary>();
+            List<HierarchicalVocabulary> rootNodes = new ArrayList<HierarchicalVocabulary>();
 
             Map<String, HierarchicalVocabulary> mV = new HashMap<String, HierarchicalVocabulary>();
             mV.putAll(mapVocabularies);
 
             for(String key : mV.keySet()) {
-                addWaitingChilds(mapVocabularies.get(key));
+                addWaitingChildren(mapVocabularies.get(key));
             }
 
             for (HierarchicalVocabulary voca : mapVocabularies.values()) {
                 HierarchicalVocabulary vp =  getNode(voca);
-                if(rootNodes.contains(vp) ==false){
+                if (!rootNodes.contains(vp)) {
                     rootNodes.add(vp);
                 }
             }
@@ -127,35 +125,35 @@ public final class Tree {
 
     private final List<HierarchicalVocabulary> rootNodes = new ArrayList<HierarchicalVocabulary>();
 
-    private Tree(final List<HierarchicalVocabulary> rootNodes) {
+    private Tree(List<HierarchicalVocabulary> rootNodes) {
         this.rootNodes.addAll(rootNodes);
     }
 
     // Missing methods for finding, adding, etc an element...
 
     public String asXML() {
-        final DOMDocumentFactory domfactory = new DOMDocumentFactory();
-        final DOMDocument document = (DOMDocument) domfactory.createDocument();
+        DOMDocumentFactory domfactory = new DOMDocumentFactory();
+        DOMDocument document = (DOMDocument) domfactory.createDocument();
 
-        final Element current = document.createElement("entries");
+        Element current = document.createElement("entries");
         document.setRootElement((org.dom4j.Element) current);
 
         buildXML(rootNodes, current, document);
         return document.asXML();
     }
 
-    public void buildXML(final DOMDocument document) {
-        final Element current = document.createElement("entries");
+    public void buildXML(DOMDocument document) {
+        Element current = document.createElement("entries");
         document.setRootElement((org.dom4j.Element) current);
 
         buildXML(rootNodes, current, document);
     }
 
-    private static void buildXML(final List<HierarchicalVocabulary> nodes,
-            final Element currentElement, final DOMDocument document) {
+    private static void buildXML(List<HierarchicalVocabulary> nodes,
+            Element currentElement, DOMDocument document) {
 
-        for (final HierarchicalVocabulary voca : nodes) {
-            final Element element = document.createElement("entry");
+        for (HierarchicalVocabulary voca : nodes) {
+            Element element = document.createElement("entry");
             element.setAttribute("id", voca.getVocabulary().getId());
             element.setAttribute("label", voca.getVocabulary().getLabel());
             element.setAttribute("translatedLabel",
@@ -164,13 +162,11 @@ public final class Tree {
                 element.setAttribute("parent",
                         voca.getParent().getVocabulary().getId());
             }
-            if (voca.hasChilds()) {
-                buildXML(voca.getChilds(), element, document);
+            if (voca.hasChildren()) {
+                buildXML(voca.getChildren(), element, document);
             }
             currentElement.appendChild(element);
         }
     }
-
-
 
 }

@@ -32,8 +32,8 @@ public final class HierarchicalVocabulary {
 
     public static final Comparator<HierarchicalVocabulary> ORDER_BY_ID = new Comparator<HierarchicalVocabulary>() {
 
-        public int compare(final HierarchicalVocabulary o1,
-                final HierarchicalVocabulary o2) {
+        public int compare(HierarchicalVocabulary o1,
+                HierarchicalVocabulary o2) {
             return o1.getVocabulary().getId().compareToIgnoreCase(
                     o2.getVocabulary().getId());
         }
@@ -44,25 +44,25 @@ public final class HierarchicalVocabulary {
 
     private final HierarchicalVocabulary parent;
 
-    private final List<HierarchicalVocabulary> childs = new ArrayList<HierarchicalVocabulary>();
+    private final List<HierarchicalVocabulary> children = new ArrayList<HierarchicalVocabulary>();
 
     private boolean sorted = false;
 
-    public HierarchicalVocabulary(final HierarchicalVocabulary parent, final SimpleVocabulary vocabulary) {
+    public HierarchicalVocabulary(HierarchicalVocabulary parent, SimpleVocabulary vocabulary) {
         simpleVocabulary = vocabulary;
         this.parent = parent;
     }
 
-    public void addChild(final HierarchicalVocabulary voca) {
-        childs.add(voca);
+    public void addChild(HierarchicalVocabulary voca) {
+        children.add(voca);
     }
 
-    public void addChild(final SimpleVocabulary voca) {
+    public void addChild(SimpleVocabulary voca) {
         addChild(new HierarchicalVocabulary(this, voca));
     }
 
-    public void removeChild(final HierarchicalVocabulary voca) {
-        childs.remove(voca);
+    public void removeChild(HierarchicalVocabulary voca) {
+        children.remove(voca);
     }
 
     public HierarchicalVocabulary getParent() {
@@ -73,20 +73,20 @@ public final class HierarchicalVocabulary {
         return simpleVocabulary;
     }
 
-    public List<HierarchicalVocabulary> getChilds() {
+    public List<HierarchicalVocabulary> getChildren() {
         if (!sorted) {
-            Collections.sort(childs, ORDER_BY_ID);
+            Collections.sort(children, ORDER_BY_ID);
             sorted = true;
         }
-        return Collections.unmodifiableList(childs);
+        return Collections.unmodifiableList(children);
     }
 
     public boolean hasParent() {
         return null != parent;
     }
 
-    public boolean hasChilds() {
-        return !childs.isEmpty();
+    public boolean hasChildren() {
+        return !children.isEmpty();
     }
 
 }
