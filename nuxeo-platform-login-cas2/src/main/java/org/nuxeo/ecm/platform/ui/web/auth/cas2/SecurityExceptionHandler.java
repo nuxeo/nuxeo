@@ -25,6 +25,8 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
 import org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService;
@@ -34,11 +36,15 @@ import org.nuxeo.ecm.platform.web.common.exceptionhandling.DefaultNuxeoException
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.ExceptionHelper;
 import org.nuxeo.runtime.api.Framework;
 
+import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.SSO_INITIAL_URL_REQUEST_KEY;
+
 public class SecurityExceptionHandler extends DefaultNuxeoExceptionHandler {
 
     public static final String CAS_REDIRECTION_URL = "/cas2.jsp";
 
     public static final String COOKIE_NAME_LOGOUT_URL = "cookie.name.logout.url";
+
+    private static final Log log = LogFactory.getLog(SecurityExceptionHandler.class);
 
     Cas2Authenticator cas2Authenticator;
 
@@ -55,7 +61,7 @@ public class SecurityExceptionHandler extends DefaultNuxeoExceptionHandler {
         Throwable unwrappedException = unwrapException(t);
 
         if (!ExceptionHelper.isSecurityError(unwrappedException)
-                && !response.containsHeader(NXAuthConstants.SSO_INITIAL_URL_REQUEST_KEY)) {
+                && !response.containsHeader(SSO_INITIAL_URL_REQUEST_KEY)) {
             super.handleException(request, response, t);
             return;
         }
@@ -63,8 +69,7 @@ public class SecurityExceptionHandler extends DefaultNuxeoExceptionHandler {
         response.resetBuffer();
 
         String urlToReach = getURLToReach(request);
-        Cookie cookieUrlToReach = new Cookie(
-                NXAuthConstants.SSO_INITIAL_URL_REQUEST_KEY, urlToReach);
+        Cookie cookieUrlToReach = new Cookie(SSO_INITIAL_URL_REQUEST_KEY, urlToReach);
         cookieUrlToReach.setPath("/");
         cookieUrlToReach.setMaxAge(60);
         response.addCookie(cookieUrlToReach);

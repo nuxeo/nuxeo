@@ -23,6 +23,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.web.Session;
 import org.nuxeo.ecm.platform.shibboleth.service.ShibbolethAuthenticationService;
 import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
@@ -34,6 +36,8 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class ShibbolethSecurityExceptionHandler extends
         NuxeoSecurityExceptionHandler {
+
+    private static final Log log = LogFactory.getLog(ShibbolethSecurityExceptionHandler.class);
 
     protected ShibbolethAuthenticationService service;
 
