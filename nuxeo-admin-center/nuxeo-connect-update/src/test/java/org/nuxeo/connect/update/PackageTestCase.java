@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     bstefanescu
+ *     bstefanescu, jcarsique
  */
 package org.nuxeo.connect.update;
 
@@ -33,7 +33,7 @@ import com.google.inject.Inject;
 @Features(RuntimeFeature.class)
 @Deploy({ "org.nuxeo.connect.client", "org.nuxeo.connect.client.wrapper",
         "org.nuxeo.connect.update", "org.nuxeo.runtime.reload" })
-public class PackageTestCase extends TestCase {
+public abstract class PackageTestCase extends TestCase {
 
     @Inject
     protected PackageUpdateService service;

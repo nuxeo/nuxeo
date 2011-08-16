@@ -12,19 +12,24 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     bstefanescu
+ *     bstefanescu, jcarsique
  */
 package org.nuxeo.connect.update.impl.task;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.commons.collections.MapUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.StringUtils;
@@ -41,6 +46,8 @@ import org.nuxeo.runtime.api.Framework;
  */
 public abstract class AbstractTask implements Task {
 
+    static final Log log = LogFactory.getLog(AbstractTask.class);
+
     public static final String PKG_ID = "package.id";
 
     public static final String PKG_NAME = "package.name";
@@ -50,6 +57,11 @@ public abstract class AbstractTask implements Task {
     public static final String PKG_ROOT = "package.root";
 
     public static final String ENV_HOME = "env.home";
+
+    /**
+     * @since 5.4.3
+     */
+    public static final String ENV_SERVER_HOME = "env.server.home";
 
     /**
      * Set only on JBoss - the EAR root directory path
@@ -64,18 +76,23 @@ public abstract class AbstractTask implements Task {
 
     public static final String ENV_CONFIG = "env.config";
 
+    /**
+     * @since 5.4.3
+     */
+    public static final String ENV_TEMPLATES = "env.templates";
+
     public static final String ENV_TIMESTAMP = "sys.timestamp";
 
     /**
      * The host application name.
-     * 
+     *
      * @see Environment#getHostApplicationName()
      */
     public static final String ENV_HOSTAPP_NAME = "env.hostapp.name";
 
     /**
      * The host application version
-     * 
+     *
      * @see Environment#getHostApplicationVersion()
      */
     public static final String ENV_HOSTAPP_VERSION = "env.hostapp.version";
@@ -93,33 +110,26 @@ public abstract class AbstractTask implements Task {
     protected AbstractTask() {
         env = new HashMap<String, String>();
         Environment nxenv = Environment.getDefault();
-        File home = nxenv.getHome();
+        File serverHome = nxenv.getServerHome();
+        File nxHome = nxenv.getRuntimeHome();
         File config = nxenv.getConfig();
-        env.put(ENV_HOME, home.getAbsolutePath());
+        env.put(ENV_SERVER_HOME, serverHome.getAbsolutePath());
+        env.put(ENV_HOME, nxHome.getAbsolutePath());
         env.put(ENV_CONFIG, config.getAbsolutePath());
         env.put(ENV_HOSTAPP_NAME, nxenv.getHostApplicationName());
         env.put(ENV_HOSTAPP_VERSION, nxenv.getHostApplicationVersion());
+        env.put(ENV_SYSLIB, new File(serverHome, "lib").getAbsolutePath());
         if (nxenv.isJBoss()) {
             File ear = config.getParentFile();
             env.put(ENV_EAR, ear.getAbsolutePath());
             env.put(ENV_LIB, new File(ear, "lib").getAbsolutePath());
             env.put(ENV_BUNDLES, new File(ear, "bundles").getAbsolutePath());
-            String v = System.getProperty("jboss.server.home.dir");
-            if (v != null) {
-                env.put(ENV_SYSLIB, v + "/lib");
-            }
         } else {
-            if (nxenv.isTomcat()) {
-                String v = System.getProperty("catalina.base");
-                if (v != null) {
-                    env.put(ENV_SYSLIB, v + "/lib");
-                }
-            } else {
-                env.put(ENV_SYSLIB, new File(home, "lib").getAbsolutePath());
-            }
-            env.put(ENV_LIB, new File(home, "lib").getAbsolutePath());
-            env.put(ENV_BUNDLES, new File(home, "bundles").getAbsolutePath());
+            env.put(ENV_LIB, new File(nxHome, "lib").getAbsolutePath());
+            env.put(ENV_BUNDLES, new File(nxHome, "bundles").getAbsolutePath());
         }
+        env.put(ENV_TEMPLATES,
+                new File(serverHome, "templates").getAbsolutePath());
         env.put(ENV_TIMESTAMP,
                 new SimpleDateFormat("yyMMddHHmmss").format(new Date()));
     }
@@ -134,6 +144,13 @@ public abstract class AbstractTask implements Task {
         env.put(PKG_NAME, pkg.getName());
         env.put(PKG_VERSION, pkg.getVersion().toString());
         env.put(PKG_ROOT, pkg.getData().getRoot().getAbsolutePath());
+
+        if (log.isDebugEnabled()) {
+            final ByteArrayOutputStream out = new ByteArrayOutputStream();
+            final PrintStream outPrint = new PrintStream(out);
+            MapUtils.debugPrint(outPrint, null, env);
+            log.debug(out.toString());
+        }
     }
 
     /**
@@ -141,7 +158,6 @@ public abstract class AbstractTask implements Task {
      * null is returned.
      *
      * @param key
-     * @return
      */
     public File getFile(String key) {
         String val = env.get(key);
