@@ -22,6 +22,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
@@ -43,6 +44,8 @@ public class ThreadedStreamGobbler extends Thread {
 
     private List<String> output;
 
+    private OutputStream outputStream;
+
     public ThreadedStreamGobbler(InputStream is, int logLevel) {
         this.is = is;
         this.logLevel = logLevel;
@@ -59,10 +62,21 @@ public class ThreadedStreamGobbler extends Thread {
         this.output = output;
     }
 
+    /**
+     * @param inputStream InputStream to read
+     * @param output OutputStream where to write.
+     * @since 5.4.3
+     */
+    public ThreadedStreamGobbler(InputStream inputStream, OutputStream output) {
+        this(inputStream, SimpleLog.LOG_LEVEL_OFF);
+        this.outputStream = output;
+    }
+
     @Override
     public void run() {
         BufferedReader br = new BufferedReader(new InputStreamReader(is));
         String line;
+        final byte[] newLine = "\n".getBytes();
 
         try {
             while ((line = br.readLine()) != null) {
@@ -79,6 +93,10 @@ public class ThreadedStreamGobbler extends Thread {
                 case SimpleLog.LOG_LEVEL_OFF:
                     if (output != null) {
                         output.add(line);
+                    }
+                    if (outputStream != null) {
+                        outputStream.write(line.getBytes());
+                        outputStream.write(newLine);
                     }
                 default:
                     break;
