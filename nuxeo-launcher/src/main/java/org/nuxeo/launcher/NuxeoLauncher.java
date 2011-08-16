@@ -290,12 +290,20 @@ public abstract class NuxeoLauncher {
     }
 
     public void logProcessStreams(Process process, boolean logProcessOutput) {
-        new ThreadedStreamGobbler(process.getInputStream(),
-                logProcessOutput ? SimpleLog.LOG_LEVEL_INFO
-                        : SimpleLog.LOG_LEVEL_OFF).start();
-        new ThreadedStreamGobbler(process.getErrorStream(),
-                logProcessOutput ? SimpleLog.LOG_LEVEL_ERROR
-                        : SimpleLog.LOG_LEVEL_OFF).start();
+        ThreadedStreamGobbler inputSG, errorSG;
+        if (logProcessOutput) {
+            inputSG = new ThreadedStreamGobbler(process.getInputStream(),
+                    System.out);
+            errorSG = new ThreadedStreamGobbler(process.getErrorStream(),
+                    System.err);
+        } else {
+            inputSG = new ThreadedStreamGobbler(process.getInputStream(),
+                    SimpleLog.LOG_LEVEL_OFF);
+            errorSG = new ThreadedStreamGobbler(process.getErrorStream(),
+                    SimpleLog.LOG_LEVEL_OFF);
+        }
+        inputSG.start();
+        errorSG.start();
     }
 
     protected abstract String getServerPrint();
