@@ -36,10 +36,12 @@ public class OpenUrlDescriptor implements Serializable {
     protected String name;
 
     protected String grantPattern;
+
     protected Pattern compiledGrantPattern;
 
     @XNode("denyPattern")
     protected String denyPattern;
+
     protected Pattern compiledDenyPattern;
 
     @XNode("method")
@@ -59,19 +61,20 @@ public class OpenUrlDescriptor implements Serializable {
     }
 
     public Pattern getCompiledGrantPattern() {
-        if (compiledGrantPattern == null && (grantPattern != null && grantPattern.length()>0)) {
+        if (compiledGrantPattern == null
+                && (grantPattern != null && grantPattern.length() > 0)) {
             compiledGrantPattern = Pattern.compile(grantPattern);
         }
         return compiledGrantPattern;
     }
 
     public Pattern getCompiledDenyPattern() {
-        if (compiledDenyPattern == null && denyPattern!=null && denyPattern.length()>0) {
+        if (compiledDenyPattern == null && denyPattern != null
+                && denyPattern.length() > 0) {
             compiledDenyPattern = Pattern.compile(denyPattern);
         }
         return compiledDenyPattern;
     }
-
 
     public String getDenyPattern() {
         return denyPattern;
@@ -85,7 +88,7 @@ public class OpenUrlDescriptor implements Serializable {
         String uri = httpRequest.getRequestURI();
         String requestMethod = httpRequest.getMethod();
 
-        if (!requestMethod.equals(method)) {
+        if (method != null && !requestMethod.equals(method)) {
             return false;
         }
 
