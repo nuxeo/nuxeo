@@ -9,13 +9,13 @@ import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.importer.service.DefaultImporterService;
 import org.nuxeo.runtime.api.Framework;
 
-public class TestDefaultImporterService extends SQLRepositoryTestCase {
+public class TestDefaultImporterServiceWithMeta extends SQLRepositoryTestCase {
 
     public static final String IMPORTER_CORE_TEST_BUNDLE = "org.nuxeo.ecm.platform.importer.core.test";
 
     public static final String IMPORTER_CORE_BUNDLE = "org.nuxeo.ecm.platform.importer.core";
 
-    public TestDefaultImporterService(String name) {
+    public TestDefaultImporterServiceWithMeta(String name) {
         super(name);
     }
 
@@ -39,7 +39,7 @@ public class TestDefaultImporterService extends SQLRepositoryTestCase {
         DefaultImporterService importerService = Framework.getService(DefaultImporterService.class);
         assertNotNull(importerService);
 
-        File source = FileUtils.getResourceFileFromContext("import-src");
+        File source = FileUtils.getResourceFileFromContext("import-src-with-metadatas");
         String targetPath = "/default-domain/workspaces/";
 
         importerService.importDocuments(targetPath, source.getPath(), false, 5,
@@ -48,19 +48,33 @@ public class TestDefaultImporterService extends SQLRepositoryTestCase {
         session.save();
 
         DocumentModel docContainer = session.getDocument(new PathRef(
-                "/default-domain/workspaces/import-src"));
+                "/default-domain/workspaces/import-src-with-metadatas"));
         assertNotNull(docContainer);
         assertEquals("Folder", docContainer.getType());
 
         DocumentModel folder = session.getDocument(new PathRef(
-                "/default-domain/workspaces/import-src/branch1"));
+                "/default-domain/workspaces/import-src-with-metadatas/branch1"));
         assertNotNull(folder);
-        assertEquals("Folder", docContainer.getType());
+        assertEquals("Folder", folder.getType());
 
         DocumentModel file = session.getDocument(new PathRef(
-                "/default-domain/workspaces/import-src/hello-pdf"));
+                "/default-domain/workspaces/import-src-with-metadatas/hello-pdf"));
         assertNotNull(file);
         assertEquals("File", file.getType());
+        assertEquals("src1", file.getPropertyValue("dc:source"));
+
+        DocumentModel file1 = session.getChild(folder.getRef(), "hello1-pdf");
+        assertEquals("src1-hello1", file1.getPropertyValue("dc:source"));
+
+        DocumentModel folder11 = session.getChild(folder.getRef(), "branch11");
+
+        DocumentModel file11 = session.getChild(folder11.getRef(),
+                "hello11-pdf");
+        String[] contributors = (String[]) file11.getPropertyValue("dc:subjects");
+        assertNotNull(contributors);
+        assertEquals("subject6", contributors[0]);
+        assertEquals("subject7", contributors[1]);
+
     }
 
     @Override
