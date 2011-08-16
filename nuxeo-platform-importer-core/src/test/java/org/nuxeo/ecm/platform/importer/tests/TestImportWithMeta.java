@@ -36,10 +36,15 @@ public class TestImportWithMeta extends SQLRepositoryTestCase {
     }
 
     @Override
-    public void setUp() throws Exception {
-        super.setUp();
+    protected void deployRepositoryContrib() throws Exception {
+        super.deployRepositoryContrib();
         deployBundle("org.nuxeo.ecm.core.api");
         deployBundle("org.nuxeo.ecm.platform.content.template");
+    }
+
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
         openSession();
     }
 
