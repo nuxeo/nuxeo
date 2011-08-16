@@ -118,6 +118,7 @@
                     If set to true, the held value will be translated. This
                     property cannot be an EL expression, it will only resolve
                     literal values 'true' or 'false'. Defaults to false.
+                    Available since 5.4.3.
                   </label>
                 </helpLabels>
                 <fields>
@@ -1150,9 +1151,6 @@
                   <widget>rows</widget>
                 </row>
                 <row>
-                  <widget>maxlength</widget>
-                </row>
-                <row>
                   <widget>accesskey</widget>
                 </row>
                 <row>
@@ -1265,14 +1263,6 @@
                 </labels>
                 <fields>
                   <field>lang</field>
-                </fields>
-              </widget>
-              <widget name="maxlength" type="int">
-                <labels>
-                  <label mode="any">Max length</label>
-                </labels>
-                <fields>
-                  <field>maxlength</field>
                 </fields>
               </widget>
               <widget name="required" type="checkbox">
