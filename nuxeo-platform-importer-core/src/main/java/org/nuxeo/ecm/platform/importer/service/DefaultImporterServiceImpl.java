@@ -47,7 +47,7 @@ public class DefaultImporterServiceImpl implements DefaultImporterService {
             int noImportingThreads) throws ClientException {
 
         if (sourceNodeClass != null
-                && sourceNodeClass.isAssignableFrom(FileSourceNode.class)) {
+                && FileSourceNode.class.isAssignableFrom(sourceNodeClass)) {
             try {
                 setSourceNode(sourceNodeClass.getConstructor(String.class).newInstance(
                         sourcePath));
@@ -57,7 +57,7 @@ public class DefaultImporterServiceImpl implements DefaultImporterService {
         }
 
         if (docModelFactoryClass != null
-                && docModelFactoryClass.isAssignableFrom(DefaultDocumentModelFactory.class)) {
+                && DefaultDocumentModelFactory.class.isAssignableFrom(docModelFactoryClass)) {
             try {
                 setDocumentModelFactory(docModelFactoryClass.getConstructor(
                         String.class, String.class).newInstance(

@@ -18,24 +18,26 @@ package org.nuxeo.ecm.platform.importer.service;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.platform.importer.factories.AbstractDocumentModelFactory;
+import org.nuxeo.ecm.platform.importer.source.FileSourceNode;
 
 @XObject("importerConfig")
 public class ImporterConfigurationDescriptor {
 
-    @XNode("@sourceNode")
-    protected Class<?> sourceNodeClass;
+    @XNode("@sourceNodeClass")
+    protected Class<? extends FileSourceNode> sourceNodeClass;
 
     @XNode("@importerLog")
     protected Class<?> importerLog;
 
-    @XNode("@documentModelFactory")
+    @XNode("documentModelFactory")
     protected DocumentModelFactory documentModelFactory;
 
     @XObject("documentModelFactory")
     public static class DocumentModelFactory {
 
         @XNode("@documentModelFactoryClass")
-        protected Class<?> documentModelFactoryClass;
+        protected Class<? extends AbstractDocumentModelFactory> documentModelFactoryClass;
 
         @XNode("@leafType")
         protected String leafType;
