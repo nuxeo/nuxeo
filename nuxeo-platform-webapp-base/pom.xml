@@ -9,9 +9,8 @@
   </parent>
 
   <artifactId>nuxeo-platform-webapp-base</artifactId>
-  <name>Nuxeo Web Framework Infrastructure </name>
-  <description> Base Seam components for skeleton of JSF WebApp based on Nuxeo EP
-  </description>
+  <name>Nuxeo Webapp Base</name>
+  <description>Base Seam components for skeleton of JSF WebApp based on Nuxeo EP</description>
 
   <dependencies>
     <dependency>
@@ -59,7 +58,7 @@
       <groupId>javax.ejb</groupId>
       <artifactId>ejb-api</artifactId>
     </dependency>
-     <dependency>
+    <dependency>
       <groupId>org.jboss.ejb3</groupId>
       <artifactId>jboss-ejb3-ext-api</artifactId>
     </dependency>
