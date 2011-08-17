@@ -136,6 +136,10 @@
              value="${distribution.dir}/templates/common/config/distribution.properties" />
       <param name="org.nuxeo.distribution.name" value="coreserver" />
     </antcall>
+    <echo append="true" file="${distribution.dir}/templates/nuxeo.defaults">
+org.nuxeo.ecm.product.name=Nuxeo CoreServer
+    </echo>
+
     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-coreserver.zip"
          basedir="${outdir}"
          includes="nuxeo-coreserver-${maven.project.version}-tomcat/**" />
@@ -172,6 +176,10 @@
              value="${distribution.dir}/templates/common/config/distribution.properties" />
       <param name="org.nuxeo.distribution.name" value="cap" />
     </antcall>
+    <echo append="true" file="${distribution.dir}/templates/nuxeo.defaults">
+org.nuxeo.ecm.product.name=Nuxeo CAP
+    </echo>
+
     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-cap.zip"
          basedir="${outdir}"
          includes="nuxeo-cap-${maven.project.version}-tomcat/**" />
@@ -221,6 +229,10 @@
              value="${distribution.dir}/templates/common/config/distribution.properties" />
       <param name="org.nuxeo.distribution.name" value="dm" />
     </antcall>
+    <echo append="true" file="${distribution.dir}/templates/nuxeo.defaults">
+org.nuxeo.ecm.product.name=Nuxeo DM
+    </echo>
+
     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-dm.zip"
          basedir="${outdir}"
          includes="nuxeo-dm-${maven.project.version}-tomcat/**" />

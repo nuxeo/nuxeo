@@ -153,6 +153,10 @@
              value="${distribution.dir}/templates/common/config/distribution.properties" />
       <param name="org.nuxeo.distribution.name" value="cap" />
     </antcall>
+    <echo append="true" file="${distribution.dir}/templates/nuxeo.defaults">
+org.nuxeo.ecm.product.name=Nuxeo CAP
+    </echo>
+
     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-cap-ear.zip"
          basedir="${outdir}"
          includes="nuxeo-cap-${maven.project.version}-jboss/**" />
@@ -215,6 +219,10 @@
              value="${distribution.dir}/templates/common/config/distribution.properties" />
       <param name="org.nuxeo.distribution.name" value="dm" />
     </antcall>
+    <echo append="true" file="${distribution.dir}/templates/nuxeo.defaults">
+org.nuxeo.ecm.product.name=Nuxeo DM
+    </echo>
+
     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-dm-ear.zip"
          basedir="${outdir}"
          includes="nuxeo-dm-${maven.project.version}-jboss/**" />
