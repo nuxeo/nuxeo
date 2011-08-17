@@ -30,7 +30,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.query.api.AbstractPageProvider;
-import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageSelections;
 
@@ -49,6 +48,7 @@ public class CoreQueryDocumentPageProvider extends
         AbstractPageProvider<DocumentModel> {
 
     public static final String CORE_SESSION_PROPERTY = "coreSession";
+
     public static final String CHECK_QUERY_CACHE_PROPERTY = "checkQueryCache";
 
     private static final Log log = LogFactory.getLog(CoreQueryDocumentPageProvider.class);
@@ -82,6 +82,7 @@ public class CoreQueryDocumentPageProvider extends
 
                 long minMaxPageSize = getMinMaxPageSize();
 
+                long offset = getCurrentPageOffset();
                 if (log.isDebugEnabled()) {
                     log.debug(String.format(
                             "Perform query for provider '%s': '%s' with pageSize=%s, offset=%s",
@@ -91,7 +92,8 @@ public class CoreQueryDocumentPageProvider extends
 
                 DocumentModelList docs = coreSession.query(query, null,
                         minMaxPageSize, offset, true);
-                resultsCount = docs.totalSize();
+                long resultsCount = docs.totalSize();
+                setResultsCount(resultsCount);
                 currentPageDocuments = docs;
 
                 if (log.isDebugEnabled()) {

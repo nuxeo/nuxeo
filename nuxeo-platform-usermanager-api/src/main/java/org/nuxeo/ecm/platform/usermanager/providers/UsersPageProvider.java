@@ -89,13 +89,15 @@ public class UsersPageProvider extends
             }
 
             if (!hasError()) {
-                resultsCount = users.size();
+                long resultsCount = users.size();
+                setResultsCount(resultsCount);
                 // post-filter the results "by hand" to handle pagination
                 long pageSize = getMinMaxPageSize();
                 if (pageSize == 0) {
                     pageUsers.addAll(users);
                 } else {
                     // handle offset
+                    long offset = getCurrentPageOffset();
                     if (offset <= resultsCount) {
                         for (int i = Long.valueOf(offset).intValue(); i < resultsCount
                                 && i < offset + pageSize; i++) {

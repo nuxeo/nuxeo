@@ -10,7 +10,6 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.directory.SizeLimitExceededException;
 import org.nuxeo.ecm.platform.query.api.AbstractPageProvider;
-import org.nuxeo.ecm.platform.query.api.PageProvider;
 
 /**
  * Abstract Page provider listing groups.
@@ -69,13 +68,15 @@ public abstract class AbstractGroupsPageProvider extends
             }
 
             if (!hasError()) {
-                resultsCount = groups.size();
+                long resultsCount = groups.size();
+                setResultsCount(resultsCount);
                 // post-filter the results "by hand" to handle pagination
                 long pageSize = getMinMaxPageSize();
                 if (pageSize == 0) {
                     pageGroups.addAll(groups);
                 } else {
                     // handle offset
+                    long offset = getCurrentPageOffset();
                     if (offset <= resultsCount) {
                         for (int i = Long.valueOf(offset).intValue(); i < resultsCount
                                 && i < offset + pageSize; i++) {

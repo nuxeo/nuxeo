@@ -23,8 +23,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.SortInfo;
@@ -35,8 +33,6 @@ import org.nuxeo.ecm.core.api.SortInfo;
  * @author Anahide Tchertchian
  */
 public abstract class AbstractPageProvider<T> implements PageProvider<T> {
-
-    private static final Log log = LogFactory.getLog(AbstractPageProvider.class);
 
     private static final long serialVersionUID = 1L;
 
@@ -51,6 +47,15 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
     protected long resultsCount = UNKNOWN_SIZE;
 
     protected int currentEntryIndex = 0;
+
+    /**
+     * Integer keeping track of the higher page index giving results. Useful
+     * for enabling or disabling the nextPage action when number of results
+     * cannot be known.
+     *
+     * @since 5.4.3
+     */
+    protected int currentHigherNonEmptyPageIndex = 0;
 
     protected List<SortInfo> sortInfos;
 
@@ -83,12 +88,14 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
     }
 
     public void firstPage() {
+        long pageSize = getPageSize();
         if (pageSize == 0) {
             // do nothing
             return;
         }
+        long offset = getCurrentPageOffset();
         if (offset != 0) {
-            offset = 0;
+            setCurrentPageOffset(0);
             pageChanged();
         }
     }
@@ -102,14 +109,20 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
     }
 
     public long getCurrentPageIndex() {
+        long pageSize = getPageSize();
         if (pageSize == 0) {
             return 0;
         }
+        long offset = getCurrentPageOffset();
         return offset / pageSize;
     }
 
     public long getCurrentPageOffset() {
         return offset;
+    }
+
+    public void setCurrentPageOffset(long offset) {
+        this.offset = offset;
     }
 
     public long getCurrentPageSize() {
@@ -125,29 +138,24 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
     }
 
     public long getNumberOfPages() {
+        long pageSize = getPageSize();
         if (pageSize == 0) {
             return 1;
         }
-        return (int) (1 + (getResultsCount() - 1) / pageSize);
+        long resultsCount = getResultsCount();
+        if (resultsCount < 0) {
+            return -1;
+        } else {
+            return (1 + (resultsCount - 1) / pageSize);
+        }
     }
 
     public List<T> setCurrentPage(long page) {
-        long oldOffset = offset;
-        offset = page * pageSize;
+        long pageSize = getPageSize();
+        long offset = page * pageSize;
+        setCurrentPageOffset(offset);
         pageChanged();
-        List<T> res = getCurrentPage();
-        // sanity check in case given page is not present in result provider
-        if (page >= getNumberOfPages()) {
-            // go back to old offset
-            log.warn(String.format(
-                    "Provider '%s' does not have a page with number '%s': "
-                            + "go back to old page", getName(),
-                    Long.valueOf(page)));
-            offset = oldOffset;
-            pageChanged();
-            res = getCurrentPage();
-        }
-        return res;
+        return getCurrentPage();
     }
 
     public long getPageSize() {
@@ -155,10 +163,11 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
     }
 
     public void setPageSize(long pageSize) {
-        if (this.pageSize != pageSize) {
+        long localPageSize = getPageSize();
+        if (localPageSize != pageSize) {
             this.pageSize = pageSize;
             // reset offset too
-            offset = 0;
+            setCurrentPageOffset(0);
             refresh();
         }
     }
@@ -269,25 +278,46 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
     }
 
     public boolean isNextPageAvailable() {
+        long pageSize = getPageSize();
         if (pageSize == 0) {
             return false;
         }
-        return getResultsCount() > pageSize + offset;
+        long resultsCount = getResultsCount();
+        if (resultsCount < 0) {
+            long currentPageIndex = getCurrentPageIndex();
+            return currentPageIndex < getCurrentHigherNonEmptyPageIndex()
+                    + getMaxNumberOfEmptyPages();
+        } else {
+            long offset = getCurrentPageOffset();
+            return resultsCount > pageSize + offset;
+        }
+    }
+
+    @Override
+    public boolean isLastPageAvailable() {
+        long resultsCount = getResultsCount();
+        if (resultsCount < 0) {
+            return false;
+        }
+        return isNextPageAvailable();
     }
 
     public boolean isPreviousPageAvailable() {
+        long offset = getCurrentPageOffset();
         return offset > 0;
     }
 
     public void lastPage() {
-        if (pageSize == 0) {
+        long pageSize = getPageSize();
+        long resultsCount = getResultsCount();
+        if (pageSize == 0 || resultsCount < 0) {
             // do nothing
             return;
         }
-        if (getResultsCount() % pageSize == 0) {
-            offset = getResultsCount() - pageSize;
+        if (resultsCount % pageSize == 0) {
+            setCurrentPageOffset(resultsCount - pageSize);
         } else {
-            offset = (int) (getResultsCount() - getResultsCount() % pageSize);
+            setCurrentPageOffset(resultsCount - resultsCount % pageSize);
         }
         pageChanged();
     }
@@ -301,11 +331,14 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
     }
 
     public void nextPage() {
+        long pageSize = getPageSize();
         if (pageSize == 0) {
             // do nothing
             return;
         }
+        long offset = getCurrentPageOffset();
         offset += pageSize;
+        setCurrentPageOffset(offset);
         pageChanged();
     }
 
@@ -318,12 +351,15 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
     }
 
     public void previousPage() {
+        long pageSize = getPageSize();
         if (pageSize == 0) {
             // do nothing
             return;
         }
+        long offset = getCurrentPageOffset();
         if (offset >= pageSize) {
             offset -= pageSize;
+            setCurrentPageOffset(offset);
             pageChanged();
         }
     }
@@ -337,7 +373,8 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
     }
 
     public void refresh() {
-        resultsCount = UNKNOWN_SIZE;
+        setResultsCount(UNKNOWN_SIZE);
+        setCurrentHigherNonEmptyPageIndex(-1);
         currentSelectPage = null;
         errorMessage = null;
         error = null;
@@ -350,7 +387,8 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
     public String getCurrentPageStatus() {
         long total = getNumberOfPages();
         long current = getCurrentPageIndex() + 1;
-        if (total == UNKNOWN_SIZE) {
+        if (total <= 0) {
+            // number of pages unknown or there is only one page
             return String.format("%d", Long.valueOf(current));
         } else {
             return String.format("%d/%d", Long.valueOf(current),
@@ -359,10 +397,27 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
     }
 
     public boolean isNextEntryAvailable() {
+        long pageSize = getPageSize();
+        long resultsCount = getResultsCount();
         if (pageSize == 0) {
-            return currentEntryIndex < getResultsCount() - 1;
+            if (resultsCount < 0) {
+                // results count unknown
+                long currentPageSize = getCurrentPageSize();
+                return currentEntryIndex < currentPageSize - 1;
+            } else {
+                return currentEntryIndex < resultsCount - 1;
+            }
         } else {
-            return (currentEntryIndex < (getResultsCount() % pageSize) - 1 || isNextPageAvailable());
+            long currentPageSize = getCurrentPageSize();
+            if (currentEntryIndex < currentPageSize - 1) {
+                return true;
+            }
+            if (resultsCount < 0) {
+                // results count unknown => do not look for entry in next page
+                return false;
+            } else {
+                return isNextPageAvailable();
+            }
         }
     }
 
@@ -371,23 +426,39 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
     }
 
     public void nextEntry() {
-        if ((pageSize == 0 && currentEntryIndex < getResultsCount())
-                || (currentEntryIndex < getCurrentPageSize() - 1)) {
-            currentEntryIndex++;
-            return;
-        }
-        if (!isNextPageAvailable()) {
-            return;
+        long pageSize = getPageSize();
+        long resultsCount = getResultsCount();
+        if (pageSize == 0) {
+            if (resultsCount < 0) {
+                // results count unknown
+                long currentPageSize = getCurrentPageSize();
+                if (currentEntryIndex < currentPageSize - 1) {
+                    currentEntryIndex++;
+                    return;
+                }
+            } else {
+                if (currentEntryIndex < resultsCount - 1) {
+                    currentEntryIndex++;
+                    return;
+                }
+            }
+        } else {
+            long currentPageSize = getCurrentPageSize();
+            if (currentEntryIndex < currentPageSize - 1) {
+                currentEntryIndex++;
+                return;
+            }
+            if (resultsCount >= 0) {
+                // if results count is unknown, do not look for entry in next
+                // page
+                if (isNextPageAvailable()) {
+                    nextPage();
+                    currentEntryIndex = 0;
+                    return;
+                }
+            }
         }
 
-        nextPage();
-        List<T> currentPage = getCurrentPage();
-        if (currentPage == null || currentPage.isEmpty()) {
-            // things have changed since last query
-            currentEntryIndex = 0;
-        } else {
-            currentEntryIndex = 0;
-        }
     }
 
     public void previousEntry() {
@@ -402,7 +473,7 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
         previousPage();
         List<T> currentPage = getCurrentPage();
         if (currentPage == null || currentPage.isEmpty()) {
-            // things may have changed
+            // things may have changed since last query
             currentEntryIndex = 0;
         } else {
             currentEntryIndex = (new Long(getPageSize() - 1)).intValue();
@@ -462,6 +533,7 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
 
     public void setResultsCount(long resultsCount) {
         this.resultsCount = resultsCount;
+        setCurrentHigherNonEmptyPageIndex(-1);
     }
 
     public void setSortable(boolean sortable) {
@@ -588,6 +660,31 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
             return maxPageSize;
         }
         return pageSize;
+    }
+
+    /**
+     * Returns an integer keeping track of the higher page index giving
+     * results. Useful for enabling or disabling the nextPage action when
+     * number of results cannot be known.
+     *
+     * @since 5.4.3
+     */
+    public int getCurrentHigherNonEmptyPageIndex() {
+        return currentHigherNonEmptyPageIndex;
+    }
+
+    public void setCurrentHigherNonEmptyPageIndex(int higherFilledPageIndex) {
+        this.currentHigherNonEmptyPageIndex = higherFilledPageIndex;
+    }
+
+    /**
+     * Returns the maximum number of empty pages that can be fetched empty. Can
+     * be useful for displaying pages of a provider without results count.
+     *
+     * @since 5.4.3
+     */
+    public int getMaxNumberOfEmptyPages() {
+        return 1;
     }
 
 }

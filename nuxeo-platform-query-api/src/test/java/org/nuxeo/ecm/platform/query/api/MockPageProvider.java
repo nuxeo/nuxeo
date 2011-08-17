@@ -31,24 +31,45 @@ public class MockPageProvider extends AbstractPageProvider<MockPagedListItem> {
 
     protected List<MockPagedListItem> currentItems;
 
-    protected long givenResultsCount;
+    protected final long givenResultsCount;
 
-    public MockPageProvider(long pageSize, long resultsCount) {
-        this.pageSize = pageSize;
+    protected final boolean knowsResultsCount;
+
+    public MockPageProvider(long pageSize, long resultsCount,
+            boolean knowsResultsCount) {
+        setPageSize(pageSize);
         givenResultsCount = resultsCount;
-        this.resultsCount = resultsCount;
+        this.knowsResultsCount = knowsResultsCount;
+        if (knowsResultsCount) {
+            setResultsCount(resultsCount);
+        } else {
+            setResultsCount(UNKNOWN_SIZE_AFTER_QUERY);
+        }
     }
 
     @Override
     public List<MockPagedListItem> getCurrentPage() {
         long usedPageSize = givenResultsCount;
+        long pageSize = getPageSize();
         if (pageSize > 0) {
             usedPageSize = pageSize;
         }
         currentItems = new ArrayList<MockPagedListItem>();
         long offset = getCurrentPageOffset();
-        for (long i = offset; i < offset + usedPageSize && i < resultsCount; i++) {
+        for (long i = offset; i < offset + usedPageSize
+                && i < givenResultsCount; i++) {
             currentItems.add(getItem(i));
+        }
+        if (!knowsResultsCount) {
+            // additional info to handle next page when results count is
+            // unknown
+            if (currentItems != null && currentItems.size() > 0) {
+                int higherNonEmptyPage = getCurrentHigherNonEmptyPageIndex();
+                int currentFilledPage = Long.valueOf(getCurrentPageIndex()).intValue();
+                if (currentFilledPage > higherNonEmptyPage) {
+                    setCurrentHigherNonEmptyPageIndex(currentFilledPage);
+                }
+            }
         }
         return currentItems;
     }
@@ -59,10 +80,16 @@ public class MockPageProvider extends AbstractPageProvider<MockPagedListItem> {
     }
 
     @Override
+    protected void pageChanged() {
+        super.pageChanged();
+        currentItems = null;
+    }
+
+    @Override
     public void refresh() {
         super.refresh();
         currentItems = null;
-        resultsCount = givenResultsCount;
+        setResultsCount(givenResultsCount);
     }
 
 }

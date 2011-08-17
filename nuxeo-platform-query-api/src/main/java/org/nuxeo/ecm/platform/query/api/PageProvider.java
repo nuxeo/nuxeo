@@ -38,9 +38,18 @@ import org.nuxeo.ecm.core.api.SortInfo;
 public interface PageProvider<T> extends Serializable {
 
     /**
-     * Constant to express that the total number of result elements is unknown.
+     * Constant to express that the total number of result elements is unknown
+     * (usually because the query has not been done yet).
      */
     long UNKNOWN_SIZE = -1;
+
+    /**
+     * Constant to express that the total number of result elements is unknown
+     * even after performing a query.
+     *
+     * @since 5.4.3
+     */
+    long UNKNOWN_SIZE_AFTER_QUERY = -2;
 
     /**
      * Default maximum page size value.
@@ -110,15 +119,23 @@ public interface PageProvider<T> extends Serializable {
     void setMaxPageSize(long pageSize);
 
     /**
-     * Returns the number of result elements if available or
-     * <code>UNKNOWN_SIZE</code> if it is unknown.
+     * Returns the number of result elements if available or a negative value
+     * if it is unknown: <code>UNKNOWN_SIZE</code> if it is unknown as query
+     * was not done, and since 5.4.3, <code>UNKNOWN_SIZE_AFTER_QUERY</code> if
+     * it is still unknown after query was done.
      */
     long getResultsCount();
 
+    /**
+     * Sets the results count.
+     *
+     * @since 5.4.3
+     */
     void setResultsCount(long resultsCount);
 
     /**
-     * Returns the total number of pages
+     * Returns the total number of pages or -1 if number of pages is unknown
+     * (instead of 0 before 5.4.3).
      */
     long getNumberOfPages();
 
@@ -150,6 +167,16 @@ public interface PageProvider<T> extends Serializable {
     void setSelectedEntries(List<T> entries);
 
     /**
+     * Sets the current page offset.
+     * <p>
+     * If the provider keeps information linked to the current page, they
+     * should be reset after calling this method.
+     *
+     * @since 5.4.3
+     */
+    public void setCurrentPageOffset(long offset);
+
+    /**
      * Sets the current page of results to the required one and return it.
      *
      * @param page the page index, starting from 0
@@ -165,6 +192,13 @@ public interface PageProvider<T> extends Serializable {
      * Returns a boolean expressing if there are further pages.
      */
     boolean isNextPageAvailable();
+
+    /**
+     * Returns a boolean expressing if the last page can be displayed.
+     *
+     * @since 5.4.3
+     */
+    boolean isLastPageAvailable();
 
     /**
      * Returns a boolean expressing if there is a previous page.
@@ -208,7 +242,8 @@ public interface PageProvider<T> extends Serializable {
     void nextPage();
 
     /**
-     * Go to the last page
+     * Go to the last page. Does not do anything if there is only one page
+     * displayed, or if the number of results is unknown.
      */
     void lastPage();
 
@@ -232,23 +267,22 @@ public interface PageProvider<T> extends Serializable {
     void setCurrentEntryIndex(long index) throws ClientException;
 
     /**
-     * Tells if there is a next entry.
+     * Returns true if there is a next entry.
      * <p>
-     * The next entry might be in next page. If no current entry is set, this
-     * returns false.
+     * The next entry might be in next page, except if results count is
+     * unknown.
      */
     boolean isNextEntryAvailable();
 
     /**
-     * Tells if there is a previous entry.
+     * Returns true if there is a previous entry.
      * <p>
-     * The next entry might be in next page. If no current entry is set, this
-     * returns false.
+     * The previous entry might be in previous page.
      */
     boolean isPreviousEntryAvailable();
 
     /**
-     * Move the current entry to the previous one, if applicable
+     * Move the current entry to the previous one, if applicable.
      * <p>
      * No exception: this method is intended to be plugged directly at the UI
      * layer. In case there's no previous entry, nothing will happen.
@@ -256,7 +290,7 @@ public interface PageProvider<T> extends Serializable {
     void previousEntry();
 
     /**
-     * Move the current entry to the next one, if applicable
+     * Move the current entry to the next one, if applicable.
      * <p>
      * If needed and possible, the provider will forward to next page. No
      * special exceptions: this method is intended to be plugged directly at

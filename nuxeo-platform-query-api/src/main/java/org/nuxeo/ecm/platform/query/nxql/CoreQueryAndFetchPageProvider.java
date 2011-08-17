@@ -30,7 +30,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.query.api.AbstractPageProvider;
-import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageSelections;
 
@@ -49,6 +48,7 @@ public class CoreQueryAndFetchPageProvider extends
         AbstractPageProvider<Map<String, Serializable>> {
 
     public static final String CORE_SESSION_PROPERTY = "coreSession";
+
     public static final String CHECK_QUERY_CACHE_PROPERTY = "checkQueryCache";
 
     private static final long serialVersionUID = 1L;
@@ -88,6 +88,7 @@ public class CoreQueryAndFetchPageProvider extends
 
                 long minMaxPageSize = getMinMaxPageSize();
 
+                long offset = getCurrentPageOffset();
                 if (log.isDebugEnabled()) {
                     log.debug(String.format(
                             "Perform query for provider '%s': '%s' with pageSize=%s, offset=%s",
@@ -96,7 +97,8 @@ public class CoreQueryAndFetchPageProvider extends
                 }
 
                 result = coreSession.queryAndFetch(query, "NXQL");
-                resultsCount = result.size();
+                long resultsCount = result.size();
+                setResultsCount(resultsCount);
                 if (offset < resultsCount) {
                     result.skipTo(offset);
                 }
