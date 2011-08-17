@@ -22,6 +22,7 @@ package org.nuxeo.ecm.platform.importer.executor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.importer.base.GenericMultiThreadedImporter;
+import org.nuxeo.ecm.platform.importer.base.ImporterRunner;
 import org.nuxeo.ecm.platform.importer.source.FileSourceNode;
 import org.nuxeo.ecm.platform.importer.source.SourceNode;
 
@@ -48,7 +49,7 @@ public class DefaultImporterExecutor extends AbstractImporterExecutor {
     }
 
     public long getCreatedDocsCounter() {
-        return importer.getCreatedDocsCounter();
+        return GenericMultiThreadedImporter.getCreatedDocsCounter();
     }
 
     public String run(String inputPath, String targetPath,
@@ -67,6 +68,12 @@ public class DefaultImporterExecutor extends AbstractImporterExecutor {
         importer.setFactory(getFactory());
         importer.setThreadPolicy(getThreadPolicy());
         return doRun(importer, interactive);
+    }
+
+    @Override
+    public String run(ImporterRunner runner, Boolean interactive)
+            throws Exception {
+        return doRun(runner, interactive);
     }
 
 }

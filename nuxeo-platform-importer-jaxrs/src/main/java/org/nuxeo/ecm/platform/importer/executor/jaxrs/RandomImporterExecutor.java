@@ -8,6 +8,7 @@ import javax.ws.rs.QueryParam;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.importer.base.GenericMultiThreadedImporter;
+import org.nuxeo.ecm.platform.importer.base.ImporterRunner;
 import org.nuxeo.ecm.platform.importer.base.ImporterRunnerConfiguration;
 import org.nuxeo.ecm.platform.importer.filter.EventServiceConfiguratorFilter;
 import org.nuxeo.ecm.platform.importer.filter.ImporterFilter;
@@ -49,7 +50,8 @@ public class RandomImporterExecutor extends AbstractJaxRSImporterExecutor {
         }
 
         getLogger().info("Init Random text generator");
-        SourceNode source = RandomTextSourceNode.init(nbNodes, fileSizeKB, onlyText);
+        SourceNode source = RandomTextSourceNode.init(nbNodes, fileSizeKB,
+                onlyText);
         getLogger().info("Random text generator initialized");
 
         ImporterRunnerConfiguration configuration = new ImporterRunnerConfiguration.Builder(
@@ -64,8 +66,14 @@ public class RandomImporterExecutor extends AbstractJaxRSImporterExecutor {
                 bulkMode);
         runner.addFilter(filter);
 
-        String res = doRun(runner, interactive);
+        String res = run(runner, interactive);
         return res;
+    }
+
+    @Override
+    public String run(ImporterRunner runner, Boolean interactive)
+            throws Exception {
+        return doRun(runner, interactive);
     }
 
 }

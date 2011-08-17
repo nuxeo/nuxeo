@@ -19,6 +19,7 @@ package org.nuxeo.ecm.platform.importer.service;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.platform.importer.factories.AbstractDocumentModelFactory;
+import org.nuxeo.ecm.platform.importer.log.ImporterLogger;
 import org.nuxeo.ecm.platform.importer.source.FileSourceNode;
 
 @XObject("importerConfig")
@@ -27,8 +28,8 @@ public class ImporterConfigurationDescriptor {
     @XNode("@sourceNodeClass")
     protected Class<? extends FileSourceNode> sourceNodeClass;
 
-    @XNode("@importerLog")
-    protected Class<?> importerLog;
+    @XNode("@importerLogClass")
+    protected Class<? extends ImporterLogger> importerLogClass;
 
     @XNode("documentModelFactory")
     protected DocumentModelFactory documentModelFactory;
@@ -66,8 +67,8 @@ public class ImporterConfigurationDescriptor {
         return documentModelFactory;
     }
 
-    public Class<?> getImporterLog() {
-        return importerLog;
+    public Class<? extends ImporterLogger> getImporterLog() {
+        return importerLogClass;
     }
 
 }

@@ -20,6 +20,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.importer.factories.AbstractDocumentModelFactory;
 import org.nuxeo.ecm.platform.importer.factories.DefaultDocumentModelFactory;
+import org.nuxeo.ecm.platform.importer.log.ImporterLogger;
 import org.nuxeo.ecm.platform.importer.source.FileSourceNode;
 import org.nuxeo.ecm.platform.importer.source.SourceNode;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -73,6 +74,14 @@ public class DefaultImporterComponent extends DefaultComponent {
                 log.info("No leaf type doc defined, using File by deafult");
             }
             importerService.setLeafDocType(leafType);
+
+            Class<? extends ImporterLogger> logClass = (Class<? extends ImporterLogger>) descriptor.getImporterLog();
+            if (logClass == null) {
+                log.info("No specific ImporterLogger configured for this importer");
+            } else {
+                importerService.setImporterLogger(logClass.newInstance());
+            }
+
         }
     }
 

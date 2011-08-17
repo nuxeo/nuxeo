@@ -1,7 +1,5 @@
 package org.nuxeo.ecm.platform.importer.executor.jaxrs;
 
-import java.io.File;
-
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -9,17 +7,16 @@ import javax.ws.rs.QueryParam;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.platform.importer.base.GenericMultiThreadedImporter;
-import org.nuxeo.ecm.platform.importer.base.ImporterRunnerConfiguration;
-import org.nuxeo.ecm.platform.importer.filter.EventServiceConfiguratorFilter;
-import org.nuxeo.ecm.platform.importer.filter.ImporterFilter;
-import org.nuxeo.ecm.platform.importer.source.FileWithMetadataSourceNode;
-import org.nuxeo.ecm.platform.importer.source.SourceNode;
+import org.nuxeo.ecm.platform.importer.base.ImporterRunner;
+import org.nuxeo.ecm.platform.importer.service.DefaultImporterService;
+import org.nuxeo.runtime.api.Framework;
 
 @Path("fileImporter")
 public class HttpFileImporterExecutor extends AbstractJaxRSImporterExecutor {
 
     private static final Log log = LogFactory.getLog(HttpFileImporterExecutor.class);
+
+    protected DefaultImporterService importerService;
 
     @Override
     protected Log getJavaLogger() {
@@ -36,21 +33,38 @@ public class HttpFileImporterExecutor extends AbstractJaxRSImporterExecutor {
             @QueryParam("batchSize") Integer batchSize,
             @QueryParam("nbThreads") Integer nbThreads,
             @QueryParam("interactive") Boolean interactive) throws Exception {
-        File srcFile = new File(inputPath);
-        SourceNode source = new FileWithMetadataSourceNode(srcFile);
 
-        ImporterRunnerConfiguration configuration = new ImporterRunnerConfiguration.Builder(
-                source, targetPath, getLogger()).skipRootContainerCreation(
-                skipRootContainerCreation).batchSize(batchSize).nbThreads(
-                nbThreads).build();
-        GenericMultiThreadedImporter runner = new GenericMultiThreadedImporter(
-                configuration);
+        if (inputPath == null || targetPath == null) {
+            return "can not import";
+        }
+        if (skipRootContainerCreation == null) {
+            skipRootContainerCreation = false;
+        }
+        if (batchSize == null) {
+            batchSize = 5;
+        }
+        if (nbThreads == null) {
+            nbThreads = 5;
+        }
+        if (interactive == null) {
+            interactive = false;
+        }
 
-        ImporterFilter filter = new EventServiceConfiguratorFilter(false,
-                false, false, true);
-        runner.addFilter(filter);
+        return getImporterService().importDocuments(this, targetPath,
+                inputPath, skipRootContainerCreation, batchSize, nbThreads,
+                interactive);
+    }
 
+    @Override
+    public String run(ImporterRunner runner, Boolean interactive)
+            throws Exception {
         return doRun(runner, interactive);
     }
 
+    protected DefaultImporterService getImporterService() throws Exception {
+        if (importerService == null) {
+            importerService = Framework.getService(DefaultImporterService.class);
+        }
+        return importerService;
+    }
 }
