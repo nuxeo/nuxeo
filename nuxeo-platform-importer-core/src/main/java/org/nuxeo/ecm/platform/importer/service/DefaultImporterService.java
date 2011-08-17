@@ -18,7 +18,7 @@ package org.nuxeo.ecm.platform.importer.service;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.importer.executor.AbstractImporterExecutor;
-import org.nuxeo.ecm.platform.importer.factories.AbstractDocumentModelFactory;
+import org.nuxeo.ecm.platform.importer.factories.DefaultDocumentModelFactory;
 import org.nuxeo.ecm.platform.importer.log.ImporterLogger;
 import org.nuxeo.ecm.platform.importer.source.SourceNode;
 
@@ -59,7 +59,7 @@ public interface DefaultImporterService {
     void setSourceNodeClass(Class<? extends SourceNode> sourceNodeClass);
 
     void setDocModelFactoryClass(
-            Class<? extends AbstractDocumentModelFactory> docModelFactoryClass);
+            Class<? extends DefaultDocumentModelFactory> docModelFactoryClass);
 
     void setLeafDocType(String fileDocType);
 
@@ -86,6 +86,32 @@ public interface DefaultImporterService {
      */
     String importDocuments(AbstractImporterExecutor executor,
             String destinationPath, String sourcePath,
+            boolean skipRootContainerCreation, int batchSize,
+            int noImportingThreads, boolean interactive) throws ClientException;
+
+    /***
+     * Imports documents using a the given executor and the contributed
+     * documentModelFactory and SourceNode implementations; Allows to overwrite
+     * the leaf and folderish types used by the documentModelFactory when
+     * importing
+     * 
+     * If no documentModelFactory implementation was contributed to the service,
+     * <code>DefaultDocumentModelFactory</code> it's used
+     * 
+     * If no SourceNode implementation was contributed to the service,
+     * <code>FileSourceNode</code> it's used
+     * 
+     * @param executor
+     * @param destinationPath
+     * @param sourcePath
+     * @param skipRootContainerCreation
+     * @param batchSize
+     * @param noImportingThreads
+     * @param interactive
+     * @throws ClientException
+     */
+    String importDocuments(AbstractImporterExecutor executor, String leafType,
+            String folderishType, String destinationPath, String sourcePath,
             boolean skipRootContainerCreation, int batchSize,
             int noImportingThreads, boolean interactive) throws ClientException;
 

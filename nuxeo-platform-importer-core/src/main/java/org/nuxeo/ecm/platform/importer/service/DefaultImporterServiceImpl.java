@@ -23,7 +23,6 @@ import org.nuxeo.ecm.platform.importer.base.GenericMultiThreadedImporter;
 import org.nuxeo.ecm.platform.importer.base.ImporterRunnerConfiguration;
 import org.nuxeo.ecm.platform.importer.executor.AbstractImporterExecutor;
 import org.nuxeo.ecm.platform.importer.executor.DefaultImporterExecutor;
-import org.nuxeo.ecm.platform.importer.factories.AbstractDocumentModelFactory;
 import org.nuxeo.ecm.platform.importer.factories.DefaultDocumentModelFactory;
 import org.nuxeo.ecm.platform.importer.filter.EventServiceConfiguratorFilter;
 import org.nuxeo.ecm.platform.importer.filter.ImporterFilter;
@@ -35,13 +34,13 @@ public class DefaultImporterServiceImpl implements DefaultImporterService {
 
     private static Log log = LogFactory.getLog(DefaultImporterServiceImpl.class);
 
-    private Class<? extends AbstractDocumentModelFactory> docModelFactoryClass;
+    private Class<? extends DefaultDocumentModelFactory> docModelFactoryClass;
 
     private Class<? extends SourceNode> sourceNodeClass;
 
     protected SourceNode sourceNode;
 
-    protected AbstractDocumentModelFactory documentModelFactory;
+    protected DefaultDocumentModelFactory documentModelFactory;
 
     protected String folderishDocType;
 
@@ -54,39 +53,18 @@ public class DefaultImporterServiceImpl implements DefaultImporterService {
             boolean skipRootContainerCreation, int batchSize,
             int noImportingThreads) throws ClientException {
 
-        if (sourceNodeClass != null
-                && FileSourceNode.class.isAssignableFrom(sourceNodeClass)) {
-            try {
-                setSourceNode(sourceNodeClass.getConstructor(String.class).newInstance(
-                        sourcePath));
-            } catch (Exception e) {
-                log.error(e);
-            }
-        }
-
-        if (docModelFactoryClass != null
-                && DefaultDocumentModelFactory.class.isAssignableFrom(docModelFactoryClass)) {
-            try {
-                setDocumentModelFactory(docModelFactoryClass.getConstructor(
-                        String.class, String.class).newInstance(
-                        getFolderishDocType(), getLeafDocType()));
-            } catch (Exception e) {
-                log.error(e);
-            }
-        }
-
-        if (sourceNode == null) {
+        if (getSourceNode(sourcePath) == null) {
             log.error("Need to set a sourceNode to be used by this importer");
             return;
         }
-        if (documentModelFactory == null) {
+        if (getDocumentModelFactory() == null) {
             log.error("Need to set a documentModelFactory to be used by this importer");
         }
 
         DefaultImporterExecutor executor = new DefaultImporterExecutor();
         executor.setFactory(getDocumentModelFactory());
         try {
-            executor.run(getSourceNode(), destinationPath,
+            executor.run(getSourceNode(sourcePath), destinationPath,
                     skipRootContainerCreation, batchSize, noImportingThreads,
                     true);
         } catch (Exception e) {
@@ -101,37 +79,17 @@ public class DefaultImporterServiceImpl implements DefaultImporterService {
             boolean skipRootContainerCreation, int batchSize,
             int noImportingThreads, boolean interactive) throws ClientException {
 
-        if (sourceNodeClass != null
-                && FileSourceNode.class.isAssignableFrom(sourceNodeClass)) {
-            try {
-                setSourceNode(sourceNodeClass.getConstructor(String.class).newInstance(
-                        sourcePath));
-            } catch (Exception e) {
-                log.error(e);
-            }
-        }
-
-        if (docModelFactoryClass != null
-                && DefaultDocumentModelFactory.class.isAssignableFrom(docModelFactoryClass)) {
-            try {
-                setDocumentModelFactory(docModelFactoryClass.getConstructor(
-                        String.class, String.class).newInstance(
-                        getFolderishDocType(), getLeafDocType()));
-            } catch (Exception e) {
-                log.error(e);
-            }
-        }
-
-        if (sourceNode == null) {
+        if (getSourceNode(sourcePath) == null) {
             log.error("Need to set a sourceNode to be used by this importer");
             return "Can not import";
         }
-        if (documentModelFactory == null) {
+        if (getDocumentModelFactory() == null) {
             log.error("Need to set a documentModelFactory to be used by this importer");
         }
 
         ImporterRunnerConfiguration configuration = new ImporterRunnerConfiguration.Builder(
-                getSourceNode(), destinationPath, executor.getLogger()).skipRootContainerCreation(
+                getSourceNode(sourcePath), destinationPath,
+                executor.getLogger()).skipRootContainerCreation(
                 skipRootContainerCreation).batchSize(batchSize).nbThreads(
                 noImportingThreads).build();
         GenericMultiThreadedImporter runner;
@@ -154,8 +112,28 @@ public class DefaultImporterServiceImpl implements DefaultImporterService {
     }
 
     @Override
+    public String importDocuments(AbstractImporterExecutor executor,
+            String leafType, String folderishType, String destinationPath,
+            String sourcePath, boolean skipRootContainerCreation,
+            int batchSize, int noImportingThreads, boolean interactive)
+            throws ClientException {
+        DefaultDocumentModelFactory defaultDocModelFactory = getDocumentModelFactory();
+        defaultDocModelFactory.setLeafType(leafType);
+        defaultDocModelFactory.setFolderishType(folderishType);
+        setDocumentModelFactory(defaultDocModelFactory);
+        String res = importDocuments(executor, destinationPath, sourcePath,
+                skipRootContainerCreation, batchSize, noImportingThreads,
+                interactive);
+        // reset the document factory to use back the contributed values
+        setDocumentModelFactory(null);
+        setSourceNode(null);
+        return res;
+
+    }
+
+    @Override
     public void setDocModelFactoryClass(
-            Class<? extends AbstractDocumentModelFactory> docModelFactoryClass) {
+            Class<? extends DefaultDocumentModelFactory> docModelFactoryClass) {
         this.docModelFactoryClass = docModelFactoryClass;
     }
 
@@ -164,7 +142,18 @@ public class DefaultImporterServiceImpl implements DefaultImporterService {
         this.sourceNodeClass = sourceNodeClass;
     }
 
-    public SourceNode getSourceNode() {
+    public SourceNode getSourceNode(String sourcePath) {
+        if (sourceNode == null) {
+            if (sourceNodeClass != null
+                    && FileSourceNode.class.isAssignableFrom(sourceNodeClass)) {
+                try {
+                    setSourceNode(sourceNodeClass.getConstructor(String.class).newInstance(
+                            sourcePath));
+                } catch (Exception e) {
+                    log.error(e);
+                }
+            }
+        }
         return sourceNode;
     }
 
@@ -172,12 +161,24 @@ public class DefaultImporterServiceImpl implements DefaultImporterService {
         this.sourceNode = sourceNode;
     }
 
-    public AbstractDocumentModelFactory getDocumentModelFactory() {
+    public DefaultDocumentModelFactory getDocumentModelFactory() {
+        if (documentModelFactory == null) {
+            if (docModelFactoryClass != null
+                    && DefaultDocumentModelFactory.class.isAssignableFrom(docModelFactoryClass)) {
+                try {
+                    setDocumentModelFactory(docModelFactoryClass.getConstructor(
+                            String.class, String.class).newInstance(
+                            getFolderishDocType(), getLeafDocType()));
+                } catch (Exception e) {
+                    log.error(e);
+                }
+            }
+        }
         return documentModelFactory;
     }
 
     public void setDocumentModelFactory(
-            AbstractDocumentModelFactory documentModelFactory) {
+            DefaultDocumentModelFactory documentModelFactory) {
         this.documentModelFactory = documentModelFactory;
     }
 

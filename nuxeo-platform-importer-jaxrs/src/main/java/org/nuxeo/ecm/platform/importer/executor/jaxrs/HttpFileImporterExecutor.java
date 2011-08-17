@@ -27,6 +27,8 @@ public class HttpFileImporterExecutor extends AbstractJaxRSImporterExecutor {
     @Path("run")
     @Produces("text/plain; charset=UTF-8")
     public String run(
+            @QueryParam("leafType") String leafType,
+            @QueryParam("folderishType") String folderishType,
             @QueryParam("inputPath") String inputPath,
             @QueryParam("targetPath") String targetPath,
             @QueryParam("skipRootContainerCreation") Boolean skipRootContainerCreation,
@@ -51,9 +53,21 @@ public class HttpFileImporterExecutor extends AbstractJaxRSImporterExecutor {
             interactive = false;
         }
 
-        return getImporterService().importDocuments(this, targetPath,
-                inputPath, skipRootContainerCreation, batchSize, nbThreads,
-                interactive);
+        if (leafType != null && folderishType != null) {
+            log.info("Importing with the specified doc types");
+            return getImporterService().importDocuments(this, leafType,
+                    folderishType, targetPath, inputPath,
+                    skipRootContainerCreation, batchSize, nbThreads,
+                    interactive);
+        }
+
+        else {
+            log.info("Importing with the deafult doc types");
+            return getImporterService().importDocuments(this, targetPath,
+                    inputPath, skipRootContainerCreation, batchSize, nbThreads,
+                    interactive);
+        }
+
     }
 
     @Override

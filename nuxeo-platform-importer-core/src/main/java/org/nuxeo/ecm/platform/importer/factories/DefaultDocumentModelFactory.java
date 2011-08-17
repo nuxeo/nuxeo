@@ -29,9 +29,9 @@ import org.nuxeo.ecm.platform.importer.source.SourceNode;
 
 /**
  *
- * Default implementation for DocumentModel factory
- * The default empty constructor create Folder for folderish file and
- * File for other. But you can specify them using the other constructor.
+ * Default implementation for DocumentModel factory The default empty
+ * constructor create Folder for folderish file and File for other. But you can
+ * specify them using the other constructor.
  *
  * @author Thierry Delprat
  * @author Daniel Tellez
@@ -51,7 +51,9 @@ public class DefaultDocumentModelFactory extends AbstractDocumentModelFactory {
     }
 
     /**
-     * Instantiate a DefaultDocumentModelFactory that creates specified types doc
+     * Instantiate a DefaultDocumentModelFactory that creates specified types
+     * doc
+     *
      * @param folderishType the folderish type
      * @param leafType the other type
      */
@@ -94,8 +96,7 @@ public class DefaultDocumentModelFactory extends AbstractDocumentModelFactory {
     }
 
     protected DocumentModel defaultCreateLeafNode(CoreSession session,
-            DocumentModel parent, SourceNode node)
-            throws Exception {
+            DocumentModel parent, SourceNode node) throws Exception {
 
         BlobHolder bh = node.getBlobHolder();
 
@@ -185,6 +186,14 @@ public class DefaultDocumentModelFactory extends AbstractDocumentModelFactory {
         } else {
             return "application/octet-stream";
         }
+    }
+
+    public void setFolderishType(String folderishType) {
+        this.folderishType = folderishType;
+    }
+
+    public void setLeafType(String leafType) {
+        this.leafType = leafType;
     }
 
 }

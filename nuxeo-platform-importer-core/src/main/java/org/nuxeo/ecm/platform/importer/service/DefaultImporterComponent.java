@@ -18,7 +18,6 @@ package org.nuxeo.ecm.platform.importer.service;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.platform.importer.factories.AbstractDocumentModelFactory;
 import org.nuxeo.ecm.platform.importer.factories.DefaultDocumentModelFactory;
 import org.nuxeo.ecm.platform.importer.log.ImporterLogger;
 import org.nuxeo.ecm.platform.importer.source.FileSourceNode;
@@ -54,7 +53,7 @@ public class DefaultImporterComponent extends DefaultComponent {
             }
             importerService.setSourceNodeClass(sourceNodeClass);
 
-            Class<? extends AbstractDocumentModelFactory> docFactoryClass = (Class<? extends AbstractDocumentModelFactory>) descriptor.getDocumentModelFactory().getDocumentModelFactoryClass();
+            Class<? extends DefaultDocumentModelFactory> docFactoryClass = (Class<? extends DefaultDocumentModelFactory>) descriptor.getDocumentModelFactory().getDocumentModelFactoryClass();
             if (docFactoryClass == null) {
                 docFactoryClass = DefaultDocumentModelFactory.class;
                 log.info("No custom implementation provided for the documentModelFactory, using DefaultDocumentModelFactory");
