@@ -134,8 +134,7 @@ public interface PageProvider<T> extends Serializable {
     void setResultsCount(long resultsCount);
 
     /**
-     * Returns the total number of pages or -1 if number of pages is unknown
-     * (instead of 0 before 5.4.3).
+     * Returns the total number of pages or 0 if number of pages is unknown.
      */
     long getNumberOfPages();
 

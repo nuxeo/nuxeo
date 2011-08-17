@@ -144,7 +144,7 @@ public class TestPageProvider extends TestCase {
         } else {
             assertEquals(PageProvider.UNKNOWN_SIZE_AFTER_QUERY,
                     provider.getResultsCount());
-            assertEquals(-1, provider.getNumberOfPages());
+            assertEquals(0, provider.getNumberOfPages());
         }
         List<MockPagedListItem> currentItems = provider.getCurrentPage();
         assertEquals(5, currentItems.size());
@@ -171,7 +171,7 @@ public class TestPageProvider extends TestCase {
         } else {
             assertEquals(PageProvider.UNKNOWN_SIZE_AFTER_QUERY,
                     provider.getResultsCount());
-            assertEquals(-1, provider.getNumberOfPages());
+            assertEquals(0, provider.getNumberOfPages());
         }
         List<MockPagedListItem> currentItems = provider.getCurrentPage();
         assertEquals(5, currentItems.size());
@@ -198,7 +198,7 @@ public class TestPageProvider extends TestCase {
         } else {
             assertEquals(PageProvider.UNKNOWN_SIZE_AFTER_QUERY,
                     provider.getResultsCount());
-            assertEquals(-1, provider.getNumberOfPages());
+            assertEquals(0, provider.getNumberOfPages());
         }
         List<MockPagedListItem> currentItems = provider.getCurrentPage();
         assertEquals(3, currentItems.size());
@@ -245,7 +245,7 @@ public class TestPageProvider extends TestCase {
         } else {
             assertEquals(PageProvider.UNKNOWN_SIZE_AFTER_QUERY,
                     provider.getResultsCount());
-            assertEquals(-1, provider.getNumberOfPages());
+            assertEquals(0, provider.getNumberOfPages());
         }
         assertEquals(0, provider.getCurrentPageIndex());
         List<MockPagedListItem> currentItems = provider.getCurrentPage();
