@@ -141,11 +141,11 @@ public class AuditPageProvider extends AbstractPageProvider<LogEntry> implements
         for (Object v : val) {
             if (v != null) {
                 if (v instanceof String) {
-                    if (!((String)v).isEmpty()) {
+                    if (!((String) v).isEmpty()) {
                         return true;
                     }
                 } else if (v instanceof String[]) {
-                    if (((String[])v).length>0) {
+                    if (((String[]) v).length > 0) {
                         return true;
                     }
                 } else {
@@ -181,8 +181,7 @@ public class AuditPageProvider extends AbstractPageProvider<LogEntry> implements
         } else {
             // Where clause based on DocumentModel
 
-            StringBuilder baseQuery = new StringBuilder(
-                    "from LogEntry log ");
+            StringBuilder baseQuery = new StringBuilder("from LogEntry log ");
 
             // manage fixed part
             String fixedPart = def.getWhereClause().getFixedPart();
@@ -235,8 +234,6 @@ public class AuditPageProvider extends AbstractPageProvider<LogEntry> implements
                     // skip predicate where all values are null
                     continue;
                 }
-
-
 
                 if (idxPredicate > 0 || idxParam > 0) {
                     baseQuery.append(" AND ");
@@ -324,15 +321,7 @@ public class AuditPageProvider extends AbstractPageProvider<LogEntry> implements
 
     public void refresh() {
         super.refresh();
-        offset = 0;
-    }
-
-    @Override
-    public long getNumberOfPages() {
-        if (this.pageSize == 0L) {
-            return 1L;
-        }
-        return (int) (1L + (getResultsCount() - 1L) / this.pageSize);
+        setCurrentPageOffset(0);
     }
 
     @SuppressWarnings("unchecked")
@@ -349,7 +338,7 @@ public class AuditPageProvider extends AbstractPageProvider<LogEntry> implements
 
         List<Long> res = (List<Long>) reader.nativeQuery(
                 "select count(log.id) " + auditQuery, auditQueryParams, 1, 20);
-        resultsCount = ((Long) res.get(0)).longValue();
+        resultsCount = res.get(0).longValue();
 
         return resultsCount;
     }
