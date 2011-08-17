@@ -140,7 +140,7 @@ public class PersistenceContext {
         }
         return Boolean.parseBoolean(value);
     }
-   
+
     protected int clearCaches() {
         mapper.clearCache();
         hierComplex.clearCaches();
@@ -711,9 +711,13 @@ public class PersistenceContext {
         // remove the lock using the lock manager
         session.removeLock(id, null, false);
 
+        // remove the hierarchy fragment
+        removeFragment(hierFragment);
+
         if (!isAllowedDeleteNonHierarchyFragments) {
-        	return;
+            return;
         }
+
         // find all the fragments with this id in the maps
         List<Fragment> fragments = new LinkedList<Fragment>();
         for (Fragment fragment : pristine.values()) {
