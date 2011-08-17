@@ -22,7 +22,25 @@ public enum SelectionType {
      */
     CHILDREN(Model.HIER_TABLE_NAME, Model.HIER_PARENT_KEY,
             Model.HIER_CHILD_NAME_KEY, Model.HIER_CHILD_ISPROPERTY_KEY,
-            Invalidations.PARENT);
+            Invalidations.PARENT),
+
+    /**
+     * Selection for the versions of a given version series.
+     */
+    SERIES_VERSIONS(Model.VERSION_TABLE_NAME, Model.VERSION_VERSIONABLE_KEY,
+            null, null, "__SERIES_VERSIONS__"),
+
+    /**
+     * Selection for the proxies of a given version series.
+     */
+    SERIES_PROXIES(Model.PROXY_TABLE_NAME, Model.PROXY_VERSIONABLE_KEY, null,
+            null, Invalidations.SERIES_PROXIES),
+
+    /**
+     * Selection for the proxies of a given target.
+     */
+    TARGET_PROXIES(Model.PROXY_TABLE_NAME, Model.PROXY_TARGET_KEY, null, null,
+            Invalidations.TARGET_PROXIES);
 
     /**
      * The table name for this selection.
@@ -46,8 +64,7 @@ public enum SelectionType {
     /**
      * The key to use to additionally filter on criterion.
      * <p>
-     * For instance for a children selection this is the complex property
-     * flag.
+     * For instance for a children selection this is the complex property flag.
      * <p>
      * This can be {@code null} for no criterion filtering.
      */
@@ -58,8 +75,8 @@ public enum SelectionType {
      */
     public final String invalidationTableName;
 
-    private SelectionType(String tableName, String selKey,
-            String filterKey, String criterionKey, String invalidationTableName) {
+    private SelectionType(String tableName, String selKey, String filterKey,
+            String criterionKey, String invalidationTableName) {
         this.tableName = tableName;
         this.selKey = selKey;
         this.filterKey = filterKey;

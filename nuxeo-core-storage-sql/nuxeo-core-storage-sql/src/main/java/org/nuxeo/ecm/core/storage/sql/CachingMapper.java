@@ -76,18 +76,6 @@ public class CachingMapper extends CachingRowMapper implements Mapper {
     }
 
     @Override
-    public Serializable getVersionIdByLabel(Serializable versionSeriesId,
-            String label) throws StorageException {
-        return mapper.getVersionIdByLabel(versionSeriesId, label);
-    }
-
-    @Override
-    public Serializable getLastVersionId(Serializable versionSeriesId)
-            throws StorageException {
-        return mapper.getLastVersionId(versionSeriesId);
-    }
-
-    @Override
     public PartialList<Serializable> query(String query,
             QueryFilter queryFilter, boolean countTotal)
             throws StorageException {

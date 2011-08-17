@@ -101,20 +101,6 @@ public class SQLInfo {
 
     protected final Map<String, SQLInfoSelect> selectFragmentById;
 
-    protected SQLInfoSelect selectVersionsBySeries;
-
-    protected SQLInfoSelect selectVersionsBySeriesDesc;
-
-    protected SQLInfoSelect selectVersionBySeriesAndLabel;
-
-    protected SQLInfoSelect selectProxiesBySeries;
-
-    protected SQLInfoSelect selectProxiesByTarget;
-
-    protected SQLInfoSelect selectProxiesByVersionSeriesAndParent;
-
-    protected SQLInfoSelect selectProxiesByTargetAndParent;
-
     protected List<Column> clusterInvalidationsColumns;
 
     protected Map<String, List<SQLStatement>> sqlStatements;
@@ -440,41 +426,13 @@ public class SQLInfo {
         versionTable.addIndex(model.VERSION_VERSIONABLE_KEY);
         // don't index series+label, a simple label scan will suffice
 
-        selectVersionsBySeries = makeJoinSelect(versionTable,
-                new String[] { model.VERSION_VERSIONABLE_KEY }, hierTable,
-                new String[] { model.MAIN_IS_VERSION_KEY }, new String[] {
-                        model.VERSION_CREATED_KEY, ORDER_ASC });
-
-        selectVersionsBySeriesDesc = makeJoinSelect(versionTable,
-                new String[] { model.VERSION_VERSIONABLE_KEY }, hierTable,
-                new String[] { model.MAIN_IS_VERSION_KEY }, new String[] {
-                        model.VERSION_CREATED_KEY, ORDER_DESC });
-
-        selectVersionBySeriesAndLabel = makeJoinSelect(versionTable,
-                new String[] { model.VERSION_VERSIONABLE_KEY,
-                        model.VERSION_LABEL_KEY }, hierTable,
-                new String[] { model.MAIN_IS_VERSION_KEY });
-
         /*
          * proxies
          */
 
         Table proxyTable = database.getTable(model.PROXY_TABLE_NAME);
-
-        selectProxiesBySeries = makeSelect(proxyTable,
-                model.PROXY_VERSIONABLE_KEY);
         proxyTable.addIndex(model.PROXY_VERSIONABLE_KEY);
-
-        selectProxiesByTarget = makeSelect(proxyTable, model.PROXY_TARGET_KEY);
         proxyTable.addIndex(model.PROXY_TARGET_KEY);
-
-        selectProxiesByVersionSeriesAndParent = makeJoinSelect(proxyTable,
-                new String[] { model.PROXY_VERSIONABLE_KEY }, hierTable,
-                new String[] { model.HIER_PARENT_KEY });
-
-        selectProxiesByTargetAndParent = makeJoinSelect(proxyTable,
-                new String[] { model.PROXY_TARGET_KEY }, hierTable,
-                new String[] { model.HIER_PARENT_KEY });
 
         /*
          * fulltext
@@ -609,8 +567,9 @@ public class SQLInfo {
     }
 
     protected void initSelections() {
-        SQLInfoSelection s = new SQLInfoSelection(SelectionType.CHILDREN);
-        selections.put(s.type, s);
+        for (SelectionType selType : SelectionType.values()) {
+            selections.put(selType, new SQLInfoSelection(selType));
+        }
     }
 
     // ----- prepare one table -----
@@ -717,7 +676,7 @@ public class SQLInfo {
         }
 
         protected void postProcessSelectById() {
-            String[] orderBys = orderBy == null ? new String[0] : new String[] {
+            String[] orderBys = orderBy == null ? NO_ORDER_BY : new String[] {
                     orderBy, ORDER_ASC };
             SQLInfoSelect select = makeSelect(table, orderBys, model.MAIN_KEY);
             selectFragmentById.put(tableName, select);
@@ -937,14 +896,14 @@ public class SQLInfo {
             SQLInfoSelect selectAll;
             SQLInfoSelect selectFiltered;
             if (selType.criterionKey == null) {
-                selectAll = makeSelect(table, new String[0], selType.selKey);
-                selectFiltered = makeSelect(table, new String[0],
-                        selType.selKey, selType.filterKey);
+                selectAll = makeSelect(table, NO_ORDER_BY, selType.selKey);
+                selectFiltered = makeSelect(table, NO_ORDER_BY, selType.selKey,
+                        selType.filterKey);
             } else {
-                selectAll = makeSelect(table, new String[0], selType.selKey,
+                selectAll = makeSelect(table, NO_ORDER_BY, selType.selKey,
                         selType.criterionKey);
-                selectFiltered = makeSelect(table, new String[0],
-                        selType.selKey, selType.filterKey, selType.criterionKey);
+                selectFiltered = makeSelect(table, NO_ORDER_BY, selType.selKey,
+                        selType.filterKey, selType.criterionKey);
             }
             this.selectAll = selectAll;
             this.selectFiltered = selectFiltered;
@@ -994,16 +953,12 @@ public class SQLInfo {
         }
     }
 
-    /**
-     * Basic SELECT x, y, z FROM table WHERE a = ? AND b = ?
-     */
-    public SQLInfoSelect makeSelect(Table table, String... freeColumns) {
-        String[] orderBys = new String[0];
-        return makeSelect(table, orderBys, freeColumns);
-    }
+    private static String[] NO_ORDER_BY = new String[0];
 
     /**
-     * Basic SELECT with optional ORDER BY x, y DESC
+     * Basic SELECT x, y, z FROM table WHERE a = ? AND b = ?
+     * <p>
+     * with optional ORDER BY x, y DESC
      */
     public static SQLInfoSelect makeSelect(Table table, String[] orderBys,
             String... freeColumns) {
@@ -1039,73 +994,6 @@ public class SQLInfo {
             String ascdesc = orderBys[i].equals(ORDER_DESC) ? " " + ORDER_DESC
                     : "";
             orders.add(table.getColumn(name).getQuotedName() + ascdesc);
-        }
-        select.setOrderBy(StringUtils.join(orders, ", "));
-        return new SQLInfoSelect(select.getStatement(), whatColumns,
-                whereColumns, opaqueColumns.isEmpty() ? null : opaqueColumns);
-    }
-
-    /**
-     * Joining SELECT T.x, T.y, T.z FROM T, U WHERE T.id = U.id AND T.a = ? and
-     * U.b = ?
-     */
-    public SQLInfoSelect makeJoinSelect(Table table, String[] freeColumns,
-            Table joinTable, String[] joinCriteria) {
-        return makeJoinSelect(table, freeColumns, joinTable, joinCriteria,
-                new String[0]);
-    }
-
-    /**
-     * Joining SELECT T.x, T.y, T.z FROM T, U WHERE T.id = U.id AND T.a = ? and
-     * U.b = ? ORDER BY x, y DESC
-     */
-    public SQLInfoSelect makeJoinSelect(Table table, String[] freeColumns,
-            Table joinTable, String[] joinCriteria, String[] orderBys) {
-        List<String> freeColumnsList = Arrays.asList(freeColumns);
-        List<Column> whatColumns = new LinkedList<Column>();
-        List<Column> whereColumns = new LinkedList<Column>();
-        List<Column> opaqueColumns = new LinkedList<Column>();
-        List<String> whats = new LinkedList<String>();
-        List<String> wheres = new LinkedList<String>();
-        String join = table.getColumn(model.MAIN_KEY).getFullQuotedName()
-                + " = "
-                + joinTable.getColumn(model.MAIN_KEY).getFullQuotedName();
-        wheres.add(join);
-        for (Column column : table.getColumns()) {
-            String qname = column.getFullQuotedName();
-            if (freeColumnsList.contains(column.getKey())) {
-                whereColumns.add(column);
-                wheres.add(qname + " = ?");
-            } else if (column.isOpaque()) {
-                opaqueColumns.add(column);
-            } else {
-                whatColumns.add(column);
-                whats.add(qname);
-            }
-        }
-        if (whats.isEmpty()) {
-            // only opaque columns, don't generate an illegal SELECT
-            whats.add(table.getColumn(model.MAIN_KEY).getQuotedName());
-        }
-        for (String name : joinCriteria) {
-            Column column = joinTable.getColumn(name);
-            whereColumns.add(column);
-            wheres.add(column.getFullQuotedName() + " = ?");
-        }
-        Select select = new Select(table);
-        select.setWhat(StringUtils.join(whats, ", "));
-        select.setFrom(table.getQuotedName() + ", " + joinTable.getQuotedName());
-        select.setWhere(StringUtils.join(wheres, " AND "));
-        List<String> orders = new LinkedList<String>();
-        for (int i = 0; i < orderBys.length; i++) {
-            String name = orderBys[i++];
-            String ascdesc = orderBys[i].equals(ORDER_DESC) ? " " + ORDER_DESC
-                    : "";
-            Column c = table.getColumn(name);
-            if (c == null) {
-                c = joinTable.getColumn(name);
-            }
-            orders.add(c.getQuotedName() + ascdesc);
         }
         select.setOrderBy(StringUtils.join(orders, ", "));
         return new SQLInfoSelect(select.getStatement(), whatColumns,

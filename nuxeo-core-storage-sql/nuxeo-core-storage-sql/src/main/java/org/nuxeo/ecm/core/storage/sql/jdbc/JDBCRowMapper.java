@@ -769,9 +769,9 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
     }
 
     @Override
-    public List<Row> readSelectionRows(SelectionType selType, Serializable selId,
-            Serializable filter, Serializable criterion, boolean limitToOne)
-            throws StorageException {
+    public List<Row> readSelectionRows(SelectionType selType,
+            Serializable selId, Serializable filter, Serializable criterion,
+            boolean limitToOne) throws StorageException {
         SQLInfoSelection selInfo = sqlInfo.getSelection(selType);
         Map<String, Serializable> criteriaMap = new HashMap<String, Serializable>();
         criteriaMap.put(selType.selKey, selId);
@@ -790,41 +790,8 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
     }
 
     @Override
-    public List<Row> getVersionRows(Serializable versionSeriesId)
-            throws StorageException {
-        SQLInfoSelect select = sqlInfo.selectVersionsBySeries;
-        Map<String, Serializable> criteriaMap = new HashMap<String, Serializable>();
-        criteriaMap.put(model.VERSION_VERSIONABLE_KEY, versionSeriesId);
-        criteriaMap.put(model.MAIN_IS_VERSION_KEY, Boolean.TRUE);
-        return getSelectRows(model.VERSION_TABLE_NAME, select, criteriaMap,
-                null, false);
-    }
-
-    @Override
-    public List<Row> getProxyRows(Serializable searchId, boolean byTarget,
-            Serializable parentId) throws StorageException {
-        Map<String, Serializable> criteriaMap = Collections.singletonMap(
-                byTarget ? model.PROXY_TARGET_KEY : model.PROXY_VERSIONABLE_KEY,
-                searchId);
-        SQLInfoSelect select;
-        Map<String, Serializable> joinMap;
-        if (parentId == null) {
-            select = byTarget ? sqlInfo.selectProxiesByTarget
-                    : sqlInfo.selectProxiesBySeries;
-            joinMap = null;
-        } else {
-            select = byTarget ? sqlInfo.selectProxiesByTargetAndParent
-                    : sqlInfo.selectProxiesByVersionSeriesAndParent;
-            joinMap = Collections.singletonMap(model.HIER_PARENT_KEY, parentId);
-        }
-        return getSelectRows(model.PROXY_TABLE_NAME, select, criteriaMap,
-                joinMap, false);
-    }
-
-    @Override
-    public CopyHierarchyResult copyHierarchy(IdWithTypes source,
-            Serializable destParentId, String destName, Row overwriteRow)
-            throws StorageException {
+    public CopyResult copy(IdWithTypes source, Serializable destParentId,
+            String destName, Row overwriteRow) throws StorageException {
         // assert !model.separateMainTable; // other case not implemented
         Invalidations invalidations = new Invalidations();
         try {
@@ -852,6 +819,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                         invalParentId));
             }
             // copy all collected fragments
+            Set<Serializable> proxyIds = new HashSet<Serializable>();
             for (Entry<String, Set<Serializable>> entry : model.getPerFragmentIds(
                     idToTypes).entrySet()) {
                 String tableName = entry.getKey();
@@ -860,26 +828,27 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                     continue;
                 }
                 Set<Serializable> ids = entry.getValue();
-                // boolean overwrite = overwriteId != null
-                // && !tableName.equals(model.hierTableName);
-                // overwrite ? overwriteId : null
+                if (tableName.equals(model.PROXY_TABLE_NAME)) {
+                    for (Serializable id : ids) {
+                        proxyIds.add(idMap.get(id)); // copied ids
+                    }
+                }
                 Boolean invalidation = copyRows(tableName, ids, idMap,
                         overwriteId);
-                // TODO XXX check code:
                 if (invalidation != null) {
                     // overwrote something
                     // make sure things are properly invalidated in this and
                     // other sessions
                     if (Boolean.TRUE.equals(invalidation)) {
-                        invalidations.addModified(Collections.singleton(new RowId(
-                                tableName, overwriteId)));
+                        invalidations.addModified(new RowId(tableName,
+                                overwriteId));
                     } else {
-                        invalidations.addDeleted(Collections.singleton(new RowId(
-                                tableName, overwriteId)));
+                        invalidations.addDeleted(new RowId(tableName,
+                                overwriteId));
                     }
                 }
             }
-            return new CopyHierarchyResult(newRootId, invalidations);
+            return new CopyResult(newRootId, invalidations, proxyIds);
         } catch (Exception e) {
             checkConnectionReset(e);
             throw new StorageException("Could not copy: "

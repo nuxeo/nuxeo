@@ -56,7 +56,6 @@ import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.Row;
 import org.nuxeo.ecm.core.storage.sql.RowId;
 import org.nuxeo.ecm.core.storage.sql.Session.PathResolver;
-import org.nuxeo.ecm.core.storage.sql.jdbc.SQLInfo.SQLInfoSelect;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Database;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
@@ -591,33 +590,6 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             checkConnectionReset(e);
             throw new StorageException("Could not insert: " + sql, e);
         }
-    }
-
-    // uses JDBCRowMapper
-    @Override
-    public Serializable getVersionIdByLabel(Serializable versionSeriesId,
-            String label) throws StorageException {
-        SQLInfoSelect select = sqlInfo.selectVersionBySeriesAndLabel;
-        Map<String, Serializable> criteriaMap = new HashMap<String, Serializable>();
-        criteriaMap.put(model.MAIN_IS_VERSION_KEY, Boolean.TRUE);
-        criteriaMap.put(model.VERSION_VERSIONABLE_KEY, versionSeriesId);
-        criteriaMap.put(model.VERSION_LABEL_KEY, label);
-        List<Row> rows = getSelectRows(model.VERSION_TABLE_NAME, select,
-                criteriaMap, null, true);
-        return rows == null ? null : rows.get(0).id;
-    }
-
-    // uses JDBCRowMapper
-    @Override
-    public Serializable getLastVersionId(Serializable versionSeriesId)
-            throws StorageException {
-        SQLInfoSelect select = sqlInfo.selectVersionsBySeriesDesc;
-        Map<String, Serializable> criteriaMap = new HashMap<String, Serializable>();
-        criteriaMap.put(model.MAIN_IS_VERSION_KEY, Boolean.TRUE);
-        criteriaMap.put(model.VERSION_VERSIONABLE_KEY, versionSeriesId);
-        List<Row> maps = getSelectRows(model.VERSION_TABLE_NAME, select,
-                criteriaMap, null, true);
-        return maps == null ? null : maps.get(0).id;
     }
 
     protected QueryMaker findQueryMaker(String query) throws StorageException {

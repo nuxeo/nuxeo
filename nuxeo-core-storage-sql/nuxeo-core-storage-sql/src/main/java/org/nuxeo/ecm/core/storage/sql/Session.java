@@ -244,6 +244,16 @@ public interface Session extends Connection {
             Node parent, String name, Long pos) throws StorageException;
 
     /**
+     * Sets a proxies' target.
+     *
+     * @param proxy the proxy
+     * @param targetId the new target id
+     * @since 5.4.3
+     */
+    void setProxyTarget(Node proxy, Serializable targetId)
+            throws StorageException;
+
+    /**
      * Removes a node from the storage.
      *
      * @param node the node to remove

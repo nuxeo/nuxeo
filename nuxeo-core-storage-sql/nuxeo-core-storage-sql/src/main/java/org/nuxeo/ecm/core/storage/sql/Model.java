@@ -257,7 +257,7 @@ public class Model {
 
     protected final RepositoryDescriptor repositoryDescriptor;
 
-    // private final AtomicLong temporaryIdCounter;
+    // private final AtomicLong temporaryIdCounter = new AtomicLong(0);
 
     /** Per-doctype list of schemas. */
     private final Map<String, Set<String>> documentTypesSchemas;
@@ -347,7 +347,6 @@ public class Model {
     public Model(ModelSetup modelSetup) throws StorageException {
         repositoryDescriptor = modelSetup.repositoryDescriptor;
         materializeFulltextSyntheticColumn = modelSetup.materializeFulltextSyntheticColumn;
-        // temporaryIdCounter = new AtomicLong(0);
 
         documentTypesSchemas = new HashMap<String, Set<String>>();
         mixinsDocumentTypes = new HashMap<String, Set<String>>();

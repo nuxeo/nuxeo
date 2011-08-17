@@ -25,8 +25,14 @@ public class Invalidations implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    /** Pseudo-table to use to notify about children invalidated. */
+    /** Pseudo-table for children invalidation. */
     public static final String PARENT = "__PARENT__";
+
+    /** Pseudo-table for series proxies invalidation. */
+    public static final String SERIES_PROXIES = "__SERIES_PROXIES__";
+
+    /** Pseudo-table for target proxies invalidation. */
+    public static final String TARGET_PROXIES = "__TARGET_PROXIES__";
 
     public static final int MODIFIED = 1;
 

@@ -71,33 +71,8 @@ public class SelectionContext {
         return n;
     }
 
-    /**
-     * Reads from the mapper a selection row given a filter value.
-     *
-     * @param id the selection id
-     * @param filter the value to filter on
-     * @return the row
-     */
-    protected Row readSelectionRow(Serializable id, Serializable filter)
-            throws StorageException {
-        List<Row> rows = mapper.readSelectionRows(selType, id, filter,
-                criterion, true);
-        return rows.isEmpty() ? null : rows.get(0);
-    }
-
-    /**
-     * Reads from the mapper all the selection rows.
-     *
-     * @param id the selection id
-     * @return the list of rows
-     */
-    protected List<Row> readSelectionRows(Serializable id)
-            throws StorageException {
-        return mapper.readSelectionRows(selType, id, null, criterion, false);
-    }
-
     /** Gets the proper selection cache. Creates one if missing. */
-    protected Selection getSelection(Serializable id) {
+    private Selection getSelection(Serializable id) {
         Selection selection = softMap.get(id);
         if (selection != null) {
             return selection;
@@ -110,66 +85,68 @@ public class SelectionContext {
                 context, softMap, hardMap);
     }
 
-    protected void addExisting(SimpleFragment fragment, boolean invalidate)
-            throws StorageException {
-        Serializable id = fragment.get(selType.selKey);
-        if (id == null) {
-            return;
+    private boolean applicable(SimpleFragment fragment) throws StorageException {
+        // check table name
+        if (!fragment.row.tableName.equals(selType.tableName)) {
+            return false;
         }
-        getSelection(id).addExisting(fragment.getId());
-        if (invalidate) {
-            modifiedInTransaction.add(id);
+        // check criterion if there's one
+        if (selType.criterionKey != null) {
+            Serializable crit = fragment.get(selType.criterionKey);
+            if (!criterion.equals(crit)) {
+                return false;
+            }
         }
-    }
-
-    protected void addCreated(SimpleFragment fragment) throws StorageException {
-        Serializable id = fragment.get(selType.selKey);
-        if (id == null) {
-            return;
-        }
-        getSelection(id).addCreated(fragment.getId());
-        modifiedInTransaction.add(id);
-    }
-
-    protected void remove(SimpleFragment fragment) throws StorageException {
-        Serializable id = fragment.get(selType.selKey);
-        if (id == null) {
-            return;
-        }
-        getSelection(id).remove(fragment.getId());
-        modifiedInTransaction.add(id);
+        return true;
     }
 
     /**
-     * Records the fragment as a new selection member.
-     *
-     * @param fragment the fragment
+     * Records the fragment as a just-created selection member.
      */
-    public void recordFragment(Fragment fragment) throws StorageException {
-        if (!selType.tableName.equals(fragment.row.tableName)) {
+    public void recordCreated(SimpleFragment fragment) throws StorageException {
+        if (!applicable(fragment)) {
             return;
         }
-        // add existing fragment to its selection
-        addExisting((SimpleFragment) fragment, false);
-    }
-
-    /**
-     * Records the fragment as a just-created selection member, and creates a
-     * new selection for it.
-     *
-     * @param fragment the fragment
-     */
-    public void createdFragment(SimpleFragment fragment)
-            throws StorageException {
-        if (!selType.tableName.equals(fragment.row.tableName)) {
-            return;
-        }
-        // add as a new fragment in the selection
-        addCreated(fragment);
-        // note that this new fragment doesn't have a selection
         Serializable id = fragment.getId();
-        new Selection(id, selType.tableName, true, selType.filterKey, context,
-                softMap, hardMap);
+        // add as a new fragment in the selection
+        Serializable selId = fragment.get(selType.selKey);
+        if (selId != null) {
+            getSelection(selId).addCreated(id);
+            modifiedInTransaction.add(selId);
+        }
+    }
+
+    /**
+     * Notes that a new empty selection should be created.
+     */
+    public void newSelection(Serializable id) {
+        new Selection(id, selType.tableName, true, selType.filterKey,
+                context, softMap, hardMap);
+    }
+
+    public void recordExisting(SimpleFragment fragment, boolean invalidate)
+            throws StorageException {
+        if (!applicable(fragment)) {
+            return;
+        }
+        Serializable selId = fragment.get(selType.selKey);
+        if (selId != null) {
+            getSelection(selId).addExisting(fragment.getId());
+            if (invalidate) {
+                modifiedInTransaction.add(selId);
+            }
+        }
+    }
+
+    public void recordRemoved(SimpleFragment fragment) throws StorageException {
+        if (!applicable(fragment)) {
+            return;
+        }
+        Serializable selId = fragment.get(selType.selKey);
+        if (selId != null) {
+            getSelection(selId).remove(fragment.getId());
+            modifiedInTransaction.add(selId);
+        }
     }
 
     /**
@@ -177,16 +154,18 @@ public class SelectionContext {
      * <p>
      * If the fragment is not in the context, fetch it from the mapper.
      *
-     * @param id the selection id
+     * @param selId the selection id
      * @param filter the value to filter on
      * @return the fragment, or {@code null} if not found
      */
-    public SimpleFragment getSelectionFragment(Serializable id, String filter)
+    public SimpleFragment getSelectionFragment(Serializable selId, String filter)
             throws StorageException {
-        SimpleFragment fragment = getSelection(id).getFragmentByValue(filter);
+        SimpleFragment fragment = getSelection(selId).getFragmentByValue(filter);
         if (fragment == SimpleFragment.UNKNOWN) {
             // read it through the mapper
-            Row row = readSelectionRow(id, filter);
+            List<Row> rows = mapper.readSelectionRows(selType, selId, filter,
+                    criterion, true);
+            Row row = rows.isEmpty() ? null : rows.get(0);
             fragment = (SimpleFragment) context.getFragmentFromFetchedRow(row,
                     false);
         }
@@ -198,18 +177,19 @@ public class SelectionContext {
      * <p>
      * No sorting on value is done.
      *
-     * @param id the selection id
+     * @param selId the selection id
      * @param filter the value to filter on, or {@code null} for all
      * @return the list of fragments
      */
-    public List<SimpleFragment> getSelectionFragments(Serializable id,
+    public List<SimpleFragment> getSelectionFragments(Serializable selId,
             String filter) throws StorageException {
-        Selection selection = getSelection(id);
+        Selection selection = getSelection(selId);
         List<SimpleFragment> fragments = selection.getFragmentsByValue(filter);
         if (fragments == null) {
             // no complete list is known
             // ask the actual selection to the mapper
-            List<Row> rows = readSelectionRows(id);
+            List<Row> rows = mapper.readSelectionRows(selType, selId, null,
+                    criterion, false);
             List<Fragment> frags = context.getFragmentsFromFetchedRows(rows,
                     false);
             fragments = new ArrayList<SimpleFragment>(frags.size());
@@ -225,14 +205,6 @@ public class SelectionContext {
             fragments = selection.getFragmentsByValue(filter);
         }
         return fragments;
-    }
-
-    /** Deletes a fragment from the context. */
-    public void removeFragment(Fragment fragment) throws StorageException {
-        if (!selType.tableName.equals(fragment.row.tableName)) {
-            return;
-        }
-        remove((SimpleFragment) fragment);
     }
 
     public void postSave() {
@@ -271,7 +243,8 @@ public class SelectionContext {
      */
     public void gatherInvalidations(Invalidations invalidations) {
         for (Serializable id : modifiedInTransaction) {
-            invalidations.addModified(new RowId(selType.invalidationTableName, id));
+            invalidations.addModified(new RowId(selType.invalidationTableName,
+                    id));
         }
         modifiedInTransaction.clear();
     }

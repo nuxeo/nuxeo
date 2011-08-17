@@ -304,6 +304,12 @@ public class ConnectionImpl implements Session {
     }
 
     @Override
+    public void setProxyTarget(Node proxy, Serializable targetId)
+            throws StorageException {
+        getSession().setProxyTarget(proxy, targetId);
+    }
+
+    @Override
     public Node addProxy(Serializable targetId, Serializable versionSeriesId,
             Node parent, String name, Long pos) throws StorageException {
         return getSession().addProxy(targetId, versionSeriesId, parent, name,

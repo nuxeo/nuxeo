@@ -397,37 +397,14 @@ public class CachingRowMapper implements RowMapper {
         return rows;
     }
 
-    // TODO this API isn't cached well...
-    @Override
-    public List<Row> getVersionRows(Serializable versionableId)
-            throws StorageException {
-        List<Row> rows = rowMapper.getVersionRows(versionableId);
-        for (Row row : rows) {
-            cachePut(row);
-        }
-        return rows;
-    }
-
-    // TODO this API isn't cached well...
-    @Override
-    public List<Row> getProxyRows(Serializable searchId, boolean byTarget,
-            Serializable parentId) throws StorageException {
-        List<Row> rows = rowMapper.getProxyRows(searchId, byTarget, parentId);
-        for (Row row : rows) {
-            cachePut(row);
-        }
-        return rows;
-    }
-
     /*
      * ----- Copy -----
      */
 
     @Override
-    public CopyHierarchyResult copyHierarchy(IdWithTypes source,
-            Serializable destParentId, String destName, Row overwriteRow)
-            throws StorageException {
-        CopyHierarchyResult result = rowMapper.copyHierarchy(source,
+    public CopyResult copy(IdWithTypes source, Serializable destParentId,
+            String destName, Row overwriteRow) throws StorageException {
+        CopyResult result = rowMapper.copy(source,
                 destParentId, destName, overwriteRow);
         Invalidations invalidations = result.invalidations;
         if (invalidations.modified != null) {
