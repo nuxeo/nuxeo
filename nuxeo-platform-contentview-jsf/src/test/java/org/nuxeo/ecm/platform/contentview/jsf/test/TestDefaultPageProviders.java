@@ -146,7 +146,7 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
         assertNotNull(pp);
 
         assertEquals(-1, pp.getResultsCount());
-        assertEquals(-1, pp.getNumberOfPages());
+        assertEquals(0, pp.getNumberOfPages());
 
         // init results
         List<DocumentModel> docs = pp.getCurrentPage();
@@ -241,7 +241,7 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
         assertNotNull(pp);
 
         assertEquals(-1, pp.getResultsCount());
-        assertEquals(-1, pp.getNumberOfPages());
+        assertEquals(0, pp.getNumberOfPages());
 
         // init results
         List<DocumentModel> docs = pp.getCurrentPage();
@@ -334,7 +334,7 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
         assertNotNull(pp);
 
         assertEquals(-1, pp.getResultsCount());
-        assertEquals(-1, pp.getNumberOfPages());
+        assertEquals(0, pp.getNumberOfPages());
 
         // init results
         List<Map<String, Serializable>> docs = pp.getCurrentPage();
@@ -413,7 +413,7 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
         assertNotNull(pp);
 
         assertEquals(-1, pp.getResultsCount());
-        assertEquals(-1, pp.getNumberOfPages());
+        assertEquals(0, pp.getNumberOfPages());
         assertNull(pp.getError());
         assertNull(pp.getErrorMessage());
 
@@ -461,7 +461,7 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
         assertNotNull(pp);
 
         assertEquals(-1, pp.getResultsCount());
-        assertEquals(-1, pp.getNumberOfPages());
+        assertEquals(0, pp.getNumberOfPages());
 
         // init results
         List<DocumentModel> docs = pp.getCurrentPage();
