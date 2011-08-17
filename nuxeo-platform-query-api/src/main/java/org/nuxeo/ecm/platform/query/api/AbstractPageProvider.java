@@ -678,8 +678,9 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
     }
 
     /**
-     * Returns the maximum number of empty pages that can be fetched empty. Can
-     * be useful for displaying pages of a provider without results count.
+     * Returns the maximum number of empty pages that can be fetched empty
+     * (defaults to 1). Can be useful for displaying pages of a provider
+     * without results count.
      *
      * @since 5.4.3
      */
