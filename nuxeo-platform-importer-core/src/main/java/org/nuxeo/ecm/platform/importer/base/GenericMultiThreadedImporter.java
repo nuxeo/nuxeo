@@ -359,7 +359,12 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
      * @throws Exception
      */
     protected DocumentModel createTargetContainer() throws Exception {
-        return getCoreSession().getDocument(new PathRef(importWritePath));
+        try {
+            return getCoreSession().getDocument(new PathRef(importWritePath));
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw new Exception(e);
+        }
     }
 
     public ImporterThreadingPolicy getThreadPolicy() {

@@ -138,6 +138,8 @@ public abstract class AbstractImporterExecutor {
      * @return
      * @throws Exception
      */
-    public abstract String run(ImporterRunner runner, Boolean interactive)
-            throws Exception;
+    public String run(ImporterRunner runner, Boolean interactive)
+            throws Exception {
+        return doRun(runner, interactive);
+    }
 }

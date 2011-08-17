@@ -35,7 +35,8 @@ public class HttpFileImporterExecutor extends AbstractJaxRSImporterExecutor {
             @QueryParam("interactive") Boolean interactive) throws Exception {
 
         if (inputPath == null || targetPath == null) {
-            return "can not import";
+            return "Can not import, missing "
+                    + (inputPath == null ? "inputPath" : "targetPath");
         }
         if (skipRootContainerCreation == null) {
             skipRootContainerCreation = false;
