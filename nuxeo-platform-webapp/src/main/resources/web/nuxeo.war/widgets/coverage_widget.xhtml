@@ -27,12 +27,12 @@
         id="#{widget.id}_editselect" onchange="#{widgetProperty_onchange}"
         required="#{widget.required}">
         <nxdir:chainSelectListbox index="0" size="0" directoryName="continent"
-          localize="true" id="#{widget.id}_continent" ordering="label">
+          localize="true" id="#{widget.id}_continent" ordering="ordering,label">
           <a4j:support event="onchange" reRender="#{widget.id}_country" />
         </nxdir:chainSelectListbox>
 
         <nxdir:chainSelectListbox size="0" index="1" directoryName="country"
-          localize="true" id="#{widget.id}_country" ordering="label" />
+          localize="true" id="#{widget.id}_country" ordering="ordering,label" />
       </nxdir:chainSelect>
     </a4j:region>
     <h:message styleClass="errorMessage" for="#{widget.id}_editselect"

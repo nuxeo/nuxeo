@@ -28,12 +28,12 @@
         allowBranchSelection="false" onchange="#{widgetProperty_onchange}"
         required="#{widget.required}">
         <nxdir:chainSelectListbox index="0" size="4" directoryName="topic"
-          localize="true" id="#{widget.id}_topic" ordering="label">
+          localize="true" id="#{widget.id}_topic" ordering="ordering,label">
           <a4j:support event="onchange" reRender="#{widget.id}_subtopic" />
         </nxdir:chainSelectListbox>
 
         <nxdir:chainSelectListbox id="#{widget.id}_subtopic" size="4" index="1"
-          directoryName="subtopic" localize="true" ordering="label" />
+          directoryName="subtopic" localize="true" ordering="ordering,label" />
 
         <a4j:commandButton value="#{messages['command.add']}"
           styleClass="button" immediate="true"
