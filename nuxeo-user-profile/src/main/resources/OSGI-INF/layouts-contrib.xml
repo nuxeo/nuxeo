@@ -27,6 +27,22 @@
         /widgets/summary/user_profile_widget_template.xhtml
       </property>
     </widgetType>
+
+    <widgetType name="avatar">
+      <configuration>
+        <sinceVersion>5.4.3</sinceVersion>
+        <title>User Profile Avatar</title>
+        <description>
+          Widget allowing to upload a picture for the user avatar.
+        </description>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/avatar_widget_template.xhtml
+      </property>
+    </widgetType>
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
@@ -34,7 +50,7 @@
 
     <widget name="summary_user_profile" type="summary_user_profile" />
 
-    <widget name="avatar" type="template">
+    <widget name="avatar" type="avatar">
       <labels>
         <label mode="any">label.userprofile.avatar</label>
       </labels>
@@ -45,11 +61,11 @@
         </label>
       </helpLabels>
       <fields>
+        <field></field>
         <field>userprofile:avatar</field>
       </fields>
       <properties mode="any">
-        <property name="template">/widgets/image_widget_template.xhtml
-        </property>
+        <property name="file_property_name">userprofile:avatar</property>
       </properties>
     </widget>
 
