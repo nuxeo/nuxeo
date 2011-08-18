@@ -38,22 +38,20 @@ public class DefaultImporterServiceImpl implements DefaultImporterService {
 
     private Class<? extends SourceNode> sourceNodeClass;
 
-    protected SourceNode sourceNode;
+    private DefaultDocumentModelFactory documentModelFactory;
 
-    protected DefaultDocumentModelFactory documentModelFactory;
+    private String folderishDocType;
 
-    protected String folderishDocType;
+    private String leafDocType;
 
-    protected String leafDocType;
-
-    protected ImporterLogger importerLogger;
+    private ImporterLogger importerLogger;
 
     @Override
     public void importDocuments(String destinationPath, String sourcePath,
             boolean skipRootContainerCreation, int batchSize,
             int noImportingThreads) throws ClientException {
-
-        if (getSourceNode(sourcePath) == null) {
+        SourceNode sourceNode = createNewSourceNodeInstanceForSourcePath(sourcePath);
+        if (sourceNode == null) {
             log.error("Need to set a sourceNode to be used by this importer");
             return;
         }
@@ -64,7 +62,7 @@ public class DefaultImporterServiceImpl implements DefaultImporterService {
         DefaultImporterExecutor executor = new DefaultImporterExecutor();
         executor.setFactory(getDocumentModelFactory());
         try {
-            executor.run(getSourceNode(sourcePath), destinationPath,
+            executor.run(sourceNode, destinationPath,
                     skipRootContainerCreation, batchSize, noImportingThreads,
                     true);
         } catch (Exception e) {
@@ -74,12 +72,14 @@ public class DefaultImporterServiceImpl implements DefaultImporterService {
 
     }
 
+    @Override
     public String importDocuments(AbstractImporterExecutor executor,
             String destinationPath, String sourcePath,
             boolean skipRootContainerCreation, int batchSize,
             int noImportingThreads, boolean interactive) throws ClientException {
 
-        if (getSourceNode(sourcePath) == null) {
+        SourceNode sourceNode = createNewSourceNodeInstanceForSourcePath(sourcePath);
+        if (sourceNode == null) {
             log.error("Need to set a sourceNode to be used by this importer");
             return "Can not import";
         }
@@ -88,8 +88,7 @@ public class DefaultImporterServiceImpl implements DefaultImporterService {
         }
 
         ImporterRunnerConfiguration configuration = new ImporterRunnerConfiguration.Builder(
-                getSourceNode(sourcePath), destinationPath,
-                executor.getLogger()).skipRootContainerCreation(
+                sourceNode, destinationPath, executor.getLogger()).skipRootContainerCreation(
                 skipRootContainerCreation).batchSize(batchSize).nbThreads(
                 noImportingThreads).build();
         GenericMultiThreadedImporter runner;
@@ -118,15 +117,15 @@ public class DefaultImporterServiceImpl implements DefaultImporterService {
             int batchSize, int noImportingThreads, boolean interactive)
             throws ClientException {
         DefaultDocumentModelFactory defaultDocModelFactory = getDocumentModelFactory();
-        defaultDocModelFactory.setLeafType(leafType);
-        defaultDocModelFactory.setFolderishType(folderishType);
+        defaultDocModelFactory.setLeafType(leafType == null ? getLeafDocType()
+                : leafType);
+        defaultDocModelFactory.setFolderishType(folderishType == null ? getFolderishDocType()
+                : folderishType);
         setDocumentModelFactory(defaultDocModelFactory);
         String res = importDocuments(executor, destinationPath, sourcePath,
                 skipRootContainerCreation, batchSize, noImportingThreads,
                 interactive);
-        // reset the document factory to use back the contributed values
         setDocumentModelFactory(null);
-        setSourceNode(null);
         return res;
 
     }
@@ -142,26 +141,22 @@ public class DefaultImporterServiceImpl implements DefaultImporterService {
         this.sourceNodeClass = sourceNodeClass;
     }
 
-    public SourceNode getSourceNode(String sourcePath) {
-        if (sourceNode == null) {
-            if (sourceNodeClass != null
-                    && FileSourceNode.class.isAssignableFrom(sourceNodeClass)) {
-                try {
-                    setSourceNode(sourceNodeClass.getConstructor(String.class).newInstance(
-                            sourcePath));
-                } catch (Exception e) {
-                    log.error(e);
-                }
+    protected SourceNode createNewSourceNodeInstanceForSourcePath(
+            String sourcePath) {
+        SourceNode sourceNode = null;
+        if (sourceNodeClass != null
+                && FileSourceNode.class.isAssignableFrom(sourceNodeClass)) {
+            try {
+                sourceNode = sourceNodeClass.getConstructor(String.class).newInstance(
+                        sourcePath);
+            } catch (Exception e) {
+                log.error(e);
             }
         }
         return sourceNode;
     }
 
-    public void setSourceNode(SourceNode sourceNode) {
-        this.sourceNode = sourceNode;
-    }
-
-    public DefaultDocumentModelFactory getDocumentModelFactory() {
+    protected DefaultDocumentModelFactory getDocumentModelFactory() {
         if (documentModelFactory == null) {
             if (docModelFactoryClass != null
                     && DefaultDocumentModelFactory.class.isAssignableFrom(docModelFactoryClass)) {
@@ -177,12 +172,12 @@ public class DefaultImporterServiceImpl implements DefaultImporterService {
         return documentModelFactory;
     }
 
-    public void setDocumentModelFactory(
+    protected void setDocumentModelFactory(
             DefaultDocumentModelFactory documentModelFactory) {
         this.documentModelFactory = documentModelFactory;
     }
 
-    public String getFolderishDocType() {
+    protected String getFolderishDocType() {
         return folderishDocType;
     }
 
@@ -191,7 +186,7 @@ public class DefaultImporterServiceImpl implements DefaultImporterService {
         this.folderishDocType = folderishDocType;
     }
 
-    public String getLeafDocType() {
+    protected String getLeafDocType() {
         return leafDocType;
     }
 
@@ -200,10 +195,11 @@ public class DefaultImporterServiceImpl implements DefaultImporterService {
         this.leafDocType = fileDocType;
     }
 
-    public ImporterLogger getImporterLogger() {
+    protected ImporterLogger getImporterLogger() {
         return importerLogger;
     }
 
+    @Override
     public void setImporterLogger(ImporterLogger importerLogger) {
         this.importerLogger = importerLogger;
     }

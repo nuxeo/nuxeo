@@ -176,7 +176,8 @@ public class GenericThreadedImportTask implements Runnable {
                     node);
         } catch (Exception e) {
             String errorMsg = "Unable to create folderish document for "
-                    + node.getSourcePath() + ":" + e.getCause().getMessage();
+                    + node.getSourcePath() + ":" + e
+                    + (e.getCause() != null ? e.getCause() : "");
             fslog(errorMsg, true);
             log.error(errorMsg);
             throw new Exception(e);
@@ -204,7 +205,8 @@ public class GenericThreadedImportTask implements Runnable {
             leaf = getFactory().createLeafNode(getCoreSession(), parent, node);
         } catch (Exception e) {
             String errMsg = "Unable to create leaf document for "
-                    + node.getSourcePath() + ":" + e.getCause().getMessage();
+                    + node.getSourcePath() + ":" + e
+                    + (e.getCause() != null ? e.getCause() : "");
             fslog(errMsg, true);
             log.error(errMsg);
 

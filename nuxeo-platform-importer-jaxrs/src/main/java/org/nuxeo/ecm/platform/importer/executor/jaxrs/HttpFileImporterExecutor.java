@@ -53,15 +53,13 @@ public class HttpFileImporterExecutor extends AbstractJaxRSImporterExecutor {
             interactive = false;
         }
 
-        if (leafType != null && folderishType != null) {
+        if (leafType != null || folderishType != null) {
             log.info("Importing with the specified doc types");
             return getImporterService().importDocuments(this, leafType,
                     folderishType, targetPath, inputPath,
                     skipRootContainerCreation, batchSize, nbThreads,
                     interactive);
-        }
-
-        else {
+        } else {
             log.info("Importing with the deafult doc types");
             return getImporterService().importDocuments(this, targetPath,
                     inputPath, skipRootContainerCreation, batchSize, nbThreads,

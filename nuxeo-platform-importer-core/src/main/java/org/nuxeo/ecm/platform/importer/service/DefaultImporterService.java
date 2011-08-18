@@ -93,7 +93,8 @@ public interface DefaultImporterService {
      * Imports documents using a the given executor and the contributed
      * documentModelFactory and SourceNode implementations; Allows to overwrite
      * the leaf and folderish types used by the documentModelFactory when
-     * importing
+     * importing; if one of them is not specified then the contributed one is
+     * used
      * 
      * If no documentModelFactory implementation was contributed to the service,
      * <code>DefaultDocumentModelFactory</code> it's used
