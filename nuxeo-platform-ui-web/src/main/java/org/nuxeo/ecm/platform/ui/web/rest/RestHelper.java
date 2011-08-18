@@ -106,6 +106,9 @@ public class RestHelper implements Serializable {
                     navigationContext.setCurrentServerLocation(repoLoc);
                 }
             }
+            if (outcome == null) {
+                outcome = docView.getViewId();
+            }
         }
 
         return outcome;
