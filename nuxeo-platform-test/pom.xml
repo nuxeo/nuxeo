@@ -85,14 +85,12 @@
 
     <dependency>
       <groupId>org.hibernate</groupId>
-      <artifactId>hibernate</artifactId>
-      <version>3.2.0.ga</version>
+      <artifactId>hibernate-core</artifactId>
       <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>hsqldb</groupId>
       <artifactId>hsqldb</artifactId>
-      <version>1.8.0.1</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
