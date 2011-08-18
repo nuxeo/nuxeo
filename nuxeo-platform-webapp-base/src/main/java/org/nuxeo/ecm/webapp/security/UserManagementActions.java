@@ -95,13 +95,29 @@ public class UserManagementActions extends AbstractUserGroupManagement
         return selectedUser;
     }
 
+    public void setSelectedUser(DocumentModel user) {
+        fireSeamEvent(USER_SELECTED_CHANGED);
+        this.selectedUser = user;
+    }
+
+    /**
+     * @deprecated since version 5.4.3, use {@link #setSelectedUserName}
+     *             instead.
+     */
+    @Deprecated
     public void setSelectedUser(String userName) throws ClientException {
         setSelectedUser(refreshUser(userName));
     }
 
-    public void setSelectedUser(DocumentModel user) {
-        fireSeamEvent(USER_SELECTED_CHANGED);
-        this.selectedUser = user;
+    /**
+     * @since 5.4.3
+     */
+    public void setSelectedUserName(String userName) throws ClientException {
+        setSelectedUser(refreshUser(userName));
+    }
+
+    public String getSelectedUserName() throws ClientException {
+        return selectedUser.getId();
     }
 
     // refresh to get references
@@ -316,6 +332,13 @@ public class UserManagementActions extends AbstractUserGroupManagement
         // do not reset the state before actually viewing the user
         shouldResetStateOnTabChange = false;
         return VIEW_HOME;
+    }
+
+    /**
+     * @since 5.4.3
+     */
+    public void setShowUser(String showUser) {
+        this.showUserOrGroup = Boolean.valueOf(showUser);
     }
 
     protected void fireSeamEvent(String eventName) {
