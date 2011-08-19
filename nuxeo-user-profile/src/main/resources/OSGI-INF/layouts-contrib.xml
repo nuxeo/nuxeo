@@ -88,7 +88,6 @@
       <properties widgetMode="edit">
         <property name="format">#{nxu:basicDateFormater()}</property>
       </properties>
-
     </widget>
 
     <widget name="phonenumber" type="text">
@@ -117,72 +116,6 @@
         </property>
       </properties>
     </widget>
-
-    <widget name="schoolworkinfo" type="text">
-      <labels>
-        <label mode="any">label.userprofile.schoolworkinfo</label>
-      </labels>
-      <translated>true</translated>
-      <fields>
-        <field>userprofile:schoolworkinfo</field>
-      </fields>
-      <properties widgetMode="edit">
-        <property name="styleClass">dataInputText</property>
-      </properties>
-    </widget>
-
-    <widget name="interests" type="text">
-      <labels>
-        <label mode="any">label.userprofile.interests</label>
-      </labels>
-      <translated>true</translated>
-      <fields>
-        <field>userprofile:interests</field>
-      </fields>
-      <properties widgetMode="edit">
-        <property name="styleClass">dataInputText</property>
-      </properties>
-    </widget>
-
-    <widget name="careerobjective" type="text">
-      <labels>
-        <label mode="any">label.userprofile.careerobjective</label>
-      </labels>
-      <translated>true</translated>
-      <fields>
-        <field>userprofile:careerobjective</field>
-      </fields>
-      <properties widgetMode="edit">
-        <property name="styleClass">dataInputText</property>
-      </properties>
-    </widget>
-
-    <widget name="skills" type="text">
-      <labels>
-        <label mode="any">label.userprofile.skills</label>
-      </labels>
-      <translated>true</translated>
-      <fields>
-        <field>userprofile:skills</field>
-      </fields>
-      <properties widgetMode="edit">
-        <property name="styleClass">dataInputText</property>
-      </properties>
-    </widget>
-
-    <widget name="publicprofile" type="checkbox">
-      <labels>
-        <label mode="any">label.userprofile.publicprofile</label>
-      </labels>
-      <translated>true</translated>
-      <fields>
-        <field>userprofile:publicprofile</field>
-      </fields>
-      <properties widgetMode="edit">
-        <property name="styleClass">dataInputText</property>
-      </properties>
-    </widget>
-
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
@@ -217,21 +150,6 @@
         </row>
         <row>
           <widget>gender</widget>
-        </row>
-        <row>
-          <widget>schoolworkinfo</widget>
-        </row>
-        <row>
-          <widget>interests</widget>
-        </row>
-        <row>
-          <widget>careerobjective</widget>
-        </row>
-        <row>
-          <widget>skills</widget>
-        </row>
-        <row>
-          <widget>publicprofile</widget>
         </row>
       </rows>
     </layout>
