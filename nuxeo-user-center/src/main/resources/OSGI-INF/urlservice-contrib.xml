@@ -8,6 +8,12 @@
       prefix="nxhome"
       class="org.nuxeo.ecm.platform.url.codec.DocumentPathCodec" />
 
+    <documentation>
+      The user codec uses the given username to select and display a user.
+      Urls are of the form http://site/nuxeo/user/username(/view).
+
+      The view is optional, and defaults to view_home if not present.
+    </documentation>
     <documentViewCodec name="user" enabled="true" default="false"
       prefix="user"
       class="org.nuxeo.ecm.user.center.UserCodec" />
