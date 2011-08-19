@@ -119,8 +119,11 @@ public class UserCodec extends AbstractDocumentViewCodec {
                 items.add(viewId);
             }
             String uri = StringUtils.join(items, "/");
-            return URIUtils.addParametersToURIQuery(uri,
-                    docView.getParameters());
+            Map<String, String> parameters = docView.getParameters();
+            if (parameters == null) {
+                parameters = new HashMap<String, String>();
+            }
+            return URIUtils.addParametersToURIQuery(uri, parameters);
         }
         return null;
     }
