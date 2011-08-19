@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -42,6 +42,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
+import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.api.model.impl.ArrayProperty;
 import org.nuxeo.ecm.core.api.model.impl.ComplexProperty;
 import org.nuxeo.ecm.core.api.model.impl.ListProperty;
@@ -110,10 +111,14 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
                             new DateTime(lock.getCreated())));
         }
         json.element("title", doc.getTitle());
-        Calendar cal = (Calendar) doc.getPart("dublincore").getValue("modified");
-        if (cal != null) {
-            json.element("lastModified",
-                    DateParser.formatW3CDateTime(cal.getTime()));
+        try {
+            Calendar cal = (Calendar) doc.getPropertyValue("dc:modified");
+            if (cal != null) {
+                json.element("lastModified",
+                        DateParser.formatW3CDateTime(cal.getTime()));
+            }
+        } catch (PropertyNotFoundException e) {
+            // ignore
         }
 
         if (schemas == null || schemas.length == 0) {
@@ -139,7 +144,7 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
     protected static void addSchema(JSONObject json, DocumentModel doc,
             String schema) throws Exception {
         DocumentPart part = doc.getPart(schema);
-        if (part==null) {
+        if (part == null) {
             return;
         }
         String prefix = part.getSchema().getNamespace().prefix;
@@ -176,7 +181,7 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
                 }
                 JSONArray jsar = new JSONArray();
                 for (Object o : ar) {
-                    jsar.add(((ListType)type).getFieldType().encode(o));
+                    jsar.add(((ListType) type).getFieldType().encode(o));
                 }
                 return jsar;
             } else {
