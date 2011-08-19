@@ -4,13 +4,18 @@
   <parent>
     <groupId>org.nuxeo.ecm.platform</groupId>
     <artifactId>nuxeo-features-parent</artifactId>
-    <version>5.4.3-SNAPSHOT</version>
+    <version>5.4.2-HF06</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.nuxeo.ecm.platform</groupId>
   <artifactId>nuxeo-platform-importer</artifactId>
   <packaging>pom</packaging>
   <name>Nuxeo Importer parent</name>
+  <version>5.4.3-I20110819_0115</version>
+
+  <properties>
+    <nuxeo.platform.importer.version>5.4.3-I20110819_0115</nuxeo.platform.importer.version>
+  </properties>
 
   <modules>
     <module>nuxeo-platform-importer-core</module>
@@ -22,7 +27,7 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-importer-core</artifactId>
-        <version>${nuxeo.features.version}</version>
+        <version>${nuxeo.platform.importer.version}</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
