@@ -83,6 +83,11 @@ public class TestRepositoryDescriptor extends TestCase {
         assertEquals(new HashSet(), fti.excludeFields);
         assertEquals("martian", fti.analyzer);
         assertEquals("other", fti.catalog);
+
+        assertTrue(desc.fulltextExcludedTypes.contains("Folder"));
+        assertTrue(desc.fulltextExcludedTypes.contains("Workspace"));
+        assertTrue(desc.fulltextIncludedTypes.contains("File"));
+        assertTrue(desc.fulltextIncludedTypes.contains("Note"));
     }
 
     public void testLargeTextFields() throws Exception {

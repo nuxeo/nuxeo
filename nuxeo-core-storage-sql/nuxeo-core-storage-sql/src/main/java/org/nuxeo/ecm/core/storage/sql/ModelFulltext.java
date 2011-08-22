@@ -66,4 +66,16 @@ public class ModelFulltext {
 
     public final Map<String, Set<String>> propPathsExcludedByIndexBinary = new HashMap<String, Set<String>>();
 
+    public final Set<String> excludedTypes = new HashSet<String>();
+
+    public final Set<String> includedTypes = new HashSet<String>();
+
+    public boolean isFulltextIndexable(String typeName) {
+        if (includedTypes.contains(typeName)
+                || (includedTypes.isEmpty() && !excludedTypes.contains(typeName))) {
+            return true;
+        }
+        return false;
+    }
+
 }

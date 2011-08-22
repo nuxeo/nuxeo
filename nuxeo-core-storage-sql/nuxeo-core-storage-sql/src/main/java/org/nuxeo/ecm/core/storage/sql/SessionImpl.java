@@ -324,6 +324,10 @@ public class SessionImpl implements Session, XAResource {
             String documentType = document.getPrimaryType();
             String[] mixinTypes = document.getMixinTypes();
 
+            if (Boolean.FALSE.equals(model.getFulltextInfo().isFulltextIndexable(documentType))) {
+                continue;
+            }
+
             for (String indexName : model.getFulltextInfo().indexNames) {
                 Set<String> paths;
                 if (model.getFulltextInfo().indexesAllSimple.contains(indexName)) {
@@ -356,6 +360,10 @@ public class SessionImpl implements Session, XAResource {
         // mark indexation in progress
         for (Node node : getNodesByIds(new ArrayList<Serializable>(
                 dirtyBinaries))) {
+            if (Boolean.FALSE.equals(model.getFulltextInfo().isFulltextIndexable(
+                    node.getPrimaryType()))) {
+                continue;
+            }
             node.getSimpleProperty(Model.FULLTEXT_JOBID_PROP).setValue(
                     node.getId());
         }

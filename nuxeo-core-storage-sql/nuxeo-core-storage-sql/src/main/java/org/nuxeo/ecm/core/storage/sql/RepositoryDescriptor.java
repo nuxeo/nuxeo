@@ -153,6 +153,12 @@ public class RepositoryDescriptor {
     @XNodeList(value = "indexing/fulltext/index", type = ArrayList.class, componentType = FulltextIndexDescriptor.class)
     public List<FulltextIndexDescriptor> fulltextIndexes;
 
+    @XNodeList(value = "indexing/excludedTypes/type", type =  HashSet.class, componentType = String.class)
+    public Set<String> fulltextExcludedTypes;
+
+    @XNodeList(value = "indexing/includedTypes/type", type =  HashSet.class, componentType = String.class)
+    public Set<String> fulltextIncludedTypes;
+
     @XNode("pathOptimizations@enabled")
     public boolean pathOptimizationsEnabled = true;
 

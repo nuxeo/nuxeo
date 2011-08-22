@@ -22,6 +22,14 @@
     <field type="xyz">foo</field>
   </schema>
   <indexing>
+    <excludedTypes>
+      <type>Folder</type>
+      <type>Workspace</type>
+    </excludedTypes>
+    <includedTypes>
+      <type>Note</type>
+      <type>File</type>
+    </includedTypes>
     <fulltext catalog="nuxeo" analyzer="french">
       <index>
         <!-- fieldType for all implied -->
