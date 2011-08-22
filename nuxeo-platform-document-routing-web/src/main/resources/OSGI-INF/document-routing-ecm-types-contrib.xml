@@ -2,9 +2,6 @@
 
   <require>org.nuxeo.ecm.platform.types.TypeService</require>
   <require>org.nuxeo.ecm.platform.types</require>
-  <require>org.nuxeo.ecm.platform.picture.jsf.types</require>
-  <require>org.nuxeo.ecm.webengine.sites.ecm.types</require>
-  <require>org.nuxeo.webengine.blogs.ecm.types</require>
   <require>org.nuxeo.ecm.webapp.contentview.contrib</require>
 
   <extension target="org.nuxeo.ecm.platform.types.TypeService" point="types">
