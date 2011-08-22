@@ -39,10 +39,10 @@ import org.nuxeo.ecm.spaces.api.AbstractSpaceProvider;
 import org.nuxeo.ecm.spaces.api.Space;
 import org.nuxeo.ecm.spaces.api.SpaceManager;
 import org.nuxeo.ecm.spaces.api.exceptions.SpaceException;
-import org.nuxeo.ecm.spaces.helper.GadgetI18nHelper;
 import org.nuxeo.opensocial.container.server.webcontent.api.WebContentAdapter;
 import org.nuxeo.opensocial.container.shared.webcontent.OpenSocialData;
 import org.nuxeo.opensocial.container.shared.webcontent.WebContentData;
+import org.nuxeo.opensocial.gadgets.helper.GadgetI18nHelper;
 import org.nuxeo.runtime.api.Framework;
 
 /**
