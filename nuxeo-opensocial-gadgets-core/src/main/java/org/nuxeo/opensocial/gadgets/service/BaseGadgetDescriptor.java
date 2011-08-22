@@ -2,11 +2,13 @@ package org.nuxeo.opensocial.gadgets.service;
 
 import java.io.Serializable;
 import java.net.MalformedURLException;
+import java.util.Locale;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.shindig.common.uri.Uri;
 import org.apache.shindig.gadgets.spec.GadgetSpec;
+import org.nuxeo.opensocial.gadgets.helper.GadgetI18nHelper;
 import org.nuxeo.opensocial.gadgets.service.api.GadgetDeclaration;
 import org.nuxeo.opensocial.gadgets.service.api.GadgetService;
 import org.nuxeo.runtime.api.Framework;
@@ -47,6 +49,15 @@ public abstract class BaseGadgetDescriptor implements Serializable,
             return getName();
         }
         return getGadgetSpec().getModulePrefs().getTitle();
+    }
+
+    public String getTitle(Locale locale) {
+        String name = getName();
+        String title = GadgetI18nHelper.getI18nGadgetTitle(name, locale);
+        if (title.equals(name)) {
+            return getTitle();
+        }
+        return title;
     }
 
     public String getAuthor() {

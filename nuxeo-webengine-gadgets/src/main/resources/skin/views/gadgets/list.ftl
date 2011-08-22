@@ -13,7 +13,7 @@
     </#if>
     </div>
 
-    <h3>${gadget.title}</h3>
+    <h3>${gadget.getTitle(This.context.locale)}</h3>
     <p class="author">${gadget.author}</p>
     <p class="description">${gadget.description}</p>
     <p class="specUrl"><a href="${gadget.getPublicGadgetDefinition()}">${Context.getMessage('label.gadget.url')}</a></p>

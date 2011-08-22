@@ -14,7 +14,7 @@
  *     Thomas Roger <troger@nuxeo.com>
  */
 
-package org.nuxeo.ecm.spaces.helper;
+package org.nuxeo.opensocial.gadgets.helper;
 
 import java.util.Locale;
 

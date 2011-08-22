@@ -19,6 +19,7 @@ package org.nuxeo.opensocial.webengine.gadgets;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -30,6 +31,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
 import org.nuxeo.common.utils.StringUtils;
+import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.WebObject;
@@ -52,7 +54,11 @@ public class Gadgets extends ModuleRoot {
 
     @GET
     public Object getGallery(@QueryParam("cat") String category,
-            @QueryParam("mode") String mode) {
+            @QueryParam("mode") String mode, @QueryParam("language") String language) {
+        if (language == null) {
+            language = "en";
+        }
+        getContext().setLocale(new Locale(language));
 
         List<GadgetDeclaration> gadgetList;
         String ftlName = null;
@@ -83,10 +89,13 @@ public class Gadgets extends ModuleRoot {
 
     @GET
     @Path("listGadgets")
-    public Object getGadgetList(@QueryParam("cat") String category) {
+    public Object getGadgetList(@QueryParam("cat") String category, @QueryParam("language") String language) {
+        if (language == null) {
+            language = "en";
+        }
+        getContext().setLocale(new Locale(language));
 
         List<GadgetDeclaration> gadgetList;
-
         if (category == null) {
             gadgetList = gm.getGadgetList();
             category = "all";
@@ -119,7 +128,6 @@ public class Gadgets extends ModuleRoot {
     }
 
     public String getCategoryLabel(String categoryKey) {
-
         if (categoryKey == null) {
             return "";
         }
@@ -127,10 +135,12 @@ public class Gadgets extends ModuleRoot {
             categoryKey = "gadget.category." + categoryKey;
         }
 
-        String label = getContext().getMessage(categoryKey);
-        if (label.startsWith("!")) {
+        Locale locale = getContext().getLocale();
+        String label = I18NUtils.getMessageString("messages", categoryKey,
+                null, locale);
+        if (categoryKey.equals(label)) {
             label = categoryKey.replace("gadget.category.", "");
-            label = label.substring(0, 1).toUpperCase() + label.substring(1);
+            label = org.apache.commons.lang.StringUtils.capitalize(label);
         }
         return label;
     }

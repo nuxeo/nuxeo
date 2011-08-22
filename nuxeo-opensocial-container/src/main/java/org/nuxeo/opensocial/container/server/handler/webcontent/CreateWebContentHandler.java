@@ -28,7 +28,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.spaces.api.Space;
-import org.nuxeo.ecm.spaces.helper.GadgetI18nHelper;
+import org.nuxeo.opensocial.gadgets.helper.GadgetI18nHelper;
 import org.nuxeo.opensocial.container.client.rpc.webcontent.action.CreateWebContent;
 import org.nuxeo.opensocial.container.client.rpc.webcontent.result.CreateWebContentResult;
 import org.nuxeo.opensocial.container.server.handler.AbstractActionHandler;

@@ -30,6 +30,7 @@ import org.nuxeo.opensocial.container.server.webcontent.api.WebContentAdapter;
 import org.nuxeo.opensocial.container.server.webcontent.gadgets.opensocial.OpenSocialAdapter;
 import org.nuxeo.opensocial.container.shared.layout.api.YUIComponent;
 import org.nuxeo.opensocial.container.shared.layout.api.YUILayout;
+import org.nuxeo.opensocial.gadgets.helper.GadgetI18nHelper;
 import org.nuxeo.opensocial.gadgets.service.api.GadgetDeclaration;
 import org.nuxeo.opensocial.gadgets.service.api.GadgetService;
 import org.nuxeo.opensocial.helper.OpenSocialGadgetHelper;

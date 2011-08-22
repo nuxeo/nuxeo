@@ -51,6 +51,9 @@ public class InternalGadgetDescriptor extends BaseGadgetDescriptor implements
     @XNode("@name")
     protected String name;
 
+    @XNode("@label")
+    protected String label;
+
     @XNode("@disabled")
     protected Boolean disabled;
 
@@ -81,6 +84,10 @@ public class InternalGadgetDescriptor extends BaseGadgetDescriptor implements
 
     public String getName() {
         return name;
+    }
+
+    public String getLabel() {
+        return label;
     }
 
     public boolean getDisabled() {

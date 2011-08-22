@@ -18,8 +18,11 @@ jQuery(document).ready(function() {
 	jQuery(".category a").click(function(e) {
 		function refreshList(name) {
 	    var targetUrl = galleryBaseUrl + "/listGadgets";
+      if (typeof language !== 'undefined') {
+        targetUrl += "?" + language;
+      }
 	    if (name != 'all') {
-	        targetUrl += "?cat=" + name;
+	        targetUrl += "&cat=" + name;
 	    }
 	    jQuery.get(targetUrl, function(data) {
 	        jQuery('#gadgetListContainer').html(data);

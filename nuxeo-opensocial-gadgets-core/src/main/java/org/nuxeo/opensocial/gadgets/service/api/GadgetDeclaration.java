@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Locale;
 
 import org.apache.shindig.gadgets.spec.GadgetSpec;
 
@@ -64,6 +65,15 @@ public interface GadgetDeclaration {
     GadgetSpec getGadgetSpec();
 
     String getTitle();
+
+    /**
+     * Try to find an internationalized title for this gadget.
+     * <p>
+     * The label key is "label.gadget." + gadgetName.
+     *
+     * @since 5.4.3
+     */
+    String getTitle(Locale locale);
 
     String getAuthor();
 
