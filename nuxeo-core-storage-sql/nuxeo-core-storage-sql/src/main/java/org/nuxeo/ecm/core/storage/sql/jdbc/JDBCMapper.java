@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.security.MessageDigest;
 import java.sql.Array;
+import java.sql.CallableStatement;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -49,7 +50,6 @@ import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.BinaryGarbageCollector;
-import org.nuxeo.ecm.core.storage.sql.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.Invalidations;
 import org.nuxeo.ecm.core.storage.sql.LockManager;
 import org.nuxeo.ecm.core.storage.sql.Mapper;
@@ -312,9 +312,8 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                 log.warn("Database contains additional unused columns for table "
                         + table.getQuotedName()
                         + ": "
-                        + StringUtils.join(
-                                new ArrayList<String>(columnTypes.keySet()),
-                                ", "));
+                        + StringUtils.join(new ArrayList<String>(
+                                columnTypes.keySet()), ", "));
             }
             if (!addedColumns.isEmpty()) {
                 if (added.containsKey(table.getKey())) {
@@ -642,10 +641,43 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         return null;
     }
 
+    protected void prepareUserReadAcls(QueryFilter queryFilter)
+            throws StorageException {
+        String sql = sqlInfo.dialect.getPrepareUserReadAclsSql();
+        String principals = StringUtils.join(queryFilter.getPrincipals(), Dialect.ARRAY_SEP);
+        if (sql == null || principals == null) {
+            return;
+        }
+        CallableStatement cs = null;
+        try {
+            cs = connection.prepareCall(sql);
+            if (logger.isLogEnabled()) {
+                logger.log(sql + " " + principals);
+            }
+            cs.setString(1, principals);
+            cs.executeUpdate();
+        } catch (Exception e) {
+            checkConnectionReset(e);
+            throw new StorageException("Failed to prepare user read acl cache",
+                    e);
+        } finally {
+            if (cs != null) {
+                try {
+                    closeStatement(cs);
+                } catch (SQLException e) {
+                    log.error(e.getMessage(), e);
+                }
+            }
+        }
+    }
+
     @Override
     public PartialList<Serializable> query(String query,
             QueryFilter queryFilter, boolean countTotal)
             throws StorageException {
+        if (sqlInfo.dialect.needsPrepareUserReadAcls()) {
+            prepareUserReadAcls(queryFilter);
+        }
         QueryMaker queryMaker = findQueryMaker(query);
         if (queryMaker == null) {
             throw new StorageException("No QueryMaker accepts query: " + query);

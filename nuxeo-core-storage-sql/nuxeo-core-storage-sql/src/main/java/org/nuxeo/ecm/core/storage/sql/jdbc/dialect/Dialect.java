@@ -832,6 +832,16 @@ public abstract class Dialect {
     }
 
     /**
+     * The dialect need an extra SQL statement to populate a user read acl cache
+     * before running the query.
+     *
+     * @since 5.4.2-HF07
+     */
+    public boolean needsPrepareUserReadAcls() {
+        return false;
+    }
+
+    /**
      * When using a CLOB field in an expression, is some casting required and
      * with what pattern?
      * <p>
@@ -1032,6 +1042,18 @@ public abstract class Dialect {
      *         access is allowed
      */
     public String getReadAclsCheckSql(String idColumnName) {
+        return null;
+    }
+
+    /**
+     * Gets the SQL expression to prepare the user read acls cache.
+     *
+     * This can be used to populate a table cache.
+     *
+     * @since 5.4.3
+     * @return and SQL expression with one parameter (principals)
+     */
+    public String getPrepareUserReadAclsSql() {
         return null;
     }
 
