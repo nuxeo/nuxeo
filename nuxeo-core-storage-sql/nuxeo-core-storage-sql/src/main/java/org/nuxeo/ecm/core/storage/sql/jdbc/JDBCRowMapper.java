@@ -831,6 +831,11 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                     // already done
                     continue;
                 }
+                if (tableName.equals(model.VERSION_TABLE_NAME)) {
+                    // versions not fileable
+                    // restore must not copy versions either
+                    continue;
+                }
                 // TODO move ACL skip logic higher
                 if (tableName.equals(model.ACL_TABLE_NAME)) {
                     continue;

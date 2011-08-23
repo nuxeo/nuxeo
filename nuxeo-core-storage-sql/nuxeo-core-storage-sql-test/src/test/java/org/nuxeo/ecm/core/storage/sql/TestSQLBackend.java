@@ -1388,6 +1388,12 @@ public class TestSQLBackend extends SQLBackendTestCase {
         SimpleProperty sp = nodeac3.getSimpleProperty("tst:title");
         assertNotNull(sp);
         assertNull(sp.getString());
+
+        /*
+         * Test checkout + checkin after restore.
+         */
+        session.checkOut(nodea);
+        session.checkIn(nodea, "hop", null);
     }
 
     public void testVersionFetching() throws Exception {
