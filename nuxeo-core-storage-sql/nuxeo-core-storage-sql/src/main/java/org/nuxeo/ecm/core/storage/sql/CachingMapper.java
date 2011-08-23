@@ -34,11 +34,12 @@ public class CachingMapper extends CachingRowMapper implements Mapper {
      */
     private final Mapper mapper;
 
-    public CachingMapper(Mapper mapper,
+    public CachingMapper(Model model, Mapper mapper,
             InvalidationsPropagator cachePropagator,
             InvalidationsPropagator eventPropagator,
             InvalidationsQueue repositoryEventQueue) {
-        super(mapper, cachePropagator, eventPropagator, repositoryEventQueue);
+        super(model, mapper, cachePropagator, eventPropagator,
+                repositoryEventQueue);
         this.mapper = mapper;
     }
 

@@ -72,20 +72,20 @@ public class SelectionContext {
     }
 
     /** Gets the proper selection cache. Creates one if missing. */
-    private Selection getSelection(Serializable id) {
-        Selection selection = softMap.get(id);
+    private Selection getSelection(Serializable selId) {
+        Selection selection = softMap.get(selId);
         if (selection != null) {
             return selection;
         }
-        selection = hardMap.get(id);
+        selection = hardMap.get(selId);
         if (selection != null) {
             return selection;
         }
-        return new Selection(id, selType.tableName, false, selType.filterKey,
+        return new Selection(selId, selType.tableName, false, selType.filterKey,
                 context, softMap, hardMap);
     }
 
-    private boolean applicable(SimpleFragment fragment) throws StorageException {
+    public boolean applicable(SimpleFragment fragment) throws StorageException {
         // check table name
         if (!fragment.row.tableName.equals(selType.tableName)) {
             return false;
@@ -104,9 +104,6 @@ public class SelectionContext {
      * Records the fragment as a just-created selection member.
      */
     public void recordCreated(SimpleFragment fragment) throws StorageException {
-        if (!applicable(fragment)) {
-            return;
-        }
         Serializable id = fragment.getId();
         // add as a new fragment in the selection
         Serializable selId = fragment.get(selType.selKey);
@@ -119,16 +116,18 @@ public class SelectionContext {
     /**
      * Notes that a new empty selection should be created.
      */
-    public void newSelection(Serializable id) {
-        new Selection(id, selType.tableName, true, selType.filterKey,
+    public void newSelection(Serializable selId) {
+        new Selection(selId, selType.tableName, true, selType.filterKey,
                 context, softMap, hardMap);
     }
 
+    /**
+     * @param invalidate {@code true} if this is for a fragment newly created by
+     *            internal database process (copy, etc.) and must notified to
+     *            other session; {@code false} if this is a normal read
+     */
     public void recordExisting(SimpleFragment fragment, boolean invalidate)
             throws StorageException {
-        if (!applicable(fragment)) {
-            return;
-        }
         Serializable selId = fragment.get(selType.selKey);
         if (selId != null) {
             getSelection(selId).addExisting(fragment.getId());
@@ -138,15 +137,25 @@ public class SelectionContext {
         }
     }
 
+    /** Removes a selection item from the selection. */
     public void recordRemoved(SimpleFragment fragment) throws StorageException {
-        if (!applicable(fragment)) {
-            return;
-        }
-        Serializable selId = fragment.get(selType.selKey);
+        recordRemoved(fragment.getId(), fragment.get(selType.selKey));
+    }
+
+    /** Removes a selection item from the selection. */
+    public void recordRemoved(Serializable id, Serializable selId)
+            throws StorageException {
         if (selId != null) {
-            getSelection(selId).remove(fragment.getId());
+            getSelection(selId).remove(id);
             modifiedInTransaction.add(selId);
         }
+    }
+
+    /** Records a selection as removed. */
+    public void recordRemovedSelection(Serializable selId) throws StorageException {
+        softMap.remove(selId);
+        hardMap.remove(selId);
+        modifiedInTransaction.add(selId);
     }
 
     /**

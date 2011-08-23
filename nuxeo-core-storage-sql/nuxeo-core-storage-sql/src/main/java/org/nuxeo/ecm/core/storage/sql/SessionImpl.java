@@ -851,8 +851,8 @@ public class SessionImpl implements Session, XAResource {
         Node proxy = addChildNode(parent, name, pos, Model.PROXY_TYPE, false);
         proxy.setSimpleProperty(model.PROXY_TARGET_PROP, targetId);
         proxy.setSimpleProperty(model.PROXY_VERSIONABLE_PROP, versionableId);
-        SimpleFragment fragment = (SimpleFragment) proxy.fragments.get(model.PROXY_TABLE_NAME);
-        context.createdProxyFragment(fragment);
+        SimpleFragment proxyFragment = (SimpleFragment) proxy.fragments.get(model.PROXY_TABLE_NAME);
+        context.createdProxyFragment(proxyFragment);
         return proxy;
     }
 
@@ -862,10 +862,10 @@ public class SessionImpl implements Session, XAResource {
         SimpleProperty prop = proxy.getSimpleProperty(Model.PROXY_TARGET_PROP);
         Serializable oldTargetId = prop.getValue();
         if (!oldTargetId.equals(targetId)) {
-            SimpleFragment fragment = (SimpleFragment) proxy.fragments.get(model.PROXY_TABLE_NAME);
-            context.removedProxyTarget(fragment);
+            SimpleFragment proxyFragment = (SimpleFragment) proxy.fragments.get(model.PROXY_TABLE_NAME);
+            context.removedProxyTarget(proxyFragment);
             proxy.setSimpleProperty(Model.PROXY_TARGET_PROP, targetId);
-            context.addedProxyTarget(fragment);
+            context.addedProxyTarget(proxyFragment);
         }
     }
 
@@ -954,7 +954,15 @@ public class SessionImpl implements Session, XAResource {
     @Override
     public void removeNode(Node node) throws StorageException {
         checkLive();
+        flush();
         context.removeNode(node.getHierFragment());
+    }
+
+    @Override
+    public void removePropertyNode(Node node) throws StorageException {
+        checkLive();
+        // no flush needed
+        context.removePropertyNode(node.getHierFragment());
     }
 
     @Override

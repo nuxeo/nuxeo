@@ -305,8 +305,9 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                 log.warn("Database contains additional unused columns for table "
                         + table.getQuotedName()
                         + ": "
-                        + StringUtils.join(new ArrayList<String>(
-                                columnTypes.keySet()), ", "));
+                        + StringUtils.join(
+                                new ArrayList<String>(columnTypes.keySet()),
+                                ", "));
             }
             if (!addedColumns.isEmpty()) {
                 if (added.containsKey(table.getKey())) {
@@ -610,7 +611,8 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
     protected void prepareUserReadAcls(QueryFilter queryFilter)
             throws StorageException {
         String sql = sqlInfo.dialect.getPrepareUserReadAclsSql();
-        String principals = StringUtils.join(queryFilter.getPrincipals(), Dialect.ARRAY_SEP);
+        String principals = StringUtils.join(queryFilter.getPrincipals(),
+                Dialect.ARRAY_SEP);
         if (sql == null || principals == null) {
             return;
         }
@@ -852,7 +854,8 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             Row row = new Row(Model.LOCK_TABLE_NAME, id);
             row.put(Model.LOCK_OWNER_KEY, lock.getOwner());
             row.put(Model.LOCK_CREATED_KEY, lock.getCreated());
-            insertSimpleRows(Model.LOCK_TABLE_NAME, Collections.singletonList(row));
+            insertSimpleRows(Model.LOCK_TABLE_NAME,
+                    Collections.singletonList(row));
         }
         return oldLock;
     }

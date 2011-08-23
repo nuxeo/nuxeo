@@ -221,6 +221,7 @@ public interface Mapper extends RowMapper, XAResource {
      *
      * @param gc the binary garbage collector
      */
-    void markReferencedBinaries(BinaryGarbageCollector gc) throws StorageException;
+    void markReferencedBinaries(BinaryGarbageCollector gc)
+            throws StorageException;
 
 }

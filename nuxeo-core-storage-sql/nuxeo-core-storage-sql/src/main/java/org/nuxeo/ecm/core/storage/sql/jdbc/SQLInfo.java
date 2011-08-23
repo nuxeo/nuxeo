@@ -81,6 +81,10 @@ public class SQLInfo {
 
     private List<Column> selectChildrenIdsAndTypesWhatColumns;
 
+    private String selectDescendantsInfoSql;
+
+    private List<Column> selectDescendantsInfoWhatColumns;
+
     private String copyHierSqlExplicitName;
 
     private String copyHierSqlCreateVersion;
@@ -197,6 +201,14 @@ public class SQLInfo {
 
     public List<Column> getSelectChildrenIdsAndTypesWhatColumns() {
         return selectChildrenIdsAndTypesWhatColumns;
+    }
+
+    public String getSelectDescendantsInfoSql() {
+        return selectDescendantsInfoSql;
+    }
+
+    public List<Column> getSelectDescendantsInfoWhatColumns() {
+        return selectDescendantsInfoWhatColumns;
     }
 
     // ----- cluster -----
@@ -434,6 +446,8 @@ public class SQLInfo {
         proxyTable.addIndex(model.PROXY_VERSIONABLE_KEY);
         proxyTable.addIndex(model.PROXY_TARGET_KEY);
 
+        initSelectDescendantsSQL();
+
         /*
          * fulltext
          */
@@ -530,6 +544,34 @@ public class SQLInfo {
         maker.table.addIndex(model.HIER_PARENT_KEY, model.HIER_CHILD_NAME_KEY);
         // don't index parent+name+isprop, a simple isprop scan will suffice
         maker.table.addIndex(model.MAIN_PRIMARY_TYPE_KEY);
+    }
+
+    protected void initSelectDescendantsSQL() {
+        Table hierTable = database.getTable(model.HIER_TABLE_NAME);
+        Table proxyTable = database.getTable(model.PROXY_TABLE_NAME);
+        Column mainColumn = hierTable.getColumn(model.MAIN_KEY);
+        List<Column> whatCols = Arrays.asList(mainColumn,
+                hierTable.getColumn(model.HIER_PARENT_KEY),
+                hierTable.getColumn(model.MAIN_PRIMARY_TYPE_KEY),
+                hierTable.getColumn(model.HIER_CHILD_ISPROPERTY_KEY),
+                proxyTable.getColumn(model.PROXY_VERSIONABLE_KEY),
+                proxyTable.getColumn(model.PROXY_TARGET_KEY));
+        // no mixins, not used to decide if we have a version or proxy
+        List<String> whats = new ArrayList<String>(6);
+        for (Column col : whatCols) {
+            whats.add(col.getFullQuotedName());
+        }
+        Select select = new Select(null);
+        select.setWhat(StringUtils.join(whats, ", "));
+        String from = hierTable.getQuotedName() + " LEFT JOIN "
+                + proxyTable.getQuotedName() + " ON "
+                + mainColumn.getFullQuotedName() + " = "
+                + proxyTable.getColumn(model.MAIN_KEY).getFullQuotedName();
+        select.setFrom(from);
+        String where = dialect.getInTreeSql(mainColumn.getFullQuotedName());
+        select.setWhere(where);
+        selectDescendantsInfoSql = select.getStatement();
+        selectDescendantsInfoWhatColumns = whatCols;
     }
 
     /**
@@ -682,7 +724,6 @@ public class SQLInfo {
             selectFragmentById.put(tableName, select);
         }
 
-        // children ids and types
         protected void postProcessSelectChildrenIdsAndTypes() {
             List<Column> whatColumns = new ArrayList<Column>(2);
             List<String> whats = new ArrayList<String>(2);

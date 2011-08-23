@@ -43,6 +43,7 @@ import org.nuxeo.ecm.core.storage.sql.PropertyType;
 import org.nuxeo.ecm.core.storage.sql.Row;
 import org.nuxeo.ecm.core.storage.sql.RowId;
 import org.nuxeo.ecm.core.storage.sql.RowMapper;
+import org.nuxeo.ecm.core.storage.sql.RowMapper.NodeInfo;
 import org.nuxeo.ecm.core.storage.sql.SelectionType;
 import org.nuxeo.ecm.core.storage.sql.SimpleFragment;
 import org.nuxeo.ecm.core.storage.sql.jdbc.SQLInfo.SQLInfoSelect;
@@ -57,6 +58,8 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.db.Update;
 public class JDBCRowMapper extends JDBCConnection implements RowMapper {
 
     public static final int UPDATE_BATCH_SIZE = 100; // also insert/delete
+
+    public static final int DEBUG_MAX_TREE = 50;
 
     /**
      * Cluster node handler, or {@code null} if this {@link Mapper} is not the
@@ -439,6 +442,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
         if (!batch.deletes.isEmpty()) {
             writeDeletes(batch.deletes);
         }
+        // batch.deletesDependent not executed
     }
 
     protected void writeCreates(List<Row> creates) throws StorageException {
@@ -823,6 +827,10 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             for (Entry<String, Set<Serializable>> entry : model.getPerFragmentIds(
                     idToTypes).entrySet()) {
                 String tableName = entry.getKey();
+                if (tableName.equals(model.HIER_TABLE_NAME)) {
+                    // already done
+                    continue;
+                }
                 // TODO move ACL skip logic higher
                 if (tableName.equals(model.ACL_TABLE_NAME)) {
                     continue;
@@ -1107,6 +1115,86 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
         } finally {
             closeStatement(copyPs);
             closeStatement(deletePs);
+        }
+    }
+
+    @Override
+    public List<NodeInfo> remove(Serializable rootId) throws StorageException {
+        List<NodeInfo> info = getDescendantsInfo(rootId);
+        deleteRowsDirect(model.HIER_TABLE_NAME, Collections.singleton(rootId));
+        return info;
+    }
+
+    protected List<NodeInfo> getDescendantsInfo(Serializable rootId)
+            throws StorageException {
+        List<NodeInfo> descendants = new LinkedList<NodeInfo>();
+        String sql = sqlInfo.getSelectDescendantsInfoSql();
+        if (logger.isLogEnabled()) {
+            logger.logSQL(sql, Collections.singletonList(rootId));
+        }
+        List<Column> columns = sqlInfo.getSelectDescendantsInfoWhatColumns();
+        PreparedStatement ps = null;
+        try {
+            ps = connection.prepareStatement(sql);
+            List<String> debugValues = null;
+            if (logger.isLogEnabled()) {
+                debugValues = new LinkedList<String>();
+            }
+            ps.setObject(1, rootId); // parent id
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Serializable id = null;
+                Serializable parentId = null;
+                String primaryType = null;
+                Boolean isProperty = null;
+                Serializable targetId = null;
+                Serializable versionableId = null;
+                int i = 1;
+                for (Column column : columns) {
+                    String key = column.getKey();
+                    Serializable value = column.getFromResultSet(rs, i++);
+                    if (key.equals(model.MAIN_KEY)) {
+                        id = value;
+                    } else if (key.equals(model.HIER_PARENT_KEY)) {
+                        parentId = value;
+                    } else if (key.equals(model.MAIN_PRIMARY_TYPE_KEY)) {
+                        primaryType = (String) value;
+                    } else if (key.equals(model.HIER_CHILD_ISPROPERTY_KEY)) {
+                        isProperty = (Boolean) value;
+                    } else if (key.equals(model.PROXY_TARGET_KEY)) {
+                        targetId = value;
+                    } else if (key.equals(model.PROXY_VERSIONABLE_KEY)) {
+                        versionableId = value;
+                    }
+                    // no mixins (not useful to caller)
+                    // no versions (not fileable)
+                }
+                descendants.add(new NodeInfo(id, parentId, primaryType,
+                        isProperty, versionableId, targetId));
+                if (debugValues != null) {
+                    if (debugValues.size() < DEBUG_MAX_TREE) {
+                        debugValues.add(id + "/" + primaryType);
+                    }
+                }
+            }
+            if (debugValues != null) {
+                if (debugValues.size() >= DEBUG_MAX_TREE) {
+                    debugValues.add("... (" + descendants.size() + ") results");
+                }
+                logger.log("  -> " + debugValues);
+            }
+            return descendants;
+        } catch (Exception e) {
+            checkConnectionReset(e);
+            throw new StorageException("Failed to get descendants", e);
+        } finally {
+            if (ps != null) {
+                try {
+                    closeStatement(ps);
+                } catch (SQLException e) {
+                    logger.error(e.getMessage(), e);
+                }
+            }
         }
     }
 

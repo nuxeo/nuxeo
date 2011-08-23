@@ -1548,7 +1548,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals(3, list.size()); // selection properly updated
     }
 
-    public void TODO_testProxyDeepRemoval() throws Exception {
+    public void testProxyDeepRemoval() throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
         Node folder1 = session.addChildNode(root, "folder1", null, "TestDoc",
@@ -1582,8 +1582,8 @@ public class TestSQLBackend extends SQLBackendTestCase {
         list = session.getProxies(node, null); // by series
         assertEquals(1, list.size());
 
-        // remove live document, should remove proxies as well
-        session.removeNode(node);
+        // remove target, should remove proxies as well
+        session.removeNode(ver);
         list = session.getProxies(ver, null); // by target
         assertEquals(0, list.size());
     }
