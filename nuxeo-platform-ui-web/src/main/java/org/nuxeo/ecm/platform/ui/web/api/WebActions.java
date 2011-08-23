@@ -190,6 +190,13 @@ public interface WebActions {
     String getCurrentTabId(String category);
 
     /**
+     * Indicates if the current tab id is set for given category
+     *
+     * @since 5.4.3
+     */
+    boolean hasCurrentTabId(String category);
+
+    /**
      * Sets the current action for given category, with additional sub tabs.
      */
     void setCurrentTabId(String category, String tabId, String... subTabIds);

@@ -211,6 +211,13 @@ public class WebActionsBean implements WebActionsLocal, Serializable {
         return null;
     }
 
+    public boolean hasCurrentTabId(String category) {
+        if (currentTabActions.getCurrentTabAction(category) == null) {
+            return false;
+        }
+        return true;
+    }
+
     @Override
     public void setCurrentTabId(String category, String tabId,
             String... subTabIds) {

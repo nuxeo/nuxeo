@@ -101,6 +101,10 @@ public class RestHelper implements Serializable {
                 DocumentRef docRef = docLoc.getDocRef();
                 RepositoryLocation repoLoc = new RepositoryLocation(serverName);
                 if (docRef != null) {
+                    if (docView.getParameter("mainTabId") == null
+                            && !webActions.hasCurrentTabId("MAIN_TABS")) {
+                        webActions.setCurrentTabId("MAIN_TABS", "documents");
+                    }
                     outcome = navigationContext.navigateTo(repoLoc, docRef);
                 } else {
                     navigationContext.setCurrentServerLocation(repoLoc);
