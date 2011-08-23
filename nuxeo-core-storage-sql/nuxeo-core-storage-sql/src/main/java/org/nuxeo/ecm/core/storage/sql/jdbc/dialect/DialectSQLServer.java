@@ -1,18 +1,14 @@
 /*
- * (C) Copyright 2008-2009 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the GNU Lesser General Public License
- * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
  *     Florent Guillaume
+ *     Benoit Delbosc
  */
 
 package org.nuxeo.ecm.core.storage.sql.jdbc.dialect;
@@ -35,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.common.utils.StringUtils;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Binary;
 import org.nuxeo.ecm.core.storage.sql.BinaryManager;
@@ -47,6 +44,7 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.db.Join;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect.FulltextQuery;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect.FulltextQuery.Op;
+import org.nuxeo.ecm.core.NXCore;
 
 /**
  * Microsoft SQL Server-specific dialect.
@@ -63,14 +61,23 @@ public class DialectSQLServer extends Dialect {
 
     protected final String fulltextCatalog;
 
+    private static final String DEFAULT_USERS_SEPARATOR = "|";
+
+    protected final String usersSeparator;
+
     public DialectSQLServer(DatabaseMetaData metadata,
             BinaryManager binaryManager,
             RepositoryDescriptor repositoryDescriptor) throws StorageException {
         super(metadata, binaryManager, repositoryDescriptor);
-        fulltextAnalyzer = repositoryDescriptor.fulltextAnalyzer == null ? DEFAULT_FULLTEXT_ANALYZER
-                : repositoryDescriptor.fulltextAnalyzer;
-        fulltextCatalog = repositoryDescriptor.fulltextCatalog == null ? DEFAULT_FULLTEXT_CATALOG
-                : repositoryDescriptor.fulltextCatalog;
+        fulltextAnalyzer = repositoryDescriptor == null ? null
+                : repositoryDescriptor.fulltextAnalyzer == null ? DEFAULT_FULLTEXT_ANALYZER
+                        : repositoryDescriptor.fulltextAnalyzer;
+        fulltextCatalog = repositoryDescriptor == null ? null
+                : repositoryDescriptor.fulltextCatalog == null ? DEFAULT_FULLTEXT_CATALOG
+                        : repositoryDescriptor.fulltextCatalog;
+        usersSeparator = repositoryDescriptor == null ? null
+                : repositoryDescriptor.usersSeparatorKey == null ? DEFAULT_USERS_SEPARATOR
+                        : repositoryDescriptor.usersSeparatorKey;
 
     }
 
@@ -387,10 +394,43 @@ public class DialectSQLServer extends Dialect {
     public Map<String, Serializable> getSQLStatementsProperties(Model model,
             Database database) {
         Map<String, Serializable> properties = new HashMap<String, Serializable>();
-        properties.put("idType", "NVARCHAR(36)");
+        properties.put("idType", "VARCHAR(36)");
         properties.put("fulltextEnabled", Boolean.valueOf(!fulltextDisabled));
         properties.put("fulltextCatalog", fulltextCatalog);
+        properties.put("aclOptimizationsEnabled",
+                Boolean.valueOf(aclOptimizationsEnabled));
+        String[] permissions = NXCore.getSecurityService().getPermissionsToCheck(
+                SecurityConstants.BROWSE);
+        List<String> permsList = new LinkedList<String>();
+        for (String perm : permissions) {
+            permsList.add(String.format(
+                    "  SELECT '%s' ", perm));
+        }
+        properties.put("readPermissions", StringUtils.join(permsList, " UNION ALL "));
+        properties.put("usersSeparator", getUsersSeparator());
         return properties;
+    }
+
+    @Override
+    public boolean supportsReadAcl() {
+        return aclOptimizationsEnabled;
+    }
+
+    @Override
+    public String getReadAclsCheckSql(String idColumnName) {
+        return String.format(
+                "%s IN (SELECT acl_id FROM dbo.nx_get_read_acls_for(?))",
+                idColumnName);
+    }
+
+    @Override
+    public String getUpdateReadAclsSql() {
+        return "EXEC dbo.nx_update_read_acls";
+    }
+
+    @Override
+    public String getRebuildReadAclsSql() {
+        return "EXEC dbo.nx_rebuild_read_acls";
     }
 
     @Override
@@ -424,6 +464,23 @@ public class DialectSQLServer extends Dialect {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public String getPrepareUserReadAclsSql() {
+        return "EXEC nx_prepare_user_read_acls ?";
+    }
+
+    @Override
+    public boolean needsPrepareUserReadAcls() {
+        return true;
+    }
+ 
+    public String getUsersSeparator() {
+        if (usersSeparator == null) {
+            return DEFAULT_USERS_SEPARATOR;
+        }
+        return usersSeparator;
     }
 
 }
