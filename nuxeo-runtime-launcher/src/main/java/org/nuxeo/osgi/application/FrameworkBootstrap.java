@@ -141,6 +141,25 @@ public class FrameworkBootstrap implements LoaderConstants {
         stop.invoke(null);
     }
 
+    public String installBundle(File f) throws Exception {
+        if (frameworkLoaderClass == null) {
+            throw new IllegalStateException(
+                    "Framework Loader was not initialized. Call initialize() method first");
+        }
+        Method install = frameworkLoaderClass.getMethod("install", File.class);
+        return (String) install.invoke(null, f);
+    }
+
+    public void uninstallBundle(String name) throws Exception {
+        if (frameworkLoaderClass == null) {
+            throw new IllegalStateException(
+                    "Framework Loader was not initialized. Call initialize() method first");
+        }
+        Method uninstall = frameworkLoaderClass.getMethod("uninstall",
+                String.class);
+        uninstall.invoke(null, name);
+    }
+
     @SuppressWarnings("unchecked")
     protected void initializeEnvironment() throws IOException {
         System.setProperty(HOME_DIR, home.getAbsolutePath());
@@ -186,7 +205,7 @@ public class FrameworkBootstrap implements LoaderConstants {
 
     /**
      * Fills the classloader with all jars found in the defined classpath.
-     *
+     * 
      * @return the list of bundle files.
      */
     protected List<File> buildClassPath() throws IOException {

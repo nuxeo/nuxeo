@@ -43,7 +43,7 @@ import org.osgi.framework.FrameworkEvent;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * 
  */
 public class FrameworkLoader {
 
@@ -170,13 +170,7 @@ public class FrameworkLoader {
         osgi.install(systemBundle);
         for (File f : bundleFiles) {
             try {
-                if (f.isDirectory()) {
-                    bf = new DirectoryBundleFile(f);
-                } else {
-                    bf = new JarBundleFile(f);
-                }
-                BundleImpl bundle = new BundleImpl(osgi, bf, loader);
-                osgi.install(bundle);
+                install(f);
             } catch (Throwable t) { // silently ignore
                 log.warn("Failed to install bundle: " + f, t);
                 // do nothing
@@ -190,6 +184,25 @@ public class FrameworkLoader {
 
     private static void doStop() throws Exception {
         osgi.shutdown();
+    }
+
+    public static void uninstall(String symbolicName) throws Exception {
+        BundleImpl bundle = osgi.getBundle(symbolicName);
+        if (bundle != null) {
+            bundle.uninstall();
+        }
+    }
+
+    public static String install(File f) throws Exception {
+        BundleFile bf = null;
+        if (f.isDirectory()) {
+            bf = new DirectoryBundleFile(f);
+        } else {
+            bf = new JarBundleFile(f);
+        }
+        BundleImpl bundle = new BundleImpl(osgi, bf, loader);
+        osgi.install(bundle);
+        return bundle.getSymbolicName();
     }
 
     public static void preprocess() throws Exception {
