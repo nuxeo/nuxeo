@@ -1535,12 +1535,21 @@
       <selector path=".miniMessages .newMiniMessageForm textarea">
         <border preset="tablelines (Galaxy User Center borders)"/>
         <font preset="title4+ (Galaxy User Center fonts)"/>
-        <float>left</float>
         <margin>5px 0 0</margin>
+        <width>400px</width>
       </selector>
       <selector path=".miniMessages .newMiniMessageForm .newMiniMessageActions">
-        <float>left</float>
-        <padding>0 10px</padding>
+        <padding>0</padding>
+        <margin>0 auto</margin>
+        <text-align>right</text-align>
+        <width>410px</width>
+      </selector>
+      <selector path=".miniMessages .newMiniMessageForm input.button">
+        <margin>5px 0 10px 10px</margin>
+      </selector>
+      <selector path=".miniMessages .dataOutput">
+        <width>500px</width>
+        <margin>0 auto</margin>
       </selector>
       <selector path=".miniMessages .dataOutput td">
         <padding>0</padding>
