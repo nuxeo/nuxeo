@@ -56,7 +56,6 @@ import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.Row;
 import org.nuxeo.ecm.core.storage.sql.RowId;
 import org.nuxeo.ecm.core.storage.sql.Session.PathResolver;
-import org.nuxeo.ecm.core.storage.sql.jdbc.SQLInfo.SQLInfoSelect;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Database;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
@@ -306,8 +305,9 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                 log.warn("Database contains additional unused columns for table "
                         + table.getQuotedName()
                         + ": "
-                        + StringUtils.join(new ArrayList<String>(
-                                columnTypes.keySet()), ", "));
+                        + StringUtils.join(
+                                new ArrayList<String>(columnTypes.keySet()),
+                                ", "));
             }
             if (!addedColumns.isEmpty()) {
                 if (added.containsKey(table.getKey())) {
@@ -593,33 +593,6 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         }
     }
 
-    // uses JDBCRowMapper
-    @Override
-    public Serializable getVersionIdByLabel(Serializable versionSeriesId,
-            String label) throws StorageException {
-        SQLInfoSelect select = sqlInfo.selectVersionBySeriesAndLabel;
-        Map<String, Serializable> criteriaMap = new HashMap<String, Serializable>();
-        criteriaMap.put(model.MAIN_IS_VERSION_KEY, Boolean.TRUE);
-        criteriaMap.put(model.VERSION_VERSIONABLE_KEY, versionSeriesId);
-        criteriaMap.put(model.VERSION_LABEL_KEY, label);
-        List<Row> rows = getSelectRows(model.VERSION_TABLE_NAME, select,
-                criteriaMap, null, true);
-        return rows == null ? null : rows.get(0).id;
-    }
-
-    // uses JDBCRowMapper
-    @Override
-    public Serializable getLastVersionId(Serializable versionSeriesId)
-            throws StorageException {
-        SQLInfoSelect select = sqlInfo.selectVersionsBySeriesDesc;
-        Map<String, Serializable> criteriaMap = new HashMap<String, Serializable>();
-        criteriaMap.put(model.MAIN_IS_VERSION_KEY, Boolean.TRUE);
-        criteriaMap.put(model.VERSION_VERSIONABLE_KEY, versionSeriesId);
-        List<Row> maps = getSelectRows(model.VERSION_TABLE_NAME, select,
-                criteriaMap, null, true);
-        return maps == null ? null : maps.get(0).id;
-    }
-
     protected QueryMaker findQueryMaker(String query) throws StorageException {
         for (Class<? extends QueryMaker> klass : queryMakerService.getQueryMakers()) {
             QueryMaker queryMaker;
@@ -638,7 +611,8 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
     protected void prepareUserReadAcls(QueryFilter queryFilter)
             throws StorageException {
         String sql = sqlInfo.dialect.getPrepareUserReadAclsSql();
-        String principals = StringUtils.join(queryFilter.getPrincipals(), Dialect.ARRAY_SEP);
+        String principals = StringUtils.join(queryFilter.getPrincipals(),
+                Dialect.ARRAY_SEP);
         if (sql == null || principals == null) {
             return;
         }
@@ -880,7 +854,8 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             Row row = new Row(Model.LOCK_TABLE_NAME, id);
             row.put(Model.LOCK_OWNER_KEY, lock.getOwner());
             row.put(Model.LOCK_CREATED_KEY, lock.getCreated());
-            insertSimpleRows(Model.LOCK_TABLE_NAME, Collections.singletonList(row));
+            insertSimpleRows(Model.LOCK_TABLE_NAME,
+                    Collections.singletonList(row));
         }
         return oldLock;
     }

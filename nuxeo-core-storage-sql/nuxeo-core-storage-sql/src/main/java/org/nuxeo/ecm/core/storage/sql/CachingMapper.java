@@ -34,11 +34,12 @@ public class CachingMapper extends CachingRowMapper implements Mapper {
      */
     private final Mapper mapper;
 
-    public CachingMapper(Mapper mapper,
+    public CachingMapper(Model model, Mapper mapper,
             InvalidationsPropagator cachePropagator,
             InvalidationsPropagator eventPropagator,
             InvalidationsQueue repositoryEventQueue) {
-        super(mapper, cachePropagator, eventPropagator, repositoryEventQueue);
+        super(model, mapper, cachePropagator, eventPropagator,
+                repositoryEventQueue);
         this.mapper = mapper;
     }
 
@@ -73,18 +74,6 @@ public class CachingMapper extends CachingRowMapper implements Mapper {
     public void setRootId(Serializable repositoryId, Serializable id)
             throws StorageException {
         mapper.setRootId(repositoryId, id);
-    }
-
-    @Override
-    public Serializable getVersionIdByLabel(Serializable versionSeriesId,
-            String label) throws StorageException {
-        return mapper.getVersionIdByLabel(versionSeriesId, label);
-    }
-
-    @Override
-    public Serializable getLastVersionId(Serializable versionSeriesId)
-            throws StorageException {
-        return mapper.getLastVersionId(versionSeriesId);
     }
 
     @Override

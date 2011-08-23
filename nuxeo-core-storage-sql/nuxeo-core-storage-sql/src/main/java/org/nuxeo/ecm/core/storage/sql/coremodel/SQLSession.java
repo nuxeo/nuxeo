@@ -374,7 +374,6 @@ public class SQLSession implements Session {
             throws DocumentException {
         Collection<Node> proxyNodes;
         try {
-
             proxyNodes = session.getProxies(((SQLDocument) document).getNode(),
                     parent == null ? null : ((SQLDocument) parent).getNode());
         } catch (StorageException e) {
@@ -385,6 +384,18 @@ public class SQLSession implements Session {
             proxies.add(newDocument(proxyNode));
         }
         return proxies;
+    }
+
+    @Override
+    public void setProxyTarget(Document proxy, Document target)
+            throws DocumentException {
+        Node proxyNode = ((SQLDocument) proxy).getNode();
+        String targetId = target.getUUID();
+        try {
+            session.setProxyTarget(proxyNode, targetId);
+        } catch (StorageException e) {
+            throw new DocumentException(e);
+        }
     }
 
     @Override
@@ -802,6 +813,14 @@ public class SQLSession implements Session {
     protected void remove(Node node) throws DocumentException {
         try {
             session.removeNode(node);
+        } catch (StorageException e) {
+            throw new DocumentException(e);
+        }
+    }
+
+    protected void removeProperty(Node node) throws DocumentException {
+        try {
+            session.removePropertyNode(node);
         } catch (StorageException e) {
             throw new DocumentException(e);
         }

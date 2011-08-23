@@ -265,6 +265,18 @@ public interface Session {
             throws DocumentException;
 
     /**
+     * Sets a proxies' target.
+     * <p>
+     * The target must have the same version series as the proxy.
+     *
+     * @param proxy the proxy
+     * @param target the new target
+     * @since 5.4.3
+     */
+    void setProxyTarget(Document proxy, Document target)
+            throws DocumentException;
+
+    /**
      * Imports a document with a given id and parent.
      * <p>
      * The document can then be filled with the normal imported properties.

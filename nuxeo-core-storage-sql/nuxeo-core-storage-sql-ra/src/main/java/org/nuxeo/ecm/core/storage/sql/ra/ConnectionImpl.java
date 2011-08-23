@@ -236,6 +236,11 @@ public class ConnectionImpl implements Session {
     }
 
     @Override
+    public void removePropertyNode(Node node) throws StorageException {
+        getSession().removePropertyNode(node);
+    }
+
+    @Override
     public Node getParentNode(Node node) throws StorageException {
         return getSession().getParentNode(node);
     }
@@ -301,6 +306,12 @@ public class ConnectionImpl implements Session {
     public List<Node> getProxies(Node document, Node parent)
             throws StorageException {
         return getSession().getProxies(document, parent);
+    }
+
+    @Override
+    public void setProxyTarget(Node proxy, Serializable targetId)
+            throws StorageException {
+        getSession().setProxyTarget(proxy, targetId);
     }
 
     @Override

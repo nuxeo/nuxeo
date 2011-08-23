@@ -105,29 +105,6 @@ public interface Mapper extends RowMapper, XAResource {
             throws StorageException;
 
     /*
-     * ----- Version/Proxy -----
-     */
-
-    /**
-     * Gets the id of a version given a version series id and a label.
-     *
-     * @param versionSeriesId the version series id
-     * @param label the label
-     * @return the id of the version, or {@code null} if not found
-     */
-    Serializable getVersionIdByLabel(Serializable versionSeriesId, String label)
-            throws StorageException;
-
-    /**
-     * Gets the id of the last version given a version series id.
-     *
-     * @param versionSeriesId the version series id
-     * @return the id of the last version, or {@code null} if not found
-     */
-    Serializable getLastVersionId(Serializable versionSeriesId)
-            throws StorageException;
-
-    /*
      * ----- Query -----
      */
 
@@ -244,6 +221,7 @@ public interface Mapper extends RowMapper, XAResource {
      *
      * @param gc the binary garbage collector
      */
-    void markReferencedBinaries(BinaryGarbageCollector gc) throws StorageException;
+    void markReferencedBinaries(BinaryGarbageCollector gc)
+            throws StorageException;
 
 }

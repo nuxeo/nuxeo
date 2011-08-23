@@ -43,8 +43,11 @@ import org.nuxeo.ecm.core.storage.sql.PropertyType;
 import org.nuxeo.ecm.core.storage.sql.Row;
 import org.nuxeo.ecm.core.storage.sql.RowId;
 import org.nuxeo.ecm.core.storage.sql.RowMapper;
+import org.nuxeo.ecm.core.storage.sql.RowMapper.NodeInfo;
+import org.nuxeo.ecm.core.storage.sql.SelectionType;
 import org.nuxeo.ecm.core.storage.sql.SimpleFragment;
 import org.nuxeo.ecm.core.storage.sql.jdbc.SQLInfo.SQLInfoSelect;
+import org.nuxeo.ecm.core.storage.sql.jdbc.SQLInfo.SQLInfoSelection;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Update;
@@ -55,6 +58,8 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.db.Update;
 public class JDBCRowMapper extends JDBCConnection implements RowMapper {
 
     public static final int UPDATE_BATCH_SIZE = 100; // also insert/delete
+
+    public static final int DEBUG_MAX_TREE = 50;
 
     /**
      * Cluster node handler, or {@code null} if this {@link Mapper} is not the
@@ -409,7 +414,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                 }
             }
             if (limitToOne) {
-                return null;
+                return Collections.emptyList();
             }
             return list;
         } catch (Exception e) {
@@ -437,6 +442,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
         if (!batch.deletes.isEmpty()) {
             writeDeletes(batch.deletes);
         }
+        // batch.deletesDependent not executed
     }
 
     protected void writeCreates(List<Row> creates) throws StorageException {
@@ -721,7 +727,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                 model.MAIN_KEY, rowId.id);
         List<Row> maps = getSelectRows(rowId.tableName, select, criteriaMap,
                 null, true);
-        return maps == null ? null : maps.get(0);
+        return maps.isEmpty() ? null : maps.get(0);
     }
 
     @Override
@@ -767,146 +773,29 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
     }
 
     @Override
-    public Row readChildHierRow(Serializable parentId, String childName,
-            boolean complexProp) throws StorageException {
-        String sql = sqlInfo.getSelectByChildNameSql(complexProp);
-        try {
-            // XXX statement should be already prepared
-            List<Serializable> debugValues = null;
-            if (logger.isLogEnabled()) {
-                debugValues = new ArrayList<Serializable>(2);
-            }
-            PreparedStatement ps = connection.prepareStatement(sql);
-            try {
-                // compute where part
-                int i = 0;
-                for (Column column : sqlInfo.getSelectByChildNameWhereColumns(complexProp)) {
-                    i++;
-                    String key = column.getKey();
-                    Serializable v;
-                    if (key.equals(model.HIER_PARENT_KEY)) {
-                        v = parentId;
-                    } else if (key.equals(model.HIER_CHILD_NAME_KEY)) {
-                        v = childName;
-                    } else {
-                        throw new RuntimeException("Invalid hier column: "
-                                + key);
-                    }
-                    if (v == null) {
-                        throw new IllegalStateException("Null value for key: "
-                                + key);
-                    }
-                    column.setToPreparedStatement(ps, i, v);
-                    if (debugValues != null) {
-                        debugValues.add(v);
-                    }
-                }
-                if (debugValues != null) {
-                    logger.logSQL(sql, debugValues);
-                }
-                ResultSet rs = ps.executeQuery();
-                if (!rs.next()) {
-                    // no match, row doesn't exist
-                    return null;
-                }
-                // construct the row from the results
-                Row row = new Row(model.HIER_TABLE_NAME, (Serializable) null);
-                i = 1;
-                List<Column> columns = sqlInfo.getSelectByChildNameWhatColumns(complexProp);
-                for (Column column : columns) {
-                    row.put(column.getKey(), column.getFromResultSet(rs, i++));
-                }
-                row.put(model.HIER_PARENT_KEY, parentId);
-                row.put(model.HIER_CHILD_NAME_KEY, childName);
-                row.put(model.HIER_CHILD_ISPROPERTY_KEY,
-                        Boolean.valueOf(complexProp));
-                if (logger.isLogEnabled()) {
-                    logger.logResultSet(rs, columns);
-                }
-                // check that we didn't get several rows
-                while (rs.next()) {
-                    // detected a duplicate name, which means that user code
-                    // wasn't careful enough. We can't go back but at least we
-                    // can make the duplicate available under a different name.
-                    String newName = childName + '.'
-                            + System.currentTimeMillis();
-                    i = 0;
-                    Serializable childId = null;
-                    for (Column column : columns) {
-                        i++;
-                        if (column.getKey().equals(model.MAIN_KEY)) {
-                            childId = column.getFromResultSet(rs, i);
-                        }
-                    }
-                    logger.error(String.format(
-                            "Child '%s' appeared twice as child of %s "
-                                    + "(%s and %s), renaming second to '%s'",
-                            childName, parentId, row.id, childId, newName));
-                    Row rename = new Row(model.HIER_TABLE_NAME, childId);
-                    rename.putNew(model.HIER_CHILD_NAME_KEY, newName);
-                    updateSimpleRowWithValues(model.HIER_TABLE_NAME, rename);
-                }
-                return row;
-            } finally {
-                closeStatement(ps);
-            }
-        } catch (Exception e) {
-            checkConnectionReset(e);
-            throw new StorageException("Could not select: " + sql, e);
-        }
-    }
-
-    @Override
-    public List<Row> readChildHierRows(Serializable parentId,
-            boolean complexProp) throws StorageException {
-        if (parentId == null) {
-            throw new IllegalArgumentException("Illegal null parentId");
-        }
-        SQLInfoSelect select = sqlInfo.selectChildrenByIsProperty;
+    public List<Row> readSelectionRows(SelectionType selType,
+            Serializable selId, Serializable filter, Serializable criterion,
+            boolean limitToOne) throws StorageException {
+        SQLInfoSelection selInfo = sqlInfo.getSelection(selType);
         Map<String, Serializable> criteriaMap = new HashMap<String, Serializable>();
-        criteriaMap.put(model.HIER_PARENT_KEY, parentId);
-        criteriaMap.put(model.HIER_CHILD_ISPROPERTY_KEY,
-                Boolean.valueOf(complexProp));
-        return getSelectRows(model.HIER_TABLE_NAME, select, criteriaMap, null,
-                false);
-    }
-
-    @Override
-    public List<Row> getVersionRows(Serializable versionSeriesId)
-            throws StorageException {
-        SQLInfoSelect select = sqlInfo.selectVersionsBySeries;
-        Map<String, Serializable> criteriaMap = new HashMap<String, Serializable>();
-        criteriaMap.put(model.VERSION_VERSIONABLE_KEY, versionSeriesId);
-        criteriaMap.put(model.MAIN_IS_VERSION_KEY, Boolean.TRUE);
-        return getSelectRows(model.VERSION_TABLE_NAME, select, criteriaMap,
-                null, false);
-    }
-
-    @Override
-    public List<Row> getProxyRows(Serializable searchId, boolean byTarget,
-            Serializable parentId) throws StorageException {
-        Map<String, Serializable> criteriaMap = Collections.singletonMap(
-                byTarget ? model.PROXY_TARGET_KEY : model.PROXY_VERSIONABLE_KEY,
-                searchId);
+        criteriaMap.put(selType.selKey, selId);
         SQLInfoSelect select;
-        Map<String, Serializable> joinMap;
-        if (parentId == null) {
-            select = byTarget ? sqlInfo.selectProxiesByTarget
-                    : sqlInfo.selectProxiesBySeries;
-            joinMap = null;
+        if (filter == null) {
+            select = selInfo.selectAll;
         } else {
-            select = byTarget ? sqlInfo.selectProxiesByTargetAndParent
-                    : sqlInfo.selectProxiesByVersionSeriesAndParent;
-            joinMap = Collections.singletonMap(model.HIER_PARENT_KEY, parentId);
+            select = selInfo.selectFiltered;
+            criteriaMap.put(selType.filterKey, filter);
         }
-        return getSelectRows(model.PROXY_TABLE_NAME, select, criteriaMap,
-                joinMap, false);
+        if (selType.criterionKey != null) {
+            criteriaMap.put(selType.criterionKey, criterion);
+        }
+        return getSelectRows(selType.tableName, select, criteriaMap, null,
+                limitToOne);
     }
 
     @Override
-    public CopyHierarchyResult copyHierarchy(IdWithTypes source,
-            Serializable destParentId, String destName, Row overwriteRow)
-            throws StorageException {
+    public CopyResult copy(IdWithTypes source, Serializable destParentId,
+            String destName, Row overwriteRow) throws StorageException {
         // assert !model.separateMainTable; // other case not implemented
         Invalidations invalidations = new Invalidations();
         try {
@@ -934,34 +823,40 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                         invalParentId));
             }
             // copy all collected fragments
+            Set<Serializable> proxyIds = new HashSet<Serializable>();
             for (Entry<String, Set<Serializable>> entry : model.getPerFragmentIds(
                     idToTypes).entrySet()) {
                 String tableName = entry.getKey();
+                if (tableName.equals(model.HIER_TABLE_NAME)) {
+                    // already done
+                    continue;
+                }
                 // TODO move ACL skip logic higher
                 if (tableName.equals(model.ACL_TABLE_NAME)) {
                     continue;
                 }
                 Set<Serializable> ids = entry.getValue();
-                // boolean overwrite = overwriteId != null
-                // && !tableName.equals(model.hierTableName);
-                // overwrite ? overwriteId : null
+                if (tableName.equals(model.PROXY_TABLE_NAME)) {
+                    for (Serializable id : ids) {
+                        proxyIds.add(idMap.get(id)); // copied ids
+                    }
+                }
                 Boolean invalidation = copyRows(tableName, ids, idMap,
                         overwriteId);
-                // TODO XXX check code:
                 if (invalidation != null) {
                     // overwrote something
                     // make sure things are properly invalidated in this and
                     // other sessions
                     if (Boolean.TRUE.equals(invalidation)) {
-                        invalidations.addModified(Collections.singleton(new RowId(
-                                tableName, overwriteId)));
+                        invalidations.addModified(new RowId(tableName,
+                                overwriteId));
                     } else {
-                        invalidations.addDeleted(Collections.singleton(new RowId(
-                                tableName, overwriteId)));
+                        invalidations.addDeleted(new RowId(tableName,
+                                overwriteId));
                     }
                 }
             }
-            return new CopyHierarchyResult(newRootId, invalidations);
+            return new CopyResult(newRootId, invalidations, proxyIds);
         } catch (Exception e) {
             checkConnectionReset(e);
             throw new StorageException("Could not copy: "
@@ -1220,6 +1115,86 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
         } finally {
             closeStatement(copyPs);
             closeStatement(deletePs);
+        }
+    }
+
+    @Override
+    public List<NodeInfo> remove(Serializable rootId) throws StorageException {
+        List<NodeInfo> info = getDescendantsInfo(rootId);
+        deleteRowsDirect(model.HIER_TABLE_NAME, Collections.singleton(rootId));
+        return info;
+    }
+
+    protected List<NodeInfo> getDescendantsInfo(Serializable rootId)
+            throws StorageException {
+        List<NodeInfo> descendants = new LinkedList<NodeInfo>();
+        String sql = sqlInfo.getSelectDescendantsInfoSql();
+        if (logger.isLogEnabled()) {
+            logger.logSQL(sql, Collections.singletonList(rootId));
+        }
+        List<Column> columns = sqlInfo.getSelectDescendantsInfoWhatColumns();
+        PreparedStatement ps = null;
+        try {
+            ps = connection.prepareStatement(sql);
+            List<String> debugValues = null;
+            if (logger.isLogEnabled()) {
+                debugValues = new LinkedList<String>();
+            }
+            ps.setObject(1, rootId); // parent id
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Serializable id = null;
+                Serializable parentId = null;
+                String primaryType = null;
+                Boolean isProperty = null;
+                Serializable targetId = null;
+                Serializable versionableId = null;
+                int i = 1;
+                for (Column column : columns) {
+                    String key = column.getKey();
+                    Serializable value = column.getFromResultSet(rs, i++);
+                    if (key.equals(model.MAIN_KEY)) {
+                        id = value;
+                    } else if (key.equals(model.HIER_PARENT_KEY)) {
+                        parentId = value;
+                    } else if (key.equals(model.MAIN_PRIMARY_TYPE_KEY)) {
+                        primaryType = (String) value;
+                    } else if (key.equals(model.HIER_CHILD_ISPROPERTY_KEY)) {
+                        isProperty = (Boolean) value;
+                    } else if (key.equals(model.PROXY_TARGET_KEY)) {
+                        targetId = value;
+                    } else if (key.equals(model.PROXY_VERSIONABLE_KEY)) {
+                        versionableId = value;
+                    }
+                    // no mixins (not useful to caller)
+                    // no versions (not fileable)
+                }
+                descendants.add(new NodeInfo(id, parentId, primaryType,
+                        isProperty, versionableId, targetId));
+                if (debugValues != null) {
+                    if (debugValues.size() < DEBUG_MAX_TREE) {
+                        debugValues.add(id + "/" + primaryType);
+                    }
+                }
+            }
+            if (debugValues != null) {
+                if (debugValues.size() >= DEBUG_MAX_TREE) {
+                    debugValues.add("... (" + descendants.size() + ") results");
+                }
+                logger.log("  -> " + debugValues);
+            }
+            return descendants;
+        } catch (Exception e) {
+            checkConnectionReset(e);
+            throw new StorageException("Failed to get descendants", e);
+        } finally {
+            if (ps != null) {
+                try {
+                    closeStatement(ps);
+                } catch (SQLException e) {
+                    logger.error(e.getMessage(), e);
+                }
+            }
         }
     }
 

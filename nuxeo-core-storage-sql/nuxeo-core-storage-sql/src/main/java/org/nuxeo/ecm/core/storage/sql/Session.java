@@ -244,12 +244,38 @@ public interface Session extends Connection {
             Node parent, String name, Long pos) throws StorageException;
 
     /**
+     * Sets a proxies' target.
+     *
+     * @param proxy the proxy
+     * @param targetId the new target id
+     * @since 5.4.3
+     */
+    void setProxyTarget(Node proxy, Serializable targetId)
+            throws StorageException;
+
+    /**
      * Removes a node from the storage.
+     * <p>
+     * This is much more complex that removing a property node (
+     * {@link #removePropertyNode}).
      *
      * @param node the node to remove
      * @throws StorageException
+     * @see {@link #removePropertyNode}
      */
     void removeNode(Node node) throws StorageException;
+
+    /**
+     * Removes a property node from the storage.
+     * <p>
+     * This is much less complex that removing a generic document node (
+     * {@link #removeNode}).
+     *
+     * @param node the property node to remove
+     * @throws StorageException
+     * @see {@link #removeNode}
+     */
+    void removePropertyNode(Node node) throws StorageException;
 
     /**
      * Order the given source child node before the destination child node. The

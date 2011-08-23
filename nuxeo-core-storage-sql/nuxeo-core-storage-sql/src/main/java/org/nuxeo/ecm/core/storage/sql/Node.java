@@ -39,7 +39,7 @@ public class Node {
     protected final SimpleFragment hierFragment;
 
     /** Fragment information for each additional mixin or inherited fragment. */
-    private final FragmentsMap fragments;
+    protected final FragmentsMap fragments;
 
     /**
      * Cache of property objects already retrieved. They are dumb objects, just

@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -53,6 +54,7 @@ import org.nuxeo.ecm.core.storage.Credentials;
 import org.nuxeo.ecm.core.storage.EventConstants;
 import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.storage.sql.Fragment.State;
 import org.nuxeo.ecm.core.storage.sql.Invalidations.InvalidationsPair;
 import org.nuxeo.ecm.core.storage.sql.RowMapper.RowBatch;
 import org.nuxeo.ecm.core.storage.sql.coremodel.BinaryTextListener;
@@ -274,11 +276,11 @@ public class SessionImpl implements Session, XAResource {
         if (!repository.getRepositoryDescriptor().fulltextDisabled) {
             updateFulltext();
         }
-        flushWithoutFulltext();
+        doFlush();
         checkInvalidationsConflict();
     }
 
-    protected void flushWithoutFulltext() throws StorageException {
+    protected void doFlush() throws StorageException {
         RowBatch batch = context.getSaveBatch();
         if (!batch.isEmpty() || readAclsChanged) {
             log.debug("Saving session");
@@ -843,7 +845,7 @@ public class SessionImpl implements Session, XAResource {
         hierRow.putNew(model.MAIN_PRIMARY_TYPE_KEY, typeName);
         hierRow.putNew(model.HIER_CHILD_ISPROPERTY_KEY,
                 Boolean.valueOf(complexProp));
-        SimpleFragment hierFragment = context.createSimpleFragment(hierRow);
+        SimpleFragment hierFragment = context.createHierarchyFragment(hierRow);
         // TODO if non-lazy creation of some fragments, create them here
         // for (String tableName : model.getTypeSimpleFragments(typeName)) {
         FragmentGroup fragmentGroup = new FragmentGroup(hierFragment,
@@ -857,7 +859,22 @@ public class SessionImpl implements Session, XAResource {
         Node proxy = addChildNode(parent, name, pos, Model.PROXY_TYPE, false);
         proxy.setSimpleProperty(model.PROXY_TARGET_PROP, targetId);
         proxy.setSimpleProperty(model.PROXY_VERSIONABLE_PROP, versionableId);
+        SimpleFragment proxyFragment = (SimpleFragment) proxy.fragments.get(model.PROXY_TABLE_NAME);
+        context.createdProxyFragment(proxyFragment);
         return proxy;
+    }
+
+    @Override
+    public void setProxyTarget(Node proxy, Serializable targetId)
+            throws StorageException {
+        SimpleProperty prop = proxy.getSimpleProperty(Model.PROXY_TARGET_PROP);
+        Serializable oldTargetId = prop.getValue();
+        if (!oldTargetId.equals(targetId)) {
+            SimpleFragment proxyFragment = (SimpleFragment) proxy.fragments.get(model.PROXY_TABLE_NAME);
+            context.removedProxyTarget(proxyFragment);
+            proxy.setSimpleProperty(Model.PROXY_TARGET_PROP, targetId);
+            context.addedProxyTarget(proxyFragment);
+        }
     }
 
     @Override
@@ -945,20 +962,15 @@ public class SessionImpl implements Session, XAResource {
     @Override
     public void removeNode(Node node) throws StorageException {
         checkLive();
-        boolean isVersion = Boolean.TRUE.equals(node.getSimpleProperty(
-                model.MAIN_IS_VERSION_PROP).getValue());
-        Serializable versionSeriesId = null;
-        if (isVersion) {
-            versionSeriesId = node.getSimpleProperty(
-                    model.VERSION_VERSIONABLE_PROP).getValue();
-        }
-
+        flush();
         context.removeNode(node.getHierFragment());
+    }
 
-        // for versions there's stuff we have to recompute
-        if (isVersion) {
-            context.recomputeVersionSeries(versionSeriesId);
-        }
+    @Override
+    public void removePropertyNode(Node node) throws StorageException {
+        checkLive();
+        // no flush needed
+        context.removePropertyNode(node.getHierFragment());
     }
 
     @Override
@@ -991,26 +1003,31 @@ public class SessionImpl implements Session, XAResource {
     @Override
     public Node getVersionByLabel(Serializable versionSeriesId, String label)
             throws StorageException {
-        checkLive();
-        flush();
-        Serializable id = mapper.getVersionIdByLabel(versionSeriesId, label);
-        return id == null ? null : getNodeById(id);
+        if (label == null) {
+            return null;
+        }
+        List<Node> versions = getVersions(versionSeriesId);
+        for (Node node : versions) {
+            String l = (String) node.getSimpleProperty(model.VERSION_LABEL_PROP).getValue();
+            if (label.equals(l)) {
+                return node;
+            }
+        }
+        return null;
     }
 
     @Override
     public Node getLastVersion(Serializable versionSeriesId)
             throws StorageException {
         checkLive();
-        flush();
-        Serializable id = mapper.getLastVersionId(versionSeriesId);
-        return id == null ? null : getNodeById(id);
+        List<Serializable> ids = context.getVersionIds(versionSeriesId);
+        return ids.isEmpty() ? null : getNodeById(ids.get(ids.size() - 1));
     }
 
     @Override
     public List<Node> getVersions(Serializable versionSeriesId)
             throws StorageException {
         checkLive();
-        flush();
         List<Serializable> ids = context.getVersionIds(versionSeriesId);
         List<Node> nodes = new ArrayList<Node>(ids.size());
         for (Serializable id : ids) {
@@ -1023,31 +1040,42 @@ public class SessionImpl implements Session, XAResource {
     public List<Node> getProxies(Node document, Node parent)
             throws StorageException {
         checkLive();
-        flush();
 
-        // find the versionable id
-        boolean byTarget;
-        Serializable searchId;
+        List<Serializable> ids;
         if (document.isVersion()) {
-            byTarget = true;
-            searchId = document.getId();
+            ids = context.getTargetProxyIds(document.getId());
         } else {
-            byTarget = false;
+            Serializable versionSeriesId;
             if (document.isProxy()) {
-                searchId = document.getSimpleProperty(
+                versionSeriesId = document.getSimpleProperty(
                         model.PROXY_VERSIONABLE_PROP).getString();
             } else {
-                searchId = document.getId();
+                versionSeriesId = document.getId();
+            }
+            ids = context.getSeriesProxyIds(versionSeriesId);
+        }
+
+        List<Node> nodes = new LinkedList<Node>();
+        for (Serializable id : ids) {
+            Node node = getNodeById(id);
+            if (node != null || Boolean.TRUE.booleanValue()) { // XXX
+                // null if deleted, which means selection wasn't correctly
+                // updated
+                nodes.add(node);
             }
         }
-        Serializable parentId = parent == null ? null : parent.getId();
 
-        List<Serializable> ids = context.getProxyIds(searchId, byTarget,
-                parentId);
-        List<Node> nodes = new ArrayList<Node>(ids.size());
-        for (Serializable id : ids) {
-            nodes.add(getNodeById(id));
+        if (parent != null) {
+            // filter by parent
+            Serializable parentId = parent.getId();
+            for (Iterator<Node> it = nodes.iterator(); it.hasNext();) {
+                Node node = it.next();
+                if (!parentId.equals(node.getParentId())) {
+                    it.remove();
+                }
+            }
         }
+
         return nodes;
     }
 

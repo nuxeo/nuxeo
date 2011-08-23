@@ -60,6 +60,20 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         DatabaseHelper.DATABASE.maybeSleepToNextSecond();
     }
 
+    public void testCreateVersionsManyTimes() throws Exception {
+        for (int i = 0; i < 10; i++) {
+            createVersions(i);
+        }
+    }
+
+    protected void createVersions(int i) throws Exception {
+        DocumentModel folder = new DocumentModelImpl("/", "fold" + i, "Folder");
+        session.createDocument(folder);
+        DocumentModel file = new DocumentModelImpl("/fold" + i, "file", "File");
+        file = session.createDocument(file);
+        createTrioVersions(file);
+    }
+
     public void testRemoveSingleDocVersion() throws Exception {
         DocumentModel folder = new DocumentModelImpl("/", "folder#1", "Folder");
         folder = session.createDocument(folder);

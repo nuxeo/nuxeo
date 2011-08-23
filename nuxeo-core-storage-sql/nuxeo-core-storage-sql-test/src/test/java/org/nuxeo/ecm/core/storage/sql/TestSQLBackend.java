@@ -20,6 +20,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.ConcurrentModificationException;
 import java.util.GregorianCalendar;
@@ -87,7 +88,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
     }
 
     protected int getChildrenHardSize(Session session) {
-        return ((SessionImpl) session).context.hierContext.childrenRegularHard.size();
+        return ((SessionImpl) session).context.hierNonComplex.hardMap.size();
     }
 
     public void testChildren() throws Exception {
@@ -733,6 +734,104 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals(1, childrenb2.size());
     }
 
+    public void testCrossSessionVersionsInvalidationAdd() throws Exception {
+        // in first session, create base folder
+        Session session1 = repository.getConnection();
+        Node root1 = session1.getRootNode();
+        Node node1 = session1.addChildNode(root1, "foo", null, "TestDoc", false);
+        Serializable id = node1.getId();
+        session1.save();
+
+        // in second session, list versions (empty)
+        Session session2 = repository.getConnection();
+        assertEquals(0, session2.getVersions(id).size());
+
+        // in first session, create version
+        session1.checkIn(node1, "v1", "comment");
+        session1.save();
+        assertEquals(1, session1.getVersions(id).size());
+
+        // in second session, list versions
+        session2.save(); // process invalidations (non-transactional)
+        assertEquals(1, session2.getVersions(id).size());
+    }
+
+    public void testCrossSessionVersionsInvalidationRemove() throws Exception {
+        // in first session, create base folder and version
+        Session session1 = repository.getConnection();
+        Node root1 = session1.getRootNode();
+        Node node1 = session1.addChildNode(root1, "foo", null, "TestDoc", false);
+        Serializable id = node1.getId();
+        Node ver1 = session1.checkIn(node1, "v1", "comment");
+
+        // in second session, list versions (empty)
+        Session session2 = repository.getConnection();
+        assertEquals(1, session2.getVersions(id).size());
+
+        // in first session, remove version
+        session1.removeNode(ver1);
+        session1.save();
+        assertEquals(0, session1.getVersions(id).size());
+
+        // in second session, list versions
+        session2.save(); // process invalidations (non-transactional)
+        assertEquals(0, session2.getVersions(id).size());
+    }
+
+    public void testCrossSessionProxiesInvalidationAdd() throws Exception {
+        // in first session, create base stuff
+        Session session1 = repository.getConnection();
+        Node root1 = session1.getRootNode();
+        Node node1 = session1.addChildNode(root1, "foo", null, "TestDoc", false);
+        Serializable id = node1.getId();
+        Node ver1 = session1.checkIn(node1, "v1", "comment");
+        Serializable verId = ver1.getId();
+        session1.save();
+
+        // in second session, list proxies (empty)
+        Session session2 = repository.getConnection();
+        Node ver2 = session2.getNodeById(verId);
+        assertEquals(0, session2.getProxies(ver2, null).size()); // by target
+
+        // in first session, create proxy
+        Node proxy1 = session1.addProxy(ver1.getId(), id, root1, "proxy", null);
+        session1.save();
+        assertEquals(1, session1.getProxies(ver1, null).size()); // by target
+
+        // in second session, list proxies
+        session2.save(); // process invalidations (non-transactional)
+        assertEquals(1, session2.getProxies(ver1, null).size()); // by target
+    }
+
+    public void testCrossSessionProxiesInvalidationRemove() throws Exception {
+        // in first session, create base stuff
+        Session session1 = repository.getConnection();
+        Node root1 = session1.getRootNode();
+        Node folder1 = session1.addChildNode(root1, "fold", null, "TestDoc",
+                false);
+        Node node1 = session1.addChildNode(root1, "foo", null, "TestDoc", false);
+        Serializable id = node1.getId();
+        Node ver1 = session1.checkIn(node1, "v1", "comment");
+        Serializable verId = ver1.getId();
+        Node proxy1 = session1.addProxy(ver1.getId(), id, folder1, "proxy",
+                null);
+        session1.save();
+
+        // in second session, list proxies
+        Session session2 = repository.getConnection();
+        Node ver2 = session2.getNodeById(verId);
+        assertEquals(1, session2.getProxies(ver2, null).size()); // by target
+
+        // in first session, remove proxy
+        session1.removeNode(proxy1);
+        session1.save();
+        assertEquals(0, session1.getProxies(ver1, null).size()); // by target
+
+        // in second session, list proxies
+        session2.save(); // process invalidations (non-transactional)
+        assertEquals(0, session2.getProxies(ver1, null).size()); // by target
+    }
+
     public void testClustering() throws Exception {
         if (this instanceof TestSQLBackendNet
                 || this instanceof ITSQLBackendNet) {
@@ -1291,6 +1390,43 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertNull(sp.getString());
     }
 
+    public void testVersionFetching() throws Exception {
+        Session session = repository.getConnection();
+        Node root = session.getRootNode();
+        Node folder = session.addChildNode(root, "folder", null, "TestDoc",
+                false);
+        Node node = session.addChildNode(folder, "node", null, "TestDoc", false);
+        session.save();
+
+        // create two versions
+        Node ver1 = session.checkIn(node, "foolab1", "desc1");
+        session.checkOut(node);
+        Node ver2 = session.checkIn(node, "foolab2", "desc2");
+
+        // get list
+        List<Node> list = session.getVersions(node.getId());
+        assertEquals(2, list.size());
+        assertEquals(ver1.getId(), list.get(0).getId());
+        assertEquals(ver2.getId(), list.get(1).getId());
+        // get by label
+        Node v = session.getVersionByLabel(node.getId(), "foolab1");
+        assertEquals(ver1.getId(), v.getId());
+        // get last
+        v = session.getLastVersion(node.getId());
+        assertEquals(ver2.getId(), v.getId());
+
+        // remove version
+        session.removeNode(ver1);
+
+        // get list
+        list = session.getVersions(node.getId());
+        assertEquals(1, list.size());
+        assertEquals(ver2.getId(), list.get(0).getId());
+
+        // copy version
+        // session.copy(ver1, null, "bar"); not possible right now
+    }
+
     public void testProxies() throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
@@ -1348,6 +1484,150 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals(1, proxies.size());
         proxies = session.getProxies(proxy, foldera);
         assertEquals(0, proxies.size());
+    }
+
+    public void testProxyFetching() throws Exception {
+        Session session = repository.getConnection();
+        Node root = session.getRootNode();
+        Node folder1 = session.addChildNode(root, "folder1", null, "TestDoc",
+                false);
+        Node folder2 = session.addChildNode(root, "folder2", null, "TestDoc",
+                false);
+        Node node = session.addChildNode(folder1, "node", null, "TestDoc",
+                false);
+        session.save();
+
+        // create two versions
+        Node ver1 = session.checkIn(node, "foolab1", "desc1");
+        session.checkOut(node);
+        Node ver2 = session.checkIn(node, "foolab2", "desc2");
+
+        // make proxies
+        Node proxy1a = session.addProxy(ver1.getId(), node.getId(), folder1,
+                "proxy1a", null);
+        Node proxy1b = session.addProxy(ver1.getId(), node.getId(), folder2,
+                "proxy1b", null);
+        Node proxy2 = session.addProxy(ver2.getId(), node.getId(), folder1,
+                "proxy2", null);
+
+        // get by versionable id
+        List<Node> list = session.getProxies(node, null);
+        assertSameSet(list, proxy1a, proxy1b, proxy2);
+        // get by proxy (same versionable id)
+        list = session.getProxies(proxy1a, null);
+        assertSameSet(list, proxy1a, proxy1b, proxy2);
+        // get by target id
+        list = session.getProxies(ver1, null);
+        assertSameSet(list, proxy1a, proxy1b);
+        list = session.getProxies(ver2, null);
+        assertSameSet(list, proxy2);
+        // get by versionable id and parent
+        list = session.getProxies(node, folder2);
+        assertSameSet(list, proxy1b);
+
+        // remove proxy1a
+        session.removeNode(proxy1a);
+        list = session.getProxies(ver1, null);
+        assertSameSet(list, proxy1b);
+        list = session.getProxies(ver2, null);
+        assertSameSet(list, proxy2);
+        list = session.getProxies(node, null);
+        assertSameSet(list, proxy1b, proxy2);
+
+        // retarget proxy2 to ver1
+        session.setProxyTarget(proxy2, ver1.getId());
+        list = session.getProxies(ver1, null);
+        assertSameSet(list, proxy1b, proxy2);
+        list = session.getProxies(ver2, null);
+        assertEquals(0, list.size());
+
+        // copy proxy1b through its container folder2
+        session.copy(folder2, root, "folder3");
+        // don't fetch proxy3 yet
+        list = session.getProxies(node, null);
+        assertEquals(3, list.size()); // selection properly updated
+    }
+
+    public void testProxyDeepRemoval() throws Exception {
+        Session session = repository.getConnection();
+        Node root = session.getRootNode();
+        Node folder1 = session.addChildNode(root, "folder1", null, "TestDoc",
+                false);
+        Node folder2 = session.addChildNode(root, "folder2", null, "TestDoc",
+                false);
+        Node folder3 = session.addChildNode(root, "folder3", null, "TestDoc",
+                false);
+        // create node in folder1
+        Node node = session.addChildNode(folder1, "node", null, "TestDoc",
+                false);
+        // create version
+        Node ver = session.checkIn(node, "foolab1", "desc1");
+        // create proxy2 in folder2
+        session.addProxy(ver.getId(), node.getId(), folder2, "proxy2", null);
+        // create proxy3 in folder3
+        session.addProxy(ver.getId(), node.getId(), folder3, "proxy3", null);
+
+        List<Node> list;
+        list = session.getProxies(ver, null); // by target
+        assertEquals(2, list.size());
+        list = session.getProxies(node, null); // by series
+        assertEquals(2, list.size());
+
+        // remove proxy through container folder2
+        session.removeNode(folder2);
+
+        // only proxy3 left
+        list = session.getProxies(ver, null); // by target
+        assertEquals(1, list.size());
+        list = session.getProxies(node, null); // by series
+        assertEquals(1, list.size());
+
+        // remove target, should remove proxies as well
+        session.removeNode(ver);
+        list = session.getProxies(ver, null); // by target
+        assertEquals(0, list.size());
+    }
+
+    public void testProxyDeepCopy() throws Exception {
+        Session session = repository.getConnection();
+        Node root = session.getRootNode();
+        Node folder1 = session.addChildNode(root, "folder1", null, "TestDoc",
+                false);
+        Node folder2 = session.addChildNode(root, "folder2", null, "TestDoc",
+                false);
+        // create node in folder1
+        Node node = session.addChildNode(folder1, "node", null, "TestDoc",
+                false);
+        // create version
+        Node ver = session.checkIn(node, "foolab1", "desc1");
+        // create proxy in folder2
+        session.addProxy(ver.getId(), node.getId(), folder2, "proxy2", null);
+
+        List<Node> list;
+        list = session.getProxies(ver, null); // by target
+        assertEquals(1, list.size());
+        list = session.getProxies(node, null); // by series
+        assertEquals(1, list.size());
+
+        // copy folder2 to folder3
+        session.copy(folder2, root, "fodler3");
+        // one more proxy
+        list = session.getProxies(ver, null); // by target
+        assertEquals(2, list.size());
+        list = session.getProxies(node, null); // by series
+        assertEquals(2, list.size());
+    }
+
+    private static void assertSameSet(Collection<Node> actual, Node... expected) {
+        assertEquals(idSet(Arrays.asList(expected)), idSet(actual));
+    }
+
+    private static Set<Serializable> idSet(Collection<Node> nodes) {
+        Set<Serializable> set = new HashSet<Serializable>();
+        for (Node node : nodes) {
+            set.add(node.getId());
+        }
+        return set;
     }
 
     public void testDelete() throws Exception {

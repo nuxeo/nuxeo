@@ -131,33 +131,39 @@ public final class SimpleFragment extends Fragment {
     }
 
     /**
-     * Comparator of {@link SimpleFragment}s according to their pos field.
+     * Comparator of {@link SimpleFragment}s according to a field.
      */
-    public static class PositionComparator implements
-            Comparator<SimpleFragment> {
+    public static class FieldComparator implements Comparator<SimpleFragment> {
 
-        protected final String posKey;
+        public final String key;
 
-        public PositionComparator(String posKey) {
-            this.posKey = posKey;
+        public FieldComparator(String key) {
+            this.key = key;
         }
 
         @Override
         public int compare(SimpleFragment frag1, SimpleFragment frag2) {
+            return doCompare(frag1, frag2);
+        }
+
+        // separate function because we need a free generic type
+        // which is incompatible with the super signature
+        @SuppressWarnings("unchecked")
+        public <T> int doCompare(SimpleFragment frag1, SimpleFragment frag2) {
             try {
-                Long pos1 = (Long) frag1.get(posKey);
-                Long pos2 = (Long) frag2.get(posKey);
-                if (pos1 == null && pos2 == null) {
+                Comparable<T> value1 = (Comparable<T>) frag1.get(key);
+                T value2 = (T) frag2.get(key);
+                if (value1 == null && value2 == null) {
                     // coherent sort
                     return frag1.hashCode() - frag2.hashCode();
                 }
-                if (pos1 == null) {
+                if (value1 == null) {
                     return 1;
                 }
-                if (pos2 == null) {
+                if (value2 == null) {
                     return -1;
                 }
-                return pos1.compareTo(pos2);
+                return value1.compareTo(value2);
             } catch (StorageException e) {
                 // shouldn't happen
                 return frag1.hashCode() - frag2.hashCode();

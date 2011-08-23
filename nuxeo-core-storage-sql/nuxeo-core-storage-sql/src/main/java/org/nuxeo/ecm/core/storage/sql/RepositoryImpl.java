@@ -352,16 +352,16 @@ public class RepositoryImpl implements Repository {
         SessionPathResolver pathResolver = new SessionPathResolver();
         Mapper mapper = backend.newMapper(model, pathResolver, credentials,
                 false);
-        SessionImpl session = newSession(mapper, credentials);
+        SessionImpl session = newSession(model, mapper, credentials);
         pathResolver.setSession(session);
         sessions.add(session);
         return session;
     }
 
-    protected SessionImpl newSession(Mapper mapper, Credentials credentials)
-            throws StorageException {
-        mapper = new CachingMapper(mapper, cachePropagator, eventPropagator,
-                repositoryEventQueue);
+    protected SessionImpl newSession(Model model, Mapper mapper,
+            Credentials credentials) throws StorageException {
+        mapper = new CachingMapper(model, mapper, cachePropagator,
+                eventPropagator, repositoryEventQueue);
         return new SessionImpl(this, model, mapper, credentials);
     }
 
