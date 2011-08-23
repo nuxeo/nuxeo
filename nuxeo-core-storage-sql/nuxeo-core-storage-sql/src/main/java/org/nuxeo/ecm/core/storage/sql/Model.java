@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -63,6 +64,9 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.SQLInfo;
 public class Model {
 
     private static final Log log = LogFactory.getLog(Model.class);
+
+    // change to have deterministic pseudo-UUID generation for debugging
+    private static final boolean DEBUG_UUIDS = false;
 
     public static final String ROOT_TYPE = "Root";
 
@@ -259,7 +263,7 @@ public class Model {
 
     protected final RepositoryDescriptor repositoryDescriptor;
 
-    // private final AtomicLong temporaryIdCounter = new AtomicLong(0);
+    private final AtomicLong temporaryIdCounter = new AtomicLong(0);
 
     /** Per-doctype list of schemas. */
     private final Map<String, Set<String>> documentTypesSchemas;
@@ -409,9 +413,11 @@ public class Model {
      * @return a new id, which may be temporary
      */
     public Serializable generateNewId() {
-        return UUID.randomUUID().toString();
-        // return "UUID_" + temporaryIdCounter.incrementAndGet();
-        // return "T" + temporaryIdCounter.incrementAndGet();
+        if (DEBUG_UUIDS) {
+            return "UUID_" + temporaryIdCounter.incrementAndGet();
+        } else {
+            return UUID.randomUUID().toString();
+        }
     }
 
     /**
