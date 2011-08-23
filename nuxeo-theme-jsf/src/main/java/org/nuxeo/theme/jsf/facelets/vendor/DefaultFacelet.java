@@ -15,6 +15,7 @@
 package org.nuxeo.theme.jsf.facelets.vendor;
 
 import java.io.Externalizable;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
@@ -43,10 +44,8 @@ import com.sun.facelets.FaceletHandler;
 import com.sun.facelets.tag.jsf.ComponentSupport;
 
 /**
- * Default Facelet implementation.
- *
- * Copied from facelets-1.1.15.B1 by Jean-Marc Orliaguet <jmo@chalmers.se> -
- * class made public 2010/10/24.
+ * Default Facelet implementation. Copied from facelets-1.1.15.B1 by Jean-Marc
+ * Orliaguet <jmo@chalmers.se> - class made public 2010/10/24.
  *
  * @author Jacob Hookom
  * @version $Id: DefaultFacelet.java,v 1.9 2006/04/03 05:10:38 jhook Exp $
@@ -251,9 +250,9 @@ public final class DefaultFacelet extends Facelet {
 
     /**
      * Used for delegation by the DefaultFaceletContext. First pulls the URL
-     * from {@link #getRelativePath(String) getRelativePath(String)}, then calls
-     * {@link #include(FaceletContext, UIComponent, URL) include(FaceletContext,
-     * UIComponent, URL)}.
+     * from {@link #getRelativePath(String) getRelativePath(String)}, then
+     * calls {@link #include(FaceletContext, UIComponent, URL)
+     * include(FaceletContext, UIComponent, URL)}.
      *
      * @see FaceletContext#includeFacelet(UIComponent, String)
      * @param ctx FaceletContext to pass to the included Facelet
@@ -267,8 +266,16 @@ public final class DefaultFacelet extends Facelet {
     public void include(DefaultFaceletContext ctx, UIComponent parent,
             String path) throws IOException, FacesException, FaceletException,
             ELException {
-        URL url = this.getRelativePath(path);
-        this.include(ctx, parent, url);
+        try {
+            URL url = this.getRelativePath(path);
+            this.include(ctx, parent, url);
+        } catch (FileNotFoundException e) {
+            if (log.isLoggable(Level.SEVERE)) {
+                log.severe("Template not found at " + path);
+            }
+            Facelet f = new NotFoundFacelet(path);
+            f.apply(ctx.getFacesContext(), parent);
+        }
     }
 
     /**
