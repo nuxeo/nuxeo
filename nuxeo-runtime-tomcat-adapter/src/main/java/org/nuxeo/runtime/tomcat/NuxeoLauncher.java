@@ -28,10 +28,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.osgi.application.FrameworkBootstrap;
 import org.nuxeo.osgi.application.MutableClassLoader;
+import org.nuxeo.runtime.tomcat.dev.DevFrameworkBootstrap;
+import org.nuxeo.runtime.tomcat.dev.NuxeoDevWebappClassLoader;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * 
  */
 public class NuxeoLauncher implements LifecycleListener {
 
@@ -72,11 +74,19 @@ public class NuxeoLauncher implements LifecycleListener {
 
     protected void handleEvent(NuxeoWebappLoader loader, LifecycleEvent event) {
         try {
+            boolean devMode = loader.getClassLoader() instanceof NuxeoDevWebappClassLoader;
             String type = event.getType();
             if (type == Lifecycle.START_EVENT) {
                 File homeDir = resolveHomeDirectory(loader);
-                bootstrap = new FrameworkBootstrap(
-                        (MutableClassLoader) loader.getClassLoader(), homeDir);
+                if (devMode) {
+                    bootstrap = new DevFrameworkBootstrap(
+                            (MutableClassLoader) loader.getClassLoader(),
+                            homeDir);
+                } else {
+                    bootstrap = new FrameworkBootstrap(
+                            (MutableClassLoader) loader.getClassLoader(),
+                            homeDir);
+                }
                 bootstrap.setHostName("Tomcat");
                 bootstrap.setHostVersion("6.0.20");
                 bootstrap.initialize();
