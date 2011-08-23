@@ -18,19 +18,27 @@ a:link {
 
 a:hover {
   text-decoration: underline;
-  }
+}
 
 button {
-  background-color: #4E9AE1;
-  background-image: none;
   line-height: 100%;
-  padding: 2px 5px;
-  margin:5px 0;
-  -moz-border-radius: 10px;
-  -webkit-border-radius: 10px;
-  border-radius: 10px;
-  color:#fff;
-  border:none;
+  cursor: pointer;
+  color: #333;
+  text-align: center;
+  text-decoration: none;
+  padding: .5em 2em .55em;
+  margin:.5em 1em .5em 0;
+  text-shadow: 0 1px 1px rgba(0,0,0,.3);
+  -webkit-border-radius: .5em;
+  -moz-border-radius: .5em;
+  border-radius: .5em;
+  -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.2);
+  -moz-box-shadow: 0 1px 2px rgba(0,0,0,.2);
+  box-shadow: 0 1px 2px rgba(0,0,0,.2);
+	border: solid 1px #da7c0c;
+	background: -moz-linear-gradient(top, #ffffff 0%, #eaeaea 100%) #f1f2f3;
+	background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#eaeaea)) #f1f2f3;
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#f1f2f3');
 }
 
 #content {
