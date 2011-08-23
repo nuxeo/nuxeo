@@ -391,6 +391,9 @@
         <margin>0</margin>
         <padding>0</padding>
       </selector>
+      <selector path=".clear">
+        <clear>both</clear>
+      </selector>
       <selector path="input">
         <margin>0</margin>
       </selector>
@@ -1481,6 +1484,89 @@
       </selector>
       <selector path=".packageUploadBlock">
         <padding>0 0 10px</padding>
+      </selector>
+      <!-- Styles for ActivityStreamTab-->
+      <selector path=".userActivityStream">
+        <text-align>center</text-align>
+      </selector>
+      <selector path=".userActivityStream form">
+        <padding>5px 10px</padding>
+        <margin>0 auto</margin>
+        <width>80%</width>
+      </selector>
+      <selector path=".userActivityStream .dataOutput">
+        <border preset="tablelines (Galaxy User Center borders)"/>
+        <padding>0</padding>
+      </selector>
+      <selector path=".userActivityStream .dataOutput td">
+        <border>none</border>
+        <padding>0</padding>
+      </selector>
+      <selector path=".userActivityStream .activity">
+        <padding>8px 10px</padding>
+        <text-align>left</text-align>
+      </selector>
+      <selector path=".userActivityStream .activity:hover">
+        <background preset="blue.sky (Galaxy User Center backgrounds)" />
+      </selector>
+      <selector path=".userActivityStream .timestamp">
+        <color preset="buttons.disabled (Galaxy User Center colors)" />
+        <float>left</float>
+        <font-size>110%</font-size>
+      </selector>
+      <selector path=".userActivityStream .message">
+        <margin-left>80px</margin-left>
+        <font-size>110%</font-size>
+      </selector>
+      <!-- Styles for MiniMessages-->
+      <selector path=".miniMessages">
+        <text-align>center</text-align>
+      </selector>
+      <selector path=".miniMessages .miniMessagePanel">
+        <border preset="tablelines (Galaxy User Center borders)"/>
+        <display>block</display>
+        <padding>5px 30px</padding>
+        <margin>0 auto</margin>
+        <width>80%</width>
+      </selector>
+      <selector path=".miniMessages .newMiniMessageForm">
+        <margin>10px 0 15px</margin>
+      </selector>
+      <selector path=".miniMessages .newMiniMessageForm textarea">
+        <border preset="tablelines (Galaxy User Center borders)"/>
+        <font preset="title4+ (Galaxy User Center fonts)"/>
+        <float>left</float>
+        <margin>5px 0 0</margin>
+      </selector>
+      <selector path=".miniMessages .newMiniMessageForm .newMiniMessageActions">
+        <float>left</float>
+        <padding>0 10px</padding>
+      </selector>
+      <selector path=".miniMessages .dataOutput td">
+        <padding>0</padding>
+      </selector>
+      <selector path=".miniMessages .miniMessage">
+        <padding>8px 10px</padding>
+        <text-align>left</text-align>
+      </selector>
+      <selector path=".miniMessages .miniMessage:hover">
+        <background preset="blue.sky (Galaxy User Center backgrounds)" />
+      </selector>
+      <selector path=".miniMessages .username">
+        <font-size>110%</font-size>
+        <font-weight>bold</font-weight>
+        <padding-right>5px</padding-right>
+      </selector>
+      <selector path=".miniMessages .owner a, .miniMessages .owner a:link">
+        <color>black</color>
+      </selector>
+      <selector path=".miniMessages .timestamp">
+        <color preset="buttons.disabled (Galaxy User Center colors)" />
+        <font-size>110%</font-size>
+      </selector>
+      <selector path=".miniMessages .message">
+        <font-size>110%</font-size>
+        <padding>3px 0</padding>
       </selector>
     </style>
     <!-- General -->
