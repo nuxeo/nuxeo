@@ -75,18 +75,22 @@ public class UserProfileActions implements Serializable {
     }
 
     public String getMode() throws ClientException {
-        userManagementActions.setSelectedUserName(currentUser.getName());
         return mode;
     }
 
     public boolean getCanEdit() throws ClientException {
-        userManagementActions.setSelectedUserName(currentUser.getName());
         return userManagementActions.getAllowEditUser()
                 && userManagementActions.isNotReadOnly();
     }
 
     public void setMode(String mode) {
         this.mode = mode;
+    }
+
+    public DocumentModel getCurrentUserModel() {
+        DocumentModel currentUserModel = currentUser.getModel();
+        userManagementActions.setSelectedUser(currentUserModel);
+        return currentUserModel;
     }
 
     public DocumentModel getUserProfileDocument() throws ClientException {
@@ -103,13 +107,18 @@ public class UserProfileActions implements Serializable {
                 documentManager);
     }
 
-    public DocumentModel getSelectedUserProfileDocument()
-            throws ClientException {
+    public DocumentModel getUserProfile() throws ClientException {
+        return getUserProfileService().getUserProfile(getCurrentUserModel(),
+                documentManager);
+    }
+
+    public DocumentModel getSelectedUserProfile() throws ClientException {
         DocumentModel selectedUser = userManagementActions.getSelectedUser();
         if (selectedUser == null) {
             return null;
         }
-        return getUserProfileService().getUserProfile(selectedUser, documentManager);
+        return getUserProfileService().getUserProfile(selectedUser,
+                documentManager);
     }
 
     protected UserProfileService getUserProfileService() throws ClientException {

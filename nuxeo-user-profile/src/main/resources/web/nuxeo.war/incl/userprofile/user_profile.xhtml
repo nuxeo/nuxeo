@@ -41,13 +41,13 @@
       </a4j:form>
 
       <h:form id="viewUser" rendered="#{userProfileActions.mode == 'view'}">
-        <nxl:layout name="user" mode="view" value="#{userManagementActions.selectedUser}" />
-        <nxl:layout name="userprofile" mode="view" value="#{userProfileActions.userProfileDocument}" />
+        <nxl:layout name="summary_user_profile_layout" mode="view"
+          value="#{userProfileActions.userProfile}" />
       </h:form>
 
       <h:form id="editUser" enctype="multipart/form-data"
         rendered="#{userProfileActions.mode == 'edit'}">
-        <nxl:layout name="user" mode="#{userProfileActions.canEdit ? 'edit' : 'view'}" value="#{userManagementActions.selectedUser}" />
+        <nxl:layout name="user" mode="#{userProfileActions.canEdit ? 'edit' : 'view'}" value="#{userProfileActions.currentUserModel}" />
         <nxl:layout name="userprofile" mode="edit" value="#{userProfileActions.userProfileDocument}" />
         <table class="dataInput">
           <tbody>
@@ -66,7 +66,7 @@
       </h:form>
 
       <h:form id="editUserPassword" rendered="#{userProfileActions.mode == 'editPassword'}">
-        <nxl:layout name="user" mode="#{userProfileActions.canEdit ? 'editPassword' : 'hidden'}" value="#{userManagementActions.selectedUser}" />
+        <nxl:layout name="user" mode="#{userProfileActions.canEdit ? 'editPassword' : 'hidden'}" value="#{userProfileActions.currentUserModel}" />
         <table class="dataInput">
           <tbody>
             <tr>
