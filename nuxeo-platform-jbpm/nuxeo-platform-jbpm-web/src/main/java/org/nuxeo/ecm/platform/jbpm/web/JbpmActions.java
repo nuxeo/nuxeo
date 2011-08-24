@@ -37,7 +37,6 @@ import org.nuxeo.ecm.platform.jbpm.VirtualTaskInstance;
 
 /**
  * @author Anahide Tchertchian
- *
  */
 public interface JbpmActions extends Serializable {
 
@@ -103,5 +102,14 @@ public interface JbpmActions extends Serializable {
     String abandonCurrentProcess() throws ClientException;
 
     void resetCurrentData();
+
+    /**
+     * Returns true if given document type has process definitions attached to
+     * it.
+     *
+     * @since 5.4.3
+     * @param documentType the document type name
+     */
+    boolean hasProcessDefinitions(String documentType);
 
 }

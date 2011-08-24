@@ -341,7 +341,8 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
                     JbpmService.VariableName.participants.name(), virtualTasks);
             jbpmService.persistProcessInstance(pi);
 
-            facesMessages.add(StatusMessage.Severity.INFO,
+            facesMessages.add(
+                    StatusMessage.Severity.INFO,
                     resourcesAccessor.getMessages().get(
                             "label.review.added.reviewer"));
 
@@ -357,7 +358,8 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
         if (pi != null) {
             jbpmService.persistProcessInstance(pi);
 
-            facesMessages.add(StatusMessage.Severity.INFO,
+            facesMessages.add(
+                    StatusMessage.Severity.INFO,
                     resourcesAccessor.getMessages().get(
                             "label.review.task.edited"));
 
@@ -392,7 +394,8 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
                     JbpmService.VariableName.participants.name(), virtualTasks);
             jbpmService.persistProcessInstance(pi);
 
-            facesMessages.add(StatusMessage.Severity.INFO,
+            facesMessages.add(
+                    StatusMessage.Severity.INFO,
                     resourcesAccessor.getMessages().get(
                             "label.review.movedUp.reviewer"));
 
@@ -415,7 +418,8 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
                     JbpmService.VariableName.participants.name(), virtualTasks);
             jbpmService.persistProcessInstance(pi);
 
-            facesMessages.add(StatusMessage.Severity.INFO,
+            facesMessages.add(
+                    StatusMessage.Severity.INFO,
                     resourcesAccessor.getMessages().get(
                             "label.review.movedDown.reviewer"));
 
@@ -437,7 +441,8 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
                     JbpmService.VariableName.participants.name(), virtualTasks);
             jbpmService.persistProcessInstance(pi);
 
-            facesMessages.add(StatusMessage.Severity.INFO,
+            facesMessages.add(
+                    StatusMessage.Severity.INFO,
                     resourcesAccessor.getMessages().get(
                             "label.review.removed.reviewer"));
 
@@ -551,7 +556,8 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
                     taskVariables, null, getTransientVariables(), currentUser);
             documentManager.save(); // process invalidations from handlers'
             // sessions
-            facesMessages.add(StatusMessage.Severity.INFO,
+            facesMessages.add(
+                    StatusMessage.Severity.INFO,
                     resourcesAccessor.getMessages().get(
                             "label.review.task.ended"));
             Set<String> recipients = getRecipientsFromTask(taskInstance);
@@ -572,7 +578,8 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
                                 + currentUser.getName(), userComment);
                 jbpmService.executeJbpmOperation(addCommentOperation);
             } else {
-                facesMessages.add(StatusMessage.Severity.ERROR,
+                facesMessages.add(
+                        StatusMessage.Severity.ERROR,
                         resourcesAccessor.getMessages().get(
                                 "label.review.task.enterComment"));
                 return null;
@@ -585,7 +592,8 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
                     taskVariables, null, getTransientVariables(), currentUser);
             documentManager.save(); // process invalidations from handlers'
             // sessions
-            facesMessages.add(StatusMessage.Severity.INFO,
+            facesMessages.add(
+                    StatusMessage.Severity.INFO,
                     resourcesAccessor.getMessages().get(
                             "label.review.task.ended"));
             Set<String> recipients = getRecipientsFromTask(taskInstance);
@@ -706,7 +714,8 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
             endProcessRunner.runUnrestricted();
 
             jbpmService.deleteProcessInstance(currentUser, pid);
-            facesMessages.add(StatusMessage.Severity.INFO,
+            facesMessages.add(
+                    StatusMessage.Severity.INFO,
                     resourcesAccessor.getMessages().get(
                             "workflowProcessCanceled"));
             notifyEventListeners(JbpmEventNames.WORKFLOW_CANCELED, userComment,
@@ -809,4 +818,12 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
         jbpmService.notifyEventListeners(name, comment, recipients,
                 documentManager, currentUser, getCurrentDocument());
     }
+
+    @Override
+    public boolean hasProcessDefinitions(String documentType) {
+        List<String> defNames = jbpmService.getTypeFilterConfiguration().get(
+                documentType);
+        return defNames != null && !defNames.isEmpty();
+    }
+
 }
