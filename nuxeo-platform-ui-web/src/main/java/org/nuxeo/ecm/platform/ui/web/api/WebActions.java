@@ -38,9 +38,40 @@ public interface WebActions {
 
     public static final String NULL_TAB_ID = "";
 
+    /**
+     * The category of actions for default tabs
+     */
     public static final String DEFAULT_TABS_CATEGORY = "VIEW_ACTION_LIST";
 
+    /**
+     * The category of actions for main tabs
+     *
+     * @since 5.4.3
+     */
+    public static final String MAIN_TABS_CATEGORY = "MAIN_TABS";
+
     public static final String SUBTAB_CATEGORY_SUFFIX = "_sub_tab";
+
+    /**
+     * Identifier of main tab for the "Documents management" area
+     *
+     * @since 5.4.3
+     */
+    public static final String DOCUMENTS_MAIN_TAB_ID = "documents";
+
+    /**
+     * Request parameter used for tab ids settings
+     *
+     * @since 5.4.3
+     */
+    public static final String TAB_IDS_PARAMETER = "tabIds";
+
+    /**
+     * Request parameter used for main tab id settings
+     *
+     * @since 5.4.3
+     */
+    public static final String MAIN_TAB_ID_PARAMETER = "mainTabId";
 
     /**
      * Event raised when the current tab has changed, with 2 parameters: first

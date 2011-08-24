@@ -101,9 +101,11 @@ public class RestHelper implements Serializable {
                 DocumentRef docRef = docLoc.getDocRef();
                 RepositoryLocation repoLoc = new RepositoryLocation(serverName);
                 if (docRef != null) {
-                    if (docView.getParameter("mainTabId") == null
-                            && !webActions.hasCurrentTabId("MAIN_TABS")) {
-                        webActions.setCurrentTabId("MAIN_TABS", "documents");
+                    if (docView.getParameter(WebActions.MAIN_TAB_ID_PARAMETER) == null
+                            && !webActions.hasCurrentTabId(WebActions.MAIN_TABS_CATEGORY)) {
+                        webActions.setCurrentTabId(
+                                WebActions.MAIN_TABS_CATEGORY,
+                                WebActions.DOCUMENTS_MAIN_TAB_ID);
                     }
                     outcome = navigationContext.navigateTo(repoLoc, docRef);
                 } else {
@@ -133,7 +135,8 @@ public class RestHelper implements Serializable {
                 params.put("version", "true");
             }
             if (!StringUtils.isEmpty(mainTabId)) {
-                params.put("mainTabId", "MAIN_TABS:" + mainTabId);
+                params.put(WebActions.MAIN_TAB_ID_PARAMETER,
+                        WebActions.MAIN_TABS_CATEGORY + ":" + mainTabId);
             }
             // additional params will be set according to the url pattern,
             // calling getters on bindings.
