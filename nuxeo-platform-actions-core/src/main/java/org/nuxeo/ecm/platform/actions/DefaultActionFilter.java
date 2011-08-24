@@ -242,6 +242,9 @@ public class DefaultActionFilter implements ActionFilter, Cloneable {
                 Context ctx = new Context();
                 ctx.put("document", doc);
                 ctx.put("principal", currentPrincipal);
+                // aliases for consistency with seam variables
+                ctx.put("currentDocument", doc);
+                ctx.put("currentUser", currentPrincipal);
                 // get custom context from ActionContext
                 for (String key : context.keySet()) {
                     ctx.put(key, context.get(key));
