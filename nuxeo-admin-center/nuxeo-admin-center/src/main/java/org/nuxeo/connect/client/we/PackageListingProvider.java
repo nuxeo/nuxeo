@@ -220,6 +220,10 @@ public class PackageListingProvider extends DefaultObject {
                 || PackageState.STARTED == pkg.getState();
     }
 
+    public boolean canRemove(Package pkg) {
+        return pkg.isLocal();
+    }
+
     public boolean canDownload(Package pkg) {
         return PackageState.REMOTE == pkg.getState()
                 && (PackageType.STUDIO == pkg.getType() ||

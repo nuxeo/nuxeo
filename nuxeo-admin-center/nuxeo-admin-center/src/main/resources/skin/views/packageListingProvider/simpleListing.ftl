@@ -89,6 +89,9 @@
          </#if>
          <#if This.canInstall(pkg)>
            <a class="button install" href="${Root.path}/install/start/${pkg.id}?source=${source}"> Install </a>
+           <#if This.canRemove(pkg)>
+             <a class="button remove" href="${Root.path}/remove/start/${pkg.id}?source=${source}"> Remove </a>
+           </#if>
          </#if>
          <#if This.canUnInstall(pkg)>
            <a class="button uninstall" href="${Root.path}/uninstall/start/${pkg.id}?source=${source}"> Uninstall </a>
