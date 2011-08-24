@@ -27,6 +27,7 @@ import org.apache.commons.collections.map.ReferenceMap;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.ACLRow.ACLRowPositionComparator;
 import org.nuxeo.ecm.core.storage.sql.Invalidations.InvalidationsPair;
+import org.nuxeo.ecm.core.storage.sql.RowMapper.NodeInfo;
 
 /**
  * A {@link RowMapper} that has an internal cache.
@@ -435,8 +436,8 @@ public class CachingRowMapper implements RowMapper {
     }
 
     @Override
-    public List<NodeInfo> remove(Serializable rootId) throws StorageException {
-        List<NodeInfo> infos = rowMapper.remove(rootId);
+    public List<NodeInfo> remove(NodeInfo rootInfo) throws StorageException {
+        List<NodeInfo> infos = rowMapper.remove(rootInfo);
         for (NodeInfo info : infos) {
             for (String fragmentName : model.getTypeFragments(new IdWithTypes(
                     info.id, info.primaryType, null))) {
@@ -447,7 +448,7 @@ public class CachingRowMapper implements RowMapper {
         }
         // we only put as absent the root fragment, to avoid polluting the cache
         // with lots of absent info. the rest is removed entirely
-        cachePutAbsent(new RowId(model.HIER_TABLE_NAME, rootId));
+        cachePutAbsent(new RowId(model.HIER_TABLE_NAME, rootInfo.id));
         return infos;
     }
 

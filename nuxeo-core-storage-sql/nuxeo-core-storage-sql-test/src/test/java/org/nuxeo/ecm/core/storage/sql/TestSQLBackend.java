@@ -664,6 +664,8 @@ public class TestSQLBackend extends SQLBackendTestCase {
         session2.save(); // process invalidations (non-transactional)
         children2 = session2.getChildren(folder2, null, false);
         assertEquals(0, children2.size());
+        // and doc1 seen as removed
+        assertNull(session2.getNodeById(doc1.getId()));
     }
 
     public void testCrossSessionChildrenInvalidationMove() throws Exception {

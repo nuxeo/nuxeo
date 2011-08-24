@@ -1124,8 +1124,10 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
     }
 
     @Override
-    public List<NodeInfo> remove(Serializable rootId) throws StorageException {
+    public List<NodeInfo> remove(NodeInfo rootInfo) throws StorageException {
+        Serializable rootId = rootInfo.id;
         List<NodeInfo> info = getDescendantsInfo(rootId);
+        info.add(rootInfo);
         deleteRowsDirect(model.HIER_TABLE_NAME, Collections.singleton(rootId));
         return info;
     }

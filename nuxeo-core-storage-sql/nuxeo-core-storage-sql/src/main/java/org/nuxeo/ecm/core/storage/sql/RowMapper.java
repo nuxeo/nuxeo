@@ -325,10 +325,11 @@ public interface RowMapper {
     /**
      * Deletes a hierarchy and returns information to generate invalidations.
      *
-     * @param rootId the node to be deleted with its children
-     * @return info about the descendants removed (not the node itself)
+     * @param rootInfo info about the root to be deleted with its children (root
+     *            id, and the rest is for invalidations)
+     * @return info about the descendants removed (including the root)
      */
-    List<NodeInfo> remove(Serializable rootId) throws StorageException;
+    List<NodeInfo> remove(NodeInfo rootInfo) throws StorageException;
 
     /**
      * Processes and returns the invalidations queued for processing by the

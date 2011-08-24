@@ -814,9 +814,7 @@ public class PersistenceContext {
                 proxyFragment);
 
         // remove with descendants, and generate cache invalidations
-        List<NodeInfo> infos = mapper.remove(rootId);
-        // add root info
-        infos.add(rootInfo);
+        List<NodeInfo> infos = mapper.remove(rootInfo);
 
         // remove from context and selections
         for (NodeInfo info : infos) {
