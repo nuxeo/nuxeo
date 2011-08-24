@@ -444,13 +444,7 @@
     <action id="POPUP_WORKFLOW" link="javascript:doWorkflow" order="90"
       label="action.view.review" icon="/icons/start_workflow.png">
       <category>POPUP</category>
-      <filter id="jbpm-process">
-        <rule grant="true">
-          <permission>Read</permission>
-          <type>File</type>
-          <type>Note</type>
-        </rule>
-      </filter>
+      <filter-id>jbpm-process</filter-id>
       <filter-id>mutable_document</filter-id>
     </action>
 
