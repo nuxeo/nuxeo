@@ -47,7 +47,8 @@ import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
-import org.nuxeo.ecm.platform.ui.web.api.WebActions;import org.nuxeo.ecm.platform.util.RepositoryLocation;
+import org.nuxeo.ecm.platform.ui.web.api.WebActions;
+import org.nuxeo.ecm.platform.util.RepositoryLocation;
 import org.nuxeo.ecm.webapp.clipboard.ClipboardActionsBean;
 import org.nuxeo.ecm.webapp.dashboard.DashboardNavigationHelper;
 
@@ -64,7 +65,8 @@ public class StartupHelper implements Serializable {
 
     protected static final String DOMAIN_TYPE = "Domain";
 
-    protected static final String DOCUMENT_MANAGEMENT_TAB = "MAIN_TABS:documents";
+    protected static final String DOCUMENT_MANAGEMENT_TAB = WebActions.MAIN_TABS_CATEGORY
+            + ":" + WebActions.DOCUMENTS_MAIN_TAB_ID;
 
     private static final long serialVersionUID = 3248972387619873245L;
 
