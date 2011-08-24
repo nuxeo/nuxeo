@@ -158,6 +158,11 @@ public class DefaultQueryVisitor implements IVisitor {
     }
 
     @Override
+    public void visitBooleanLiteral(BooleanLiteral node) {
+        visitLiteral(node);
+    }
+
+    @Override
     public void visitFunction(Function node) {
         for (Operand operand : node.args) {
             operand.accept(this);

@@ -33,6 +33,8 @@ public interface IVisitor extends Serializable {
 
     void visitIntegerLiteral(IntegerLiteral node);
 
+    void visitBooleanLiteral(BooleanLiteral node);
+
     void visitOperandList(OperandList node);
 
     void visitOperator(Operator node);

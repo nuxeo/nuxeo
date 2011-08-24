@@ -32,6 +32,7 @@ import org.nuxeo.ecm.core.api.impl.FacetFilter;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.query.sql.SQLQueryParser;
+import org.nuxeo.ecm.core.query.sql.model.BooleanLiteral;
 import org.nuxeo.ecm.core.query.sql.model.DateLiteral;
 import org.nuxeo.ecm.core.query.sql.model.DefaultQueryVisitor;
 import org.nuxeo.ecm.core.query.sql.model.DoubleLiteral;
@@ -39,7 +40,6 @@ import org.nuxeo.ecm.core.query.sql.model.Expression;
 import org.nuxeo.ecm.core.query.sql.model.FromClause;
 import org.nuxeo.ecm.core.query.sql.model.FromList;
 import org.nuxeo.ecm.core.query.sql.model.Function;
-import org.nuxeo.ecm.core.query.sql.model.IVisitor;
 import org.nuxeo.ecm.core.query.sql.model.IntegerLiteral;
 import org.nuxeo.ecm.core.query.sql.model.Literal;
 import org.nuxeo.ecm.core.query.sql.model.LiteralList;
@@ -950,52 +950,6 @@ public class NXQLQueryMaker implements QueryMaker {
             inOrderBy = true;
             super.visitOrderByClause(node);
             inOrderBy = false;
-        }
-
-    }
-
-    /**
-     * Boolean literal.
-     */
-    protected static class BooleanLiteral extends Literal {
-
-        private static final long serialVersionUID = 1L;
-
-        public final boolean value;
-
-        public BooleanLiteral(boolean value) {
-            this.value = value;
-        }
-
-        @Override
-        public void accept(IVisitor visitor) {
-            ((WhereBuilder) visitor).visitBooleanLiteral(this);
-        }
-
-        @Override
-        public String asString() {
-            return String.valueOf(value);
-        }
-
-        @Override
-        public String toString() {
-            return String.valueOf(value);
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (obj == this) {
-                return true;
-            }
-            if (obj instanceof BooleanLiteral) {
-                return value == ((BooleanLiteral) obj).value;
-            }
-            return false;
-        }
-
-        @Override
-        public int hashCode() {
-            return Boolean.valueOf(value).hashCode();
         }
 
     }
