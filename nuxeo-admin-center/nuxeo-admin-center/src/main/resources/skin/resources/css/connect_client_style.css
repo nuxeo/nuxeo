@@ -126,6 +126,10 @@ h3 {
   color:#000;
 }
 
+.packageListing .remove {
+  color:#e04f00;
+}
+
 .row_odd {
  background-color:#f6f6f6;
 }

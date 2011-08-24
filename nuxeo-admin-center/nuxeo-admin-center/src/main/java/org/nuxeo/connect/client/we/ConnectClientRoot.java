@@ -59,6 +59,11 @@ public class ConnectClientRoot extends ModuleRoot {
         return ctx.newObject("uninstallHandler");
     }
 
+    @Path(value = "remove")
+    public Resource remove() {
+        return ctx.newObject("removeHandler");
+    }
+
     @GET
     @Produces("text/html")
     @Path(value = "restartView")
