@@ -1503,7 +1503,7 @@
         <padding>0</padding>
       </selector>
       <selector path=".userActivityStream .activity">
-        <padding>8px 10px</padding>
+        <padding>8px 20px</padding>
         <text-align>left</text-align>
       </selector>
       <selector path=".userActivityStream .activity:hover">
@@ -1536,19 +1536,20 @@
         <border preset="tablelines (Galaxy User Center borders)"/>
         <font preset="title4+ (Galaxy User Center fonts)"/>
         <margin>5px 0 0</margin>
-        <width>400px</width>
+        <width>450px</width>
+        <padding>10px</padding>
       </selector>
       <selector path=".miniMessages .newMiniMessageForm .newMiniMessageActions">
         <padding>0</padding>
         <margin>0 auto</margin>
         <text-align>right</text-align>
-        <width>410px</width>
+        <width>470px</width>
       </selector>
       <selector path=".miniMessages .newMiniMessageForm input.button">
         <margin>5px 0 10px 10px</margin>
       </selector>
       <selector path=".miniMessages .dataOutput">
-        <width>500px</width>
+        <width>550px</width>
         <margin>0 auto</margin>
       </selector>
       <selector path=".miniMessages .dataOutput td">
@@ -1576,6 +1577,36 @@
       <selector path=".miniMessages .message">
         <font-size>110%</font-size>
         <padding>3px 0</padding>
+      </selector>
+      <!-- Style for Relationship circles -->
+      <selector path=".relationPopUpContainer">
+        <position>relative</position>
+      </selector>
+      <selector path=".relationPopUp">
+        <display>none</display>
+        <width>auto</width>
+        <position>absolute</position>
+        <background-color>white</background-color>
+        <z-index>1000</z-index>
+        <padding>5px</padding>
+        <top>10px</top>
+        <right>0</right>
+        <border preset="header.userMenuList (Galaxy User Center borders)" />
+        <box-shadow>3px 3px 5px rgba(0, 0, 0, 0.5)</box-shadow>
+      </selector>
+      <selector path=".relationPopUp table">
+        <width>100%</width>
+      </selector>
+      <selector path=".relationPopUp table td">
+        <padding>5px 0</padding>
+        <border-bottom preset="genericPopUp.title (Galaxy User Center borders)" />
+      </selector>
+      <selector path=".relationPopUp table td span">
+        <float>left</float>
+      </selector>
+      <selector path=".relationPopUp table input">
+        <margin>0 0 0 20px</margin>
+        <float>right</float>
       </selector>
     </style>
     <!-- General -->
