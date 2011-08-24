@@ -825,7 +825,7 @@ SELECT nx_upgrade_tags();
 
 
 ############################################################
-# Adding miscellaneous indexes
+# Temporary workaround that should be removed see NXP-7399.
 
 #TEST:
 SELECT 1 WHERE EXISTS(SELECT 1 FROM pg_tables WHERE tablename = 'nxp_logs')
@@ -842,6 +842,9 @@ SELECT 1 WHERE EXISTS(SELECT 1 FROM pg_tables WHERE tablename = 'nxp_logs')
 #IF: ! emptyResult
 CREATE INDEX nxp_logs_log_event_date_idx ON nxp_logs USING btree(log_event_date); 
 
+
+############################################################
+# Adding miscellaneous indexes
 
 #TEST:
 SELECT 1 WHERE EXISTS(SELECT 1 FROM pg_tables WHERE tablename = 'dc_contributors')
