@@ -17,9 +17,9 @@
  * under the License.
  */
 
-.gadgets-gadget-chrome {
+.gadgets-gadget-chrome, div.gadgets-gadget-chrome {
   float: left;
-  margin: 4px;
+  margin: 1px 0 15px !important;
   border: 1px solid #ddd;
 }
 
