@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.webapp.directory;
 
+import static org.jboss.seam.ScopeType.CONVERSATION;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -38,12 +40,14 @@ import org.jboss.seam.annotations.Scope;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.directory.Directory;
+import org.nuxeo.ecm.directory.DirectoryException;
+import org.nuxeo.ecm.directory.api.DirectoryService;
+import org.nuxeo.ecm.platform.ui.web.directory.DirectoryHelper;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 import org.nuxeo.runtime.api.Framework;
 import org.richfaces.component.UITree;
 import org.richfaces.event.NodeExpandedEvent;
-
-import static org.jboss.seam.ScopeType.CONVERSATION;
 
 /**
  * Manage trees defined by xvocabulary directories. Update the associated
@@ -78,8 +82,8 @@ public class DirectoryTreeManagerBean implements DirectoryTreeManager {
     private transient List<DirectoryTreeNode> directoryTrees;
 
     /*
-     * The directoryTrees need a working core session in order to perform search
-     * actions.
+     * The directoryTrees need a working core session in order to perform
+     * search actions.
      */
     public boolean isInitialized() {
         return documentManager != null;
@@ -98,10 +102,45 @@ public class DirectoryTreeManagerBean implements DirectoryTreeManager {
         DirectoryTreeDescriptor config = getDirectoryTreeService().getDirectoryTreeDescriptor(
                 treeName);
         if (config == null) {
-
             log.error("no DirectoryTreeDescriptor registered as " + treeName);
             return null;
         }
+
+        // check that each required directory exists and has the xvocabulary
+        // schema
+        String[] directories = config.getDirectories();
+        DirectoryService directoryService = DirectoryHelper.getDirectoryService();
+        try {
+            boolean isFirst = true;
+            for (String directoryName : directories) {
+                Directory directory = directoryService.getDirectory(directoryName);
+                if (directory == null) {
+                    throw new DirectoryException(directoryName
+                            + " is not a registered directory");
+                }
+                String dirSchema = directory.getSchema();
+                if (isFirst) {
+                    if (!dirSchema.equals(DirectoryTreeDescriptor.VOCABULARY_SCHEMA)
+                            && !dirSchema.equals(DirectoryTreeDescriptor.XVOCABULARY_SCHEMA)) {
+                        throw new DirectoryException(directoryName
+                                + "does not have the required schema: "
+                                + DirectoryTreeDescriptor.VOCABULARY_SCHEMA
+                                + " or "
+                                + DirectoryTreeDescriptor.XVOCABULARY_SCHEMA);
+                    }
+                } else {
+                    if (!dirSchema.equals(DirectoryTreeDescriptor.XVOCABULARY_SCHEMA)) {
+                        throw new DirectoryException(directoryName
+                                + "does not have the required schema: "
+                                + DirectoryTreeDescriptor.XVOCABULARY_SCHEMA);
+                    }
+                }
+                isFirst = false;
+            }
+        } catch (DirectoryException e) {
+            throw new RuntimeException(e);
+        }
+
         treeModel = new DirectoryTreeNode(0, config, config.getName(),
                 config.getLabel(), "", null);
 
@@ -155,8 +194,8 @@ public class DirectoryTreeManagerBean implements DirectoryTreeManager {
 
         // Toggle the expanded/collapse state for this node:
         // its only used for multi-select (see DirectoryTreeNode.isOpened())
-        // Note: we can't use the internal nodeState.isExpanded() method because
-        // this is broken as of writing
+        // Note: we can't use the internal nodeState.isExpanded() method
+        // because this is broken as of writing
         // https://jira.jboss.org/jira/browse/RF-7273
         // TreeState nodeState = (TreeState) requestMap.get("nodeState");
         // TreeRowKey treeRowKey = nodeState.getSelectedNode();

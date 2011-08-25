@@ -23,10 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
-import org.nuxeo.ecm.directory.api.DirectoryService;
-import org.nuxeo.ecm.platform.ui.web.directory.DirectoryHelper;
 
 @XObject(value = "directoryTree")
 public class DirectoryTreeDescriptor {
@@ -100,37 +97,6 @@ public class DirectoryTreeDescriptor {
 
     @XNodeList(value = "directory", componentType = String.class, type = String[].class)
     public void setDirectories(String[] directories) throws DirectoryException {
-        // check that each required directory exists and has the xvocabulary
-        // schema
-        DirectoryService directoryService = DirectoryHelper.getDirectoryService();
-        if (directoryService == null) {
-            log.warn("DirectoryService not ready, cannot check directories; skip validation");
-        } else {
-            boolean isFirst = true;
-            for (String directoryName : directories) {
-                Directory directory = directoryService.getDirectory(directoryName);
-                if (directory == null) {
-                    throw new DirectoryException(directoryName
-                            + " is not a registered directory");
-                }
-                String directorySchema = directory.getSchema();
-                if (isFirst) {
-                    if (!(directorySchema.equals(VOCABULARY_SCHEMA) || directorySchema.equals(XVOCABULARY_SCHEMA))) {
-                        throw new DirectoryException(directoryName
-                                + "does not have the required schema: "
-                                + VOCABULARY_SCHEMA + " or "
-                                + XVOCABULARY_SCHEMA);
-                    }
-                } else {
-                    if (!directorySchema.equals(XVOCABULARY_SCHEMA)) {
-                        throw new DirectoryException(directoryName
-                                + "does not have the required schema: "
-                                + XVOCABULARY_SCHEMA);
-                    }
-                }
-                isFirst = false;
-            }
-        }
         this.directories = directories;
     }
 
