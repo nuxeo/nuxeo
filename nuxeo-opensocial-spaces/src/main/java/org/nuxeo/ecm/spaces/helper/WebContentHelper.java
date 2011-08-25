@@ -20,6 +20,7 @@ import static org.nuxeo.ecm.spaces.api.Constants.OPEN_SOCIAL_GADGET_DOCUMENT_TYP
 
 import java.net.MalformedURLException;
 import java.util.Locale;
+import java.util.Map;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -30,6 +31,7 @@ import org.nuxeo.opensocial.container.server.webcontent.api.WebContentAdapter;
 import org.nuxeo.opensocial.container.server.webcontent.gadgets.opensocial.OpenSocialAdapter;
 import org.nuxeo.opensocial.container.shared.layout.api.YUIComponent;
 import org.nuxeo.opensocial.container.shared.layout.api.YUILayout;
+import org.nuxeo.opensocial.container.shared.webcontent.OpenSocialData;
 import org.nuxeo.opensocial.gadgets.helper.GadgetI18nHelper;
 import org.nuxeo.opensocial.gadgets.service.api.GadgetDeclaration;
 import org.nuxeo.opensocial.gadgets.service.api.GadgetService;
@@ -48,9 +50,19 @@ public class WebContentHelper {
         // Helper class
     }
 
+    /**
+     * Creates an OpenSocial gadget in the given {@code space} at the given
+     * position.
+     * <p>
+     * If the {@code additionalPreferences} map is not null and not empty, the
+     * gadget's additionalPreferences will be initialized with that map.
+     *
+     * @since 5.4.3
+     */
     public static void createOpenSocialGadget(Space space, CoreSession session,
             Locale currentLocale, String gadgetName, int zoneIndex,
-            int unitIndex, int position) throws ClientException {
+            int unitIndex, int position,
+            Map<String, String> additionalPreferences) throws ClientException {
         String id = getUnitId(space.getLayout().getLayout(), zoneIndex,
                 unitIndex);
         DocumentModel unitDoc = session.getDocument(new IdRef(id));
@@ -65,8 +77,26 @@ public class WebContentHelper {
 
         setTitle(os, gadgetName, currentLocale);
 
-        session.createDocument(docGadget);
+        docGadget = session.createDocument(docGadget);
 
+        if (additionalPreferences != null && !additionalPreferences.isEmpty()) {
+            os = (OpenSocialAdapter) docGadget.getAdapter(WebContentAdapter.class);
+            OpenSocialData data = os.getData();
+            data.getAdditionalPreferences().putAll(additionalPreferences);
+            os.feedFrom(data);
+            session.saveDocument(docGadget);
+        }
+    }
+
+    /**
+     * Creates an OpenSocial gadget in the given {@code space} at the given
+     * position.
+     */
+    public static void createOpenSocialGadget(Space space, CoreSession session,
+            Locale currentLocale, String gadgetName, int zoneIndex,
+            int unitIndex, int position) throws ClientException {
+        createOpenSocialGadget(space, session, currentLocale, gadgetName,
+                zoneIndex, unitIndex, position, null);
     }
 
     private static void setTitle(OpenSocialAdapter os, String gadgetName,
