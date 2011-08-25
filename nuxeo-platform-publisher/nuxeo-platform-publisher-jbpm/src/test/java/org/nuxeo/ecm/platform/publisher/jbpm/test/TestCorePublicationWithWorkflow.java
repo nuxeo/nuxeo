@@ -87,6 +87,7 @@ public class TestCorePublicationWithWorkflow extends SQLRepositoryTestCase {
 
     @Override
     public void tearDown() throws Exception {
+        closeSession();
         NamingContextFactory.revertSetAsInitial();
         super.tearDown();
     }
