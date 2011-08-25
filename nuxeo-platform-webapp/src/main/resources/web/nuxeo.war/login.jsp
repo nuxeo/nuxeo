@@ -223,6 +223,24 @@ nxthemes css is not used in login.jsp */
   padding:5px 5px 5px 23px;
   text-align: center;
   }
+
+.welcome {
+  background:#fff;
+  opacity:0.8;
+  filter : alpha(opacity=80);
+  border: 1px solid #4E9AE1;
+  width:400px;
+  padding:20px;
+  margin: 10px;
+}
+
+.welcomeText {
+  font: 12px "Lucida Grande", sans-serif;
+  text-align: left;
+  color: #454545;
+  margin:0 0 0.8em 0;
+}
+
 -->
 
 </style>
@@ -264,6 +282,7 @@ nxthemes css is not used in login.jsp */
     </tr>
     <tr>
       <td align="center">
+        <%@ include file="login_welcome.jsp" %>
         <form method="post" action="nxstartup.faces">
           <!-- To prevent caching -->
           <%
