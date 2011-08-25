@@ -46,6 +46,7 @@ public class DocumentContextInvalidatorInterceptor extends AbstractInterceptor {
 
     private static final Log log = LogFactory.getLog(DocumentContextInvalidatorInterceptor.class);
 
+    @Override
     public Object aroundInvoke(InvocationContext invocationContext)
             throws Exception {
         beforeInvocation(invocationContext);
@@ -72,11 +73,8 @@ public class DocumentContextInvalidatorInterceptor extends AbstractInterceptor {
             meth.invoke(target);
         } else {
             DocumentModel currentDoc = getCurrentDocumentModel();
-            if (currentDoc != null) {
-                meth.invoke(target, currentDoc);
-            } else {
-                log.error("Unable to get CurrentDocument");
-            }
+            // currentDoc may be null, it's ok
+            meth.invoke(target, currentDoc);
         }
     }
 
