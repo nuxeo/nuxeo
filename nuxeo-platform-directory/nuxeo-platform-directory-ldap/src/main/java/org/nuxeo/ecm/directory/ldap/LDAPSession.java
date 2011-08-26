@@ -949,6 +949,8 @@ public class LDAPSession extends BaseSession implements EntrySource {
         Properties env = (Properties) directory.getContextProperties().clone();
         env.put(Context.SECURITY_PRINCIPAL, dn);
         env.put(Context.SECURITY_CREDENTIALS, password);
+        //disable connection with former password
+        env.put("com.sun.jndi.ldap.connect.pool", "false");
 
         InitialDirContext authenticationDirContext = null;
         try {
