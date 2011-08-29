@@ -45,7 +45,7 @@ import org.w3c.dom.Element;
  * Copy command has an inverse another copy command with the md5 to the one of
  * the copied file and the overwrite flag to true. The file to copy will be the
  * backup of the overwritten file.
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class Copy extends AbstractCommand {
@@ -63,6 +63,8 @@ public class Copy extends AbstractCommand {
 
     protected String md5;
 
+    protected boolean removeOnExit;
+
     protected Copy(String id) {
         super(id);
     }
@@ -72,16 +74,21 @@ public class Copy extends AbstractCommand {
     }
 
     public Copy(File file, File tofile, String md5, boolean overwrite) {
-        this(ID, file, tofile, md5, overwrite);
+        this(ID, file, tofile, md5, overwrite, false);
+    }
+
+    public Copy(File file, File tofile, String md5, boolean overwrite, boolean removeOnExit) {
+        this(ID, file, tofile, md5, overwrite, removeOnExit);
     }
 
     protected Copy(String id, File file, File tofile, String md5,
-            boolean overwrite) {
+            boolean overwrite, boolean removeOnExit) {
         super(id);
         this.file = file;
         this.tofile = tofile;
         this.md5 = md5;
         this.overwrite = overwrite;
+        this.removeOnExit = removeOnExit;
     }
 
     protected Command doRun(Task task, Map<String, String> prefs)
@@ -131,7 +138,7 @@ public class Copy extends AbstractCommand {
             throw new PackageException("Failed to copy " + dst, e);
         }
         if (bak == null) { // no file was replaced
-            return new Delete(dst, md5);
+            return new Delete(dst, md5, removeOnExit);
         } else {
             return new Copy(bak, dst, md5, true);
         }
@@ -148,8 +155,15 @@ public class Copy extends AbstractCommand {
             status.addError("Cannot execute command in installer. No file or tofile specified.");
         }
         if (tofile.isFile() && !overwrite) {
-            status.addError("Cannot overwite existing file: "
-                    + tofile.getName());
+            if (removeOnExit) {
+                // a plugin is still there due to a previous action that needs a
+                // restart
+                status.addError("A restart is needed to perform this operation: cleaning "
+                        + tofile.getName());
+            } else {
+                status.addError("Cannot overwite existing file: "
+                        + tofile.getName());
+            }
         }
         if (md5 != null) {
             try {
@@ -192,6 +206,10 @@ public class Copy extends AbstractCommand {
         if (v.length() > 0) {
             overwrite = Boolean.parseBoolean(v);
         }
+        v = element.getAttribute("removeOnExit");
+        if (v.length() > 0) {
+            removeOnExit = Boolean.parseBoolean(v);
+        }
     }
 
     public void writeTo(XmlWriter writer) {
@@ -205,6 +223,9 @@ public class Copy extends AbstractCommand {
         writer.attr("overwrite", String.valueOf(overwrite));
         if (md5 != null) {
             writer.attr("md5", md5);
+        }
+        if (removeOnExit) {
+            writer.attr("removeOnExit", "true");
         }
         writer.end();
     }

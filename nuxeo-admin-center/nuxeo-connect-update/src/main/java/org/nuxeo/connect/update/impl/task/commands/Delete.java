@@ -46,16 +46,21 @@ public class Delete extends AbstractCommand {
 
     protected String md5;
 
-    protected boolean onExit = false;
+    protected boolean onExit;
 
     public Delete() {
         super(ID);
     }
 
     public Delete(File file, String md5) {
+        this(file, md5, false);
+    }
+
+    public Delete(File file, String md5, boolean onExit) {
         super(ID);
         this.file = file;
         this.md5 = md5;
+        this.onExit = onExit;
     }
 
     protected void doValidate(Task task, ValidationStatus status) {
@@ -81,7 +86,7 @@ public class Delete extends AbstractCommand {
                 } else {
                     file.delete();
                 }
-                return new Copy(bak, file, md5, false);
+                return new Copy(bak, file, md5, false, onExit);
             } else {
                 return null;
             }
