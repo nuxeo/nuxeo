@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.platform.commandline.executor.service.executors;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
@@ -37,8 +39,8 @@ public abstract class AbstractExecutor {
     }
 
     /**
-     * Returns parameters as a String after having replaced parameterized values
-     * inside.
+     * Returns parameters as a String after having replaced parameterized
+     * values inside.
      *
      * @param cmdDesc CommandLineDescriptor containing parameters
      * @param params parameterized values
@@ -54,8 +56,7 @@ public abstract class AbstractExecutor {
 
     /**
      * Returns parameters as a String array after having replaced parameterized
-     * values
-     * inside.
+     * values inside.
      *
      * @param cmdDesc CommandLineDescriptor containing parameters
      * @param params parameterized values
@@ -64,12 +65,13 @@ public abstract class AbstractExecutor {
      */
     public static String[] getParametersArray(CommandLineDescriptor cmdDesc,
             CmdParameters params) {
+        List<String> res = new ArrayList<String>();
         String[] paramsArray = cmdDesc.getParametersString().split(" ");
         Map<String, String> paramsValues = params.getParameters();
         for (String paramString : paramsArray) {
-            paramString = replaceParams(paramsValues, paramString);
+            res.add(replaceParams(paramsValues, paramString));
         }
-        return paramsArray;
+        return res.toArray(new String[] {});
     }
 
     private static String replaceParams(Map<String, String> paramsValues,

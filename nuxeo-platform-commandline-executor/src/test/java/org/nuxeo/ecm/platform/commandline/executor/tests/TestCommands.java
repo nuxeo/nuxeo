@@ -22,6 +22,7 @@ package org.nuxeo.ecm.platform.commandline.executor.tests;
 
 import java.io.File;
 import java.util.List;
+
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
 import org.nuxeo.ecm.platform.commandline.executor.service.CommandLineDescriptor;
@@ -82,6 +83,18 @@ public class TestCommands extends NXRuntimeTestCase {
         assertTrue(parsedParamString.startsWith("-a --lang=fr_FR --encoding=utf-8 -H --rem-sgml-check=alt < "));
         assertTrue(parsedParamString.contains(System.getProperties().getProperty(
                 "java.io.tmpdir")));
+
+        String[] res = AbstractExecutor.getParametersArray(cmdDesc, params);
+        assertEquals(7, res.length);
+        assertEquals("-a", res[0]);
+        assertEquals("--lang=fr_FR", res[1]);
+        assertEquals("--encoding=utf-8", res[2]);
+        assertEquals("-H", res[3]);
+        assertEquals("--rem-sgml-check=alt", res[4]);
+        assertEquals("<", res[5]);
+        assertTrue(res[6].startsWith("\""
+                + System.getProperties().getProperty("java.io.tmpdir")));
+        assertTrue(res[6].contains("testMe"));
     }
 
 }
