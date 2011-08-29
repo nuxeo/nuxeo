@@ -16,7 +16,7 @@
         <li> ${error} </li>
       </#list>
     </ul>
-  
+    <br />
     <a href="${Root.path}/packages/${source}" class="installButton"> Cancel </a>
   </div>
 
