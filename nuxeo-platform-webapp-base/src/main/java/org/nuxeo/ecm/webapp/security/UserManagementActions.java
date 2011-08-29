@@ -377,6 +377,7 @@ public class UserManagementActions extends AbstractUserGroupManagement
     public void resetState() {
         if (shouldResetStateOnTabChange) {
             newUser = null;
+            selectedUser = null;
             showUserOrGroup = false;
             showCreateForm = false;
             detailsMode = DETAILS_VIEW_MODE;
