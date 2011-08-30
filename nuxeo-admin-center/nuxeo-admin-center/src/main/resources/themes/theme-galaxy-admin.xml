@@ -1547,6 +1547,53 @@
       <selector path=".packageUploadBlock">
         <padding>0 0 10px</padding>
       </selector>
+      <!-- custom style for nuxeo relationship -->
+       <selector path=".summary_div_1 .action_bar">
+        <margin>10px 0</margin>
+        <width>100%</width>
+        <display>block</display>
+      </selector>
+      <selector path=".summary_div_1 .action_bar a">
+        <float>right</float>
+        <margin>0 0 0 10px</margin>
+      </selector>
+      <selector path=".relationship_label">
+        <float>left</float>
+        <width>75%</width>
+      </selector>
+      <selector path=".relationList">
+        <clear>both</clear>
+      </selector>
+      <!-- Style for Relationship circles -->
+      <selector path=".relationPopUpContainer">
+        <position>relative</position>
+      </selector>
+      <selector path=".relationPopUp">
+        <display>none</display>
+        <width>auto</width>
+        <position>absolute</position>
+        <background-color>white</background-color>
+        <z-index>1000</z-index>
+        <padding>5px</padding>
+        <top>10px</top>
+        <right>0</right>
+        <border preset="header.userMenuList (Galaxy Admin borders)" />
+        <box-shadow>3px 3px 5px rgba(0, 0, 0, 0.5)</box-shadow>
+      </selector>
+      <selector path=".relationPopUp table">
+        <width>100%</width>
+      </selector>
+      <selector path=".relationPopUp table td">
+        <padding>5px 0</padding>
+        <border-bottom preset="genericPopUp.title (Galaxy Admin borders)" />
+      </selector>
+      <selector path=".relationPopUp table td span">
+        <float>left</float>
+      </selector>
+      <selector path=".relationPopUp table input">
+        <margin>0 0 0 20px</margin>
+        <float>right</float>
+      </selector>
     </style>
     <!-- General -->
     <style element="page[1]">
