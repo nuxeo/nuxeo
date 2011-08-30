@@ -53,6 +53,7 @@ public class ShellExecutor extends AbstractExecutor implements Executor {
             String[] paramsArray = getParametersArray(cmdDesc, params);
             cmd = new String[] { "cmd", "/C", cmdDesc.getCommand() };
             cmd = (String[]) ArrayUtils.addAll(cmd, paramsArray);
+            cmd = (String[]) ArrayUtils.addAll(cmd, new String[] {"2>&1"});
         } else {
             String paramsString = getParametersString(cmdDesc, params)
                     + " 2>&1";
