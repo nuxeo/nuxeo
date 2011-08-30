@@ -27,6 +27,10 @@
   float: none;
 }
 
+#viewUser .gadgets-gadget-chrome, #viewUser div.gadgets-gadget-chrome {
+  float: none;
+}
+
 .no-border {
   border-color: transparent;
 }
