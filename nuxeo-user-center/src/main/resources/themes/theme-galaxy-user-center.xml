@@ -1545,6 +1545,19 @@
         <text-align>right</text-align>
         <width>470px</width>
       </selector>
+      <selector path=".newMiniMessageForm .newMiniMessageActions .miniMessageCounter">
+        <font-weight>bold</font-weight>
+        <font-size>110%</font-size>
+        <color>#999</color>
+      </selector>
+      <selector path=".newMiniMessageForm .newMiniMessageActions .warning">
+        <color>#de1a00</color>
+      </selector>
+      <selector path=".newMiniMessageForm input.button[disabled],.newMiniMessageForm input.button[disabled]:hover">
+        <color preset="buttons.disabled (Galaxy User Center colors)" />
+        <border preset="buttons (Galaxy User Center borders)"/>
+        <cursor>default</cursor>
+      </selector>
       <selector path=".miniMessages .newMiniMessageForm input.button">
         <margin>5px 0 10px 10px</margin>
       </selector>
