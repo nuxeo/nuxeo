@@ -65,6 +65,8 @@ public class DialectSQLServer extends Dialect {
 
     protected final String usersSeparator;
 
+    protected boolean pathOptimizationsEnabled;
+
     public DialectSQLServer(DatabaseMetaData metadata,
             BinaryManager binaryManager,
             RepositoryDescriptor repositoryDescriptor) throws StorageException {
@@ -78,7 +80,8 @@ public class DialectSQLServer extends Dialect {
         usersSeparator = repositoryDescriptor == null ? null
                 : repositoryDescriptor.usersSeparatorKey == null ? DEFAULT_USERS_SEPARATOR
                         : repositoryDescriptor.usersSeparatorKey;
-
+        pathOptimizationsEnabled = repositoryDescriptor == null ? false
+                : repositoryDescriptor.pathOptimizationsEnabled;
     }
 
     @Override
@@ -377,6 +380,11 @@ public class DialectSQLServer extends Dialect {
 
     @Override
     public String getInTreeSql(String idColumnName) {
+        if (pathOptimizationsEnabled) {
+            return String.format(
+                    "EXISTS(SELECT 1 FROM ancestors WHERE hierarchy_id = %s AND ancestor = ?)",
+                    idColumnName);
+        }
         return String.format("dbo.NX_IN_TREE(%s, ?) = 1", idColumnName);
     }
 
@@ -403,10 +411,10 @@ public class DialectSQLServer extends Dialect {
                 SecurityConstants.BROWSE);
         List<String> permsList = new LinkedList<String>();
         for (String perm : permissions) {
-            permsList.add(String.format(
-                    "  SELECT '%s' ", perm));
+            permsList.add(String.format("  SELECT '%s' ", perm));
         }
-        properties.put("readPermissions", StringUtils.join(permsList, " UNION ALL "));
+        properties.put("readPermissions", StringUtils.join(permsList,
+                " UNION ALL "));
         properties.put("usersSeparator", getUsersSeparator());
         return properties;
     }
