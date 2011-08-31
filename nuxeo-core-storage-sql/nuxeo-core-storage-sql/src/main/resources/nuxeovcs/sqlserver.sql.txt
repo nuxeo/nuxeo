@@ -24,6 +24,7 @@
 # Conditions used:
 # fulltextEnabled
 # aclOptimizationsEnabled
+# pathOptimizationsEnabled
 
 ############################################################
 
@@ -256,7 +257,6 @@ END;
 IF OBJECT_ID('dbo.nx_init_ancestors', 'P') IS NOT NULL
   DROP PROCEDURE dbo.nx_init_ancestors;
 
-#IF: aclOptimizationsEnabled
 CREATE PROCEDURE nx_init_ancestors AS
 BEGIN
   SET NOCOUNT ON;
@@ -280,6 +280,7 @@ END;
 IF OBJECT_ID('dbo.nx_trig_ancestor_insert', 'TR') IS NOT NULL
   DROP TRIGGER dbo.nx_trig_ancestor_insert;
 
+
 CREATE TRIGGER nx_trig_ancestor_insert ON [hierarchy]
 AFTER INSERT AS
 BEGIN
@@ -300,8 +301,13 @@ BEGIN
 END;
 
 
+#IF: ! pathOptimizationsEnabled
+ALTER TABLE [hierarchy] DISABLE TRIGGER nx_trig_ancestor_insert
+
+
 IF OBJECT_ID('dbo.nx_trig_ancestor_update', 'TR') IS NOT NULL
   DROP TRIGGER dbo.nx_trig_ancestor_update;
+
 
 CREATE TRIGGER nx_trig_ancestor_update ON [hierarchy]
 AFTER UPDATE AS
@@ -342,6 +348,27 @@ BEGIN
   DEALLOCATE @cur;
 END;
 
+
+#IF: ! pathOptimizationsEnabled
+ALTER TABLE [hierarchy] DISABLE TRIGGER nx_trig_ancestor_update
+
+
+# Init the ancestors if empty
+#IF: pathOptimizationsEnabled
+#TEST:
+SELECT 1 FROM (
+    SELECT hierarchy_id, ROW_NUMBER() OVER (ORDER BY hierarchy_id) AS rownum FROM ancestors
+) AS foo WHERE foo.rownum = 1
+
+
+#IF: pathOptimizationsEnabled
+#IF: emptyResult
+LOG.INFO Initializing ancestors table for path optimization, please wait...
+
+
+#IF: pathOptimizationsEnabled
+#IF: emptyResult
+EXEC nx_init_ancestors
 
 
 # ------------------------------------------------------------

@@ -407,6 +407,8 @@ public class DialectSQLServer extends Dialect {
         properties.put("fulltextCatalog", fulltextCatalog);
         properties.put("aclOptimizationsEnabled",
                 Boolean.valueOf(aclOptimizationsEnabled));
+        properties.put("pathOptimizationsEnabled",
+                Boolean.valueOf(pathOptimizationsEnabled));
         String[] permissions = NXCore.getSecurityService().getPermissionsToCheck(
                 SecurityConstants.BROWSE);
         List<String> permsList = new LinkedList<String>();
