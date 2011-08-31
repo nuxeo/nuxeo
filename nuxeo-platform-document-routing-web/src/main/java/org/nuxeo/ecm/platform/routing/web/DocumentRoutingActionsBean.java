@@ -170,10 +170,10 @@ public class DocumentRoutingActionsBean implements Serializable {
     public DocumentRoute getRelatedRoute() {
         // try to see if actually the current document is a route
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
-        DocumentRoute relatedRoute = currentDocument.getAdapter(DocumentRoute.class);
-        if (relatedRoute != null) {
+
+        if (currentDocument.hasFacet(DocumentRoutingConstants.DOCUMENT_ROUTE_DOCUMENT_FACET)) {
             docWithAttachedRouteId = null;
-            return relatedRoute;
+            return currentDocument.getAdapter(DocumentRoute.class);
         }
         // try to see if the current document is a routeElement
         DocumentRouteElement relatedRouteElement = currentDocument.getAdapter(DocumentRouteElement.class);
@@ -391,7 +391,8 @@ public class DocumentRoutingActionsBean implements Serializable {
                     resourcesAccessor.getMessages().get(
                             "feedback.casemanagement.document.route.not.locked"));
             return null;
-        }Contexts.removeFromAllContexts("relatedRoutes");
+        }
+        Contexts.removeFromAllContexts("relatedRoutes");
         Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
                 routeModel.getDocument());
         // Release the lock only when currentUser had locked it before
@@ -520,8 +521,7 @@ public class DocumentRoutingActionsBean implements Serializable {
         navigationContext.invalidateCurrentDocument();
         facesMessages.add(FacesMessage.SEVERITY_INFO,
                 resourcesAccessor.getMessages().get("document_modified"),
-                resourcesAccessor.getMessages().get(
-                        currentDocument.getType()));
+                resourcesAccessor.getMessages().get(currentDocument.getType()));
         EventManager.raiseEventsOnDocumentChange(currentDocument);
         // Release the lock only when currentUser had locked it before
         // entering this method.
@@ -769,7 +769,7 @@ public class DocumentRoutingActionsBean implements Serializable {
     }
 
     private void setRelatedRouteWhenNavigateBackToCase() throws ClientException {
-       // recompute factory
+        // recompute factory
         webActions.resetTabList();
         navigationContext.setCurrentDocument(documentManager.getDocument(new IdRef(
                 docWithAttachedRouteId)));
