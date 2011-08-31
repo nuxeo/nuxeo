@@ -197,6 +197,153 @@ END;
 EXEC NX_UPGRADE_TAGS
 
 
+
+# ------------------------------------------------------------
+# -- PATH OPTIMIZATIONS
+
+# ------------------------------------------------------------
+# -- ancestors table
+# -- ancestors field contains the list of parents from root to parent
+#TEST:
+SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'ancestors' AND TABLE_CATALOG = db_name();
+
+#IF: emptyResult
+CREATE TABLE ancestors (
+  hierarchy_id ${idType} NOT NULL,
+  ancestor ${idType},
+  CONSTRAINT ancestors_hierarchy_id_fk FOREIGN KEY (hierarchy_id) REFERENCES hierarchy (id) ON DELETE CASCADE
+);
+
+#TEST:
+SELECT 1 FROM sysindexes WHERE name = 'ancestors_hierarchy_id_idx'
+
+#IF: emptyResult
+CREATE INDEX [ancestors_hierarchy_id_idx] ON [dbo].[ancestors] ([hierarchy_id])
+
+#TEST:
+SELECT 1 FROM sysindexes WHERE name = 'ancestors_ancestor_idx'
+
+#IF: emptyResult
+CREATE INDEX [ancestors_ancestor_idx] ON [dbo].[ancestors] ([ancestor])
+
+
+IF OBJECT_ID('dbo.nx_get_ancestors', 'TF') IS NOT NULL
+  DROP FUNCTION dbo.nx_get_ancestors;
+
+CREATE FUNCTION nx_get_ancestors(@id ${idType})
+RETURNS @output TABLE (ancestor_id ${idType}) AS
+  -- List ancestors of a document
+BEGIN
+  DECLARE @first TINYINT;
+  DECLARE @curid ${idType};
+  DECLARE @newid ${idType};
+  SET @first = 1;
+  SET @curid = @id;
+  WHILE @curid IS NOT NULL BEGIN
+    SET @newid = (SELECT [parentid] FROM [hierarchy] WHERE [id] = @curid);
+    IF @curid IS NOT NULL AND @curid <> @id BEGIN
+      INSERT INTO @output (ancestor_id) VALUES (@curid);
+    END;
+    IF @first = 1 AND @newid IS NULL BEGIN
+      SET @newid = (SELECT [versionableid] FROM [versions] WHERE [id] = @curid);
+    END;
+    SET @first = 0;
+    SET @curid = @newid;
+  END;
+  RETURN;
+END;
+
+IF OBJECT_ID('dbo.nx_init_ancestors', 'P') IS NOT NULL
+  DROP PROCEDURE dbo.nx_init_ancestors;
+
+#IF: aclOptimizationsEnabled
+CREATE PROCEDURE nx_init_ancestors AS
+BEGIN
+  SET NOCOUNT ON;
+  TRUNCATE TABLE ancestors;
+  DECLARE @cur CURSOR;
+  DECLARE @id ${idType};
+  SET @cur = CURSOR FAST_FORWARD FOR
+    SELECT id FROM hierarchy WHERE isproperty=0;
+  OPEN @cur;
+  FETCH FROM @cur INTO @id;
+  WHILE @@FETCH_STATUS = 0 BEGIN
+    INSERT INTO ancestors (hierarchy_id, ancestor)
+      SELECT @id, ancestor_id FROM dbo.nx_get_ancestors(@id);
+    FETCH FROM @cur INTO @id;
+  END;
+  CLOSE @cur;
+  DEALLOCATE @cur;
+END;
+
+
+IF OBJECT_ID('dbo.nx_trig_ancestor_insert', 'TR') IS NOT NULL
+  DROP TRIGGER dbo.nx_trig_ancestor_insert;
+
+CREATE TRIGGER nx_trig_ancestor_insert ON [hierarchy]
+AFTER INSERT AS
+BEGIN
+  SET NOCOUNT ON;
+  DECLARE @cur CURSOR;
+  DECLARE @id ${idType};
+  SET @cur = CURSOR FAST_FORWARD FOR
+    SELECT id FROM inserted WHERE isproperty = 0;
+  OPEN @cur;
+  FETCH FROM @cur INTO @id;
+  WHILE @@FETCH_STATUS = 0 BEGIN
+    INSERT INTO ancestors (hierarchy_id, ancestor)
+      SELECT @id, ancestor_id FROM dbo.nx_get_ancestors(@id);
+    FETCH FROM @cur INTO @id;
+  END;
+  CLOSE @cur;
+  DEALLOCATE @cur;
+END;
+
+
+IF OBJECT_ID('dbo.nx_trig_ancestor_update', 'TR') IS NOT NULL
+  DROP TRIGGER dbo.nx_trig_ancestor_update;
+
+CREATE TRIGGER nx_trig_ancestor_update ON [hierarchy]
+AFTER UPDATE AS
+BEGIN
+  SET NOCOUNT ON;
+  DECLARE @cur CURSOR;
+  DECLARE @cur2 CURSOR;
+  DECLARE @id ${idType};
+  DECLARE @sid ${idType};
+  SET @cur = CURSOR FAST_FORWARD FOR
+    SELECT OLD.id FROM deleted OLD
+    JOIN [inserted] NEW ON OLD.id = NEW.id
+    WHERE NEW.isproperty = 0 AND OLD.parentid <> NEW.parentid;
+  OPEN @cur;
+  FETCH FROM @cur INTO @id;
+  WHILE @@FETCH_STATUS = 0 BEGIN
+    SET @cur2 = CURSOR FAST_FORWARD FOR
+      -- distinct is required because the table is updated between fetches
+      SELECT DISTINCT(hierarchy_id) FROM ancestors WHERE ancestor = @id;
+    OPEN @cur2;
+    FETCH FROM @cur2 INTO @sid;
+    WHILE @@FETCH_STATUS = 0 BEGIN
+      -- delete ancestors
+      DELETE FROM ancestors WHERE hierarchy_id = @sid;
+      -- insert new one    
+      INSERT INTO ancestors (hierarchy_id, ancestor)
+        SELECT @sid, ancestor_id FROM dbo.nx_get_ancestors(@sid);
+      FETCH FROM @cur2 INTO @sid;
+    END;
+    CLOSE @cur2;
+    DEALLOCATE @cur2;
+    DELETE FROM ancestors WHERE hierarchy_id = @id;
+    INSERT INTO ancestors (hierarchy_id, ancestor)
+      SELECT @id, ancestor_id FROM dbo.nx_get_ancestors(@id);
+    FETCH FROM @cur INTO @id;
+  END;
+  CLOSE @cur;
+  DEALLOCATE @cur;
+END;
+
+
+
 # ------------------------------------------------------------
 # -- ACLR (aka READ ACL) OPTIMIZATIONS
 
