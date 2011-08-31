@@ -125,7 +125,7 @@ public class TestFreemarkerRendering extends NXRuntimeTestCase {
 
         InputStream expected = new FileInputStream(
                 getTestFile("expecteddata/c_output.txt"));
-        assertEquals(FileUtils.read(expected), writer.toString());
+        assertEquals(FileUtils.read(expected), writer.toString().replace("\r\n","\n"));
 
         // System.out.println(writer.getBuffer());
         // System.out.println(">>>>>>>>>> RENDERING TOOK: " + ((e - s) / 1000));
