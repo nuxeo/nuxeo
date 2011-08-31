@@ -1765,6 +1765,10 @@
       <selector path=".UserSuggestionInput table">
         <width>100%</width>
       </selector>
+      <!-- fix gadget width in profile view-->
+      <selector path=".fullWidth">
+        <width>100%</width>
+      </selector>
     </style>
     <style name="common style 2">
       <selector path="h1,h2,h3,h4">
