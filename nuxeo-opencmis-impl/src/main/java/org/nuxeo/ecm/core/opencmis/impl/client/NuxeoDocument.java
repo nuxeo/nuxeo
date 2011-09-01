@@ -229,7 +229,7 @@ public class NuxeoDocument extends NuxeoFileableObject implements Document {
     public Document setContentStream(ContentStream contentStream,
             boolean overwrite) {
         ObjectId objectId = setContentStream(contentStream, overwrite, true);
-        return (NuxeoDocument) session.getObject(objectId);
+        return (Document) session.getObject(objectId);
     }
 
     @Override
