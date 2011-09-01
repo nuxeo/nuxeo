@@ -171,8 +171,9 @@ public class TestLogEntryProvider extends PersistenceTestCase {
         assertEquals(1, entryCount);
     }
 
-    public void testLogsByPage() {
+    public void testLogsByPage() throws Exception {
         LogEntry one = doCreateEntryAndPersist("one");
+        Thread.sleep(1000);
         Date limit = new Date();
         LogEntry two = doCreateEntryAndPersist("two");
         LogEntry three = doCreateEntryAndPersist("three");
@@ -203,7 +204,6 @@ public class TestLogEntryProvider extends PersistenceTestCase {
 
     public void testQuery() {
         LogEntry one = doCreateEntryAndPersist("one");
-        Date limit = new Date();
         LogEntry two = doCreateEntryAndPersist("two");
         LogEntry three = doCreateEntryAndPersist("three");
         one.setCategory("nuch");
