@@ -1407,27 +1407,27 @@
       <selector path=".metadata_block .dataInput td">
         <padding>3px</padding>
       </selector>
-      <selector path=".surveyStatusLabel, .surveyStatus">
+      <selector path=".pollStatusLabel, .pollStatus">
         <float>left</float>
       </selector>
-      <selector path=".surveyStatusLabel">
+      <selector path=".pollStatusLabel">
         <padding>0px 10px 5px 0</padding>
       </selector>
-      <selector path=".surveyStatus span, .surveyStatus a">
+      <selector path=".pollStatus span, .pollStatus a">
         <padding>1px 5px</padding>
       </selector>
-      <selector path=".surveyStatus .status">
+      <selector path=".pollStatus .status">
         <font-weight>bold</font-weight>
         <background-color preset="taglike (Galaxy backgrounds)"/>
       </selector>
-      <selector path=".surveyStatus .project">
-        <color preset="summary.surveyproject (Galaxy colors)" />
+      <selector path=".pollStatus .project">
+        <color preset="summary.pollproject (Galaxy colors)" />
       </selector>
-      <selector path=".surveyStatus .open">
-        <color preset="summary.surveyopen (Galaxy colors)" />
+      <selector path=".pollStatus .open">
+        <color preset="summary.pollopen (Galaxy colors)" />
       </selector>
-      <selector path=".surveyStatus .closed">
-        <color preset="summary.surveyclosed (Galaxy colors)" />
+      <selector path=".pollStatus .closed">
+        <color preset="summary.pollclosed (Galaxy colors)" />
       </selector>
       <selector path=".layoutViewMode">
         <margin>0px</margin>
