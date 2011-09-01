@@ -11,6 +11,7 @@
  */
 package org.nuxeo.ecm.core.opencmis.impl.client;
 
+import org.apache.chemistry.opencmis.commons.spi.AuthenticationProvider;
 import org.apache.chemistry.opencmis.commons.spi.BindingsObjectFactory;
 import org.apache.chemistry.opencmis.commons.spi.CmisBinding;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoCmisService;
@@ -79,6 +80,11 @@ public class NuxeoBinding implements CmisBinding {
     @Override
     public BindingsObjectFactory getObjectFactory() {
         return service.getObjectFactory();
+    }
+
+    @Override
+    public AuthenticationProvider getAuthenticationProvider() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override

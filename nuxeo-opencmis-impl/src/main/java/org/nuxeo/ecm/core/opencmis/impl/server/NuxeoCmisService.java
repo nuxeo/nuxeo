@@ -126,24 +126,24 @@ import org.nuxeo.ecm.platform.audit.api.AuditReader;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.runtime.api.Framework;
 
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_REMOVED;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_UPDATED;
+
 /**
  * Nuxeo implementation of the CMIS Services, on top of a {@link CoreSession}.
  */
 public class NuxeoCmisService extends AbstractCmisService {
 
-    private static final Log log = LogFactory.getLog(NuxeoCmisService.class);
-
     public static final int DEFAULT_TYPE_LEVELS = 2;
-
     public static final int DEFAULT_FOLDER_LEVELS = 2;
-
     public static final int DEFAULT_CHANGE_LOG_SIZE = 100;
-
     public static final int DEFAULT_QUERY_SIZE = 100;
-
     public static final int DEFAULT_MAX_CHILDREN = 100;
 
     public static final String NUXEO_WAR = "nuxeo.war";
+
+    private static final Log log = LogFactory.getLog(NuxeoCmisService.class);
 
     protected final BindingsObjectFactory objectFactory = new BindingsObjectFactoryImpl();
 
@@ -843,7 +843,7 @@ public class NuxeoCmisService extends AbstractCmisService {
     // part of CMIS API and of ObjectInfoHandler
     @Override
     public ObjectInfo getObjectInfo(String repositoryId, String objectId) {
-        ObjectInfo info = getObjectInfos().get(objectId);
+        ObjectInfo info = getObjectInfo().get(objectId);
         if (info != null) {
             return info;
         }
@@ -855,16 +855,15 @@ public class NuxeoCmisService extends AbstractCmisService {
     }
 
     // AbstractCmisService helper
-    @Override
     protected ObjectInfo getObjectInfo(String repositoryId, ObjectData data) {
-        ObjectInfo info = getObjectInfos().get(data.getId());
+        ObjectInfo info = getObjectInfo().get(data.getId());
         if (info != null) {
             return info;
         }
         try {
             collectObjectInfos = false;
             info = getObjectInfoIntern(repositoryId, data);
-            getObjectInfos().put(info.getId(), info);
+            getObjectInfo().put(info.getId(), info);
         } catch (Exception e) {
             log.error(e.toString(), e);
         } finally {
@@ -873,7 +872,7 @@ public class NuxeoCmisService extends AbstractCmisService {
         return info;
     }
 
-    protected Map<String, ObjectInfo> getObjectInfos() {
+    protected Map<String, ObjectInfo> getObjectInfo() {
         if (objectInfos == null) {
             objectInfos = new HashMap<String, ObjectInfo>();
         }
@@ -1050,9 +1049,9 @@ public class NuxeoCmisService extends AbstractCmisService {
                     + "   AND log.repositoryId = :repoId" //
                     + " ORDER BY log.eventDate";
             params.put("minDate", new Date(minDate));
-            params.put("evCreated", DocumentEventTypes.DOCUMENT_CREATED);
-            params.put("evModified", DocumentEventTypes.DOCUMENT_UPDATED);
-            params.put("evRemoved", DocumentEventTypes.DOCUMENT_REMOVED);
+            params.put("evCreated", DOCUMENT_CREATED);
+            params.put("evModified", DOCUMENT_UPDATED);
+            params.put("evRemoved", DOCUMENT_REMOVED);
             params.put("repoId", repositoryId);
             List<?> entries = reader.nativeQuery(query, params, 1, max + 1);
             ObjectListImpl ol = new ObjectListImpl();
@@ -1070,11 +1069,11 @@ public class NuxeoCmisService extends AbstractCmisService {
                 // change type
                 String eventId = logEntry.getEventId();
                 ChangeType changeType;
-                if (DocumentEventTypes.DOCUMENT_CREATED.equals(eventId)) {
+                if (DOCUMENT_CREATED.equals(eventId)) {
                     changeType = ChangeType.CREATED;
-                } else if (DocumentEventTypes.DOCUMENT_UPDATED.equals(eventId)) {
+                } else if (DOCUMENT_UPDATED.equals(eventId)) {
                     changeType = ChangeType.UPDATED;
-                } else if (DocumentEventTypes.DOCUMENT_REMOVED.equals(eventId)) {
+                } else if (DOCUMENT_REMOVED.equals(eventId)) {
                     changeType = ChangeType.DELETED;
                 } else {
                     continue;
@@ -1119,9 +1118,9 @@ public class NuxeoCmisService extends AbstractCmisService {
             String query = "FROM LogEntry log" //
                     + " WHERE log.eventId IN (:evCreated, :evModified, :evRemoved)" //
                     + " ORDER BY log.eventDate DESC";
-            params.put("evCreated", DocumentEventTypes.DOCUMENT_CREATED);
-            params.put("evModified", DocumentEventTypes.DOCUMENT_UPDATED);
-            params.put("evRemoved", DocumentEventTypes.DOCUMENT_REMOVED);
+            params.put("evCreated", DOCUMENT_CREATED);
+            params.put("evModified", DOCUMENT_UPDATED);
+            params.put("evRemoved", DOCUMENT_REMOVED);
             List<?> entries = reader.nativeQuery(query, params, 1, 1);
             if (entries.size() == 0) {
                 return "0";

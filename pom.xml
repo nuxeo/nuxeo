@@ -26,7 +26,7 @@
   </modules>
 
   <properties>
-    <chemistry.opencmis.version>0.4.0-r1096750</chemistry.opencmis.version>
+    <chemistry.opencmis.version>0.5.0-SNAPSHOT</chemistry.opencmis.version>
     <nuxeo.version>5.4.3-SNAPSHOT</nuxeo.version>
   </properties>
 
@@ -75,7 +75,6 @@
     <dependency>
       <groupId>org.apache.chemistry.opencmis</groupId>
       <artifactId>chemistry-opencmis-server-bindings</artifactId>
-      <classifier>classes</classifier>
       <version>${chemistry.opencmis.version}</version>
     </dependency>
     </dependencies>
