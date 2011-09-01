@@ -28,6 +28,7 @@ import org.nuxeo.ecm.core.query.sql.model.OperandList;
 import org.nuxeo.ecm.core.query.sql.model.Operator;
 import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
 import org.nuxeo.ecm.core.query.sql.model.OrderByList;
+import org.nuxeo.ecm.core.query.sql.model.PathReference;
 import org.nuxeo.ecm.core.query.sql.model.Predicate;
 import org.nuxeo.ecm.core.query.sql.model.Reference;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
@@ -114,6 +115,22 @@ public class TestQueryParser extends TestCase {
         SelectClause select = query.getSelectClause();
         String v = select.getVariable(0).name;
         assertEquals("dc:title", v);
+    }
+
+    public void testComplexProperties() {
+        SQLQuery query = SQLQueryParser.parse("SELECT dc:foo/bar/baz FROM Document"
+                + " WHERE dc:foo/3/ho = dc:bar/*/bobby"
+                + " OR dc:foo/bar[5]/gee = dc:foo/*6/hop");
+        SelectClause select = query.getSelectClause();
+        String v = select.getVariable(0).name;
+        assertEquals("dc:foo/bar/baz", v);
+        Predicate where = query.getWhereClause().predicate;
+        Predicate p1 = (Predicate) where.lvalue;
+        Predicate p2 = (Predicate) where.rvalue;
+        assertEquals("dc:foo/3/ho", ((PathReference) p1.lvalue).name);
+        assertEquals("dc:bar/*/bobby", ((PathReference) p1.rvalue).name);
+        assertEquals("dc:foo/bar[5]/gee", ((PathReference) p2.lvalue).name);
+        assertEquals("dc:foo/*6/hop", ((PathReference) p2.rvalue).name);
     }
 
     public void testVariables() {

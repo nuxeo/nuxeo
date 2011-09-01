@@ -41,6 +41,7 @@ import javax.transaction.xa.Xid;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.XidImpl;
+import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.storage.PartialList;
@@ -2683,6 +2684,243 @@ public class TestSQLBackend extends SQLBackendTestCase {
         propagatorField.setAccessible(true);
         InvalidationsPropagator propagator = (InvalidationsPropagator) propagatorField.get(clusterNodeHandler);
         return propagator.queues.size();
+    }
+
+    @SuppressWarnings("boxing")
+    public void testQueryComplexProperties() throws Exception {
+        if (this instanceof TestSQLBackendNet
+                || this instanceof ITSQLBackendNet) {
+            return;
+        }
+
+        Session session = repository.getConnection();
+        Node root = session.getRootNode();
+
+        Node doc = session.addChildNode(root, "doc", null, "TestDoc", false);
+        Serializable docId = doc.getId();
+        List<Serializable> oneDoc = Arrays.asList(docId);
+        // tst:title = 'hello world'
+        doc.setSimpleProperty("tst:title", "hello world");
+        // tst:subjects = ['aaa', 'bbb', 'ccc']
+        doc.setCollectionProperty("tst:subjects", new String[] { "aaa", "bbb",
+                "ccc" });
+
+        Node owner = session.addChildNode(doc, "tst:owner", null, "person",
+                true);
+        // tst:owner/firstname = 'Bruce'
+        owner.setSimpleProperty("firstname", "Bruce");
+        // tst:owner/lastname = 'Willis'
+        owner.setSimpleProperty("lastname", "Willis");
+
+        Node duo = session.addChildNode(doc, "tst:couple", null, "duo", true);
+        Node first = session.addChildNode(duo, "first", null, "person", true);
+        Node second = session.addChildNode(duo, "second", null, "person", true);
+        // tst:couple/first/firstname = 'Steve'
+        first.setSimpleProperty("firstname", "Steve");
+        // tst:couple/first/lastname = 'Jobs'
+        first.setSimpleProperty("lastname", "Jobs");
+        // tst:couple/second/firstname = 'Steve'
+        second.setSimpleProperty("firstname", "Steve");
+        // tst:couple/second/lastname = 'McQueen'
+        second.setSimpleProperty("lastname", "McQueen");
+
+        Node friend0 = session.addChildNode(doc, "tst:friends", 0L, "person",
+                true);
+        Node friend1 = session.addChildNode(doc, "tst:friends", 1L, "person",
+                true);
+        // tst:friends/item[0]/firstname = 'John'
+        // tst:friends/0/firstname = 'John'
+        friend0.setSimpleProperty("firstname", "John");
+        // tst:friends/0/lastname = 'Lennon'
+        friend0.setSimpleProperty("lastname", "Lennon");
+        // tst:friends/1/firstname = 'John'
+        friend1.setSimpleProperty("firstname", "John");
+        // tst:friends/1/lastname = 'Smith'
+        friend1.setSimpleProperty("lastname", "Smith");
+
+        session.save();
+
+        String clause;
+        PartialList<Serializable> res;
+        IterableQueryResult it;
+
+        String FROM_WHERE = " FROM TestDoc WHERE ecm:isProxy = 0 AND ";
+        String SELECT_WHERE = "SELECT *" + FROM_WHERE;
+        String SELECT_TITLE_WHERE = "SELECT tst:title" + FROM_WHERE;
+
+        /*
+         * non-complex queries
+         */
+
+        clause = "tst:title = 'hello world'";
+        res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
+        assertEquals(oneDoc, res.list);
+        it = session.queryAndFetch(SELECT_TITLE_WHERE + clause, "NXQL",
+                QueryFilter.EMPTY);
+        assertEquals(1, it.size());
+        assertEquals("hello world", it.iterator().next().get("tst:title"));
+        it.close();
+
+        clause = "tst:subjects = 'aaa'";
+        res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
+        assertEquals(oneDoc, res.list);
+        it = session.queryAndFetch(SELECT_TITLE_WHERE + clause, "NXQL",
+                QueryFilter.EMPTY);
+        assertEquals(1, it.size());
+        assertEquals("hello world", it.iterator().next().get("tst:title"));
+        it.close();
+
+        /*
+         * complex WHERE clauses
+         */
+
+        // hierarchy h
+        // JOIN hierarchy h2 ON h2.parentid = h.id
+        // LEFT JOIN person p ON p.id = h2.id
+        // WHERE h2.name = 'tst:owner'
+        // AND p.firstname = 'Bruce'
+        clause = "tst:owner/firstname = 'Bruce'";
+        res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
+        assertEquals(oneDoc, res.list);
+        it = session.queryAndFetch("SELECT tst:title, tst:owner/lastname"
+                + FROM_WHERE + clause, "NXQL", QueryFilter.EMPTY);
+        assertEquals(1, it.size());
+        assertEquals("Willis", it.iterator().next().get("tst:owner/lastname"));
+        it.close();
+
+        // check other operators
+
+//        clause = "tst:owner/firstname LIKE 'S%'";
+//        res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
+//        assertEquals(oneDoc, res.list);
+
+//        clause = "tst:owner/firstname IS NOT NULL";
+//        res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
+//        assertEquals(oneDoc, res.list);
+
+//        clause = "tst:owner/firstname IN ('Steve', 'Eve')";
+//        res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
+//        assertEquals(oneDoc, res.list);
+
+        // hierarchy h
+        // JOIN hierarchy h2 ON h2.parentid = h.id
+        // JOIN hierarchy h3 ON h3.parentid = h2.id
+        // LEFT JOIN person p ON p.id = h3.id
+        // WHERE h2.name = 'tst:couple'
+        // AND h3.name = 'first'
+        // AND p.firstname = 'Steve'
+        clause = "tst:couple/first/firstname = 'Steve'";
+        res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
+        assertEquals(oneDoc, res.list);
+        it = session.queryAndFetch(
+                "SELECT tst:title, tst:couple/first/lastname" + FROM_WHERE
+                        + clause, "NXQL", QueryFilter.EMPTY);
+        assertEquals(1, it.size());
+        assertEquals("Jobs",
+                it.iterator().next().get("tst:couple/first/lastname"));
+        it.close();
+
+        // hierarchy h
+        // JOIN hierarchy h2 ON h2.parentid = h.id
+        // LEFT JOIN person p ON p.id = h2.id
+        // WHERE h2.name = 'tst:friends' AND h2.pos = 0
+        // AND p.firstname = 'John'
+        clause = "tst:friends/0/firstname = 'John'";
+        res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
+        assertEquals(oneDoc, res.list);
+        it = session.queryAndFetch("SELECT tst:title, tst:friends/0/lastname"
+                + FROM_WHERE + clause, "NXQL", QueryFilter.EMPTY);
+        assertEquals(1, it.size());
+        assertEquals("Lennon",
+                it.iterator().next().get("tst:friends/0/lastname"));
+        it.close();
+
+        // hierarchy h
+        // JOIN hierarchy h2 ON h2.parentid = h.id
+        // LEFT JOIN person p ON p.id = h2.id
+        // WHERE h2.name = 'tst:friends'
+        // AND p.firstname = 'John'
+        clause = "tst:friends/*/firstname = 'John'";
+        res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
+        assertEquals(oneDoc, res.list);
+        it = session.queryAndFetch(SELECT_TITLE_WHERE + clause, "NXQL",
+                QueryFilter.EMPTY);
+        assertEquals(2, it.size()); // two uncorrelated stars
+        it.close();
+
+        // hierarchy h
+        // JOIN hierarchy h2 ON h2.parentid = h.id
+        // LEFT JOIN person p ON p.id = h2.id
+        // WHERE h2.name = 'tst:friends'
+        // AND p.firstname = 'John'
+        clause = "tst:friends/*/firstname = 'John'";
+        res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
+        assertEquals(oneDoc, res.list);
+        it = session.queryAndFetch(SELECT_TITLE_WHERE + clause, "NXQL",
+                QueryFilter.EMPTY);
+        assertEquals(2, it.size()); // two uncorrelated stars
+        it.close();
+
+        // hierarchy h
+        // JOIN hierarchy h2 ON h2.parentid = h.id
+        // LEFT JOIN person p ON p.id = h2.id
+        // WHERE h2.name = 'tst:friends'
+        // AND p.firstname = 'John'
+        // AND p.lastname = 'Smith'
+        clause = "tst:friends/*1/firstname = 'John'"
+                + " AND tst:friends/*1/lastname = 'Smith'";
+        res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
+        assertEquals(oneDoc, res.list);
+        it = session.queryAndFetch("SELECT tst:title, tst:friends/*1/lastname"
+                + FROM_WHERE + clause, "NXQL", QueryFilter.EMPTY);
+        assertEquals(1, it.size()); // correlated stars
+        assertEquals("Smith",
+                it.iterator().next().get("tst:friends/*1/lastname"));
+        it.close();
+
+        /*
+         * return complex prop with no complex WHERE clause
+         */
+
+        // SELECT p.lastname
+        // FROM hierarchy h
+        // JOIN hierarchy h2 ON h2.parentid = h.id
+        // LEFT JOIN person p ON p.id = h2.id
+        // WHERE h2.name = 'tst:friends'
+        clause = "tst:title = 'hello world'";
+        res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
+        assertEquals(oneDoc, res.list);
+        it = session.queryAndFetch("SELECT tst:friends/*/lastname" + FROM_WHERE
+                + clause, "NXQL", QueryFilter.EMPTY);
+        assertEquals(2, it.size());
+        Set<String> set = new HashSet<String>();
+        for (Map<String, Serializable> map : it) {
+            set.add((String) map.get("tst:friends/*/lastname"));
+        }
+        assertEquals(new HashSet<String>(Arrays.asList("Lennon", "Smith")), set);
+        it.close();
+
+        // SELECT p.firstname, p.lastname
+        // FROM hierarchy h
+        // JOIN hierarchy h2 ON h2.parentid = h.id
+        // LEFT JOIN person p ON p.id = h2.id
+        // WHERE h2.name = 'tst:friends'
+        clause = "tst:title = 'hello world'";
+        res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
+        assertEquals(oneDoc, res.list);
+        it = session.queryAndFetch(
+                "SELECT tst:friends/*1/firstname, tst:friends/*1/lastname"
+                        + FROM_WHERE + clause, "NXQL", QueryFilter.EMPTY);
+        assertEquals(2, it.size());
+        Set<String> fn = new HashSet<String>();
+        Set<String> ln = new HashSet<String>();
+        for (Map<String, Serializable> map : it) {
+            fn.add((String) map.get("tst:friends/*1/firstname"));
+            ln.add((String) map.get("tst:friends/*1/lastname"));
+        }
+        assertEquals(Collections.singleton("John"), fn);
+        assertEquals(new HashSet<String>(Arrays.asList("Lennon", "Smith")), ln);
+        it.close();
     }
 
 }

@@ -298,7 +298,10 @@ public class Model {
     /** Per-schema set of path to simple fulltext properties. */
     private final Map<String, Set<String>> schemaSimpleTextPaths;
 
-    /** Map of path (from all doc types) to property info. */
+    /**
+     * Map of path (from all doc types) to property info. Value is NONE for
+     * valid complex property path prefixes.
+     */
     private final Map<String, ModelProperty> allPathPropertyInfos;
 
     /** Per-table info about fragments keys type. */
@@ -583,11 +586,25 @@ public class Model {
         Map<String, ModelProperty> propertyInfoByPath = new HashMap<String, ModelProperty>();
         inferTypePropertyPaths(schema, "", propertyInfoByPath, null);
         schemaPathPropertyInfos.put(schemaName, propertyInfoByPath);
-        allPathPropertyInfos.putAll(propertyInfoByPath);
+        // allow schema-as-prefix if schemas has no prefix, if non-complex
+        Map<String, ModelProperty> alsoWithPrefixes = new HashMap<String, ModelProperty>(
+                propertyInfoByPath);
+        if (schema.getNamespace().prefix.isEmpty()) {
+            for (Entry<String, ModelProperty> e : propertyInfoByPath.entrySet()) {
+                String key = e.getKey();
+                if (!key.contains("/")) {
+                    alsoWithPrefixes.put(schemaName + ':' + key, e.getValue());
+                }
+            }
+        }
+        allPathPropertyInfos.putAll(alsoWithPrefixes);
         // those for simpletext properties
         Set<String> simplePaths = new HashSet<String>();
         for (Entry<String, ModelProperty> entry : propertyInfoByPath.entrySet()) {
             ModelProperty pi = entry.getValue();
+            if (pi == ModelProperty.NONE) {
+                continue;
+            }
             if (pi.propertyType != PropertyType.STRING
                     && pi.propertyType != PropertyType.ARRAY_STRING) {
                 continue;
@@ -613,11 +630,12 @@ public class Model {
         done.add(typeName);
 
         for (Field field : complexType.getFields()) {
-            String propertyName = field.getName().getPrefixedName(); // TODO-prefixed?
+            String propertyName = field.getName().getPrefixedName();
             String path = prefix + propertyName;
             Type fieldType = field.getType();
             if (fieldType.isComplexType()) {
                 // complex type
+                propertyInfoByPath.put(path, ModelProperty.NONE);
                 inferTypePropertyPaths((ComplexType) fieldType, path + '/',
                         propertyInfoByPath, done);
                 continue;
@@ -625,14 +643,14 @@ public class Model {
                 Type listFieldType = ((ListType) fieldType).getFieldType();
                 if (!listFieldType.isSimpleType()) {
                     // complex list
+                    propertyInfoByPath.put(path + "/*", ModelProperty.NONE);
                     inferTypePropertyPaths((ComplexType) listFieldType, path
                             + "/*/", propertyInfoByPath, done);
                     continue;
                 }
                 // else array
-            } else {
-                // else primitive type
             }
+            // else primitive type
             ModelProperty pi = schemaPropertyInfos.get(typeName).get(
                     propertyName);
             propertyInfoByPath.put(path, pi);
@@ -770,6 +788,11 @@ public class Model {
 
     public ModelProperty getPropertyInfo(String propertyName) {
         return mergedPropertyInfos.get(propertyName);
+    }
+
+    // return ModelProperty.NONE if legal prefix
+    public ModelProperty getPathPropertyInfo(String xpath) {
+        return allPathPropertyInfos.get(xpath);
     }
 
     public Set<String> getPropertyInfoNames() {
@@ -1388,7 +1411,8 @@ public class Model {
                                     + "' using column type " + type);
                         }
                         addPropertyInfo(typeName, propertyName, propertyType,
-                                fragmentName, null, false, null, null);
+                                fragmentName, COLL_TABLE_VALUE_KEY, false,
+                                null, type);
 
                         Map<String, ColumnType> keysType = new LinkedHashMap<String, ColumnType>();
                         keysType.put(COLL_TABLE_POS_KEY, ColumnType.INTEGER);
