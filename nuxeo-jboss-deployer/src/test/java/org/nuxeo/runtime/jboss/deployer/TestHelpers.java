@@ -27,7 +27,7 @@ import junit.framework.TestCase;
  */
 public class TestHelpers extends TestCase {
 
-    public static void assertPathEquals(String expected, String actual) {
+    public static void assertPathEquals(String expected, String actual) throws Exception {
         if (File.separatorChar == '\\') { // windows
             expected = expected.replace('/', '\\');
             if (expected.startsWith("\\c:")) {
@@ -36,8 +36,14 @@ public class TestHelpers extends TestCase {
                 expected = expected.substring(1);
             }
             if (expected.startsWith("\\")) {
-                // TODO does the drive letter depend on current working dir?
-                expected = "C:" + expected;
+                // The drive letter depends on the current working dir
+                String currentDriveRoot;
+                File currentDir = new File(System.getProperty("user.dir"));
+                while (currentDir.getParentFile() != null) {
+                    currentDir = currentDir.getParentFile();
+                }
+                currentDriveRoot = currentDir.getCanonicalPath();
+                expected = currentDriveRoot + expected.substring(1);
             }
         }
         assertEquals(expected, actual);
