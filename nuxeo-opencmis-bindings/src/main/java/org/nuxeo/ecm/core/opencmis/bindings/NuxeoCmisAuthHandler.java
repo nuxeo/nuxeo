@@ -34,12 +34,12 @@ import com.sun.xml.ws.api.handler.MessageHandlerContext;
  */
 public class NuxeoCmisAuthHandler extends AuthHandler implements LoginProvider {
 
-    private static final Log log = LogFactory.getLog(NuxeoCmisAuthHandler.class);
-
     public static final String NUXEO_LOGIN_CONTEXT = "nuxeo.opencmis.LoginContext";
 
     /** Framework property redefining the login provider class. */
     public static final String LOGIN_PROVIDER_PROP = LoginProvider.class.getName();
+
+    private static final Log log = LogFactory.getLog(NuxeoCmisAuthHandler.class);
 
     protected LoginProvider loginProvider;
 
@@ -117,7 +117,7 @@ public class NuxeoCmisAuthHandler extends AuthHandler implements LoginProvider {
         }
     }
 
-    protected Authenticator getAuthenticator() {
+    protected static Authenticator getAuthenticator() {
         Authenticator userManager;
         try {
             userManager = Framework.getService(Authenticator.class);
