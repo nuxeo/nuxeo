@@ -44,9 +44,6 @@ public class AutomationModule extends Application {
         return result;
     }
 
-    protected static final Set<Object> singletons =
-            setupSingletons();
-
     protected static Set<Object> setupSingletons() {
         Set<Object> result = new HashSet<Object>();
         result.add(new JsonRequestReader());
@@ -63,13 +60,9 @@ public class AutomationModule extends Application {
         return result;
     }
 
-    public static void addSingleton(Object singleton) {
-        singletons.add(singleton);
-    }
-
     @Override
     public Set<Object> getSingletons() {
-        return singletons;
+        return setupSingletons();
     }
 
 }
