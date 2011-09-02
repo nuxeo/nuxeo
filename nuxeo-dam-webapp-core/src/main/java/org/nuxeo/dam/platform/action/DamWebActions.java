@@ -70,6 +70,8 @@ public class DamWebActions implements Serializable {
 
     protected boolean showThumbnail = true;
 
+    protected boolean showBigThumbnail = false;
+
     @Factory(value = "assetActionsList", scope = EVENT)
     public List<Action> getAssetActionsList() {
         return webActions.getActionsList("VIEW_ASSET_ACTION_LIST");
@@ -110,16 +112,27 @@ public class DamWebActions implements Serializable {
         if (showList) {
             return;
         }
-        showList = !showList;
-        showThumbnail = !showThumbnail;
+        showList = true;
+        showThumbnail = false;
+        showBigThumbnail = false;
     }
 
     public void showThumbnailLink() {
         if (showThumbnail) {
             return;
         }
-        showThumbnail = !showThumbnail;
-        showList = !showList;
+        showThumbnail = true;
+        showList = false;
+        showBigThumbnail = false;
+    }
+
+    public void showBigThumbnailLink() {
+        if (showBigThumbnail) {
+            return;
+        }
+        showBigThumbnail = true;
+        showList = false;
+        showThumbnail = false;
     }
 
     public boolean getShowList() {
@@ -138,4 +151,11 @@ public class DamWebActions implements Serializable {
         this.showThumbnail = showThumbnail;
     }
 
+    public boolean isShowBigThumbnail() {
+        return showBigThumbnail;
+    }
+
+    public void setShowBigThumbnail(boolean showBigThumbnail) {
+        this.showBigThumbnail = showBigThumbnail;
+    }
 }

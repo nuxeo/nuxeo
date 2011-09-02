@@ -37,6 +37,17 @@
                 url="/icons/thumbnail_view_selected.png"
                 rendered="#{damWebActions.showThumbnail}" />
             </a4j:commandLink>
+
+            <a4j:commandLink id="showBigThumbnailLink"
+              action="#{damWebActions.showBigThumbnailLink}"
+              reRender="filterResultTable"
+              styleClass="ThumbViewIcon">
+              <h:graphicImage id="showBigThumbnail" url="/icons/big_thumbnail_view.png"
+                rendered="#{!damWebActions.showBigThumbnail}" />
+              <h:graphicImage id="showBigThumbnailSelected"
+                url="/icons/big_thumbnail_view_selected.png"
+                rendered="#{damWebActions.showBigThumbnail}" />
+            </a4j:commandLink>
           </div>
           <f:subview id="clipboard">
             <ui:include src="/incl/bulk_actions.xhtml" />
