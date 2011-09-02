@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,49 +12,47 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
+ *     eugen
  */
 package org.nuxeo.opensocial.webengine.gadgets.render;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.net.URL;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.opensocial.gadgets.service.InternalGadgetDescriptor;
+import org.nuxeo.opensocial.gadgets.service.api.GadgetDeclaration;
+import org.nuxeo.opensocial.gadgets.service.api.GadgetService;
+import org.nuxeo.runtime.api.Framework;
 
-import freemarker.cache.StringTemplateLoader;
+import freemarker.cache.URLTemplateLoader;
 
 /**
- * Specific template loader that fallsback to lookup in skin/resources/ftl for
- * common template files
- *
- * @author Tiry (tdelprat@nuxeo.com)
- *
+ * @author <a href="mailto:ei@nuxeo.com">Eugen Ionica</a>
+ * 
  */
-public class GadgetTemplateLoader extends StringTemplateLoader {
+public class GadgetTemplateLoader extends URLTemplateLoader {
 
-    protected static Log log = LogFactory.getLog(GadgetTemplateLoader.class);
+    private static final Log log = LogFactory.getLog(GadgetTemplateLoader.class);
 
-    @Override
-    public Object findTemplateSource(String name) {
-        Object template = super.findTemplateSource(name);
+    protected URL getURL(String name) {
+        if (name.startsWith("gadget://")) {
+            GadgetService gs = Framework.getLocalService(GadgetService.class);
+            if (gs == null)
+                return null;
+            GadgetDeclaration gadget = gs.getGadget(name.substring("gadget://".length()));
 
-        if (template == null) {
-            // fallback to lookup in common resources
-            InputStream stream = GadgetTemplateLoader.class.getClassLoader().getResourceAsStream(
-                    "skin/resources/ftl/" + name);
-            if (stream != null) {
-                try {
-                    String templateSource = FileUtils.read(stream);
-                    super.putTemplate(name, templateSource);
-                    template = super.findTemplateSource(name);
-                } catch (IOException e) {
-                    log.error("Unable to find template " + name, e);
-                }
+            try {
+                return gadget.getResource(((InternalGadgetDescriptor) gadget).getEntryPoint());
+            } catch (IOException e) {
+                log.debug("failed to gadget entry point", e);
             }
+        } else {
+            // fallback to lookup in common resources
+            return GadgetTemplateLoader.class.getClassLoader().getResource(
+                    "skin/resources/ftl/" + name);
         }
-        return template;
+        return null;
     }
 }

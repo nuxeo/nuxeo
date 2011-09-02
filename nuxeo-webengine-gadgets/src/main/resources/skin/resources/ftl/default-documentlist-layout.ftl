@@ -5,7 +5,7 @@
           <span class="currentPageStatus" id="nxDocumentListPage"></span>
           <input type="image" id="navNextPage" src="${clientSideBaseUrl}icons/action_page_next.gif"/>
           <input type="image" id="navLastPage" src="${clientSideBaseUrl}icons/action_page_fastforward.gif"/>
-          </div>
+         </div>
         <div id="nxDocumentListData">
           <!-- here comes the real listing -->
         </div>

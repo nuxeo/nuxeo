@@ -19,19 +19,19 @@ package org.nuxeo.opensocial.webengine.gadgets.render;
 
 import org.nuxeo.ecm.platform.rendering.fm.FreemarkerEngine;
 
-import freemarker.cache.StringTemplateLoader;
+import freemarker.cache.TemplateLoader;
 
 /**
  * Simple Freemarker wrapper
- *
+ * 
  * @author Tiry (tdelprat@nuxeo.com)
- *
+ * 
  */
 public class GadgetSpecRenderingEngine extends FreemarkerEngine {
 
-    public GadgetSpecRenderingEngine(StringTemplateLoader specLoader) {
+    public GadgetSpecRenderingEngine(TemplateLoader loader) {
         super();
-        cfg.setTemplateLoader(specLoader);
+        cfg.setTemplateLoader(loader);
     }
 
 }

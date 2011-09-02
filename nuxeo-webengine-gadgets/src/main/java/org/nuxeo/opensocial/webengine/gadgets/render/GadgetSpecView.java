@@ -30,7 +30,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.WebContext;
@@ -40,17 +39,15 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Helper to render the GadgetSpec via FreeMarker
- *
+ * 
  * Using FreeMarker for that allow to have some dynamic computations : - OAUth
  * urls (that may be different depending on the IP the client uses) - resources
  * urls - requests urls - ...
- *
+ * 
  * @author tiry
- *
+ * 
  */
 public class GadgetSpecView {
-
-    protected static GadgetTemplateLoader specLoader = new GadgetTemplateLoader();
 
     protected static GadgetSpecRenderingEngine engine;
 
@@ -80,7 +77,7 @@ public class GadgetSpecView {
 
     protected static GadgetSpecRenderingEngine getEngine() {
         if (engine == null) {
-            engine = new GadgetSpecRenderingEngine(specLoader);
+            engine = new GadgetSpecRenderingEngine(new GadgetTemplateLoader());
         }
 
         return engine;
@@ -140,15 +137,7 @@ public class GadgetSpecView {
     public static InputStream render(InternalGadgetDescriptor gadget,
             Map<String, Object> params) throws Exception {
 
-        String key = "fs://" + gadget.getMountPoint() + "/"
-                + gadget.getEntryPoint();
-        synchronized (specLoader) {
-            // dynamically load the gadget spec templates as needed
-            if (specLoader.findTemplateSource(key) == null) {
-                String specData = FileUtils.read(gadget.getResourceAsStream(gadget.getEntryPoint()));
-                specLoader.putTemplate(key, specData);
-            }
-        }
+        String key = "gadget://" + gadget.getName();
 
         WebContext ctx = WebEngine.getActiveContext();
 
@@ -161,8 +150,7 @@ public class GadgetSpecView {
             // we are called by local Nuxeo-Shindig
             // so we don't know the client URL, but a relative URL is ok
             input.put("serverSideBaseUrl",
-                    Framework.getProperty(NUXEO_LOOPBACK_URL)
-                            + "/");
+                    Framework.getProperty(NUXEO_LOOPBACK_URL) + "/");
             input.put("clientSideBaseUrl",
                     VirtualHostHelper.getContextPathProperty() + "/");
             input.put("specDirectoryUrl",

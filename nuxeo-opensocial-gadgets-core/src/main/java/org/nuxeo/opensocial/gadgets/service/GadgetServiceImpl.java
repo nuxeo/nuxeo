@@ -97,7 +97,6 @@ public class GadgetServiceImpl extends DefaultComponent implements
             throws Exception {
         if (GADGET_XP.equals(extensionPoint)) {
             InternalGadgetDescriptor gadget = (InternalGadgetDescriptor) contribution;
-
             unregisterNewGadget(gadget, contributor);
         }
     }

@@ -166,7 +166,16 @@ public class InternalGadgetDescriptor extends BaseGadgetDescriptor implements
 
     public InputStream getResourceAsStream(String resourcePath)
             throws IOException {
+        URL gadgetURL = getResource(resourcePath);
+        if (gadgetURL != null) {
+            return gadgetURL.openStream();
+        } else {
+            return null;
+        }
+    }
 
+    @Override
+    public URL getResource(String resourcePath) {
         ComponentInstance component = Framework.getRuntime().getComponentInstance(
                 componentName);
         Bundle bundle = component.getRuntimeContext().getBundle();
@@ -175,11 +184,7 @@ public class InternalGadgetDescriptor extends BaseGadgetDescriptor implements
         if (gadgetURL == null) {
             gadgetURL = bundle.getEntry("gadget/resources/" + resourcePath);
         }
-        if (gadgetURL != null) {
-            return gadgetURL.openStream();
-        } else {
-            return null;
-        }
+        return gadgetURL;
     }
 
     public URL getGadgetDefinition() throws MalformedURLException {
@@ -230,7 +235,7 @@ public class InternalGadgetDescriptor extends BaseGadgetDescriptor implements
      * Shindig always prepend the beginning of the Spec URL if it gets a
      * relative URL for Thumbnail or Screenshot in the gadget spec, but we need
      * a relative URL.
-     *
+     * 
      */
     protected String rewriteURL(String url) {
         if (url != null) {

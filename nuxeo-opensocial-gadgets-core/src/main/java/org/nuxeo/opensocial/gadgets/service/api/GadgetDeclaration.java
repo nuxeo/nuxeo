@@ -31,10 +31,10 @@ import org.apache.shindig.gadgets.spec.GadgetSpec;
  * implementation can be an internal or external gadget. Callers should not
  * depend on particular implementation strategies since they may vary quite
  * widely.
- *
+ * 
  * @author Ian Smith<iansmith@nuxecloud.com>
  * @author Thomas Roger<troger@nuxeo.com>
- *
+ * 
  */
 public interface GadgetDeclaration {
 
@@ -53,7 +53,7 @@ public interface GadgetDeclaration {
     /**
      * Returns the public URL of the gadget spec. That URL can be used to add
      * the gadget in an other container.
-     *
+     * 
      * @since 5.4.2
      */
     String getPublicGadgetDefinition() throws MalformedURLException;
@@ -70,7 +70,7 @@ public interface GadgetDeclaration {
      * Try to find an internationalized title for this gadget.
      * <p>
      * The label key is "label.gadget." + gadgetName.
-     *
+     * 
      * @since 5.4.3
      */
     String getTitle(Locale locale);
@@ -80,5 +80,7 @@ public interface GadgetDeclaration {
     String getScreenshot();
 
     String getThumbnail();
+
+    URL getResource(String resourcePath) throws IOException;
 
 }

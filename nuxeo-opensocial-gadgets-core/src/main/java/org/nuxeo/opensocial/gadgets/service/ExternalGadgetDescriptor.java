@@ -70,8 +70,13 @@ public class ExternalGadgetDescriptor extends BaseGadgetDescriptor implements
 
     public InputStream getResourceAsStream(String resourcePath)
             throws IOException {
-        URL result = new URL(getGadgetDefinition(), resourcePath);
+        URL result = getResource(resourcePath);
         return result.openStream();
+    }
+
+    @Override
+    public URL getResource(String resourcePath) throws IOException {
+        return new URL(getGadgetDefinition(), resourcePath);
     }
 
     @Override
