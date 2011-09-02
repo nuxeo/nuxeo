@@ -19,12 +19,12 @@
         </div>
     </f:subview>
 
-    <f:subview id="showListSubview" rendered="#{webActions.showList}">
+    <f:subview id="showListSubview" rendered="#{damWebActions.showList}">
 	  <ui:decorate template="/incl/documents_table.xhtml" >
 	    <ui:param name="documents" value="#{documents}"/>
 	  </ui:decorate>
 	</f:subview>
-	<f:subview id="showListThumbnail" rendered="#{webActions.showThumbnail}">
+	<f:subview id="showListThumbnail" rendered="#{damWebActions.showThumbnail}">
 	  <ui:decorate template="/incl/thumbnail_documents_table.xhtml" >
 	    <ui:param name="documents" value="#{documents}"/>
 	  </ui:decorate>

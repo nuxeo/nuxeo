@@ -5,9 +5,9 @@
 
   <a4j:form>
     <ul>
-      <nxu:dataList var="tab" value="#{tabsActionsList}">
+      <nxu:dataList var="tab" value="#{assetActionsList}">
         <li>
-          <a4j:commandLink styleClass="#{nxu:test(webActions.currentTabAction == tab, 'selected', '')}" action="#{documentActions.setCurrentTabAction(tab)}" reRender="selectionView">
+          <a4j:commandLink styleClass="#{nxu:test(damWebActions.currentTabAction == tab, 'selected', '')}" action="#{documentActions.setCurrentTabAction(tab)}" reRender="selectionView">
             <h:outputText value="#{messages[tab.label]}" />
           </a4j:commandLink>
         </li>

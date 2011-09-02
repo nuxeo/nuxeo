@@ -7,8 +7,8 @@
       <ul>
         <nxu:dataList var="tab" value="#{adminActionsList}">
           <li>
-            <a4j:commandLink action="#{webActions.setCurrentAdminTabAction(tab)}" reRender="administrationView" 
-            								 styleClass="#{nxu:test(webActions.currentAdminTabAction == tab, 'selected', '')}">
+            <a4j:commandLink action="#{damWebActions.setCurrentAdminTabAction(tab)}" reRender="administrationView"
+            								 styleClass="#{nxu:test(damWebActions.currentAdminTabAction == tab, 'selected', '')}">
               <h:outputText value="#{messages[tab.label]}" />
             </a4j:commandLink>
           </li>

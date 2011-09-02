@@ -17,9 +17,10 @@
 
 package org.nuxeo.dam.webapp.contentbrowser;
 
+import static org.jboss.seam.annotations.Install.FRAMEWORK;
+
 import java.io.Serializable;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.faces.context.FacesContext;
@@ -60,8 +61,6 @@ import org.nuxeo.ecm.platform.url.codec.DocumentFileCodec;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
 import org.nuxeo.ecm.webapp.delegate.DocumentManagerBusinessDelegate;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
-
-import static org.jboss.seam.annotations.Install.FRAMEWORK;
 
 @Name("documentActions")
 @Scope(ScopeType.CONVERSATION)
@@ -114,18 +113,11 @@ public class DocumentActions implements Serializable {
 
     public void setCurrentSelection(DocumentModel selection) {
         // Reset the tabs list and the display mode
-        webActions.resetTabList();
+        webActions.resetCurrentTabs("VIEW_ASSET_ACTION_LIST");
         displayMode = BuiltinModes.VIEW;
-
         currentSelection = selection;
-
-        // Set first tab as current tab
-        List<Action> tabList = webActions.getTabsList();
-        if (tabList != null && tabList.size() > 0) {
-            Action currentAction = tabList.get(0);
-            webActions.setCurrentTabAction(currentAction);
-            currentSelectionLink = currentAction.getLink();
-        }
+        currentSelectionLink = webActions.getCurrentTabAction(
+                "VIEW_ASSET_ACTION_LIST").getLink();
         resetData();
         raiseEvents(currentSelection);
     }
@@ -138,7 +130,8 @@ public class DocumentActions implements Serializable {
     }
 
     public void setCurrentTabAction(Action currentTabAction) {
-        webActions.setCurrentTabAction(currentTabAction);
+        webActions.setCurrentTabAction("VIEW_ASSET_ACTION_LIST",
+                currentTabAction);
         currentSelectionLink = currentTabAction.getLink();
     }
 
@@ -272,8 +265,7 @@ public class DocumentActions implements Serializable {
                         "file:content");
 
                 Blob blob = currentSelection.getAdapter(BlobHolder.class).getBlob();
-                params.put(
-                        DocumentFileCodec.FILENAME_KEY, blob.getFilename());
+                params.put(DocumentFileCodec.FILENAME_KEY, blob.getFilename());
                 DocumentView docView = new DocumentViewImpl(docLoc, null,
                         params);
 

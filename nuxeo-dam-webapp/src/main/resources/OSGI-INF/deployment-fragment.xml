@@ -2,6 +2,7 @@
 <fragment version="1">
 
   <require>org.nuxeo.ecm.platform.ui</require>
+  <require>org.nuxeo.ecm.webapp.base</require>
 
   <extension target="web#CONTEXT-PARAM-RICHFACES" mode="replace">
     <context-param>

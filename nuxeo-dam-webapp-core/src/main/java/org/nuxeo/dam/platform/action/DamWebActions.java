@@ -17,6 +17,7 @@
 
 package org.nuxeo.dam.platform.action;
 
+import java.io.Serializable;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -34,35 +35,34 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.actions.ActionContext;
 import org.nuxeo.ecm.platform.actions.ejb.ActionManager;
+import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
+import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.platform.ui.web.util.SeamContextHelper;
 import org.nuxeo.ecm.webapp.action.WebActionsBean;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
-import org.nuxeo.ecm.webapp.security.UserManagerActions;
 import org.nuxeo.runtime.api.Framework;
 
 import static org.jboss.seam.ScopeType.CONVERSATION;
 import static org.jboss.seam.ScopeType.EVENT;
+import static org.jboss.seam.annotations.Install.FRAMEWORK;
 
 /**
  * @author <a href="mailto:cbaican@nuxeo.com">Catalin Baican</a>
  */
-@Name("webActions")
+@Name("damWebActions")
 @Scope(CONVERSATION)
-@Install(precedence = Install.APPLICATION)
-public class DamWebActions extends WebActionsBean {
+@Install(precedence = FRAMEWORK)
+public class DamWebActions implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     private static final Log log = LogFactory.getLog(DamWebActions.class);
 
-    @In(create = true)
-    protected transient NuxeoPrincipal currentNuxeoPrincipal;
-
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
 
-    @In(create = true, required = false)
-    protected transient UserManagerActions userManagerActions;
+    @In(create = true)
+    protected transient WebActions webActions;
 
     protected ActionManager actionService;
 
@@ -70,55 +70,26 @@ public class DamWebActions extends WebActionsBean {
 
     protected boolean showThumbnail = true;
 
-    protected boolean showAdministration = false;
-
-    protected List<Action> adminActionsList;
-
-    @Out(required = false)
-    protected Action currentAdminTabAction;
-
-    @Override
-    @Factory(value = "tabsActionsList", scope = EVENT)
-    public List<Action> getTabsList() {
-        if (tabsActionsList == null) {
-            actionService = getActionService();
-            tabsActionsList = actionService.getActions(
-                    "VIEW_ASSET_ACTION_LIST", createActionContext());
-            currentTabAction = getDefaultTab();
-        }
-        return tabsActionsList;
+    @Factory(value = "assetActionsList", scope = EVENT)
+    public List<Action> getAssetActionsList() {
+        return webActions.getActionsList("VIEW_ASSET_ACTION_LIST");
     }
 
     @Factory(value = "adminActionsList", scope = EVENT)
     public List<Action> getAdminTabsList() {
-        if (adminActionsList == null) {
-            adminActionsList = getActionService().getActions(
-                    "ADMIN_ACTION_LIST", createActionContext());
-            currentAdminTabAction = getDefaultAdminTab();
-        }
-        return adminActionsList;
+        return webActions.getActionsList("ADMIN_ACTION_LIST");
     }
 
-    protected Action getDefaultAdminTab() {
-        if (getAdminTabsList() == null) {
-            return null;
-        }
-        try {
-            return adminActionsList.get(0);
-        } catch (IndexOutOfBoundsException e) {
-            return null;
-        }
+    public Action getCurrentTabAction() {
+        return webActions.getCurrentTabAction("VIEW_ASSET_ACTION_LIST");
     }
 
     public Action getCurrentAdminTabAction() {
-        if (currentAdminTabAction == null) {
-            currentAdminTabAction = getDefaultAdminTab();
-        }
-        return currentAdminTabAction;
+        return webActions.getCurrentTabAction("ADMIN_ACTION_LIST");
     }
 
     public void setCurrentAdminTabAction(Action currentAdminTabAction) {
-        this.currentAdminTabAction = currentAdminTabAction;
+        webActions.setCurrentTabAction("ADMIN_ACTION_LIST", currentAdminTabAction);
     }
 
     @Factory(value = "actionManager", scope = EVENT)
@@ -133,35 +104,6 @@ public class DamWebActions extends WebActionsBean {
         }
 
         return actionService;
-    }
-
-    @Override
-    protected ActionContext createActionContext() {
-        ActionContext ctx = new ActionContext();
-        ctx.setDocumentManager(documentManager);
-        ctx.put("SeamContext", new SeamContextHelper());
-        ctx.setCurrentPrincipal(currentNuxeoPrincipal);
-        return ctx;
-    }
-
-    public String navigateToAdministration() throws ClientException {
-        showAdministration = true;
-        return "administration";
-    }
-
-    public String navigateToAssetManagement() throws ClientException {
-        showAdministration = false;
-        return navigationContext.goHome();
-    }
-
-    @Factory(value = "isInsideAdministration", scope = EVENT)
-    public boolean showAdministration() {
-        return showAdministration;
-    }
-
-    @Observer(value = EventNames.GO_HOME)
-    public void resetOnGoHome() {
-        showAdministration = false;
     }
 
     public void showListLink() {

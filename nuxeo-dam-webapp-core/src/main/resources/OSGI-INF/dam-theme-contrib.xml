@@ -24,13 +24,6 @@
       <template>incl/logo.xhtml</template>
     </view>
 
-    <view name="dam banner" template-engine="jsf-facelets">
-      <format-type>widget</format-type>
-      <template>incl/banner.xhtml</template>
-      <resource>modal-popup.css</resource>
-      <resource>importSetForm.js</resource>
-    </view>
-
     <view name="dam search filters" template-engine="jsf-facelets">
       <format-type>widget</format-type>
       <template>incl/search_filter.xhtml</template>
@@ -58,9 +51,15 @@
       <resource>utils.js</resource>
     </view>
 
-    <view name="dam footer" template-engine="jsf-facelets">
+    <view name="Nuxeo header" template-engine="jsf-facelets">
       <format-type>widget</format-type>
-      <template>incl/footer.xhtml</template>
+      <template>incl/nuxeo_header.xhtml</template>
+    </view>
+
+    <view name="Nuxeo footer"
+      template-engine="jsf-facelets">
+      <format-type>widget</format-type>
+      <template>incl/nuxeo_footer.xhtml</template>
     </view>
 
   </extension>
@@ -148,10 +147,6 @@
     </resource>
     <resource name="dam.css">
       <path>css/dam.css</path>
-    </resource>
-
-    <resource name="importSetForm.js">
-      <path>scripts/importSetForm.js</path>
     </resource>
 
     <resource name="utils.js">

@@ -40,10 +40,6 @@
           <!-- main area -->
           <fragment type="region fragment" />
         </cell>
-        <cell>
-          <!-- Include -->
-          <fragment type="generic fragment" />
-        </cell>
       </section>
     </page>
     <page name="settings">
@@ -132,9 +128,6 @@
       <width>100%</width>
     </layout>
     <layout element="page[2]/section[1]/cell[1]"/>
-    <layout element="page[2]/section[1]/cell[2]">
-      <width>0%</width>
-    </layout>
     <layout element="page[3]">
       <margin>0</margin>
       <padding>0</padding>
@@ -182,9 +175,9 @@
       <view>dam logo</view>
     </widget>
     <widget element="page[1]/section[1]/cell[2]/fragment[1]|page[3]/section[1]/cell[2]/fragment[1]">
-      <view>dam banner</view>
+      <view>Nuxeo header</view>
     </widget>
-    <widget element="page[1]/section[1]/cell[2]/fragment[2]|page[2]/section[1]/cell[2]/fragment[1]|page[3]/section[1]/cell[2]/fragment[2]">
+    <widget element="page[1]/section[1]/cell[2]/fragment[2]|page[3]/section[1]/cell[2]/fragment[2]">
       <view>dam includes</view>
     </widget>
     <widget element="page[1]/section[2]/cell[1]/fragment[1]">
@@ -197,7 +190,7 @@
       <view>dam selection view</view>
     </widget>
     <widget element="page[1]/section[3]/cell[1]/fragment[1]|page[3]/section[3]/cell[1]/fragment[1]">
-      <view>dam footer</view>
+      <view>Nuxeo footer</view>
     </widget>
     <widget element="page[2]/section[1]/cell[1]/fragment[1]|page[3]/section[2]/cell[1]/fragment[1]">
       <view>facelet region</view>
@@ -785,14 +778,14 @@
     </style>
     <style element="page[1]/section[1]/cell[2]|page[3]/section[1]/cell[2]" inherit="common style"/>
         <style element="page[1]/section[1]/cell[2]/fragment[1]|page[3]/section[1]/cell[2]/fragment[1]" inherit="common style">
-      <selector path=".banner_actions" view="dam banner">
+      <selector path=".banner_actions" view="Nuxeo header">
         <margin>0</margin>
         <padding>0px 10px 0px 0px</padding>
         <text-align>right</text-align>
         <font preset="small (DAM fonts)"/>
         <color preset="gray.light (DAM colors)"/>
       </selector>
-      <selector path=".banner_actions a, .banner_actions a:link, .banner_actions a:hover, .banner_actions a:active, .banner_actions a:visited," view="dam banner">
+      <selector path=".banner_actions a, .banner_actions a:link, .banner_actions a:hover, .banner_actions a:active, .banner_actions a:visited," view="Nuxeo header">
         <color preset="white (DAM colors)"/>
       </selector>
     </style>
@@ -867,12 +860,12 @@
     </style>
     <style element="page[1]/section[3]/cell[1]|page[3]/section[3]/cell[1]" inherit="common style"/>
     <style element="page[1]/section[3]/cell[1]/fragment[1]|page[3]/section[3]/cell[1]/fragment[1]" inherit="common style">
-      <selector path="a, a:link, a:active, a:visited" view="dam footer">
+      <selector path="a, a:link, a:active, a:visited" view="Nuxeo footer">
         <color preset="white (DAM colors)"/>
         <text-decoration>none</text-decoration>
       </selector>
       <selector path="a:hover">
-        <color preset="white (DAM colors)" view="dam footer"/>
+        <color preset="white (DAM colors)" view="Nuxeo footer"/>
         <text-decoration>underline</text-decoration>
       </selector>
     </style>

@@ -56,7 +56,6 @@
         <exclude name="**/nxserver/bundles/nuxeo-platform-webapp-core*" />
 
         <exclude name="**/nxserver/bundles/nuxeo-platform-comment-web*" />
-        <exclude name="**/nxserver/bundles/nuxeo-platform-directory-web*" />
         <exclude name="**/nxserver/bundles/nuxeo-platform-ear*" />
         <exclude name="**/nxserver/bundles/nuxeo-platform-forum*" />
         <exclude name="**/nxserver/bundles/nuxeo-platform-imaging-dm*" />
@@ -73,9 +72,11 @@
 
         <exclude name="**/nxserver/bundles/nuxeo-webengine-gadgets*" />
         <exclude name="**/nxserver/bundles/nuxeo-webengine-admin*" />
-        <exclude name="**/nxserver/bundles/nuxeo-webengine-blogs*" />
         <exclude name="**/nxserver/bundles/nuxeo-webengine-sites*" />
         <exclude name="**/nxserver/bundles/nuxeo-webengine-ui*" />
+        <exclude name="**/nxserver/bundles/nuxeo-user-dashboard*" />
+        <exclude name="**/nxserver/bundles/nuxeo-user-settings*" />
+
 
         <exclude name="**/nxserver/bundles/nuxeo-platform-faceted-search-dm*" />
 
