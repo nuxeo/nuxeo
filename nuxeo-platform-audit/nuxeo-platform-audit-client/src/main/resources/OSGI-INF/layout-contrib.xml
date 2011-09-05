@@ -110,8 +110,7 @@
         </column>
       </columns>
 
-      <!-- XXX use directory to get the labels, but should use i18n text widget -->
-       <widget name="eventId" type="selectOneDirectory">
+      <widget name="eventId" type="text">
         <labels>
           <label mode="any">label.performedAction</label>
         </labels>
@@ -120,7 +119,6 @@
           <field>data.eventId</field>
         </fields>
         <properties mode="any">
-          <property name="directoryName">eventTypes</property>
           <property name="localize">true</property>
         </properties>
       </widget>
