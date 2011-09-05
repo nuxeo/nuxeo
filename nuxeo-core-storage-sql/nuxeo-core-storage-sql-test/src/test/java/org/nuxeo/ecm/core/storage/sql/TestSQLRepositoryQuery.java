@@ -105,7 +105,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         String content = "Some caf\u00e9 in a restaurant.\nDrink!.\n";
         String filename = "testfile.txt";
         ByteArrayBlob blob1 = new ByteArrayBlob(content.getBytes("UTF-8"),
-                "text/plain");
+                "text/plain", "UTF-8", filename, null);
         file1.setPropertyValue("content", blob1);
         file1.setPropertyValue("filename", filename);
         Calendar cal1 = getCalendar(2007, 3, 1, 12, 0, 0);
@@ -225,6 +225,10 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         dml = session.query("SELECT * FROM Note WHERE dc:title = 'testfile3_Title'");
         assertEquals(1, dml.size());
 
+        // two uses of the same schema
+        dml = session.query("SELECT * FROM Note WHERE dc:title = 'testfile3_Title' OR dc:description = 'hmmm'");
+        assertEquals(1, dml.size());
+
         // property in a schema with no prefix
         dml = session.query("SELECT * FROM Document WHERE uid = 'uid123'");
         assertEquals(1, dml.size());
@@ -248,6 +252,12 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         // early detection of conflicting types for VCS
         dml = session.query("SELECT * FROM Document WHERE ecm:primaryType = 'foo'");
         assertEquals(0, dml.size());
+
+        // query complex type
+        dml = session.query("SELECT * FROM File WHERE content/length > 0");
+        assertEquals(1, dml.size());
+        dml = session.query("SELECT * FROM File WHERE content/name = 'testfile.txt'");
+        assertEquals(1, dml.size());
     }
 
     public void testQueryBasic2() throws Exception {
@@ -413,6 +423,14 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         assertEquals("testfile1_description",
                 dml.get(0).getPropertyValue("dc:description"));
 
+        // without proxies as well
+        sql = "SELECT * FROM Document WHERE dc:title LIKE 'testfile%' AND ecm:isProxy = 0 ORDER BY dc:description";
+        dml = session.query(sql);
+        assertEquals(4, dml.size());
+        assertEquals("testfile1_description",
+                dml.get(0).getPropertyValue("dc:description"));
+
+        // desc
         sql = "SELECT * FROM Document WHERE dc:title LIKE 'testfile%' ORDER BY dc:description DESC";
         dml = session.query(sql);
         assertEquals(4, dml.size());
@@ -1141,6 +1159,9 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
          * ecm:versionLabel
          */
         dml = session.query("SELECT * FROM Document WHERE ecm:versionLabel = '0.1'");
+        // we can check the version label on a proxy
+        assertIdSet(dml, version.getId(), proxy.getId());
+        dml = session.query("SELECT * FROM Document WHERE ecm:versionLabel = '0.1' AND ecm:isProxy = 0");
         assertIdSet(dml, version.getId());
 
         /*
