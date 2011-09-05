@@ -555,7 +555,7 @@ public class NXQLQueryBuilder {
             if (element != null) {
                 String value = element.toString().trim();
                 if (!value.equals("")) {
-                    values.add("'" + value + "'");
+                    values.add(prepareStringLiteral(value, true, true));
                 }
             }
         }
