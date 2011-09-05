@@ -131,6 +131,12 @@ public class TestQueryParser extends TestCase {
         assertEquals("dc:bar/*/bobby", ((PathReference) p1.rvalue).name);
         assertEquals("dc:foo/bar[5]/gee", ((PathReference) p2.lvalue).name);
         assertEquals("dc:foo/*6/hop", ((PathReference) p2.rvalue).name);
+
+        // check parsing of complex properties in other contexts
+        SQLQueryParser.parse("SELECT x FROM Document"
+                + " WHERE dc:foo/bar LIKE 'foo' OR dc:foo/bar IS NULL"
+                + " OR dc:foo/bar BETWEEN 1 AND 1000"
+                + " ORDER BY dc:foo/bar");
     }
 
     public void testVariables() {

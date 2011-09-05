@@ -2790,17 +2790,23 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
         // check other operators
 
-//        clause = "tst:owner/firstname LIKE 'S%'";
-//        res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
-//        assertEquals(oneDoc, res.list);
+        clause = "tst:owner/firstname LIKE 'B%'";
+        res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
+        assertEquals(oneDoc, res.list);
 
-//        clause = "tst:owner/firstname IS NOT NULL";
-//        res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
-//        assertEquals(oneDoc, res.list);
+        clause = "tst:owner/firstname IS NOT NULL";
+        res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
+        assertEquals(oneDoc, res.list);
 
-//        clause = "tst:owner/firstname IN ('Steve', 'Eve')";
-//        res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
-//        assertEquals(oneDoc, res.list);
+        clause = "tst:owner/firstname IN ('Bruce', 'Bilbo')";
+        res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
+        assertEquals(oneDoc, res.list);
+
+        // ORDER BY on complex prop
+
+        clause = "tst:title LIKE '%' ORDER BY tst:owner/firstname";
+        res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
+        assertEquals(oneDoc, res.list);
 
         // hierarchy h
         // JOIN hierarchy h2 ON h2.parentid = h.id
@@ -2835,6 +2841,11 @@ public class TestSQLBackend extends SQLBackendTestCase {
                 it.iterator().next().get("tst:friends/0/lastname"));
         it.close();
 
+        // alternate xpath syntax
+        clause = "tst:friends/item[0]/firstname = 'John'";
+        res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
+        assertEquals(oneDoc, res.list);
+
         // hierarchy h
         // JOIN hierarchy h2 ON h2.parentid = h.id
         // LEFT JOIN person p ON p.id = h2.id
@@ -2847,6 +2858,11 @@ public class TestSQLBackend extends SQLBackendTestCase {
                 QueryFilter.EMPTY);
         assertEquals(2, it.size()); // two uncorrelated stars
         it.close();
+
+        // alternate xpath syntax
+        clause = "tst:friends/item[*]/firstname = 'John'";
+        res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
+        assertEquals(oneDoc, res.list);
 
         // hierarchy h
         // JOIN hierarchy h2 ON h2.parentid = h.id
@@ -2877,6 +2893,12 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals("Smith",
                 it.iterator().next().get("tst:friends/*1/lastname"));
         it.close();
+
+        // alternate xpath syntax
+        clause = "tst:friends/item[*1]/firstname = 'John'"
+                + " AND tst:friends/item[*1]/lastname = 'Smith'";
+        res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
+        assertEquals(oneDoc, res.list);
 
         /*
          * return complex prop with no complex WHERE clause
