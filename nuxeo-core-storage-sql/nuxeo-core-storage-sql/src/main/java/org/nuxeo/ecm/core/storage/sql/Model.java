@@ -654,6 +654,10 @@ public class Model {
             ModelProperty pi = schemaPropertyInfos.get(typeName).get(
                     propertyName);
             propertyInfoByPath.put(path, pi);
+            if (pi.propertyType.isArray()) {
+                // also add the propname/* path for array elements
+                propertyInfoByPath.put(path + "/*", pi);
+            }
         }
         done.remove(typeName);
     }
@@ -790,7 +794,7 @@ public class Model {
         return mergedPropertyInfos.get(propertyName);
     }
 
-    // return ModelProperty.NONE if legal prefix
+    /** returns {@link ModelProperty#NONE} if legal prefix */
     public ModelProperty getPathPropertyInfo(String xpath) {
         return allPathPropertyInfos.get(xpath);
     }

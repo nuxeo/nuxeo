@@ -2701,9 +2701,11 @@ public class TestSQLBackend extends SQLBackendTestCase {
         List<Serializable> oneDoc = Arrays.asList(docId);
         // tst:title = 'hello world'
         doc.setSimpleProperty("tst:title", "hello world");
-        // tst:subjects = ['aaa', 'bbb', 'ccc']
-        doc.setCollectionProperty("tst:subjects", new String[] { "aaa", "bbb",
-                "ccc" });
+        // tst:subjects = ['foo', 'bar', 'moo']
+        // tst:subjects/item[0] = 'foo'
+        // tst:subjects/0 = 'foo'
+        doc.setCollectionProperty("tst:subjects", new String[] { "foo", "bar",
+                "moo" });
 
         Node owner = session.addChildNode(doc, "tst:owner", null, "person",
                 true);
@@ -2743,6 +2745,8 @@ public class TestSQLBackend extends SQLBackendTestCase {
         String clause;
         PartialList<Serializable> res;
         IterableQueryResult it;
+        Set<String> set;
+        List<String> list;
 
         String FROM_WHERE = " FROM TestDoc WHERE ecm:isProxy = 0 AND ";
         String SELECT_WHERE = "SELECT *" + FROM_WHERE;
@@ -2761,7 +2765,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals("hello world", it.iterator().next().get("tst:title"));
         it.close();
 
-        clause = "tst:subjects = 'aaa'";
+        clause = "tst:subjects = 'foo'";
         res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
         assertEquals(oneDoc, res.list);
         it = session.queryAndFetch(SELECT_TITLE_WHERE + clause, "NXQL",
@@ -2915,7 +2919,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         it = session.queryAndFetch("SELECT tst:friends/*/lastname" + FROM_WHERE
                 + clause, "NXQL", QueryFilter.EMPTY);
         assertEquals(2, it.size());
-        Set<String> set = new HashSet<String>();
+        set = new HashSet<String>();
         for (Map<String, Serializable> map : it) {
             set.add((String) map.get("tst:friends/*/lastname"));
         }
@@ -2942,6 +2946,91 @@ public class TestSQLBackend extends SQLBackendTestCase {
         }
         assertEquals(Collections.singleton("John"), fn);
         assertEquals(new HashSet<String>(Arrays.asList("Lennon", "Smith")), ln);
+        it.close();
+
+        /*
+         * list elements
+         */
+
+        // hierarchy h
+        // JOIN tst_subjects s ON h.id = s.id // not LEFT JOIN
+        // WHERE s.pos = 0
+        // AND s.item = 'foo'
+        clause = "tst:subjects/0 = 'foo'";
+        res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
+        assertEquals(oneDoc, res.list);
+        clause = "tst:subjects/0 = 'bar'";
+        res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
+        assertEquals(0, res.list.size());
+
+        // SELECT s.item
+        // FROM hierarchy h
+        // JOIN tst_subjects s ON h.id = s.id // not LEFT JOIN
+        // WHERE s.pos = 0
+        // AND s.item = 'bar'
+        clause = "tst:subjects/0 = 'foo'";
+        res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
+        assertEquals(oneDoc, res.list);
+        it = session.queryAndFetch("SELECT tst:subjects/0" + FROM_WHERE
+                + clause, "NXQL", QueryFilter.EMPTY);
+        assertEquals(1, it.size());
+        assertEquals("foo", it.iterator().next().get("tst:subjects/0"));
+        it.close();
+
+        // SELECT s1.item
+        // FROM hierarchy h
+        // JOIN tst_subjects s0 ON h.id = s0.id // not LEFT JOIN
+        // JOIN tst_subjects s1 ON h.id = s1.id // not LEFT JOIN
+        // WHERE s0.pos = 0 AND s1.pos = 1
+        // AND s0.item = 'foo'
+        clause = "tst:subjects/0 = 'foo'";
+        res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
+        assertEquals(oneDoc, res.list);
+        it = session.queryAndFetch("SELECT tst:subjects/1" + FROM_WHERE
+                + clause, "NXQL", QueryFilter.EMPTY);
+        assertEquals(1, it.size());
+        assertEquals("bar", it.iterator().next().get("tst:subjects/1"));
+        it.close();
+
+        // SELECT s.item
+        // FROM hierarchy h
+        // LEFT JOIN tst_subjects s ON h.id = s.id
+        // WHERE s.item LIKE '%oo'
+        clause = "tst:subjects/*1 LIKE '%oo'";
+        res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
+        assertEquals(oneDoc, res.list);
+        it = session.queryAndFetch("SELECT tst:subjects/*1" + FROM_WHERE
+                + clause, "NXQL", QueryFilter.EMPTY);
+        assertEquals(2, it.size());
+        set = new HashSet<String>();
+        for (Map<String, Serializable> map : it) {
+            set.add((String) map.get("tst:subjects/*1"));
+        }
+        assertEquals(new HashSet<String>(Arrays.asList("foo", "moo")), set);
+        it.close();
+
+        // WHAT
+        clause = "tst:title = 'hello world'";
+        it = session.queryAndFetch("SELECT tst:subjects/*" + FROM_WHERE
+                + clause, "NXQL", QueryFilter.EMPTY);
+        assertEquals(3, it.size());
+        set = new HashSet<String>();
+        for (Map<String, Serializable> map : it) {
+            set.add((String) map.get("tst:subjects/*"));
+        }
+        assertEquals(new HashSet<String>(Arrays.asList("foo", "bar", "moo")), set);
+        it.close();
+
+        // ORDER BY
+        clause = "tst:title = 'hello world' ORDER BY tst:subjects/*1";
+        it = session.queryAndFetch("SELECT tst:subjects/*1" + FROM_WHERE
+                + clause, "NXQL", QueryFilter.EMPTY);
+        assertEquals(3, it.size());
+        list = new LinkedList<String>();
+        for (Map<String, Serializable> map : it) {
+            list.add((String) map.get("tst:subjects/*1"));
+        }
+        assertEquals(Arrays.asList("bar", "foo", "moo"), list);
         it.close();
     }
 

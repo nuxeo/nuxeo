@@ -354,7 +354,7 @@ public class NXQLQueryMaker implements QueryMaker {
                 }
             }
 
-            if (selectDocuments && whereBuilder.hierJoinCount > 0) {
+            if (selectDocuments && whereBuilder.needsDistinct) {
                 distinct = true;
             }
 
@@ -670,7 +670,7 @@ public class NXQLQueryMaker implements QueryMaker {
     private final static Pattern INDEX = Pattern.compile("\\d+|\\*|\\*\\d+");
 
     // digits or star or star followed by digits, then slash
-    private final static Pattern INDEX_SLASH = Pattern.compile("(\\d+|\\*|\\*\\d+)/");
+    private final static Pattern INDEX_SLASH = Pattern.compile("(?:\\d+|\\*|\\*\\d+)(/|$)");
 
     // non-canonical index syntax
     private final static Pattern NON_CANON_INDEX = Pattern.compile("[^/\\[\\]]+" // name
@@ -697,6 +697,17 @@ public class NXQLQueryMaker implements QueryMaker {
         } else {
             return NON_CANON_INDEX.matcher(xpath).replaceAll("$1");
         }
+    }
+
+    /**
+     * Turns the xpath into one where all indices have been replaced by *.
+     *
+     * @param xpath the xpath
+     * @return the simple xpath
+     */
+    public static String simpleXPath(String xpath) {
+        xpath = canonicalXPath(xpath);
+        return INDEX_SLASH.matcher(xpath).replaceAll("*$1");
     }
 
     /**
@@ -951,8 +962,7 @@ public class NXQLQueryMaker implements QueryMaker {
          * @throws QueryMakerException if the property doesn't exist
          */
         protected void checkProperty(String xpath) {
-            xpath = canonicalXPath(xpath);
-            String simple = INDEX_SLASH.matcher(xpath).replaceAll("*/");
+            String simple = simpleXPath(xpath);
             ModelProperty prop = model.getPathPropertyInfo(simple);
             if (prop == null || prop == ModelProperty.NONE) {
                 prop = model.getPathPropertyInfo(simple);
@@ -982,11 +992,18 @@ public class NXQLQueryMaker implements QueryMaker {
 
         public final Column column;
 
-        public final PropertyType propertyType;
+        public final boolean isArrayElement;
 
-        public ColumnInfo(Column column, PropertyType propertyType) {
+        public final boolean needsSubSelect;
+
+        public final boolean isBoolean;
+
+        public ColumnInfo(Column column, boolean isArrayElement,
+                PropertyType propertyType) {
             this.column = column;
-            this.propertyType = propertyType;
+            this.isArrayElement = isArrayElement;
+            this.needsSubSelect = !isArrayElement && propertyType.isArray();
+            this.isBoolean = propertyType == PropertyType.BOOLEAN;
         }
     }
 
@@ -1013,6 +1030,8 @@ public class NXQLQueryMaker implements QueryMaker {
 
         protected int fragJoinCount = 0;
 
+        protected boolean needsDistinct;
+
         // path prefix -> hier table to join,
         protected Map<String, Table> propertyHierTables = new HashMap<String, Table>();
 
@@ -1025,7 +1044,7 @@ public class NXQLQueryMaker implements QueryMaker {
 
         // internal fields
 
-        private boolean allowArray;
+        private boolean allowSubSelect;
 
         private boolean inSelect;
 
@@ -1041,20 +1060,17 @@ public class NXQLQueryMaker implements QueryMaker {
             this.isProxies = isProxies;
         }
 
-        public Column findColumn(String name, boolean allowArray,
+        public Column findColumn(String name, boolean allowSubSelect,
                 boolean inOrderBy) {
             Column column;
             if (name.startsWith(NXQL.ECM_PREFIX)) {
                 column = getSpecialColumn(name);
             } else {
                 ColumnInfo info = getColumnInfo(name); // may throw
-                if (info.propertyType.isArray()) {
-                    if (!allowArray) {
-                        String msg = inOrderBy ? "Cannot use collection %s in ORDER BY clause"
-                                : "Can only use collection %s with =, <>, IN or NOT IN clause";
-                        throw new QueryMakerException(String.format(msg, name));
-                    }
-                    // arrays are allowed when in a EXISTS subselect
+                if (info.needsSubSelect && !allowSubSelect) {
+                    String msg = inOrderBy ? "Cannot use collection %s in ORDER BY clause"
+                            : "Can only use collection %s with =, <>, IN or NOT IN clause";
+                    throw new QueryMakerException(String.format(msg, name));
                 }
                 column = info.column;
             }
@@ -1111,7 +1127,7 @@ public class NXQLQueryMaker implements QueryMaker {
             }
             if (table == null) {
                 table = getFragmentTable(dataHierTable, fragmentName,
-                        fragmentName, false);
+                        fragmentName, -1, false);
             }
             return table.getColumn(fragmentKey);
         }
@@ -1136,18 +1152,17 @@ public class NXQLQueryMaker implements QueryMaker {
             String simple = null; // simplified prefix to match model
             String lastContextKey = null; // prefix used as key for table to
                                           // join
-            String contextKey = null;
             String segment = null;
             ModelProperty prop = null;
             for (int i = 0; i < segments.length; i++) {
                 segment = segments[i];
                 simple = simple == null ? segment : simple + '/' + segment;
-                lastContextKey = contextKey;
-                contextKey = lastContextKey == null ? segment : lastContextKey
-                        + '/' + segment;
+                String contextKey = lastContextKey == null ? segment
+                        : lastContextKey + '/' + segment;
+                String contextKeySuffix = "";
                 int index = -1;
                 boolean star = false;
-                if (i < segments.length - 2) {
+                if (i < segments.length - 1) {
                     // check if we have a complex list index in the next
                     // position
                     String next = segments[i + 1];
@@ -1163,17 +1178,17 @@ public class NXQLQueryMaker implements QueryMaker {
                         i++;
                         simple += "/*";
                         if (star) {
-                            contextKey += "/*";
+                            contextKeySuffix = "/*";
                             if (index == -1) {
                                 // any
-                                contextKey += "-" + ++uniquePropIndex;
+                                contextKeySuffix = "-" + ++uniquePropIndex;
                             } else {
                                 // named
-                                contextKey += index;
+                                contextKeySuffix = String.valueOf(index);
                             }
                             index = -1;
                         } else {
-                            contextKey += "/" + index;
+                            contextKeySuffix = "/" + index;
                         }
                     }
                 }
@@ -1183,11 +1198,12 @@ public class NXQLQueryMaker implements QueryMaker {
                     throw new QueryMakerException("No such property: " + xpath);
                 }
                 if (i < segments.length - 1) {
-                    // intermediate segment
+                    // non-final segment
                     if (prop != ModelProperty.NONE) {
                         throw new QueryMakerException("No such property: "
                                 + xpath);
                     }
+                    contextKey += contextKeySuffix;
                     Table table = propertyHierTables.get(contextKey);
                     if (table == null) {
                         // none existing
@@ -1210,6 +1226,7 @@ public class NXQLQueryMaker implements QueryMaker {
                                     Long.valueOf(index));
                         }
                         joins.add(join);
+                        needsDistinct = true;
                     }
                     contextHier = table;
                 } else {
@@ -1218,13 +1235,22 @@ public class NXQLQueryMaker implements QueryMaker {
                         throw new QueryMakerException("No such property: "
                                 + xpath);
                     }
+                    boolean isArrayElement = !contextKeySuffix.isEmpty();
+                    // use fragment name, not segment, for table context key
                     contextKey = lastContextKey == null ? prop.fragmentName
                             : lastContextKey + '/' + prop.fragmentName;
+                    contextKey += contextKeySuffix;
+                    boolean skipJoin = !isArrayElement
+                            && prop.propertyType.isArray();
+                    if (isArrayElement) {
+                        needsDistinct = true;
+                    }
                     Table table = getFragmentTable(contextHier, contextKey,
-                            prop.fragmentName, prop.propertyType.isArray());
+                            prop.fragmentName, index, skipJoin);
                     return new ColumnInfo(table.getColumn(prop.fragmentKey),
-                            prop.propertyType);
+                            isArrayElement, prop.propertyType);
                 }
+                lastContextKey = contextKey;
             }
             return null; // not reached
         }
@@ -1234,20 +1260,27 @@ public class NXQLQueryMaker implements QueryMaker {
          * and maybe adds a join if one is not already done.
          */
         protected Table getFragmentTable(Table currentHier, String contextKey,
-                String fragmentName, boolean isArray) {
+                String fragmentName, int index, boolean skipJoin) {
             Table table = propertyFragmentTables.get(contextKey);
             if (table == null) {
                 Table baseTable = database.getTable(fragmentName);
                 String alias = TABLE_FRAG_ALIAS + ++fragJoinCount;
                 table = new TableAlias(baseTable, alias);
                 propertyFragmentTables.put(contextKey, table);
-                if (!isArray) {
+                if (!skipJoin) {
                     String on1 = currentHier.getColumn(model.MAIN_KEY).getFullQuotedName();
                     String on2 = table.getColumn(model.MAIN_KEY).getFullQuotedName();
-                    Join join = new Join(Join.LEFT, baseTable.getQuotedName(),
+                    int kind = index == -1 ? Join.LEFT : Join.INNER;
+                    Join join = new Join(kind, baseTable.getQuotedName(),
                             alias, null, on1, on2);
+                    if (index != -1) {
+                        String posCol = table.getColumn(
+                                model.HIER_CHILD_POS_KEY).getFullQuotedName();
+                        join.addWhereClause(posCol + " = ?",
+                                Long.valueOf(index));
+                    }
                     joins.add(join);
-                } // else no global join, EXISTS references the table
+                }
             }
             return table;
         }
@@ -1315,7 +1348,7 @@ public class NXQLQueryMaker implements QueryMaker {
                     && name != null && !name.startsWith(NXQL.ECM_PREFIX)) {
                 ColumnInfo info = getColumnInfo(name);
                 // node.lvalue must not be accepted from now on
-                if (info.propertyType.isArray()) {
+                if (info.needsSubSelect) {
                     // use EXISTS with subselect clause
                     boolean direct = op == Operator.EQ || op == Operator.IN
                             || op == Operator.LIKE || op == Operator.ILIKE;
@@ -1328,7 +1361,7 @@ public class NXQLQueryMaker implements QueryMaker {
                         buf.append("NOT ");
                     }
                     generateExistsStart(buf, info.column.getTable());
-                    allowArray = true;
+                    allowSubSelect = true;
                     if (directOp == Operator.ILIKE) {
                         visitExpressionIlike(info.column, directOp, node.rvalue);
                     } else {
@@ -1336,13 +1369,13 @@ public class NXQLQueryMaker implements QueryMaker {
                         directOp.accept(this);
                         node.rvalue.accept(this);
                     }
-                    allowArray = false;
+                    allowSubSelect = false;
                     generateExistsEnd(buf);
                 } else {
                     // boolean literals have to be translated according the
                     // database dialect
                     Operand rvalue = node.rvalue;
-                    if (info.propertyType == PropertyType.BOOLEAN) {
+                    if (info.isBoolean) {
                         if (!(node.rvalue instanceof IntegerLiteral)) {
                             throw new QueryMakerException(
                                     "Boolean expressions require literal 0 or 1 as right argument");
@@ -1443,8 +1476,7 @@ public class NXQLQueryMaker implements QueryMaker {
                 String path) {
             String name = ((Reference) node.lvalue).name;
             ColumnInfo info = getColumnInfo(name); // may throw
-            boolean isArray = info.propertyType.isArray();
-            if (isArray) {
+            if (info.needsSubSelect) {
                 // use EXISTS with subselect clause
                 generateExistsStart(buf, info.column.getTable());
             }
@@ -1458,7 +1490,7 @@ public class NXQLQueryMaker implements QueryMaker {
             // TODO escape % chars...
             visitStringLiteral(path + PATH_SEP + '%');
             buf.append(')');
-            if (isArray) {
+            if (info.needsSubSelect) {
                 generateExistsEnd(buf);
             }
         }
@@ -1748,7 +1780,7 @@ public class NXQLQueryMaker implements QueryMaker {
         }
 
         protected void visitReference(String name) {
-            Column column = findColumn(name, allowArray, inOrderBy);
+            Column column = findColumn(name, allowSubSelect, inOrderBy);
             if (inSelect) {
                 whatColumns.add(column);
                 whatKeys.add(name);
