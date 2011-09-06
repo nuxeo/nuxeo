@@ -185,6 +185,9 @@ public class EventBundleTransactionHandler {
      * @since 5.4.3
      */
     public void setTransactionRollbackOnly() {
+        if (disabled || tx == null) {
+            return;
+        }
         try {
             tx.setRollbackOnly();
         } catch (Exception e) {
