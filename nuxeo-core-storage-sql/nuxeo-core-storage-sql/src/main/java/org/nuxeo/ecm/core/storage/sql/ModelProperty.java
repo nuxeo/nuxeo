@@ -13,9 +13,12 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 /**
- * Model of a property.
+ * Model of a property (simple or array) of a {@link Node}.
  */
 public class ModelProperty {
+
+    public static final ModelProperty NONE = new ModelProperty(
+            PropertyType.STRING, "", "", false);
 
     public final PropertyType propertyType;
 

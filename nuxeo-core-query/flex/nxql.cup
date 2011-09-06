@@ -194,12 +194,12 @@ order_by_list ::= order_by_expr:e
                      {: l.add(e); RESULT = l; :}
                 ;
 
-order_by_expr ::= IDENTIFIER:name
-                     {: RESULT = new OrderByExpr(new Reference(name), false); :}
-                | IDENTIFIER:name ASC
-                     {: RESULT = new OrderByExpr(new Reference(name), false); :}
-                | IDENTIFIER:name DESC
-                     {: RESULT = new OrderByExpr(new Reference(name), true); :}
+order_by_expr ::= reference:ref
+                     {: RESULT = new OrderByExpr(ref, false); :}
+                | reference:ref ASC
+                     {: RESULT = new OrderByExpr(ref, false); :}
+                | reference:ref DESC
+                     {: RESULT = new OrderByExpr(ref, true); :}
                 ;
 
 
@@ -234,42 +234,36 @@ predicate ::= predicate:l AND predicate:r
             | NOT predicate:p
                 {: RESULT = new Predicate(p, Operator.NOT, null); :}
 
-            | IDENTIFIER:name IN LPARA literal_list:list RPARA
-                {: RESULT = new Predicate(new Reference(name), Operator.IN, list); :}
-            | IDENTIFIER:name NOT IN LPARA literal_list:list RPARA
-                {: RESULT = new Predicate(new Reference(name), Operator.NOTIN, list); :}
-            | IDENTIFIER:name BETWEEN literal:min AND literal:max
+            | reference:ref IN LPARA literal_list:list RPARA
+                {: RESULT = new Predicate(ref, Operator.IN, list); :}
+            | reference:ref NOT IN LPARA literal_list:list RPARA
+                {: RESULT = new Predicate(ref, Operator.NOTIN, list); :}
+            | reference:ref BETWEEN literal:min AND literal:max
                 {:
                 LiteralList range = new LiteralList();
                 range.add(min); range.add(max);
-                RESULT = new Predicate(new Reference(name), Operator.BETWEEN, range);
+                RESULT = new Predicate(ref, Operator.BETWEEN, range);
                 :}
-            | IDENTIFIER:name NOT BETWEEN literal:min AND literal:max
+            | reference:ref NOT BETWEEN literal:min AND literal:max
                 {:
                 LiteralList range = new LiteralList();
                 range.add(min); range.add(max);
-                RESULT = new Predicate(new Reference(name), Operator.NOTBETWEEN, range);
+                RESULT = new Predicate(ref, Operator.NOTBETWEEN, range);
                 :}
-            | IDENTIFIER:name LIKE STRING:s
-                {: RESULT = new Predicate(new Reference(name), Operator.LIKE, new StringLiteral(s)); :}
-            | IDENTIFIER:name ILIKE STRING:s
-                {: RESULT = new Predicate(new Reference(name), Operator.ILIKE, new StringLiteral(s)); :}
-            | IDENTIFIER:name NOT LIKE STRING:s
-                {: RESULT = new Predicate(new Reference(name), Operator.NOTLIKE, new StringLiteral(s)); :}
-            | IDENTIFIER:name NOT ILIKE STRING:s
-                {: RESULT = new Predicate(new Reference(name), Operator.NOTILIKE, new StringLiteral(s)); :}
-            | IDENTIFIER:name IS NULL
-                {: RESULT = new Predicate(new Reference(name), Operator.ISNULL, null); :}
-            | IDENTIFIER:name IS NOT NULL
-                {: RESULT = new Predicate(new Reference(name), Operator.ISNOTNULL, null); :}
-
-            /* -- removed as it is replaced by ecm:path
-            | LOCATION STARTSWITH STRING:s
-                {: RESULT = new Predicate(new StringLiteral(s), Operator.STARTSWITH, null); :}
-            */
-
-            | IDENTIFIER:name STARTSWITH STRING:s
-                {: RESULT = new Predicate(new Reference(name), Operator.STARTSWITH, new StringLiteral(s)); :}
+            | reference:ref LIKE STRING:s
+                {: RESULT = new Predicate(ref, Operator.LIKE, new StringLiteral(s)); :}
+            | reference:ref ILIKE STRING:s
+                {: RESULT = new Predicate(ref, Operator.ILIKE, new StringLiteral(s)); :}
+            | reference:ref NOT LIKE STRING:s
+                {: RESULT = new Predicate(ref, Operator.NOTLIKE, new StringLiteral(s)); :}
+            | reference:ref NOT ILIKE STRING:s
+                {: RESULT = new Predicate(ref, Operator.NOTILIKE, new StringLiteral(s)); :}
+            | reference:ref IS NULL
+                {: RESULT = new Predicate(ref, Operator.ISNULL, null); :}
+            | reference:ref IS NOT NULL
+                {: RESULT = new Predicate(ref, Operator.ISNOTNULL, null); :}
+            | reference:ref STARTSWITH STRING:s
+                {: RESULT = new Predicate(ref, Operator.STARTSWITH, new StringLiteral(s)); :}
             ;
 
 predicate_operand ::= operand:o
