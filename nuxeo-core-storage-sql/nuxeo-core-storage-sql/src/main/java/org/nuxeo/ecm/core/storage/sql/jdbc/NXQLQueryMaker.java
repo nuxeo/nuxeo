@@ -1088,6 +1088,8 @@ public class NXQLQueryMaker implements QueryMaker {
 
         public WhereBuilder(boolean isProxies) {
             this.isProxies = isProxies;
+            propertyFragmentTables = new HashMap<String, Table>();
+            fragJoinCount = 0;
         }
 
         public Column findColumn(String name, boolean allowSubSelect,
