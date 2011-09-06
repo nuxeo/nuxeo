@@ -27,6 +27,7 @@ import org.nuxeo.ecm.core.storage.sql.Session.PathResolver;
 import org.nuxeo.ecm.core.storage.sql.jdbc.NXQLQueryMaker;
 import org.nuxeo.ecm.core.storage.sql.jdbc.SQLInfo;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
+import org.nuxeo.ecm.core.storage.sql.jdbc.db.Join;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Select;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
 
@@ -56,7 +57,7 @@ public class TagQueryMaker extends NXQLQueryMaker {
 
     protected String type;
 
-    protected int tagJoinIndex;
+    protected Table relationTable;
 
     protected Column firstSelectedColumn;
 
@@ -76,7 +77,6 @@ public class TagQueryMaker extends NXQLQueryMaker {
             Object... params) throws StorageException {
         if (query.startsWith(TAG_IS_TARGET)) {
             type = TAG_IS_TARGET;
-            query = query.substring(type.length());
         } else if (query.startsWith(COUNT_SOURCE)) {
             type = COUNT_SOURCE;
             // SELECT "TAG"."LABEL" AS "_C1",
@@ -89,30 +89,37 @@ public class TagQueryMaker extends NXQLQueryMaker {
             // AND ("RELATION"."SOURCE" = '47c4c0f7...') -- or IN ()
             // AND ("DUBLINCORE"."CREATOR" = 'Administrator')
             // GROUP BY "_C1"
-            query = query.substring(type.length());
         } else {
             throw new QueryMakerException("Bad query: " + query);
         }
+        query = query.substring(type.length());
         return super.buildQuery(sqlInfo, model, pathResolver, query,
                 queryFilter, params);
     }
 
+    /**
+     * Adds an initial join on the Relation table, and records it.
+     */
     @Override
-    protected void addDataJoin(Table table, String joinId) {
-        if (table.getKey().equals(SCHEMA_TAG)) {
-            joinId = database.getTable(SCHEMA_RELATION).getColumn(
-                    PROPERTY_TARGET).getFullQuotedName();
-            tagJoinIndex = joins.size();
-        }
-        // add as INNER JOIN, not LEFT JOIN
-        joins.add(formatJoin(table, joinId));
+    protected void fixInitialJoins() {
+        relationTable = getFragmentTable(dataHierTable, SCHEMA_RELATION,
+                SCHEMA_RELATION, -1, false);
     }
 
+    /**
+     * Patches the Tag join to join on the relation target instead of the
+     * hierarchy id.
+     */
     @Override
-    protected void fixJoins() {
-        // put patched tag join last because it depends on the relation table
-        // which is mentioned in other joins
-        joins.add(joins.remove(tagJoinIndex));
+    protected void addJoin(int kind, String alias, Table table, String column,
+            Table contextTable, String contextColumn, String name, int index) {
+        if (table.getKey().equals(SCHEMA_TAG)) {
+            kind = Join.INNER;
+            contextTable = relationTable;
+            contextColumn = PROPERTY_TARGET;
+        }
+        super.addJoin(kind, alias, table, column, contextTable, contextColumn,
+                name, index);
     }
 
     @Override
