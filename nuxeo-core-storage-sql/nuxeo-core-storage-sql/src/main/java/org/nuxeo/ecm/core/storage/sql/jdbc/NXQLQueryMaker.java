@@ -192,6 +192,11 @@ public class NXQLQueryMaker implements QueryMaker {
 
     protected List<Serializable> whereParams;
 
+    // fragmentName or prefix/fragmentName -> fragment table to join
+    protected Map<String, Table> propertyFragmentTables = new HashMap<String, Table>();
+
+    protected int fragJoinCount = 0;
+
     @Override
     public String getName() {
         return "NXQL";
@@ -306,14 +311,15 @@ public class NXQLQueryMaker implements QueryMaker {
                 String proxiestargetid = proxies.getColumn(
                         model.PROXY_TARGET_KEY).getFullQuotedName();
                 // join all that
-                joins.add(new Join(Join.INNER, proxies.getQuotedName(), null,
-                        null, hierId, proxiesid));
-                joins.add(new Join(Join.INNER, dataHierTable.getQuotedName(),
-                        null, null, dataHierId, proxiestargetid));
+                addJoin(Join.INNER, null, proxies, model.MAIN_KEY, hierTable,
+                        model.MAIN_KEY, null, -1);
+                addJoin(Join.INNER, null, dataHierTable, model.MAIN_KEY,
+                        proxies, model.PROXY_TARGET_KEY, null, -1);
                 break;
             default:
                 throw new AssertionError(docKind);
             }
+            fixInitialJoins();
 
             /*
              * Parse the WHERE clause from the original query, and deduce from
@@ -603,17 +609,46 @@ public class NXQLQueryMaker implements QueryMaker {
     }
 
     // overridden by specialized query makers that need to tweak some joins
-    protected void addDataJoin(Table table, String joinId) {
-        joins.add(formatJoin(table, joinId));
+    protected void addJoin(int kind, String alias, Table table, String column,
+            Table contextTable, String contextColumn, String name, int index) {
+        String on1 = contextTable.getColumn(contextColumn).getFullQuotedName();
+        String on2 = table.getColumn(column).getFullQuotedName();
+        Join join = new Join(kind, table.getRealTable().getQuotedName(), alias,
+                null, on1, on2);
+        if (name != null) {
+            String nameCol = table.getColumn(model.HIER_CHILD_NAME_KEY).getFullQuotedName();
+            join.addWhereClause(nameCol + " = ?", name);
+        }
+        if (index != -1) {
+            String posCol = table.getColumn(model.HIER_CHILD_POS_KEY).getFullQuotedName();
+            join.addWhereClause(posCol + " = ?", Long.valueOf(index));
+        }
+        joins.add(join);
     }
 
-    protected Join formatJoin(Table table, String joinId) {
-        return new Join(Join.LEFT, table.getQuotedName(), null, null, joinId,
-                table.getColumn(model.MAIN_KEY).getFullQuotedName());
+    /**
+     * Gets the table for the given fragmentName in the given contextKey, and
+     * maybe adds a join if one is not already done.
+     */
+    protected Table getFragmentTable(Table contextHier, String contextKey,
+            String fragmentName, int index, boolean skipJoin) {
+        Table table = propertyFragmentTables.get(contextKey);
+        if (table == null) {
+            Table baseTable = database.getTable(fragmentName);
+            String alias = TABLE_FRAG_ALIAS + ++fragJoinCount;
+            table = new TableAlias(baseTable, alias);
+            propertyFragmentTables.put(contextKey, table);
+            if (!skipJoin) {
+                int kind = index == -1 ? Join.LEFT : Join.INNER;
+                addJoin(kind, alias, table, model.MAIN_KEY, contextHier,
+                        model.MAIN_KEY, null, index);
+            }
+        }
+        return table;
     }
 
     // overridden by specialized query makers that need to tweak some joins
-    protected void fixJoins() {
+    protected void fixInitialJoins() {
         // to be overridden
     }
 
@@ -1028,15 +1063,10 @@ public class NXQLQueryMaker implements QueryMaker {
 
         protected int hierJoinCount = 0;
 
-        protected int fragJoinCount = 0;
-
         protected boolean needsDistinct;
 
         // path prefix -> hier table to join,
         protected Map<String, Table> propertyHierTables = new HashMap<String, Table>();
-
-        // fragmentName or prefix/fragmentName -> fragment table to join
-        protected Map<String, Table> propertyFragmentTables = new HashMap<String, Table>();
 
         private final boolean isProxies;
 
@@ -1142,8 +1172,6 @@ public class NXQLQueryMaker implements QueryMaker {
          *
          * @throws QueryMakerException if the property doesn't exist
          */
-        // TODO addDataJoin(table, dataHierId);
-        // TODO fixJoins();
         protected ColumnInfo getColumnInfo(String xpath) {
             Table hier = dataHierTable;
             Table contextHier = hier;
@@ -1211,21 +1239,9 @@ public class NXQLQueryMaker implements QueryMaker {
                         String alias = TABLE_HIER_ALIAS + ++hierJoinCount;
                         table = new TableAlias(hier, alias);
                         propertyHierTables.put(contextKey, table);
-                        String on1 = table.getColumn(model.HIER_PARENT_KEY).getFullQuotedName();
-                        String on2 = contextHier.getColumn(model.MAIN_KEY).getFullQuotedName();
-                        Join join = new Join(Join.INNER, hier.getQuotedName(),
-                                alias, null, on1, on2);
-                        String nameCol = table.getColumn(
-                                model.HIER_CHILD_NAME_KEY).getFullQuotedName();
-                        String name = segment;
-                        join.addWhereClause(nameCol + " = ?", name);
-                        if (index != -1) {
-                            String posCol = table.getColumn(
-                                    model.HIER_CHILD_POS_KEY).getFullQuotedName();
-                            join.addWhereClause(posCol + " = ?",
-                                    Long.valueOf(index));
-                        }
-                        joins.add(join);
+                        addJoin(Join.INNER, alias, table,
+                                model.HIER_PARENT_KEY, contextHier,
+                                model.MAIN_KEY, segment, index);
                         needsDistinct = true;
                     }
                     contextHier = table;
@@ -1253,36 +1269,6 @@ public class NXQLQueryMaker implements QueryMaker {
                 lastContextKey = contextKey;
             }
             return null; // not reached
-        }
-
-        /**
-         * Gets the table for the given fragmentName in the given contextKey,
-         * and maybe adds a join if one is not already done.
-         */
-        protected Table getFragmentTable(Table currentHier, String contextKey,
-                String fragmentName, int index, boolean skipJoin) {
-            Table table = propertyFragmentTables.get(contextKey);
-            if (table == null) {
-                Table baseTable = database.getTable(fragmentName);
-                String alias = TABLE_FRAG_ALIAS + ++fragJoinCount;
-                table = new TableAlias(baseTable, alias);
-                propertyFragmentTables.put(contextKey, table);
-                if (!skipJoin) {
-                    String on1 = currentHier.getColumn(model.MAIN_KEY).getFullQuotedName();
-                    String on2 = table.getColumn(model.MAIN_KEY).getFullQuotedName();
-                    int kind = index == -1 ? Join.LEFT : Join.INNER;
-                    Join join = new Join(kind, baseTable.getQuotedName(),
-                            alias, null, on1, on2);
-                    if (index != -1) {
-                        String posCol = table.getColumn(
-                                model.HIER_CHILD_POS_KEY).getFullQuotedName();
-                        join.addWhereClause(posCol + " = ?",
-                                Long.valueOf(index));
-                    }
-                    joins.add(join);
-                }
-            }
-            return table;
         }
 
         protected Set<String> getStringLiterals(LiteralList list)

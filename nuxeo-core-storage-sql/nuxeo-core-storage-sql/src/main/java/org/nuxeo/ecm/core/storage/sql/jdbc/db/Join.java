@@ -125,4 +125,44 @@ public class Join implements Serializable, Comparable<Join> {
         }
     }
 
+    @Override
+    public String toString() {
+        String k;
+        switch (kind) {
+        case INNER:
+            k = "INNER";
+            break;
+        case LEFT:
+            k = "LEFT";
+            break;
+        case RIGHT:
+            k = "RIGHT";
+            break;
+        case IMPLICIT:
+            k = "IMPLICIT";
+            break;
+        default:
+            throw new AssertionError();
+        }
+        StringBuilder buf = new StringBuilder();
+        buf.append("<");
+        buf.append(k);
+        buf.append(" JOIN ");
+        buf.append(table);
+        if (tableAlias != null) {
+            buf.append(" ");
+            buf.append(tableAlias);
+        }
+        buf.append(" ON ");
+        buf.append(getClause());
+        if (!whereClauses.isEmpty()) {
+            buf.append(" WHERE ");
+            buf.append(whereClauses);
+            buf.append(" % ");
+            buf.append(whereParams);
+        }
+        buf.append(">");
+        return buf.toString();
+    }
+
 }
