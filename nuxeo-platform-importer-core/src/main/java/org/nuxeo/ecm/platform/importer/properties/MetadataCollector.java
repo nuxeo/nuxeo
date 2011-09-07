@@ -22,14 +22,9 @@ package org.nuxeo.ecm.platform.importer.properties;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.Serializable;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
-import java.util.Date;
 import java.util.Enumeration;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -128,14 +123,6 @@ public class MetadataCollector {
                     lstprop.add(parseFromString(name, part));
                 }
                 prop = (Serializable) lstprop;
-            } else if (value.contains("/")) {
-                try {
-                    Date date = new SimpleDateFormat(DATE_FORMAT).parse(value);
-                    Calendar cal = new GregorianCalendar();
-                    cal.setTime(date);
-                    prop = cal;
-                } catch (ParseException e) {
-                }
             }
         }
         return prop;

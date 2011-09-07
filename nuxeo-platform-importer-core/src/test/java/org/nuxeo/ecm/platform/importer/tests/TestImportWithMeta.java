@@ -20,6 +20,8 @@
 package org.nuxeo.ecm.platform.importer.tests;
 
 import java.io.File;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -74,6 +76,10 @@ public class TestImportWithMeta extends SQLRepositoryTestCase {
         assertEquals("subject2", subjects[1]);
         assertTrue(subjects.length == 2);
 
+        assertEquals(
+                2008,
+                ((Calendar) (doc1.getPropertyValue("dc:issued"))).get(Calendar.YEAR));
+
         DocumentModel doc2 = session.getDocument(new PathRef(targetPath
                 + "import-src/branch1/hello-pdf"));
         assertEquals("src1", doc2.getPropertyValue("dc:source").toString());
@@ -111,5 +117,4 @@ public class TestImportWithMeta extends SQLRepositoryTestCase {
         assertTrue(subjects.length == 2);
 
     }
-
 }
