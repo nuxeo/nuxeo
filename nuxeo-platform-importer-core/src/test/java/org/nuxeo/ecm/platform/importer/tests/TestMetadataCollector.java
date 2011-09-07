@@ -70,9 +70,7 @@ public class TestMetadataCollector extends TestCase {
         assertEquals("value0", mc.getProperty("/", "str0"));
         assertEquals("value1", mc.getProperty("/", "str"));
         assertEquals("1577", mc.getProperty("/", "num"));
-        assertEquals(
-                2007,
-                ((GregorianCalendar) mc.getProperty("/", "date")).get(Calendar.YEAR));
+        assertEquals("12/06/2007", mc.getProperty("/", "date"));
         assertNull(mc.getProperty("/", "doesnotexist"));
         List<Long> list = (List<Long>) mc.getProperty("/", "lst");
         assertNotNull(list);
@@ -82,8 +80,7 @@ public class TestMetadataCollector extends TestCase {
         assertEquals("value2", mc.getProperty("/node21/", "str"));
         assertEquals("value22", mc.getProperty("/node21/", "str2"));
         assertEquals("2008", mc.getProperty("/node21/", "num"));
-        assertEquals(2008, ((GregorianCalendar) mc.getProperty("/node21/",
-                "date")).get(Calendar.YEAR));
+        assertEquals("01/07/2008", mc.getProperty("/node21/", "date"));
         assertNull(mc.getProperty("/node21/", "doesnotexist"));
         list = (List<Long>) mc.getProperty("/node21", "lst");
         assertNotNull(list);
@@ -93,8 +90,7 @@ public class TestMetadataCollector extends TestCase {
         assertEquals("value2", mc.getProperty("/node21", "str"));
         assertEquals("value22", mc.getProperty("/node21", "str2"));
         assertEquals("2008", mc.getProperty("/node21", "num"));
-        assertEquals(2008, ((GregorianCalendar) mc.getProperty("/node21",
-                "date")).get(Calendar.YEAR));
+        assertEquals("01/07/2008", mc.getProperty("/node21", "date"));
         assertNull(mc.getProperty("/node21", "doesnotexist"));
 
         assertEquals("value0", mc.getProperty("/node21/node31", "str0"));

@@ -22,6 +22,8 @@ import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
 import java.io.Serializable;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -52,6 +54,8 @@ import com.google.inject.Inject;
 @Deploy( { "org.nuxeo.ecm.core.api" })
 public class TestMetadataFile {
 
+    public static String DATE_FORMAT = "MM/dd/yyyy";
+
     @Inject
     protected CoreSession session;
 
@@ -76,7 +80,7 @@ public class TestMetadataFile {
         assertEquals("testTitle", properties.get("dc:title"));
         assertEquals("testDescription", properties.get("dc:description"));
         assertEquals("testCoverage", properties.get("dc:coverage"));
-        Date date = ((Calendar) properties.get("dc:expired")).getTime();
+        Date date = ((Calendar) formatDate((String) properties.get("dc:expired"))).getTime();
         assertEquals(MetadataFile.DATE_FORMAT.format(calendar.getTime()),
                 MetadataFile.DATE_FORMAT.format(date));
         assertEquals("testIcon", properties.get("common:icon"));
@@ -105,7 +109,7 @@ public class TestMetadataFile {
         assertEquals("testTitle", properties.get("dc:title"));
         assertEquals("testDescription", properties.get("dc:description"));
         assertEquals("testCoverage", properties.get("dc:coverage"));
-        Date date = ((Calendar) properties.get("dc:expired")).getTime();
+        Date date = ((Calendar) formatDate((String) properties.get("dc:expired"))).getTime();
         assertEquals(MetadataFile.DATE_FORMAT.format(calendar.getTime()),
                 MetadataFile.DATE_FORMAT.format(date));
     }
@@ -114,8 +118,9 @@ public class TestMetadataFile {
     public void generateOneSchemaWithPropertiesMetadataFile() throws Exception {
         DocumentModel testFile = createTestFile();
 
-        MetadataFile mdFile = MetadataFile.createFromSchemasAndProperties(testFile,
-                Arrays.asList(new String[] { "common" }), Arrays.asList(new String[] { "dc:title" }));
+        MetadataFile mdFile = MetadataFile.createFromSchemasAndProperties(
+                testFile, Arrays.asList(new String[] { "common" }),
+                Arrays.asList(new String[] { "dc:title" }));
 
         File file = File.createTempFile("mdf", null);
         mdFile.writeTo(file);
@@ -138,7 +143,8 @@ public class TestMetadataFile {
         DocumentModel testFile = createTestFile();
 
         MetadataFile mdFile = MetadataFile.createFromProperties(testFile,
-                Arrays.asList(new String[] { "dc:title", "common:icon", "dc:description" , "common:size" }));
+                Arrays.asList(new String[] { "dc:title", "common:icon",
+                        "dc:description", "common:size" }));
 
         File file = File.createTempFile("mdf", null);
         mdFile.writeTo(file);
@@ -157,8 +163,8 @@ public class TestMetadataFile {
     }
 
     protected DocumentModel createTestFile() throws ClientException {
-        DocumentModel file = session.createDocumentModel("/",
-                "testfile", "File");
+        DocumentModel file = session.createDocumentModel("/", "testfile",
+                "File");
         file.setPropertyValue("dc:title", "testTitle");
         file.setPropertyValue("dc:description", "testDescription");
         file.setPropertyValue("dc:coverage", "testCoverage");
@@ -171,6 +177,13 @@ public class TestMetadataFile {
         session.save();
 
         return file;
+    }
+
+    protected Calendar formatDate(String value) throws ParseException {
+        Date date = new SimpleDateFormat(DATE_FORMAT).parse(value);
+        Calendar cal = new GregorianCalendar();
+        cal.setTime(date);
+        return cal;
     }
 
 }
