@@ -63,7 +63,7 @@ public class DocumentRouteAdapterFactory implements DocumentAdapterFactory {
                 return new DocumentRouteStepsContainerImpl(doc,
                         new ParallelRunner());
             }
-        } else if (DocumentRoutingConstants.CONDITIONAL_STEP_DOCUMENT_TYPE.equalsIgnoreCase(type)) {
+        } else if (doc.hasFacet(DocumentRoutingConstants.CONDITIONAL_STEP_FACET)) {
             return new DocumentRouteStepsContainerImpl(doc,
                     new ConditionalRunner());
         }

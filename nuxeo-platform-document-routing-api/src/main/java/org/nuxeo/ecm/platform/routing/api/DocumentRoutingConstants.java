@@ -18,7 +18,7 @@ package org.nuxeo.ecm.platform.routing.api;
 
 /**
  * @author arussel
- *
+ * 
  */
 public interface DocumentRoutingConstants {
 
@@ -42,7 +42,7 @@ public interface DocumentRoutingConstants {
 
     String STEP_FOLDER_DOCUMENT_TYPE = "StepFolder";
 
-    String CONDITIONAL_STEP_DOCUMENT_TYPE = "ConditionalStepFolder";
+    String CONDITIONAL_STEP_FACET = "ConditionalStepFolder";
 
     String TITLE_PROPERTY_NAME = "dc:title";
 

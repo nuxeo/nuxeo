@@ -48,7 +48,7 @@ public class ConditionalFolderUpdateRunner {
                     // to be run next
                     DocumentModel condFolder = session.getDocument(session.getParentDocumentRef(new IdRef(
                             stepDocId)));
-                    if (!DocumentRoutingConstants.CONDITIONAL_STEP_DOCUMENT_TYPE.equals(condFolder.getType())) {
+                    if (!condFolder.hasFacet(DocumentRoutingConstants.CONDITIONAL_STEP_FACET)) {
                         return;
                     }
                     condFolder.setPropertyValue(

@@ -23,6 +23,11 @@
     <facet name="CommentsInfoHolder">
       <schema name="info_comments" />
     </facet>
+    
+    <facet name="ConditionalStepFolder">
+      <schema name="conditional_step_folder" />
+    </facet>
+    
 
     <doctype name="DocumentRouteInstancesRoot" extends="Folder">
       <subtypes>
@@ -63,7 +68,7 @@
     </doctype>
 
     <doctype name="ConditionalStepFolder" extends="StepFolder">
-      <schema name="conditional_step_folder" />
+      <facet name="ConditionalStepFolder" />
       <subtypes>
         <type>StepFolder</type>
         <type>DocumentRouteStep</type>
