@@ -154,6 +154,8 @@ public class NXQLQueryMaker implements QueryMaker {
 
     protected static final String WITH_ALIAS_PREFIX = "_W";
 
+    protected static final String READ_ACL_ALIAS = "_RACL";
+
     /**
      * These mixins never match an instance mixin when used in a clause
      * ecm:mixinType = 'foo'
@@ -459,11 +461,14 @@ public class NXQLQueryMaker implements QueryMaker {
                 String id = dialect.supportsWith() ? mainAlias : hierId;
                 if (dialect.supportsReadAcl()) {
                     /* optimized read acl */
-                    securityClause = dialect.getReadAclsCheckSql("r.acl_id");
+                    String racl = dialect.openQuote() + READ_ACL_ALIAS
+                            + dialect.closeQuote();
+                    securityClause = dialect.getReadAclsCheckSql(racl
+                            + ".acl_id");
                     securityParams.add(principals);
                     securityJoin = new Join(Join.INNER,
-                            model.HIER_READ_ACL_TABLE_NAME, "r", null, id,
-                            "r.id");
+                            model.HIER_READ_ACL_TABLE_NAME, READ_ACL_ALIAS,
+                            null, id, racl + ".id");
                 } else {
                     securityClause = dialect.getSecurityCheckSql(id);
                     securityParams.add(principals);
