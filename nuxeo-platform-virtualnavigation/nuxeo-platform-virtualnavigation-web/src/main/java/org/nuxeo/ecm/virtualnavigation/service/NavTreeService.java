@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.virtualnavigation.action.NavTreeDescriptor;
+import org.nuxeo.ecm.webapp.directory.DirectoryTreeDescriptor;
 import org.nuxeo.ecm.webapp.directory.DirectoryTreeService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -63,8 +64,8 @@ public class NavTreeService extends DefaultComponent {
         List<String> treeNames = directoryTreeService.getNavigationDirectoryTrees();
         List<NavTreeDescriptor> trees = new ArrayList<NavTreeDescriptor>();
         for (String dTreeName : treeNames) {
-            trees.add(new NavTreeDescriptor(dTreeName, "label." + dTreeName,
-                    true));
+            DirectoryTreeDescriptor desc = directoryTreeService.getDirectoryTreeDescriptor(dTreeName);
+            trees.add(new NavTreeDescriptor(dTreeName, desc.getLabel(), true));
         }
         return trees;
     }
