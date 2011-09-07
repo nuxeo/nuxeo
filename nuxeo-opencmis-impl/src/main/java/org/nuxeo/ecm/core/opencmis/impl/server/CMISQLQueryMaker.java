@@ -473,7 +473,7 @@ public class CMISQLQueryMaker implements QueryMaker {
             Collections.sort(generator.ftJoins); // implicit JOINs last
                                                  // (PostgreSQL)
             for (org.nuxeo.ecm.core.storage.sql.jdbc.db.Join join : generator.ftJoins) {
-                from.append(join.toString());
+                from.append(join.toSql(dialect));
                 if (join.tableParam != null) {
                     fromParams.add(join.tableParam);
                 }
