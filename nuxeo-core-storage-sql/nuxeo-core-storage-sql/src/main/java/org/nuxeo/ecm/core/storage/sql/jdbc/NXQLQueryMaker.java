@@ -289,6 +289,8 @@ public class NXQLQueryMaker implements QueryMaker {
             joins = new LinkedList<Join>();
             whereClauses = new LinkedList<String>();
             whereParams = new LinkedList<Serializable>();
+            propertyFragmentTables = new HashMap<String, Table>();
+            fragJoinCount = 0;
 
             switch (docKind) {
             case DIRECT:
@@ -1088,8 +1090,6 @@ public class NXQLQueryMaker implements QueryMaker {
 
         public WhereBuilder(boolean isProxies) {
             this.isProxies = isProxies;
-            propertyFragmentTables = new HashMap<String, Table>();
-            fragJoinCount = 0;
         }
 
         public Column findColumn(String name, boolean allowSubSelect,
