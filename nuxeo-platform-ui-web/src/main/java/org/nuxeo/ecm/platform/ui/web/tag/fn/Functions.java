@@ -39,6 +39,7 @@ import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
@@ -225,10 +226,15 @@ public final class Functions {
      * Returns the full name of a user, or its username if user if not found.
      * <p>
      * Since 5.4.3, returns null if given username is null (instead of
-     * returning the cureent user full name).
+     * returning the current user full name).
      */
     @SuppressWarnings("unchecked")
     public static String userFullName(String username) {
+        if (SecurityConstants.SYSTEM_USERNAME.equals(username)) {
+            // avoid costly and useless calls to the user directory
+            return username;
+        }
+
         ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
 
         // empty user name is current user
