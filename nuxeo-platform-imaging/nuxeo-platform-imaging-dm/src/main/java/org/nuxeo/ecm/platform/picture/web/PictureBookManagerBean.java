@@ -36,6 +36,16 @@ import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.jboss.seam.annotations.Create;
+import org.jboss.seam.annotations.Destroy;
+import org.jboss.seam.annotations.In;
+import org.jboss.seam.annotations.Name;
+import org.jboss.seam.annotations.Observer;
+import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.annotations.intercept.BypassInterceptors;
+import org.jboss.seam.core.Events;
 import org.nuxeo.common.utils.ZipUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -53,17 +63,6 @@ import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.runtime.api.Framework;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.jboss.seam.annotations.Create;
-import org.jboss.seam.annotations.Destroy;
-import org.jboss.seam.annotations.In;
-import org.jboss.seam.annotations.Name;
-import org.jboss.seam.annotations.Observer;
-import org.jboss.seam.annotations.Scope;
-import org.jboss.seam.annotations.intercept.BypassInterceptors;
-import org.jboss.seam.core.Events;
-
 /**
  * Provide Picture Book related Actions.
  *
@@ -74,38 +73,38 @@ import org.jboss.seam.core.Events;
 public class PictureBookManagerBean extends InputController implements
         PictureBookManager, Serializable {
 
-    private static final long serialVersionUID = -1593206839472821743L;
+    private static final long serialVersionUID = 1L;
 
     private static final Log log = LogFactory.getLog(PictureBookManagerBean.class);
 
     @In(create = true)
-    CoreSession documentManager;
+    protected CoreSession documentManager;
 
-    Integer timeinterval;
+    protected Integer timeinterval;
 
-    Integer maxsize;
+    protected Integer maxsize;
 
-    ArrayList<Map<String, Object>> views;
+    protected ArrayList<Map<String, Object>> views;
 
-    String title;
+    protected String title;
 
-    String viewtitle;
+    protected String viewtitle;
 
-    String tag;
+    protected String tag;
 
-    String description;
+    protected String description;
 
-    List<SelectItem> selectItems;
+    protected List<SelectItem> selectItems;
 
-    String[] selectedViews = { "Original" };
+    protected String[] selectedViews = { "Original" };
 
     @In(create = true)
-    private transient NavigationContext navigationContext;
+    protected transient NavigationContext navigationContext;
 
     @In(create = true)
     protected transient DocumentsListsManager documentsListsManager;
 
-    private static final int BUFFER = 2048;
+    protected static final int BUFFER = 2048;
 
     protected DocumentModel getCurrentDocument() {
         return navigationContext.getCurrentDocument();
@@ -117,7 +116,7 @@ public class PictureBookManagerBean extends InputController implements
         initViews();
     }
 
-    private void initViews() {
+    protected void initViews() {
         // Sets the default views original, thumbnail and medium.
         views = new ArrayList<Map<String, Object>>();
         Map<String, Object> map = new HashMap<String, Object>();
@@ -193,7 +192,7 @@ public class PictureBookManagerBean extends InputController implements
         views.add(map);
     }
 
-    @Observer( { EventNames.DOCUMENT_SELECTION_CHANGED })
+    @Observer({ EventNames.DOCUMENT_SELECTION_CHANGED })
     @BypassInterceptors
     public void reset() throws ClientException {
         title = null;
@@ -217,7 +216,7 @@ public class PictureBookManagerBean extends InputController implements
         return createZip(list);
     }
 
-    private boolean isEmptyFolder(DocumentModel doc) throws ClientException {
+    protected boolean isEmptyFolder(DocumentModel doc) throws ClientException {
         List<DocumentModel> docList = documentManager.getChildren(doc.getRef());
         for (DocumentModel docChild : docList) {
             BlobHolder bh = docChild.getAdapter(BlobHolder.class);
@@ -230,7 +229,7 @@ public class PictureBookManagerBean extends InputController implements
         return true;
     }
 
-    private String formatFileName(String filename, String count) {
+    protected String formatFileName(String filename, String count) {
         StringBuilder sb = new StringBuilder();
         CharSequence name = filename.subSequence(0, filename.lastIndexOf("."));
         CharSequence extension = filename.subSequence(
@@ -239,7 +238,7 @@ public class PictureBookManagerBean extends InputController implements
         return sb.toString();
     }
 
-    private void addBlobHolderToZip(String path, ZipOutputStream out,
+    protected void addBlobHolderToZip(String path, ZipOutputStream out,
             byte[] data, PictureBlobHolder bh) throws IOException,
             ClientException {
         List<Blob> blobs;
@@ -259,9 +258,11 @@ public class PictureBookManagerBean extends InputController implements
                             ZipUtils._zip(path + fileName, content.getStream(),
                                     out);
                         } else {
-                            ZipUtils._zip(path
-                                    + formatFileName(fileName, "(" + tryCount
-                                            + ")"), content.getStream(), out);
+                            ZipUtils._zip(
+                                    path
+                                            + formatFileName(fileName, "("
+                                                    + tryCount + ")"),
+                                    content.getStream(), out);
                         }
                         break;
                     } catch (ZipException e) {
@@ -272,7 +273,7 @@ public class PictureBookManagerBean extends InputController implements
         }
     }
 
-    private void addFolderToZip(String path, ZipOutputStream out,
+    protected void addFolderToZip(String path, ZipOutputStream out,
             DocumentModel doc, byte[] data) throws ClientException, IOException {
 
         String title = (String) doc.getProperty("dublincore", "title");
@@ -294,8 +295,8 @@ public class PictureBookManagerBean extends InputController implements
         }
     }
 
-    private String createZip(List<DocumentModel> documents) throws IOException,
-            ClientException {
+    protected String createZip(List<DocumentModel> documents)
+            throws IOException, ClientException {
 
         FacesContext context = FacesContext.getCurrentInstance();
         HttpServletResponse response = (HttpServletResponse) context.getExternalContext().getResponse();
@@ -341,7 +342,7 @@ public class PictureBookManagerBean extends InputController implements
         return null;
     }
 
-    private void initSelectItems() throws ClientException {
+    protected void initSelectItems() throws ClientException {
         DocumentModel doc = getCurrentDocument();
         List<Map<String, Object>> views = (List) doc.getProperty("picturebook",
                 "picturetemplates");
@@ -378,7 +379,7 @@ public class PictureBookManagerBean extends InputController implements
 
     @Deprecated
     public Integer getTimeinterval() {
-        if (timeinterval == null){
+        if (timeinterval == null) {
             timeinterval = 5;
         }
         return timeinterval;

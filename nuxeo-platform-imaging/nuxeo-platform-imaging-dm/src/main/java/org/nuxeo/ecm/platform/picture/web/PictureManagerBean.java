@@ -75,35 +75,35 @@ import org.nuxeo.runtime.api.Framework;
 @Scope(CONVERSATION)
 public class PictureManagerBean implements PictureManager, Serializable {
 
-    private static final long serialVersionUID = -7323791279190937921L;
+    private static final long serialVersionUID = 1L;
 
     private static final Log log = LogFactory.getLog(PictureManagerBean.class);
 
-    private static Boolean imageMagickAvailable;
+    protected static Boolean imageMagickAvailable;
 
     @In(create = true, required = false)
-    private transient CoreSession documentManager;
+    protected transient CoreSession documentManager;
 
     @RequestParameter
-    private String fileFieldFullName;
+    protected String fileFieldFullName;
 
     @In(required = true, create = true)
-    private transient NavigationContext navigationContext;
+    protected transient NavigationContext navigationContext;
 
     @In(create = true, required = false)
     protected ResourcesAccessor resourcesAccessor;
 
-    String fileurlPicture;
+    protected String fileurlPicture;
 
-    String filename;
+    protected String filename;
 
-    Blob fileContent;
+    protected Blob fileContent;
 
-    Integer index;
+    protected Integer index;
 
-    String cropCoords;
+    protected String cropCoords;
 
-    ArrayList<Map<String, Object>> selectItems;
+    protected ArrayList<Map<String, Object>> selectItems;
 
     @Create
     public void initialize() throws Exception {
@@ -125,7 +125,7 @@ public class PictureManagerBean implements PictureManager, Serializable {
         this.fileurlPicture = fileurlPicture;
     }
 
-    private void initSelectItems() throws ClientException {
+    protected void initSelectItems() throws ClientException {
         selectItems = new ArrayList<Map<String, Object>>();
         DocumentModel doc = getCurrentDocument();
         ArrayList<Map<String, Object>> views = (ArrayList) doc.getProperty(
