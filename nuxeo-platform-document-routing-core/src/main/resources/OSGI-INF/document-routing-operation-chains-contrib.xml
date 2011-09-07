@@ -14,7 +14,10 @@
     </chain>
     <chain id="simpleUndo">
       <operation id="Document.Routing.BackToReady" />
-    </chain>  
+    </chain>
+    <chain id="setNextStep">
+      <operation id="Update.NextStep.ConditionalFolder" />
+    </chain>    
     <chain id="updateCommentsOnDoc">
       <operation id="Document.Routing.UpdateCommentsInfoOnDocument" />  
     </chain>

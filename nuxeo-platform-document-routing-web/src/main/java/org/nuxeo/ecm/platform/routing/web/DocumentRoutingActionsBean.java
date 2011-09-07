@@ -735,6 +735,34 @@ public class DocumentRoutingActionsBean implements Serializable {
         }
     }
 
+    public List<DocumentModel> getOrderedChildren(String docRouteElementId,
+            String type) throws ClientException {
+        // xxx move me in serice with query
+        DocumentModelList orderedChildren = getDocumentRoutingService().getOrderedRouteElement(
+                docRouteElementId, documentManager);
+        List<DocumentModel> filteredChildren = new ArrayList<DocumentModel>();
+        for (DocumentModel documentModel : orderedChildren) {
+            if (type.equals(documentModel.getType())) {
+                filteredChildren.add(documentModel);
+            }
+        }
+        return filteredChildren;
+    }
+
+    public DocumentModel getChildWithPosition(DocumentModel docRouteElement,
+            String pos) throws ClientException {
+        DocumentModelList orderedChildren = getDocumentRoutingService().getOrderedRouteElement(
+                docRouteElement.getId(), documentManager);
+        return orderedChildren.get(Integer.parseInt(pos));
+    }
+
+    public String getPositionForChild(DocumentModel docRouteElement,
+            DocumentModel docChild) throws ClientException {
+        DocumentModelList orderedChildren = getDocumentRoutingService().getOrderedRouteElement(
+                docRouteElement.getId(), documentManager);
+        return String.valueOf(orderedChildren.indexOf(docChild));
+    }
+
     public String getHiddenSourceDocId() {
         return hiddenSourceDocId;
     }

@@ -37,10 +37,12 @@ public interface DocumentRoutingConstants {
     String DOCUMENT_ROUTE_DOCUMENT_FACET = "DocumentRoute";
 
     String COMMENTS_INFO_HOLDER_FACET = "CommentsInfoHolder";
-    
+
     String STEP_DOCUMENT_TYPE = "DocumentRouteStep";
 
     String STEP_FOLDER_DOCUMENT_TYPE = "StepFolder";
+
+    String CONDITIONAL_STEP_DOCUMENT_TYPE = "ConditionalStepFolder";
 
     String TITLE_PROPERTY_NAME = "dc:title";
 
@@ -49,8 +51,10 @@ public interface DocumentRoutingConstants {
     String EXECUTION_TYPE_PROPERTY_NAME = "stepf:execution";
 
     String ATTACHED_DOCUMENTS_PROPERTY_NAME = "docri:participatingDocuments";
-    
+
     String COMMENTS_NO_PROPERTY_NAME = "info_comments:numberOfComments";
+
+    String STEP_TO_BE_EXECUTED_NEXT_PROPERTY_NAME = "condstepf:posOfChildStepToRunNext";
 
     // operation constant
     String OPERATION_CATEGORY_ROUTING_NAME = "Routing";

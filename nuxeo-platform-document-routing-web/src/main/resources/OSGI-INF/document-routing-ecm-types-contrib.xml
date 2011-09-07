@@ -36,6 +36,7 @@
       <subtypes>
         <type>StepFolder</type>
         <type>DocumentRouteStep</type>
+        <type>ConditionalStepFolder</type>
       </subtypes>
       <layouts mode="any">
         <layout>heading</layout>
@@ -102,6 +103,34 @@
         <layout>dublincore</layout>
       </layouts>
     </type>
+    
+    <type id="ConditionalStepFolder" coreType="ConditionalStepFolder">
+      <label>ConditionalStepFolder</label>
+      <icon>/icons/fork.png</icon>
+      <bigIcon>/icons/fork_100.png</bigIcon>
+      <category>Collaborative</category>
+      <description>Folder.description</description>
+      <default-view>view_documents</default-view>
+      <edit-view>edit_route_element</edit-view>
+      <subtypes>
+        <type>StepFolder</type>
+        <type>DocumentRouteStep</type>
+      </subtypes>
+      <layouts mode="any">
+        <layout>heading</layout>
+      </layouts>
+      <layouts mode="edit">
+        <layout>heading</layout>
+        <layout>conditional_step_folder</layout>
+      </layouts>
+      <contentViews category="content">
+        <contentView>orderable_document_content</contentView>
+      </contentViews>
+      <contentViews category="trash_content">
+        <contentView>document_trash_content</contentView>
+      </contentViews>
+    </type>
+    
 
   </extension>
 

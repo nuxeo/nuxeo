@@ -81,6 +81,10 @@
         noRecursionForTransitions="toValidated,toReady,toRunning,toDone,toCanceled">
         documentRouteElement
       </type>
+      <type name="ConditionalStepFolder"
+        noRecursionForTransitions="toValidated,toReady,toRunning,toDone,toCanceled">
+        documentRouteElement
+      </type>
       <type name="DocumentRouteStep">documentRouteElement</type>
     </types>
   </extension>

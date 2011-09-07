@@ -10,6 +10,7 @@
       src="schemas/document_route_model.xsd" />
     <schema name="step_folder" prefix="stepf" src="schemas/step_folder.xsd" />
     <schema name="info_comments" src="schemas/info_comments.xsd" prefix="infocom" />
+    <schema name="conditional_step_folder" prefix="condstepf" src="schemas/conditional_step_folder.xsd" /> 
   
   </extension>
 
@@ -42,6 +43,7 @@
       <subtypes>
         <type>StepFolder</type>
         <type>DocumentRouteStep</type>
+        <type>ConditionalStepFolder</type>
       </subtypes>
     </doctype>
 
@@ -59,6 +61,15 @@
       <facet name="Commentable" />
       <facet name="CommentsInfoHolder"/>
     </doctype>
+
+    <doctype name="ConditionalStepFolder" extends="StepFolder">
+      <schema name="conditional_step_folder" />
+      <subtypes>
+        <type>StepFolder</type>
+        <type>DocumentRouteStep</type>
+      </subtypes>
+    </doctype>
+
 
   </extension>
 
