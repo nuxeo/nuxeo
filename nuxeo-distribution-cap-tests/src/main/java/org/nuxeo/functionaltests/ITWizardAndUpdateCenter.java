@@ -39,7 +39,7 @@ import org.openqa.selenium.WebElement;
 
 public class ITWizardAndUpdateCenter extends AbstractTest {
 
-    private static final String MARKETPLACE_PACKAGE_ID = "audit-web-access-1.0.2";
+    private static final String MARKETPLACE_PACKAGE_ID = "audit-web-access-1.0.3";
     //private static final String MARKETPLACE_PACKAGE_ID = "easybookmark-1.0.0";
 
     private static final String SMTP_SERVER_HOST = "someSMTPServer.com";
