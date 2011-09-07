@@ -162,13 +162,12 @@ public class CommentManagerBean implements CommentManagerLocal {
         }
     }
 
-	public DocumentModel getThreadForComment(DocumentModel comment)
-			throws ClientException {
-		try{
-			return commentManager.getThreadForComment(comment);
-		} catch (Throwable e) {
-			throw ClientException.wrap(e);
-		}
-	}
-	
+    public DocumentModel getThreadForComment(DocumentModel comment)
+            throws ClientException {
+        try {
+            return commentManager.getThreadForComment(comment);
+        } catch (Throwable e) {
+            throw ClientException.wrap(e);
+        }
+    }
 }

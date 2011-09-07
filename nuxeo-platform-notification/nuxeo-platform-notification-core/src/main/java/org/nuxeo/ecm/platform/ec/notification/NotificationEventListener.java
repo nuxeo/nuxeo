@@ -115,18 +115,19 @@ public class NotificationEventListener implements PostCommitEventListener {
         CoreSession coreSession = event.getContext().getCoreSession();
         Map<String, Serializable> properties = event.getContext().getProperties();
         Map<Notification, List<String>> targetUsers = new HashMap<Notification, List<String>>();
-        
+
         //Comments notifications: the related thread is retrieved for sending to its subscribers
-        if(docCtx.getSourceDocument().getType().equals("Post") || docCtx.getSourceDocument().getType().equals("Comment")){
-        	CommentManager commentManager = Framework.getService(CommentManager.class);
-        	DocumentModel thread = commentManager.getThreadForComment(docCtx.getSourceDocument());
-        	Object[] args = {thread,null};
-        	docCtx.setArgs(args);
+        if (docCtx.getSourceDocument().getType().equals("Post")
+                || docCtx.getSourceDocument().getType().equals("Comment")) {
+            CommentManager commentManager = Framework.getService(CommentManager.class);
+            DocumentModel thread = commentManager.getThreadForComment(docCtx.getSourceDocument());
+            Object[] args = { thread, null };
+            docCtx.setArgs(args);
         }
-        
-    	gatherConcernedUsersForDocument(coreSession,
+
+        gatherConcernedUsersForDocument(coreSession,
                 docCtx.getSourceDocument(), notifs, targetUsers);
-        
+
         for (Notification notif : targetUsers.keySet()) {
             if (!notif.getAutoSubscribed()) {
                 for (String user : targetUsers.get(notif)) {

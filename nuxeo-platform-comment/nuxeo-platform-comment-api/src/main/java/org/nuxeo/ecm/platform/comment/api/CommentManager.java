@@ -81,9 +81,10 @@ public interface CommentManager {
      * @param comment
      * @return
      * @throws ClientException
+     * @since 5.4.3
      */
-    DocumentModel getThreadForComment(DocumentModel comment) 
-    		throws ClientException;
+    DocumentModel getThreadForComment(DocumentModel comment)
+            throws ClientException;
 
     /**
      * Creates a comment document model. It gives opportunity to save the comments in a
