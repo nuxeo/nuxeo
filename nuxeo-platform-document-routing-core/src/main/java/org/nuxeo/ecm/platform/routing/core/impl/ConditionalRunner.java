@@ -53,7 +53,7 @@ public class ConditionalRunner extends SerialRunner {
         }
         // run all the child unless there is a wait state
         for (DocumentRouteElement child : children) {
-            if (!child.isDone()) {
+            if (!child.isDone() && !child.isCanceled()) {
                 if (!(child instanceof DocumentRouteStepsContainer)) {
                     // run the simple step
                     child.run(session);
@@ -70,6 +70,9 @@ public class ConditionalRunner extends SerialRunner {
                         if (!child.isDone()) {
                             return;
                         }
+                    } else {
+                        // cancel the branch that won;t be run
+                        child.cancel(session);
                     }
                 }
             }

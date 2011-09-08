@@ -44,6 +44,8 @@ public interface DocumentRoutingConstants {
 
     String CONDITIONAL_STEP_FACET = "ConditionalStepFolder";
 
+    String CONDITIONAL_STEP_DOCUMENT_TYPE = "ConditionalStepFolder";
+
     String TITLE_PROPERTY_NAME = "dc:title";
 
     String DESCRIPTION_PROPERTY_NAME = "dc:description";

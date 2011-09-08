@@ -12,8 +12,8 @@
     <factoryBinding name="ConditionalfolderFactory"
       factoryName="SimpleTemplateFactory" targetType="ConditionalStepFolder">
       <template>
-         <templateItem typeName="DocumentRouteStep" id="routeDocStep"
-          title="ConditionalStep" description="Conditional step" />
+        <templateItem typeName="DocumentRouteStep" id="routeDocStep"
+          title="DecisionalStep" description="Decisional step" />
         <templateItem typeName="StepFolder" id="option1"
           title="Option 1" description="Branch executed if option1 is chosen" />
         <templateItem typeName="StepFolder" id="option2" title="Option2"

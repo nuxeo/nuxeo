@@ -11,7 +11,7 @@
     <operation
       class="org.nuxeo.ecm.platform.routing.api.operation.UpdateCommentsInfoOnDocumentOperation" /> 
     <operation
-      class="org.nuxeo.ecm.platform.routing.api.operation.SetNextStepOnConditionalFolderDocumentOperation" />   
+      class="org.nuxeo.ecm.platform.routing.api.operation.SetNextStepOnConditionalFolderOperation" />   
   </extension>
 
 </component>

@@ -22,6 +22,7 @@ import java.util.List;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.security.ACE;
@@ -60,8 +61,8 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         assertEquals(1, stepFolders.size());
         DocumentModel parallel1 = stepFolders.get(0);
         service.lockDocumentRoute(route, session);
-        service.addRouteElementToRoute(parallel1.getRef(), "step32", step.getAdapter(DocumentRouteElement.class),
-                session);
+        service.addRouteElementToRoute(parallel1.getRef(), "step32",
+                step.getAdapter(DocumentRouteElement.class), session);
         service.unlockDocumentRoute(route, session);
         DocumentModelList parallel1Childs = service.getOrderedRouteElement(
                 parallel1.getId(), session);
@@ -75,7 +76,8 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         step.setPropertyValue(DocumentRoutingConstants.TITLE_PROPERTY_NAME,
                 "step33");
         service.lockDocumentRoute(route, session);
-        service.addRouteElementToRoute(parallel1.getRef(), null, step.getAdapter(DocumentRouteElement.class), session);
+        service.addRouteElementToRoute(parallel1.getRef(), null,
+                step.getAdapter(DocumentRouteElement.class), session);
         service.unlockDocumentRoute(route, session);
         parallel1Childs = service.getOrderedRouteElement(parallel1.getId(),
                 session);
@@ -89,7 +91,8 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         step.setPropertyValue(DocumentRoutingConstants.TITLE_PROPERTY_NAME,
                 "step30");
         service.lockDocumentRoute(route, session);
-        service.addRouteElementToRoute(parallel1.getRef(), 0, step.getAdapter(DocumentRouteElement.class), session);
+        service.addRouteElementToRoute(parallel1.getRef(), 0,
+                step.getAdapter(DocumentRouteElement.class), session);
         parallel1Childs = service.getOrderedRouteElement(parallel1.getId(),
                 session);
         service.unlockDocumentRoute(route, session);
@@ -103,7 +106,8 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         step.setPropertyValue(DocumentRoutingConstants.TITLE_PROPERTY_NAME,
                 "step34");
         service.lockDocumentRoute(route, session);
-        service.addRouteElementToRoute(parallel1.getRef(), 5, step.getAdapter(DocumentRouteElement.class), session);
+        service.addRouteElementToRoute(parallel1.getRef(), 5,
+                step.getAdapter(DocumentRouteElement.class), session);
         parallel1Childs = service.getOrderedRouteElement(parallel1.getId(),
                 session);
         service.unlockDocumentRoute(route, session);
@@ -117,7 +121,8 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         step.setPropertyValue(DocumentRoutingConstants.TITLE_PROPERTY_NAME,
                 "step33bis");
         service.lockDocumentRoute(route, session);
-        service.addRouteElementToRoute(parallel1.getRef(), 5, step.getAdapter(DocumentRouteElement.class), session);
+        service.addRouteElementToRoute(parallel1.getRef(), 5,
+                step.getAdapter(DocumentRouteElement.class), session);
         service.unlockDocumentRoute(route, session);
         parallel1Childs = service.getOrderedRouteElement(parallel1.getId(),
                 session);
@@ -137,7 +142,8 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         DocumentModel newStep = session.createDocumentModel(
                 route.getDocument().getPathAsString(), "step1",
                 DocumentRoutingConstants.STEP_DOCUMENT_TYPE);
-        service.addRouteElementToRoute(route.getDocument().getRef(), null, newStep.getAdapter(DocumentRouteElement.class), session);
+        service.addRouteElementToRoute(route.getDocument().getRef(), null,
+                newStep.getAdapter(DocumentRouteElement.class), session);
         session.save();
         assertNotNull(route);
         childrens = session.getChildren(route.getDocument().getRef());
@@ -155,7 +161,8 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         service.lockDocumentRoute(route, session);
         service.validateRouteModel(route, session);
         service.unlockDocumentRoute(route, session);
-        route = service.createNewInstance(route, new ArrayList<String>(), session);
+        route = service.createNewInstance(route, new ArrayList<String>(),
+                session);
         session.save();
         assertNotNull(route);
         DocumentModel step = session.createDocumentModel(
@@ -167,8 +174,8 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         assertEquals(1, stepFolders.size());
         DocumentModel parallel1 = stepFolders.get(0);
         service.lockDocumentRoute(route, session);
-        service.addRouteElementToRoute(parallel1.getRef(), "step32", step.getAdapter(DocumentRouteElement.class),
-                session);
+        service.addRouteElementToRoute(parallel1.getRef(), "step32",
+                step.getAdapter(DocumentRouteElement.class), session);
         service.unlockDocumentRoute(route, session);
         assertNotNull(route);
         assertFalse(route.isDone());
@@ -189,8 +196,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         assertFalse(route.isDone());
         WaitingStepRuntimePersister.resumeStep(waiting.get(0), session);
         assertEquals(0, waiting.size());
-        route = session.getDocument(
-                route.getDocument().getRef()).getAdapter(
+        route = session.getDocument(route.getDocument().getRef()).getAdapter(
                 DocumentRoute.class);
         assertTrue(route.isDone());
     }
@@ -209,7 +215,8 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
                 + "/" + ROUTE1 + "/parallel1/step32"));
         assertNotNull(step32);
         service.lockDocumentRoute(route, session);
-        service.removeRouteElement(step32.getAdapter(DocumentRouteElement.class), session);
+        service.removeRouteElement(
+                step32.getAdapter(DocumentRouteElement.class), session);
         service.unlockDocumentRoute(route, session);
         childs = service.getOrderedRouteElement(stepFolder.getId(), session);
         assertEquals(1, childs.size());
@@ -220,17 +227,21 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         service.lockDocumentRoute(route, session);
         route = service.validateRouteModel(route, session);
         service.unlockDocumentRoute(route, session);
-        route = service.createNewInstance(route, new ArrayList<String>(), session);
+        route = service.createNewInstance(route, new ArrayList<String>(),
+                session);
         assertNotNull(route);
         session.save();
         session = openSessionAs("routeManagers");
-        DocumentModel step = session.getChildren(route.getDocument().getRef()).get(0);
+        DocumentModel step = session.getChildren(route.getDocument().getRef()).get(
+                0);
         service.lockDocumentRoute(route, session);
-        service.removeRouteElement(step.getAdapter(DocumentRouteElement.class), session);
+        service.removeRouteElement(step.getAdapter(DocumentRouteElement.class),
+                session);
         service.unlockDocumentRoute(route, session);
         DocumentRoute newModel = service.saveRouteAsNewModel(route, session);
         assertNotNull(newModel);
-        assertEquals("(COPY) route1", (String) newModel.getDocument().getPropertyValue("dc:title"));
+        assertEquals("(COPY) route1",
+                (String) newModel.getDocument().getPropertyValue("dc:title"));
     }
 
     public void testRemoveStepFromLockedRoute() throws Exception {
@@ -271,7 +282,8 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         closeSession();
         openSession();
         // service.lockDocumentRoute(route, session);
-        service.removeRouteElement(step32.getAdapter(DocumentRouteElement.class), session);
+        service.removeRouteElement(
+                step32.getAdapter(DocumentRouteElement.class), session);
         service.unlockDocumentRoute(route, session);
         e = null;
         session = openSessionAs("jdoe");
@@ -586,19 +598,148 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         assertTrue(session.hasPermission(route.getRef(), SecurityConstants.READ));
     }
 
+    public void testConditionalFolderContainerModel() throws ClientException {
+        DocumentRoute route = createDocumentRouteWithConditionalFolder(session,
+                ROUTE1);
+        DocumentModel conditionalStepFolder = session.getChild(
+                route.getDocument().getRef(), "conditionalStep2");
+        DocumentModelList children = service.getOrderedRouteElement(
+                conditionalStepFolder.getId(), session);
+        assertEquals(DocumentRoutingConstants.STEP_DOCUMENT_TYPE, children.get(
+                0).getType());
+        DocumentModel branch1 = children.get(1);
+        assertEquals(DocumentRoutingConstants.STEP_FOLDER_DOCUMENT_TYPE,
+                branch1.getType());
+        assertEquals("executeIfOption1",
+                session.getChildren(branch1.getRef()).get(0).getName());
+        DocumentModel branch2 = children.get(2);
+        assertEquals(DocumentRoutingConstants.STEP_FOLDER_DOCUMENT_TYPE,
+                branch2.getType());
+        assertEquals("executeIfOption2",
+                session.getChildren(branch2.getRef()).get(0).getName());
+    }
+
     public void testGetRouteElements() throws ClientException {
         DocumentRoute route = createDocumentRoute(session, ROUTE1);
         assertNotNull(route);
-        List<DocumentRouteTableElement> elements = service.getRouteElements(route, session);
+        List<DocumentRouteTableElement> elements = service.getRouteElements(
+                route, session);
         assertNotNull(elements);
         assertEquals(4, elements.size());
-        for(DocumentRouteTableElement element : elements) {
+        for (DocumentRouteTableElement element : elements) {
             assertEquals(1, element.getRouteMaxDepth());
         }
         assertEquals(1, elements.get(2).getFirstChildFolders().size());
         assertEquals(0, elements.get(3).getFirstChildFolders().size());
-        assertEquals(2, elements.get(2).getFirstChildFolders().get(0).getTotalChildCount());
+        assertEquals(
+                2,
+                elements.get(2).getFirstChildFolders().get(0).getTotalChildCount());
         assertEquals(4, elements.get(0).getRouteTable().getTotalChildCount());
+    }
+
+    public void testExecuteSimpleRouteWithConditionalStep()
+            throws ClientException {
+        DocumentRoute route = createDocumentRouteWithConditionalFolder(session,
+                ROUTE1);
+        DocumentModel conditionalStepFolder = session.getChild(
+                route.getDocument().getRef(), "conditionalStep2");
+        DocumentModelList children = service.getOrderedRouteElement(
+                conditionalStepFolder.getId(), session);
+        assertEquals(DocumentRoutingConstants.STEP_DOCUMENT_TYPE, children.get(
+                0).getType());
+        assertEquals(DocumentRoutingConstants.STEP_FOLDER_DOCUMENT_TYPE,
+                children.get(1).getType());
+        assertEquals(DocumentRoutingConstants.STEP_FOLDER_DOCUMENT_TYPE,
+                children.get(2).getType());
+        // set first option to be executed on this route in case of the
+        // conditional folder
+        conditionalStepFolder.setPropertyValue(
+                DocumentRoutingConstants.STEP_TO_BE_EXECUTED_NEXT_PROPERTY_NAME,
+                "1");
+        session.saveDocument(conditionalStepFolder);
+        service.lockDocumentRoute(route, session);
+        route = service.validateRouteModel(route, session);
+        service.unlockDocumentRoute(route, session);
+        session.save();
+        assertEquals("validated",
+                route.getDocument().getCurrentLifeCycleState());
+        assertEquals("validated", session.getChildren(
+                route.getDocument().getRef()).get(0).getCurrentLifeCycleState());
+        DocumentModel doc1 = createTestDocument("test1", session);
+        session.save();
+        waitForAsyncExec();
+        session = openSessionAs("routeManagers");
+        DocumentRoute routeInstance = service.createNewInstance(route,
+                doc1.getId(), session);
+        session.save();
+        waitForAsyncExec();
+        assertTrue(routeInstance.isDone());
+
+        // check if branch no 1 in the optional folder was executed
+        children = session.getChildren(routeInstance.getDocument().getRef(),
+                DocumentRoutingConstants.CONDITIONAL_STEP_DOCUMENT_TYPE);
+
+        children = service.getOrderedRouteElement(children.get(0).getId(),
+                session);
+        // branch executed in done
+        assertEquals("done", children.get(1).getCurrentLifeCycleState());
+        // branch not executed is now in canceled state
+        assertEquals("canceled", children.get(2).getCurrentLifeCycleState());
+    }
+
+    public void testExecuteRouteWithWaitStateAndConditionalStep()
+            throws Exception {
+        deployBundle(TEST_BUNDLE);
+        DocumentRoute route = createDocumentRouteWithConditionalFolder(session,
+                ROUTE1);
+        session.save();
+        assertNotNull(route);
+        session.save();
+        List<DocumentRoute> routes = service.getAvailableDocumentRouteModel(session);
+        assertEquals(1, routes.size());
+        DocumentRoute routeModel = routes.get(0);
+        DocumentModel doc1 = createTestDocument("test1", session);
+        session.save();
+        service.lockDocumentRoute(route, session);
+        route = service.validateRouteModel(route, session);
+        service.unlockDocumentRoute(route, session);
+        assertEquals("validated",
+                route.getDocument().getCurrentLifeCycleState());
+        assertEquals("validated", session.getChildren(
+                route.getDocument().getRef()).get(0).getCurrentLifeCycleState());
+        session.save();
+        waitForAsyncExec();
+        DocumentRoute routeInstance = service.createNewInstance(routeModel,
+                doc1.getId(), session);
+        assertNotNull(routeInstance);
+        assertFalse(routeInstance.isDone());
+        assertEquals(1, service.getDocumentRoutesForAttachedDocument(session,
+                doc1.getId()).size());
+        List<String> waiting = WaitingStepRuntimePersister.getRunningStepIds();
+        // step 1
+        assertEquals(1, waiting.size());
+        WaitingStepRuntimePersister.resumeStep(waiting.get(0), session);
+        // first step in conditionalFolder, conditionalStep2 running,
+        waiting = WaitingStepRuntimePersister.getRunningStepIds();
+        assertEquals(1, waiting.size());
+        WaitingStepRuntimePersister.resumeDecisionalStep(waiting.get(0),
+                session, "2");
+        // executeIfOption2 is running
+        waiting = WaitingStepRuntimePersister.getRunningStepIds();
+        assertEquals(1, waiting.size());
+        assertEquals("executeIfOption2", session.getDocument(
+                new IdRef(waiting.get(0))).getName());
+        WaitingStepRuntimePersister.resumeStep(waiting.get(0), session);
+        // step 3 is run
+        waiting = WaitingStepRuntimePersister.getRunningStepIds();
+        assertEquals(1, waiting.size());
+        WaitingStepRuntimePersister.resumeStep(waiting.get(0), session);
+        waiting = WaitingStepRuntimePersister.getRunningStepIds();
+        assertEquals(0, waiting.size());
+        routeInstance = session.getDocument(
+                routeInstance.getDocument().getRef()).getAdapter(
+                DocumentRoute.class);
+        assertTrue(routeInstance.isDone());
     }
 
     protected void setPermissionToUser(DocumentModel doc, String username,
