@@ -54,6 +54,8 @@
     <view name="Nuxeo header" template-engine="jsf-facelets">
       <format-type>widget</format-type>
       <template>incl/nuxeo_header.xhtml</template>
+      <resource>screen.css</resource>
+      <resource>modal-popup.css</resource>
     </view>
 
     <view name="Nuxeo footer"
@@ -151,6 +153,10 @@
 
     <resource name="utils.js">
       <path>scripts/utils.js</path>
+    </resource>
+
+    <resource name="screen.css">
+      <path>css/screen.css</path>
     </resource>
 
   </extension>

@@ -42,31 +42,6 @@
         </cell>
       </section>
     </page>
-    <page name="settings">
-      <section>
-        <cell>
-          <!-- dam logo -->
-          <fragment type="generic fragment"/>
-        </cell>
-        <cell>
-          <!-- dam banner -->
-          <fragment type="generic fragment"/>
-          <!-- Include -->
-          <fragment type="generic fragment"/>
-        </cell>
-      </section>
-      <section>
-        <cell>
-          <!-- main area -->
-          <fragment type="region fragment" />
-        </cell>
-      </section>
-      <section>
-        <cell>
-          <fragment type="generic fragment"/>
-        </cell>
-      </section>
-    </page>
   </layout>
   <properties element="page[1]/section[2]/cell[2]/fragment[1]">
     <name>body</name>
@@ -74,11 +49,6 @@
     <defaultSrc />
   </properties>
   <properties element="page[2]/section[1]/cell[1]/fragment[1]">
-    <name>body</name>
-    <defaultBody />
-    <defaultSrc />
-  </properties>
-  <properties element="page[3]/section[2]/cell[1]/fragment[1]">
     <name>body</name>
     <defaultBody />
     <defaultSrc />
@@ -91,20 +61,24 @@
     </layout>
     <layout element="page[1]/section[1]">
       <width>100%</width>
+      <height>36px</height>
+      <overflow>auto</overflow>
     </layout>
     <layout element="page[1]/section[1]/cell[1]">
       <width>18%</width>
       <text-align>center</text-align>
+      <vertical-align>middle</vertical-align>
     </layout>
     <layout element="page[1]/section[1]/cell[2]">
       <width>82%</width>
+      <vertical-align>bottom</vertical-align>
     </layout>
     <layout element="page[1]/section[2]">
       <height>100%</height>
       <width>100%</width>
     </layout>
     <layout element="page[1]/section[2]/cell[1]">
-      <width>210px</width>
+      <width>18%</width>
       <padding>0px</padding>
     </layout>
     <layout element="page[1]/section[2]/cell[2]">
@@ -128,56 +102,28 @@
       <width>100%</width>
     </layout>
     <layout element="page[2]/section[1]/cell[1]"/>
-    <layout element="page[3]">
-      <margin>0</margin>
-      <padding>0</padding>
-    </layout>
-    <layout element="page[3]/section[1]">
-      <width>100%</width>
-    </layout>
-    <layout element="page[3]/section[1]/cell[1]">
-      <width>18%</width>
-      <text-align>center</text-align>
-    </layout>
-    <layout element="page[3]/section[1]/cell[2]">
-      <width>82%</width>
-    </layout>
-    <layout element="page[3]/section[2]">
-      <height>100%</height>
-      <width>100%</width>
-    </layout>
-    <layout element="page[3]/section[2]/cell[1]">
-      <width>100%</width>
-    </layout>
-    <layout element="page[3]/section[3]">
-      <width>100%</width>
-      <text-align>right</text-align>
-    </layout>
-    <layout element="page[3]/section[3]/cell[1]">
-      <width>100%</width>
-    </layout>
     <widget element="">
       <view>theme view</view>
-      <icon>/nuxeo/icons/favicon.png</icon>
+      <icon>${org.nuxeo.ecm.contextPath}/icons/favicon.png</icon>
       <charset>utf-8</charset>
     </widget>
     <!-- WIDGET AFFECTATON -->
     <widget element="page[1]|page[2]|page[3]">
       <view>page frame</view>
     </widget>
-    <widget element="page[1]/section[1]|page[1]/section[2]|page[1]/section[3]|page[2]/section[1]|page[3]/section[1]|page[3]/section[2]|page[3]/section[3]">
+    <widget element="page[1]/section[1]|page[1]/section[2]|page[1]/section[3]|page[2]/section[1]">
       <view>section frame</view>
     </widget>
-    <widget element="page[1]/section[1]/cell[1]|page[1]/section[1]/cell[2]|page[1]/section[2]/cell[1]|page[1]/section[2]/cell[2]|page[1]/section[2]/cell[3]|page[1]/section[3]/cell[1]|page[2]/section[1]/cell[1]|page[3]/section[1]/cell[1]|page[3]/section[1]/cell[2]|page[3]/section[2]/cell[1]|page[3]/section[3]/cell[1]">
+    <widget element="page[1]/section[1]/cell[1]|page[1]/section[1]/cell[2]|page[1]/section[2]/cell[1]|page[1]/section[2]/cell[2]|page[1]/section[2]/cell[3]|page[1]/section[3]/cell[1]|page[2]/section[1]/cell[1]">
       <view>cell frame</view>
     </widget>
-    <widget element="page[1]/section[1]/cell[1]/fragment[1]|page[3]/section[1]/cell[1]/fragment[1]">
+    <widget element="page[1]/section[1]/cell[1]/fragment[1]">
       <view>dam logo</view>
     </widget>
-    <widget element="page[1]/section[1]/cell[2]/fragment[1]|page[3]/section[1]/cell[2]/fragment[1]">
+    <widget element="page[1]/section[1]/cell[2]/fragment[1]">
       <view>Nuxeo header</view>
     </widget>
-    <widget element="page[1]/section[1]/cell[2]/fragment[2]|page[3]/section[1]/cell[2]/fragment[2]">
+    <widget element="page[1]/section[1]/cell[2]/fragment[2]">
       <view>dam includes</view>
     </widget>
     <widget element="page[1]/section[2]/cell[1]/fragment[1]">
@@ -189,10 +135,10 @@
     <widget element="page[1]/section[2]/cell[3]/fragment[1]">
       <view>dam selection view</view>
     </widget>
-    <widget element="page[1]/section[3]/cell[1]/fragment[1]|page[3]/section[3]/cell[1]/fragment[1]">
+    <widget element="page[1]/section[3]/cell[1]/fragment[1]">
       <view>Nuxeo footer</view>
     </widget>
-    <widget element="page[2]/section[1]/cell[1]/fragment[1]|page[3]/section[2]/cell[1]/fragment[1]">
+    <widget element="page[2]/section[1]/cell[1]/fragment[1]">
       <view>facelet region</view>
     </widget>
     <!-- buttons -->
@@ -203,8 +149,9 @@
         <border preset="buttons (DAM borders)"/>
         <background preset="buttons (DAM backgrounds)"/>
         <margin>5px 10px 10px 0px</margin>
-        <padding>2px 5px 2px 5px</padding>
+        <padding>2px 5px</padding>
         <cursor>pointer</cursor>
+        <border-radius>3px</border-radius>
       </selector>
       <selector path=".clipboard .button">
         <margin>1px 3px</margin>
@@ -235,10 +182,214 @@
         <padding>2px 5px 2px 5px</padding>
         <margin>1px 3px</margin>
         <cursor>pointer</cursor>
+        <border-radius>3px</border-radius>
+      </selector>
+      <selector path=".import">
+        <font-size>12px</font-size>
+        <font-weight>bold</font-weight>
+        <color>#eee</color>
+        <border>1px solid #000000</border>
+        <background>none #4F4F4F</background>
+        <padding>3px 8px</padding>
+        <display>inline-block</display>
+      </selector>
+      <selector path=".import:hover">
+        <text-decoration>none</text-decoration>
+        <color>#fff</color>
+        <background-color>#000</background-color>
+        <border>1px solid #000</border>
       </selector>
       <selector path=".clipboard span span span, .clipboard span span input, .clipboard span span a">
         <float>right</float>
         <display>block</display>
+      </selector>
+    </style>
+    <style name="header and footer style" inherit="default buttons">
+      <selector path="a, a:link, a:visited">
+        <text-decoration>none</text-decoration>
+      </selector>
+      <selector path="a:hover, a:active">
+        <text-decoration>underline</text-decoration>
+      </selector>
+      <selector path="a, a:link, a:visited, a:hover, a:active">
+        <color preset="header.link (DAM colors)" />
+      </selector>
+      <selector path="img">
+        <margin-left>5px</margin-left>
+        <margin-right>2px</margin-right>
+        <vertical-align>middle</vertical-align>
+      </selector>
+      <selector path="form">
+        <margin>0</margin>
+        <padding>0</padding>
+      </selector>
+      <selector path=".userActions">
+        <font preset="small (DAM fonts)"/>
+        <color preset="header.text (DAM colors)" />
+        <line-height>185%</line-height>
+        <padding>5px 0 0 0</padding>
+        <text-align>left</text-align>
+        <float>left</float>
+        <margin>0 0 0 15px</margin>
+      </selector>
+      <selector path=".userServicesBlock">
+        <float>left</float>
+        <padding>0</padding>
+      </selector>
+      <selector path=".userMenuActions">
+        <font preset="default (DAM fonts)"/>
+        <color preset="header.text (DAM colors)" />
+        <line-height>185%</line-height>
+        <padding>0px</padding>
+        <text-align>left</text-align>
+        <float>left</float>
+        <margin>0 0 0 15px</margin>
+      </selector>
+      <selector path=".userMenuActions ul, .userMenuActions ul ul">
+        <list-style>none</list-style>
+      </selector>
+      <selector path=".userMenuActions ul">
+        <margin>0</margin>
+        <padding>0</padding>
+        <height>28px</height>
+      </selector>
+      <selector path=".userMenuActions ul li">
+        <float>left</float>
+        <text-align>left</text-align>
+      </selector>
+      <selector path=".userMenuActions ul li a:hover, .userMenuActions ul li:hover">
+        <background-color preset="white (DAM backgrounds)" />
+        <color preset="header.userMenuHover (DAM colors)" />
+      </selector>
+      <selector path=".userMenuActions a">
+        <display>block</display>
+        <text-decoration>none</text-decoration>
+        <margin>0</margin>
+        <color preset="header.userMenu (DAM colors)" />
+        <background-color preset="white (DAM backgrounds)" />
+      </selector>
+      <selector path=".userMenuActions a.userButton">
+        <background preset="header.userMenu (DAM backgrounds)"/>
+        <padding>3px 8px 5px 23px</padding>
+      </selector>
+      <selector path=".userMenuActions li ul">
+        <display>none</display>
+        <position>absolute</position>
+        <width>180px</width>
+        <height>auto</height>
+        <border preset="header.userMenuList (DAM borders)" />
+        <box-shadow>3px 3px 5px rgba(0, 0, 0, 0.5)</box-shadow>
+        <border-top>none</border-top>
+        <z-index>1000</z-index>
+      </selector>
+      <selector path=".userMenuActions li:hover ul">
+        <display>block</display>
+      </selector>
+      <selector path=".userMenuActions li ul a">
+        <padding>4px 4px 4px 22px</padding>
+      </selector>
+      <selector path=".userMenuActions ul li li">
+        <width>180px</width>
+      </selector>
+       <selector path=".userMenuActions ul ul a:hover">
+        <background-color preset="header.userListLinkHover (DAM backgrounds)" />
+      </selector>
+      <selector path=".userMenuActions input.button">
+        <margin>0 5px</margin>
+      </selector>
+      <selector path=".mainTabs">
+        <font preset="default (DAM fonts)"/>
+        <line-height>normal</line-height>
+        <height>28px</height>
+        <float>left</float>
+      </selector>
+      <selector path=".mainTabs ul">
+        <margin>0</margin>
+        <padding>0</padding>
+      </selector>
+      <selector path=".mainTabs li">
+        <background-color preset="header.mainTabs (DAM backgrounds)" />
+        <display>inline</display>
+        <float>left</float>
+        <height>28px</height>
+        <margin>0 5px</margin>
+      </selector>
+      <selector path=".mainTabs a, .mainTabs a:visited">
+        <color preset="header.mainTabs (DAM colors)" />
+        <display>inline-block</display>
+        <font-size>12px</font-size>
+        <padding>5px 11px 8px</padding>
+        <text-decoration>none</text-decoration>
+      </selector>
+      <selector path=".mainTabs a:hover">
+        <color preset="header.mainTabsHover (DAM colors)" />
+      </selector>
+      <selector path=".mainTabs li.selected">
+        <background-color preset="header.mainTabsSelected (DAM backgrounds)" />
+      </selector>
+      <selector path=".mainTabs li.selected a, .mainTabs li.selected a:hover, .mainTabs li.selected a:visited">
+        <color preset="header.mainTabsSelected (DAM colors)" />
+        <font-weight>bold</font-weight>
+        <text-decoration>none</text-decoration>
+      </selector>
+      <selector path=".mainTabs li a:hover">
+        <text-decoration>none</text-decoration>
+      </selector>
+      <selector path=".footerDefaultLinks">
+        <border-top preset="footer (DAM borders)"/>
+        <background preset="footer (DAM backgrounds)"/>
+        <padding>15px</padding>
+      </selector>
+      <selector path=".footerBlock">
+        <margin>0</margin>
+        <line-height>1.25em</line-height>
+        <padding>0</padding>
+        <font preset="small (DAM fonts)"/>
+      </selector>
+      <selector path=".footerBlock div">
+        <margin>0</margin>
+        <line-height>1.25em</line-height>
+        <padding>0</padding>
+        <font preset="small (DAM fonts)"/>
+      </selector>
+      <selector path=".footerBlock form, .footerBlock p">
+        <margin>5px 0px 0px 0px</margin>
+        <padding>0</padding>
+      </selector>
+      <selector path=".nuxLinks">
+        <float>right</float>
+        <padding-left>20px</padding-left>
+      </selector>
+      <selector path=".nuxLinks a">
+        <vertical-align>middle</vertical-align>
+      </selector>
+      <selector path=".copyrights">
+        <float>right</float>
+        <padding>2px 20px 0 0</padding>
+        <color preset="footer.text (DAM colors)" />
+      </selector>
+      <selector path="a.twitt">
+        <background preset="footer.twittLink (DAM backgrounds)" />
+        <height>16px</height>
+        <width>16px</width>
+        <display>inline-block</display>
+        <margin>0px 5px</margin>
+      </selector>
+      <selector path="a.twitt:hover">
+        <background-position>left bottom</background-position>
+      </selector>
+      <selector path="a.linkedin">
+        <background preset="footer.linkedInLink (DAM backgrounds)" />
+        <height>16px</height>
+        <width>16px</width>
+        <display>inline-block</display>
+        <margin>0px 5px</margin>
+      </selector>
+      <selector path="a.linkedin:hover">
+        <background-position>-16px bottom</background-position>
+      </selector>
+      <selector path=".clear">
+        <clear>both</clear>
       </selector>
     </style>
     <style name="common style" inherit="default buttons">
@@ -273,7 +424,6 @@
       <selector path="input, table">
         <margin>0</margin>
       </selector>
-
       <selector path=".facesStatusMessage">
         <position>absolute</position>
         <left>48%</left>
@@ -379,7 +529,7 @@
       <selector path=".togglePanelTitleBox"/>
       <selector path=".togglePanel">
         <margin>0</margin>
-        <background>#fff url(/nuxeo/img/data_title_bg.png) repeat-x top left</background>
+        <background>#fff url(${org.nuxeo.ecm.contextPath}/img/data_title_bg.png) repeat-x top left</background>
       </selector>
       <selector path=".togglePanel h3">
         <padding>4px 0</padding>
@@ -388,11 +538,11 @@
       </selector>
       <selector path=".togglePanel h3 .folded">
         <padding>0 0 0 18px</padding>
-        <background>transparent url(/nuxeo/icons/arrow_folded.gif) top left no-repeat</background>
+        <background>transparent url(${org.nuxeo.ecm.contextPath}/icons/arrow_folded.gif) top left no-repeat</background>
       </selector>
       <selector path=".togglePanel h3 .unfolded">
         <padding>0 0 0 18px</padding>
-        <background>transparent url(/nuxeo/icons/arrow_unfolded.gif) top left no-repeat</background>
+        <background>transparent url(${org.nuxeo.ecm.contextPath}/icons/arrow_unfolded.gif) top left no-repeat</background>
       </selector>
       <selector path=".togglePanel h3 a,.togglePanel h3 a:link, .togglePanel h3 a:visited, .togglePanel h3 a:hover, .togglePanel h3 a:visited:hover">
         <color>#4B4D68</color>
@@ -421,7 +571,7 @@
         <background preset="blue.light (DAM backgrounds)"/>
       </selector>
       <selector path=".logopic">
-        <padding>0px 5px</padding>
+        <padding>6px 5px 0px</padding>
         <font-size>1%</font-size><!-- for IE -->
       </selector>
       <selector path=".searchFilter"/>
@@ -442,23 +592,23 @@
       <selector path=".banner_actions ul li a">
         <display>block</display>
         <padding>9px 10px 8px</padding>
-        <background>transparent url(/nuxeo/img/headerLink_bg.png) repeat-x top left</background>
+        <background>transparent url(${org.nuxeo.ecm.contextPath}/img/headerLink_bg.png) repeat-x top left</background>
       </selector>
       <selector path=".banner_actions ul li a:hover">
-        <background>transparent url(/nuxeo/img/headerLink_bg_hover.png) repeat-x top left</background>
+        <background>transparent url(${org.nuxeo.ecm.contextPath}/img/headerLink_bg_hover.png) repeat-x top left</background>
         <text-decoration>none</text-decoration>
       </selector>
       <selector path=".importButton">
-        <padding>6px 0 3px 20px</padding>
-        <background>transparent url(/nuxeo/img/import_button.png) no-repeat top left</background>
+        <padding>0 0 0 20px</padding>
+        <background>url("/nuxeo/img/import_button.png") no-repeat scroll left bottom transparent</background>
       </selector>
       <selector path=".administrationButton">
         <padding>6px 0 3px 22px</padding>
-        <background>transparent url(/nuxeo/img/administration_button.png) no-repeat top left</background>
+        <background>transparent url(${org.nuxeo.ecm.contextPath}/img/administration_button.png) no-repeat top left</background>
       </selector>
       <selector path=".assetManagementButton">
         <padding>6px 0 3px 24px</padding>
-        <background>transparent url(/nuxeo/img/asset_management_button.png) no-repeat top left</background>
+        <background>transparent url(${org.nuxeo.ecm.contextPath}/img/asset_management_button.png) no-repeat top left</background>
       </selector>
       <selector path=".separator">
         <padding>9px 0px 8px 7px</padding>
@@ -534,7 +684,7 @@
         <border>1px solid #445B71</border>
         <margin>15px 70px</margin>
         <padding>10px 15px 10px 25px</padding>
-        <background>#f8fcff url(/nuxeo/icons/warning.gif) no-repeat scroll 5px 8px</background>
+        <background>#f8fcff url(${org.nuxeo.ecm.contextPath}/icons/warning.gif) no-repeat scroll 5px 8px</background>
       </selector>
       <!-- style for Rich Faces thumb panel -->
       <selector path=".dr-pnl">
@@ -644,6 +794,31 @@
         <padding>0</padding>
         <width>0</width>
       </selector>
+      <!-- Style for BigThumbnailView -->
+      <selector path=".bigThumbnailView .thumbnailItem">
+        <width>536px</width>
+        <height>446px</height>
+        <float>left</float>
+        <margin>10px</margin>
+      </selector>
+      <selector path=".bigThumbnailView .thumbViewElement">
+        <width>520px</width>
+        <height>430px</height>
+      </selector>
+      <selector path=".bigThumbnailView .thumbViewElement .thumbViewPic td">
+        <width>510px</width>
+        <height>300px</height>
+        <padding-bottom>20px</padding-bottom>
+      </selector>
+      <selector path=".bigThumbnailView .thumbViewPictureLink">
+        <width>510px</width>
+        <height>320px</height>
+        <margin>0 auto 15px</margin>
+      </selector>
+      <selector path=".thumbViewPicture">
+        <max-height>320px</max-height>
+        <max-width>500px</max-width>
+      </selector>
       <!-- rich faces disabled icon area for the panelMenuItem that holds the tree -->
       <selector path=".hiddenMenuIcon .dr-pmenu-nowrap img">
         <display>none</display>
@@ -717,79 +892,23 @@
       <selector path=".commentAction">
         <float>right</float>
       </selector>
-    </style>
-    <style name="settings style" inherit="common style">
-      <selector path=".tabsBar">
+      <selector path=".clear">
+        <clear>both</clear>
       </selector>
-      <selector path=".tabsBar ul">
-        <height>21px</height>
-      </selector>
-      <selector path=".tabsBar li">
-        <margin>0 3px 0px 0px</margin>
-      </selector>
-      <selector path=".tabsBar a, .tabsBar a:hover, .tabsBar a:visited">
-        <border-right>none</border-right>
-        <background>#AFBBCC none</background>
-        <border-top>1px solid #AFBBCC</border-top>
-        <color>#f6f6f6</color>
-      </selector>
-      <selector path=".tabsBar a:hover">
-        <border-top>1px solid #fff</border-top>
-      </selector>
-      <selector path=".tabsBar a.selected, .tabsBar a.selected:hover, .tabsBar a.selected:visited">
-        <border-top preset="grayneutral (DAM borders)"/>
-        <border-left preset="grayneutral (DAM borders)"/>
-      </selector>
-      <selector path=".tabsBar li a:hover">
-      </selector>
-      <selector path=".tabsContent">
-        <background preset="white (DAM backgrounds)"/>
-      </selector>
-      <selector path=".tabsContent .tabsContent">
-        <margin>10px 0px 0px</margin>
-      </selector>
-      <selector path="h3">
-        <margin>10px 0px 15px</margin>
-      </selector>
-      <selector path=".action_bar ul">
-        <list-style>none</list-style>
-        <margin>10px 0px 15px</margin>
-        <padding>0px 5px</padding>
-      </selector>
-      <selector path=".action_bar li.selected">
-        <background-color>transparent</background-color>
-      </selector>
-      <selector path=".action_bar ul li a img">
-        <margin-right>4px</margin-right>
-      </selector>
-      <selector path=".directoryFilter">
-        <margin-right>10px</margin-right>
-      </selector>
-      <selector path=".directoryBack">
-        <background>url(/nuxeo/icons/arrow_left.gif) 3px 1px no-repeat</background>
-        <padding>2px 2px 2px 20px</padding>
+      <!-- Fix calendar width -->
+      <selector path=".DateSelectors table.rich-calendar-exterior">
+        <width>auto</width>
       </selector>
     </style>
-    <style element="page[1]/section[1]|page[3]/section[1]" inherit="common style">
+    <style element="page[1]/section[1]" inherit="common style">
       <selector path="" view="section frame">
-        <border-bottom preset="black (DAM borders)"/>
-        <background preset="banner (DAM backgrounds)"/>
+        <border-bottom preset="topbar (DAM borders)"/>
+        <background preset="topbar (DAM backgrounds)"/>
       </selector>
     </style>
-    <style element="page[1]/section[1]/cell[2]|page[3]/section[1]/cell[2]" inherit="common style"/>
-        <style element="page[1]/section[1]/cell[2]/fragment[1]|page[3]/section[1]/cell[2]/fragment[1]" inherit="common style">
-      <selector path=".banner_actions" view="Nuxeo header">
-        <margin>0</margin>
-        <padding>0px 10px 0px 0px</padding>
-        <text-align>right</text-align>
-        <font preset="small (DAM fonts)"/>
-        <color preset="gray.light (DAM colors)"/>
-      </selector>
-      <selector path=".banner_actions a, .banner_actions a:link, .banner_actions a:hover, .banner_actions a:active, .banner_actions a:visited," view="Nuxeo header">
-        <color preset="white (DAM colors)"/>
-      </selector>
-    </style>
-        <style element="page[1]/section[2]/cell[1]" inherit="common style">
+    <style element="page[1]/section[1]/cell[2]"/>
+    <style element="page[1]/section[1]/cell[2]/fragment[1]" inherit="header and footer style" />
+    <style element="page[1]/section[2]/cell[1]" inherit="common style">
       <selector path="" view="cell frame">
         <background preset="leftcolumn (DAM backgrounds)"/>
         <border-right preset="graymedium (DAM borders)"/>
@@ -801,13 +920,13 @@
       </selector>
       <selector path=".actionBar">
         <background-color>#a0a8b4</background-color>
-        <padding>1px 5px</padding>
-        <height>19px</height>
+        <padding>5px 5px 0</padding>
+        <height>40px</height>
       </selector>
       <selector path=".actionBar .button">
-        <margin>1px 3px</margin>
-        <padding>1px 5px</padding>
-        <font-size>9px</font-size>
+        <margin>3px</margin>
+        <padding>4px 7px</padding>
+        <font-size>10px</font-size>
       </selector>
       <selector path="a">
         <white-space>normal</white-space>
@@ -847,34 +966,13 @@
         <margin>0px 10px 0px 0px</margin>
       </selector>
     </style>
-    <style element="page[1]/section[3]|page[3]/section[3]" inherit="common style">
-      <selector path="" view="section frame">
-        <padding>5px 10px</padding>
-        <background preset="footer (DAM backgrounds)"/>
-        <border-top preset="black (DAM borders)"/>
-      </selector>
-      <selector path="div" view="section frame">
-        <font preset="tiny (DAM fonts)"/>
-        <color>#AFAFAF</color>
+    <style element="page[1]/section[3]" inherit="header and footer style"/>
+    <style element="page[1]/section[3]/cell[1]"/>
+    <style element="page[1]/section[3]/cell[1]/fragment[1]" inherit="header and footer style">
+      <selector path="" view="Nuxeo footer">
+        <font preset="small (DAM fonts)"/>
+        <color preset="header.text (DAM colors)" />
       </selector>
     </style>
-    <style element="page[1]/section[3]/cell[1]|page[3]/section[3]/cell[1]" inherit="common style"/>
-    <style element="page[1]/section[3]/cell[1]/fragment[1]|page[3]/section[3]/cell[1]/fragment[1]" inherit="common style">
-      <selector path="a, a:link, a:active, a:visited" view="Nuxeo footer">
-        <color preset="white (DAM colors)"/>
-        <text-decoration>none</text-decoration>
-      </selector>
-      <selector path="a:hover">
-        <color preset="white (DAM colors)" view="Nuxeo footer"/>
-        <text-decoration>underline</text-decoration>
-      </selector>
-    </style>
-    <style element="page[3]/section[2]/cell[1]" inherit="common style">
-      <selector path="" view="cell frame">
-        <padding>10px</padding>
-        <background preset="scroll (DAM backgrounds)"/>
-      </selector>
-    </style>
-    <style element="page[3]/section[2]/cell[1]/fragment[1]" inherit="settings style" />
   </formats>
 </theme>
