@@ -132,4 +132,9 @@
       class="org.nuxeo.ecm.platform.ec.notification.service.GeneralSettingsDescriptor" />
   </extension-point>
 
+  <extension-point name="notificationListenerHook">
+    <object
+      class="org.nuxeo.ecm.platform.ec.notification.service.NotificationListenerHookDescriptor" />
+  </extension-point>
+
 </component>

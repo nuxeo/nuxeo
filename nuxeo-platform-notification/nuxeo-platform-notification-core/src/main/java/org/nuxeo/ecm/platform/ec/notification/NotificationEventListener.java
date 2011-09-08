@@ -43,7 +43,6 @@ import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.PostCommitEventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
-import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.ec.notification.email.EmailHelper;
 import org.nuxeo.ecm.platform.ec.notification.service.NotificationService;
 import org.nuxeo.ecm.platform.ec.notification.service.NotificationServiceHelper;
@@ -116,13 +115,8 @@ public class NotificationEventListener implements PostCommitEventListener {
         Map<String, Serializable> properties = event.getContext().getProperties();
         Map<Notification, List<String>> targetUsers = new HashMap<Notification, List<String>>();
 
-        //Comments notifications: the related thread is retrieved for sending to its subscribers
-        if (docCtx.getSourceDocument().getType().equals("Post")
-                || docCtx.getSourceDocument().getType().equals("Comment")) {
-            CommentManager commentManager = Framework.getService(CommentManager.class);
-            DocumentModel thread = commentManager.getThreadForComment(docCtx.getSourceDocument());
-            Object[] args = { thread, null };
-            docCtx.setArgs(args);
+        for(NotificationListenerHook hookListener:NotificationServiceHelper.getNotificationService().getListenerHooks()) {
+            docCtx = hookListener.handleNotifications(event);
         }
 
         gatherConcernedUsersForDocument(coreSession,
