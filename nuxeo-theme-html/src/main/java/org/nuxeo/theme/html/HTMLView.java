@@ -19,7 +19,6 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.theme.elements.ClassHolder;
 import org.nuxeo.theme.elements.Element;
 import org.nuxeo.theme.fragments.Fragment;
 import org.nuxeo.theme.fragments.FragmentType;
@@ -79,12 +78,9 @@ public class HTMLView extends TemplateView {
             result = replaceModelExpressions(info, result);
         }
 
-        if (element instanceof ClassHolder) {
-            ClassHolder classHolder = (ClassHolder) element;
-            String className = classHolder.getClassName();
-            if (className != null) {
-                result = CSSUtils.insertCssClass(result, className);
-            }
+        String className = element.getClassName();
+        if (className != null) {
+            result = CSSUtils.insertCssClass(result, className);
         }
 
         // replace [nxthemes markup] strings with the actual markup

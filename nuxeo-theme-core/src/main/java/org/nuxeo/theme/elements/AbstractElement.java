@@ -31,6 +31,8 @@ public abstract class AbstractElement extends AbstractNode implements Element {
 
     private String description;
 
+    private String className;
+
     public Integer getUid() {
         return uid;
     }
@@ -81,6 +83,16 @@ public abstract class AbstractElement extends AbstractNode implements Element {
 
     public boolean isEmpty() {
         return !hasChildren();
+    }
+
+    @Override
+    public String getClassName() {
+        return className;
+    }
+
+    @Override
+    public void setClassName(String className) {
+        this.className = className;
     }
 
     public String computeXPath() {

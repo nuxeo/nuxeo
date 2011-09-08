@@ -43,7 +43,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.theme.Manager;
-import org.nuxeo.theme.elements.ClassHolder;
 import org.nuxeo.theme.elements.Element;
 import org.nuxeo.theme.elements.ElementFactory;
 import org.nuxeo.theme.elements.ElementFormatter;
@@ -387,12 +386,9 @@ public class ThemeParser {
                 }
             }
 
-            if (elem instanceof ClassHolder) {
-                ClassHolder classHolder = (ClassHolder) elem;
-                Node classAttr = attributes.getNamedItem("class");
-                if (classAttr != null) {
-                    classHolder.setClassName(classAttr.getNodeValue());
-                }
+            Node classAttr = attributes.getNamedItem("class");
+            if (classAttr != null) {
+                elem.setClassName(classAttr.getNodeValue());
             }
 
             String description = getCommentAssociatedTo(n);
