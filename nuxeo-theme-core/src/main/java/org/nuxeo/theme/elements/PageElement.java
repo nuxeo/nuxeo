@@ -14,6 +14,6 @@
 
 package org.nuxeo.theme.elements;
 
-public class PageElement extends AbstractElement {
+public class PageElement extends AbstractClassHolderElement {
 
 }

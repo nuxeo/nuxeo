@@ -43,6 +43,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.theme.Manager;
+import org.nuxeo.theme.elements.ClassHolder;
 import org.nuxeo.theme.elements.Element;
 import org.nuxeo.theme.elements.ElementFactory;
 import org.nuxeo.theme.elements.ElementFormatter;
@@ -383,6 +384,14 @@ public class ThemeParser {
                 } else {
                     log.warn("Element names may only contain lower-case alpha-numeric characters, digits, underscores, spaces and dashes: "
                             + elementName);
+                }
+            }
+
+            if (elem instanceof ClassHolder) {
+                ClassHolder classHolder = (ClassHolder) elem;
+                Node classAttr = attributes.getNamedItem("class");
+                if (classAttr != null) {
+                    classHolder.setClassName(classAttr.getNodeValue());
                 }
             }
 

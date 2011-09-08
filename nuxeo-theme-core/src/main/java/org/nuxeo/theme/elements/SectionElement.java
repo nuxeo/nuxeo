@@ -14,6 +14,6 @@
 
 package org.nuxeo.theme.elements;
 
-public class SectionElement extends AbstractElement {
+public class SectionElement extends AbstractClassHolderElement {
 
 }

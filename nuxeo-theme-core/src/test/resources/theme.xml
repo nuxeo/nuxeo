@@ -2,17 +2,17 @@
 <theme description="Theme 1" name="theme1">
   <layout>
     <!-- Page 1 -->
-    <page name="page1">
-      <section name="header">
+    <page name="page1" class="pageClass1 pageClass2">
+      <section name="header" class="sectionClass1 sectionClass2">
         <cell>
-          <!--  The first fragment -->
+          <!-- The first fragment -->
           <fragment type="dummy fragment" />
         </cell>
-        <cell name="right column">
+        <cell name="right column" class="cellClass">
           <fragment type="dummy fragment"
             perspectives="default" name="main" />
           <!-- this fragment is visible in the view perspective only -->
-          <fragment type="dummy fragment" perspectives="view" />
+          <fragment type="dummy fragment" perspectives="view"/>
         </cell>
       </section>
     </page>
