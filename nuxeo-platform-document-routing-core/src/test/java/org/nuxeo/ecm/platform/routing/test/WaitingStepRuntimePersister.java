@@ -16,8 +16,11 @@
  */
 package org.nuxeo.ecm.platform.routing.test;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -64,6 +67,21 @@ public class WaitingStepRuntimePersister {
         }
         ActionableValidator validator = new ActionableValidator(
                 new SimpleActionableObject(id), session);
+        validator.validate();
+        runningSteps.remove(id);
+        doneSteps.add(id);
+    }
+
+    static public void resumeDecisionalStep(final String id,
+            CoreSession session, String nextStepPos) {
+        if (!runningSteps.contains(id)) {
+            throw new RuntimeException("Asking to resume a non peristed step.");
+        }
+
+        Map<String, Serializable> properties = new HashMap<String, Serializable>();
+        properties.put("nextStepPos", nextStepPos);
+        ActionableValidator validator = new ActionableValidator(
+                new SimpleDecisionalActionableObject(id), session, properties);
         validator.validate();
         runningSteps.remove(id);
         doneSteps.add(id);

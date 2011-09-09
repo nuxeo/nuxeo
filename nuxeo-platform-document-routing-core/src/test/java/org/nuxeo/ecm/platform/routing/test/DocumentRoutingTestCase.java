@@ -34,7 +34,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author arussel
- *
+ * 
  */
 public class DocumentRoutingTestCase extends SQLRepositoryTestCase {
     public static final String ROOT_PATH = "/";
@@ -119,6 +119,32 @@ public class DocumentRoutingTestCase extends SQLRepositoryTestCase {
         return route;
     }
 
+    public DocumentModel createDocumentRouteModelWithConditionalFolder(
+            CoreSession session, String name, String path)
+            throws ClientException {
+        DocumentModel route = createDocumentModel(session, name,
+                DocumentRoutingConstants.DOCUMENT_ROUTE_DOCUMENT_TYPE, path);
+        createDocumentModel(session, "step1",
+                DocumentRoutingConstants.STEP_DOCUMENT_TYPE,
+                route.getPathAsString());
+        DocumentModel condFolder = createDocumentModel(session,
+                "conditionalStep2",
+                DocumentRoutingConstants.CONDITIONAL_STEP_DOCUMENT_TYPE,
+                route.getPathAsString());
+        // create a step into each one of the 2 branches
+        createDocumentModel(session, "executeIfOption1",
+                DocumentRoutingConstants.STEP_DOCUMENT_TYPE,
+                condFolder.getPathAsString() + "/option1");
+        createDocumentModel(session, "executeIfOption2",
+                DocumentRoutingConstants.STEP_DOCUMENT_TYPE,
+                condFolder.getPathAsString() + "/option2");
+        createDocumentModel(session, "step3",
+                DocumentRoutingConstants.STEP_DOCUMENT_TYPE,
+                route.getPathAsString());
+        session.save();
+        return route;
+    }
+
     public DocumentModel createDocumentModel(CoreSession session, String name,
             String type, String path) throws ClientException {
         DocumentModel route1 = session.createDocumentModel(path, name, type);
@@ -131,6 +157,13 @@ public class DocumentRoutingTestCase extends SQLRepositoryTestCase {
             throws ClientException {
         DocumentModel model = createDocumentRouteModel(session, name,
                 WORKSPACES_PATH);
+        return model.getAdapter(DocumentRoute.class);
+    }
+
+    public DocumentRoute createDocumentRouteWithConditionalFolder(
+            CoreSession session, String name) throws ClientException {
+        DocumentModel model = createDocumentRouteModelWithConditionalFolder(
+                session, name, WORKSPACES_PATH);
         return model.getAdapter(DocumentRoute.class);
     }
 

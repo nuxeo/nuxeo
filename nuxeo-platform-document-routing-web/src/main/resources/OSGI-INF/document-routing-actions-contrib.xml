@@ -73,6 +73,7 @@
       <category>ADD_STEP_ACTIONS_LIST</category>
       <filter-id>isNotRunning</filter-id>
       <filter-id>isEditableRoute</filter-id>
+      <filter-id>isNotImutableConditionalStructure</filter-id>
     </action>
 
     <action id="ADD_STEP_AFTER" label="command.add.routeelement.after"
@@ -80,6 +81,7 @@
       icon="/icons/add.png">
       <category>ADD_STEP_ACTIONS_LIST</category>
       <filter-id>isEditableRoute</filter-id>
+      <filter-id>isNotImutableConditionalStructure</filter-id>
     </action>
 
     <action id="ADD_STEP_BETWEEN" label="command.add.routeelement.in"
@@ -88,6 +90,7 @@
       <category>ADD_STEP_IN_FORK_ACTIONS_LIST</category>
       <filter-id>isNotRunning</filter-id>
       <filter-id>isEditableRoute</filter-id>
+       <filter-id>isNotImutableConditionalStructure</filter-id>
     </action>
 
     <action id="REMOVE_STEP" label="command.delete"
@@ -95,6 +98,7 @@
       <category>REMOVE_STEP_ACTIONS_LIST</category>
       <filter-id>isNotRunning</filter-id>
       <filter-id>isEditableRoute</filter-id>
+      <filter-id>isNotImutableConditionalStructure</filter-id>
     </action>
 
     <action id="UPDATE_STEP" label="command.edit"
@@ -110,6 +114,7 @@
       <category>EDIT_STEP_ACTIONS_LIST</category>
       <filter-id>isNotRunning</filter-id>
       <filter-id>isEditableRoute</filter-id>
+      <filter-id>isNotImutableConditionalStructure</filter-id>
     </action>
 
     <action id="MOVE_STEP_DOWN" label="command.selection.moveDown"
@@ -118,6 +123,7 @@
       <category>EDIT_STEP_ACTIONS_LIST</category>
       <filter-id>isNotRunning</filter-id>
       <filter-id>isEditableRoute</filter-id>
+      <filter-id>isNotImutableConditionalStructure</filter-id>
     </action>
 
   </extension>
@@ -195,6 +201,14 @@
       <rule grant="false">
         <condition>
           document.getCurrentLifeCycleState().equals("running")
+        </condition>
+      </rule>
+    </filter>
+
+    <filter id="isNotImutableConditionalStructure">
+      <rule grant="false">
+        <condition>
+          #{documentManager.getParentDocument(document.getRef()).hasFacet("ConditionalStepFolder")}
         </condition>
       </rule>
     </filter>

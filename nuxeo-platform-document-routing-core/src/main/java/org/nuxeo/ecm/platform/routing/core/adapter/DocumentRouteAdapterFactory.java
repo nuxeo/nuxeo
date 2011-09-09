@@ -23,6 +23,7 @@ import org.nuxeo.ecm.core.api.adapter.DocumentAdapterFactory;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.ExecutionTypeValues;
+import org.nuxeo.ecm.platform.routing.core.impl.ConditionalRunner;
 import org.nuxeo.ecm.platform.routing.core.impl.DocumentRouteElementImpl;
 import org.nuxeo.ecm.platform.routing.core.impl.DocumentRouteImpl;
 import org.nuxeo.ecm.platform.routing.core.impl.DocumentRouteStepsContainerImpl;
@@ -62,6 +63,9 @@ public class DocumentRouteAdapterFactory implements DocumentAdapterFactory {
                 return new DocumentRouteStepsContainerImpl(doc,
                         new ParallelRunner());
             }
+        } else if (doc.hasFacet(DocumentRoutingConstants.CONDITIONAL_STEP_FACET)) {
+            return new DocumentRouteStepsContainerImpl(doc,
+                    new ConditionalRunner());
         }
         return null;
     }
