@@ -125,6 +125,11 @@
       <filter-id>isEditableRoute</filter-id>
       <filter-id>isNotImutableConditionalStructure</filter-id>
     </action>
+    
+    <action id="newDocument">
+      <filter-id>create</filter-id>
+      <filter-id>isNotDraftRouteModel</filter-id>
+    </action>
 
   </extension>
 
@@ -210,6 +215,16 @@
         <condition>
           #{documentManager.getParentDocument(document.getRef()).hasFacet("ConditionalStepFolder")}
         </condition>
+      </rule>
+    </filter>
+    
+    <filter id="isNotDraftRouteModel">
+      <rule grant="false">
+        <condition>
+          !(document.getCurrentLifeCycleState().equals("draft"))
+        </condition>
+        <type>DocumentRoute</type>
+        <type>StepFolder</type>
       </rule>
     </filter>
 
