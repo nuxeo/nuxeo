@@ -37,6 +37,9 @@ import javax.faces.FacesException;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 
+import org.nuxeo.theme.ResourceResolver;
+import org.nuxeo.theme.jsf.FacesResourceResolver;
+
 import com.sun.facelets.Facelet;
 import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletException;
@@ -95,7 +98,13 @@ public final class DefaultFacelet extends Facelet {
                 this);
         this.refresh(parent);
         ComponentSupport.markForDeletion(parent);
-        this.root.apply(ctx, parent);
+        ResourceResolver.setInstance(new FacesResourceResolver(
+                facesContext.getExternalContext()));
+        try {
+            this.root.apply(ctx, parent);
+        } finally {
+            ResourceResolver.setInstance(null);
+        }
         ComponentSupport.finalizeForDeletion(parent);
         this.markApplied(parent);
     }
