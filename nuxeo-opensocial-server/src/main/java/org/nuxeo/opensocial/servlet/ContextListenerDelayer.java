@@ -63,13 +63,10 @@ public class ContextListenerDelayer implements ServletContextListener {
 
     /*
      * No need to delay this method.
-     *
-     * @seejavax.servlet.ServletContextListener#contextDestroyed(javax.servlet.
-     * ServletContextEvent)
      */
+    @Override
     public void contextDestroyed(ServletContextEvent sce) {
         delayed.contextDestroyed(sce);
-
     }
 
     /*
@@ -82,6 +79,7 @@ public class ContextListenerDelayer implements ServletContextListener {
     /*
      * This is where the true object expects to be initialzed but we prevent it.
      */
+    @Override
     public void contextInitialized(ServletContextEvent sce) {
         delayedEvent = sce;
         if (hasBeenActivated) {
@@ -96,6 +94,11 @@ public class ContextListenerDelayer implements ServletContextListener {
      * Framework is fully up.
      */
     public void frameworkEvent(FrameworkEvent event) {
+        if (delayedEvent == null) {
+            // OSGi activation done before ServletContextListener init
+            // will initialize later as a standard ServletContextListener
+            return;
+        }
         if (event.getType() == FrameworkEvent.STARTED) {
             delayed.contextInitialized(delayedEvent);
         }
