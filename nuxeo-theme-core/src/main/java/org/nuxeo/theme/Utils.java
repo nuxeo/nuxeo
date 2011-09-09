@@ -105,8 +105,7 @@ public final class Utils {
         InputStream is = null;
         ByteArrayOutputStream os = null;
         try {
-            is = Thread.currentThread().getContextClassLoader().getResourceAsStream(
-                    path);
+            is = ResourceResolver.getInstance().getResourceAsStream(path);
             if (is == null) {
                 log.warn("Resource not found: " + path);
             } else {

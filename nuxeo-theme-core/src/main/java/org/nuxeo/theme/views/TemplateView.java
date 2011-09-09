@@ -22,6 +22,7 @@ import java.io.Reader;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.theme.ResourceResolver;
 import org.nuxeo.theme.rendering.RenderingInfo;
 
 public class TemplateView extends AbstractView {
@@ -39,13 +40,8 @@ public class TemplateView extends AbstractView {
         String result = "";
         InputStream is = null;
         try {
-            is = Thread.currentThread().getContextClassLoader().getResourceAsStream(
-                    template);
-            if (is == null) {
-                String warTemplate = "nuxeo.war/" + template;
-                is = Thread.currentThread().getContextClassLoader().getResourceAsStream(
-                        warTemplate);
-            }
+            // checks through FacesResourceResolver
+            is = ResourceResolver.getInstance().getResourceAsStream(template);
             if (is == null) {
                 log.warn("Template file not found: " + template);
             } else {

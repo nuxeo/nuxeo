@@ -34,6 +34,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.theme.ApplicationType;
 import org.nuxeo.theme.Manager;
+import org.nuxeo.theme.ResourceResolver;
 import org.nuxeo.theme.html.CSSUtils;
 import org.nuxeo.theme.html.JSUtils;
 import org.nuxeo.theme.html.Utils;
@@ -59,6 +60,17 @@ public final class Resources extends HttpServlet implements Serializable {
 
     @Override
     protected void doPost(final HttpServletRequest request,
+            final HttpServletResponse response) throws IOException {
+        ResourceResolver.setInstance(new ServletResourceResolver(
+                getServletContext()));
+        try {
+            doProcess(request, response);
+        } finally {
+            ResourceResolver.setInstance(null);
+        }
+    }
+
+    protected void doProcess(final HttpServletRequest request,
             final HttpServletResponse response) throws IOException {
 
         final String pathInfo = request.getPathInfo();
@@ -203,15 +215,9 @@ public final class Resources extends HttpServlet implements Serializable {
             final OutputStream out) {
         InputStream in = null;
         try {
-            in = Thread.currentThread().getContextClassLoader().getResourceAsStream(
-                    resource.getPath());
-
-            if (in == null) {
-                in = Thread.currentThread().getContextClassLoader().getResourceAsStream(
-                        "nuxeo.war/" + resource.getPath());
-
-            }
-
+            String path = resource.getPath();
+            // checks through ServletResourceResolver
+            in = ResourceResolver.getInstance().getResourceAsStream(path);
             if (in != null) {
                 byte[] buffer = new byte[1024];
                 int read = in.read(buffer);
