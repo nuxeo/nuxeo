@@ -7,25 +7,19 @@
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxh="http://nuxeo.org/nxweb/html"
   xmlns:nxd="http://nuxeo.org/nxweb/document"
-  xmlns:rich="http://richfaces.org/rich">
+  xmlns:rich="http://richfaces.org/rich"
+  class="thumbnailView">
 
   <div id="dataTableContainer">
-  <rich:dataGrid
-    id="dataTable"
-    value="#{documents.rows}"
-    var="row"
-    rowKeyVar="rowKey"
-    columns="4"
-    rendered="#{documents.rowCount > 0}">
-    <a4j:support event="onclick" reRender="dataTable, selection_buttons"
-      onclick="if (event.ctrlKey || event.metaKey) {return false;};"
+
+    <a4j:outputPanel id="dataThumbnailContainer" layout="block" >
+      <a4j:support event="onclick" reRender="dataThumbnailContainer, selection_buttons" onclick="if (event.ctrlKey || event.metaKey) {return false;};"
       action="#{bulkSelectActions.clearWorkingList('CURRENT_SELECTION')}" />
 
-      <rich:panel>
-        <div class="thumbViewElement #{nxu:test(documentActions.currentSelection == row.data, 'selected', '')} #{nxu:test(bulkSelectActions.getIsCurrentSelectionInWorkingList(row.data.ref, 'CURRENT_SELECTION'), 'selectedCtrlClick', '')}">
-        <a4j:support event="onclick" reRender="dataTable, selection_buttons"
-          onclick="if (!event.ctrlKey &amp;&amp; !event.metaKey) {return false;};"
-          action="#{bulkSelectActions.toggleDocumentSelection(row.data, 'CURRENT_SELECTION')}" />
+  <ui:repeat id="dataTable" var="row" value="#{documents.rows}">
+  <a4j:outputPanel layout="block" styleClass="thumbnailItem">
+  <a4j:support event="onclick" reRender="dataThumbnailContainer, selection_buttons" onclick="if (!event.ctrlKey &amp;&amp; !event.metaKey) {return false;};" action="#{bulkSelectActions.toggleDocumentSelection(row.data, 'CURRENT_SELECTION')}" />
+      <div class="thumbViewElement #{nxu:test(documentActions.currentSelection == row.data, 'selected', '')} #{nxu:test(bulkSelectActions.getIsCurrentSelectionInWorkingList(row.data.ref, 'CURRENT_SELECTION'), 'selectedCtrlClick', '')}">
 
         <h:panelGrid rowClasses="thumbViewPic, thumbViewInfos,  thumbViewInfos,  thumbViewInfos,  thumbViewInfos">
           <a4j:commandLink id="imageLink" styleClass="thumbViewPictureLink"
@@ -34,16 +28,13 @@
             reRender="dataTable, selectionView">
             <nxh:graphicImage id="theImage"
               url="#{nxd:fileUrl('downloadPicture', row.data, 'Thumbnail:content', row.data.dublincore.modified)}?conversationId=#{conversation.id}"
-              style="max-height: 80px; max-width:125px;"
               rendered="#{row.data.hasSchema('picture')}"
               styleClass="thumbViewPicture"/>
             <nxh:graphicImage id="theAudio"
               value="/icons/audio_big.png"
-              style="max-height: 90px; max-width:140px;"
               rendered="#{row.data.hasSchema('audio')}"
               styleClass="thumbViewPicture"/>
             <nxh:graphicImage value="/icons/office_big.png"
-              style="max-height: 90px; max-width:140px;"
               rendered="#{!row.data.hasSchema('picture') and !row.data.hasSchema('audio')}"
               styleClass="thumbViewPicture"/>
           </a4j:commandLink>
@@ -77,8 +68,13 @@
           </h:panelGroup>
         </h:panelGrid>
 
-      </div></rich:panel>
+      </div>
+      </a4j:outputPanel>
 
-  </rich:dataGrid>
+    </ui:repeat>
+
+
+    </a4j:outputPanel>
+    <div class="clear"></div>
   </div>
 </div>

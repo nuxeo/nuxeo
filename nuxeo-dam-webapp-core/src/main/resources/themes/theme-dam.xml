@@ -794,12 +794,18 @@
         <padding>0</padding>
         <width>0</width>
       </selector>
+      <selector path=".thumbnailItem">
+        <float>left</float>
+        <margin>10px</margin>
+      </selector>
+      <selector path=".thumbViewPicture">
+        <max-height>80px</max-height>
+        <max-width>125px</max-width>
+      </selector>
       <!-- Style for BigThumbnailView -->
       <selector path=".bigThumbnailView .thumbnailItem">
         <width>536px</width>
         <height>446px</height>
-        <float>left</float>
-        <margin>10px</margin>
       </selector>
       <selector path=".bigThumbnailView .thumbViewElement">
         <width>520px</width>
@@ -815,7 +821,7 @@
         <height>320px</height>
         <margin>0 auto 15px</margin>
       </selector>
-      <selector path=".thumbViewPicture">
+      <selector path=".bigThumbnailView .thumbViewPicture">
         <max-height>320px</max-height>
         <max-width>500px</max-width>
       </selector>

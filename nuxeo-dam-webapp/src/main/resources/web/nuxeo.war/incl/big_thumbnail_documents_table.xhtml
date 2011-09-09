@@ -13,7 +13,7 @@
   <div id="dataTableContainer">
 
     <a4j:outputPanel id="dataThumbnailContainer" layout="block" >
-      <a4j:support event="onclick" reRender="ddd, selection_buttons" onclick="if (event.ctrlKey || event.metaKey) {return false;};"
+      <a4j:support event="onclick" reRender="dataThumbnailContainer, selection_buttons" onclick="if (event.ctrlKey || event.metaKey) {return false;};"
       action="#{bulkSelectActions.clearWorkingList('CURRENT_SELECTION')}" />
 
   <ui:repeat id="dataTable" var="row" value="#{documents.rows}">

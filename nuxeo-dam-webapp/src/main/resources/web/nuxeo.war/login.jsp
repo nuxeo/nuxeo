@@ -4,14 +4,32 @@
 <%@ page language="java"%>
 <%@ page import="org.nuxeo.runtime.api.Framework"%>
 <%@ page import="org.nuxeo.ecm.platform.web.common.admin.AdminStatusHelper"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ page import="java.util.Locale"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%
-    String productName = Framework.getProperty("org.nuxeo.ecm.product.name");
-    String productVersion = Framework.getProperty("org.nuxeo.ecm.product.version");
+String productName = Framework.getProperty("org.nuxeo.ecm.product.name");
+String productVersion = Framework.getProperty("org.nuxeo.ecm.product.version");
+String context = request.getContextPath();
+Locale locale = request.getLocale();
+String language = locale == null ? "en" : locale.getLanguage();
+String country = locale == null ? "US" : locale.getCountry();
+String selectedLanguage = null;
+// handle variants
+if ("en".equals(language)) {
+    if ("US".equals(country) || "GB".equals(country)) {
+        selectedLanguage = "en_" + country;
+    } else {
+        selectedLanguage = "en_US";
+    }
+} else if ("pt".equals(language)) {
+    selectedLanguage = "pt_BR";
+} else {
+    selectedLanguage = language;
+}
 
-    boolean maintenanceMode = AdminStatusHelper.isInstanceInMaintenanceMode();
-    String maintenanceMessage = AdminStatusHelper.getMaintenanceMessage();
+boolean maintenanceMode = AdminStatusHelper.isInstanceInMaintenanceMode();
+String maintenanceMessage = AdminStatusHelper.getMaintenanceMessage();
 %>
 <html>
 
@@ -19,21 +37,21 @@
 
 <head>
 <title><%=productName%></title>
-<link rel="icon" type="image/png" href="/nuxeo/icons/favicon.png" />
+<link rel="icon" type="image/png" href="<%=context%>/icons/favicon.png" />
 <style type="text/css">
 <!--
  body {
   font: normal 11px "Lucida Grande", sans-serif;
   background-repeat: no-repeat;
-  background-position: top left;
-  background-color: white;
-  background-image: url(/nuxeo/img/dam_login_1500.jpg);
+  background-position: top center;
+  background-color: black;
+  background-image: url(<%=context%>/img/dam_login_1500.jpg);
   color: #343434;
   }
 
 .topBar {
   background-color: #000;
-  opacity: 0.6;
+  opacity: 0.8;
   width:100%;
   height:30px;
   border:0;
@@ -126,7 +144,7 @@ nxthemes css is not used in login.jsp */
   cursor:pointer;
   color: #454545;
   font-size: 10px;
-  background: #CECFD1 url(/nuxeo/img/buttons.png) repeat-x scroll left top;
+  background: #CECFD1 url(<%=context%>/img/buttons.png) repeat-x scroll left top;
   border:1px solid #BFC5CB;
   padding: 2px 5px 2px 5px;
   margin: 5px 10px 10px 0;
@@ -218,12 +236,29 @@ nxthemes css is not used in login.jsp */
   color:#000;
   font:bold 10px "Lucida Grande", sans-serif;
   border:1px solid #666;
-  background: url(/nuxeo/icons/warning.gif) 2px 3px no-repeat #FFCC33;
+  background: url(<%=context%>/icons/warning.gif) 2px 3px no-repeat #FFCC33;
   margin-bottom:12px;
   display:block;
   padding:5px 5px 5px 23px;
   text-align: center;
   }
+
+.welcome {
+  background:#fff;
+  opacity:0.8;
+  filter : alpha(opacity=80);
+  border: 1px solid #4E9AE1;
+  width:400px;
+  padding:20px;
+  margin: 10px;
+}
+
+.welcomeText {
+  font: 12px "Lucida Grande", sans-serif;
+  text-align: left;
+  color: #454545;
+  margin:0 0 0.8em 0;
+}
 -->
 
 </style>
@@ -254,7 +289,7 @@ nxthemes css is not used in login.jsp */
     <tr class="topBar">
       <td colspan="2" class="loginLogo">
         <div>
-          <img width="305" height="30" alt="Nuxeo DAM" src="/nuxeo/img/dam_logo_login.png"/>
+          <img width="305" height="30" alt="Nuxeo DAM" src="<%=context%>/img/dam_logo_login.png"/>
         </div>
       </td>
       <td align="right" class="leftColumn">
@@ -285,6 +320,7 @@ nxthemes css is not used in login.jsp */
      </tr>
      <tr>
        <td align="center" colspan="2">
+         <%@ include file="login_welcome.jsp" %>
          <form method="post" action="nxstartup.faces">
            <!-- To prevent caching -->
           <%
@@ -292,6 +328,7 @@ nxthemes css is not used in login.jsp */
             response.setHeader("Pragma", "no-cache"); // HTTP 1.0
             response.setDateHeader("Expires", -1); // Prevents caching at the proxy server
           %>
+          <!-- ;jsessionid=<%=request.getSession().getId()%> -->
             <div class="login">
               <% if (maintenanceMode) { %>
               <div class="maintenanceModeMessage">
@@ -379,6 +416,7 @@ nxthemes css is not used in login.jsp */
       </tr>
     </tbody>
   </table>
+<!--   Current User = <%=request.getRemoteUser()%> -->
 </body>
 </html>
 
