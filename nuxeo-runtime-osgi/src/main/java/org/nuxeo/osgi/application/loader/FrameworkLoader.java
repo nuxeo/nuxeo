@@ -43,7 +43,7 @@ import org.osgi.framework.FrameworkEvent;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public class FrameworkLoader {
 
@@ -201,6 +201,10 @@ public class FrameworkLoader {
             bf = new JarBundleFile(f);
         }
         BundleImpl bundle = new BundleImpl(osgi, bf, loader);
+        if (bundle.getState() == 0) {
+            // not a bundle (no Bundle-SymbolicName)
+            return null;
+        }
         osgi.install(bundle);
         return bundle.getSymbolicName();
     }

@@ -23,6 +23,10 @@
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-launcher-commons</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime-osgi</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>javax.servlet</groupId>

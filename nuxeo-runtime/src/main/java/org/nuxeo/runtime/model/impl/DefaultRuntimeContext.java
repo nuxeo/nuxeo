@@ -100,8 +100,12 @@ public class DefaultRuntimeContext implements RuntimeContext {
         if (deployedFiles.containsKey(name)) {
             return null;
         }
-        log.debug("Deploying component from url " + name);
         RegistrationInfoImpl ri = createRegistrationInfo(ref);
+        if (ri.name == null) {
+            // not parsed correctly, e.g., faces-config.xml
+            return null;
+        }
+        log.debug("Deploying component from url " + name);
         ri.context = this;
         ri.xmlFileUrl = ref.asURL();
         if (ri.getBundle() != null) {

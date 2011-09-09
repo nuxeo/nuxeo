@@ -27,6 +27,7 @@ import java.net.URL;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Map;
+import java.util.jar.Manifest;
 
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
@@ -39,7 +40,7 @@ import org.osgi.framework.Version;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public class BundleImpl implements Bundle {
 
@@ -74,7 +75,21 @@ public class BundleImpl implements Bundle {
         this.osgi = osgi;
         this.loader = loader;
         this.file = file;
-        headers = BundleManifestReader.getHeaders(file.getManifest());
+        Manifest mf = file.getManifest();
+        if (mf == null) {
+            headers = null;
+            symbolicName = null;
+            id = -1;
+            context = null;
+            return;
+        }
+        headers = BundleManifestReader.getHeaders(mf);
+        if (headers == null) {
+            symbolicName = null;
+            id = -1;
+            context = null;
+            return;
+        }
         symbolicName = headers.get(Constants.BUNDLE_SYMBOLICNAME);
         id = isSystemBundle ? 0 : osgi.getBundleId(symbolicName);
         context = createContext();
