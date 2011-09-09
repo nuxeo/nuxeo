@@ -7,7 +7,7 @@
   xmlns:nxl="http://nuxeo.org/nxforms/layout" id="#{widget.id}">
 
 
-  <f:subview rendered="#{widget.mode == 'edit' }">
+  <f:subview rendered="#{widget.mode == 'edit' }" id ="#{widget.id}_choose">
     <h:selectOneListbox value="#{field_0}"
       id="#{widget.id}_select"      
       required="#{widget.properties['required']}">

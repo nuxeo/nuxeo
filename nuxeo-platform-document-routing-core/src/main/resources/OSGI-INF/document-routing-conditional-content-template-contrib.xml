@@ -16,7 +16,7 @@
           title="DecisionalStep" description="Decisional step" />
         <templateItem typeName="StepFolder" id="option1"
           title="Option 1" description="Branch executed if option1 is chosen" />
-        <templateItem typeName="StepFolder" id="option2" title="Option2"
+        <templateItem typeName="StepFolder" id="option2" title="Option 2"
           description="Branch executed if option2 is chosen" />
       </template>
     </factoryBinding>
