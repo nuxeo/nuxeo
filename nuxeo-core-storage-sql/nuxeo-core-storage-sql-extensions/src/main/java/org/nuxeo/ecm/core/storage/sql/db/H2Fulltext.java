@@ -29,8 +29,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -59,8 +57,6 @@ import org.h2.value.DataType;
  * @author Florent Guillaume
  */
 public class H2Fulltext {
-
-    private static final Log log = LogFactory.getLog(H2Fulltext.class);
 
     private static final Map<String, IndexWriter> indexWriters = new ConcurrentHashMap<String, IndexWriter>();
 
@@ -413,7 +409,10 @@ public class H2Fulltext {
                         indexWriter = new IndexWriter(indexPath,
                                 getAnalyzer(analyzer), recreate);
                     } catch (LockObtainFailedException e) {
-                        log.error("Cannot open fulltext index", e);
+                        // log.error("Cannot open fulltext index", e);
+                        System.err.println("Cannot open fulltext index "
+                                + indexPath);
+                        e.printStackTrace();
                         throw convertException(e);
                     } catch (IOException e) {
                         throw convertException(e);

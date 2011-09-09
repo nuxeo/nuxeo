@@ -26,9 +26,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 /**
  * Functions used as stored procedures for Derby and H2.
  *
@@ -36,10 +33,15 @@ import org.apache.commons.logging.LogFactory;
  */
 public class EmbeddedFunctions {
 
-    private static final Log log = LogFactory.getLog(EmbeddedFunctions.class);
+    // for debug
+    private static boolean isLogEnabled() {
+        return false;
+        // return log.isTraceEnabled();
+    }
 
+    // for debug
     private static void logDebug(String message) {
-        // log.debug(message);
+        // log.trace(message);
     }
 
     /**
@@ -137,7 +139,7 @@ public class EmbeddedFunctions {
     public static boolean isAccessAllowed(Connection conn, Serializable id,
             Set<String> principals, Set<String> permissions)
             throws SQLException {
-        if (log.isDebugEnabled()) {
+        if (isLogEnabled()) {
             logDebug("isAccessAllowed " + id + " " + principals + " "
                     + permissions);
         }
@@ -160,12 +162,12 @@ public class EmbeddedFunctions {
                     boolean grant = rs.getShort(1) != 0;
                     String permission = rs.getString(2);
                     String user = rs.getString(3);
-                    if (log.isDebugEnabled()) {
+                    if (isLogEnabled()) {
                         logDebug(" -> " + user + " " + permission + " " + grant);
                     }
                     if (principals.contains(user)
                             && permissions.contains(permission)) {
-                        if (log.isDebugEnabled()) {
+                        if (isLogEnabled()) {
                             logDebug(" => " + grant);
                         }
                         return grant;
@@ -208,7 +210,7 @@ public class EmbeddedFunctions {
             /*
              * We reached the root, deny access.
              */
-            if (log.isDebugEnabled()) {
+            if (isLogEnabled()) {
                 logDebug(" => false (root)");
             }
             return false;

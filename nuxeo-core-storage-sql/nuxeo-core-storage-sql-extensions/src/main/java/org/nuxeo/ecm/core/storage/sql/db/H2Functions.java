@@ -23,8 +23,6 @@ import java.sql.Types;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.h2.tools.SimpleResultSet;
 
 /**
@@ -34,8 +32,6 @@ import org.h2.tools.SimpleResultSet;
  */
 public class H2Functions extends EmbeddedFunctions {
 
-    private static final Log log = LogFactory.getLog(H2Functions.class);
-
     // for debug
     private static boolean isLogEnabled() {
         return false;
@@ -44,7 +40,7 @@ public class H2Functions extends EmbeddedFunctions {
 
     // for debug
     private static void logDebug(String message, Object... args) {
-        log.trace("SQL: " + String.format(message.replace("?", "%s"), args));
+        // log.trace("SQL: " + String.format(message.replace("?", "%s"), args));
     }
 
     public static boolean isInTreeString(Connection conn, String id,
