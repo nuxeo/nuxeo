@@ -10,7 +10,6 @@
 
     <action id="dam" link="assets" label="label.main.tab.dam" order="50">
       <category>MAIN_TABS</category>
-      <filter-id>only_for_manager</filter-id>
     </action>
 
     <action id="non_anonymous_logout" link="logout" label="command.logout" order="100">

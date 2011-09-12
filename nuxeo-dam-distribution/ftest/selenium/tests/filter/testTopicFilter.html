@@ -153,9 +153,9 @@
 </tr>
 <!-- make sure the 'Art' tree didn't expand -->
 <tr>
-        <td>verifyNotVisible</td>
-        <td>filterForm:topicRichTreeId:topicRecursiveTreeNodesAdaptorId:0::topicTreeNodeId:childs</td>
-        <td></td>
+  <td>verifyNotVisible</td>
+  <td>filterForm:topicRichTreeId:topicRecursiveTreeNodesAdaptorId:0::topicTreeNodeId:childs</td>
+  <td></td>
 </tr>
 <!-- Add topic 'Rights' -->
 <!-- Expand the 'Human science' tree -->
@@ -166,7 +166,7 @@
 </tr>
 <tr>
 	<td>click</td>
-	<td>filterForm:topicRichTreeId:topicRecursiveTreeNodesAdaptorId:1::topicTreeNodeId:handle:img:collapsed</td>
+	<td>filterForm:topicRichTreeId:topicRecursiveTreeNodesAdaptorId:2::topicTreeNodeId:handle:img:collapsed</td>
 	<td></td>
 </tr>
 <tr>
@@ -186,7 +186,7 @@
 </tr>
 <tr>
 	<td>click</td>
-	<td>filterForm:topicRichTreeId:topicRecursiveTreeNodesAdaptorId:1:topicRecursiveTreeNodesAdaptorId:0::topicLinkId</td>
+	<td>filterForm:topicRichTreeId:topicRecursiveTreeNodesAdaptorId:2:topicRecursiveTreeNodesAdaptorId:7::topicLinkId</td>
 	<td></td>
 </tr>
 <tr>
@@ -310,7 +310,7 @@
 </tr>
 <tr>
 	<td>click</td>
-	<td>filterForm:topicRichTreeId:topicRecursiveTreeNodesAdaptorId:1:topicRecursiveTreeNodesAdaptorId:2::topicLinkId</td>
+	<td>filterForm:topicRichTreeId:topicRecursiveTreeNodesAdaptorId:2:topicRecursiveTreeNodesAdaptorId:1::topicLinkId</td>
 	<td></td>
 </tr>
 <tr>
@@ -336,7 +336,7 @@
 </tr>
 <tr>
 	<td>click</td>
-	<td>filterForm:topicRichTreeId:topicRecursiveTreeNodesAdaptorId:1:topicRecursiveTreeNodesAdaptorId:0::topicLinkId</td>
+	<td>filterForm:topicRichTreeId:topicRecursiveTreeNodesAdaptorId:2:topicRecursiveTreeNodesAdaptorId:7::topicLinkId</td>
 	<td></td>
 </tr>
 <tr>
@@ -351,7 +351,7 @@
 </tr>
 <tr>
 	<td>click</td>
-	<td>filterForm:topicRichTreeId:topicRecursiveTreeNodesAdaptorId:1:topicRecursiveTreeNodesAdaptorId:2::topicLinkId</td>
+	<td>filterForm:topicRichTreeId:topicRecursiveTreeNodesAdaptorId:2:topicRecursiveTreeNodesAdaptorId:1::topicLinkId</td>
 	<td></td>
 </tr>
 <tr>
@@ -373,7 +373,7 @@
 </tr>
 <tr>
 	<td>click</td>
-	<td>filterForm:topicRichTreeId:topicRecursiveTreeNodesAdaptorId:1:topicRecursiveTreeNodesAdaptorId:0::topicLinkId</td>
+	<td>filterForm:topicRichTreeId:topicRecursiveTreeNodesAdaptorId:2:topicRecursiveTreeNodesAdaptorId:7::topicLinkId</td>
 	<td></td>
 </tr>
 <tr>
@@ -389,7 +389,7 @@
 </tr>
 <tr>
 	<td>click</td>
-	<td>filterForm:topicRichTreeId:topicRecursiveTreeNodesAdaptorId:1::topicTreeNodeId:handle:img:collapsed</td>
+	<td>filterForm:topicRichTreeId:topicRecursiveTreeNodesAdaptorId:2::topicTreeNodeId:handle:img:collapsed</td>
 	<td></td>
 </tr>
 <tr>
@@ -398,9 +398,9 @@
 	<td></td>
 </tr>
 <tr>
-        <td>verifyAttribute</td>
-        <td>filterForm:topicRichTreeId:topicRecursiveTreeNodesAdaptorId:1::topicTreeNodeId:childs@style</td>
-        <td>*display:*none*</td>
+  <td>verifyAttribute</td>
+  <td>filterForm:topicRichTreeId:topicRecursiveTreeNodesAdaptorId:2::topicTreeNodeId:childs@style</td>
+  <td>*display:*none*</td>
 </tr>
 <!-- open the 'Technology' tree -->
 <tr>
@@ -419,36 +419,33 @@
 	<td></td>
 </tr>
 <tr>
-        <td>verifyTextPresent</td>
-        <td>Energy</td>
-        <td></td>
+  <td>verifyTextPresent</td>
+  <td>Energy</td>
+  <td></td>
 </tr>
 <!-- Select 'Energy' -->
 <tr>
-        <td>watchA4jRequests</td>
-        <td></td>
-        <td></td>
+  <td>watchA4jRequests</td>
+  <td></td>
+  <td></td>
 </tr>
 <tr>
-        <td>click</td>
-        <td>filterForm:topicRichTreeId:topicRecursiveTreeNodesAdaptorId:4:topicRecursiveTreeNodesAdaptorId:2::topicLinkId</td>
-        <td></td>
+  <td>click</td>
+  <td>filterForm:topicRichTreeId:topicRecursiveTreeNodesAdaptorId:4:topicRecursiveTreeNodesAdaptorId:2::topicLinkId</td>
+  <td></td>
 </tr>
 <tr>
-        <td>waitForA4jRequest</td>
-        <td>10000</td>
-        <td></td>
+  <td>waitForA4jRequest</td>
+  <td>10000</td>
+  <td></td>
 </tr>
 <!-- Make sure the 'Human science' tree didn't expand (open) when we selected 'Energy' in the 'Technology' tree -->
 <!-- make sure the 'Art' tree didn't expand -->
 <tr>
-        <td>verifyAttribute</td>
-        <td>filterForm:coverageRichTreeId:coverageRecursiveTreeNodesAdaptorId:1::coverageTreeNodeId:childs@style</td>
-        <td>*display:*none*</td>
+  <td>verifyAttribute</td>
+  <td>filterForm:coverageRichTreeId:coverageRecursiveTreeNodesAdaptorId:2::coverageTreeNodeId:childs@style</td>
+  <td>*display:*none*</td>
 </tr>
-
-
-
 
 </tbody></table>
 </body>
