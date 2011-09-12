@@ -173,6 +173,7 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap {
         // clear dev classloader
         NuxeoDevWebappClassLoader devLoader = (NuxeoDevWebappClassLoader) loader;
         devLoader.clear();
+        System.gc();
         URL[] urls = new URL[bundles.length];
         for (int i = 0; i < bundles.length; i++) {
             urls[i] = bundles[i].url();

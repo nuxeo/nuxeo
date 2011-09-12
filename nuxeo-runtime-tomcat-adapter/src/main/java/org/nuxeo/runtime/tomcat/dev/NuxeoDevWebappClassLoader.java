@@ -64,7 +64,6 @@ public class NuxeoDevWebappClassLoader extends WebappClassLoader implements
     public synchronized void clear() {
         children.clear();
         _children = null;
-        System.gc();
     }
 
     public LocalClassLoader[] getChildren() {
@@ -78,8 +77,11 @@ public class NuxeoDevWebappClassLoader extends WebappClassLoader implements
         return cls;
     }
 
+    /**
+     * Do not synchronize this method at method level to avoid deadlocks.
+     */
     @Override
-    public synchronized Class<?> loadClass(String name, boolean resolve)
+    public Class<?> loadClass(String name, boolean resolve)
             throws ClassNotFoundException {
         try {
             return super.loadClass(name, resolve);
