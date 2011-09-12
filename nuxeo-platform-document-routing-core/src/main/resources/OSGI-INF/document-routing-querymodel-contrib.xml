@@ -9,7 +9,7 @@
     <queryModel name="CURRENT_DOC_ROUTING_SEARCH_ATTACHED_DOC">
       <pattern>
         SELECT * FROM Document WHERE ecm:mixinType != 'Folderish' AND
-        ecm:currentLifeCycleState != 'deleted' AND dc:title LIKE ?
+        ecm:currentLifeCycleState != 'deleted' AND dc:title ILIKE ?
       </pattern>
       <sortable value="true" defaultSortColumn="dc:title"
         defaultSortAscending="true" />
@@ -19,7 +19,7 @@
     <queryModel name="DOC_ROUTING_SEARCH_ALL_ROUTE_MODELS">
       <pattern>
         SELECT * FROM DocumentRoute WHERE ecm:currentLifeCycleState =
-        'validated' AND dc:title LIKE ?
+        'validated' AND dc:title ILIKE ?
       </pattern>
       <sortable value="true" defaultSortColumn="dc:title"
         defaultSortAscending="true" />
