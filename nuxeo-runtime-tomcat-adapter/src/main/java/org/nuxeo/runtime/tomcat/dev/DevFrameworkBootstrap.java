@@ -56,7 +56,14 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap {
 
     @Override
     public void start() throws Exception {
+        // check if we have dev. bundles or libs to deploy and add them to the
+        // classpath
+        preloadDevBundles();
+        // start the framework
         super.start();
+        // start dev bundles if any
+        postloadDevBundles();
+        // start reload timer
         bundlesCheck = new Timer("Dev Bundles Loader");
         bundlesCheck.scheduleAtFixedRate(new TimerTask() {
             @Override
@@ -67,7 +74,7 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap {
                     log.error("Error running dev mode timer", t);
                 }
             }
-        }, 0, 2000);
+        }, 2000, 2000);
     }
 
     @Override
@@ -77,6 +84,39 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap {
             bundlesCheck = null;
         }
         super.stop();
+    }
+
+    /**
+     * Load the development bundles and libs if any in the classpath before
+     * starting the framework.
+     */
+    protected void preloadDevBundles() throws IOException {
+        if (devBundlesFile.isFile()) {
+            lastModified = devBundlesFile.lastModified();
+            devBundles = getDevBundles();
+            if (devBundles.length == 0) {
+                devBundles = null;
+                return;
+            }
+            // clear dev classloader
+            NuxeoDevWebappClassLoader devLoader = (NuxeoDevWebappClassLoader) loader;
+            devLoader.clear();
+            URL[] urls = new URL[devBundles.length];
+            for (int i = 0; i < devBundles.length; i++) {
+                urls[i] = devBundles[i].url();
+            }
+            devLoader.createLocalClassLoader(urls);
+        }
+    }
+
+    protected void postloadDevBundles() throws Exception {
+        if (devBundles != null) {
+            for (DevBundle bundle : devBundles) {
+                if (!bundle.isLibrary()) {
+                    bundle.name = installBundle(bundle.file);
+                }
+            }
+        }
     }
 
     protected void checkDevBundles() {
@@ -139,11 +179,9 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap {
         }
         devLoader.createLocalClassLoader(urls);
         // deploy
-        for (URL url : urls) {
-            for (DevBundle bundle : devBundles) {
-                if (!bundle.isLibrary()) {
-                    bundle.name = installBundle(bundle.file);
-                }
+        for (DevBundle bundle : devBundles) {
+            if (!bundle.isLibrary()) {
+                bundle.name = installBundle(bundle.file);
             }
         }
     }
