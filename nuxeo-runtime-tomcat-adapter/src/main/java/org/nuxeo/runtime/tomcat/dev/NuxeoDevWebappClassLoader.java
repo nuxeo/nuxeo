@@ -64,6 +64,7 @@ public class NuxeoDevWebappClassLoader extends WebappClassLoader implements
     public synchronized void clear() {
         children.clear();
         _children = null;
+        System.gc();
     }
 
     public LocalClassLoader[] getChildren() {
