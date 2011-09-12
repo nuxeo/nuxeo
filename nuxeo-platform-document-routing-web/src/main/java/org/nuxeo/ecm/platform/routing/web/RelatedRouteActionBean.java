@@ -49,18 +49,34 @@ public class RelatedRouteActionBean {
 
     @Factory(value = "relatedRoutes")
     public List<DocumentModel> findRelatedRoute() throws ClientException {
+        DocumentModel currentDoc = navigationContext.getCurrentDocument();
+        if (currentDoc != null) {
+            return findRelatedRoute(currentDoc.getId());
+        }
+        return new ArrayList<DocumentModel>();
+    }
+
+    public List<DocumentModel> findRelatedRoute(String documentId) throws ClientException {
         List<DocumentModel> docs = new ArrayList<DocumentModel>();
-        DocumentModel currentDocument = navigationContext.getCurrentDocument();
-        if(currentDocument == null) {
+        if(documentId == null || "".equals(documentId)) {
             return docs;
         }
         List<DocumentRoute> relatedRoutes = getDocumentRoutingService().getDocumentRoutesForAttachedDocument(
-                documentManager, currentDocument.getId());
+                documentManager, documentId);
         for (DocumentRoute documentRoute : relatedRoutes) {
             docs.add(documentRoute.getDocument());
         }
         return docs;
     }
+
+    public boolean hasRelatedRoute(String documentId) throws ClientException {
+        return !findRelatedRoute(documentId).isEmpty();
+    }
+
+    public boolean hasRelatedRoute() throws ClientException {
+        return !findRelatedRoute().isEmpty();
+    }
+
 
     public DocumentRoutingService getDocumentRoutingService() {
         try {
