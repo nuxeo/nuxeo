@@ -26,7 +26,6 @@ import java.util.regex.Pattern;
 
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.common.utils.URIUtils;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
@@ -52,10 +51,10 @@ public class UserCodec extends AbstractDocumentViewCodec {
 
     // prefix/username/view_id?requestParams
     public static final String GET_URL_PATTERN = "/" // slash
-            + "([a-zA-Z_0-9\\-\\.]*)?" // username (group 1)
-            + "(/[a-zA-Z_0-9\\-\\.]*)?" // view id (group 2) (optional)
+            + "([a-zA-Z_0-9\\-\\.@]*)?" // username (group 1)
+            + "(/([a-zA-Z_0-9\\-\\.]*))?" // view id (group 3) (optional)
             + "/?" // final slash (optional)
-            + "(\\?(.*)?)?"; // query (group 3) (optional)
+            + "(\\?((.*)?))?"; // query (group 5) (optional)
 
     @Override
     public String getPrefix() {
@@ -73,12 +72,12 @@ public class UserCodec extends AbstractDocumentViewCodec {
             if (m.groupCount() >= 1) {
                 String username = m.group(1);
 
-                String viewId = m.group(2);
+                String viewId = m.group(3);
                 if (viewId == null || "".equals(viewId)) {
                     viewId = DEFAULT_VIEW_ID;
                 }
 
-                String query = m.group(3);
+                String query = m.group(5);
                 Map<String, String> params = URIUtils.getRequestParameters(query);
                 if (params == null) {
                     params = new HashMap<String, String>();
@@ -91,7 +90,8 @@ public class UserCodec extends AbstractDocumentViewCodec {
                     params.put("tabIds", DEFAULT_USERS_TAB);
                 }
 
-                final DocumentLocation docLoc = new DocumentLocationImpl(getDefaultRepositoryName(), null);
+                final DocumentLocation docLoc = new DocumentLocationImpl(
+                        getDefaultRepositoryName(), null);
                 return new DocumentViewImpl(docLoc, viewId, params);
             }
         }

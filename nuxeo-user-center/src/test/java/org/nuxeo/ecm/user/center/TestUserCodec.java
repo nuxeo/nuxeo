@@ -28,8 +28,6 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.DocumentLocation;
-import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
@@ -72,6 +70,7 @@ public class TestUserCodec {
         assertEquals(url, codec.getUrlFromDocumentView(docView));
     }
 
+    @Test
     public void shouldGetDocumentView() {
         UserCodec codec = new UserCodec();
         String url = "user/bender";
@@ -105,6 +104,15 @@ public class TestUserCodec {
         assertEquals("true", docView.getParameter("showUser"));
         assertEquals("FakeTab", docView.getParameter("tabIds"));
         assertEquals("fry", docView.getParameter("username"));
+
+        url = "user/zoidberg@planet-express.com/view_user";
+        docView = codec.getDocumentViewFromUrl(url);
+        assertNotNull(docView);
+        assertEquals("view_user", docView.getViewId());
+        assertEquals("true", docView.getParameter("showUser"));
+        assertEquals(DEFAULT_USERS_TAB, docView.getParameter("tabIds"));
+        assertEquals("zoidberg@planet-express.com",
+                docView.getParameter("username"));
     }
 
 }
