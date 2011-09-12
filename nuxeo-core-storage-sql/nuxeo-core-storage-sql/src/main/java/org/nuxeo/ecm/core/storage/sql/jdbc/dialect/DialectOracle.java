@@ -564,13 +564,16 @@ public class DialectOracle extends Dialect {
         } catch (Exception e) {
             // ignore
         }
+        if (Integer.valueOf(0).equals(err)) {
+            try {
+                err = ((SQLException) t).getErrorCode();
+            } catch (Exception e) {
+                // ignore
+            }
+        }
         switch (err.intValue()) {
         case 17002: // ORA-17002 IO Exception
-            return true;
-        }
-        // java.sql.SQLRecoverableException: No more data to read from socket
-        String message = t.getMessage();
-        if (message.contains("No more data to read from socket")) {
+        case 17410: // ORA-17410 No more data to read from socket
             return true;
         }
         return false;
