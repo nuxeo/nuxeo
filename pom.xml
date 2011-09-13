@@ -2,18 +2,17 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <groupId>org.nuxeo.ecm.platform</groupId>
     <artifactId>nuxeo-features-parent</artifactId>
-    <version>5.4.2-HF07</version>
+    <version>5.4.3-SNAPSHOT</version>
   </parent>
 
   <groupId>org.nuxeo.dam</groupId>
   <artifactId>nuxeo-dam-parent</artifactId>
-  <version>1.4-SNAPSHOT</version>
+  <version>5.4.3-SNAPSHOT</version>
   <name>Nuxeo DAM Parent</name>
   <packaging>pom</packaging>
   <description>Nuxeo DAM Parent</description>
@@ -30,7 +29,7 @@
   </modules>
 
   <properties>
-    <nuxeo.dam.version>1.4-SNAPSHOT</nuxeo.dam.version>
+    <nuxeo.dam.version>5.4.3-SNAPSHOT</nuxeo.dam.version>
   </properties>
 
   <dependencyManagement>

@@ -38,7 +38,7 @@
   </target>
 
   <target name="expand" unless="no.build">
-    <artifact:expand depth="3" />
+    <artifact:nuxeo-expand />
   </target>
 
   <target name="build" depends="init,cleanstage" unless="no.build">
