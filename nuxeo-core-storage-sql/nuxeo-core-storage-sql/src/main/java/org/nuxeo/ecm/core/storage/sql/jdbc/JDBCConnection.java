@@ -64,7 +64,7 @@ public class JDBCConnection {
 
     /**
      * Creates a new Mapper.
-     *
+     * 
      * @param model the model
      * @param sqlInfo the sql info
      * @param xadatasource the XA datasource to use to get connections
@@ -86,6 +86,10 @@ public class JDBCConnection {
     }
 
     protected void open() throws StorageException {
+        openConnections();
+    }
+
+    private void openConnections() throws StorageException {
         try {
             xaconnection = xadatasource.getXAConnection();
             connection = xaconnection.getConnection();
@@ -97,23 +101,30 @@ public class JDBCConnection {
 
     public void close() {
         connectionPropagator.removeConnection(this);
+        closeConnections();
+        xaresource = null;
+    }
+
+    private void closeConnections() {
         if (connection != null) {
             try {
                 connection.close();
             } catch (Exception e) {
                 // ignore, including UndeclaredThrowableException
+                checkConnectionValid = true;
+            } finally {
+                connection = null;
             }
         }
         if (xaconnection != null) {
             try {
                 xaconnection.close();
             } catch (SQLException e) {
-                // ignore
+                checkConnectionValid = true;
+            } finally {
+                xaconnection = null;
             }
         }
-        xaconnection = null;
-        connection = null;
-        xaresource = null;
     }
 
     /**
@@ -121,8 +132,8 @@ public class JDBCConnection {
      */
     protected void resetConnection() throws StorageException {
         logger.error("Resetting connection");
-        close();
-        open();
+        closeConnections();
+        openConnections();
         // we had to reset a connection; notify all the others that they
         // should check their validity proactively
         connectionPropagator.checkConnectionValid(this);
@@ -133,31 +144,31 @@ public class JDBCConnection {
      */
     protected void checkConnectionValid() throws StorageException {
         if (checkConnectionValid) {
-            doCheckConnectionValid();
-            // only if there was no exception set the flag to false
-            checkConnectionValid = false;
-        }
-    }
-
-    protected void doCheckConnectionValid() throws StorageException {
-        Statement st = null;
-        try {
-            st = connection.createStatement();
-            st.execute(sqlInfo.dialect.getValidationQuery());
-        } catch (Exception e) {
-            if (sqlInfo.dialect.isConnectionClosedException(e)) {
+            if (connection == null) {
                 resetConnection();
-            } else {
-                throw new StorageException(e);
             }
-        } finally {
-            if (st != null) {
-                try {
-                    st.close();
-                } catch (Exception e) {
-                    // ignore
+
+            Statement st = null;
+            try {
+                st = connection.createStatement();
+                st.execute(sqlInfo.dialect.getValidationQuery());
+            } catch (Exception e) {
+                if (sqlInfo.dialect.isConnectionClosedException(e)) {
+                    resetConnection();
+                } else {
+                    throw new StorageException(e);
+                }
+            } finally {
+                if (st != null) {
+                    try {
+                        st.close();
+                    } catch (Exception e) {
+                        // ignore
+                    }
                 }
             }
+            // only if there was no exception set the flag to false
+            checkConnectionValid = false;
         }
     }
 
@@ -170,7 +181,8 @@ public class JDBCConnection {
      * InvocationTargetException / UndeclaredThrowableException.
      */
     protected void checkConnectionReset(Throwable t) throws StorageException {
-        if (sqlInfo.dialect.isConnectionClosedException(t)) {
+        if (connection == null
+                || sqlInfo.dialect.isConnectionClosedException(t)) {
             resetConnection();
         }
     }
@@ -180,7 +192,8 @@ public class JDBCConnection {
      * to be reset.
      */
     protected void checkConnectionReset(XAException e) {
-        if (sqlInfo.dialect.isConnectionClosedException(e)) {
+        if (connection == null
+                || sqlInfo.dialect.isConnectionClosedException(e)) {
             try {
                 resetConnection();
             } catch (StorageException ee) {
