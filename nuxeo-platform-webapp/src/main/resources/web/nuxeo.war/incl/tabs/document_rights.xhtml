@@ -33,10 +33,10 @@
           <h:outputText value="#{messages['label.username']}" />
         </f:facet>
 
-        <h:commandLink value="#{nxu:userFullName(user)}" immediate="true"
-          action="#{userManagementActions.viewUser(user)}"
+        <h:outputLink value="#{nxu:userUrl('user', user, null, false)}"
           rendered="#{principalType=='USER_TYPE'}">
-        </h:commandLink>
+          <h:outputText value="#{nxu:userFullName(user)}" />
+        </h:outputLink>
         <h:commandLink value="#{nxu:groupFullName(user)}" immediate="true"
           action="#{groupManagementActions.viewGroup(user)}"
           rendered="#{principalType!='USER_TYPE'}">
@@ -121,12 +121,12 @@
 
         <!--  Username -->
         <f:subview rendered="${columnHeader.id == 'c1'}">
-          <h:commandLink
-            value="#{nxu:userFullName(securityActions.dataTableModel.currentCellDisplayedValue)}"
-            immediate="true"
-            action="#{userManagementActions.viewUser(securityActions.dataTableModel.currentCellDisplayedValue)}"
+          <h:outputLink
+            value="#{nxu:userUrl('user', securityActions.dataTableModel.currentCellDisplayedValue, null, false)}"
             rendered="#{securityActions.dataTableModel.currentUserType=='USER_TYPE'}">
-          </h:commandLink>
+            <h:outputText
+              value="#{nxu:userFullName(securityActions.dataTableModel.currentCellDisplayedValue)}" />
+          </h:outputLink>
           <h:commandLink
             value="#{nxu:groupFullName(securityActions.dataTableModel.currentCellDisplayedValue)}"
             immediate="true"
