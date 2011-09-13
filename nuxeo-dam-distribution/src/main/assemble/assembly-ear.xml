@@ -65,8 +65,12 @@
         <exclude name="**/bundles/nuxeo-webengine-blogs*" />
         <exclude name="**/bundles/nuxeo-webengine-sites*" />
         <exclude name="**/bundles/nuxeo-webengine-ui*" />
+        <exclude name="**/bundles/nuxeo-user-dashboard*" />
+        <exclude name="**/bundles/nuxeo-user-settings*" />
 
         <exclude name="**/bundles/nuxeo-platform-faceted-search-dm*" />
+        <exclude name="**/bundles/nuxeo-platform-login-disgest*" />
+        <exclude name="**/bundles/nuxeo-platform-wi-backend*" />
 
         <!-- OpenSocial libs -->
         <exclude name="**/lib/shindig*" />
