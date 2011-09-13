@@ -72,6 +72,8 @@
         <exclude name="**/bundles/nuxeo-platform-login-disgest*" />
         <exclude name="**/bundles/nuxeo-platform-wi-backend*" />
 
+        <exclude name="**/bundles/nuxeo-core-storage-sql-ra*" />
+
         <!-- OpenSocial libs -->
         <exclude name="**/lib/shindig*" />
         <exclude name="**/lib/caja*" />
@@ -90,6 +92,7 @@
           <artifact artifactId="nuxeo-platform-audio-core" />
           <artifact artifactId="nuxeo-platform-categorization-*" />
           <artifact artifactId="nuxeo-platform-importer-core" />
+          <artifact artifactId="nuxeo-core-storage-sql-ra" />
         </includes>
         <excludes>
           <artifact artifactId="nuxeo-dam-importer-jaxrs" />
