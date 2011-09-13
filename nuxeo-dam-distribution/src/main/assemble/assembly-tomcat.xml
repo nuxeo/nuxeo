@@ -70,6 +70,7 @@
         <exclude name="**/nxserver/bundles/nuxeo-platform-workflow*" />
         <exclude name="**/nxserver/bundles/nuxeo-platform-wss*" />
 
+        <exclude name="**/nxserver/bundles/nuxeo-webengine-blog*" />
         <exclude name="**/nxserver/bundles/nuxeo-webengine-gadgets*" />
         <exclude name="**/nxserver/bundles/nuxeo-webengine-admin*" />
         <exclude name="**/nxserver/bundles/nuxeo-webengine-sites*" />
@@ -79,8 +80,8 @@
 
 
         <exclude name="**/nxserver/bundles/nuxeo-platform-faceted-search-dm*" />
-        <exclude name="**/nxserver/bundles/nuxeo-platform-login*" />
-
+        <exclude name="**/nxserver/bundles/nuxeo-platform-login-disgest*" />
+        <exclude name="**/nxserver/bundles/nuxeo-platform-wi-backend*" />
 
         <!-- OpenSocial libs -->
         <exclude name="**/nxserver/lib/shindig*" />

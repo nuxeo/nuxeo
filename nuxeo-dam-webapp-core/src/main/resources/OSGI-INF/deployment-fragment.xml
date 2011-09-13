@@ -46,12 +46,6 @@
       <to-view-id>/annotations_popup.xhtml</to-view-id>
     </navigation-case>
 
-    <navigation-case>
-      <from-outcome>administration</from-outcome>
-      <to-view-id>/administration.xhtml</to-view-id>
-      <redirect />
-    </navigation-case>
-
   </extension>
 
   <extension target="pages#PAGES">
