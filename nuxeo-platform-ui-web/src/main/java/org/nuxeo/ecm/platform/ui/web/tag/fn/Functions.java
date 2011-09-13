@@ -32,15 +32,23 @@ import java.util.regex.Pattern;
 
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.platform.ui.web.rest.RestHelper;
+import org.nuxeo.ecm.platform.ui.web.rest.api.URLPolicyService;
+import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
+import org.nuxeo.ecm.platform.url.DocumentViewImpl;
+import org.nuxeo.ecm.platform.url.api.DocumentView;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
@@ -51,6 +59,8 @@ import org.nuxeo.runtime.api.Framework;
  * @author <a href="mailto:tm@nuxeo.com">Thierry Martins</a>
  */
 public final class Functions {
+
+    private static final Log log = LogFactory.getLog(Functions.class);
 
     public static final String I18N_DURATION_PREFIX = "label.duration.unit.";
 
@@ -565,6 +575,48 @@ public final class Functions {
             }
         }
         return false;
+    }
+
+    public static String userUrl(String patternName, String username,
+            String viewId, boolean newConversation) {
+        return userUrl(patternName, username, viewId, newConversation, null);
+    }
+
+    public static String userUrl(String patternName, String username,
+            String viewId, boolean newConversation, HttpServletRequest req) {
+        try {
+
+            Map<String, String> parameters = new HashMap<String, String>();
+            parameters.put("username", username);
+            DocumentView docView = new DocumentViewImpl(null, viewId,
+                    parameters);
+
+            // generate url
+            URLPolicyService service = Framework.getService(URLPolicyService.class);
+            if (patternName == null || patternName.length() == 0) {
+                patternName = service.getDefaultPatternName();
+            }
+
+            String baseURL = null;
+            if (req == null) {
+                baseURL = BaseURL.getBaseURL();
+            } else {
+                baseURL = BaseURL.getBaseURL(req);
+            }
+
+            String url = service.getUrlFromDocumentView(patternName, docView,
+                    baseURL);
+
+            // pass conversation info if needed
+            if (!newConversation && url != null) {
+                url = RestHelper.addCurrentConversationParameters(url);
+            }
+
+            return url;
+        } catch (Exception e) {
+            log.error("Could not generate user url", e);
+        }
+        return null;
     }
 
 }

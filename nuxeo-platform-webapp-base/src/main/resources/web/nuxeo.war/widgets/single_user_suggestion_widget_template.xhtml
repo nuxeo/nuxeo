@@ -41,7 +41,7 @@
     <h:outputText value="#{field_0}"/>
   </f:subview>
   <f:subview rendered="#{displayAction == 'view' and searchType == 'USER_TYPE'}">
-    <h:commandLink action="#{userManagementActions.viewUser(field_0)}">
+    <h:outputLink value="#{nxu:userUrl('user', field_0, null, false)}">
       <h:outputText value="#{field_0}"
         converter="#{userSuggestionActions.userConverter}">
         <f:attribute name="prefixed" value="false" />
@@ -50,7 +50,7 @@
         <f:attribute name="firstNameField" value="#{firstNameField}" />
         <f:attribute name="lastNameField" value="#{lastNameField}" />
       </h:outputText>
-    </h:commandLink>
+    </h:outputLink>
   </f:subview>
   <f:subview rendered="#{displayAction == 'view' and searchType == 'GROUP_TYPE'}">
     <h:commandLink action="#{groupManagementActions.viewGroup(field_0)}">

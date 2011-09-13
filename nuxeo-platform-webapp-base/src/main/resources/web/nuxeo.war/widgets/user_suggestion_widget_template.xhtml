@@ -39,7 +39,9 @@
                 <c:set var="userDisplayName" value="#{nxu:userDisplayName(info.id, info.entry[userSchema][firstLabelField], info.entry[userSchema][entrySecondLabel])}" />
               </c:when>
             </c:choose>
-            <h:commandLink value="#{userDisplayName}" action="#{userManagementActions.viewUser(info.id)}" title="#{info.id}" />
+            <h:outputLink value="#{nxu:userUrl('user', info.id, null, false)}" title="#{info.id}">
+              <h:outputText value="#{userDisplayName}" />
+            </h:outputLink>
           </f:subview>
           <f:subview rendered="#{info.type == 'GROUP_TYPE'}">
             <h:graphicImage value="/icons/group.gif" alt="group.gif" />
