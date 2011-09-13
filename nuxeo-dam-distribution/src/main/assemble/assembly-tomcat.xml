@@ -50,57 +50,28 @@
 
     <unzip dest="${stagedir}">
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-tomcat:${nuxeo.distribution.version}:zip"
-                            classifier="nuxeo-dm" />
+                            classifier="nuxeo-cap" />
       <patternset>
         <exclude name="**/nxserver/bundles/nuxeo-platform-webapp-${nuxeo.distribution.version}*" />
         <exclude name="**/nxserver/bundles/nuxeo-platform-webapp-core*" />
 
-        <exclude name="**/nxserver/bundles/nuxeo-platform-comment-web*" />
         <exclude name="**/nxserver/bundles/nuxeo-platform-ear*" />
+        <exclude name="**/nxserver/bundles/nuxeo-platform-publisher-web*" />
         <exclude name="**/nxserver/bundles/nuxeo-platform-forum*" />
-        <exclude name="**/nxserver/bundles/nuxeo-platform-imaging-dm*" />
-        <exclude name="**/nxserver/bundles/nuxeo-platform-mail*" />
-        <exclude name="**/nxserver/bundles/nuxeo-platform-notification-web*" />
-        <exclude name="**/nxserver/bundles/nuxeo-opensocial*" />
-        <exclude name="**/nxserver/bundles/nuxeo-platform-publish*" />
-        <exclude name="**/nxserver/bundles/nuxeo-platform-spaces*" />
-        <exclude name="**/nxserver/bundles/nuxeo-platform-syndication*" />
-        <exclude name="**/nxserver/bundles/nuxeo-platform-tag*" />
-        <exclude name="**/nxserver/bundles/nuxeo-platform-virtualnavigation*" />
-        <exclude name="**/nxserver/bundles/nuxeo-platform-workflow*" />
-        <exclude name="**/nxserver/bundles/nuxeo-platform-wss*" />
 
-        <exclude name="**/nxserver/bundles/nuxeo-webengine-blog*" />
-        <exclude name="**/nxserver/bundles/nuxeo-webengine-gadgets*" />
-        <exclude name="**/nxserver/bundles/nuxeo-webengine-admin*" />
-        <exclude name="**/nxserver/bundles/nuxeo-webengine-sites*" />
-        <exclude name="**/nxserver/bundles/nuxeo-webengine-ui*" />
-        <exclude name="**/nxserver/bundles/nuxeo-user-dashboard*" />
-        <exclude name="**/nxserver/bundles/nuxeo-user-settings*" />
-
-
-        <exclude name="**/nxserver/bundles/nuxeo-platform-faceted-search-dm*" />
-        <exclude name="**/nxserver/bundles/nuxeo-platform-login-disgest*" />
-        <exclude name="**/nxserver/bundles/nuxeo-platform-wi-backend*" />
-
-        <!-- OpenSocial libs -->
-        <exclude name="**/nxserver/lib/shindig*" />
-        <exclude name="**/nxserver/lib/caja*" />
-
-        <exclude name="**/nxserver/config/nxmail-scheduler-config.xml" />
-        <exclude name="**/templates/common/config/default-opensocial-config.xml" />
-        <exclude name="**/templates/default/nxserver/config/opensocial.properties" />
       </patternset>
     </unzip>
 
     <!-- <move file="${stagedir}/nuxeo-dm-${nuxeo.distribution.version}-tomcat.zip" tofile="${tomcatdir}" /> -->
-    <nx:rename from="${stagedir}/nuxeo-dm*" to="${tomcatdir}" />
+    <nx:rename from="${stagedir}/nuxeo-cap*" to="${tomcatdir}" />
     <chmod dir="${tomcatdir}/bin" perm="750" includes="*.sh,*ctl" />
 
     <copy todir="${nxserver}/bundles" overwrite="true">
       <artifact:set>
         <includes>
-          <artifact groupId="org.nuxeo.dam*" />
+          <artifact groupId="org.nuxeo*" />
+          <artifact artifactId="nuxeo-platform-preview*" />
+          <artifact artifactId="nuxeo-platform-imaging-*" />
           <artifact artifactId="nuxeo-platform-video-*" />
           <artifact artifactId="nuxeo-platform-audio-core" />
           <artifact artifactId="nuxeo-platform-categorization-*" />
