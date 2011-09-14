@@ -39,6 +39,7 @@
     <view name="dam selection view" template-engine="jsf-facelets">
       <format-type>widget</format-type>
       <template>dam/incl/selection_view.xhtml</template>
+      <resource>dam-annotations.js</resource>
     </view>
 
     <view name="dam includes" template-engine="jsf-facelets">
@@ -69,6 +70,9 @@
     </resource>
     <resource name="import-set-form.js">
       <path>dam/scripts/import-set-form.js</path>
+    </resource>
+    <resource name="dam-annotations.js">
+      <path>dam/scripts/dam-annotations.js</path>
     </resource>
 
     <resource name="video-controller.js">

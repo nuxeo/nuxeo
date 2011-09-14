@@ -7,30 +7,12 @@
      xmlns:nxl="http://nuxeo.org/nxforms/layout"
      xmlns:nxd="http://nuxeo.org/nxweb/document">
 
-  <script language="javascript">
-    function popupAnnotation(url) {
-      popupWidth = 1000;
-      popupHeight = 700;
-      popupTop = (window.screen.height - popupHeight) / 2;
-      popupLeft = (window.screen.width - popupWidth) / 2;
-      popup = window.open(url, '_annotationPopup', 'toolbar=0, scrollbars=1, location=0, statusbar=0, menubar=0, resizable=1, dependent=1, top='+popupTop+', left='+popupLeft+', width='+popupWidth+', height='+popupHeight);
-      if(!popup.opener) {
-        popup.opener = window;
-      }
-      return false;
-    }
-
-    function focusComment() {
-      document.getElementById('navigation:assetView:commentList:addComment:commentContent').focus();
-    }
-  </script>
-
   <div class="infoTabContent">
     <table>
       <tr>
         <td class="assetContainer">
           <f:subview rendered="#{!damDocumentActions.currentSelection.hasSchema('video') and !damDocumentActions.currentSelection.hasSchema('audio')}">
-          <a href="#" onclick="return popupAnnotation('#{annotationsActions.annotationsURL}')">
+          <a id="showAnnotationsButton" href="#{annotationsActions.annotationsURL}">
 
             <f:subview rendered="#{damDocumentActions.currentSelection.hasSchema('picture') and damDocumentActions.currentSelection.picture.views.size > 0}">
                 <f:subview rendered="#{pictureActions.isLandscape(damDocumentActions.currentSelection)}">
