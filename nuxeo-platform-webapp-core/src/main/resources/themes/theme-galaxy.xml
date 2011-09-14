@@ -91,6 +91,7 @@
     <layout element="page[1]/section[1]/cell[1]">
       <width>18%</width>
       <text-align>center</text-align>
+      <vertical-align>bottom</vertical-align>
     </layout>
     <layout element="page[1]/section[1]/cell[2]">
       <width>82%</width>
