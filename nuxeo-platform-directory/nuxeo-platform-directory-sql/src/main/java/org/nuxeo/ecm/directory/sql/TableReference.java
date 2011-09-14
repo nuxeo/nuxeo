@@ -17,9 +17,12 @@
  */
 package org.nuxeo.ecm.directory.sql;
 
+import java.io.Serializable;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -156,6 +159,10 @@ public class TableReference extends AbstractReference {
         select.setWhere(whereString);
 
         String selectSql = select.getStatement();
+        if (session.logger.isLogEnabled()) {
+            session.logger.logSQL(selectSql,
+                    Arrays.<Serializable> asList(sourceId, targetId));
+        }
 
         PreparedStatement ps = null;
         try {
@@ -205,6 +212,10 @@ public class TableReference extends AbstractReference {
         insert.addColumn(table.getColumn(sourceColumn));
         insert.addColumn(table.getColumn(targetColumn));
         String insertSql = insert.getStatement();
+        if (session.logger.isLogEnabled()) {
+            session.logger.logSQL(insertSql,
+                    Arrays.<Serializable> asList(sourceId, targetId));
+        }
 
         PreparedStatement ps = null;
         try {
@@ -228,6 +239,7 @@ public class TableReference extends AbstractReference {
 
     protected List<String> getIdsFor(String valueColumn, String filterColumn,
             String filterValue) throws DirectoryException {
+        SQLSession session = getSQLSession();
 
         // String sql = String.format("SELECT %s FROM %s WHERE %s = ?",
         // table.getColumn(valueColumn), tableName, filterColumn);
@@ -238,8 +250,11 @@ public class TableReference extends AbstractReference {
         select.setWhere(table.getColumn(filterColumn).getQuotedName() + " = ?");
 
         String sql = select.getStatement();
+        if (session.logger.isLogEnabled()) {
+            session.logger.logSQL(sql,
+                    Collections.<Serializable> singleton(filterValue));
+        }
 
-        SQLSession session = getSQLSession();
         List<String> ids = new LinkedList<String>();
         PreparedStatement ps = null;
         try {
@@ -283,6 +298,10 @@ public class TableReference extends AbstractReference {
         Table table = getTable();
         String sql = String.format("DELETE FROM %s WHERE %s = ?",
                 table.getQuotedName(), table.getColumn(column).getQuotedName());
+        if (session.logger.isLogEnabled()) {
+            session.logger.logSQL(sql,
+                    Collections.<Serializable> singleton(entryId));
+        }
         PreparedStatement ps = null;
         try {
             ps = session.sqlConnection.prepareStatement(sql);
@@ -393,6 +412,10 @@ public class TableReference extends AbstractReference {
             try {
                 ps = session.sqlConnection.prepareStatement(deleteSql);
                 for (String unwantedId : idsToDelete) {
+                    if (session.logger.isLogEnabled()) {
+                        session.logger.logSQL(deleteSql,
+                                Arrays.<Serializable> asList(filterValue, unwantedId));
+                    }
                     ps.setString(1, filterValue);
                     ps.setString(2, unwantedId);
                     ps.execute();

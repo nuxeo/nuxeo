@@ -30,6 +30,7 @@ import java.util.Set;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
@@ -44,7 +45,7 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
 
     private static final String SCHEMA = "user";
 
-    private static Calendar getCalendar(int year, int month, int day,
+    public static Calendar getCalendar(int year, int month, int day,
             int hours, int minutes, int seconds, int milliseconds) {
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.YEAR, year);
@@ -55,6 +56,29 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
         cal.set(Calendar.SECOND, seconds);
         cal.set(Calendar.MILLISECOND, milliseconds);
         return cal;
+    }
+
+    public static Calendar stripMillis(Calendar calendar) {
+        return getCalendar(calendar.get(Calendar.YEAR), //
+                calendar.get(Calendar.MONTH) + 1, //
+                calendar.get(Calendar.DAY_OF_MONTH), //
+                calendar.get(Calendar.HOUR_OF_DAY), //
+                calendar.get(Calendar.MINUTE), //
+                calendar.get(Calendar.SECOND), 0);
+    }
+
+    public static void assertCalendarEquals(Calendar expected, Calendar actual)
+            throws Exception {
+        if (expected.equals(actual)) {
+            return;
+        }
+        if (!DatabaseHelper.DATABASE.hasSubSecondResolution()) {
+            // try without milliseconds for stupid MySQL
+            if (stripMillis(expected).equals(stripMillis(actual))) {
+                return;
+            }
+        }
+        assertEquals(expected, actual); // proper failure
     }
 
     public static Session getSession() throws Exception {
@@ -89,8 +113,8 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
             assertTrue(administrators.contains("user_1"));
 
             // readding the same link should not duplicate it
-            membersRef.addLinks("administrators", Arrays.asList("user_1",
-                    "user_2"));
+            membersRef.addLinks("administrators",
+                    Arrays.asList("user_1", "user_2"));
 
             administrators = membersRef.getTargetIdsForSource("administrators");
             assertEquals(3, administrators.size());
@@ -112,15 +136,15 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
 
             // readd references with the set* methods
 
-            membersRef.setTargetIdsForSource("administrators", Arrays.asList(
-                    "user_1", "user_2"));
+            membersRef.setTargetIdsForSource("administrators",
+                    Arrays.asList("user_1", "user_2"));
             administrators = membersRef.getTargetIdsForSource("administrators");
             assertEquals(2, administrators.size());
             assertTrue(administrators.contains("user_1"));
             assertTrue(administrators.contains("user_2"));
 
-            membersRef.setTargetIdsForSource("administrators", Arrays.asList(
-                    "user_1", "Administrator"));
+            membersRef.setTargetIdsForSource("administrators",
+                    Arrays.asList("user_1", "Administrator"));
             administrators = membersRef.getTargetIdsForSource("administrators");
             assertEquals(2, administrators.size());
             assertTrue(administrators.contains("user_1"));
@@ -165,8 +189,8 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
             assertEquals("user_0", dm.getProperty(SCHEMA, "username"));
             assertEquals("pass_0", dm.getProperty(SCHEMA, "password"));
             assertEquals(Long.valueOf(5), dm.getProperty(SCHEMA, "intField"));
-            assertEquals(getCalendar(1982, 3, 25, 16, 30, 47, 0),
-                    dm.getProperty(SCHEMA, "dateField"));
+            assertCalendarEquals(getCalendar(1982, 3, 25, 16, 30, 47, 0),
+                    (Calendar) dm.getProperty(SCHEMA, "dateField"));
 
             List<String> groups = (List<String>) dm.getProperty(SCHEMA,
                     "groups");
@@ -199,8 +223,8 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
             assertFalse("pass_0".equals(password));
             assertTrue(PasswordHelper.verifyPassword("pass_0", password));
             assertEquals(Long.valueOf(5), dm.getProperty(SCHEMA, "intField"));
-            assertEquals(getCalendar(1982, 3, 25, 16, 30, 47, 0),
-                    dm.getProperty(SCHEMA, "dateField"));
+            assertCalendarEquals(getCalendar(1982, 3, 25, 16, 30, 47, 0),
+                    (Calendar) dm.getProperty(SCHEMA, "dateField"));
 
             List<String> groups = (List<String>) dm.getProperty(SCHEMA,
                     "groups");
@@ -221,8 +245,8 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
             assertEquals("user_1", dm.getProperty(SCHEMA, "username"));
             assertEquals("pass_1", dm.getProperty(SCHEMA, "password"));
             assertEquals(Long.valueOf(3), dm.getProperty(SCHEMA, "intField"));
-            assertEquals(getCalendar(2007, 9, 7, 14, 36, 28, 0),
-                    dm.getProperty(SCHEMA, "dateField"));
+            assertCalendarEquals(getCalendar(2007, 9, 7, 14, 36, 28, 0),
+                    (Calendar) dm.getProperty(SCHEMA, "dateField"));
             assertNull(dm.getProperty(SCHEMA, "company"));
             List<String> groups = (List<String>) dm.getProperty(SCHEMA,
                     "groups");
@@ -234,8 +258,8 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
             assertEquals("Administrator", dm.getProperty(SCHEMA, "username"));
             assertEquals("Administrator", dm.getProperty(SCHEMA, "password"));
             assertEquals(Long.valueOf(10), dm.getProperty(SCHEMA, "intField"));
-            assertEquals(getCalendar(1982, 3, 25, 16, 30, 47, 123),
-                    dm.getProperty(SCHEMA, "dateField"));
+            assertCalendarEquals(getCalendar(1982, 3, 25, 16, 30, 47, 123),
+                    (Calendar) dm.getProperty(SCHEMA, "dateField"));
             groups = (List<String>) dm.getProperty(SCHEMA, "groups");
             assertEquals(1, groups.size());
             assertTrue(groups.contains("administrators"));
@@ -262,8 +286,8 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
             assertNotNull(dm);
             assertEquals("user_1", dm.getProperty(SCHEMA, "username"));
             assertEquals("pass_1", dm.getProperty(SCHEMA, "password"));
-            assertEquals(getCalendar(2007, 9, 7, 14, 36, 28, 0),
-                    dm.getProperty(SCHEMA, "dateField"));
+            assertCalendarEquals(getCalendar(2007, 9, 7, 14, 36, 28, 0),
+                    (Calendar) dm.getProperty(SCHEMA, "dateField"));
             assertEquals(Long.valueOf(3), dm.getProperty(SCHEMA, "intField"));
             // XXX: getEntries does not fetch references anymore => groups is
             // null
@@ -273,8 +297,8 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
             assertEquals("Administrator", dm.getProperty(SCHEMA, "username"));
             assertEquals("Administrator", dm.getProperty(SCHEMA, "password"));
             assertEquals(Long.valueOf(10), dm.getProperty(SCHEMA, "intField"));
-            assertEquals(getCalendar(1982, 3, 25, 16, 30, 47, 123),
-                    dm.getProperty(SCHEMA, "dateField"));
+            assertCalendarEquals(getCalendar(1982, 3, 25, 16, 30, 47, 123),
+                    (Calendar) dm.getProperty(SCHEMA, "dateField"));
 
         } finally {
             session.close();
@@ -283,12 +307,18 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
         session = getSession("groupDirectory");
         try {
             DocumentModel doc = session.getEntry("administrators");
-            assertEquals("administrators", doc.getPropertyValue("group:groupname"));
-            assertEquals("Administrators group", doc.getPropertyValue("group:grouplabel"));
+            assertEquals("administrators",
+                    doc.getPropertyValue("group:groupname"));
+            assertEquals("Administrators group",
+                    doc.getPropertyValue("group:grouplabel"));
 
             doc = session.getEntry("group_1");
             assertEquals("group_1", doc.getPropertyValue("group:groupname"));
-            assertEquals("", doc.getPropertyValue("group:grouplabel"));
+            Serializable label = doc.getPropertyValue("group:grouplabel");
+            if (label != null) {
+                // NULL for Oracle
+                assertEquals("", label);
+            }
         } finally {
             session.close();
         }
@@ -304,10 +334,10 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
             dm.setProperty(SCHEMA, "username", "user_2");
             dm.setProperty(SCHEMA, "password", "pass_2");
             dm.setProperty(SCHEMA, "intField", Long.valueOf(2));
-            dm.setProperty(SCHEMA, "dateField", getCalendar(2001, 2, 3, 4, 5,
-                    6, 7));
-            dm.setProperty(SCHEMA, "groups", Arrays.asList("administrators",
-                    "members"));
+            dm.setProperty(SCHEMA, "dateField",
+                    getCalendar(2001, 2, 3, 4, 5, 6, 7));
+            dm.setProperty(SCHEMA, "groups",
+                    Arrays.asList("administrators", "members"));
             session.updateEntry(dm);
             session.commit();
             session.close();
@@ -323,8 +353,8 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
             assertFalse("pass_2".equals(password));
             assertTrue(PasswordHelper.verifyPassword("pass_2", password));
             assertEquals(Long.valueOf(2), dm.getProperty(SCHEMA, "intField"));
-            assertEquals(getCalendar(2001, 2, 3, 4, 5, 6, 7), dm.getProperty(
-                    SCHEMA, "dateField"));
+            assertCalendarEquals(getCalendar(2001, 2, 3, 4, 5, 6, 7),
+                    (Calendar) dm.getProperty(SCHEMA, "dateField"));
             List<String> groups = (List<String>) dm.getProperty(SCHEMA,
                     "groups");
             assertEquals(2, groups.size());
@@ -416,25 +446,6 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
             // entry is gone, only Administrator left
             assertEquals(1, session.getEntries().size());
 
-        } finally {
-            session.close();
-        }
-    }
-
-    public void testRollback() throws Exception {
-        Session session = getSession();
-        try {
-            DocumentModel dm = session.getEntry("user_1");
-            session.deleteEntry(dm);
-            session.rollback();
-        } finally {
-            session.close();
-        }
-
-        session = getSession();
-        try {
-            DocumentModel dm = session.getEntry("user_1");
-            assertNotNull(dm);
         } finally {
             session.close();
         }
@@ -663,7 +674,7 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
 
             String schema1 = "tmpschema1";
             DocumentModel entry = BaseSession.createEntryModel(null, schema1,
-                        null, null);
+                    null, null);
             entry.setProperty(schema1, "id", "john");
             entry.setProperty(schema1, "label", "monLabel");
 
@@ -672,15 +683,15 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
             assertEquals("john", entry.getId());
             assertNotNull(session.getEntry("john"));
 
-            // Open a new directory that uses the same table with a different schema.
+            // Open a new directory that uses the same table with a different
+            // schema.
             // And test if the table has not been re-created, and data are there
             dirtmp2 = (SQLDirectory) getDirectory("tmpdirectory2");
             assertNotNull(dirtmp2);
 
             session = dirtmp2.getSession();
             assertNotNull(session.getEntry("john"));
-        }
-        finally {
+        } finally {
             if (dirtmp1 != null) {
                 dirtmp1.shutdown();
             }

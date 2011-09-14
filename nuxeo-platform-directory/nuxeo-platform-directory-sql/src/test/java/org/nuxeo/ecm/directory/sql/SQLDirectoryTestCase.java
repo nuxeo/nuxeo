@@ -17,10 +17,8 @@
  */
 package org.nuxeo.ecm.directory.sql;
 
-import java.sql.Connection;
-import java.util.Properties;
-
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.DirectoryServiceImpl;
@@ -37,6 +35,7 @@ public abstract class SQLDirectoryTestCase extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.core.schema");
         deployBundle("org.nuxeo.ecm.core.api");
         deployBundle("org.nuxeo.ecm.core");
+
         deployBundle("org.nuxeo.ecm.directory");
         deployBundle("org.nuxeo.ecm.directory.sql");
 
@@ -45,8 +44,16 @@ public abstract class SQLDirectoryTestCase extends NXRuntimeTestCase {
         deployContrib("org.nuxeo.ecm.directory.sql.tests",
                 "test-sql-directories-schema-override.xml");
 
+        DatabaseHelper.DATABASE.setUp();
+
         deployContrib("org.nuxeo.ecm.directory.sql.tests",
                 "test-sql-directories-bundle.xml");
+    }
+
+    @Override
+    public void tearDown() throws Exception {
+        DatabaseHelper.DATABASE.tearDown();
+        super.tearDown();
     }
 
     protected static Session getSession(String dirName) throws ClientException {
@@ -63,17 +70,6 @@ public abstract class SQLDirectoryTestCase extends NXRuntimeTestCase {
             dir = ((SQLDirectoryProxy) dir).getDirectory();
         }
         return dir;
-    }
-
-    public Connection getConnection() throws Exception {
-        return new SimpleDataSource("jdbc:hsqldb:mem:memid",
-                "org.hsqldb.jdbcDriver", "sa", "").getConnection();
-    }
-
-    public static void setUpContextFactory() {
-        Properties props = System.getProperties();
-        props.put("java.naming.factory.initial",
-                "org.nuxeo.ecm.directory.sql.LocalContextFactory");
     }
 
 }

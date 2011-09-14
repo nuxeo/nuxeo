@@ -220,26 +220,17 @@ public interface Session {
     // DirectoryException;
 
     /**
-     * Commits any changes on this session.
-     *
-     * @throws UnsupportedOperationException if the directory does not support
-     *             transactions
-     * @throws DirectoryException if a communication error occurs
-     *             <p>
-     *             In this case the session will be automatically rollbacked
+     * @deprecated do not use, the container manages transactions.
+     * @since 5.4.3
      */
+    @Deprecated
     void commit() throws ClientException, DirectoryException;
 
     /**
-     * Rollbacks any changes on this session.
-     *
-     * @throws UnsupportedOperationException if the associated directory does
-     *             not support transactions
-     * @throws DirectoryException if a communication error occurs
-     *             <p>
-     *             In this case, the session will be automatically rollbacked
-     *             anyway
+     * @deprecated do not use, the container manages transactions.
+     * @since 5.4.3
      */
+    @Deprecated
     void rollback() throws ClientException, DirectoryException;
 
     /**

@@ -103,7 +103,7 @@ public class SQLSession extends BaseSession implements EntrySource {
 
     private final Dialect dialect;
 
-    private JDBCLogger logger = new JDBCLogger("SQLDirectory");
+    protected JDBCLogger logger = new JDBCLogger("SQLDirectory");
 
     public SQLSession(SQLDirectory directory, SQLDirectoryDescriptor config,
             IdGenerator idGenerator, boolean managedSQLSession)
@@ -146,6 +146,9 @@ public class SQLSession extends BaseSession implements EntrySource {
         try {
             if (sqlConnection == null || sqlConnection.isClosed()) {
                 sqlConnection = directory.getDataSource().getConnection();
+                if (!managedSQLSession) {
+                    sqlConnection.setAutoCommit(true);
+                }
             }
         } catch (SQLException e) {
             throw new DirectoryException("updateConnection failed", e);
@@ -636,12 +639,14 @@ public class SQLSession extends BaseSession implements EntrySource {
                 }
                 String leftSide = column.getQuotedName();
                 String operator;
-                if ("".equals(value) && dialect.hasNullEmptyString()) {
+                boolean substring = fulltext != null && fulltext.contains(columnName);
+                if ("".equals(value) && dialect.hasNullEmptyString()
+                        && !substring) {
                     // see NXP-6172, empty values are Null in Oracle
                     value = null;
                 }
                 if (value != null) {
-                    if (fulltext != null && fulltext.contains(columnName)) {
+                    if (substring) {
                         // NB : remove double % in like query NXGED-833
                         String searchedValue = null;
                         switch (substringMatchType) {
@@ -869,23 +874,12 @@ public class SQLSession extends BaseSession implements EntrySource {
 
     @Override
     public void commit() throws DirectoryException {
-        // TODO: cannot commit during a managed transaction !!
-        try {
-            if (!managedSQLSession) {
-                sqlConnection.commit();
-            }
-        } catch (SQLException e) {
-            throw new DirectoryException("commit failed", e);
-        }
+        // deprecated since 5.4.3
     }
 
     @Override
     public void rollback() throws DirectoryException {
-        try {
-            sqlConnection.rollback();
-        } catch (SQLException e) {
-            throw new DirectoryException("rollback failed", e);
-        }
+        // deprecated since 5.4.3
     }
 
     @Override

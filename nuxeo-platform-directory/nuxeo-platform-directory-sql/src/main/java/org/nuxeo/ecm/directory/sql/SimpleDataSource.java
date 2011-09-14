@@ -24,6 +24,8 @@ import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
+import org.nuxeo.runtime.api.Framework;
+
 /**
  * This class is used for tests, where datasources are set up from a driver, url
  * and user/password instead of a JNDI name.
@@ -38,6 +40,10 @@ public class SimpleDataSource implements DataSource {
 
     public SimpleDataSource(String url, String driver, String user,
             String password) {
+        url = Framework.expandVars(url);
+        driver = Framework.expandVars(driver);
+        user = Framework.expandVars(user);
+        password = Framework.expandVars(password);
         try {
             Class.forName(driver);
         } catch (ClassNotFoundException e) {

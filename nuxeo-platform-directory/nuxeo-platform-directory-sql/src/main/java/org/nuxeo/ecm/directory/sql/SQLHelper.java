@@ -73,7 +73,7 @@ public class SQLHelper {
 
     protected final char characterSeparator;
 
-    private JDBCLogger logger = new JDBCLogger("SQLHelper");
+    private JDBCLogger logger = new JDBCLogger("SQLDirectory");
 
     public SQLHelper(Connection connection, Table table, String dataFileName,
             char characterSeparator, String policy) {

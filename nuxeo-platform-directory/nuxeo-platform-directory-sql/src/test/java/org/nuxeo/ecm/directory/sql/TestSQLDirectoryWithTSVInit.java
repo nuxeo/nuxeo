@@ -52,25 +52,12 @@ public class TestSQLDirectoryWithTSVInit extends SQLDirectoryTestCase {
             assertEquals("AdministratorTSV", dm.getProperty(SCHEMA, "username"));
             assertEquals("AdministratorTSV", dm.getProperty(SCHEMA, "password"));
             assertEquals(Long.valueOf(10), dm.getProperty(SCHEMA, "intField"));
-            assertEquals(getCalendar(1982, 3, 25, 16, 30, 47, 123),
-                    dm.getProperty(SCHEMA, "dateField"));
+            TestSQLDirectory.assertCalendarEquals(
+                    TestSQLDirectory.getCalendar(1982, 3, 25, 16, 30, 47, 123),
+                    (Calendar) dm.getProperty(SCHEMA, "dateField"));
         } finally {
             session.close();
         }
     }
-
-    private static Calendar getCalendar(int year, int month, int day,
-            int hours, int minutes, int seconds, int milliseconds) {
-        Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.YEAR, year);
-        cal.set(Calendar.MONTH, month - 1); // 0-based
-        cal.set(Calendar.DAY_OF_MONTH, day);
-        cal.set(Calendar.HOUR_OF_DAY, hours);
-        cal.set(Calendar.MINUTE, minutes);
-        cal.set(Calendar.SECOND, seconds);
-        cal.set(Calendar.MILLISECOND, milliseconds);
-        return cal;
-    }
-
 
 }
