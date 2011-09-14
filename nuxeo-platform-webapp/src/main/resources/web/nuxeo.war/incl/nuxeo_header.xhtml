@@ -9,6 +9,12 @@
 
 <ui:insert name="user">
 
+  <c:if test="#{adminMessageActivated}">
+   <div style="text-align: center; padding: 5px 5px 5px 25px; background-color:#fff9B4; font: normal 12px Arial,sans-serif;">
+     <h:outputText value="#{adminMessage}"/>
+   </div>
+  </c:if>
+
   <div class="userSearchBlock">
   <h:form id="userServicesSearchForm">
    <div class="searchService">
@@ -200,12 +206,6 @@
 </c:if>
 
   <div class="clear"></div>
-
-  <c:if test="#{adminMessageActivated}">
-   <div style="text-align: center; padding: 5px 5px 5px 25px; border: 1px solid rgb(170, 187, 255); background: url('icons/info.gif') no-repeat 3px center #fff; font: normal 12px Arial,sans-serif; margin:3px;">
-     <h:outputText value="#{adminMessage}"/>
-   </div>
-  </c:if>
 
 </ui:insert>
 
