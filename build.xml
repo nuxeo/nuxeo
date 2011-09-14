@@ -213,15 +213,13 @@
 
   <target name="web-tomcat">
     <copy todir="${tomcat.nuxeo.war.dir}">
-      <fileset dir="${basedir}/nuxeo-dam-webapp/src/main/resources/web/nuxeo.war/" />
-      <fileset dir="${basedir}/nuxeo-dam-webapp-common/src/main/resources/web/nuxeo.war/" />
+      <fileset dir="${basedir}/nuxeo-dam-web/src/main/resources/web/nuxeo.war/" />
     </copy>
   </target>
 
   <target name="web-jboss">
     <copy todir="${jboss.nuxeo.war.dir}">
-      <fileset dir="${basedir}/nuxeo-dam-webapp/src/main/resources/web/nuxeo.war/" />
-      <fileset dir="${basedir}/nuxeo-dam-webapp-common/src/main/resources/web/nuxeo.war/" />
+      <fileset dir="${basedir}/nuxeo-dam-web/src/main/resources/web/nuxeo.war/" />
     </copy>
   </target>
 

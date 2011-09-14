@@ -20,12 +20,9 @@
   <modules>
     <module>nuxeo-dam-api</module>
     <module>nuxeo-dam-core</module>
-    <module>nuxeo-dam-webapp-core</module>
-    <module>nuxeo-dam-webapp-common</module>
-    <module>nuxeo-dam-webapp</module>
-    <module>nuxeo-dam-webapp-override</module>
-    <module>nuxeo-dam-lang</module>
     <module>nuxeo-dam-importer</module>
+    <module>nuxeo-dam-lang</module>
+    <module>nuxeo-dam-web</module>
   </modules>
 
   <properties>
@@ -46,22 +43,7 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.dam</groupId>
-        <artifactId>nuxeo-dam-webapp-core</artifactId>
-        <version>${nuxeo.dam.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.dam</groupId>
-        <artifactId>nuxeo-dam-webapp-common</artifactId>
-        <version>${nuxeo.dam.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.dam</groupId>
-        <artifactId>nuxeo-dam-webapp</artifactId>
-        <version>${nuxeo.dam.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.dam</groupId>
-        <artifactId>nuxeo-dam-webapp-override</artifactId>
+        <artifactId>nuxeo-dam-web</artifactId>
         <version>${nuxeo.dam.version}</version>
       </dependency>
       <dependency>
@@ -99,7 +81,7 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-actions-core</artifactId>
+        <artifactId>nuxeo-platform-damDocumentActions-core</artifactId>
         <type>ejb</type>
         <version>${nuxeo.services.version}</version>
       </dependency>

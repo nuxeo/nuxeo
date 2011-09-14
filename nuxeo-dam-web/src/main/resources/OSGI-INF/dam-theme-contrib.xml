@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.dam.theme">
+
+  <require>org.nuxeo.theme.core</require>
+  <require>org.nuxeo.theme.fragments</require>
+  <require>org.nuxeo.theme.html</require>
+  <require>org.nuxeo.theme.jsf</require>
+
+  <!--  themes -->
+  <extension target="org.nuxeo.theme.services.ThemeService"
+    point="themes">
+
+    <theme>
+      <src>themes/theme-dam.xml</src>
+    </theme>
+
+  </extension>
+
+
+  <!-- views -->
+  <extension target="org.nuxeo.theme.services.ThemeService"
+    point="views">
+
+    <view name="dam logo" template-engine="jsf-facelets">
+      <format-type>widget</format-type>
+      <template>dam/incl/logo.xhtml</template>
+    </view>
+
+    <view name="dam search filters" template-engine="jsf-facelets">
+      <format-type>widget</format-type>
+      <template>dam/incl/search_filter.xhtml</template>
+    </view>
+
+    <view name="dam filtered search results" template-engine="jsf-facelets">
+      <format-type>widget</format-type>
+      <template>dam/incl/filtered_search_results.xhtml</template>
+    </view>
+
+    <view name="dam selection view" template-engine="jsf-facelets">
+      <format-type>widget</format-type>
+      <template>dam/incl/selection_view.xhtml</template>
+    </view>
+
+    <view name="dam includes" template-engine="jsf-facelets">
+      <format-type>widget</format-type>
+      <template>dam/incl/dam_includes.xhtml</template>
+      <resource>dam.css</resource>
+      <resource>modal-popup.css</resource>
+      <resource>toggle-panel.js</resource>
+      <resource>import-set-form.js</resource>
+      <resource>video-controller.js</resource>
+    </view>
+
+  </extension>
+
+  <!-- resources -->
+  <extension target="org.nuxeo.theme.services.ThemeService"
+    point="resources">
+
+    <resource name="modal-popup.css">
+      <path>dam/css/modal_popup.css</path>
+    </resource>
+    <resource name="dam.css">
+      <path>dam/css/dam.css</path>
+    </resource>
+
+    <resource name="toggle-panel.js">
+      <path>dam/scripts/toggle-panel.js</path>
+    </resource>
+    <resource name="import-set-form.js">
+      <path>dam/scripts/import-set-form.js</path>
+    </resource>
+
+    <resource name="video-controller.js">
+      <path>jsvideo/video-controller.js</path>
+    </resource>
+
+  </extension>
+
+  <!-- application settings -->
+  <extension target="org.nuxeo.theme.services.ThemeService"
+    point="applications">
+
+    <application root="${org.nuxeo.ecm.contextPath}"
+      template-engine="jsf-facelets">
+
+      <view id="/dam/assets.xhtml">
+        <theme>dam/default</theme>
+      </view>
+
+      <view id="/dam/annotations_popup.xhtml">
+        <theme>dam/popup</theme>
+      </view>
+
+    </application>
+
+  </extension>
+
+  <!-- Styles presets -->
+  <extension target="org.nuxeo.theme.services.ThemeService" point="presets">
+
+    <palette name="DAM borders"
+      src="themes/palettes/dam-borders.properties" category="border" />
+    <palette name="DAM backgrounds"
+      src="themes/palettes/dam-backgrounds.properties" category="background" />
+    <palette name="DAM fonts" src="themes/palettes/dam-fonts.properties"
+      category="font" />
+    <palette name="DAM colors" src="themes/palettes/dam-colors.properties"
+      category="color" />
+
+  </extension>
+
+
+</component>

@@ -51,15 +51,6 @@
     <unzip dest="${stagedir}">
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-tomcat:${nuxeo.distribution.version}:zip"
                             classifier="nuxeo-cap" />
-      <patternset>
-        <exclude name="**/nxserver/bundles/nuxeo-platform-webapp-${nuxeo.distribution.version}*" />
-        <exclude name="**/nxserver/bundles/nuxeo-platform-webapp-core*" />
-
-        <exclude name="**/nxserver/bundles/nuxeo-platform-ear*" />
-        <exclude name="**/nxserver/bundles/nuxeo-platform-publisher-web*" />
-        <exclude name="**/nxserver/bundles/nuxeo-platform-forum*" />
-
-      </patternset>
     </unzip>
 
     <!-- <move file="${stagedir}/nuxeo-dm-${nuxeo.distribution.version}-tomcat.zip" tofile="${tomcatdir}" /> -->
@@ -69,13 +60,14 @@
     <copy todir="${nxserver}/bundles" overwrite="true">
       <artifact:set>
         <includes>
-          <artifact groupId="org.nuxeo*" />
-          <artifact artifactId="nuxeo-platform-preview*" />
+          <artifact groupId="org.nuxeo.dam*" />
+          <artifact artifactId="nuxeo-platform-importer-core" />
+          <artifact artifactId="nuxeo-platform-categorization-*" />
           <artifact artifactId="nuxeo-platform-imaging-*" />
           <artifact artifactId="nuxeo-platform-video-*" />
-          <artifact artifactId="nuxeo-platform-audio-core" />
-          <artifact artifactId="nuxeo-platform-categorization-*" />
-          <artifact artifactId="nuxeo-platform-importer-core" />
+          <artifact artifactId="nuxeo-platform-audio*" />
+          <artifact artifactId="nuxeo-platform-annotations*" />
+          <artifact artifactId="nuxeo-platform-preview*" />
         </includes>
         <excludes>
           <artifact artifactId="nuxeo-dam-importer-jaxrs" />
@@ -137,6 +129,8 @@ org.nuxeo.distribution.date=${org.nuxeo.distribution.date}
   <target name="third-party-libraries">
     <copy todir="${nxserver}/lib" overwrite="true">
       <artifact:resolveFile key="de.schlichtherle.io:truezip" />
+      <artifact:resolveFile key="com.google.gwt:gwt-servlet" />
+
     </copy>
 
     <copy todir="${tomcatdir}/lib">

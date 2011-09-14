@@ -1,0 +1,31 @@
+<div class="searchFilter" xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:rich="http://richfaces.org/rich"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:c="http://java.sun.com/jstl/core">
+
+  <script type="text/javascript" src="#{baseURL}js/?scripts=importSetForm.js"></script>
+
+  <rich:modalPanel id="importSetFormPanel" autosized="true" styleClass="ImportSetFormPanel">
+    <f:facet name="header">
+      <h:panelGroup>
+        <h:outputText value="${messages['popup.label.creation.importSet']}"/>
+    </h:panelGroup>
+  </f:facet>
+  <f:facet name="controls">
+    <h:panelGroup>
+      <h:graphicImage value="/img/close.png"
+          styleClass="hidelink" id="hidelink" />
+        <rich:componentControl for="importSetFormPanel" attachTo="hidelink"
+          operation="hide" event="onclick" />
+      </h:panelGroup>
+    </f:facet>
+    <ui:include src="/dam/incl/new_import_set.xhtml" />
+  </rich:modalPanel>
+
+</div>
