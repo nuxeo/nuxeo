@@ -47,6 +47,10 @@ public abstract class DatabaseHelper {
 
     public static final String REPOSITORY_PROPERTY = "nuxeo.test.vcs.repository";
 
+    // available for JDBC tests
+    public static final String DRIVER_PROPERTY = "nuxeo.test.vcs.driver";
+
+    // available for JDBC tests
     public static final String URL_PROPERTY = "nuxeo.test.vcs.url";
 
     public static final String SERVER_PROPERTY = "nuxeo.test.vcs.server";
@@ -159,6 +163,19 @@ public abstract class DatabaseHelper {
      * the next second.
      */
     public void maybeSleepToNextSecond() {
+        if (!hasSubSecondResolution()) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+            }
+        }
+    }
+
+    /**
+     * For databases that don't have subsecond resolution, like MySQL.
+     */
+    public boolean hasSubSecondResolution() {
+        return true;
     }
 
     /**

@@ -14,7 +14,6 @@ package org.nuxeo.ecm.core.storage.sql;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -38,6 +37,8 @@ public class DatabasePostgreSQL extends DatabaseHelper {
 
     private static final String CONTRIB_XML = "OSGI-INF/test-repo-repository-postgresql-contrib.xml";
 
+    private static final String DRIVER = "org.postgresql.Driver";
+
     protected void setProperties() {
         Properties properties = Framework.getProperties();
         properties.setProperty(REPOSITORY_PROPERTY, repositoryName);
@@ -46,17 +47,21 @@ public class DatabasePostgreSQL extends DatabaseHelper {
         setProperty(PORT_PROPERTY, DEF_PORT);
         setProperty(USER_PROPERTY, DEF_USER);
         setProperty(PASSWORD_PROPERTY, DEF_PASSWORD);
-    }
-
-    @Override
-    public void setUp() throws Exception {
-        Class.forName("org.postgresql.Driver");
-        setProperties();
+        // for sql directory tests
+        setProperty(DRIVER_PROPERTY, DRIVER);
         String url = String.format("jdbc:postgresql://%s:%s/%s",
                 System.getProperty(SERVER_PROPERTY),
                 System.getProperty(PORT_PROPERTY),
                 System.getProperty(DATABASE_PROPERTY));
-        Connection connection = DriverManager.getConnection(url,
+        setProperty(URL_PROPERTY, url);
+    }
+
+    @Override
+    public void setUp() throws Exception {
+        Class.forName(DRIVER);
+        setProperties();
+        Connection connection = DriverManager.getConnection(
+                System.getProperty(URL_PROPERTY),
                 System.getProperty(USER_PROPERTY),
                 System.getProperty(PASSWORD_PROPERTY));
         try {

@@ -36,18 +36,16 @@ public class DatabaseSQLServer extends DatabaseHelper {
 
     private static final String CONTRIB_XML = "OSGI-INF/test-repo-repository-mssql-contrib.xml";
 
+    private static final String DRIVER = "net.sourceforge.jtds.jdbc.Driver";
+
     private static void setProperties() {
         setProperty(SERVER_PROPERTY, DEF_SERVER);
         setProperty(PORT_PROPERTY, DEF_PORT);
         setProperty(DATABASE_PROPERTY, DEF_DATABASE);
         setProperty(USER_PROPERTY, DEF_USER);
         setProperty(PASSWORD_PROPERTY, DEF_PASSWORD);
-    }
-
-    @Override
-    public void setUp() throws Exception {
-        Class.forName("net.sourceforge.jtds.jdbc.Driver");
-        setProperties();
+        // for sql directory tests
+        setProperty(DRIVER_PROPERTY, DRIVER);
         String url = String.format(
                 "jdbc:jtds:sqlserver://%s:%s/%s;user=%s;password=%s",
                 System.getProperty(SERVER_PROPERTY),
@@ -55,7 +53,14 @@ public class DatabaseSQLServer extends DatabaseHelper {
                 System.getProperty(DATABASE_PROPERTY),
                 System.getProperty(USER_PROPERTY),
                 System.getProperty(PASSWORD_PROPERTY));
-        Connection connection = DriverManager.getConnection(url);
+        setProperty(URL_PROPERTY, url);
+    }
+
+    @Override
+    public void setUp() throws Exception {
+        Class.forName(DRIVER);
+        setProperties();
+        Connection connection = DriverManager.getConnection(System.getProperty(URL_PROPERTY));
         doOnAllTables(connection, null, null, "DROP TABLE [%s]"); // no CASCADE...
         connection.close();
     }

@@ -38,14 +38,25 @@ public class DatabaseDerby extends DatabaseHelper {
 
     private static final String LOG = "target/test/derby.log";
 
-    private static void setProperties() {
+    private static final String DRIVER = "org.apache.derby.jdbc.EmbeddedDriver";
+
+    protected String url;
+
+    protected void setProperties() {
         setProperty(DATABASE_PROPERTY, new File(DIRECTORY).getAbsolutePath());
         setProperty(USER_PROPERTY, DEF_USER);
         setProperty(PASSWORD_PROPERTY, DEF_PASSWORD);
+        // for sql directory tests
+        setProperty(DRIVER_PROPERTY, DRIVER);
+        url = String.format("jdbc:derby:%s;create=true",
+                System.getProperty(DATABASE_PROPERTY));
+        setProperty(URL_PROPERTY, url);
     }
 
     @Override
-    public void setUp() {
+    public void setUp() throws Exception {
+        // newInstance needed after a previous shutdown
+        Class.forName(DRIVER).newInstance();
         File dbdir = new File(DIRECTORY);
         File parent = dbdir.getParentFile();
         FileUtils.deleteTree(dbdir);
@@ -62,6 +73,7 @@ public class DatabaseDerby extends DatabaseHelper {
         Exception ex = null;
         try {
             DriverManager.getConnection("jdbc:derby:;shutdown=true");
+            // after this to reboot the driver a newInstance is needed
         } catch (SQLException e) {
             String message = e.getMessage();
             if ("Derby system shutdown.".equals(message)) {

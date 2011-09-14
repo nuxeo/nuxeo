@@ -32,15 +32,18 @@ public class DatabaseMySQL extends DatabaseHelper {
 
     private static final String CONTRIB_XML = "OSGI-INF/test-repo-repository-mysql-contrib.xml";
 
+    private static final String DRIVER = "com.mysql.jdbc.Driver";
+
     private static void setProperties() {
         setProperty(URL_PROPERTY, DEF_URL);
         setProperty(USER_PROPERTY, DEF_USER);
         setProperty(PASSWORD_PROPERTY, DEF_PASSWORD);
+        setProperty(DRIVER_PROPERTY, DRIVER);
     }
 
     @Override
     public void setUp() throws Exception {
-        Class.forName("com.mysql.jdbc.Driver");
+        Class.forName(DRIVER);
         setProperties();
         Connection connection = DriverManager.getConnection(
                 System.getProperty(URL_PROPERTY),
@@ -68,11 +71,8 @@ public class DatabaseMySQL extends DatabaseHelper {
     }
 
     @Override
-    public void maybeSleepToNextSecond() {
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-        }
+    public boolean hasSubSecondResolution() {
+        return false;
     }
 
     @Override

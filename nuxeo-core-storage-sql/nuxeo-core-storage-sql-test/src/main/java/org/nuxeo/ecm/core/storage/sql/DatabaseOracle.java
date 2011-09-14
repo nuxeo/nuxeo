@@ -24,7 +24,10 @@ public class DatabaseOracle extends DatabaseHelper {
 
     public static DatabaseHelper INSTANCE = new DatabaseOracle();
 
-    private static final String DEF_URL = "jdbc:oracle:thin:@localhost:1521:XE";
+    private static final String DEF_SERVER = "localhost";
+
+    private static final String DEF_URL = "jdbc:oracle:thin:@" + DEF_SERVER
+            + ":1521:XE";
 
     private static final String DEF_USER = "nuxeo";
 
@@ -32,15 +35,18 @@ public class DatabaseOracle extends DatabaseHelper {
 
     private static final String CONTRIB_XML = "OSGI-INF/test-repo-repository-oracle-contrib.xml";
 
+    private static final String DRIVER = "oracle.jdbc.driver.OracleDriver";
+
     private static void setProperties() {
         setProperty(URL_PROPERTY, DEF_URL);
         setProperty(USER_PROPERTY, DEF_USER);
         setProperty(PASSWORD_PROPERTY, DEF_PASSWORD);
+        setProperty(DRIVER_PROPERTY, DRIVER);
     }
 
     @Override
     public void setUp() throws Exception {
-        Class.forName("oracle.jdbc.driver.OracleDriver");
+        Class.forName(DRIVER);
         setProperties();
         Connection connection = DriverManager.getConnection(
                 System.getProperty(URL_PROPERTY),

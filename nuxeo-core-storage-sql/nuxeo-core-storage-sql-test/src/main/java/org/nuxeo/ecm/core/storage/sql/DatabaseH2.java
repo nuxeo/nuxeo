@@ -43,6 +43,8 @@ public class DatabaseH2 extends DatabaseHelper {
 
     protected static final String CONTRIB_XML = "OSGI-INF/test-repo-repository-h2-contrib.xml";
 
+    protected static final String DRIVER = "org.h2.Driver";
+
     protected String h2Path;
 
     protected String origUrl;
@@ -57,11 +59,13 @@ public class DatabaseH2 extends DatabaseHelper {
         setProperty(DATABASE_PROPERTY, databaseName);
         setProperty(USER_PROPERTY, DEF_USER);
         setProperty(PASSWORD_PROPERTY, DEF_PASSWORD);
+        // for sql directory tests
+        setProperty(DRIVER_PROPERTY, DRIVER);
     }
 
     @Override
     public void setUp() throws Exception {
-        Class.forName("org.h2.Driver");
+        Class.forName(DRIVER);
         File dir = new File(DIRECTORY);
         FileUtils.deleteTree(dir);
         dir.mkdirs();
