@@ -73,8 +73,7 @@ public class TestMetadataFile {
         MetadataCollector collector = new MetadataCollector();
         collector.addPropertyFile(file);
 
-        String contextPath = new Path(file.getAbsolutePath()).removeLastSegments(
-                1).toString();
+        String contextPath = file.getParent();
         Map<String, Serializable> properties = collector.getProperties(contextPath);
         assertEquals(8, properties.size());
         assertEquals("testTitle", properties.get("dc:title"));
@@ -102,8 +101,7 @@ public class TestMetadataFile {
         MetadataCollector collector = new MetadataCollector();
         collector.addPropertyFile(file);
 
-        String contextPath = new Path(file.getAbsolutePath()).removeLastSegments(
-                1).toString();
+        String contextPath = file.getParent();
         Map<String, Serializable> properties = collector.getProperties(contextPath);
         assertEquals(4, properties.size());
         assertEquals("testTitle", properties.get("dc:title"));
@@ -128,8 +126,7 @@ public class TestMetadataFile {
         MetadataCollector collector = new MetadataCollector();
         collector.addPropertyFile(file);
 
-        String contextPath = new Path(file.getAbsolutePath()).removeLastSegments(
-                1).toString();
+        String contextPath = file.getParent();
         Map<String, Serializable> properties = collector.getProperties(contextPath);
         assertEquals(3, properties.size());
         assertEquals("testTitle", properties.get("dc:title"));
@@ -152,8 +149,7 @@ public class TestMetadataFile {
         MetadataCollector collector = new MetadataCollector();
         collector.addPropertyFile(file);
 
-        String contextPath = new Path(file.getAbsolutePath()).removeLastSegments(
-                1).toString();
+        String contextPath = file.getParent();
         Map<String, Serializable> properties = collector.getProperties(contextPath);
         assertEquals(4, properties.size());
         assertEquals("testTitle", properties.get("dc:title"));

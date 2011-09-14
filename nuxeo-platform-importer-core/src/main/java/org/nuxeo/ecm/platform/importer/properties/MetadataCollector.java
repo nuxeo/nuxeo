@@ -32,7 +32,8 @@ import java.util.Properties;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.regex.Pattern;
 
-import org.nuxeo.common.utils.Path;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
 
 /**
  *
@@ -61,13 +62,6 @@ public class MetadataCollector {
 
     protected ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
-    protected String normalizePath(String contextPath) {
-        if (contextPath != null) {
-            return contextPath = new Path(contextPath).removeTrailingSeparator().toString();
-        }
-        return null;
-    }
-
     public void addPropertiesFromStrings(String contextPath,
             Map<String, String> properties) {
         Map<String, Serializable> collectedProperties = new HashMap<String, Serializable>();
@@ -82,12 +76,12 @@ public class MetadataCollector {
             Map<String, Serializable> collectedProperties) {
         try {
             lock.writeLock().lock();
-            contextPath = normalizePath(contextPath);
+            contextPath = FilenameUtils.normalizeNoEndSeparator(contextPath);
             if (staticInherit) {
-                Path path = new Path(contextPath);
-                while (!path.isEmpty() && !path.isRoot()) {
-                    path = path.removeLastSegments(1);
-                    Map<String, Serializable> parentProperties = collectedMetadata.get(path.toString());
+                File file = new File(contextPath);
+                while (!StringUtils.isEmpty(file.getParent())) {
+                    file = file.getParentFile();
+                    Map<String, Serializable> parentProperties = collectedMetadata.get(file.toString());
                     if (parentProperties != null) {
                         for (String name : parentProperties.keySet()) {
                             if (!collectedProperties.containsKey(name)) {
@@ -145,17 +139,17 @@ public class MetadataCollector {
 
     public Map<String, Serializable> getProperties(String contextPath) {
 
-        contextPath = normalizePath(contextPath);
+        contextPath = FilenameUtils.normalizeNoEndSeparator(contextPath);
 
         try {
             lock.readLock().lock();
             Map<String, Serializable> props = collectedMetadata.get(contextPath);
 
             if (props == null) {
-                Path path = new Path(contextPath);
-                while (props == null && !path.isEmpty() && !path.isRoot()) {
-                    path = path.removeLastSegments(1);
-                    props = collectedMetadata.get(path.toString());
+                File file = new File(contextPath);
+                while (props == null && !StringUtils.isEmpty(file.getParent())) {
+                    file = file.getParentFile();
+                    props = collectedMetadata.get(file.getPath().toString());
                 }
             }
 
@@ -179,8 +173,7 @@ public class MetadataCollector {
             String name = (String) names.nextElement();
             stringMap.put(name, mdProperties.getProperty(name));
         }
-        String contextPath = new Path(propertyFile.getAbsolutePath()).removeLastSegments(
-                1).toString();
+        String contextPath = new File(propertyFile.getPath()).getParent();
         addPropertiesFromStrings(contextPath, stringMap);
     }
 
