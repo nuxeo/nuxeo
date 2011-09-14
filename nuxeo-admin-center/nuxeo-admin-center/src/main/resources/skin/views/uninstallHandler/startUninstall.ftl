@@ -12,7 +12,7 @@
 
  		<#if status.hasWarnings()>
    		 <div class="installWarningsTitle">
-    	   <p>Some warnings where found when checking the package:</p>
+    	   <p>Some warnings were found when checking the package:</p>
    		 	 <ul class="installWarnings">
    	  	 		<#list status.getWarnings() as warning>
       	 		 <li> ${warning} </li>

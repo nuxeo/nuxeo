@@ -8,7 +8,7 @@
     <h1> Uninstallation of ${pkg.title} (${pkg.id}) is not possible </h1>
 
     <div class="installErrorTitle">
-       Some errors where found when checking the package.<br/>
+       Some errors were found when checking the package.<br/>
        Uninstall process can not continue.
     </div>
     <ul class="installErrors">
