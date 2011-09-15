@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.util.Properties;
 
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.DirectoryServiceImpl;
@@ -19,6 +20,8 @@ public class TestSQLDirectories extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
+        DatabaseHelper.DATABASE.setUp();
+
         deployBundle("org.nuxeo.ecm.core.schema");
         deployBundle("org.nuxeo.ecm.core.api");
         deployBundle("org.nuxeo.ecm.core");
@@ -28,6 +31,12 @@ public class TestSQLDirectories extends NXRuntimeTestCase {
 
         deployBundle("org.nuxeo.ecm.platform.audit.api");
         deployContrib("org.nuxeo.ecm.platform.audit.tests", "OSGI-INF/test-directories-contrib.xml");
+    }
+
+    @Override
+    public void tearDown() throws Exception {
+        DatabaseHelper.DATABASE.tearDown();
+        super.tearDown();
     }
 
     protected static Session getSession(String dirName) throws ClientException {
