@@ -865,7 +865,7 @@ public class SQLSession extends BaseSession implements EntrySource {
     protected Serializable fieldValueForWrite(Object value, Column column) {
         ColumnSpec spec = column.getType().spec;
         if (value instanceof String) {
-            if (spec == ColumnSpec.LONG) {
+            if (spec == ColumnSpec.LONG || spec == ColumnSpec.AUTOINC) {
                 // allow storing string into integer/long key
                 return Long.valueOf((String) value);
             }
