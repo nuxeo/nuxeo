@@ -1,9 +1,9 @@
 // import form popup
 function showImportSetForm() {
   jQuery('<a href="#importSetFormPopup"></a>').fancybox({
-    'autoScale'			: true,
-    'transitionIn'		: 'none',
-    'transitionOut'		: 'none',
+    'autoScale': true,
+    'transitionIn': 'none',
+    'transitionOut': 'none',
     'enableEscapeButton': true,
     'centerOnScroll': true
   }).click();
@@ -28,27 +28,13 @@ function fileUploadComplete() {
 // bulk edit popup
 function showBulkEditPopup() {
   jQuery('<a href="#bulkEditPopup"></a>').fancybox({
-    'autoScale'			: true,
-    'transitionIn'		: 'none',
-    'transitionOut'		: 'none',
+    'autoScale': true,
+    'transitionIn': 'none',
+    'transitionOut': 'none',
     'enableEscapeButton': true,
     'centerOnScroll': true
   }).click();
 }
-
-// annotations
-jQuery(document).ready(function() {
-  jQuery("#showAnnotationsButton").fancybox({
-    'width'				: '95%',
-    'height'			: '95%',
-    'autoScale'			: true,
-    'transitionIn'		: 'none',
-    'transitionOut'		: 'none',
-    'type'				: 'iframe',
-    'enableEscapeButton': true,
-    'centerOnScroll': true
-  });
-});
 
 // common
 function togglePanel(button) {
