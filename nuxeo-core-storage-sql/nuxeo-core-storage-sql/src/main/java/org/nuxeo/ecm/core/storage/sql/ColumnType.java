@@ -77,6 +77,8 @@ public class ColumnType {
 
     public static final ColumnType INTEGER = new ColumnType(ColumnSpec.INTEGER);
 
+    public static final ColumnType AUTOINC = new ColumnType(ColumnSpec.AUTOINC);
+
     public static final ColumnType FTINDEXED = new ColumnType(
             ColumnSpec.FTINDEXED);
 

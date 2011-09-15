@@ -14,13 +14,22 @@ package org.nuxeo.ecm.core.storage.sql;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * @author Florent Guillaume
  */
 public class DatabaseOracle extends DatabaseHelper {
+
+    private static final Log log = LogFactory.getLog(DatabaseOracle.class);
 
     public static DatabaseHelper INSTANCE = new DatabaseOracle();
 
@@ -55,7 +64,28 @@ public class DatabaseOracle extends DatabaseHelper {
         doOnAllTables(connection, null,
                 System.getProperty(USER_PROPERTY).toUpperCase(),
                 "DROP TABLE \"%s\" CASCADE CONSTRAINTS PURGE");
+        dropSequences(connection);
         connection.close();
+    }
+
+    public void dropSequences(Connection connection) throws Exception {
+        List<String> sequenceNames = new ArrayList<String>();
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT SEQUENCE_NAME FROM USER_SEQUENCES");
+        while (rs.next()) {
+            String sequenceName = rs.getString(1);
+            if (sequenceName.indexOf('$') != -1) {
+                continue;
+            }
+            sequenceNames.add(sequenceName);
+        }
+        rs.close();
+        for (String sequenceName : sequenceNames) {
+            String sql = String.format("DROP SEQUENCE \"%s\"", sequenceName);
+            log.trace("SQL: " + sql);
+            st.execute(sql);
+        }
+        st.close();
     }
 
     @Override

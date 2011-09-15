@@ -37,6 +37,7 @@ public enum ColumnSpec {
     SYSNAMEARRAY, // system names array (mixins), string if not suppported
     TINYINT, // cluster inval kind
     INTEGER, // complex prop order, ordered doc
+    AUTOINC, // auto-incremented integer (identity, serial, etc.)
     FTINDEXED, // summary ft column being indexed
     FTSTORED, // individual ft column
     CLUSTERNODE, // cluster node id

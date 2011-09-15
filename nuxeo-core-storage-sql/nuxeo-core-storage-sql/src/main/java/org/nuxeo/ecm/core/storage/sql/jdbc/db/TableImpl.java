@@ -210,23 +210,17 @@ public class TableImpl implements Table {
     protected void addOneColumn(StringBuilder buf, Column column) {
         buf.append(column.getQuotedName());
         buf.append(' ');
-        if (column.isIdentity()) {
-            throw new UnsupportedOperationException();
-        } else {
-            buf.append(column.getSqlTypeString());
-            String defaultValue = column.getDefaultValue();
-            if (defaultValue != null) {
-                buf.append(" DEFAULT ");
-                buf.append(defaultValue);
-            }
-            if (column.isNullable()) {
-                buf.append(dialect.getNullColumnString());
-            } else {
-                buf.append(" NOT NULL");
-            }
+        buf.append(column.getSqlTypeString());
+        String defaultValue = column.getDefaultValue();
+        if (defaultValue != null) {
+            buf.append(" DEFAULT ");
+            buf.append(defaultValue);
         }
-        // unique
-        // check
+        if (column.isNullable()) {
+            buf.append(dialect.getNullColumnString());
+        } else {
+            buf.append(" NOT NULL");
+        }
     }
 
     @Override
@@ -246,7 +240,8 @@ public class TableImpl implements Table {
     }
 
     protected void postAddColumn(Column column, List<String> sqls, Model model) {
-        if (column.isPrimary()) {
+        if (column.isPrimary()
+                && !(column.isIdentity() && dialect.isIdentityAlreadyPrimary())) {
             StringBuilder buf = new StringBuilder();
             String constraintName = dialect.openQuote()
                     + dialect.getPrimaryKeyConstraintName(key)
@@ -258,6 +253,10 @@ public class TableImpl implements Table {
             buf.append(column.getQuotedName());
             buf.append(')');
             sqls.add(buf.toString());
+        }
+        if (column.isIdentity()) {
+            // Oracle needs a sequence + trigger
+            sqls.addAll(dialect.getPostCreateIdentityColumnSql(column));
         }
         Table ft = column.getForeignTable();
         if (ft != null) {

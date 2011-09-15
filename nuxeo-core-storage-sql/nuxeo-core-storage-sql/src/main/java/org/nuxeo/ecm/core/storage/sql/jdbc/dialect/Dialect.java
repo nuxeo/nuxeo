@@ -1125,15 +1125,53 @@ public abstract class Dialect {
         // the SQL-standard function (PostgreSQL, MySQL)
         return "OCTET_LENGTH";
     }
-    
+
     /**
-     * Let the dialect perform additional statements just after the connection is opened
-     * 
-     * @param connection
-     * @throws SQLException 
+     * Let the dialect perform additional statements just after the connection
+     * is opened.
      */
-    public void performPostOpenStatements(Connection connection) throws SQLException {
-        
+    public void performPostOpenStatements(Connection connection)
+            throws SQLException {
+    }
+
+    /**
+     * Gets additional SQL statements to execute after the CREATE TABLE when
+     * creating an identity column.
+     * <p>
+     * Oracle needs both a sequence and a trigger.
+     */
+    public List<String> getPostCreateIdentityColumnSql(Column column) {
+        return Collections.emptyList();
+    }
+
+    /**
+     * Checks if an identity column is already defined as a primary key and does
+     * not need a separate index added.
+     * <p>
+     * MySQL defines the identity column directly as primary key.
+     */
+    public boolean isIdentityAlreadyPrimary() {
+        return false;
+    }
+
+    /**
+     * True if the dialect returns the generated key for the identity from the
+     * insert statement.
+     * <p>
+     * Oracle needs a separate call to CURRVAL.
+     */
+    public boolean hasIdentityGeneratedKey() {
+        return true;
+    }
+
+    /**
+     * Gets the SQL query to execute to retrieve the last generated identity
+     * key.
+     * <p>
+     * Oracle needs a separate call to CURRVAL.
+     */
+    public String getIdentityGeneratedKeySql(Column column) {
+        return null;
     }
 
 }

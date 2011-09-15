@@ -147,6 +147,8 @@ public class DialectSQLServer extends Dialect {
             return jdbcInfo("TINYINT", Types.TINYINT);
         case INTEGER:
             return jdbcInfo("INT", Types.INTEGER);
+        case AUTOINC:
+            return jdbcInfo("INT IDENTITY", Types.INTEGER);
         case FTINDEXED:
             throw new AssertionError(type);
         case FTSTORED:

@@ -28,6 +28,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -45,6 +46,7 @@ import org.nuxeo.ecm.core.storage.sql.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.ModelFulltext;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
+import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCConnection;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Database;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Join;
@@ -62,7 +64,6 @@ public class DialectOracle extends Dialect {
     protected final String fulltextParameters;
 
     protected boolean pathOptimizationsEnabled;
-
 
     public DialectOracle(DatabaseMetaData metadata,
             BinaryManager binaryManager,
@@ -135,6 +136,8 @@ public class DialectOracle extends Dialect {
         case TINYINT:
             return jdbcInfo("NUMBER(3,0)", Types.TINYINT);
         case INTEGER:
+            return jdbcInfo("NUMBER(10,0)", Types.INTEGER);
+        case AUTOINC:
             return jdbcInfo("NUMBER(10,0)", Types.INTEGER);
         case FTINDEXED:
             return jdbcInfo("CLOB", Types.CLOB);
@@ -536,8 +539,8 @@ public class DialectOracle extends Dialect {
                 SecurityConstants.BROWSE);
         List<String> permsList = new LinkedList<String>();
         for (String perm : permissions) {
-            permsList.add(String.format(
-                    "  INTO ACLR_PERMISSION VALUES ('%s')", perm));
+            permsList.add(String.format("  INTO ACLR_PERMISSION VALUES ('%s')",
+                    perm));
         }
         properties.put("readPermissions", StringUtils.join(permsList, "\n"));
         return properties;
@@ -583,6 +586,34 @@ public class DialectOracle extends Dialect {
     @Override
     public String getBlobLengthFunction() {
         return "LENGTHB";
+    }
+
+    @Override
+    public List<String> getPostCreateIdentityColumnSql(Column column) {
+        String table = column.getTable().getPhysicalName();
+        String col = column.getPhysicalName();
+        String seq = table + "_IDSEQ";
+        String trig = table + "_IDTRIG";
+        String createSeq = String.format("CREATE SEQUENCE \"%s\"", seq);
+        String createTrig = String.format("CREATE TRIGGER \"%s\"\n" //
+                + "  BEFORE INSERT ON \"%s\"\n" //
+                + "  FOR EACH ROW WHEN (NEW.\"%s\" IS NULL)\n" //
+                + "BEGIN\n" //
+                + "  SELECT \"%s\".NEXTVAL INTO :NEW.\"%s\" FROM DUAL;\n" //
+                + "END;", trig, table, col, seq, col);
+        return Arrays.asList(createSeq, createTrig);
+    }
+
+    @Override
+    public boolean hasIdentityGeneratedKey() {
+        return false;
+    }
+
+    @Override
+    public String getIdentityGeneratedKeySql(Column column) {
+        String table = column.getTable().getPhysicalName();
+        String seq = table + "_IDSEQ";
+        return String.format("SELECT \"%s\".CURRVAL FROM DUAL", seq);
     }
 
 }
