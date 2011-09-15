@@ -129,9 +129,9 @@ public class SQLDirectory extends AbstractDirectory {
                     if (isId) {
                         if (config.isAutoincrementIdField()) {
                             column.setIdentity(true);
-                            column.setNullable(false);
                         }
                         column.setPrimary(true);
+                        column.setNullable(false);
                         hasPrimary = true;
                     }
                     Object defaultValue = f.getDefaultValue();
