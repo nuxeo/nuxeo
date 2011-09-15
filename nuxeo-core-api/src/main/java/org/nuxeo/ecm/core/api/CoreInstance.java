@@ -81,8 +81,6 @@ public class CoreInstance implements Serializable {
 
     private final Map<String, CoreSession> sessions = new ConcurrentHashMap<String, CoreSession>();
 
-    private final Map<String, DocumentType> docTypes = new Hashtable<String, DocumentType>();
-
     // hiding the default constructor from clients
     protected CoreInstance() {
     }
@@ -94,14 +92,6 @@ public class CoreInstance implements Serializable {
      */
     public static CoreInstance getInstance() {
         return instance;
-    }
-
-    public DocumentType getCachedDocumentType(String type) {
-        return docTypes.get(type);
-    }
-
-    public void cacheDocumentType(DocumentType docType) {
-        docTypes.put(docType.getName(), docType);
     }
 
     public CoreSession open(String repositoryName,
