@@ -12,11 +12,13 @@
 package org.nuxeo.ecm.core.storage.sql.jdbc.db;
 
 import java.io.Serializable;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
 
 import org.nuxeo.ecm.core.storage.sql.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.Model;
+import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCConnection;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
 
 /**
@@ -87,20 +89,17 @@ public interface Table extends Serializable {
     String getAddColumnSql(Column column);
 
     /**
-     * Computes the SQL statements to finish creating the table, usually some
-     * ALTER TABLE statements to add constraints or indexes.
-     *
-     * @return the SQL strings
+     * Finish creating the table, usually executing some ALTER TABLE statements
+     * to add constraints or indexes.
      */
-    List<String> getPostCreateSqls(Model model);
+    void postCreate(Model model, JDBCConnection connection) throws SQLException;
 
     /**
-     * Computes the SQL statements to finish adding a column, usually some ALTER
-     * TABLE statements to add constraints or indexes.
-     *
-     * @return the SQL strings
+     * Finish adding a column, usually executing some ALTER TABLE statements to
+     * add constraints or indexes.
      */
-    List<String> getPostAddSqls(Column column, Model model);
+    void postAddColumn(Column column, Model model, JDBCConnection connection)
+            throws SQLException;
 
     /**
      * Computes the SQL statement to drop the table.

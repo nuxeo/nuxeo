@@ -11,12 +11,14 @@
  */
 package org.nuxeo.ecm.core.storage.sql.jdbc.db;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import org.nuxeo.ecm.core.storage.sql.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.Model;
+import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCConnection;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
 
 /**
@@ -142,12 +144,14 @@ public class TableAlias implements Table {
     }
 
     @Override
-    public List<String> getPostCreateSqls(Model model) {
+    public void postCreate(Model model, JDBCConnection connection)
+            throws SQLException {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public List<String> getPostAddSqls(Column column, Model model) {
+    public void postAddColumn(Column column, Model model,
+            JDBCConnection connection) throws SQLException {
         throw new UnsupportedOperationException();
     }
 

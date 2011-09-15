@@ -62,11 +62,4 @@ public interface SecurityManager {
     Access getAccess(Document doc, String username,
             String permission) throws SecurityException;
 
-    /**
-     * @deprecated unused
-     * @since 5.4.3
-     */
-    @Deprecated
-    void invalidateCache(Session session);
-
 }

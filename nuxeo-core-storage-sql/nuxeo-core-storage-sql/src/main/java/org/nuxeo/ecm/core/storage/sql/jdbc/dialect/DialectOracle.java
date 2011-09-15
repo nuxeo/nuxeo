@@ -28,6 +28,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -45,10 +46,12 @@ import org.nuxeo.ecm.core.storage.sql.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.ModelFulltext;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
+import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCConnection;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Database;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Join;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
+import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.SQLStatement.SQLStatements;
 
 /**
  * Oracle-specific dialect.
@@ -62,7 +65,6 @@ public class DialectOracle extends Dialect {
     protected final String fulltextParameters;
 
     protected boolean pathOptimizationsEnabled;
-
 
     public DialectOracle(DatabaseMetaData metadata,
             BinaryManager binaryManager,
@@ -135,6 +137,9 @@ public class DialectOracle extends Dialect {
         case TINYINT:
             return jdbcInfo("NUMBER(3,0)", Types.TINYINT);
         case INTEGER:
+            return jdbcInfo("NUMBER(10,0)", Types.INTEGER);
+        case AUTOINC:
+            // TODO also needs an associated sequence and trigger
             return jdbcInfo("NUMBER(10,0)", Types.INTEGER);
         case FTINDEXED:
             return jdbcInfo("CLOB", Types.CLOB);
@@ -511,7 +516,7 @@ public class DialectOracle extends Dialect {
         properties.put("pathOptimizationsEnabled",
                 Boolean.valueOf(pathOptimizationsEnabled));
         properties.put("fulltextEnabled", Boolean.valueOf(!fulltextDisabled));
-        if (!fulltextDisabled) {
+        if (!fulltextDisabled && model != null) {
             Table ft = database.getTable(model.FULLTEXT_TABLE_NAME);
             properties.put("fulltextTable", ft.getQuotedName());
             ModelFulltext fti = model.getFulltextInfo();
@@ -536,8 +541,8 @@ public class DialectOracle extends Dialect {
                 SecurityConstants.BROWSE);
         List<String> permsList = new LinkedList<String>();
         for (String perm : permissions) {
-            permsList.add(String.format(
-                    "  INTO ACLR_PERMISSION VALUES ('%s')", perm));
+            permsList.add(String.format("  INTO ACLR_PERMISSION VALUES ('%s')",
+                    perm));
         }
         properties.put("readPermissions", StringUtils.join(permsList, "\n"));
         return properties;
@@ -583,6 +588,23 @@ public class DialectOracle extends Dialect {
     @Override
     public String getBlobLengthFunction() {
         return "LENGTHB";
+    }
+
+    protected SQLStatements sqlStatements;
+
+    @Override
+    public void postCreateIdentityColumnSql(Column column,
+            JDBCConnection connection) throws SQLException {
+        try {
+            sqlStatements = new SQLStatements(this, null, null, null);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        Map<String, Serializable> props = new HashMap<String, Serializable>();
+        props.put("table", column.getTable().getPhysicalName());
+        props.put("column", column.getQuotedName());
+        sqlStatements.setProperties(props);
+        sqlStatements.execute("postCreateIdentity", connection);
     }
 
 }

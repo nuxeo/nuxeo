@@ -902,3 +902,19 @@ UPDATE locks SET
   owner = SUBSTR("LOCK", 1, INSTR("LOCK", ':') - 1),
   created = TO_TIMESTAMP(SUBSTR("LOCK", INSTR("LOCK", ':') + 1), 'MON DD, YYYY')
   WHERE owner IS NULL
+
+
+############################################################
+
+
+# This category is called with variables ${table} and ${column}
+#CATEGORY: postCreateIdentity
+
+CREATE SEQUENCE ${table}_SEQ
+
+CREATE OR REPLACE TRIGGER ${table}_IDTRIG
+  BEFORE INSERT ON "${table}"
+  FOR EACH ROW WHEN (NEW.${column} IS NULL)
+BEGIN
+  SELECT ${table}_SEQ.NEXTVAL INTO :NEW.${column} FROM DUAL;
+END;

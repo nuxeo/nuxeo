@@ -44,6 +44,7 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Update;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.SQLStatement;
+import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.SQLStatement.SQLStatements;
 
 /**
  * This singleton generates and holds the actual SQL DDL and DML statements for
@@ -107,9 +108,7 @@ public class SQLInfo {
 
     protected List<Column> clusterInvalidationsColumns;
 
-    protected Map<String, List<SQLStatement>> sqlStatements;
-
-    protected Map<String, Serializable> sqlStatementsProperties;
+    protected SQLStatements sqlStatements;
 
     protected List<String> getBinariesSql;
 
@@ -1043,17 +1042,7 @@ public class SQLInfo {
 
     public void initSQLStatements(Map<String, Serializable> testProps)
             throws IOException {
-        sqlStatements = new HashMap<String, List<SQLStatement>>();
-        SQLStatement.read(dialect.getSQLStatementsFilename(), sqlStatements);
-        if (!testProps.isEmpty()) {
-            SQLStatement.read(dialect.getTestSQLStatementsFilename(),
-                    sqlStatements);
-        }
-        sqlStatementsProperties = dialect.getSQLStatementsProperties(model,
-                database);
-        if (!testProps.isEmpty()) {
-            sqlStatementsProperties.putAll(testProps);
-        }
+        sqlStatements = new SQLStatements(dialect, model, database, testProps);
     }
 
     /**
@@ -1061,10 +1050,7 @@ public class SQLInfo {
      */
     public void executeSQLStatements(String category, JDBCConnection jdbc)
             throws SQLException {
-        List<SQLStatement> statements = sqlStatements.get(category);
-        if (statements != null) {
-            SQLStatement.execute(statements, sqlStatementsProperties, jdbc);
-        }
+        sqlStatements.execute(category, jdbc);
     }
 
     public int getMaximumArgsForIn() {

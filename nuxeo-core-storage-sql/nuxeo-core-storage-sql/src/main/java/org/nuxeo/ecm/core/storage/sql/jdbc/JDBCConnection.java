@@ -33,7 +33,7 @@ public class JDBCConnection {
     /** The model used to do the mapping. */
     protected final Model model;
 
-    /** The SQL information. */
+    /** The Dialect. */
     protected final SQLInfo sqlInfo;
 
     /** The xa datasource. */
@@ -58,15 +58,14 @@ public class JDBCConnection {
     private static final AtomicLong instanceCounter = new AtomicLong(0);
 
     // for debug
-    private final long instanceNumber = instanceCounter.incrementAndGet();
+    private final long instanceNumber;
 
     // for debug
-    public final JDBCLogger logger = new JDBCLogger(
-            String.valueOf(instanceNumber));
+    public final JDBCLogger logger;
 
     /**
-     * Creates a new Mapper.
-     * 
+     * Creates a new connection.
+     *
      * @param model the model
      * @param sqlInfo the sql info
      * @param xadatasource the XA datasource to use to get connections
@@ -75,12 +74,29 @@ public class JDBCConnection {
             XADataSource xadatasource,
             JDBCConnectionPropagator connectionPropagator)
             throws StorageException {
+        instanceNumber = instanceCounter.incrementAndGet();
+        logger = new JDBCLogger(String.valueOf(instanceNumber));
         this.model = model;
         this.sqlInfo = sqlInfo;
         this.xadatasource = xadatasource;
         this.connectionPropagator = connectionPropagator;
         connectionPropagator.addConnection(this);
         open();
+    }
+
+    /**
+     * Creates a new JDBCConnection from a standard Connection.
+     * <p>
+     * Used for directories.
+     */
+    public JDBCConnection(Connection connection, String instance) {
+        instanceNumber = 0;
+        logger = new JDBCLogger(instance);
+        this.connection = connection;
+        xadatasource = null;
+        sqlInfo = null;
+        model = null;
+        connectionPropagator = null;
     }
 
     public Identification getIdentification() {

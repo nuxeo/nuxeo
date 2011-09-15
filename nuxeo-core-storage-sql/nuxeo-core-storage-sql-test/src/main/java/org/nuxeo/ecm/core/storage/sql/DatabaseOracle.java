@@ -24,7 +24,7 @@ public class DatabaseOracle extends DatabaseHelper {
 
     public static DatabaseHelper INSTANCE = new DatabaseOracle();
 
-    private static final String DEF_SERVER = "localhost";
+    private static final String DEF_SERVER = "192.168.133.206";
 
     private static final String DEF_URL = "jdbc:oracle:thin:@" + DEF_SERVER
             + ":1521:XE";

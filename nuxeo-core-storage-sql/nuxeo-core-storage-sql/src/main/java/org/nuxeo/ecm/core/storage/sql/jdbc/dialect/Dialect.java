@@ -26,6 +26,7 @@ import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
@@ -41,6 +42,7 @@ import org.nuxeo.ecm.core.storage.sql.BinaryManager;
 import org.nuxeo.ecm.core.storage.sql.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
+import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCConnection;
 import org.nuxeo.ecm.core.storage.sql.jdbc.QueryMaker.QueryMakerException;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Database;
@@ -1125,15 +1127,34 @@ public abstract class Dialect {
         // the SQL-standard function (PostgreSQL, MySQL)
         return "OCTET_LENGTH";
     }
-    
+
     /**
      * Let the dialect perform additional statements just after the connection is opened
-     * 
+     *
      * @param connection
-     * @throws SQLException 
+     * @throws SQLException
      */
     public void performPostOpenStatements(Connection connection) throws SQLException {
-        
+
     }
+
+    /**
+     * Executes additional SQL statements after the CREATE TABLE when creating
+     * an identity column.
+     * <p>
+     * Oracle needs both a sequence and a trigger.
+     */
+    public void postCreateIdentityColumnSql(Column column,
+            JDBCConnection connection) throws SQLException {
+    }
+
+    /**
+     * Checks if an identity column is already defined as a primary key and does
+     * not need a separate index added.
+     */
+    public boolean isIdentityAlreadyPrimary() {
+        return false;
+    }
+
 
 }
