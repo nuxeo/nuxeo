@@ -119,12 +119,6 @@ public class SecurityService extends DefaultComponent {
         return permissionProvider;
     }
 
-    // Never used. Remove ?
-    public static void invalidateCache(Session session, String username) {
-        session.getRepository().getNuxeoSecurityManager().invalidateCache(
-                session);
-    }
-
     public boolean arePoliciesRestrictingPermission(String permission) {
         return securityPolicyService.arePoliciesRestrictingPermission(permission);
     }
