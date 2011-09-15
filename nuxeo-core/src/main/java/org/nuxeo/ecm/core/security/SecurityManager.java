@@ -63,12 +63,10 @@ public interface SecurityManager {
             String permission) throws SecurityException;
 
     /**
-     * Invalidates cache, if there is any.
-     * <p>
-     * Do nothing if no cache is used.
-     *
-     * @param session the current session
+     * @deprecated unused
+     * @since 5.4.3
      */
+    @Deprecated
     void invalidateCache(Session session);
 
 }
