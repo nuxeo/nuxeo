@@ -31,7 +31,6 @@ import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.Property;
-import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.security.SecurityException;
 import org.nuxeo.ecm.core.security.SecurityManager;
 import org.nuxeo.ecm.core.storage.sql.ACLRow;
@@ -119,10 +118,6 @@ public class SQLSecurityManager implements SecurityManager {
         ACP acp = getMergedACP(doc);
         return acp == null ? Access.UNKNOWN : acp.getAccess(username,
                 permission);
-    }
-
-    @Override
-    public void invalidateCache(Session session) {
     }
 
     /*

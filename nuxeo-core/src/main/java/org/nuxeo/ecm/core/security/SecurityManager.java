@@ -17,7 +17,6 @@ package org.nuxeo.ecm.core.security;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.Access;
 import org.nuxeo.ecm.core.model.Document;
-import org.nuxeo.ecm.core.model.Session;
 
 /**
  * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -61,12 +60,5 @@ public interface SecurityManager {
      */
     Access getAccess(Document doc, String username,
             String permission) throws SecurityException;
-
-    /**
-     * @deprecated unused
-     * @since 5.4.3
-     */
-    @Deprecated
-    void invalidateCache(Session session);
 
 }
