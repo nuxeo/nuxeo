@@ -15,9 +15,9 @@
   <a4j:form id="filterForm">
 
   <div class="actionBar">
-    <a4j:commandLink styleClass="button import" action="#{importActions.invalidateImportContext}" onclick="javascript:Richfaces.showModalPanel('importSetFormPanel');"
-      rendered="#{importActions.importFolders.size() > 0}" id="importset_creation_button" reRender="importSetPanel">
-      <h:outputText class="importButton" value="${messages['label.action.createImportSet']}"/>
+    <a4j:commandLink styleClass="button import" action="#{importActions.invalidateImportContext}" oncomplete="showImportSetForm();"
+      id="importset_creation_button" reRender="importSetPanel">
+      <h:outputText styleClass="importButton" value="${messages['label.action.createImportSet']}"/>
     </a4j:commandLink>
 
     <a4j:commandButton id="filterFormClear"

@@ -47,7 +47,7 @@
 
 
     <!-- BUTTONS -->
-    <action id="CURRENT_SELECTION_EDIT" link="javascript:Richfaces.showModalPanel('bulkEditPanel');"
+    <action id="CURRENT_SELECTION_EDIT" link="javascript:showBulkEditPopup();"
       label="command.bulk.edit" icon="" help="command.bulk.edit.help">
       <category>DAM_CURRENT_SELECTION_LIST_HREF</category>
       <filter id="canBulkEdit">

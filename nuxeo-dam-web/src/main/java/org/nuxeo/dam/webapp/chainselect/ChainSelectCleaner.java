@@ -31,15 +31,15 @@ public class ChainSelectCleaner {
 
     public static final String ASSET_COVERAGE_CHAIN_SELECT_ID = "navigation:assetView:editSubView:nxl_dublincore_1:nxw_coverage_3:nxw_coverage_3_editselect";
 
-    public static final String ASSET_SUBJECTS_CHAIN_SELECT_ID = "navigation:assetView:editSubView:nxl_dublincore_1:nxw_topic_3:nxw_topic_3_editselect";
+    public static final String ASSET_SUBJECTS_CHAIN_SELECT_ID = "navigation:assetView:editSubView:nxl_dublincore_1:nxw_subjects_3:nxw_subjects_3_editselect";
 
     public static final String IMPORT_COVERAGE_CHAIN_SELECT_ID = "importset_form:nxl_importset:nxl_importset_left:nxw_coverage:nxw_coverage_editselect";
 
-    public static final String IMPORT_SUBJECTS_CHAIN_SELECT_ID = "importset_form:nxl_importset:nxl_importset_right:nxw_topic:nxw_topic_editselect";
+    public static final String IMPORT_SUBJECTS_CHAIN_SELECT_ID = "importset_form:nxl_importset:nxl_importset_right:nxw_subjects:nxw_subjects_editselect";
 
     public static final String BULK_EDIT_COVERAGE_CHAIN_SELECT_ID = "bulk_edit_form:nxl_bulk_edit:nxw_coverage_1:nxw_coverage_1_editselect";
 
-    public static final String BULK_EDIT_SUBJECTS_CHAIN_SELECT_ID = "bulk_edit_form:nxl_bulk_edit:nxw_topic_1:nxw_topic_1_editselect";
+    public static final String BULK_EDIT_SUBJECTS_CHAIN_SELECT_ID = "bulk_edit_form:nxl_bulk_edit:nxw_subjects_1:nxw_subjects_1_editselect";
 
     private ChainSelectCleaner() {
         // Helper class

@@ -89,7 +89,7 @@
         value="#{messages['command.create']}" action="#{importActions.createImportSet}"
         onclick="processInProgress()"
         data="#{facesContext.maximumSeverity.ordinal ge 2}"
-        oncomplete="if (data) { hideWaiter() } else { processFinished() };"
+        oncomplete="processFinished()"
         reRender="filterFormPanel, filterResultTable, selectionView, importset_form" />
 
       <a4j:commandButton styleClass="button"
