@@ -44,7 +44,6 @@ import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.directory.AbstractDirectory;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.DirectoryFieldMapper;
-import org.nuxeo.ecm.directory.IdGenerator;
 import org.nuxeo.ecm.directory.Reference;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.runtime.api.Framework;
@@ -260,11 +259,6 @@ public class LDAPDirectory extends AbstractDirectory {
                     "could not initialise LDAP directory context: "
                             + e.getMessage(), e);
         }
-    }
-
-    public IdGenerator getIdGenerator() {
-        // XXX: YAGNI?
-        return null;
     }
 
     public String getName() {

@@ -166,6 +166,12 @@ public class SQLHelper {
                 logger.log(createSql);
             }
             stmt.execute(createSql);
+            for (String sql : table.getPostCreateSqls(null)) {
+                if (logger.isLogEnabled()) {
+                    logger.log(sql);
+                }
+                stmt.execute(sql);
+            }
         } catch (SQLException e) {
             throw new DirectoryException(String.format(
                     "Table '%s' creation failed: %s", table, e.getMessage()), e);
@@ -431,7 +437,7 @@ public class SQLHelper {
         } else {
             physicalName = name;
         }
-        return new TableImpl(dialect, physicalName, null);
+        return new TableImpl(dialect, physicalName, physicalName);
     }
 
     public static Column addColumn(Table table, String fieldName,

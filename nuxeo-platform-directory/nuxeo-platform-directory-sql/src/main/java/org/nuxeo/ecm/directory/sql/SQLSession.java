@@ -22,6 +22,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -56,7 +57,6 @@ import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.EntrySource;
-import org.nuxeo.ecm.directory.IdGenerator;
 import org.nuxeo.ecm.directory.Reference;
 import org.nuxeo.ecm.directory.SizeLimitExceededException;
 
@@ -89,7 +89,7 @@ public class SQLSession extends BaseSession implements EntrySource {
 
     final String passwordHashAlgorithm;
 
-    IdGenerator idGenerator;
+    private final boolean autoincrementIdField;
 
     final SQLDirectory directory;
 
@@ -106,8 +106,7 @@ public class SQLSession extends BaseSession implements EntrySource {
     protected JDBCLogger logger = new JDBCLogger("SQLDirectory");
 
     public SQLSession(SQLDirectory directory, SQLDirectoryDescriptor config,
-            IdGenerator idGenerator, boolean managedSQLSession)
-            throws DirectoryException {
+            boolean managedSQLSession) throws DirectoryException {
         this.directory = directory;
         this.schemaName = config.getSchemaName();
         this.table = directory.getTable();
@@ -122,7 +121,7 @@ public class SQLSession extends BaseSession implements EntrySource {
         this.sid = String.valueOf(SIDGenerator.next());
         this.managedSQLSession = managedSQLSession;
         this.substringMatchType = config.getSubstringMatchType();
-        this.idGenerator = idGenerator;
+        this.autoincrementIdField = config.isAutoincrementIdField();
         this.staticFilters = config.getStaticFilters();
     }
 
@@ -163,8 +162,8 @@ public class SQLSession extends BaseSession implements EntrySource {
             log.warn(READ_ONLY_VOCABULARY_WARN);
         }
         acquireConnection();
-        if (idGenerator != null) {
-            fieldMap.put(idField, Integer.valueOf(idGenerator.nextId()));
+        if (autoincrementIdField) {
+            fieldMap.remove(idField);
         } else {
             // check id that was given
             Object rawId = fieldMap.get(idField);
@@ -178,14 +177,6 @@ public class SQLSession extends BaseSession implements EntrySource {
             }
         }
 
-        // first step: insert stored fields
-        // String columnList = StringUtils.join(storedFieldNames.iterator(), ",
-        // ");
-        // String valueList = StringUtils.join(Collections.nCopies(
-        // storedFieldNames.size(), "?").iterator(), ", ");
-
-        // String sql = String.format("INSERT INTO %s (%s) VALUES (%s)",
-        // tableName, columnList, valueList);
         List<Column> columnList = new ArrayList<Column>(table.getColumns());
         for (Iterator<Column> i = columnList.iterator(); i.hasNext();) {
             Column column = i.next();
@@ -211,8 +202,11 @@ public class SQLSession extends BaseSession implements EntrySource {
 
         DocumentModel entry;
         PreparedStatement ps = null;
+        Statement st = null;
         try {
-            ps = sqlConnection.prepareStatement(sql);
+            ps = sqlConnection.prepareStatement(sql,
+                    autoincrementIdField ? Statement.RETURN_GENERATED_KEYS
+                            : Statement.NO_GENERATED_KEYS);
             int index = 1;
             for (Column column : columnList) {
                 Object value = fieldMap.get(column.getKey());
@@ -220,6 +214,28 @@ public class SQLSession extends BaseSession implements EntrySource {
                 index++;
             }
             ps.execute();
+            if (autoincrementIdField) {
+                Column column = table.getColumn(idField);
+                ResultSet rs;
+                if (dialect.hasIdentityGeneratedKey()) {
+                    rs = ps.getGeneratedKeys();
+                } else {
+                    // needs specific statements
+                    sql = dialect.getIdentityGeneratedKeySql(column);
+                    st = sqlConnection.createStatement();
+                    rs = st.executeQuery(sql);
+                }
+                if (!rs.next()) {
+                    throw new DirectoryException("Cannot get generated key");
+                }
+                if (logger.isLogEnabled()) {
+                    logger.logResultSet(rs,
+                            Collections.singletonList(column));
+                }
+                Serializable rawId = column.getFromResultSet(rs, 1);
+                fieldMap.put(idField, rawId);
+                rs.close();
+            }
             entry = fieldMapToDocumentModel(fieldMap);
         } catch (SQLException e) {
             throw new DirectoryException("createEntry failed", e);
@@ -227,6 +243,9 @@ public class SQLSession extends BaseSession implements EntrySource {
             try {
                 if (ps != null) {
                     ps.close();
+                }
+                if (st != null) {
+                    st.close();
                 }
             } catch (SQLException sqle) {
                 throw new DirectoryException(sqle);
@@ -844,8 +863,9 @@ public class SQLSession extends BaseSession implements EntrySource {
     }
 
     protected Serializable fieldValueForWrite(Object value, Column column) {
+        ColumnSpec spec = column.getType().spec;
         if (value instanceof String) {
-            if (column.getType().spec == ColumnSpec.LONG) {
+            if (spec == ColumnSpec.LONG) {
                 // allow storing string into integer/long key
                 return Long.valueOf((String) value);
             }
@@ -859,12 +879,12 @@ public class SQLSession extends BaseSession implements EntrySource {
                 return password;
             }
         } else if (value instanceof Number) {
-            if (column.getType().spec == ColumnSpec.LONG) {
+            if (spec == ColumnSpec.LONG || spec == ColumnSpec.AUTOINC) {
                 // canonicalize to Long
                 if (value instanceof Integer) {
                     return Long.valueOf(((Integer) value).longValue());
                 }
-            } else if (column.getType().spec == ColumnSpec.STRING) {
+            } else if (spec == ColumnSpec.STRING) {
                 // allow storing number in string field
                 return value.toString();
             }

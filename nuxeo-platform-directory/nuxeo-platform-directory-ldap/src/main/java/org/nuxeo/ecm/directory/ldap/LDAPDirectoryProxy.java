@@ -25,7 +25,6 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryCache;
 import org.nuxeo.ecm.directory.DirectoryException;
-import org.nuxeo.ecm.directory.IdGenerator;
 import org.nuxeo.ecm.directory.Reference;
 import org.nuxeo.ecm.directory.Session;
 
@@ -54,10 +53,6 @@ public class LDAPDirectoryProxy implements Directory {
             }
         }
         return directory;
-    }
-
-    public IdGenerator getIdGenerator() throws DirectoryException {
-        return getDirectory().getIdGenerator();
     }
 
     public String getName() throws DirectoryException {

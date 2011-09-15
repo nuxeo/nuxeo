@@ -42,7 +42,6 @@ import org.nuxeo.ecm.directory.AbstractDirectory;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.DirectoryServiceImpl;
-import org.nuxeo.ecm.directory.IdGenerator;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.RuntimeService;
@@ -60,8 +59,6 @@ public class SQLDirectory extends AbstractDirectory {
     private boolean managedSQLSession;
 
     private DataSource dataSource;
-
-    private final SimpleIdGenerator idGenerator;
 
     private List<Session> sessions = new ArrayList<Session>();
 
@@ -122,10 +119,18 @@ public class SQLDirectory extends AbstractDirectory {
                     // reference
                     storedFieldNames.add(fieldName);
 
+                    boolean isId = fieldName.equals(config.getIdField());
                     ColumnType type = ColumnType.fromField(f);
+                    if (isId && config.isAutoincrementIdField()) {
+                        type = ColumnType.AUTOINC;
+                    }
                     Column column = SQLHelper.addColumn(table, fieldName, type,
                             useNativeCase());
-                    if (fieldName.equals(config.getIdField())) {
+                    if (isId) {
+                        if (config.isAutoincrementIdField()) {
+                            column.setIdentity(true);
+                            column.setNullable(false);
+                        }
                         column.setPrimary(true);
                         hasPrimary = true;
                     }
@@ -147,13 +152,6 @@ public class SQLDirectory extends AbstractDirectory {
                     config.getDataFileCharacterSeparator(),
                     config.createTablePolicy);
             helper.setupTable();
-
-            if (config.autoincrementIdField) {
-                idGenerator = new SimpleIdGenerator(sqlConnection, table,
-                        config.getIdField());
-            } else {
-                idGenerator = null;
-            }
 
             try {
                 if (config.dataSourceName == null) {
@@ -211,11 +209,6 @@ public class SQLDirectory extends AbstractDirectory {
     }
 
     @Override
-    public IdGenerator getIdGenerator() {
-        return idGenerator;
-    }
-
-    @Override
     public String getName() {
         return config.getName();
     }
@@ -242,8 +235,7 @@ public class SQLDirectory extends AbstractDirectory {
 
     @Override
     public synchronized Session getSession() throws DirectoryException {
-        Session session = new SQLSession(this, config, idGenerator,
-                managedSQLSession);
+        Session session = new SQLSession(this, config, managedSQLSession);
         addSession(session);
         return session;
     }

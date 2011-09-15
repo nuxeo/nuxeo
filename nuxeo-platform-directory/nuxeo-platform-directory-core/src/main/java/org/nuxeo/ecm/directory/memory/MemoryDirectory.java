@@ -29,7 +29,6 @@ import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.directory.AbstractDirectory;
 import org.nuxeo.ecm.directory.DirectoryException;
-import org.nuxeo.ecm.directory.IdGenerator;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.runtime.api.Framework;
 
@@ -90,10 +89,6 @@ public class MemoryDirectory extends AbstractDirectory {
         this.schemaSet = schemaSet;
         this.idField = idField;
         this.passwordField = passwordField;
-    }
-
-    public IdGenerator getIdGenerator() {
-        return null;
     }
 
     public String getName() {

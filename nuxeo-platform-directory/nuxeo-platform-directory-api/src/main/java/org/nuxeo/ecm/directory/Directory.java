@@ -73,14 +73,6 @@ public interface Directory {
     String getPasswordField() throws DirectoryException;
 
     /**
-     * Gets the ID generator used when creating new entries in this directory.
-     *
-     * @return an ID Generator object
-     * @throws DirectoryException
-     */
-    IdGenerator getIdGenerator() throws DirectoryException;
-
-    /**
      * Shuts down the directory.
      *
      * @throws DirectoryException

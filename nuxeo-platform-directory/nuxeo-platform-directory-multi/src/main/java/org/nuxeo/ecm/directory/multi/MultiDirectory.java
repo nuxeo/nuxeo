@@ -26,7 +26,6 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.directory.AbstractDirectory;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
-import org.nuxeo.ecm.directory.IdGenerator;
 import org.nuxeo.ecm.directory.Reference;
 import org.nuxeo.ecm.directory.Session;
 
@@ -47,10 +46,6 @@ public class MultiDirectory extends AbstractDirectory {
 
     protected MultiDirectoryDescriptor getDescriptor() {
         return descriptor;
-    }
-
-    public IdGenerator getIdGenerator() {
-        return null; // this method is never called
     }
 
     public String getName() {
