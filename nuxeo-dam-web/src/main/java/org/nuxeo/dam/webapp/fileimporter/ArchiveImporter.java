@@ -23,8 +23,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.dam.Constants;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -54,10 +56,13 @@ public class ArchiveImporter extends AbstractFileImporter {
             String path, boolean overwrite, String filename,
             TypeManager typeService) throws ClientException, IOException {
 
-        String extension = null;
-        if (filename.contains(".")) {
-            extension = filename.substring(filename.lastIndexOf("."));
+        DocumentModel doc = documentManager.getDocument(new PathRef(path));
+        if (!Constants.IMPORT_FOLDER_TYPE.equals(doc.getType())) {
+            // only use this import in Import Folders
+            return null;
         }
+
+        String extension = FilenameUtils.getExtension(filename);
         java.io.File tmp = File.createTempFile("import", extension);
         try {
             File archive = new File(tmp);
