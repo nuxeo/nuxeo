@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.usermanager.UserManager;import org.nuxeo.runtime.api.Framework;
@@ -24,6 +25,7 @@ public class TestUsersPageProvider extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
+        DatabaseHelper.DATABASE.setUp();
 
         deployBundle("org.nuxeo.ecm.core.schema");
         deployBundle("org.nuxeo.ecm.core");
@@ -49,6 +51,12 @@ public class TestUsersPageProvider extends NXRuntimeTestCase {
         assertNotNull(userManager);
 
         initUsers();
+    }
+
+    @Override
+    public void tearDown() throws Exception {
+        DatabaseHelper.DATABASE.tearDown();
+        super.tearDown();
     }
 
     protected void initUsers() throws ClientException {

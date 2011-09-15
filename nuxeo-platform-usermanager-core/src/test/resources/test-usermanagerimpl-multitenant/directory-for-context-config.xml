@@ -18,10 +18,10 @@
 
       <schema>user</schema>
 
-      <dbDriver>org.hsqldb.jdbcDriver</dbDriver>
-      <dbUrl>jdbc:hsqldb:mem:memid</dbUrl>
-      <dbUser>sa</dbUser>
-      <dbPassword></dbPassword>
+      <dbDriver>${nuxeo.test.vcs.driver}</dbDriver>
+      <dbUrl>${nuxeo.test.vcs.url}</dbUrl>
+      <dbUser>${nuxeo.test.vcs.user}</dbUser>
+      <dbPassword>${nuxeo.test.vcs.password}</dbPassword>
 
       <table>users</table>
       <idField>username</idField>
@@ -44,10 +44,10 @@
 
       <schema>user</schema>
 
-      <dbDriver>org.hsqldb.jdbcDriver</dbDriver>
-      <dbUrl>jdbc:hsqldb:mem:memid</dbUrl>
-      <dbUser>sa</dbUser>
-      <dbPassword></dbPassword>
+      <dbDriver>${nuxeo.test.vcs.driver}</dbDriver>
+      <dbUrl>${nuxeo.test.vcs.url}</dbUrl>
+      <dbUser>${nuxeo.test.vcs.user}</dbUser>
+      <dbPassword>${nuxeo.test.vcs.password}</dbPassword>
 
       <table>users_tenanta</table>
       <idField>username</idField>
@@ -64,15 +64,15 @@
             master="true"/>
       </references>
     </directory>
-    
+
     <directory name="groupDirectory_tenanta">
 
       <schema>group</schema>
 
-      <dbDriver>org.hsqldb.jdbcDriver</dbDriver>
-      <dbUrl>jdbc:hsqldb:mem:memid</dbUrl>
-      <dbUser>sa</dbUser>
-      <dbPassword></dbPassword>
+      <dbDriver>${nuxeo.test.vcs.driver}</dbDriver>
+      <dbUrl>${nuxeo.test.vcs.url}</dbUrl>
+      <dbUser>${nuxeo.test.vcs.user}</dbUser>
+      <dbPassword>${nuxeo.test.vcs.password}</dbPassword>
 
       <table>groups1</table>
       <idField>groupname</idField>
@@ -90,15 +90,15 @@
             directory="groupDirectory_tenanta" dualReferenceField="subGroups"/>
       </references>
     </directory>
-    
+
     <directory name="groupDirectory_tenantb">
 
       <schema>group</schema>
 
-      <dbDriver>org.hsqldb.jdbcDriver</dbDriver>
-      <dbUrl>jdbc:hsqldb:mem:memid</dbUrl>
-      <dbUser>sa</dbUser>
-      <dbPassword></dbPassword>
+      <dbDriver>${nuxeo.test.vcs.driver}</dbDriver>
+      <dbUrl>${nuxeo.test.vcs.url}</dbUrl>
+      <dbUser>${nuxeo.test.vcs.user}</dbUser>
+      <dbPassword>${nuxeo.test.vcs.password}</dbPassword>
 
       <table>groups2</table>
       <idField>groupname</idField>
@@ -116,10 +116,10 @@
             directory="groupDirectory_tenantb" dualReferenceField="subGroups"/>
       </references>
     </directory>
-    
-    
+
+
   </extension>
-    
+
   <extension
     target="org.nuxeo.ecm.directory.multi.MultiDirectoryFactory"
     point="directories">
@@ -136,7 +136,7 @@
         <subDirectory name="userDirectory_tenantb" />
       </source>
     </directory>
-    
+
     <directory name="groupDirectory">
 
       <schema>group</schema>
@@ -147,10 +147,10 @@
       <source name="source2">
         <subDirectory name="groupDirectory_tenantb" />
       </source>
-      
+
     </directory>
-    
+
 
   </extension>
-  
+
 </component>

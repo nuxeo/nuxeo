@@ -28,6 +28,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
+import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.platform.usermanager.DefaultUserMultiTenantManagementMock;
 import org.nuxeo.ecm.platform.usermanager.UserManagerImpl;
 import org.nuxeo.ecm.platform.usermanager.UserMultiTenantManagement;
@@ -38,7 +39,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 /**
  * These Test Cases test the usermanager when a Directory Local Configuration is
  * set.
- * 
+ *
  * @author Benjamin JALON
  */
 public class TestUserManagerWithContext extends NXRuntimeTestCase {
@@ -50,6 +51,7 @@ public class TestUserManagerWithContext extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
+        DatabaseHelper.DATABASE.setUp();
 
         deployBundle("org.nuxeo.ecm.core.schema");
         deployBundle("org.nuxeo.ecm.core.api");
@@ -77,6 +79,12 @@ public class TestUserManagerWithContext extends NXRuntimeTestCase {
         userManager.multiTenantManagement = umtm;
     }
 
+    @Override
+    public void tearDown() throws Exception {
+        DatabaseHelper.DATABASE.tearDown();
+        super.tearDown();
+    }
+
     public void testGetAdministratorTenanta() throws Exception {
         NuxeoPrincipal principal = userManager.getPrincipal("Administrator@tenanta");
         assertNotNull(principal);
@@ -84,7 +92,7 @@ public class TestUserManagerWithContext extends NXRuntimeTestCase {
         assertFalse(principal.isMemberOf("administrators-tenantb"));
     }
 
-    
+
 
     public void testShouldReturnOnlyUserFromTenantA() throws Exception {
 
@@ -128,7 +136,7 @@ public class TestUserManagerWithContext extends NXRuntimeTestCase {
         DocumentModel newGroup = userManager.getBareGroupModel();
         newGroup.setPropertyValue("groupname", "test");
         userManager.createGroup(newGroup, fakeDoc);
-        
+
         DocumentModel group = userManager.getGroupModel("test", fakeDoc);
         String groupIdValue = (String) group.getPropertyValue("groupname");
         assertTrue(groupIdValue.endsWith("-tenanta"));

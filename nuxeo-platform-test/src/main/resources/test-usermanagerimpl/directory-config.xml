@@ -13,10 +13,10 @@
 
       <schema>user</schema>
 
-      <dbDriver>org.hsqldb.jdbcDriver</dbDriver>
-      <dbUrl>jdbc:hsqldb:mem:memid</dbUrl>
-      <dbUser>sa</dbUser>
-      <dbPassword></dbPassword>
+      <dbDriver>${nuxeo.test.vcs.driver}</dbDriver>
+      <dbUrl>${nuxeo.test.vcs.url}</dbUrl>
+      <dbUser>${nuxeo.test.vcs.user}</dbUser>
+      <dbPassword>${nuxeo.test.vcs.password}</dbPassword>
 
       <table>users</table>
       <idField>username</idField>
@@ -40,10 +40,10 @@
 
       <schema>group</schema>
 
-      <dbDriver>org.hsqldb.jdbcDriver</dbDriver>
-      <dbUrl>jdbc:hsqldb:mem:memid</dbUrl>
-      <dbUser>sa</dbUser>
-      <dbPassword></dbPassword>
+      <dbDriver>${nuxeo.test.vcs.driver}</dbDriver>
+      <dbUrl>${nuxeo.test.vcs.url}</dbUrl>
+      <dbUser>${nuxeo.test.vcs.user}</dbUser>
+      <dbPassword>${nuxeo.test.vcs.password}</dbPassword>
 
       <table>groups</table>
       <idField>groupname</idField>

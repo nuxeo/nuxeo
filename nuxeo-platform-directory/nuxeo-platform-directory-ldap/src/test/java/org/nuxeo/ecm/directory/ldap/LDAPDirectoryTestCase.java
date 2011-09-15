@@ -32,6 +32,7 @@ import javax.naming.directory.SearchResult;
 
 import org.apache.directory.server.protocol.shared.store.LdifFileLoader;
 import org.apache.directory.server.protocol.shared.store.LdifLoadFilter;
+import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
@@ -80,6 +81,8 @@ public abstract class LDAPDirectoryTestCase extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
+        DatabaseHelper.DATABASE.setUp();
+
         // setup the client environment
         deployContrib("org.nuxeo.ecm.core", "OSGI-INF/CoreService.xml");
         deployContrib("org.nuxeo.ecm.directory.ldap.tests",
@@ -152,6 +155,7 @@ public abstract class LDAPDirectoryTestCase extends NXRuntimeTestCase {
             undeployContrib("org.nuxeo.ecm.directory.ldap.tests",
                     INTERNAL_SERVER_SETUP);
         }
+        DatabaseHelper.DATABASE.tearDown();
         super.tearDown();
     }
 

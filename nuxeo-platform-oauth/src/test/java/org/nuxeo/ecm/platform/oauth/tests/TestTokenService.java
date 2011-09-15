@@ -17,6 +17,7 @@
  */
 package org.nuxeo.ecm.platform.oauth.tests;
 
+import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.platform.oauth.tokens.OAuthToken;
 import org.nuxeo.ecm.platform.oauth.tokens.OAuthTokenStore;
 import org.nuxeo.runtime.api.Framework;
@@ -27,6 +28,7 @@ public class TestTokenService extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
+        DatabaseHelper.DATABASE.setUp();
         deployBundle("org.nuxeo.ecm.core.schema");
         deployBundle("org.nuxeo.ecm.core.api");
         deployBundle("org.nuxeo.ecm.directory.api");
@@ -34,6 +36,12 @@ public class TestTokenService extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.directory.sql");
         deployBundle("org.nuxeo.ecm.platform.oauth");
         deployContrib("org.nuxeo.ecm.platform.oauth.test", "OSGI-INF/directory-test-config.xml");
+    }
+
+    @Override
+    public void tearDown() throws Exception {
+        DatabaseHelper.DATABASE.tearDown();
+        super.tearDown();
     }
 
     public void testServiceLookup() throws Exception {

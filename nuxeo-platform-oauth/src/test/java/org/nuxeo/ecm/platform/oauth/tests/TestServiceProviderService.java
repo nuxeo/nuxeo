@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.oauth.providers.NuxeoOAuthServiceProvider;
@@ -34,6 +35,7 @@ public class TestServiceProviderService extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
+        DatabaseHelper.DATABASE.setUp();
         deployBundle("org.nuxeo.ecm.core.schema");
         deployBundle("org.nuxeo.ecm.core.api");
         deployBundle("org.nuxeo.ecm.directory.api");
@@ -43,6 +45,11 @@ public class TestServiceProviderService extends NXRuntimeTestCase {
         deployContrib("org.nuxeo.ecm.platform.oauth.test", "OSGI-INF/directory-test-config.xml");
     }
 
+    @Override
+    public void tearDown() throws Exception {
+        DatabaseHelper.DATABASE.tearDown();
+        super.tearDown();
+    }
 
     public void testServiceLookup() throws Exception {
         OAuthServiceProviderRegistry providerRegistry = Framework.getLocalService(OAuthServiceProviderRegistry.class);

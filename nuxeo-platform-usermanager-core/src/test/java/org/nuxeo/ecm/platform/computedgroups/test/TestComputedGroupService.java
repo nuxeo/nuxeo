@@ -27,6 +27,7 @@ import java.util.Map;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
+import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.platform.computedgroups.ComputedGroupsService;
 import org.nuxeo.ecm.platform.computedgroups.ComputedGroupsServiceImpl;
 import org.nuxeo.ecm.platform.computedgroups.GroupComputer;
@@ -38,6 +39,18 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestComputedGroupService extends NXRuntimeTestCase {
+
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+        DatabaseHelper.DATABASE.setUp();
+    }
+
+    @Override
+    public void tearDown() throws Exception {
+        DatabaseHelper.DATABASE.tearDown();
+        super.tearDown();
+    }
 
     public void testLookup() throws Exception {
         deployContrib("org.nuxeo.ecm.platform.usermanager", "OSGI-INF/computedgroups-framework.xml");

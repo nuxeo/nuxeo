@@ -37,6 +37,7 @@ import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
+import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.platform.usermanager.exceptions.GroupAlreadyExistsException;
 import org.nuxeo.ecm.platform.usermanager.exceptions.UserAlreadyExistsException;
 import org.nuxeo.runtime.api.Framework;
@@ -56,6 +57,7 @@ public class TestUserManager extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
+        DatabaseHelper.DATABASE.setUp();
 
         deployBundle("org.nuxeo.ecm.core.schema");
         deployBundle("org.nuxeo.ecm.core");
@@ -75,6 +77,12 @@ public class TestUserManager extends NXRuntimeTestCase {
                 UserService.NAME);
 
         userManager = userService.getUserManager();
+    }
+
+    @Override
+    public void tearDown() throws Exception {
+        DatabaseHelper.DATABASE.tearDown();
+        super.tearDown();
     }
 
     public void testConnect() {
@@ -767,6 +775,7 @@ public class TestUserManager extends NXRuntimeTestCase {
      * getUsernamesForPermission.
      */
     private void initTestGetUsernamesForPermission() throws Exception {
+        userManager.getPrincipal("Administrator"); // creates tables
         deleteTestObjects();
         userManager.deleteUser("Administrator");
         userManager.createUser(getUser("alex"));

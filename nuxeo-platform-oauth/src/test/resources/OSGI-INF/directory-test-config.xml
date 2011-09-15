@@ -9,10 +9,10 @@
 
     <directory name="oauthConsumers">
       <schema>oauthConsumer</schema>
-      <dbDriver>org.hsqldb.jdbcDriver</dbDriver>
-      <dbUrl>jdbc:hsqldb:mem:memid</dbUrl>
-      <dbUser>sa</dbUser>
-      <dbPassword></dbPassword>
+      <dbDriver>${nuxeo.test.vcs.driver}</dbDriver>
+      <dbUrl>${nuxeo.test.vcs.url}</dbUrl>
+      <dbUser>${nuxeo.test.vcs.user}</dbUser>
+      <dbPassword>${nuxeo.test.vcs.password}</dbPassword>
       <cacheTimeout>3600</cacheTimeout>
       <cacheMaxSize>1000</cacheMaxSize>
       <table>oauthConsumers</table>
@@ -26,10 +26,10 @@
 
    <directory name="oauthTokens">
       <schema>oauthToken</schema>
-      <dbDriver>org.hsqldb.jdbcDriver</dbDriver>
-      <dbUrl>jdbc:hsqldb:mem:memid</dbUrl>
-      <dbUser>sa</dbUser>
-      <dbPassword></dbPassword>
+      <dbDriver>${nuxeo.test.vcs.driver}</dbDriver>
+      <dbUrl>${nuxeo.test.vcs.url}</dbUrl>
+      <dbUser>${nuxeo.test.vcs.user}</dbUser>
+      <dbPassword>${nuxeo.test.vcs.password}</dbPassword>
       <cacheTimeout>3600</cacheTimeout>
       <cacheMaxSize>1000</cacheMaxSize>
       <table>oauthTokens</table>
@@ -44,10 +44,10 @@
 
     <directory name="oauthServiceProviders">
       <schema>oauthServiceProvider</schema>
-      <dbDriver>org.hsqldb.jdbcDriver</dbDriver>
-      <dbUrl>jdbc:hsqldb:mem:memid</dbUrl>
-      <dbUser>sa</dbUser>
-      <dbPassword></dbPassword>
+      <dbDriver>${nuxeo.test.vcs.driver}</dbDriver>
+      <dbUrl>${nuxeo.test.vcs.url}</dbUrl>
+      <dbUser>${nuxeo.test.vcs.user}</dbUser>
+      <dbPassword>${nuxeo.test.vcs.password}</dbPassword>
       <cacheTimeout>3600</cacheTimeout>
       <cacheMaxSize>1000</cacheMaxSize>
       <table>oauthServiceProviders</table>

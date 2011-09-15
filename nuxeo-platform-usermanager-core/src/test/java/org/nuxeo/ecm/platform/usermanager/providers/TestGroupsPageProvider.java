@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.usermanager.UserManager;import org.nuxeo.runtime.api.Framework;
@@ -20,12 +21,13 @@ public class TestGroupsPageProvider extends NXRuntimeTestCase {
     protected static final String PROVIDER_NAME = "groups_listing";
 
     protected PageProviderService ppService;
-    
+
     protected UserManager userManager;
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
+        DatabaseHelper.DATABASE.setUp();
 
         deployBundle("org.nuxeo.ecm.core.schema");
         deployBundle("org.nuxeo.ecm.core");
@@ -46,18 +48,24 @@ public class TestGroupsPageProvider extends NXRuntimeTestCase {
 
         ppService = Framework.getService(PageProviderService.class);
         assertNotNull(ppService);
-        
+
         userManager = Framework.getService(UserManager.class);
         assertNotNull(userManager);
-        
+
         initGroups();
     }
-    
+
+    @Override
+    public void tearDown() throws Exception {
+        DatabaseHelper.DATABASE.tearDown();
+        super.tearDown();
+    }
+
     protected void initGroups() throws ClientException {
         userManager.createGroup(createGroup("group1"));
         userManager.createGroup(createGroup("group2"));
     }
-    
+
     protected DocumentModel createGroup(String groupName) throws ClientException {
         DocumentModel newGroup = userManager.getBareGroupModel();
         newGroup.setProperty("group", "groupname", groupName);
