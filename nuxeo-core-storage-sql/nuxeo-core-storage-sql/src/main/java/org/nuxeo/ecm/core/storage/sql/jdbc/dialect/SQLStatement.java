@@ -20,7 +20,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -29,9 +28,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.nuxeo.ecm.core.storage.sql.Activator;
-import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCConnection;
-import org.nuxeo.ecm.core.storage.sql.jdbc.db.Database;
 
 /**
  * A SQL statement and some optional tags that condition execution.
@@ -173,8 +170,7 @@ public class SQLStatement {
                         SQLStatement statement = new SQLStatement(sql, tags);
                         List<SQLStatement> catStatements = statements.get(category);
                         if (catStatements == null) {
-                            statements.put(
-                                    category,
+                            statements.put(category,
                                     catStatements = new LinkedList<SQLStatement>());
                         }
                         catStatements.add(statement);
@@ -289,45 +285,6 @@ public class SQLStatement {
             }
         } finally {
             st.close();
-        }
-    }
-
-    public static class SQLStatements {
-
-        public final Map<String, List<SQLStatement>> statements;
-
-        public Map<String, Serializable> properties;
-
-        public SQLStatements(Dialect dialect, Model model, Database database,
-                Map<String, Serializable> testProperties) throws IOException {
-            statements = new HashMap<String, List<SQLStatement>>();
-            SQLStatement.read(dialect.getSQLStatementsFilename(), statements);
-            if (testProperties != null && !testProperties.isEmpty()) {
-                SQLStatement.read(dialect.getTestSQLStatementsFilename(),
-                        statements);
-            }
-            properties = dialect.getSQLStatementsProperties(model, database);
-            if (testProperties != null) {
-                properties.putAll(testProperties);
-            }
-        }
-
-        /**
-         * Sets some properties before execution.
-         */
-        public void setProperties(Map<String, Serializable> props) {
-            properties.putAll(props);
-        }
-
-        /**
-         * Executes the SQL statements for the given category.
-         */
-        public void execute(String category, JDBCConnection jdbc)
-                throws SQLException {
-            List<SQLStatement> list = statements.get(category);
-            if (list != null) {
-                SQLStatement.execute(list, properties, jdbc);
-            }
         }
     }
 

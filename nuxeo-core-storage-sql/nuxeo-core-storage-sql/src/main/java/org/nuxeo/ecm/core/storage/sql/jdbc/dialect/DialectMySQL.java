@@ -121,8 +121,6 @@ public class DialectMySQL extends Dialect {
             return jdbcInfo("TINYINT", Types.TINYINT);
         case INTEGER:
             return jdbcInfo("INTEGER", Types.INTEGER);
-        case AUTOINC:
-            return jdbcInfo("INTEGER AUTO_INCREMENT PRIMARY KEY", Types.INTEGER);
         case FTINDEXED:
             throw new AssertionError(type);
         case FTSTORED:
@@ -429,11 +427,6 @@ public class DialectMySQL extends Dialect {
     @Override
     public String getPagingClause(long limit, long offset) {
         return String.format("LIMIT %d OFFSET %d", limit, offset);
-    }
-
-    @Override
-    public boolean isIdentityAlreadyPrimary() {
-        return true;
     }
 
 }

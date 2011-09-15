@@ -121,6 +121,10 @@ public class SQLSecurityManager implements SecurityManager {
                 permission);
     }
 
+    @Override
+    public void invalidateCache(Session session) {
+    }
+
     /*
      * ----- internal methods -----
      */

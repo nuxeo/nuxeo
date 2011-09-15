@@ -84,8 +84,6 @@ public class DialectHSQLDB extends Dialect {
             return jdbcInfo("TINYINT", Types.TINYINT);
         case INTEGER:
             return jdbcInfo("INTEGER", Types.INTEGER);
-        case AUTOINC:
-            return jdbcInfo("INTEGER IDENTITY", Types.INTEGER);
         case FTINDEXED:
             throw new AssertionError(type);
         case FTSTORED:

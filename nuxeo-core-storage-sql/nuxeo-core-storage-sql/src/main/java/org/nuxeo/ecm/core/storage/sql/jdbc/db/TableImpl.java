@@ -11,8 +11,6 @@
  */
 package org.nuxeo.ecm.core.storage.sql.jdbc.db;
 
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -25,7 +23,6 @@ import java.util.Map;
 
 import org.nuxeo.ecm.core.storage.sql.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.Model;
-import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCConnection;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
 
 /**
@@ -213,43 +210,43 @@ public class TableImpl implements Table {
     protected void addOneColumn(StringBuilder buf, Column column) {
         buf.append(column.getQuotedName());
         buf.append(' ');
-        buf.append(column.getSqlTypeString());
-        String defaultValue = column.getDefaultValue();
-        if (defaultValue != null) {
-            buf.append(" DEFAULT ");
-            buf.append(defaultValue);
-        }
-        if (column.isNullable()) {
-            buf.append(dialect.getNullColumnString());
+        if (column.isIdentity()) {
+            throw new UnsupportedOperationException();
         } else {
-            buf.append(" NOT NULL");
+            buf.append(column.getSqlTypeString());
+            String defaultValue = column.getDefaultValue();
+            if (defaultValue != null) {
+                buf.append(" DEFAULT ");
+                buf.append(defaultValue);
+            }
+            if (column.isNullable()) {
+                buf.append(dialect.getNullColumnString());
+            } else {
+                buf.append(" NOT NULL");
+            }
         }
+        // unique
+        // check
     }
 
     @Override
-    public void postCreate(Model model, JDBCConnection connection)
-            throws SQLException {
+    public List<String> getPostCreateSqls(Model model) {
+        List<String> sqls = new LinkedList<String>();
         for (Column column : columns.values()) {
-            postAddColumn(column, model, connection);
+            postAddColumn(column, sqls, model);
         }
-    }
-
-    protected void execute(JDBCConnection connection, String sql)
-            throws SQLException {
-        Statement st = connection.connection.createStatement();
-        try {
-            connection.logger.log(sql);
-            st.execute(sql);
-        } finally {
-            st.close();
-        }
+        return sqls;
     }
 
     @Override
-    public void postAddColumn(Column column, Model model,
-            JDBCConnection connection) throws SQLException {
-        if (column.isPrimary()
-                && !(column.isIdentity() && dialect.isIdentityAlreadyPrimary())) {
+    public List<String> getPostAddSqls(Column column, Model model) {
+        List<String> sqls = new LinkedList<String>();
+        postAddColumn(column, sqls, model);
+        return sqls;
+    }
+
+    protected void postAddColumn(Column column, List<String> sqls, Model model) {
+        if (column.isPrimary()) {
             StringBuilder buf = new StringBuilder();
             String constraintName = dialect.openQuote()
                     + dialect.getPrimaryKeyConstraintName(key)
@@ -260,11 +257,7 @@ public class TableImpl implements Table {
             buf.append('(');
             buf.append(column.getQuotedName());
             buf.append(')');
-            execute(connection, buf.toString());
-        }
-        if (column.isIdentity()) {
-            // Oracle needs a sequence + trigger
-            dialect.postCreateIdentityColumnSql(column, connection);
+            sqls.add(buf.toString());
         }
         Table ft = column.getForeignTable();
         if (ft != null) {
@@ -290,7 +283,7 @@ public class TableImpl implements Table {
                 // - proxies.versionableid
                 buf.append(" ON DELETE CASCADE");
             }
-            execute(connection, buf.toString());
+            sqls.add(buf.toString());
         }
         // add indexes for this column
         String columnName = column.getKey();
@@ -335,7 +328,7 @@ public class TableImpl implements Table {
                 createIndexSql = dialect.getCreateIndexSql(quotedIndexName,
                         getQuotedName(), qcols);
             }
-            execute(connection, createIndexSql);
+            sqls.add(createIndexSql);
         }
     }
 

@@ -24,7 +24,7 @@ public class DatabaseSQLServer extends DatabaseHelper {
 
     public static DatabaseHelper INSTANCE = new DatabaseSQLServer();
 
-    private static final String DEF_SERVER = "192.168.133.128";
+    private static final String DEF_SERVER = "localhost";
 
     private static final String DEF_PORT = "1433";
 

@@ -150,8 +150,6 @@ public class DialectPostgreSQL extends Dialect {
             return jdbcInfo("int2", Types.SMALLINT);
         case INTEGER:
             return jdbcInfo("int4", Types.INTEGER);
-        case AUTOINC:
-            return jdbcInfo("serial", Types.INTEGER);
         case FTINDEXED:
             return jdbcInfo("tsvector", Types.OTHER);
         case FTSTORED:

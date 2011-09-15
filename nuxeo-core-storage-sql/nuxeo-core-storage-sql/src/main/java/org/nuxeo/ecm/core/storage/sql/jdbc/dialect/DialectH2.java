@@ -102,8 +102,6 @@ public class DialectH2 extends Dialect {
             return jdbcInfo("TINYINT", Types.TINYINT);
         case INTEGER:
             return jdbcInfo("INTEGER", Types.INTEGER);
-        case AUTOINC:
-            return jdbcInfo("INTEGER AUTO_INCREMENT", Types.INTEGER);
         case FTINDEXED:
             throw new AssertionError(type);
         case FTSTORED:
