@@ -8,19 +8,21 @@
              point="trees">
 
     <directoryTree name="dcCoverageDirectoryTree"
-                   label="base.filtering.coverage"
-                   querymodel="FILTERED_DOCUMENTS" field="dc_coverage"
-                   schema="filter_query"
-                   multiselect="true">
+      label="base.filtering.coverage"
+      querymodel="FILTERED_DOCUMENTS" field="dc_coverage"
+      schema="filter_query"
+      multiselect="true"
+      isNavigationTree="false">
       <directory>continent</directory>
       <directory>country</directory>
     </directoryTree>
 
-    <directoryTree name="topicDirectoryTree"
-                   label="base.filtering.topic"
-                   querymodel="FILTERED_DOCUMENTS" field="dc_subjects"
-                   schema="filter_query"
-                   multiselect="true">
+    <directoryTree name="dcSubjectsDirectoryTree"
+      label="base.filtering.topic"
+      querymodel="FILTERED_DOCUMENTS" field="dc_subjects"
+      schema="filter_query"
+      multiselect="true"
+      isNavigationTree="false">
       <directory>topic</directory>
       <directory>subtopic</directory>
     </directoryTree>

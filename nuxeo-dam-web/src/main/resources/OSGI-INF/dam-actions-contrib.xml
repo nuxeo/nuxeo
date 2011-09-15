@@ -82,13 +82,6 @@
       <filter-id>damCreate</filter-id>
     </action>
 
-    <!-- Admin Center -->
-    <action id="ADMIN_FOLDERS" link="/incl/admin/folders.xhtml" order="30"
-      label="action.admin.folders">
-      <category>NUXEO_ADMIN</category>
-      <filter-id>only_for_manager</filter-id>
-    </action>
-
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"

@@ -64,7 +64,7 @@ public class FilterActions implements Serializable, ResultsProviderFarm {
 
     public static final String DC_COVERAGE_DIRECTORY_TREE = "dcCoverageDirectoryTree";
 
-    public static final String TOPIC_DIRECTORY_TREE = "topicDirectoryTree";
+    public static final String TOPIC_DIRECTORY_TREE = "dcSubjectsDirectoryTree";
 
     private static final long serialVersionUID = 1L;
 
