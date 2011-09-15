@@ -12,11 +12,6 @@
       <category>MAIN_TABS</category>
     </action>
 
-    <action id="non_anonymous_logout" link="logout" label="command.logout" order="100">
-      <category>USER_MENU_ACTIONS</category>
-      <filter-id>not_anonymous</filter-id>
-    </action>
-
     <!-- TABS -->
     <action id="TAB_ASSET_VIEW" link="/dam/incl/tabs/asset_view.xhtml" order="10"
       label="action.asset.view" icon="/icons/file.gif">
@@ -98,20 +93,6 @@
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="filters">
-
-    <filter id="not_anonymous">
-      <rule grant="false">
-        <condition>#{currentUser.anonymous}</condition>
-      </rule>
-    </filter>
-    <filter id="only_for_manager">
-      <rule grant="true">
-        <condition>#{userSession.administrator}</condition>
-      </rule>
-    </filter>
-
-    <filter id="user_manager">
-    </filter>
 
     <filter id="damCreate">
       <rule grant="true">

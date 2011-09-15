@@ -26,6 +26,12 @@
       <template>dam/incl/logo.xhtml</template>
     </view>
 
+    <view name="dam header" template-engine="jsf-facelets">
+      <format-type>widget</format-type>
+      <template>dam/incl/nuxeo_dam_header.xhtml</template>
+      <resource>screen.css</resource>
+    </view>
+
     <view name="dam search filters" template-engine="jsf-facelets">
       <format-type>widget</format-type>
       <template>dam/incl/search_filter.xhtml</template>

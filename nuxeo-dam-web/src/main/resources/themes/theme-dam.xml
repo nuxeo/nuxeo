@@ -8,7 +8,7 @@
           <fragment type="generic fragment"/>
         </cell>
         <cell>
-          <!-- dam banner -->
+          <!-- dam header -->
           <fragment type="generic fragment"/>
           <!-- Nuxeo Include -->
           <fragment type="generic fragment"/>
@@ -123,7 +123,7 @@
       <view>dam logo</view>
     </widget>
     <widget element="page[1]/section[1]/cell[2]/fragment[1]">
-      <view>Nuxeo header</view>
+      <view>dam header</view>
     </widget>
     <widget element="page[1]/section[1]/cell[2]/fragment[2]">
       <view>nuxeo5 includes</view>
