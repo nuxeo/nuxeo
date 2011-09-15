@@ -18,10 +18,13 @@
  */
 package org.nuxeo.ecm.webapp.versioning;
 
+import static org.jboss.seam.ScopeType.CONVERSATION;
+import static org.jboss.seam.ScopeType.EVENT;
+import static org.jboss.seam.annotations.Install.FRAMEWORK;
+
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -58,10 +61,6 @@ import org.nuxeo.ecm.platform.versioning.api.VersioningManager;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 
-import static org.jboss.seam.ScopeType.CONVERSATION;
-import static org.jboss.seam.ScopeType.EVENT;
-import static org.jboss.seam.annotations.Install.FRAMEWORK;
-
 /**
  * Web action bean for document versioning. Used also by other seam components
  * through injection.
@@ -76,17 +75,6 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
     private static final long serialVersionUID = 75409841629876L;
 
     private static final Log log = LogFactory.getLog(DocumentVersioningBean.class);
-
-    private static final String VER_INFO_AUTO_INC_KEY = "message.versioning.editoptionsinfo.auto_increment";
-
-    private static final String VER_INFO_NO_INC_KEY = "message.versioning.editoptionsinfo.no_increment";
-
-    private static final String VER_INFO_UNDEF_KEY = "message.versioning.editoptionsinfo.undefined";
-
-    /**
-     * The schema containing version info.
-     */
-    private static final String UID_SCHEMA = "uid";
 
     @In(create = true)
     protected transient ResourcesAccessor resourcesAccessor;
@@ -109,11 +97,6 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
     private Boolean rendered;
 
     private VersioningActions selectedOption;
-
-    // XXX: cache to workaround a performance problem computing availability of
-    // versioning schema we should probably use a lighter test such as a trusted
-    // facet instead of remote calls to he versioning service and schema manager
-    private final Map<String, Boolean> uidInfoAvailableCache = new HashMap<String, Boolean>();
 
     @Override
     @Deprecated
