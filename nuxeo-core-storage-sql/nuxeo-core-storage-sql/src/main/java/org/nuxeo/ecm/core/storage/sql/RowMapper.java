@@ -24,12 +24,13 @@ import javax.transaction.xa.Xid;
 
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Invalidations.InvalidationsPair;
+import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCConnection;
 
 /**
  * A {@link RowMapper} maps {@link Row}s to and from the database.
  * <p>
  * These are the operations that can benefit from a cache.
- *
+ * 
  * @see CachingRowMapper
  */
 public interface RowMapper {
@@ -44,7 +45,7 @@ public interface RowMapper {
      * For each requested row, either a {@link Row} is found and returned, or a
      * {@link RowId} (not implementing {@link Row}) is returned to signify an
      * absent row.
-     *
+     * 
      * @param rowIds the row ids (including their table name)
      * @return the collection of {@link Row}s (or {@link RowId}s if the row was
      *         absent from the database). Order is not the same as the input
@@ -142,7 +143,7 @@ public interface RowMapper {
 
     /**
      * Writes a set of rows. This includes creating, updating and deleting rows.
-     *
+     * 
      * @param batch the set of rows and the operations to do on them
      * @throws StorageException
      */
@@ -155,7 +156,7 @@ public interface RowMapper {
     /**
      * Gets a row for a {@link SimpleFragment} from the database, given its
      * table name and id. If the row doesn't exist, {@code null} is returned.
-     *
+     * 
      * @param rowId the row id
      * @return the row, or {@code null}
      */
@@ -164,7 +165,7 @@ public interface RowMapper {
     /**
      * Gets an array for a {@link CollectionFragment} from the database, given
      * its table name and id. If no rows are found, an empty array is returned.
-     *
+     * 
      * @param rowId the row id
      * @return the array
      */
@@ -172,7 +173,7 @@ public interface RowMapper {
 
     /**
      * Reads the rows corresponding to a selection.
-     *
+     * 
      * @param selType the selection type
      * @param selId the selection id (parent id for a hierarchy selection)
      * @param filter the filter value (name for a hierarchy selection)
@@ -251,7 +252,7 @@ public interface RowMapper {
      * If {@code overwriteRow} is passed, the copy is done onto this existing
      * node as its root (version restore) instead of creating a new node in the
      * parent.
-     *
+     * 
      * @param source the id, primary type and mixin types of the row to copy
      * @param destParentId the new parent id, or {@code null}
      * @param destName the new name
@@ -314,7 +315,8 @@ public interface RowMapper {
                 versionSeriesId = versionFragment == null ? null
                         : versionFragment.get(Model.VERSION_VERSIONABLE_KEY);
                 // may still be null
-                targetId = null; // marks it as a version if versionableId not null
+                targetId = null; // marks it as a version if versionableId not
+                                 // null
             } else {
                 versionSeriesId = ps;
                 targetId = proxyFragment.get(Model.PROXY_TARGET_KEY);
@@ -324,7 +326,7 @@ public interface RowMapper {
 
     /**
      * Deletes a hierarchy and returns information to generate invalidations.
-     *
+     * 
      * @param rootInfo info about the root to be deleted with its children (root
      *            id, and the rest is for invalidations)
      * @return info about the descendants removed (including the root)
@@ -332,11 +334,21 @@ public interface RowMapper {
     List<NodeInfo> remove(NodeInfo rootInfo) throws StorageException;
 
     /**
+     * 
+     * @return true if cluster mode enabled and connection is established but
+     *         needs to be validated. this occurs after a connection error
+     * 
+     * @see JDBCConnection#checkConnectionReset
+     * @since 5.4.3
+     */
+    boolean isClusterReconnecting();
+
+    /**
      * Processes and returns the invalidations queued for processing by the
      * cache (if any).
      * <p>
      * Called pre-transaction by session start or transactionless save;
-     *
+     * 
      * @return the invalidations (both for the mapper and the events), or
      *         {@code null}
      */
@@ -347,7 +359,7 @@ public interface RowMapper {
      * <p>
      * Called post-transaction by session commit/rollback or transactionless
      * save.
-     *
+     * 
      * @param invalidations the known invalidations to send to others, or
      *            {@code null}
      */

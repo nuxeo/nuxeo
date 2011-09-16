@@ -282,7 +282,7 @@ public class PersistenceContext {
     /**
      * Finds the documents having dirty text or dirty binaries that have to be
      * reindexed as fulltext.
-     *
+     * 
      * @param dirtyStrings set of ids, updated by this method
      * @param dirtyBinaries set of ids, updated by this method
      */
@@ -399,6 +399,11 @@ public class PersistenceContext {
      * Called pre-transaction by start or transactionless save;
      */
     public void processReceivedInvalidations() throws StorageException {
+        if (mapper.isClusterReconnecting()) {
+            mapper.clearCache();
+            ((Mapper) mapper).createClusterNode();
+            return;
+        }
         InvalidationsPair invals = mapper.receiveInvalidations();
         if (invals == null) {
             return;
@@ -464,7 +469,7 @@ public class PersistenceContext {
      * <p>
      * Called by {@link #get}, and by the {@link Mapper} to reuse known
      * selection fragments.
-     *
+     * 
      * @param rowId the fragment id
      * @return the fragment, or {@code null} if not found
      */
@@ -483,7 +488,7 @@ public class PersistenceContext {
      * database, returns {@code null} or an absent fragment.
      * <p>
      * Deleted fragments may be returned.
-     *
+     * 
      * @param rowId the fragment id
      * @param allowAbsent {@code true} to return an absent fragment as an object
      *            instead of {@code null}
@@ -554,7 +559,7 @@ public class PersistenceContext {
      * not in the database, use an absent fragment or skip it.
      * <p>
      * Deleted fragments are skipped.
-     *
+     * 
      * @param id the fragment id
      * @param allowAbsent {@code true} to return an absent fragment as an object
      *            instead of skipping it
@@ -602,7 +607,7 @@ public class PersistenceContext {
      * If a simple {@link RowId} is passed, it means that an absent row was
      * found by the mapper. An absent fragment will be returned, unless
      * {@code allowAbsent} is {@code false} in which case it will be skipped.
-     *
+     * 
      * @param rowIds the list of rows or row ids
      * @param allowAbsent {@code true} to return an absent fragment as an object
      *            instead of {@code null}
@@ -634,7 +639,7 @@ public class PersistenceContext {
      * found by the mapper. An absent fragment will be returned, unless
      * {@code allowAbsent} is {@code false} in which case {@code null} will be
      * returned.
-     *
+     * 
      * @param rowId the row or row id (may be {@code null})
      * @param allowAbsent {@code true} to return an absent fragment as an object
      *            instead of {@code null}
@@ -904,7 +909,7 @@ public class PersistenceContext {
 
     /**
      * Cleans up after a fragment has been removed in the database.
-     *
+     * 
      * @param rowId the row id
      */
     private void removedFragment(RowId rowId) throws StorageException {
@@ -1001,7 +1006,7 @@ public class PersistenceContext {
 
     /**
      * Finds the id of the enclosing non-complex-property node.
-     *
+     * 
      * @param id the id
      * @return the id of the containing document, or {@code null} if there is no
      *         parent or the parent has been deleted.
@@ -1064,7 +1069,7 @@ public class PersistenceContext {
 
     /**
      * Gets the next pos value for a new child in a folder.
-     *
+     * 
      * @param nodeId the folder node id
      * @param complexProp whether to deal with complex properties or regular
      *            children
@@ -1087,7 +1092,7 @@ public class PersistenceContext {
 
     /**
      * Order a child before another.
-     *
+     * 
      * @param parentId the parent id
      * @param sourceId the node id to move
      * @param destId the node id before which to place the source node, if
@@ -1195,7 +1200,7 @@ public class PersistenceContext {
 
     /**
      * Move a child to a new parent with a new name.
-     *
+     * 
      * @param source the source
      * @param parentId the destination parent id
      * @param name the new name
@@ -1231,7 +1236,7 @@ public class PersistenceContext {
 
     /**
      * Copy a child to a new parent with a new name.
-     *
+     * 
      * @param source the source of the copy
      * @param parentId the destination parent id
      * @param name the new name
@@ -1271,7 +1276,7 @@ public class PersistenceContext {
 
     /**
      * Checks in a node (creates a version).
-     *
+     * 
      * @param node the node to check in
      * @param label the version label
      * @param checkinComment the version description
@@ -1335,7 +1340,7 @@ public class PersistenceContext {
 
     /**
      * Checks out a node.
-     *
+     * 
      * @param node the node to check out
      */
     public void checkOut(Node node) throws StorageException {
@@ -1351,7 +1356,7 @@ public class PersistenceContext {
      * Restores a node to a given version.
      * <p>
      * The restored node is checked in.
-     *
+     * 
      * @param node the node
      * @param version the version to restore on this node
      */
