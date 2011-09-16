@@ -79,6 +79,7 @@ public class InputDateTimeTagHandler extends GenericHtmlComponentHandler {
             c.setPopup(true);
             c.setEnableManualInput(true);
             c.setShowApplyButton(false);
+            c.setZindex(1500);
         }
     }
 
