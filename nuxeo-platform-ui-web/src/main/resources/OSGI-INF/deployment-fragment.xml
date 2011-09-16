@@ -211,10 +211,10 @@
   </extension>
 
   <extension target="web#CONTEXT-PARAM-RICHFACES" mode="replace">
-    <!-- Plugging the "BlueSky" skin into the project -->
+    <!-- Plugging the "BlueGrayDM" skin into the project -->
     <context-param>
       <param-name>org.richfaces.SKIN</param-name>
-      <param-value>blueSky</param-value>
+      <param-value>blueGrayDM</param-value>
     </context-param>
   </extension>
 
@@ -253,10 +253,10 @@
     <!-- When a page is requested, what interval in seconds should the compiler
       check for changes. If you don't want the compiler to check for changes
       once the page is compiled, then use a value of -1.
-      
+
       Setting a low refresh period helps during development to be able to edit
       pages in a running application but slows down page rendering.
-      
+
       Default: 2 seconds.
     -->
     <context-param>
