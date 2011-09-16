@@ -119,9 +119,13 @@ public class ResourceTemplateLoader implements TemplateLoader {
                     return file.getCanonicalFile();
                 }
             }
-            File file = new File(name).getCanonicalFile();
-            if (file.isFile()) {
-                return file;
+            try {
+                File file = new File(name).getCanonicalFile();
+                if (file.isFile()) {
+                    return file;
+                }
+            } catch (IOException e) {
+                return null;
             }
             return null;
         }
