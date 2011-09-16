@@ -723,7 +723,7 @@ public abstract class NuxeoLauncher {
             File[] files = baseDir.listFiles(new FilenameFilter() {
                 @Override
                 public boolean accept(File basedir, String filename) {
-                    return filename.matches(filePattern + "-[0-9].*\\.jar");
+                    return filename.matches(filePattern + "(-[0-9].*)?\\.jar");
                 }
             });
             FileUtils.copyFileToDirectory(files[0], targetDir);
