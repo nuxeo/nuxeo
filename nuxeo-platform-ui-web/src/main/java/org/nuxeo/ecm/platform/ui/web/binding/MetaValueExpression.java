@@ -26,7 +26,6 @@ import java.io.Serializable;
 
 import javax.el.ELContext;
 import javax.el.ExpressionFactory;
-import javax.el.MethodExpression;
 import javax.el.ValueExpression;
 import javax.faces.application.Application;
 import javax.faces.context.FacesContext;
@@ -105,21 +104,7 @@ public class MetaValueExpression extends ValueExpression implements
             res = originalValueExpression.getValue(context);
             if (res instanceof String) {
                 String expression = (String) res;
-                if (ComponentTagUtils.isMethodReference(expression)) {
-                    FacesContext faces = FacesContext.getCurrentInstance();
-                    Application app = faces.getApplication();
-                    ExpressionFactory factory = app.getExpressionFactory();
-                    MethodExpression newMeth = factory.createMethodExpression(
-                            context, expression, Object.class, new Class[0]);
-                    try {
-                        res = newMeth.invoke(context, null);
-                    } catch (Exception err) {
-                        log.error(String.format(
-                                "Error processing method expression %s: %s",
-                                expression, err));
-                        res = null;
-                    }
-                } else if (ComponentTagUtils.isValueReference(expression)) {
+                if (ComponentTagUtils.isValueReference(expression)) {
                     FacesContext faces = FacesContext.getCurrentInstance();
                     Application app = faces.getApplication();
                     ExpressionFactory factory = app.getExpressionFactory();
