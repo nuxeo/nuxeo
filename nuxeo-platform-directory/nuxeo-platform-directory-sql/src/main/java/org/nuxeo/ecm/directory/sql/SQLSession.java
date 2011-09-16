@@ -116,13 +116,12 @@ public class SQLSession extends BaseSession implements EntrySource {
         this.schemaFieldMap = directory.getSchemaFieldMap();
         this.storedFieldNames = directory.getStoredFieldNames();
         this.dialect = directory.getDialect();
-        acquireConnection();
-
         this.sid = String.valueOf(SIDGenerator.next());
         this.managedSQLSession = managedSQLSession;
         this.substringMatchType = config.getSubstringMatchType();
         this.autoincrementIdField = config.isAutoincrementIdField();
         this.staticFilters = config.getStaticFilters();
+        acquireConnection();
     }
 
     public Directory getDirectory() {
