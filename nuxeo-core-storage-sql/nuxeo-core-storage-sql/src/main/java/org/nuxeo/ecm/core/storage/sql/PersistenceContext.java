@@ -335,6 +335,12 @@ public class PersistenceContext {
      * Called pre-transaction by start or transactionless save;
      */
     protected void processReceivedInvalidations() throws StorageException {
+        if (mapper.isClusterReconnecting()) {
+            mapper.clearCache();
+            ((Mapper) mapper).createClusterNode();
+            return;
+        }
+
         InvalidationsPair invals = mapper.receiveInvalidations();
         if (invals == null) {
             return;
@@ -345,7 +351,8 @@ public class PersistenceContext {
         session.sendInvalidationEvent(invals);
     }
 
-    protected void processCacheInvalidations(Invalidations invalidations) throws StorageException {
+    protected void processCacheInvalidations(Invalidations invalidations)
+            throws StorageException {
         if (invalidations == null) {
             return;
         }

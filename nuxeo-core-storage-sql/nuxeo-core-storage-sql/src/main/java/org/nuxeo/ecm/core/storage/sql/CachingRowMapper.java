@@ -460,4 +460,9 @@ public class CachingRowMapper implements RowMapper {
         return result;
     }
 
+    @Override
+    public boolean isClusterReconnecting() {
+        return rowMapper.isClusterReconnecting();
+    }
+
 }
