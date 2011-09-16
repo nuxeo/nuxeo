@@ -338,8 +338,13 @@ public class PersistenceContext {
      * <p>
      * Called pre-transaction by start or transactionless save;
      */
-    protected void processReceivedInvalidations()
-            throws StorageException {
+    protected void processReceivedInvalidations() throws StorageException {
+        if (mapper.isClusterReconnecting()) {
+            mapper.clearCache();
+            ((Mapper) mapper).createClusterNode();
+            return;
+        }
+
         InvalidationsPair invals = mapper.receiveInvalidations();
         if (invals == null) {
             return;

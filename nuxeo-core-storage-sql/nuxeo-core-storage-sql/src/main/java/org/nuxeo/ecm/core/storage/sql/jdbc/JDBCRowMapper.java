@@ -87,7 +87,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
     @Override
     public InvalidationsPair receiveInvalidations() throws StorageException {
         Invalidations invalidations = null;
-        if (clusterNodeHandler != null) {
+        if (clusterNodeHandler != null && connection != null) {
             receiveClusterInvalidations();
             invalidations = queue.getInvalidations();
         }
@@ -1146,6 +1146,12 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             closeStatement(copyPs);
             closeStatement(deletePs);
         }
+    }
+
+    @Override
+    public boolean isClusterReconnecting() {
+        return clusterNodeHandler != null && checkConnectionValid == true
+                && connection != null;
     }
 
 }
