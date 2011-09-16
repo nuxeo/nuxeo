@@ -26,8 +26,7 @@ import javax.el.ValueExpression;
 import javax.faces.FacesException;
 import javax.faces.component.UIComponent;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.platform.ui.web.binding.MetaValueExpression;
 import org.nuxeo.ecm.platform.ui.web.binding.alias.AliasTagHandler;
 import org.nuxeo.ecm.platform.ui.web.binding.alias.AliasVariableMapper;
 
@@ -45,8 +44,8 @@ import com.sun.facelets.tag.TagException;
  * resolved the first time is is called and will be put in the context after</li>
  * <li>The resolved variable is removed from context when tag is closed to
  * avoid filling the context with it</li>
- * <li>Since 5.4, variables are made available in the request context after
- * the JSF component tree build thanks to a backing component.</li>
+ * <li>Since 5.4, variables are made available in the request context after the
+ * JSF component tree build thanks to a backing component.</li>
  * </ul>
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
@@ -54,16 +53,20 @@ import com.sun.facelets.tag.TagException;
  */
 public class SetTagHandler extends AliasTagHandler {
 
-    private static final Log log = LogFactory.getLog(AliasTagHandler.class);
-
     protected final TagAttribute var;
 
     protected final TagAttribute value;
+
+    /**
+     * @since 5.4.3
+     */
+    protected final TagAttribute resolveTwice;
 
     public SetTagHandler(TagConfig config) {
         super(config, null);
         var = getRequiredAttribute("var");
         value = getAttribute("value");
+        resolveTwice = getAttribute("resolveTwice");
     }
 
     public void apply(FaceletContext ctx, UIComponent parent)
@@ -90,6 +93,13 @@ public class SetTagHandler extends AliasTagHandler {
                     Object.class);
         } else {
             ve = value.getValueExpression(ctx, Object.class);
+        }
+        boolean resolveTwiceBool = false;
+        if (resolveTwice != null) {
+            resolveTwiceBool = resolveTwice.getBoolean(ctx);
+        }
+        if (resolveTwiceBool) {
+            ve = new MetaValueExpression(ve);
         }
 
         AliasVariableMapper target = new AliasVariableMapper(id);

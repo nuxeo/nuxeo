@@ -244,6 +244,17 @@
         in its expression (like table variable). Set to "false" by default.
       </description>
     </attribute>
+    <attribute>
+      <name>resolveTwice</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>
+        Boolean. Flag indicating if the expression should be evaluated twice 
+        when resolving it: if value resolved is a String that still contains EL
+        expressions after the first resolution, a second resolution is done.
+        Set to "false" by default. Available since 5.4.3.
+      </description>
+    </attribute>
     <example>
       <![CDATA[
 <nxu:set var="actions" value="#{webActions.getActionsList('SUBVIEW_UPPER_LIST')}" cache="true">
