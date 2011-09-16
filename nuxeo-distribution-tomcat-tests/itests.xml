@@ -13,6 +13,6 @@
   </unzip>
   <import file="${out.dir}/nuxeo-ftest.xml" />
 
-  <target name="prepare-environment" depends="prepare-tomcat,wizard-on" />
+  <target name="prepare-environment" depends="prepare-db,prepare-tomcat,wizard-on" />
 
 </project>

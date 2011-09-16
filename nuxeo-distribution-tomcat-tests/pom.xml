@@ -107,12 +107,33 @@
             </goals>
             <configuration>
               <buildFile>${basedir}/itests.xml</buildFile>
-              <target>stop</target>
+              <targets>
+                <target>stop</target>
+                <target>cleanup-environment</target>
+              </targets>
             </configuration>
           </execution>
         </executions>
       </plugin>
     </plugins>
   </build>
+
+  <profiles>
+    <profile>
+      <id>pgsql</id>
+    </profile>
+    <profile>
+      <id>mssql</id>
+    </profile>
+    <profile>
+      <id>oracle10g</id>
+    </profile>
+    <profile>
+      <id>oracle11g</id>
+    </profile>
+    <profile>
+      <id>mysql</id>
+    </profile>
+  </profiles>
 
 </project>
