@@ -24,6 +24,7 @@ import java.util.Map;
 
 import org.apache.shindig.gadgets.spec.GadgetSpec;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.opensocial.gadgets.service.api.GadgetDeclaration;
@@ -36,6 +37,7 @@ public class TestGadgetService extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
+        DatabaseHelper.DATABASE.setUp();
         deployBundle("org.nuxeo.opensocial.gadgets.core");
         deployBundle("org.nuxeo.ecm.core.schema");
         deployBundle("org.nuxeo.ecm.core.api");
@@ -49,6 +51,12 @@ public class TestGadgetService extends NXRuntimeTestCase {
         "OSGI-INF/directory-test-config.xml");
 
         Framework.getProperties().put(NUXEO_LOOPBACK_URL, "http://localhost:8080/nuxeo");
+    }
+
+    @Override
+    public void tearDown() throws Exception {
+        DatabaseHelper.DATABASE.tearDown();
+        super.tearDown();
     }
 
     public void testServiceRegistration() throws Exception {
