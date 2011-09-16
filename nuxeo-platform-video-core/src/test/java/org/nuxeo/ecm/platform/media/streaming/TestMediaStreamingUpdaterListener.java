@@ -101,6 +101,7 @@ public class TestMediaStreamingUpdaterListener extends SQLRepositoryTestCase {
     @Override
     public void tearDown() throws Exception {
         closeSession();
+        super.tearDown();
     }
 
 }
