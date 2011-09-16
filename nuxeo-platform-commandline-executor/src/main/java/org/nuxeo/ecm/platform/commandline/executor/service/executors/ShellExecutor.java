@@ -43,6 +43,7 @@ public class ShellExecutor extends AbstractExecutor implements Executor {
 
     private static final Log log = LogFactory.getLog(ShellExecutor.class);
 
+    @Override
     public ExecResult exec(CommandLineDescriptor cmdDesc, CmdParameters params) {
 
         long t0 = System.currentTimeMillis();
@@ -53,7 +54,7 @@ public class ShellExecutor extends AbstractExecutor implements Executor {
             String[] paramsArray = getParametersArray(cmdDesc, params);
             cmd = new String[] { "cmd", "/C", cmdDesc.getCommand() };
             cmd = (String[]) ArrayUtils.addAll(cmd, paramsArray);
-            cmd = (String[]) ArrayUtils.addAll(cmd, new String[] {"2>&1"});
+            cmd = (String[]) ArrayUtils.addAll(cmd, new String[] { "2>&1" });
         } else {
             String paramsString = getParametersString(cmdDesc, params)
                     + " 2>&1";
@@ -72,14 +73,19 @@ public class ShellExecutor extends AbstractExecutor implements Executor {
             return new ExecResult(e);
         }
 
-        new ThreadedStreamGobbler(p1.getInputStream(),
-                cmdDesc.getReadOutput() ? output : null).start();
-        new ThreadedStreamGobbler(p1.getErrorStream(),
-                SimpleLog.LOG_LEVEL_ERROR).start();
+        ThreadedStreamGobbler out = new ThreadedStreamGobbler(
+                p1.getInputStream(), cmdDesc.getReadOutput() ? output : null);
+        ThreadedStreamGobbler err = new ThreadedStreamGobbler(
+                p1.getErrorStream(), SimpleLog.LOG_LEVEL_ERROR);
+
+        err.start();
+        out.start();
 
         int exitCode = 0;
         try {
             exitCode = p1.waitFor();
+            out.join();
+            err.join();
         } catch (InterruptedException e) {
             return new ExecResult(e);
         }
