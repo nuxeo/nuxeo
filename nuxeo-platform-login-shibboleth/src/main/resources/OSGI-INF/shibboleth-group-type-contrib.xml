@@ -3,7 +3,7 @@
 
   <extension target="org.nuxeo.ecm.core.schema.TypeService"
     point="schema">
-    <schema name="shibbGroup" src="schema/shibb-group.xsd" />
+    <schema name="shibbolethGroup" src="schema/shibb-group.xsd" />
   </extension>
 
   <require>org.nuxeo.ecm.directory.sql.SQLDirectoryFactory</require>
@@ -12,7 +12,7 @@
     point="directories">
 
     <directory name="shibbGroup">
-      <schema>shibbGroup</schema>
+      <schema>shibbolethGroup</schema>
       <dataSource>java:/nxsqldirectory</dataSource>
       <cacheTimeout>3600</cacheTimeout>
       <cacheMaxSize>1000</cacheMaxSize>
@@ -27,7 +27,7 @@
     point="doctype">
 
     <doctype name="shibbGroup" extends="Document">
-      <schema name="shibbGroup" />
+      <schema name="shibbolethGroup" />
     </doctype>
   </extension>
 </component>

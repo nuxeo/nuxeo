@@ -72,8 +72,8 @@ public class TestShibbolethGroupHelper {
         assertSame(0, ShibbolethGroupHelper.getGroups().size());
         DocumentModel group = ShibbolethGroupHelper.getBareGroupModel(session);
 
-        group.setPropertyValue("shibbGroup:groupName", "group1");
-        group.setPropertyValue("shibbGroup:expressionLanguage", CORRECT_EL);
+        group.setPropertyValue("shibbolethGroup:groupName", "group1");
+        group.setPropertyValue("shibbolethGroup:expressionLanguage", CORRECT_EL);
         ShibbolethGroupHelper.createGroup(group);
 
         assertSame(1, ShibbolethGroupHelper.getGroups().size());
@@ -194,8 +194,8 @@ public class TestShibbolethGroupHelper {
 
     protected DocumentModel createShibbGroup(String name) throws Exception {
         DocumentModel group = ShibbolethGroupHelper.getBareGroupModel(session);
-        group.setPropertyValue("shibbGroup:groupName", name);
-        group.setPropertyValue("shibbGroup:expressionLanguage", CORRECT_EL);
+        group.setPropertyValue("shibbolethGroup:groupName", name);
+        group.setPropertyValue("shibbolethGroup:expressionLanguage", CORRECT_EL);
 
         group = ShibbolethGroupHelper.createGroup(group);
         session.save();

@@ -26,7 +26,9 @@ public final class ShibbolethConstants {
 
     public static final String SHIBBOLETH_DIRECTORY = "shibbGroup";
 
-    public static final String SHIBBOLETH_SCHEMA = "shibbGroup";
+    public static final String SHIBBOLETH_SCHEMA = "shibbolethGroup";
+
+    public static final String SHIBBOLETH_DOCTYPE = "shibbGroup";
 
     public static final String GROUP_EL_PROPERTY = "expressionLanguage";
 

@@ -78,7 +78,7 @@ public class ShibbolethGroupHelper {
 
     public static DocumentModel getBareGroupModel(CoreSession core)
             throws ClientException {
-        return core.createDocumentModel(ShibbolethConstants.SHIBBOLETH_SCHEMA);
+        return core.createDocumentModel(ShibbolethConstants.SHIBBOLETH_DOCTYPE);
     }
 
     public static DocumentModel createGroup(DocumentModel group)

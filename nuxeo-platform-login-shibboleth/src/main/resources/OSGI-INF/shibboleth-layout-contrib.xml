@@ -63,7 +63,7 @@
         <mode value="any">hidden</mode>
       </widgetModes>
       <fields>
-        <field>shibbGroup:groupName</field>
+        <field>shibbolethGroup:groupName</field>
       </fields>
       <properties widgetMode="any">
         <property name="required">true</property>
@@ -78,7 +78,7 @@
         </label>
       </labels>
       <fields>
-        <field>shibbGroup:expressionLanguage</field>
+        <field>shibbolethGroup:expressionLanguage</field>
       </fields>
       <properties widgetMode="any">
         <property name="required">true</property>
@@ -91,7 +91,7 @@
         <label mode="any">label.widget.shibboleth.groupName</label>
       </labels>
       <fields>
-         <field>data.shibbGroup.groupName</field>
+         <field>data.shibbolethGroup.groupName</field>
       </fields>
       <widgetModes>
         <mode value="any">view</mode>

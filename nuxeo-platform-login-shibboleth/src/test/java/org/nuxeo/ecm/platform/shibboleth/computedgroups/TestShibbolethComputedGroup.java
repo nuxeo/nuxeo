@@ -68,6 +68,10 @@ public class TestShibbolethComputedGroup {
     public void setUp() throws Exception {
         userDir = directoryService.open("userDirectory");
         groupDir = directoryService.open("shibbGroup");
+        groupDir.deleteEntry("group1");
+        groupDir.deleteEntry("group2");
+        groupDir.deleteEntry("group3");
+        groupDir.deleteEntry("group4");
     }
 
     @After
