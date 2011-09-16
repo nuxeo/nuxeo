@@ -157,6 +157,7 @@ public class TestMediaStreamingServiceImpl extends SQLRepositoryTestCase {
     @Override
     public void tearDown() throws Exception {
         closeSession();
+        super.tearDown();
     }
 
 

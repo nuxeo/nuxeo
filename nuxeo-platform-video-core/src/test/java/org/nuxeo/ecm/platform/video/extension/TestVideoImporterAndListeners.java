@@ -100,6 +100,7 @@ public class TestVideoImporterAndListeners extends SQLRepositoryTestCase {
     public void tearDown() throws Exception {
         fileManagerService = null;
         root = null;
+        super.tearDown();
     }
 
     public void testVideoType() throws ClientException {
