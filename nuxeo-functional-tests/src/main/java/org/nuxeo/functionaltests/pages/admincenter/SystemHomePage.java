@@ -81,7 +81,7 @@ public class SystemHomePage extends AdminCenterBasePage {
         }
         WebElement input = findElementWithTimeout(By.xpath("//td[@id='" + id + "']/input"));
         if (input != null) {
-            return input.getValue();
+            return input.getAttribute("value");
         }
         return null;
     }

@@ -44,13 +44,19 @@ public class ScreenShotFileOutput implements OutputType<File> {
 
     @Override
     public File convertFromBase64Png(String base64Png) {
+
+            byte[] data = BYTES.convertFromBase64Png(base64Png);
+            return convertFromPngBytes(data);
+
+    }
+
+    @Override
+    public File convertFromPngBytes(byte[] data) {
         FileOutputStream fos = null;
         String location = System.getProperty("basedir") + File.separator
                 + "target";
 
         try {
-            byte[] data = BYTES.convertFromBase64Png(base64Png);
-
             File outputFolder = null;
             if (location != null) {
                 outputFolder = new File(location);

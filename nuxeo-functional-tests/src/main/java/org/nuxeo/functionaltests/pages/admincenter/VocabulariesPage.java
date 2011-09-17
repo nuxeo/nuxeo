@@ -24,11 +24,12 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.ui.Select;
 
 public class VocabulariesPage extends AbstractPage {
 
     @FindBy(id = "selectDirectoryForm:directoriesList")
-    WebElement directoriesListSelect;
+    WebElement directoriesListSelectElement;
 
     public VocabulariesPage(WebDriver driver) {
         super(driver);
@@ -40,8 +41,9 @@ public class VocabulariesPage extends AbstractPage {
      * @return
      */
     public List<String> getDirectoriesList() {
+        Select directoriesListSelect = new Select(directoriesListSelectElement);
         ArrayList<String> directoryList = new ArrayList();
-        List<WebElement> list = directoriesListSelect.findElements(By.tagName("option"));
+        List<WebElement> list = directoriesListSelect.getOptions();
         for (WebElement webElement : list) {
             directoryList.add(webElement.getText());
         }
@@ -54,10 +56,11 @@ public class VocabulariesPage extends AbstractPage {
      * @param directoryName
      */
     public void select(String directoryName) {
-        List<WebElement> list = directoriesListSelect.findElements(By.tagName("option"));
+        Select directoriesListSelect = new Select(directoriesListSelectElement);
+        List<WebElement> list = directoriesListSelect.getOptions();
         for (WebElement webElement : list) {
             if (directoryName.trim().equals(webElement.getText().trim())) {
-                webElement.setSelected();
+                directoriesListSelect.selectByVisibleText(webElement.getText());
                 break;
             }
         }

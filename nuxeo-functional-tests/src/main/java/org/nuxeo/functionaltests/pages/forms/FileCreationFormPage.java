@@ -54,7 +54,7 @@ public class FileCreationFormPage extends AbstractPage {
             String description, String fileToUploadPath) {
         titleTextInput.sendKeys(title);
         descriptionTextInput.sendKeys(description);
-        uploadFileRadioButton.setSelected();
+        uploadFileRadioButton.click();
         fileInput.sendKeys(fileToUploadPath);
         createButton.click();
         return asPage(FileDocumentBasePage.class);

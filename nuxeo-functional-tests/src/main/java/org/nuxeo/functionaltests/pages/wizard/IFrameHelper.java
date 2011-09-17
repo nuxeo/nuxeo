@@ -57,13 +57,13 @@ public class IFrameHelper {
             return focusOnWizardPage(driver, nbTry-1);
         }
 
-        if (driver.getCurrentUrl().contains(CONNECT_IFRAME_URL_PATTERN)) {
-            try {
-                driver.switchTo().defaultContent();
-                return true;
-            } catch (Throwable e) {
-                System.out.println("Unable to top windows on page " + driver.getCurrentUrl());
-            }
+        // if we're coming from an iframe, driver.getCurrentUrl() can be empty
+        // switch back to main frame without testing the URL
+        try {
+            driver.switchTo().defaultContent();
+            return true;
+        } catch (Throwable e) {
+            System.out.println("Unable to top windows on page " + driver.getCurrentUrl());
         }
         return false;
     }

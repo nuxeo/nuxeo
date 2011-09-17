@@ -101,7 +101,7 @@ public abstract class AbstractWizardPage extends AbstractPage {
         if (element != null) {
             Select select = new Select(element);
             select.selectByValue(value);
-            return select.getFirstSelectedOption().getValue().equals(value);
+            return select.getFirstSelectedOption().getAttribute("value").equals(value);
         }
         return false;
     }

@@ -29,19 +29,7 @@
     </dependency>
     <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
-      <artifactId>selenium-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.seleniumhq.selenium</groupId>
-      <artifactId>selenium-remote-control</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.seleniumhq.selenium</groupId>
-      <artifactId>selenium-support</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.seleniumhq.selenium</groupId>
-      <artifactId>selenium-server</artifactId>
+      <artifactId>selenium-server-standalone</artifactId>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.distribution</groupId>
@@ -74,7 +62,7 @@
               <goal>verify</goal>
             </goals>
             <configuration>
-              <argLine>-Dlog4j.configuration=file://${build.directory}/tomcat/lib/log4j.xml
+              <argLine>-Dlog4j.configuration=${file.uri.prefix}${build.directory}/tomcat/lib/log4j.xml
                 -Dnuxeo.log.dir=${build.directory}/tomcat/log
                 -DconnectPassword=${connect.password}</argLine>
             </configuration>
@@ -119,6 +107,28 @@
   </build>
 
   <profiles>
+    <profile>
+      <id>os-notwindows</id>
+      <activation>
+        <os>
+          <family>!windows</family>
+        </os>
+      </activation>
+      <properties>
+        <file.uri.prefix>file://</file.uri.prefix>
+      </properties>
+    </profile>
+    <profile>
+      <id>os-windows</id>
+      <activation>
+        <os>
+          <family>windows</family>
+        </os>
+      </activation>
+      <properties>
+        <file.uri.prefix>file:///</file.uri.prefix>
+      </properties>
+    </profile>
     <profile>
       <id>pgsql</id>
     </profile>

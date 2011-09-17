@@ -24,6 +24,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.ui.Select;
 
 /**
  * Nuxeo default login page.
@@ -63,11 +64,13 @@ public class LoginPage extends AbstractPage {
         usernameInputTextBox.sendKeys(username);
         passwordInputTextBox.sendKeys(password);
 
+        Select languageSelect = new Select(languageSelectBox);
+
         if (language != null) {
-            List<WebElement> list = languageSelectBox.findElements(By.tagName("option"));
+            List<WebElement> list = languageSelect.getOptions();
             for (WebElement webElement : list) {
                 if (language.trim().equals(webElement.getText().trim())) {
-                    webElement.setSelected();
+                    languageSelect.selectByVisibleText(webElement.getText());
                     break;
                 }
             }

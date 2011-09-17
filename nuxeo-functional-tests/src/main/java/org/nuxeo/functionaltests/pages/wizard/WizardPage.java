@@ -74,4 +74,12 @@ public class WizardPage extends AbstractWizardPage {
         return errors;
     }
 
+    public String getTitle2() {
+        WebElement title2 = findElementWithTimeout(By.xpath("//h2"));
+        if (title2 == null) {
+            return null;
+        }
+        return title2.getText();
+    }
+
 }

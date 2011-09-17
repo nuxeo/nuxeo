@@ -25,6 +25,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.FindBys;
 import org.openqa.selenium.support.pagefactory.ByChained;
+import org.openqa.selenium.support.ui.Select;
 
 /**
  * @author Sun Seng David TAN <stan@nuxeo.com>
@@ -36,7 +37,7 @@ public class AccessRightsSubPage extends AbstractPage {
     WebElement userSelectionSuggestInputText;
 
     @FindBy(id = "add_rights_form:rights_grant_select")
-    WebElement selectGrant;
+    WebElement selectGrantElement;
 
     @FindBys({ @FindBy(id = "add_rights_form:rights_grant_select"),
             @FindBy(xpath = "//option[@value='Grant']") })
@@ -47,7 +48,7 @@ public class AccessRightsSubPage extends AbstractPage {
     WebElement selectDenyOption;
 
     @FindBy(id = "add_rights_form:rights_permission_select")
-    WebElement selectPermission;
+    WebElement selectPermissionElement;
 
     @FindBy(id = "validate_rights:document_rights_validate_button")
     WebElement validateButton;
@@ -97,15 +98,18 @@ public class AccessRightsSubPage extends AbstractPage {
         findElementWithTimeout(
                 By.xpath("//table[@id='add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox:suggest']/tbody/tr[1]/td[2]")).click();
 
+        Select selectGrant = new Select(selectGrantElement);
+
         if (grant) {
-            selectGrantOption.setSelected();
+            selectGrant.selectByValue("Grant");
 
         } else {
-            selectDenyOption.setSelected();
+            selectGrant.selectByValue("Deny");
         }
 
-        selectPermission.findElement(
-                By.xpath("//option[text()='" + permission + "']")).setSelected();
+        Select selectPermission = new Select(selectPermissionElement);
+        selectPermission.selectByVisibleText(permission);
+
         addButton.click();
 
         return asPage(AccessRightsSubPage.class).saveChanges();

@@ -82,8 +82,10 @@ public abstract class AbstractTest {
         profile.setPreference("intl.accept_languages", "en");
 
         // flag UserAgent as Selenium tester: this is used in Nuxeo
-        profile.setPreference("general.useragent.extra.nuxeo",
-                "Nuxeo-Selenium-Tester");
+        // general.useragent.extra has been removed in newer firefox versions
+        // so we need to override the whole string
+        profile.setPreference("general.useragent.override",
+                "Mozilla/5.0 Nuxeo-Selenium-Tester");
 
         addFireBug(profile);
 
@@ -179,11 +181,12 @@ public abstract class AbstractTest {
             }
         }
         if (xpi == null) {
+            String customM2Repo = System.getProperty("M2_REPO", M2_REPO);
             // try to guess the location in the M2 repo
             for (String f : clf) {
-                if (f.contains(M2_REPO)) {
+                if (f.contains(customM2Repo)) {
                     String m2 = f.substring(0,
-                            f.indexOf(M2_REPO) + M2_REPO.length());
+                            f.indexOf(customM2Repo) + customM2Repo.length());
                     xpi = new File(m2 + FIREBUG_M2 + "/" + FIREBUG_XPI);
                     break;
                 }
