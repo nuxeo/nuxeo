@@ -22,7 +22,7 @@ lk@nuxeo.com
 .textAlignF
 */
 
-/*//////////////////// Generic /////////////////////*/
+/*//////////////////// =Generic /////////////////////*/
 html, body { font-size: 100%;	line-height: 1.125em;	color: #444 }
 
 html, body, textarea { font-family: "Lucida Grande", Arial, Helvetica, Geneva, sans-serif }
@@ -39,9 +39,9 @@ a, a:link, a:visited { color: #0079a6; text-decoration: none }
 a:hover { color: #00416b; text-decoration: underline }
 
 h1, h2, h3 { color: #5C5C5C; font-weight: bold }
-h1 { font-size: 1.4em; padding: 0.4em 0 0.5em }
+h1 { font-size: 1.4em; padding: .4em 0 .5em }
 h2 { font-size: 1.2em; padding: .5em 1em .5em 0 }
-h3 { font-size: 1.2em; padding: .3em 0 .2em 0 }
+h3 { font-size: 1.2em; padding: .8em 0 .3em }
 h4, h5, h6 { color: #848484;font-size: .8em; margin: .2em 0 .2em 0 }
 
 /* Forms elements */
@@ -218,7 +218,7 @@ a.linkedin:hover { background-position:-16px bottom }
   border-color:#ddd #ddd #fff; border-style:solid; border-width:1px; color:#333 }
 
 /* TabsContent*/
-.tabsContent { margin: 0; padding: 5px 10px 10px 10px }
+.tabsContent { font-size: .98em; margin: 0; padding: 5px 10px 10px 10px }
 
 /*//////////// Action Bar ///////////////*/
 .action_bar { float: left; line-height: normal; margin: 10px 10px 10px 0 }
@@ -342,7 +342,7 @@ table thead th { padding: 3px; text-align: left }
 .dataList thead th a:hover { text-decoration: underline }
 
 .dataInput { margin-top: 5px }
-.dataInput td { border: 0 solid #FFF; padding: 7px 4px }
+.dataInput td, .rightsAddManager .dataInput td { border: 0 solid #FFF; padding: 7px 4px }
 .dataInput td td, .dataInput td td td { padding: 3px 4px }
 .dataInput .button { margin: 0 10px 0 0 }
 .dataInput textarea, .dataInput .dataInputText { width: 500px }
@@ -421,7 +421,7 @@ table.trashTable tbody tr:hover { background-color: #fffbf2 }
   background-color: #fff;
   border: 1px solid #ddd;
   font-size: 1.1em;
-  height: 18px;
+  height: 20px;
   padding: 3px 3px 3px 18px }
 .foldableBox h3.folded {
   background: #ededed url("${org.nuxeo.ecm.contextPath}/icons/arrow_folded.gif") top left no-repeat }
@@ -439,11 +439,22 @@ table.trashTable tbody tr:hover { background-color: #fffbf2 }
   padding-right: 10px }
 .foldableBox h3 a.warningLink { color: #f56200 }
 .foldableBox h3 a.action, .foldableBox h3 a.action:visited, .foldableBox h3 a.action:hover, .foldableBox h3 a.action:visited:hover {
-  background-color: #efefef;
-  border: 1px solid #cecece;
+  box-shadow:inset 0px 1px 0px 0px #fff;
+  background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #f5f2f5), color-stop(1, #dfdfdf) );
+  background:-moz-linear-gradient( center top, #f5f2f5 5%, #dfdfdf 100% );
+  background: linear-gradient( center top, #f5f2f5 5%, #dfdfdf 100% );
+  filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#f5f2f5', endColorstr='#dfdfdf');
+  background-color:#EAEAEA;
+  border-radius:3px;
+  border:1px solid #bdbdbd;
+  color:#000;
   float: right;
-  font-weight: normal;
-  padding: 1px 3px}
+  font-size: 0.8em;
+  font-weight: bold;
+  margin: 0 5px;
+  padding: 0 6px;
+  text-decoration:none;
+  text-shadow:1px 1px 0px #fff}
 
 .foldableBox .boxBody { clear: both; padding: 10px }
 
