@@ -22,6 +22,16 @@ lk@nuxeo.com
 .textAlignF
 */
 
+/* Colors
+Text = #c6c6c6, #777, #9a9a9a, #444, #000 + #0079a6 Blue + #f56200 Orange + #42a600 Green
+Titles= #5c5c5c + #848484
+Links = #fff + #666 + #000 + #0079a6 Blue + #00416b Blue + #d7e3f1 BlueLight +  #7693a3 BlueGray
+Buttons = #f5f2f5 + #dfdfdf / #eee + #c9c9c9 /
+Borders = #e7e7e7 + #c6c6c6 +  #aaa + #292929 + #70bbff Blue + #ff4e00 Orange + #ffc000 Yellow
+Backgrounds = #f6f6f6 + #c6c6c6 + #d2d2d2+ #e6f6ff BlueLight + #cfecff BlueSky + #adf Blue + #207594 Blue+ #101b3f BlueDark + #fff1c6 YellowLight + #ffc3a6 RedLight + #101b3f BlueDark
+*/
+
+
 /*//////////////////// =Generic /////////////////////*/
 html, body { font-size: 100%;	line-height: 1.125em;	color: #444 }
 
@@ -42,10 +52,9 @@ h1, h2, h3 { color: #5C5C5C; font-weight: bold }
 h1 { font-size: 1.4em; padding: .4em 0 .5em }
 h2 { font-size: 1.2em; padding: .5em 1em .5em 0 }
 h3 { font-size: 1.2em; padding: .8em 0 .3em }
-h4, h5, h6 { color: #848484;font-size: .8em; margin: .2em 0 .2em 0 }
+h4, h5, h6 { color: #9a9a9a;font-size: .8em; margin: .2em 0 .2em 0 }
 
 /* Forms elements */
-input, textarea, select { border: 1px solid #aaa; border-radius: 2px; font-size: 100%; padding: 4px }
 textarea { padding: 5px }
 .selectDocumentType { margin-top: 10px }
 .checkBox { margin-right: 3px }
@@ -58,9 +67,9 @@ input.button {
 	background:-moz-linear-gradient( center top, #f5f2f5 5%, #dfdfdf 100% );
 	background: linear-gradient( center top, #f5f2f5 5%, #dfdfdf 100% );
 	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#f5f2f5', endColorstr='#dfdfdf');
-	background-color:#EAEAEA;
+	background-color:#dfdfdf;
 	border-radius:3px;
-	border:1px solid #bdbdbd;
+	border:1px solid #c6c6c6;
 	color:#000;
 	cursor: pointer;
 	font-size: .9em;
@@ -71,13 +80,13 @@ input.button {
 	text-shadow:1px 1px 0px #fff }
 
 input.button:hover {
-  background: none repeat scroll 0 0 #f3f3f3;
-	border: 1px solid #747474 }
+  background: none repeat scroll 0 0 #f6f6f6;
+	border: 1px solid #aaa }
 
 input.button[disabled=disabled], input.button[disabled=disabled]:hover {
-	background: none repeat scroll 0 0 #eee;
+	background: none repeat scroll 0 0 #f6f6f6;
 	border: 1px solid #c9c9c9;
-	color: #a4a4a4;
+	color: #9a9a9a;
 	cursor: default }
 
 input.major {
@@ -97,7 +106,7 @@ input.small { font-size: 0.85em; padding: 3px }
 /*////////// =Header /////////////*/
 .header {
   background: none repeat scroll 0 0 #101B3F;
-  border-bottom: 3px solid #fff;
+  border-bottom: 2px solid #fff;
 	height:36px;
 	overflow: auto;
 	width:100% }
@@ -131,7 +140,7 @@ input.small { font-size: 0.85em; padding: 3px }
 .mainTabs li.selected a, .mainTabs li.selected a:hover, .mainTabs li.selected a:visited { color: #000; font-weight: bold }
 
 .userMenuActions {
-    color: #cecece;
+    color: #c6c6c6;
     float: left;
     font-size: .9em;
     margin: 0 0 0 15px;
@@ -158,20 +167,19 @@ input.small { font-size: 0.85em; padding: 3px }
 .userMenuActions li:hover ul { display:block }
 .userMenuActions ul li li { width: 180px }
 .userMenuActions li ul a { padding: 4px 4px 4px 22px }
-.userMenuActions ul ul a:hover { background-color:#ccf1ff }
+.userMenuActions ul ul a:hover { background-color:#cfecff }
 
 /*////////// =Footer /////////////*/
 .footer {
-  background: none repeat scroll 0 0 #2D313E;
-  border-top: 1px solid #292929;
+  background: none repeat scroll 0 0 #101b3f;
   font-size: .7em;
-  padding: 15px;
 	width:100% }
+.footerDefaultLinks { padding: 15px }
 
 .footer .content { text-align: right; width: 100% }
 .footer a {	color: #fff }
 
-.copyrights { color: #9A9A9A; float: right; padding: 2px 20px 0 0 }
+.copyrights { color: #9a9a9a; float: right; padding: 2px 20px 0 0 }
 .nuxLinks { float: right; padding-left: 20px }
 .nuxLinks a { vertical-align: middle }
 
@@ -184,7 +192,7 @@ a.linkedin:hover { background-position:-16px bottom }
 /*////////// =Main Frame /////////////*/
 /* =Tabs */
 .tabsBar {
-  border-bottom:1px solid #A7A7A7;
+  border-bottom:1px solid #aaa;
   float:left;
   margin-top:5px;
   width:100% }
@@ -197,25 +205,25 @@ a.linkedin:hover { background-position:-16px bottom }
   margin:0 2px -1px 4px;
   padding:0 }
 .tabsBar a,.tabsBar a:visited {
-  background:none repeat scroll 0 0 #F6F6F6;
-  border:1px solid #F6F6F6;
-  color:#7A7A7A;
+  background:none repeat scroll 0 0 #f6f6f6;
+  border:1px solid #f6f6f6;
+  color:#777;
   display:block;
   float:left;
   padding:3px 7px;
   text-decoration:none }
 .tabsBar li.selected a,.tabsBar li a:hover,.tabsBar li.selected a:visited {
   background:none repeat scroll 0 0 #fff;
-  border-color:#A7A7A7 #A7A7A7 white;
+  border-color:#aaa #aaa white;
   border-style:solid;
   border-width:1px;
   color:#000;
   padding:3px 7px 4px }
 
-.subtabsBar {border-bottom:1px solid #ddd}
-.subtabsBar a,.subtabsBar a:visited {border:1px solid #F6F6F6;color:#7A7A7A }
+.subtabsBar {border-bottom:1px solid #f6f6f6; font-size: .9em}
+.subtabsBar a,.subtabsBar a:visited { color:#777 }
 .subtabsBar li.selected a,.subtabsBar li a:hover,.subtabsBar li.selected a:visited {
-  border-color:#ddd #ddd #fff; border-style:solid; border-width:1px; color:#333 }
+  border-color:#c6c6c6 #c6c6c6 #fff; border-style:solid; border-width:1px; color:#444 }
 
 /* TabsContent*/
 .tabsContent { font-size: .98em; margin: 0; padding: 5px 10px 10px 10px }
@@ -232,9 +240,9 @@ a.linkedin:hover { background-position:-16px bottom }
   background:-moz-linear-gradient( center top, #f5f2f5 5%, #dfdfdf 100% );
   background: linear-gradient( center top, #f5f2f5 5%, #dfdfdf 100% );
   filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#f5f2f5', endColorstr='#dfdfdf');
-  background-color:#EAEAEA;
+  background-color:#eeeff0;
   border-radius:3px;
-  border:1px solid #bdbdbd;
+  border:1px solid #c6c6c6;
   color:#000;
   cursor: pointer;
   float: left;
@@ -244,29 +252,29 @@ a.linkedin:hover { background-position:-16px bottom }
   padding:4px 8px;
   text-decoration:none;
   text-shadow:1px 1px 0px #fff }
-.action_bar a:hover { background: none repeat scroll 0 0 #f3f3f3; border: 1px solid #747474 }
+.action_bar a:hover { background: none repeat scroll 0 0 #f6f6f6; border: 1px solid #aaa }
 .action_bar a img { margin: 0 3px -2px -4px }
 
 /* Other elements close to Action Bar */
 .listingLayoutSelector { float: right; margin: 11px 0 10px 7px; text-align: right }
-.listingLayoutSelector .contentViewPageSelectorDesc { float: left; padding: 2px 3px 0 0 }
-.listingLayoutSelector .langSelect { float: left; margin: 0 0 10px; padding: 0 }
+.listingLayoutSelector .contentViewPageSelectorDesc { float: left; padding: 0 4px 0 0 }
+.listingLayoutSelector .langSelect { float: left; font-size: 0.8em; padding: 1px }
 
 /* =Breadcrumb */
-.breadcrumb { background: none repeat scroll 0 0 #EEEFF0; border-bottom: 1px solid #E3E5E7; font-size: .7em; padding: 3px 7px }
+.breadcrumb { background: none repeat scroll 0 0 #eeeff0; border-bottom: 1px solid #e7e7e7; font-size: .7em; padding: 3px 7px }
 .breadcrumb .action_bar { margin: 0 }
 .breadcrumb .action_bar a { border: none; padding: 3px 0 }
 
 .breadcrumbs { float: left; padding: 3px 4px 0 0 }
-.breadcrumbs a, .breadcrumbs a:link, .breadcrumbs a:visited { color: #666 }
+.breadcrumbs a, .breadcrumbs a:link, .breadcrumbs a:visited { color: #777 }
 .breadcrumbs a:hover, .breadcrumbs a:active { font-weight: normal; text-decoration: underline }
 
 .printButton { float: right; padding-right: 1px }
-.printButton .liveEditCreateButtons { border-right: 1px solid #C7C7C7; margin-right: 5px; padding-right: 8px }
+.printButton .liveEditCreateButtons { border-right: 1px solid #c6c6c6; margin-right: 5px; padding-right: 8px }
 
 /* Main Area */
 .mainContainer { height: 600px; width: 100%; font-size: .8em }
-.mainContainer .column { border-right: 1px solid #E3E5E7; font-size: .85em; padding: 5px; width: 18% }
+.mainContainer .column { border-right: 1px solid #e7e7e7; font-size: .85em; padding: 5px; width: 18% }
 .mainContainer .content {
   background: url("${org.nuxeo.ecm.contextPath}/img/theme_galaxy/galaxy_logo.png") no-repeat scroll right bottom #fff;
   border-left: 1px solid #fff;
@@ -274,8 +282,8 @@ a.linkedin:hover { background-position:-16px bottom }
   width: 82% }
 
 /* //////// Navigation controls ////// */
-#pageNavigationControls { border-bottom: 1px solid #3399FF; margin: 0 0 5px; padding: 2px 0 0; text-align: center }
-#pageNavigationControls span { color: #757575; font-weight: bold; margin: 10px 5px; vertical-align: top }
+#pageNavigationControls { border-bottom: 1px solid #e7e7e7; margin: 0 0 5px; padding: 2px 0 0; text-align: center }
+#pageNavigationControls span { color: #777; font-weight: bold; margin: 10px 5px; vertical-align: top }
 #pageNavigationControls input { margin-left: 5px }
 
 /* //////// Tips and Messages ////// */
@@ -284,24 +292,24 @@ a.linkedin:hover { background-position:-16px bottom }
 
 .errorMessage, .infoMessage, .warningMessage, .infoFeedback  {
   background-color: #fff;
-  border-color:#ccc;
+  border-color:#c6c6c6;
   border-width: 1px;
   border-style: solid solid none none;
   border-radius: 0 10px 0 0;
   box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
-  color: #333;
+  color: #000;
   display: block;
   list-style: none;
   margin: 0;
   padding: 10px 15px }
 
 .errorMessage, .errorFeedback { background-color:#ffc3a6; border-color: #FF4E00 }
-.warningMessage, .warningFeedback { background-color: #FFF1C6; border-color:#FFC000 }
+.warningMessage, .warningFeedback { background-color: #fff1C6; border-color:#FFC000 }
 .error { color: #F56200; font-weight: bold }
 
 .tooltip {
-  background-color: #f2f7fc;
-  border: 1px solid #ccc;
+  background-color: #e6f6ff;
+  border: 1px solid #c6c6c6;
   border-radius: 3px;
   display: none;
   font-weight: normal;
@@ -310,35 +318,28 @@ a.linkedin:hover { background-position:-16px bottom }
   z-index: 1000 }
 
 .tips {
-	border: 1px dashed #ddd;
-	color: #888;
+	border: 1px dashed #c6c6c6;
+	color: #9a9a9a;
 	text-align: center }
 
 /* //////// UI detail elements ////// */
 .directoryBack { background: url("${org.nuxeo.ecm.contextPath}/icons/arrow_left.gif") no-repeat scroll 3px 1px transparent; padding: 2px 2px 2px 20px }
-
-.wizardFrame { border: 1px solid #e7e7e7; padding: 0 5px; width: 800px }
-.wizardFrame .wizardFinish h4 img { float: left; margin-right: 10px }
-.wizardFrame .templatePreview { border: 1px solid #e7e7e7; padding: 10px !important }
-.wizardFrame .templatePreview img { border: 1px solid #333; float: left }
-.wizardFrame .templatePreview .templatePreviewDescription { font-style: italic }
-.wizardFrame .wizardButtonBar { text-align: right }
 
 /* //////////// Tables /////////////////// */
 table thead th { padding: 3px; text-align: left }
 
 .dataList { background: white; border-collapse: collapse; margin: 0 }
 .dataList td {
-  border-bottom: 1px solid #c7c7c7;
-  border-top: 1px solid #c7c7c7;
+  border-bottom: 1px solid #c6c6c6;
+  border-top: 1px solid #c6c6c6;
   padding: 5px 3px }
 .dataList thead th {
-  background: #f1f2f3;
-  border-bottom: 1px solid #c7c7c7;
-  color: #666;
+  background: #f6f6f6;
+  border-bottom: 1px solid #c6c6c6;
+  color: #777;
   padding: 5px 3px;
   text-align: left }
-.dataList thead th a, .dataList thead th a:link, .dataList thead th a:visited { color: #666; text-decoration: none }
+.dataList thead th a, .dataList thead th a:link, .dataList thead th a:visited { color: #777; text-decoration: none }
 .dataList thead th a:hover { text-decoration: underline }
 
 .dataInput { margin-top: 5px }
@@ -346,7 +347,7 @@ table thead th { padding: 3px; text-align: left }
 .dataInput td td, .dataInput td td td { padding: 3px 4px }
 .dataInput .button { margin: 0 10px 0 0 }
 .dataInput textarea, .dataInput .dataInputText { width: 500px }
-.dataInput textarea, .dataInput .dataInputText, .dataInput .dataInputTextNoSize { vertical-align: top }
+.dataInput textarea, .dataInput .dataInputText, .dataInput .dataInputTextNoSize { border: 1px solid #aaa; vertical-align: top }
 .dataInput select { padding: 2px 1px 2px 1px; vertical-align: top }
 .archiveTabContent .dataInput { border: none; margin-bottom: 15px }
 .dataInputGroup { margin: 0; padding: 0; vertical-align: top }
@@ -356,32 +357,32 @@ table thead th { padding: 3px; text-align: left }
   margin-top: 7px;
   margin-bottom: 5px }
 table.dataOutput thead th {
-  background-color: #f1f2f3;
-  border-bottom: 1px solid #c7c7c7;
-  color: #666;
+  background-color: #f6f6f6;
+  border-bottom: 1px solid #c6c6c6;
+  color: #777;
   padding: 5px 3px;
   text-align: left }
 .dataOutput td {
-  border-bottom: 1px solid #c7c7c7;
-  border-top: 1px solid #c7c7c7;
+  border-bottom: 1px solid #c6c6c6;
+  border-top: 1px solid #c6c6c6;
   padding: 5px 3px }
 .dataOutput td table td { border: 0 none transparent }
 .dataOutput, .dataOutput2Columns, .dataList { width: 100% }
 .dataOutput2Columns td { padding: 5px 3px; vertical-align: top }
-table.dataOutput thead th a, table.dataOutput thead th a:hover, table.dataOutput thead th a:active, table.dataOutput thead th a:visited { color: #666 }
+table.dataOutput thead th a, table.dataOutput thead th a:hover, table.dataOutput thead th a:active, table.dataOutput thead th a:visited { color: #777 }
 .dataOutput .button { margin: 2px 10px 2px 0 !important }
 table.dataOutput th a img { margin: 0 0 0 2px; padding: 0; vertical-align: bottom }
 
 .boldColumn { font-weight: bold !important }
 .buttonColumn { text-align: center; width: 280px }
-.focusColumn { background-color: #ebebeb }
+.focusColumn { background-color: #f6f6f6 }
 .radioColumn {
   padding: 0 0 0 5px;
   vertical-align: top;
   width: 8px }
 .iconColumn { text-align: center; width: 20px }
 .iconColumn .cell { background: none; width: 40px }
-.iconColumn .dropInto { background-color: #efefef }
+.iconColumn .dropInto { background-color: #f6f6f6 }
 .iconColumn img { background: none; position: relative; z-index: 25 }
 .twoColumns { width: 50% }
 .fieldColumn img { margin: 0 4px; vertical-align: top }
@@ -410,27 +411,27 @@ table.dataOutput th a img { margin: 0 0 0 2px; padding: 0; vertical-align: botto
 
 .taskPrincipalSelect select { margin: 5px 0 10px 15px; padding: 2px 1px 2px 1px }
 
-table.trashTable tbody tr:hover { background-color: #fffbf2 }
+table.trashTable tbody tr:hover { background-color: #fff1C6 }
 
 .dataRowOdd:hover, .dataRowEven:hover {	background-color: #e6f6ff }
 
 /*///////////// Foldable Boxes //////////////*/
-.foldableBox { border-bottom: 1px solid #f6f6f6; font-size: .9em; margin-bottom: 20px }
+.foldableBox { border-bottom: 1px solid #e7e7e7; font-size: .9em; margin-bottom: 20px }
 
 .foldableBox h3 {
   background-color: #fff;
-  border: 1px solid #ddd;
+  border: 1px solid #c6c6c6;
   font-size: 1.1em;
   height: 20px;
   padding: 3px 3px 3px 18px }
 .foldableBox h3.folded {
-  background: #ededed url("${org.nuxeo.ecm.contextPath}/icons/arrow_folded.gif") top left no-repeat }
+  background: #eeeff0 url("${org.nuxeo.ecm.contextPath}/icons/arrow_folded.gif") top left no-repeat }
 .foldableBox h3.unfolded {
-  background: #ededed url("${org.nuxeo.ecm.contextPath}/icons/arrow_unfolded.gif") top left no-repeat;
+  background: #eeeff0 url("${org.nuxeo.ecm.contextPath}/icons/arrow_unfolded.gif") top left no-repeat;
   clear: both }
 .foldableBox h3.foldedDisabled {
-  background: #d2d2d2 none;
-  border-bottom: 1px solid #d2d2d2;
+  background: #eeeff0 none;
+  border-bottom: 1px solid #c6c6c6;
   color: #555 }
 .foldableBox h3 span, .foldableBox h3 a:link, .foldableBox h3 a:visited, .foldableBox h3 a:hover, .foldableBox h3 a:visited:hover {
   color: #000;
@@ -438,15 +439,15 @@ table.trashTable tbody tr:hover { background-color: #fffbf2 }
   float: left;
   padding-right: 10px }
 .foldableBox h3 a.warningLink { color: #f56200 }
-.foldableBox h3 a.action, .foldableBox h3 a.action:visited, .foldableBox h3 a.action:hover, .foldableBox h3 a.action:visited:hover {
+.foldableBox h3 a.action, .foldableBox h3 a.action:visited {
   box-shadow:inset 0px 1px 0px 0px #fff;
   background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #f5f2f5), color-stop(1, #dfdfdf) );
   background:-moz-linear-gradient( center top, #f5f2f5 5%, #dfdfdf 100% );
   background: linear-gradient( center top, #f5f2f5 5%, #dfdfdf 100% );
   filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#f5f2f5', endColorstr='#dfdfdf');
-  background-color:#EAEAEA;
+  background-color:#eeeff0;
   border-radius:3px;
-  border:1px solid #bdbdbd;
+  border:1px solid #c6c6c6;
   color:#000;
   float: right;
   font-size: 0.8em;
@@ -454,22 +455,23 @@ table.trashTable tbody tr:hover { background-color: #fffbf2 }
   margin: 0 5px;
   padding: 0 6px;
   text-decoration:none;
-  text-shadow:1px 1px 0px #fff}
+  text-shadow:1px 1px 0px #fff }
+.foldableBox h3 a.action:hover, .foldableBox h3 a.action:visited:hover { background: none repeat scroll 0 0 #f6f6f6; border: 1px solid #aaa }
 
 .foldableBox .boxBody { clear: both; padding: 10px }
 
 .foldableLightBox { margin-bottom: 20px }
 .foldableLightBox div.folded {background: #fff url("${org.nuxeo.ecm.contextPath}/icons/arrow_folded.gif") top left no-repeat }
 .foldableLightBox div.unfolded { background: #fff url("${org.nuxeo.ecm.contextPath}/icons/arrow_unfolded.gif") top left no-repeat }
-.foldableLightBox div.folded a, .foldableLightBox div.unfolded a { color: #666; float: left }
+.foldableLightBox div.folded a, .foldableLightBox div.unfolded a { color: #777; float: left }
 .foldableLightBox div.folded, .foldableLightBox div.unfolded {
-  border-bottom: 1px solid #f6f6f6;
-  color: #666;
+  border-bottom: 1px solid #e7e7e7;
+  color: #777;
   font-size: .8em;
   height: 18px;
   padding: 3px 3px 3px 18px }
 .foldableLightBox .boxBody {
-  border: 1px solid #f6f6f6;
+  border: 1px solid #e7e7e7;
   border-top: none;
   clear: both;
   font-size: .8em;
@@ -483,7 +485,7 @@ table.trashTable tbody tr:hover { background-color: #fffbf2 }
 
 /*//  DM manage, archive, relation tab //*/
 .rightsAdd { margin: 10px 0 10px 0 }
-.rightsAddTitle { background-color: #f5f5f5; border: 1px solid #ddd; padding: 5px; text-align: center }
+.rightsAddTitle { background-color: #f6f6f6; border: 1px solid #c6c6c6; padding: 5px; text-align: center }
 .rightsAddLabel { font-weight: bold; padding: 0 5px 0 0 }
 .rightsAddSelect { margin-top: 0}
 .rightsAddManager {
@@ -492,7 +494,7 @@ table.trashTable tbody tr:hover { background-color: #fffbf2 }
   width: 100% }
 .rightsAddManager td {
   background-color: #fff;
-  border: 1px solid #ccc;
+  border: 1px solid #c6c6c6;
   margin: 0 10px 0 10px;
   padding: 10px }
 .rightsAddManager .labelColumn { width: 80px }
@@ -503,7 +505,7 @@ table.trashTable tbody tr:hover { background-color: #fffbf2 }
 .buttonsGadgetNoForm { margin: 0 5px }
 
 .directoryFilter, .searchField {
-  border: 1px solid #ddd;
+  border: 1px solid #c6c6c6;
   font-size: 11px;
   margin: 0 5px 10px 0;
   padding: 3px }
@@ -514,11 +516,11 @@ table.trashTable tbody tr:hover { background-color: #fffbf2 }
 
 .archiveTabContent { margin-left: 18px }
 .archiveTabContent .notEditable { background-color: #fff; border: none }
-.archiveTabContent .currentDocumentInformation { background-color: #f1f1f1 }
+.archiveTabContent .currentDocumentInformation { background-color: #eeeff0 }
 
 .taskAssign {
-  background: #f1f1f1;
-  border: 1px solid #ddd;
+  background: #eeeff0;
+  border: 1px solid #c6c6c6;
   display: block;
   margin: 5px 0 10px 0;
   padding: 5px;
@@ -534,13 +536,13 @@ table.trashTable tbody tr:hover { background-color: #fffbf2 }
 .summary_div_1 { float: right; font-size: .9em; padding: 10px 0; width: 33% }
 .summary_div_2 { clear: both }
 
-.summary_div_1 h3.summaryTitle { color: #848484; font-size: 1.1em }
+.summary_div_1 h3.summaryTitle { color: #9a9a9a; font-size: 1.1em }
 
 .contentViewTitle { float: left; line-height: normal; margin: 10px 10px 10px 0 }
 
 h3.summaryTitle {
-  border-bottom: 1px solid #A9A9A9;
-  color: #848484;
+  border-bottom: 1px solid #aaa;
+  color: #9a9a9a;
   font-size: 1.2em;
   font-weight: bold;
   margin: 0 0 10px 0;
@@ -557,17 +559,17 @@ h3.summaryTitle {
 .content_block .actionsColumn { vertical-align: top; width: 20% }
 .content_block img { padding: 0 5px }
 
-.note_content_block { border: 1px solid #d7d7d7; margin: 0 0 15px; padding: 15px }
+.note_content_block { border: 1px solid #c6c6c6; margin: 0 0 15px; padding: 15px }
 .note_content_block span, .note_content_block p { font-size: 1.05em; line-height: 1.8em }
 
 .lockFile_block, .restoreFile_block { padding: 0 0 10px }
 .lockDetail, .DetailList { padding-top: 5px }
 .summary_locked { color: #f56200; font-weight: bold }
-.summary_unlocked { color: #1caa00; font-weight: bold }
+.summary_unlocked { color: #42a600; font-weight: bold }
 
-.lcAndVersion { border: 1px solid #dedede; padding: 3px }
+.lcAndVersion { border: 1px solid #c6c6c6; padding: 3px }
 
-.actions_block { border: 1px solid #dedede; margin: 10px 0; padding: 10px 7px 3px }
+.actions_block { border: 1px solid #c6c6c6; margin: 10px 0; padding: 10px 7px 3px }
 
 .comments_block .commentBlock { border: none }
 .comments_block .commentQuote { margin: 5px 0 5px 24px }
@@ -584,7 +586,7 @@ h3.summaryTitle {
 .commentQuote { margin: 5px 0 5px 0 }
 .commentAuthor {
   background: transparent url("${org.nuxeo.ecm.contextPath}/icons/comment.gif") no-repeat 4px 4px;
-  color: #666;
+  color: #777;
   font-weight: bold;
   padding: 5px 3px 3px 24px }
 
@@ -601,8 +603,8 @@ h3.summaryTitle {
 
 /*////// PictureBook Styles ///////*/
 .pictureBookItem {
-  background-color: #F1F2F3;
-  border: 1px solid #CACACA;
+  background-color: #f6f6f6;
+  border: 1px solid #c6c6c6;
   float: left;
   height: 100%;
   margin: 10px 20px 10px 0;
@@ -643,14 +645,14 @@ td.dr-tree-h-text, td.dr-tree-h-text span, td.dr-tree-h-text a.treeLink { white-
 .userClipboard { background-color: #fff; height: 1%; margin: 10px 0 10px 0 }
 .userClipboardContent { margin: 0; padding: 10px 0 10px 3px }
 .userClipboard h4 {
-  border-bottom: 1px dotted #999;
-  color: #848484;
+  border-bottom: 1px dotted #aaa;
+  color: #9a9a9a;
   font-size: 1.2em;
   height: 16px;
   margin: 0 0 2px;
   padding: 8px 2px 2px }
 
-.dropInto { background-color: #efefef }
+.dropInto { background-color: #f6f6f6 }
 .dropIntoClipboardCopy { background: #adf url("${org.nuxeo.ecm.contextPath}/icons/action_clipboard_copy.gif") no-repeat 98% 3% }
 
 #clipboardCopy { padding: 3px }
@@ -659,10 +661,10 @@ td.dr-tree-h-text, td.dr-tree-h-text span, td.dr-tree-h-text a.treeLink { white-
 .clipboardFunction { padding: 2px }
 .clipboardRemoveItem { float: right }
 
-.clipboardEmptyMessage { color: #666; font-style: italic; padding: 0 2px 2px 2px; text-align: center }
+.clipboardEmptyMessage { color: #777; font-style: italic; padding: 0 2px 2px 2px; text-align: center }
 
 /*////////// =Faceted Search ////////*/
-.facetedSearchActionBar { border-bottom: 1px solid #cacaca; padding: 2px; color: #323232 }
+.facetedSearchActionBar { border-bottom: 1px solid #c6c6c6; padding: 2px; color: #444 }
 .facetedSearchActionBar a { float: left; padding-top: 3px }
 
 .facetedSearchActionBar input.button {
@@ -673,13 +675,13 @@ td.dr-tree-h-text, td.dr-tree-h-text span, td.dr-tree-h-text a.treeLink { white-
   width: auto }
 
 #facetedSearchSelectorDiv, #savedFacetedSearchSelectorDiv {
-  border-bottom: 1px solid #f1f1f1;
+  border-bottom: 1px solid #e7e7e7;
   margin: 0;
   padding: 0 0 5px }
 
 #facetedSearchSelectorDiv p, #savedFacetedSearchSelectorDiv p {
   background-color: #ecf6ff;
-  border-bottom: 1px solid #cacaca;
+  border-bottom: 1px solid #c6c6c6;
   border-top: 1px solid #fff;
   font-weight: bold;
   padding: 3px }
@@ -694,24 +696,24 @@ td.dr-tree-h-text, td.dr-tree-h-text span, td.dr-tree-h-text a.treeLink { white-
 .facetedSearchBlock .widgetContent { border-bottom: 1px solid #dcdcdc; color: #777 }
 
 .facetedSearchBlock h5 {
-  background-color: #F1F2F3;
-  border-bottom: 1px solid #CACACA;
+  background-color: #f6f6f6;
+  border-bottom: 1px solid #c6c6c6;
   border-top: 1px solid #fff;
-  color: #323232;
+  color: #444;
   font-size: 1em;
   margin: 0;
   padding: 3px }
 
 .facetedSearchBlock .widgetContent .labelOpenPopUp {
-  border-bottom: 1px solid #cacaca;
-  color: #323232;
+  border-bottom: 1px solid #c6c6c6;
+  color: #444;
   display: block;
   margin: 0 0 5px;
   padding: 0 0 1px }
 
 .facetedSearchPopUp {
   background-color: #fff;
-  border: 1px solid #b5bcc6;
+  border: 1px solid #c6c6c6;
   display: none;
   left: 25%;
   position: absolute;
@@ -720,8 +722,8 @@ td.dr-tree-h-text, td.dr-tree-h-text span, td.dr-tree-h-text a.treeLink { white-
   z-index: 10000 }
 
 .facetedSearchPopUp .closePopUpHeader {
-  background-color: #f6f8ff;
-  border-bottom: 1px dotted #dedede;
+  background-color: #e6f6ff;
+  border-bottom: 1px dotted #c6c6c6;
   padding: 3px;
   text-align: right }
 
@@ -740,15 +742,15 @@ td.dr-tree-h-text, td.dr-tree-h-text span, td.dr-tree-h-text a.treeLink { white-
 /* Generic PopuP div used in Faceted Search */
 .genericPopUp {
   background-color: #fff;
-  border: 1px solid #B5BCC6;
+  border: 1px solid #c6c6c6;
   display: none;
   position: absolute;
   width: 400px;
   z-index: 10000 }
 
 .genericPopUp .closePopUpHeader {
-  background-color: #f6f8ff;
-  border-bottom: 1px solid #ddd;
+  background-color: #e6f6ff;
+  border-bottom: 1px solid #c6c6c6;
   padding: 3px;
   text-align: right }
 
@@ -763,10 +765,10 @@ td.dr-tree-h-text, td.dr-tree-h-text span, td.dr-tree-h-text a.treeLink { white-
 .pollStatusLabel, .pollStatus { float:left }
 .pollStatusLabel { padding: 0 10px 5px 0 }
 .pollStatus span, .pollStatus a { padding: 1px 5px }
-.pollStatus .status {	font-weight: bold; background-color:#eee }
+.pollStatus .status {	font-weight: bold; background-color:#f6f6f6 }
 .pollStatus .project { color: #0088c0 }
 .pollStatus .open { color: #42a600 }
-.pollStatus .closed {	color: #5d5d5d }
+.pollStatus .closed {	color: #444 }
 
 /*//////////// Syndication Button ////////////*/
 div.syndicationButton { background-color: #FF9D5C; float: right; font-size: .7em; margin-bottom: 5px }
@@ -787,9 +789,16 @@ div.syndicationButton div.syndicationLinks a { color: #fff }
 .smallIcon { height: 16px; width: 16px }
 
 /*//////////////  No IDEA //////////////*/
+.wizardFrame { border: 1px solid #e7e7e7; padding: 0 5px; width: 800px }
+.wizardFrame .wizardFinish h4 img { float: left; margin-right: 10px }
+.wizardFrame .templatePreview { border: 1px solid #e7e7e7; padding: 10px !important }
+.wizardFrame .templatePreview img { border: 1px solid #333; float: left }
+.wizardFrame .templatePreview .templatePreviewDescription { font-style: italic }
+.wizardFrame .wizardButtonBar { text-align: right }
+
 .closedContent {
   background: #fff;
-  border: 1px solid #ddd;
+  border: 1px solid #c6c6c6;
   margin: 15px 0 0;
   padding: 0 10px 10px 10px }
 
