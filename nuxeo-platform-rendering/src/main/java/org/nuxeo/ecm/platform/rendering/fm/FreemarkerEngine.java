@@ -16,6 +16,7 @@ package org.nuxeo.ecm.platform.rendering.fm;
 
 import java.io.Writer;
 import java.util.ResourceBundle;
+import java.net.SocketException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -181,6 +182,8 @@ public class FreemarkerEngine implements RenderingEngine {
                     wrapper);
             env.process();
             bw.copyTo(writer);
+        } catch (SocketException e) {
+            // Connection was closed - not a rendering error
         } catch (Exception e) {
             throw new RenderingException(e);
         }
