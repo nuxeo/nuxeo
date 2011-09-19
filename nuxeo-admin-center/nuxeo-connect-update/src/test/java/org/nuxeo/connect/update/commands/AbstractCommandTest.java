@@ -20,6 +20,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.common.Environment;
@@ -184,6 +185,7 @@ public abstract class AbstractCommandTest extends PackageTestCase {
 
     @Test
     public void testInstallThenUninstall() throws Exception {
+        Assume.assumeTrue(!isWindows());
         File zip = createPackage();
         zip.deleteOnExit();
         LocalPackage pkg = service.addPackage(zip);
@@ -197,4 +199,8 @@ public abstract class AbstractCommandTest extends PackageTestCase {
         }
     }
 
+    private boolean isWindows() {
+        String os = System.getProperty("os.name").toLowerCase();
+        return (os.indexOf("win") >= 0);
+    }
 }
