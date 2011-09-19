@@ -17,6 +17,8 @@
 
 package org.nuxeo.ecm.platform.video.listener;
 
+import static org.nuxeo.ecm.platform.video.VideoConstants.HAS_STORYBOARD_FACET;
+
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -42,7 +44,7 @@ public class VideoStoryboardListener implements EventListener {
         }
         DocumentEventContext docCtx = (DocumentEventContext) ctx;
         DocumentModel doc = docCtx.getSourceDocument();
-        if (doc.hasFacet(VideoConstants.HAS_STORYBOARD_FACET)) {
+        if (doc.hasFacet(HAS_STORYBOARD_FACET)) {
             Property origVideoProperty = doc.getProperty("file:content");
             if (origVideoProperty.isDirty()) {
                 VideoHelper.updateStoryboard(doc,

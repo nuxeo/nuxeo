@@ -17,6 +17,8 @@
 
 package org.nuxeo.ecm.platform.video.listener;
 
+import static org.nuxeo.ecm.platform.video.VideoConstants.HAS_VIDEO_PREVIEW_FACET;
+
 import java.io.IOException;
 
 import org.nuxeo.ecm.core.api.Blob;
@@ -44,7 +46,7 @@ public class VideoPreviewListener implements EventListener {
         }
         DocumentEventContext docCtx = (DocumentEventContext) ctx;
         DocumentModel doc = docCtx.getSourceDocument();
-        if (doc.hasFacet(VideoConstants.HAS_VIDEO_PREVIEW_FACET)) {
+        if (doc.hasFacet(HAS_VIDEO_PREVIEW_FACET)) {
             Property origVideoProperty = doc.getProperty("file:content");
             if (origVideoProperty.isDirty()) {
                 try {

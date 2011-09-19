@@ -20,6 +20,8 @@ public class VideoConstants {
 
     public static final String VIDEO_TYPE = "Video";
 
+    public static final String VIDEO_FACET = "Video";
+
     public static final String STORYBOARD_PROPERTY = "vid:storyboard";
 
     public static final String DURATION_PROPERTY = "strm:duration";
