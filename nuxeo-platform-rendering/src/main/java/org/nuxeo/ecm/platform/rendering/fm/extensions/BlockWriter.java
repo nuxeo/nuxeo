@@ -15,11 +15,15 @@
 package org.nuxeo.ecm.platform.rendering.fm.extensions;
 
 import java.io.IOException;
+import java.net.SocketException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
 import freemarker.template.TemplateException;
+
+import org.nuxeo.ecm.platform.rendering.api.RenderingOutputClosedException;
+
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -118,7 +122,7 @@ public class BlockWriter extends Writer {
         }
     }
 
-    public void copyTo(Writer writer) throws TemplateException, IOException {
+    public void copyTo(Writer writer) throws TemplateException, IOException, RenderingOutputClosedException {
         // check first if you need to suppress this block
         if (ifBlockDefined != null) {
             BlockWriter bw = reg.getBlock(ifBlockDefined);
@@ -137,7 +141,16 @@ public class BlockWriter extends Writer {
             }
             bw.copyTo(writer);
         }
-        writer.write(buf.toString());
+        try {
+            writer.write(buf.toString());
+        } catch (IOException e) {
+            if (e.getCause() instanceof SocketException) {
+                // Client closed connection
+                throw new RenderingOutputClosedException(e);
+            } else {
+                throw e;
+            }
+        }
     }
 
     @Override

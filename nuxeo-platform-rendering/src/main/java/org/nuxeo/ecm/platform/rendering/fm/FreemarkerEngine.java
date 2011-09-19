@@ -16,12 +16,12 @@ package org.nuxeo.ecm.platform.rendering.fm;
 
 import java.io.Writer;
 import java.util.ResourceBundle;
-import java.net.SocketException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
 import org.nuxeo.ecm.platform.rendering.api.RenderingException;
+import org.nuxeo.ecm.platform.rendering.api.RenderingOutputClosedException;
 import org.nuxeo.ecm.platform.rendering.api.ResourceLocator;
 import org.nuxeo.ecm.platform.rendering.api.View;
 import org.nuxeo.ecm.platform.rendering.fm.adapters.DocumentObjectWrapper;
@@ -182,8 +182,8 @@ public class FreemarkerEngine implements RenderingEngine {
                     wrapper);
             env.process();
             bw.copyTo(writer);
-        } catch (SocketException e) {
-            // Connection was closed - not a rendering error
+        } catch (RenderingOutputClosedException e) {
+            log.debug("Output closed while rendering " + template);
         } catch (Exception e) {
             throw new RenderingException(e);
         }
