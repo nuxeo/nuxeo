@@ -1,26 +1,47 @@
-/*======
-Default CSS in one file
-lk@nuxeo.com
-14 Sept 2011
-======*/
+/*====== Default DM CSS in one file - lk@nuxeo.com - Sept 2011 ======*/
 
 
-/* CSS Structure
-=Generic
-=Header
-=Nav
-=Tabs
-=Footer
-*/
-
-/* =Generic
-.button
-.tips
-.floatR
-.floatL
-.textAlignR
-.textAlignF
-*/
+/*-------- CSS Structure
+=Generics
+   =Resets
+   =Common
+     =Links and Titles
+     =Forms elements
+     =Buttons
+     =Global helpers
+=Common Parts
+   =Header
+     =Search
+     =UserServices
+     =MainTabs
+   =Tabs
+   =Main Area
+     =Tabs Content
+     =Action Bar
+     =Layout View & Resume Tab
+     =Manage tab
+     =Tables
+     =Foldable Boxes
+     =Tips and Messages
+     =Syndication Button
+     =Comments
+     =Advanced Search
+     =PopUps
+   =Footer
+=Common details
+=Specific for DM
+  =Main Frame
+    =Breadcrumb
+    =Document View
+  =Left Column
+    =Tree Link
+    =Clipboard & Worklist
++ unused ?
+To move to addons:
+- Poll
+- Faceted Search
+- PictureBook
+----------------------*/
 
 /* Colors
 Text = #c6c6c6, #777, #9a9a9a, #444, #000 + #0079a6 Blue + #f56200 Orange + #42a600 Green
@@ -31,8 +52,8 @@ Borders = #e7e7e7 + #c6c6c6 +  #aaa + #292929 + #70bbff Blue + #ff4e00 Orange + 
 Backgrounds = #f6f6f6 + #c6c6c6 + #d2d2d2+ #e6f6ff BlueLight + #cfecff BlueSky + #adf Blue + #207594 Blue+ #101b3f BlueDark + #fff1c6 YellowLight + #ffc3a6 RedLight + #101b3f BlueDark
 */
 
-
-/*//////////////////// =Generic /////////////////////*/
+/*///////////// =Generics /////////////*/
+/*---- =Resets ----*/
 html, body { font-size: 100%;	line-height: 1.125em;	color: #444 }
 
 html, body, textarea { font-family: "Lucida Grande", Arial, Helvetica, Geneva, sans-serif }
@@ -44,7 +65,8 @@ ul { list-style: none outside none }
 img { border: 0 none }
 img, a { outline: medium none }
 
-/********** Common *********/
+/*---- =Common ----*/
+/*-- =Links and Titles */
 a, a:link, a:visited { color: #0079a6; text-decoration: none }
 a:hover { color: #00416b; text-decoration: underline }
 
@@ -54,14 +76,14 @@ h2 { font-size: 1.2em; padding: .5em 1em .5em 0 }
 h3 { font-size: 1.2em; padding: .8em 0 .3em }
 h4, h5, h6 { color: #9a9a9a;font-size: .8em; margin: .2em 0 .2em 0 }
 
-/* Forms elements */
+/*-- =Forms elements */
 textarea { padding: 5px }
 .selectDocumentType { margin-top: 10px }
 .checkBox { margin-right: 3px }
 .required { background: transparent url("${org.nuxeo.ecm.contextPath}/icons/required.gif") top right no-repeat; padding: 0 10px 0 0 }
 
-/* Buttons */
-input.button {
+/*-- =Buttons */
+.button, input.button {
 	box-shadow:inset 0px 1px 0px 0px #fff;
 	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #f5f2f5), color-stop(1, #dfdfdf) );
 	background:-moz-linear-gradient( center top, #f5f2f5 5%, #dfdfdf 100% );
@@ -96,14 +118,16 @@ input.major {
 
 input.small { font-size: 0.85em; padding: 3px }
 
-/* Globals */
+/*-- =Global helpers */
 .clear { clear:both }
 .boldLabel { font-weight: bold }
+.floatR { float: right }
+.floatL { float: left }
+.textAlignR { float: right }
+textAlignL { float: left }
 
-/* About this page */
-.documentManagement {}
-
-/*////////// =Header /////////////*/
+/*///////////// =Common Parts /////////////*/
+/*---- =Header----*/
 .header {
   background: none repeat scroll 0 0 #101B3F;
   border-bottom: 2px solid #fff;
@@ -115,17 +139,17 @@ input.small { font-size: 0.85em; padding: 3px }
 .header .includes { width: 0 }
 .header a, .header a:link, .header a:visited, .header a:hover, .header a:active { color: #fff }
 
-/***** =Search ********/
+/*-- =Search */
 .userSearchBlock { float: right }
 .searchService { padding-top: 5px }
 .searchService input.button { margin: 3px 5px 0 3px; padding: 2px }
 .advancedSearchLink a { font-size: .8em }
 
-/***** =UserServices ********/
+/*-- =UserServices */
 .userServicesBlock { float: left; padding-top: 10px }
 .userServicesBlock a:hover { text-decoration: none }
 
-/***** =MainTabs ********/
+/*-- =MainTabs */
 .mainTabs { float: left }
 .mainTabs li {
     background-color: #207594;
@@ -169,28 +193,7 @@ input.small { font-size: 0.85em; padding: 3px }
 .userMenuActions li ul a { padding: 4px 4px 4px 22px }
 .userMenuActions ul ul a:hover { background-color:#cfecff }
 
-/*////////// =Footer /////////////*/
-.footer {
-  background: none repeat scroll 0 0 #101b3f;
-  font-size: .7em;
-	width:100% }
-.footerDefaultLinks { padding: 15px }
-
-.footer .content { text-align: right; width: 100% }
-.footer a {	color: #fff }
-
-.copyrights { color: #9a9a9a; float: right; padding: 2px 20px 0 0 }
-.nuxLinks { float: right; padding-left: 20px }
-.nuxLinks a { vertical-align: middle }
-
-a.twitt, a.linkedin { display:inline-block; height:16px; margin:0 5px; width:16px }
-a.twitt{ background:transparent url("${org.nuxeo.ecm.contextPath}/icons/icones-metanav.png") no-repeat left top }
-a.linkedin {background:transparent url("${org.nuxeo.ecm.contextPath}/icons/icones-metanav.png") no-repeat -16px top }
-a.twitt:hover { background-position:left bottom }
-a.linkedin:hover { background-position:-16px bottom }
-
-/*////////// =Main Frame /////////////*/
-/* =Tabs */
+/*---- =Tabs ----*/
 .tabsBar {
   border-bottom:1px solid #aaa;
   float:left;
@@ -225,10 +228,19 @@ a.linkedin:hover { background-position:-16px bottom }
 .subtabsBar li.selected a,.subtabsBar li a:hover,.subtabsBar li.selected a:visited {
   border-color:#c6c6c6 #c6c6c6 #fff; border-style:solid; border-width:1px; color:#444 }
 
-/* TabsContent*/
+/*---- =Main Area ----*/
+.mainContainer { height: 600px; width: 100%; font-size: .8em }
+.mainContainer .column { border-right: 1px solid #e7e7e7; font-size: .85em; padding: 5px; width: 18% }
+.mainContainer .content {
+  background: url("${org.nuxeo.ecm.contextPath}/img/theme_galaxy/galaxy_logo.png") no-repeat scroll right bottom #fff;
+  border-left: 1px solid #fff;
+  padding: 0;
+  width: 82% }@
+
+/*-- =TabsContent */
 .tabsContent { font-size: .98em; margin: 0; padding: 5px 10px 10px 10px }
 
-/*//////////// Action Bar ///////////////*/
+/*-- =Action Bar */
 .action_bar { float: left; line-height: normal; margin: 10px 10px 10px 0 }
 .action_bar_message { float: right; font-size: .8em; margin: 0 }
 .action_bar_message form { display: inline; text-align: right }
@@ -255,77 +267,104 @@ a.linkedin:hover { background-position:-16px bottom }
 .action_bar a:hover { background: none repeat scroll 0 0 #f6f6f6; border: 1px solid #aaa }
 .action_bar a img { margin: 0 3px -2px -4px }
 
-/* Other elements close to Action Bar */
 .listingLayoutSelector { float: right; margin: 11px 0 10px 7px; text-align: right }
 .listingLayoutSelector .contentViewPageSelectorDesc { float: left; padding: 0 4px 0 0 }
 .listingLayoutSelector .langSelect { float: left; font-size: 0.8em; padding: 1px }
 
-/* =Breadcrumb */
-.breadcrumb { background: none repeat scroll 0 0 #eeeff0; border-bottom: 1px solid #e7e7e7; font-size: .7em; padding: 3px 7px }
-.breadcrumb .action_bar { margin: 0 }
-.breadcrumb .action_bar a { border: none; padding: 3px 0 }
+/*-- =Layout View and Resume Tab Styles */
+.layoutViewMode { margin: 0; padding: 0 }
+.layoutViewMode li { display: inline }
+.layoutViewMode a img { border: 1px solid #fff }
+.layoutViewMode a:hover img, .layoutViewMode li.selected img { border: 1px solid #aaa }
 
-.breadcrumbs { float: left; padding: 3px 4px 0 0 }
-.breadcrumbs a, .breadcrumbs a:link, .breadcrumbs a:visited { color: #777 }
-.breadcrumbs a:hover, .breadcrumbs a:active { font-weight: normal; text-decoration: underline }
+.summary_div_0 { float: left; padding: 10px 0; width: 62% }
+.summary_div_1 { float: right; font-size: .9em; padding: 10px 0; width: 33% }
+.summary_div_2 { clear: both }
 
-.printButton { float: right; padding-right: 1px }
-.printButton .liveEditCreateButtons { border-right: 1px solid #c6c6c6; margin-right: 5px; padding-right: 8px }
+.summary_div_1 h3.summaryTitle { color: #9a9a9a; font-size: 1.1em }
 
-/* Main Area */
-.mainContainer { height: 600px; width: 100%; font-size: .8em }
-.mainContainer .column { border-right: 1px solid #e7e7e7; font-size: .85em; padding: 5px; width: 18% }
-.mainContainer .content {
-  background: url("${org.nuxeo.ecm.contextPath}/img/theme_galaxy/galaxy_logo.png") no-repeat scroll right bottom #fff;
-  border-left: 1px solid #fff;
-  padding: 0;
-  width: 82% }
+.contentViewTitle { float: left; line-height: normal; margin: 10px 10px 10px 0 }
 
-/* //////// Navigation controls ////// */
-#pageNavigationControls { border-bottom: 1px solid #e7e7e7; margin: 0 0 5px; padding: 2px 0 0; text-align: center }
-#pageNavigationControls span { color: #777; font-weight: bold; margin: 10px 5px; vertical-align: top }
-#pageNavigationControls input { margin-left: 5px }
+h3.summaryTitle {
+  border-bottom: 1px solid #aaa;
+  color: #9a9a9a;
+  font-size: 1.2em;
+  font-weight: bold;
+  margin: 0 0 10px 0;
+  padding: 17px 0 3px 0 }
 
-/* //////// Tips and Messages ////// */
-.facesStatusMessage { bottom: 0; left: 0; position: absolute; z-index: 1000 }
-.facesStatusMessage ul, .infoFeedback ul, .warningFeedback ul, .errorFeedback ul { list-style-type: none; width: 500px }
+.description_block span { display: block; font-size: .8em; padding-bottom: 10px }
+.dublincore_block table.floatingLeftTable { float: left; margin-right: 100px }
+.labelColumnLeftAlign { font-weight: bold; padding-right: 30px }
+.rank_block, .publication_block, .attachments { margin-top: 15px }
 
-.errorMessage, .infoMessage, .warningMessage, .infoFeedback  {
+.content_block table { margin-bottom: 10px; width: 100% }
+.content_block td { padding: 0; vertical-align: top }
+.content_block .labelColumn { width: 100px }
+.content_block .actionsColumn { vertical-align: top; width: 20% }
+.content_block img { padding: 0 5px }
+
+.note_content_block { border: 1px solid #c6c6c6; margin: 0 0 15px; padding: 15px }
+.note_content_block span, .note_content_block p { font-size: 1.05em; line-height: 1.8em }
+
+.lockFile_block, .restoreFile_block { padding: 0 0 10px }
+.lockDetail, .DetailList { padding-top: 5px }
+.summary_locked { color: #f56200; font-weight: bold }
+.summary_unlocked { color: #42a600; font-weight: bold }
+
+.lcAndVersion { border: 1px solid #c6c6c6; padding: 3px }
+
+.actions_block { border: 1px solid #c6c6c6; margin: 10px 0; padding: 10px 7px 3px }
+
+.comments_block .commentBlock { border: none }
+.comments_block .commentQuote { margin: 5px 0 5px 24px }
+
+.metadata_block .dataInput td { padding: 3px }
+
+/*--  =Manage tab */
+.rightsAdd { margin: 10px 0 10px 0 }
+.rightsAddTitle { background-color: #f6f6f6; border: 1px solid #c6c6c6; padding: 5px; text-align: center }
+.rightsAddLabel { font-weight: bold; padding: 0 5px 0 0 }
+.rightsAddSelect { margin-top: 0}
+.rightsAddManager {
+  background: transparent url("${org.nuxeo.ecm.contextPath}/img/rightsadd_bar.gif") no-repeat center;
+  margin: 3px 0 0 0;
+  width: 100% }
+.rightsAddManager td {
   background-color: #fff;
-  border-color:#c6c6c6;
-  border-width: 1px;
-  border-style: solid solid none none;
-  border-radius: 0 10px 0 0;
-  box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
-  color: #000;
-  display: block;
-  list-style: none;
-  margin: 0;
-  padding: 10px 15px }
-
-.errorMessage, .errorFeedback { background-color:#ffc3a6; border-color: #FF4E00 }
-.warningMessage, .warningFeedback { background-color: #fff1C6; border-color:#FFC000 }
-.error { color: #F56200; font-weight: bold }
-
-.tooltip {
-  background-color: #e6f6ff;
   border: 1px solid #c6c6c6;
-  border-radius: 3px;
-  display: none;
-  font-weight: normal;
-  max-width: 20%;
+  margin: 0 10px 0 10px;
+  padding: 10px }
+.rightsAddManager .labelColumn { width: 80px }
+
+.userAndGroupSearch { margin: 0 }
+.userAndGroupFilter { margin: 15px 0 0 0 }
+
+.buttonsGadgetNoForm { margin: 0 5px }
+
+.directoryFilter, .searchField {
+  border: 1px solid #c6c6c6;
+  font-size: 11px;
+  margin: 0 5px 10px 0;
+  padding: 3px }
+
+.relationPredicateColumn { vertical-align: top; width: 100px }
+.relationCommentList { background: transparent }
+.relationCreateLabelColumn { width: 100px }
+
+.archiveTabContent { margin-left: 18px }
+.archiveTabContent .notEditable { background-color: #fff; border: none }
+.archiveTabContent .currentDocumentInformation { background-color: #eeeff0 }
+
+.taskAssign {
+  background: #eeeff0;
+  border: 1px solid #c6c6c6;
+  display: block;
+  margin: 5px 0 10px 0;
   padding: 5px;
-  z-index: 1000 }
+  text-align: center }
 
-.tips {
-	border: 1px dashed #c6c6c6;
-	color: #9a9a9a;
-	text-align: center }
-
-/* //////// UI detail elements ////// */
-.directoryBack { background: url("${org.nuxeo.ecm.contextPath}/icons/arrow_left.gif") no-repeat scroll 3px 1px transparent; padding: 2px 2px 2px 20px }
-
-/* //////////// Tables /////////////////// */
+/*-- =Tables */
 table thead th { padding: 3px; text-align: left }
 
 .dataList { background: white; border-collapse: collapse; margin: 0 }
@@ -347,7 +386,7 @@ table thead th { padding: 3px; text-align: left }
 .dataInput td td, .dataInput td td td { padding: 3px 4px }
 .dataInput .button { margin: 0 10px 0 0 }
 .dataInput textarea, .dataInput .dataInputText { width: 500px }
-.dataInput textarea, .dataInput .dataInputText, .dataInput .dataInputTextNoSize { border: 1px solid #aaa; vertical-align: top }
+.dataInput textarea, .dataInput .dataInputText, .dataInput .dataInputTextNoSize { border: 1px solid #aaa; padding: 4px; vertical-align: top }
 .dataInput select { padding: 2px 1px 2px 1px; vertical-align: top }
 .archiveTabContent .dataInput { border: none; margin-bottom: 15px }
 .dataInputGroup { margin: 0; padding: 0; vertical-align: top }
@@ -415,7 +454,7 @@ table.trashTable tbody tr:hover { background-color: #fff1C6 }
 
 .dataRowOdd:hover, .dataRowEven:hover {	background-color: #e6f6ff }
 
-/*///////////// Foldable Boxes //////////////*/
+/*-- =Foldable Boxes */
 .foldableBox { border-bottom: 1px solid #e7e7e7; font-size: .9em; margin-bottom: 20px }
 
 .foldableBox h3 {
@@ -479,107 +518,49 @@ table.trashTable tbody tr:hover { background-color: #fff1C6 }
 
 .massEditForm foldableBox { margin-right: 15px }
 
-/* ///////////////// Document Description //////////////////////// */
-.currentDocumentDescription { font-size: .8em; padding: 4px 0 }
-.currentItemDescription { display: block; font-size: 13px }
+/*-- =Tips and Messages */
+.facesStatusMessage { bottom: 0; left: 0; position: absolute; z-index: 1000 }
+.facesStatusMessage ul, .infoFeedback ul, .warningFeedback ul, .errorFeedback ul { list-style-type: none; width: 500px }
 
-/*//  DM manage, archive, relation tab //*/
-.rightsAdd { margin: 10px 0 10px 0 }
-.rightsAddTitle { background-color: #f6f6f6; border: 1px solid #c6c6c6; padding: 5px; text-align: center }
-.rightsAddLabel { font-weight: bold; padding: 0 5px 0 0 }
-.rightsAddSelect { margin-top: 0}
-.rightsAddManager {
-  background: transparent url("${org.nuxeo.ecm.contextPath}/img/rightsadd_bar.gif") no-repeat center;
-  margin: 3px 0 0 0;
-  width: 100% }
-.rightsAddManager td {
+.errorMessage, .infoMessage, .warningMessage, .infoFeedback  {
   background-color: #fff;
-  border: 1px solid #c6c6c6;
-  margin: 0 10px 0 10px;
-  padding: 10px }
-.rightsAddManager .labelColumn { width: 80px }
-
-.userAndGroupSearch { margin: 0 }
-.userAndGroupFilter { margin: 15px 0 0 0 }
-
-.buttonsGadgetNoForm { margin: 0 5px }
-
-.directoryFilter, .searchField {
-  border: 1px solid #c6c6c6;
-  font-size: 11px;
-  margin: 0 5px 10px 0;
-  padding: 3px }
-
-.relationPredicateColumn { vertical-align: top; width: 100px }
-.relationCommentList { background: transparent }
-.relationCreateLabelColumn { width: 100px }
-
-.archiveTabContent { margin-left: 18px }
-.archiveTabContent .notEditable { background-color: #fff; border: none }
-.archiveTabContent .currentDocumentInformation { background-color: #eeeff0 }
-
-.taskAssign {
-  background: #eeeff0;
-  border: 1px solid #c6c6c6;
+  border-color:#c6c6c6;
+  border-width: 1px;
+  border-style: solid solid none none;
+  border-radius: 0 10px 0 0;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+  color: #000;
   display: block;
-  margin: 5px 0 10px 0;
+  list-style: none;
+  margin: 0;
+  padding: 10px 15px }
+
+.errorMessage, .errorFeedback { background-color:#ffc3a6; border-color: #FF4E00 }
+.warningMessage, .warningFeedback { background-color: #fff1C6; border-color:#FFC000 }
+.error { color: #F56200; font-weight: bold }
+
+.tooltip {
+  background-color: #e6f6ff;
+  border: 1px solid #c6c6c6;
+  border-radius: 3px;
+  display: none;
+  font-weight: normal;
+  max-width: 20%;
   padding: 5px;
-  text-align: center }
+  z-index: 1000 }
 
-/*//////////// Layout View and Resume Tab Styles /////////////*/
-.layoutViewMode { margin: 0; padding: 0 }
-.layoutViewMode li { display: inline }
-.layoutViewMode a img { border: 1px solid #fff }
-.layoutViewMode a:hover img, .layoutViewMode li.selected img { border: 1px solid #aaa }
+.tips {
+	border: 1px dashed #c6c6c6;
+	color: #9a9a9a;
+	text-align: center }
 
-.summary_div_0 { float: left; padding: 10px 0; width: 62% }
-.summary_div_1 { float: right; font-size: .9em; padding: 10px 0; width: 33% }
-.summary_div_2 { clear: both }
+/*-- =Syndication Button */
+div.syndicationButton { background-color: #FF9D5C; float: right; font-size: .7em; margin-bottom: 5px }
+.syndicationContainer { height: 30px }
+div.syndicationButton div.syndicationLinks {color: #fff; padding: 2px 4px }
+div.syndicationButton div.syndicationLinks a { color: #fff }
 
-.summary_div_1 h3.summaryTitle { color: #9a9a9a; font-size: 1.1em }
-
-.contentViewTitle { float: left; line-height: normal; margin: 10px 10px 10px 0 }
-
-h3.summaryTitle {
-  border-bottom: 1px solid #aaa;
-  color: #9a9a9a;
-  font-size: 1.2em;
-  font-weight: bold;
-  margin: 0 0 10px 0;
-  padding: 17px 0 3px 0 }
-
-.description_block span { display: block; font-size: .8em; padding-bottom: 10px }
-.dublincore_block table.floatingLeftTable { float: left; margin-right: 100px }
-.labelColumnLeftAlign { font-weight: bold; padding-right: 30px }
-.rank_block, .publication_block, .attachments { margin-top: 15px }
-
-.content_block table { margin-bottom: 10px; width: 100% }
-.content_block td { padding: 0; vertical-align: top }
-.content_block .labelColumn { width: 100px }
-.content_block .actionsColumn { vertical-align: top; width: 20% }
-.content_block img { padding: 0 5px }
-
-.note_content_block { border: 1px solid #c6c6c6; margin: 0 0 15px; padding: 15px }
-.note_content_block span, .note_content_block p { font-size: 1.05em; line-height: 1.8em }
-
-.lockFile_block, .restoreFile_block { padding: 0 0 10px }
-.lockDetail, .DetailList { padding-top: 5px }
-.summary_locked { color: #f56200; font-weight: bold }
-.summary_unlocked { color: #42a600; font-weight: bold }
-
-.lcAndVersion { border: 1px solid #c6c6c6; padding: 3px }
-
-.actions_block { border: 1px solid #c6c6c6; margin: 10px 0; padding: 10px 7px 3px }
-
-.comments_block .commentBlock { border: none }
-.comments_block .commentQuote { margin: 5px 0 5px 24px }
-
-.metadata_block .dataInput td { padding: 3px }
-
-/* Calendar */
-.calendarTrigger { cursor: pointer; margin: 0 0 5px; vertical-align: bottom }
-
-/* Comments */
+/*-- =Comments */
 .commentBlock { margin: 7px 0 8px; padding: 2px 10px 2px 0 }
 .commentActions { float: right; font-size: .8em; margin-right: 4px; padding: 3px }
 .commentCreationDate { font-weight: normal }
@@ -590,44 +571,106 @@ h3.summaryTitle {
   font-weight: bold;
   padding: 5px 3px 3px 24px }
 
-/*////// Rich faces tree //////*/
+/*-- =Advanced Search */
+.listShuttleTable .listShuttleSelectionActions a { display: block }
+
+/*-- =PopUps */
+/* Generic PopuP div used in Faceted Search */
+.genericPopUp {
+  background-color: #fff;
+  border: 1px solid #c6c6c6;
+  display: none;
+  position: absolute;
+  width: 400px;
+  z-index: 10000 }
+
+.genericPopUp .closePopUpHeader {
+  background-color: #e6f6ff;
+  border-bottom: 1px solid #c6c6c6;
+  padding: 3px;
+  text-align: right }
+
+.genericPopUp .closePopUpHeader .closePopUp { cursor: pointer; float: right }
+.genericPopUp .closePopUpHeader .popUpTitle { float: left; font-size: 1.2em }
+.genericPopUp .popUpContent { height: 390px; overflow: auto; padding: 10px }
+
+.bigPopUp { height: 70%; width: 80% }
+
+/*---- =Footer ----*/
+.footer {
+  background: none repeat scroll 0 0 #101b3f;
+  font-size: .7em;
+	width:100% }
+.footerDefaultLinks { padding: 15px }
+
+.footer .content { text-align: right; width: 100% }
+.footer a {	color: #fff }
+
+.copyrights { color: #9a9a9a; float: right; padding: 2px 20px 0 0 }
+.nuxLinks { float: right; padding-left: 20px }
+.nuxLinks a { vertical-align: middle }
+
+a.twitt, a.linkedin { display:inline-block; height:16px; margin:0 5px; width:16px }
+a.twitt{ background:transparent url("${org.nuxeo.ecm.contextPath}/icons/icones-metanav.png") no-repeat left top }
+a.linkedin {background:transparent url("${org.nuxeo.ecm.contextPath}/icons/icones-metanav.png") no-repeat -16px top }
+a.twitt:hover { background-position:left bottom }
+a.linkedin:hover { background-position:-16px bottom }
+
+/*///////////// =Common details /////////////*/
+/*---- =Rich faces  ----*/
+/*-- =Tree */
 .dr-tree-h-ic-div { margin-left: 8px; padding-left: 10px }
 .treeNodeHighlightedClass { text-decoration: none }
 .treeNodeSelectedClass { border: none }
 
-/*////// Rich Faces fileUpload //////*/
+/*-- =For RFaces Navigation Tree in the main area */
+.dataInput .dr-tree td, .dataInput .dr-tree td td {padding: 1px }
+.fieldColumn .dr-tree img { margin: 0 }
+
+/*-- =FileUpload */
 .rich-fileupload-list-decor { margin: 10px 0 }
 .rich-fileupload-button, .rich-fileupload-button-border { padding: 2px }
 .rich-fileupload-button-light, .rich-fileupload-button-press { padding: 1px }
 .rich-fileupload-button-content { padding: 2px 6px 2px 19px }
 
-/*////// PictureBook Styles ///////*/
-.pictureBookItem {
-  background-color: #f6f6f6;
-  border: 1px solid #c6c6c6;
-  float: left;
-  height: 100%;
-  margin: 10px 20px 10px 0;
-  text-align: center;
-  width: 140px }
+/*---- =Calendar ----*/
+.calendarTrigger { cursor: pointer; margin: 0 0 5px; vertical-align: bottom }
 
-.itemSelected { background-color: #ECF6FF; border: 1px solid #70BBFF }
+/*---- =Arrow ----*/
+.directoryBack { background: url("${org.nuxeo.ecm.contextPath}/icons/arrow_left.gif") no-repeat scroll 3px 1px transparent; padding: 2px 2px 2px 20px }
 
-.pictureBookItem .cell { height: 110px; padding-top: 15px; text-align: center }
-.pictureBookItem .cell a { display: block; height: 100px; padding: 20px; width: 100px }
-.pictureBookItemTitle { background-color: #fff; font-size:.8em; padding: 5px 0 }
+/*----  =Navigation controls ----*/
+#pageNavigationControls { border-bottom: 1px solid #e7e7e7; margin: 0 0 5px; padding: 2px 0 0; text-align: center }
+#pageNavigationControls span { color: #777; font-weight: bold; margin: 10px 5px; vertical-align: top }
+#pageNavigationControls input { margin-left: 5px }
 
-.slideshowContent { padding: 10px 0 5px 0 }
-.slideshowContent h3 { padding: 8px 0 5px 70px }
+/*---- Fix icon size to allow icon upload in Nuxeo Studio ----*/
+.fullWidth { width:100% }
+.bigIcon { width: 50px }
+.smallIcon { height: 16px; width: 16px }
 
-.slideShowControl { margin: 0 0 10px }
-.slideShowControl input { margin: 0 3px; padding: 0 }
-.slideShowControl .indexPicture { margin: 0 3px 4px 0 }
-.slideShowControl span { padding-right: 10px }
+/*//////////// =Specific for DM /////////////*/
+/*---- Main Frame----*/
+.documentManagement {}
 
-/*///////////////////// =Left Column /////////////////////*/
+/*-- =Breadcrumb */
+.breadcrumb { background: none repeat scroll 0 0 #eeeff0; border-bottom: 1px solid #e7e7e7; font-size: .7em; padding: 3px 7px }
+.breadcrumb .action_bar { margin: 0 }
+.breadcrumb .action_bar a { border: none; padding: 3px 0 }
 
-/*// Tree links //*/
+.breadcrumbs { float: left; padding: 3px 4px 0 0 }
+.breadcrumbs a, .breadcrumbs a:link, .breadcrumbs a:visited { color: #777 }
+.breadcrumbs a:hover, .breadcrumbs a:active { font-weight: normal; text-decoration: underline }
+
+.printButton { float: right; padding-right: 1px }
+.printButton .liveEditCreateButtons { border-right: 1px solid #c6c6c6; margin-right: 5px; padding-right: 8px }
+
+/*--  =Document view */
+.currentDocumentDescription { font-size: .8em; padding: 4px 0 }
+.currentItemDescription { display: block; font-size: 13px }
+
+/*---- =Left Column----*/
+/*-- =Tree links */
 .treeLink a, .treeLink a:link, .treeLink a:visited { font-weight: normal }
 .treeLink a:hover, .treeLink a:active { font-weight: normal; text-decoration: underline }
 .treeLink img {margin: 3px 4px 4px 0; vertical-align: top }
@@ -641,7 +684,7 @@ h3.summaryTitle {
 
 td.dr-tree-h-text, td.dr-tree-h-text span, td.dr-tree-h-text a.treeLink { white-space: normal }
 
-/*////////// =Clipboard & Worklist ////////*/
+/*-- =Clipboard & Worklist */
 .userClipboard { background-color: #fff; height: 1%; margin: 10px 0 10px 0 }
 .userClipboardContent { margin: 0; padding: 10px 0 10px 3px }
 .userClipboard h4 {
@@ -663,7 +706,40 @@ td.dr-tree-h-text, td.dr-tree-h-text span, td.dr-tree-h-text a.treeLink { white-
 
 .clipboardEmptyMessage { color: #777; font-style: italic; padding: 0 2px 2px 2px; text-align: center }
 
-/*////////// =Faceted Search ////////*/
+/*----  to check if it's still used ----*/
+.wizardFrame { border: 1px solid #e7e7e7; padding: 0 5px; width: 800px }
+.wizardFrame .wizardFinish h4 img { float: left; margin-right: 10px }
+.wizardFrame .templatePreview { border: 1px solid #e7e7e7; padding: 10px !important }
+.wizardFrame .templatePreview img { border: 1px solid #333; float: left }
+.wizardFrame .templatePreview .templatePreviewDescription { font-style: italic }
+.wizardFrame .wizardButtonBar { text-align: right }
+
+.closedContent {
+  background: #fff;
+  border: 1px solid #c6c6c6;
+  margin: 15px 0 0;
+  padding: 0 10px 10px 10px }
+
+.serverChoice {
+  float: left;
+  margin-top: 20px;
+  margin-right: 30px;
+  text-align: center;
+  width: 200px }
+
+.taskActions { width: 470px }
+
+/*/////////////  For addons //////////////*/
+/*----  =Nuxeo POLL ----*/
+.pollStatusLabel, .pollStatus { float:left }
+.pollStatusLabel { padding: 0 10px 5px 0 }
+.pollStatus span, .pollStatus a { padding: 1px 5px }
+.pollStatus .status {	font-weight: bold; background-color:#f6f6f6 }
+.pollStatus .project { color: #0088c0 }
+.pollStatus .open { color: #42a600 }
+.pollStatus .closed {	color: #444 }
+
+/*---- =Faceted Search ----*/
 .facetedSearchActionBar { border-bottom: 1px solid #c6c6c6; padding: 2px; color: #444 }
 .facetedSearchActionBar a { float: left; padding-top: 3px }
 
@@ -678,7 +754,6 @@ td.dr-tree-h-text, td.dr-tree-h-text span, td.dr-tree-h-text a.treeLink { white-
   border-bottom: 1px solid #e7e7e7;
   margin: 0;
   padding: 0 0 5px }
-
 #facetedSearchSelectorDiv p, #savedFacetedSearchSelectorDiv p {
   background-color: #ecf6ff;
   border-bottom: 1px solid #c6c6c6;
@@ -738,75 +813,28 @@ td.dr-tree-h-text, td.dr-tree-h-text span, td.dr-tree-h-text a.treeLink { white-
 .UserSuggestionInput table { width: 100% }
 #saveFacetedSearchForm input { margin-left: 3px }
 
-/*//////////// =PopUps ////////////*/
-/* Generic PopuP div used in Faceted Search */
-.genericPopUp {
-  background-color: #fff;
+/*---- PictureBook Styles ----*/
+.pictureBookItem {
+  background-color: #f6f6f6;
   border: 1px solid #c6c6c6;
-  display: none;
-  position: absolute;
-  width: 400px;
-  z-index: 10000 }
-
-.genericPopUp .closePopUpHeader {
-  background-color: #e6f6ff;
-  border-bottom: 1px solid #c6c6c6;
-  padding: 3px;
-  text-align: right }
-
-.genericPopUp .closePopUpHeader .closePopUp { cursor: pointer; float: right }
-.genericPopUp .closePopUpHeader .popUpTitle { float: left; font-size: 1.2em }
-.genericPopUp .popUpContent { height: 390px; overflow: auto; padding: 10px }
-
-/* Same one, bigger */
-.bigPopUp { height: 70%; width: 80% }
-
-/*//////////////  Nuxeo POLL //////////////*/
-.pollStatusLabel, .pollStatus { float:left }
-.pollStatusLabel { padding: 0 10px 5px 0 }
-.pollStatus span, .pollStatus a { padding: 1px 5px }
-.pollStatus .status {	font-weight: bold; background-color:#f6f6f6 }
-.pollStatus .project { color: #0088c0 }
-.pollStatus .open { color: #42a600 }
-.pollStatus .closed {	color: #444 }
-
-/*//////////// Syndication Button ////////////*/
-div.syndicationButton { background-color: #FF9D5C; float: right; font-size: .7em; margin-bottom: 5px }
-.syndicationContainer { height: 30px }
-div.syndicationButton div.syndicationLinks {color: #fff; padding: 2px 4px }
-div.syndicationButton div.syndicationLinks a { color: #fff }
-
-/* Advanced Search */
-.listShuttleTable .listShuttleSelectionActions a { display: block }
-
-/*//////// For RFaces Navigation Tree in the main area ///////*/
-.dataInput .dr-tree td, .dataInput .dr-tree td td {padding: 1px }
-.fieldColumn .dr-tree img { margin: 0 }
-
-/*/// Fixs ///*/
-.fullWidth { width:100% }
-.bigIcon { width: 50px }
-.smallIcon { height: 16px; width: 16px }
-
-/*//////////////  No IDEA //////////////*/
-.wizardFrame { border: 1px solid #e7e7e7; padding: 0 5px; width: 800px }
-.wizardFrame .wizardFinish h4 img { float: left; margin-right: 10px }
-.wizardFrame .templatePreview { border: 1px solid #e7e7e7; padding: 10px !important }
-.wizardFrame .templatePreview img { border: 1px solid #333; float: left }
-.wizardFrame .templatePreview .templatePreviewDescription { font-style: italic }
-.wizardFrame .wizardButtonBar { text-align: right }
-
-.closedContent {
-  background: #fff;
-  border: 1px solid #c6c6c6;
-  margin: 15px 0 0;
-  padding: 0 10px 10px 10px }
-
-.serverChoice {
   float: left;
-  margin-top: 20px;
-  margin-right: 30px;
+  height: 100%;
+  margin: 10px 20px 10px 0;
   text-align: center;
-  width: 200px }
+  width: 140px }
 
-.taskActions { width: 470px }
+.itemSelected { background-color: #ECF6FF; border: 1px solid #70BBFF }
+
+.pictureBookItem .cell { height: 110px; padding-top: 15px; text-align: center }
+.pictureBookItem .cell a { display: block; height: 100px; padding: 20px; width: 100px }
+.pictureBookItemTitle { background-color: #fff; font-size:.8em; padding: 5px 0 }
+
+.slideshowContent { padding: 10px 0 5px 0 }
+.slideshowContent h3 { padding: 8px 0 5px 70px }
+
+.slideShowControl { margin: 0 0 10px }
+.slideShowControl input { margin: 0 3px; padding: 0 }
+.slideShowControl .indexPicture { margin: 0 3px 4px 0 }
+.slideShowControl span { padding-right: 10px }
+
+/* End */
