@@ -79,6 +79,7 @@
       <resource>jquery.js</resource>
       <resource>jquery.fancybox.js</resource>
       <resource>jquery.fancybox.style.css</resource>
+      <resource>fancybox-popup-utils.js</resource>
       <resource>contextmenu.js</resource>
       <resource>jquery.tools.tooltip.min.js</resource>
     </view>
@@ -174,6 +175,9 @@
     </resource>
     <resource name="jquery.fancybox.style.css">
       <path>css/jquery.fancybox.css</path>
+    </resource>
+    <resource name="fancybox-popup-utils.js">
+      <path>scripts/fancybox-popup-utils.js</path>
     </resource>
   </extension>
 

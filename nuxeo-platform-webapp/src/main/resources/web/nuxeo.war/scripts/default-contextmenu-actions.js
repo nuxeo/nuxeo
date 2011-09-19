@@ -95,7 +95,13 @@ function doAccessRights(docid) {
 }
 
 function doPreview(docid) {
-      navigateOnPopupDoc('TAB_PREVIEW');
+  navigateOnPopupDoc('TAB_PREVIEW');
+}
+
+function doPreviewPopup(docid) {
+  Seam.Component.getInstance("previewActions").getPreviewPopupURL(docid, function(result) {
+    showFancyBox(result);
+  });
 }
 
 function doDownload(docid) {

@@ -7,11 +7,13 @@
     <ul>
       <nxu:dataList var="action" layout="simple"
         value="#{popupHelper.unfiltredPopupActions}">
-        <li id="ctxMenu_#{action.id}" action="#{action.link}">
-          <nxu:graphicImage value="#{action.icon}"
-            rendered="#{not empty action.icon}" />
-          <h:outputText value=" #{messages[action.label]}" />
-        </li>
+        <nxu:set var="link" value="#{action.getLink()}" resolveTwice="true">
+          <li id="ctxMenu_#{action.id}" action="#{link}">
+            <nxu:graphicImage value="#{action.icon}"
+              rendered="#{not empty action.icon}" />
+            <h:outputText value=" #{messages[action.label]}" />
+          </li>
+        </nxu:set>
       </nxu:dataList>
     </ul>
   </div>
