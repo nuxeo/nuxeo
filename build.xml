@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="nuxeo-platform-audio" default="usage" basedir=".">
+
+  <property file="build.properties"/>
+
+  <property name="mvn.opts" value="" />
+  <property name="tomcat.bundles.dir" location="${tomcat.dir}/nxserver/bundles"/>
+  <property name="tomcat.nuxeo.war.dir" location="${tomcat.dir}/nxserver/nuxeo.war"/>
+
+  <condition property="osfamily-unix">
+    <os family="unix" />
+  </condition>
+  <condition property="osfamily-windows">
+    <os family="windows" />
+  </condition>
+
+  <target name="usage">
+    <echo message="usage: ant [build|deploy|web]" />
+    <echo message="ant build              => Build Nuxeo Platform Video" />
+    <echo message="ant build-with-tests   => Build and Test Nuxeo Platform Video" />
+    <echo message="ant deploy-tomcat      => Build Nuxeo Platform Video and deploy it on a Tomcat instance" />
+  </target>
+
+  <target name="build" depends="build-unix,build-windows" description="Build Nuxeo Platform Video"/>
+  <target name="build-unix" if="osfamily-unix">
+    <exec executable="mvn" failonerror="true">
+      <arg line="clean install -Dmaven.test.skip=true ${mvn.opts}"/>
+    </exec>
+  </target>
+  <target name="build-windows" if="osfamily-windows">
+    <exec executable="cmd" failonerror="true">
+      <arg value="/c" />
+      <arg value="mvn.bat" />
+      <arg value="clean" />
+      <arg value="install" />
+      <arg value="-Dmaven.test.skip=true" />
+      <arg value="${mvn.opts}" />
+    </exec>
+  </target>
+
+  <target name="build-with-tests" depends="build-with-tests-unix,build-with-tests-windows" description="Build Nuxeo Platform Video"/>
+  <target name="build-with-tests-unix" if="osfamily-unix">
+    <exec executable="mvn" failonerror="true">
+      <arg line="clean install ${mvn.opts}"/>
+    </exec>
+  </target>
+  <target name="build-with-tests-windows" if="osfamily-windows">
+    <exec executable="cmd" failonerror="true">
+      <arg value="/c" />
+      <arg value="mvn.bat" />
+      <arg value="clean" />
+      <arg value="install" />
+      <arg value="${mvn.opts}" />
+    </exec>
+  </target>
+
+  <target name="deploy-tomcat" depends="build" description="Deploy project on a Tomcat instance">
+    <copy todir="${tomcat.bundles.dir}" overwrite="true" flatten="true">
+      <fileset dir="${basedir}">
+        <include name="**/target/*.jar" />
+        <exclude name="**/target/*-sources.jar" />
+      </fileset>
+    </copy>
+  </target>
+
+</project>
