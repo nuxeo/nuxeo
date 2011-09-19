@@ -32,14 +32,9 @@ FULL_TEXT_WAIT = 10
 
 # Nuxeo
 #REPOSITORY_URL = 'http://cmis.demo.nuxeo.org/nuxeo/site/cmis/repository'
-REPOSITORY_URL = 'http://localhost:8080/nuxeo/site/cmis/repository'
+REPOSITORY_URL = 'http://localhost:8080/nuxeo/atom/cmis'
 USERNAME = 'Administrator'
 PASSWORD = 'Administrator'
 TEST_ROOT_PATH = '/default-domain/'
-
-# Chemistry
-#REPOSITORY_URL = 'http://localhost:8082/cmis/repository'
-#USERNAME = ''
-#PASSWORD = ''
-#TEST_ROOT_PATH = ''
+EXT_ARGS = {}
 

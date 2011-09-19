@@ -4,6 +4,8 @@ import cmislibtest
 import unittest
 import sys
 
+# These are the tests (from cmislibtest) that are actually run against Nuxeo.
+# Please uncomment (remove leading '#') when a new test passes.
 TESTS = """
 #cmislibtest.ACLTest.testApplyACL
 #cmislibtest.ACLTest.testGetObjectACL

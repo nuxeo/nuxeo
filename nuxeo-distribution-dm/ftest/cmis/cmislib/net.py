@@ -1,18 +1,20 @@
 #
-#   Licensed under the Apache License, Version 2.0 (the "License");
-#   you may not use this file except in compliance with the License.
-#   You may obtain a copy of the License at
+#      Licensed to the Apache Software Foundation (ASF) under one
+#      or more contributor license agreements.  See the NOTICE file
+#      distributed with this work for additional information
+#      regarding copyright ownership.  The ASF licenses this file
+#      to you under the Apache License, Version 2.0 (the
+#      "License"); you may not use this file except in compliance
+#      with the License.  You may obtain a copy of the License at
 #
-#       http://www.apache.org/licenses/LICENSE-2.0
+#        http://www.apache.org/licenses/LICENSE-2.0
 #
-#   Unless required by applicable law or agreed to in writing, software
-#   distributed under the License is distributed on an "AS IS" BASIS,
-#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-#   See the License for the specific language governing permissions and
-#   limitations under the License.
-#
-#   Authors:
-#    Jeff Potts, Optaros
+#      Unless required by applicable law or agreed to in writing,
+#      software distributed under the License is distributed on an
+#      "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+#      KIND, either express or implied.  See the License for the
+#      specific language governing permissions and limitations
+#      under the License.
 #
 '''
 Module that knows how to connect to the AtomPub Binding of a CMIS repo
@@ -25,7 +27,8 @@ from urllib2 import HTTPBasicAuthHandler, \
                     HTTPDefaultErrorHandler, \
                     HTTPError, \
                     Request, \
-                    build_opener
+                    build_opener, \
+                    AbstractBasicAuthHandler
 
 
 class SmartRedirectHandler(HTTPRedirectHandler):
@@ -59,6 +62,36 @@ class DefaultErrorHandler(HTTPDefaultErrorHandler):
         return result
 
 
+class ContextualBasicAuthHandler(HTTPBasicAuthHandler):
+
+    """
+    Handles 401 errors without recursing indefinitely. The recursing
+    behaviour has been introduced in Python 2.6.5 to handle 401 redirects
+    used by some architectures of authentication.
+    """
+
+    def __init__(self, password_mgr):
+        HTTPBasicAuthHandler.__init__(self, password_mgr)
+        self.authContext = set([])
+
+    def http_error_401(self, req, fp, code, msg, headers):
+        """Override the default autoretry behaviour"""
+        url = req.get_full_url()
+        hdrs = req.header_items()
+        hdrs = ', '.join(['%s: %s' % (key, value)
+                          for key, value in sorted(hdrs)])
+        context = (url, hdrs)
+        if context in self.authContext:
+            self.authContext.clear()
+            result = HTTPError(
+                req.get_full_url(), code, msg, headers, fp)
+            result.status = code
+            return result
+        self.authContext.add(context)
+        return self.http_error_auth_reqed('www-authenticate',
+                                          url, req, headers)
+
+
 class RESTService(object):
 
     """
@@ -67,7 +100,7 @@ class RESTService(object):
     """
 
     def __init__(self):
-        self.user_agent = 'cmislib/%s +http://code.google.com/p/cmislib/'
+        self.user_agent = 'cmislib/%s +http://chemistry.apache.org/'
 
     def get(self,
             url,
@@ -93,8 +126,8 @@ class RESTService(object):
         passwordManager.add_password(None, url, username, password)
 
         opener = build_opener(SmartRedirectHandler(),
-                                      DefaultErrorHandler(),
-                                      HTTPBasicAuthHandler(passwordManager))
+                              DefaultErrorHandler(),
+                              ContextualBasicAuthHandler(passwordManager))
 
         return opener.open(request)
 
@@ -118,8 +151,8 @@ class RESTService(object):
         passwordManager.add_password(None, url, username, password)
 
         opener = build_opener(SmartRedirectHandler(),
-                                      DefaultErrorHandler(),
-                                      HTTPBasicAuthHandler(passwordManager))
+                              DefaultErrorHandler(),
+                              ContextualBasicAuthHandler(passwordManager))
 
         #try:
         #    opener.open(request)
@@ -161,8 +194,8 @@ class RESTService(object):
         passwordManager.add_password(None, url, username, password)
 
         opener = build_opener(SmartRedirectHandler(),
-                                      DefaultErrorHandler(),
-                                      HTTPBasicAuthHandler(passwordManager))
+                              DefaultErrorHandler(),
+                              ContextualBasicAuthHandler(passwordManager))
 
         return opener.open(request)
 
@@ -199,8 +232,8 @@ class RESTService(object):
         passwordManager.add_password(None, url, username, password)
 
         opener = build_opener(SmartRedirectHandler(),
-                                      DefaultErrorHandler(),
-                                      HTTPBasicAuthHandler(passwordManager))
+                              DefaultErrorHandler(),
+                              ContextualBasicAuthHandler(passwordManager))
 
         try:
             return opener.open(request)

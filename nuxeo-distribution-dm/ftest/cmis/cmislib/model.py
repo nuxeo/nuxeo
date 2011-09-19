@@ -1,35 +1,41 @@
 #
-#   Licensed under the Apache License, Version 2.0 (the "License");
-#   you may not use this file except in compliance with the License.
-#   You may obtain a copy of the License at
+#      Licensed to the Apache Software Foundation (ASF) under one
+#      or more contributor license agreements.  See the NOTICE file
+#      distributed with this work for additional information
+#      regarding copyright ownership.  The ASF licenses this file
+#      to you under the Apache License, Version 2.0 (the
+#      "License"); you may not use this file except in compliance
+#      with the License.  You may obtain a copy of the License at
 #
-#       http://www.apache.org/licenses/LICENSE-2.0
+#        http://www.apache.org/licenses/LICENSE-2.0
 #
-#   Unless required by applicable law or agreed to in writing, software
-#   distributed under the License is distributed on an "AS IS" BASIS,
-#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-#   See the License for the specific language governing permissions and
-#   limitations under the License.
-#
-#   Authors:
-#    Jeff Potts, Optaros
+#      Unless required by applicable law or agreed to in writing,
+#      software distributed under the License is distributed on an
+#      "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+#      KIND, either express or implied.  See the License for the
+#      specific language governing permissions and limitations
+#      under the License.
 #
 """
 Module containing the domain objects used to work with a CMIS provider.
 """
-from cmislib.net import RESTService as Rest
-from cmislib.exceptions import CmisException, RuntimeException, \
+from net import RESTService as Rest
+from exceptions import CmisException, RuntimeException, \
     ObjectNotFoundException, InvalidArgumentException, \
     PermissionDeniedException, NotSupportedException, \
     UpdateConflictException
-from cmislib import messages
+import messages
+
 from urllib import quote_plus
 from urllib2 import HTTPError
+from urlparse import urlparse, urlunparse
 import re
 import mimetypes
 from xml.parsers.expat import ExpatError
 import datetime
 import time
+import iso8601
+import StringIO
 
 # would kind of like to not have any parsing logic in this module,
 # but for now I'm going to put the serial/deserialization in methods
@@ -77,10 +83,6 @@ CHECKED_OUT_COLL = 'checkedout'
 UNFILED_COLL = 'unfiled'
 ROOT_COLL = 'root'
 
-# This seems to be the common pattern across known CMIS servers
-# It is essentially ISO 8601 without the microseconds or time zone offset
-timeStampPattern = re.compile('^(\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2})?')
-
 
 class CmisClient(object):
 
@@ -88,7 +90,7 @@ class CmisClient(object):
     Handles all communication with the CMIS provider.
     """
 
-    def __init__(self, repositoryUrl, username, password):
+    def __init__(self, repositoryUrl, username, password, **kwargs):
 
         """
         This is the entry point to the API. You need to know the
@@ -102,6 +104,7 @@ class CmisClient(object):
         self.repositoryUrl = repositoryUrl
         self.username = username
         self.password = password
+        self.extArgs = kwargs
 
     def __str__(self):
         """To string"""
@@ -120,7 +123,7 @@ class CmisClient(object):
         [{'repositoryName': u'Main Repository', 'repositoryId': u'83beb297-a6fa-4ac5-844b-98c871c0eea9'}]
         """
 
-        result = self.get(self.repositoryUrl)
+        result = self.get(self.repositoryUrl, **self.extArgs)
         if (type(result) == HTTPError):
             raise RuntimeException()
 
@@ -146,7 +149,7 @@ class CmisClient(object):
         u'Main Repository'
         """
 
-        doc = self.get(self.repositoryUrl)
+        doc = self.get(self.repositoryUrl, **self.extArgs)
         workspaceElements = doc.getElementsByTagNameNS(APP_NS, 'workspace')
 
         for workspaceElement in workspaceElements:
@@ -154,7 +157,7 @@ class CmisClient(object):
             if idElement[0].childNodes[0].data == repositoryId:
                 return Repository(self, workspaceElement)
 
-        raise ObjectNotFoundException
+        raise ObjectNotFoundException(url=self.repositoryUrl)
 
     def getDefaultRepository(self):
 
@@ -168,7 +171,7 @@ class CmisClient(object):
         u'83beb297-a6fa-4ac5-844b-98c871c0eea9'
         """
 
-        doc = self.get(self.repositoryUrl)
+        doc = self.get(self.repositoryUrl, **self.extArgs)
         workspaceElements = doc.getElementsByTagNameNS(APP_NS, 'workspace')
         # instantiate a Repository object with the first workspace
         # element we find
@@ -187,6 +190,10 @@ class CmisClient(object):
         the root folder (:class:`Repository.getRootFolder`) and drill down from
         there.
         """
+
+        # merge the cmis client extended args with the ones that got passed in
+        if (len(self.extArgs) > 0):
+            kwargs.update(self.extArgs)
 
         result = Rest().get(url,
                             username=self.username,
@@ -208,6 +215,10 @@ class CmisClient(object):
         to delete a document you'd call :class:`Document.delete`.
         """
 
+        # merge the cmis client extended args with the ones that got passed in
+        if (len(self.extArgs) > 0):
+            kwargs.update(self.extArgs)
+
         result = Rest().delete(url,
                                username=self.username,
                                password=self.password,
@@ -228,6 +239,10 @@ class CmisClient(object):
         :class:`CmisObject.updateProperties`. Or, to check in a document that's
         been checked out, you'd call :class:`Document.checkin` on the PWC.
         """
+
+        # merge the cmis client extended args with the ones that got passed in
+        if (len(self.extArgs) > 0):
+            kwargs.update(self.extArgs)
 
         result = Rest().post(url,
                              payload,
@@ -253,6 +268,10 @@ class CmisClient(object):
         :class:`CmisObject.updateProperties`. Or, to check in a document that's
         been checked out, you'd call :class:`Document.checkin` on the PWC.
         """
+
+        # merge the cmis client extended args with the ones that got passed in
+        if (len(self.extArgs) > 0):
+            kwargs.update(self.extArgs)
 
         result = Rest().put(url,
                             payload,
@@ -281,19 +300,19 @@ class CmisClient(object):
         """
 
         if error.status == 401:
-            raise PermissionDeniedException(error.status)
+            raise PermissionDeniedException(error.status, error.url)
         elif error.status == 400:
-            raise InvalidArgumentException(error.status)
+            raise InvalidArgumentException(error.status, error.url)
         elif error.status == 404:
-            raise ObjectNotFoundException(error.status)
+            raise ObjectNotFoundException(error.status, error.url)
         elif error.status == 403:
-            raise PermissionDeniedException(error.status)
+            raise PermissionDeniedException(error.status, error.url)
         elif error.status == 405:
-            raise NotSupportedException(error.status)
+            raise NotSupportedException(error.status, error.url)
         elif error.status == 409:
-            raise UpdateConflictException(error.status)
+            raise UpdateConflictException(error.status, error.url)
         elif error.status == 500:
-            raise RuntimeException(error.status)
+            raise RuntimeException(error.status, error.url)
 
     defaultRepository = property(getDefaultRepository)
     repositories = property(getRepositories)
@@ -334,7 +353,7 @@ class Repository(object):
         This method will re-fetch the repository's XML data from the CMIS
         repository.
         """
-        self.xmlDoc = self._cmisClient.get(self._cmisClient.repositoryUrl)
+        self.xmlDoc = self._cmisClient.get(self._cmisClient.repositoryUrl.encode('utf-8'))
         self._initData()
 
     def _initData(self):
@@ -669,7 +688,7 @@ class Repository(object):
         if typeId:
             targetType = self.getTypeDefinition(typeId)
             childrenUrl = targetType.getLink(DOWN_REL, ATOM_XML_FEED_TYPE_P)
-            typesXmlDoc = self._cmisClient.get(childrenUrl)
+            typesXmlDoc = self._cmisClient.get(childrenUrl.encode('utf-8'))
             entryElements = typesXmlDoc.getElementsByTagNameNS(ATOM_NS, 'entry')
             types = []
             for entryElement in entryElements:
@@ -740,7 +759,7 @@ class Repository(object):
         if not descendUrl:
             raise NotSupportedException("Could not determine the type descendants URL")
 
-        typesXmlDoc = self._cmisClient.get(descendUrl, **kwargs)
+        typesXmlDoc = self._cmisClient.get(descendUrl.encode('utf-8'), **kwargs)
         entryElements = typesXmlDoc.getElementsByTagNameNS(ATOM_NS, 'entry')
         types = []
         for entryElement in entryElements:
@@ -918,12 +937,12 @@ class Repository(object):
               '{filter}': '',
               '{includeAllowableActions}': 'false',
               '{includePolicyIds}': 'false',
-              '{includeRelationships}': 'false',
+              '{includeRelationships}': '',
               '{includeACL}': 'false',
               '{renditionFilter}': ''}
 
         options = {}
-        addOptions = {} # args specified, but not in the template
+        addOptions = {}  # args specified, but not in the template
         for k, v in kwargs.items():
             pKey = "{" + k + "}"
             if template.find(pKey) >= 0:
@@ -937,7 +956,7 @@ class Repository(object):
         byObjectPathUrl = multiple_replace(params, template)
 
         # do a GET against the URL
-        result = self._cmisClient.get(byObjectPathUrl, **addOptions)
+        result = self._cmisClient.get(byObjectPathUrl.encode('utf-8'), **addOptions)
         if type(result) == HTTPError:
             raise CmisException(result.code)
 
@@ -1001,9 +1020,9 @@ class Repository(object):
         xmlDoc = self._getQueryXmlDoc(statement, **kwargs)
 
         # do the POST
-        #print 'posting:%s' % xmlDoc.toxml()
-        result = self._cmisClient.post(queryUrl,
-                                       xmlDoc.toxml(),
+        #print 'posting:%s' % xmlDoc.toxml(encoding='utf-8')
+        result = self._cmisClient.post(queryUrl.encode('utf-8'),
+                                       xmlDoc.toxml(encoding='utf-8'),
                                        CMIS_QUERY_TYPE)
         if type(result) == HTTPError:
             raise CmisException(result.code)
@@ -1063,13 +1082,47 @@ class Repository(object):
             raise NotSupportedException(messages.NO_CHANGE_LOG_SUPPORT)
 
         changesUrl = self.getLink(CHANGE_LOG_REL)
-        result = self._cmisClient.get(changesUrl, **kwargs)
+        result = self._cmisClient.get(changesUrl.encode('utf-8'), **kwargs)
         if type(result) == HTTPError:
             raise CmisException(result.code)
 
         # return the result set
         return ChangeEntryResultSet(self._cmisClient, self, result)
 
+    def createDocumentFromString(self,
+                                 name,
+                                 properties={},
+                                 parentFolder=None,
+                                 contentString=None,
+                                 contentType=None,
+                                 contentEncoding=None):
+
+        """
+        Creates a new document setting the content to the string provided. If
+        the repository supports unfiled objects, you do not have to pass in
+        a parent :class:`Folder` otherwise it is required.
+
+        This method is essentially a convenience method that wraps your string
+        with a StringIO and then calls createDocument.
+
+        >>> repo.createDocumentFromString('testdoc5', parentFolder=testFolder, contentString='Hello, World!', contentType='text/plain')
+        <cmislib.model.Document object at 0x101352ed0>
+        """
+
+        # if you didn't pass in a parent folder
+        if parentFolder == None:
+            # if the repository doesn't require fileable objects to be filed
+            if self.getCapabilities()['Unfiling']:
+                # has not been implemented
+                #postUrl = self.getCollectionLink(UNFILED_COLL)
+                raise NotImplementedError
+            else:
+                # this repo requires fileable objects to be filed
+                raise InvalidArgumentException
+
+        return parentFolder.createDocument(name, properties, StringIO.StringIO(contentString),
+            contentType, contentEncoding)
+        
     def createDocument(self,
                        name,
                        properties={},
@@ -1104,18 +1157,44 @@ class Repository(object):
          - removeACEs
         """
 
+        postUrl = ''
         # if you didn't pass in a parent folder
         if parentFolder == None:
             # if the repository doesn't require fileable objects to be filed
             if self.getCapabilities()['Unfiling']:
                 # has not been implemented
+                #postUrl = self.getCollectionLink(UNFILED_COLL)
                 raise NotImplementedError
             else:
                 # this repo requires fileable objects to be filed
                 raise InvalidArgumentException
+        else:
+            postUrl = parentFolder.getChildrenLink()
 
-        return parentFolder.createDocument(name, properties, contentFile,
-            contentType, contentEncoding)
+        # make sure a name is set
+        properties['cmis:name'] = name
+
+        # hardcoding to cmis:document if it wasn't
+        # passed in via props
+        if not properties.has_key('cmis:objectTypeId'):
+            properties['cmis:objectTypeId'] = CmisId('cmis:document')
+        # and if it was passed in, making sure it is a CmisId
+        elif not isinstance(properties['cmis:objectTypeId'], CmisId):
+            properties['cmis:objectTypeId'] = CmisId(properties['cmis:objectTypeId'])
+
+        # build the Atom entry
+        xmlDoc = getEntryXmlDoc(properties, contentFile,
+                                      contentType, contentEncoding)
+        
+        # post the Atom entry
+        result = self._cmisClient.post(postUrl.encode('utf-8'), xmlDoc.toxml(encoding='utf-8'), ATOM_XML_ENTRY_TYPE)
+        if type(result) == HTTPError:
+            raise CmisException(result.code)
+
+        # what comes back is the XML for the new document,
+        # so use it to instantiate a new document
+        # then return it
+        return Document(self._cmisClient, self, xmlDoc=result)
 
     def createDocumentFromSource(self,
                                  sourceId,
@@ -1259,7 +1338,7 @@ class Repository(object):
         elif collectionType == TYPES_COLL:
             return self.getTypeDefinitions()
 
-        result = self._cmisClient.get(self.getCollectionLink(collectionType), **kwargs)
+        result = self._cmisClient.get(self.getCollectionLink(collectionType).encode('utf-8'), **kwargs)
         if (type(result) == HTTPError):
             raise CmisException(result.code)
 
@@ -1322,7 +1401,7 @@ class Repository(object):
     supportedPermissions = property(getSupportedPermissions)
 
 
-class ResultSet():
+class ResultSet(object):
 
     """
     Represents a paged result set. In CMIS, this is most often an Atom feed.
@@ -1372,7 +1451,7 @@ class ResultSet():
         '''
         link = self._getLink(rel)
         if link:
-            result = self._cmisClient.get(link)
+            result = self._cmisClient.get(link.encode('utf-8'))
             if (type(result) == HTTPError):
                 raise CmisException(result.code)
 
@@ -1614,12 +1693,12 @@ class CmisObject(object):
               '{filter}': '',
               '{includeAllowableActions}': 'false',
               '{includePolicyIds}': 'false',
-              '{includeRelationships}': 'false',
+              '{includeRelationships}': '',
               '{includeACL}': 'false',
               '{renditionFilter}': ''}
 
         options = {}
-        addOptions = {} # args specified, but not in the template
+        addOptions = {}  # args specified, but not in the template
         for k, v in self._kwargs.items():
             pKey = "{" + k + "}"
             if template.find(pKey) >= 0:
@@ -1633,7 +1712,7 @@ class CmisObject(object):
         # fill in the template
         byObjectIdUrl = multiple_replace(params, template)
 
-        self.xmlDoc = self._cmisClient.get(byObjectIdUrl, **addOptions)
+        self.xmlDoc = self._cmisClient.get(byObjectIdUrl.encode('utf-8'), **addOptions)
         self._initData()
 
         # if a returnVersion arg was passed in, it is possible we got back
@@ -1673,8 +1752,6 @@ class CmisObject(object):
 
     def getObjectParents(self):
         """
-        This has not yet been implemented.
-
         See CMIS specification document 2.2.3.5 getObjectParents
 
         The following optional arguments are not supported:
@@ -1684,9 +1761,20 @@ class CmisObject(object):
          - includeAllowableActions
          - includeRelativePathSegment
         """
+        # get the appropriate 'up' link
+        parentUrl = self._getLink(UP_REL)
 
-        # TODO To be implemented
-        raise NotImplementedError
+        if parentUrl == None:
+            raise NotSupportedException('Root folder does not support getObjectParents')
+
+        # invoke the URL
+        result = self._cmisClient.get(parentUrl.encode('utf-8'))
+
+        if type(result) == HTTPError:
+            raise CmisException(result.code)
+
+        # return the result set
+        return ResultSet(self._cmisClient, self._repository, result)
 
     def getAllowableActions(self):
 
@@ -1773,9 +1861,17 @@ class CmisObject(object):
                 if node.childNodes and \
                    node.getElementsByTagNameNS(CMIS_NS, 'value')[0] and \
                    node.getElementsByTagNameNS(CMIS_NS, 'value')[0].childNodes:
-                    propertyValue = parsePropValue(
-                       node.getElementsByTagNameNS(CMIS_NS, 'value')[0].childNodes[0].data,
-                       node.localName)
+                    valNodeList = node.getElementsByTagNameNS(CMIS_NS, 'value')
+                    if (len(valNodeList) == 1):
+                        propertyValue = parsePropValue(valNodeList[0].
+                                                       childNodes[0].data,
+                                                       node.localName)
+                    else:
+                        propertyValue = []
+                        for valNode in valNodeList:
+                            propertyValue.append(parsePropValue(valNode.
+                                                       childNodes[0].data,
+                                                       node.localName))
                 else:
                     propertyValue = None
                 self._properties[propertyName] = propertyValue
@@ -1822,11 +1918,11 @@ class CmisObject(object):
         selfUrl = self._getSelfLink()
 
         # build the entry based on the properties provided
-        xmlEntryDoc = self._getEntryXmlDoc(properties)
+        xmlEntryDoc = getEntryXmlDoc(properties)
 
         # do a PUT of the entry
-        updatedXmlDoc = self._cmisClient.put(selfUrl,
-                                             xmlEntryDoc.toxml(),
+        updatedXmlDoc = self._cmisClient.put(selfUrl.encode('utf-8'),
+                                             xmlEntryDoc.toxml(encoding='utf-8'),
                                              ATOM_XML_TYPE)
 
         # reset the xmlDoc for this object with what we got back from
@@ -1837,21 +1933,27 @@ class CmisObject(object):
         self._initData()
         return self
 
-    def move(self, targetFolderId, sourceFolderId):
+    def move(self, sourceFolder, targetFolder):
 
         """
-        This is not yet implemented.
+        Moves an object from the source folder to the target folder.
 
         See CMIS specification document 2.2.4.13 move
+        
+        >>> sub1 = repo.getObjectByPath('/cmislib/sub1')
+        >>> sub2 = repo.getObjectByPath('/cmislib/sub2')
+        >>> doc = repo.getObjectByPath('/cmislib/sub1/testdoc1')
+        >>> doc.move(sub1, sub2)
         """
 
-        #TODO to be implemented
-#        From looking at Alfresco, it seems as if you can post an atom entry
-#        with an object ID to a new folder and pass the existing folder in the
-#        sourceFolderId argument and that will trigger a move.
-#
-#        See the notes on Folder.addObject
-        raise NotImplementedError
+        postUrl = targetFolder.getChildrenLink()
+        
+        args = {"sourceFolderId": sourceFolder.id}
+        
+        # post the Atom entry
+        result = self._cmisClient.post(postUrl.encode('utf-8'), self.xmlDoc.toxml(encoding='utf-8'), ATOM_XML_ENTRY_TYPE, **args)
+        if type(result) == HTTPError:
+            raise CmisException(result.code)
 
     def delete(self, **kwargs):
 
@@ -1870,7 +1972,7 @@ class CmisObject(object):
         """
 
         url = self._getSelfLink()
-        result = self._cmisClient.delete(url, **kwargs)
+        result = self._cmisClient.delete(url.encode('utf-8'), **kwargs)
 
         if type(result) == HTTPError:
             raise CmisException(result.code)
@@ -1909,13 +2011,13 @@ class CmisObject(object):
         props['cmis:sourceId'] = self.getObjectId()
         props['cmis:targetId'] = targetObj.getObjectId()
         props['cmis:objectTypeId'] = relTypeId
-        xmlDoc = self._getEntryXmlDoc(props)
+        xmlDoc = getEntryXmlDoc(props)
 
         url = self._getLink(RELATIONSHIPS_REL)
         assert url != None, 'Could not determine relationships URL'
 
-        result = self._cmisClient.post(url,
-                                       xmlDoc.toxml(),
+        result = self._cmisClient.post(url.encode('utf-8'),
+                                       xmlDoc.toxml(encoding='utf-8'),
                                        ATOM_XML_TYPE)
 
         if type(result) == HTTPError:
@@ -1954,7 +2056,7 @@ class CmisObject(object):
         url = self._getLink(RELATIONSHIPS_REL)
         assert url != None, 'Could not determine relationships URL'
 
-        result = self._cmisClient.get(url, **kwargs)
+        result = self._cmisClient.get(url.encode('utf-8'), **kwargs)
 
         if type(result) == HTTPError:
             raise CmisException(result.code)
@@ -2008,7 +2110,7 @@ class CmisObject(object):
             # if the ACL capability is discover or manage, this must be
             # supported
             aclUrl = self._getLink(ACL_REL)
-            result = self._cmisClient.get(aclUrl)
+            result = self._cmisClient.get(aclUrl.encode('utf-8'))
             if type(result) == HTTPError:
                 raise CmisException(result.code)
             return ACL(xmlDoc=result)
@@ -2039,7 +2141,7 @@ class CmisObject(object):
                 raise CmisException('The ACL to apply must be an instance of the ACL class.')
             aclUrl = self._getLink(ACL_REL)
             assert aclUrl, "Could not determine the object's ACL URL."
-            result = self._cmisClient.put(aclUrl, acl.getXmlDoc().toxml(), CMIS_ACL_TYPE)
+            result = self._cmisClient.put(aclUrl.encode('utf-8'), acl.getXmlDoc().toxml(encoding='utf-8'), CMIS_ACL_TYPE)
             if type(result) == HTTPError:
                 raise CmisException(result.code)
             return ACL(xmlDoc=result)
@@ -2087,123 +2189,7 @@ class CmisObject(object):
                     if relAttr == rel:
                         return linkElement.attributes['href'].value
 
-    def _getEmptyXmlDoc(self):
-
-        """
-        Internal helper method that knows how to build an empty Atom entry.
-        """
-
-        entryXmlDoc = minidom.Document()
-        entryElement = entryXmlDoc.createElementNS(ATOM_NS, "entry")
-        entryElement.setAttribute('xmlns', ATOM_NS)
-        entryXmlDoc.appendChild(entryElement)
-        return entryXmlDoc
-
-    def _getEntryXmlDoc(self, properties=None, contentFile=None,
-                        contentType=None, contentEncoding=None):
-
-        """
-        Internal helper method that knows how to build an Atom entry based
-        on the properties and, optionally, the contentFile provided.
-        """
-
-        entryXmlDoc = minidom.Document()
-        entryElement = entryXmlDoc.createElementNS(ATOM_NS, "entry")
-        entryElement.setAttribute('xmlns', ATOM_NS)
-        entryElement.setAttribute('xmlns:app', APP_NS)
-        entryElement.setAttribute('xmlns:cmisra', CMISRA_NS)
-        entryXmlDoc.appendChild(entryElement)
-
-        # if there is a File, encode it and add it to the XML
-        if contentFile:
-            mimetype = contentType
-            encoding = contentEncoding
-
-            # need to determine the mime type
-            if not mimetype and hasattr(contentFile, 'name'):
-                mimetype, encoding = mimetypes.guess_type(contentFile.name)
-
-            if not mimetype:
-                mimetype = 'application/binary'
-
-            if not encoding:
-                encoding = 'utf8'
-
-            # This used to be ATOM_NS content but there is some debate among
-            # vendors whether the ATOM_NS content must always be base64
-            # encoded. The spec does mandate that CMISRA_NS content be encoded
-            # and that element takes precedence over ATOM_NS content if it is
-            # present, so it seems reasonable to use CMIS_RA content for now
-            # and encode everything.
-
-            fileData = contentFile.read().encode("base64")
-            contentElement = entryXmlDoc.createElementNS(CMISRA_NS, 'cmisra:content')
-            mediaElement = entryXmlDoc.createElementNS(CMISRA_NS, 'cmisra:mediatype')
-            mediaElementText = entryXmlDoc.createTextNode(mimetype)
-            mediaElement.appendChild(mediaElementText)
-            base64Element = entryXmlDoc.createElementNS(CMISRA_NS, 'cmisra:base64')
-            base64ElementText = entryXmlDoc.createTextNode(fileData)
-            base64Element.appendChild(base64ElementText)
-            contentElement.appendChild(mediaElement)
-            contentElement.appendChild(base64Element)
-
-            entryElement.appendChild(contentElement)
-
-        objectElement = entryXmlDoc.createElementNS(CMISRA_NS, 'cmisra:object')
-        objectElement.setAttribute('xmlns:cmis', CMIS_NS)
-        entryElement.appendChild(objectElement)
-
-        if properties:
-            # a name is required for most things, but not for a checkout
-            if properties.has_key('cmis:name'):
-                titleElement = entryXmlDoc.createElementNS(ATOM_NS, "title")
-                titleText = entryXmlDoc.createTextNode(properties['cmis:name'])
-                titleElement.appendChild(titleText)
-                entryElement.appendChild(titleElement)
-
-            propsElement = entryXmlDoc.createElementNS(CMIS_NS, 'cmis:properties')
-            objectElement.appendChild(propsElement)
-
-            for propName, propValue in properties.items():
-                """
-                the name of the element here is significant: it includes the
-                data type. I should be able to figure out the right type based
-                on the actual type of the object passed in.
-
-                I could do a lookup to the type definition, but that doesn't
-                seem worth the performance hit
-                """
-                if isinstance(propValue, CmisId):
-                    propElementName = 'cmis:propertyId'
-                    propValueStr = propValue
-                elif isinstance(propValue, str):
-                    propElementName = 'cmis:propertyString'
-                    propValueStr = propValue
-                elif isinstance(propValue, datetime.datetime):
-                    propElementName = 'cmis:propertyDateTime'
-                    propValueStr = propValue.isoformat()
-                elif isinstance(propValue, bool):
-                    propElementName = 'cmis:propertyBoolean'
-                    propValueStr = str(propValue).lower()
-                elif isinstance(propValue, int):
-                    propElementName = 'cmis:propertyInteger'
-                    propValueStr = str(propValue)
-                elif isinstance(propValue, float):
-                    propElementName = 'cmis:propertyDecimal'
-                    propValueStr = str(propValue)
-                else:
-                    propElementName = 'cmis:propertyString'
-                    propValueStr = str(propValue)
-
-                propElement = entryXmlDoc.createElementNS(CMIS_NS, propElementName)
-                propElement.setAttribute('propertyDefinitionId', propName)
-                valElement = entryXmlDoc.createElementNS(CMIS_NS, 'cmis:value')
-                val = entryXmlDoc.createTextNode(propValueStr)
-                valElement.appendChild(val)
-                propElement.appendChild(valElement)
-                propsElement.appendChild(propElement)
-
-        return entryXmlDoc
+    
 
     allowableActions = property(getAllowableActions)
     name = property(getName)
@@ -2244,11 +2230,11 @@ class Document(CmisObject):
         # get this document's object ID
         # build entry XML with it
         properties = {'cmis:objectId': self.getObjectId()}
-        entryXmlDoc = self._getEntryXmlDoc(properties)
+        entryXmlDoc = getEntryXmlDoc(properties)
 
         # post it to to the checkedout collection URL
-        result = self._cmisClient.post(checkoutUrl,
-                                       entryXmlDoc.toxml(),
+        result = self._cmisClient.post(checkoutUrl.encode('utf-8'),
+                                       entryXmlDoc.toxml(encoding='utf-8'),
                                        ATOM_XML_ENTRY_TYPE)
 
         if type(result) == HTTPError:
@@ -2366,12 +2352,12 @@ class Document(CmisObject):
         kwargs['checkinComment'] = checkinComment
 
         # Build an empty ATOM entry
-        entryXmlDoc = self._getEmptyXmlDoc()
+        entryXmlDoc = getEmptyXmlDoc()
 
         # Get the self link
         # Do a PUT of the empty ATOM to the self link
         url = self._getSelfLink()
-        result = self._cmisClient.put(url, entryXmlDoc.toxml(), ATOM_XML_TYPE, **kwargs)
+        result = self._cmisClient.put(url.encode('utf-8'), entryXmlDoc.toxml(encoding='utf-8'), ATOM_XML_TYPE, **kwargs)
 
         if type(result) == HTTPError:
             raise CmisException(result.code)
@@ -2444,7 +2430,7 @@ class Document(CmisObject):
         versionsUrl = self._getLink(VERSION_HISTORY_REL)
 
         # invoke the URL
-        result = self._cmisClient.get(versionsUrl, **kwargs)
+        result = self._cmisClient.get(versionsUrl.encode('utf-8'), **kwargs)
 
         if type(result) == HTTPError:
             raise CmisException(result.code)
@@ -2484,9 +2470,10 @@ class Document(CmisObject):
             srcUrl = contentElements[0].attributes['src'].value
 
             # the cmis client class parses non-error responses
-            result = Rest().get(srcUrl,
+            result = Rest().get(srcUrl.encode('utf-8'),
                                 username=self._cmisClient.username,
-                                password=self._cmisClient.password)
+                                password=self._cmisClient.password,
+                                **self._cmisClient.extArgs)
             if result.code != 200:
                 raise CmisException(result.code)
             return result
@@ -2495,7 +2482,7 @@ class Document(CmisObject):
             if contentElements[0].childNodes:
                 return contentElements[0].childNodes[0].data
 
-    def setContentStream(self, contentFile):
+    def setContentStream(self, contentFile, contentType=None):
 
         """
         See CMIS specification document 2.2.4.16 setContentStream
@@ -2518,11 +2505,16 @@ class Document(CmisObject):
         # set the content stream when that is the case
         assert(srcUrl), 'Unable to determine content stream URL.'
 
-        # build the Atom entry
-        #xmlDoc = self._getEntryXmlDoc(contentFile=contentFile)
+        # need to determine the mime type
+        mimetype = contentType
+        if not mimetype and hasattr(contentFile, 'name'):
+            mimetype, encoding = mimetypes.guess_type(contentFile.name)
 
-        # post the Atom entry
-        result = self._cmisClient.put(srcUrl, contentFile.read(), ATOM_XML_TYPE)
+        if not mimetype:
+            mimetype = 'application/binary'
+
+        # put the content file
+        result = self._cmisClient.put(srcUrl.encode('utf-8'), contentFile.read(), mimetype)
         if type(result) == HTTPError:
             raise CmisException(result.code)
 
@@ -2552,7 +2544,7 @@ class Document(CmisObject):
         assert(srcUrl), 'Unable to determine content stream URL.'
 
         # delete the content stream
-        result = self._cmisClient.delete(srcUrl)
+        result = self._cmisClient.delete(srcUrl.encode('utf-8'))
         if type(result) == HTTPError:
             raise CmisException(result.code)
 
@@ -2623,11 +2615,11 @@ class Folder(CmisObject):
             properties['cmis:objectTypeId'] = CmisId(properties['cmis:objectTypeId'])
 
         # build the Atom entry
-        entryXml = self._getEntryXmlDoc(properties)
+        entryXml = getEntryXmlDoc(properties)
 
         # post the Atom entry
-        result = self._cmisClient.post(postUrl,
-                                       entryXml.toxml(),
+        result = self._cmisClient.post(postUrl.encode('utf-8'),
+                                       entryXml.toxml(encoding='utf-8'),
                                        ATOM_XML_ENTRY_TYPE)
         if type(result) == HTTPError:
             raise CmisException(result.code)
@@ -2635,6 +2627,27 @@ class Folder(CmisObject):
         # what comes back is the XML for the new folder,
         # so use it to instantiate a new folder then return it
         return Folder(self._cmisClient, self._repository, xmlDoc=result)
+
+    def createDocumentFromString(self,
+                                 name,
+                                 properties={},
+                                 contentString=None,
+                                 contentType=None,
+                                 contentEncoding=None):
+
+        """
+        Creates a new document setting the content to the string provided. If
+        the repository supports unfiled objects, you do not have to pass in
+        a parent :class:`Folder` otherwise it is required.
+
+        This method is essentially a convenience method that wraps your string
+        with a StringIO and then calls createDocument.
+
+        >>> testFolder.createDocumentFromString('testdoc3', contentString='hello, world', contentType='text/plain')
+        """
+
+        return self._repository.createDocumentFromString(name, properties,
+            self, contentString, contentType, contentEncoding)
 
     def createDocument(self, name, properties={}, contentFile=None,
             contentType=None, contentEncoding=None):
@@ -2677,34 +2690,12 @@ class Folder(CmisObject):
          - removeACEs
         """
 
-        # get the folder represented by folderId.
-        # we'll use his 'children' link post the new child
-        postUrl = self.getChildrenLink()
-
-        # make sure a name is set
-        properties['cmis:name'] = name
-
-        # hardcoding to cmis:document if it wasn't
-        # passed in via props
-        if not properties.has_key('cmis:objectTypeId'):
-            properties['cmis:objectTypeId'] = CmisId('cmis:document')
-        # and if it was passed in, making sure it is a CmisId
-        elif not isinstance(properties['cmis:objectTypeId'], CmisId):
-            properties['cmis:objectTypeId'] = CmisId(properties['cmis:objectTypeId'])
-
-        # build the Atom entry
-        xmlDoc = self._getEntryXmlDoc(properties, contentFile,
-                                      contentType, contentEncoding)
-
-        # post the Atom entry
-        result = self._cmisClient.post(postUrl, xmlDoc.toxml(), ATOM_XML_ENTRY_TYPE)
-        if type(result) == HTTPError:
-            raise CmisException(result.code)
-
-        # what comes back is the XML for the new document,
-        # so use it to instantiate a new document
-        # then return it
-        return Document(self._cmisClient, self._repository, xmlDoc=result)
+        return self._repository.createDocument(name,
+                                               properties,
+                                               self,
+                                               contentFile,
+                                               contentType,
+                                               contentEncoding)
 
     def getChildren(self, **kwargs):
 
@@ -2734,7 +2725,7 @@ class Folder(CmisObject):
         # get the appropriate 'down' link
         childrenUrl = self.getChildrenLink()
         # invoke the URL
-        result = self._cmisClient.get(childrenUrl, **kwargs)
+        result = self._cmisClient.get(childrenUrl.encode('utf-8'), **kwargs)
 
         if type(result) == HTTPError:
             raise CmisException(result.code)
@@ -2768,9 +2759,11 @@ class Folder(CmisObject):
         assert len(url) > 0, "Could not find the descendants url"
 
         # some servers return a depth arg as part of this URL
-        # so strip it off
+        # so strip it off but keep other args
         if url.find("?") >= 0:
-            url = url[:url.find("?")]
+            u = list(urlparse(url))
+            u[4] = '&'.join([p for p in u[4].split('&') if not p.startswith('depth=')])
+            url = urlunparse(u)
 
         return url
 
@@ -2818,7 +2811,7 @@ class Folder(CmisObject):
         descendantsUrl = self.getDescendantsLink()
 
         # invoke the URL
-        result = self._cmisClient.get(descendantsUrl, **kwargs)
+        result = self._cmisClient.get(descendantsUrl.encode('utf-8'), **kwargs)
 
         if type(result) == HTTPError:
             raise CmisException(result.code)
@@ -2857,7 +2850,7 @@ class Folder(CmisObject):
         # Get the descendants link and do a GET against it
         url = self._getLink(FOLDER_TREE_REL)
         assert url != None, 'Unable to determine folder tree link'
-        result = self._cmisClient.get(url, **kwargs)
+        result = self._cmisClient.get(url.encode('utf-8'), **kwargs)
 
         if type(result) == HTTPError:
             raise CmisException(result.code)
@@ -2877,7 +2870,7 @@ class Folder(CmisObject):
         # get the appropriate 'up' link
         parentUrl = self._getLink(UP_REL)
         # invoke the URL
-        result = self._cmisClient.get(parentUrl)
+        result = self._cmisClient.get(parentUrl.encode('utf-8'))
 
         if type(result) == HTTPError:
             raise CmisException(result.code)
@@ -2910,37 +2903,66 @@ class Folder(CmisObject):
 
         # Get the descendants link and do a DELETE against it
         url = self._getLink(DOWN_REL, CMIS_TREE_TYPE_P)
-        result = self._cmisClient.delete(url, **kwargs)
+        result = self._cmisClient.delete(url.encode('utf-8'), **kwargs)
 
         if type(result) == HTTPError:
             raise CmisException(result.code)
 
-    def addObject(self, cmisObject):
+    def addObject(self, cmisObject, **kwargs):
 
         """
-        This is not yet implemented.
+        Adds the specified object as a child of this object. No new object is
+        created. The repository must support multifiling for this to work.
 
         See CMIS specification document 2.2.5.1 addObjectToFolder
 
-        The optional allVersions argument is not yet supported.
+        >>> sub1 = repo.getObjectByPath("/cmislib/sub1")
+        >>> sub2 = repo.getObjectByPath("/cmislib/sub2")
+        >>> doc = sub1.createDocument("testdoc1")
+        >>> len(sub1.getChildren())
+        1
+        >>> len(sub2.getChildren())
+        0
+        >>> sub2.addObject(doc)
+        >>> len(sub2.getChildren())
+        1
+        >>> sub2.getChildren()[0].name
+        u'testdoc1'
+
+        The following optional arguments are supported:
+         - allVersions
         """
 
-        # TODO: To be implemented.
-#        It looks as if all you need to do is take the object and post its entry
-#        XML to the target folder's children URL as if you were creating a new
-#        object.
-        raise NotImplementedError
+        if not self._repository.getCapabilities()['Multifiling']:
+            raise NotSupportedException('This repository does not support multifiling')
+        
+        postUrl = self.getChildrenLink()
+        
+        # post the Atom entry
+        result = self._cmisClient.post(postUrl.encode('utf-8'), cmisObject.xmlDoc.toxml(encoding='utf-8'), ATOM_XML_ENTRY_TYPE, **kwargs)
+        if type(result) == HTTPError:
+            raise CmisException(result.code)
 
     def removeObject(self, cmisObject):
 
         """
-        This is not yet implemented.
+        Removes the specified object from this folder. The repository must
+        support unfiling for this to work.
 
         See CMIS specification document 2.2.5.2 removeObjectFromFolder
         """
 
-        # TODO: To be implemented
-        raise NotImplementedError
+        if not self._repository.getCapabilities()['Unfiling']:
+            raise NotSupportedException('This repository does not support unfiling')
+
+        postUrl = self._repository.getCollectionLink(UNFILED_COLL)
+
+        args = {"removeFrom": self.getObjectId()}
+
+        # post the Atom entry to the unfiled collection
+        result = self._cmisClient.post(postUrl.encode('utf-8'), cmisObject.xmlDoc.toxml(encoding='utf-8'), ATOM_XML_ENTRY_TYPE, **args)
+        if type(result) == HTTPError:
+            raise CmisException(result.code)
 
 
 class Relationship(CmisObject):
@@ -3193,7 +3215,7 @@ class ObjectType(object):
         template = templates['typebyid']['template']
         params = {'{id}': self._typeId}
         byTypeIdUrl = multiple_replace(params, template)
-        result = self._cmisClient.get(byTypeIdUrl, **kwargs)
+        result = self._cmisClient.get(byTypeIdUrl.encode('utf-8'), **kwargs)
         if type(result) == HTTPError:
             raise CmisException(result.code)
 
@@ -3616,7 +3638,7 @@ class ChangeEntry(object):
         if (len(aclEls) == 1):
             return ACL(self._cmisClient, self._repository, aclEls[0])
         elif aclUrl:
-            result = self._cmisClient.get(aclUrl)
+            result = self._cmisClient.get(aclUrl.encode('utf-8'))
             if type(result) == HTTPError:
                 raise CmisException(result.code)
             return ACL(xmlDoc=result)
@@ -3792,12 +3814,7 @@ def parseDateTimeValue(value):
     """
     Utility function to return a datetime from a string.
     """
-    timeFormat = '%Y-%m-%dT%H:%M:%S'
-    match = timeStampPattern.match(value)
-    if match:
-        return datetime.datetime.fromtimestamp(time.mktime(time.strptime(
-            match.group(),
-            timeFormat)))
+    return iso8601.parse_date(value)
 
 
 def parseBoolValue(value):
@@ -3871,3 +3888,165 @@ def getSpecializedObject(obj, **kwargs):
     # specify baseTypeId) or if the type isn't one of the known base
     # types, give the object back
     return obj
+
+
+def getEmptyXmlDoc():
+
+    """
+    Internal helper method that knows how to build an empty Atom entry.
+    """
+
+    entryXmlDoc = minidom.Document()
+    entryElement = entryXmlDoc.createElementNS(ATOM_NS, "entry")
+    entryElement.setAttribute('xmlns', ATOM_NS)
+    entryXmlDoc.appendChild(entryElement)
+    return entryXmlDoc
+
+
+def getEntryXmlDoc(properties=None, contentFile=None,
+                    contentType=None, contentEncoding=None):
+
+    """
+    Internal helper method that knows how to build an Atom entry based
+    on the properties and, optionally, the contentFile provided.
+    """
+
+    entryXmlDoc = minidom.Document()
+    entryElement = entryXmlDoc.createElementNS(ATOM_NS, "entry")
+    entryElement.setAttribute('xmlns', ATOM_NS)
+    entryElement.setAttribute('xmlns:app', APP_NS)
+    entryElement.setAttribute('xmlns:cmisra', CMISRA_NS)
+    entryXmlDoc.appendChild(entryElement)
+
+    # if there is a File, encode it and add it to the XML
+    if contentFile:
+        mimetype = contentType
+        encoding = contentEncoding
+
+        # need to determine the mime type
+        if not mimetype and hasattr(contentFile, 'name'):
+            mimetype, encoding = mimetypes.guess_type(contentFile.name)
+
+        if not mimetype:
+            mimetype = 'application/binary'
+
+        if not encoding:
+            encoding = 'utf8'
+
+        # This used to be ATOM_NS content but there is some debate among
+        # vendors whether the ATOM_NS content must always be base64
+        # encoded. The spec does mandate that CMISRA_NS content be encoded
+        # and that element takes precedence over ATOM_NS content if it is
+        # present, so it seems reasonable to use CMIS_RA content for now
+        # and encode everything.
+
+        fileData = contentFile.read().encode("base64")
+        contentElement = entryXmlDoc.createElementNS(CMISRA_NS, 'cmisra:content')
+        mediaElement = entryXmlDoc.createElementNS(CMISRA_NS, 'cmisra:mediatype')
+        mediaElementText = entryXmlDoc.createTextNode(mimetype)
+        mediaElement.appendChild(mediaElementText)
+        base64Element = entryXmlDoc.createElementNS(CMISRA_NS, 'cmisra:base64')
+        base64ElementText = entryXmlDoc.createTextNode(fileData)
+        base64Element.appendChild(base64ElementText)
+        contentElement.appendChild(mediaElement)
+        contentElement.appendChild(base64Element)
+
+        entryElement.appendChild(contentElement)
+
+    objectElement = entryXmlDoc.createElementNS(CMISRA_NS, 'cmisra:object')
+    objectElement.setAttribute('xmlns:cmis', CMIS_NS)
+    entryElement.appendChild(objectElement)
+
+    if properties:
+        # a name is required for most things, but not for a checkout
+        if properties.has_key('cmis:name'):
+            titleElement = entryXmlDoc.createElementNS(ATOM_NS, "title")
+            titleText = entryXmlDoc.createTextNode(properties['cmis:name'])
+            titleElement.appendChild(titleText)
+            entryElement.appendChild(titleElement)
+
+        propsElement = entryXmlDoc.createElementNS(CMIS_NS, 'cmis:properties')
+        objectElement.appendChild(propsElement)
+
+        for propName, propValue in properties.items():
+            """
+            the name of the element here is significant: it includes the
+            data type. I should be able to figure out the right type based
+            on the actual type of the object passed in.
+
+            I could do a lookup to the type definition, but that doesn't
+            seem worth the performance hit
+            """
+            propType = type(propValue)
+            isList = False
+            if (propType == list):
+                propType = type(propValue[0])
+                isList = True
+
+            if (propType == CmisId):
+                propElementName = 'cmis:propertyId'
+                if isList:
+                    propValueStrList = []
+                    for val in propValue:
+                        propValueStrList.append(val)
+                else:
+                    propValueStrList = [propValue]
+            elif (propType == str):
+                propElementName = 'cmis:propertyString'
+                if isList:
+                    propValueStrList = []
+                    for val in propValue:
+                        propValueStrList.append(val)
+                else:
+                    propValueStrList = [propValue]
+            elif (propType == datetime.datetime):
+                propElementName = 'cmis:propertyDateTime'
+                if isList:
+                    propValueStrList = []
+                    for val in propValue:
+                        propValueStrList.append(val.isoformat())
+                else:
+                    propValueStrList = [propValue.isoformat()]
+            elif (propType == bool):
+                propElementName = 'cmis:propertyBoolean'
+                if isList:
+                    propValueStrList = []
+                    for val in propValue:
+                        propValueStrList.append(unicode(val).lower())
+                else:
+                    propValueStrList = [unicode(propValue).lower()]
+            elif (propType == int):
+                propElementName = 'cmis:propertyInteger'
+                if isList:
+                    propValueStrList = []
+                    for val in propValue:
+                        propValueStrList.append(unicode(val))
+                else:
+                    propValueStrList = [unicode(propValue)]
+            elif (propType == float):
+                propElementName = 'cmis:propertyDecimal'
+                if isList:
+                    propValueStrList = []
+                    for val in propValue:
+                        propValueStrList.append(unicode(val))
+                else:
+                    propValueStrList = [unicode(propValue)]
+            else:
+                propElementName = 'cmis:propertyString'
+                if isList:
+                    propValueStrList = []
+                    for val in propValue:
+                        propValueStrList.append(unicode(val))
+                else:
+                    propValueStrList = [unicode(propValue)]
+
+            propElement = entryXmlDoc.createElementNS(CMIS_NS, propElementName)
+            propElement.setAttribute('propertyDefinitionId', propName)
+            for val in propValueStrList:
+                valElement = entryXmlDoc.createElementNS(CMIS_NS, 'cmis:value')
+                valText = entryXmlDoc.createTextNode(val)
+                valElement.appendChild(valText)
+                propElement.appendChild(valElement)
+            propsElement.appendChild(propElement)
+
+    return entryXmlDoc
