@@ -156,23 +156,6 @@
       <filter-id>not_readonly</filter-id>
     </action>
 
-    <action id="admin_center_non_anonymous_logout"
-      link="#{loginLogoutAction.logout()}" label="command.logout">
-      <category>NUXEO_ADMIN_USER_SERVICES</category>
-      <filter-id>not_anonymous</filter-id>
-    </action>
-
-    <action id="admin_center_login" link="#{loginLogoutAction.logout()}"
-      label="command.login">
-      <category>NUXEO_ADMIN_USER_SERVICES</category>
-      <filter-id>anonymous</filter-id>
-    </action>
-
-    <action id="adm_exit" link="#{adminViews.exit()}" label="action.admin.exit"
-      order="60">
-      <category>NUXEO_ADMIN_USER_SERVICES</category>
-    </action>
-
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"

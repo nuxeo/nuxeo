@@ -8,3 +8,4 @@ Require-Bundle: org.nuxeo.ecm.platform.annotations.api,
   org.nuxeo.ecm.annotations
 Bundle-Localization: bundle
 Eclipse-LazyStart: true
+Nuxeo-Component: OSGI-INF/annotations-transactional-contrib.xml

@@ -22,19 +22,35 @@ package org.nuxeo.ecm.platform.preview.seam;
 
 import java.io.Serializable;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
+import org.jboss.seam.annotations.remoting.WebRemote;
 import org.jboss.seam.annotations.web.RequestParameter;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.platform.preview.helper.PreviewHelper;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
+import org.nuxeo.ecm.platform.ui.web.rest.RestHelper;
+import org.nuxeo.ecm.platform.ui.web.rest.api.URLPolicyService;
+import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
+import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
+import org.nuxeo.ecm.platform.url.DocumentViewImpl;
+import org.nuxeo.ecm.platform.url.api.DocumentView;
+import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
+import org.nuxeo.runtime.api.Framework;
+import org.restlet.VirtualHost;
 
 /**
  * Seam Action bean to handle the preview tabs and associated actions.
@@ -48,8 +64,15 @@ public class PreviewActionBean implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private static final Log log = LogFactory.getLog(PreviewActionBean.class);
+
+    public static final String PREVIEW_POPUP_VIEW = "preview_popup";
+
     @In(create = true, required = false)
     transient NavigationContext navigationContext;
+
+    @In(create = true, required = false)
+    protected transient CoreSession documentManager;
 
     @In(create = true, required = false)
     protected WebActions webActions;
@@ -96,6 +119,32 @@ public class PreviewActionBean implements Serializable {
         String url = getPreviewURL(doc);
         url += "?blobPostProcessing=true";
         return url;
+    }
+
+    public String getCurrentDocumentPreviewPopupURL() {
+        return getPreviewPopupURL(navigationContext.getCurrentDocument());
+    }
+
+    public String getPreviewPopupURL(DocumentModel doc) {
+        DocumentLocation docLocation = new DocumentLocationImpl(
+                doc.getRepositoryName(), doc.getRef());
+        DocumentView docView = new DocumentViewImpl(docLocation,
+                PREVIEW_POPUP_VIEW);
+        URLPolicyService urlPolicyService = Framework.getLocalService(URLPolicyService.class);
+        String url = urlPolicyService.getUrlFromDocumentView(docView, null);
+        url = RestHelper.addCurrentConversationParameters(url);
+        return VirtualHostHelper.getContextPathProperty() + "/" + url;
+    }
+
+    @WebRemote
+    public String getPreviewPopupURL(String docId) {
+        try {
+            DocumentModel doc = documentManager.getDocument(new IdRef(docId));
+            return getPreviewPopupURL(doc);
+        } catch(ClientException e) {
+            log.error(e, e);
+            return "";
+        }
     }
 
     @Observer(value = { EventNames.DOCUMENT_SELECTION_CHANGED,

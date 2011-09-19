@@ -24,19 +24,35 @@
       contextPath : "#{contextPath}"
     };
     -->
+
+    jQuery(document).ready(function() {
+       var fancyBox = jQuery('#fancybox-content', window.parent.document);
+       if (fancyBox.length > 0 &amp;&amp; fancyBox.height() > 0) {
+         // we know we are in a fancybox
+         var height = fancyBox.height();
+         var documentFileView = jQuery('#documentFilesView');
+         if (documentFileView.length > 0) {
+           height = height - documentFileView.height();
+         }
+         jQuery('#display').height(height - 20);
+       }
+     });
+
   </script>
 
   <script type="text/javascript"
     src='#{contextPath}/org.nuxeo.ecm.platform.annotations.gwt.AnnotationModule/org.nuxeo.ecm.platform.annotations.gwt.AnnotationModule.nocache.js'></script>
 
-  <f:subview rendered="#{previewDoc.hasSchema('file')}"
-    id="document_file_view">
-    <nxl:layout name="file" mode="preview" value="#{previewDoc}" />
-  </f:subview>
-  <f:subview rendered="#{previewDoc.hasSchema('files')}"
-    id="document_files_view">
-    <nxl:layout name="files" mode="preview" value="#{previewDoc}" />
-  </f:subview>
+  <div id="documentFilesView">
+    <f:subview rendered="#{previewDoc.hasSchema('file')}"
+      id="document_file_view">
+      <nxl:layout name="file" mode="preview" value="#{previewDoc}" />
+    </f:subview>
+    <f:subview rendered="#{previewDoc.hasSchema('files')}"
+      id="document_files_view">
+      <nxl:layout name="files" mode="preview" value="#{previewDoc}" />
+    </f:subview>
+  </div>
 
   <iframe src="javascript:''" id="__gwt_historyFrame"
     style="width: 0; height: 0; border: 0"></iframe>
