@@ -4,12 +4,21 @@
   <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
     point="listener">
 
-    <listener name="updateCommentsInfoListener" async="false" postCommit="false"
+    <listener name="updateCommentsInfoListener" async="false"
+      postCommit="false"
       class="org.nuxeo.ecm.platform.routing.core.listener.DocumentRoutingUpdateCommentsInfoListener"
       priority="120">
       <event>commentAdded</event>
       <event>commentRemoved</event>
     </listener>
+
+    <listener name="routeCreatedListener" async="false"
+      postCommit="false"
+      class="org.nuxeo.ecm.platform.routing.core.listener.DocumentRouteCreationListener"
+      priority="200">
+      <event>documentCreated</event>
+    </listener>
+
   </extension>
 
 </component>
