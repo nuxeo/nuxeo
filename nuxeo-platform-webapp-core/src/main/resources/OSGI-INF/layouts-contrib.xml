@@ -27,6 +27,26 @@
       </property>
     </widgetType>
 
+    <widgetType name="header_actions">
+
+      <documentation>
+        This widgets displays the document header related actions. They must be
+        contributed in one of the following categories:
+        <ul>
+          <li>DOCUMENT_HEADER_ACTIONS_LIST</li>
+          <li>DOCUMENT_HEADER_ACTIONS_LIST_HREF</li>
+        </ul>
+
+      </documentation>
+
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/header_actions_widget_template.xhtml
+      </property>
+    </widgetType>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
@@ -373,6 +393,14 @@
       </properties>
     </widget>
 
+    <widget name="header_actions" type="header_actions">
+      <fields>
+      </fields>
+      <labels>
+        <label mode="any"></label>
+      </labels>
+    </widget>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
@@ -480,6 +508,7 @@
       <rows>
         <row>
           <widget>header_title_and_permlink</widget>
+          <widget>header_actions</widget>
         </row>
         <row>
           <widget>header_description</widget>
