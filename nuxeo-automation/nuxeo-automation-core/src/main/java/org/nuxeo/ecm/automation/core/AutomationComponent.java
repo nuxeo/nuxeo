@@ -66,6 +66,7 @@ import org.nuxeo.ecm.automation.core.operations.document.UpdateDocument;
 import org.nuxeo.ecm.automation.core.operations.execution.RunDocumentChain;
 import org.nuxeo.ecm.automation.core.operations.execution.RunFileChain;
 import org.nuxeo.ecm.automation.core.operations.execution.RunOperation;
+import org.nuxeo.ecm.automation.core.operations.execution.RunOperationOnList;
 import org.nuxeo.ecm.automation.core.operations.execution.SaveSession;
 import org.nuxeo.ecm.automation.core.operations.login.LoginAs;
 import org.nuxeo.ecm.automation.core.operations.login.Logout;
@@ -90,7 +91,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
 /**
  * Nuxeo component that provide an implementation of the
  * {@link AutomationService} and handle extensions registrations.
- *
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class AutomationComponent extends DefaultComponent {
@@ -125,6 +126,7 @@ public class AutomationComponent extends DefaultComponent {
         service.putOperation(RestoreBlobsInput.class);
         service.putOperation(RunScript.class);
         service.putOperation(RunOperation.class);
+        service.putOperation(RunOperationOnList.class);
         service.putOperation(RunDocumentChain.class);
         service.putOperation(RunFileChain.class);
         service.putOperation(CopyDocument.class);

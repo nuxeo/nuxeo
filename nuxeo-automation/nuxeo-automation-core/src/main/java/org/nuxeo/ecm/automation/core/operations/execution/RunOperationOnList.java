@@ -11,6 +11,7 @@
  */
 package org.nuxeo.ecm.automation.core.operations.execution;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,10 +29,10 @@ import org.nuxeo.ecm.automation.core.annotations.Param;
  * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@Operation(id = RunOperation.ID, category = Constants.CAT_SUBCHAIN_EXECUTION, label = "Run Chain", description = "Run an operation chain in the current context")
-public class RunOperation {
+@Operation(id = RunOperationOnList.ID, category = Constants.CAT_SUBCHAIN_EXECUTION, label = "Run For Each", description = "Run an operation for each element from the list defined by the 'list' paramter. The 'list' parameter is pointing to context variable that represent the list which will be iterated. The 'item' parameter represent the name of the context varible which will point to the current element in the list at each iteration. You can use the 'isolate' parameter to specify whether or not the evalution context is the same as the parent context or a copy of it. If the isolate is 'true' then a copy of the current contetx is used and so that modifications in this context will not affect the parent context. Any input is accepted. The input is returned back as output when operation terminate.")
+public class RunOperationOnList {
 
-    public static final String ID = "Context.RunOperation";
+    public static final String ID = "Context.RunOperationOnList";
 
     @Context
     protected OperationContext ctx;
@@ -42,8 +43,14 @@ public class RunOperation {
     @Param(name = "id")
     protected String chainId;
 
-    @Param(name = "isolate", required = false, values = "false")
-    protected boolean isolate = false;
+    @Param(name = "list")
+    protected String listName;
+
+    @Param(name = "item", required = false, values = "item")
+    protected String itemName = "item";
+
+    @Param(name = "isolate", required = false, values = "true")
+    protected boolean isolate = true;
 
     @OperationMethod
     public void run() throws Exception {
@@ -52,7 +59,10 @@ public class RunOperation {
         OperationContext subctx = new OperationContext(ctx.getCoreSession(),
                 vars);
         subctx.setInput(ctx.getInput());
-        service.run(subctx, chainId);
+        for (Object value : (Collection<?>) ctx.get(listName)) {
+            ctx.put(itemName, value);
+            service.run(subctx, chainId);
+        }
     }
 
 }
