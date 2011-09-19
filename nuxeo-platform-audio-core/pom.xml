@@ -12,23 +12,7 @@
   <groupId>org.nuxeo.ecm.platform</groupId>
   <artifactId>nuxeo-platform-audio-core</artifactId>
   <name>Nuxeo Platform Audio Core</name>
-  <description>
-    Nuxeo Platform Audio provides audio management to Nuxeo Web Platform
-    and RCP.
-  </description>
-
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-antrun-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
+  <description>Nuxeo Platform Audio Core</description>
 
   <dependencies>
     <dependency>
