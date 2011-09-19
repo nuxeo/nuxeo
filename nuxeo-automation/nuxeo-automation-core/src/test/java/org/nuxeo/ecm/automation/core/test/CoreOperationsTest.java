@@ -19,6 +19,8 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.util.ArrayList;
+
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -50,6 +52,7 @@ import org.nuxeo.ecm.automation.core.operations.document.SetDocumentLifeCycle;
 import org.nuxeo.ecm.automation.core.operations.document.SetDocumentProperty;
 import org.nuxeo.ecm.automation.core.operations.document.UpdateDocument;
 import org.nuxeo.ecm.automation.core.operations.execution.RunDocumentChain;
+import org.nuxeo.ecm.automation.core.operations.execution.RunOperationOnList;
 import org.nuxeo.ecm.automation.core.operations.stack.PopDocument;
 import org.nuxeo.ecm.automation.core.operations.stack.PushDocument;
 import org.nuxeo.ecm.automation.core.scripting.Expression;
@@ -133,13 +136,13 @@ public class CoreOperationsTest {
         ctx.setInput(src);
 
         OperationChain chain = new OperationChain("testChain");
-        chain.add(RunScript.ID).set("script", "This.setPropertyValue(\"dc:title\",\"modified from mvel\");");
+        chain.add(RunScript.ID).set("script",
+                "This.setPropertyValue(\"dc:title\",\"modified from mvel\");");
 
         service.run(ctx, chain);
         String title = src.getProperty("dc:title").getValue(String.class);
         assertThat(title, is("modified from mvel"));
     }
-
 
     /*
      * This test is not enabled for now since the operation is disabled until
@@ -164,7 +167,7 @@ public class CoreOperationsTest {
     /**
      * Create | Copy | Set Property. This is also testing
      * {@link StringToProperties} adapter
-     *
+     * 
      * @throws Exception
      */
     @Test
@@ -193,7 +196,7 @@ public class CoreOperationsTest {
     /**
      * Same as before but tests relative paths Create | Copy | Set Property This
      * is also testing {@link StringToProperties} adapter
-     *
+     * 
      * @throws Exception
      */
     @Test
@@ -214,7 +217,7 @@ public class CoreOperationsTest {
     /**
      * Same as before Create | Copy | Set Property But also test properties
      * specified using a mvel Expression
-     *
+     * 
      * @throws Exception
      */
     @Test
@@ -245,7 +248,7 @@ public class CoreOperationsTest {
 
     /**
      * Same as before but use DocumentWrapper to access properties
-     *
+     * 
      * @throws Exception
      */
     @Test
@@ -448,7 +451,9 @@ public class CoreOperationsTest {
     }
 
     /**
-     * Alternate version - use xml properties instead of java properties when defining a properties value
+     * Alternate version - use xml properties instead of java properties when
+     * defining a properties value
+     * 
      * @throws Exception
      */
     @Test
@@ -613,6 +618,24 @@ public class CoreOperationsTest {
         assertNotNull(ver);
 
         Framework.getLocalService(EventService.class).waitForAsyncCompletion();
+    }
+
+    @Test
+    public void testRunOperatioOnList() throws Exception {
+        service.putOperation(RunOnListItem.class);
+        OperationContext ctx = new OperationContext(session);
+        String input = "dummyInput";
+        ctx.setInput(input);
+        ArrayList<String> users = new ArrayList<String>();
+        users.add("foo");
+        users.add("bar");
+        ctx.put("users", users);
+        OperationChain chain = new OperationChain("testChain");
+        chain.add(RunOperationOnList.ID).set("list", "users").set("id",
+                "runOnList").set("isolate", "false");
+        service.run(ctx, chain);
+        String result = (String) ctx.get("result");
+        assertEquals("foo, bar", result);
     }
 
 }
