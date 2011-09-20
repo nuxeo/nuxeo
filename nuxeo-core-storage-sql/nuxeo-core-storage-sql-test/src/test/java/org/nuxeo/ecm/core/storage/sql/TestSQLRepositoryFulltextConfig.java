@@ -1,3 +1,14 @@
+/*
+ * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Thierry Martins
+ */
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.util.Calendar;
@@ -102,6 +113,9 @@ public class TestSQLRepositoryFulltextConfig extends SQLRepositoryTestCase {
 
 
     public void testFulltextOnlyNoteFile() throws Exception {
+        if (!(database instanceof DatabaseH2)) {
+            return;
+        }
         // deploy contrib where only Note and File documents are fulltext indexed
         deployContrib("org.nuxeo.ecm.core.storage.sql.test",
                 "OSGI-INF/test-repo-fulltext-note-file-only-contrib.xml");
@@ -137,6 +151,9 @@ public class TestSQLRepositoryFulltextConfig extends SQLRepositoryTestCase {
     }
 
     public void testFulltextNoteFileExcluded() throws Exception {
+        if (!(database instanceof DatabaseH2)) {
+            return;
+        }
         // deploy contrib where only Note and File are not fulltext indexed
         deployContrib("org.nuxeo.ecm.core.storage.sql.test",
                 "OSGI-INF/test-repo-fulltext-note-file-excluded-contrib.xml");
@@ -172,6 +189,9 @@ public class TestSQLRepositoryFulltextConfig extends SQLRepositoryTestCase {
     }
 
     public void testFulltextMixedConfig() throws Exception {
+        if (!(database instanceof DatabaseH2)) {
+            return;
+        }
         // deploy contrib where fulltext configuration is mixed
         // include types should have the priority
         deployContrib("org.nuxeo.ecm.core.storage.sql.test",
