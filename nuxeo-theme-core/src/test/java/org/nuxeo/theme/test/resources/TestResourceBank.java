@@ -77,14 +77,25 @@ public class TestResourceBank extends NXRuntimeTestCase {
     }
 
     public void testGetBankLogoFile() throws IOException {
-        assertTrue(BankManager.getBankLogoFile(BANK_NAME).getPath().endsWith(
-                "/test/logo.png"));
+        if(!isWindows()){
+            assertTrue(BankManager.getBankLogoFile(BANK_NAME).getPath().endsWith(
+            "/test/logo.png"));
+        }else{
+            assertTrue(BankManager.getBankLogoFile(BANK_NAME).getPath().endsWith(
+            "\\test\\logo.png"));
+        }
     }
 
     public void testGetImageFile() throws IOException {
-        assertTrue(BankManager.getImageFile(BANK_NAME, COLLECTION_NAME,
-                "emoticon_smile.png").getPath().endsWith(
-                "/test/Test/image/emoticon_smile.png"));
+        if(!isWindows()){
+            assertTrue(BankManager.getImageFile(BANK_NAME, COLLECTION_NAME,
+            "emoticon_smile.png").getPath().endsWith(
+            "/test/Test/image/emoticon_smile.png"));
+        }else{
+            assertTrue(BankManager.getImageFile(BANK_NAME, COLLECTION_NAME,
+            "emoticon_smile.png").getPath().endsWith(
+            "\\test\\Test\\image\\emoticon_smile.png"));
+        }
     }
 
     public void testGetStyleInfo() throws IOException {
@@ -174,5 +185,10 @@ public class TestResourceBank extends NXRuntimeTestCase {
         assertFalse(BankUtils.checkFilePath("test'a"));
         assertFalse(BankUtils.checkFilePath("test\ta"));
         assertFalse(BankUtils.checkFilePath("test\na"));
+    }
+
+    public static boolean isWindows(){
+        String os = System.getProperty("os.name").toLowerCase();
+        return (os.indexOf( "win" ) >= 0);
     }
 }
