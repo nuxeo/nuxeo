@@ -230,6 +230,8 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
         if (reconnectedCoreSession != null) {
             CoreInstance.getInstance().close(reconnectedCoreSession);
         }
+        reconnectedCoreSession=null;
+        reconnectedEvents=null;
         if (loginCtx != null) {
             try {
                 loginCtx.logout();
