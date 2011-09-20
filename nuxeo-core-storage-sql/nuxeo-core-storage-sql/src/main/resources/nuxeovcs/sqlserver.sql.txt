@@ -371,6 +371,59 @@ LOG.INFO Initializing ancestors table for path optimization, please wait...
 EXEC nx_init_ancestors
 
 
+# ancestors ids (since Nuxeo 5.4.3)
+
+IF OBJECT_ID('dbo.NX_ANCESTORS', 'TF') IS NOT NULL
+  DROP FUNCTION dbo.NX_ANCESTORS;
+
+#IF: pathOptimizationsEnabled
+CREATE FUNCTION NX_ANCESTORS(@ids VARCHAR(4000))
+RETURNS @output TABLE (id ${idType}) AS
+BEGIN
+  DECLARE @pos INT;
+  DECLARE @next INT;
+  DECLARE @end INT;
+  DECLARE @id ${idType};
+  SET @pos = 0;
+  SET @next = 1;
+  WHILE @next > 0 BEGIN
+    SET @next = CHARINDEX('|', @ids, @pos + 1);
+    SET @end = CASE WHEN @next > 0 THEN @next ELSE len(@ids) + 1 END;
+    SET @id = SUBSTRING(@ids, @pos + 1, @end - @pos - 1);
+    SET @pos = @next;
+    --
+    INSERT INTO @output (id) SELECT [ancestor] FROM [ancestors] WHERE [hierarchy_id] = @id;
+  END;
+  RETURN;
+END;
+
+#IF: !pathOptimizationsEnabled
+CREATE FUNCTION NX_ANCESTORS(@ids VARCHAR(4000))
+RETURNS @output TABLE (id ${idType}) AS
+BEGIN
+  DECLARE @pos INT;
+  DECLARE @next INT;
+  DECLARE @end INT;
+  DECLARE @id ${idType};
+  SET @pos = 0;
+  SET @next = 1;
+  WHILE @next > 0 BEGIN
+    SET @next = CHARINDEX('|', @ids, @pos + 1);
+    SET @end = CASE WHEN @next > 0 THEN @next ELSE len(@ids) + 1 END;
+    SET @id = SUBSTRING(@ids, @pos + 1, @end - @pos - 1);
+    SET @pos = @next;
+    --
+    WHILE @id IS NOT NULL BEGIN
+      SET @id = (SELECT [parentid] FROM [hierarchy] WHERE [id] = @id);
+      IF @id IS NOT NULL BEGIN
+        INSERT INTO @output (id) VALUES (@id);
+      END;
+    END;
+  END;
+  RETURN;
+END;
+
+
 # ------------------------------------------------------------
 # -- ACLR (aka READ ACL) OPTIMIZATIONS
 

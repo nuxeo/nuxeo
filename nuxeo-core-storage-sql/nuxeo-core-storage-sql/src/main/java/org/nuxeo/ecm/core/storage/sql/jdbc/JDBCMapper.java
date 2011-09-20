@@ -56,6 +56,7 @@ import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.Row;
 import org.nuxeo.ecm.core.storage.sql.RowId;
 import org.nuxeo.ecm.core.storage.sql.Session.PathResolver;
+import org.nuxeo.ecm.core.storage.sql.jdbc.SQLInfo.SQLInfoSelect;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Database;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
@@ -777,6 +778,146 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             checkConnectionReset(e);
             throw new StorageException("Invalid query: " + queryType + ": "
                     + query, e);
+        }
+    }
+
+    @Override
+    public Set<Serializable> getAncestorsIds(Collection<Serializable> ids)
+            throws StorageException {
+        SQLInfoSelect select = sqlInfo.getSelectAncestorsIds();
+        if (select == null) {
+            return getAncestorsIdsIterative(ids);
+        }
+        Serializable whereIds;
+        List<String> idsa = new ArrayList<String>(ids.size());
+        for (Serializable id : ids) {
+            idsa.add((String) id);
+        }
+        if (sqlInfo.dialect.supportsArrays()) {
+            whereIds = idsa.toArray(new String[0]);
+        } else {
+            // join with '|'
+            whereIds = join(idsa, '|');
+        }
+        Set<Serializable> res = new HashSet<Serializable>();
+        PreparedStatement ps = null;
+        try {
+            if (logger.isLogEnabled()) {
+                logger.logSQL(select.sql, Collections.singleton(whereIds));
+            }
+            Column what = select.whatColumns.get(0);
+            ps = connection.prepareStatement(select.sql);
+            if (whereIds instanceof String[]) {
+                Array array = sqlInfo.dialect.createArrayOf(Types.VARCHAR,
+                        (Object[]) whereIds, connection);
+                ps.setArray(1, array);
+            } else {
+                ps.setString(1, (String) whereIds);
+            }
+            ResultSet rs = ps.executeQuery();
+            List<Serializable> debugIds = null;
+            if (logger.isLogEnabled()) {
+                debugIds = new LinkedList<Serializable>();
+            }
+            while (rs.next()) {
+                if (sqlInfo.dialect.supportsArraysReturnInsteadOfRows()) {
+                    String[] resultIds = (String[]) rs.getArray(1).getArray();
+                    for (String id : resultIds) {
+                        if (id != null) {
+                            res.add(id);
+                            if (logger.isLogEnabled()) {
+                                debugIds.add(id);
+                            }
+                        }
+                    }
+                    break;
+                }
+                Serializable id = (Serializable) what.getFromResultSet(rs, 1);
+                if (id != null) {
+                    res.add(id);
+                    if (logger.isLogEnabled()) {
+                        debugIds.add(id);
+                    }
+                }
+            }
+            if (logger.isLogEnabled()) {
+                logger.logIds(debugIds, false, 0);
+            }
+            return res;
+        } catch (Exception e) {
+            checkConnectionReset(e);
+            throw new StorageException("Failed to get ancestors ids", e);
+        } finally {
+            if (ps != null) {
+                try {
+                    closeStatement(ps);
+                } catch (SQLException e) {
+                    log.error(e.getMessage(), e);
+                }
+            }
+        }
+    }
+
+    /**
+     * Uses iterative parentid selection.
+     */
+    protected Set<Serializable> getAncestorsIdsIterative(
+            Collection<Serializable> ids) throws StorageException {
+        PreparedStatement ps = null;
+        try {
+            LinkedList<Serializable> todo = new LinkedList<Serializable>(ids);
+            Set<Serializable> done = new HashSet<Serializable>();
+            Set<Serializable> res = new HashSet<Serializable>();
+            while (!todo.isEmpty()) {
+                done.addAll(todo);
+                SQLInfoSelect select = sqlInfo.getSelectParentIds(todo.size());
+                if (logger.isLogEnabled()) {
+                    logger.logSQL(select.sql, todo);
+                }
+                Column what = select.whatColumns.get(0);
+                Column where = select.whereColumns.get(0);
+                ps = connection.prepareStatement(select.sql);
+                int i = 1;
+                for (Serializable id : todo) {
+                    where.setToPreparedStatement(ps, i++, id);
+                }
+                ResultSet rs = ps.executeQuery();
+                todo = new LinkedList<Serializable>();
+                List<Serializable> debugIds = null;
+                if (logger.isLogEnabled()) {
+                    debugIds = new LinkedList<Serializable>();
+                }
+                while (rs.next()) {
+                    Serializable id = (Serializable) what.getFromResultSet(rs,
+                            1);
+                    if (id != null) {
+                        res.add(id);
+                        if (!done.contains(id)) {
+                            todo.add(id);
+                        }
+                        if (logger.isLogEnabled()) {
+                            debugIds.add(id);
+                        }
+                    }
+                }
+                if (logger.isLogEnabled()) {
+                    logger.logIds(debugIds, false, 0);
+                }
+                ps.close();
+                ps = null;
+            }
+            return res;
+        } catch (Exception e) {
+            checkConnectionReset(e);
+            throw new StorageException("Failed to get ancestors ids", e);
+        } finally {
+            if (ps != null) {
+                try {
+                    closeStatement(ps);
+                } catch (SQLException e) {
+                    log.error(e.getMessage(), e);
+                }
+            }
         }
     }
 

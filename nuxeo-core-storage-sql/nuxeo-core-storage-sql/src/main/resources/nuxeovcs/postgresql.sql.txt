@@ -208,6 +208,46 @@ LANGUAGE plpgsql
 VOLATILE;
 
 
+# ancestors ids (since Nuxeo 5.4.3)
+
+#IF: pathOptimizationsEnabled
+CREATE OR REPLACE FUNCTION NX_ANCESTORS(ids ${idType}[])
+RETURNS SETOF ${idType}
+AS $$
+DECLARE
+  id ${idType};
+  r record;
+BEGIN
+  FOR r IN SELECT anc.ancestors FROM ancestors anc
+      WHERE anc.id IN (SELECT * FROM unnest(ids)) LOOP
+    RETURN QUERY SELECT unnest(r.ancestors);
+  END LOOP;
+END $$
+LANGUAGE plpgsql
+VOLATILE;
+
+# TODO 8.4: use CTE
+#IF: !pathOptimizationsEnabled
+CREATE OR REPLACE FUNCTION NX_ANCESTORS(ids ${idType}[])
+RETURNS SETOF ${idType}
+AS $$
+DECLARE
+  id ${idType};
+  curid ${idType};
+BEGIN
+  FOR id IN SELECT * FROM unnest(ids) LOOP
+    curid := id;
+    LOOP
+      SELECT parentid INTO curid FROM hierarchy WHERE hierarchy.id = curid;
+      EXIT WHEN curid IS NULL;
+      RETURN NEXT curid;
+    END LOOP;
+  END LOOP;
+END $$
+LANGUAGE plpgsql
+VOLATILE;
+
+
 ############################################################
 
 
