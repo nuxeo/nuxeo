@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.platform.video.jsf.types">
+
+  <require>org.nuxeo.ecm.platform.types</require>
+
+  <extension target="org.nuxeo.ecm.platform.types.TypeService" point="types">
+    <type id="Video">
+      <label>Video</label>
+      <default-view>view_documents</default-view>
+      <icon>/icons/video.png</icon>
+      <bigIcon>/icons/video_big.png</bigIcon>
+      <category>SimpleDocument</category>
+      <description>Video.description</description>
+      <layouts mode="any">
+        <layout>heading</layout>
+        <layout>file</layout>
+      </layouts>
+      <layouts mode="edit">
+        <layout>heading</layout>
+        <layout>dublincore</layout>
+      </layouts>
+    </type>
+
+    <type id="Workspace">
+      <subtypes>
+        <type>Video</type>
+      </subtypes>
+    </type>
+
+    <type id="Folder">
+      <subtypes>
+        <type>Video</type>
+      </subtypes>
+    </type>
+
+  </extension>
+
+</component>

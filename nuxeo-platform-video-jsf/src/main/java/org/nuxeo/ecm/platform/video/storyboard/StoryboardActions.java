@@ -16,6 +16,8 @@
  */
 package org.nuxeo.ecm.platform.video.storyboard;
 
+import static org.nuxeo.ecm.platform.video.VideoConstants.STORYBOARD_PROPERTY;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -27,8 +29,6 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.platform.video.VideoConstants;
-
-import static org.nuxeo.ecm.platform.video.VideoConstants.STORYBOARD_PROPERTY;
 
 /**
  * Backing bean for the Storyboard view of an document with the video storyboard
@@ -45,8 +45,7 @@ public class StoryboardActions {
         if (!doc.hasFacet(VideoConstants.HAS_STORYBOARD_FACET)) {
             return Collections.emptyList();
         }
-        int size = doc.getProperty(STORYBOARD_PROPERTY).getValue(
-                List.class).size();
+        int size = doc.getProperty(STORYBOARD_PROPERTY).getValue(List.class).size();
         List<StoryboardItem> items = new ArrayList<StoryboardItem>(size);
         for (int i = 0; i < size; i++) {
             items.add(new StoryboardItem(doc, STORYBOARD_PROPERTY, i));

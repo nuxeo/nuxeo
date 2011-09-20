@@ -22,7 +22,6 @@ import java.io.Serializable;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -52,6 +51,7 @@ public class VideoImporter extends AbstractFileImporter {
     @SuppressWarnings("unused")
     private static final Log log = LogFactory.getLog(VideoImporter.class);
 
+    @Override
     public DocumentModel create(CoreSession documentManager, Blob content,
             String path, boolean overwrite, String fullname,
             TypeManager typeService) throws ClientException, IOException {

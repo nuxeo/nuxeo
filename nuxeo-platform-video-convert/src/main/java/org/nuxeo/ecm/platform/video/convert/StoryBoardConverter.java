@@ -73,6 +73,7 @@ public class StoryboardConverter extends BaseVideoConverter implements
 
     protected Map<String, String> commonParams = new HashMap<String, String>();
 
+    @Override
     public void init(ConverterDescriptor descriptor) {
         try {
             cleService = Framework.getService(CommandLineExecutorService.class);
@@ -98,6 +99,7 @@ public class StoryboardConverter extends BaseVideoConverter implements
         }
     }
 
+    @Override
     public BlobHolder convert(BlobHolder blobHolder,
             Map<String, Serializable> parameters) throws ConversionException {
 
@@ -123,14 +125,14 @@ public class StoryboardConverter extends BaseVideoConverter implements
             Double duration = extractDuration(result.getOutput());
             properties.put("duration", duration);
 
-
             if (duration < 3.0) {
                 // do not extract a storyboard for so short videos
-                return collectBlobs(outFolder, properties, blob.getFilename(), 0.0);
+                return collectBlobs(outFolder, properties, blob.getFilename(),
+                        0.0);
             }
 
             Double rate = numberOfThumbnails / duration;
-            if (rate  < 0.1) {
+            if (rate < 0.1) {
                 // NB: the minimum rate accepted by the current version of
                 // ffmpeg (SVN-r19352-4:0.5+svn20090706-2ubuntu2) is 0.1,
                 // i.e. at least one thumbnail every 10s
@@ -144,7 +146,8 @@ public class StoryboardConverter extends BaseVideoConverter implements
                     quoteFilePath(outFolder.getAbsolutePath()));
             params.addNamedParameter(RATE_PARAM, rateParam);
             params.addNamedParameter(WIDTH_PARAM, commonParams.get(WIDTH_PARAM));
-            params.addNamedParameter(HEIGHT_PARAM, commonParams.get(HEIGHT_PARAM));
+            params.addNamedParameter(HEIGHT_PARAM,
+                    commonParams.get(HEIGHT_PARAM));
             result = cleService.execCommand(FFMPEG_STORYBOARD_COMMAND, params);
             if (!result.isSuccessful()) {
                 Exception error = result.getError();

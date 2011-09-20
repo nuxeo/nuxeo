@@ -17,6 +17,8 @@
 
 package org.nuxeo.ecm.platform.video.extension;
 
+import static org.nuxeo.ecm.platform.video.VideoConstants.DURATION_PROPERTY;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -119,13 +121,13 @@ public class TestVideoImporterAndListeners extends SQLRepositoryTestCase {
         assertNull(docModel.getPropertyValue("dc:title"));
         assertNull(docModel.getPropertyValue("picture:credit"));
         assertNull(docModel.getPropertyValue("uid:uid"));
-        assertNull(docModel.getPropertyValue("strm:duration"));
+        assertNull(docModel.getPropertyValue(DURATION_PROPERTY));
 
         docModel.setPropertyValue("common:icon", "/icons/video.png");
         docModel.setPropertyValue("dc:title", "testTitle");
         docModel.setPropertyValue("picture:credit", "testUser");
         docModel.setPropertyValue("uid:uid", "testUid");
-        docModel.setPropertyValue("strm:duration", 133);
+        docModel.setPropertyValue(DURATION_PROPERTY, 133);
 
         DocumentModel docModelResult = session.createDocument(docModel);
         assertNotNull(docModelResult);
@@ -137,7 +139,7 @@ public class TestVideoImporterAndListeners extends SQLRepositoryTestCase {
                 docModelResult.getPropertyValue("picture:credit"));
         assertEquals("testUid", docModelResult.getPropertyValue("uid:uid"));
         assertEquals("133.0",
-                docModelResult.getPropertyValue("strm:duration").toString());
+                docModelResult.getPropertyValue(DURATION_PROPERTY).toString());
 
     }
 
@@ -179,7 +181,7 @@ public class TestVideoImporterAndListeners extends SQLRepositoryTestCase {
         }
 
         // the test video is very short, no storyboard:
-        assertEquals(0.0, docModel.getPropertyValue("strm:duration"));
+        assertEquals(0.0, docModel.getPropertyValue(DURATION_PROPERTY));
         List<Map<String, Serializable>> storyboard = docModel.getProperty(
                 "vid:storyboard").getValue(List.class);
         assertNotNull(storyboard);
@@ -204,7 +206,7 @@ public class TestVideoImporterAndListeners extends SQLRepositoryTestCase {
         docModel = session.createDocument(docModel);
 
         // the test video last around 10 minutes
-        assertEquals(653.53, docModel.getPropertyValue("strm:duration"));
+        assertEquals(653.53, docModel.getPropertyValue(DURATION_PROPERTY));
         List<Map<String, Serializable>> storyboard = docModel.getProperty(
                 "vid:storyboard").getValue(List.class);
         assertNotNull(storyboard);

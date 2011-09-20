@@ -27,7 +27,6 @@ import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
-import org.nuxeo.ecm.platform.video.VideoConstants;
 import org.nuxeo.ecm.platform.video.VideoHelper;
 
 /**
@@ -37,6 +36,7 @@ import org.nuxeo.ecm.platform.video.VideoHelper;
  */
 public class VideoStoryboardListener implements EventListener {
 
+    @Override
     public void handleEvent(Event event) throws ClientException {
         EventContext ctx = event.getContext();
         if (!(ctx instanceof DocumentEventContext)) {

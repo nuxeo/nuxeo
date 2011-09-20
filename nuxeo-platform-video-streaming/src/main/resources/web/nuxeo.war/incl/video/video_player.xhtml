@@ -8,21 +8,31 @@
      xmlns:nxl="http://nuxeo.org/nxforms/layout"
      xmlns:nxd="http://nuxeo.org/nxweb/document">
 
+  <f:subview rendered="#{streamableVideoActions.isPreviewReady(videoDoc)}">
+    <h1><h:outputText value="#{messages['Stream Version']}"/></h1><br/>
+  </f:subview>
+  <f:subview rendered="#{!streamableVideoActions.isPreviewReady(videoDoc)}">
+    <h1><h:outputText value="#{messages['Original Version']}"/></h1><br/>
+    <h:outputText rendered="#{streamableVideoActions.isDocumentStreamable(videoDoc)}"
+       value="#{messages['Streaming Preview processing in Progress, please wait']}"/>
+
+  </f:subview>
+
   <a id="videoPlayerStaticPreview" href="#play"
    onclick="return unhidePlayerAndPlay('videoPlayerStaticPreview', 'videoPlayerObject');">
     <nxh:graphicImage
-      url="#{videoActions.getURLForStaticPreview(videoDoc)}?conversationId=#{conversation.id}"
+      url="#{streamableVideoActions.getURLForStaticPreview(videoDoc)}?conversationId=#{conversation.id}"
       style="max-width: 400px;" />
   </a>
 
   <object classid='clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B'
     width="400" codebase='http://www.apple.com/qtactivex/qtplugin.cab'
     id="videoPlayerObject" style="display: none">
-    <param name="src" value="#{videoActions.getURLForPlayer(videoDoc)}"/>
+    <param name="src" value="#{streamableVideoActions.getURLForPlayer(videoDoc)}"/>
     <param name="autoplay" value="true"/>
     <param name="loop" value="false"/>
     <param name="scale" value="aspect"/>
-    <embed src="#{videoActions.getURLForPlayer(videoDoc)}"
+    <embed src="#{streamableVideoActions.getURLForPlayer(videoDoc)}"
      name="videoPlayerObject" EnableJavaScript="true"
      width="400" autoplay="true" loop="true" scale="aspect"
      bgcolor="#6F6F6F"

@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.platform.video.convert;
 
+import static org.nuxeo.ecm.platform.video.convert.Constants.POSITION_PARAMETER;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.Serializable;
@@ -39,8 +41,6 @@ import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorServic
 import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
 import org.nuxeo.runtime.api.Framework;
 
-import static org.nuxeo.ecm.platform.video.convert.Constants.POSITION_PARAMETER;
-
 /**
  * Extract a JPEG screenshot of the video at a given time offset (position).
  *
@@ -55,6 +55,7 @@ public class ScreenshotConverter extends BaseVideoConverter implements
 
     protected CommandLineExecutorService cleService;
 
+    @Override
     public void init(ConverterDescriptor descriptor) {
         try {
             cleService = Framework.getService(CommandLineExecutorService.class);
@@ -63,6 +64,7 @@ public class ScreenshotConverter extends BaseVideoConverter implements
         }
     }
 
+    @Override
     public BlobHolder convert(BlobHolder blobHolder,
             Map<String, Serializable> parameters) throws ConversionException {
 
@@ -78,7 +80,8 @@ public class ScreenshotConverter extends BaseVideoConverter implements
             CmdParameters params = new CmdParameters();
             params.addNamedParameter("inFilePath",
                     quoteFilePath(inputFile.file.getAbsolutePath()));
-            params.addNamedParameter("outFilePath", quoteFilePath(outFile.getAbsolutePath()));
+            params.addNamedParameter("outFilePath",
+                    quoteFilePath(outFile.getAbsolutePath()));
             Double position = 0.0;
             if (parameters != null) {
                 position = (Double) parameters.get(POSITION_PARAMETER);
@@ -97,7 +100,8 @@ public class ScreenshotConverter extends BaseVideoConverter implements
             outBlob.setFilename(String.format("video-screenshot-%05d.000.jpeg",
                     positionParam));
             Map<String, Serializable> properties = new HashMap<String, Serializable>();
-            properties.put("duration", BaseVideoConverter.extractDuration(result.getOutput()));
+            properties.put("duration",
+                    BaseVideoConverter.extractDuration(result.getOutput()));
             return new SimpleBlobHolderWithProperties(outBlob, properties);
         } catch (Exception e) {
             if (blob != null) {

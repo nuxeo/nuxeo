@@ -12,26 +12,18 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Olivier Grisel
+ *     "<a href=\"mailto:bjalon@nuxeo.com\">Benjamin JALON</a>"
  */
-package org.nuxeo.ecm.platform.video;
+package org.nuxeo.ecm.platform.media.streaming;
 
-public class VideoConstants {
+public class MediaStreamingConstants {
 
-    public static final String VIDEO_TYPE = "Video";
+    public static final String STREAM_MEDIA_SCHEMA = "streamable_media";
 
-    public static final String VIDEO_FACET = "Video";
-
-    public static final String STORYBOARD_PROPERTY = "vid:storyboard";
-
-    public static final String DURATION_PROPERTY = "vid:metadata/duration";
-
-    public static final String HAS_STORYBOARD_FACET = "HasStoryboard";
-
-    public static final String HAS_VIDEO_PREVIEW_FACET = "HasVideoPreview";
+    public static final String STREAM_MEDIA_FIELD = "strm:streamable";
 
     // Constant utility class.
-    private VideoConstants() {
+    private MediaStreamingConstants() {
     }
 
 }
