@@ -332,7 +332,7 @@ BEGIN
     WHILE @@FETCH_STATUS = 0 BEGIN
       -- delete ancestors
       DELETE FROM ancestors WHERE hierarchy_id = @sid;
-      -- insert new one    
+      -- insert new one
       INSERT INTO ancestors (hierarchy_id, ancestor)
         SELECT @sid, ancestor_id FROM dbo.nx_get_ancestors(@sid);
       FETCH FROM @cur2 INTO @sid;
@@ -529,7 +529,7 @@ BEGIN
   FETCH FROM @cur INTO @op;
   WHILE @@FETCH_STATUS = 0 BEGIN
     IF @op IS NOT NULL BEGIN
-      IF @read_acl IS NULL 
+      IF @read_acl IS NULL
         SET @read_acl = @op;
       ELSE
         SET @read_acl = @read_acl + N'${usersSeparator}' + @op;
@@ -668,9 +668,9 @@ CREATE TRIGGER nx_trig_acls_modified ON [acls]
 AFTER INSERT, UPDATE, DELETE AS
 BEGIN
   SET NOCOUNT ON;
-  INSERT INTO aclr_modified (hierarchy_id, is_new) 
+  INSERT INTO aclr_modified (hierarchy_id, is_new)
     SELECT DISTINCT(id), 0 FROM inserted;
-  INSERT INTO aclr_modified (hierarchy_id, is_new) 
+  INSERT INTO aclr_modified (hierarchy_id, is_new)
     SELECT DISTINCT(id), 0 FROM deleted;
 END;
 
@@ -684,8 +684,8 @@ CREATE TRIGGER nx_trig_hierarchy_insert ON [hierarchy]
 AFTER INSERT AS
 BEGIN
   SET NOCOUNT ON;
-  INSERT INTO aclr_modified (hierarchy_id, is_new) 
-    SELECT DISTINCT(id), 1 FROM inserted 
+  INSERT INTO aclr_modified (hierarchy_id, is_new)
+    SELECT DISTINCT(id), 1 FROM inserted
     WHERE isproperty = 0;
 END;
 
@@ -699,7 +699,7 @@ CREATE TRIGGER nx_trig_hierarchy_update ON [hierarchy]
 AFTER UPDATE AS
 BEGIN
   SET NOCOUNT ON;
-  INSERT INTO aclr_modified (hierarchy_id, is_new) 
+  INSERT INTO aclr_modified (hierarchy_id, is_new)
     SELECT DISTINCT(id), 0 FROM inserted;
 END;
 
@@ -715,7 +715,7 @@ BEGIN
   SET NOCOUNT ON;
   DECLARE @permissions VARCHAR(4000);
   SET @permissions = dbo.nx_get_read_permissions();
-  INSERT INTO aclr_user_map 
+  INSERT INTO aclr_user_map
     SELECT u.user_id, NEW.acl_id
     FROM aclr_user AS u, inserted AS NEW
     LEFT JOIN hierarchy_read_acl AS h ON NEW.acl_id = h.acl_id
