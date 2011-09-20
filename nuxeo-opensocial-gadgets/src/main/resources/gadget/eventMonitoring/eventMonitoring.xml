@@ -19,6 +19,7 @@
   ${jsContext}
 
   <script src="${specDirectoryUrl}default-automation-request.js"></script>
+  <!--[if lte IE 8]><script src="${clientSideBaseUrl}scripts/jquery/flot/excanvas.min.js"></script><![endif]-->
   <script src="${clientSideBaseUrl}nxthemes-lib/jquery.js"></script>
   <script src="${clientSideBaseUrl}scripts/jquery/flot/jquery.flot.min.js"></script>
 
