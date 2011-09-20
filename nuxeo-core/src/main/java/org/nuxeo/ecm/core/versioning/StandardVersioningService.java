@@ -226,7 +226,7 @@ public class StandardVersioningService implements VersioningService {
             throws DocumentException {
         option = validateOption(doc, option);
         if (!doc.isCheckedOut() && isDirty) {
-            doc.checkOut();
+            doCheckOut(doc);
             followTransitionByOption(doc, option);
         }
         // transition follow shouldn't change what postSave options will be
