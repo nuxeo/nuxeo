@@ -13,6 +13,14 @@
         /widgets/summary/summary_current_route_action.xhtml
       </property>
     </widgetType>
+    <widgetType name="summary_current_route_actions_lock">
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/summary/summary_actions_lock_route_widget_template.xhtml
+      </property>
+    </widgetType>
     <widgetType name="summary_document_route_action">
      <configuration>
         <sinceVersion>1.8</sinceVersion>
@@ -45,6 +53,8 @@
       type="summary_current_route_action" />
     <widget name="summary_document_route_action"
       type="summary_document_route_action" />
+    <widget name="summary_current_route_actions_lock"
+      type="summary_current_route_actions_lock" />
 
     <widget name="participatingDocuments" type="template">
       <labels>
@@ -167,7 +177,7 @@
         </row>
         <row>
           <widget>summary_current_document_lc_and_version</widget>
-          <widget>summary_current_document_actions</widget>
+          <widget>summary_current_route_actions_lock</widget>
           <widget>summary_current_route_action</widget>
         </row>
       </rows>
