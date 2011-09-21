@@ -219,18 +219,15 @@ public class DocumentRoutingActionsBean implements Serializable {
         return null;
     }
 
+    /**
+     * Validate Route implies a document unlock under unrestricted session by a
+     * route manager
+     * 
+     * @return
+     * @throws ClientException
+     */
     public String validateRouteModel() throws ClientException {
         DocumentRoute currentRouteModel = getRelatedRoute();
-        try {
-            getDocumentRoutingService().lockDocumentRoute(currentRouteModel,
-                    documentManager);
-        } catch (DocumentRouteAlredayLockedException e) {
-            facesMessages.add(
-                    FacesMessage.SEVERITY_WARN,
-                    resourcesAccessor.getMessages().get(
-                            "feedback.casemanagement.document.route.already.locked"));
-            return null;
-        }
         try {
             getDocumentRoutingService().validateRouteModel(currentRouteModel,
                     documentManager);
@@ -243,8 +240,6 @@ public class DocumentRoutingActionsBean implements Serializable {
         }
         Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
                 currentRouteModel.getDocument());
-        getDocumentRoutingService().unlockDocumentRoute(currentRouteModel,
-                documentManager);
         return null;
     }
 
