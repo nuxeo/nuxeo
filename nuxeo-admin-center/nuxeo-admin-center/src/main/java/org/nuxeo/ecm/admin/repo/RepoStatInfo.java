@@ -146,7 +146,10 @@ public class RepoStatInfo {
         if (isVersion) {
             versions += 1;
         }
-        speed = 1000 * getTotalNbDocs() / (System.currentTimeMillis() - t1);
+	long t2 = System.currentTimeMillis();
+	long delta = t2 - t1;
+	if (delta == 0) delta=1;
+        speed = 1000 * getTotalNbDocs() / delta;
     }
 
     public synchronized void addBlob(long size, Path path) {
