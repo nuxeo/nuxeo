@@ -63,7 +63,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         service.lockDocumentRoute(route, session);
         service.addRouteElementToRoute(parallel1.getRef(), "step32",
                 step.getAdapter(DocumentRouteElement.class), session);
-        service.unlockDocumentRoute(route, session);
+        service.unlockDocumentRouteUnrestrictedSession(route, session);
         DocumentModelList parallel1Childs = service.getOrderedRouteElement(
                 parallel1.getId(), session);
         assertEquals(3, parallel1Childs.size());
@@ -160,6 +160,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         DocumentRoute route = createDocumentRoute(session, ROUTE1);
         service.lockDocumentRoute(route, session);
         service.validateRouteModel(route, session);
+        service.unlockDocumentRouteUnrestrictedSession(route, session);
         route = service.createNewInstance(route, new ArrayList<String>(),
                 session);
         session.save();
@@ -225,6 +226,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         DocumentRoute route = createDocumentRoute(session, ROUTE1);
         service.lockDocumentRoute(route, session);
         route = service.validateRouteModel(route, session);
+        service.unlockDocumentRouteUnrestrictedSession(route, session);
         route = service.createNewInstance(route, new ArrayList<String>(),
                 session);
         assertNotNull(route);
@@ -306,6 +308,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         session.save();
         service.lockDocumentRoute(route, session);
         route = service.validateRouteModel(route, session);
+        service.unlockDocumentRouteUnrestrictedSession(route, session);
         session.save();
         assertEquals("validated",
                 route.getDocument().getCurrentLifeCycleState());
@@ -331,6 +334,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         session.save();
         service.lockDocumentRoute(route, session);
         route = service.validateRouteModel(route, session);
+        service.unlockDocumentRouteUnrestrictedSession(route, session);
         assertEquals("validated",
                 route.getDocument().getCurrentLifeCycleState());
         assertEquals("validated", session.getChildren(
@@ -382,6 +386,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         session.save();
         service.lockDocumentRoute(route, session);
         route = service.validateRouteModel(route, session);
+        service.unlockDocumentRouteUnrestrictedSession(route, session);
         assertEquals("validated",
                 route.getDocument().getCurrentLifeCycleState());
         assertEquals("validated", session.getChildren(
@@ -426,6 +431,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         session.save();
         service.lockDocumentRoute(route, session);
         route = service.validateRouteModel(route, session);
+        service.unlockDocumentRouteUnrestrictedSession(route, session);
         assertEquals("validated",
                 route.getDocument().getCurrentLifeCycleState());
         assertEquals("validated", session.getChildren(
@@ -504,6 +510,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         session.save();
         service.lockDocumentRoute(route, session);
         route = service.validateRouteModel(route, session);
+        service.unlockDocumentRouteUnrestrictedSession(route, session);
         assertEquals("validated",
                 route.getDocument().getCurrentLifeCycleState());
         assertEquals("validated", session.getChildren(
@@ -580,6 +587,8 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         route = service.validateRouteModel(
                 route.getAdapter(DocumentRoute.class), session).getDocument();
         session.save();
+        service.unlockDocumentRouteUnrestrictedSession(route.getAdapter(DocumentRoute.class),
+                session);
         route = session.getDocument(route.getRef());
         assertEquals("validated", route.getCurrentLifeCycleState());
         closeSession();
@@ -650,6 +659,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         session.saveDocument(conditionalStepFolder);
         service.lockDocumentRoute(route, session);
         route = service.validateRouteModel(route, session);
+        service.unlockDocumentRouteUnrestrictedSession(route, session);
         session.save();
         assertEquals("validated",
                 route.getDocument().getCurrentLifeCycleState());
@@ -692,6 +702,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         session.save();
         service.lockDocumentRoute(route, session);
         route = service.validateRouteModel(route, session);
+        service.unlockDocumentRouteUnrestrictedSession(route, session);
         assertEquals("validated",
                 route.getDocument().getCurrentLifeCycleState());
         assertEquals("validated", session.getChildren(
