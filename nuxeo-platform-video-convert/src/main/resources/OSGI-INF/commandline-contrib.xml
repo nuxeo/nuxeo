@@ -24,12 +24,6 @@
       <installationDirective>You need to install ffmpeg from http://ffmpeg.org (apt-get install ffmpeg)</installationDirective>
     </command>
 
-    <command name="ffmpeg-convert" enabled="true">
-      <commandLine>ffmpeg2theora</commandLine>
-      <parameterString> #{inFilePath} -o #{outFilePath}</parameterString>
-      <installationDirective>You need to install ffmpeg2theora from http://v2v.cc/~j/ffmpeg2theora (apt-get install ffmpeg2theora)</installationDirective>
-    </command>
-
   </extension>
 
 </component>

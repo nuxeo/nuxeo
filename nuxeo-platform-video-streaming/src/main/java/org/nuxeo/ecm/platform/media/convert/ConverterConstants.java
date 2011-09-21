@@ -22,7 +22,7 @@ package org.nuxeo.ecm.platform.media.convert;
  */
 public class ConverterConstants {
 
-    public static final String FFMPEG_CONVERT = "ffmpeg-convert";
+    public static final String FFMPEG_CONVERT = "ffmpeg2theora";
 
     public static final String HANDBRAKE_CONVERT_MP4 = "handbrake-H264-AAC";
 

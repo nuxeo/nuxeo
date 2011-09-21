@@ -6,6 +6,12 @@
   <extension target="org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent"
     point="command">
 
+    <command name="ffmpeg2theora" enabled="true">
+      <commandLine>ffmpeg2theora</commandLine>
+      <parameterString> #{inFilePath} -o #{outFilePath}</parameterString>
+      <installationDirective>You need to install ffmpeg2theora from http://v2v.cc/~j/ffmpeg2theora (apt-get install ffmpeg2theora)</installationDirective>
+    </command>
+
     <command name="handbrake-H264-AAC" enabled="true">
       <commandLine>HandBrakeCLI</commandLine>
       <parameterString> -i #{inFilePath} -o #{outFilePath} -e x264 -f mp4 -x preset=ultrafast:keyint=25</parameterString>
