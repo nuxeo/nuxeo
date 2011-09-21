@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -15,14 +15,11 @@
 package org.nuxeo.ecm.platform.rendering.fm.extensions;
 
 import java.io.IOException;
-import java.net.SocketException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
 import freemarker.template.TemplateException;
-
-import org.nuxeo.ecm.platform.rendering.api.RenderingOutputClosedException;
 
 
 /**
@@ -122,7 +119,7 @@ public class BlockWriter extends Writer {
         }
     }
 
-    public void copyTo(Writer writer) throws TemplateException, IOException, RenderingOutputClosedException {
+    public void copyTo(Writer writer) throws TemplateException, IOException {
         // check first if you need to suppress this block
         if (ifBlockDefined != null) {
             BlockWriter bw = reg.getBlock(ifBlockDefined);
@@ -141,16 +138,7 @@ public class BlockWriter extends Writer {
             }
             bw.copyTo(writer);
         }
-        try {
-            writer.write(buf.toString());
-        } catch (IOException e) {
-            if (e.getCause() instanceof SocketException) {
-                // Client closed connection
-                throw new RenderingOutputClosedException(e);
-            } else {
-                throw e;
-            }
-        }
+        writer.write(buf.toString());
     }
 
     @Override
