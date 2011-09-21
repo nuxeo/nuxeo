@@ -69,6 +69,7 @@
       <subtypes>
         <type>StepFolder</type>
         <type>DocumentRouteStep</type>
+        <type>ConditionalStepFolder</type>
       </subtypes>
       <layouts mode="any">
         <layout>heading</layout>
@@ -76,7 +77,6 @@
       </layouts>
       <layouts mode="edit">
         <layout>heading</layout>
-        <layout>dublincore</layout>
         <layout>step_folder</layout>
       </layouts>
       <contentViews category="content">
@@ -100,7 +100,6 @@
       </layouts>
       <layouts mode="edit">
         <layout>heading</layout>
-        <layout>dublincore</layout>
       </layouts>
     </type>
     
