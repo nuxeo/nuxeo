@@ -19,16 +19,20 @@
   <c:if test="#{widget.mode != 'edit'}">
 
     <c:if test="#{empty field_1}">
-      <h:graphicImage value="/icons/missing_avatar.png"
-        title="Missing profile avatar" alt="Missing profile avatar" />
+      <div class="profileAvatar">
+        <h:graphicImage value="/icons/missing_avatar.png"
+        title="Missing profile avatar" alt="Missing profile avatar" class="avatar" />
+      </div>
     </c:if>
 
     <c:if test="#{not empty field_1}">
-      <nxu:set var="image_url"
-        value="#{nxd:fileUrl('downloadFile', field_0, widget.properties.file_property_name, field_1.filename)}">
-        <img src="#{image_url}" title="#{field_1.filename}"
-          alt="#{field_1.filename}" width="#{widget.properties['width']}" />
-      </nxu:set>
+      <div class="profileAvatar">
+        <nxu:set var="image_url"
+          value="#{nxd:fileUrl('downloadFile', field_0, widget.properties.file_property_name, field_1.filename)}">
+          <img src="#{image_url}" title="#{field_1.filename}"
+            alt="#{field_1.filename}" width="#{widget.properties['width']}" class="avatar" />
+        </nxu:set>
+      </div>
     </c:if>
 
   </c:if>

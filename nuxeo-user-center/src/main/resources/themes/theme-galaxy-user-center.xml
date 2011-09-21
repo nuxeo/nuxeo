@@ -1626,6 +1626,19 @@
       <selector path=".fullWidth">
         <width>100%</width>
       </selector>
+      <!-- Avatar resize -->
+      <selector path=".pictureColumn">
+        <width>150px</width>
+      </selector>
+      <selector path=".profileAvatar">
+        <width>70px</width>
+        <height>70px</height>
+        <margin>0 auto</margin>
+      </selector>
+      <selector path=".avatar">
+        <max-width>70px</max-width>
+        <max-height>70px</max-height>
+      </selector>
     </style>
     <!-- General -->
     <style element="page[1]">
