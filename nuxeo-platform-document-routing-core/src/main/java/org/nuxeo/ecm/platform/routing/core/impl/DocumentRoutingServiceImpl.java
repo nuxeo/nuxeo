@@ -165,17 +165,32 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
         return undoChainIdFromDone.get(documentType);
     }
 
-    /**
-     * Validate Route implies a document unlock under unrestricted session by a
-     * route manager
-     * 
-     * @return
-     * @throws ClientException
-     */
+    @Override
+    public DocumentRoute unlockDocumentRouteUnrestrictedSession(
+            final DocumentRoute routeModel, CoreSession userSession)
+            throws ClientException {
+        new UnrestrictedSessionRunner(userSession) {
+            @Override
+            public void run() throws ClientException {
+                DocumentRoute route = session.getDocument(
+                        routeModel.getDocument().getRef()).getAdapter(
+                        DocumentRoute.class);
+                LockableDocumentRoute lockableRoute = route.getDocument().getAdapter(
+                        LockableDocumentRoute.class);
+                lockableRoute.unlockDocument(session);
+            }
+        }.runUnrestricted();
+        return userSession.getDocument(routeModel.getDocument().getRef()).getAdapter(
+                DocumentRoute.class);
+    }
+
     @Override
     public DocumentRoute validateRouteModel(final DocumentRoute routeModel,
             CoreSession userSession) throws DocumentRouteNotLockedException,
             ClientException {
+        if (!routeModel.getDocument().isLocked()) {
+            throw new DocumentRouteNotLockedException();
+        }
         new UnrestrictedSessionRunner(userSession) {
             @Override
             public void run() throws ClientException {
@@ -183,9 +198,6 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
                         routeModel.getDocument().getRef()).getAdapter(
                         DocumentRoute.class);
                 route.validate(session);
-                LockableDocumentRoute lockableRoute = route.getDocument().getAdapter(
-                        LockableDocumentRoute.class);
-                lockableRoute.unlockDocument(session);
             }
         }.runUnrestricted();
         return userSession.getDocument(routeModel.getDocument().getRef()).getAdapter(

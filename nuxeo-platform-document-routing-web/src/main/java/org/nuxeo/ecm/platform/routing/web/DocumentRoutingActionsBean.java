@@ -219,13 +219,6 @@ public class DocumentRoutingActionsBean implements Serializable {
         return null;
     }
 
-    /**
-     * Validate Route implies a document unlock under unrestricted session by a
-     * route manager
-     * 
-     * @return
-     * @throws ClientException
-     */
     public String validateRouteModel() throws ClientException {
         DocumentRoute currentRouteModel = getRelatedRoute();
         try {
@@ -240,6 +233,8 @@ public class DocumentRoutingActionsBean implements Serializable {
         }
         Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
                 currentRouteModel.getDocument());
+        getDocumentRoutingService().unlockDocumentRouteUnrestrictedSession(
+                currentRouteModel, documentManager);
         return null;
     }
 

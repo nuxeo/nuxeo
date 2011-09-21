@@ -130,6 +130,18 @@ public interface DocumentRoutingService {
             ClientException;
 
     /**
+     * Unlock the given {@link DocumentRoute} model under unrestricted session.
+     * 
+     * @param routeModel
+     * @param userSession
+     * @return The unlocked route.
+     * @since 1.9
+     */
+    public DocumentRoute unlockDocumentRouteUnrestrictedSession(
+            final DocumentRoute routeModel, CoreSession userSession)
+            throws ClientException;
+
+    /**
      * Computes the list of elements {@link DocumentRouteTableElement} for this
      * {@link DocumentRoute}.
      *
