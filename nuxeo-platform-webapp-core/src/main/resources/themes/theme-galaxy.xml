@@ -585,6 +585,7 @@
         <display>none</display>
         <max-width>20%</max-width>
         <z-index>1000</z-index>
+        <position>relative</position>
       </selector>
       <selector path=".rightsAddManager td">
         <border preset="subtabsbar (Galaxy borders)" />
@@ -1373,6 +1374,10 @@
       <selector path=".note_content_block span, .note_content_block p">
         <line-height>1.8em</line-height>
         <font-size>105%</font-size>
+      </selector>
+      <selector path=".note_content_block img">
+        <max-width>200px</max-width>
+        <max-height>150px</max-height>
       </selector>
       <selector path=".relation_block">
       </selector>
