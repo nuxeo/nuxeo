@@ -67,6 +67,14 @@ public class PlatformHelper {
         return Environment.getDefault().isJetty();
     }
 
+    public boolean isWindows() {
+        return System.getProperty("os.name").toLowerCase().indexOf("win") >= 0;
+    }
+
+    public boolean isNotWindows() {
+        return !isWindows();
+    }
+
     public static String getFullName(String platform) {
         return null;
     }
