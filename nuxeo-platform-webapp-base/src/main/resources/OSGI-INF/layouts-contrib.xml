@@ -704,6 +704,49 @@
       </property>
     </widgetType>
 
+    <widgetType name="title_and_permlink">
+      <configuration>
+        <sinceVersion>5.4.2</sinceVersion>
+        <title>Title and permanent link</title>
+        <description>
+          This widgets displays the document title with a permlink icon. If the
+          document is a version, the major and minor are displayed in
+          parenthesis.
+
+          One field is required :
+          <ul>
+            <li>an empty field to map the document</li>
+          </ul>
+
+          Since 5.4.3, it also displays the document header related actions.
+          They must be contributed in one of the following categories:
+          <ul>
+            <li>DOCUMENT_HEADER_ACTIONS_LIST</li>
+            <li>DOCUMENT_HEADER_ACTIONS_LIST_HREF</li>
+          </ul>
+
+        </description>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <defaultConfiguration>
+            <field></field>
+            <field>uid:major_version</field>
+            <field>uid:minor_version</field>
+          </defaultConfiguration>
+        </fields>
+        <categories>
+          <category>header</category>
+        </categories>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/title_with_permlink_widget_template.xhtml
+      </property>
+    </widgetType>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
