@@ -671,7 +671,7 @@
     <attribute>
       <name>handleMultipleValues</name>
       <description>
-        Boolean to treat multi-valued fields as seperate entries (multi-line
+        Boolean to treat multi-valued fields as separate entries (multi-line
         rendering).
       </description>
     </attribute>
