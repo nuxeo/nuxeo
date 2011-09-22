@@ -33,7 +33,8 @@
           <nxh:commandLink action="#{action.getLink()}"
             immediate="#{action.immediate}">
             <h:graphicImage value="#{action.icon}"
-              rendered="#{not empty action.icon}" title="#{messages[action.label]}" />
+              rendered="#{not empty action.icon}"
+              title="#{messages[action.label]}" />
           </nxh:commandLink>
         </c:forEach>
       </c:if>
@@ -46,7 +47,8 @@
           <nxu:set var="link" value="#{action.getLink()}" resolveTwice="true">
             <a href="#{link}">
               <h:graphicImage value="#{action.icon}"
-                rendered="#{not empty action.icon}" title="#{messages[action.label]}" />
+                rendered="#{not empty action.icon}"
+                title="#{messages[action.label]}" />
             </a>
           </nxu:set>
         </c:forEach>
