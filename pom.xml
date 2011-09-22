@@ -118,7 +118,7 @@
     <!-- should use same property name as JBoss to ease upgrades -->
     <jboss.ejb.version>3.0-RC8</jboss.ejb.version>
     <javax.ejb.version>3.0-RC8</javax.ejb.version>
-    <nuxeo.distribution.tools.version>1.10.1</nuxeo.distribution.tools.version>
+    <nuxeo.distribution.tools.version>1.10.2-SNAPSHOT</nuxeo.distribution.tools.version>
     <!-- compliance property since removal of maven-nuxeo-plugin execution -->
     <eclipseVersion>${project.version}</eclipseVersion>
   </properties>
@@ -2444,12 +2444,12 @@
                 </message>
                 <banLatest>true</banLatest>
                 <banRelease>true</banRelease>
-                <banSnapshots>true</banSnapshots>
+                <!-- <banSnapshots>true</banSnapshots> -->
               </requirePluginVersions>
-              <requireReleaseDeps>
-                <message>No Snapshots Allowed!</message>
-                <onlyWhenRelease>true</onlyWhenRelease>
-              </requireReleaseDeps>
+              <!-- <requireReleaseDeps> -->
+              <!-- <message>No Snapshots Allowed!</message> -->
+              <!-- <onlyWhenRelease>true</onlyWhenRelease> -->
+              <!-- </requireReleaseDeps> -->
               <requireMavenVersion>
                 <version>[2.2.1,)</version>
               </requireMavenVersion>
