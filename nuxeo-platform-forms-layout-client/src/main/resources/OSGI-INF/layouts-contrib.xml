@@ -2,7 +2,8 @@
 
 <component name="org.nuxeo.ecm.platform.forms.layout.MainContribution">
   <documentation>
-    Component that provides main contributions to the web layout manager widget
+    Component that provides main contributions to the web layout
+    manager widget
     types.
 
     @version 1.0 @author Anahide Tchertchian (at@nuxeo.com)
@@ -99,9 +100,12 @@
                 </labels>
                 <helpLabels>
                   <label mode="any">
-                    If set to false, the held value will not be escaped. For
-                    instance if it contains HTML tags, they will be rendered as
-                    part of the rendered HTML page instead of being rendered as
+                    If set to false, the held value will not be
+                    escaped. For
+                    instance if it contains HTML tags, they will be
+                    rendered as
+                    part of the rendered HTML page instead of being
+                    rendered as
                     text content. Defaults to true.
                   </label>
                 </helpLabels>
@@ -115,9 +119,12 @@
                 </labels>
                 <helpLabels>
                   <label mode="any">
-                    If set to true, the held value will be translated. This
-                    property cannot be an EL expression, it will only resolve
-                    literal values 'true' or 'false'. Defaults to false.
+                    If set to true, the held value will be
+                    translated. This
+                    property cannot be an EL expression, it will
+                    only resolve
+                    literal values 'true' or 'false'. Defaults to
+                    false.
                     Available since 5.4.3.
                   </label>
                 </helpLabels>
@@ -583,7 +590,7 @@
             accepted on a &lt;h:outputText /&gt; tag in other modes.
           </p>
         </description>
-        <!--<demo id="doubleWidget" />-->
+        <!--<demo id="doubleWidget" /> -->
         <categories>
           <category>document</category>
         </categories>
@@ -1050,8 +1057,10 @@
         <title>Textarea</title>
         <description>
           <p>
-            The textarea widget displays a textarea in create or edit mode, with
-            additional message tag for errors, and a regular text output in any
+            The textarea widget displays a textarea in create or edit mode,
+            with
+            additional message tag for errors, and a regular text output in
+            any
             other mode.
           </p>
           <p>
@@ -1126,9 +1135,12 @@
                 </labels>
                 <helpLabels>
                   <label mode="any">
-                    If set to false, the held value will not be escaped. For
-                    instance if it contains HTML tags, they will be rendered as
-                    part of the rendered HTML page instead of being rendered as
+                    If set to false, the held value will not be
+                    escaped. For
+                    instance if it contains HTML tags, they will be
+                    rendered as
+                    part of the rendered HTML page instead of being
+                    rendered as
                     text content. Defaults to true.
                   </label>
                 </helpLabels>
@@ -1303,7 +1315,8 @@
         <title>Datetime</title>
         <description>
           <p>
-            The datetime widget displays a javascript calendar in create or edit
+            The datetime widget displays a javascript calendar in create or
+            edit
             mode, with additional message tag for errors, and a regular text
             output in any other mode. It uses a date time converter.
           </p>
@@ -1349,10 +1362,14 @@
                 </labels>
                 <helpLabels>
                   <label mode="any">
-                    String pattern for the date and time, as described by the
-                    java.text.SimpleDateFormat class, and as used in the
-                    standard DateTimeConverter. Default value is "dd/MM/yyyy
-                    HH:mm". Sample value: "#{nxu:basicDateFormater()}" or
+                    String pattern for the date and time, as
+                    described by the
+                    java.text.SimpleDateFormat class, and as
+                    used in the
+                    standard DateTimeConverter. Default value is
+                    "dd/MM/yyyy
+                    HH:mm". Sample value:
+                    "#{nxu:basicDateFormater()}" or
                     "#{nxu:basicDateAndTimeFormater()}".
                   </label>
                 </helpLabels>
@@ -1366,7 +1383,8 @@
                 </labels>
                 <helpLabels>
                   <label mode="any">
-                    String timeZone ID. The server time zone is used if not set.
+                    String timeZone ID. The server time zone is
+                    used if not set.
                   </label>
                 </helpLabels>
                 <fields>
@@ -1412,10 +1430,14 @@
                 </labels>
                 <helpLabels>
                   <label mode="any">
-                    String format for the date and time, as described by the
-                    java.text.SimpleDateFormat class, and as used in the
-                    standard DateTimeConverter. Default value is "dd/MM/yyyy
-                    HH:mm". Sample value: "#{nxu:basicDateFormater()}" or
+                    String format for the date and time, as
+                    described by the
+                    java.text.SimpleDateFormat class, and as
+                    used in the
+                    standard DateTimeConverter. Default value is
+                    "dd/MM/yyyy
+                    HH:mm". Sample value:
+                    "#{nxu:basicDateFormater()}" or
                     "#{nxu:basicDateAndTimeFormater()}".
                   </label>
                 </helpLabels>
@@ -1429,7 +1451,8 @@
                 </labels>
                 <helpLabels>
                   <label mode="any">
-                    String representing the locale to use for the calendar.
+                    String representing the locale to use for
+                    the calendar.
                     Current locale is used if not set.
                   </label>
                 </helpLabels>
@@ -1469,8 +1492,10 @@
                 </labels>
                 <helpLabels>
                   <label mode="any">
-                    Flag indicating that the calendar must show a time choice.
-                    Since 5.4.2, this property is ignored and time is shown
+                    Flag indicating that the calendar must show
+                    a time choice.
+                    Since 5.4.2, this property is ignored and time
+                    is shown
                     depending on the date format.
                   </label>
                 </helpLabels>
@@ -1492,7 +1517,8 @@
                 </labels>
                 <helpLabels>
                   <label mode="any">
-                    String timeZone ID. The server time zone is used if not set.
+                    String timeZone ID. The server time zone is
+                    used if not set.
                   </label>
                 </helpLabels>
                 <fields>
@@ -1505,7 +1531,8 @@
                 </labels>
                 <helpLabels>
                   <label mode="any">
-                    Image path to use for the trigger. Available since 5.4.
+                    Image path to use for the trigger. Available
+                    since 5.4.
                   </label>
                 </helpLabels>
                 <fields>
@@ -1518,7 +1545,8 @@
                 </labels>
                 <helpLabels>
                   <label mode="any">
-                    Label to display on the trigger image. Defaults to "...".
+                    Label to display on the trigger image.
+                    Defaults to "...".
                   </label>
                 </helpLabels>
                 <fields>
@@ -1531,7 +1559,8 @@
                 </labels>
                 <helpLabels>
                   <label mode="any">
-                    Style class to set on the trigger button tag, defaults to
+                    Style class to set on the trigger button
+                    tag, defaults to
                     'calendarTrigger'.
                   </label>
                 </helpLabels>
@@ -1568,8 +1597,7 @@
             org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
             &lt;/handler-class&gt; &lt;property name="template"&gt;
             /widgets/my_custom_widget_template.xhtml &lt;/property&gt;
-            &lt;/widgetType&gt;
-          </p>
+            &lt;/widgetType&gt; </p>
         </description>
         <demo id="templateWidget" previewEnabled="false" />
         <categories>
@@ -1579,6 +1607,7 @@
           <mode>edit</mode>
           <mode>view</mode>
         </supportedModes>
+        <acceptingSubWidgets>true</acceptingSubWidgets>
         <properties>
           <layouts mode="any">
             <layout name="template_widget_type_properties_any">
@@ -1660,7 +1689,8 @@
                 </labels>
                 <helpLabels>
                   <label mode="any">
-                    Value binding that will be used as the download link value,
+                    Value binding that will be used as the
+                    download link value,
                     and will attempt to be translated.
                   </label>
                 </helpLabels>
@@ -1674,7 +1704,8 @@
                 </labels>
                 <helpLabels>
                   <label mode="any">
-                    Boolean flag indicating whether or not the file icon should
+                    Boolean flag indicating whether or not the
+                    file icon should
                     be rendered. Defaults to true.
                   </label>
                 </helpLabels>
@@ -1711,7 +1742,8 @@
                 </labels>
                 <helpLabels>
                   <label mode="any">
-                    Value binding that will be used as the download link value,
+                    Value binding that will be used as the
+                    download link value,
                     and will attempt to be translated.
                   </label>
                 </helpLabels>
@@ -1725,7 +1757,8 @@
                 </labels>
                 <helpLabels>
                   <label mode="any">
-                    Boolean flag indicating whether or not the file icon should
+                    Boolean flag indicating whether or not the
+                    file icon should
                     be rendered. Defaults to true.
                   </label>
                 </helpLabels>
@@ -1841,7 +1874,8 @@
                 </labels>
                 <helpLabels>
                   <label mode="any">
-                    If set to true, the default display will be the text display
+                    If set to true, the default display will be
+                    the text display
                     (not html editor). Available since 5.3.1.
                   </label>
                 </helpLabels>
@@ -1893,8 +1927,10 @@
                 </labels>
                 <helpLabels>
                   <label mode="any">
-                    The class to use to identify text areas to turn into html
-                    editors. Defaults to "mceEditor". See the editor_selector
+                    The class to use to identify text areas to
+                    turn into html
+                    editors. Defaults to "mceEditor". See the
+                    editor_selector
                     option in tiny_mce
                     (http://wiki.moxiecode.com/index.php/TinyMCE:Configuration/editor_selector).
                   </label>
@@ -2125,7 +2161,8 @@
                 </labels>
                 <helpLabels>
                   <label mode="any">
-                    True if there should not be displayed a "Please select a
+                    True if there should not be displayed a
+                    "Please select a
                     value" option
                   </label>
                 </helpLabels>
@@ -2175,7 +2212,7 @@
         </categories>
         <supportedModes>
           <mode>edit</mode>
-          <!--  TODO
+          <!-- TODO
             <mode>view</mode>
           -->
         </supportedModes>
@@ -2205,7 +2242,7 @@
         </categories>
         <supportedModes>
           <mode>edit</mode>
-          <!--  TODO
+          <!-- TODO
             <mode>view</mode>
           -->
         </supportedModes>
@@ -2405,7 +2442,8 @@
                 </labels>
                 <helpLabels>
                   <label mode="any">
-                    True if there should not be displayed a "Please select a
+                    True if there should not be displayed a
+                    "Please select a
                     value" option
                   </label>
                 </helpLabels>
@@ -2447,9 +2485,9 @@
         <title>List</title>
         <description>
           <p>
-            The list widget displays an editable list of items in create or edit
-            mode, with additional message tag for errors, and the same list of
-            items in other modes. It is not usable within a list widget (see
+            The list widget displays an editable list of items in create or
+            edit mode, with additional message tag for errors, and the same list
+            of items in other modes. It is not usable within a list widget (see
             sublist widget for this feature).
           </p>
           <p>Items are defined using sub wigdets configuration.</p>
@@ -2467,6 +2505,7 @@
           <mode>edit</mode>
           <mode>view</mode>
         </supportedModes>
+        <acceptingSubWidgets>true</acceptingSubWidgets>
         <fields>
           <list>true</list>
           <complex>false</complex>
@@ -2478,15 +2517,16 @@
             <type>integer</type>
             <type>double</type>
             <type>boolean</type>
+            <type>complex</type>
           </supportedTypes>
           <defaultTypes>
             <type>string</type>
             <type>path</type>
             <type>date</type>
-            <type>blob</type>
             <type>integer</type>
             <type>double</type>
             <type>boolean</type>
+            <type>complex</type>
           </defaultTypes>
         </fields>
         <properties>
@@ -2506,8 +2546,10 @@
                 </labels>
                 <helpLabels>
                   <label mode="any">
-                    The display attribute controls the rendering of subwidgets,
-                    either in a table, either inline. Available since 5.4.2.
+                    The display attribute controls the rendering
+                    of subwidgets,
+                    either in a table, either inline. Available
+                    since 5.4.2.
                   </label>
                 </helpLabels>
                 <fields>
@@ -2524,7 +2566,8 @@
                 </labels>
                 <helpLabels>
                   <label mode="any">
-                    This attribute controls the rendering of subwidgets labels.
+                    This attribute controls the rendering of
+                    subwidgets labels.
                     Available since 5.4.2.
                   </label>
                 </helpLabels>
@@ -2569,7 +2612,8 @@
                 </labels>
                 <helpLabels>
                   <label mode="any">
-                    This attribute controls the possibility to order the items.
+                    This attribute controls the possibility to
+                    order the items.
                     Available since 5.4.3.
                   </label>
                 </helpLabels>
@@ -2593,8 +2637,8 @@
         <title>Complex</title>
         <description>
           <p>
-            The complex widget displays its sub widgets, and is controlling of a
-            map-like. Each of the map items rendering is done through sub
+            The complex widget displays its sub widgets, and is controlling of
+            a map-like. Each of the map items rendering is done through sub
             widgets configuration.
           </p>
         </description>
@@ -2606,9 +2650,16 @@
           <mode>edit</mode>
           <mode>view</mode>
         </supportedModes>
+        <acceptingSubWidgets>true</acceptingSubWidgets>
         <fields>
           <list>false</list>
           <complex>true</complex>
+          <supportedTypes>
+            <type>complex</type>
+          </supportedTypes>
+          <defaultTypes>
+            <type>complex</type>
+          </defaultTypes>
         </fields>
         <properties>
           <layouts mode="any">
@@ -2627,8 +2678,10 @@
                 </labels>
                 <helpLabels>
                   <label mode="any">
-                    The display attribute controls the rendering of subwidgets,
-                    either in a table, either inline. Available since 5.4.2.
+                    The display attribute controls the rendering
+                    of subwidgets,
+                    either in a table, either inline. Available
+                    since 5.4.2.
                   </label>
                 </helpLabels>
                 <fields>
@@ -2645,7 +2698,8 @@
                 </labels>
                 <helpLabels>
                   <label mode="any">
-                    This attribute controls the rendering of subwidgets labels.
+                    This attribute controls the rendering of
+                    subwidgets labels.
                     Available since 5.4.2.
                   </label>
                 </helpLabels>
@@ -3209,7 +3263,8 @@
                 </labels>
                 <helpLabels>
                   <label mode="any">
-                    The cols attribute sets the number of columns to display.
+                    The cols attribute sets the number of
+                    columns to display.
                     Available since 5.3.1.
                   </label>
                 </helpLabels>
@@ -3223,7 +3278,8 @@
                 </labels>
                 <helpLabels>
                   <label mode="any">
-                    The rows attribute sets the number of rows to display.
+                    The rows attribute sets the number of rows
+                    to display.
                     Available since 5.3.1.
                   </label>
                 </helpLabels>
@@ -3237,8 +3293,10 @@
                 </labels>
                 <helpLabels>
                   <label mode="any">
-                    The class to use to identify text areas to turn into html
-                    editors. Defaults to "mceEditor". See the editor_selector
+                    The class to use to identify text areas to
+                    turn into html
+                    editors. Defaults to "mceEditor". See the
+                    editor_selector
                     option in tiny_mce
                     (http://wiki.moxiecode.com/index.php/TinyMCE:Configuration/editor_selector).
                   </label>
@@ -3264,8 +3322,10 @@
         <sinceVersion>5.3.2</sinceVersion>
         <title>Duration</title>
         <description>
-          This widget displays a i18n formatted duration of a field holding a
-          value measured in seconds (can be Long, Double or String valued). NB:
+          This widget displays a i18n formatted duration of a field
+          holding a
+          value measured in seconds (can be Long, Double or String
+          valued). NB:
           only view mode is supported right now.
         </description>
         <categories>
