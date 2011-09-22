@@ -8,13 +8,21 @@
 
   <table class="dataInput">
     <tr>
-      <td class="iconColumn" style="vertical-align:top;" />
+      <td class="iconColumn" style="vertical-align:top;">
+        <h:graphicImage value="/icons/lightbulb.png"
+          styleClass="layoutHelpLabel"
+          title="#{messages['label.versioning.currentVersion.tooltip']}" />
+      </td>
       <td class="labelColumn"><h:outputText value="#{messages['label.version']}"/></td>
       <td class="fieldColumn"><h:outputText value="#{currentDocumentVersionInfo.versionLabel}"/></td>
     </tr>
     <c:if test="#{renderVersioningOptionsForCurrentDocument}">
     <tr>
-      <td class="iconColumn" style="vertical-align:top;" />
+      <td class="iconColumn" style="vertical-align:top;">
+        <h:graphicImage value="/icons/lightbulb.png"
+          styleClass="layoutHelpLabel"
+          title="#{messages['label.versioning.changeVersion.tooltip']}" />
+      </td>
       <td class="labelColumn">
         <h:outputLabel for="versioningOptionInstanceId"
           value="#{messages['label.versioning.selectVersioningOption']}" />
