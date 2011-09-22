@@ -631,7 +631,9 @@ public class Model {
     @SuppressWarnings("unchecked")
     private void inferFulltextInfo() {
         List<FulltextIndexDescriptor> descs = repositoryDescriptor.fulltextIndexes;
-        fulltextInfo.excludedTypes.addAll(repositoryDescriptor.fulltextExcludedTypes);
+        if (repositoryDescriptor.fulltextExcludedTypes != null) {
+            fulltextInfo.excludedTypes.addAll(repositoryDescriptor.fulltextExcludedTypes);
+        }
         if (descs == null) {
             descs = new ArrayList<FulltextIndexDescriptor>(1);
         }

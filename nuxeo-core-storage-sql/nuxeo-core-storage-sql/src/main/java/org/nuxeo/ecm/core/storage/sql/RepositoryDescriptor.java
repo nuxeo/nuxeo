@@ -154,7 +154,7 @@ public class RepositoryDescriptor {
     public List<FulltextIndexDescriptor> fulltextIndexes;
 
     @XNodeList(value = "indexing/excludedTypes/type", type =  HashSet.class, componentType = String.class)
-    public Set<String> fulltextExcludedTypes;
+    public Set<String> fulltextExcludedTypes = new HashSet<String>();
 
     @XNode("pathOptimizations@enabled")
     public boolean pathOptimizationsEnabled = true;
