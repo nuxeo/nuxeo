@@ -3,53 +3,6 @@
 <component name="org.nuxeo.ecm.platform.forms.layouts.webapp">
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
-    point="widgettypes">
-
-    <widgetType name="title_and_permlink">
-
-      <documentation>
-        This widgets displays the document title with a permlink icon. If the
-        document is a version, the major and minor are displayed in parenthesis.
-
-        Three fields are required :
-        <ul>
-          <li>an empty field to map the document</li>
-          <li>the major version field</li>
-          <li>the minor version field</li>
-        </ul>
-      </documentation>
-
-      <handler-class>
-        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
-      </handler-class>
-      <property name="template">
-        /widgets/title_with_permlink_widget_template.xhtml
-      </property>
-    </widgetType>
-
-    <widgetType name="header_actions">
-
-      <documentation>
-        This widgets displays the document header related actions. They must be
-        contributed in one of the following categories:
-        <ul>
-          <li>DOCUMENT_HEADER_ACTIONS_LIST</li>
-          <li>DOCUMENT_HEADER_ACTIONS_LIST_HREF</li>
-        </ul>
-
-      </documentation>
-
-      <handler-class>
-        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
-      </handler-class>
-      <property name="template">
-        /widgets/header_actions_widget_template.xhtml
-      </property>
-    </widgetType>
-
-  </extension>
-
-  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="widgets">
 
     <widget name="nature" type="selectOneDirectory">
@@ -373,8 +326,6 @@
     <widget name="header_title_and_permlink" type="title_and_permlink">
       <fields>
         <field></field>
-        <field>uid:major_version</field>
-        <field>uid:minor_version</field>
       </fields>
       <labels>
         <label mode="any"></label>
@@ -391,14 +342,6 @@
       <properties mode="any">
         <property name="styleClass">currentDocumentDescription</property>
       </properties>
-    </widget>
-
-    <widget name="header_actions" type="header_actions">
-      <fields>
-      </fields>
-      <labels>
-        <label mode="any"></label>
-      </labels>
     </widget>
 
   </extension>
@@ -508,7 +451,6 @@
       <rows>
         <row>
           <widget>header_title_and_permlink</widget>
-          <widget>header_actions</widget>
         </row>
         <row>
           <widget>header_description</widget>

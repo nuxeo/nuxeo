@@ -1,36 +1,58 @@
-<div xmlns:h="http://java.sun.com/jsf/html"
+<f:subview xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:c="http://java.sun.com/jstl/core">
 
-  <c:if test="#{widget.mode != 'edit'}">
+  <h1>
 
-   <h:panelGroup rendered="#{field_0.version}">
-      <h1>
-      <nxu:methodResult name="sourceDocument"
-        value="#{versionedActions.getSourceDocument(field_0)}">
-        <h:outputText value="#{nxd:titleOrId(sourceDocument)}"/>
-      </nxu:methodResult>
-      (
-      <h:outputText value="#{messages['label.version']}" />
-      <h:outputText value=" #{field_1}"/>.
-      <h:outputText value="#{field_2}"/>)
-      </h1>
-    </h:panelGroup>
-    <h:panelGroup rendered="#{! field_0.version}">
-      <h1>
-        <h:outputText value="#{nxd:titleOrId(field_0)}"/>
-        <span title="uid: #{field_0.id}">
-          <nxd:restDocumentLink document="#{field_0}" pattern="id">
-            <nxu:graphicImage value="/icons/permalink.png"
-              style="vertical-align:middle"
-              alt="#{messages['label.permalink']}"
-              title="#{messages['label.permalink']}"/>
-          </nxd:restDocumentLink>
-       </span>
-      </h1>
-    </h:panelGroup>
+    <c:if test="#{field.version}">
+      <h:outputText value="#{nxd:titleOrId(field)}"/>
+      (<h:outputText value="#{messages['label.version']}" />
+      <h:outputText value=" #{documentManager.getVersionLabel(field)}"/>)
+    </c:if>
+    <c:if test="#{! field.version}">
+      <h:outputText value="#{nxd:titleOrId(field)}"/>
+    </c:if>
 
-  </c:if>
+    <span title="uid: #{field.id}">
+      <nxd:restDocumentLink document="#{field}" pattern="id" target="_blank">
+        <nxu:graphicImage value="/icons/permalink.png"
+          style="vertical-align:middle"
+          alt="#{messages['label.permalink']}"
+          title="#{messages['label.permalink']}"/>
+      </nxd:restDocumentLink>
+    </span>
 
-</div>
+    <nxu:set var="actions"
+      value="#{webActions.getActionsList('DOCUMENT_HEADER_ACTIONS_LIST')}"
+      cache="true">
+      <c:if test="#{!empty actions}">
+        <c:forEach var="action" items="#{actions}">
+          <nxh:commandLink action="#{action.getLink()}"
+            immediate="#{action.immediate}">
+            <h:graphicImage value="#{action.icon}"
+              rendered="#{not empty action.icon}" title="#{messages[action.label]}" />
+          </nxh:commandLink>
+        </c:forEach>
+      </c:if>
+    </nxu:set>
+    <nxu:set var="actions"
+      value="#{webActions.getActionsList('DOCUMENT_HEADER_ACTIONS_LIST_HREF')}"
+      cache="true">
+      <c:if test="#{!empty actions}">
+        <c:forEach var="action" items="#{actions}">
+          <nxu:set var="link" value="#{action.getLink()}" resolveTwice="true">
+            <a href="#{link}">
+              <h:graphicImage value="#{action.icon}"
+                rendered="#{not empty action.icon}" title="#{messages[action.label]}" />
+            </a>
+          </nxu:set>
+        </c:forEach>
+      </c:if>
+    </nxu:set>
+
+  </h1>
+
+</f:subview>
