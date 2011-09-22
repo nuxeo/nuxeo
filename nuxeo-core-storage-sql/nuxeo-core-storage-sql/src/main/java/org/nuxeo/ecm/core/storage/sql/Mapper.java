@@ -13,6 +13,8 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.Set;
 
 import javax.transaction.xa.XAResource;
 
@@ -156,6 +158,15 @@ public interface Mapper extends RowMapper, XAResource {
     // queryFilter used for principals and permissions
     IterableQueryResult queryAndFetch(String query, String queryType,
             QueryFilter queryFilter, Object... params) throws StorageException;
+
+    /**
+     * Gets the ids for all the ancestors of the given row ids.
+     *
+     * @param ids the ids
+     * @return the set of ancestor ids
+     */
+    Set<Serializable> getAncestorsIds(Collection<Serializable> ids)
+            throws StorageException;
 
     /*
      * ----- ACLs -----

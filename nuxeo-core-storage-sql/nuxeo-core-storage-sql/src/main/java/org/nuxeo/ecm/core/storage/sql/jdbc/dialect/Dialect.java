@@ -884,6 +884,16 @@ public abstract class Dialect {
     }
 
     /**
+     * Does a stored function returning an result set need to access it as a
+     * single array instead of iterating over a normal result set's rows.
+     * <p>
+     * Oracle needs this.
+     */
+    public boolean supportsArraysReturnInsteadOfRows() {
+        return false;
+    }
+
+    /**
      * Checks if the dialect supports storing arrays of system names (for mixins
      * for instance).
      */
@@ -1102,6 +1112,15 @@ public abstract class Dialect {
     public String getBlobLengthFunction() {
         // the SQL-standard function (PostgreSQL, MySQL)
         return "OCTET_LENGTH";
+    }
+
+    /**
+     * Gets the SQL query to get the ancestors of a set of ids.
+     *
+     * @return null if not available
+     */
+    public String getAncestorsIdsSql() {
+        return null;
     }
 
 }

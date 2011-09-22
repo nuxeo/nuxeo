@@ -2116,4 +2116,52 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertNull(lock);
     }
 
+    public void testPath() throws Exception {
+        Session session = repository.getConnection();
+        Node root = session.getRootNode();
+
+        // /foo
+        Node foo = session.addChildNode(root, "foo", null, "TestDoc", false);
+        // /foo/bar
+        Node bar = session.addChildNode(foo, "bar", null, "TestDoc", false);
+        // /foo/bar/gee
+        Node gee = session.addChildNode(bar, "gee", null, "TestDoc", false);
+        // /foo/moo
+        Node moo = session.addChildNode(foo, "moo", null, "TestDoc", false);
+
+        session.save();
+        session.close();
+        session = repository.getConnection();
+
+        List<Node> nodes = session.getNodesByIds(Arrays.asList(gee.getId(),
+                moo.getId()));
+        assertEquals("/foo/bar/gee", nodes.get(0).getPath());
+        assertEquals("/foo/moo", nodes.get(1).getPath());
+    }
+
+    public void testPathDeep() throws Exception {
+        Session session = repository.getConnection();
+        Node root = session.getRootNode();
+        Node r1 = session.addChildNode(root, "r1", null, "TestDoc", false);
+        Node r2 = session.addChildNode(root, "r2", null, "TestDoc", false);
+        for (int i = 0; i < 10; i++) {
+            r1 = session.addChildNode(r1, "node" + i, null, "TestDoc", false);
+            r2 = session.addChildNode(r2, "node" + i, null, "TestDoc", false);
+        }
+        Node last1 = r1;
+        Node last2 = r2;
+
+        session.save();
+        session.close();
+        session = repository.getConnection();
+
+        // fetch last
+        List<Node> nodes = session.getNodesByIds(Arrays.asList(last1.getId(),
+                last2.getId()));
+        assertEquals("/r1/node0/node1/node2/node3/node4"
+                + "/node5/node6/node7/node8/node9", nodes.get(0).getPath());
+        assertEquals("/r2/node0/node1/node2/node3/node4"
+                + "/node5/node6/node7/node8/node9", nodes.get(1).getPath());
+    }
+
 }

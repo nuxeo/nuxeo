@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
@@ -53,6 +54,7 @@ import org.nuxeo.ecm.core.storage.EventConstants;
 import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Invalidations.InvalidationsPair;
+import org.nuxeo.ecm.core.storage.sql.PersistenceContext.PathAndId;
 import org.nuxeo.ecm.core.storage.sql.RowMapper.RowBatch;
 import org.nuxeo.ecm.core.storage.sql.coremodel.BinaryTextListener;
 import org.nuxeo.runtime.api.Framework;
@@ -576,9 +578,6 @@ public class SessionImpl implements Session, XAResource {
 
     protected Node getNodeById(Serializable id, boolean prefetch)
             throws StorageException {
-        if (context.isDeleted(id)) {
-            return null;
-        }
         List<Node> nodes = getNodesByIds(Collections.singletonList(id),
                 prefetch);
         return nodes.get(0);
@@ -603,8 +602,35 @@ public class SessionImpl implements Session, XAResource {
         }
 
         List<Fragment> hierFragments = context.getMulti(hierRowIds, false);
-        // the ids usually come from a query, in which case we don't need to
-        // check if they are removed using isDeleted()
+
+        // find available paths
+        Map<Serializable,String> paths = new HashMap<Serializable, String>();
+        Set<Serializable> parentIds = new HashSet<Serializable>();
+        for (Fragment fragment : hierFragments) {
+            Serializable id = fragment.getId();
+            PathAndId pathOrId = context.getPathOrMissingParentId(
+                    (SimpleFragment) fragment, false);
+            // find missing fragments
+            if (pathOrId.path != null) {
+                paths.put(id, pathOrId.path);
+            } else {
+                parentIds.add(pathOrId.id);
+            }
+        }
+        // fetch the missing parents and their ancestors in bulk
+        if (!parentIds.isEmpty()) {
+            // fetch them in the context
+            getHierarchyAndAncestors(parentIds);
+            // compute missing paths using context
+            for (Fragment fragment : hierFragments) {
+                Serializable id = fragment.getId();
+                if (paths.containsKey(id)) {
+                    continue;
+                }
+                String path = context.getPath((SimpleFragment) fragment);
+                paths.put(id, path);
+            }
+        }
 
         // prepare fragment groups to build nodes
         Map<Serializable, FragmentGroup> fragmentGroups = new HashMap<Serializable, FragmentGroup>(
@@ -674,7 +700,7 @@ public class SessionImpl implements Session, XAResource {
             FragmentGroup fragmentGroup = fragmentGroups.get(id);
             // null if deleted/absent
             Node node = fragmentGroup == null ? null : new Node(context,
-                    fragmentGroup);
+                    fragmentGroup, paths.get(id));
             nodes.add(node);
         }
 
@@ -740,24 +766,11 @@ public class SessionImpl implements Session, XAResource {
     @Override
     public String getPath(Node node) throws StorageException {
         checkLive();
-        List<String> list = new LinkedList<String>();
-        while (node != null) {
-            list.add(node.getName());
-            node = getParentNode(node);
+        String path = node.getPath();
+        if (path == null) {
+            path = context.getPath(node.getHierFragment());
         }
-        if (list.size() == 1) {
-            String name = list.get(0);
-            if (name == null || name.length() == 0) {
-                // root, special case
-                // (empty string for normal databases, null for Oracle)
-                return "/";
-            } else {
-                // placeless document, no initial slash
-                return name;
-            }
-        }
-        Collections.reverse(list);
-        return StringUtils.join(list, "/");
+        return path;
     }
 
     /* Does not apply to properties for now (no use case). */
@@ -843,7 +856,7 @@ public class SessionImpl implements Session, XAResource {
         // for (String tableName : model.getTypeSimpleFragments(typeName)) {
         FragmentGroup fragmentGroup = new FragmentGroup(hierFragment,
                 new FragmentsMap());
-        return new Node(context, fragmentGroup);
+        return new Node(context, fragmentGroup, context.getPath(hierFragment));
     }
 
     @Override
@@ -1042,6 +1055,23 @@ public class SessionImpl implements Session, XAResource {
             nodes.add(getNodeById(id));
         }
         return nodes;
+    }
+
+    /**
+     * Fetches the hierarchy fragment for the given rows and all their
+     * ancestors.
+     *
+     * @param ids the fragment ids
+     */
+    protected List<Fragment> getHierarchyAndAncestors(
+            Collection<Serializable> ids) throws StorageException {
+        Set<Serializable> allIds = mapper.getAncestorsIds(ids);
+        allIds.addAll(ids);
+        List<RowId> rowIds = new ArrayList<RowId>(allIds.size());
+        for (Serializable id : allIds) {
+            rowIds.add(new RowId(model.HIER_TABLE_NAME, id));
+        }
+        return context.getMulti(rowIds, true);
     }
 
     @Override

@@ -12,6 +12,8 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.Set;
 
 import javax.transaction.xa.XAException;
 import javax.transaction.xa.XAResource;
@@ -97,6 +99,12 @@ public class CachingMapper extends CachingRowMapper implements Mapper {
     public IterableQueryResult queryAndFetch(String query, String queryType,
             QueryFilter queryFilter, Object... params) throws StorageException {
         return mapper.queryAndFetch(query, queryType, queryFilter, params);
+    }
+
+    @Override
+    public Set<Serializable> getAncestorsIds(Collection<Serializable> ids)
+            throws StorageException {
+        return mapper.getAncestorsIds(ids);
     }
 
     @Override

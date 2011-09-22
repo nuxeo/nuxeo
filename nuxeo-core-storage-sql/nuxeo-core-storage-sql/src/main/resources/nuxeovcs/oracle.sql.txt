@@ -250,6 +250,42 @@ LOG.INFO Initializing ancestors table for path optimization, please wait...
 {CALL nx_init_ancestors}
 
 
+# ancestors ids (since Nuxeo 5.4.3)
+
+#IF: pathOptimizationsEnabled
+CREATE OR REPLACE FUNCTION NX_ANCESTORS(ids NX_STRING_TABLE)
+RETURN NX_STRING_TABLE PIPELINED
+IS
+  id hierarchy.id%TYPE;
+  a ancestors.ancestors%TYPE;
+BEGIN
+  FOR i IN ids.FIRST .. ids.LAST LOOP
+    id := ids(i);
+    SELECT ancestors INTO a FROM ancestors WHERE hierarchy_id = id;
+    FOR j IN a.FIRST .. a.LAST LOOP
+      PIPE ROW(a(j));
+    END LOOP;
+  END LOOP;
+END;
+
+#IF: !pathOptimizationsEnabled
+CREATE OR REPLACE FUNCTION NX_ANCESTORS(ids NX_STRING_TABLE)
+RETURN NX_STRING_TABLE PIPELINED
+IS
+  id hierarchy.id%TYPE;
+  curid hierarchy.id%TYPE;
+BEGIN
+  FOR i IN ids.FIRST .. ids.LAST LOOP
+    curid := ids(i);
+    LOOP
+      SELECT parentid INTO curid FROM hierarchy WHERE hierarchy.id = curid;
+      EXIT WHEN curid IS NULL;
+      PIPE ROW(curid);
+    END LOOP;
+  END LOOP;
+END;
+
+
 # ------------------------------------------------------------
 # -- ACLR (aka READ ACL) OPTIMIZATIONS
 

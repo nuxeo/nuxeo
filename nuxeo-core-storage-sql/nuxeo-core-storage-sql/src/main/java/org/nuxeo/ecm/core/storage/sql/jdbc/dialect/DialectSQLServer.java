@@ -406,4 +406,9 @@ public class DialectSQLServer extends Dialect {
         return "DATALENGTH";
     }
 
+    @Override
+    public String getAncestorsIdsSql() {
+        return "SELECT id FROM dbo.NX_ANCESTORS(?)";
+    }
+
 }

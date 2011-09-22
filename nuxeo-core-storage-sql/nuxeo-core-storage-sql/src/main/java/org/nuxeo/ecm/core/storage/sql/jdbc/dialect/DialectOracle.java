@@ -445,6 +445,11 @@ public class DialectOracle extends Dialect {
     }
 
     @Override
+    public boolean supportsArraysReturnInsteadOfRows() {
+        return true;
+    }
+
+    @Override
     public boolean hasNullEmptyString() {
         return true;
     }
@@ -579,6 +584,11 @@ public class DialectOracle extends Dialect {
     @Override
     public String getBlobLengthFunction() {
         return "LENGTHB";
+    }
+
+    @Override
+    public String getAncestorsIdsSql() {
+        return "SELECT NX_ANCESTORS(?) FROM DUAL";
     }
 
 }

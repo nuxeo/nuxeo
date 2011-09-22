@@ -20,8 +20,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -260,4 +262,80 @@ public class H2Functions extends EmbeddedFunctions {
 
         return new SimpleResultSet();
     }
+
+    public static ResultSet getAncestorsIds(Connection conn, String idsString)
+            throws SQLException {
+        Set<String> ids = split(idsString);
+        DatabaseMetaData meta = conn.getMetaData();
+        SimpleResultSet result = new SimpleResultSet();
+        result.addColumn("ID", Types.VARCHAR, 0, 0); // String id
+        if (meta.getURL().startsWith("jdbc:columnlist:")) {
+            // this is just to query the result set columns
+            return result;
+        }
+
+        PreparedStatement ps = null;
+        try {
+            LinkedList<String> todo = new LinkedList<String>(ids);
+            Set<String> done = new HashSet<String>();
+            Set<String> res = new HashSet<String>();
+            while (!todo.isEmpty()) {
+                done.addAll(todo);
+                String sql = getSelectParentIdsByIdsSql(todo.size());
+                if (isLogEnabled()) {
+                    logDebug(sql, todo);
+                }
+                ps = conn.prepareStatement(sql);
+                int i = 1;
+                for (String id : todo) {
+                    ps.setString(i++, id);
+                }
+                todo = new LinkedList<String>();
+                List<String> debugIds = null;
+                if (isLogEnabled()) {
+                    debugIds = new LinkedList<String>();
+                }
+                ResultSet rs = ps.executeQuery();
+                while (rs.next()) {
+                    String id = rs.getString(1);
+                    if (id != null) {
+                        if (!res.contains(id)) {
+                            res.add(id);
+                            result.addRow(new Object[] { id });
+                        }
+                        if (!done.contains(id)) {
+                            todo.add(id);
+                        }
+                        if (isLogEnabled()) {
+                            debugIds.add(id);
+                        }
+                    }
+                }
+                if (isLogEnabled()) {
+                    logDebug("  -> " + debugIds);
+                }
+                ps.close();
+                ps = null;
+            }
+            return result;
+        } finally {
+            if (ps != null) {
+                ps.close();
+            }
+        }
+    }
+
+    protected static String getSelectParentIdsByIdsSql(int size) {
+        StringBuilder buf = new StringBuilder(
+                "SELECT DISTINCT \"PARENTID\" FROM \"HIERARCHY\" WHERE \"ID\" IN (");
+        for (int i = 0; i < size; i++) {
+            if (i != 0) {
+                buf.append(", ");
+            }
+            buf.append('?');
+        }
+        buf.append(')');
+        return buf.toString();
+    }
+
 }

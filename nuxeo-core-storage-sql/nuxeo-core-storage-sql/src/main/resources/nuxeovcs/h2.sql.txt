@@ -41,6 +41,8 @@ CREATE ALIAS IF NOT EXISTS nx_upgrade_versions FOR "${h2Functions}.upgradeVersio
 
 CREATE ALIAS IF NOT EXISTS nx_upgrade_lastContributor FOR "${h2Functions}.upgradeLastContributor";
 
+CREATE ALIAS IF NOT EXISTS NX_ANCESTORS FOR "${h2Functions}.getAncestorsIds";
+
 #IF: fulltextEnabled
 CREATE ALIAS IF NOT EXISTS NXFT_INIT FOR "${h2Fulltext}.init";
 

@@ -769,4 +769,9 @@ public class DialectPostgreSQL extends Dialect {
         return "";
     }
 
+    @Override
+    public String getAncestorsIdsSql() {
+        return "SELECT NX_ANCESTORS(?)";
+    }
+
 }
