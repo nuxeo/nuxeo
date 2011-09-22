@@ -3,6 +3,7 @@
 
   <require>org.nuxeo.ecm.platform.types</require>
   <require>org.nuxeo.ecm.platform.picture.jsf.types</require>
+  <require>org.nuxeo.ecm.platform.audio.ecm.types</require>
 
   <extension target="org.nuxeo.ecm.platform.types.TypeService" point="types">
 
@@ -159,12 +160,8 @@
     </type>
 
     <type id="Audio">
-      <label>Audio</label>
-      <default-view>view_documents</default-view>
       <icon>/dam/icons/audio.png</icon>
       <bigIcon>/dam/icons/audio_big.png</bigIcon>
-      <category>SimpleDocument</category>
-      <description>Audio.description</description>
       <layouts mode="any">
         <layout>heading</layout>
         <layout>dam_common</layout>
