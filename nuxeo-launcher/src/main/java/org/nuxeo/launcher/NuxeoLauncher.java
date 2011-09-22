@@ -694,8 +694,8 @@ public abstract class NuxeoLauncher {
                 "nuxeo-connect-client-wrapper", "nuxeo-runtime-reload" };
         cp = getTempClassPath(tmpDir, cp, baseDir, filenames);
         baseDir = configurationGenerator.getServerConfigurator().getNuxeoLibDir();
-        filenames = new String[] { "commons-io", "groovy-all", "osgi-core",
-                "xercesImpl" };
+        filenames = new String[] { "commons-io", "commons-jexl", "groovy-all",
+                "osgi-core", "xercesImpl" };
         cp = getTempClassPath(tmpDir, cp, baseDir, filenames);
         baseDir = configurationGenerator.getServerConfigurator().getServerLibDir();
         filenames = new String[] { "commons-logging", "log4j" };
