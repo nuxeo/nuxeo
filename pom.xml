@@ -77,11 +77,6 @@
         <artifactId>nuxeo-platform-usermanager-api</artifactId>
         <version>${nuxeo.features.version}</version>
       </dependency>
-      <dependency>
-        <groupId>org.jboss.seam</groupId>
-        <artifactId>jboss-seam-pdf</artifactId>
-        <version>2.0.3.CR1</version>
-      </dependency>
     </dependencies>
   </dependencyManagement>
 

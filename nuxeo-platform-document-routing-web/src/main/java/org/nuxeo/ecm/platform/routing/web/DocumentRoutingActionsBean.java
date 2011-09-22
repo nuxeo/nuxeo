@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import javax.faces.application.FacesMessage;
 import javax.faces.convert.Converter;
 
 import org.apache.commons.lang.StringUtils;
@@ -44,6 +43,7 @@ import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
+import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.common.collections.ScopedMap;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
@@ -59,9 +59,9 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteTableElement;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
+import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.ExecutionTypeValues;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 import org.nuxeo.ecm.platform.routing.api.LockableDocumentRoute;
-import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.ExecutionTypeValues;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteAlredayLockedException;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteNotLockedException;
 import org.nuxeo.ecm.platform.types.TypeManager;
@@ -213,7 +213,7 @@ public class DocumentRoutingActionsBean implements Serializable {
         getDocumentRoutingService().saveRouteAsNewModel(getRelatedRoute(),
                 documentManager);
         facesMessages.add(
-                FacesMessage.SEVERITY_INFO,
+                StatusMessage.Severity.INFO,
                 resourcesAccessor.getMessages().get(
                         "feedback.casemanagement.document.route.route_duplicated"));
         return null;
@@ -226,7 +226,7 @@ public class DocumentRoutingActionsBean implements Serializable {
                     documentManager);
         } catch (DocumentRouteNotLockedException e) {
             facesMessages.add(
-                    FacesMessage.SEVERITY_WARN,
+                    StatusMessage.Severity.WARN,
                     resourcesAccessor.getMessages().get(
                             "feedback.casemanagement.document.route.not.locked"));
             return null;
@@ -297,7 +297,7 @@ public class DocumentRoutingActionsBean implements Serializable {
         }
         if (route == null) {
             facesMessages.add(
-                    FacesMessage.SEVERITY_WARN,
+                    StatusMessage.Severity.WARN,
                     resourcesAccessor.getMessages().get(
                             "feedback.casemanagement.document.route.no.valid.route"));
             return null;
@@ -314,7 +314,7 @@ public class DocumentRoutingActionsBean implements Serializable {
     /**
      * returns true if the routeStarted on the current Document is editable (is
      * Ready )
-     * */
+     */
     public boolean routeRelatedToCurrentDocumentIsRunning()
             throws ClientException {
         DocumentRoute route = getRelatedRoute();
@@ -377,7 +377,7 @@ public class DocumentRoutingActionsBean implements Serializable {
                     documentManager);
         } catch (DocumentRouteNotLockedException e) {
             facesMessages.add(
-                    FacesMessage.SEVERITY_WARN,
+                    StatusMessage.Severity.WARN,
                     resourcesAccessor.getMessages().get(
                             "feedback.casemanagement.document.route.not.locked"));
             return null;
@@ -396,7 +396,7 @@ public class DocumentRoutingActionsBean implements Serializable {
 
     /**
      * Returns true if the givenDoc is a step that can be edited
-     * */
+     */
     public boolean isEditableStep(DocumentModel stepDoc) throws ClientException {
         DocumentRouteElement stepElement = stepDoc.getAdapter(DocumentRouteElement.class);
         // if fork, is not simple editable step
@@ -408,7 +408,7 @@ public class DocumentRoutingActionsBean implements Serializable {
 
     /**
      * Returns true if the givenDoc is an routeElement that can be edited
-     * */
+     */
     public boolean isEditableRouteElement(DocumentModel stepDoc)
             throws ClientException {
         DocumentRouteElement stepElement = stepDoc.getAdapter(DocumentRouteElement.class);
@@ -428,11 +428,11 @@ public class DocumentRoutingActionsBean implements Serializable {
     }
 
     public boolean canUnlockRoute() throws ClientException {
-        return lockActions.getCanUnlockDoc(getRelatedRoute().getDocument());
+        return Boolean.TRUE.equals(lockActions.getCanUnlockDoc(getRelatedRoute().getDocument()));
     }
 
     public boolean canLockRoute() throws ClientException {
-        return lockActions.getCanLockDoc(getRelatedRoute().getDocument());
+        return Boolean.TRUE.equals(lockActions.getCanLockDoc(getRelatedRoute().getDocument()));
     }
 
     public Map<String, Serializable> getCurrentRouteLockDetails()
@@ -453,7 +453,7 @@ public class DocumentRoutingActionsBean implements Serializable {
                     documentManager);
         } catch (DocumentRouteAlredayLockedException e) {
             facesMessages.add(
-                    FacesMessage.SEVERITY_WARN,
+                    StatusMessage.Severity.WARN,
                     resourcesAccessor.getMessages().get(
                             "feedback.casemanagement.document.route.already.locked"));
             return null;
@@ -503,13 +503,13 @@ public class DocumentRoutingActionsBean implements Serializable {
                     documentManager);
         } catch (DocumentRouteNotLockedException e) {
             facesMessages.add(
-                    FacesMessage.SEVERITY_WARN,
+                    StatusMessage.Severity.WARN,
                     resourcesAccessor.getMessages().get(
                             "feedback.casemanagement.document.route.already.locked"));
             return null;
         }
         navigationContext.invalidateCurrentDocument();
-        facesMessages.add(FacesMessage.SEVERITY_INFO,
+        facesMessages.add(StatusMessage.Severity.INFO,
                 resourcesAccessor.getMessages().get("document_modified"),
                 resourcesAccessor.getMessages().get(currentDocument.getType()));
         EventManager.raiseEventsOnDocumentChange(currentDocument);
@@ -583,11 +583,11 @@ public class DocumentRoutingActionsBean implements Serializable {
     }
 
     /**
-     * Moves the step in the parent container in the specified direction. If the
-     * step is in a parallel container, it can't be moved. A step can't be moved
-     * before a step already done or running. Assumed that the route is already
-     * locked to have this action availabe , so no check is done
-     * */
+     * Moves the step in the parent container in the specified direction. If
+     * the step is in a parallel container, it can't be moved. A step can't be
+     * moved before a step already done or running. Assumed that the route is
+     * already locked to have this action availabe , so no check is done
+     */
     public String moveRouteElement(String direction) throws ClientException {
         if (StringUtils.isEmpty(stepId)) {
             return null;
@@ -598,7 +598,7 @@ public class DocumentRoutingActionsBean implements Serializable {
         ExecutionTypeValues executionType = ExecutionTypeValues.valueOf((String) parentDoc.getPropertyValue(DocumentRoutingConstants.EXECUTION_TYPE_PROPERTY_NAME));
         if (DocumentRoutingConstants.ExecutionTypeValues.parallel.equals(executionType)) {
             facesMessages.add(
-                    FacesMessage.SEVERITY_WARN,
+                    StatusMessage.Severity.WARN,
                     resourcesAccessor.getMessages().get(
                             "feedback.casemanagement.document.route.cant.move.steps.in.parallel.container"));
             return null;
@@ -609,24 +609,24 @@ public class DocumentRoutingActionsBean implements Serializable {
         if (DocumentRoutingWebConstants.MOVE_STEP_UP.equals(direction)) {
             if (selectedDocumentIndex == 0) {
                 facesMessages.add(
-                        FacesMessage.SEVERITY_WARN,
+                        StatusMessage.Severity.WARN,
                         resourcesAccessor.getMessages().get(
                                 "feedback.casemanagement.document.route.already.first.step.in.container"));
                 return null;
             }
-            DocumentRouteElement currentElementToMove = routeElementDocToMove.getAdapter(DocumentRouteElement.class);
+            routeElementDocToMove.getAdapter(DocumentRouteElement.class);
             DocumentModel stepMoveBefore = orderedChilds.get(selectedDocumentIndex - 1);
             DocumentRouteElement stepElementMoveBefore = stepMoveBefore.getAdapter(DocumentRouteElement.class);
             if (stepElementMoveBefore.isRunning()) {
                 facesMessages.add(
-                        FacesMessage.SEVERITY_WARN,
+                        StatusMessage.Severity.WARN,
                         resourcesAccessor.getMessages().get(
                                 "feedback.casemanagement.document.route.cant.move.step.before.already.running.step"));
                 return null;
             }
             if (!stepElementMoveBefore.isModifiable()) {
                 facesMessages.add(
-                        FacesMessage.SEVERITY_WARN,
+                        StatusMessage.Severity.WARN,
                         resourcesAccessor.getMessages().get(
                                 "feedback.casemanagement.document.route.cant.move.step.after.no.modifiable.step"));
                 return null;
@@ -637,23 +637,23 @@ public class DocumentRoutingActionsBean implements Serializable {
         if (DocumentRoutingWebConstants.MOVE_STEP_DOWN.equals(direction)) {
             if (selectedDocumentIndex == orderedChilds.size() - 1) {
                 facesMessages.add(
-                        FacesMessage.SEVERITY_WARN,
+                        StatusMessage.Severity.WARN,
                         resourcesAccessor.getMessages().get(
                                 "feedback.casemanagement.document.already.last.step.in.container"));
                 return null;
             }
-            DocumentRouteElement currentElementToMove = routeElementDocToMove.getAdapter(DocumentRouteElement.class);
+            routeElementDocToMove.getAdapter(DocumentRouteElement.class);
             DocumentModel stepMoveAfter = orderedChilds.get(selectedDocumentIndex + 1);
             DocumentRouteElement stepElementMoveAfter = stepMoveAfter.getAdapter(DocumentRouteElement.class);
             if (stepElementMoveAfter.isRunning()) {
                 facesMessages.add(
-                        FacesMessage.SEVERITY_WARN,
+                        StatusMessage.Severity.WARN,
                         resourcesAccessor.getMessages().get(
                                 "feedback.casemanagement.document.route.cant.move.step.after.already.running.step"));
                 return null;
             }
-            documentManager.orderBefore(parentDoc.getRef(), orderedChilds.get(
-                    selectedDocumentIndex + 1).getName(),
+            documentManager.orderBefore(parentDoc.getRef(),
+                    orderedChilds.get(selectedDocumentIndex + 1).getName(),
                     routeElementDocToMove.getName());
         }
         if (docWithAttachedRouteId == null) {
@@ -701,13 +701,13 @@ public class DocumentRoutingActionsBean implements Serializable {
                         documentManager);
             } catch (DocumentRouteNotLockedException e) {
                 facesMessages.add(
-                        FacesMessage.SEVERITY_WARN,
+                        StatusMessage.Severity.WARN,
                         resourcesAccessor.getMessages().get(
                                 "feedback.casemanagement.document.route.not.locked"));
                 return null;
             }
             DocumentModel routeDocument = documentManager.getDocument(routeDocRef);
-            facesMessages.add(FacesMessage.SEVERITY_INFO,
+            facesMessages.add(StatusMessage.Severity.INFO,
                     resourcesAccessor.getMessages().get("document_saved"),
                     resourcesAccessor.getMessages().get(newDocument.getType()));
 

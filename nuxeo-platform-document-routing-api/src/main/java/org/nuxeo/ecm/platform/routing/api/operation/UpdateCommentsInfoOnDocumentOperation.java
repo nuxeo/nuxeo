@@ -24,18 +24,17 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.platform.comment.api.CommentableDocument;
+import org.nuxeo.ecm.platform.routing.api.DocumentRouteStep;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 
 /***
- *
  * Updates the number of comments stored on the {@link DocumentRouteStep}. This
  * is used to avoid unnecessary jena calls when displaying the number of
  * comments on each step. This updates the number of comments on the documents
- * from the relations.
- * To invoke it: run from nuxeo-shell : run updateCommentsOnDoc
+ * from the relations. To invoke it: run from nuxeo-shell : run
+ * updateCommentsOnDoc
  *
  * @author mcedica
- *
  */
 @Operation(id = UpdateCommentsInfoOnDocumentOperation.ID, category = DocumentRoutingConstants.OPERATION_CATEGORY_ROUTING_NAME, label = "Update comments number on the document", description = "Update comments number on the document")
 public class UpdateCommentsInfoOnDocumentOperation {
@@ -57,7 +56,7 @@ public class UpdateCommentsInfoOnDocumentOperation {
             CommentableDocument commentableDoc = documentModel.getAdapter(CommentableDocument.class);
             documentModel.setPropertyValue(
                     DocumentRoutingConstants.COMMENTS_NO_PROPERTY_NAME,
-                    commentableDoc.getComments().size());
+                    Integer.valueOf(commentableDoc.getComments().size()));
             session.saveDocument(documentModel);
         }
 

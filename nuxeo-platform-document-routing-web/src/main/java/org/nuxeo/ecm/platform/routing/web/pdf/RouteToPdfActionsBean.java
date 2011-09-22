@@ -37,7 +37,6 @@ import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
 import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
 import org.nuxeo.runtime.api.Framework;
 
-
 /**
  * Actions for generating a pdf for the current document route
  *
@@ -55,13 +54,13 @@ public class RouteToPdfActionsBean implements Serializable {
                 + Conversation.instance().getId();
         /**
          * hack needed for jboss 4
-         * */
+         */
         HttpServletResponse response = getHttpServletResponse();
         response.resetBuffer();
         response.sendRedirect(url);
         response.flushBuffer();
         getHttpServletRequest().setAttribute(
-                NXAuthConstants.DISABLE_REDIRECT_REQUEST_KEY, true);
+                NXAuthConstants.DISABLE_REDIRECT_REQUEST_KEY, Boolean.TRUE);
         FacesContext.getCurrentInstance().responseComplete();
     }
 
