@@ -4,6 +4,7 @@ Bundle-Name: Nuxeo Audio Core
 Bundle-SymbolicName: org.nuxeo.ecm.platform.audio.core;singleton=true
 Bundle-Vendor: Nuxeo
 Nuxeo-Component: OSGI-INF/core-types-contrib.xml,
+ OSGI-INF/lifecycle-contrib.xml,
  OSGI-INF/filemanager-importer-contrib.xml
 Eclipse-LazyStart: true
 Bundle-Category: core,stateful
