@@ -38,14 +38,14 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
- * Implementation of the {@link OAuthServiceProviderRegistry}.
- * The main storage backend is a SQL Directory.
- * Readonly providers (contributed directly at OpenSocialService level) are managed in memory.
+ * Implementation of the {@link OAuthServiceProviderRegistry}. The main storage
+ * backend is a SQL Directory. Readonly providers (contributed directly at
+ * OpenSocialService level) are managed in memory.
  *
  * @author tiry
- *
  */
-public class OAuthServiceProviderRegistryImpl extends DefaultComponent implements OAuthServiceProviderRegistry {
+public class OAuthServiceProviderRegistryImpl extends DefaultComponent
+        implements OAuthServiceProviderRegistry {
 
     protected static final Log log = LogFactory.getLog(OAuthServiceProviderRegistryImpl.class);
 
@@ -53,9 +53,11 @@ public class OAuthServiceProviderRegistryImpl extends DefaultComponent implement
 
     protected Map<String, NuxeoOAuthServiceProvider> inMemoryProviders = new HashMap<String, NuxeoOAuthServiceProvider>();
 
-    public NuxeoOAuthServiceProvider getProvider(String gadgetUri, String serviceName) {
+    public NuxeoOAuthServiceProvider getProvider(String gadgetUri,
+            String serviceName) {
         try {
-            NuxeoOAuthServiceProvider provider = getEntry(gadgetUri, serviceName, null);
+            NuxeoOAuthServiceProvider provider = getEntry(gadgetUri,
+                    serviceName, null);
             return provider;
         } catch (Exception e) {
             log.error("Unable to read provider from Directory backend", e);
@@ -64,7 +66,7 @@ public class OAuthServiceProviderRegistryImpl extends DefaultComponent implement
     }
 
     protected String getBareGadgetUri(String gadgetUri) {
-        if (gadgetUri==null) {
+        if (gadgetUri == null) {
             return null;
         }
         String pattern = "http(s)?://(localhost|127.0.0.1)";
@@ -72,27 +74,31 @@ public class OAuthServiceProviderRegistryImpl extends DefaultComponent implement
     }
 
     protected String preProcessServiceName(String serviceName) {
-        if (serviceName!=null && serviceName.trim().isEmpty()) {
+        if (serviceName != null && serviceName.trim().isEmpty()) {
             return null;
         }
         return serviceName;
     }
 
-
-    protected DocumentModel getBestEntry(DocumentModelList entries, String gadgetUri, String serviceName) throws PropertyException, ClientException {
-        if (entries.size()>1) {
-            log.warn("Found several entries for gadgetUri=" + gadgetUri + " and serviceName=" + serviceName);
+    protected DocumentModel getBestEntry(DocumentModelList entries,
+            String gadgetUri, String serviceName) throws PropertyException,
+            ClientException {
+        if (entries.size() > 1) {
+            log.warn("Found several entries for gadgetUri=" + gadgetUri
+                    + " and serviceName=" + serviceName);
         }
-        if (serviceName==null || serviceName.trim().isEmpty()){
-            for (DocumentModel entry:entries) {
-                if (entry.getPropertyValue("serviceName")==null || ((String) entry.getPropertyValue("serviceName")).trim().isEmpty()) {
+        if (serviceName == null || serviceName.trim().isEmpty()) {
+            for (DocumentModel entry : entries) {
+                if (entry.getPropertyValue("serviceName") == null
+                        || ((String) entry.getPropertyValue("serviceName")).trim().isEmpty()) {
                     return entry;
                 }
             }
             return null;
-        } else if (gadgetUri==null || gadgetUri.trim().isEmpty()) {
-            for (DocumentModel entry:entries) {
-                if (entry.getPropertyValue("gadgetUrl")==null || ((String) entry.getPropertyValue("gadgetUrl")).trim().isEmpty()) {
+        } else if (gadgetUri == null || gadgetUri.trim().isEmpty()) {
+            for (DocumentModel entry : entries) {
+                if (entry.getPropertyValue("gadgetUrl") == null
+                        || ((String) entry.getPropertyValue("gadgetUrl")).trim().isEmpty()) {
                     return entry;
                 }
             }
@@ -103,7 +109,8 @@ public class OAuthServiceProviderRegistryImpl extends DefaultComponent implement
         return entries.get(0);
     }
 
-    protected NuxeoOAuthServiceProvider getEntry(String gadgetUri, String serviceName, Set<String> ftFilter) throws Exception {
+    protected NuxeoOAuthServiceProvider getEntry(String gadgetUri,
+            String serviceName, Set<String> ftFilter) throws Exception {
 
         String id = mkStringIdx(gadgetUri, serviceName);
         if (inMemoryProviders.containsKey(id)) {
@@ -113,52 +120,54 @@ public class OAuthServiceProviderRegistryImpl extends DefaultComponent implement
         // normalize "enmpty" service name
         serviceName = preProcessServiceName(serviceName);
 
-        if (gadgetUri==null && serviceName==null) {
+        if (gadgetUri == null && serviceName == null) {
             log.warn("Can not find provider with null gadgetUri and null serviceName !");
             return null;
         }
 
         DirectoryService ds = Framework.getService(DirectoryService.class);
-        Session session = ds.open(DIRECTORY_NAME);
+        Session session = null;
         NuxeoOAuthServiceProvider provider = null;
         try {
-
+            session = ds.open(DIRECTORY_NAME);
             Map<String, Serializable> filter = new HashMap<String, Serializable>();
-            if (gadgetUri!=null) {
+            if (gadgetUri != null) {
                 filter.put("gadgetUrl", gadgetUri);
             }
-            if (serviceName!=null) {
+            if (serviceName != null) {
                 filter.put("serviceName", serviceName);
             }
             DocumentModelList entries = session.query(filter, ftFilter);
-            if (entries == null || entries.size()==0) {
+            if (entries == null || entries.size() == 0) {
                 String bareGadgetUrl = getBareGadgetUri(gadgetUri);
-                if (bareGadgetUrl!=null && !bareGadgetUrl.equals(gadgetUri)) {
+                if (bareGadgetUrl != null && !bareGadgetUrl.equals(gadgetUri)) {
                     Set<String> urlfilter = new HashSet<String>();
                     urlfilter.add("gadgetUrl");
-                    return getEntry(bareGadgetUrl, serviceName,urlfilter);
+                    return getEntry(bareGadgetUrl, serviceName, urlfilter);
                 }
-                if (serviceName!=null) {
-                    if (bareGadgetUrl!=null) {
-                        provider = getEntry(bareGadgetUrl, null,ftFilter);
-                         if (provider!=null) {
-                             return provider;
-                         }
+                if (serviceName != null) {
+                    if (bareGadgetUrl != null) {
+                        provider = getEntry(bareGadgetUrl, null, ftFilter);
+                        if (provider != null) {
+                            return provider;
+                        }
                     }
-                    if (gadgetUri!=null) {
-                        return getEntry(null, serviceName,ftFilter);
+                    if (gadgetUri != null) {
+                        return getEntry(null, serviceName, ftFilter);
                     }
                 }
                 return null;
             }
             DocumentModel entry = getBestEntry(entries, gadgetUri, serviceName);
-            if (entry==null) {
+            if (entry == null) {
                 return null;
             }
             provider = NuxeoOAuthServiceProvider.createFromDirectoryEntry(entry);
             return provider;
         } finally {
-            session.close();
+            if (session != null) {
+                session.close();
+            }
         }
     }
 
@@ -166,10 +175,13 @@ public class OAuthServiceProviderRegistryImpl extends DefaultComponent implement
         return "k-" + gadgetUri + "-" + serviceName;
     }
 
-    public NuxeoOAuthServiceProvider addReadOnlyProvider(String gadgetUri, String serviceName, String consumerKey, String consumerSecret, String publicKey ) {
+    public NuxeoOAuthServiceProvider addReadOnlyProvider(String gadgetUri,
+            String serviceName, String consumerKey, String consumerSecret,
+            String publicKey) {
         String id = mkStringIdx(gadgetUri, serviceName);
         Long dummyId = new Random().nextLong();
-        NuxeoOAuthServiceProvider sp = new NuxeoOAuthServiceProvider(dummyId, gadgetUri, serviceName, consumerKey, consumerSecret, publicKey);
+        NuxeoOAuthServiceProvider sp = new NuxeoOAuthServiceProvider(dummyId,
+                gadgetUri, serviceName, consumerKey, consumerSecret, publicKey);
         inMemoryProviders.put(id, sp);
         return sp;
     }
@@ -177,7 +189,7 @@ public class OAuthServiceProviderRegistryImpl extends DefaultComponent implement
     public void deleteProvider(String gadgetUri, String serviceName) {
 
         NuxeoOAuthServiceProvider provider = getProvider(gadgetUri, serviceName);
-        if (provider!=null) {
+        if (provider != null) {
             deleteProvider(provider.id.toString());
         }
 
@@ -186,12 +198,15 @@ public class OAuthServiceProviderRegistryImpl extends DefaultComponent implement
     public void deleteProvider(String providerId) {
         try {
             DirectoryService ds = Framework.getService(DirectoryService.class);
-            Session session = ds.open(DIRECTORY_NAME);
+            Session session = null;
             try {
+                session = ds.open(DIRECTORY_NAME);
                 session.deleteEntry(providerId);
                 session.commit();
             } finally {
-                session.close();
+                if (session != null) {
+                    session.close();
+                }
             }
         } catch (Exception e) {
             log.error("Unable to delete provider " + providerId, e);
@@ -206,19 +221,21 @@ public class OAuthServiceProviderRegistryImpl extends DefaultComponent implement
         }
         try {
             DirectoryService ds = Framework.getService(DirectoryService.class);
-            Session session = ds.open(DIRECTORY_NAME);
+            Session session = null;
             try {
+                session = ds.open(DIRECTORY_NAME);
                 DocumentModelList entries = session.getEntries();
                 for (DocumentModel entry : entries) {
                     result.add(NuxeoOAuthServiceProvider.createFromDirectoryEntry(entry));
                 }
             } finally {
-                session.close();
+                if (session != null) {
+                    session.close();
+                }
             }
         } catch (Exception e) {
             log.error("Error while fetching provider directory", e);
         }
         return result;
     }
-
 }

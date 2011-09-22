@@ -34,11 +34,10 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
- * Implementation of the {@link OAuthConsumerRegistry} Service. It's basically a
- * simple Storage API on top of an SQL Directory.
+ * Implementation of the {@link OAuthConsumerRegistry} Service. It's basically
+ * a simple Storage API on top of an SQL Directory.
  *
  * @author tiry
- *
  */
 public class OAuthConsumerRegistryImpl extends DefaultComponent implements
         OAuthConsumerRegistry {
@@ -60,21 +59,26 @@ public class OAuthConsumerRegistryImpl extends DefaultComponent implements
 
     @Override
     public NuxeoOAuthConsumer getConsumer(String consumerKey) {
-       return getConsumer(consumerKey, null);
+        return getConsumer(consumerKey, null);
     }
 
-    protected NuxeoOAuthConsumer getEntry(String consumerKey, String keyType) throws Exception {
+    protected NuxeoOAuthConsumer getEntry(String consumerKey, String keyType)
+            throws Exception {
         DirectoryService ds = Framework.getService(DirectoryService.class);
-        Session session = ds.open(DIRECTORY_NAME);
+        Session session = null;
         try {
+            session = ds.open(DIRECTORY_NAME);
             DocumentModel entry = session.getEntry(consumerKey);
             if (entry == null) {
                 return null;
             }
-            NuxeoOAuthConsumer consumer = NuxeoOAuthConsumer.createFromDirectoryEntry(entry, keyType);
+            NuxeoOAuthConsumer consumer = NuxeoOAuthConsumer.createFromDirectoryEntry(
+                    entry, keyType);
             return consumer;
         } finally {
-            session.close();
+            if (session != null) {
+                session.close();
+            }
         }
     }
 
@@ -82,9 +86,9 @@ public class OAuthConsumerRegistryImpl extends DefaultComponent implements
             throws Exception {
 
         DirectoryService ds = Framework.getService(DirectoryService.class);
-        Session session = ds.open(DIRECTORY_NAME);
+        Session session = null;
         try {
-
+            session = ds.open(DIRECTORY_NAME);
             Map<String, Object> init = new HashMap<String, Object>();
             init.put("consumerKey", consumer.consumerKey);
             DocumentModel entry = session.createEntry(init);
@@ -97,7 +101,9 @@ public class OAuthConsumerRegistryImpl extends DefaultComponent implements
             consumer = NuxeoOAuthConsumer.createFromDirectoryEntry(entry, null);
             return consumer;
         } finally {
-            session.close();
+            if (session != null) {
+                session.close();
+            }
         }
     }
 
@@ -105,12 +111,15 @@ public class OAuthConsumerRegistryImpl extends DefaultComponent implements
     public void deleteConsumer(String consumerKey) {
         try {
             DirectoryService ds = Framework.getService(DirectoryService.class);
-            Session session = ds.open(DIRECTORY_NAME);
+            Session session = null;
             try {
+                session = ds.open(DIRECTORY_NAME);
                 session.deleteEntry(consumerKey);
                 session.commit();
             } finally {
-                session.close();
+                if (session != null) {
+                    session.close();
+                }
             }
         } catch (Exception e) {
             log.error("Unable to delete consumer " + consumerKey, e);
@@ -123,14 +132,18 @@ public class OAuthConsumerRegistryImpl extends DefaultComponent implements
         List<NuxeoOAuthConsumer> result = new ArrayList<NuxeoOAuthConsumer>();
         try {
             DirectoryService ds = Framework.getService(DirectoryService.class);
-            Session session = ds.open(DIRECTORY_NAME);
+            Session session = null;
             try {
+                session = ds.open(DIRECTORY_NAME);
                 DocumentModelList entries = session.getEntries();
                 for (DocumentModel entry : entries) {
-                    result.add(NuxeoOAuthConsumer.createFromDirectoryEntry(entry, null));
+                    result.add(NuxeoOAuthConsumer.createFromDirectoryEntry(
+                            entry, null));
                 }
             } finally {
-                session.close();
+                if (session != null) {
+                    session.close();
+                }
             }
         } catch (Exception e) {
             log.error("Error while fetching consumer directory", e);
