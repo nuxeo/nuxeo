@@ -40,44 +40,119 @@ public abstract class AbstractWizardPage extends AbstractPage {
     protected abstract String getPreviousButtonLocator();
 
     public <T extends AbstractWizardPage> T next(Class<T> wizardPageClass) {
+        return next(wizardPageClass, false);
+    }
+
+    public <T extends AbstractWizardPage> T next(Class<T> wizardPageClass,
+            Boolean waitForURLChange) {
         WebElement buttonNext = findElementWithTimeout(By.xpath(getNextButtonLocator()));
+        String URLbefore = driver.getCurrentUrl();
         buttonNext.click();
+        if (waitForURLChange == true) {
+            waitUntilURLDifferentFrom(URLbefore);
+        } else {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                // do nothing
+            }
+        }
         return asPage(wizardPageClass);
     }
 
     public <T extends AbstractWizardPage> T previous(Class<T> wizardPageClass) {
+        return previous(wizardPageClass, false);
+    }
+
+    public <T extends AbstractWizardPage> T previous(Class<T> wizardPageClass,
+            Boolean waitForURLChange) {
         WebElement buttonPrev = findElementWithTimeout(By.xpath(getPreviousButtonLocator()));
+        String URLbefore = driver.getCurrentUrl();
         buttonPrev.click();
+        if (waitForURLChange == true) {
+            waitUntilURLDifferentFrom(URLbefore);
+        } else {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                // do nothing
+            }
+        }
         return asPage(wizardPageClass);
     }
 
     public <T extends AbstractPage> T nav(Class<T> wizardPageClass,
             String buttonLabel) {
+        return nav(wizardPageClass, buttonLabel, false);
+    }
+
+    public <T extends AbstractPage> T nav(Class<T> wizardPageClass,
+            String buttonLabel, Boolean waitForURLChange) {
         WebElement button = findNavButton(buttonLabel);
         if (button == null) {
             return null;
         }
+        String URLbefore = driver.getCurrentUrl();
         button.click();
+        if (waitForURLChange == true) {
+            waitUntilURLDifferentFrom(URLbefore);
+        } else {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                // do nothing
+            }
+        }
         return asPage(wizardPageClass);
     }
 
     public <T extends AbstractPage> T navByLink(Class<T> wizardPageClass,
             String linkLabel) {
+        return navByLink(wizardPageClass, linkLabel, false);
+    }
+
+    public <T extends AbstractPage> T navByLink(Class<T> wizardPageClass,
+            String linkLabel, Boolean waitForURLChange) {
         WebElement link = findElementWithTimeout(By.linkText(linkLabel));
         if (link == null) {
             return null;
         }
+        String URLbefore = driver.getCurrentUrl();
         link.click();
+        if (waitForURLChange == true) {
+            waitUntilURLDifferentFrom(URLbefore);
+        } else {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                // do nothing
+            }
+        }
         return asPage(wizardPageClass);
     }
 
     public <T extends AbstractPage> T navById(Class<T> wizardPageClass,
             String buttonId) {
+        return navById(wizardPageClass, buttonId, false);
+    }
+
+    public <T extends AbstractPage> T navById(Class<T> wizardPageClass,
+            String buttonId, Boolean waitForURLChange) {
         WebElement button = findElementWithTimeout(By.id(buttonId));
         if (button == null) {
             return null;
         }
+        String URLbefore = driver.getCurrentUrl();
         button.click();
+        if (waitForURLChange == true) {
+            waitUntilURLDifferentFrom(URLbefore);
+        } else {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                // do nothing
+            }
+        }
         return asPage(wizardPageClass);
     }
 
