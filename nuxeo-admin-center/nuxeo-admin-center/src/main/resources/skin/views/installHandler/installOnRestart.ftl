@@ -18,6 +18,9 @@ function closePopup() {
     <div>
      Installation will be completed on next server restart.
     </div>
+    <div>
+     <string>Please read carefully the description of the package, in case any manual update is needed.</strong>
+    </div>
     <br/>
 
     <#if source=="installer">
