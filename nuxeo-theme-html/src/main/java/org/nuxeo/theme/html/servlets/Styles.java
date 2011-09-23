@@ -17,7 +17,6 @@ package org.nuxeo.theme.html.servlets;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Serializable;
-import java.util.Date;
 import java.util.zip.GZIPOutputStream;
 
 import javax.servlet.http.HttpServlet;
@@ -28,9 +27,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.theme.ApplicationType;
 import org.nuxeo.theme.Manager;
-import org.nuxeo.theme.formats.styles.Style;
-import org.nuxeo.theme.html.CSSUtils;
 import org.nuxeo.theme.html.Utils;
+import org.nuxeo.theme.html.ui.ThemeStyles;
 import org.nuxeo.theme.themes.ThemeDescriptor;
 import org.nuxeo.theme.themes.ThemeManager;
 import org.nuxeo.theme.types.TypeFamily;
@@ -101,26 +99,8 @@ public final class Styles extends HttpServlet implements Serializable {
         String rendered = themeManager.getCachedStyles(themeName, basePath);
 
         if (rendered == null) {
-            final StringBuilder sb = new StringBuilder();
-            sb.append(String.format("/* CSS styles for theme '%s' (%s) */\n\n",
-                    themeName, new Date()));
-            // Named styles sorted to preserve dependencies in CSS
-            for (Style style : themeManager.getSortedNamedStyles(themeName)) {
-                sb.insert(0, CSSUtils.styleToCss(style,
-                        style.getSelectorViewNames(), IGNORE_VIEW_NAME,
-                        IGNORE_CLASSNAME, INDENT));
-            }
-            // Local theme styles
-            for (Style style : themeManager.getStyles(themeName)) {
-                sb.append(CSSUtils.styleToCss(style,
-                        style.getSelectorViewNames(), IGNORE_VIEW_NAME,
-                        IGNORE_CLASSNAME, INDENT));
-            }
-            rendered = sb.toString();
-
-            rendered = CSSUtils.expandVariables(rendered, basePath,
-                    themeDescriptor);
-
+            rendered = ThemeStyles.generateThemeStyles(themeName,
+                    themeDescriptor, basePath);
             themeManager.setCachedStyles(themeName, basePath, rendered);
         }
 
