@@ -271,9 +271,10 @@ public class GadgetServiceImpl extends DefaultComponent implements
             result.put(key, internalGadgets.get(key));
         }
         try {
-            DirectoryService dirService = Framework.getService(DirectoryService.class);
-            Session session = dirService.open(GADGET_DIRECTORY);
+            Session session = null;
             try {
+                DirectoryService dirService = Framework.getService(DirectoryService.class);
+                session = dirService.open(GADGET_DIRECTORY);
                 for (DocumentModel model : session.getEntries()) {
                     String name = (String) model.getProperty(GADGET_DIR_SCHEMA,
                             EXTERNAL_PROP_NAME);
