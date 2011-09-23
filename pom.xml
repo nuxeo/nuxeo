@@ -2444,12 +2444,12 @@
                 </message>
                 <banLatest>true</banLatest>
                 <banRelease>true</banRelease>
-                <!-- <banSnapshots>true</banSnapshots> -->
+                <banSnapshots>true</banSnapshots>
               </requirePluginVersions>
-              <!-- <requireReleaseDeps> -->
-              <!-- <message>No Snapshots Allowed!</message> -->
-              <!-- <onlyWhenRelease>true</onlyWhenRelease> -->
-              <!-- </requireReleaseDeps> -->
+              <requireReleaseDeps>
+              <message>No Snapshots Allowed!</message>
+              <onlyWhenRelease>true</onlyWhenRelease>
+              </requireReleaseDeps>
               <requireMavenVersion>
                 <version>[2.2.1,)</version>
               </requireMavenVersion>
@@ -2563,6 +2563,7 @@
               </execution>
             </executions>
           </plugin>
+          <!--
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-enforcer-plugin</artifactId>
@@ -2575,6 +2576,7 @@
               </execution>
             </executions>
           </plugin>
+           -->
         </plugins>
       </build>
     </profile>
