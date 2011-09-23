@@ -289,7 +289,12 @@ public abstract class NuxeoLauncher {
         }
     }
 
-    public void logProcessStreams(Process process, boolean logProcessOutput) {
+    /**
+     * @return (since 5.4.3) Array list with created stream gobbler threads.
+     */
+    public ArrayList<ThreadedStreamGobbler> logProcessStreams(Process process,
+            boolean logProcessOutput) {
+        ArrayList<ThreadedStreamGobbler> sgArray = new ArrayList<ThreadedStreamGobbler>();
         ThreadedStreamGobbler inputSG, errorSG;
         if (logProcessOutput) {
             inputSG = new ThreadedStreamGobbler(process.getInputStream(),
@@ -304,6 +309,9 @@ public abstract class NuxeoLauncher {
         }
         inputSG.start();
         errorSG.start();
+        sgArray.add(inputSG);
+        sgArray.add(errorSG);
+        return sgArray;
     }
 
     protected abstract String getServerPrint();
@@ -726,9 +734,23 @@ public abstract class NuxeoLauncher {
         pb.directory(configurationGenerator.getNuxeoHome());
         log.debug("Install command: " + pb.command());
         Process installProcess = pb.start();
-        logProcessStreams(installProcess, false);
-        Thread.sleep(1000);
+        ArrayList<ThreadedStreamGobbler> sgArray = logProcessStreams(
+                installProcess, false);
+        Thread.sleep(100);
         installProcess.waitFor();
+        stopProcessStreams(sgArray);
+    }
+
+    /**
+     * Stop stream gobblers contained in the given ArrayList
+     *
+     * @since 5.4.3
+     * @see #logProcessStreams(Process, boolean)
+     */
+    public void stopProcessStreams(ArrayList<ThreadedStreamGobbler> sgArray) {
+        for (ThreadedStreamGobbler streamGobbler : sgArray) {
+            streamGobbler.stopProcessing();
+        }
     }
 
     /**
@@ -848,8 +870,10 @@ public abstract class NuxeoLauncher {
                 log.debug("Server command: " + pb.command());
                 try {
                     Process stopProcess = pb.start();
-                    logProcessStreams(stopProcess, logProcessOutput);
+                    ArrayList<ThreadedStreamGobbler> sgArray = logProcessStreams(
+                            stopProcess, logProcessOutput);
                     stopProcess.waitFor();
+                    stopProcessStreams(sgArray);
                     boolean wait = true;
                     while (wait) {
                         try {
