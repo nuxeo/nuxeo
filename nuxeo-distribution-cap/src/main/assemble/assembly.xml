@@ -16,8 +16,15 @@
   </target>
 
   <target name="expand">
+    <artifact:nuxeo-expand scope="test" />
+    <artifact:print output="${outdir}/test-artifacts.properties"
+                    mode="flat"
+                    format="1" />
     <artifact:nuxeo-expand />
     <!-- <artifact:print output="${basedir}/dependency-tree.log" /> -->
+    <artifact:print output="${outdir}/artifacts.properties"
+                    mode="flat"
+                    format="1" />
   </target>
 
   <target name="build" depends="init" description="Build Nuxeo CAP">
@@ -42,6 +49,9 @@
     </copy>
 
     <antcall target="third-party-libraries" />
+
+    <copy file="${outdir}/artifacts.properties" todir="${nuxeo.ear}" />
+    <copy file="${outdir}/test-artifacts.properties" todir="${nuxeo.ear}" />
 
     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}.zip"
          basedir="${nuxeo.ear}" />

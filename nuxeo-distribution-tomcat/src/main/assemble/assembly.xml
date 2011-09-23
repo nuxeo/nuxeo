@@ -38,6 +38,9 @@
   <target name="expand" unless="no.build">
     <artifact:nuxeo-expand />
     <!-- <artifact:print output="${basedir}/dependency-tree.log" /> -->
+    <artifact:print output="${outdir}/artifacts.properties"
+                    mode="flat"
+                    format="1" />
   </target>
 
   <target name="build" depends="init" unless="no.build">
@@ -94,6 +97,7 @@
     <copy todir="${tomcat}/client">
       <artifact:resolveFile key="org.nuxeo.shell:nuxeo-shell" />
     </copy>
+    <mkdir dir="${tomcat}/sdk" />
   </target>
 
   <target name="build-nuxeo-coreserver"
@@ -113,6 +117,10 @@
     <unzip dest="${distribution.dir}/nxserver">
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-coreserver::zip" />
     </unzip>
+    <antcall target="copy-sdk-resources">
+      <param name="distribution.key"
+             value="org.nuxeo.ecm.distribution:nuxeo-distribution-coreserver::zip" />
+    </antcall>
 
     <unzip dest="${distribution.dir}/templates" overwrite="true">
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources::zip"
@@ -132,13 +140,13 @@
     </delete>
 
     <antcall target="set-distribution-properties">
-      <param name="distribution.properties.file"
-             value="${distribution.dir}/templates/common/config/distribution.properties" />
       <param name="org.nuxeo.distribution.name" value="coreserver" />
     </antcall>
     <echo append="true" file="${distribution.dir}/templates/nuxeo.defaults">
 org.nuxeo.ecm.product.name=Nuxeo CoreServer
     </echo>
+
+    <antcall target="download-sdk-sources" />
 
     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-coreserver.zip"
          basedir="${outdir}"
@@ -166,19 +174,23 @@ org.nuxeo.ecm.product.name=Nuxeo CoreServer
     <unzip dest="${distribution.dir}/nxserver">
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-cap::zip" />
     </unzip>
+    <antcall target="copy-sdk-resources">
+      <param name="distribution.key"
+             value="org.nuxeo.ecm.distribution:nuxeo-distribution-cap::zip" />
+    </antcall>
 
     <antcall target="reorganize-libs">
       <param name="distribution.dir" value="${distribution.dir}" />
     </antcall>
 
     <antcall target="set-distribution-properties">
-      <param name="distribution.properties.file"
-             value="${distribution.dir}/templates/common/config/distribution.properties" />
       <param name="org.nuxeo.distribution.name" value="cap" />
     </antcall>
     <echo append="true" file="${distribution.dir}/templates/nuxeo.defaults">
 org.nuxeo.ecm.product.name=Nuxeo CAP
     </echo>
+
+    <antcall target="download-sdk-sources" />
 
     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-cap.zip"
          basedir="${outdir}"
@@ -211,6 +223,10 @@ org.nuxeo.ecm.product.name=Nuxeo CAP
     <unzip dest="${distribution.dir}/nxserver">
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-dm::zip" />
     </unzip>
+    <antcall target="copy-sdk-resources">
+      <param name="distribution.key"
+             value="org.nuxeo.ecm.distribution:nuxeo-distribution-dm::zip" />
+    </antcall>
 
     <antcall target="reorganize-libs">
       <param name="distribution.dir" value="${distribution.dir}" />
@@ -225,13 +241,13 @@ org.nuxeo.ecm.product.name=Nuxeo CAP
     </unzip>
 
     <antcall target="set-distribution-properties">
-      <param name="distribution.properties.file"
-             value="${distribution.dir}/templates/common/config/distribution.properties" />
       <param name="org.nuxeo.distribution.name" value="dm" />
     </antcall>
     <echo append="true" file="${distribution.dir}/templates/nuxeo.defaults">
 org.nuxeo.ecm.product.name=Nuxeo DM
     </echo>
+
+    <antcall target="download-sdk-sources" />
 
     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-dm.zip"
          basedir="${outdir}"
@@ -296,14 +312,54 @@ org.nuxeo.ecm.product.name=Nuxeo DM
   </target>
 
   <target name="set-distribution-properties">
-    <echo append="false" file="${distribution.properties.file}">
-## DO NOT MANUALLY EDIT THIS FILE
+    <property name="distribution.properties.file"
+              value="${distribution.dir}/templates/common/config/distribution.properties" />
+    <echo append="false" file="${distribution.properties.file}">## DO NOT MANUALLY EDIT THIS FILE
 org.nuxeo.distribution.name=${org.nuxeo.distribution.name}
 org.nuxeo.distribution.server=tomcat
 org.nuxeo.distribution.version=${maven.project.version}
 org.nuxeo.distribution.date=${DSTAMP}${TSTAMP}
 org.nuxeo.distribution.package=zip
     </echo>
+    <copy file="${distribution.dir}/templates/common/config/distribution.properties"
+          todir="${distribution.dir}/sdk" />
   </target>
 
+  <target name="copy-sdk-resources">
+    <move file="${distribution.dir}/nxserver/artifacts.properties"
+          todir="${distribution.dir}/sdk" />
+    <concat append="true"
+            destfile="${distribution.dir}/sdk/artifacts.properties">
+      <fileset file="${outdir}/artifacts.properties" />
+    </concat>
+    <move file="${distribution.dir}/nxserver/test-artifacts.properties"
+          todir="${distribution.dir}/sdk" />
+    <!--
+    <artifact:print output="${distribution.dir}/sdk/artifacts2.properties"
+                    mode="flat"
+                    append="true"
+                    format="1"
+                    source="${distribution.key}" />
+    <artifact:print output="${distribution.dir}/sdk/test-artifacts2.properties"
+                    mode="flat"
+                    append="true"
+                    format="1"
+                    scope="test"
+                    source="${distribution.key}" />
+    -->
+  </target>
+
+  <target name="download-sdk-sources">
+    <nx:profile name="release">
+      <mkdir dir="${distribution.dir}/sdk/sources" />
+      <copy todir="${distribution.dir}/sdk/sources">
+        <artifact:resolveFiles source="${distribution.dir}/sdk/artifacts.properties"
+                               classifier="sources" />
+      </copy>
+    </nx:profile>
+    <mkdir dir="${distribution.dir}/sdk/tests" />
+    <copy todir="${distribution.dir}/sdk/tests">
+      <artifact:resolveFiles source="${distribution.dir}/sdk/test-artifacts.properties" />
+    </copy>
+  </target>
 </project>
