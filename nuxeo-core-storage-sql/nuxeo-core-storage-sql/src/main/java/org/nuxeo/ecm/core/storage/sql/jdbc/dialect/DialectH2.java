@@ -358,4 +358,9 @@ public class DialectH2 extends Dialect {
         return "LENGTH";
     }
 
+    @Override
+    public String getAncestorsIdsSql() {
+        return "CALL NX_ANCESTORS(?)";
+    }
+
 }

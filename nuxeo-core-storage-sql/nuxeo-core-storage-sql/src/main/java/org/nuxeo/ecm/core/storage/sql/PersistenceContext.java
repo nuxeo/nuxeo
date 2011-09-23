@@ -28,6 +28,7 @@ import java.util.Set;
 import org.apache.commons.collections.map.ReferenceMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Fragment.State;
@@ -1004,6 +1005,78 @@ public class PersistenceContext {
      * ----- Hierarchy -----
      */
 
+    public static class PathAndId {
+        public final String path;
+
+        public final Serializable id;
+
+        public PathAndId(String path, Serializable id) {
+            this.path = path;
+            this.id = id;
+        }
+    }
+
+    /**
+     * Gets the path by recursing up the hierarchy.
+     */
+    public String getPath(SimpleFragment hierFragment) throws StorageException {
+        PathAndId pathAndId = getPathOrMissingParentId(hierFragment, true);
+        return pathAndId.path;
+    }
+
+    /**
+     * Gets the full path, or the closest parent id which we don't have in
+     * cache.
+     * <p>
+     * If {@code fetch} is {@code true}, returns the full path.
+     * <p>
+     * If {@code fetch} is {@code false}, does not touch the mapper, only the
+     * context, therefore may return a missing parent id instead of the path.
+     *
+     * @param fetch {@code true} if we can use the mapper
+     */
+    public PathAndId getPathOrMissingParentId(SimpleFragment hierFragment,
+            boolean fetch) throws StorageException {
+        LinkedList<String> list = new LinkedList<String>();
+        Serializable parentId = null;
+        while (true) {
+            String name = hierFragment.getString(model.HIER_CHILD_NAME_KEY);
+            if (name == null) {
+                // (empty string for normal databases, null for Oracle)
+                name = "";
+            }
+            list.addFirst(name);
+            parentId = hierFragment.get(model.HIER_PARENT_KEY);
+            if (parentId == null) {
+                // root
+                break;
+            }
+            // recurse in the parent
+            RowId rowId = new RowId(model.HIER_TABLE_NAME, parentId);
+            hierFragment = (SimpleFragment) getIfPresent(rowId);
+            if (hierFragment == null) {
+                if (!fetch) {
+                    return new PathAndId(null, parentId);
+                }
+                hierFragment = (SimpleFragment) getFromMapper(rowId, true);
+            }
+        }
+        String path;
+        if (list.size() == 1) {
+            String name = list.peek();
+            if (name.isEmpty()) {
+                // root, special case
+                path = "/";
+            } else {
+                // placeless document, no initial slash
+                path = name;
+            }
+        } else {
+            path = StringUtils.join(list, "/");
+        }
+        return new PathAndId(path, null);
+    }
+
     /**
      * Finds the id of the enclosing non-complex-property node.
      * 
@@ -1232,6 +1305,8 @@ public class PersistenceContext {
         getHierSelectionContext(complexProp).recordRemoved(hierFragment);
         hierFragment.put(model.HIER_PARENT_KEY, parentId);
         getHierSelectionContext(complexProp).recordExisting(hierFragment, true);
+        // path invalidated
+        source.path = null;
     }
 
     /**

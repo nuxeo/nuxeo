@@ -34,6 +34,7 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.schema.FacetNames;
+import org.nuxeo.ecm.core.versioning.VersioningService;
 
 public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
 
@@ -761,4 +762,23 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         assertEquals(doc.getId(), session.getWorkingCopy(ver.getRef()).getId());
     }
 
+    public void testSaveRestoredVersionWithVersionAutoIncrement() throws ClientException {
+            // check-in version 1.0, 2.0 and restore version 1.0
+             DocumentModel doc = new DocumentModelImpl("/", "myfile", "File");
+             doc = session.createDocument(doc);
+             doc = session.saveDocument(doc);
+             DocumentRef co = doc.getRef();
+             DocumentRef ci1 = session.checkIn(co, VersioningOption.MAJOR, "first check-in" ); 
+             session.checkOut(co);
+             DocumentRef ci2 = session.checkIn(co,VersioningOption.MAJOR, "second check-in");
+             session.restoreToVersion(co, ci1);
+            
+            // save document with auto-increment should produce version 3.0
+            doc = session.getDocument(co);
+            assertEquals(doc.getVersionLabel(), "1.0");
+            doc.getContextData().putScopedValue(ScopeType.DEFAULT, VersioningService.VERSIONING_OPTION, VersioningOption.MAJOR);
+            doc.setPropertyValue("dc:title", doc.getPropertyValue("dc:title")); // mark as dirty
+            doc = session.saveDocument(doc);
+            assertEquals(doc.getVersionLabel(), "3.0");
+    }
 }

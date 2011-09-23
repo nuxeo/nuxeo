@@ -332,7 +332,7 @@ BEGIN
     WHILE @@FETCH_STATUS = 0 BEGIN
       -- delete ancestors
       DELETE FROM ancestors WHERE hierarchy_id = @sid;
-      -- insert new one    
+      -- insert new one
       INSERT INTO ancestors (hierarchy_id, ancestor)
         SELECT @sid, ancestor_id FROM dbo.nx_get_ancestors(@sid);
       FETCH FROM @cur2 INTO @sid;
@@ -369,6 +369,59 @@ LOG.INFO Initializing ancestors table for path optimization, please wait...
 #IF: pathOptimizationsEnabled
 #IF: emptyResult
 EXEC nx_init_ancestors
+
+
+# ancestors ids (since Nuxeo 5.4.3)
+
+IF OBJECT_ID('dbo.NX_ANCESTORS', 'TF') IS NOT NULL
+  DROP FUNCTION dbo.NX_ANCESTORS;
+
+#IF: pathOptimizationsEnabled
+CREATE FUNCTION NX_ANCESTORS(@ids VARCHAR(4000))
+RETURNS @output TABLE (id ${idType}) AS
+BEGIN
+  DECLARE @pos INT;
+  DECLARE @next INT;
+  DECLARE @end INT;
+  DECLARE @id ${idType};
+  SET @pos = 0;
+  SET @next = 1;
+  WHILE @next > 0 BEGIN
+    SET @next = CHARINDEX('|', @ids, @pos + 1);
+    SET @end = CASE WHEN @next > 0 THEN @next ELSE len(@ids) + 1 END;
+    SET @id = SUBSTRING(@ids, @pos + 1, @end - @pos - 1);
+    SET @pos = @next;
+    --
+    INSERT INTO @output (id) SELECT [ancestor] FROM [ancestors] WHERE [hierarchy_id] = @id;
+  END;
+  RETURN;
+END;
+
+#IF: !pathOptimizationsEnabled
+CREATE FUNCTION NX_ANCESTORS(@ids VARCHAR(4000))
+RETURNS @output TABLE (id ${idType}) AS
+BEGIN
+  DECLARE @pos INT;
+  DECLARE @next INT;
+  DECLARE @end INT;
+  DECLARE @id ${idType};
+  SET @pos = 0;
+  SET @next = 1;
+  WHILE @next > 0 BEGIN
+    SET @next = CHARINDEX('|', @ids, @pos + 1);
+    SET @end = CASE WHEN @next > 0 THEN @next ELSE len(@ids) + 1 END;
+    SET @id = SUBSTRING(@ids, @pos + 1, @end - @pos - 1);
+    SET @pos = @next;
+    --
+    WHILE @id IS NOT NULL BEGIN
+      SET @id = (SELECT [parentid] FROM [hierarchy] WHERE [id] = @id);
+      IF @id IS NOT NULL BEGIN
+        INSERT INTO @output (id) VALUES (@id);
+      END;
+    END;
+  END;
+  RETURN;
+END;
 
 
 # ------------------------------------------------------------
@@ -529,7 +582,7 @@ BEGIN
   FETCH FROM @cur INTO @op;
   WHILE @@FETCH_STATUS = 0 BEGIN
     IF @op IS NOT NULL BEGIN
-      IF @read_acl IS NULL 
+      IF @read_acl IS NULL
         SET @read_acl = @op;
       ELSE
         SET @read_acl = @read_acl + N'${usersSeparator}' + @op;
@@ -668,9 +721,9 @@ CREATE TRIGGER nx_trig_acls_modified ON [acls]
 AFTER INSERT, UPDATE, DELETE AS
 BEGIN
   SET NOCOUNT ON;
-  INSERT INTO aclr_modified (hierarchy_id, is_new) 
+  INSERT INTO aclr_modified (hierarchy_id, is_new)
     SELECT DISTINCT(id), 0 FROM inserted;
-  INSERT INTO aclr_modified (hierarchy_id, is_new) 
+  INSERT INTO aclr_modified (hierarchy_id, is_new)
     SELECT DISTINCT(id), 0 FROM deleted;
 END;
 
@@ -684,8 +737,8 @@ CREATE TRIGGER nx_trig_hierarchy_insert ON [hierarchy]
 AFTER INSERT AS
 BEGIN
   SET NOCOUNT ON;
-  INSERT INTO aclr_modified (hierarchy_id, is_new) 
-    SELECT DISTINCT(id), 1 FROM inserted 
+  INSERT INTO aclr_modified (hierarchy_id, is_new)
+    SELECT DISTINCT(id), 1 FROM inserted
     WHERE isproperty = 0;
 END;
 
@@ -699,7 +752,7 @@ CREATE TRIGGER nx_trig_hierarchy_update ON [hierarchy]
 AFTER UPDATE AS
 BEGIN
   SET NOCOUNT ON;
-  INSERT INTO aclr_modified (hierarchy_id, is_new) 
+  INSERT INTO aclr_modified (hierarchy_id, is_new)
     SELECT DISTINCT(id), 0 FROM inserted;
 END;
 
@@ -715,7 +768,7 @@ BEGIN
   SET NOCOUNT ON;
   DECLARE @permissions VARCHAR(4000);
   SET @permissions = dbo.nx_get_read_permissions();
-  INSERT INTO aclr_user_map 
+  INSERT INTO aclr_user_map
     SELECT u.user_id, NEW.acl_id
     FROM aclr_user AS u, inserted AS NEW
     LEFT JOIN hierarchy_read_acl AS h ON NEW.acl_id = h.acl_id
@@ -937,31 +990,31 @@ DROP PROCEDURE dbo.NX_UPGRADE_VERSIONS;
 #CATEGORY: addClusterNode
 
 # -- delete nodes for sessions that don't exist anymore
-DELETE FROM N FROM cluster_nodes N WHERE
+DELETE FROM N FROM [cluster_nodes] N WHERE
   HAS_PERMS_BY_NAME(null, null, 'VIEW SERVER STATE') = 1
   AND NOT EXISTS(
     SELECT 1 FROM sys.dm_exec_sessions S WHERE
       S.is_user_process = 1 AND N.nodeid = S.session_id);
 
 # Remove orphan invalidations
-DELETE FROM CLUSTER_INVALS WHERE NODEID IN (
-  SELECT DISTINCT CLUSTER_INVALS.NODEID
-    FROM CLUSTER_INVALS LEFT JOIN CLUSTER_NODES ON CLUSTER_INVALS.NODEID = CLUSTER_NODES.NODEID
-    WHERE CLUSTER_NODES.NODEID IS NULL
+DELETE FROM [cluster_invals] WHERE [nodeid] IN (
+  SELECT DISTINCT [cluster_invals].[nodeid]
+    FROM [cluster_invals] LEFT JOIN [cluster_nodes] ON [cluster_invals].[nodeid] = [cluster_nodes].[nodeid]
+    WHERE [cluster_nodes].[nodeid] IS NULL
 )
 
-INSERT INTO cluster_nodes (nodeid, created) VALUES (@@SPID, CURRENT_TIMESTAMP);
+INSERT INTO [cluster_nodes] (nodeid, created) VALUES (@@SPID, CURRENT_TIMESTAMP);
 
 
 #CATEGORY: removeClusterNode
 
-DELETE FROM cluster_nodes WHERE nodeid = @@SPID;
+DELETE FROM [cluster_nodes] WHERE nodeid = @@SPID;
 
 # Remove orphan invalidations
-DELETE FROM CLUSTER_INVALS WHERE NODEID IN (
-  SELECT DISTINCT CLUSTER_INVALS.NODEID
-    FROM CLUSTER_INVALS LEFT JOIN CLUSTER_NODES ON CLUSTER_INVALS.NODEID = CLUSTER_NODES.NODEID
-    WHERE CLUSTER_NODES.NODEID IS NULL
+DELETE FROM [cluster_invals] WHERE [nodeid] IN (
+  SELECT DISTINCT [cluster_invals].[nodeid]
+    FROM [cluster_invals] LEFT JOIN [cluster_nodes] ON [cluster_invals].[nodeid] = [cluster_nodes].[nodeid]
+    WHERE [cluster_nodes].[nodeid] IS NULL
 )
 
 

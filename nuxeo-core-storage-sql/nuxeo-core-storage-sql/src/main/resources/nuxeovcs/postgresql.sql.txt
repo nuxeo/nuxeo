@@ -109,6 +109,10 @@ LANGUAGE sql
 STABLE;
 
 
+# NXP-7596 typo
+DROP TRIGGER IF EXISTS NX_TRIG_ANCESTOS_UPDATE;
+
+
 #IF: pathOptimizationsEnabled
 CREATE OR REPLACE FUNCTION nx_ancestors_create_triggers()
 RETURNS void
@@ -122,7 +126,7 @@ AS $$
     AFTER INSERT ON hierarchy
     FOR EACH ROW EXECUTE PROCEDURE nx_ancestors_insert();
   DROP TRIGGER IF EXISTS NX_TRIG_ANCESTORS_UPDATE ON hierarchy;
-  CREATE TRIGGER nx_trig_ancestos_update
+  CREATE TRIGGER nx_trig_ancestors_update
     AFTER UPDATE ON hierarchy
     FOR EACH ROW EXECUTE PROCEDURE nx_ancestors_update();
 $$
@@ -203,6 +207,46 @@ BEGIN
     WHERE id IN (SELECT id FROM ancestors
                    WHERE ARRAY[NEW.id] <@ ancestors OR id = NEW.id);
   RETURN NULL;
+END $$
+LANGUAGE plpgsql
+VOLATILE;
+
+
+# ancestors ids (since Nuxeo 5.4.3)
+
+#IF: pathOptimizationsEnabled
+CREATE OR REPLACE FUNCTION NX_ANCESTORS(ids ${idType}[])
+RETURNS SETOF ${idType}
+AS $$
+DECLARE
+  id ${idType};
+  r record;
+BEGIN
+  FOR r IN SELECT anc.ancestors FROM ancestors anc
+      WHERE anc.id IN (SELECT * FROM unnest(ids)) LOOP
+    RETURN QUERY SELECT unnest(r.ancestors);
+  END LOOP;
+END $$
+LANGUAGE plpgsql
+VOLATILE;
+
+# TODO 8.4: use CTE
+#IF: !pathOptimizationsEnabled
+CREATE OR REPLACE FUNCTION NX_ANCESTORS(ids ${idType}[])
+RETURNS SETOF ${idType}
+AS $$
+DECLARE
+  id ${idType};
+  curid ${idType};
+BEGIN
+  FOR id IN SELECT * FROM unnest(ids) LOOP
+    curid := id;
+    LOOP
+      SELECT parentid INTO curid FROM hierarchy WHERE hierarchy.id = curid;
+      EXIT WHEN curid IS NULL;
+      RETURN NEXT curid;
+    END LOOP;
+  END LOOP;
 END $$
 LANGUAGE plpgsql
 VOLATILE;
@@ -840,7 +884,7 @@ SELECT 1 WHERE EXISTS(SELECT 1 FROM pg_tables WHERE tablename = 'nxp_logs')
            AND NOT EXISTS(SELECT 1 FROM pg_indexes WHERE indexname='nxp_logs_log_event_date_idx');
 
 #IF: ! emptyResult
-CREATE INDEX nxp_logs_log_event_date_idx ON nxp_logs USING btree(log_event_date); 
+CREATE INDEX nxp_logs_log_event_date_idx ON nxp_logs USING btree(log_event_date);
 
 
 ############################################################

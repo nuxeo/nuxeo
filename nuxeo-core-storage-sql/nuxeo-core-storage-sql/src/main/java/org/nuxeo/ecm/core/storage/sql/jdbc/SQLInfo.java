@@ -324,6 +324,50 @@ public class SQLInfo {
                 opaqueColumns.isEmpty() ? null : opaqueColumns);
     }
 
+    /**
+     * Select all ancestors ids for several fragments.
+     * <p>
+     * Fast alternative to the slowest iterative
+     * {@link #getSelectParentIds}.
+     *
+     * @return null if it's not possible in one call in this dialect
+     */
+    public SQLInfoSelect getSelectAncestorsIds() {
+        String sql = dialect.getAncestorsIdsSql();
+        if (sql == null) {
+            return null;
+        }
+        Table table = database.getTable(model.HIER_TABLE_NAME);
+        Column mainColumn = table.getColumn(model.MAIN_KEY);
+        return new SQLInfoSelect(sql, Collections.singletonList(mainColumn),
+                null, null);
+    }
+
+    /**
+     * Select parentid by ids for all values of several fragments.
+     */
+    public SQLInfoSelect getSelectParentIds(int nids) {
+        Table table = database.getTable(model.HIER_TABLE_NAME);
+        Column whatColumn = table.getColumn(model.HIER_PARENT_KEY);
+        Column whereColumn = table.getColumn(model.MAIN_KEY);
+        StringBuilder wherebuf = new StringBuilder(whereColumn.getQuotedName());
+        wherebuf.append(" IN (");
+        for (int i = 0; i < nids; i++) {
+            if (i != 0) {
+                wherebuf.append(", ");
+            }
+            wherebuf.append('?');
+        }
+        wherebuf.append(')');
+        Select select = new Select(table);
+        select.setWhat("DISTINCT " + whatColumn.getQuotedName());
+        select.setFrom(table.getQuotedName());
+        select.setWhere(wherebuf.toString());
+        return new SQLInfoSelect(select.getStatement(),
+                Collections.singletonList(whatColumn),
+                Collections.singletonList(whereColumn), null);
+    }
+
     // ----- delete -----
 
     /**
