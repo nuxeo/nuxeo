@@ -79,6 +79,7 @@ import org.nuxeo.theme.relations.Relation;
 import org.nuxeo.theme.resources.ResourceBank;
 import org.nuxeo.theme.resources.ResourceManager;
 import org.nuxeo.theme.resources.ResourceType;
+import org.nuxeo.theme.services.ThemeService;
 import org.nuxeo.theme.templates.TemplateEngineType;
 import org.nuxeo.theme.types.Type;
 import org.nuxeo.theme.types.TypeFamily;
@@ -486,7 +487,7 @@ public final class ThemeManager implements Registrable {
         return path[4];
     }
 
-    public String getPagePathByUrl(final URL url) {
+    public static String getPagePathByUrl(final URL url) {
         if (url == null) {
             return null;
         }
@@ -1647,7 +1648,8 @@ public final class ThemeManager implements Registrable {
         if (elements.isEmpty()) {
             return null;
         }
-        // Get the first element assuming all elements belong to the same theme.
+        // Get the first element assuming all elements belong to the same
+        // theme.
         Element element = elements.iterator().next();
         return getThemeOf(element);
     }
@@ -1710,6 +1712,11 @@ public final class ThemeManager implements Registrable {
     public ThemeSet getThemeSetByName(final String name) {
         final TypeRegistry typeRegistry = Manager.getTypeRegistry();
         return (ThemeSet) typeRegistry.lookup(TypeFamily.THEMESET, name);
+    }
+
+    public List<String> getResourcesForPage(String themePage) {
+        ThemeService themeService = Manager.getThemeService();
+        return themeService.getResourcesForPage(themePage);
     }
 
 }

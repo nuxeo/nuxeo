@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -127,8 +128,19 @@ public final class Resources extends HttpServlet implements Serializable {
         StringBuilder text = new StringBuilder();
         String basePath = request.getParameter("basepath");
 
+        // plug additional resources for this page
+        List<String> allResourceNames = new ArrayList<String>();
+        allResourceNames.addAll(resourceNames);
+        final String themePage = request.getParameter("themePage");
+        if (themePage != null) {
+            // TODO: handle order
+            List<String> pageResources = themeManager.getResourcesForPage(themePage);
+            if (pageResources != null) {
+                allResourceNames.addAll(pageResources);
+            }
+        }
         for (String resourceName : themeManager.getResourceOrdering()) {
-            if (!resourceNames.contains(resourceName)) {
+            if (!allResourceNames.contains(resourceName)) {
                 continue;
             }
             final OutputStream out = new ByteArrayOutputStream();
@@ -165,8 +177,12 @@ public final class Resources extends HttpServlet implements Serializable {
                     source = Framework.expandVars(source);
 
                     // expand ${basePath}
-                    // TODO use ${org.nuxeo.ecm.contextPath} instead?
                     source = source.replaceAll("\\$\\{basePath\\}",
+                            Matcher.quoteReplacement(basePath));
+                    // also expand ${org.nuxeo.ecm.contextPath}
+                    // TODO: do not expand basePath?
+                    source = source.replaceAll(
+                            "\\$\\{org.nuxeo.ecm.contextPath\\}",
                             Matcher.quoteReplacement(basePath));
 
                     if (resource.isShrinkable()) {

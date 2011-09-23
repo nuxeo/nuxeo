@@ -39,12 +39,6 @@ public final class Styles extends HttpServlet implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private static final boolean IGNORE_VIEW_NAME = false;
-
-    private static final boolean IGNORE_CLASSNAME = false;
-
-    private static final boolean INDENT = false;
-
     @Override
     protected void doGet(final HttpServletRequest request,
             final HttpServletResponse response) throws IOException {

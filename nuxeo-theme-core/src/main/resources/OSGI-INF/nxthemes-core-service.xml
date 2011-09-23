@@ -259,4 +259,12 @@
     </documentation>
     <object class="org.nuxeo.theme.resources.ResourceBank"/>
   </extension-point>
+
+  <extension-point name="themePageResources">
+    <documentation>
+      Extension Point for mapping between theme pages and resources
+    </documentation>
+    <object class="org.nuxeo.theme.ThemePageResources"/>
+  </extension-point>
+
 </component>

@@ -20,7 +20,6 @@ import java.util.Collections;
 import java.util.Map;
 
 import org.nuxeo.common.utils.URLStreamHandlerFactoryInstaller;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.theme.perspectives.PerspectiveManager;
 import org.nuxeo.theme.protocol.nxtheme.Handler;
@@ -39,7 +38,7 @@ public final class Manager {
     private Manager() {
     }
 
-    private static ThemeService getThemeService() {
+    public static ThemeService getThemeService() {
         return (ThemeService) Framework.getRuntime().getComponent(
                 ThemeService.ID);
     }
