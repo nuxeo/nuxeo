@@ -88,13 +88,8 @@
       <format-type>widget</format-type>
       <template>incl/nuxeo_header.xhtml</template>
       <resource>screen.css</resource>
-      <resource>header.css</resource>
-    </view>
-
-    <view name="Nuxeo header" template-engine="jsf-facelets">
-      <format-type>widget</format-type>
-      <template>incl/nuxeo_header.xhtml</template>
-      <resource>screen.css</resource>
+      <!-- Theme CSS for Theme refactoring -->
+      <resource>nuxeo_dm_default.css</resource>
     </view>
 
     <view name="nuxeo5 breadcrumbs" template-engine="jsf-facelets">
@@ -178,6 +173,10 @@
     </resource>
     <resource name="fancybox-popup-utils.js">
       <path>scripts/fancybox-popup-utils.js</path>
+    </resource>
+    <!-- Theme CSS for Theme refactoring -->
+    <resource name="nuxeo_dm_default.css">
+      <path>css/nuxeo_dm_default.css</path>
     </resource>
   </extension>
 
