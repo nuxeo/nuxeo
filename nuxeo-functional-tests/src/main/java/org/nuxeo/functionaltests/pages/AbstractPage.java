@@ -26,11 +26,16 @@ import org.openqa.selenium.NotFoundException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 /**
  * Base functions for all pages.
  */
 public abstract class AbstractPage {
+
+    // Timeout for waitUntilURLDifferentFrom in seconds
+    public static int URLCHANGE_MAX_WAIT = 10;
 
     @FindBy(name = "userServicesForm")
     public WebElement userServicesForm;
@@ -152,6 +157,27 @@ public abstract class AbstractPage {
     public static void waitUntilEnabled(WebElement element)
             throws NotFoundException {
         AbstractTest.waitUntilEnabled(element);
+    }
+
+    /**
+     * Waits until the URL is different from the one given in parameter,
+     * with a timeout
+     *
+     * @param url the URL to compare to
+     */
+    public void waitUntilURLDifferentFrom(String url) {
+        final String refurl = url;
+        ExpectedCondition urlchanged = new ExpectedCondition<Boolean>() {
+            public Boolean apply(WebDriver d) {
+                return !d.getCurrentUrl().equals(refurl);
+            }
+        };
+        System.out.println("Waiting for URL to change from "+refurl);
+        WebDriverWait wait = new WebDriverWait(driver, URLCHANGE_MAX_WAIT);
+        wait.until(urlchanged);
+        if (driver.getCurrentUrl().equals(refurl)) {
+            System.out.println("Page change failed");
+        }
     }
 
 }

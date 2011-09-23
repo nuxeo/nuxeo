@@ -37,11 +37,19 @@ public class WizardPage extends AbstractWizardPage {
     }
 
     public WizardPage next() {
-        return next(WizardPage.class);
+        return next(WizardPage.class, false);
+    }
+
+    public WizardPage next(Boolean waitForURLChange) {
+        return next(WizardPage.class, waitForURLChange);
     }
 
     public WizardPage previous() {
-        return previous(WizardPage.class);
+        return previous(WizardPage.class, false);
+    }
+
+    public WizardPage previous(Boolean waitForURLChange) {
+        return previous(WizardPage.class, waitForURLChange);
     }
 
     @Override

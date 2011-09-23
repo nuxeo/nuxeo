@@ -68,6 +68,11 @@ public class ConnectWizardPage extends AbstractWizardPage {
             return null;
         }
         link.click();
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            // do nothing
+        }
         return asPage(wizardPageClass);
     }
 
