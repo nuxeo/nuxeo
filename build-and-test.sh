@@ -2,6 +2,7 @@
 
 # install library
 svn export --force https://svn.nuxeo.org/nuxeo/tools/qa/nuxeo-integration-release/trunk/integration-lib.sh
+svn export --force https://svn.nuxeo.org/nuxeo/tools/qa/nuxeo-integration-release/trunk/integration-dblib.sh
 HERE=$(cd $(dirname $0); pwd -P)
 . $HERE/integration-lib.sh
 
