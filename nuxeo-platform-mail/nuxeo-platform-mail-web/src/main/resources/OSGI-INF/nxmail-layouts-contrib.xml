@@ -328,7 +328,7 @@
           <property name="escape">false</property>
         </properties>
         <fields>
-          <field>mail:text</field>
+          <field>mail:htmlText</field>
         </fields>
       </widget>
     </layout>
