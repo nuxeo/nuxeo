@@ -1,0 +1,59 @@
+<div xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:rich="http://richfaces.org/rich"
+  xmlns:a4j="http://richfaces.org/a4j"
+  class="videoPlayer">
+
+  <link rel="stylesheet" href="#{baseURL}css/video-js.css" type="text/css" media="screen" title="Video JS"/>
+  <script src="#{baseURL}scripts/video.js" type="text/javascript" charset="utf-8"></script>
+
+  <script type="text/javascript">
+    VideoJS.setupAllWhenReady();
+  </script>
+
+  <nxu:set var="staticPreview" value="#{videoActions.getURLForStaticPreview(currentDocument)}">
+  <nxu:set var="mp4URL" value="#{videoActions.getTranscodedVideoURL(currentDocument, 'MP4 480p')}">
+  <nxu:set var="webmURL" value="#{videoActions.getTranscodedVideoURL(currentDocument, 'WebM 480p')}">
+
+    <c:if test="#{empty mp4URL and empty webmURL}">
+      <p>This video is in processing.</p>
+    </c:if>
+    <c:if test="#{not empty mp4URL or not empty webmURL}">
+      <div class="video-js-box">
+        <!-- HTML5 player -->
+        <video class="video-js" width="450" height="337" controls="controls" preload="auto" poster="#{staticPreview}">
+          <c:if test="#{not empty mp4URL}">
+            <source src="#{videoActions.getTranscodedVideoURL(currentDocument, 'MP4 480p')}" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"' />
+          </c:if>
+          <c:if test="#{not empty webmURL}">
+            <source src="#{videoActions.getTranscodedVideoURL(currentDocument, 'WebM 480p')}" type='video/webm; codecs="vp8, vorbis"' />
+          </c:if>
+          <c:if test="#{not empty mp4URL}">
+            <object type="application/x-shockwave-flash" data="http://jarisflvplayer.org/files/JarisFLVPlayer.swf" width="450px" height="337px">
+              <param name="menu" value="false"/>
+              <param name="scale" value="noScale"/>
+              <param name="allowFullscreen" value="true"/>
+              <param name="allowScriptAccess" value="always"/>
+              <param name="bgcolor" value="#000000"/>
+              <param name="quality" value="high"/>
+              <param name="wmode" value="opaque"/>
+              <param name="flashvars" value="source=#{mp4URL}&amp;type=video&amp;streamtype=file&amp;controltype=0&amp;duration=&amp;poster=#{videoActions.getURLForStaticPreview(currentDocument)}&amp;aspectratio=&amp;autostart=false&amp;;hardwarescaling=false&amp;controls=true&amp;darkcolor=000000&amp;brightcolor=4c4c4c&amp;controlcolor=FFFFFF&amp;hovercolor=67A8C1&amp;seekcolor=D3D3D3&amp;jsapi=flase&amp;controltype=1"/>
+              <img src="#{staticPreview}" height="480" alt="Poster Image"
+                title="No video playback capabilities." />
+            </object>
+          </c:if>
+        </video>
+      </div>
+    </c:if>
+
+  </nxu:set>
+  </nxu:set>
+  </nxu:set>
+
+</div>

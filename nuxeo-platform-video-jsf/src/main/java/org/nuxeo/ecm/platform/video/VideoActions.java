@@ -37,8 +37,19 @@ public class VideoActions implements Serializable {
 
     public String getURLForPlayer(DocumentModel videoDoc)
             throws ClientException {
-        return DocumentModelFunctions.bigFileUrl(videoDoc, "file:content",
-                "file:filename");
+        return DocumentModelFunctions.bigFileUrl(videoDoc, "file:content", "");
+    }
+
+    public String getTranscodedVideoURL(DocumentModel videoDoc, String name) {
+        VideoDocument video = videoDoc.getAdapter(VideoDocument.class);
+        TranscodedVideo transcodedVideo = video.getTranscodedVideo(name);
+        if (transcodedVideo == null) {
+            return null;
+        }
+
+        String blobPropertyName = transcodedVideo.getBlobPropertyName();
+        return DocumentModelFunctions.bigFileUrl(videoDoc, blobPropertyName,
+                transcodedVideo.getVideoBlob().getFilename());
     }
 
     public String getURLForStaticPreview(DocumentModel videoDoc)

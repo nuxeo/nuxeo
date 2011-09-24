@@ -30,6 +30,8 @@ public class VideoConstants {
 
     public static final String HAS_VIDEO_PREVIEW_FACET = "HasVideoPreview";
 
+    public static final String VIDEO_CHANGED_PROPERTY = "videoChanged";
+
     // Constant utility class.
     private VideoConstants() {
     }

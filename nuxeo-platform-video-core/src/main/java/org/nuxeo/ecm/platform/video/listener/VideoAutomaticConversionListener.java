@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -12,33 +12,32 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
+ *     Thomas Roger <troger@nuxeo.com>
  */
 
 package org.nuxeo.ecm.platform.video.listener;
 
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_UPDATED;
-import static org.nuxeo.ecm.platform.video.VideoConstants.HAS_STORYBOARD_FACET;
 import static org.nuxeo.ecm.platform.video.VideoConstants.VIDEO_CHANGED_PROPERTY;
+import static org.nuxeo.ecm.platform.video.VideoConstants.VIDEO_FACET;
 
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.PostCommitEventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
-import org.nuxeo.ecm.platform.video.VideoHelper;
+import org.nuxeo.ecm.platform.video.service.VideoService;
+import org.nuxeo.runtime.api.Framework;
 
 /**
- * Core event listener to compute / update the storyboard of a Video document
- *
- * @author ogrisel
+ * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
+ * @since 5.4.3
  */
-public class VideoStoryboardListener implements PostCommitEventListener {
+public class VideoAutomaticConversionListener implements
+        PostCommitEventListener {
 
     @Override
     public void handleEvent(EventBundle events) throws ClientException {
@@ -55,20 +54,20 @@ public class VideoStoryboardListener implements PostCommitEventListener {
         }
     }
 
-    public void handleEvent(Event event) throws ClientException {
+    private void handleEvent(Event event) throws ClientException {
         EventContext ctx = event.getContext();
         if (!(ctx instanceof DocumentEventContext)) {
             return;
         }
+
         DocumentEventContext docCtx = (DocumentEventContext) ctx;
         DocumentModel doc = docCtx.getSourceDocument();
-        if (doc.hasFacet(HAS_STORYBOARD_FACET) && ctx.hasProperty(VIDEO_CHANGED_PROPERTY)) {
-            BlobHolder blobHolder = doc.getAdapter(BlobHolder.class);
-            VideoHelper.updateStoryboard(doc, blobHolder.getBlob());
-            CoreSession session = docCtx.getCoreSession();
-            session.saveDocument(doc);
-            session.save();
+        if (doc == null || !doc.hasFacet(VIDEO_FACET) || !ctx.hasProperty(VIDEO_CHANGED_PROPERTY)) {
+            return;
         }
+
+        VideoService videoService = Framework.getLocalService(VideoService.class);
+        videoService.launchAutomaticConversions(doc);
     }
 
 }

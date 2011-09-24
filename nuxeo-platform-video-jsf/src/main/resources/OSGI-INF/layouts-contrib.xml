@@ -2,28 +2,90 @@
 <component name="org.nuxeo.ecm.platform.video.layouts">
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
-    point="layouts">
+    point="widgettypes">
+    <widgetType name="summary_video_player">
+      <documentation>
+        This widget displays a HTML5 video player for browsers
+        supporting it, and fallback on a Flash player for others.
+        It uses the WebM or MP4 conversion (in 480p) of the video.
 
-    <layout name="streamable_media">
+        It requires the following variables to be
+        present in the EL context:
+        <ul>
+          <li>currentDocument: the current document</li>
+        </ul>
+      </documentation>
+
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/summary/summary_video_player_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="summary_video_storyboard">
+      <documentation>
+        This widget displays the story board of
+        a video.
+
+        It requires the following variables to be
+        present in the EL context:
+        <ul>
+          <li>currentDocument: the current document</li>
+        </ul>
+      </documentation>
+
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/summary/summary_video_storyboard_widget_template.xhtml
+      </property>
+    </widgetType>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+      point="widgets">
+    <widget name="summary_video_player"
+      type="summary_video_player" />
+
+    <widget name="summary_video_storyboard"
+      type="summary_video_storyboard" />
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+    <layout name="video_summary_layout">
       <templates>
-        <template mode="any">/layouts/layout_default_template.xhtml</template>
+        <template mode="any">/layouts/layout_summary_template.xhtml</template>
       </templates>
       <rows>
         <row>
-          <widget>duration</widget>
+          <widget>summary_video_player</widget>
+          <widget>summary_current_document_files</widget>
+          <widget>summary_current_document_description</widget>
+          <widget>summary_current_document_view</widget>
+          <widget>summary_current_document_dublincore</widget>
+          <widget>summary_current_document_comments</widget>
+        </row>
+        <row>
+          <widget>summary_video_storyboard</widget>
+          <widget>summary_current_document_lc_and_version</widget>
+          <widget>summary_current_document_actions</widget>
+          <widget>summary_current_document_tagging</widget>
+          <widget>summary_current_document_relations</widget>
+        </row>
+        <row>
+          <widget>summary_current_document_publications</widget>
+        </row>
+        <row>
+          <widget>summary_current_document_single_tasks</widget>
         </row>
       </rows>
-      <widget name="duration" type="duration">
-        <translated>true</translated>
-        <fields>
-          <field>strm:duration</field>
-        </fields>
-        <widgetModes>
-          <mode value="any">view</mode>
-        </widgetModes>
-      </widget>
+      <widget name="summary_current_document_entities"
+       type="summary_current_document_entities"/>
     </layout>
-
   </extension>
 
 </component>

@@ -18,6 +18,7 @@
 package org.nuxeo.ecm.platform.video.listener;
 
 import static org.nuxeo.ecm.platform.video.VideoConstants.HAS_VIDEO_PREVIEW_FACET;
+import static org.nuxeo.ecm.platform.video.VideoConstants.VIDEO_CHANGED_PROPERTY;
 
 import java.io.IOException;
 
@@ -36,7 +37,7 @@ import org.nuxeo.ecm.platform.video.VideoHelper;
  *
  * @author ogrisel
  */
-public class VideoPreviewListener implements EventListener {
+public class VideoChangedListener implements EventListener {
 
     @Override
     public void handleEvent(Event event) throws ClientException {
@@ -52,6 +53,7 @@ public class VideoPreviewListener implements EventListener {
                 try {
                     VideoHelper.updatePreviews(doc,
                             origVideoProperty.getValue(Blob.class));
+                    ctx.setProperty(VIDEO_CHANGED_PROPERTY, true);
                 } catch (IOException e) {
                     throw ClientException.wrap(e);
                 }

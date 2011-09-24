@@ -5,17 +5,24 @@
 
   <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
 
-    <listener name="videoStoryboardListener" async="false" postCommit="false"
-      class="org.nuxeo.ecm.platform.video.listener.VideoStoryboardListener"
-      priority="10">
+    <listener name="videoChangedListener" async="false" postCommit="false"
+      class="org.nuxeo.ecm.platform.video.listener.VideoChangedListener" priority="20">
       <event>aboutToCreate</event>
       <event>beforeDocumentModification</event>
     </listener>
 
-    <listener name="videoPreviewListener" async="false" postCommit="false"
-      class="org.nuxeo.ecm.platform.video.listener.VideoPreviewListener" priority="20">
-      <event>aboutToCreate</event>
-      <event>beforeDocumentModification</event>
+    <listener name="videoStoryboardListener" async="true" postCommit="true"
+      class="org.nuxeo.ecm.platform.video.listener.VideoStoryboardListener"
+      priority="10">
+      <event>documentCreated</event>
+      <event>documentModified</event>
+    </listener>
+
+    <listener name="videoAutomaticConversions" async="true" postCommit="true"
+      class="org.nuxeo.ecm.platform.video.listener.VideoAutomaticConversionListener"
+      priority="20">
+      <event>documentCreated</event>
+      <event>documentModified</event>
     </listener>
 
   </extension>

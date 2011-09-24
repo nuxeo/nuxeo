@@ -18,7 +18,7 @@
       <xs:element name="container" type="xs:string" />
       <xs:element name="videoCodec" type="xs:string" />
       <xs:element name="audioCodec" type="xs:string" />
-      <xs:element name="framerate" type="xs:float" />
+      <xs:element name="frameRate" type="xs:float" />
     </xs:sequence>
   </xs:complexType>
 

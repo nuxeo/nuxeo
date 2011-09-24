@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.platform.video.jsf.actions">
+
+  <require>org.nuxeo.ecm.platform.preview.actions</require>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="filters">
+
+    <filter id="view_preview" append="true">
+      <rule grant="false">
+        <facet>Video</facet>
+      </rule>
+    </filter>
+
+    <filter id="popup_view_preview" append="true">
+      <rule grant="false">
+        <facet>Video</facet>
+      </rule>
+    </filter>
+
+  </extension>
+
+</component>

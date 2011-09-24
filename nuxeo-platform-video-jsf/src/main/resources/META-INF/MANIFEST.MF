@@ -8,4 +8,6 @@ Bundle-Category: web,stateless
 Eclipse-LazyStart: true
 Nuxeo-Require: org.nuxeo.ecm.platform.video.core
 Require-Bundle: org.nuxeo.ecm.platform.video.core
-Nuxeo-Component: OSGI-INF/layouts-contrib.xml
+Nuxeo-Component: OSGI-INF/layouts-contrib.xml,
+ OSGI-INF/ui-types-contrib.xml,
+ OSGI-INF/actions-contrib.xml
