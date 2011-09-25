@@ -84,7 +84,9 @@ public class NuxeoDevWebappClassLoader extends WebappClassLoader implements
     public Class<?> loadClass(String name, boolean resolve)
             throws ClassNotFoundException {
         try {
-            return super.loadClass(name, resolve);
+            synchronized (this) {
+                return super.loadClass(name, resolve);
+            }
         } catch (ClassNotFoundException e) {
             for (LocalClassLoader cl : getChildren()) {
                 try {
