@@ -8,7 +8,7 @@
         value="#{nxu:test(!empty widget.properties.width, widget.properties.width, '100%')}" />
 
     <nxu:set var="sound_url"
-      value="#{nxd:fileUrl('downloadFile', value, widget.fieldDefinitions[0].propertyName, field.filename)}">
+      value="#{nxd:bigFileUrl(value, widget.fieldDefinitions[0].propertyName, field.filename)}">
 
       <audio id="audioplayer" preload="auto" controls="controls" style="width:#{width};">
         <source src="#{sound_url}" />
