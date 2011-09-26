@@ -24,13 +24,6 @@
       <template>incl/logo_DM_galaxy_admin.xhtml</template>
     </view>
     
-    <view name="Nuxeo header" template-engine="jsf-facelets">
-      <format-type>widget</format-type>
-      <template>incl/nuxeo_header.xhtml</template>
-      <resource>screen.css</resource>
-      <resource>nuxeo_admin_center_default.css</resource>
-    </view>
-
   </extension>
 
   <!-- application settings -->
@@ -62,17 +55,16 @@
   
   </extension>
   
-  <!-- mapping between theme pages and resources 
+  <!-- mapping between theme pages and resources -->
   <extension target="org.nuxeo.theme.services.ThemeService" point="themePageResources">
   
-    Theme CSS for Theme refactoring
-    <themePage name="galaxy/default">
+    <themePage name="admin/default">
       <resources append="true">
         <resource>nuxeo_user_center_default.css</resource>
       </resources>
     </themePage>
   
-  </extension-->
+  </extension>
 
   <!-- Styles presets -->
 
