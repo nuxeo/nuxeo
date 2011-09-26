@@ -90,9 +90,6 @@
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-startup-wizard::war" />
     </copy>
 
-    <copy todir="${tomcat}/lib">
-      <artifact:resolveFile key="org.nuxeo.runtime:nuxeo-runtime-tomcat-adapter" />
-    </copy>
     <mkdir dir="${tomcat}/client" />
     <copy todir="${tomcat}/client">
       <artifact:resolveFile key="org.nuxeo.shell:nuxeo-shell" />
@@ -306,6 +303,7 @@ org.nuxeo.ecm.product.name=Nuxeo DM
       </fileset>
       <fileset dir="${distribution.dir}/nxserver/bundles">
         <include name="nuxeo-core-storage-sql-extensions-*" />
+        <include name="nuxeo-runtime-tomcat-adapter*" />
       </fileset>
     </move>
     <nx:rmdups dir="${distribution.dir}/lib" />
