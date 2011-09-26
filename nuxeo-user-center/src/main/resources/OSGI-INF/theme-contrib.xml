@@ -6,7 +6,7 @@
   <require>org.nuxeo.theme.html</require>
   <require>org.nuxeo.theme.jsf</require>
 
-  <!--  themes -->
+  <!-- themes -->
   <extension target="org.nuxeo.theme.services.ThemeService" point="themes">
 
     <theme>
@@ -21,13 +21,6 @@
       template-engine="jsf-facelets">
       <format-type>widget</format-type>
       <template>incl/logo_DM_galaxy_user_center.xhtml</template>
-    </view>
-    
-    <view name="Nuxeo header" template-engine="jsf-facelets">
-      <format-type>widget</format-type>
-      <template>incl/nuxeo_header.xhtml</template>
-      <resource>screen.css</resource>
-      <resource>nuxeo_user_center_default.css</resource>
     </view>
 
   </extension>
@@ -46,29 +39,29 @@
     </application>
 
   </extension>
-  
+
   <!-- resources -->
   <extension target="org.nuxeo.theme.services.ThemeService" point="resources">
-  
+
     <!-- Theme CSS for Theme refactoring -->
     <resource name="nuxeo_user_center_default.css">
       <path>css/nuxeo_user_center_default.css</path>
     </resource>
-  
+
   </extension>
-  
-  <!-- mapping between theme pages and resources 
-  <extension target="org.nuxeo.theme.services.ThemeService" point="themePageResources">
-  
-    Theme CSS for Theme refactoring
-    <themePage name="galaxy/default">
+
+  <!-- mapping between theme pages and resources -->
+  <extension target="org.nuxeo.theme.services.ThemeService"
+    point="themePageResources">
+
+    <themePage name="userCenter/default">
       <resources append="true">
         <resource>nuxeo_user_center_default.css</resource>
       </resources>
     </themePage>
-  
-  </extension-->  
-    
+
+  </extension>
+
 
   <!-- Styles presets -->
 
