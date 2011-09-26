@@ -172,7 +172,6 @@ public abstract class AbstractPage {
                 return !d.getCurrentUrl().equals(refurl);
             }
         };
-        System.out.println("Waiting for URL to change from "+refurl);
         WebDriverWait wait = new WebDriverWait(driver, URLCHANGE_MAX_WAIT);
         wait.until(urlchanged);
         if (driver.getCurrentUrl().equals(refurl)) {

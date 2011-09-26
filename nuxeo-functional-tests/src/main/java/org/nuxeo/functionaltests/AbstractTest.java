@@ -77,6 +77,9 @@ public abstract class AbstractTest {
     public static void initDriver() throws Exception {
         FirefoxProfile profile = new FirefoxProfile();
 
+        // Disable native events (makes things break on Windows)
+        profile.setEnableNativeEvents(false);
+
         // Set English as default language
         profile.setPreference("general.useragent.locale", "en");
         profile.setPreference("intl.accept_languages", "en");
