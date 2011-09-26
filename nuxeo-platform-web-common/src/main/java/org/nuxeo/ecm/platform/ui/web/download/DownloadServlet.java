@@ -245,19 +245,52 @@ public class DownloadServlet extends HttpServlet {
             resp.setHeader("Content-Disposition", contentDisposition);
             resp.setContentType(blob.getMimeType());
 
-            long fileSize = blob.getLength();
+            int fileSize = (int) blob.getLength();
             if (fileSize > 0) {
-                resp.setContentLength((int) fileSize);
+                String range = req.getHeader("Range");
+                ByteRange byteRange = null;
+                if (range != null) {
+                    try {
+                        byteRange = parseRange(range, fileSize);
+                    } catch (ClientException e) {
+                        log.error(e.getMessage(), e);
+                    }
+                }
+                if (byteRange != null) {
+                    resp.setHeader("Accept-Ranges", "bytes");
+                    resp.setHeader("Content-Range", "bytes "
+                            + byteRange.getStart() + "-" + byteRange.getEnd()
+                            + "/" + fileSize);
+                    resp.setContentLength(byteRange.getLength());
+                    resp.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
+
+                    OutputStream out = resp.getOutputStream();
+                    in = blob.getStream();
+                    byte[] buffer = new byte[BUFFER_SIZE];
+                    int read;
+                    int offset = byteRange.getStart();
+                    in.skip(offset);
+                    while (offset <= byteRange.getEnd()
+                            && (read = in.read(buffer)) != -1) {
+                        read = Math.min(read, byteRange.getEnd() - offset + 1);
+                        out.write(buffer, 0, read);
+                        out.flush();
+                        offset += BUFFER_SIZE;
+                    }
+                } else {
+                    resp.setContentLength(fileSize);
+
+                    OutputStream out = resp.getOutputStream();
+                    in = blob.getStream();
+                    byte[] buffer = new byte[BUFFER_SIZE];
+                    int read;
+                    while ((read = in.read(buffer)) != -1) {
+                        out.write(buffer, 0, read);
+                        out.flush();
+                    }
+                }
             }
 
-            OutputStream out = resp.getOutputStream();
-            in = blob.getStream();
-            byte[] buffer = new byte[BUFFER_SIZE];
-            int read;
-            while ((read = in.read(buffer)) != -1) {
-                out.write(buffer, 0, read);
-                out.flush();
-            }
         } catch (IOException ioe) {
             handleClientDisconnect(ioe);
         } catch (Exception e) {
@@ -311,4 +344,63 @@ public class DownloadServlet extends HttpServlet {
             tmpZip.delete();
         }
     }
+
+    private ByteRange parseRange(String range, int fileSize)
+            throws ClientException {
+        if (!range.startsWith("bytes=") || range.indexOf(',') >= 0) { // Do no support multiple ranges
+            throw new ClientException("Cannot parse range : " + range);
+        }
+        int sepIndex = range.indexOf('-', 6);
+        if (sepIndex < 0) {
+            throw new ClientException("Cannot parse range : " + range);
+        }
+        String start = range.substring(6, sepIndex).trim();
+        String end = range.substring(sepIndex + 1).trim();
+        int rangeStart = 0;
+        int rangeEnd = fileSize - 1;
+        if (start.isEmpty()) {
+            if (end.isEmpty()) {
+                throw new ClientException("Cannot parse range : " + range);
+            }
+            rangeStart = fileSize - Integer.parseInt(end);
+            if (rangeStart < 0) {
+                rangeStart = 0;
+            }
+        } else {
+            rangeStart = Integer.parseInt(start);
+            if (!end.isEmpty()) {
+                rangeEnd = Integer.parseInt(end);
+            }
+        }
+        if (rangeStart > rangeEnd) {
+            throw new ClientException("Cannot parse range : " + range);
+        }
+
+        return new ByteRange(rangeStart, rangeEnd);
+    }
+
+    private class ByteRange {
+
+        private int start;
+
+        private int end;
+
+        public ByteRange(int rangeStart, int rangeEnd) {
+            start = rangeStart;
+            end = rangeEnd;
+        }
+
+        public int getStart() {
+            return start;
+        }
+
+        public int getEnd() {
+            return end;
+        }
+
+        public int getLength() {
+            return end - start + 1;
+        }
+    }
+
 }
