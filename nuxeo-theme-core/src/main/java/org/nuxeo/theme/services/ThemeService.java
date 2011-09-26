@@ -727,8 +727,23 @@ public class ThemeService extends DefaultComponent implements Reloadable {
         // TODO
     }
 
-    public List<String> getResourcesForPage(String themePage) {
-        return themePageResources.get(themePage);
+    public List<String> getResourcesForPage(String themePage,
+            String resourceSuffix) {
+        List<String> resources = themePageResources.get(themePage);
+        if (resources == null) {
+            return null;
+        }
+        if (resourceSuffix == null) {
+            return resources;
+        }
+        List<String> res = new ArrayList<String>();
+        // filter resources
+        for (String resource : resources) {
+            if (resource != null && resource.endsWith(resourceSuffix)) {
+                res.add(resource);
+            }
+        }
+        return res;
     }
 
 }

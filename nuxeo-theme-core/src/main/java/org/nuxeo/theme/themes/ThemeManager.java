@@ -1478,6 +1478,39 @@ public final class ThemeManager implements Registrable {
         return resourceOrdering;
     }
 
+    /**
+     * Returns all the ordered resource names and their dependencies, given a
+     * list of resources names.
+     *
+     * @since 5.4.3
+     * @param resourceNames
+     */
+    // TODO: optimize?
+    public List<String> getOrderedResourcesAndDeps(List<String> resourceNames) {
+        List<String> res = new ArrayList<String>();
+        if (resourceNames == null) {
+            return res;
+        }
+        TypeRegistry typeRegistry = Manager.getTypeRegistry();
+        for (String resourceName : resourceNames) {
+            ResourceType resource = (ResourceType) typeRegistry.lookup(
+                    TypeFamily.RESOURCE, resourceName);
+            if (resource == null) {
+                log.error(String.format("Resource not registered %s.",
+                        resourceName));
+                continue;
+            }
+            String[] deps = resource.getDependencies();
+            if (deps != null) {
+                for (String dep : deps) {
+                    res.add(dep);
+                }
+            }
+            res.add(resourceName);
+        }
+        return res;
+    }
+
     public void unregisterResourceOrdering(ResourceType resourceType) {
         String resourceName = resourceType.getName();
         if (resourceOrdering.contains(resourceName)) {
@@ -1714,9 +1747,10 @@ public final class ThemeManager implements Registrable {
         return (ThemeSet) typeRegistry.lookup(TypeFamily.THEMESET, name);
     }
 
-    public List<String> getResourcesForPage(String themePage) {
+    public List<String> getResourcesForPage(String themePage,
+            String resourceSuffix) {
         ThemeService themeService = Manager.getThemeService();
-        return themeService.getResourcesForPage(themePage);
+        return themeService.getResourcesForPage(themePage, resourceSuffix);
     }
 
 }

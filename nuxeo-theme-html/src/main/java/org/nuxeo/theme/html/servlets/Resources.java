@@ -88,15 +88,19 @@ public final class Resources extends HttpServlet implements Serializable {
         final ThemeManager themeManager = Manager.getThemeManager();
 
         String contentType = null;
+        String resourceSuffix = null;
         final List<String> resourceNames = Arrays.asList(m.group(1).split(","));
         for (String resourceName : resourceNames) {
             String previousContentType = contentType;
             if (resourceName.endsWith(".js")) {
                 contentType = "text/javascript";
+                resourceSuffix = ".js";
             } else if (resourceName.endsWith(".css")) {
                 contentType = "text/css";
+                resourceSuffix = ".css";
             } else if (resourceName.endsWith(".json")) {
                 contentType = "text/json";
+                resourceSuffix = ".json";
             }
 
             if (contentType == null) {
@@ -130,19 +134,16 @@ public final class Resources extends HttpServlet implements Serializable {
 
         // plug additional resources for this page
         List<String> allResourceNames = new ArrayList<String>();
-        allResourceNames.addAll(resourceNames);
+        allResourceNames.addAll(themeManager.getOrderedResourcesAndDeps(resourceNames));
         final String themePage = request.getParameter("themePage");
         if (themePage != null) {
-            // TODO: handle order
-            List<String> pageResources = themeManager.getResourcesForPage(themePage);
+            List<String> pageResources = themeManager.getResourcesForPage(
+                    themePage, resourceSuffix);
             if (pageResources != null) {
                 allResourceNames.addAll(pageResources);
             }
         }
-        for (String resourceName : themeManager.getResourceOrdering()) {
-            if (!allResourceNames.contains(resourceName)) {
-                continue;
-            }
+        for (String resourceName : allResourceNames) {
             final OutputStream out = new ByteArrayOutputStream();
             String source = themeManager.getResource(resourceName);
             if (source == null) {
