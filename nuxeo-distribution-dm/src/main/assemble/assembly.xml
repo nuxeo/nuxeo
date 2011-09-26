@@ -72,7 +72,6 @@
           <artifact artifactId="gwt-log" />
           <artifact artifactId="gwt-presenter" />
           <artifact artifactId="gwt-user" />
-          <artifact artifactId="h2" />
         </excludes>
       </artifact:set>
     </copy>
