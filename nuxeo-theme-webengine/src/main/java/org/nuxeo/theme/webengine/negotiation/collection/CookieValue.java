@@ -17,6 +17,7 @@ package org.nuxeo.theme.webengine.negotiation.collection;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.theme.negotiation.Scheme;
+import org.nuxeo.ecm.webengine.model.WebContext;
 
 public class CookieValue implements Scheme {
 

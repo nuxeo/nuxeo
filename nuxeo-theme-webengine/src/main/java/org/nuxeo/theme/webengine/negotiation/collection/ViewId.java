@@ -20,6 +20,8 @@ import org.nuxeo.theme.ViewDef;
 import org.nuxeo.theme.negotiation.Scheme;
 import org.nuxeo.theme.types.TypeFamily;
 import org.nuxeo.theme.types.TypeRegistry;
+import org.nuxeo.ecm.webengine.model.WebContext;
+import org.nuxeo.ecm.webengine.model.Resource;
 
 public final class ViewId implements Scheme {
 
