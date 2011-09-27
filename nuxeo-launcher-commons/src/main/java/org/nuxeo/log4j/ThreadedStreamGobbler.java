@@ -38,8 +38,6 @@ import org.apache.commons.logging.impl.SimpleLog;
 public class ThreadedStreamGobbler extends Thread {
     static final Log log = LogFactory.getLog(ThreadedStreamGobbler.class);
 
-    public static final long SLEEPING_TIME = 100;
-
     private InputStream is;
 
     private int logLevel;
@@ -47,8 +45,6 @@ public class ThreadedStreamGobbler extends Thread {
     private List<String> output;
 
     private OutputStream outputStream;
-
-    private boolean stop = false;
 
     public ThreadedStreamGobbler(InputStream is, int logLevel) {
         this.is = is;
@@ -83,45 +79,33 @@ public class ThreadedStreamGobbler extends Thread {
         final byte[] newLine = "\n".getBytes();
 
         try {
-            while (!stop) {
-                while (is.available() > 0 && !stop) {
-                    line = br.readLine();
-                    switch (logLevel) {
-                    case SimpleLog.LOG_LEVEL_DEBUG:
-                        log.debug(line);
-                        break;
-                    case SimpleLog.LOG_LEVEL_INFO:
-                        log.info(line);
-                        break;
-                    case SimpleLog.LOG_LEVEL_ERROR:
-                        log.error(line);
-                        break;
-                    case SimpleLog.LOG_LEVEL_OFF:
-                        if (output != null) {
-                            output.add(line);
-                        }
-                        if (outputStream != null) {
-                            outputStream.write(line.getBytes());
-                            outputStream.write(newLine);
-                        }
-                    default:
-                        break;
+            while ((line = br.readLine()) != null) {
+                switch (logLevel) {
+                case SimpleLog.LOG_LEVEL_DEBUG:
+                    log.debug(line);
+                    break;
+                case SimpleLog.LOG_LEVEL_INFO:
+                    log.info(line);
+                    break;
+                case SimpleLog.LOG_LEVEL_ERROR:
+                    log.error(line);
+                    break;
+                case SimpleLog.LOG_LEVEL_OFF:
+                    if (output != null) {
+                        output.add(line);
                     }
+                    if (outputStream != null) {
+                        outputStream.write(line.getBytes());
+                        outputStream.write(newLine);
+                    }
+                default:
+                    break;
                 }
-                Thread.sleep(SLEEPING_TIME);
             }
         } catch (IOException e) {
             log.error(e);
-        } catch (InterruptedException e) {
-            // stop
         } finally {
             IOUtils.closeQuietly(br);
         }
     }
-
-    public void stopProcessing() {
-        this.stop = true;
-        this.interrupt();
-    }
-
 }
