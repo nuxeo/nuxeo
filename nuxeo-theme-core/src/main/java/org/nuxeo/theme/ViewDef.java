@@ -29,6 +29,9 @@ public final class ViewDef {
     @XNode("mode")
     private String mode;
 
+    @XNode("collection")
+    private String collection;
+
     @XNode("perspective")
     private String perspective;
 
@@ -64,4 +67,11 @@ public final class ViewDef {
         this.mode = mode;
     }
 
+    public String getCollection() {
+        return collection;
+    }
+
+    public void setCollection(String collection) {
+        this.collection = collection;
+    }
 }
