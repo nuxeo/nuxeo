@@ -73,8 +73,8 @@ public class UIThemeStyles extends UIOutput {
         final ExternalContext externalContext = context.getExternalContext();
 
         Map<String, Object> requestMap = externalContext.getRequestMap();
+        final URL themeUrl = (URL) requestMap.get("org.nuxeo.theme.url");
         if (theme == null) {
-            final URL themeUrl = (URL) requestMap.get("org.nuxeo.theme.url");
             theme = ThemeManager.getThemeNameByUrl(themeUrl);
         }
 
@@ -87,6 +87,8 @@ public class UIThemeStyles extends UIOutput {
                 "/nuxeo")
                 + "/site";
         params.put("basepath", basePath);
+        String collectionName = ThemeManager.getCollectionNameByUrl(themeUrl);
+        params.put("collection", collectionName);
 
         Boolean virtualHosting = Utils.isVirtualHosting((HttpServletRequest) externalContext.getRequest());
         writer.write(ThemeStyles.render(params, Boolean.parseBoolean(cache),
