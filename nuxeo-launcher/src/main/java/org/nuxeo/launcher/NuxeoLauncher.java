@@ -101,6 +101,8 @@ public abstract class NuxeoLauncher {
 
     private static final String INSTALLER_CLASS = "org.nuxeo.ecm.admin.offline.update.Main";
 
+    private static final long STREAM_MAX_WAIT = 3000;
+
     protected ConfigurationGenerator configurationGenerator;
 
     public final ConfigurationGenerator getConfigurationGenerator() {
@@ -738,18 +740,24 @@ public abstract class NuxeoLauncher {
                 installProcess, false);
         Thread.sleep(100);
         installProcess.waitFor();
-        stopProcessStreams(sgArray);
+        waitForProcessStreams(sgArray);
     }
 
     /**
      * Stop stream gobblers contained in the given ArrayList
      *
+     * @throws InterruptedException
+     *
      * @since 5.4.3
      * @see #logProcessStreams(Process, boolean)
      */
-    public void stopProcessStreams(ArrayList<ThreadedStreamGobbler> sgArray) {
+    public void waitForProcessStreams(ArrayList<ThreadedStreamGobbler> sgArray) {
         for (ThreadedStreamGobbler streamGobbler : sgArray) {
-            streamGobbler.stopProcessing();
+            try {
+                streamGobbler.join(STREAM_MAX_WAIT);
+            } catch (InterruptedException e) {
+                streamGobbler.interrupt();
+            }
         }
     }
 
@@ -873,7 +881,7 @@ public abstract class NuxeoLauncher {
                     ArrayList<ThreadedStreamGobbler> sgArray = logProcessStreams(
                             stopProcess, logProcessOutput);
                     stopProcess.waitFor();
-                    stopProcessStreams(sgArray);
+                    waitForProcessStreams(sgArray);
                     boolean wait = true;
                     while (wait) {
                         try {
