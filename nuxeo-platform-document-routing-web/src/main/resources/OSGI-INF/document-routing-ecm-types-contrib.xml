@@ -62,7 +62,7 @@
       <label>StepFolder</label>
       <icon>/icons/fork.png</icon>
       <bigIcon>/icons/fork_100.png</bigIcon>
-      <category>Collaborative</category>
+      <category>StepContainers</category>
       <description>Folder.description</description>
       <default-view>view_documents</default-view>
       <edit-view>edit_route_element</edit-view>
@@ -91,7 +91,7 @@
       <label>Step</label>
       <icon>/icons/step.png</icon>
       <bigIcon>/icons/step_100.png</bigIcon>
-      <category>SimpleDocument</category>
+      <category>Steps</category>
       <description>File.description</description>
       <default-view>view_documents</default-view>
       <edit-view>edit_route_element</edit-view>
@@ -107,7 +107,7 @@
       <label>ConditionalStepFolder</label>
       <icon>/icons/fork.png</icon>
       <bigIcon>/icons/fork_100.png</bigIcon>
-      <category>Collaborative</category>
+      <category>StepContainers</category>
       <description>Folder.description</description>
       <default-view>view_documents</default-view>
       <edit-view>edit_route_element</edit-view>
