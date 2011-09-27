@@ -7,25 +7,25 @@
   </documentation>
 
   <require>org.nuxeo.theme.core</require>
-  <!-- TODO: remove --> 
+  <!-- TODO: remove -->
   <require>org.nuxeo.theme.fragments</require>
 
   <extension target="org.nuxeo.theme.services.ThemeService" point="template-engines">
-    
+
     <template-engine name="freemarker" title="Freemarker"
       template-view="org.nuxeo.theme.webengine.FreemarkerView" />
-        
+
   </extension>
 
- 
+
   <extension target="org.nuxeo.ecm.webengine.WebEngineComponent" point="rendering-extension">
 
-    <rendering-extension name="theme" 
+    <rendering-extension name="theme"
       class="org.nuxeo.theme.webengine.fm.extensions.ThemeDirective"/>
 
     <rendering-extension name="nxthemes_head"
       class="org.nuxeo.theme.webengine.fm.extensions.NXThemesHeadDirective"/>
-    
+
     <rendering-extension name="nxthemes_themestyles"
       class="org.nuxeo.theme.webengine.fm.extensions.NXThemesThemeStylesDirective"/>
 
@@ -55,7 +55,7 @@
 
     <rendering-extension name="nxthemes_tabs"
       class="org.nuxeo.theme.webengine.fm.extensions.NXThemesTabsDirective"/>
-      
+
     <rendering-extension name="nxthemes_require"
       class="org.nuxeo.theme.webengine.fm.extensions.NXThemesRequireDirective"/>
   </extension>
@@ -75,7 +75,7 @@
         org.nuxeo.theme.html.filters.standalone.FragmentVisibility
       </class>
     </standalone-filter>
-    
+
     <standalone-filter name="set element name" template-engine="freemarker">
       <class>
         org.nuxeo.theme.html.filters.standalone.ElementName
@@ -83,7 +83,7 @@
     </standalone-filter>
 
   </extension>
-  
+
 
   <extension target="org.nuxeo.theme.services.ThemeService" point="views">
 
@@ -102,7 +102,7 @@
     </view>
 
     <!-- Layout -->
-    
+
     <view name="theme view" template-engine="freemarker">
       <element-type>theme</element-type>
       <format-type>widget</format-type>
@@ -126,10 +126,10 @@
       <format-type>widget</format-type>
       <template>nxthemes/webengine/fm/widgets/cell-frame.xml</template>
     </view>
-    
-    
+
+
     <!-- Default widgets -->
-    
+
     <view name="block region" template-engine="freemarker">
       <format-type>widget</format-type>
       <model-type>region</model-type>
@@ -137,7 +137,7 @@
       <class>
         org.nuxeo.theme.webengine.fm.filters.widgets.BlockRegionView
       </class>
-    </view>   
+    </view>
 
     <view name="vertical menu" template-engine="freemarker">
       <format-type>widget</format-type>
@@ -152,19 +152,19 @@
         nxthemes/webengine/fm/widgets/horizontal-tabs.xml
       </template>
     </view>
-    
+
     <view name="vertical list" template-engine="freemarker">
       <format-type>widget</format-type>
       <model-type>navigation</model-type>
       <template>nxthemes/webengine/fm/widgets/vertical-list.xml</template>
     </view>
-    
+
     <view name="horizontal trail" template-engine="freemarker">
       <format-type>widget</format-type>
       <model-type>navigation</model-type>
       <template>nxthemes/webengine/fm/widgets/horizontal-trail.xml</template>
     </view>
-    
+
     <view name="plain text" template-engine="freemarker">
       <format-type>widget</format-type>
       <model-type>text</model-type>
@@ -177,7 +177,7 @@
       <model-type>html</model-type>
       <icon>nxthemes/html/icons/plain-html.png</icon>
       <template>nxthemes/webengine/fm/widgets/plain-html.xml</template>
-    </view>    
+    </view>
 
     <!-- no style caching -->
     <view name="theme view" template-engine="freemarker">
@@ -188,9 +188,9 @@
       <template>nxthemes/webengine/fm/widgets/theme-view-no-cache.xml</template>
     </view>
 
-  </extension>  
-  
-  
+  </extension>
+
+
   <extension target="org.nuxeo.theme.services.ThemeService" point="negotiations">
 
     <negotiation object="engine" strategy="web">
@@ -202,10 +202,10 @@
       </scheme>
       <scheme>
         org.nuxeo.theme.webengine.negotiation.engine.RequestAttribute
-      </scheme>       
+      </scheme>
       <scheme>
         org.nuxeo.theme.webengine.negotiation.engine.ViewId
-      </scheme>         
+      </scheme>
       <scheme>
         org.nuxeo.theme.webengine.negotiation.engine.DefaultEngine
       </scheme>
@@ -214,16 +214,16 @@
     <negotiation object="mode" strategy="web">
       <scheme>
         org.nuxeo.theme.webengine.negotiation.mode.RequestParameter
-      </scheme>       
+      </scheme>
       <scheme>
         org.nuxeo.theme.webengine.negotiation.mode.CookieValue
       </scheme>
       <scheme>
         org.nuxeo.theme.webengine.negotiation.mode.RequestAttribute
-      </scheme>       
+      </scheme>
       <scheme>
         org.nuxeo.theme.webengine.negotiation.mode.ViewId
-      </scheme>         
+      </scheme>
       <scheme>
         org.nuxeo.theme.webengine.negotiation.mode.UnspecifiedMode
       </scheme>
@@ -232,16 +232,16 @@
     <negotiation object="theme" strategy="web">
       <scheme>
         org.nuxeo.theme.webengine.negotiation.theme.RequestParameter
-      </scheme>          
+      </scheme>
       <scheme>
         org.nuxeo.theme.webengine.negotiation.theme.CookieValue
       </scheme>
       <scheme>
         org.nuxeo.theme.webengine.negotiation.theme.RequestAttribute
-      </scheme>       
+      </scheme>
       <scheme>
         org.nuxeo.theme.webengine.negotiation.theme.ViewId
-      </scheme>            
+      </scheme>
       <scheme>
         org.nuxeo.theme.webengine.negotiation.theme.DefaultTheme
       </scheme>
@@ -256,16 +256,35 @@
       </scheme>
       <scheme>
         org.nuxeo.theme.webengine.negotiation.perspective.RequestAttribute
-      </scheme>       
+      </scheme>
       <scheme>
         org.nuxeo.theme.webengine.negotiation.perspective.ViewId
-      </scheme>      
+      </scheme>
       <scheme>
         org.nuxeo.theme.webengine.negotiation.perspective.DefaultPerspective
       </scheme>
     </negotiation>
 
+
+    <negotiation object="collection" strategy="web">
+      <scheme>
+        org.nuxeo.theme.webengine.negotiation.collection.RequestParameter
+      </scheme>
+      <scheme>
+        org.nuxeo.theme.webengine.negotiation.collection.CookieValue
+      </scheme>
+      <scheme>
+        org.nuxeo.theme.webengine.negotiation.collection.RequestAttribute
+      </scheme>
+      <scheme>
+        org.nuxeo.theme.webengine.negotiation.collection.ViewId
+      </scheme>
+      <scheme>
+        org.nuxeo.theme.webengine.negotiation.collection.UnspecifiedCollection
+      </scheme>
+    </negotiation>
+
   </extension>
-  
+
 </component>
 
