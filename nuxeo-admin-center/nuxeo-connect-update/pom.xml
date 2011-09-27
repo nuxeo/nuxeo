@@ -42,6 +42,10 @@
       <groupId>org.apache.ant</groupId>
       <artifactId>ant</artifactId>
     </dependency>
+    <dependency>
+      <groupId>commons-collections</groupId>
+      <artifactId>commons-collections</artifactId>
+    </dependency>
     <!-- for command guards -->
     <dependency>
       <groupId>commons-jexl</groupId>
