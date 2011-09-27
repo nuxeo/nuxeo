@@ -35,6 +35,9 @@ public class ThemeStyles {
 
     private static final boolean INDENT = false;
 
+    // TODO: see whether "__FLAVOR__" is OK in CSS otherwise use ${flavor}
+    private static final String COLLECTION_MARKER = "__FLAVOR__";
+
     public static String render(Map<String, String> params, boolean cache,
             boolean inline, boolean virtualHosting) {
         String themeName = params.get("themeName");
@@ -98,9 +101,12 @@ public class ThemeStyles {
         }
 
         String rendered = sb.toString();
+        if (collectionName != null) {
+            // Preprocessing: replace the collection name
+            rendered = rendered.replaceAll(COLLECTION_MARKER, collectionName);
+        }
         rendered = CSSUtils.expandVariables(rendered, basePath, collectionName,
                 themeDescriptor);
         return String.format("<style type=\"text/css\">%s</style>", rendered);
     }
-
 }
