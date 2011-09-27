@@ -8,13 +8,13 @@
   </documentation>
 
   <require>org.nuxeo.theme.core</require>
-  
+
   <extension target="org.nuxeo.theme.services.ThemeService"
     point="template-engines">
-    
+
     <template-engine name="jsf-facelets" title="JSF/Facelets"
       template-view="org.nuxeo.theme.jsf.JSFView" />
-    
+
   </extension>
 
 
@@ -30,7 +30,7 @@
       </scheme>
       <scheme>
         org.nuxeo.theme.jsf.negotiation.engine.RequestAttribute
-      </scheme>       
+      </scheme>
       <scheme>
         org.nuxeo.theme.jsf.negotiation.engine.ViewId
       </scheme>
@@ -48,7 +48,7 @@
       </scheme>
       <scheme>
         org.nuxeo.theme.jsf.negotiation.mode.RequestAttribute
-      </scheme>       
+      </scheme>
       <scheme>
         org.nuxeo.theme.jsf.negotiation.mode.ViewId
       </scheme>
@@ -66,7 +66,7 @@
       </scheme>
       <scheme>
         org.nuxeo.theme.jsf.negotiation.theme.RequestAttribute
-      </scheme>        
+      </scheme>
       <scheme>
         org.nuxeo.theme.jsf.negotiation.theme.ViewId
       </scheme>
@@ -84,12 +84,30 @@
       </scheme>
       <scheme>
         org.nuxeo.theme.jsf.negotiation.perspective.RequestAttribute
-      </scheme>       
+      </scheme>
       <scheme>
         org.nuxeo.theme.jsf.negotiation.perspective.ViewId
       </scheme>
       <scheme>
         org.nuxeo.theme.jsf.negotiation.perspective.DefaultPerspective
+      </scheme>
+    </negotiation>
+
+    <negotiation object="collection" strategy="default">
+      <scheme>
+        org.nuxeo.theme.jsf.negotiation.collection.RequestParameter
+      </scheme>
+      <scheme>
+        org.nuxeo.theme.jsf.negotiation.collection.CookieValue
+      </scheme>
+      <scheme>
+        org.nuxeo.theme.jsf.negotiation.collection.RequestAttribute
+      </scheme>
+      <scheme>
+        org.nuxeo.theme.jsf.negotiation.collection.ViewId
+      </scheme>
+      <scheme>
+        org.nuxeo.theme.jsf.negotiation.collection.UnspecifiedCollection
       </scheme>
     </negotiation>
 
@@ -115,7 +133,7 @@
       <class>
         org.nuxeo.theme.html.filters.standalone.FragmentVisibility
       </class>
-    </standalone-filter>    
+    </standalone-filter>
 
     <standalone-filter name="set element name" template-engine="jsf-facelets">
       <class>
@@ -205,7 +223,7 @@
       </class>
     </view>
 
-    <!-- no style caching -->    
+    <!-- no style caching -->
     <view name="theme view" template-engine="jsf-facelets">
       <engine>default</engine>
       <element-type>theme</element-type>
