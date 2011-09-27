@@ -84,8 +84,8 @@ public class ShellExecutor extends AbstractExecutor implements Executor {
         int exitCode = 0;
         try {
             exitCode = p1.waitFor();
-            out.stopProcessing();
-            err.stopProcessing();
+            out.join();
+            err.join();
         } catch (InterruptedException e) {
             return new ExecResult(e);
         }
