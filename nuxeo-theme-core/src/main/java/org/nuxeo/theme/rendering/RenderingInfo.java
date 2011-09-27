@@ -92,6 +92,10 @@ public class RenderingInfo implements Info, Identifiable {
         return ThemeManager.getViewModeByUrl(themeUrl);
     }
 
+    public String getCollection() {
+        return ThemeManager.getCollectionNameByUrl(themeUrl);
+    }
+
     public URL getThemeUrl() {
         return themeUrl;
     }

@@ -59,6 +59,8 @@ public final class Styles extends HttpServlet implements Serializable {
             return;
         }
 
+        final String collectionName = request.getParameter("collection");
+
         // Load theme if needed
         ThemeDescriptor themeDescriptor = ThemeManager.getThemeDescriptorByThemeName(themeName);
         if (themeDescriptor == null) {
@@ -90,12 +92,14 @@ public final class Styles extends HttpServlet implements Serializable {
         final String basePath = request.getParameter("basepath");
 
         final ThemeManager themeManager = Manager.getThemeManager();
-        String rendered = themeManager.getCachedStyles(themeName, basePath);
+        String rendered = themeManager.getCachedStyles(themeName, basePath,
+                collectionName);
 
         if (rendered == null) {
             rendered = ThemeStyles.generateThemeStyles(themeName,
-                    themeDescriptor, basePath);
-            themeManager.setCachedStyles(themeName, basePath, rendered);
+                    themeDescriptor, basePath, collectionName);
+            themeManager.setCachedStyles(themeName, basePath, collectionName,
+                    rendered);
         }
 
         os.write(rendered.getBytes());

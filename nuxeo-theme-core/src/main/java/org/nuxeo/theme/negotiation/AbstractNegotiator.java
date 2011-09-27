@@ -35,10 +35,10 @@ public abstract class AbstractNegotiator implements Negotiator {
     }
 
     public final String getSpec() throws NegotiationException {
-        return String.format("%s/%s/%s/%s/%s/%s", SPEC_PREFIX,
+        return String.format("%s/%s/%s/%s/%s/%s/%s", SPEC_PREFIX,
                 negotiate("engine"), negotiate("mode"),
                 getTemplateEngineName(), negotiate("theme"),
-                negotiate("perspective"));
+                negotiate("perspective"), negotiate("collection"));
     }
 
     public final synchronized String negotiate(String object)

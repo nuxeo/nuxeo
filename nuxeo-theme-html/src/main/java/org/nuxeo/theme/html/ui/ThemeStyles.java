@@ -40,6 +40,7 @@ public class ThemeStyles {
         String themeName = params.get("themeName");
         String path = params.get("path");
         String basePath = params.get("basepath");
+        String collectionName = params.get("collection");
 
         String cssPath = VirtualHostHelper.getContextPathProperty()
                 + "/nxthemes-css";
@@ -56,7 +57,8 @@ public class ThemeStyles {
         }
 
         if (inline) {
-            return generateThemeStyles(themeName, themeDescriptor, basePath);
+            return generateThemeStyles(themeName, themeDescriptor, basePath,
+                    collectionName);
         }
 
         long timestamp = 0;
@@ -74,7 +76,8 @@ public class ThemeStyles {
     }
 
     public static String generateThemeStyles(String themeName,
-            ThemeDescriptor themeDescriptor, String basePath) {
+            ThemeDescriptor themeDescriptor, String basePath,
+            String collectionName) {
 
         final StringBuilder sb = new StringBuilder();
 
@@ -95,7 +98,8 @@ public class ThemeStyles {
         }
 
         String rendered = sb.toString();
-        rendered = CSSUtils.expandVariables(rendered, basePath, themeDescriptor);
+        rendered = CSSUtils.expandVariables(rendered, basePath, collectionName,
+                themeDescriptor);
         return String.format("<style type=\"text/css\">%s</style>", rendered);
     }
 
