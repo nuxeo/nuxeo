@@ -228,7 +228,8 @@ public class DownloadServlet extends HttpServlet {
 
     private void downloadBlob(HttpServletRequest req, HttpServletResponse resp,
             Blob blob, String fileName) throws IOException, ServletException {
-        InputStream in = null;
+        InputStream in = blob.getStream();
+        OutputStream out = resp.getOutputStream();
         try {
             if (fileName == null || fileName.length() == 0) {
                 if (blob.getFilename() != null
@@ -263,31 +264,10 @@ public class DownloadServlet extends HttpServlet {
                             + "/" + fileSize);
                     resp.setContentLength(byteRange.getLength());
                     resp.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
-
-                    OutputStream out = resp.getOutputStream();
-                    in = blob.getStream();
-                    byte[] buffer = new byte[BUFFER_SIZE];
-                    int read;
-                    int offset = byteRange.getStart();
-                    in.skip(offset);
-                    while (offset <= byteRange.getEnd()
-                            && (read = in.read(buffer)) != -1) {
-                        read = Math.min(read, byteRange.getEnd() - offset + 1);
-                        out.write(buffer, 0, read);
-                        out.flush();
-                        offset += BUFFER_SIZE;
-                    }
+                    writeStream(in, out, byteRange);
                 } else {
                     resp.setContentLength(fileSize);
-
-                    OutputStream out = resp.getOutputStream();
-                    in = blob.getStream();
-                    byte[] buffer = new byte[BUFFER_SIZE];
-                    int read;
-                    while ((read = in.read(buffer)) != -1) {
-                        out.write(buffer, 0, read);
-                        out.flush();
-                    }
+                    writeStream(in, out, new ByteRange(0, fileSize - 1));
                 }
             }
 
@@ -345,7 +325,23 @@ public class DownloadServlet extends HttpServlet {
         }
     }
 
-    private ByteRange parseRange(String range, int fileSize)
+    public static void writeStream(InputStream in, OutputStream out,
+            ByteRange range) throws IOException {
+        byte[] buffer = new byte[BUFFER_SIZE];
+        int read;
+        int offset = range.getStart();
+        in.skip(offset);
+        while (offset <= range.getEnd()
+                && (read = in.read(buffer)) != -1) {
+            read = Math.min(read, range.getEnd() - offset + 1);
+            out.write(buffer, 0, read);
+            out.flush();
+            offset += BUFFER_SIZE;
+        }
+
+    }
+
+    public static ByteRange parseRange(String range, int fileSize)
             throws ClientException {
         if (!range.startsWith("bytes=") || range.indexOf(',') >= 0) { // Do no support multiple ranges
             throw new ClientException("Cannot parse range : " + range);
@@ -379,7 +375,7 @@ public class DownloadServlet extends HttpServlet {
         return new ByteRange(rangeStart, rangeEnd);
     }
 
-    private class ByteRange {
+    public static class ByteRange {
 
         private int start;
 
