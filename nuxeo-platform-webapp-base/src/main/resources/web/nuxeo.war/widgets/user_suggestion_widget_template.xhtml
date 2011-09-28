@@ -69,7 +69,8 @@
     <c:set var="displayHorizontally" value="#{nxu:test(!empty widget.properties.displayHorizontally, widget.properties.displayHorizontally, true)}" />
     <c:set var="displayHelpLabel" value="#{nxu:test(!empty widget.properties.displayHelpLabel, widget.properties.displayHelpLabel, true)}" />
     <c:set var="suggestionWidth" value="${nxu:test(!empty widget.properties.width, widget.properties.width, '400')}" />
-
+    <c:set var="suggestionWithEmail" value="${nxu:test(!empty widget.properties.displayEmailInSuggestion, widget.properties.displayEmailInSuggestion, false)}" />
+    
     <c:if test="#{!hideSearchTypeText}">
       <h:outputText value="#{messages['label.security.searchUsers']}"
         rendered="#{searchType =='USER_TYPE'}"
@@ -122,7 +123,14 @@
             <h:column>
               <f:subview rendered="#{result.type == 'USER_TYPE'}" id="#{widget.id}_user_result">
                 <h:graphicImage value="/icons/user.gif" alt="user.gif" />
-                <h:outputText value="#{nxu:userDisplayName(result.id, result.entry[userSchema].firstName, result.entry[userSchema].lastName)}" />
+                <c:choose>
+                  <c:when test="#{suggestionWithEmail}">
+                    <h:outputText value="#{nxu:userDisplayNameAndEmail(result.id, result.entry[userSchema].firstName, result.entry[userSchema].lastName, result.entry[userSchema].email)}" />
+                  </c:when>
+                  <c:otherwise>
+                    <h:outputText value="#{nxu:userDisplayName(result.id, result.entry[userSchema].firstName, result.entry[userSchema].lastName)}" />
+                  </c:otherwise>
+                </c:choose>
               </f:subview>
               <f:subview rendered="#{result.type == 'GROUP_TYPE'}" id="#{widget.id}_group_result">
                 <h:graphicImage value="/icons/group.gif" alt="group.gif" />
@@ -159,7 +167,14 @@
                   <nxu:methodResult name="info" value="#{userSuggestionActions.getUserInfo(model.rowData)}">
                     <f:subview rendered="#{info.type == 'USER_TYPE'}">
                       <h:graphicImage value="/icons/user.gif" alt="user.gif" />
-                      <h:outputText value="#{nxu:userDisplayName(info.id, info.entry[userSchema].firstName, info.entry[userSchema].lastName)}" />
+                    <c:choose>
+                        <c:when test="#{suggestionWithEmail}">
+                            <h:outputText value="#{nxu:userDisplayNameAndEmail(info.id, info.entry[userSchema].firstName, info.entry[userSchema].lastName,info.entry[userSchema].email)}" />
+                        </c:when>
+                        <c:otherwise>
+                            <h:outputText value="#{nxu:userDisplayName(info.id, info.entry[userSchema].firstName, info.entry[userSchema].lastName)}" />
+                        </c:otherwise>
+                    </c:choose>
                     </f:subview>
                     <f:subview rendered="#{info.type == 'GROUP_TYPE'}">
                       <h:graphicImage value="/icons/group.gif" alt="group.gif" />

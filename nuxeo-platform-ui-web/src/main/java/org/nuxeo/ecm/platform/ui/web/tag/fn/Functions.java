@@ -321,6 +321,29 @@ public final class Functions {
     }
 
     /**
+     * Return, from the id, the id its-self if neither last name nor name are
+     * found or the full name plus the email if this one exists
+     * 
+     * @param id id of the user
+     * @param first first name of the user
+     * @param last last name of the user
+     * @param email email of the user
+     * @return id or full name with email if exists
+     * @since 5.4.3
+     */
+    public static String userDisplayNameAndEmail(String id, String first,
+            String last, String email) {
+        String userDisplayedName = userDisplayName(id, first, last);
+        if (userDisplayedName.equals(id)) {
+            return userDisplayedName;
+        }
+        if (email == null || email.length() == 0) {
+            return userDisplayedName;
+        }
+        return userDisplayedName + " " + email;
+    }
+    
+    /**
      * Choose between label or name the best string to display a group
      *
      * @param name the group name

@@ -136,6 +136,22 @@
       </properties>
     </widget>
 
+    <widget name="listing_email" type="singleUserSuggestion">
+      <labels>
+        <label mode="any">email</label>
+      </labels>
+      <fields>
+         <field>data.user.email</field>
+      </fields>
+      <widgetModes>
+        <mode value="any">view</mode>
+      </widgetModes>
+      <properties widgetMode="view">
+        <property name="userSuggestionSearchType">USER_TYPE</property>
+        <property name="thirdLabelField">email</property>
+      </properties>
+    </widget>
+
     <widget name="listing_groupName" type="singleUserSuggestion">
       <labels>
         <label mode="any">label.groupManager.groupName</label>

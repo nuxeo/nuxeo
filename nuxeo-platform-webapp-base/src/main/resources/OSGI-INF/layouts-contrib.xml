@@ -56,10 +56,16 @@
                   <widget>secondLabelField</widget>
                 </row>
                 <row>
+                  <widget>thirdLabelField</widget>
+                </row>
+                <row>
                   <widget>hideFirstLabel</widget>
                 </row>
                 <row>
                   <widget>hideSecondLabel</widget>
+                </row>
+                <row>
+                  <widget>hideThirdLabel</widget>
                 </row>
                 <row>
                   <widget>displayAction</widget>
@@ -105,6 +111,20 @@
                   <field>secondLabelField</field>
                 </fields>
               </widget>
+              <widget name="thirdLabelField" type="text">
+                <labels>
+                  <label mode="any">third label field</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Field to use as the third label when displaying the
+                    selected user. Default to 'email'.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>thirdLabelField</field>
+                </fields>
+              </widget>
               <widget name="hideFirstLabel" type="checkbox">
                 <labels>
                   <label mode="any">Hide first label</label>
@@ -119,6 +139,14 @@
                 </labels>
                 <fields>
                   <field>hideSecondLabel</field>
+                </fields>
+              </widget>
+              <widget name="hideThirdLabel" type="checkbox">
+                <labels>
+                  <label mode="any">Hide third label</label>
+                </labels>
+                <fields>
+                  <field>hideThirdLabel</field>
                 </fields>
               </widget>
               <widget name="displayAction" type="selectOneListbox">
@@ -1004,6 +1032,7 @@
             /widgets/user_suggestion_widget_template.xhtml
           </property>
         </properties>
+        
       </widget>
     </layout>
 
