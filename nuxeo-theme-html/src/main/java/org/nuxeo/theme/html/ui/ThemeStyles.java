@@ -35,8 +35,8 @@ public class ThemeStyles {
 
     private static final boolean INDENT = false;
 
-    // TODO: see whether "__FLAVOR__" is OK in CSS otherwise use ${flavor}
-    private static final String COLLECTION_MARKER = "__FLAVOR__";
+    // TODO: see whether "__FLAVOUR__" is OK in CSS otherwise use ${flavour}
+    private static final String COLLECTION_MARKER = "__FLAVOUR__";
 
     public static String render(Map<String, String> params, boolean cache,
             boolean inline, boolean virtualHosting) {
