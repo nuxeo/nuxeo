@@ -532,6 +532,12 @@ public class UserManagerImpl implements UserManager {
         if (userName == null) {
             return null;
         }
+
+        // return anonymous model
+        if (anonymousUser != null && userName.equals(anonymousUser.getId())) {
+            return makeVirtualUserEntry(getAnonymousUserId(), anonymousUser);
+        }
+
         Session userDir = null;
         try {
             userDir = dirService.open(userDirectoryName);
