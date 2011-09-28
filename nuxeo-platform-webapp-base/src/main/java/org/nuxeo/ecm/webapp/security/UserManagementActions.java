@@ -97,7 +97,7 @@ public class UserManagementActions extends AbstractUserGroupManagement
 
     public void setSelectedUser(DocumentModel user) {
         fireSeamEvent(USER_SELECTED_CHANGED);
-        this.selectedUser = user;
+        selectedUser = user;
     }
 
     /**
@@ -338,7 +338,7 @@ public class UserManagementActions extends AbstractUserGroupManagement
      * @since 5.4.3
      */
     public void setShowUser(String showUser) {
-        this.showUserOrGroup = Boolean.valueOf(showUser);
+        showUserOrGroup = Boolean.valueOf(showUser);
     }
 
     protected void fireSeamEvent(String eventName) {
