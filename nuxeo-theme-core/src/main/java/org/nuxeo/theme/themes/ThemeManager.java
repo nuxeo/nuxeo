@@ -80,7 +80,6 @@ import org.nuxeo.theme.resources.PresetInfo;
 import org.nuxeo.theme.resources.ResourceBank;
 import org.nuxeo.theme.resources.ResourceManager;
 import org.nuxeo.theme.resources.ResourceType;
-import org.nuxeo.theme.services.ThemeService;
 import org.nuxeo.theme.templates.TemplateEngineType;
 import org.nuxeo.theme.types.Type;
 import org.nuxeo.theme.types.TypeFamily;
@@ -1497,7 +1496,7 @@ public final class ThemeManager implements Registrable {
     /**
      * Returns all the ordered resource names and their dependencies, given a
      * list of resources names.
-     * 
+     *
      * @since 5.4.3
      * @param resourceNames
      */
@@ -1761,12 +1760,6 @@ public final class ThemeManager implements Registrable {
     public ThemeSet getThemeSetByName(final String name) {
         final TypeRegistry typeRegistry = Manager.getTypeRegistry();
         return (ThemeSet) typeRegistry.lookup(TypeFamily.THEMESET, name);
-    }
-
-    public List<String> getResourcesForPage(String themePage,
-            String resourceSuffix) {
-        ThemeService themeService = Manager.getThemeService();
-        return themeService.getResourcesForPage(themePage, resourceSuffix);
     }
 
     public static List<PresetInfo> getPresetsInCollection(String collection) {
