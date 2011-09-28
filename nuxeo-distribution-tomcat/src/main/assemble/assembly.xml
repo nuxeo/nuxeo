@@ -29,6 +29,12 @@
         <isset property="maven.profile.all-distributions" />
       </or>
     </condition>
+    <condition property="build.sdk">
+      <or>
+        <isset property="maven.profile.release" />
+        <isset property="maven.profile.sdk" />
+      </or>
+    </condition>
 
     <property name="outdir" value="${maven.project.build.directory}" />
     <antcall target="expand" />
@@ -100,8 +106,9 @@
   <target name="build-nuxeo-coreserver"
           if="build.core"
           description="Build Tomcat distribution with Nuxeo CoreServer">
+    <property name="classifier" value="coreserver" />
     <property name="distribution.dir"
-              value="${outdir}/nuxeo-coreserver-${maven.project.version}-tomcat" />
+              value="${outdir}/${classifier}-${maven.project.version}-tomcat" />
     <delete failonerror="false" dir="${distribution.dir}" />
     <copy todir="${distribution.dir}">
       <fileset dir="${tomcat}" />
@@ -114,19 +121,12 @@
     <unzip dest="${distribution.dir}/nxserver">
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-coreserver::zip" />
     </unzip>
-    <antcall target="copy-sdk-resources">
-      <param name="distribution.key"
-             value="org.nuxeo.ecm.distribution:nuxeo-distribution-coreserver::zip" />
-    </antcall>
 
+    <!-- Complementary templates for CoreServer -->
     <unzip dest="${distribution.dir}/templates" overwrite="true">
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources::zip"
                             classifier="templates-tomcat-coreserver" />
     </unzip>
-
-    <antcall target="reorganize-libs">
-      <param name="distribution.dir" value="${distribution.dir}" />
-    </antcall>
 
     <delete failonerror="false">
       <fileset dir="${distribution.dir}/templates/common/config">
@@ -143,22 +143,15 @@
 org.nuxeo.ecm.product.name=Nuxeo CoreServer
     </echo>
 
-    <antcall target="download-sdk-sources" />
-
-    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-coreserver.zip"
-         basedir="${outdir}"
-         includes="nuxeo-coreserver-${maven.project.version}-tomcat/**" />
-    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-coreserver.zip"
-                     target="${maven.project.groupId}:${maven.project.artifactId}"
-                     classifier="coreserver"
-                     type="zip" />
+    <antcall target="reorganize-libs-zip-attach" />
   </target>
 
   <target name="build-nuxeo-cap"
           if="build.cap"
           description="Build Tomcat distribution with Nuxeo CAP">
+    <property name="classifier" value="nuxeo-cap" />
     <property name="distribution.dir"
-              value="${outdir}/nuxeo-cap-${maven.project.version}-tomcat" />
+              value="${outdir}/${classifier}-${maven.project.version}-tomcat" />
     <delete failonerror="false" dir="${distribution.dir}" />
     <copy todir="${distribution.dir}">
       <fileset dir="${tomcat}" />
@@ -171,14 +164,6 @@ org.nuxeo.ecm.product.name=Nuxeo CoreServer
     <unzip dest="${distribution.dir}/nxserver">
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-cap::zip" />
     </unzip>
-    <antcall target="copy-sdk-resources">
-      <param name="distribution.key"
-             value="org.nuxeo.ecm.distribution:nuxeo-distribution-cap::zip" />
-    </antcall>
-
-    <antcall target="reorganize-libs">
-      <param name="distribution.dir" value="${distribution.dir}" />
-    </antcall>
 
     <antcall target="set-distribution-properties">
       <param name="org.nuxeo.distribution.name" value="cap" />
@@ -187,23 +172,15 @@ org.nuxeo.ecm.product.name=Nuxeo CoreServer
 org.nuxeo.ecm.product.name=Nuxeo CAP
     </echo>
 
-    <antcall target="download-sdk-sources" />
-
-    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-cap.zip"
-         basedir="${outdir}"
-         includes="nuxeo-cap-${maven.project.version}-tomcat/**" />
-    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-cap.zip"
-                     target="${maven.project.groupId}:${maven.project.artifactId}"
-                     classifier="nuxeo-cap"
-                     type="zip" />
+    <antcall target="reorganize-libs-zip-attach" />
   </target>
 
   <target name="build-nuxeo-dm"
           if="build.dm"
           description="Build Tomcat distribution with Nuxeo DM">
+    <property name="classifier" value="nuxeo-dm" />
     <property name="distribution.dir"
-              value="${outdir}/nuxeo-dm-${maven.project.version}-tomcat" />
-
+              value="${outdir}/${classifier}-${maven.project.version}-tomcat" />
     <delete failonerror="false" dir="${distribution.dir}" />
     <copy todir="${distribution.dir}">
       <fileset dir="${tomcat}" />
@@ -220,14 +197,6 @@ org.nuxeo.ecm.product.name=Nuxeo CAP
     <unzip dest="${distribution.dir}/nxserver">
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-dm::zip" />
     </unzip>
-    <antcall target="copy-sdk-resources">
-      <param name="distribution.key"
-             value="org.nuxeo.ecm.distribution:nuxeo-distribution-dm::zip" />
-    </antcall>
-
-    <antcall target="reorganize-libs">
-      <param name="distribution.dir" value="${distribution.dir}" />
-    </antcall>
 
     <!-- Complementary templates for DM -->
     <unzip dest="${distribution.dir}/templates" overwrite="true">
@@ -244,17 +213,21 @@ org.nuxeo.ecm.product.name=Nuxeo CAP
 org.nuxeo.ecm.product.name=Nuxeo DM
     </echo>
 
-    <antcall target="download-sdk-sources" />
-
-    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-dm.zip"
-         basedir="${outdir}"
-         includes="nuxeo-dm-${maven.project.version}-tomcat/**" />
-    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-dm.zip"
-                     target="${maven.project.groupId}:${maven.project.artifactId}"
-                     classifier="nuxeo-dm"
-                     type="zip" />
+    <antcall target="reorganize-libs-zip-attach" />
   </target>
 
+  <target name="reorganize-libs-zip-attach">
+    <antcall target="reorganize-libs" />
+    <antcall target="copy-sdk-resources" />
+    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-${classifier}.zip"
+         basedir="${outdir}"
+         includes="${classifier}-${maven.project.version}-tomcat/**" />
+    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-${classifier}.zip"
+                     target="${maven.project.groupId}:${maven.project.artifactId}"
+                     classifier="${classifier}"
+                     type="zip" />
+    <antcall target="build-sdk" />
+  </target>
 
   <target name="reorganize-libs">
     <!-- Add Tomcat specific requirements -->
@@ -332,22 +305,9 @@ org.nuxeo.distribution.package=zip
     </concat>
     <move file="${distribution.dir}/nxserver/test-artifacts.properties"
           todir="${distribution.dir}/sdk" />
-    <!--
-    <artifact:print output="${distribution.dir}/sdk/artifacts2.properties"
-                    mode="flat"
-                    append="true"
-                    format="1"
-                    source="${distribution.key}" />
-    <artifact:print output="${distribution.dir}/sdk/test-artifacts2.properties"
-                    mode="flat"
-                    append="true"
-                    format="1"
-                    scope="test"
-                    source="${distribution.key}" />
-    -->
   </target>
 
-  <target name="download-sdk-sources" if="maven.profile.release">
+  <target name="build-sdk" if="build.sdk">
     <mkdir dir="${distribution.dir}/sdk/sources" />
     <copy todir="${distribution.dir}/sdk/sources">
       <artifact:resolveFiles source="${distribution.dir}/sdk/artifacts.properties"
@@ -357,5 +317,12 @@ org.nuxeo.distribution.package=zip
     <copy todir="${distribution.dir}/sdk/tests">
       <artifact:resolveFiles source="${distribution.dir}/sdk/test-artifacts.properties" />
     </copy>
+    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-${classifier}-sdk.zip"
+         basedir="${outdir}"
+         includes="${classifier}-${maven.project.version}-tomcat/**" />
+    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-${classifier}-sdk.zip"
+                     target="${maven.project.groupId}:${maven.project.artifactId}"
+                     classifier="${classifier}-sdk"
+                     type="zip" />
   </target>
 </project>

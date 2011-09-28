@@ -53,6 +53,11 @@
       <id>nuxeo-dm</id>
       <!-- default profile for building Tomcat with only Nuxeo DM -->
     </profile>
+    <!-- <profile> -->
+    <!-- <id>sdk</id> -->
+    <!-- profile for building SDK distributions (which are always built when release
+      profile is activated) -->
+    <!-- </profile> -->
   </profiles>
 
   <build>
