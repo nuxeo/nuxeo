@@ -163,6 +163,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
         userConfig = new UserConfig();
     }
 
+    @Override
     public void setConfiguration(UserManagerDescriptor descriptor) {
         defaultGroup = descriptor.defaultGroup;
         administratorIds = descriptor.defaultAdministratorIds;
@@ -219,26 +220,32 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
         }
     }
 
+    @Override
     public String getUserDirectoryName() {
         return userDirectoryName;
     }
 
+    @Override
     public String getUserIdField() throws ClientException {
         return userIdField;
     }
 
+    @Override
     public String getUserSchemaName() throws ClientException {
         return userSchemaName;
     }
 
+    @Override
     public String getUserEmailField() {
         return userEmailField;
     }
 
+    @Override
     public Set<String> getUserSearchFields() {
         return Collections.unmodifiableSet(userSearchFields.keySet());
     }
 
+    @Override
     public Set<String> getGroupSearchFields() {
         return Collections.unmodifiableSet(groupSearchFields.keySet());
     }
@@ -254,50 +261,62 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
         }
     }
 
+    @Override
     public String getGroupDirectoryName() {
         return groupDirectoryName;
     }
 
+    @Override
     public String getGroupIdField() throws ClientException {
         return groupIdField;
     }
 
+    @Override
     public String getGroupLabelField() throws ClientException {
         return groupLabelField;
     }
 
+    @Override
     public String getGroupSchemaName() throws ClientException {
         return groupSchemaName;
     }
 
+    @Override
     public String getGroupMembersField() {
         return groupMembersField;
     }
 
+    @Override
     public String getGroupSubGroupsField() {
         return groupSubGroupsField;
     }
 
+    @Override
     public String getGroupParentGroupsField() {
         return groupParentGroupsField;
     }
 
+    @Override
     public String getUserListingMode() {
         return userListingMode;
     }
 
+    @Override
     public String getGroupListingMode() {
         return groupListingMode;
     }
 
+    @Override
     public String getDefaultGroup() {
         return defaultGroup;
     }
 
+    @Override
     public Pattern getUserPasswordPattern() {
         return userPasswordPattern;
     }
 
+    @Override
     public String getAnonymousUserId() {
         if (anonymousUser == null) {
             return null;
@@ -317,6 +336,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
         }
     }
 
+    @Override
     public boolean checkUsernamePassword(String username, String password)
             throws ClientException {
 
@@ -439,6 +459,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
         return digestAuthRealm;
     }
 
+    @Override
     public boolean validatePassword(String password) {
         if (userPasswordPattern == null) {
             return true;
@@ -526,6 +547,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
         return principal;
     }
 
+    @Override
     public NuxeoPrincipal getPrincipal(String username) throws ClientException {
         return getPrincipal(username, null);
     }
@@ -535,11 +557,13 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
         return getUserModel(userName, null);
     }
 
+    @Override
     public DocumentModel getBareUserModel() throws ClientException {
         String schema = dirService.getDirectorySchema(userDirectoryName);
         return BaseSession.createEntryModel(null, schema, null, null);
     }
 
+    @Override
     public NuxeoGroup getGroup(String groupName) throws ClientException {
         return getGroup(groupName, null);
     }
@@ -554,6 +578,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
 
     }
 
+    @Override
     public DocumentModel getGroupModel(String groupName) throws ClientException {
         return getGroupModel(groupName, null);
     }
@@ -606,15 +631,18 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
         return getTopLevelGroups(null);
     }
 
+    @Override
     public List<String> getGroupsInGroup(String parentId)
             throws ClientException {
         return getGroupsInGroup(parentId, null);
     }
 
+    @Override
     public List<String> getUsersInGroup(String groupId) throws ClientException {
         return getGroup(groupId).getMemberUsers();
     }
 
+    @Override
     public List<String> getUsersInGroupAndSubGroups(String groupId)
             throws ClientException {
         return getUsersInGroupAndSubGroups(groupId, null);
@@ -669,6 +697,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
         return true;
     }
 
+    @Override
     public List<NuxeoPrincipal> searchPrincipals(String pattern)
             throws ClientException {
         DocumentModelList entries = searchUsers(pattern);
@@ -680,11 +709,13 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
         return principals;
     }
 
+    @Override
     public DocumentModelList searchGroups(String pattern)
             throws ClientException {
         return searchGroups(pattern, null);
     }
 
+    @Override
     public String getUserSortField() {
         return userSortField;
     }
@@ -733,6 +764,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
         notify(groupName, GROUPCHANGED_EVENT_ID);
     }
 
+    @Override
     public Boolean areGroupsReadOnly() throws ClientException {
         Session groupDir = null;
         try {
@@ -751,6 +783,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
         }
     }
 
+    @Override
     public Boolean areUsersReadOnly() throws ClientException {
         Session userDir = null;
         try {
@@ -787,33 +820,40 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
         return (String) userIdValue;
     }
 
+    @Override
     public DocumentModel createGroup(DocumentModel groupModel)
             throws ClientException {
         return createGroup(groupModel, null);
     }
 
+    @Override
     public DocumentModel createUser(DocumentModel userModel)
             throws ClientException {
         return createUser(userModel, null);
     }
 
+    @Override
     public void deleteGroup(String groupId) throws ClientException {
         deleteGroup(groupId, null);
     }
 
+    @Override
     public void deleteGroup(DocumentModel groupModel) throws ClientException {
         deleteGroup(groupModel, null);
     }
 
+    @Override
     public void deleteUser(String userId) throws ClientException {
         deleteUser(userId, null);
     }
 
+    @Override
     public void deleteUser(DocumentModel userModel) throws ClientException {
         String userId = getUserId(userModel);
         deleteUser(userId);
     }
 
+    @Override
     public List<String> getGroupIds() throws ClientException {
         Session groupDir = null;
         try {
@@ -830,6 +870,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
         }
     }
 
+    @Override
     public List<String> getUserIds() throws ClientException {
         return getUserIds(null);
     }
@@ -852,28 +893,34 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
         return searchGroups(filter, fulltext, null);
     }
 
+    @Override
     public DocumentModelList searchUsers(String pattern) throws ClientException {
         return searchUsers(pattern, null);
     }
 
+    @Override
     public DocumentModelList searchUsers(Map<String, Serializable> filter,
             Set<String> fulltext) throws ClientException {
         return searchUsers(filter, fulltext, getUserSortMap(), null);
     }
 
+    @Override
     public void updateGroup(DocumentModel groupModel) throws ClientException {
         updateGroup(groupModel, null);
     }
 
+    @Override
     public void updateUser(DocumentModel userModel) throws ClientException {
         updateUser(userModel, null);
     }
 
+    @Override
     public DocumentModel getBareGroupModel() throws ClientException {
         String schema = dirService.getDirectorySchema(groupDirectoryName);
         return BaseSession.createEntryModel(null, schema, null, null);
     }
 
+    @Override
     public void createGroup(NuxeoGroup group) throws ClientException {
         DocumentModel newGroupModel = getBareGroupModel();
         newGroupModel.setProperty(groupSchemaName, groupIdField,
@@ -885,20 +932,24 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
         createGroup(newGroupModel);
     }
 
+    @Override
     public void createPrincipal(NuxeoPrincipal principal)
             throws ClientException {
         createUser(principal.getModel());
     }
 
+    @Override
     public void deleteGroup(NuxeoGroup group) throws ClientException {
         deleteGroup(group.getName());
     }
 
+    @Override
     public void deletePrincipal(NuxeoPrincipal principal)
             throws ClientException {
         deleteUser(principal.getName());
     }
 
+    @Override
     public List<NuxeoGroup> getAvailableGroups() throws ClientException {
         DocumentModelList groupModels = searchGroups(
                 Collections.<String, Serializable> emptyMap(), null);
@@ -909,6 +960,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
         return groups;
     }
 
+    @Override
     public List<NuxeoPrincipal> getAvailablePrincipals() throws ClientException {
         DocumentModelList userModels = searchUsers(
                 Collections.<String, Serializable> emptyMap(), null);
@@ -920,10 +972,12 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
         return users;
     }
 
+    @Override
     public DocumentModel getModelForUser(String name) throws ClientException {
         return getUserModel(name);
     }
 
+    @Override
     public List<NuxeoPrincipal> searchByMap(Map<String, Serializable> filter,
             Set<String> pattern) throws ClientException {
         Session userDir = null;
@@ -948,6 +1002,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
         }
     }
 
+    @Override
     public void updateGroup(NuxeoGroup group) throws ClientException {
         // XXX: need to refetch it for tests to pass, i don't get why (session
         // id is used maybe?)
@@ -961,11 +1016,13 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
         updateGroup(newGroupModel);
     }
 
+    @Override
     public void updatePrincipal(NuxeoPrincipal principal)
             throws ClientException {
         updateUser(principal.getModel());
     }
 
+    @Override
     public List<String> getAdministratorsGroups() {
         return administratorGroups;
     }
@@ -1168,6 +1225,12 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
         if (userName == null) {
             return null;
         }
+
+        // return anonymous model
+        if (anonymousUser != null && userName.equals(anonymousUser.getId())) {
+            return makeVirtualUserEntry(getAnonymousUserId(), anonymousUser);
+        }
+
         Session userDir = null;
         try {
             userDir = dirService.open(userDirectoryName, context);
