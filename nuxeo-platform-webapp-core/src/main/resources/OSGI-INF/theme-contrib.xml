@@ -166,21 +166,36 @@
     <resource name="fancybox-popup-utils.js">
       <path>scripts/fancybox-popup-utils.js</path>
     </resource>
-    <!-- Theme CSS for Theme refactoring -->
-    <resource name="nuxeo_dm_default.css">
-      <path>css/nuxeo_dm_default.css</path>
-    </resource>
   </extension>
 
+  <!-- Theme CSS for Theme refactoring -->
   <!-- mapping between theme pages and resources -->
   <extension target="org.nuxeo.theme.services.ThemeService" point="themePageResources">
 
-    <!-- Theme CSS for Theme refactoring -->
     <themePage name="galaxy/default">
-      <resources append="true">
-        <resource>nuxeo_dm_default.css</resource>
-      </resources>
+      <flavours append="true">
+        <flavour>summer</flavour>
+        <flavour>winter</flavour>
+      </flavours>
+      <styles append="true">
+        <style>nuxeo_dm_default</style>
+      </styles>
     </themePage>
+
+    <style name="nuxeo_dm_default">
+      <path>css/nuxeo_dm_default.css</path>
+    </style>
+
+    <flavour name="summer">
+      <presetsList append="true">
+        <!-- TODO: use one file for all categories with a custom parser -->
+        <presets category="border" src="themes/palettes/galaxy-borders.properties" />
+        <presets category="background"
+          src="themes/palettes/galaxy-backgrounds.properties" />
+        <presets category="font" src="themes/palettes/galaxy-fonts.properties" />
+        <presets category="color" src="themes/palettes/galaxy-colors.properties" />
+      </presetsList>
+    </flavour>
 
   </extension>
 
@@ -195,6 +210,7 @@
         <default-engine>default</default-engine>
         <default-theme>galaxy/default</default-theme>
         <default-perspective>default</default-perspective>
+        <!-- TODO default collection/flavour... -->
       </negotiation>
 
       <!-- Cache control for theme resources (/nxthemes-lib/) -->
