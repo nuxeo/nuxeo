@@ -40,28 +40,19 @@
 
   </extension>
 
-  <!-- resources -->
-  <extension target="org.nuxeo.theme.services.ThemeService" point="resources">
-
-    <!-- Theme CSS for Theme refactoring -->
-    <resource name="nuxeo_user_center_default.css">
-      <path>css/nuxeo_user_center_default.css</path>
-    </resource>
-
-  </extension>
-
   <!-- mapping between theme pages and resources -->
-  <extension target="org.nuxeo.theme.services.ThemeService"
-    point="themePageResources">
-
+  <extension target="org.nuxeo.theme.styling.service" point="pages">  
     <themePage name="userCenter/default">
       <resources append="true">
-        <resource>nuxeo_user_center_default.css</resource>
+        <resource>nuxeo_user_center_default</resource>
       </resources>
     </themePage>
-
   </extension>
-
+  <extension target="org.nuxeo.theme.styling.service" point="styles">
+    <style name="nuxeo_admin_center_default">
+      <path>css/nuxeo_user_center_default.css</path>
+    </style>
+  </extension>
 
   <!-- Styles presets -->
 
