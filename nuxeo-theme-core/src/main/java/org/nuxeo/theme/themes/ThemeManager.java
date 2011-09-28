@@ -1508,7 +1508,16 @@ public final class ThemeManager implements Registrable {
             }
             res.add(resourceName);
         }
-        return res;
+        List<String> orderedRes = new ArrayList<String>();
+        List<String> ordered = getResourceOrdering();
+        if (ordered != null) {
+            for (String resource : ordered) {
+                if (res.contains(resource)) {
+                    orderedRes.add(resource);
+                }
+            }
+        }
+        return orderedRes;
     }
 
     public void unregisterResourceOrdering(ResourceType resourceType) {
