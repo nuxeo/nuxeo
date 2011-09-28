@@ -60,8 +60,9 @@ public class ThemeStyles {
         }
 
         if (inline) {
-            return generateThemeStyles(themeName, themeDescriptor, basePath,
-                    collectionName);
+            return String.format("<style type=\"text/css\">%s</style>",
+                    generateThemeStyles(themeName, themeDescriptor, basePath,
+                            collectionName));
         }
 
         long timestamp = 0;
@@ -107,6 +108,6 @@ public class ThemeStyles {
         }
         rendered = CSSUtils.expandVariables(rendered, basePath, collectionName,
                 themeDescriptor);
-        return String.format("<style type=\"text/css\">%s</style>", rendered);
+        return rendered;
     }
 }
