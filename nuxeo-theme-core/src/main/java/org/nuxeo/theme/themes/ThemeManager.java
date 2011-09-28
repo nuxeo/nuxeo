@@ -1438,7 +1438,7 @@ public final class ThemeManager implements Registrable {
     // Cached styles
     public String getCachedStyles(String themeName, String basePath,
             String collectionName) {
-        String key = String.format("%s|%s", themeName,
+        String key = String.format("%s|%s|%s", themeName,
                 basePath != null ? basePath : "",
                 collectionName != null ? collectionName : "");
         return cachedStyles.get(key);
@@ -1446,7 +1446,7 @@ public final class ThemeManager implements Registrable {
 
     public synchronized void setCachedStyles(String themeName, String basePath,
             String collectionName, String css) {
-        String key = String.format("%s|%s|%s",
+        String key = String.format("%s|%s|%s", themeName,
                 basePath != null ? basePath : "",
                 collectionName != null ? collectionName : "");
         cachedStyles.put(key, css);
