@@ -17,7 +17,6 @@ Nuxeo-Component: OSGI-INF/dam-theme-contrib.xml,
  OSGI-INF/dam-imaging-contrib.xml,
  OSGI-INF/dam-directorytreemanager-contrib.xml,
  OSGI-INF/dam-tiling-contrib.xml,
- OSGI-INF/dam-user-manager-contrib.xml,
  OSGI-INF/dam-auth-contrib.xml,
  OSGI-INF/dam-request-controller-contrib.xml
 Require-Bundle: org.nuxeo.runtime,
