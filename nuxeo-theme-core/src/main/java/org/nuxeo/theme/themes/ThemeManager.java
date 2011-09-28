@@ -76,7 +76,6 @@ import org.nuxeo.theme.relations.DefaultPredicate;
 import org.nuxeo.theme.relations.DyadicRelation;
 import org.nuxeo.theme.relations.Predicate;
 import org.nuxeo.theme.relations.Relation;
-import org.nuxeo.theme.resources.PresetInfo;
 import org.nuxeo.theme.resources.ResourceBank;
 import org.nuxeo.theme.resources.ResourceManager;
 import org.nuxeo.theme.resources.ResourceType;
@@ -1774,11 +1773,6 @@ public final class ThemeManager implements Registrable {
     /*
      * Collection, flavours.
      */
-    public static List<PresetInfo> getPresetsInCollection(String collection) {
-        // TODO not implemented
-        return new ArrayList<PresetInfo>();
-    }
-
     public static List<String> getFlavourNamesByTheme(String themeName) {
         // TODO not implemented
         return new ArrayList<String>();

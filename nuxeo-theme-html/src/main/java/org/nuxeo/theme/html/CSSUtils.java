@@ -410,7 +410,8 @@ public final class CSSUtils {
 
         // Replace presets from the current collection
         if (collectionName != null) {
-            for (PresetInfo preset : ThemeManager.getPresetsInCollection(collectionName)) {
+            for (PresetType preset : PresetManager.getGlobalPresets(
+                    collectionName, null)) {
                 text = text.replaceAll(Pattern.quote(String.format("\"%s\"",
                         preset.getTypeName())),
                         Matcher.quoteReplacement(PresetManager.resolvePresets(
