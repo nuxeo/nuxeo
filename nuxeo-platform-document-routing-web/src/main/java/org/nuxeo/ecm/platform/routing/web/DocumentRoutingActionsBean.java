@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.routing.web;
 
 import static org.jboss.seam.ScopeType.CONVERSATION;
 import static org.jboss.seam.ScopeType.EVENT;
+import static org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager.CURRENT_DOCUMENT_SELECTION;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -70,6 +71,7 @@ import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.platform.ui.web.model.SelectDataModel;
 import org.nuxeo.ecm.platform.ui.web.model.impl.SelectDataModelImpl;
 import org.nuxeo.ecm.webapp.action.TypesTool;
+import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 import org.nuxeo.ecm.webapp.edit.lock.LockActions;
 import org.nuxeo.ecm.webapp.helpers.EventManager;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
@@ -128,6 +130,9 @@ public class DocumentRoutingActionsBean implements Serializable {
 
     @In(create = true)
     protected RelatedRouteActionBean relatedRouteAction;
+
+    @In(create = true)
+    protected DocumentsListsManager documentsListsManager;
 
     @RequestParameter("stepId")
     protected String stepId;
@@ -209,14 +214,46 @@ public class DocumentRoutingActionsBean implements Serializable {
         return navigationContext.navigateToDocument(navigationContext.getCurrentDocument());
     }
 
-    public String saveRouteAsNewInstance() {
+    public void saveRouteAsNewInstance() {
         getDocumentRoutingService().saveRouteAsNewModel(getRelatedRoute(),
                 documentManager);
+        Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED);
         facesMessages.add(
                 StatusMessage.Severity.INFO,
                 resourcesAccessor.getMessages().get(
                         "feedback.casemanagement.document.route.route_duplicated"));
-        return null;
+    }
+
+    public void saveSelectedRouteAsNewInstance() {
+        List<DocumentModel> docs = documentsListsManager.getWorkingList(CURRENT_DOCUMENT_SELECTION);
+        if (!docs.isEmpty()) {
+            DocumentRoute route;
+            for (DocumentModel doc : docs) {
+                route = doc.getAdapter(DocumentRoute.class);
+                if (route != null) {
+                    getDocumentRoutingService().saveRouteAsNewModel(route,
+                            documentManager);
+                }
+            }
+        }
+        Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED);
+        facesMessages.add(
+                StatusMessage.Severity.INFO,
+                resourcesAccessor.getMessages().get(
+                        "feedback.casemanagement.document.route.selected_route_duplicated"));
+    }
+
+    public boolean getCanDuplicateRouteInstance() {
+        List<DocumentModel> docs = documentsListsManager.getWorkingList(CURRENT_DOCUMENT_SELECTION);
+        if (docs.isEmpty()) {
+            return false;
+        }
+        for (DocumentModel doc : docs) {
+            if (!doc.hasFacet(DocumentRoutingConstants.DOCUMENT_ROUTE_DOCUMENT_FACET)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public String validateRouteModel() throws ClientException {

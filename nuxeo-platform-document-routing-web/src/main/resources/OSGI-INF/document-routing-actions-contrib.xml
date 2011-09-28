@@ -61,10 +61,22 @@
       <filter-id>hasRelatedRouteStarted</filter-id>
     </action>
 
+    <action id="SAVE_SELECTED_ROUTE_AS_NEW_INSTANCE"
+      link="#{routingActions.saveSelectedRouteAsNewInstance()}" order="10"
+      label="label.document.routing.saveAsNew">
+      <category>CURRENT_SELECTION_LIST</category>
+      <filter id="canDuplicateRouteInstance">
+        <rule grant="true">
+          <condition>#{routingActions.getCanDuplicateRouteInstance()}</condition>
+        </rule>
+      </filter>
+    </action>
+
     <action id="SAVE_ROUTE_AS_NEW_INSTANCE"
       link="#{routingActions.saveRouteAsNewInstance()}" order="10"
       label="label.document.routing.saveAsNew">
-      <category>ROUTE_LIST</category>
+      <category>SUBVIEW_UPPER_LIST</category>
+      <filter-id>isRoute</filter-id>
     </action>
 
     <action id="ADD_STEP_BEFORE" label="command.add.routeelement.before"
