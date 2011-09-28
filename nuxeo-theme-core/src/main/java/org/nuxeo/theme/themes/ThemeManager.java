@@ -1496,7 +1496,7 @@ public final class ThemeManager implements Registrable {
     /**
      * Returns all the ordered resource names and their dependencies, given a
      * list of resources names.
-     *
+     * 
      * @since 5.4.3
      * @param resourceNames
      */
@@ -1771,9 +1771,17 @@ public final class ThemeManager implements Registrable {
         return (ThemeSet) typeRegistry.lookup(TypeFamily.THEMESET, name);
     }
 
+    /*
+     * Collection, flavours.
+     */
     public static List<PresetInfo> getPresetsInCollection(String collection) {
-        // TODO Auto-generated method stub
-        return null;
+        // TODO not implemented
+        return new ArrayList<PresetInfo>();
+    }
+
+    public static List<String> getFlavourNamesByTheme(String themeName) {
+        // TODO not implemented
+        return new ArrayList<String>();
     }
 
 }

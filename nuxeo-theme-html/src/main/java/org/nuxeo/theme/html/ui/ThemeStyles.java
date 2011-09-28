@@ -73,8 +73,8 @@ public class ThemeStyles {
             timestamp = new Date().getTime();
         }
         return String.format(
-                "<link rel=\"stylesheet\" type=\"text/css\" media=\"all\" href=\"%s/%s-styles.css?theme=%s&amp;path=%s&amp;basepath=%s&amp;timestamp=%s\" />",
-                cssPath, themeName, themeName, path, basePath,
+                "<link rel=\"stylesheet\" type=\"text/css\" media=\"all\" href=\"%s/%s-styles.css?theme=%s&amp;path=%s&amp;basepath=%s&amp;collection=%s&amp;timestamp=%s\" />",
+                cssPath, themeName, themeName, path, basePath, collectionName,
                 Long.valueOf(timestamp));
     }
 
