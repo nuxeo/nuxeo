@@ -14,29 +14,17 @@
  * Contributors:
  *     Anahide Tchertchian
  */
-package org.nuxeo.theme;
+package org.nuxeo.theme.styling.tests;
 
-import org.nuxeo.common.xmap.annotation.XNode;
-import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
  * @since 5.4.3
  */
-@XObject("style")
-public class ThemePageStyle {
+public class TestThemeStylingService extends NXRuntimeTestCase {
 
-    @XNode("@name")
-    String name;
-
-    @XNode("path")
-    String path;
-
-    public String getName() {
-        return name;
-    }
-
-    public String getPath() {
-        return path;
+    // TODO
+    public void test() throws Exception {
     }
 
 }

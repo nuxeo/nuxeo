@@ -14,7 +14,7 @@
  * Contributors:
  *     Anahide Tchertchian
  */
-package org.nuxeo.theme;
+package org.nuxeo.theme.styling.service.descriptors;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,10 +29,13 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @since 5.4.3
  */
 @XObject("themePage")
-public class ThemePageResources {
+public class ThemePage {
 
     @XNode("@name")
     String name;
+
+    @XNode("defaultFlavour")
+    String defaultFlavour;
 
     @XNode("styles/append")
     boolean appendStyles;
@@ -48,6 +51,25 @@ public class ThemePageResources {
 
     public String getName() {
         return name;
+    }
+
+    public String getThemeName() {
+        try {
+            String[] nameEl = name.split("/");
+            return nameEl[0];
+        } catch (Exception e) {
+            throw new RuntimeException(String.format(
+                    "Invalid theme page name '%s': cannot retrieve theme name",
+                    name));
+        }
+    }
+
+    public String getDefaultFlavour() {
+        return defaultFlavour;
+    }
+
+    public void setDefaultFlavour(String defaultFlavour) {
+        this.defaultFlavour = defaultFlavour;
     }
 
     public boolean getAppendStyles() {

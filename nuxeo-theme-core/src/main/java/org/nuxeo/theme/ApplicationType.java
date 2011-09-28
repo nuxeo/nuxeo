@@ -14,14 +14,11 @@
 
 package org.nuxeo.theme;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.nuxeo.common.xmap.annotation.XNode;
-import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.runtime.api.Framework;
@@ -47,9 +44,6 @@ public final class ApplicationType implements Type {
 
     @XNodeMap(value = "view", key = "@id", type = HashMap.class, componentType = ViewDef.class)
     private Map<String, ViewDef> viewDefs;
-
-    @XNodeList(value = "themePage", type = ArrayList.class, componentType = ThemePageResources.class)
-    List<ThemePageResources> themePageResources;
 
     public TypeFamily getTypeFamily() {
         return TypeFamily.APPLICATION;
@@ -114,10 +108,6 @@ public final class ApplicationType implements Type {
 
     public void setTemplateEngine(String templateEngine) {
         this.templateEngine = templateEngine;
-    }
-
-    public List<ThemePageResources> getThemePageResources() {
-        return themePageResources;
     }
 
 }

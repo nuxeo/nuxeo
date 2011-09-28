@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.theme.styling.service">
+
+  <implementation class="org.nuxeo.theme.services.ThemeService" />
+
+  <extension-point name="pages">
+    <object class="org.nuxeo.theme.styling.service.descriptors.ThemePage" />
+  </extension-point>
+
+  <extension-point name="styles">
+    <object class="org.nuxeo.theme.styling.service.descriptors.Style" />
+  </extension-point>
+
+  <extension-point name="flavours">
+    <object class="org.nuxeo.theme.styling.service.descriptors.Flavour" />
+  </extension-point>
+
+
+</component>

@@ -14,41 +14,29 @@
  * Contributors:
  *     Anahide Tchertchian
  */
-package org.nuxeo.theme;
-
-import java.util.ArrayList;
-import java.util.List;
+package org.nuxeo.theme.styling.service.descriptors;
 
 import org.nuxeo.common.xmap.annotation.XNode;
-import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
  * @since 5.4.3
  */
-// TODO: use one file for all categories with a custom parser
-@XObject("flavour")
-public class ThemePageFlavour {
+@XObject("style")
+public class Style {
 
     @XNode("@name")
     String name;
 
-    @XNode("presetsList/append")
-    boolean appendPresets;
-
-    @XNodeList(value = "presetsList/presets", type = ArrayList.class, componentType = ThemePageFlavourPresets.class)
-    List<ThemePageFlavourPresets> presets;
+    @XNode("path")
+    String path;
 
     public String getName() {
         return name;
     }
 
-    public boolean getAppendPresets() {
-        return appendPresets;
-    }
-
-    public List<ThemePageFlavourPresets> getPresets() {
-        return presets;
+    public String getPath() {
+        return path;
     }
 
 }

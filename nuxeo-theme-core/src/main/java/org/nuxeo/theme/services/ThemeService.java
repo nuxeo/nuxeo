@@ -37,10 +37,6 @@ import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.NegotiationDef;
 import org.nuxeo.theme.Registrable;
 import org.nuxeo.theme.RegistryType;
-import org.nuxeo.theme.ThemePageFlavour;
-import org.nuxeo.theme.ThemePageFlavourPresets;
-import org.nuxeo.theme.ThemePageResources;
-import org.nuxeo.theme.ThemePageStyle;
 import org.nuxeo.theme.ViewDef;
 import org.nuxeo.theme.engines.EngineType;
 import org.nuxeo.theme.models.ModelType;
@@ -74,12 +70,6 @@ public class ThemeService extends DefaultComponent implements Reloadable {
     private Map<String, Registrable> registries = new HashMap<String, Registrable>();
 
     private RuntimeContext context;
-
-    protected Map<String, ThemePageResources> themePageResources = new HashMap<String, ThemePageResources>();
-
-    protected Map<String, ThemePageFlavour> themePageFlavours = new HashMap<String, ThemePageFlavour>();
-
-    protected Map<String, ThemePageStyle> themePageStyles = new HashMap<String, ThemePageStyle>();
 
     // collect all registered extensions here to be able to reload the
     // registries.
@@ -188,8 +178,6 @@ public class ThemeService extends DefaultComponent implements Reloadable {
             registerResourceExtension(extension);
         } else if (xp.equals("banks")) {
             registerBank(extension);
-        } else if (xp.equals("themePageResources")) {
-            registerThemePageResources(extension);
         } else {
             log.warn(String.format("Unknown extension point: %s", xp));
             return false;
@@ -225,8 +213,6 @@ public class ThemeService extends DefaultComponent implements Reloadable {
             unregisterModelExtension(extension);
         } else if (xp.equals("banks")) {
             unregisterBank(extension);
-        } else if (xp.equals("themePageResources")) {
-            unregisterThemePageResources(extension);
         } else {
             log.warn(String.format("Unknown extension point: %s", xp));
             return false;
@@ -697,73 +683,5 @@ public class ThemeService extends DefaultComponent implements Reloadable {
             }
         }
     }
-
-    protected void registerThemePageResources(Extension extension) {
-        Object[] contribs = extension.getContributions();
-        for (Object contrib : contribs) {
-            if (contrib instanceof ThemePageResources) {
-                ThemePageResources item = (ThemePageResources) contrib;
-                String themePage = item.getName();
-                if (themePageResources.containsKey(themePage)) {
-                    if (!item.getAppendStyles() && !item.getAppendFlavours()) {
-                        // override
-                        themePageResources.put(themePage, item);
-                    } else {
-                        // merge
-                        List<String> newStyles = new ArrayList<String>();
-                        ThemePageResources existing = themePageResources.get(themePage);
-                        if (item.getAppendStyles()) {
-                            List<String> existingStyles = existing.getStyles();
-                            if (existingStyles != null) {
-                                newStyles.addAll(existingStyles);
-                            }
-                        }
-                        newStyles.addAll(item.getStyles());
-                        List<String> newFlavours = new ArrayList<String>();
-                        if (item.getAppendFlavours()) {
-                            List<String> existingFlavours = existing.getFlavours();
-                            if (existingFlavours != null) {
-                                newFlavours.addAll(existingFlavours);
-                            }
-                        }
-                        newFlavours.addAll(item.getFlavours());
-                        existing.setStyles(newStyles);
-                        existing.setFlavours(newFlavours);
-                        themePageResources.put(themePage, existing);
-                    }
-                } else {
-                    themePageResources.put(themePage, item);
-                }
-            } else if (contrib instanceof ThemePageFlavour) {
-                ThemePageFlavour flavour = (ThemePageFlavour) contrib;
-                // TODO: merge of presets
-                // flavour.getAppendPresets();
-                themePageFlavours.put(flavour.getName(), flavour);
-                // register all presets to the standard registries
-                List<ThemePageFlavourPresets> presets = flavour.getPresets();
-                if (presets != null) {
-                    RuntimeContext extensionContext = extension.getContext();
-                    for (ThemePageFlavourPresets preset : presets) {
-                        PaletteType palette = new PaletteType(
-                                flavour.getName(), preset.getSrc(),
-                                preset.getCategory());
-                        registerPalette(palette, extensionContext);
-                    }
-                }
-            } else if (contrib instanceof ThemePageStyle) {
-                ThemePageStyle style = (ThemePageStyle) contrib;
-                themePageStyles.put(style.getName(), style);
-            } else {
-                log.error("Unknown contribution to the theme service, extension"
-                        + " point 'themePageResources': " + contrib);
-            }
-        }
-    }
-
-    protected void unregisterThemePageResources(Extension extension) {
-        // TODO
-    }
-
-    // TODO: add API for theme page resources retrieval
 
 }
