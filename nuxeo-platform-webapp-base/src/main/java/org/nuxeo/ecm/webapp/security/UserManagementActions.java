@@ -97,7 +97,7 @@ public class UserManagementActions extends AbstractUserGroupManagement
 
     public void setSelectedUser(DocumentModel user) {
         fireSeamEvent(USER_SELECTED_CHANGED);
-        this.selectedUser = user;
+        selectedUser = user;
     }
 
     /**
@@ -155,6 +155,16 @@ public class UserManagementActions extends AbstractUserGroupManagement
         if (userManager.areUsersReadOnly()) {
             return false;
         }
+
+        // if the selected user is the anonymous user, do not display
+        // edit/password tabs
+        if (selectedUser != null
+                && userManager.getAnonymousUserId() != null
+                && userManager.getAnonymousUserId().equals(selectedUser.getId())) {
+
+            return false;
+        }
+
         if (currentUser instanceof NuxeoPrincipal) {
             NuxeoPrincipal pal = (NuxeoPrincipal) currentUser;
             if (pal.isAdministrator()) {
@@ -338,7 +348,7 @@ public class UserManagementActions extends AbstractUserGroupManagement
      * @since 5.4.3
      */
     public void setShowUser(String showUser) {
-        this.showUserOrGroup = Boolean.valueOf(showUser);
+        showUserOrGroup = Boolean.valueOf(showUser);
     }
 
     protected void fireSeamEvent(String eventName) {
