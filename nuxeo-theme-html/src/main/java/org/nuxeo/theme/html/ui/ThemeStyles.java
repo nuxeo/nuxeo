@@ -35,11 +35,15 @@ public class ThemeStyles {
 
     private static final boolean INDENT = false;
 
+    // TODO: see whether "__FLAVOUR__" is OK in CSS otherwise use ${flavour}
+    private static final String COLLECTION_MARKER = "__FLAVOUR__";
+
     public static String render(Map<String, String> params, boolean cache,
             boolean inline, boolean virtualHosting) {
         String themeName = params.get("themeName");
         String path = params.get("path");
         String basePath = params.get("basepath");
+        String collectionName = params.get("collection");
 
         String cssPath = VirtualHostHelper.getContextPathProperty()
                 + "/nxthemes-css";
@@ -56,7 +60,8 @@ public class ThemeStyles {
         }
 
         if (inline) {
-            return generateThemeStyles(themeName, themeDescriptor, basePath);
+            return generateThemeStyles(themeName, themeDescriptor, basePath,
+                    collectionName);
         }
 
         long timestamp = 0;
@@ -74,7 +79,8 @@ public class ThemeStyles {
     }
 
     public static String generateThemeStyles(String themeName,
-            ThemeDescriptor themeDescriptor, String basePath) {
+            ThemeDescriptor themeDescriptor, String basePath,
+            String collectionName) {
 
         final StringBuilder sb = new StringBuilder();
 
@@ -95,8 +101,12 @@ public class ThemeStyles {
         }
 
         String rendered = sb.toString();
-        rendered = CSSUtils.expandVariables(rendered, basePath, themeDescriptor);
+        if (collectionName != null) {
+            // Preprocessing: replace the collection name
+            rendered = rendered.replaceAll(COLLECTION_MARKER, collectionName);
+        }
+        rendered = CSSUtils.expandVariables(rendered, basePath, collectionName,
+                themeDescriptor);
         return String.format("<style type=\"text/css\">%s</style>", rendered);
     }
-
 }

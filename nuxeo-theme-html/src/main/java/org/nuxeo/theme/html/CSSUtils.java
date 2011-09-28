@@ -31,8 +31,6 @@ import java.util.regex.Pattern;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
-import org.nuxeo.theme.Manager;
-import org.nuxeo.theme.elements.ThemeElement;
 import org.nuxeo.theme.formats.styles.Style;
 import org.nuxeo.theme.presets.PresetManager;
 import org.nuxeo.theme.presets.PresetType;
@@ -98,17 +96,6 @@ public final class CSSUtils {
     public static String styleToCss(final Style style,
             final Collection<String> viewNames, final boolean ignoreViewName,
             final boolean ignoreClassName, final boolean indent) {
-
-        String themeName = null;
-        if (style.isNamed()) {
-            themeName = Manager.getThemeManager().getThemeNameOfNamedObject(
-                    style);
-        } else {
-            ThemeElement theme = ThemeManager.getThemeOfFormat(style);
-            if (theme != null) {
-                themeName = theme.getName();
-            }
-        }
 
         final StringBuilder sb = new StringBuilder();
         final StringBuilder pSb = new StringBuilder();
@@ -396,7 +383,7 @@ public final class CSSUtils {
     }
 
     public static String expandVariables(String text, String basePath,
-            ThemeDescriptor themeDescriptor) {
+            String collectionName, ThemeDescriptor themeDescriptor) {
 
         String themeName = themeDescriptor.getName();
 
@@ -419,6 +406,16 @@ public final class CSSUtils {
             text = text.replaceAll(Pattern.quote(String.format("\"%s\"",
                     preset.getTypeName())),
                     Matcher.quoteReplacement(preset.getValue()));
+        }
+
+        // Replace presets from the current collection
+        if (collectionName != null) {
+            for (PresetInfo preset : ThemeManager.getPresetsInCollection(collectionName)) {
+                text = text.replaceAll(Pattern.quote(String.format("\"%s\"",
+                        preset.getTypeName())),
+                        Matcher.quoteReplacement(PresetManager.resolvePresets(
+                                themeName, preset.getValue())));
+            }
         }
 
         // Replace presets and images from resource banks

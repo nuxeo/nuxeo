@@ -76,10 +76,10 @@ import org.nuxeo.theme.relations.DefaultPredicate;
 import org.nuxeo.theme.relations.DyadicRelation;
 import org.nuxeo.theme.relations.Predicate;
 import org.nuxeo.theme.relations.Relation;
+import org.nuxeo.theme.resources.PresetInfo;
 import org.nuxeo.theme.resources.ResourceBank;
 import org.nuxeo.theme.resources.ResourceManager;
 import org.nuxeo.theme.resources.ResourceType;
-import org.nuxeo.theme.services.ThemeService;
 import org.nuxeo.theme.templates.TemplateEngineType;
 import org.nuxeo.theme.types.Type;
 import org.nuxeo.theme.types.TypeFamily;
@@ -584,6 +584,22 @@ public final class ThemeManager implements Registrable {
         final String perspectiveName = path[6];
         return (PerspectiveType) Manager.getTypeRegistry().lookup(
                 TypeFamily.PERSPECTIVE, perspectiveName);
+    }
+
+    public static String getCollectionNameByUrl(final URL url) {
+        if (url == null) {
+            return null;
+        }
+        if (!url.getHost().equals("theme")) {
+            return null;
+        }
+        final String[] path = url.getPath().split("/");
+        if (path.length <= 7) {
+            return null;
+        }
+        final String collectionName = path[7];
+        // TODO: check to see if the collection exists?
+        return collectionName;
     }
 
     public static String getUrlDescription(URL url) {
@@ -1419,20 +1435,19 @@ public final class ThemeManager implements Registrable {
     }
 
     // Cached styles
-    public String getCachedStyles(String themeName, String basePath) {
-        String key = themeName;
-        if (basePath != null) {
-            key = String.format("%s|%s", key, basePath);
-        }
+    public String getCachedStyles(String themeName, String basePath,
+            String collectionName) {
+        String key = String.format("%s|%s|%s", themeName,
+                basePath != null ? basePath : "",
+                collectionName != null ? collectionName : "");
         return cachedStyles.get(key);
     }
 
     public synchronized void setCachedStyles(String themeName, String basePath,
-            String css) {
-        String key = themeName;
-        if (basePath != null) {
-            key = String.format("%s|%s", key, basePath);
-        }
+            String collectionName, String css) {
+        String key = String.format("%s|%s|%s", themeName,
+                basePath != null ? basePath : "",
+                collectionName != null ? collectionName : "");
         cachedStyles.put(key, css);
     }
 
@@ -1756,10 +1771,9 @@ public final class ThemeManager implements Registrable {
         return (ThemeSet) typeRegistry.lookup(TypeFamily.THEMESET, name);
     }
 
-    public List<String> getResourcesForPage(String themePage,
-            String resourceSuffix) {
-        ThemeService themeService = Manager.getThemeService();
-        return themeService.getResourcesForPage(themePage, resourceSuffix);
+    public static List<PresetInfo> getPresetsInCollection(String collection) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

@@ -37,7 +37,10 @@ import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.NegotiationDef;
 import org.nuxeo.theme.Registrable;
 import org.nuxeo.theme.RegistryType;
+import org.nuxeo.theme.ThemePageFlavour;
+import org.nuxeo.theme.ThemePageFlavourPresets;
 import org.nuxeo.theme.ThemePageResources;
+import org.nuxeo.theme.ThemePageStyle;
 import org.nuxeo.theme.ViewDef;
 import org.nuxeo.theme.engines.EngineType;
 import org.nuxeo.theme.models.ModelType;
@@ -72,7 +75,11 @@ public class ThemeService extends DefaultComponent implements Reloadable {
 
     private RuntimeContext context;
 
-    protected Map<String, List<String>> themePageResources = new HashMap<String, List<String>>();
+    protected Map<String, ThemePageResources> themePageResources = new HashMap<String, ThemePageResources>();
+
+    protected Map<String, ThemePageFlavour> themePageFlavours = new HashMap<String, ThemePageFlavour>();
+
+    protected Map<String, ThemePageStyle> themePageStyles = new HashMap<String, ThemePageStyle>();
 
     // collect all registered extensions here to be able to reload the
     // registries.
@@ -350,8 +357,6 @@ public class ThemeService extends DefaultComponent implements Reloadable {
                         oldViewDefs.put(entry.getKey(), entry.getValue());
                     }
                 }
-
-                List<ThemePageResources> themePageResources = application.getThemePageResources();
 
             }
         }
@@ -700,25 +705,57 @@ public class ThemeService extends DefaultComponent implements Reloadable {
                 ThemePageResources item = (ThemePageResources) contrib;
                 String themePage = item.getName();
                 if (themePageResources.containsKey(themePage)) {
-                    if (!item.getAppend()) {
+                    if (!item.getAppendStyles() && !item.getAppendFlavours()) {
                         // override
-                        themePageResources.put(themePage, item.getResources());
+                        themePageResources.put(themePage, item);
                     } else {
                         // merge
-                        List<String> allResources = new ArrayList<String>();
-                        List<String> existingResources = themePageResources.get(themePage);
-                        if (existingResources != null) {
-                            allResources.addAll(existingResources);
+                        List<String> newStyles = new ArrayList<String>();
+                        ThemePageResources existing = themePageResources.get(themePage);
+                        if (item.getAppendStyles()) {
+                            List<String> existingStyles = existing.getStyles();
+                            if (existingStyles != null) {
+                                newStyles.addAll(existingStyles);
+                            }
                         }
-                        List<String> newResources = item.getResources();
-                        if (newResources != null) {
-                            allResources.addAll(newResources);
+                        newStyles.addAll(item.getStyles());
+                        List<String> newFlavours = new ArrayList<String>();
+                        if (item.getAppendFlavours()) {
+                            List<String> existingFlavours = existing.getFlavours();
+                            if (existingFlavours != null) {
+                                newFlavours.addAll(existingFlavours);
+                            }
                         }
-                        themePageResources.put(themePage, newResources);
+                        newFlavours.addAll(item.getFlavours());
+                        existing.setStyles(newStyles);
+                        existing.setFlavours(newFlavours);
+                        themePageResources.put(themePage, existing);
                     }
                 } else {
-                    themePageResources.put(themePage, item.getResources());
+                    themePageResources.put(themePage, item);
                 }
+            } else if (contrib instanceof ThemePageFlavour) {
+                ThemePageFlavour flavour = (ThemePageFlavour) contrib;
+                // TODO: merge of presets
+                // flavour.getAppendPresets();
+                themePageFlavours.put(flavour.getName(), flavour);
+                // register all presets to the standard registries
+                List<ThemePageFlavourPresets> presets = flavour.getPresets();
+                if (presets != null) {
+                    RuntimeContext extensionContext = extension.getContext();
+                    for (ThemePageFlavourPresets preset : presets) {
+                        PaletteType palette = new PaletteType(
+                                flavour.getName(), preset.getSrc(),
+                                preset.getCategory());
+                        registerPalette(palette, extensionContext);
+                    }
+                }
+            } else if (contrib instanceof ThemePageStyle) {
+                ThemePageStyle style = (ThemePageStyle) contrib;
+                themePageStyles.put(style.getName(), style);
+            } else {
+                log.error("Unknown contribution to the theme service, extension"
+                        + " point 'themePageResources': " + contrib);
             }
         }
     }
@@ -727,23 +764,6 @@ public class ThemeService extends DefaultComponent implements Reloadable {
         // TODO
     }
 
-    public List<String> getResourcesForPage(String themePage,
-            String resourceSuffix) {
-        List<String> resources = themePageResources.get(themePage);
-        if (resources == null) {
-            return null;
-        }
-        if (resourceSuffix == null) {
-            return resources;
-        }
-        List<String> res = new ArrayList<String>();
-        // filter resources
-        for (String resource : resources) {
-            if (resource != null && resource.endsWith(resourceSuffix)) {
-                res.add(resource);
-            }
-        }
-        return res;
-    }
+    // TODO: add API for theme page resources retrieval
 
 }

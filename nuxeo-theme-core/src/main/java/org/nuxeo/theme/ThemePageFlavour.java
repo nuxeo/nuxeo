@@ -24,58 +24,31 @@ import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
- * Descriptor to associate resources to a theme page
- *
  * @since 5.4.3
  */
-@XObject("themePage")
-public class ThemePageResources {
+// TODO: use one file for all categories with a custom parser
+@XObject("flavour")
+public class ThemePageFlavour {
 
     @XNode("@name")
     String name;
 
-    @XNode("styles/append")
-    boolean appendStyles;
+    @XNode("presetsList/append")
+    boolean appendPresets;
 
-    @XNodeList(value = "styles/style", type = ArrayList.class, componentType = String.class)
-    List<String> styles;
-
-    @XNode("flavours/append")
-    boolean appendFlavours;
-
-    @XNodeList(value = "flavours/flavour", type = ArrayList.class, componentType = String.class)
-    List<String> flavours;
+    @XNodeList(value = "presetsList/presets", type = ArrayList.class, componentType = ThemePageFlavourPresets.class)
+    List<ThemePageFlavourPresets> presets;
 
     public String getName() {
         return name;
     }
 
-    public boolean getAppendStyles() {
-        return appendStyles;
+    public boolean getAppendPresets() {
+        return appendPresets;
     }
 
-    public List<String> getStyles() {
-        return styles;
-    }
-
-    public boolean getAppendFlavours() {
-        return appendFlavours;
-    }
-
-    public List<String> getFlavours() {
-        return flavours;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setStyles(List<String> styles) {
-        this.styles = styles;
-    }
-
-    public void setFlavours(List<String> flavours) {
-        this.flavours = flavours;
+    public List<ThemePageFlavourPresets> getPresets() {
+        return presets;
     }
 
 }
