@@ -168,11 +168,10 @@
     </resource>
   </extension>
 
-  <!-- Theme CSS for Theme refactoring -->
   <!-- mapping between theme pages and resources -->
-  <extension target="org.nuxeo.theme.services.ThemeService" point="themePageResources">
-
+  <extension target="org.nuxeo.theme.styling.service" point="pages">  
     <themePage name="galaxy/default">
+      <defaultFlavour>summer</defaultFlavour>
       <flavours append="true">
         <flavour>summer</flavour>
         <flavour>winter</flavour>
@@ -181,10 +180,15 @@
         <style>nuxeo_dm_default</style>
       </styles>
     </themePage>
+  </extension>
 
+  <extension target="org.nuxeo.theme.styling.service" point="styles">
     <style name="nuxeo_dm_default">
       <path>css/nuxeo_dm_default.css</path>
     </style>
+  </extension>
+
+  <extension target="org.nuxeo.theme.styling.service" point="flavours">
 
     <flavour name="summer">
       <presetsList append="true">
@@ -197,6 +201,18 @@
       </presetsList>
     </flavour>
 
+    <!-- TODO: use different files for this flavour... -->
+    <flavour name="winter">
+      <presetsList append="true">
+        <!-- TODO: use one file for all categories with a custom parser -->
+        <presets category="border" src="themes/palettes/galaxy-borders.properties" />
+        <presets category="background"
+          src="themes/palettes/galaxy-backgrounds.properties" />
+        <presets category="font" src="themes/palettes/galaxy-fonts.properties" />
+        <presets category="color" src="themes/palettes/galaxy-colors.properties" />
+      </presetsList>
+
+    </flavour>
   </extension>
 
   <!-- application settings -->
