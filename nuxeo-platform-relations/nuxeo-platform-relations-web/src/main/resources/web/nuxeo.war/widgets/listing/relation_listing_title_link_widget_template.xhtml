@@ -6,7 +6,7 @@
   xmlns:nxh="http://nuxeo.org/nxweb/html"
   xmlns:h="http://java.sun.com/jsf/html">
 
-  <a href="javascript:updateParent('#{field_1}', '#{field_2}');">
+  <a href="javascript:updateParent('#{field_1}', '#{nxu:javaScriptEscape(field_2)}');">
     #{nxd:titleOrId(field_0)}
   </a>
 
