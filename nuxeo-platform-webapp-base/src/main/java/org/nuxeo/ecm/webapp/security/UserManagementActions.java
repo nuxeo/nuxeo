@@ -132,6 +132,16 @@ public class UserManagementActions extends AbstractUserGroupManagement
         if (userManager.areUsersReadOnly()) {
             return false;
         }
+
+        // if the selected user is the anonymous user, do not display
+        // edit/password tabs
+        if (selectedUser != null
+                && userManager.getAnonymousUserId() != null
+                && userManager.getAnonymousUserId().equals(selectedUser.getId())) {
+
+            return false;
+        }
+
         if (currentUser instanceof NuxeoPrincipal) {
             NuxeoPrincipal pal = (NuxeoPrincipal) currentUser;
             if (pal.isAdministrator()) {
