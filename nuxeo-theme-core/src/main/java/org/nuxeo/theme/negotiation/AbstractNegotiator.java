@@ -23,6 +23,9 @@ public abstract class AbstractNegotiator implements Negotiator {
 
     private static final String SPEC_PREFIX = "nxtheme://theme";
 
+    // FIXME: can be called 'web' under webengine
+    private static final String DEFAULT_NEGOTIATION_STRATEGY = "default";
+
     private final String strategy;
 
     private final Object context;
@@ -49,6 +52,12 @@ public abstract class AbstractNegotiator implements Negotiator {
         NegotiationType negotiation = (NegotiationType) Manager.getTypeRegistry().lookup(
                 TypeFamily.NEGOTIATION,
                 String.format("%s/%s", strategy, object));
+        // Try with the 'default' strategy
+        if (negotiation == null) {
+            negotiation = (NegotiationType) Manager.getTypeRegistry().lookup(
+                    TypeFamily.NEGOTIATION,
+                    String.format("%s/%s", DEFAULT_NEGOTIATION_STRATEGY, object));
+        }
         if (negotiation == null) {
             throw new NegotiationException("Could not obtain negotiation for: "
                     + strategy + " (strategy) " + object + " (object)");
