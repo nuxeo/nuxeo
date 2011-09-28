@@ -1770,12 +1770,4 @@ public final class ThemeManager implements Registrable {
         return (ThemeSet) typeRegistry.lookup(TypeFamily.THEMESET, name);
     }
 
-    /*
-     * Collection, flavours.
-     */
-    public static List<String> getFlavourNamesByTheme(String themeName) {
-        // TODO not implemented
-        return new ArrayList<String>();
-    }
-
 }
