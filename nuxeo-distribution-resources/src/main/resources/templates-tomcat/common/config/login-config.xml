@@ -2,7 +2,7 @@
 
 <component name="org.nuxeo.ecm.platform.login.LoginConfig" version="1.0">
   <documentation>
-  Login modules used on JBoss
+  Login modules used on Tomcat
   @author Bogdan Stefanescu (bs@nuxeo.com)
   </documentation>
 
