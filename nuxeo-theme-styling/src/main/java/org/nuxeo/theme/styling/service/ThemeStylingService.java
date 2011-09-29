@@ -33,6 +33,7 @@ import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.Utils;
 import org.nuxeo.theme.elements.ElementFormatter;
 import org.nuxeo.theme.elements.PageElement;
+import org.nuxeo.theme.elements.ThemeElement;
 import org.nuxeo.theme.formats.FormatFactory;
 import org.nuxeo.theme.presets.PaletteParser;
 import org.nuxeo.theme.presets.PaletteType;
@@ -42,6 +43,8 @@ import org.nuxeo.theme.styling.service.descriptors.Flavour;
 import org.nuxeo.theme.styling.service.descriptors.FlavourPresets;
 import org.nuxeo.theme.styling.service.descriptors.Style;
 import org.nuxeo.theme.styling.service.descriptors.ThemePage;
+import org.nuxeo.theme.themes.ThemeDescriptor;
+import org.nuxeo.theme.themes.ThemeException;
 import org.nuxeo.theme.themes.ThemeManager;
 import org.nuxeo.theme.types.TypeRegistry;
 
@@ -134,7 +137,7 @@ public class ThemeStylingService extends DefaultComponent {
      * @since 5.4.3
      * @param flavour
      */
-    // TODO: see if useful
+    // TODO: see if useful : not working right now
     protected void postRegisterThemePageResourcesForStyle(
             RuntimeContext extensionContext, Style style) throws Exception {
         if (themePageResources != null) {
@@ -206,6 +209,17 @@ public class ThemeStylingService extends DefaultComponent {
     protected void postRegisterThemePageResources(
             RuntimeContext extensionContext, ThemePage page) throws Exception {
         ThemeManager themeManager = Manager.getThemeManager();
+        String themeName = page.getThemeName();
+        ThemeDescriptor themeDescriptor = ThemeManager.getThemeDescriptorByThemeName(themeName);
+        if (themeDescriptor == null) {
+            log.error(String.format(
+                    "Could not resolve theme descriptor for name '%s'",
+                    themeName));
+        }
+        if (themeDescriptor != null && !themeDescriptor.isLoaded()) {
+            ThemeManager.loadTheme(themeDescriptor);
+        }
+        ThemeElement themeElement = themeManager.getThemeByName(themeName);
         PageElement pageElement = themeManager.getPageByPath(page.getName());
         if (pageElement != null) {
             List<String> styles = page.getStyles();
@@ -214,11 +228,11 @@ public class ThemeStylingService extends DefaultComponent {
                 String parentStyle = null;
                 for (String style : page.getStyles()) {
                     org.nuxeo.theme.formats.styles.Style pageStyle = (org.nuxeo.theme.formats.styles.Style) FormatFactory.create("style");
-                    ElementFormatter.setFormat(pageElement, pageStyle);
                     pageStyle.setName(style);
                     if (themePageStyles.containsKey(style)) {
                         Style styleDesc = themePageStyles.get(style);
                         String src = styleDesc.getPath();
+                        log.error(src);
                         URL url = null;
                         try {
                             url = new URL(src);
@@ -228,19 +242,37 @@ public class ThemeStylingService extends DefaultComponent {
                                 url = extensionContext.getResource(src);
                             }
                         }
-                        String cssSource = FileUtils.readFile(FileUtils.urlToFile(url));
+                        log.error(url);
+                        String cssSource = new String(FileUtils.readBytes(url));
                         cssSource = cssSource.replaceAll("__FLAVOUR__",
                                 ThemeManager.getCollectionCssMarker());
                         Utils.loadCss(pageStyle, cssSource, "*");
                     } else {
                         log.warn("Style not available (yet?): " + style);
                     }
-                    // handle inheritance: style here should be parent style
-                    themeManager.makeElementUseNamedStyle(pageElement,
-                            parentStyle, page.getThemeName());
+                    // register directly style to the page
+                    ElementFormatter.setFormat(pageElement, pageStyle);
+                    // FIXME: attach it to theme as attaching it to page does not work
+                    ElementFormatter.setFormat(themeElement, pageStyle);
+                    // handle inheritance
+                    if (parentStyle == null) {
+                        ThemeManager.removeInheritanceTowards(pageStyle);
+                    } else {
+                        org.nuxeo.theme.formats.styles.Style inheritedStyle = (org.nuxeo.theme.formats.styles.Style) themeManager.getNamedObject(
+                                themeName, "style", parentStyle);
+                        if (inheritedStyle == null) {
+                            throw new ThemeException(
+                                    "Could not find named style: "
+                                            + parentStyle);
+                        }
+                        themeManager.makeFormatInherit(pageStyle,
+                                inheritedStyle);
+                    }
                     parentStyle = style;
                 }
             }
+            // reset cache
+            themeManager.stylesModified(themeName);
         } else {
             log.error(String.format("Unknown theme page '%s'", page.getName()));
         }

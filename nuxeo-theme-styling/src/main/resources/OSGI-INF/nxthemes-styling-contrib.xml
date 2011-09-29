@@ -2,7 +2,7 @@
 
 <component name="org.nuxeo.theme.styling.service">
 
-  <implementation class="org.nuxeo.theme.services.ThemeService" />
+  <implementation class="org.nuxeo.theme.styling.service.ThemeStylingService" />
 
   <extension-point name="pages">
     <object class="org.nuxeo.theme.styling.service.descriptors.ThemePage" />

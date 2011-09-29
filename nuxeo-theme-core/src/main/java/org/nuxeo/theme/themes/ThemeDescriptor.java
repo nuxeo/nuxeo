@@ -62,6 +62,9 @@ public class ThemeDescriptor implements Type {
     @XNode("src")
     public String src = "";
 
+    @XNode("@name")
+    public String themeName;
+
     public void setContext(RuntimeContext ctx) {
         this.ctx = ctx;
     }
@@ -185,6 +188,9 @@ public class ThemeDescriptor implements Type {
     }
 
     public String getName() {
+        if (name == null) {
+            return themeName;
+        }
         return name;
     }
 
