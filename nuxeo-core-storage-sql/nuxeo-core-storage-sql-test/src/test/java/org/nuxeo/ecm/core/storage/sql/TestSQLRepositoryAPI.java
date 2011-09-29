@@ -2181,6 +2181,11 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertNotSame(copy1.getName(), copy3.getName());
 
         // copy again again to same space
+        if (System.getProperty("os.name").startsWith("Windows")) {
+            // windows has too coarse time granularity
+            // for SQLSession.findFreeName
+            Thread.sleep(1000);
+        }
         DocumentModel copy4 = session.copy(file.getRef(), folder2.getRef(),
                 null);
 
