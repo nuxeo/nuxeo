@@ -1,3 +1,5 @@
+#!/bin/sh
+
 # This script will check out the needed sources from mercurial.
 
 VERSION=`hg id -b`
