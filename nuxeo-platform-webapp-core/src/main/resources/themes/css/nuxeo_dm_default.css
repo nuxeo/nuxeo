@@ -54,6 +54,7 @@ Backgrounds = #f6f6f6 + #c6c6c6 + #d2d2d2+ #e6f6ff BlueLight + #cfecff BlueSky +
 
 /*///////////// =Generics /////////////*/
 /*---- =Resets ----*/
+/** remove body and html elements? **/
 html, body { font-size: 100%;	line-height: 1.125em;	color: #444 }
 
 html, body, textarea { font-family: "Lucida Grande", Arial, Helvetica, Geneva, sans-serif }
@@ -67,7 +68,7 @@ img, a { outline: medium none }
 
 /*---- =Common ----*/
 /*-- =Links and Titles */
-a, a:link, a:visited { color: #0079a6; text-decoration: none }
+a, a:link, a:visited { color: "link (__FLAVOUR__ color)"; text-decoration: none }
 a:hover { color: #00416b; text-decoration: underline }
 
 h1, h2, h3 { color: #5C5C5C; font-weight: bold }
@@ -133,7 +134,7 @@ textAlignL { float: left }
 .header .logo {text-align: center; vertical-align:bottom; width: 18% }
 .header .content { padding: 0 10px 0 0; vertical-align: bottom;	width: 82%; font-size: .75em }
 .header .includes { width: 0 }
-.header a, .header a:link, .header a:visited, .header a:hover, .header a:active { color: #fff }
+.header a, .header a:link, .header a:visited, .header a:hover, .header a:active { color: "header.link (__FLAVOUR__ color)"}
 
 /*-- =Search */
 .userSearchBlock { float: right }
