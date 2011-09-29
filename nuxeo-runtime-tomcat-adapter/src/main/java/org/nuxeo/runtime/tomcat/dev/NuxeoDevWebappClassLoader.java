@@ -23,6 +23,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.management.MBeanServerFactory;
+
 import org.apache.catalina.loader.WebappClassLoader;
 import org.nuxeo.osgi.application.MutableClassLoader;
 
@@ -30,7 +32,7 @@ import org.nuxeo.osgi.application.MutableClassLoader;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class NuxeoDevWebappClassLoader extends WebappClassLoader implements
-        MutableClassLoader {
+        MutableClassLoader, WebResourcesCacheFlusher {
 
     public LocalClassLoader createLocalClassLoader(URL... urls) {
         LocalClassLoader cl = new LocalURLClassLoader(urls, this);
@@ -64,6 +66,10 @@ public class NuxeoDevWebappClassLoader extends WebappClassLoader implements
     public synchronized void clear() {
         children.clear();
         _children = null;
+    }
+
+    public synchronized void flushWebResources() {
+        resourceEntries.clear();
     }
 
     public LocalClassLoader[] getChildren() {

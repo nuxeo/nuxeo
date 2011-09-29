@@ -34,7 +34,7 @@ import org.nuxeo.osgi.application.MutableClassLoader;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * 
  */
-public class DevFrameworkBootstrap extends FrameworkBootstrap implements DevBundlesChecker {
+public class DevFrameworkBootstrap extends FrameworkBootstrap implements DevBundlesManager {
 
     protected File devBundlesFile;
 
@@ -77,7 +77,7 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements DevBund
             @Override
             public void run() {
                 try {
-                    checkDevBundles();
+                    loadDevBundles();
                 } catch (Throwable t) {
                     log.error("Error running dev mode timer", t);
                 }
@@ -131,7 +131,7 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements DevBund
         }
     }
 
-    public void checkDevBundles() {
+    public void loadDevBundles() {
         long tm = devBundlesFile.lastModified();
         if (lastModified >= tm) {
             return;
@@ -147,7 +147,7 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements DevBund
     public void resetDevBundles(String path) {
         devBundlesFile = new File(path);
         lastModified = 0;
-        checkDevBundles();
+        loadDevBundles();
     }
  
     public DevBundle[] getDevBundles() throws IOException {

@@ -41,6 +41,9 @@ import org.nuxeo.runtime.tomcat.dev.NuxeoDevWebappClassLoader;
  */
 public class NuxeoLauncher implements LifecycleListener {
 
+    public static final String DEV_BUNDLES_NAME = "org.nuxeo:type=sdk,name=dev-bundles";
+    public static final String WEB_RESOURCES_NAME = "org.nuxeo:type=sdk,name=web-resources";
+            
     static final Log log = LogFactory.getLog(NuxeoLauncher.class);
 
     protected boolean shared; // TODO
@@ -88,19 +91,21 @@ public class NuxeoLauncher implements LifecycleListener {
 
     protected void handleEvent(NuxeoWebappLoader loader, LifecycleEvent event) {
         try {
-            boolean devMode = loader.getClassLoader() instanceof NuxeoDevWebappClassLoader;
+            ClassLoader cl = loader.getClassLoader();
+            boolean devMode = cl instanceof NuxeoDevWebappClassLoader;
             String type = event.getType();
             if (type == Lifecycle.START_EVENT) {
                 File homeDir = resolveHomeDirectory(loader);
                 if (devMode) {
                     bootstrap = new DevFrameworkBootstrap(
-                            (MutableClassLoader) loader.getClassLoader(),
+                            (MutableClassLoader) cl,
                             homeDir);
                     MBeanServer server = ManagementFactory.getPlatformMBeanServer();
-                    server.registerMBean(bootstrap, new ObjectName("org.nuxeo:type=sdk,name=dev-bundles"));
+                    server.registerMBean(bootstrap, new ObjectName(DEV_BUNDLES_NAME));
+                    server.registerMBean(cl, new ObjectName(WEB_RESOURCES_NAME));
                 } else {
                     bootstrap = new FrameworkBootstrap(
-                            (MutableClassLoader) loader.getClassLoader(),
+                            (MutableClassLoader) cl,
                             homeDir);
                 }
                 bootstrap.setHostName("Tomcat");
@@ -110,6 +115,11 @@ public class NuxeoLauncher implements LifecycleListener {
                 bootstrap.start();
             } else if (type == Lifecycle.STOP_EVENT) {
                 bootstrap.stop();
+                if (devMode) {
+                    MBeanServer server = ManagementFactory.getPlatformMBeanServer();
+                    server.unregisterMBean(new ObjectName(DEV_BUNDLES_NAME));
+                    server.unregisterMBean(new ObjectName(WEB_RESOURCES_NAME));                   
+                }
             }
         } catch (Throwable e) {
             log.error("Failed to handle event", e);

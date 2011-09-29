@@ -31,8 +31,8 @@ import org.nuxeo.runtime.tomcat.dev.DevFrameworkBootstrap.DevBundle;
  * 
  */
 @MXBean(true)
-public interface DevBundlesChecker {
-    void checkDevBundles();
+public interface DevBundlesManager {
+    void loadDevBundles();
     String getDevBundlesLocation();
     void resetDevBundles(String location);
     DevBundle[] getDevBundles() throws IOException;
