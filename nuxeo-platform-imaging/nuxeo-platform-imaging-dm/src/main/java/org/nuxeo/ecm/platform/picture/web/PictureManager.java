@@ -22,8 +22,6 @@ package org.nuxeo.ecm.platform.picture.web;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import javax.ejb.Local;
-
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
@@ -33,7 +31,6 @@ import org.nuxeo.ecm.platform.url.api.DocumentView;
  *
  * @author <a href="mailto:ldoguin@nuxeo.com">Laurent Doguin</a>
  */
-@Local
 public interface PictureManager {
 
     /**

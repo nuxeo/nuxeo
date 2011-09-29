@@ -23,9 +23,6 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-import javax.ejb.Remove;
-
-import org.jboss.seam.annotations.Destroy;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.audit.api.AuditException;
@@ -83,9 +80,5 @@ public interface ContentHistoryActions extends Serializable {
     String doSearch();
 
     SortInfo getSortInfo();
-
-    @Destroy
-    @Remove
-    void destroy();
 
 }

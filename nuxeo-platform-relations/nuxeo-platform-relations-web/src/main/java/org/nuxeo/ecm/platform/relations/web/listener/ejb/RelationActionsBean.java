@@ -32,15 +32,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import javax.ejb.PostActivate;
-import javax.ejb.PrePassivate;
-import javax.ejb.Remove;
 import javax.faces.event.ActionEvent;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
-import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
@@ -527,26 +523,6 @@ public class RelationActionsBean extends DocumentContextBoundActionBean
 
     public Boolean getShowCreateForm() {
         return showCreateForm;
-    }
-
-    public void initialize() {
-        log.debug("Initializing...");
-    }
-
-    @Destroy
-    @Remove
-    public void destroy() {
-        log.debug("Removing Seam action listener...");
-    }
-
-    @PrePassivate
-    public void saveState() {
-        log.debug("PrePassivate");
-    }
-
-    @PostActivate
-    public void readState() {
-        log.debug("PostActivate");
     }
 
     @Override

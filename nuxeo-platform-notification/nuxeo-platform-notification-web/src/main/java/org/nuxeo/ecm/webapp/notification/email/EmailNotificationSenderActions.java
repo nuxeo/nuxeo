@@ -19,27 +19,13 @@
 
 package org.nuxeo.ecm.webapp.notification.email;
 
-import javax.annotation.security.PermitAll;
-import javax.ejb.Local;
-import javax.ejb.Remove;
-
-import org.nuxeo.ecm.webapp.base.StatefulBaseLifeCycle;
-
 /**
  * Provides email related operations.
  *
  * @author <a href="mailto:npaslaru@nuxeo.com">Narcis Paslaru</a>
  *
  */
-@Local
-public interface EmailNotificationSenderActions extends StatefulBaseLifeCycle {
-
-    @Remove
-    @PermitAll
-    void destroy();
-    void saveState();
-    void readState();
-    void initialize();
+public interface EmailNotificationSenderActions {
 
     String send();
     String getMailSubject();

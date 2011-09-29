@@ -23,7 +23,6 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
-import javax.ejb.Remove;
 import javax.faces.event.ActionEvent;
 
 import org.apache.commons.logging.Log;
@@ -86,7 +85,6 @@ public class SlideShowManagerBean implements SlideShowManager, Serializable {
     }
 
     @Destroy
-    @Remove
     public void destroy() {
         log.debug("Destroy");
         index = null;

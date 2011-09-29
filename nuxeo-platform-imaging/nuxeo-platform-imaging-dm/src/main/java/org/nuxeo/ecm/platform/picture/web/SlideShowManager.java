@@ -95,8 +95,4 @@ public interface SlideShowManager {
      */
     void setChild(DocumentModel child);
 
-    void destroy();
-
-    void initialize() throws Exception;
-
 }

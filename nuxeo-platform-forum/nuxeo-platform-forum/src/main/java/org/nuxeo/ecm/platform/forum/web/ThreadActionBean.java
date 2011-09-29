@@ -27,7 +27,6 @@ import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-import javax.ejb.Remove;
 import javax.faces.context.FacesContext;
 
 import org.apache.commons.logging.Log;
@@ -345,11 +344,6 @@ public class ThreadActionBean implements ThreadAction {
 
     public void readState() {
         log.info("PostActivate");
-    }
-
-    @Remove
-    public void destroy() {
-        log.debug("Removing SEAM action listener...");
     }
 
     public boolean isModerated() {

@@ -54,8 +54,4 @@ public interface UserWorkspaceManagerActions extends Serializable {
      */
     boolean isShowingPersonalWorkspace();
 
-    void destroy();
-
-    void initialize();
-
 }

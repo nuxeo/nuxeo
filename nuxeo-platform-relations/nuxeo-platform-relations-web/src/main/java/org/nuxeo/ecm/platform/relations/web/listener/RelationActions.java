@@ -21,7 +21,6 @@ package org.nuxeo.ecm.platform.relations.web.listener;
 
 import java.util.List;
 
-import javax.ejb.Local;
 import javax.faces.event.ActionEvent;
 
 import org.nuxeo.ecm.core.api.ClientException;
@@ -29,7 +28,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.relations.api.Node;
 import org.nuxeo.ecm.platform.relations.api.QNameResource;
 import org.nuxeo.ecm.platform.relations.web.StatementInfo;
-import org.nuxeo.ecm.webapp.base.StatefulBaseLifeCycle;
 
 /**
  * Relation actions.
@@ -37,8 +35,7 @@ import org.nuxeo.ecm.webapp.base.StatefulBaseLifeCycle;
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  *
  */
-@Local
-public interface RelationActions extends StatefulBaseLifeCycle {
+public interface RelationActions {
 
     String SEARCH_DOCUMENT_LIST = "RELATION_SEARCH_DOCUMENT_LIST";
 
@@ -88,9 +85,5 @@ public interface RelationActions extends StatefulBaseLifeCycle {
     String getPredicateUri();
 
     void setPredicateUri(String predicateUri);
-
-    void initialize();
-
-    void destroy();
 
 }

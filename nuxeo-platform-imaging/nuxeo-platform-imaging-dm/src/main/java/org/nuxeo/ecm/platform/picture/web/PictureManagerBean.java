@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.ejb.Remove;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 
@@ -326,7 +325,6 @@ public class PictureManagerBean implements PictureManager, Serializable {
     }
 
     @Destroy
-    @Remove
     public void destroy() {
         log.debug("Removing Seam action listener...");
         fileurlPicture = null;

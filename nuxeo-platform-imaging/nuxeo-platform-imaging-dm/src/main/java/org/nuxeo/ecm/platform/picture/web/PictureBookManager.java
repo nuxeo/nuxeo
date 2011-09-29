@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import javax.ejb.Local;
 import javax.faces.model.SelectItem;
 
 import org.nuxeo.ecm.core.api.ClientException;
@@ -36,7 +35,6 @@ import org.nuxeo.ecm.core.api.ClientException;
  *
  * @author <a href="mailto:ldoguin@nuxeo.com">Laurent Doguin</a>
  */
-@Local
 public interface PictureBookManager {
 
     /**
@@ -166,8 +164,6 @@ public interface PictureBookManager {
     String createPictureBook() throws Exception;
 
     void reset() throws ClientException;
-
-    void destroy();
 
     void initialize() throws Exception;
 

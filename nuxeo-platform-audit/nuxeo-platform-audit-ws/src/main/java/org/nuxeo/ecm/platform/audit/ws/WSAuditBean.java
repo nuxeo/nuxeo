@@ -28,8 +28,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.ejb.Local;
-import javax.ejb.Remote;
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebService;
@@ -51,12 +49,10 @@ import org.nuxeo.runtime.api.Framework;
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
  */
-@Local(WSAuditLocal.class)
-@Remote(WSAudit.class)
 @WebService(name = "WSAuditInterface", serviceName = "WSAuditService")
 @SOAPBinding(style = Style.DOCUMENT)
 public class WSAuditBean extends AbstractNuxeoWebService implements
-        WSAuditLocal {
+        WSAudit {
 
     private static final long serialVersionUID = 1L;
 

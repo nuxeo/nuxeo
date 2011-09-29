@@ -21,8 +21,6 @@ package org.nuxeo.ecm.platform.userworkspace.web.ejb;
 
 import static org.jboss.seam.ScopeType.SESSION;
 
-import javax.ejb.Remove;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
@@ -103,7 +101,6 @@ public class UserWorkspaceManagerActionsBean implements
     }
 
     @Destroy
-    @Remove
     public void destroy() {
         userWorkspaceService = null;
         log.debug("Removing user workspace actions bean");

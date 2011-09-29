@@ -31,7 +31,6 @@ import java.util.Map;
 import java.util.zip.ZipException;
 import java.util.zip.ZipOutputStream;
 
-import javax.ejb.Remove;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.servlet.http.HttpServletResponse;
@@ -146,7 +145,6 @@ public class PictureBookManagerBean extends InputController implements
     }
 
     @Destroy
-    @Remove
     public void destroy() {
         title = null;
         timeinterval = null;

@@ -32,7 +32,6 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
@@ -104,13 +103,6 @@ public class ContentHistoryActionsBean implements ContentHistoryActions {
     public ContentHistoryActionsBean() {
         // init sorting information
         sortInfo = new SortInfo(EVENT_DATE, false);
-    }
-
-    @Destroy
-    public void destroy() {
-        if (log.isDebugEnabled()) {
-            log.debug("Removing Audit Seam component...");
-        }
     }
 
     @Factory(value = "latestLogEntries", scope = EVENT)
