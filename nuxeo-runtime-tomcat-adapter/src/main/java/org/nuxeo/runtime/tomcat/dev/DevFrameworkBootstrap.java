@@ -21,9 +21,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -34,7 +34,7 @@ import org.nuxeo.osgi.application.MutableClassLoader;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * 
  */
-public class DevFrameworkBootstrap extends FrameworkBootstrap {
+public class DevFrameworkBootstrap extends FrameworkBootstrap implements DevBundlesChecker {
 
     protected File devBundlesFile;
 
@@ -63,6 +63,14 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap {
         super.start();
         // start dev bundles if any
         postloadDevBundles();
+        installLoaderTimer();
+    }
+
+    public void installLoaderTimer() {
+        String installReloadTimerOption = (String)env.get(INSTALL_RELOAD_TIMER);
+        if (installReloadTimerOption == null || Boolean.parseBoolean(installReloadTimerOption) == Boolean.FALSE) {
+            return;
+        }
         // start reload timer
         bundlesCheck = new Timer("Dev Bundles Loader");
         bundlesCheck.scheduleAtFixedRate(new TimerTask() {
@@ -74,9 +82,9 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap {
                     log.error("Error running dev mode timer", t);
                 }
             }
-        }, 2000, 2000);
+        }, 2000, 2000);        
     }
-
+    
     @Override
     public void stop() throws Exception {
         if (bundlesCheck != null) {
@@ -86,6 +94,10 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap {
         super.stop();
     }
 
+    public String getDevBundlesLocation() {
+        return devBundlesFile.getAbsolutePath();
+    }
+    
     /**
      * Load the development bundles and libs if any in the classpath before
      * starting the framework.
@@ -119,7 +131,7 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap {
         }
     }
 
-    protected void checkDevBundles() {
+    public void checkDevBundles() {
         long tm = devBundlesFile.lastModified();
         if (lastModified >= tm) {
             return;
@@ -132,7 +144,13 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap {
         }
     }
 
-    protected DevBundle[] getDevBundles() throws IOException {
+    public void resetDevBundles(String path) {
+        devBundlesFile = new File(path);
+        lastModified = 0;
+        checkDevBundles();
+    }
+ 
+    public DevBundle[] getDevBundles() throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(
                 new FileInputStream(devBundlesFile)));
         try {
@@ -187,12 +205,15 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap {
         }
     }
 
-    static class DevBundle {
-        String name; // the bundle symbolic name if not a lib
+    public static class DevBundle implements Serializable {
+        
+        private static final long serialVersionUID = 1L;
 
-        boolean isLibrary;
+        protected String name; // the bundle symbolic name if not a lib
 
-        File file;
+        protected final boolean isLibrary;
+
+        protected final File file;
 
         public DevBundle(File file) {
             this(file, false);
@@ -209,6 +230,14 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap {
 
         public boolean isLibrary() {
             return isLibrary;
+        }
+        
+        public String getName() {
+            return name;
+        }
+        
+        public String getFileLocation() {
+            return file.getAbsolutePath();
         }
     }
 

@@ -17,6 +17,10 @@
 package org.nuxeo.runtime.tomcat;
 
 import java.io.File;
+import java.lang.management.ManagementFactory;
+
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
 
 import org.apache.catalina.Container;
 import org.apache.catalina.Lifecycle;
@@ -43,6 +47,8 @@ public class NuxeoLauncher implements LifecycleListener {
 
     protected String home = "nxserver";
 
+    protected boolean automaticReload = true;
+
     protected FrameworkBootstrap bootstrap;
 
     public void setShared(boolean shared) {
@@ -59,6 +65,14 @@ public class NuxeoLauncher implements LifecycleListener {
 
     public String getHome() {
         return home;
+    }
+
+    public void setAutomaticReload(boolean value) {
+        this.automaticReload = value;
+    }
+
+    public boolean getAutomaticReload() {
+        return this.automaticReload;
     }
 
     @Override
@@ -82,6 +96,8 @@ public class NuxeoLauncher implements LifecycleListener {
                     bootstrap = new DevFrameworkBootstrap(
                             (MutableClassLoader) loader.getClassLoader(),
                             homeDir);
+                    MBeanServer server = ManagementFactory.getPlatformMBeanServer();
+                    server.registerMBean(bootstrap, new ObjectName("org.nuxeo:type=sdk,name=dev-bundles"));
                 } else {
                     bootstrap = new FrameworkBootstrap(
                             (MutableClassLoader) loader.getClassLoader(),
