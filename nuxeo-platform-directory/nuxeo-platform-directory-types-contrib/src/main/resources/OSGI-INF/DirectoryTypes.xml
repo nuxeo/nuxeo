@@ -8,6 +8,8 @@
     <schema name="group" src="directoryschema/group.xsd"/>
     <schema name="vocabulary" src="directoryschema/vocabulary.xsd"/>
     <schema name="xvocabulary" src="directoryschema/xvocabulary.xsd"/>
+    <schema name="l10nvocabulary" src="directoryschema/l10nvocabulary.xsd"/>
+    <schema name="l10nxvocabulary" src="directoryschema/l10nxvocabulary.xsd"/>
   </extension>
 
 </component>
