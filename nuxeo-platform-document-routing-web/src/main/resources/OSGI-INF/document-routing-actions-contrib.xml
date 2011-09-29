@@ -13,12 +13,12 @@
     <action id="TAB_DOCUMENT_ROUTE_CONTENT"
       link="/incl/tabs/document_route_content.xhtml" order="10"
       label="action.view.content" icon="/icons/file.gif">
-      <category>VIEW_ACTION_LIST</category>
+      <category>TAB_MANAGE_sub_tab</category>
       <filter-id>isRoute</filter-id>
     </action>
 
     <action id="TAB_DOCUMENT_ROUTE_ELEMENTS"
-      link="/incl/tabs/document_route_content_elements.xhtml" order="100"
+      link="/incl/tabs/document_route_content_elements.xhtml" order="10"
       label="action.view.document.routing.elements" icon="/icons/file.gif">
       <category>VIEW_ACTION_LIST</category>
       <filter-id>isRoute</filter-id>
@@ -73,10 +73,23 @@
     </action>
 
     <action id="SAVE_ROUTE_AS_NEW_INSTANCE"
-      link="#{routingActions.saveRouteAsNewInstance()}" order="10"
+      link="#{routingActions.saveRouteAsNewInstance()}" order="20"
       label="label.document.routing.saveAsNew">
       <category>SUBVIEW_UPPER_LIST</category>
+      <category>ROUTE_LIST</category>
       <filter-id>isRoute</filter-id>
+    </action>
+
+    <action id="VALIDATE_ROUTE"
+      link="#{routingActions.validateRouteModel()}" order="10"
+      label="action.validate.document.routing.model">
+      <category>ROUTE_LIST</category>
+      <filter-id>isDraftRouteModel</filter-id>
+      <filter id="canValidateRoute">
+        <rule grant="true">
+          <condition>#{routeSecurityChecker.canValidateRoute(currentDocument)}</condition>
+        </rule>
+      </filter>
     </action>
 
     <action id="ADD_STEP_BEFORE" label="command.add.routeelement.before"
