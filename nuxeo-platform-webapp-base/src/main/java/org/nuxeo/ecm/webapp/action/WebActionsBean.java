@@ -26,13 +26,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.ejb.PostActivate;
-import javax.ejb.PrePassivate;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.Component;
-import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
@@ -63,7 +59,7 @@ import org.nuxeo.ecm.webapp.helpers.EventNames;
 @Name("webActions")
 @Scope(CONVERSATION)
 @Install(precedence = Install.FRAMEWORK)
-public class WebActionsBean implements WebActionsLocal, Serializable {
+public class WebActionsBean implements WebActions, Serializable {
 
     private static final long serialVersionUID = 1959221536502251848L;
 
@@ -85,25 +81,6 @@ public class WebActionsBean implements WebActionsLocal, Serializable {
     protected List<Action> subTabsActionsList;
 
     protected TabActionsSelection currentTabActions = new TabActionsSelection();
-
-    public void initialize() {
-        log.debug("Initializing...");
-    }
-
-    @Destroy
-    public void destroy() {
-        log.debug("Removing Seam action listener...");
-    }
-
-    @PrePassivate
-    public void saveState() {
-        log.debug("PrePassivate");
-    }
-
-    @PostActivate
-    public void readState() {
-        log.debug("PostActivate");
-    }
 
     // actions management
 

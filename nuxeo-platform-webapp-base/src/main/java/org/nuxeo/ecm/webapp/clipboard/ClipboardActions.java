@@ -21,9 +21,6 @@ package org.nuxeo.ecm.webapp.clipboard;
 
 import java.util.List;
 
-import javax.ejb.Remove;
-
-import org.jboss.seam.annotations.Destroy;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -92,13 +89,6 @@ public interface ClipboardActions {
     String pasteClipboardInside(String docId) throws ClientException;
 
     String moveClipboardInside(String docId) throws ClientException;
-
-    /**
-     * Removes the component.
-     */
-    @Destroy
-    @Remove
-    void destroy();
 
     String exportWorklistAsZip() throws ClientException;
 

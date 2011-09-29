@@ -19,10 +19,6 @@
 
 package org.nuxeo.ecm.webapp.contentbrowser;
 
-import javax.annotation.security.PermitAll;
-import javax.ejb.Remove;
-
-import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.remoting.WebRemote;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -31,22 +27,13 @@ import org.nuxeo.ecm.platform.ui.web.model.SelectDataModel;
 import org.nuxeo.ecm.platform.ui.web.model.SelectDataModelListener;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
 import org.nuxeo.ecm.webapp.action.TypesTool;
-import org.nuxeo.ecm.webapp.base.StatefulBaseLifeCycle;
 
 /**
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
  */
-public interface DocumentActions extends StatefulBaseLifeCycle,
-        SelectDataModelListener {
+public interface DocumentActions extends SelectDataModelListener {
 
     String CHILDREN_DOCUMENT_LIST = "CHILDREN_DOCUMENT_LIST";
-
-    void initialize();
-
-    @Destroy
-    @Remove
-    @PermitAll
-    void destroy();
 
     /**
      * Returns the edit view of a document.

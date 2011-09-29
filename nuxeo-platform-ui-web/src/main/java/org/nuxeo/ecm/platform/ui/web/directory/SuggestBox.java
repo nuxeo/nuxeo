@@ -19,9 +19,6 @@
 
 package org.nuxeo.ecm.platform.ui.web.directory;
 
-import javax.ejb.Local;
-import javax.ejb.Remote;
-
 import org.jboss.seam.annotations.remoting.WebRemote;
 import org.nuxeo.ecm.platform.ui.web.util.SuggestionActionsBean;
 
@@ -31,8 +28,6 @@ import org.nuxeo.ecm.platform.ui.web.util.SuggestionActionsBean;
  *
  * @author Anahide Tchertchian
  */
-@Local
-@Remote
 @Deprecated
 public interface SuggestBox {
 

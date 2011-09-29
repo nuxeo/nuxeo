@@ -25,10 +25,7 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.ejb.Remove;
-
 import org.jboss.seam.annotations.Create;
-import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
@@ -63,11 +60,6 @@ public class DocumentsListsManagerBean extends BaseDocumentsListsManager
     }
 
     private DocumentRef lastDocumentRef;
-
-    @Remove
-    @Destroy
-    public void destroy() {
-    }
 
     @Create
     public void initListManager() {

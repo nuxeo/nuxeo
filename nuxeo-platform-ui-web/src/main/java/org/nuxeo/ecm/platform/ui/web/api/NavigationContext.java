@@ -21,8 +21,6 @@ package org.nuxeo.ecm.platform.ui.web.api;
 
 import java.util.List;
 
-import javax.ejb.Remote;
-
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -45,7 +43,6 @@ import org.nuxeo.ecm.platform.util.RepositoryLocation;
  * This Seam component should ideally serve only DocumentModel, lists of DMs
  * and Trees of DMs: no UI related structure.
  */
-@Remote
 public interface NavigationContext {
 
     /**
