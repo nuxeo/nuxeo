@@ -23,7 +23,7 @@
   <!-- themes -->
   <extension target="org.nuxeo.theme.services.ThemeService" point="themes">
 
-    <theme>
+    <theme name="galaxy">
       <src>themes/theme-galaxy.xml</src>
     </theme>
 
@@ -168,6 +168,12 @@
     </resource>
   </extension>
 
+  <extension target="org.nuxeo.theme.styling.service" point="styles">
+    <style name="nuxeo_dm_default">
+      <path>themes/css/nuxeo_dm_default.css</path>
+    </style>
+  </extension>
+
   <!-- mapping between theme pages and resources -->
   <extension target="org.nuxeo.theme.styling.service" point="pages">  
     <themePage name="galaxy/default">
@@ -180,12 +186,6 @@
         <style>nuxeo_dm_default</style>
       </styles>
     </themePage>
-  </extension>
-
-  <extension target="org.nuxeo.theme.styling.service" point="styles">
-    <style name="nuxeo_dm_default">
-      <path>css/nuxeo_dm_default.css</path>
-    </style>
   </extension>
 
   <extension target="org.nuxeo.theme.styling.service" point="flavours">
@@ -209,9 +209,8 @@
         <presets category="background"
           src="themes/palettes/galaxy-backgrounds.properties" />
         <presets category="font" src="themes/palettes/galaxy-fonts.properties" />
-        <presets category="color" src="themes/palettes/galaxy-colors.properties" />
+        <presets category="color" src="themes/palettes/galaxy-colors2.properties" />
       </presetsList>
-
     </flavour>
   </extension>
 

@@ -85,10 +85,6 @@ textarea { padding: 5px }
 /*-- =Buttons */
 .button, input.button {
 	box-shadow:inset 0px 1px 0px 0px #fff;
-	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #f5f2f5), color-stop(1, #dfdfdf) );
-	background:-moz-linear-gradient( center top, #f5f2f5 5%, #dfdfdf 100% );
-	background: linear-gradient( center top, #f5f2f5 5%, #dfdfdf 100% );
-	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#f5f2f5', endColorstr='#dfdfdf');
 	background-color:#dfdfdf;
 	border-radius:3px;
 	border:1px solid #c6c6c6;
@@ -248,10 +244,6 @@ textAlignL { float: left }
 .action_bar li { float: left; margin: 0; padding: 0 }
 .action_bar a {
   box-shadow:inset 0px 1px 0px 0px #fff;
-  background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #f5f2f5), color-stop(1, #dfdfdf) );
-  background:-moz-linear-gradient( center top, #f5f2f5 5%, #dfdfdf 100% );
-  background: linear-gradient( center top, #f5f2f5 5%, #dfdfdf 100% );
-  filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#f5f2f5', endColorstr='#dfdfdf');
   background-color:#eeeff0;
   border-radius:3px;
   border:1px solid #c6c6c6;
@@ -480,10 +472,6 @@ table.trashTable tbody tr:hover { background-color: #fff1C6 }
 .foldableBox h3 a.warningLink { color: #f56200 }
 .foldableBox h3 a.action, .foldableBox h3 a.action:visited {
   box-shadow:inset 0px 1px 0px 0px #fff;
-  background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #f5f2f5), color-stop(1, #dfdfdf) );
-  background:-moz-linear-gradient( center top, #f5f2f5 5%, #dfdfdf 100% );
-  background: linear-gradient( center top, #f5f2f5 5%, #dfdfdf 100% );
-  filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#f5f2f5', endColorstr='#dfdfdf');
   background-color:#eeeff0;
   border-radius:3px;
   border:1px solid #c6c6c6;
