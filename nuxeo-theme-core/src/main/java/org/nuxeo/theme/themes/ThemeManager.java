@@ -124,6 +124,8 @@ public final class ThemeManager implements Registrable {
 
     private static final int DEFAULT_THEME_INDENT = 2;
 
+    private static final String COLLECTION_CSS_MARKER = "COLLECTION";
+
     private static final Pattern styleResourceNamePattern = Pattern.compile(
             "(.*?)\\s\\((.*?)\\)$", Pattern.DOTALL);
 
@@ -1768,6 +1770,10 @@ public final class ThemeManager implements Registrable {
     public ThemeSet getThemeSetByName(final String name) {
         final TypeRegistry typeRegistry = Manager.getTypeRegistry();
         return (ThemeSet) typeRegistry.lookup(TypeFamily.THEMESET, name);
+    }
+
+    public static String getCollectionCssMarker() {
+        return COLLECTION_CSS_MARKER;
     }
 
 }

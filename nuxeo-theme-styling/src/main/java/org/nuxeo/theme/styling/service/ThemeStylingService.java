@@ -52,7 +52,7 @@ import org.nuxeo.theme.types.TypeRegistry;
  * Registers corresponding contributions to the {@link ThemeService} so that
  * styling of the page is handled as if styling was provided by the theme
  * definition. Also handles related flavours as theme collections.
- *
+ * 
  * @since 5.4.3
  */
 public class ThemeStylingService extends DefaultComponent {
@@ -128,7 +128,7 @@ public class ThemeStylingService extends DefaultComponent {
 
     /**
      * Reload theme page resources conf according to new style
-     *
+     * 
      * @since 5.4.3
      * @param flavour
      */
@@ -147,7 +147,7 @@ public class ThemeStylingService extends DefaultComponent {
 
     /**
      * Reload theme page resources conf according to new flavour
-     *
+     * 
      * @since 5.4.3
      * @param flavour
      */
@@ -173,7 +173,7 @@ public class ThemeStylingService extends DefaultComponent {
             for (FlavourPresets myPreset : presets) {
                 PaletteType palette = new PaletteType(flavour.getName(),
                         myPreset.getSrc(), myPreset.getCategory());
-                TypeRegistry typeRegistry = (TypeRegistry) getRegistry("types");
+                TypeRegistry typeRegistry = Manager.getTypeRegistry();
                 String paletteName = palette.getName();
                 String src = palette.getSrc();
                 String category = palette.getCategory();
@@ -225,14 +225,15 @@ public class ThemeStylingService extends DefaultComponent {
                     if (style == null) {
                         style = themeManager.createStyle();
                         style.setName(styleName);
-                        style.setRemote(true);
                         themeManager.setNamedObject(themeName, "style", style);
                     }
 
                     String resourceId = styleInfo.getResource();
-                    String cssSource = ResourceManager.getBankResource(name,
-                            flavour, "style", resourceId);
-                    style.setCollection(collectionName);
+                    String cssSource = "" // ;
+
+                    cssSource = cssSource.replaceAll("__FLAVOUR__", ThemeManager.getCollectionCssMarker());
+
+                    style.setCollection(flavour);
                     Utils.loadCss(style, cssSource, "*");
                 }
             }
