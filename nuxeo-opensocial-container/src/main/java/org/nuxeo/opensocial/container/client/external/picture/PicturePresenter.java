@@ -20,8 +20,15 @@ package org.nuxeo.opensocial.container.client.external.picture;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.customware.gwt.presenter.client.EventBus;
+import net.customware.gwt.presenter.client.place.Place;
+import net.customware.gwt.presenter.client.place.PlaceRequest;
+import net.customware.gwt.presenter.client.widget.WidgetDisplay;
+import net.customware.gwt.presenter.client.widget.WidgetPresenter;
+
 import org.nuxeo.gwt.habyt.upload.client.FileChanges;
 import org.nuxeo.gwt.habyt.upload.client.FileRef;
+import org.nuxeo.opensocial.container.client.ContainerConfiguration;
 import org.nuxeo.opensocial.container.client.event.priv.app.portlet.WebContentUpdatedEvent;
 import org.nuxeo.opensocial.container.client.event.priv.app.portlet.WebContentUpdatedEventHandler;
 import org.nuxeo.opensocial.container.client.event.publ.UpdateWebContentEvent;
@@ -36,12 +43,6 @@ import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.Image;
-
-import net.customware.gwt.presenter.client.EventBus;
-import net.customware.gwt.presenter.client.place.Place;
-import net.customware.gwt.presenter.client.place.PlaceRequest;
-import net.customware.gwt.presenter.client.widget.WidgetDisplay;
-import net.customware.gwt.presenter.client.widget.WidgetPresenter;
 
 /**
  * @author Stéphane Fourrier
@@ -126,7 +127,7 @@ public class PicturePresenter extends WidgetPresenter<PicturePresenter.Display> 
 
     private void setPictureUrl() {
         display.getPicture().setUrl(
-                FileUtils.buildFileUrl(model.getData().getId()));
+                FileUtils.buildFileUrl(ContainerConfiguration.getRepositoryName(), model.getData().getId(),"content"));
     }
 
     @Override

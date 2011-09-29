@@ -28,6 +28,7 @@ import net.customware.gwt.presenter.client.widget.WidgetPresenter;
 
 import org.nuxeo.gwt.habyt.upload.client.FileChanges;
 import org.nuxeo.gwt.habyt.upload.client.FileRef;
+import org.nuxeo.opensocial.container.client.ContainerConfiguration;
 import org.nuxeo.opensocial.container.client.event.priv.app.portlet.WebContentUpdatedEvent;
 import org.nuxeo.opensocial.container.client.event.priv.app.portlet.WebContentUpdatedEventHandler;
 import org.nuxeo.opensocial.container.client.event.publ.UpdateWebContentEvent;
@@ -152,7 +153,7 @@ public class HTMLPresenter extends WidgetPresenter<HTMLPresenter.Display> {
 
     private void setHtmlPictureUrl() {
         display.getHtmlPicture().setUrl(
-                FileUtils.buildFileUrl(model.getData().getId()));
+                FileUtils.buildFileUrl(ContainerConfiguration.getRepositoryName(), model.getData().getId(),"content"));
     }
 
     private void setHtmlPictureLegend() {
@@ -207,7 +208,7 @@ public class HTMLPresenter extends WidgetPresenter<HTMLPresenter.Display> {
                                 model.getData().getTemplate());
 
                         if (model.getData().hasPicture()) {
-                            display.setPicturePreview(FileUtils.buildFileUrl(model.getData().getId()));
+                            display.setPicturePreview(FileUtils.buildFileUrl(ContainerConfiguration.getRepositoryName(), model.getData().getId(),"content"));
                             display.getDeletePictureImage().addClickHandler(
                                     new ClickHandler() {
                                         public void onClick(ClickEvent event) {
