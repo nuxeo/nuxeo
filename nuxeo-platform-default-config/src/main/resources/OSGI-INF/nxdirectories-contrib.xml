@@ -27,6 +27,31 @@
       <dataFile>directories/continent.csv</dataFile>
       <createTablePolicy>on_missing_columns</createTablePolicy>
     </directory>
+<!-- NXP-7466 DEBUT -->
+    <directory name="l10n_continent">
+      <schema>l10nvocabulary</schema>
+      <dataSource>java:/nxsqldirectory</dataSource>
+      <cacheTimeout>3600</cacheTimeout>
+      <cacheMaxSize>1000</cacheMaxSize>
+      <table>l10ncontinent</table>
+      <idField>id</idField>
+      <autoincrementIdField>false</autoincrementIdField>
+      <dataFile>directories/l10n_continent.csv</dataFile>
+      <createTablePolicy>on_missing_columns</createTablePolicy>
+    </directory>
+    
+    <directory name="l10n_country">
+      <schema>l10nxvocabulary</schema>
+      <dataSource>java:/nxsqldirectory</dataSource>
+      <cacheTimeout>3600</cacheTimeout>
+      <cacheMaxSize>1000</cacheMaxSize>
+      <table>l10ncountry</table>
+      <idField>id</idField>
+      <autoincrementIdField>false</autoincrementIdField>
+      <dataFile>directories/l10n_country.csv</dataFile>
+      <createTablePolicy>on_missing_columns</createTablePolicy>
+    </directory>
+<!-- NXP-7466 FIN -->
 
     <directory name="subtopic">
       <schema>xvocabulary</schema>
