@@ -89,74 +89,10 @@ pre {
 
 <body>
 
-  <table width="100%" class="main_table">
-    <tr>
-      <td colspan="2" align="right">
-        <a href="${baseURL}?">Index</a> - <a href="${baseURL}wiki/">Wiki export</a>
-      </td>
-    </tr>
-    <tr valign="top">
-      <td width="30%">
-        <!-- menu -->
-        <div class="tree">
-          <#list categories?keys as cat>
-            <div class="category">${cat}</div>
-            <div class="export_link">
-              <a href="${baseURL}widgetTypes/${cat}?all=true">JSON definitions</a>
-              <a href="${baseURL}widgetTypes/${cat}?version=5.4.0&all=true">5.4.0</a>
-              <a href="${baseURL}widgetTypes/${cat}?version=5.4.1&all=true">5.4.1</a>
-              <a href="${baseURL}widgetTypes/${cat}?version=5.4.2&all=true">5.4.2</a>
-            </div>
-            <div class="category_content">
-              <#list categories["${cat}"] as widgetType>
-                <div class="item">
-                  <a href="${baseURL}?widgetType=${widgetType.name}">
-                    ${This.getWidgetTypeLabel(widgetType)}
-                  </a>
-                </div>
-              </#list>
-            </div>
-          </#list>
-          <div class="export_link">
-            <a href="${baseURL}widgetTypes?all=true">All JSON definitions</a>
-            <a href="${baseURL}widgetTypes?version=5.4.0&all=true">5.4.0</a>
-            <a href="${baseURL}widgetTypes?version=5.4.1&all=true">5.4.1</a>
-            <a href="${baseURL}widgetTypes?version=5.4.2&all=true">5.4.2</a>
-          </div>
-        </div>
-      </td>
-      <td>
-        <div class="content">
-          <#if widgetType?has_content>
-            <h1>${This.getWidgetTypeLabel(widgetType)}</h1>
-            <div class="description">
-              ${This.getWidgetTypeDescription(widgetType)}
-            </div>
-            <h2>General Information</h2>
-            <div class="info">
-              <div>
-                <b>Categories:</b> ${This.getWidgetTypeCategoriesAsString(widgetType)}
-              </div>
-              <div>
-                <b>Widget type name:</b> ${widgetType.name}
-              </div>
-            </div>
-            <h2>Links</h2>
-            <div>
-              <a href="${baseURL}widgetType/${widgetType.name}">JSON definition</a>
-            </div>
-          <#else>
-            <h1>Index</h1>
-            <#list widgetTypes as widgetType>
-              <div class="index_item">
-                <a href="${baseURL}?widgetType=${widgetType.name}">${This.getWidgetTypeLabel(widgetType)}</a>
-              </div>
-            </#list>
-          </#if>
-        </div>
-      </td>
-    </tr>
-  </table>
+  <h1>Nuxeo Layout Documentation</h1>
+
+    <h2> <A href="${baseURL}layouts"> View Layouts definitions (${nbLayouts}) </A></h2>
+    <h2> <A href="${baseURL}widgets"> View Widgets types definitions (${nbWidgets}) </h2>
 
 </body>
 

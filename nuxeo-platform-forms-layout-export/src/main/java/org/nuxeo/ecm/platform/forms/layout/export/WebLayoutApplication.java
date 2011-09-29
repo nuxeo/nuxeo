@@ -34,7 +34,9 @@ public class WebLayoutApplication extends Application {
     @Override
     public Set<Class<?>> getClasses() {
         Set<Class<?>> result = new HashSet<Class<?>>();
-        result.add(WebLayoutResource.class);
+        result.add(RootResource.class);
+//        result.add(WidgetTypeResource.class);
+//        result.add(WebLayoutResource.class);
         return result;
     }
 
