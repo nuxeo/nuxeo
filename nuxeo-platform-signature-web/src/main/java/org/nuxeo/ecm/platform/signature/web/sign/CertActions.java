@@ -50,9 +50,9 @@ import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
  * Certificate management actions exposed as a Seam component. Used for
  * launching certificate generation, storage and retrieving operations from low
  * level services. Allows verifying if a user certificate is already present.
- * 
+ *
  * @author <a href="mailto:ws@nuxeo.com">Wojciech Sulejman</a>
- * 
+ *
  */
 @Name("certActions")
 @Scope(ScopeType.CONVERSATION)
@@ -105,12 +105,12 @@ public class CertActions implements Serializable {
 
     protected DocumentModel certificate;
 
-    private static final String ROOT_CERTIFICATE_FILE_NAME = "ROOT_CA_.crt";
+    private static final String LOCAL_CA_CERTIFICATE_FILE_NAME = "LOCAL_CA_.crt";
 
     /**
      * Retrieves a user certificate and returns a certificate's document model
      * object
-     * 
+     *
      * @param user
      * @return
      * @throws ClientException
@@ -123,7 +123,7 @@ public class CertActions implements Serializable {
 
     /**
      * Checks if a specified user has a certificate
-     * 
+     *
      * @param user
      * @return
      * @throws ClientException
@@ -135,7 +135,7 @@ public class CertActions implements Serializable {
 
     /**
      * Checks if a specified user has a certificate
-     * 
+     *
      * @param userID
      * @return
      * @throws ClientException
@@ -146,7 +146,7 @@ public class CertActions implements Serializable {
 
     /**
      * Checks if a specified user has a certificate
-     * 
+     *
      * @return
      * @throws ClientException
      */
@@ -156,7 +156,7 @@ public class CertActions implements Serializable {
 
     /**
      * Indicates whether a user has the right to generate a certificate.
-     * 
+     *
      * @param user
      * @return
      * @throws ClientException
@@ -172,7 +172,7 @@ public class CertActions implements Serializable {
     /**
      * Launches certificate generation. Requires valid passwords for certificate
      * encryption.
-     * 
+     *
      * @param user
      * @param firstPassword
      * @param secondPassword
@@ -221,7 +221,7 @@ public class CertActions implements Serializable {
      * <p>
      * The validations are performed in the following sequence cheapest
      * validations first, then the ones requiring more system resources.
-     * 
+     *
      * @param firstPassword
      * @param secondPassword
      */
@@ -263,7 +263,7 @@ public class CertActions implements Serializable {
          * exception is thrown, as those passwords should not be the same to
          * increase security and decouple one from another to allow for reuse
          */
-        if (PasswordHelper.verifyPassword(firstPassword, hashedUserPassword)) {
+        if (hashedUserPassword!=null && PasswordHelper.verifyPassword(firstPassword, hashedUserPassword)) {
             FacesMessage message = new FacesMessage(
                     FacesMessage.SEVERITY_ERROR,
                     resourcesAccessor.getMessages().get(
@@ -276,7 +276,7 @@ public class CertActions implements Serializable {
      * Validates user identity fields required for certificate generation
      * NXP-6485
      * <p>
-     * 
+     *
      */
     public void validateRequiredUserFields() throws ClientException {
 
@@ -317,7 +317,7 @@ public class CertActions implements Serializable {
             HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
             response.setContentType("application/octet-stream");
             response.addHeader("Content-Disposition", "attachment;filename="
-                    + ROOT_CERTIFICATE_FILE_NAME);
+                    + LOCAL_CA_CERTIFICATE_FILE_NAME);
             response.setContentLength(rootCertificateData.length);
             OutputStream writer = response.getOutputStream();
             writer.write(rootCertificateData);

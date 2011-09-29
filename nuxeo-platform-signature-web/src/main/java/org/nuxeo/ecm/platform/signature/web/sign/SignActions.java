@@ -287,10 +287,10 @@ public class SignActions implements Serializable {
                     throw new SignException(e);
                 }
                 if (pdfCertificates.size() > 0) {
-                    isSigned = true;
                     if (checkCurrentUserOnly) {
                         return containsCurrentPrincipal(pdfCertificates);
                     }
+                    isSigned = true;
                 }
             }
         }
