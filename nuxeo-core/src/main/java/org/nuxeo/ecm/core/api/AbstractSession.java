@@ -1889,6 +1889,11 @@ public abstract class AbstractSession implements CoreSession,
 
             // post-save event
             docModel = readModel(doc, null);
+            if (!VersioningOption.NONE.equals(versioningOption)) {
+                notifyCheckedInVersion(docModel, null, options,
+                        checkinComment);
+            }
+
             notifyEvent(DocumentEventTypes.DOCUMENT_UPDATED, docModel, options,
                     null, null, true, false);
 
@@ -2213,14 +2218,10 @@ public abstract class AbstractSession implements CoreSession,
                     options, null, null, true, false);
 
             docModel = readModel(doc, null);
-            String label = getVersioningService().getVersionLabel(docModel);
-            options.put("versionLabel", label);
-            options.put("checkInComment", checkinComment);
-            String comment = checkinComment == null ? label : label + ' '
-                    + checkinComment;
-            options.put("comment", comment); // compat, used in audit
-            notifyEvent(DocumentEventTypes.DOCUMENT_CHECKEDIN, docModel,
-                    options, null, null, true, false);
+            DocumentRef checkedInVersionRef = versionModel.getRef();
+            notifyCheckedInVersion(docModel, checkedInVersionRef, options,
+                    checkinComment);
+
             writeModel(doc, docModel);
 
             return versionModel.getRef();
@@ -2229,6 +2230,38 @@ public abstract class AbstractSession implements CoreSession,
                     e);
         }
     }
+
+    /**
+     * Send a core event for the creation of a new check in version. The source
+     * document is the live document model used as the source for the checkin,
+     * not the archived version it-self.
+     *
+     * @param docModel work document that has been checked-in as a version
+     * @param checkedInVersionRef document ref of the new checked-in version
+     * @param options initial option map, or null
+     * @param checkinComment
+     * @throws ClientException
+     */
+    protected void notifyCheckedInVersion(DocumentModel docModel,
+            DocumentRef checkedInVersionRef, Map<String, Serializable> options,
+            String checkinComment) throws ClientException {
+        String label = getVersioningService().getVersionLabel(docModel);
+        Map<String, Serializable> props = new HashMap<String, Serializable>();
+        if (options != null) {
+            props.putAll(options);
+        }
+        props.put("versionLabel", label);
+        props.put("checkInComment", checkinComment);
+        if (checkedInVersionRef != null) {
+            props.put("checkedInVersionRef", checkedInVersionRef);
+        }
+        String comment = checkinComment == null ? label : label + ' '
+                + checkinComment;
+        props.put("comment", comment); // compat, used in audit
+        notifyEvent(DocumentEventTypes.DOCUMENT_CHECKEDIN, docModel, props,
+                null, null, true, false);
+    }
+
 
     @Override
     public void checkOut(DocumentRef docRef) throws ClientException {
