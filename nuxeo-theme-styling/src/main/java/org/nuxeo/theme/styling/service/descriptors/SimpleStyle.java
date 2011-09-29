@@ -23,7 +23,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @since 5.4.3
  */
 @XObject("style")
-public class Style {
+public class SimpleStyle {
 
     @XNode("@name")
     String name;
@@ -31,12 +31,25 @@ public class Style {
     @XNode("path")
     String path;
 
+    /**
+     * Resolved source content
+     */
+    String content;
+
     public String getName() {
         return name;
     }
 
     public String getPath() {
         return path;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
     }
 
 }

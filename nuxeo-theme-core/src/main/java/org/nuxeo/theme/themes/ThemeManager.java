@@ -43,6 +43,9 @@ import org.codehaus.plexus.util.dag.CycleDetectedException;
 import org.codehaus.plexus.util.dag.DAG;
 import org.codehaus.plexus.util.dag.TopologicalSorter;
 import org.nuxeo.common.Environment;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.event.Event;
+import org.nuxeo.runtime.services.event.EventService;
 import org.nuxeo.theme.ApplicationType;
 import org.nuxeo.theme.CustomThemeNameFilter;
 import org.nuxeo.theme.Manager;
@@ -88,6 +91,10 @@ import org.nuxeo.theme.uids.UidManager;
 import org.nuxeo.theme.views.ViewType;
 
 public final class ThemeManager implements Registrable {
+
+    public static final String THEME_TOPIC = "org.nuxeo.theme";
+
+    public static final String THEME_REGISTERED_EVENT_ID = "themeRegistered";
 
     private static final Log log = LogFactory.getLog(ThemeManager.class);
 
@@ -1049,6 +1056,11 @@ public final class ThemeManager implements Registrable {
             pages.put(pagePath, page);
         }
 
+        // hook to notify potential listeners that the theme was registered
+        EventService eventService = Framework.getLocalService(EventService.class);
+        eventService.sendEvent(new Event(THEME_TOPIC,
+                THEME_REGISTERED_EVENT_ID, this, themeName));
+
         themeModified(themeName);
         stylesModified(themeName);
     }
@@ -1497,7 +1509,7 @@ public final class ThemeManager implements Registrable {
     /**
      * Returns all the ordered resource names and their dependencies, given a
      * list of resources names.
-     * 
+     *
      * @since 5.4.3
      * @param resourceNames
      */

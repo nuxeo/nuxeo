@@ -22,6 +22,7 @@ import java.util.List;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.theme.services.ThemeService;
 
 /**
  * Descriptor to associate resources to a theme page
@@ -48,6 +49,12 @@ public class ThemePage {
 
     @XNodeList(value = "flavours/flavour", type = ArrayList.class, componentType = String.class)
     List<String> flavours;
+
+    /**
+     * boolean handling the descriptor status: has it been already loaded to
+     * the {@link ThemeService}?
+     */
+    boolean loaded = false;
 
     public String getName() {
         return name;
@@ -98,6 +105,14 @@ public class ThemePage {
 
     public void setFlavours(List<String> flavours) {
         this.flavours = flavours;
+    }
+
+    public boolean isLoaded() {
+        return loaded;
+    }
+
+    public void setLoaded(boolean loaded) {
+        this.loaded = loaded;
     }
 
 }

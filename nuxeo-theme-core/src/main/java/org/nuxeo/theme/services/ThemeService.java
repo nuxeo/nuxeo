@@ -398,8 +398,6 @@ public class ThemeService extends DefaultComponent implements Reloadable {
 
             // register the theme descriptor even if the theme fails to load
             typeRegistry.register(themeDescriptor);
-            log.error(String.format("register theme descriptor '%s', src='%s'",
-                    themeDescriptor.getName(), themeDescriptor.getSrc()));
         }
     }
 
