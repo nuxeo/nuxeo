@@ -25,6 +25,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.RuntimeContext;
@@ -36,7 +37,6 @@ import org.nuxeo.theme.formats.FormatFactory;
 import org.nuxeo.theme.presets.PaletteParser;
 import org.nuxeo.theme.presets.PaletteType;
 import org.nuxeo.theme.presets.PresetType;
-import org.nuxeo.theme.resources.ResourceManager;
 import org.nuxeo.theme.services.ThemeService;
 import org.nuxeo.theme.styling.service.descriptors.Flavour;
 import org.nuxeo.theme.styling.service.descriptors.FlavourPresets;
@@ -52,7 +52,7 @@ import org.nuxeo.theme.types.TypeRegistry;
  * Registers corresponding contributions to the {@link ThemeService} so that
  * styling of the page is handled as if styling was provided by the theme
  * definition. Also handles related flavours as theme collections.
- * 
+ *
  * @since 5.4.3
  */
 public class ThemeStylingService extends DefaultComponent {
@@ -103,6 +103,7 @@ public class ThemeStylingService extends DefaultComponent {
             } else {
                 themePageResources.put(themePage, item);
             }
+            postRegisterThemePageResources(contributor.getContext(), item);
         } else if (contribution instanceof Flavour) {
             Flavour flavour = (Flavour) contribution;
             // TODO: merge of presets
@@ -112,7 +113,8 @@ public class ThemeStylingService extends DefaultComponent {
         } else if (contribution instanceof Style) {
             Style style = (Style) contribution;
             themePageStyles.put(style.getName(), style);
-            postRegisterThemePageResourcesForStyle(style);
+            postRegisterThemePageResourcesForStyle(contributor.getContext(),
+                    style);
         } else {
             log.error("Unknown contribution to the theme service, extension"
                     + " point 'themePageResources': " + contribution);
@@ -127,19 +129,20 @@ public class ThemeStylingService extends DefaultComponent {
     }
 
     /**
-     * Reload theme page resources conf according to new style
-     * 
+     * Reload theme page resources conf according to new flavour
+     *
      * @since 5.4.3
      * @param flavour
      */
     // TODO: see if useful
-    protected void postRegisterThemePageResourcesForStyle(Style style) {
+    protected void postRegisterThemePageResourcesForStyle(
+            RuntimeContext extensionContext, Style style) throws Exception {
         if (themePageResources != null) {
             String styleName = style.getName();
             for (ThemePage res : themePageResources.values()) {
                 List<String> styles = res.getStyles();
                 if (styles != null && styles.contains(styleName)) {
-                    postRegisterThemePageResources(res);
+                    postRegisterThemePageResources(extensionContext, res);
                 }
             }
         }
@@ -147,18 +150,19 @@ public class ThemeStylingService extends DefaultComponent {
 
     /**
      * Reload theme page resources conf according to new flavour
-     * 
+     *
      * @since 5.4.3
      * @param flavour
      */
     // TODO: see if useful
-    protected void postRegisterThemePageResourcesForFlavour(Flavour flavour) {
+    protected void postRegisterThemePageResourcesForFlavour(
+            RuntimeContext extensionContext, Flavour flavour) throws Exception {
         if (themePageResources != null) {
             String flavourName = flavour.getName();
             for (ThemePage res : themePageResources.values()) {
                 List<String> flavours = res.getFlavours();
                 if (flavours != null && flavours.contains(flavourName)) {
-                    postRegisterThemePageResources(res);
+                    postRegisterThemePageResources(extensionContext, res);
                 }
             }
         }
@@ -167,7 +171,6 @@ public class ThemeStylingService extends DefaultComponent {
     protected void registerPaletteToThemeServiceFor(
             RuntimeContext extensionContext, Flavour flavour) {
         // register all presets to the standard registries
-        // TODO: finish
         List<FlavourPresets> presets = flavour.getPresets();
         if (presets != null) {
             for (FlavourPresets myPreset : presets) {
@@ -200,41 +203,42 @@ public class ThemeStylingService extends DefaultComponent {
         }
     }
 
-    protected void postRegisterThemePageResources(ThemePage page) {
+    protected void postRegisterThemePageResources(
+            RuntimeContext extensionContext, ThemePage page) throws Exception {
         ThemeManager themeManager = Manager.getThemeManager();
         PageElement pageElement = themeManager.getPageByPath(page.getName());
         if (pageElement != null) {
             List<String> styles = page.getStyles();
             // link styles to the theme page
             if (styles != null) {
+                String parentStyle = null;
                 for (String style : page.getStyles()) {
                     org.nuxeo.theme.formats.styles.Style pageStyle = (org.nuxeo.theme.formats.styles.Style) FormatFactory.create("style");
                     ElementFormatter.setFormat(pageElement, pageStyle);
-                    themeManager.makeElementUseNamedStyle(pageElement, style,
-                            page.getThemeName());
-                }
-            }
-            List<String> flavours = page.getFlavours();
-            // register flavours as collections
-            if (flavours != null) {
-                String themeName = page.getThemeName();
-                for (String flavour : flavours) {
-                    org.nuxeo.theme.formats.styles.Style style = (org.nuxeo.theme.formats.styles.Style) themeManager.getNamedObject(
-                            themeName, "style", styleName);
-
-                    if (style == null) {
-                        style = themeManager.createStyle();
-                        style.setName(styleName);
-                        themeManager.setNamedObject(themeName, "style", style);
+                    pageStyle.setName(style);
+                    if (themePageStyles.containsKey(style)) {
+                        Style styleDesc = themePageStyles.get(style);
+                        String src = styleDesc.getPath();
+                        URL url = null;
+                        try {
+                            url = new URL(src);
+                        } catch (MalformedURLException e) {
+                            url = extensionContext.getLocalResource(src);
+                            if (url == null) {
+                                url = extensionContext.getResource(src);
+                            }
+                        }
+                        String cssSource = FileUtils.readFile(FileUtils.urlToFile(url));
+                        cssSource = cssSource.replaceAll("__FLAVOUR__",
+                                ThemeManager.getCollectionCssMarker());
+                        Utils.loadCss(pageStyle, cssSource, "*");
+                    } else {
+                        log.warn("Style not available (yet?): " + style);
                     }
-
-                    String resourceId = styleInfo.getResource();
-                    String cssSource = "" // ;
-
-                    cssSource = cssSource.replaceAll("__FLAVOUR__", ThemeManager.getCollectionCssMarker());
-
-                    style.setCollection(flavour);
-                    Utils.loadCss(style, cssSource, "*");
+                    // handle inheritance: style here should be parent style
+                    themeManager.makeElementUseNamedStyle(pageElement,
+                            parentStyle, page.getThemeName());
+                    parentStyle = style;
                 }
             }
         } else {
