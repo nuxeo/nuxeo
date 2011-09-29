@@ -16,6 +16,7 @@
  */
 package org.nuxeo.runtime.deployment;
 
+import static org.nuxeo.common.Environment.JBOSS_HOST;
 import static org.nuxeo.common.Environment.NUXEO_CONFIG_DIR;
 import static org.nuxeo.common.Environment.NUXEO_DATA_DIR;
 import static org.nuxeo.common.Environment.NUXEO_LOG_DIR;
@@ -155,7 +156,10 @@ public class NuxeoStarter implements ServletContextListener {
             env.put(NUXEO_RUNTIME_HOME, home.getAbsolutePath());
         }
         // host
-        if (servletContext.getClass().getName().startsWith(
+        if (getClass().getClassLoader().getClass().getName().startsWith(
+                "org.jboss.classloader")) {
+            env.put(FrameworkLoader.HOST_NAME, JBOSS_HOST);
+        } else if (servletContext.getClass().getName().startsWith(
                 "org.apache.catalina")) {
             env.put(FrameworkLoader.HOST_NAME, TOMCAT_HOST);
         }
