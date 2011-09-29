@@ -190,6 +190,9 @@
       <rule grant="true">
         <group>routeManagers</group>
       </rule>
+      <rule grant="true">
+        <permission>ValidateRoute</permission>
+      </rule>      
     </filter>
 
 

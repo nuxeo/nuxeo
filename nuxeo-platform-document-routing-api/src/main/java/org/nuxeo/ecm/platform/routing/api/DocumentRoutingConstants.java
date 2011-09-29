@@ -18,7 +18,7 @@ package org.nuxeo.ecm.platform.routing.api;
 
 /**
  * @author arussel
- * 
+ *
  */
 public interface DocumentRoutingConstants {
 
@@ -26,6 +26,8 @@ public interface DocumentRoutingConstants {
     String SEARCH_ROUTE_BY_ATTACHED_DOC_QUERY = "SEARCH_ROUTE_BY_ATTACHED_DOC";
 
     String ROUTE_MANAGERS_GROUP_NAME = "routeManagers";
+
+    String VALIDATE_ROUTE_PERMISSION_NAME = "ValidateRoute";
 
     // document constant
     String DOCUMENT_ROUTE_INSTANCES_ROOT_DOCUMENT_TYPE = "DocumentRouteInstancesRoot";

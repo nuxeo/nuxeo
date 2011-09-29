@@ -34,10 +34,10 @@ import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleConstants;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
+import org.nuxeo.ecm.platform.routing.api.DocumentRouteTableElement;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingPersister;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
-import org.nuxeo.ecm.platform.routing.api.DocumentRouteTableElement;
 import org.nuxeo.ecm.platform.routing.api.LockableDocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.RouteFolderElement;
 import org.nuxeo.ecm.platform.routing.api.RouteTable;
@@ -85,6 +85,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
         }
     }
 
+    @Override
     public void registerContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor)
             throws Exception {
@@ -260,6 +261,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
         return null;
     }
 
+    @Override
     public List<DocumentRoute> getDocumentRoutesForAttachedDocument(
             CoreSession session, String attachedDocId) {
         List<DocumentRouteElement.ElementLifeCycleState> states = new ArrayList<DocumentRouteElement.ElementLifeCycleState>();
@@ -269,6 +271,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
                 states);
     }
 
+    @Override
     public List<DocumentRoute> getDocumentRoutesForAttachedDocument(
             CoreSession session, String attachedDocId,
             List<DocumentRouteElement.ElementLifeCycleState> states) {
@@ -299,12 +302,6 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public boolean canUserCreateRoute(NuxeoPrincipal currentUser) {
-        return currentUser.getGroups().contains(
-                DocumentRoutingConstants.ROUTE_MANAGERS_GROUP_NAME);
-    }
-
-    @Override
     public boolean canUserModifyRoute(NuxeoPrincipal currentUser) {
         return currentUser.getGroups().contains(
                 DocumentRoutingConstants.ROUTE_MANAGERS_GROUP_NAME);
@@ -314,6 +311,20 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
     public boolean canUserValidateRoute(NuxeoPrincipal currentUser) {
         return currentUser.getGroups().contains(
                 DocumentRoutingConstants.ROUTE_MANAGERS_GROUP_NAME);
+    }
+
+    @Override
+    public boolean canUserModifyRoute(DocumentModel documentRoute,
+            CoreSession coreSession) throws ClientException {
+        return coreSession.hasPermission(documentRoute.getRef(),
+                DocumentRoutingConstants.VALIDATE_ROUTE_PERMISSION_NAME);
+    }
+
+    @Override
+    public boolean canUserValidateRoute(DocumentModel documentRoute,
+            CoreSession coreSession) throws ClientException {
+        return coreSession.hasPermission(documentRoute.getRef(),
+                DocumentRoutingConstants.VALIDATE_ROUTE_PERMISSION_NAME);
     }
 
     @Override

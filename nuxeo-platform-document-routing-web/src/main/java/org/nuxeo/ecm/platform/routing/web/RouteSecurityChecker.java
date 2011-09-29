@@ -21,6 +21,9 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 import org.nuxeo.runtime.api.Framework;
@@ -33,19 +36,33 @@ import org.nuxeo.runtime.api.Framework;
 @Name("routeSecurityChecker")
 @Install(precedence = Install.FRAMEWORK)
 public class RouteSecurityChecker {
+
     @In(required = true, create = false)
     protected NuxeoPrincipal currentUser;
 
-    public boolean canCreateRoute() {
-        return getDocumentRoutingService().canUserCreateRoute(currentUser);
-    }
+    @In(required = true, create = false)
+    protected CoreSession documentManager;
 
+    @Deprecated
     public boolean canModifyRoute() {
         return getDocumentRoutingService().canUserModifyRoute(currentUser);
     }
 
+    @Deprecated
+    /**
+     * @deprecated use
+     *             {@link #canValidateRoute(DocumentModel)}
+     *             instead.
+     */
     public boolean canValidateRoute() {
         return getDocumentRoutingService().canUserValidateRoute(currentUser);
+    }
+
+    public boolean canValidateRoute(DocumentModel routeDocument)
+            throws ClientException {
+        return getDocumentRoutingService().canUserValidateRoute(routeDocument,
+                documentManager)
+                || canValidateRoute();
     }
 
     public DocumentRoutingService getDocumentRoutingService() {

@@ -20,6 +20,7 @@ import java.util.List;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -131,7 +132,7 @@ public interface DocumentRoutingService {
 
     /**
      * Unlock the given {@link DocumentRoute} model under unrestricted session.
-     * 
+     *
      * @param routeModel
      * @param userSession
      * @return The unlocked route.
@@ -175,19 +176,45 @@ public interface DocumentRoutingService {
             CoreSession session, String attachedDocId);
 
     /**
-     * if the user can create a route.
+     * if the user can modify a route.
+     *
+     * @deprecated use
+     *             {@link #canUserModifyRoute(DocumentModel, CoreSession)}
+     *             instead.
      */
-    boolean canUserCreateRoute(NuxeoPrincipal currentUser);
-
-    /**
-     * if the user can create a route.
-     */
+    @Deprecated
     boolean canUserModifyRoute(NuxeoPrincipal currentUser);
 
     /**
      * if the user can validate a route.
+     *
+     * @deprecated use
+     *             {@link #canUserValidateRoute(DocumentModel, CoreSession)}
+     *             instead.
      */
+    @Deprecated
     boolean canUserValidateRoute(NuxeoPrincipal currentUser);
+
+    /**
+     * if the user can modify a route.
+     *
+     * @param documentRoute
+     * @param coreSession
+     * @throws ClientException
+     */
+    boolean canUserModifyRoute(DocumentModel documentRoute,
+            CoreSession coreSession) throws ClientException;
+
+    /**
+     * if the user can validate a route.
+     *
+     * @param documentRoute
+     * @param coreSession
+     * @throws ClientException
+     *
+     */
+    boolean canUserValidateRoute(DocumentModel documentRoute,
+            CoreSession coreSession) throws ClientException;
 
     /**
      * Add a route element in another route element.
