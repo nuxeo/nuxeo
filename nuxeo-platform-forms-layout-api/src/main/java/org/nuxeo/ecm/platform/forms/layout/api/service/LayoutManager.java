@@ -66,6 +66,14 @@ public interface LayoutManager extends Serializable {
     LayoutDefinition getLayoutDefinition(String layoutName);
 
     /**
+     * Returns the names of all the regostred Layouts
+     *
+     * @return
+     * @since 5.4.3
+     */
+    List<String> getLayoutDefinitionNames();
+
+    /**
      * Returns the registered widget definition for this name.
      * <p>
      * If the no definition is found with this name, return null.
