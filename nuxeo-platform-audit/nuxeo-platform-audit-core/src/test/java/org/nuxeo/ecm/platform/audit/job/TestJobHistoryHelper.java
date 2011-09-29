@@ -96,7 +96,8 @@ public class TestJobHistoryHelper extends NXRuntimeTestCase {
         exportDate = helper.getLastSuccessfulRun();
         long loggedT1 = exportDate.getTime();
 
-        assertTrue(loggedT1-loggedT0>= 3000);
+        long elapsed = loggedT1 - loggedT0;
+        assertTrue(elapsed + " should be >= 3000", elapsed >= 3000);
     }
 
 }
