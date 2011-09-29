@@ -21,13 +21,10 @@ package org.nuxeo.ecm.webapp.filemanager;
 
 import java.io.InputStream;
 
-import javax.ejb.Remote;
-
 import org.jboss.seam.annotations.remoting.WebRemote;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.ui.web.api.SimpleFileManager;
 
-@Remote
 public interface FileManageActions extends SimpleFileManager {
 
     String display();

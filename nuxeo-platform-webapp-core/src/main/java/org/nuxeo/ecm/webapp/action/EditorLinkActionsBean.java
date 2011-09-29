@@ -25,12 +25,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.ejb.Remove;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
@@ -105,12 +102,6 @@ public class EditorLinkActionsBean extends InputController implements
 
     public void setSearchKeywords(String searchKeywords) {
         this.searchKeywords = searchKeywords;
-    }
-
-    @Destroy
-    @Remove
-    public void destroy() {
-        log.debug("Removing Seam action listener...");
     }
 
 }

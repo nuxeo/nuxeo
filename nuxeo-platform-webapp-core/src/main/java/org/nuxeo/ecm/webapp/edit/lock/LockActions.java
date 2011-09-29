@@ -165,6 +165,4 @@ public interface LockActions extends Serializable {
 
     void resetLockState();
 
-    void destroy();
-
 }

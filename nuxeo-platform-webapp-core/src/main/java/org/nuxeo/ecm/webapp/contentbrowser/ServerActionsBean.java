@@ -25,11 +25,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import javax.annotation.security.PermitAll;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
@@ -64,17 +61,6 @@ public class ServerActionsBean implements ServerActions, Serializable {
     private transient RepositoryManager repositoryManager;
 
     private transient Collection<Repository> availableRepositories;
-
-    @Destroy
-    @PermitAll
-    public void destroy() {
-    }
-
-    public void saveState() {
-    }
-
-    public void readState() {
-    }
 
     private RepositoryManager getRepositoryManager() throws Exception {
         if (repositoryManager == null) {

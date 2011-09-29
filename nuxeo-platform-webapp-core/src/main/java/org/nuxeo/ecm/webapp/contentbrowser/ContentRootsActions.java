@@ -21,14 +21,9 @@ package org.nuxeo.ecm.webapp.contentbrowser;
 
 import java.util.List;
 
-import javax.annotation.security.PermitAll;
-import javax.ejb.Remove;
-
-import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.remoting.WebRemote;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.webapp.base.StatefulBaseLifeCycle;
 import org.nuxeo.ecm.webapp.table.model.DocModelTableModel;
 
 /**
@@ -37,14 +32,7 @@ import org.nuxeo.ecm.webapp.table.model.DocModelTableModel;
  * @author <a href="mailto:npaslaru@nuxeo.com">Narcis Paslaru</a>
  *
  */
-public interface ContentRootsActions extends StatefulBaseLifeCycle {
-
-    void initialize();
-
-    @Destroy
-    @Remove
-    @PermitAll
-    void destroy();
+public interface ContentRootsActions {
 
     String display();
 

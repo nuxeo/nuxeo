@@ -29,19 +29,14 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import javax.ejb.PostActivate;
-import javax.ejb.PrePassivate;
-import javax.ejb.Remove;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.annotations.Create;
-import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
-import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.datamodel.DataModel;
+import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.contexts.Context;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -119,13 +114,6 @@ public class ContentRootsActionsBean extends InputController implements
     public void initialize() {
         sessionContext.set("useTemplateFlag", true);
         logo = null;
-    }
-
-
-    @Destroy
-    @Remove
-    public void destroy() {
-        log.debug("Removing Seam action listener...");
     }
 
     public String display() {
@@ -321,12 +309,10 @@ public class ContentRootsActionsBean extends InputController implements
         return "view_workspaces";
     }
 
-    @PrePassivate
     public void saveState() {
         log.info("PrePassivate");
     }
 
-    @PostActivate
     public void readState() {
         log.info("PostActivate");
     }

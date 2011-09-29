@@ -19,25 +19,12 @@
 
 package org.nuxeo.ecm.webapp.email;
 
-import javax.annotation.security.PermitAll;
-import javax.ejb.Local;
-import javax.ejb.Remove;
-
-import org.nuxeo.ecm.webapp.base.StatefulBaseLifeCycle;
-
 /**
  * Provides email related operations.
  *
  * @author <a href="mailto:npaslaru@nuxeo.com">Narcis Paslaru</a>
  */
-@Local
-public interface EmailSenderActions extends StatefulBaseLifeCycle {
-
-    @Remove
-    @PermitAll
-    void destroy();
-
-    void initialize();
+public interface EmailSenderActions {
 
     void send();
 

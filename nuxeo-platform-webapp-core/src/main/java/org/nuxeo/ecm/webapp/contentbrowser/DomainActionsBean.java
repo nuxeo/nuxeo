@@ -28,14 +28,8 @@ import static org.nuxeo.ecm.webapp.helpers.EventNames.NEW_DOCUMENT_CREATED;
 import java.io.Serializable;
 import java.util.List;
 
-import javax.annotation.security.PermitAll;
-import javax.ejb.PostActivate;
-import javax.ejb.PrePassivate;
-import javax.ejb.Remove;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
@@ -145,28 +139,6 @@ public class DomainActionsBean extends InputController implements DomainActions,
             documentsListsManager.removeFromWorkingList(DOMAINS_WORKING_LIST,
                     data);
         }
-    }
-
-    //@Create
-    public void initialize() {
-        log.debug("Initializing...");
-    }
-
-    @Destroy
-    @Remove
-    @PermitAll
-    public void destroy() {
-        log.debug("Removing Seam action listener...");
-    }
-
-    @PrePassivate
-    public void saveState() {
-        log.debug("PrePassivate");
-    }
-
-    @PostActivate
-    public void readState() {
-        log.debug("PostActivate");
     }
 
 }

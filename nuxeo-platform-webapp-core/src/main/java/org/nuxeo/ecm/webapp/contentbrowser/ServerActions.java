@@ -21,14 +21,9 @@ package org.nuxeo.ecm.webapp.contentbrowser;
 
 import java.util.List;
 
-import javax.annotation.security.PermitAll;
-import javax.ejb.Remove;
-
-import org.jboss.seam.annotations.Destroy;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
-import org.nuxeo.ecm.webapp.base.StatefulBaseLifeCycle;
 
 /**
  * Defines actions that can be invoked from pages or other actions - relative to
@@ -36,7 +31,7 @@ import org.nuxeo.ecm.webapp.base.StatefulBaseLifeCycle;
  *
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
  */
-public interface ServerActions extends StatefulBaseLifeCycle {
+public interface ServerActions {
 
     /**
      * Returns the list of available {@link RepositoryLocation}s the user can
@@ -59,13 +54,5 @@ public interface ServerActions extends StatefulBaseLifeCycle {
      * @throws ClientException
      */
     //RepositoryLocation selectFirstLocation() throws ClientException;
-
-    /**
-     * Removes the reference.
-     */
-    @Destroy
-    @Remove
-    @PermitAll
-    void destroy();
 
 }

@@ -22,7 +22,6 @@ package org.nuxeo.ecm.webapp.action;
 import java.io.IOException;
 import java.io.InputStream;
 
-import javax.ejb.Remove;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletResponse;
 
@@ -79,11 +78,6 @@ public class ConversionActionBean implements ConversionAction {
 
     protected static final ThreadSafeCacheHolder<Boolean> exportableToPDFCache = new ThreadSafeCacheHolder<Boolean>(
             20);
-
-    @Remove
-    public void destroy() {
-        log.debug("Removing Seam action listener...");
-    }
 
     public String display() {
         return "view_file";

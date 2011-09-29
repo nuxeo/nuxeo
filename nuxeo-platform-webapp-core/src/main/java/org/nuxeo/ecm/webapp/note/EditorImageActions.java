@@ -71,6 +71,4 @@ public interface EditorImageActions {
 
     String getImageProperty();
 
-    void destroy();
-
 }
