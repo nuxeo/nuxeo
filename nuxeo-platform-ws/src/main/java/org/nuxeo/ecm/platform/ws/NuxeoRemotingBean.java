@@ -26,8 +26,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.ejb.Local;
-import javax.ejb.Remote;
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebService;
@@ -70,12 +68,10 @@ import org.nuxeo.runtime.api.Framework;
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
  */
-@Local(NuxeoRemotingLocal.class)
-@Remote(NuxeoRemoting.class)
 @WebService(name = "NuxeoRemotingInterface", serviceName = "NuxeoRemotingService")
 @SOAPBinding(style = Style.DOCUMENT)
 public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
-        NuxeoRemotingLocal {
+        NuxeoRemoting {
 
     private static final long serialVersionUID = 359922583442116202L;
 
@@ -259,7 +255,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
         }
         return props.toArray(new DocumentProperty[props.size()]);
     }
-    
+
 
     public DocumentDescriptor getCurrentVersion(
             @WebParam(name = "sessionId") String sid,
