@@ -11,6 +11,7 @@
  */
 package org.nuxeo.ecm.automation.core.operations.document;
 
+import org.nuxeo.ecm.automation.ConflictOperationException;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -39,8 +40,20 @@ public class UpdateDocument {
     @Param(name = "save", required = false, values = "true")
     protected boolean save = true;
 
+    @Param(name = "changeToken", required = false)
+    protected String changeToken = null;
+
     @OperationMethod(collector=DocumentModelCollector.class)
     public DocumentModel run(DocumentModel doc) throws Exception {
+
+        if (changeToken!=null) {
+            // Check for dirty update
+           String repoToken = doc.getChangeToken();
+           if (!changeToken.equals(repoToken)) {
+               throw new ConflictOperationException(doc);
+           }
+        }
+
         DocumentHelper.setProperties(session, doc, properties);
         if (save) {
             doc = session.saveDocument(doc);
