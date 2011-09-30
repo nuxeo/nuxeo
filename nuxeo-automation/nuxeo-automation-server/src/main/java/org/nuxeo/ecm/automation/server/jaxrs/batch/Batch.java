@@ -90,6 +90,10 @@ public class Batch {
         return blobs;
     }
 
+    public Blob getBlob(String fileId) {
+        return uploadedBlob.get(fileId);
+    }
+
     public void clear() {
         uploadedBlob.clear();
         FileUtils.deleteTree(new File(baseDir));

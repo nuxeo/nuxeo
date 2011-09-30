@@ -57,7 +57,11 @@ public class CoreProxyFactory extends AbstractBasePublishedDocumentFactory
         } else {
             proxy = coreSession.publishDocument(doc, targetDocModel);
         }
-        coreSession.save();
+        if ((params != null) && ("true".equalsIgnoreCase(params.get("batchSave")))) {
+            // no save
+        } else {
+            coreSession.save();
+        }
         notifyEvent(PublishingEvent.documentPublished, proxy,
                             coreSession);
         return new SimpleCorePublishedDocument(proxy);

@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.nuxeo.ecm.automation.core.util.ComplexTypeJSONDecoder;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.runtime.model.DefaultComponent;
 
@@ -39,6 +40,10 @@ public class BatchManagerComponent extends DefaultComponent implements
     protected Map<String, Batch> batches = new ConcurrentHashMap<String, Batch>();
 
     protected static final String DEFAULT_CONTEXT = "None";
+
+    static {
+        ComplexTypeJSONDecoder.registerBlobDecoder(new JSONBatchBlobDecoder());
+    }
 
     public String initBatch(String batchId, String contextName) {
 
@@ -74,6 +79,15 @@ public class BatchManagerComponent extends DefaultComponent implements
         }
         return batch.getBlobs();
     }
+
+    public Blob getBlob(String batchId, String fileId) {
+        Batch batch = batches.get(batchId);
+        if (batch == null) {
+            return null;
+        }
+        return batch.getBlob(fileId);
+    }
+
 
     public void clean(String batchId) {
         Batch batch = batches.get(batchId);

@@ -57,6 +57,8 @@ public interface BatchManager {
      */
     List<Blob> getBlobs(String batchId);
 
+    Blob getBlob(String batchId, String fileId);
+
     /**
      * Cleanup the temporary storage associated to the batch
      *
@@ -73,5 +75,6 @@ public interface BatchManager {
      * @return the batchId
      */
     String initBatch(String batchId, String contextName);
+
 
 }
