@@ -14,6 +14,7 @@
       <properties mode="any">
         <property name="showListingHeader">true</property>
         <property name="showRowEvenOddClass">true</property>
+        <property name="showRouteLokingInfo">true</property>
       </properties>
       <columns>
         <column>
@@ -64,6 +65,7 @@
       <properties mode="any">
         <property name="showListingHeader">true</property>
         <property name="showRowEvenOddClass">true</property>
+        <property name="showRouteLokingInfo">true</property>
       </properties>
       <columns>
         <column>
