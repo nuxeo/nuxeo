@@ -66,9 +66,8 @@ public interface LayoutManager extends Serializable {
     LayoutDefinition getLayoutDefinition(String layoutName);
 
     /**
-     * Returns the names of all the regostred Layouts
+     * Returns the names of all the registered layout definitions
      *
-     * @return
      * @since 5.4.3
      */
     List<String> getLayoutDefinitionNames();
