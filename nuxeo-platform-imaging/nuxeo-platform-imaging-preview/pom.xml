@@ -25,13 +25,6 @@
       <artifactId>nuxeo-platform-preview</artifactId>
       <version>${nuxeo.features.version}</version>
     </dependency>
-
-    <!-- EJBs -->
-    <dependency>
-      <groupId>javax.ejb</groupId>
-      <artifactId>ejb</artifactId>
-      <scope>provided</scope>
-    </dependency>
   </dependencies>
 
 </project>

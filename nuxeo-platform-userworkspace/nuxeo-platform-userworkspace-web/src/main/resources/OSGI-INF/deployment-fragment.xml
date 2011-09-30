@@ -1,17 +1,8 @@
 <?xml version="1.0"?>
-
 <fragment version="1">
 
   <require>org.nuxeo.ecm.platform.lang</require>
   <require>org.nuxeo.ecm.webapp.core</require>
-
-  <extension target="application#MODULE">
-
-    <module>
-      <ejb>${bundle.fileName}</ejb>
-    </module>
-
-  </extension>
 
   <install>
     <!--  unzip the war template -->

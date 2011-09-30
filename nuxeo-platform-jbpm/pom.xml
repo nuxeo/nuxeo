@@ -21,7 +21,6 @@
   <modules>
     <module>nuxeo-platform-jbpm-api</module>
     <module>nuxeo-platform-jbpm-core</module>
-    <module>nuxeo-platform-jbpm-facade</module>
     <module>nuxeo-platform-jbpm-web</module>
     <module>nuxeo-platform-jbpm-test</module>
     <module>nuxeo-platform-jbpm-automation</module>

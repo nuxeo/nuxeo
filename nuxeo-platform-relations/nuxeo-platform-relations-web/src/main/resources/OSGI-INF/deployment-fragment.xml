@@ -3,12 +3,6 @@
 
   <require>org.nuxeo.ecm.webapp.ui</require>
 
-  <extension target="application#MODULE">
-    <module>
-      <ejb>${bundle.fileName}</ejb>
-    </module>
-  </extension>
-
   <extension target="faces-config#MANAGED-BEAN">
     <managed-bean>
       <managed-bean-name>relationCreationBean</managed-bean-name>

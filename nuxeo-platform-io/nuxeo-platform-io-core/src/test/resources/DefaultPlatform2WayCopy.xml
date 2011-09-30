@@ -7,7 +7,7 @@
     <documentation>The default platform layout</documentation>
 
     <server name="default" host="localhost">
-      <service class="org.nuxeo.ecm.platform.types.TypeManager" jndiName="%TypeManagerBean"/>
+      <service class="org.nuxeo.ecm.platform.types.TypeManager" />
       <repository name="demo" class="org.nuxeo.ecm.core.api.CoreSession" description="Demo Repository"/>
     </server>
 
@@ -52,18 +52,6 @@
 
     <service class="org.nuxeo.ecm.core.api.CoreSession" name="rep2" group="remote2">
       <locator>%DocumentManagerBean</locator>
-    </service>
-
-    <service class="org.nuxeo.ecm.platform.io.api.IOManager" group="remote1">
-      <locator>%IOManagerBean</locator>
-    </service>
-
-    <service class="org.nuxeo.ecm.platform.io.api.IOManager" name="remote" group="remote2">
-      <locator>%IOManagerBean</locator>
-    </service>
-
-    <service class="org.nuxeo.ecm.platform.relations.api.RelationManager" group="remote1">
-      <locator>%RelationManagerBean</locator>
     </service>
 
     <service class="org.nuxeo.ecm.platform.audit.api.Logs" group="remote1">

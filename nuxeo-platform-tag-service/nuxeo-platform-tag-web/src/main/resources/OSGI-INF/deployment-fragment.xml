@@ -2,12 +2,6 @@
 <fragment version="1">
   <require>org.nuxeo.ecm.platform.lang</require>
 
-  <extension target="application#MODULE">
-    <module>
-      <ejb>${bundle.fileName}</ejb>
-    </module>
-  </extension>
-
   <extension target="faces-config#NAVIGATION">
     <navigation-case>
       <from-outcome>tag_search_results</from-outcome>

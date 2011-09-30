@@ -39,11 +39,6 @@
     </dependency>
     <!-- persistence -->
     <dependency>
-      <groupId>javax.ejb</groupId>
-      <artifactId>ejb-api</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
       <groupId>javax.persistence</groupId>
       <artifactId>persistence</artifactId>
       <scope>provided</scope>

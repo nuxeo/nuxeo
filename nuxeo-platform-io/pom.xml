@@ -19,7 +19,6 @@
     <module>nuxeo-platform-io-api</module>
     <module>nuxeo-platform-io-core</module>
     <module>nuxeo-platform-io-client</module>
-    <module>nuxeo-platform-io-facade</module>
   </modules>
 
 </project>
