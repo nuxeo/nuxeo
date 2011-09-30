@@ -20,7 +20,6 @@
     <module>nuxeo-platform-directory-core</module>
     <module>nuxeo-platform-directory-sql</module>
     <module>nuxeo-platform-directory-types-contrib</module>
-    <module>nuxeo-platform-directory-facade</module>
     <module>nuxeo-platform-directory-ldap</module>
     <module>nuxeo-platform-directory-multi</module>
   </modules>

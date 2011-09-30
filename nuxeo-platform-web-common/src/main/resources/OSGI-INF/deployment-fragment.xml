@@ -1,12 +1,5 @@
 <?xml version="1.0"?>
-
 <fragment version="1">
-
-  <extension target="application#MODULE">
-    <module>
-      <ejb>${bundle.fileName}</ejb>
-    </module>
-  </extension>
 
   <extension target="components#SEAM_CORE_MANAGER" mode="replace">
     <property name="conversationTimeout">180000</property><!-- 30 min -->

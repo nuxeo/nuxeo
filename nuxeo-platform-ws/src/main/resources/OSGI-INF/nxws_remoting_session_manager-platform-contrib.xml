@@ -19,8 +19,7 @@
 
     <server name="default">
 
-      <service class="org.nuxeo.ecm.platform.api.ws.session.WSRemotingSessionManager"
-          jndiName="%WSRemotingSessionBean"/>
+      <service class="org.nuxeo.ecm.platform.api.ws.session.WSRemotingSessionManager"/>
     </server>
 
   </extension>
