@@ -191,6 +191,12 @@ public class SQLInfo {
         getBinariesColumns = new ArrayList<Column>(1);
 
         initSQL();
+
+        try {
+            initSQLStatements(JDBCMapper.testProps);
+        } catch (IOException e) {
+            throw new StorageException(e);
+        }
     }
 
     public Database getDatabase() {
