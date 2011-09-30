@@ -46,6 +46,9 @@
     <operation
       class="org.nuxeo.ecm.automation.core.operations.services.GetDirectoryEntries" />
 
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.services.UserWorkspace" />
+
   </extension>
 
   <extension point="chains"
