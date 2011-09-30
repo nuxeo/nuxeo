@@ -44,7 +44,7 @@
         </categories>
         <properties>
           <layouts mode="view">
-            <layout name="singleUserSuggestion_widget_type_properties_edit">
+            <layout name="singleUserSuggestion_widget_type_properties_view">
               <rows>
                 <row>
                   <widget>userSuggestionSearchType</widget>
@@ -90,7 +90,7 @@
                 <helpLabels>
                   <label mode="any">
                     Field to use as the first label when displaying the selected
-                    user. Default to 'firstName'.
+                    user. Defaults to 'firstName'.
                   </label>
                 </helpLabels>
                 <fields>
@@ -104,7 +104,7 @@
                 <helpLabels>
                   <label mode="any">
                     Field to use as the second label when displaying the
-                    selected user. Default to 'lastName'.
+                    selected user. Defaults to 'lastName'.
                   </label>
                 </helpLabels>
                 <fields>
@@ -118,7 +118,7 @@
                 <helpLabels>
                   <label mode="any">
                     Field to use as the third label when displaying the
-                    selected user. Default to 'email'.
+                    selected user. Defaults to 'email'. Available since 5.4.3.
                   </label>
                 </helpLabels>
                 <fields>
@@ -129,6 +129,12 @@
                 <labels>
                   <label mode="any">Hide first label</label>
                 </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Boolean indicating if the first label should be hidden.
+                    Defaults to false. 
+                  </label>
+                </helpLabels>
                 <fields>
                   <field>hideFirstLabel</field>
                 </fields>
@@ -137,6 +143,12 @@
                 <labels>
                   <label mode="any">Hide second label</label>
                 </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Boolean indicating if the second label should be hidden.
+                    Defaults to false. 
+                  </label>
+                </helpLabels>
                 <fields>
                   <field>hideSecondLabel</field>
                 </fields>
@@ -145,6 +157,12 @@
                 <labels>
                   <label mode="any">Hide third label</label>
                 </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Boolean indicating if the third label should be hidden.
+                    Defaults to false. Available since 5.4.3.
+                  </label>
+                </helpLabels>
                 <fields>
                   <field>hideThirdLabel</field>
                 </fields>
