@@ -12,7 +12,6 @@ Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Version: 0.0.0.SNAPSHOT
 Bundle-ManifestVersion: 2
-Nuxeo-Component: OSGI-INF/CoreServiceBindings.xml
 Bundle-SymbolicName: org.nuxeo.ecm.core.facade
 Import-Package: javax.annotation.security,
  javax.ejb,
