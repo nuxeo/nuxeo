@@ -1,12 +1,6 @@
 <?xml version="1.0"?>
 <fragment version="1">
 
-  <extension target="application#MODULE">
-    <module>
-      <ejb>${bundle.fileName}</ejb>
-    </module>
-  </extension>
-
   <!-- uncomment that to enable tomcat based auth
     <extension target="web#LOGIN-CONFIG">
     <login-config>
