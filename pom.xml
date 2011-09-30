@@ -61,6 +61,7 @@
     <module>nuxeo-platform-placeful-core</module>
     <module>nuxeo-platform-placeful-facade</module>
     <module>nuxeo-platform-uidgen-core</module>
+    <module>nuxeo-platform-uidgen-facade</module>
     <module>nuxeo-platform-ws</module>
     <module>nuxeo-platform-ws-sun-jaxws</module>
     <module>nuxeo-platform-ws-jbossws</module>
@@ -375,6 +376,11 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-uidgen-core</artifactId>
+        <version>${nuxeo.services.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-uidgen-facade</artifactId>
         <version>${nuxeo.services.version}</version>
       </dependency>
       <dependency>

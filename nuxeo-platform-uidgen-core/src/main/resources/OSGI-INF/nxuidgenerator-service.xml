@@ -64,15 +64,4 @@
         </hibernateConfiguration>
   </extension>
 
-  <extension target="org.nuxeo.runtime.api.ServiceManagement"
-        point="services">
-
-      <documentation> Define the sequencer session bean binding. </documentation>
-
-      <service class="org.nuxeo.ecm.platform.uidgen.UIDSequencer" group="platform/services">
-        <locator>%UIDSequencerManagerBean</locator>
-      </service>
-
-  </extension>
-
 </component>
