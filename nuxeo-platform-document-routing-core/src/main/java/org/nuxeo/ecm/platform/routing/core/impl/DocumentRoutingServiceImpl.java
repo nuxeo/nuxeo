@@ -302,26 +302,13 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public boolean canUserModifyRoute(NuxeoPrincipal currentUser) {
-        return currentUser.getGroups().contains(
-                DocumentRoutingConstants.ROUTE_MANAGERS_GROUP_NAME);
-    }
-
-    @Override
     public boolean canUserValidateRoute(NuxeoPrincipal currentUser) {
         return currentUser.getGroups().contains(
                 DocumentRoutingConstants.ROUTE_MANAGERS_GROUP_NAME);
     }
 
     @Override
-    public boolean canUserModifyRoute(DocumentModel documentRoute,
-            CoreSession coreSession) throws ClientException {
-        return coreSession.hasPermission(documentRoute.getRef(),
-                DocumentRoutingConstants.VALIDATE_ROUTE_PERMISSION_NAME);
-    }
-
-    @Override
-    public boolean canUserValidateRoute(DocumentModel documentRoute,
+    public boolean canValidateRoute(DocumentModel documentRoute,
             CoreSession coreSession) throws ClientException {
         return coreSession.hasPermission(documentRoute.getRef(),
                 DocumentRoutingConstants.VALIDATE_ROUTE_PERMISSION_NAME);
@@ -378,7 +365,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
         docRouteElement = session.createDocument(docRouteElement);
         session.orderBefore(parentDocumentRef, docRouteElement.getName(),
                 sourceName);
-        session.save();//the new document will be queried later on
+        session.save();// the new document will be queried later on
     }
 
     @Override
@@ -390,7 +377,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
             throw new DocumentRouteNotLockedException();
         }
         session.removeDocument(routeElement.getDocument().getRef());
-        session.save();//the document will be queried later on
+        session.save();// the document will be queried later on
     }
 
     @Override

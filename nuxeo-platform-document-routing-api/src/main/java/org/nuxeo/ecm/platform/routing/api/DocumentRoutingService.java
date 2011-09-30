@@ -176,44 +176,24 @@ public interface DocumentRoutingService {
             CoreSession session, String attachedDocId);
 
     /**
-     * if the user can modify a route.
-     *
-     * @deprecated use
-     *             {@link #canUserModifyRoute(DocumentModel, CoreSession)}
-     *             instead.
-     */
-    @Deprecated
-    boolean canUserModifyRoute(NuxeoPrincipal currentUser);
-
-    /**
      * if the user can validate a route.
      *
-     * @deprecated use
-     *             {@link #canUserValidateRoute(DocumentModel, CoreSession)}
+     * @deprecated use {@link #canValidateRoute(DocumentModel, CoreSession)}
      *             instead.
      */
     @Deprecated
     boolean canUserValidateRoute(NuxeoPrincipal currentUser);
 
     /**
-     * if the user can modify a route.
-     *
-     * @param documentRoute
-     * @param coreSession
-     * @throws ClientException
-     */
-    boolean canUserModifyRoute(DocumentModel documentRoute,
-            CoreSession coreSession) throws ClientException;
-
-    /**
-     * if the user can validate a route.
+     * Checks if the principal that created the client session can validate the
+     * route
      *
      * @param documentRoute
      * @param coreSession
      * @throws ClientException
      *
      */
-    boolean canUserValidateRoute(DocumentModel documentRoute,
+    boolean canValidateRoute(DocumentModel documentRoute,
             CoreSession coreSession) throws ClientException;
 
     /**
