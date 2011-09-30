@@ -145,6 +145,13 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
             jg.writeEndObject();
         }
 
+        jg.writeArrayFieldStart("facets");
+        for (String facet : doc.getFacets()) {
+            jg.writeString(facet);
+        }
+        jg.writeEndArray();
+        jg.writeStringField("changeToken", doc.getChangeToken());
+
         jg.writeEndObject();
         jg.flush();
     }

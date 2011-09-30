@@ -48,13 +48,19 @@ public class Document extends DocRef {
 
     protected final PropertyMap properties;
 
+    protected final String changeToken;
+
+    protected final PropertyList facets;
+
     /**
      * Reserved to framework. Should be only called by client framework when
      * unmarshalling documents.
      */
-    public Document(String id, String type, String path, String state,
+    public Document(String id, String type, PropertyList facets,String changeToken, String path, String state,
             String lock, String repository, PropertyMap properties) {
         super(id);
+        this.changeToken=changeToken;
+        this.facets=facets;
         this.path = path;
         this.type = type;
         this.state = state;
@@ -152,4 +158,11 @@ public class Document extends DocRef {
         properties.set(key, defValue);
     }
 
+    public String getChangeToken() {
+        return changeToken;
+    }
+
+    public PropertyList getFacets() {
+        return facets;
+    }
 }

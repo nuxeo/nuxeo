@@ -47,6 +47,8 @@ public class DocumentMarshaller implements JsonMarshaller<Document> {
         String state = null;
         String lock = null;
         String repository = null;
+        PropertyList facets = null;
+        String changeToken = null;
         JsonToken tok = jp.nextToken();
         PropertyMap props = new PropertyMap();
         while (tok != JsonToken.END_OBJECT) {
@@ -70,10 +72,18 @@ public class DocumentMarshaller implements JsonMarshaller<Document> {
                 props.set("dc:modified", jp.getText());
             } else if (key.equals("properties")) {
                 readProperties(jp, props);
+            } else if (key.equals("facets")) {
+                facets = readArrayProperty(jp);
+            } else if (key.equals("changeToken")) {
+                changeToken = jp.getText();
+            }
+            else {
+                // do skip unknown keys
+                jp.skipChildren();
             }
             tok = jp.nextToken();
         }
-        return new Document(uid, type, path, state, lock, repository, props);
+        return new Document(uid, type, facets, changeToken, path, state, lock, repository, props);
     }
 
     protected static void readProperties(JsonParser jp, PropertyMap props) throws Exception {

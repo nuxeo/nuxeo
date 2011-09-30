@@ -33,7 +33,7 @@ public class SampleQuery {
             Documents docs = rs.query("SELECT * from Workspace");
             System.out.println(docs);
             for (Document d : docs) {
-                System.out.println(d.getTitle() + " at " + d.getLastModified());
+                System.out.println(d.getTitle() + " at " + d.getLastModified() + " facets :" + d.getFacets() + " token:" + d.getChangeToken());
             }
             client.shutdown();
         } catch (RemoteException e) {
