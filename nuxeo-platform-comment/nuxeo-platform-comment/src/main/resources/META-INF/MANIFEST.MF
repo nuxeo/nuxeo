@@ -14,7 +14,6 @@ Bundle-Vendor: Nuxeo
 Eclipse-LazyStart: true
 Bundle-Version: 0.0.0.SNAPSHOT
 Nuxeo-Component: OSGI-INF/CommentService.xml,
-  OSGI-INF/comment-platform-contrib.xml,
   OSGI-INF/CommentService.xml,
   OSGI-INF/comment-listener-contrib.xml,
   OSGI-INF/comment-notification-contrib.xml

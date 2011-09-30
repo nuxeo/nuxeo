@@ -66,10 +66,6 @@
       <locator>%RelationManagerBean</locator>
     </service>
 
-    <service class="org.nuxeo.ecm.platform.comment.api.CommentManager" group="remote1">
-      <locator>%CommentManagerBean</locator>
-    </service>
-
     <service class="org.nuxeo.ecm.platform.audit.api.Logs" group="remote1">
       <locator>%LogsBean</locator>
     </service>
