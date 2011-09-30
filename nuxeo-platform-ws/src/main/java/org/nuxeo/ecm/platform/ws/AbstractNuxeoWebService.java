@@ -31,10 +31,8 @@ import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.platform.api.login.UserSession;
 import org.nuxeo.ecm.platform.api.ws.BaseNuxeoWebService;
-import org.nuxeo.ecm.platform.api.ws.WSException;
 import org.nuxeo.ecm.platform.api.ws.session.WSRemotingSession;
 import org.nuxeo.ecm.platform.api.ws.session.WSRemotingSessionManager;
-import org.nuxeo.ecm.platform.api.ws.session.WSRemotingSessionServiceDelegate;
 import org.nuxeo.ecm.platform.api.ws.session.impl.WSRemotingSessionImpl;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
@@ -62,9 +60,8 @@ public abstract class AbstractNuxeoWebService implements BaseNuxeoWebService {
     protected WSRemotingSessionManager getSessionsManager() throws ClientException {
         if (sessionsManager == null) {
             try {
-                sessionsManager = WSRemotingSessionServiceDelegate
-                        .getRemoteWSRemotingSessionManager();
-            } catch (WSException wse) {
+                sessionsManager = Framework.getService(WSRemotingSessionManager.class);
+            } catch (Exception wse) {
                 throw new ClientException(wse);
             }
         }

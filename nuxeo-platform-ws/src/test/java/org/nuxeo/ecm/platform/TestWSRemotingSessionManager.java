@@ -29,8 +29,8 @@ import org.nuxeo.ecm.platform.api.ws.DocumentProperty;
 import org.nuxeo.ecm.platform.api.ws.DocumentSnapshot;
 import org.nuxeo.ecm.platform.api.ws.session.WSRemotingSession;
 import org.nuxeo.ecm.platform.api.ws.session.WSRemotingSessionManager;
-import org.nuxeo.ecm.platform.api.ws.session.WSRemotingSessionServiceDelegate;
 import org.nuxeo.ecm.platform.ws.NuxeoRemotingBean;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
@@ -43,10 +43,10 @@ public class TestWSRemotingSessionManager extends SQLRepositoryTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        service = WSRemotingSessionServiceDelegate.getRemoteWSRemotingSessionManager();
+        service = Framework.getService(WSRemotingSessionManager.class);
         assertNotNull(service);
     }
-    
+
     @Override
     protected void deployRepositoryContrib() throws Exception {
         super.deployRepositoryContrib();
@@ -120,11 +120,11 @@ public class TestWSRemotingSessionManager extends SQLRepositoryTestCase {
             public int compare(DocumentProperty o1, DocumentProperty o2) {
                 return o1.getName().compareTo(o2.getName());
             }
-            
+
         };
         Arrays.sort(props, propsComparator);
         // check for system properties
-        int lci = Arrays.binarySearch(props, new DocumentProperty("lifeCycleState", null), propsComparator); 
+        int lci = Arrays.binarySearch(props, new DocumentProperty("lifeCycleState", null), propsComparator);
         assertTrue(lci > 0);
         assertEquals("lifeCycleState:project", props[lci].toString());
 
@@ -133,5 +133,5 @@ public class TestWSRemotingSessionManager extends SQLRepositoryTestCase {
         assertTrue(tti > 0);
         assertEquals("dc:title:huum", props[tti].toString());
     }
-    
+
 }

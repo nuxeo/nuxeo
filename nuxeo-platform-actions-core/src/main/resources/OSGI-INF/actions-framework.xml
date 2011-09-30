@@ -14,7 +14,7 @@
   <implementation class="org.nuxeo.ecm.platform.actions.ActionService" />
 
   <service>
-	  <provide interface="org.nuxeo.ecm.platform.actions.ejb.ActionManager" />
+          <provide interface="org.nuxeo.ecm.platform.actions.ejb.ActionManager" />
   </service>
 
   <extension-point name="filters">
@@ -106,7 +106,7 @@
       - id: string identifying the action
 
       - label: the action name
-      
+
       - help: the action help message
 
       - link: string representing the command the action will trigger
@@ -132,9 +132,9 @@
 
       - order: an optional integer used to sort actions within the same
       category. This attribute may be depracated in the future.
-      
+
       - immediate: an optional boolean (available since 5.4.2) that makes it
-      possible to call command actions without validating the enclosing form. 
+      possible to call command actions without validating the enclosing form.
 
       It is important to understand that an action does *not* define the way it
       will be rendered: this is left to pages, templates and other components
@@ -176,11 +176,5 @@
     </documentation>
     <object class="org.nuxeo.ecm.platform.actions.Action" />
   </extension-point>
-
-  <extension target="org.nuxeo.runtime.api.ServiceManagement" point="services">
-    <service class="org.nuxeo.ecm.platform.actions.ejb.ActionManager" group="platform/web/actions">
-      <locator>%ActionManagerBean</locator>
-    </service>
-  </extension>
 
 </component>
