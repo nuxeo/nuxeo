@@ -657,4 +657,7 @@ public class SimpleDocumentModel implements DocumentModel {
         return true;
     }
 
+    public String getChangeToken() {
+        return null;
+    }
 }

@@ -533,4 +533,8 @@ public class ShallowDocumentModel implements DocumentModel {
         return true;
     }
 
+    @Override
+    public String getChangeToken() {
+        return null;
+    }
 }

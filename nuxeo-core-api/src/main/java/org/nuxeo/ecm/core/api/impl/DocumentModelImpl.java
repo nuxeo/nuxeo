@@ -1678,4 +1678,18 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         }
     }
 
+    public String getChangeToken() {
+        if (!hasSchema("dublincore")) {
+            return null;
+        }
+        try {
+            Calendar modified = (Calendar) getProperty("dublincore", "modified");
+            if (modified!=null) {
+                return new Long(modified.getTimeInMillis()).toString();
+            }
+        } catch (ClientException e) {
+            log.error("Error while retrieving dc:modified", e);
+        }
+        return null;
+    }
 }

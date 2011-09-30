@@ -970,4 +970,15 @@ public interface DocumentModel extends Serializable {
      */
     DocumentModel clone() throws CloneNotSupportedException;
 
+    /**
+     * Opaque string that represents the last update state of the DocumentModel.
+     * This token can be used for optimistic locking and avoid dirty updates.
+     *
+     * See CMIS spec : http://docs.oasis-open.org/cmis/CMIS/v1.0/os/cmis-spec-v1.0.html#_Toc243905432
+     *
+     * @since 5.4.3
+     *
+     * @return the ChangeToken string that can be null for some Document types
+     */
+    String getChangeToken();
 }
