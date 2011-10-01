@@ -134,7 +134,7 @@ textAlignL { float: left }
 .header .logo {text-align: center; vertical-align:bottom; width: 18% }
 .header .content { padding: 0 10px 0 0; vertical-align: bottom;	width: 82%; font-size: .75em }
 .header .includes { width: 0 }
-.header a, .header a:link, .header a:visited, .header a:hover, .header a:active { color: "header.link (__FLAVOUR__ color)"}
+.header a, .header a:link, .header a:visited, .header a:hover, .header a:active { color: green}
 
 /*-- =Search */
 .userSearchBlock { float: right }
