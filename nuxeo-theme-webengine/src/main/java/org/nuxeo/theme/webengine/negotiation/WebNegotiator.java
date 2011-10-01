@@ -14,6 +14,8 @@
 
 package org.nuxeo.theme.webengine.negotiation;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.theme.negotiation.AbstractNegotiator;
 
@@ -23,8 +25,9 @@ public final class WebNegotiator extends AbstractNegotiator {
         return "freemarker";
     }
 
-    public WebNegotiator(final String strategy, final WebContext context) {
-        super(strategy, context);
+    public WebNegotiator(final String strategy, final WebContext context,
+            final HttpServletRequest request) {
+        super(strategy, context, request);
     }
 
 }
