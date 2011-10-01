@@ -43,16 +43,27 @@
   <!-- mapping between theme pages and resources -->
   <extension target="org.nuxeo.theme.styling.service" point="pages">  
     <themePage name="userCenter/default">
-      <resources append="true">
-        <resource>nuxeo_user_center_default</resource>
-      </resources>
+      <!-- TODO -->
+      <!-- 
+        <defaultFlavour>userCenter</defaultFlavour>
+      -->
+      <styles append="true">
+        <style>nuxeo_user_center_default</style>
+      </styles>
     </themePage>
   </extension>
   <extension target="org.nuxeo.theme.styling.service" point="styles">
-    <style name="nuxeo_admin_center_default">
-      <path>css/nuxeo_user_center_default.css</path>
+    <style name="nuxeo_user_center_default">
+      <path>themes/css/nuxeo_user_center_default.css</path>
     </style>
   </extension>
+  <!-- TODO -->
+  <!--
+  <extension target="org.nuxeo.theme.styling.service" point="flavours">
+    <flavour name="userCenter">
+    </flavour>
+  </extension>
+  -->
 
   <!-- Styles presets -->
 

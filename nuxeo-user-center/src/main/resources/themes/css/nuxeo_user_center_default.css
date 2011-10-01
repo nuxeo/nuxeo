@@ -80,15 +80,11 @@ h4, h5, h6 { color: #9a9a9a;font-size: .8em; margin: .2em 0 .2em 0 }
 textarea { padding: 5px }
 .selectDocumentType { margin-top: 10px }
 .checkBox { margin-right: 3px }
-.required { background: transparent url("${org.nuxeo.ecm.contextPath}/icons/required.gif") top right no-repeat; padding: 0 10px 0 0 }
+.required { background: transparent url("${basePath}/icons/required.gif") top right no-repeat; padding: 0 10px 0 0 }
 
 /*-- =Buttons */
 .button, input.button {
 	box-shadow:inset 0px 1px 0px 0px #fff;
-	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #f5f2f5), color-stop(1, #dfdfdf) );
-	background:-moz-linear-gradient( center top, #f5f2f5 5%, #dfdfdf 100% );
-	background: linear-gradient( center top, #f5f2f5 5%, #dfdfdf 100% );
-	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#f5f2f5', endColorstr='#dfdfdf');
 	background-color:#dfdfdf;
 	border-radius:3px;
 	border:1px solid #c6c6c6;
@@ -183,7 +179,7 @@ input.small { font-size: 0.85em; padding: 3px }
     display: block }
 
 .userMenuActions a.userButton {
-    background: url("${org.nuxeo.ecm.contextPath}/icons/user.png") no-repeat scroll 3px center transparent;
+    background: url("${basePath}/icons/user.png") no-repeat scroll 3px center transparent;
     padding: 3px 8px 5px 23px }
 .userMenuActions ul li a:hover, .userMenuActions ul li:hover { background-color:#fff; color:#000 }
 .userMenuActions li ul {
@@ -236,7 +232,7 @@ input.small { font-size: 0.85em; padding: 3px }
 /*---- =Main Area ----*/
 .mainContainer { min-height: 600px; width: 100%; font-size: .8em }
 .mainContainer .content {
-  background: url("${org.nuxeo.ecm.contextPath}/img/theme_galaxy/galaxy_logo.png") no-repeat scroll right bottom #fff;
+  background: url("${basePath}/img/theme_galaxy/galaxy_logo.png") no-repeat scroll right bottom #fff;
   padding: 0;
   width: 100% }
 
@@ -251,10 +247,6 @@ input.small { font-size: 0.85em; padding: 3px }
 .action_bar li { float: left; margin: 0; padding: 0 }
 .action_bar a {
   box-shadow:inset 0px 1px 0px 0px #fff;
-  background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #f5f2f5), color-stop(1, #dfdfdf) );
-  background:-moz-linear-gradient( center top, #f5f2f5 5%, #dfdfdf 100% );
-  background: linear-gradient( center top, #f5f2f5 5%, #dfdfdf 100% );
-  filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#f5f2f5', endColorstr='#dfdfdf');
   background-color:#eeeff0;
   border-radius:3px;
   border:1px solid #c6c6c6;
@@ -330,7 +322,7 @@ h3.summaryTitle {
 .rightsAddLabel { font-weight: bold; padding: 0 5px 0 0 }
 .rightsAddSelect { margin-top: 0}
 .rightsAddManager {
-  background: transparent url("${org.nuxeo.ecm.contextPath}/img/rightsadd_bar.gif") no-repeat center;
+  background: transparent url("${basePath}/img/rightsadd_bar.gif") no-repeat center;
   margin: 3px 0 0 0;
   width: 100% }
 .rightsAddManager td {
@@ -467,9 +459,9 @@ table.trashTable tbody tr:hover { background-color: #fff1C6 }
   height: 20px;
   padding: 3px 3px 3px 18px }
 .foldableBox h3.folded {
-  background: #eeeff0 url("${org.nuxeo.ecm.contextPath}/icons/arrow_folded.gif") top left no-repeat }
+  background: #eeeff0 url("${basePath}/icons/arrow_folded.gif") top left no-repeat }
 .foldableBox h3.unfolded {
-  background: #eeeff0 url("${org.nuxeo.ecm.contextPath}/icons/arrow_unfolded.gif") top left no-repeat;
+  background: #eeeff0 url("${basePath}/icons/arrow_unfolded.gif") top left no-repeat;
   clear: both }
 .foldableBox h3.foldedDisabled {
   background: #eeeff0 none;
@@ -483,10 +475,6 @@ table.trashTable tbody tr:hover { background-color: #fff1C6 }
 .foldableBox h3 a.warningLink { color: #f56200 }
 .foldableBox h3 a.action, .foldableBox h3 a.action:visited {
   box-shadow:inset 0px 1px 0px 0px #fff;
-  background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #f5f2f5), color-stop(1, #dfdfdf) );
-  background:-moz-linear-gradient( center top, #f5f2f5 5%, #dfdfdf 100% );
-  background: linear-gradient( center top, #f5f2f5 5%, #dfdfdf 100% );
-  filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#f5f2f5', endColorstr='#dfdfdf');
   background-color:#eeeff0;
   border-radius:3px;
   border:1px solid #c6c6c6;
@@ -503,8 +491,8 @@ table.trashTable tbody tr:hover { background-color: #fff1C6 }
 .foldableBox .boxBody { clear: both; padding: 10px }
 
 .foldableLightBox { margin-bottom: 20px }
-.foldableLightBox div.folded {background: #fff url("${org.nuxeo.ecm.contextPath}/icons/arrow_folded.gif") top left no-repeat }
-.foldableLightBox div.unfolded { background: #fff url("${org.nuxeo.ecm.contextPath}/icons/arrow_unfolded.gif") top left no-repeat }
+.foldableLightBox div.folded {background: #fff url("${basePath}/icons/arrow_folded.gif") top left no-repeat }
+.foldableLightBox div.unfolded { background: #fff url("${basePath}/icons/arrow_unfolded.gif") top left no-repeat }
 .foldableLightBox div.folded a, .foldableLightBox div.unfolded a { color: #777; float: left }
 .foldableLightBox div.folded, .foldableLightBox div.unfolded {
   border-bottom: 1px solid #e7e7e7;
@@ -571,7 +559,7 @@ div.syndicationButton div.syndicationLinks a { color: #fff }
 .commentCreationDate { font-weight: normal }
 .commentQuote { margin: 5px 0 5px 0 }
 .commentAuthor {
-  background: transparent url("${org.nuxeo.ecm.contextPath}/icons/comment.gif") no-repeat 4px 4px;
+  background: transparent url("${basePath}/icons/comment.gif") no-repeat 4px 4px;
   color: #777;
   font-weight: bold;
   padding: 5px 3px 3px 24px }
@@ -616,8 +604,8 @@ div.syndicationButton div.syndicationLinks a { color: #fff }
 .nuxLinks a { vertical-align: middle }
 
 a.twitt, a.linkedin { display:inline-block; height:16px; margin:0 5px; width:16px }
-a.twitt{ background:transparent url("${org.nuxeo.ecm.contextPath}/icons/icones-metanav.png") no-repeat left top }
-a.linkedin {background:transparent url("${org.nuxeo.ecm.contextPath}/icons/icones-metanav.png") no-repeat -16px top }
+a.twitt{ background:transparent url("${basePath}/icons/icones-metanav.png") no-repeat left top }
+a.linkedin {background:transparent url("${basePath}/icons/icones-metanav.png") no-repeat -16px top }
 a.twitt:hover { background-position:left bottom }
 a.linkedin:hover { background-position:-16px bottom }
 
@@ -642,7 +630,7 @@ a.linkedin:hover { background-position:-16px bottom }
 .calendarTrigger { cursor: pointer; margin: 0 0 5px; vertical-align: bottom }
 
 /*---- =Arrow ----*/
-p.directoryBack { background: url("${org.nuxeo.ecm.contextPath}/icons/arrow_left.gif") no-repeat scroll 3px 1px transparent; padding: 2px 2px 2px 20px }
+p.directoryBack { background: url("${basePath}/icons/arrow_left.gif") no-repeat scroll 3px 1px transparent; padding: 2px 2px 2px 20px }
 
 /*----  =Navigation controls ----*/
 #pageNavigationControls { border-bottom: 1px solid #e7e7e7; margin: 0 0 5px; padding: 2px 0 0; text-align: center }
@@ -669,7 +657,7 @@ p.directoryBack { background: url("${org.nuxeo.ecm.contextPath}/icons/arrow_left
 
 /*---- =Left Column----*/
 /*-- =Vertical Tabs */
-.adminTabsColumn { background: url("${org.nuxeo.ecm.contextPath}/img/left_column_bg.png") repeat-y scroll right top #BCF2F4; height: 100%; padding: 0; width: 210px }
+.adminTabsColumn { background: url("${basePath}/img/left_column_bg.png") repeat-y scroll right top #BCF2F4; height: 100%; padding: 0; width: 210px }
 .adminTabBlock { border-right: 1px solid #00AAAF; height: 100%; margin: 0 0 0 5px }
 
 .adminTabsColumn ul {  margin: 0 -1px 0 0; padding: 20px 0 30px }
