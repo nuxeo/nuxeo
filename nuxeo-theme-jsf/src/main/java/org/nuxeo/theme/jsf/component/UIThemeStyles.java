@@ -84,8 +84,7 @@ public class UIThemeStyles extends UIOutput {
         params.put("path", externalContext.getRequestContextPath());
         // FIXME: use configuration
         String basePath = Framework.getProperty("org.nuxeo.ecm.contextPath",
-                "/nuxeo")
-                + "/site";
+                "/nuxeo");
         params.put("basepath", basePath);
         String collectionName = ThemeManager.getCollectionNameByUrl(themeUrl);
         params.put("collection", collectionName);

@@ -104,7 +104,7 @@ public final class CompositionHandler extends TagHandler implements
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * com.sun.facelets.FaceletHandler#apply(com.sun.facelets.FaceletContext,
      * javax.faces.component.UIComponent)
@@ -150,7 +150,7 @@ public final class CompositionHandler extends TagHandler implements
             if (strategyAttribute != null) {
                 strategy = strategyAttribute.getValue(ctx);
             }
-            String contextPath = BaseURL.getContextPath() + "/site";
+            String contextPath = BaseURL.getContextPath();
             if (strategy == null) {
                 log.error("Could not obtain the negotiation strategy for "
                         + root);
