@@ -21,6 +21,7 @@ import javax.faces.context.FacesContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.theme.negotiation.Negotiator;
 import org.nuxeo.theme.negotiation.Scheme;
 import org.nuxeo.theme.styling.service.ThemeStylingService;
 
@@ -36,7 +37,8 @@ public class DefaultThemeFlavour implements Scheme {
         // FIXME: retrieve current theme returned by negotiation instead of
         // using default theme
         String defaultTheme = (String) faces.getExternalContext().getRequestMap().get(
-                "org.nuxeo.theme.default.theme");
+                Negotiator.NEGOTIATION_RESULT_PREFIX
+                        + Negotiator.NEGOTIATION_OBJECT.theme.name());
         if (defaultTheme != null) {
             try {
                 ThemeStylingService service = Framework.getService(ThemeStylingService.class);
