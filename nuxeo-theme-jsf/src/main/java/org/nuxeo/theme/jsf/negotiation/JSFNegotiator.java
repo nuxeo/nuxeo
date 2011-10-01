@@ -15,6 +15,7 @@
 package org.nuxeo.theme.jsf.negotiation;
 
 import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpServletRequest;
 
 import org.nuxeo.theme.negotiation.AbstractNegotiator;
 
@@ -25,8 +26,9 @@ public final class JSFNegotiator extends AbstractNegotiator {
         return "jsf-facelets";
     }
 
-    public JSFNegotiator(final String strategy, final FacesContext context) {
-        super(strategy, context);
+    public JSFNegotiator(final String strategy, final FacesContext context,
+            final HttpServletRequest request) {
+        super(strategy, context, request);
     }
 
 }
