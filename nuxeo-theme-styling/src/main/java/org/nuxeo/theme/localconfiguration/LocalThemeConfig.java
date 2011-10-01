@@ -36,7 +36,8 @@ public interface LocalThemeConfig extends LocalConfiguration<LocalThemeConfig> {
     String getPage();
 
     /**
-     * Returns the configured perspective used in the {@code LocalPerspective} negociation scheme.
+     * Returns the configured perspective used in the {@code LocalPerspective}
+     * negociation scheme.
      */
     String getPerspective();
 
@@ -54,5 +55,12 @@ public interface LocalThemeConfig extends LocalConfiguration<LocalThemeConfig> {
      * Returns the page path used in the {@code LocalTheme} negociation scheme
      */
     String computePagePath();
+
+    /**
+     * Returns the collection (flavour) to use for current page
+     *
+     * @since 5.4.3
+     */
+    String getCollection();
 
 }
