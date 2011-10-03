@@ -786,7 +786,7 @@
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>Link=RouteDoc</td>
+	<td>Link=Note Document</td>
 	<td></td>
 </tr>
 <!-- look for the route -->
@@ -797,8 +797,8 @@
 </tr>
 <tr>
 	<td>typeKeys</td>
-	<td>//input[@name='document_view:nxl_summary_document_route_layout:nxl_document_routing_instance:nxw_participatingDocuments_suggest']</td>
-	<td>Note</td>
+	<td>//input[@name='document_view:nxl_note_summary_layout:nxl_document_related_route:nxw_document_related_route_route_suggest']</td>
+	<td>RouteDoc</td>
 </tr>
 <tr>
 	<td>waitForA4jRequest</td>
@@ -807,8 +807,8 @@
 </tr>
 <tr>
 	<td>verifyText</td>
-	<td>//*[@id='document_view:nxl_summary_document_route_layout:nxl_document_routing_instance:nxw_participatingDocuments_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
-	<td>Note Document</td>
+	<td>//*[@id='document_view:nxl_note_summary_layout:nxl_document_related_route:nxw_document_related_route_route_suggestionBox:suggest']/tbody/tr[@id='']/td[2]</td>
+	<td>RouteDoc</td>
 </tr>
 <tr>
 	<td>watchA4jRequests</td>
@@ -817,7 +817,7 @@
 </tr>
 <tr>
 	<td>click</td>
-	<td>//*[@id='document_view:nxl_summary_document_route_layout:nxl_document_routing_instance:nxw_participatingDocuments_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td>//*[@id='document_view:nxl_note_summary_layout:nxl_document_related_route:nxw_document_related_route_route_suggestionBox:suggest']/tbody/tr[@id='']/td[2]</td>
 	<td></td>
 </tr>
 <tr>
@@ -827,23 +827,18 @@
 </tr>
 <tr>
 	<td>verifyTextPresent</td>
-	<td>Note Document</td>
+	<td>RouteDoc</td>
 	<td></td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>//input[@value='Execute route']</td>
+	<td>//input[@value='Start']</td>
 	<td></td>
 </tr>
 <tr>
-	<td>assertText</td>
-	<td>//form[@id='orderable_document_content']/table/tbody/tr[1]/td[9]</td>
-	<td>validated</td>
-</tr>
-<tr>
-	<td>assertText</td>
-	<td>//form[@id='orderable_document_content']/table/tbody/tr[5]/td[9]</td>
-	<td>validated</td>
+	<td>clickAndWait</td>
+	<td>Link=RouteDoc</td>
+	<td></td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
