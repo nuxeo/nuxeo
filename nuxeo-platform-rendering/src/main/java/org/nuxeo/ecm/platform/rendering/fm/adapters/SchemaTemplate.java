@@ -63,7 +63,7 @@ public class SchemaTemplate extends PropertyWrapper implements
             prefetchField.setAccessible(true);
             @SuppressWarnings("unchecked")
             Map<String, Serializable> prefetch = (Map<String, Serializable>) prefetchField.get(doc);
-            if (prefetch.containsKey(schemaName + '.' + name)) {
+            if (prefetch != null && prefetch.containsKey(schemaName + '.' + name)) {
                 return wrapper.wrap(doc.getProperty(schemaName, name));
             }
             // else use normal Property lookup in Part
