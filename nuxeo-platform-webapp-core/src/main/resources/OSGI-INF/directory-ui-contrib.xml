@@ -35,16 +35,14 @@
     <directory name="language" layout="vocabulary" sortField="label" />
     <directory name="nature" layout="vocabulary" sortField="label" />
 
-    <directory name="l10n_continent" layout="l10nVocabulary"
+    <directory name="l10ncoverage" layout="l10ncoverage_vocabulary"
       sortField="id">
       <deleteConstraint
         class="org.nuxeo.ecm.directory.api.ui.HierarchicalDirectoryUIDeleteConstraint">
-        <property name="targetDirectory">country</property>
+        <property name="targetDirectory">l10ncoverage</property>
         <property name="targetDirectoryField">parent</property>
       </deleteConstraint>
     </directory>
-    <directory name="l10n_country" layout="l10nCountry_vocabulary"
-      sortField="parent" />
 
   </extension>
 
@@ -182,19 +180,6 @@
       </properties>
     </widget>
 
-    <widget name="l10nvocabulary_label" type="text">
-      <labels>
-        <label mode="any">label.vocabulary.l10n.entry.label.default</label>
-      </labels>
-      <translated>true</translated>
-      <fields>
-        <field>l10nvocabulary:label</field>
-      </fields>
-      <properties widgetMode="edit">
-        <property name="size">50</property>
-      </properties>
-    </widget>
-
     <widget name="l10nvocabulary_label_fr" type="text">
       <labels>
         <label mode="any">label.vocabulary.l10n.entry.label.french</label>
@@ -265,19 +250,6 @@
       </properties>
     </widget>
 
-    <widget name="l10nxvocabulary_label" type="text">
-      <labels>
-        <label mode="any">label.vocabulary.l10n.entry.label.default</label>
-      </labels>
-      <translated>true</translated>
-      <fields>
-        <field>l10nxvocabulary:label</field>
-      </fields>
-      <properties widgetMode="edit">
-        <property name="size">50</property>
-      </properties>
-    </widget>
-
     <widget name="l10nxvocabulary_label_fr" type="text">
       <labels>
         <label mode="any">label.vocabulary.l10n.entry.label.french</label>
@@ -303,7 +275,7 @@
         <property name="size">50</property>
       </properties>
     </widget>
-    
+
       <widget name="l10nxvocabulary_obsolete" type="template">
       <labels>
         <label mode="any">label.vocabulary.entry.obsolete</label>
@@ -441,8 +413,8 @@
         </properties>
       </widget>
     </layout>
-    
-        <layout name="l10nVocabulary">
+
+    <layout name="l10nvocabulary">
       <templates>
         <template mode="any">
           /directory/directory_layout_template.xhtml
@@ -451,9 +423,6 @@
       <rows>
         <row>
           <widget>l10nvocabulary_id</widget>
-        </row>
-        <row>
-          <widget>l10nvocabulary_label</widget>
         </row>
         <row>
           <widget>l10nvocabulary_label_fr</widget>
@@ -470,7 +439,7 @@
       </rows>
     </layout>
 
-    <layout name="l10nCountry_vocabulary">
+    <layout name="l10ncoverage_vocabulary">
       <templates>
         <template mode="any">
           /directory/directory_layout_template.xhtml
@@ -482,9 +451,6 @@
         </row>
         <row>
           <widget>l10nxvocabulary_id</widget>
-        </row>
-        <row>
-          <widget>l10nxvocabulary_label</widget>
         </row>
         <row>
           <widget>l10nxvocabulary_label_en</widget>
@@ -508,7 +474,7 @@
           <field>l10nxvocabulary:parent</field>
         </fields>
         <properties mode="any">
-          <property name="directoryName">l10n_continent</property>
+          <property name="directoryName">l10ncoverage</property>
           <property name="localize">true</property>
         </properties>
         <properties widgetMode="edit">
@@ -516,7 +482,7 @@
         </properties>
       </widget>
     </layout>
-    
+
   </extension>
 
 </component>

@@ -28,27 +28,16 @@
       <createTablePolicy>on_missing_columns</createTablePolicy>
     </directory>
 
-    <directory name="l10n_continent">
-      <schema>l10nvocabulary</schema>
-      <dataSource>java:/nxsqldirectory</dataSource>
-      <cacheTimeout>3600</cacheTimeout>
-      <cacheMaxSize>1000</cacheMaxSize>
-      <table>l10ncontinent</table>
-      <idField>id</idField>
-      <autoincrementIdField>false</autoincrementIdField>
-      <dataFile>directories/l10n_continent.csv</dataFile>
-      <createTablePolicy>on_missing_columns</createTablePolicy>
-    </directory>
-    
-    <directory name="l10n_country">
+    <directory name="l10ncoverage">
       <schema>l10nxvocabulary</schema>
+      <parentDirectory>l10ncoverage</parentDirectory>
       <dataSource>java:/nxsqldirectory</dataSource>
       <cacheTimeout>3600</cacheTimeout>
       <cacheMaxSize>1000</cacheMaxSize>
-      <table>l10ncountry</table>
+      <table>l10ncoverage</table>
       <idField>id</idField>
       <autoincrementIdField>false</autoincrementIdField>
-      <dataFile>directories/l10n_country.csv</dataFile>
+      <dataFile>directories/l10ncoverage.csv</dataFile>
       <createTablePolicy>on_missing_columns</createTablePolicy>
     </directory>
 
