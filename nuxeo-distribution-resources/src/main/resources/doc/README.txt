@@ -1,6 +1,6 @@
-                  Nuxeo platform 5.4.3-SNAPSHOT Release Notes
+                  Nuxeo platform 5.4.3-I20111003_1046 Release Notes
 
-   Welcome to the Nuxeo platform 5.4.3-SNAPSHOT.
+   Welcome to the Nuxeo platform 5.4.3-I20111003_1046.
 
    You can always download the latest releases of Nuxeo applications based
    on the Nuxeo Enterprise Platform from
