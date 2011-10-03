@@ -14,6 +14,7 @@ package org.nuxeo.ecm.automation.features;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.core.scripting.CoreFunctions;
 import org.nuxeo.ecm.automation.core.util.StringList;
@@ -138,6 +139,10 @@ public class PlatformFunctions extends CoreFunctions {
     public String getNextId(final String key) throws Exception {
         UIDSequencer svc = Framework.getService(UIDSequencer.class);
         return Integer.toString(svc.getNext(key));
+    }
+
+    public static String htmlEscape(String str) {
+        return StringEscapeUtils.escapeHtml(str);
     }
 
 }
