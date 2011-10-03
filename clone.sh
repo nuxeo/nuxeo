@@ -6,7 +6,7 @@ VERSION=`hg id -b`
 VERSION=""
 if [ ! $VERSION ]
 then
-    VERSION=5.4
+    VERSION=release-5.4.3-I20111003_1046
 fi
 
 echo "Updating for version: " $VERSION
