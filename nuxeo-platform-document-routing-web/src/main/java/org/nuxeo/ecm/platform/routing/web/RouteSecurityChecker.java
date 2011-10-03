@@ -44,11 +44,6 @@ public class RouteSecurityChecker {
     protected CoreSession documentManager;
 
     @Deprecated
-    public boolean canModifyRoute() {
-        return getDocumentRoutingService().canUserModifyRoute(currentUser);
-    }
-
-    @Deprecated
     /**
      * @deprecated use
      *             {@link #canValidateRoute(DocumentModel)}
@@ -60,7 +55,7 @@ public class RouteSecurityChecker {
 
     public boolean canValidateRoute(DocumentModel routeDocument)
             throws ClientException {
-        return getDocumentRoutingService().canUserValidateRoute(routeDocument,
+        return getDocumentRoutingService().canValidateRoute(routeDocument,
                 documentManager)
                 || canValidateRoute();
     }

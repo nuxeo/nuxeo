@@ -313,6 +313,13 @@ public class DocumentRoutingActionsBean implements Serializable {
                 computeRelatedRouteElements(), null);
     }
 
+    public SelectDataModel computeSelectDataModelRouteElements(
+            DocumentModel relatedRouteDocumentModel) throws ClientException {
+        DocumentRoute currentRoute = relatedRouteDocumentModel.getAdapter(DocumentRoute.class);
+        return new SelectDataModelImpl("related_route_elements",
+                getElements(currentRoute), null);
+    }
+
     /**
      * Check if the related route to this case is started (ready or running) or
      * no
@@ -620,10 +627,10 @@ public class DocumentRoutingActionsBean implements Serializable {
     }
 
     /**
-     * Moves the step in the parent container in the specified direction. If
-     * the step is in a parallel container, it can't be moved. A step can't be
-     * moved before a step already done or running. Assumed that the route is
-     * already locked to have this action availabe , so no check is done
+     * Moves the step in the parent container in the specified direction. If the
+     * step is in a parallel container, it can't be moved. A step can't be moved
+     * before a step already done or running. Assumed that the route is already
+     * locked to have this action availabe , so no check is done
      */
     public String moveRouteElement(String direction) throws ClientException {
         if (StringUtils.isEmpty(stepId)) {
@@ -689,8 +696,8 @@ public class DocumentRoutingActionsBean implements Serializable {
                                 "feedback.casemanagement.document.route.cant.move.step.after.already.running.step"));
                 return null;
             }
-            documentManager.orderBefore(parentDoc.getRef(),
-                    orderedChilds.get(selectedDocumentIndex + 1).getName(),
+            documentManager.orderBefore(parentDoc.getRef(), orderedChilds.get(
+                    selectedDocumentIndex + 1).getName(),
                     routeElementDocToMove.getName());
         }
         if (docWithAttachedRouteId == null) {

@@ -20,7 +20,9 @@
 	<c:if
 		test="#{showListingHeader and layout.properties.showListingHeader}">
 
-   <nxu:set var="isLocked" value="#{routingActions.isCurrentRouteLocked()}" cache="true">
+  	<c:if
+		test="#{layout.properties.showRouteLokingInfo}">
+       <nxu:set var="isLocked" value="#{routingActions.isCurrentRouteLocked()}" cache="true">
       <div class="lockFile_block" id='lock_unlock_button'>
         <c:if test="#{isLocked}">
           <h:outputText value="#{messages['label.summary.locked.intro']} "/>
@@ -47,6 +49,7 @@
         </c:if>
       </div>
     </nxu:set>
+    </c:if>
 
    <h:outputText value="#{messages['label.lifecycle']}: #{currentDocument.currentLifeCycleState}" />
 

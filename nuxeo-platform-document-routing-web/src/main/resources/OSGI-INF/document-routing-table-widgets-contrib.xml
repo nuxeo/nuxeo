@@ -228,6 +228,9 @@
         <field>routeElement.document.id</field>
         <field>routeElement.document.hasFacet('Folderish')</field>
       </fields>
+      <properties mode="any">
+        <property name="showAvailableActionsOnRouteElement">true</property>
+      </properties>
     </widget>
 
     <widget name="dr_listing_document_route_element_type"
@@ -257,6 +260,9 @@
     <widget name="dr_listing_route_element_state"
       type="listing_document_route_element_state">
       <translated>true</translated>
+       <labels>
+        <label mode="any">label.widget.document_routing_route_content.dr_listing_route_element_state</label>
+      </labels>
       <fields>
         <field>data.document.currentLifeCycleState</field>
       </fields>

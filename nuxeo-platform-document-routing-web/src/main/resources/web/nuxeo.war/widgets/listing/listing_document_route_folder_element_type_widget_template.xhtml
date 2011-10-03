@@ -4,8 +4,10 @@
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html">
 
- <ui:include src="/widgets/listing/route_actions_widget_template.xhtml" />
-
+   <c:if test="#{widget.properties.showAvailableActionsOnRouteElement == 'true'}" >
+     <ui:include src="/widgets/listing/route_actions_widget_template.xhtml" />
+   </c:if>
+   
   <c:if test="#{field_0.stepf.execution eq 'parallel'}">
     <h:graphicImage value="icons/route_parallel.png"
       alt="#{field_0.dc.title}"
