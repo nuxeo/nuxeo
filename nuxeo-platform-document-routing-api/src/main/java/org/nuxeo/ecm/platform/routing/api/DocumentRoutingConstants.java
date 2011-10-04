@@ -44,6 +44,8 @@ public interface DocumentRoutingConstants {
 
     String STEP_FOLDER_DOCUMENT_TYPE = "StepFolder";
 
+    String STEP_FOLDER_FACET = "StepFolder";
+
     String CONDITIONAL_STEP_FACET = "ConditionalStepFolder";
 
     String CONDITIONAL_STEP_DOCUMENT_TYPE = "ConditionalStepFolder";

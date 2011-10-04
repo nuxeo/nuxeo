@@ -53,7 +53,10 @@ public class DocumentRouteAdapterFactory implements DocumentAdapterFactory {
             }
         } else if (doc.hasFacet(DocumentRoutingConstants.ROUTE_STEP_FACET)) {
             return new DocumentRouteElementImpl(doc, new StepElementRunner());
-        } else if (DocumentRoutingConstants.STEP_FOLDER_DOCUMENT_TYPE.equalsIgnoreCase(type)) {
+        } else if (doc.hasFacet(DocumentRoutingConstants.CONDITIONAL_STEP_FACET)) {
+            return new DocumentRouteStepsContainerImpl(doc,
+                    new ConditionalRunner());
+        } else if (doc.hasFacet(DocumentRoutingConstants.STEP_FOLDER_FACET)) {
             ExecutionTypeValues executionType = getExecutionType(doc, type);
             switch (executionType) {
             case serial:
@@ -63,9 +66,6 @@ public class DocumentRouteAdapterFactory implements DocumentAdapterFactory {
                 return new DocumentRouteStepsContainerImpl(doc,
                         new ParallelRunner());
             }
-        } else if (doc.hasFacet(DocumentRoutingConstants.CONDITIONAL_STEP_FACET)) {
-            return new DocumentRouteStepsContainerImpl(doc,
-                    new ConditionalRunner());
         }
         return null;
     }

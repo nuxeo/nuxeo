@@ -10,8 +10,8 @@
       src="schemas/document_route_model.xsd" />
     <schema name="step_folder" prefix="stepf" src="schemas/step_folder.xsd" />
     <schema name="info_comments" src="schemas/info_comments.xsd" prefix="infocom" />
-    <schema name="conditional_step_folder" prefix="condstepf" src="schemas/conditional_step_folder.xsd" /> 
-  
+    <schema name="conditional_step_folder" prefix="condstepf" src="schemas/conditional_step_folder.xsd" />
+
   </extension>
 
   <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
@@ -19,15 +19,15 @@
     <facet name="Routable" />
     <facet name="DocumentRoute" />
     <facet name="RouteStep" />
-    
+
     <facet name="CommentsInfoHolder">
       <schema name="info_comments" />
     </facet>
-    
+
     <facet name="ConditionalStepFolder">
       <schema name="conditional_step_folder" />
     </facet>
-    
+
 
     <doctype name="DocumentRouteInstancesRoot" extends="Folder">
       <subtypes>
@@ -53,6 +53,7 @@
     </doctype>
 
     <doctype name="StepFolder" extends="OrderedFolder">
+      <facet name="StepFolder" />
       <schema name="step_folder" />
       <subtypes>
         <type>StepFolder</type>
