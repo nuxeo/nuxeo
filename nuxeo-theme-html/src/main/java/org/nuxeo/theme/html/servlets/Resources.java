@@ -144,6 +144,9 @@ public final class Resources extends HttpServlet implements Serializable {
             }
         }
         for (String resourceName : allResourceNames) {
+            if (!resourceName.endsWith(resourceSuffix)) {
+                continue;
+            }
             final OutputStream out = new ByteArrayOutputStream();
             String source = themeManager.getResource(resourceName);
             if (source == null) {
