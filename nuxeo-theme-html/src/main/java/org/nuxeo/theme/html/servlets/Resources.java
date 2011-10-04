@@ -136,6 +136,9 @@ public final class Resources extends HttpServlet implements Serializable {
         List<String> allResourceNames = new ArrayList<String>();
         allResourceNames.addAll(themeManager.getOrderedResourcesAndDeps(resourceNames));
         for (String resourceName : allResourceNames) {
+            if (!resourceName.endsWith(resourceSuffix)) {
+                continue;
+            }
             final OutputStream out = new ByteArrayOutputStream();
             String source = themeManager.getResource(resourceName);
             if (source == null) {
