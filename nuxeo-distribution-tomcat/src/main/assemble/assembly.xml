@@ -317,6 +317,9 @@ org.nuxeo.distribution.package=zip
     <copy todir="${distribution.dir}/sdk/tests">
       <artifact:resolveFiles source="${distribution.dir}/sdk/test-artifacts.properties" />
     </copy>
+    <copy todir="${distribution.dir}/nxserver/bundles">
+      <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-platform-seam-debug" />
+    </copy>
     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-${classifier}-sdk.zip"
          basedir="${outdir}"
          includes="${classifier}-${maven.project.version}-tomcat/**" />
