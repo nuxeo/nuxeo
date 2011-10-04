@@ -29,8 +29,8 @@
   <c:set var="userDirectory" value="#{userManager.userDirectoryName}" />
   <c:set var="userSchema" value="#{userManager.userSchemaName}" />
   <c:set var="firstNameField" value="#{nxu:test(hideFirstLabel, null, firstLabelField)}" />
-  <c:set var="lastNameField" value="#{nxu:test(hideSecondLabel, null, entrySecondLabel)}" />
-  <c:set var="emailField" value="#{nxu:test(hideThirdLabel, null, entryThirdLabel)}" />
+  <c:set var="lastNameField" value="#{nxu:test(hideSecondLabel, null, secondLabelField)}" />
+  <c:set var="emailField" value="#{nxu:test(hideThirdLabel, null, thirdLabelField)}" />
 
   <f:subview rendered="#{displayAction == 'nothing' and searchType == 'USER_TYPE'}">
     <h:outputText value="#{field_0}"
@@ -97,7 +97,7 @@
   <c:set var="maxSearchResults"
     value="#{nxu:test(!empty widget.properties.userSuggestionMaxSearchResults, widget.properties.userSuggestionMaxSearchResults, 0)}" />
   <c:set var="suggestionWidth" value="${nxu:test(!empty widget.properties.width, widget.properties.width, '400')}" />
-  <c:set var="suggestionWithEmail" value="${nxu:test(!empty widget.properties.displayEmailInSuggestion, widget.properties.displayEmailInSuggestion, true)}" />
+  <c:set var="suggestionWithEmail" value="${nxu:test(!empty widget.properties.displayEmailInSuggestion, widget.properties.displayEmailInSuggestion, false)}" />
     
   <a4j:region renderRegionOnly="true" id="#{widget.id}_ajax_region">
     <h:panelGrid id="#{widget.id}_panel" columns="2">

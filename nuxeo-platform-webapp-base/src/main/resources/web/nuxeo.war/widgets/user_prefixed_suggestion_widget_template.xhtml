@@ -15,8 +15,16 @@
       <h:column>
         <nxu:methodResult name="info" value="#{userSuggestionActions.getPrefixedUserInfo(item)}">
           <f:subview rendered="#{info.type == 'USER_TYPE'}">
+              <c:set var="suggestionWithEmail" value="${nxu:test(!empty widget.properties.displayEmailInSuggestion, widget.properties.displayEmailInSuggestion, false)}" />
             <h:graphicImage value="/icons/user.gif" alt="user.gif" />
-            <h:outputText value="#{nxu:userDisplayName(info.id, info.entry[userSchema].firstName, info.entry[userSchema].lastName)}" />
+            <c:choose>
+              <c:when test="#{suggestionWithEmail}">
+                <c:set var="userDisplayName" value="#{nxu:userDisplayNameAndEmail(info.id, info.entry[userSchema].firstName, info.entry[userSchema].lastName, info.entry[userSchema].email)}" />
+              </c:when>
+              <c:otherwise>
+                <c:set var="userDisplayName" value="#{nxu:userDisplayName(info.id, info.entry[userSchema].firstName, info.entry[userSchema].lastName)}" />
+              </c:otherwise>
+            </c:choose>
           </f:subview>
           <f:subview rendered="#{info.type == 'GROUP_TYPE'}">
             <h:graphicImage value="/icons/group.gif" alt="group.gif" />
@@ -133,10 +141,10 @@
                       <h:graphicImage value="/icons/user.gif" alt="user.gif" />
                         <c:choose>
                           <c:when test="#{suggestionWithEmail}">
-                            <h:outputText value="#{nxu:userDisplayNameAndEmail(result.id, result.entry[userSchema].firstName, result.entry[userSchema].lastName, result.entry[userSchema].email)}" />
+                            <h:outputText value="#{nxu:userDisplayNameAndEmail(result.id, info.entry[userSchema].firstName, info.entry[userSchema].lastName, info.entry[userSchema].email)}" />
                           </c:when>
                           <c:otherwise>
-                            <h:outputText value="#{nxu:userDisplayName(result.id, result.entry[userSchema].firstName, result.entry[userSchema].lastName)}" />
+                            <h:outputText value="#{nxu:userDisplayName(result.id, info.entry[userSchema].firstName, info.entry[userSchema].lastName)}" />
                           </c:otherwise>
                         </c:choose>
                     </f:subview>
