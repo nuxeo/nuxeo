@@ -35,6 +35,7 @@
     <module>nuxeo-platform-webapp-base</module>
     <module>nuxeo-theme-jsf</module>
     <module>nuxeo-platform-contentview-jsf</module>
+    <module>nuxeo-platform-seam-debug</module>
   </modules>
 
   <dependencyManagement>
