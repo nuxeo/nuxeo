@@ -127,7 +127,9 @@ public class DocumentManagerBusinessDelegate implements Serializable {
         LoginContext lc = null;
         try {
             try {
-                lc = Framework.login();
+                if (Framework.getRuntime() != null) {
+                    lc = Framework.login();
+                }
             } catch (LoginException le) {
                 log.error("Unable to login as System", le);
                 log.warn("...try to feed CoreSession(s) without system login ...");
