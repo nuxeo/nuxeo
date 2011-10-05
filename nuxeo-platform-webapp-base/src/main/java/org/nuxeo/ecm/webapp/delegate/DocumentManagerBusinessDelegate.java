@@ -128,10 +128,9 @@ public class DocumentManagerBusinessDelegate implements Serializable {
         try {
             try {
                 lc = Framework.login();
-            }
-            catch (LoginException le) {
-                 log.error("Unable to login as System", le);
-                 log.warn("...try to feed CoreSession(s) without system login ...");
+            } catch (LoginException le) {
+                log.error("Unable to login as System", le);
+                log.warn("...try to feed CoreSession(s) without system login ...");
             }
             for (Entry<RepositoryLocation, CoreSession> entry : sessions.entrySet()) {
                 String serverName = entry.getKey().getName();
@@ -139,17 +138,15 @@ public class DocumentManagerBusinessDelegate implements Serializable {
                 Repository.close(session);
                 log.debug("Closed session for repository " + serverName);
             }
-        }
-        finally {
+        } finally {
             if (lc != null) {
                 try {
                     lc.logout();
                 } catch (LoginException lo) {
-                    log.error("Error when loggin out", lo);
+                    log.error("Error when logout", lo);
                 }
             }
             sessions.clear();
         }
-
     }
 }
