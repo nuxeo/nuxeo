@@ -28,10 +28,13 @@
             <field schema="relation_search" name="ecm_fulltext" />
           </predicate>
 
+          <predicate parameter="ecm:currentLifeCycleState" operator="!=">
+            <field schema="relation_search" name="currentLifeCycleState" />
+          </predicate>
+
           <fixedPart>
             ecm:uuid != ? AND ecm:mixinType != 'HiddenInNavigation' AND
-            ecm:mixinType != 'Folderish' AND ecm:isCheckedInVersion = 0 AND
-            ecm:currentLifeCycleState !='deleted'
+            ecm:mixinType != 'Folderish' AND ecm:isCheckedInVersion = 0
           </fixedPart>
         </whereClause>
         <sort column="dc:title" ascending="true" />

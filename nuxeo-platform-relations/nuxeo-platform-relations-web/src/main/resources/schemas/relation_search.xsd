@@ -8,5 +8,6 @@
   <xs:element name="ecm_path" type="nxs:stringList"/>
   <xs:element name="dc_title" type="xs:string" />
   <xs:element name="ecm_fulltext" type="xs:string" />
+  <xs:element name="currentLifeCycleState" type="xs:string" default=" " />
 
 </xs:schema>
