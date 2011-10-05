@@ -8,7 +8,7 @@
     <provide interface="org.nuxeo.ecm.spaces.api.SpaceManager" />
   </service>
 
-   <extension-point name="spaceProviders">
+  <extension-point name="spaceProviders">
     <documentation>
       Space provider contribution
       <spaceProvider name="someName">
@@ -16,6 +16,14 @@
       </spaceProvider>
     </documentation>
     <object class="org.nuxeo.ecm.spaces.impl.SpaceProviderDescriptor" />
+  </extension-point>
+
+  <extension-point name="spacePermissions">
+    <documentation>
+      Space permissions contribution
+    <permission>SomePermission</permission>
+    </documentation>
+    <object class="org.nuxeo.ecm.spaces.impl.SpacePermissionsDescriptor" />
   </extension-point>
 
 </component>

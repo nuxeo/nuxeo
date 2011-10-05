@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.spaces.core.spacemanager.test.permissionsContrib" version="1.0">
+
+  <extension target="org.nuxeo.ecm.spaces.core.spacemanager.service"
+    point="spacePermissions">
+    <spacePermissions>
+      <permission>Write</permission>
+      <permission>Write1</permission>
+      <permission>Write2</permission>
+    </spacePermissions>
+
+  </extension>
+
+</component>

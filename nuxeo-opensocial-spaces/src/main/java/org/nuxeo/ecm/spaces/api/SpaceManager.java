@@ -18,6 +18,7 @@
 package org.nuxeo.ecm.spaces.api;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -61,6 +62,6 @@ public interface SpaceManager {
 
     SpaceProvider getSpaceProvider(String string) throws SpaceException;
 
-
-
+    List<String> getAvailablePermissions();
+    
 }

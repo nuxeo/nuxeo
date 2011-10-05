@@ -18,8 +18,10 @@
 
 package org.nuxeo.ecm.spaces.impl;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -49,16 +51,22 @@ public class SpaceManagerImpl extends DefaultComponent implements SpaceManager {
 
     protected static final String SPACE_PROVIDER_EP = "spaceProviders";
 
+    protected static final String SPACE_PERMISSIONS_EP = "spacePermissions";
+
     protected Map<String, SpaceProvider> spaceProviders;
+
+    protected List<String> spacePermissions;
 
     @Override
     public void activate(ComponentContext context) throws Exception {
         spaceProviders = new HashMap<String, SpaceProvider>();
+        spacePermissions = new ArrayList<String>();
     }
 
     @Override
     public void deactivate(ComponentContext context) throws Exception {
         spaceProviders = null;
+        spacePermissions = null;
     }
 
     public Space getSpaceFromId(String spaceId, CoreSession session)
@@ -148,6 +156,15 @@ public class SpaceManagerImpl extends DefaultComponent implements SpaceManager {
                 spaceProviders.put(descriptor.getName(),
                         descriptor.getSpaceProvider());
             }
+        } else if (SPACE_PERMISSIONS_EP.equals(extensionPoint)) {
+            SpacePermissionsDescriptor descriptor =  (SpacePermissionsDescriptor) contribution;
+            log.info("descriptor:" + descriptor);
+            spacePermissions.addAll(descriptor.getPermissions());
+            if (log.isInfoEnabled()) {
+                for (String entry : descriptor.getPermissions()) {
+                    log.info("Registering space permission with nxName " + entry);
+                }
+            }
         }
     }
 
@@ -160,6 +177,16 @@ public class SpaceManagerImpl extends DefaultComponent implements SpaceManager {
             String name = descriptor.getName();
             spaceProviders.remove(name);
             log.info("Unregistering space provider with name " + name);
+        } else if (SPACE_PERMISSIONS_EP.equals(extensionPoint)) {
+            SpacePermissionsDescriptor descriptor =  (SpacePermissionsDescriptor) contribution;
+            for (String entry : descriptor.getPermissions()) {
+                boolean removed = spacePermissions.remove(entry);
+                if (removed) {
+                    log.info("Unregistering space permission with nxName " + entry);
+                } else {
+                    log.warn("Unregistering unknown space permission with nxName " + entry);
+                }
+            }
         }
     }
 
@@ -175,6 +202,11 @@ public class SpaceManagerImpl extends DefaultComponent implements SpaceManager {
         } else {
             throw new SpaceException("Provider " + providerName + " not found");
         }
+    }
+
+    @Override
+    public List<String> getAvailablePermissions() {
+        return new ArrayList<String>(spacePermissions);
     }
 
 }

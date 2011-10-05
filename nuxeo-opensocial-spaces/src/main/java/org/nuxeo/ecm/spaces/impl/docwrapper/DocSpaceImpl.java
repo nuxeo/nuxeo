@@ -37,6 +37,7 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.Sorter;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.spaces.api.Space;
+import org.nuxeo.ecm.spaces.api.SpaceManager;
 import org.nuxeo.opensocial.container.server.layout.YUILayoutAdapter;
 import org.nuxeo.opensocial.container.server.service.WebContentSaverService;
 import org.nuxeo.opensocial.container.shared.PermissionsConstants;
@@ -275,7 +276,7 @@ public class DocSpaceImpl implements Space {
         try {
             service = Framework.getService(WebContentSaverService.class);
         } catch (Exception e) {
-            throw new ClientException("Unable to get Space Manager", e);
+            throw new ClientException("Unable to get WebContent saver service", e);
         }
         DocumentModel webContentDoc = session().getDocument(
                 new IdRef(webContentId));
@@ -329,13 +330,26 @@ public class DocSpaceImpl implements Space {
         id = doc.getId();
 
         Map<String, Boolean> perm = new HashMap<String, Boolean>();
-
-        if (hasPermission(id, SecurityConstants.EVERYTHING)) {
-            perm.put(PermissionsConstants.EVERYTHING, Boolean.TRUE);
-        } else {
-            perm.put(PermissionsConstants.READ, Boolean.TRUE);
+        SpaceManager sm = null;
+        try {
+            sm = Framework.getService(SpaceManager.class);
+        } catch (Exception e) {
+            throw new ClientException("Unable to get Space Manager", e);
         }
-
+        List<String> permissions = sm.getAvailablePermissions();
+        if (permissions.isEmpty()) {
+            if (hasPermission(id, SecurityConstants.EVERYTHING)) {
+                perm.put(PermissionsConstants.EVERYTHING, Boolean.TRUE);
+            } else {
+                perm.put(PermissionsConstants.READ, Boolean.TRUE);
+            }
+        } else {
+            for (String entry : permissions) {
+                if (hasPermission(id, entry)) {
+                    perm.put(entry, Boolean.TRUE);
+                }
+            }
+        }
         return perm;
     }
 

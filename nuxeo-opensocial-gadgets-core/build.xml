@@ -9,7 +9,7 @@
 
   <!-- Create a build.properties file from build.properties.sample
        if you wish to override the JBoss paths -->
-  <property file="build.properties" />
+  <property file="../build.properties" />
   <property name="jboss.dir" value="/opt/jboss" />
 
   <property name="javac.debug" value="true" />
