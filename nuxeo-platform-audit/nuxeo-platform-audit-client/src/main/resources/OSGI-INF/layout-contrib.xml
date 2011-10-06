@@ -139,7 +139,7 @@
         </properties>
       </widget>
 
-      <widget name="username" type="text">
+      <widget name="username" type="listing_author">
         <labels>
           <label mode="any">label.username</label>
         </labels>
