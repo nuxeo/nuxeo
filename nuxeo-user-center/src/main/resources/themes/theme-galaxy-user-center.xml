@@ -103,6 +103,9 @@
     </widget>
     <!-- buttons -->
     <style name="default buttons">
+      <selector path="input">
+        <margin>0</margin>
+      </selector>
       <selector path="input.button">
         <font preset="default (Galaxy User Center fonts)"/>
         <color preset="buttons (Galaxy User Center colors)" />
@@ -394,9 +397,6 @@
       </selector>
       <selector path=".clear">
         <clear>both</clear>
-      </selector>
-      <selector path="input">
-        <margin>0</margin>
       </selector>
       <selector path=".pageNavigationControls span">
         <color preset="navigation.control (Galaxy User Center colors)" />
@@ -1621,6 +1621,36 @@
       <selector path=".relationPopUp table input">
         <margin>0 0 0 20px</margin>
         <float>right</float>
+      </selector>
+      <!-- Styles for Relationship Network tab-->
+      <selector path=".tag">
+        <margin>2px</margin>
+        <display>block</display>
+        <padding>2px</padding>
+        <border-radius>3px</border-radius>
+        <background-color>#E1F3FF</background-color>
+        <border>1px solid #BDE5FF</border>
+      </selector>
+      <selector path=".userRelation">
+        <float>right</float>
+      </selector>
+      <selector path=".userRelationsPanel">
+        <padding>10px 15px 15px</padding>
+      </selector>
+      <selector path=".half">
+        <width>45%</width>
+      </selector>
+      <selector path=".left">
+        <float>left</float>
+      </selector>
+      <selector path=".right">
+        <float>right</float>
+      </selector>
+      <selector path=".userRelationsPanel #searchForm">
+        <display>inline</display>
+      </selector>
+      <selector path=".userRelationsPanel .dataOutput tr:hover">
+        <background preset="blue.sky (Galaxy User Center backgrounds)" />
       </selector>
       <!-- fix gadget width in profile view-->
       <selector path=".fullWidth">
