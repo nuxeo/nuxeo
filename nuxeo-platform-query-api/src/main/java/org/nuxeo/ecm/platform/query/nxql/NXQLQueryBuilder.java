@@ -403,11 +403,18 @@ public class NXQLQueryBuilder {
      * @return the serialized statement
      */
 
-    public static final String SPECIAL_CHARACTERS_REGEXP = "[!-/:-@{-}`^~]";
+    // public static final String SPECIAL_CHARACTERS_REGEXP = "[!-/:-@{-}`^~]";
+
+    public static final String DEFAULT_SPECIAL_CHARACTERS_REGEXP = "!\"#$%&'()*+,-./:-@{|}`^~";
+
+    public static final String IGNORED_CHARS_KEY = "org.nuxeo.query.builder.ignored.chars";
 
     public static String serializeFullText(String value) {
+        String ignoredChars = Framework.getProperty(IGNORED_CHARS_KEY,
+                DEFAULT_SPECIAL_CHARACTERS_REGEXP);
+
         String res = "";
-        value = value.replaceAll(SPECIAL_CHARACTERS_REGEXP, " ");
+        value = value.replaceAll("[" + ignoredChars + "]", " ");
         value = value.trim();
         String[] tokens = value.split(" ");
         for (int i = 0; i < tokens.length; i++) {
