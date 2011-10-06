@@ -135,7 +135,7 @@
                 <helpLabels>
                   <label mode="any">
                     Boolean indicating if the first label should be hidden.
-                    Defaults to false. 
+                    Defaults to false.
                   </label>
                 </helpLabels>
                 <fields>
@@ -149,7 +149,7 @@
                 <helpLabels>
                   <label mode="any">
                     Boolean indicating if the second label should be hidden.
-                    Defaults to false. 
+                    Defaults to false.
                   </label>
                 </helpLabels>
                 <fields>
@@ -207,7 +207,7 @@
                   <field>displayEmailInSuggestion</field>
                 </fields>
               </widget>
-              
+
             </layout>
           </layouts>
           <layouts mode="edit">
@@ -297,7 +297,7 @@
                     Default value is 0ms.
                   </label>
                 </helpLabels>
-                
+
                 <fields>
                   <field>frequency</field>
                 </fields>
@@ -450,7 +450,7 @@
                 <helpLabels>
                   <label mode="any">
                     Boolean indicating if the first label should be hidden.
-                    Defaults to false. 
+                    Defaults to false.
                   </label>
                 </helpLabels>
                 <fields>
@@ -464,7 +464,7 @@
                 <helpLabels>
                   <label mode="any">
                     Boolean indicating if the second label should be hidden.
-                    Defaults to false. 
+                    Defaults to false.
                   </label>
                 </helpLabels>
                 <fields>
@@ -958,6 +958,27 @@
       </property>
     </widgetType>
 
+    <widgetType name="select_vocabulary_tree">
+      <configuration>
+        <sinceVersion>5.4.3</sinceVersion>
+        <title>Vocabulary tree</title>
+        <description>
+          Widget allowing to select one or more values from a tree constructed
+          from a l10nvocabulary or l10nxvocabulary directory.
+
+          The property 'directoryName' is required.
+          To be able to select multiple values, set property 'multipleValues' to true.
+          To select only the id of a node (instead of its path), set property 'selectIdOnly' to true.
+        </description>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/select_vocabulary_tree_widget_template.xhtml
+      </property>
+    </widgetType>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
@@ -1215,7 +1236,7 @@
             /widgets/user_suggestion_widget_template.xhtml
           </property>
         </properties>
-        
+
       </widget>
     </layout>
 
