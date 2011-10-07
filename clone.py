@@ -35,7 +35,7 @@ def fetch(module, root_url=None):
         system("hg pull -R %s" % module)
     else:
         print "Cloning " + module + "..."
-        system("hg clone %s/%s %s" % (root, module, module))
+        system("hg clone %s/%s %s" % (root_url, module, module))
     system("hg up -R %s %s" % (module, branch))
     print
 
