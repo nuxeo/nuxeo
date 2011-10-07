@@ -35,12 +35,12 @@
       <groupId>org.nuxeo.ecm.distribution</groupId>
       <artifactId>nuxeo-distribution-cap-tests</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.distribution</groupId>
-      <artifactId>nuxeo-distribution-tomcat</artifactId>
-      <type>zip</type>
-      <classifier>nuxeo-dm</classifier>
-    </dependency>
+<!--     <dependency> -->
+<!--       <groupId>org.nuxeo.ecm.distribution</groupId> -->
+<!--       <artifactId>nuxeo-distribution-tomcat</artifactId> -->
+<!--       <type>zip</type> -->
+<!--       <classifier>nuxeo-dm</classifier> -->
+<!--     </dependency> -->
   </dependencies>
 
   <build>
