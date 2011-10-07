@@ -30,6 +30,7 @@ import org.jboss.seam.annotations.Create;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -45,6 +46,7 @@ import org.nuxeo.ecm.directory.api.ui.DirectoryUI;
 import org.nuxeo.ecm.directory.api.ui.DirectoryUIDeleteConstraint;
 import org.nuxeo.ecm.directory.api.ui.DirectoryUIManager;
 import org.nuxeo.ecm.platform.ui.web.directory.DirectoryHelper;
+import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 
 /**
@@ -231,6 +233,7 @@ public class DirectoryUIActionsBean implements Serializable {
             resetCreateDirectoryEntry();
             // invalidate directory entries list
             currentDirectoryEntries = null;
+            Events.instance().raiseEvent(EventNames.DIRECTORY_CHANGED, dirName);
 
             facesMessages.add(StatusMessage.Severity.INFO,
                     resourcesAccessor.getMessages().get(
@@ -281,6 +284,7 @@ public class DirectoryUIActionsBean implements Serializable {
             selectedDirectoryEntry = null;
             // invalidate directory entries list
             currentDirectoryEntries = null;
+            Events.instance().raiseEvent(EventNames.DIRECTORY_CHANGED, dirName);
 
             facesMessages.add(StatusMessage.Severity.INFO,
                     resourcesAccessor.getMessages().get(
@@ -314,6 +318,7 @@ public class DirectoryUIActionsBean implements Serializable {
             dirSession.deleteEntry(entryId);
             // invalidate directory entries list
             currentDirectoryEntries = null;
+            Events.instance().raiseEvent(EventNames.DIRECTORY_CHANGED, dirName);
             facesMessages.add(StatusMessage.Severity.INFO,
                     resourcesAccessor.getMessages().get(
                             "vocabulary.entry.deleted"));
