@@ -19,7 +19,7 @@
 ## repositories.
 ##
 
-import re, os, sys, commands
+import re, os, sys, subprocess
 
 def system(cmd):
     print "$> " + cmd
@@ -48,7 +48,7 @@ def fetch(module, root_url=None):
 if len(sys.argv) == 2:
     branch = sys.argv[1]
 else:
-    branch = commands.getoutput("hg id -b")
+    branch = subprocess.check_output(["hg","id","-b"]).strip()
 
 system("hg pull")
 system("hg up %s" % branch)
