@@ -765,7 +765,7 @@ padding:5px 0px 2px 0px;
 .bannerBottom .links a:hover {
   background-color: #1aabe0;
   border: 1px solid #3ab6e3;
-  color:#fff; 
+  color:#fff;
   text-decoration: none;
   }
 
@@ -803,4 +803,18 @@ padding:5px 0px 2px 0px;
     border: 1px solid #00b6cb;
     color: #fff;
     text-decoration:none !important;
+}
+
+/* FancyBox styles */
+#fancybox-wrap {
+    font: normal 12px/19px "Lucida Grande", Helvetica, Verdana, sans-serif
+}
+
+#fancybox-wrap a, #fancybox-wrap a:link, #fancybox-wrap a:visited {
+    text-decoration: none;
+    color: #0066cc
+}
+
+#fancybox-wrap a:hover, #fancybox-wrap a:active {
+    text-decoration: underline
 }
