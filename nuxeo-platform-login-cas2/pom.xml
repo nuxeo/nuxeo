@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -32,14 +33,13 @@
       <groupId>javax.ejb</groupId>
       <artifactId>ejb-api</artifactId>
     </dependency>
-    
 
     <dependency>
       <groupId>commons-logging</groupId>
       <artifactId>commons-logging-api</artifactId>
       <scope>provided</scope>
     </dependency>
-    
+
     <dependency>
       <groupId>org.jboss.seam</groupId>
       <artifactId>jboss-seam</artifactId>
@@ -50,11 +50,9 @@
       <artifactId>jsf-api</artifactId>
     </dependency>
     <dependency>
-    	<groupId>org.nuxeo.ecm.platform</groupId>
-    	<artifactId>nuxeo-platform-login</artifactId>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-login</artifactId>
     </dependency>
-
-
 
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
@@ -81,12 +79,13 @@
       <artifactId>nuxeo-platform-webapp-base</artifactId>
     </dependency>
     <dependency>
-    	<groupId>org.jboss.seam</groupId>
-    	<artifactId>jboss-seam</artifactId>
+      <groupId>org.jboss.seam</groupId>
+      <artifactId>jboss-seam</artifactId>
     </dependency>
     <dependency>
-    	<groupId>org.nuxeo.ecm.platform</groupId>
-    	<artifactId>nuxeo-platform-web-common</artifactId>
-    </dependency>  </dependencies>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-web-common</artifactId>
+    </dependency>
+  </dependencies>
 
 </project>
