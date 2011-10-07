@@ -20,7 +20,7 @@
 ## repositories.
 ##
 
-import re, os, sys, commands, urllib
+import re, os, sys, subprocess, urllib
 #from pprint import pprint
 
 git_url = "https://github.com/nuxeo"
@@ -63,7 +63,7 @@ def git_fetch(module):
 if len(sys.argv) == 2:
     branch = sys.argv[1]
 else:
-    branch = commands.getoutput("hg id -b")
+    branch = subprocess.check_output(["hg","id","-b"]).strip()
 
 system("hg pull")
 system("hg up %s" % branch)
