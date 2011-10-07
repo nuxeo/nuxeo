@@ -20,24 +20,4 @@
     <module>nuxeo-user-dashboard-opensocial</module>
   </modules>
 
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-user-dashboard</artifactId>
-        <version>${nuxeo.user.center.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-user-dashboard-jsf</artifactId>
-        <version>${nuxeo.user.center.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-user-dashboard-opensocial</artifactId>
-        <version>${nuxeo.user.center.version}</version>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
-
 </project>
