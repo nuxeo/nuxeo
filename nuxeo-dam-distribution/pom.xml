@@ -86,10 +86,6 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-imaging-facade</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-imaging-preview</artifactId>
     </dependency>
     <dependency>
@@ -119,10 +115,6 @@
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-annotations-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-annotations-facade</artifactId>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
