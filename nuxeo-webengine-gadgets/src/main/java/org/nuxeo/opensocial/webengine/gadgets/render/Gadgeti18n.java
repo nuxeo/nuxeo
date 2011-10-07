@@ -47,7 +47,7 @@ import org.nuxeo.opensocial.gadgets.service.InternalGadgetDescriptor;
  *
  * Dynamic mode : gadget only includes a dynamic_messages.properties This file
  * is used to know what labels are used by the gadget (and provide default
- * valude) The Headers in Gadgets specs and associated XML files will be
+ * value) The Headers in Gadgets specs and associated XML files will be
  * dynamically generated using the message bundles used by Nuxeo app.
  *
  * @author Tiry (tdelprat@nuxeo.com)
@@ -59,12 +59,18 @@ public class Gadgeti18n {
 
     protected static final String EMPTY_I18N_FILE = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><messagebundle></messagebundle>";
 
+    protected static final String[] LANGS = { "en", "fr", "de", "it", "es",
+            "pt", "pl", "eu", "ru", "ar", "cn", "ja", "vn" };
+
+    protected static final List<Locale> SUPPORTED_LOCALES = new ArrayList<Locale>();
+
+    static {
+        for (String lang : LANGS) {
+            SUPPORTED_LOCALES.add(new Locale(lang));
+        }
+    }
+
     protected Map<String, Boolean> isDynamicTranslation = new HashMap<String, Boolean>();
-
-    protected String[] langs = { "en", "fr", "de", "it", "es", "pt", "pl",
-            "eu", "ru", "ar", "cn", "ja", "vn" };
-
-    protected List<Locale> supportedLang;
 
     public InputStream getTranslationFile(InternalGadgetDescriptor gadget,
             String fileName) throws IOException {
@@ -76,13 +82,7 @@ public class Gadgeti18n {
     }
 
     public List<Locale> getSupportedLangs() {
-        if (supportedLang == null) {
-            supportedLang = new ArrayList<Locale>();
-            for (String lang : langs) {
-                supportedLang.add(new Locale(lang));
-            }
-        }
-        return supportedLang;
+        return SUPPORTED_LOCALES;
     }
 
     protected boolean usesDynamicTranslation(InternalGadgetDescriptor gadget) {
@@ -129,8 +129,9 @@ public class Gadgeti18n {
                 dynDescriptor);
 
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
-        for (Locale locale : getSupportedLangs()) {
-            ResourceBundle bundle = ResourceBundle.getBundle("messages", locale, cl);
+        for (Locale locale : SUPPORTED_LOCALES) {
+            ResourceBundle bundle = ResourceBundle.getBundle("messages",
+                    locale, cl);
 
             File messageFile = getDynamicFile(gadget,
                     "messages_" + locale.toString() + ".xml");
