@@ -109,7 +109,7 @@ public class ConfigurationGenerator {
 
     public static final int MIN_PORT = 1;
 
-    public static final int MAX_PORT = 49151;
+    public static final int MAX_PORT = 65535;
 
     public static final int ADDRESS_PING_TIMEOUT = 1000;
 
