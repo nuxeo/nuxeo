@@ -64,4 +64,8 @@ for line in os.popen("mvn -N help:effective-pom"):
 fetch("nuxeo-distribution")
 fetch("addons", "https://hg.nuxeo.org")
 
-system("cd addons ; python clone.py %s" % branch)
+cwd = os.getcwd()
+os.chdir("addons")
+system("python clone.py %s" % branch)
+os.chdir(cwd)
+
