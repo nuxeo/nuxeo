@@ -25,12 +25,6 @@
     <module>nuxeo-theme-webengine</module>
   </modules>
 
-  <properties>
-    <nuxeo.webengine.version>5.4.3-SNAPSHOT</nuxeo.webengine.version>
-    <nuxeo.services.version>5.4.3-SNAPSHOT</nuxeo.services.version>
-    <nuxeo.theme.version>5.4.3-SNAPSHOT</nuxeo.theme.version>
-  </properties>
-
   <dependencies>
     <!-- needed by APT for annotation processing -->
     <dependency>
@@ -43,74 +37,6 @@
       <artifactId>nuxeo-webengine-apt</artifactId>
     </dependency>
   </dependencies>
-
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-rendering</artifactId>
-        <version>${nuxeo.services.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-test</artifactId>
-        <version>${nuxeo.services.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.webengine</groupId>
-        <artifactId>nuxeo-webengine-core</artifactId>
-        <version>${nuxeo.webengine.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.webengine</groupId>
-        <artifactId>nuxeo-webengine-jaxrs</artifactId>
-        <version>${nuxeo.webengine.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.webengine</groupId>
-        <artifactId>nuxeo-webengine-ui</artifactId>
-        <version>${nuxeo.webengine.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.webengine</groupId>
-        <artifactId>nuxeo-theme-webengine</artifactId>
-        <version>${nuxeo.webengine.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.theme</groupId>
-        <artifactId>nuxeo-theme-core</artifactId>
-        <version>${nuxeo.theme.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.theme</groupId>
-        <artifactId>nuxeo-theme-fragments</artifactId>
-        <version>${nuxeo.theme.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.theme</groupId>
-        <artifactId>nuxeo-theme-html</artifactId>
-        <version>${nuxeo.theme.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.nuxeo.runtime</groupId>
-        <artifactId>nuxeo-runtime-jetty-adapter</artifactId>
-        <version>${nuxeo.runtime.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.runtime</groupId>
-        <artifactId>nuxeo-runtime-launcher</artifactId>
-        <version>${nuxeo.runtime.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.nuxeo.runtime</groupId>
-        <artifactId>nuxeo-runtime-test</artifactId>
-        <version>${nuxeo.runtime.version}</version>
-        <scope>test</scope>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
 
   <build>
     <plugins>
