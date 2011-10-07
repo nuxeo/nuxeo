@@ -24,62 +24,6 @@
     <module>nuxeo-webengine-gadgets</module>
   </modules>
 
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.nuxeo.ecm.opensocial</groupId>
-        <artifactId>nuxeo-opensocial-gadgets</artifactId>
-        <version>${nuxeo.features.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.opensocial</groupId>
-        <artifactId>nuxeo-opensocial-server</artifactId>
-        <version>${nuxeo.features.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.opensocial</groupId>
-        <artifactId>nuxeo-opensocial-features</artifactId>
-        <version>${nuxeo.features.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.opensocial</groupId>
-        <artifactId>nuxeo-opensocial-gadgets-core</artifactId>
-        <version>${nuxeo.features.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.opensocial</groupId>
-        <artifactId>nuxeo-opensocial-container</artifactId>
-        <version>${nuxeo.features.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.nuxeo.build</groupId>
-            <artifactId>nuxeo-distribution-tools</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.opensocial</groupId>
-        <artifactId>nuxeo-opensocial-container-webapp</artifactId>
-        <version>${nuxeo.features.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.opensocial</groupId>
-        <artifactId>nuxeo-opensocial-spaces</artifactId>
-        <version>${nuxeo.features.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.opensocial</groupId>
-        <artifactId>nuxeo-webengine-gadgets</artifactId>
-        <version>${nuxeo.features.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.opensocial</groupId>
-        <artifactId>nuxeo-gwt-richtexteditor</artifactId>
-        <version>${nuxeo.features.version}</version>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
-
   <developers>
     <developer>
       <id>dmetzler</id>
