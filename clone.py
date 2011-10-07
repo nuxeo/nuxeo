@@ -52,9 +52,15 @@ def hg_fetch(module, root_url=None):
 def git_fetch(module):
     if os.path.isdir(module):
         print "Updating " + module + "..."
-        retcode = system("cd %s ; git pull %s/%s.git %s" % (module, git_url, module, branch))
+        cwd = os.getcwd()
+        os.chdir(module)
+        retcode = system("git pull %s/%s.git %s" % (git_url, module, branch))
+        os.chdir(cwd)
         if retcode != 0:
-            system("cd %s ; git pull %s/%s.git %s" % (module, git_url, module, "master"))
+            cwd = os.getcwd()
+            os.chdir(module)
+            system("git pull %s/%s.git %s" % (git_url, module, "master"))
+            os.chdir(cwd)
     else:
         print "Cloning " + module
         system("git clone -b %s %s/%s.git %s" % (branch, git_url, module, module))
