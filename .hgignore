@@ -8,6 +8,7 @@ target
 *.swp
 *~
 *.orig
+.idea
 *.ipr
 *.iml
 *.iws
