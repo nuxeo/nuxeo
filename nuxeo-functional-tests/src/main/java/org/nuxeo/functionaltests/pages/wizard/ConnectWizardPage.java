@@ -67,6 +67,7 @@ public class ConnectWizardPage extends AbstractWizardPage {
         if (link == null) {
             return null;
         }
+        waitUntilEnabled(link);
         link.click();
         try {
             Thread.sleep(1000);

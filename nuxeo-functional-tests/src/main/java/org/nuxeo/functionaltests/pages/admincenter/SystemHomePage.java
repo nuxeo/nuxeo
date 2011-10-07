@@ -30,6 +30,8 @@ public class SystemHomePage extends AdminCenterBasePage {
 
     public static final String SETUP_SUBTAB = "Setup";
 
+     private static final int RESTART_TIMEOUT_MINUTES = 10;
+
     public SystemHomePage(WebDriver driver) {
         super(driver);
     }
@@ -59,7 +61,7 @@ public class SystemHomePage extends AdminCenterBasePage {
         } else {
             return null;
         }
-        findElementWithTimeout(By.id("username"), 4 * 60 * 1000);
+        findElementWithTimeout(By.id("username"), RESTART_TIMEOUT_MINUTES * 60 * 1000);
         return asPage(LoginPage.class);
     }
 

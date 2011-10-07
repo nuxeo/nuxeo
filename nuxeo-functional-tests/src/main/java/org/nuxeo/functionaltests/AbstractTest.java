@@ -65,9 +65,9 @@ public abstract class AbstractTest {
 
     private static final String M2_REPO = "/.m2/repository/";
 
-    private static final int LOAD_TIMEOUT_SECONDS = 5;
+    private static final int LOAD_TIMEOUT_SECONDS = 30;
 
-    private static final int AJAX_TIMEOUT_SECONDS = 5;
+    private static final int AJAX_TIMEOUT_SECONDS = 10;
 
     protected static FirefoxDriver driver;
 
