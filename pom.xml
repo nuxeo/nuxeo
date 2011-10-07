@@ -18,11 +18,6 @@
     framework used to compose the UI and the look and feel of web applications.
   </description>
 
-  <properties>
-    <nuxeo.theme.version>${pom.version}</nuxeo.theme.version>
-    <nuxeo.webengine.version>${pom.version}</nuxeo.webengine.version>
-  </properties>
-
   <modules>
     <module>nuxeo-theme-core</module>
     <module>nuxeo-theme-fragments</module>
@@ -54,26 +49,6 @@
     <developerConnection>scm:hg:https://hg.nuxeo.org/nuxeo/nuxeo-theme</developerConnection>
     <url>http://hg.nuxeo.org/nuxeo/nuxeo-theme</url>
   </scm>
-
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.nuxeo.theme</groupId>
-        <artifactId>nuxeo-theme-core</artifactId>
-        <version>${nuxeo.theme.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.theme</groupId>
-        <artifactId>nuxeo-theme-fragments</artifactId>
-        <version>${nuxeo.theme.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.theme</groupId>
-        <artifactId>nuxeo-theme-html</artifactId>
-        <version>${nuxeo.theme.version}</version>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
 
   <repositories>
     <repository>
