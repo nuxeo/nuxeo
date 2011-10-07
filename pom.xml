@@ -2,11 +2,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-
-  <prerequisites>
-    <maven>2.0.9</maven>
-  </prerequisites>
-
   <parent>
     <groupId>org.nuxeo.ecm.platform</groupId>
     <artifactId>nuxeo-features-parent</artifactId>
@@ -24,62 +19,6 @@
     <module>nuxeo-opencmis-bindings</module>
     <module>nuxeo-opencmis-tests</module>
   </modules>
-
-  <properties>
-    <chemistry.opencmis.version>0.4.0-r1096750</chemistry.opencmis.version>
-    <nuxeo.version>5.4.3-SNAPSHOT</nuxeo.version>
-  </properties>
-
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.nuxeo.ecm.core</groupId>
-        <artifactId>nuxeo-opencmis-bindings</artifactId>
-        <version>${nuxeo.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.core</groupId>
-        <artifactId>nuxeo-opencmis-impl</artifactId>
-        <version>${nuxeo.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.core</groupId>
-        <artifactId>nuxeo-opencmis-tests</artifactId>
-        <version>${nuxeo.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.chemistry.opencmis</groupId>
-        <artifactId>chemistry-opencmis-commons-api</artifactId>
-        <version>${chemistry.opencmis.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.chemistry.opencmis</groupId>
-        <artifactId>chemistry-opencmis-commons-impl</artifactId>
-        <version>${chemistry.opencmis.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.chemistry.opencmis</groupId>
-        <artifactId>chemistry-opencmis-server-support</artifactId>
-        <version>${chemistry.opencmis.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.chemistry.opencmis</groupId>
-        <artifactId>chemistry-opencmis-client-api</artifactId>
-        <version>${chemistry.opencmis.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.chemistry.opencmis</groupId>
-        <artifactId>chemistry-opencmis-client-impl</artifactId>
-        <version>${chemistry.opencmis.version}</version>
-      </dependency>
-    <dependency>
-      <groupId>org.apache.chemistry.opencmis</groupId>
-      <artifactId>chemistry-opencmis-server-bindings</artifactId>
-      <classifier>classes</classifier>
-      <version>${chemistry.opencmis.version}</version>
-    </dependency>
-    </dependencies>
-  </dependencyManagement>
 
   <repositories>
     <repository>
