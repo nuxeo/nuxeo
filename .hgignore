@@ -1,3 +1,8 @@
 .classpath
 .project
 .settings
+nuxeo-social-collaboration
+nuxeo-rss-reader
+
+syntax: regexp
+
