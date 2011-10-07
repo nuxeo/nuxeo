@@ -25,6 +25,14 @@ def system(cmd):
     print "$> " + cmd
     retcode = os.system(cmd)
 
+def check_output(cmd):
+    p =  subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+    out, err = p.communicate()
+    if err != None:
+        print "[ERROR]: command",str(cmd)," returned an error:"
+        print err
+    return out.strip()
+
 def fetch(module, root_url=None):
     if root_url is None:
         fetch(module, "https://hg.nuxeo.org/nuxeo")
@@ -48,7 +56,7 @@ def fetch(module, root_url=None):
 if len(sys.argv) == 2:
     branch = sys.argv[1]
 else:
-    branch = subprocess.check_output(["hg","id","-b"]).strip()
+    branch = check_output(["hg","id","-b"])
 
 system("hg pull")
 system("hg up %s" % branch)
