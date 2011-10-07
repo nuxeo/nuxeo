@@ -48,7 +48,7 @@
     <module>nuxeo-platform-rendition</module>
     <module>nuxeo-platform-replication</module>
     <module>nuxeo-apidoc-server</module>
-    <module>nuxeo-social-collaboration</module>
+    <!-- <module>nuxeo-social-collaboration</module> -->
   </modules>
 
   <repositories>
