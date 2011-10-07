@@ -21,7 +21,7 @@
       <event name="commentAdded"/>
     </notification>
 
-    <notification name="Création/modification de contenu" channel="email" enabled="true" availableIn="workspace"
+    <notification name="Cr&#233;ation/modification de contenu" channel="email" enabled="true" availableIn="workspace"
       autoSubscribed="false" template="modifContent">
       <event name="contentSubdocumentModified"/>
     </notification>
