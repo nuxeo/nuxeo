@@ -33,6 +33,7 @@
       <modules>
         <module>nuxeo-distribution-coreserver</module>
         <module>nuxeo-distribution-cap</module>
+        <module>nuxeo-distribution-cap-tests</module>
       </modules>
     </profile>
     <profile>
@@ -40,6 +41,7 @@
       <modules>
         <module>nuxeo-distribution-coreserver</module>
         <module>nuxeo-distribution-cap</module>
+        <module>nuxeo-distribution-cap-tests</module>
         <module>nuxeo-distribution-dm</module>
       </modules>
     </profile>
@@ -49,6 +51,7 @@
       <modules>
         <module>nuxeo-distribution-coreserver</module>
         <module>nuxeo-distribution-cap</module>
+        <module>nuxeo-distribution-cap-tests</module>
         <module>nuxeo-distribution-dm</module>
         <module>nuxeo-distribution-jboss</module>
       </modules>
@@ -58,6 +61,7 @@
       <modules>
         <module>nuxeo-distribution-coreserver</module>
         <module>nuxeo-distribution-cap</module>
+        <module>nuxeo-distribution-cap-tests</module>
         <module>nuxeo-distribution-dm</module>
         <module>nuxeo-distribution-tomcat</module>
       </modules>
@@ -71,6 +75,7 @@
       <modules>
         <module>nuxeo-distribution-coreserver</module>
         <module>nuxeo-distribution-cap</module>
+        <module>nuxeo-distribution-cap-tests</module>
         <module>nuxeo-distribution-dm</module>
         <module>nuxeo-distribution-jboss</module>
         <module>nuxeo-distribution-tomcat</module>
@@ -92,6 +97,7 @@
       <modules>
         <module>nuxeo-distribution-coreserver</module>
         <module>nuxeo-distribution-cap</module>
+        <module>nuxeo-distribution-cap-tests</module>
         <module>nuxeo-distribution-dm</module>
         <module>nuxeo-distribution-tomcat</module>
         <module>nuxeo-distribution-dm/ftest/selenium</module>
