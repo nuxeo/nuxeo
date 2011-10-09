@@ -13,6 +13,14 @@
   </unzip>
   <import file="${out.dir}/nuxeo-ftest.xml" />
 
-  <target name="prepare-environment" depends="prepare-db,prepare-tomcat,wizard-on" />
+  <target name="fix-stop-max-wait" depends="_init"
+          description="Increase default time to wait for server to stop">
+    <antcall target="set-conf">
+      <param name="name" value="launcher.stop.max.wait" />
+      <param name="value" value="300" />
+    </antcall>
+  </target>
+
+  <target name="prepare-environment" depends="prepare-db,prepare-tomcat,wizard-on,fix-stop-max-wait" />
 
 </project>
