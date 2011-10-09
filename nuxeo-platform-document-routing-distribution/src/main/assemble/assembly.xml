@@ -26,7 +26,7 @@
     <mkdir dir="${stagedir}" />
     <unzip dest="${stagedir}">
       <artifact:resolveFile
-        key="org.nuxeo.ecm.distribution:nuxeo-distribution-tomcat:${nuxeo.platform.version}:zip"
+        key="org.nuxeo.ecm.distribution:nuxeo-distribution-tomcat:${nuxeo.distribution.version}:zip"
         classifier="nuxeo-dm" />
       <patternset>
         <exclude name="**/templates/common-sfsl/**" />
