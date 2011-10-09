@@ -88,7 +88,7 @@ public abstract class NuxeoLauncher {
     /**
      * Max time to wait for effective stop (in seconds)
      */
-    private static final int STOP_MAX_WAIT = 10;
+    private static final int STOP_MAX_WAIT = 60;
 
     /**
      * Number of try to cleanly stop server before killing process
