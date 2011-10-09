@@ -40,7 +40,7 @@ function install() {
 
     <#if (over || pkg.completed)>
       <div class="successfulDownloadBox">
-        <p>Download for package ${pkg.id} terminated </p>
+        <p>Download for package ${pkg.id} complete </p>
         <#if !install>
 	        <script>
 	         window.setTimeout(back,1000);

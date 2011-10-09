@@ -74,7 +74,7 @@ public class TestDownloader {
             downloadInProgress = false;
             for (DownloadingPackage pkg : downloads) {
                 if (pkg.isCompleted()) {
-                    System.out.print(pkg.getId() + ":terminated  - ");
+                    System.out.print(pkg.getId() + ":complete  - ");
                 } else {
                     downloadInProgress = true;
                     System.out.print(pkg.getId() + ":in progress - ");
