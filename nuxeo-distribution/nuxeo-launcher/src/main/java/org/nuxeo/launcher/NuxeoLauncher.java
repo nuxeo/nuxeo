@@ -76,6 +76,8 @@ public abstract class NuxeoLauncher {
 
     private static final String START_MAX_WAIT_PARAM = "launcher.start.max.wait";
 
+    private static final String STOP_MAX_WAIT_PARAM = "launcher.stop.max.wait";
+
     /**
      * Default maximum time to wait for server startup summary in logs (in
      * seconds).
@@ -85,9 +87,9 @@ public abstract class NuxeoLauncher {
     private static final String START_MAX_WAIT_JBOSS_DEFAULT = "900";
 
     /**
-     * Max time to wait for effective stop (in seconds)
+     * Default maximum time to wait for effective stop (in seconds)
      */
-    private static final int STOP_MAX_WAIT = 60;
+    private static final String STOP_MAX_WAIT_DEFAULT = "60";
 
     /**
      * Number of try to cleanly stop server before killing process
@@ -371,6 +373,7 @@ public abstract class NuxeoLauncher {
             commandSucceeded = launcher.doStartAndWait();
         } else if ("console".equalsIgnoreCase(command)) {
             launcher.executor.execute(new Runnable() {
+                @Override
                 public void run() {
                     launcher.addShutdownHook();
                     if (!launcher.doStart(true)) {
@@ -519,8 +522,9 @@ public abstract class NuxeoLauncher {
             boolean countActive = false;
             String line;
             // Go to end of file
-            while (in.readLine() != null)
+            while (in.readLine() != null) {
                 ;
+            }
             int startMaxWait = Integer.parseInt(configurationGenerator.getUserConfig().getProperty(
                     START_MAX_WAIT_PARAM, getDefaultMaxWait()));
             log.debug("Will wait for effective start during " + startMaxWait
@@ -731,6 +735,7 @@ public abstract class NuxeoLauncher {
             this.launcher = launcher;
         }
 
+        @Override
         public void run() {
             log.debug("Shutting down...");
             launcher.stop();
@@ -761,6 +766,8 @@ public abstract class NuxeoLauncher {
             System.out.print("Stopping server...");
             int nbTry = 0;
             boolean retry = false;
+            int stopMaxWait = Integer.parseInt(configurationGenerator.getUserConfig().getProperty(
+                STOP_MAX_WAIT_PARAM, STOP_MAX_WAIT_DEFAULT));
             do {
                 List<String> stopCommand = new ArrayList<String>();
                 stopCommand.add(getJavaExecutable().getPath());
@@ -808,7 +815,7 @@ public abstract class NuxeoLauncher {
                     }
                     // Wait a few seconds for effective stop
                     for (int i = 0; !retry && getPid() != null
-                            && i < STOP_MAX_WAIT; i++) {
+                            && i < stopMaxWait; i++) {
                         System.out.print(".");
                         Thread.sleep(1000);
                     }
