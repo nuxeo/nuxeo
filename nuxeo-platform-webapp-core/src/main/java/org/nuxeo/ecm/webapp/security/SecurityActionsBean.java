@@ -29,16 +29,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.security.PermitAll;
-import javax.ejb.PostActivate;
-import javax.ejb.PrePassivate;
-import javax.ejb.Remove;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
@@ -166,13 +161,6 @@ public class SecurityActionsBean extends InputController implements
         } catch (Throwable t) {
             throw ClientException.wrap(t);
         }
-    }
-
-    @Destroy
-    @Remove
-    @PermitAll
-    public void destroy() {
-        log.debug("Removing Seam action listener...");
     }
 
     /**
@@ -537,16 +525,6 @@ public class SecurityActionsBean extends InputController implements
             permissions.add(it);
         }
         return permissions;
-    }
-
-    @PrePassivate
-    public void saveState() {
-        log.info("PrePassivate");
-    }
-
-    @PostActivate
-    public void readState() {
-        log.info("PostActivate");
     }
 
     public Map<String, String> getIconAltMap() {

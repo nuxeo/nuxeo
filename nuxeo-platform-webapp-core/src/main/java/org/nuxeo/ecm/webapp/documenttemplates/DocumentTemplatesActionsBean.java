@@ -31,7 +31,6 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
@@ -90,11 +89,6 @@ public class DocumentTemplatesActionsBean extends InputController implements
     private String selectedTemplateId;
 
     private String targetType = "Workspace";
-
-    @Destroy
-    public void destroy() {
-        log.debug("<destroy> ");
-    }
 
     @Factory(value = "availableTemplates", scope = EVENT)
     public DocumentModelList templatesListFactory() {

@@ -29,10 +29,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.security.PermitAll;
-import javax.ejb.PostActivate;
-import javax.ejb.PrePassivate;
-import javax.ejb.Remove;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -135,28 +131,6 @@ public class DocumentActionsBean extends InputController implements
     protected transient WebActions webActions;
 
     protected String comment;
-
-    // @Create
-    public void initialize() {
-        log.debug("Initializing...");
-    }
-
-    @Destroy
-    @Remove
-    @PermitAll
-    public void destroy() {
-        log.debug("Removing Seam action listener...");
-    }
-
-    @PrePassivate
-    public void saveState() {
-        log.debug("PrePassivate");
-    }
-
-    @PostActivate
-    public void readState() {
-        log.debug("PostActivate");
-    }
 
     @Factory(autoCreate = true, value = "currentDocumentSummaryLayout", scope = EVENT)
     public String getCurrentDocumentSummaryLayout() {

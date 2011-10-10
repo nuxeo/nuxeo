@@ -26,16 +26,9 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.security.PermitAll;
-import javax.ejb.PostActivate;
-import javax.ejb.PrePassivate;
-import javax.ejb.Remove;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.annotations.Begin;
-import org.jboss.seam.annotations.Create;
-import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.End;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
@@ -119,29 +112,8 @@ public class WorkspaceActionsBean extends InputController implements
     @In(create = true)
     private transient DocumentTemplatesActions documentTemplatesActions;
 
-    @Create
-    public void initialize() {
-    }
-
-    @Destroy
-    @Remove
-    @PermitAll
-    public void destroy() {
-        log.debug("Removing Seam action listener...");
-    }
-
     public String cancel() {
         return "view_workspaces";
-    }
-
-    @PrePassivate
-    public void saveState() {
-        log.info("PrePassivate");
-    }
-
-    @PostActivate
-    public void readState() {
-        log.info("PostActivate");
     }
 
     // Flag for indicating if template will be used

@@ -25,7 +25,6 @@ import java.util.Map;
 import javax.faces.model.SelectItem;
 
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.webapp.base.StatefulBaseLifeCycle;
 import org.nuxeo.ecm.webapp.table.model.UserPermissionsTableModel;
 
 /**
@@ -33,7 +32,7 @@ import org.nuxeo.ecm.webapp.table.model.UserPermissionsTableModel;
  *
  * @author Razvan Caraghin
  */
-public interface SecurityActions extends StatefulBaseLifeCycle {
+public interface SecurityActions {
 
     /**
      * Submits the security changes to the backend.
@@ -114,8 +113,6 @@ public interface SecurityActions extends StatefulBaseLifeCycle {
      * document.
      */
     void rebuildSecurityData() throws ClientException;
-
-    void destroy();
 
     /**
      * @return a UserPermissionsTableModel used to build a checkboxable listing

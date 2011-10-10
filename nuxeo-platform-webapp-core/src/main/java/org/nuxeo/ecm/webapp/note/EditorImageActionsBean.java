@@ -28,11 +28,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.ejb.Remove;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
@@ -268,13 +265,6 @@ public class EditorImageActionsBean extends InputController implements
     @Override
     public String getImageProperty() {
         return selectedSize + ":content";
-    }
-
-    @Override
-    @Destroy
-    @Remove
-    public void destroy() {
-        log.debug("Removing Seam action listener...");
     }
 
 }

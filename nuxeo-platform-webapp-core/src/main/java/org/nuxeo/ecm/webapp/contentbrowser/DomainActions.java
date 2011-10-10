@@ -19,15 +19,10 @@
 
 package org.nuxeo.ecm.webapp.contentbrowser;
 
-import javax.annotation.security.PermitAll;
-import javax.ejb.Remove;
-
-import org.jboss.seam.annotations.Destroy;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.platform.ui.web.model.SelectDataModel;
 import org.nuxeo.ecm.platform.ui.web.model.SelectDataModelListener;
-import org.nuxeo.ecm.webapp.base.StatefulBaseLifeCycle;
 
 /**
  * Retrieves the domains found at a specific location and supports various
@@ -35,17 +30,9 @@ import org.nuxeo.ecm.webapp.base.StatefulBaseLifeCycle;
  *
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
  */
-public interface DomainActions extends StatefulBaseLifeCycle,
-        SelectDataModelListener {
+public interface DomainActions extends SelectDataModelListener {
 
     String DOMAINS_WORKING_LIST = "CURRENT_SELECTION";
-
-    void initialize();
-
-    @Destroy
-    @Remove
-    @PermitAll
-    void destroy();
 
     /**
      * Gets the available domains for the selected contentRoot.

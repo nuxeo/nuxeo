@@ -25,9 +25,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import javax.ejb.PostActivate;
-import javax.ejb.PrePassivate;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -162,24 +159,6 @@ public class SearchActionsBean extends InputController implements
 
     // used for direct nxql only
     private static final int maxResultsCount = 10;
-
-    public void init() {
-        log.debug("Initializing...");
-    }
-
-    public void destroy() {
-        log.debug("Destroy...");
-    }
-
-    @PrePassivate
-    public void saveState() {
-        log.debug("PrePassivate");
-    }
-
-    @PostActivate
-    public void readState() {
-        log.debug("PostActivate");
-    }
 
     //
     // business methods

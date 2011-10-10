@@ -28,7 +28,6 @@ import java.security.Principal;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.ejb.Remove;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
@@ -37,7 +36,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
-import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.common.utils.URIUtils;
@@ -98,12 +96,6 @@ public class LogoutAction extends InputController implements Serializable {
             context.responseComplete();
         }
         return null;
-    }
-
-    @Destroy
-    @Remove
-    public void destroy() {
-        log.debug("Removing Seam action listener...");
     }
 
 }

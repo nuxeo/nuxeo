@@ -29,16 +29,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import javax.annotation.security.PermitAll;
-import javax.ejb.PostActivate;
-import javax.ejb.Remove;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.Component;
 import org.jboss.seam.annotations.Begin;
 import org.jboss.seam.annotations.Create;
-import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
@@ -94,8 +89,7 @@ import org.nuxeo.runtime.api.Framework;
 @Name("navigationContext")
 @Scope(CONVERSATION)
 @Install(precedence = FRAMEWORK)
-public class NavigationContextBean implements NavigationContextLocal,
-        Serializable {
+public class NavigationContextBean implements NavigationContext, Serializable {
 
     private static final long serialVersionUID = -3708768859028774906L;
 
@@ -132,7 +126,6 @@ public class NavigationContextBean implements NavigationContextLocal,
     protected transient CoreSession documentManager;
 
     @Create
-    @PostActivate
     public void init() {
         log.debug("<init> ");
         parents = null;
@@ -846,13 +839,6 @@ public class NavigationContextBean implements NavigationContextLocal,
             return null;
         }
         return navigateToURL(docRef);
-    }
-
-    @Destroy
-    @Remove
-    @PermitAll
-    public void destroy() {
-        log.debug("<destroy> ");
     }
 
     protected void resetCurrentPath() throws ClientException {

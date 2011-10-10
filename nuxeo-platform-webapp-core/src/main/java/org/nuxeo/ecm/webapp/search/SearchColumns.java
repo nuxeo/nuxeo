@@ -22,11 +22,6 @@ package org.nuxeo.ecm.webapp.search;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.security.PermitAll;
-import javax.ejb.Local;
-import javax.ejb.Remove;
-
-import org.jboss.seam.annotations.Destroy;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.types.FieldWidget;
 import org.nuxeo.ecm.platform.ui.web.directory.VocabularyEntryList;
@@ -34,18 +29,7 @@ import org.nuxeo.ecm.platform.ui.web.directory.VocabularyEntryList;
 /**
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
  */
-@Local
 public interface SearchColumns {
-
-    /**
-     * Declaration for [Seam]Create method.
-     */
-    void init();
-
-    @Remove
-    @Destroy
-    @PermitAll
-    void destroy();
 
     /**
      * The list of schemas to be displayed.

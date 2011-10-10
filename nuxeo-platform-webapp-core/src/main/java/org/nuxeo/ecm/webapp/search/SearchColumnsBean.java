@@ -27,8 +27,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.ejb.PostActivate;
-import javax.ejb.PrePassivate;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 
@@ -97,20 +95,6 @@ public class SearchColumnsBean extends InputController implements SearchColumns,
         log.debug("Initializing...");
         fieldMap = buildFieldMap();
         buildVocabularyEntries();
-    }
-
-    public void destroy() {
-        log.debug("Destroy...");
-    }
-
-    @PrePassivate
-    public void saveState() {
-        log.debug("PrePassivate");
-    }
-
-    @PostActivate
-    public void readState() {
-        log.debug("PostActivate");
     }
 
     public String changeSearch() {

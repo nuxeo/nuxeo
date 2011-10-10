@@ -30,12 +30,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.ejb.Remove;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
-import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
@@ -367,11 +364,6 @@ public class LockActionsBean implements LockActions {
         canLock = null;
         canUnlock = null;
         isLiveEditable = null;
-    }
-
-    @Destroy
-    @Remove
-    public void destroy() {
     }
 
 }

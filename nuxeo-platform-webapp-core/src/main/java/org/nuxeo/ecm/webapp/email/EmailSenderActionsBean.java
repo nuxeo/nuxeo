@@ -24,8 +24,6 @@ import static org.jboss.seam.ScopeType.STATELESS;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.security.PermitAll;
-import javax.ejb.Remove;
 import javax.faces.context.FacesContext;
 
 import org.apache.commons.logging.Log;
@@ -85,29 +83,6 @@ public class EmailSenderActionsBean extends InputController implements
 
     @Out(required = false)
     private List<NuxeoPrincipal> toEmail;
-
-    // @Create
-    public void initialize() {
-        log.info("Initializing...");
-        log.debug("Principal List Manager: " + principalListManager);
-    }
-
-    // @Destroy
-    @Remove
-    @PermitAll
-    public void destroy() {
-        log.debug("Removing Seam action listener...");
-    }
-
-    // @PrePassivate
-    public void saveState() {
-        log.info("PrePassivate");
-    }
-
-    // @PostActivate
-    public void readState() {
-        log.info("PostActivate");
-    }
 
     public void send() {
         if (mailSubject == null || mailSubject.trim().length() == 0) {

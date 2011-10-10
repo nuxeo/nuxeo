@@ -21,15 +21,12 @@ package org.nuxeo.ecm.webapp.navigation;
 
 import java.util.List;
 
-import javax.ejb.Local;
-
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.ui.web.pathelements.PathElement;
 
 /**
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
  */
-@Local
 public interface BreadcrumbActions {
 
     String navigateToParent() throws ClientException;
