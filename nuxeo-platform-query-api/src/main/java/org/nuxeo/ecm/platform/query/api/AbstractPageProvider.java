@@ -205,7 +205,7 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
             SortInfo newSort = newSortInfos.get(i);
             if (oldSort == null && newSort == null) {
                 continue;
-            } else if (oldSort != null || newSort != null) {
+            } else if (oldSort == null || newSort == null) {
                 return true;
             }
             if (!oldSort.equals(newSort)) {
