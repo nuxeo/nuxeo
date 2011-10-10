@@ -67,7 +67,7 @@
         iconCollapsed="/icons/toggle_plus.png">
         <rich:recursiveTreeNodesAdaptor
           id="#{widget.id}_recursiveTreeNodesAdaptorId"
-          roots="#{vocabularyTreeActions.getRoots(widget.properties.directoryName)}"
+          roots="#{vocabularyTreeActions.getRoots(widget.properties.directoryName, widget.properties.showObsolete, widget.properties.sortByOrdering)}"
           nodes="#{node.children}"
           var="node">
           <rich:treeNode

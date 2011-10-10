@@ -967,8 +967,11 @@
           from a l10nvocabulary or l10nxvocabulary directory.
 
           The property 'directoryName' is required.
+          The following properties are optional and set by default to false :
           To be able to select multiple values, set property 'multipleValues' to true.
           To select only the id of a node (instead of its path), set property 'selectIdOnly' to true.
+          To show obsolete entries, set property 'showObsolete' to true.
+          To sort by ordering value instead of alphabetical order, set property 'sortByOrdering' to true.
         </description>
       </configuration>
       <handler-class>

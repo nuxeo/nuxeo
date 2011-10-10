@@ -67,6 +67,10 @@ public class VocabularyTreeActions implements Serializable {
     protected DirectoryService directoryService;
 
     public VocabularyTreeNode get(String vocabularyName) {
+        return get(vocabularyName, false, false);
+    }
+
+    public VocabularyTreeNode get(String vocabularyName, boolean showObsolete, boolean sortByOrdering) {
         if (treeModels == null) {
             treeModels = new HashMap<String, VocabularyTreeNode>();
         }
@@ -95,14 +99,14 @@ public class VocabularyTreeActions implements Serializable {
         }
 
         treeModel = new VocabularyTreeNode(0, "", "", "", vocabularyName,
-                directoryService);
+                directoryService, showObsolete, sortByOrdering);
 
         treeModels.put(vocabularyName, treeModel);
         return treeModel;
     }
 
-    public List<VocabularyTreeNode> getRoots(String vocabularyName) {
-        return get(vocabularyName).getChildren();
+    public List<VocabularyTreeNode> getRoots(String vocabularyName, boolean showObsolete, boolean sortByOrdering) {
+        return get(vocabularyName, showObsolete, sortByOrdering).getChildren();
     }
 
     public String getLabelFor(String vocabularyName, String pathOrId) {
