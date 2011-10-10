@@ -691,6 +691,11 @@
         <artifactId>nuxeo-theme-html</artifactId>
         <version>${nuxeo.theme.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.nuxeo.theme</groupId>
+        <artifactId>nuxeo-theme-styling</artifactId>
+        <version>${nuxeo.theme.version}</version>
+      </dependency>
 
       <!-- Nuxeo JSF -->
       <dependency>
