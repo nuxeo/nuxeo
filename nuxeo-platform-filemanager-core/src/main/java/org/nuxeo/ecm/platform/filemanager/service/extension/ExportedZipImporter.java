@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2002 - 2006 Nuxeo SARL <http://nuxeo.com> and others
+ * (C) Copyright 2002-2011 Nuxeo SARL <http://nuxeo.com> and others
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,8 +8,6 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- *
  *
  */
 
@@ -41,7 +39,8 @@ import org.nuxeo.ecm.core.io.impl.plugins.NuxeoArchiveReader;
 import org.nuxeo.ecm.platform.types.TypeManager;
 
 /**
- * Simple Plugin that imports IO Zip achive into Nuxeo using the IO core service.
+ * Simple Plugin that imports IO Zip archive into Nuxeo using the IO core
+ * service.
  *
  * @author tiry
  */
@@ -101,7 +100,8 @@ public class ExportedZipImporter extends AbstractFileImporter {
             }
         }
 
-        DocumentWriter writer = new DocumentModelWriter(documentManager, path, 10);
+        DocumentWriter writer = new DocumentModelWriter(documentManager, path,
+                10);
         reader.close();
         reader = new NuxeoArchiveReader(tmp);
 
@@ -124,9 +124,6 @@ public class ExportedZipImporter extends AbstractFileImporter {
             writer.close();
         }
         tmp.delete();
-        if (resultingRef != null) {
-            return documentManager.getDocument(resultingRef);
-        }
-        return null;
+        return documentManager.getDocument(resultingRef);
     }
 }
