@@ -65,6 +65,10 @@
         given its id, first name and last name.
       </li>
       <li>
+        userDisplayNameAndEmail(String, String, String,String): returns the full name of a user 
+        and its email given its id, first name, last name and email. Available since 5.4.3.
+      </li>
+      <li>
         groupDisplayName(String, String): returns the label of a group given its
         id, label. Available since 5.4.3.
       </li>
@@ -85,7 +89,7 @@
       </li>
       <li>
         javaScriptEscape(String): returns escaped string for use in JavaScript
-        code (excapes single quote characters for instance).
+        code (escapes single quote characters for instance).
       </li>
       <li>
         printFileSize(String size): same as printFormatedFileSize( size, "SI",

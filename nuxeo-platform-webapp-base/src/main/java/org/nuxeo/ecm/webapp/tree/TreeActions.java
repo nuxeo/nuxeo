@@ -20,11 +20,6 @@ package org.nuxeo.ecm.webapp.tree;
 
 import java.util.List;
 
-import javax.ejb.Local;
-import javax.ejb.Remote;
-import javax.ejb.Remove;
-
-import org.jboss.seam.annotations.Destroy;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.richfaces.component.UITree;
 import org.richfaces.event.NodeExpandedEvent;
@@ -35,8 +30,6 @@ import org.richfaces.event.NodeExpandedEvent;
  * @author Razvan Caraghin
  * @author Anahide Tchertchian
  */
-@Local
-@Remote
 public interface TreeActions {
 
     String DEFAULT_TREE_PLUGIN_NAME = "navigation";
@@ -61,9 +54,5 @@ public interface TreeActions {
     void resetCurrentDocumentData();
 
     void reset();
-
-    @Remove
-    @Destroy
-    void destroy();
 
 }

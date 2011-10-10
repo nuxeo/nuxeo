@@ -15,17 +15,22 @@
     value="#{nxu:test(!empty widgetProperty_firstLabelField, widgetProperty_firstLabelField, 'firstName')}" />
   <c:set var="secondLabelField"
     value="#{nxu:test(!empty widgetProperty_secondLabelField, widgetProperty_secondLabelField, 'lastName')}" />
+  <c:set var="thirdLabelField"
+    value="#{nxu:test(!empty widgetProperty_thirdLabelField, widgetProperty_thirdLabelField, 'email')}" />
   <c:set var="hideFirstLabel"
     value="#{nxu:test(!empty widgetProperty_hideFirstLabel, widgetProperty_hideFirstLabel, false)}" />
   <c:set var="hideSecondLabel"
     value="#{nxu:test(!empty widgetProperty_hideSecondLabel, widgetProperty_hideSecondLabel, false)}" />
+  <c:set var="hideThirdLabel"
+    value="#{nxu:test(!empty widgetProperty_hideThirdLabel, widgetProperty_hideThirdLabel, false)}" />
   <c:set var="displayAction"
     value="#{nxu:test(!empty widgetProperty_displayAction, widgetProperty_displayAction, 'nothing')}" />
 
   <c:set var="userDirectory" value="#{userManager.userDirectoryName}" />
   <c:set var="userSchema" value="#{userManager.userSchemaName}" />
   <c:set var="firstNameField" value="#{nxu:test(hideFirstLabel, null, firstLabelField)}" />
-  <c:set var="lastNameField" value="#{nxu:test(hideSecondLabel, null, entrySecondLabel)}" />
+  <c:set var="lastNameField" value="#{nxu:test(hideSecondLabel, null, secondLabelField)}" />
+  <c:set var="emailField" value="#{nxu:test(hideThirdLabel, null, thirdLabelField)}" />
 
   <f:subview rendered="#{displayAction == 'nothing' and searchType == 'USER_TYPE'}">
     <h:outputText value="#{field_0}"
@@ -35,6 +40,7 @@
       <f:attribute name="userSchema" value="#{userSchema}" />
       <f:attribute name="firstNameField" value="#{firstNameField}" />
       <f:attribute name="lastNameField" value="#{lastNameField}" />
+      <f:attribute name="emailField" value="#{emailField}" />
     </h:outputText>
   </f:subview>
   <f:subview rendered="#{displayAction == 'nothing' and searchType == 'GROUP_TYPE'}">
@@ -49,6 +55,7 @@
         <f:attribute name="userSchema" value="#{userSchema}" />
         <f:attribute name="firstNameField" value="#{firstNameField}" />
         <f:attribute name="lastNameField" value="#{lastNameField}" />
+        <f:attribute name="emailField" value="#{emailField}" />
       </h:outputText>
     </h:outputLink>
   </f:subview>
@@ -66,6 +73,7 @@
         <f:attribute name="userSchema" value="#{userSchema}" />
         <f:attribute name="firstNameField" value="#{firstNameField}" />
         <f:attribute name="lastNameField" value="#{lastNameField}" />
+        <f:attribute name="emailField" value="#{emailField}" />
       </h:outputText>
     </a4j:commandLink>
   </f:subview>
@@ -89,7 +97,8 @@
   <c:set var="maxSearchResults"
     value="#{nxu:test(!empty widget.properties.userSuggestionMaxSearchResults, widget.properties.userSuggestionMaxSearchResults, 0)}" />
   <c:set var="suggestionWidth" value="${nxu:test(!empty widget.properties.width, widget.properties.width, '400')}" />
-
+  <c:set var="suggestionWithEmail" value="${nxu:test(!empty widget.properties.displayEmailInSuggestion, widget.properties.displayEmailInSuggestion, false)}" />
+    
   <a4j:region renderRegionOnly="true" id="#{widget.id}_ajax_region">
     <h:panelGrid id="#{widget.id}_panel" columns="2">
 
@@ -135,8 +144,14 @@
             <f:subview rendered="#{result.type == 'USER_TYPE'}"
               id="#{widget.id}_user_result">
               <h:graphicImage value="/icons/user.gif" alt="user.gif" />
-              <h:outputText
-                value="#{nxu:userDisplayName(result.id, result.entry[userSchema].firstName, result.entry[userSchema].lastName)}" />
+                <c:choose>
+                  <c:when test="#{suggestionWithEmail}">
+                    <h:outputText value="#{nxu:userDisplayNameAndEmail(result.id, result.entry[userSchema].firstName, result.entry[userSchema].lastName, result.entry[userSchema].email)}" />
+                  </c:when>
+                  <c:otherwise>
+                    <h:outputText value="#{nxu:userDisplayName(result.id, result.entry[userSchema].firstName, result.entry[userSchema].lastName)}" />
+                  </c:otherwise>
+                </c:choose>
             </f:subview>
             <f:subview rendered="#{result.type == 'GROUP_TYPE'}"
               id="#{widget.id}_group_result">
@@ -175,6 +190,7 @@
           <f:attribute name="userSchema" value="#{userManager.userSchemaName}" />
           <f:attribute name="firstNameField" value="firstName" />
           <f:attribute name="lastNameField" value="lastName" />
+          <f:attribute name="emailField" value="email" />
         </h:outputText>
         <h:inputHidden id="#{widget.id}" value="#{field_0}"
           required="#{widget.required}" />

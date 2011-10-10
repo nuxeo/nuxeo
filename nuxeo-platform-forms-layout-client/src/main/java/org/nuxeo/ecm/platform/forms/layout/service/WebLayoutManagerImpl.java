@@ -258,6 +258,10 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
         return layoutRegistry.get(layoutName);
     }
 
+    public List<String> getLayoutDefinitionNames() {
+        return new ArrayList<String>(layoutRegistry.keySet());
+    }
+
     public WidgetDefinition getWidgetDefinition(String widgetName) {
         return widgetRegistry.get(widgetName);
     }

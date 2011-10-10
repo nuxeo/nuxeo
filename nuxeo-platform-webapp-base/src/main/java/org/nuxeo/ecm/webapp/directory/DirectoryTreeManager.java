@@ -21,9 +21,6 @@ package org.nuxeo.ecm.webapp.directory;
 import java.io.Serializable;
 import java.util.List;
 
-import javax.ejb.Remove;
-
-import org.jboss.seam.annotations.Destroy;
 import org.richfaces.component.UITree;
 import org.richfaces.event.NodeExpandedEvent;
 
@@ -71,9 +68,5 @@ public interface DirectoryTreeManager extends Serializable {
      */
     public String getLabelFor(String directoryTreeName, String fullPath,
             boolean includeDirectoryTreeLabel);
-
-    @Remove
-    @Destroy
-    void destroy();
 
 }

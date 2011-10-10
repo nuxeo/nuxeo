@@ -21,8 +21,6 @@ package org.nuxeo.ecm.platform.ui.web.api;
 
 import java.util.List;
 
-import javax.ejb.Remote;
-
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.actions.ActionContext;
@@ -33,7 +31,6 @@ import org.nuxeo.ecm.platform.actions.ActionContext;
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
-@Remote
 public interface WebActions {
 
     public static final String NULL_TAB_ID = "";

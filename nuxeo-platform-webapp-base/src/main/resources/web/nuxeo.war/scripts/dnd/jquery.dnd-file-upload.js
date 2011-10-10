@@ -189,8 +189,8 @@
       xhr.open(opts.method, opts.url + "upload");
       xhr.setRequestHeader("Cache-Control", "no-cache");
       xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
-      xhr.setRequestHeader("X-File-Name", encodeURIComponent(file.fileName));
-      xhr.setRequestHeader("X-File-Size", file.fileSize);
+      xhr.setRequestHeader("X-File-Name", encodeURIComponent(file.name));
+      xhr.setRequestHeader("X-File-Size", file.size);
       xhr.setRequestHeader("X-File-Type", file.type);
       xhr.setRequestHeader("X-Batch-Id", batchId);
       xhr.setRequestHeader("X-File-Idx", uploadIdx);

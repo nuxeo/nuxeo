@@ -21,8 +21,6 @@ package org.nuxeo.ecm.webapp.helpers;
 
 import java.util.Map;
 
-import javax.ejb.Local;
-
 /**
  * Global resources can be injected by Seam into a application scoped component
  * that doesn't need to be serialized.
@@ -32,7 +30,6 @@ import javax.ejb.Local;
  *
  * @author DM
  */
-@Local
 public interface ResourcesAccessor {
 
     Map<String, String> getMessages();

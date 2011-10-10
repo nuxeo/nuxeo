@@ -26,14 +26,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import javax.ejb.Remove;
 import javax.faces.component.UIComponent;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
@@ -285,12 +283,6 @@ public class DirectoryTreeManagerBean implements DirectoryTreeManager {
             translatedLabels.add(resourcesAccessor.getMessages().get(label));
         }
         return translatedLabels;
-    }
-
-    @Remove
-    @Destroy
-    public void destroy() {
-        // destroy seam component
     }
 
 }

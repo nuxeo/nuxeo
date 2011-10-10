@@ -54,6 +54,7 @@ public class UserDisplayConverter implements Converter {
     /**
      * Returns given value (does not do any reverse conversion)
      */
+    @Override
     public Object getAsObject(FacesContext context, UIComponent component,
             String value) {
         return value;
@@ -71,6 +72,7 @@ public class UserDisplayConverter implements Converter {
      * <li>lastNameField: field storing the user last name</li>
      * </ul>
      */
+    @Override
     public String getAsString(FacesContext context, UIComponent component,
             Object value) {
         if (value instanceof String && !StringUtils.isEmpty((String) value)) {
@@ -88,6 +90,8 @@ public class UserDisplayConverter implements Converter {
                     context, component, "firstNameField", null);
             String lastName = (String) ComponentUtils.getAttributeOrExpressionValue(
                     context, component, "lastNameField", null);
+            String email = (String) ComponentUtils.getAttributeOrExpressionValue(
+                    context, component, "emailField", null);
             String schema = (String) ComponentUtils.getAttributeOrExpressionValue(
                     context, component, "userSchema", null);
 
@@ -100,8 +104,11 @@ public class UserDisplayConverter implements Converter {
                                 schema, firstName) : null;
                         String lastNameValue = lastName != null ? (String) doc.getProperty(
                                 schema, lastName) : null;
-                        return Functions.userDisplayName(username,
-                                firstNameValue, lastNameValue);
+                        String emailValue = email != null ? (String) doc.getProperty(
+                                schema, email) : null;
+                        return Functions.userDisplayNameAndEmail(username,
+                                firstNameValue, lastNameValue, emailValue);
+
                     }
                 } catch (Exception e) {
                     throw new RuntimeException(e);

@@ -22,8 +22,20 @@
 package org.nuxeo.ecm.webapp.seam;
 
 import java.io.File;
+import java.lang.management.ManagementFactory;
+import java.lang.reflect.Field;
+import java.util.ResourceBundle;
 import java.util.Set;
 
+import javax.management.InstanceNotFoundException;
+import javax.management.MBeanException;
+import javax.management.MBeanInfo;
+import javax.management.MBeanOperationInfo;
+import javax.management.MBeanServer;
+import javax.management.MalformedObjectNameException;
+import javax.management.ObjectInstance;
+import javax.management.ObjectName;
+import javax.management.ReflectionException;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
@@ -54,7 +66,10 @@ public class SeamHotReloadHelper {
 
     public static Set<String> reloadSeamComponents(HttpServletRequest httpRequest) {
 
+
         ServletContext servletContext = httpRequest.getSession().getServletContext();
+
+        flushI18N();
 
         boolean reloadDone = false;
 
@@ -110,4 +125,40 @@ public class SeamHotReloadHelper {
         return false;
     }
 
+    /**
+     * @since 5.4.3
+     */
+    protected static void flushI18N() {
+        try {
+            flushWebResources();
+        } catch (Exception e) {
+            log.error("Cannot flush web resources, did you start with the sdk profile active ?", e);
+        }
+        ResourceBundle.clearCache(Thread.currentThread().getContextClassLoader());
+    }
+
+    /**
+     * @since 5.4.3
+     */
+    protected static void flushWebResources()
+            throws MalformedObjectNameException, ReflectionException,
+            InstanceNotFoundException, MBeanException {
+        MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+        ObjectName on = new ObjectName("org.nuxeo:type=sdk,name=web-resources");
+        if (mbs.isRegistered(on)) { 
+            // only in tomcat container
+            mbs.invoke(on, "flushWebResources", new Object[0], new String[0]);
+        }
+    } 
+    
+    @SuppressWarnings({ "unused", "unchecked" })
+    private static <T> T getFieldValue(Object object, String fieldName) {
+    try {
+        Field field = object.getClass().getDeclaredField(fieldName);
+        field.setAccessible(true);
+        return (T) field.get(object);
+    } catch (Exception e) {
+        return null;
+    }       
+}
 }

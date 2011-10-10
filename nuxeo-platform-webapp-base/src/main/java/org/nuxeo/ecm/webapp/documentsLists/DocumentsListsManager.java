@@ -21,9 +21,6 @@ package org.nuxeo.ecm.webapp.documentsLists;
 
 import java.util.List;
 
-import javax.ejb.Remove;
-
-import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.Observer;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
@@ -312,10 +309,5 @@ public interface DocumentsListsManager {
      * @return the Descriptor of the DocumentModel list
      */
     DocumentsListDescriptor getWorkingListDescriptor();
-
-
-    @Remove
-    @Destroy
-    void destroy();
 
 }

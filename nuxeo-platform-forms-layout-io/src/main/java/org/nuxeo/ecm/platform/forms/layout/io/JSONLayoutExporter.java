@@ -40,7 +40,6 @@ import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutRowDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetSelectOption;
-import org.nuxeo.ecm.platform.forms.layout.api.WidgetSelectOptions;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeConfiguration;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.impl.FieldDefinitionImpl;
@@ -52,6 +51,8 @@ import org.nuxeo.ecm.platform.forms.layout.api.impl.WidgetSelectOptionsImpl;
 import org.nuxeo.ecm.platform.forms.layout.api.impl.WidgetTypeConfigurationImpl;
 import org.nuxeo.ecm.platform.forms.layout.api.impl.WidgetTypeDefinitionComparator;
 import org.nuxeo.ecm.platform.forms.layout.api.impl.WidgetTypeDefinitionImpl;
+import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * JSON exporter for layout objects
@@ -315,6 +316,11 @@ public class JSONLayoutExporter {
     }
 
     public static JSONObject exportToJson(LayoutDefinition layoutDef) {
+        return exportToJson(layoutDef, null);
+    }
+
+    public static JSONObject exportToJson(LayoutDefinition layoutDef,
+            String lang) {
         JSONObject json = new JSONObject();
         json.element("name", layoutDef.getName());
 
@@ -345,18 +351,22 @@ public class JSONLayoutExporter {
         if (!rows.isEmpty()) {
             json.element("rows", rows);
         }
-
+        // XXX Change to a non JSF specific implementation : see NXP-7614
+        WebLayoutManager webLayoutManager = Framework.getLocalService(WebLayoutManager.class);
         JSONArray widgets = new JSONArray();
         for (String widgetName : widgetsToExport) {
             WidgetDefinition widgetDef = layoutDef.getWidgetDefinition(widgetName);
             if (widgetDef == null) {
+                widgetDef = webLayoutManager.getWidgetDefinition(widgetName);
+            }
+            if (widgetDef == null) {
                 log.error(String.format(
-                        "No local definition found for widget '%s' in layout '%s' "
+                        "No definition found for widget '%s' in layout '%s' "
                                 + "=> cannot export", widgetName,
                         layoutDef.getName()));
                 continue;
             }
-            widgets.add(exportToJson(widgetDef));
+            widgets.add(exportToJson(widgetDef, lang));
         }
         if (!widgets.isEmpty()) {
             json.element("widgets", widgets);
@@ -433,11 +443,19 @@ public class JSONLayoutExporter {
     }
 
     public static JSONObject exportToJson(WidgetDefinition widgetDef) {
+        return exportToJson(widgetDef, null);
+    }
+
+    public static JSONObject exportToJson(WidgetDefinition widgetDef,
+            String lang) {
         JSONObject json = new JSONObject();
         json.element("name", widgetDef.getName());
         json.element("type", widgetDef.getType());
         JSONObject labels = exportStringPropsToJson(widgetDef.getLabels());
         if (!labels.isEmpty()) {
+            if (widgetDef.isTranslated() && lang != null) {
+                labels = TranslationHelper.getTranslations(labels, lang);
+            }
             json.element("labels", labels);
         }
         JSONObject helpLabels = exportStringPropsToJson(widgetDef.getHelpLabels());
@@ -465,7 +483,7 @@ public class JSONLayoutExporter {
         WidgetDefinition[] subWidgetDefs = widgetDef.getSubWidgetDefinitions();
         if (subWidgetDefs != null) {
             for (WidgetDefinition wDef : subWidgetDefs) {
-                subWidgets.add(exportToJson(wDef));
+                subWidgets.add(exportToJson(wDef, lang));
             }
         }
         if (!subWidgets.isEmpty()) {
@@ -485,8 +503,27 @@ public class JSONLayoutExporter {
         WidgetSelectOption[] selectOptionDefs = widgetDef.getSelectOptions();
         if (selectOptionDefs != null) {
             for (WidgetSelectOption selectOptionDef : selectOptionDefs) {
-                selectOptions.add(exportToJson(selectOptionDef));
+                selectOptions.add(VocabularyExporter.exportToJson(selectOptionDef));
             }
+        }
+        String wType = widgetDef.getType();
+        if ((wType.equals("selectOneDirectory"))
+                || (wType.equals("selectManyDirectory")) && (lang != null)) {
+            String dirName = (String) widgetDef.getProperties("any", "any").get(
+                    "directoryName");
+            if (dirName != null) {
+                selectOptions.addAll(VocabularyExporter.getVocabulary(dirName,
+                        lang));
+            }
+        } else if (wType.equals("template") && (lang != null)) {
+            if (widgetDef.getName().equals("subjects")) {
+                selectOptions.addAll(VocabularyExporter.getVocabulary("topic",
+                        "subtopic", lang));
+            } else if (widgetDef.getName().equals("coverage")) {
+                selectOptions.addAll(VocabularyExporter.getVocabulary(
+                        "continent", "country", lang));
+            }
+
         }
         if (!selectOptions.isEmpty()) {
             json.element("selectOptions", selectOptions);
@@ -554,52 +591,6 @@ public class JSONLayoutExporter {
         FieldDefinition res = new FieldDefinitionImpl(fieldDef.optString(
                 "schemaName", null), fieldDef.getString("fieldName"));
         return res;
-    }
-
-    public static JSONObject exportToJson(WidgetSelectOption selectOption) {
-        JSONObject json = new JSONObject();
-        Serializable value = selectOption.getValue();
-        boolean isMulti = selectOption instanceof WidgetSelectOptions;
-        if (isMulti) {
-            json.element("multiple", true);
-        } else {
-            json.element("multiple", false);
-        }
-        if (value != null) {
-            json.element("value", value);
-        }
-        String var = selectOption.getVar();
-        if (var != null) {
-            json.element("var", var);
-        }
-        String itemLabel = selectOption.getItemLabel();
-        if (itemLabel != null) {
-            json.element("itemLabel", itemLabel);
-        }
-        String itemValue = selectOption.getItemValue();
-        if (itemValue != null) {
-            json.element("itemValue", itemValue);
-        }
-        Serializable itemDisabled = selectOption.getItemDisabled();
-        if (itemDisabled != null) {
-            json.element("itemDisabled", itemDisabled);
-        }
-        Serializable itemRendered = selectOption.getItemRendered();
-        if (itemRendered != null) {
-            json.element("itemRendered", itemRendered);
-        }
-        if (isMulti) {
-            WidgetSelectOptions selectOptions = (WidgetSelectOptions) selectOption;
-            String ordering = selectOptions.getOrdering();
-            if (ordering != null) {
-                json.element("ordering", ordering);
-            }
-            Boolean caseSensitive = selectOptions.getCaseSensitive();
-            if (caseSensitive != null) {
-                json.element("caseSensitive", caseSensitive);
-            }
-        }
-        return json;
     }
 
     public static WidgetSelectOption importWidgetSelectionOption(

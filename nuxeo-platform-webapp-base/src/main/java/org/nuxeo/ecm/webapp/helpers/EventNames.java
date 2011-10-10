@@ -179,6 +179,11 @@ public final class EventNames {
      */
     public static final String LOCAL_CONFIGURATION_CHANGED = "localConfigurationChanged";
 
+    /**
+     * Event raised when the content of a directory has changed
+     */
+    public static final String DIRECTORY_CHANGED = "directoryChanged";
+
     // Constant utility class.
     private EventNames() {
     }

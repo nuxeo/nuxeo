@@ -27,15 +27,14 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.ui.web.api.ResultsProviderFarm;
 import org.nuxeo.ecm.platform.ui.web.model.SelectDataModel;
 import org.nuxeo.ecm.platform.ui.web.model.SelectDataModelListener;
-import org.nuxeo.ecm.webapp.base.StatefulBaseLifeCycle;
 
 /**
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
  * @deprecated use {@link DocumentSearchActions} and content views instead
  */
 @Deprecated
-public interface SearchActions extends StatefulBaseLifeCycle,
-        SelectDataModelListener, ResultsProviderFarm {
+public interface SearchActions extends SelectDataModelListener,
+        ResultsProviderFarm {
 
     String SEARCH_DOCUMENT_LIST = "SEARCH_DOCUMENT_LIST";
 
@@ -44,13 +43,6 @@ public interface SearchActions extends StatefulBaseLifeCycle,
     String QM_SIMPLE = "SIMPLE_SEARCH";
 
     String PROV_NXQL = "SEARCH_BEAN_NXQL_PROVIDER";
-
-    /**
-     * Declaration for [Seam]Create method.
-     */
-    void init();
-
-    void destroy();
 
     /**
      * @return the query text - to be used in quick search form
