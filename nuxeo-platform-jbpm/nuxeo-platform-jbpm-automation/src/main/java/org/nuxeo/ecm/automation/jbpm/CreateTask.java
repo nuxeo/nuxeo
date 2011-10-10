@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2010-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -104,8 +104,7 @@ public class CreateTask {
     @Param(name = "create one task per actor", required = false, values = "true", order = 8)
     protected boolean createOneTaskPerActor = true;
 
-
-    @OperationMethod(collector=DocumentModelCollector.class)
+    @OperationMethod(collector = DocumentModelCollector.class)
     @SuppressWarnings("unchecked")
     public DocumentModel run(DocumentModel document) throws Exception {
         Principal pal = coreSession.getPrincipal();
@@ -146,7 +145,7 @@ public class CreateTask {
             prefixedActorIds.addAll(additionalPrefixedActors);
         }
 
-        if (prefixedActorIds == null || prefixedActorIds.isEmpty()) {
+        if (prefixedActorIds.isEmpty()) {
             // no actors: do nothing
             log.debug("No actors could be resolved => do not create any task");
             return document;
