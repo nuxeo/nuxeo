@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2010-2011 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -86,8 +86,7 @@ public class DocumentRouteTableElement {
         RouteFolderElement currentParent = parent;
         boolean currentIsFirst = isFirstChild;
         while (currentIsFirst && currentParent != null) {
-            currentIsFirst = currentParent == null ? false
-                    : currentParent.isFirstChild;
+            currentIsFirst = currentParent.isFirstChild;
             firstChildList.add(0, currentParent);
             currentParent = currentParent.parent;
         }
