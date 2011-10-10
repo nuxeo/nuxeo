@@ -19,10 +19,10 @@
             <h:graphicImage value="/icons/user.gif" alt="user.gif" />
             <c:choose>
               <c:when test="#{suggestionWithEmail}">
-                <c:set var="userDisplayName" value="#{nxu:userDisplayNameAndEmail(info.id, info.entry[userSchema].firstName, info.entry[userSchema].lastName, info.entry[userSchema].email)}" />
+                <h:outputText  value="#{nxu:userDisplayNameAndEmail(info.id, info.entry[userSchema].firstName, info.entry[userSchema].lastName, info.entry[userSchema].email)}" />
               </c:when>
               <c:otherwise>
-                <c:set var="userDisplayName" value="#{nxu:userDisplayName(info.id, info.entry[userSchema].firstName, info.entry[userSchema].lastName)}" />
+                <h:outputText  value="#{nxu:userDisplayName(info.id, info.entry[userSchema].firstName, info.entry[userSchema].lastName)}" />
               </c:otherwise>
             </c:choose>
           </f:subview>
@@ -141,10 +141,10 @@
                       <h:graphicImage value="/icons/user.gif" alt="user.gif" />
                         <c:choose>
                           <c:when test="#{suggestionWithEmail}">
-                            <h:outputText value="#{nxu:userDisplayNameAndEmail(result.id, info.entry[userSchema].firstName, info.entry[userSchema].lastName, info.entry[userSchema].email)}" />
+                            <h:outputText value="#{nxu:userDisplayNameAndEmail(info.id, info.entry[userSchema].firstName, info.entry[userSchema].lastName, info.entry[userSchema].email)}" />
                           </c:when>
                           <c:otherwise>
-                            <h:outputText value="#{nxu:userDisplayName(result.id, info.entry[userSchema].firstName, info.entry[userSchema].lastName)}" />
+                            <h:outputText value="#{nxu:userDisplayName(info.id, info.entry[userSchema].firstName, info.entry[userSchema].lastName)}" />
                           </c:otherwise>
                         </c:choose>
                     </f:subview>
