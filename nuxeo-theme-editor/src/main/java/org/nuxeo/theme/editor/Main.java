@@ -1,3 +1,16 @@
+/*
+ * (C) Copyright 2011 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Jean-Marc Orliaguet, Chalmers
+ *
+ */
+
 package org.nuxeo.theme.editor;
 
 import java.util.ArrayList;
@@ -690,8 +703,10 @@ public class Main extends ModuleRoot {
 
         ResponseBuilder builder = Response.ok(xml);
         if (download != null) {
-            builder.header("Content-disposition", String.format(
-                    "attachment; filename=theme-%s.xml", themeDef.getName()));
+            builder.header(
+                    "Content-disposition",
+                    String.format("attachment; filename=theme-%s.xml",
+                            themeDef.getName()));
         }
         builder.type("text/xml");
         return builder.build();
@@ -1563,8 +1578,7 @@ public class Main extends ModuleRoot {
             Enumeration<?> propertyNames = properties.propertyNames();
             while (propertyNames.hasMoreElements()) {
                 String name = (String) propertyNames.nextElement();
-                String value = properties == null ? ""
-                        : properties.getProperty(name, "");
+                String value = properties.getProperty(name, "");
                 String type = cssProperties.getProperty(name, "");
                 String id = "p" + idx;
                 fieldProperties.add(new StyleFieldProperty(name, value, type,
@@ -1812,8 +1826,8 @@ public class Main extends ModuleRoot {
         String group = getSelectedPresetGroup();
         String themeName = getCurrentThemeName(applicationPath, name);
         List<PresetType> presetTypes = group == null ? PresetManager.getCustomPresets(
-                themeName, category)
-                : PresetManager.getGlobalPresets(group, category);
+                themeName, category) : PresetManager.getGlobalPresets(group,
+                category);
         return new ArrayList<PresetType>(presetTypes);
     }
 
