@@ -33,7 +33,11 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.platform.video.VideoHelper;
 
 /**
- * Core event listener to compute / update the story board of a Video document
+ * Core event listener to update the preview and the metadata of a Video
+ * document.
+ * <p>
+ * It also set the context property {@link VIDEO_CHANGED_PROPERTY} to
+ * {@code true} if the main video has changed.
  *
  * @author ogrisel
  */
@@ -51,8 +55,9 @@ public class VideoChangedListener implements EventListener {
             Property origVideoProperty = doc.getProperty("file:content");
             if (origVideoProperty.isDirty()) {
                 try {
-                    VideoHelper.updatePreviews(doc,
-                            origVideoProperty.getValue(Blob.class));
+                    Blob blob = origVideoProperty.getValue(Blob.class);
+                    VideoHelper.updateMetadata(doc, blob);
+                    VideoHelper.updatePreviews(doc, blob);
                     ctx.setProperty(VIDEO_CHANGED_PROPERTY, true);
                 } catch (IOException e) {
                     throw ClientException.wrap(e);

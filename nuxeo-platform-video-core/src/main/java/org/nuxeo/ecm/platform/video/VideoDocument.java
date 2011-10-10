@@ -25,17 +25,7 @@ import java.util.Collection;
  */
 public interface VideoDocument {
 
-    public double getDuration();
-
-    public long getWidth();
-
-    public long getHeight();
-
-    public String getContainer();
-
-    public String getVideoCodec();
-
-    public double getFrameRate();
+    VideoMetadata getVideoMetadata();
 
     Collection<TranscodedVideo> getTranscodedVideos();
 

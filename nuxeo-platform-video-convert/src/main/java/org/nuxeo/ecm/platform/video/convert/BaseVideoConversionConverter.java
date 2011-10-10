@@ -32,9 +32,9 @@ import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolderWithProperties;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
-import org.nuxeo.ecm.core.convert.cache.SimpleCachableBlobHolder;
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
 import org.nuxeo.ecm.platform.convert.plugins.CommandLineBasedConverter;
 
@@ -100,7 +100,9 @@ public abstract class BaseVideoConversionConverter extends
         blob.setMimeType(getVideoMimeType());
         blobs.add(blob);
 
-        return new SimpleCachableBlobHolder(blobs);
+        Map<String, Serializable> properties = new HashMap<String, Serializable>();
+        properties.put("cmdOutput", (Serializable) cmdOutput);
+        return new SimpleBlobHolderWithProperties(blobs, properties);
     }
 
     protected abstract String getVideoMimeType();

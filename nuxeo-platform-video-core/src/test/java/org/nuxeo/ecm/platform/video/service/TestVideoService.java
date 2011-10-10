@@ -27,7 +27,9 @@ import org.apache.commons.io.FilenameUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
+import org.nuxeo.ecm.core.event.EventServiceAdmin;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.nuxeo.ecm.platform.video.TranscodedVideo;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -57,15 +59,21 @@ public class TestVideoService extends SQLRepositoryTestCase {
 
         openSession();
 
+        Framework.getLocalService(EventServiceAdmin.class).setListenerEnabledFlag(
+                "videoAutomaticConversions", false);
+
         videoService = Framework.getLocalService(VideoService.class);
     }
 
     public void testVideoConversion() throws IOException, ClientException {
         Blob video = getBlobFromPath(DELTA_MP4, "video/mp4");
-        Blob transcodedVideo = videoService.convert(video, "WebM 480p");
+        TranscodedVideo transcodedVideo = videoService.convert(video,
+                "WebM 480p");
         assertNotNull(transcodedVideo);
-        assertEquals(WEBM_VIDEO_MIMETYPE, transcodedVideo.getMimeType());
-        assertTrue(transcodedVideo.getFilename().endsWith(WEBM_EXTENSION));
+        assertEquals(WEBM_VIDEO_MIMETYPE,
+                transcodedVideo.getVideoBlob().getMimeType());
+        assertTrue(transcodedVideo.getVideoBlob().getFilename().endsWith(
+                WEBM_EXTENSION));
     }
 
     protected static Blob getBlobFromPath(String path, String mimeType)

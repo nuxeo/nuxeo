@@ -17,7 +17,6 @@
 
 package org.nuxeo.ecm.platform.video.convert;
 
-
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.4.3

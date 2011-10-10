@@ -58,37 +58,8 @@ public class VideoDocumentAdapter implements VideoDocument {
     }
 
     @Override
-    public double getDuration() {
-        return metadata.getDuration();
-    }
-
-    @Override
-    public long getWidth() {
-        return metadata.getWidth();
-    }
-
-    @Override
-    public long getHeight() {
-        return metadata.getHeight();
-    }
-
-    @Override
-    public String getContainer() {
-        return metadata.getContainer();
-    }
-
-    public String getAudioCodec() {
-        return metadata.getAudioCodec();
-    }
-
-    @Override
-    public String getVideoCodec() {
-        return metadata.getVideoCodec();
-    }
-
-    @Override
-    public double getFrameRate() {
-        return metadata.getFrameRate();
+    public VideoMetadata getVideoMetadata() {
+        return metadata;
     }
 
     @Override

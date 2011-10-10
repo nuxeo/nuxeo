@@ -19,7 +19,6 @@ package org.nuxeo.ecm.platform.video.service;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -32,6 +31,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.platform.video.TranscodedVideo;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -60,15 +60,11 @@ public class VideoConversionTask implements Runnable {
 
     @Override
     public void run() {
-        try {
-            Blob originalVideo = getBlobToConvert();
-            if (originalVideo != null) {
-                Blob transcodedVideo = service.convert(originalVideo,
-                        conversionName);
-                saveNewTranscodedVideo(transcodedVideo);
-            }
-        } catch (ClientException e) {
-            log.error(e, e);
+        Blob originalVideo = getBlobToConvert();
+        if (originalVideo != null) {
+            TranscodedVideo transcodedVideo = service.convert(originalVideo,
+                    conversionName);
+            saveNewTranscodedVideo(transcodedVideo);
         }
     }
 
@@ -97,7 +93,7 @@ public class VideoConversionTask implements Runnable {
         return blobs.isEmpty() ? null : blobs.get(0);
     }
 
-    private void saveNewTranscodedVideo(final Blob blob) {
+    private void saveNewTranscodedVideo(final TranscodedVideo transcodedVideo) {
         TransactionHelper.startTransaction();
         try {
             new UnrestrictedSessionRunner(repositoryName) {
@@ -108,12 +104,7 @@ public class VideoConversionTask implements Runnable {
                     if (transcodedVideos == null) {
                         transcodedVideos = new ArrayList<Map<String, Serializable>>();
                     }
-                    Map<String, Serializable> transcodedVideo = new HashMap<String, Serializable>();
-                    Map<String, Serializable> metadata = new HashMap<String, Serializable>();
-                    metadata.put("name", conversionName);
-                    transcodedVideo.put("content", (Serializable) blob);
-                    transcodedVideo.put("metadata", (Serializable) metadata);
-                    transcodedVideos.add(transcodedVideo);
+                    transcodedVideos.add(transcodedVideo.toMap());
                     doc.setPropertyValue("vid:transcodedVideos",
                             (Serializable) transcodedVideos);
                     session.saveDocument(doc);

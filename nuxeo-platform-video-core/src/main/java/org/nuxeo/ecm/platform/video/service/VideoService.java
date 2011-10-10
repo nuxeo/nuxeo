@@ -18,8 +18,8 @@
 package org.nuxeo.ecm.platform.video.service;
 
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.platform.video.TranscodedVideo;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
@@ -31,7 +31,6 @@ public interface VideoService {
 
     void launchAutomaticConversions(DocumentModel doc);
 
-    Blob convert(Blob originalVideo, String conversionName)
-            throws ClientException;
+    TranscodedVideo convert(Blob originalVideo, String conversionName);
 
 }

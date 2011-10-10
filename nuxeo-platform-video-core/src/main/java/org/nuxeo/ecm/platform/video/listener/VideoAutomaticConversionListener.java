@@ -62,7 +62,8 @@ public class VideoAutomaticConversionListener implements
 
         DocumentEventContext docCtx = (DocumentEventContext) ctx;
         DocumentModel doc = docCtx.getSourceDocument();
-        if (doc == null || !doc.hasFacet(VIDEO_FACET) || !ctx.hasProperty(VIDEO_CHANGED_PROPERTY)) {
+        if (doc == null || !doc.hasFacet(VIDEO_FACET)
+                || !ctx.hasProperty(VIDEO_CHANGED_PROPERTY)) {
             return;
         }
 

@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.platform.video;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
@@ -36,8 +37,12 @@ import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
+import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
+import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
+import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
 import org.nuxeo.ecm.platform.picture.api.adapters.AbstractPictureAdapter;
 import org.nuxeo.ecm.platform.picture.api.adapters.PictureResourceAdapter;
+import org.nuxeo.ecm.platform.video.convert.BaseVideoConverter;
 import org.nuxeo.ecm.platform.video.convert.Constants;
 import org.nuxeo.runtime.api.Framework;
 
@@ -56,6 +61,8 @@ public class VideoHelper {
     public static final Log log = LogFactory.getLog(VideoHelper.class);
 
     public static final String MISSING_PREVIEW_PICTURE = "preview/missing-video-preview.jpeg";
+
+    public static final String FFMPEG_INFO_COMMAND_LINE = "ffmpeg-info";
 
     // TODO: make this configurable somehow though an extension point. The
     // imaging package need a similar refactoring, try to make both consistent
@@ -120,8 +127,6 @@ public class VideoHelper {
         }
         docModel.setPropertyValue(VideoConstants.STORYBOARD_PROPERTY,
                 (Serializable) storyboard);
-        docModel.setPropertyValue(VideoConstants.DURATION_PROPERTY,
-                result.getProperty("duration"));
     }
 
     /**
@@ -197,6 +202,40 @@ public class VideoHelper {
             position = duration * 0.1;
         }
         updatePreviews(docModel, video, position, THUMBNAILS_VIEWS);
+    }
+
+    public static void updateMetadata(DocumentModel docModel, Blob video)
+            throws ClientException {
+        if (video == null) {
+            docModel.setPropertyValue("vid:metadata",
+                    (Serializable) VideoMetadata.EMPTY_METADATA.toMap());
+            return;
+        }
+
+        File file = null;
+        try {
+            CommandLineExecutorService cleService = Framework.getLocalService(CommandLineExecutorService.class);
+
+            file = File.createTempFile("ffmpegInfo", video.getFilename());
+            video.transferTo(file);
+
+            CmdParameters params = new CmdParameters();
+            params.addNamedParameter("inFilePath",
+                    BaseVideoConverter.quoteFilePath(file.getAbsolutePath()));
+
+            // read the duration with a first command to adjust the best rate:
+            ExecResult result = cleService.execCommand(
+                    FFMPEG_INFO_COMMAND_LINE, params);
+            VideoMetadata videoMetadata = VideoMetadata.fromFFmpegOutput(result.getOutput());
+            docModel.setPropertyValue("vid:metadata",
+                    (Serializable) videoMetadata.toMap());
+        } catch (Exception e) {
+            throw ClientException.wrap(e);
+        } finally {
+            if (file != null) {
+                file.delete();
+            }
+        }
     }
 
 }

@@ -11,21 +11,28 @@
 
   <xs:complexType name="metadata">
     <xs:sequence>
-      <xs:element name="name" type="xs:string" />
       <xs:element name="duration" type="xs:float" /> <!-- in seconds -->
       <xs:element name="width" type="xs:integer" />
       <xs:element name="height" type="xs:integer" />
-      <xs:element name="container" type="xs:string" />
-      <xs:element name="videoCodec" type="xs:string" />
-      <xs:element name="audioCodec" type="xs:string" />
+      <xs:element name="format" type="xs:string" />
+      <xs:element name="streams" type="nxs:streamItems" />
       <xs:element name="frameRate" type="xs:float" />
     </xs:sequence>
   </xs:complexType>
 
-  <xs:complexType name="transcodedVideoItem">
+  <xs:complexType name="streamItems">
     <xs:sequence>
-      <xs:element name="content" type="nxs:content" />
-      <xs:element name="metadata" type="nxs:metadata" />
+      <xs:element maxOccurs="unbounded" minOccurs="0"
+       name="streamItem" type="nxs:streamItem"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="streamItem">
+    <xs:sequence>
+      <xs:element name="streamInfo" type="xs:string" />
+      <xs:element name="type" type="xs:string" />
+      <xs:element name="codec" type="xs:string" />
+      <xs:element name="bitRate" type="xs:double" />
     </xs:sequence>
   </xs:complexType>
 
@@ -33,6 +40,14 @@
     <xs:sequence>
       <xs:element maxOccurs="unbounded" minOccurs="0"
        name="transcodedVideoItem" type="nxs:transcodedVideoItem"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="transcodedVideoItem">
+    <xs:sequence>
+      <xs:element name="name" type="xs:string" />
+      <xs:element name="content" type="nxs:content" />
+      <xs:element name="metadata" type="nxs:metadata" />
     </xs:sequence>
   </xs:complexType>
 

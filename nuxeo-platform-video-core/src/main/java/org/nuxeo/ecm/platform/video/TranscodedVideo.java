@@ -18,6 +18,7 @@
 package org.nuxeo.ecm.platform.video;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
@@ -27,6 +28,14 @@ import org.nuxeo.ecm.core.api.Blob;
  * @since 5.4.3
  */
 public final class TranscodedVideo {
+
+    private static final String NAME = "name";
+
+    private static final String CONTENT = "content";
+
+    private static final String METADATA = "metadata";
+
+    private final String name;
 
     private final VideoMetadata metadata;
 
@@ -39,15 +48,28 @@ public final class TranscodedVideo {
         return new TranscodedVideo(map, position);
     }
 
+    public static TranscodedVideo fromBlobAndMetadata(String name, Blob blob,
+            VideoMetadata videoMetadata) {
+        return new TranscodedVideo(name, blob, videoMetadata);
+    }
+
     private TranscodedVideo(Map<String, Serializable> map, int position) {
         this.position = position;
-        blob = (Blob) map.get("content");
-        Map<String, Serializable> metadata = (Map<String, Serializable>) map.get("metadata");
+        name = (String) map.get(NAME);
+        blob = (Blob) map.get(CONTENT);
+        Map<String, Serializable> metadata = (Map<String, Serializable>) map.get(METADATA);
         this.metadata = VideoMetadata.fromMap(metadata);
     }
 
+    private TranscodedVideo(String name, Blob blob, VideoMetadata videoMetadata) {
+        this.name = name;
+        this.blob = blob;
+        metadata = videoMetadata;
+        position = -1;
+    }
+
     public String getName() {
-        return metadata.getName();
+        return name;
     }
 
     public double getDuration() {
@@ -63,15 +85,7 @@ public final class TranscodedVideo {
     }
 
     public String getContainer() {
-        return metadata.getContainer();
-    }
-
-    public String getAudioCodec() {
-        return metadata.getAudioCodec();
-    }
-
-    public String getVideoCodec() {
-        return metadata.getVideoCodec();
+        return metadata.getFormat();
     }
 
     public double getFrameRate() {
@@ -83,7 +97,19 @@ public final class TranscodedVideo {
     }
 
     public String getBlobPropertyName() {
+        if (position == -1) {
+            throw new IllegalStateException(
+                    "This transcoded video is not yet persisted, cannot generate property name.");
+        }
         return "vid:transcodedVideos/" + position + "/content";
+    }
+
+    public Map<String, Serializable> toMap() {
+        Map<String, Serializable> map = new HashMap<String, Serializable>();
+        map.put(NAME, name);
+        map.put(CONTENT, (Serializable) blob);
+        map.put(METADATA, (Serializable) metadata.toMap());
+        return map;
     }
 
 }

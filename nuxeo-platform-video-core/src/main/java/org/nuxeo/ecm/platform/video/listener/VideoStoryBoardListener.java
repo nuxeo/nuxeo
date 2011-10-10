@@ -62,7 +62,8 @@ public class VideoStoryboardListener implements PostCommitEventListener {
         }
         DocumentEventContext docCtx = (DocumentEventContext) ctx;
         DocumentModel doc = docCtx.getSourceDocument();
-        if (doc.hasFacet(HAS_STORYBOARD_FACET) && ctx.hasProperty(VIDEO_CHANGED_PROPERTY)) {
+        if (doc.hasFacet(HAS_STORYBOARD_FACET)
+                && ctx.hasProperty(VIDEO_CHANGED_PROPERTY)) {
             BlobHolder blobHolder = doc.getAdapter(BlobHolder.class);
             VideoHelper.updateStoryboard(doc, blobHolder.getBlob());
             CoreSession session = docCtx.getCoreSession();
