@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2007-2011 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -249,13 +249,12 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
             WSRemotingSession rs) throws ClientException {
 
         List<DocumentProperty> props = new ArrayList<DocumentProperty>();
-        if (doc != null)  {
+        if (doc != null) {
             DocumentLoader loader = Framework.getLocalService(DocumentLoader.class);
             loader.fillProperties(doc, props, rs);
         }
         return props.toArray(new DocumentProperty[props.size()]);
     }
-
 
     public DocumentDescriptor getCurrentVersion(
             @WebParam(name = "sessionId") String sid,
@@ -478,18 +477,11 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
             return listUsers(sid, 0, Integer.MAX_VALUE);
         }
         WSRemotingSession rs = initSession(sid);
-
-        List<String> users;
-        // FIXME: parentGroup is always non-null here
-        if (parentGroup == null) {
-            users = rs.getUserManager().getUserIds();
-        } else {
-            NuxeoGroup group = rs.getUserManager().getGroup(parentGroup);
-            if (group == null) {
-                return null;
-            }
-            users = group.getMemberUsers();
+        NuxeoGroup group = rs.getUserManager().getGroup(parentGroup);
+        if (group == null) {
+            return null;
         }
+        List<String> users = group.getMemberUsers();
         return users.toArray(new String[users.size()]);
     }
 
