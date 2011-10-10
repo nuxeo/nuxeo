@@ -5,6 +5,8 @@
 
   <property name="mvn.opts" value="" />
 
+  <property name="branch" value="" />
+
   <property name="jboss.dir" value="/opt/jboss" />
   <property name="jboss.config" value="default" />
   <property name="jboss.server" value="${jboss.dir}/server/${jboss.config}" />
@@ -31,17 +33,10 @@
     <os family="windows" />
   </condition>
 
-  <target name="clone" depends="clone-unix,clone-windows"
-    description="Launch the platform'sz clone command" />
-  <target name="clone-unix" if="osfamily-unix">
-    <exec executable="/bin/sh" failonerror="true">
-      <arg value="clone.sh" />
-    </exec>
-  </target>
-  <target name="clone-windows" if="osfamily-windows">
-    <exec executable="cmd.exe" failonerror="true">
-      <arg value="/C" />
-      <arg value="clone.bat" />
+  <target name="clone" description="Launch the clone.py command">
+    <exec executable="python" failonerror="true">
+      <arg value="clone.py" />
+      <arg value="${branch}" />
     </exec>
   </target>
 

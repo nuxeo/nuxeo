@@ -19,11 +19,19 @@
 ## repositories.
 ##
 
-import re, os, sys, commands
+import re, os, sys, subprocess
 
 def system(cmd):
     print "$> " + cmd
     retcode = os.system(cmd)
+
+def check_output(cmd):
+    p =  subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+    out, err = p.communicate()
+    if err != None:
+        print "[ERROR]: command",str(cmd)," returned an error:"
+        print err
+    return out.strip()
 
 def fetch(module, root_url=None):
     if root_url is None:
@@ -32,17 +40,23 @@ def fetch(module, root_url=None):
 
     if os.path.isdir(module):
         print "Updating " + module + "..."
-        system("hg pull -R %s" % module)
+        cwd = os.getcwd()
+        os.chdir(module)
+        system("hg pull")
+        os.chdir(cwd)
     else:
         print "Cloning " + module + "..."
-        system("hg clone %s/%s %s" % (root, module, module))
-    system("hg up -R %s %s" % (module, branch))
+        system("hg clone %s/%s %s" % (root_url, module, module))
+    cwd = os.getcwd()
+    os.chdir(module)
+    system("hg up %s" % (branch))
+    os.chdir(cwd)
     print
 
 if len(sys.argv) == 2:
     branch = sys.argv[1]
 else:
-    branch = commands.getoutput("hg id -b")
+    branch = check_output(["hg","id","-b"])
 
 system("hg pull")
 system("hg up %s" % branch)
@@ -58,4 +72,8 @@ for line in os.popen("mvn -N help:effective-pom"):
 fetch("nuxeo-distribution")
 fetch("addons", "https://hg.nuxeo.org")
 
-system("cd addons ; python clone.py %s" % branch)
+cwd = os.getcwd()
+os.chdir("addons")
+system("python clone.py %s" % branch)
+os.chdir(cwd)
+
