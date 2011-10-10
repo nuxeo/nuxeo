@@ -27,7 +27,9 @@ import org.nuxeo.theme.perspectives.PerspectiveType;
  * document.
  *
  * @author <a href="mailto:jmo@chalmers.se">Jean-Marc Orliaguet</a>
+ * @deprecated since 5.4.3: use local theme flavour instead
  */
+@Deprecated
 public class LocalPerspective implements Scheme {
 
     /**

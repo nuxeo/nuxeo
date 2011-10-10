@@ -26,7 +26,9 @@ import org.nuxeo.theme.negotiation.Scheme;
  * Negotiation scheme for obtaining the local theme from the current space.
  *
  * @author <a href="mailto:jmo@chalmers.se">Jean-Marc Orliaguet</a>
+ * @deprecated since 5.4.3: use local theme flavour instead
  */
+@Deprecated
 public class LocalTheme implements Scheme {
 
     /**
