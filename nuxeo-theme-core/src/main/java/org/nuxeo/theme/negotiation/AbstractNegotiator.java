@@ -16,6 +16,8 @@ package org.nuxeo.theme.negotiation;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.types.TypeFamily;
 
@@ -23,22 +25,29 @@ public abstract class AbstractNegotiator implements Negotiator {
 
     private static final String SPEC_PREFIX = "nxtheme://theme";
 
-    private final String strategy;
+    // FIXME: can be called 'web' under webengine
+    private static final String DEFAULT_NEGOTIATION_STRATEGY = "default";
 
-    private final Object context;
+    protected final String strategy;
+
+    protected final Object context;
+
+    protected final HttpServletRequest request;
 
     public abstract String getTemplateEngineName();
 
-    protected AbstractNegotiator(String strategy, Object context) {
+    protected AbstractNegotiator(String strategy, Object context,
+            HttpServletRequest request) {
         this.strategy = strategy;
         this.context = context;
+        this.request = request;
     }
 
     public final String getSpec() throws NegotiationException {
-        return String.format("%s/%s/%s/%s/%s/%s", SPEC_PREFIX,
+        return String.format("%s/%s/%s/%s/%s/%s/%s", SPEC_PREFIX,
                 negotiate("engine"), negotiate("mode"),
                 getTemplateEngineName(), negotiate("theme"),
-                negotiate("perspective"));
+                negotiate("perspective"), negotiate("collection"));
     }
 
     public final synchronized String negotiate(String object)
@@ -49,6 +58,12 @@ public abstract class AbstractNegotiator implements Negotiator {
         NegotiationType negotiation = (NegotiationType) Manager.getTypeRegistry().lookup(
                 TypeFamily.NEGOTIATION,
                 String.format("%s/%s", strategy, object));
+        // Try with the 'default' strategy
+        if (negotiation == null) {
+            negotiation = (NegotiationType) Manager.getTypeRegistry().lookup(
+                    TypeFamily.NEGOTIATION,
+                    String.format("%s/%s", DEFAULT_NEGOTIATION_STRATEGY, object));
+        }
         if (negotiation == null) {
             throw new NegotiationException("Could not obtain negotiation for: "
                     + strategy + " (strategy) " + object + " (object)");
@@ -68,6 +83,9 @@ public abstract class AbstractNegotiator implements Negotiator {
             throw new NegotiationException(
                     "No negotiation outcome found for:  " + strategy
                             + " (strategy) " + object + " (object)");
+        } else {
+            // add result to the request
+            request.setAttribute(NEGOTIATION_RESULT_PREFIX + object, outcome);
         }
         return outcome;
     }

@@ -31,6 +31,16 @@ public class PaletteType implements Type {
     @XNode("@category")
     private String category = "";
 
+    public PaletteType() {
+    }
+
+    public PaletteType(String name, String src, String category) {
+        super();
+        this.name = name;
+        this.src = src;
+        this.category = category;
+    }
+
     public TypeFamily getTypeFamily() {
         return TypeFamily.PALETTE;
     }

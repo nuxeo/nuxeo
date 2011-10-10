@@ -40,6 +40,7 @@ public class ThemeStyles {
         String themeName = params.get("themeName");
         String path = params.get("path");
         String basePath = params.get("basepath");
+        String collectionName = params.get("collection");
 
         String cssPath = VirtualHostHelper.getContextPathProperty()
                 + "/nxthemes-css";
@@ -56,7 +57,9 @@ public class ThemeStyles {
         }
 
         if (inline) {
-            return generateThemeStyles(themeName, themeDescriptor, basePath);
+            return String.format("<style type=\"text/css\">%s</style>",
+                    generateThemeStyles(themeName, themeDescriptor, basePath,
+                            collectionName));
         }
 
         long timestamp = 0;
@@ -68,13 +71,14 @@ public class ThemeStyles {
             timestamp = new Date().getTime();
         }
         return String.format(
-                "<link rel=\"stylesheet\" type=\"text/css\" media=\"all\" href=\"%s/%s-styles.css?theme=%s&amp;path=%s&amp;basepath=%s&amp;timestamp=%s\" />",
-                cssPath, themeName, themeName, path, basePath,
+                "<link rel=\"stylesheet\" type=\"text/css\" media=\"all\" href=\"%s/%s-styles.css?theme=%s&amp;path=%s&amp;basepath=%s&amp;collection=%s&amp;timestamp=%s\" />",
+                cssPath, themeName, themeName, path, basePath, collectionName,
                 Long.valueOf(timestamp));
     }
 
     public static String generateThemeStyles(String themeName,
-            ThemeDescriptor themeDescriptor, String basePath) {
+            ThemeDescriptor themeDescriptor, String basePath,
+            String collectionName) {
 
         final StringBuilder sb = new StringBuilder();
 
@@ -94,9 +98,14 @@ public class ThemeStyles {
                     IGNORE_VIEW_NAME, IGNORE_CLASSNAME, INDENT));
         }
 
+        final String collectionCssMarker = ThemeManager.getCollectionCssMarker();
         String rendered = sb.toString();
-        rendered = CSSUtils.expandVariables(rendered, basePath, themeDescriptor);
-        return String.format("<style type=\"text/css\">%s</style>", rendered);
+        if (collectionName != null) {
+            // Preprocessing: replace the collection name
+            rendered = rendered.replaceAll(collectionCssMarker, collectionName);
+        }
+        rendered = CSSUtils.expandVariables(rendered, basePath, collectionName,
+                themeDescriptor);
+        return rendered;
     }
-
 }
