@@ -53,7 +53,6 @@ import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
  * Manages directories editable by administrators.
  *
  * @author Anahide Tchertchian
- * @author Anahide Tchertchian
  */
 @Name("directoryUIActions")
 @Scope(ScopeType.CONVERSATION)
@@ -196,7 +195,6 @@ public class DirectoryUIActionsBean implements Serializable {
 
     public DocumentModel getCreationDirectoryEntry() throws ClientException {
         if (creationDirectoryEntry == null) {
-            Session dirSession = null;
             try {
                 String dirName = currentDirectoryInfo.getName();
                 String schema = dirService.getDirectorySchema(dirName);
@@ -204,10 +202,6 @@ public class DirectoryUIActionsBean implements Serializable {
                         schema, null, null);
             } catch (DirectoryException e) {
                 throw new ClientException(e);
-            } finally {
-                if (dirSession != null) {
-                    dirSession.close();
-                }
             }
         }
         return creationDirectoryEntry;
@@ -223,7 +217,8 @@ public class DirectoryUIActionsBean implements Serializable {
             Object id = creationDirectoryEntry.getProperty(schema, idField);
             dirSession = dirService.open(dirName);
             if (id instanceof String && dirSession.hasEntry((String) id)) {
-                facesMessages.add(StatusMessage.Severity.ERROR,
+                facesMessages.add(
+                        StatusMessage.Severity.ERROR,
                         resourcesAccessor.getMessages().get(
                                 "vocabulary.entry.identifier.already.exists"));
                 return;
@@ -235,7 +230,8 @@ public class DirectoryUIActionsBean implements Serializable {
             currentDirectoryEntries = null;
             Events.instance().raiseEvent(EventNames.DIRECTORY_CHANGED, dirName);
 
-            facesMessages.add(StatusMessage.Severity.INFO,
+            facesMessages.add(
+                    StatusMessage.Severity.INFO,
                     resourcesAccessor.getMessages().get(
                             "vocabulary.entry.added"));
         } catch (DirectoryException e) {
@@ -286,7 +282,8 @@ public class DirectoryUIActionsBean implements Serializable {
             currentDirectoryEntries = null;
             Events.instance().raiseEvent(EventNames.DIRECTORY_CHANGED, dirName);
 
-            facesMessages.add(StatusMessage.Severity.INFO,
+            facesMessages.add(
+                    StatusMessage.Severity.INFO,
                     resourcesAccessor.getMessages().get(
                             "vocabulary.entry.edited"));
         } catch (DirectoryException e) {
@@ -319,7 +316,8 @@ public class DirectoryUIActionsBean implements Serializable {
             // invalidate directory entries list
             currentDirectoryEntries = null;
             Events.instance().raiseEvent(EventNames.DIRECTORY_CHANGED, dirName);
-            facesMessages.add(StatusMessage.Severity.INFO,
+            facesMessages.add(
+                    StatusMessage.Severity.INFO,
                     resourcesAccessor.getMessages().get(
                             "vocabulary.entry.deleted"));
         } catch (DirectoryException e) {
