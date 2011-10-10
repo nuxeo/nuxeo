@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2011 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -34,15 +34,20 @@ import java.util.StringTokenizer;
 public class PostfixExpression implements Iterable<PostfixExpression.Token> {
 
     public static final int ARG = 0;
+
     public static final int NOT = 1;
+
     public static final int AND = 2;
+
     public static final int OR = 3;
+
     public static final int PARA = 4;
+
     public static final int LPARA = 5;
+
     public static final int RPARA = 6;
 
     protected Token[] expr;
-
 
     public PostfixExpression(String expr) throws ParseException {
         parse(expr);
@@ -95,17 +100,20 @@ public class PostfixExpression implements Iterable<PostfixExpression.Token> {
 
     public interface Visitor {
         Object createParameter(Token token);
+
         Object createOperation(Token token, Object lparam, Object rparam);
     }
 
     public static class Token {
         public final int type;
+
         public final String name;
 
         public Token(int type, String name) {
             this.type = type;
             this.name = name;
         }
+
         @Override
         public String toString() {
             return name;
@@ -114,12 +122,15 @@ public class PostfixExpression implements Iterable<PostfixExpression.Token> {
 
     public static class OpStack extends LinkedList<Token> {
         private static final long serialVersionUID = 1L;
+
         public final void push(Token token) {
             add(token);
         }
+
         public final Token pop() {
             return removeLast();
         }
+
         public final Token top() {
             return getLast();
         }
@@ -128,7 +139,6 @@ public class PostfixExpression implements Iterable<PostfixExpression.Token> {
     protected void parse(String expr) throws ParseException {
         OpStack stack = new OpStack();
         List<Token> result = new ArrayList<Token>();
-        String arg = null;
         StringTokenizer tok = new StringTokenizer(expr, " \t\n\r\f()", true);
         while (tok.hasMoreTokens()) {
             String token = tok.nextToken();
@@ -139,27 +149,24 @@ public class PostfixExpression implements Iterable<PostfixExpression.Token> {
             case '\r':
             case '\n':
             case '\f':
-                arg = null;
                 break;
             case '(':
                 stack.push(new Token(LPARA, "("));
                 break;
             case ')':
-                if (arg != null) {
-                    result.add(new Token(ARG, arg));
-                }
                 while (!stack.isEmpty() && stack.top().type != LPARA) {
                     result.add(stack.pop());
                 }
                 if (stack.isEmpty()) {
-                    throw new ParseException("Not matching LPARA '(' found ", -1);
+                    throw new ParseException("Not matching LPARA '(' found ",
+                            -1);
                 }
                 stack.pop(); // remove LPARA from stack
                 break;
             default:
                 if ("OR".equals(token)) {
                     pushOp(new Token(OR, "OR"), stack, result);
-                } else if ("AND".equals(token)){
+                } else if ("AND".equals(token)) {
                     pushOp(new Token(AND, "AND"), stack, result);
                 } else if ("NOT".equals(token)) {
                     pushOp(new Token(NOT, "NOT"), stack, result);
