@@ -84,7 +84,7 @@ public final class TranscodedVideo {
         return metadata.getHeight();
     }
 
-    public String getContainer() {
+    public String getFormat() {
         return metadata.getFormat();
     }
 

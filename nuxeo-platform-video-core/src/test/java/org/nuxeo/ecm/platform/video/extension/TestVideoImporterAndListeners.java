@@ -99,8 +99,11 @@ public class TestVideoImporterAndListeners extends SQLRepositoryTestCase {
 
         openSession();
 
-        Framework.getLocalService(EventServiceAdmin.class).setListenerEnabledFlag(
+        EventServiceAdmin eventServiceAdmin = Framework.getLocalService(EventServiceAdmin.class);
+        eventServiceAdmin.setListenerEnabledFlag(
                 "videoAutomaticConversions", false);
+        eventServiceAdmin.setListenerEnabledFlag(
+                        "sql-storage-binary-text", false);
 
         root = session.getRootDocument();
         fileManagerService = Framework.getService(FileManager.class);

@@ -35,8 +35,6 @@ import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.event.EventServiceAdmin;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.video.TranscodedVideo;
-import org.nuxeo.ecm.platform.video.VideoConstants;
-import org.nuxeo.ecm.platform.video.VideoConversionStatus;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -66,8 +64,12 @@ public class TestVideoService extends SQLRepositoryTestCase {
 
         openSession();
 
-        Framework.getLocalService(EventServiceAdmin.class).setListenerEnabledFlag(
+        EventServiceAdmin eventServiceAdmin = Framework.getLocalService(EventServiceAdmin.class);
+        eventServiceAdmin.setListenerEnabledFlag(
                 "videoAutomaticConversions", false);
+        eventServiceAdmin.setListenerEnabledFlag(
+                        "sql-storage-binary-text", false);
+
 
         videoService = Framework.getLocalService(VideoService.class);
     }
@@ -81,6 +83,12 @@ public class TestVideoService extends SQLRepositoryTestCase {
                 transcodedVideo.getVideoBlob().getMimeType());
         assertTrue(transcodedVideo.getVideoBlob().getFilename().endsWith(
                 WEBM_EXTENSION));
+        assertEquals("WebM 480p", transcodedVideo.getName());
+        assertEquals(8.38, transcodedVideo.getDuration(), 0.1);
+        assertEquals(768, transcodedVideo.getWidth());
+        assertEquals(480, transcodedVideo.getHeight());
+        assertEquals(23.98, transcodedVideo.getFrameRate());
+        assertEquals("webm", transcodedVideo.getFormat());
     }
 
     protected static Blob getBlobFromPath(String path, String mimeType)
