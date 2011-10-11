@@ -478,10 +478,9 @@ public class IORelationAdapter extends AbstractIOResourceAdapter {
             // variables for date update
             Literal newDate = RelationDate.getLiteralDate(new Date());
             String[] dateUris = getStringArrayProperty(IORelationAdapterProperties.UPDATE_DATE_METADATA);
-            List<Resource> dateProperties = null;
+            List<Resource> dateProperties = new ArrayList<Resource>();
             if (dateUris != null) {
                 for (String dateUri : dateUris) {
-                    // FIXME: this can't work, dateProperties is null!
                     dateProperties.add(new ResourceImpl(dateUri));
                 }
             }
