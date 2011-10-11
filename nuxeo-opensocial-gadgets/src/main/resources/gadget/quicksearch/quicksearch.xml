@@ -6,6 +6,7 @@
     <Require feature="setprefs"/>
     <#include "dynamic-translations.ftl"/>
     <Require feature="dynamic-height" />
+    <Require feature="jquery" />
     <#include "default-oauth-prefs.ftl"/>
   </ModulePrefs>
   <#include "context-prefs.ftl"/>
@@ -109,6 +110,14 @@
      loadSearch();
      gadgets.window.adjustHeight();
    });
+
+  jQuery(document).ready(function() {
+    jQuery('#searchPattern').keydown(function(event) {
+      if (event.keyCode == '13') {
+        doSearch();
+      }
+    });
+  });
 
   </script>
   </head>
