@@ -70,8 +70,8 @@
           <widget>summary_current_document_comments</widget>
         </row>
         <row>
-          <widget>summary_video_storyboard</widget>
           <widget>summary_current_document_lc_and_version</widget>
+          <widget>summary_video_storyboard</widget>
           <widget>summary_current_document_actions</widget>
           <widget>summary_current_document_tagging</widget>
           <widget>summary_current_document_relations</widget>
