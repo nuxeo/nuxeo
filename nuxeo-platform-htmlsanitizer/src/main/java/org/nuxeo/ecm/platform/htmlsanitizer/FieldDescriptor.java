@@ -60,9 +60,9 @@ public class FieldDescriptor {
     @Override
     public String toString() {
         if (filterField != null) {
-            return contentField + "if " + filterField + "=" + filterValue;
+            return getContentField() + " if " + filterField + "=" + filterValue;
         } else {
-            return contentField;
+            return getContentField();
         }
     }
 
