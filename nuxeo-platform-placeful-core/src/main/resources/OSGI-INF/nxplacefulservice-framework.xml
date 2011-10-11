@@ -5,13 +5,16 @@
     This component manages placeful annotations stored in RDBMS
   </documentation>
 
+  <!-- needed so that activation has access to persistence -->
+  <require>org.nuxeo.ecm.platform.ec.placeful.persistence</require>
+
   <implementation
      class="org.nuxeo.ecm.platform.ec.placeful.PlacefulServiceImpl" />
-  
+
   <service>
     <provide interface="org.nuxeo.ecm.platform.ec.placeful.interfaces.PlacefulService" />
   </service>
-  
+
 
   <extension-point name="annotations">
     <documentation>
@@ -21,15 +24,4 @@
     <object class="org.nuxeo.ecm.platform.ec.placeful.AnnotationDescriptor" />
   </extension-point>
 
-  <require>org.nuxeo.ecm.core.persistence.PersistenceComponent</require>
-  
-  <extension target="org.nuxeo.ecm.core.persistence.PersistenceComponent"
-	     point="hibernate">
-    <hibernateConfiguration name="nxplaceful">
-      <datasource>placeful_service_ds</datasource>
-      <properties>
-	     <property name="hibernate.hbm2ddl.auto">update</property>
-      </properties>
-    </hibernateConfiguration>
-  </extension>
 </component>

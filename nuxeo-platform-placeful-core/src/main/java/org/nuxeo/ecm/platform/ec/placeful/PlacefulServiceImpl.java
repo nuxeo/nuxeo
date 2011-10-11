@@ -58,11 +58,10 @@ public class PlacefulServiceImpl extends DefaultComponent implements PlacefulSer
     protected HibernateConfiguration hibernateConfiguration;
 
     public PersistenceProvider getOrCreatePersistenceProvider() {
-        if (persistenceProvider != null) {
-            return persistenceProvider;
+        if (persistenceProvider == null) {
+            activatePersistenceProvider();
         }
-        PersistenceProviderFactory persistenceProviderFactory = Framework.getLocalService(PersistenceProviderFactory.class);
-        return persistenceProvider = persistenceProviderFactory.newProvider("nxplaceful");
+        return persistenceProvider;
     }
 
     public HibernateConfiguration getOrCreateHibernateConfiguration() {
@@ -71,6 +70,11 @@ public class PlacefulServiceImpl extends DefaultComponent implements PlacefulSer
         }
         HibernateConfigurator hibernateConfigurator = Framework.getLocalService(HibernateConfigurator.class);
         return hibernateConfiguration = hibernateConfigurator.getHibernateConfiguration("nxplaceful");
+    }
+
+    protected void activatePersistenceProvider() {
+        PersistenceProviderFactory persistenceProviderFactory = Framework.getLocalService(PersistenceProviderFactory.class);
+        persistenceProvider = persistenceProviderFactory.newProvider("nxplaceful");
     }
 
     protected void deactivatePersistenceProvider() {

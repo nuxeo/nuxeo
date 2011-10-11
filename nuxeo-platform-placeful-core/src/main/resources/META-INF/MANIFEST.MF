@@ -10,7 +10,8 @@ Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Vendor: Nuxeo
 Bundle-Version: 0.0.0.SNAPSHOT
-Nuxeo-Component: OSGI-INF/nxplacefulservice-framework.xml
+Nuxeo-Component: OSGI-INF/nxplacefulservice-framework.xml,
+ OSGI-INF/nxplaceful-persistence-config.xml
 Bundle-ManifestVersion: 2
 Import-Package: javax.persistence,
  org.apache.commons.logging,
