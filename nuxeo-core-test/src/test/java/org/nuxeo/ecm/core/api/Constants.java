@@ -26,10 +26,10 @@ package org.nuxeo.ecm.core.api;
 public class Constants {
 
     public static final String CORE_BUNDLE = "org.nuxeo.ecm.core";
-    public static final String CORE_TESTS_BUNDLE = "org.nuxeo.ecm.core.tests";
+
     public static final String SCHEMA_BUNDLE = "org.nuxeo.ecm.core.schema";
-    public static final String CORE_FACADE_BUNDLE = "org.nuxeo.ecm.core.facade";
-    public static final String CORE_FACADE_TESTS_BUNDLE = "org.nuxeo.ecm.core.facade.tests";
+
+    public static final String CORE_TEST_TESTS_BUNDLE = "org.nuxeo.ecm.core.test.tests";
 
     private Constants() {
     }

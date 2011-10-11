@@ -18,6 +18,7 @@ package org.nuxeo.ecm.core.version.test;
 
 import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.Constants;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
@@ -197,8 +198,8 @@ public class TestVersioningService extends SQLRepositoryTestCase {
 
     @SuppressWarnings("deprecation")
     public void testOldNuxeoVersioning() throws Exception {
-        deployContrib("org.nuxeo.ecm.core.facade.tests",
-                "OSGI-INF/test-versioning-contrib.xml");
+        deployContrib(Constants.CORE_TEST_TESTS_BUNDLE,
+                "test-versioningservice-contrib.xml");
         service.service = new CompatVersioningService();
 
         DocumentModel folder = session.createDocumentModel("/", "folder",

@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.core.api.blobholder;
 
+import org.nuxeo.ecm.core.api.Constants;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.runtime.api.Framework;
@@ -39,7 +40,8 @@ public class TestBlobHolderAdapterService extends NXRuntimeTestCase {
 
     public void testContrib() throws Exception {
         assertSame(0, BlobHolderAdapterComponent.getFactoryNames().size());
-        deployContrib("org.nuxeo.ecm.core.facade.tests","blob-holder-adapters-test-contrib.xml");
+        deployContrib(Constants.CORE_TEST_TESTS_BUNDLE,
+                "test-blob-holder-adapters-contrib.xml");
         assertSame(1, BlobHolderAdapterComponent.getFactoryNames().size());
 
         BlobHolderAdapterService bhas = Framework.getLocalService(BlobHolderAdapterService.class);

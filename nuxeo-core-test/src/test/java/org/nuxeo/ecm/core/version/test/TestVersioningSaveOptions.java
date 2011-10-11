@@ -13,7 +13,7 @@
  *
  * Contributors:
  *     Laurent Doguin
- *     
+ *
  */
 
 package org.nuxeo.ecm.core.version.test;
@@ -46,8 +46,8 @@ public class TestVersioningSaveOptions extends RepositoryOSGITestCase {
         List<VersioningOption> opts = vService.getSaveOptions(fileDoc);
         assertEquals(3, opts.size());
         assertEquals(VersioningOption.NONE, opts.get(0));
-        
-        deployContrib(Constants.CORE_FACADE_TESTS_BUNDLE,
+
+        deployContrib(Constants.CORE_TEST_TESTS_BUNDLE,
                 "test-versioning-contrib.xml");
         fileDoc = new DocumentModelImpl("File");
         fileDoc = coreSession.createDocument(fileDoc);
@@ -64,7 +64,7 @@ public class TestVersioningSaveOptions extends RepositoryOSGITestCase {
         opts = vService.getSaveOptions(fileDoc);
         assertEquals(3, opts.size());
 
-        deployContrib(Constants.CORE_FACADE_TESTS_BUNDLE,
+        deployContrib(Constants.CORE_TEST_TESTS_BUNDLE,
                 "test-versioning-override-contrib.xml");
         fileDoc = new DocumentModelImpl("File");
         fileDoc = coreSession.createDocument(fileDoc);

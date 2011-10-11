@@ -19,7 +19,7 @@
 package org.nuxeo.ecm.core.api;
 
 import static org.nuxeo.ecm.core.api.Constants.CORE_BUNDLE;
-import static org.nuxeo.ecm.core.api.Constants.CORE_FACADE_TESTS_BUNDLE;
+import static org.nuxeo.ecm.core.api.Constants.CORE_TEST_TESTS_BUNDLE;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.ADMINISTRATOR;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.ANONYMOUS;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ;
@@ -100,11 +100,11 @@ public class TestSecurityPolicyService extends SQLRepositoryTestCase {
 
     public void testNewSecurityPolicy() throws Exception {
         // "user" schema
-        deployContrib(CORE_FACADE_TESTS_BUNDLE, "test-CoreExtensions.xml");
+        deployContrib(CORE_TEST_TESTS_BUNDLE, "test-CoreExtensions.xml");
         // standard permissions
         deployContrib(CORE_BUNDLE, "OSGI-INF/permissions-contrib.xml");
         // deploy custom security policy
-        deployContrib(CORE_FACADE_TESTS_BUNDLE,
+        deployContrib(CORE_TEST_TESTS_BUNDLE,
                 "test-security-policy-contrib.xml");
         checkCorePolicy();
     }

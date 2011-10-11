@@ -16,8 +16,7 @@
  */
 package org.nuxeo.ecm.core.event.test;
 
-import java.net.URL;
-
+import org.nuxeo.ecm.core.api.Constants;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.EventContextImpl;
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
@@ -43,9 +42,8 @@ public class PostCommitEventListenerTest extends RepositoryOSGITestCase {
     public static int SCRIPT_CNT = 0;
 
     public void testScripts() throws Exception {
-        URL url = PostCommitEventListenerTest.class.getClassLoader().getResource(
+        deployContrib(Constants.CORE_TEST_TESTS_BUNDLE,
                 "test-PostCommitListeners.xml");
-        deployTestContrib("org.nuxeo.ecm.core.event", url);
         assertEquals(0, SCRIPT_CNT);
 
         EventContextImpl customContext = new EventContextImpl(null, null);
