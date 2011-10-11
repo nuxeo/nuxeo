@@ -43,7 +43,7 @@ import org.nuxeo.runtime.model.RuntimeContext;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * 
  */
 @XObject("component")
 public class RegistrationInfoImpl implements RegistrationInfo {
@@ -77,12 +77,6 @@ public class RegistrationInfoImpl implements RegistrationInfo {
     @XNodeList(value = "require", type = HashSet.class, componentType = ComponentName.class)
     Set<ComponentName> requires;
 
-    // the object names I depend of and that are blocking my registration
-    Set<ComponentName> waitsFor;
-
-    // registration that depends on me
-    Set<RegistrationInfoImpl> dependsOnMe;
-
     @XNode("implementation@class")
     String implementation;
 
@@ -101,7 +95,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
     /**
      * To be set when deploying configuration components that are not in a
      * bundle (e.g. from config. dir).
-     *
+     * 
      * Represent the bundle that will be assumed to be the owner of the
      * component.
      */
@@ -129,11 +123,25 @@ public class RegistrationInfoImpl implements RegistrationInfo {
 
     /**
      * Useful when dynamically registering components
-     *
+     * 
      * @param name the component name
      */
     public RegistrationInfoImpl(ComponentName name) {
         this.name = name;
+    }
+
+    /**
+     * Attach to a manager - this method must be called after all registration
+     * fields are initialized.
+     * 
+     * @param manager
+     */
+    public void attach(ComponentManagerImpl manager) {
+        if (this.manager != null) {
+            throw new IllegalStateException("Registration '" + name
+                    + "' was already attached to a manager");
+        }
+        this.manager = manager;
     }
 
     public void setContext(RuntimeContext rc) {
@@ -143,14 +151,6 @@ public class RegistrationInfoImpl implements RegistrationInfo {
     @Override
     public boolean isDisabled() {
         return disabled;
-    }
-
-    public Set<RegistrationInfoImpl> getDependsOnMe() {
-        return dependsOnMe;
-    }
-
-    public Set<ComponentName> getWaitsFor() {
-        return waitsFor;
     }
 
     @Override
@@ -163,22 +163,10 @@ public class RegistrationInfoImpl implements RegistrationInfo {
         this.isPersistent = isPersistent;
     }
 
-    public final boolean isPending() {
-        return waitsFor != null;
-    }
-
     public void destroy() {
-        if (waitsFor != null) {
-            waitsFor.clear();
-            waitsFor = null;
-        }
         if (requires != null) {
             requires.clear();
             requires = null;
-        }
-        if (dependsOnMe != null) {
-            dependsOnMe.clear();
-            dependsOnMe = null;
         }
         component = null;
         name = null;
@@ -201,6 +189,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
 
     /**
      * Reload the underlying component if reload is supported
+     * 
      * @throws Exception
      */
     public synchronized void reload() throws Exception {
@@ -336,6 +325,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
 
         // activate component
         component.activate();
+        log.info("Component activated: " + name);
 
         state = ACTIVATED;
         manager.sendEvent(new ComponentEvent(
@@ -507,6 +497,22 @@ public class RegistrationInfoImpl implements RegistrationInfo {
     @Override
     public URL getXmlFileUrl() {
         return xmlFileUrl;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        }
+        if (obj instanceof RegistrationInfo) {
+            return name.equals(((RegistrationInfo) obj).getName());
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return name.hashCode();
     }
 
 }
