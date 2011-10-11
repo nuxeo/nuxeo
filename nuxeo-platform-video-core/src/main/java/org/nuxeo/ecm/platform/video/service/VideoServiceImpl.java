@@ -21,6 +21,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -31,17 +32,23 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
+import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
+import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.core.event.impl.AsyncEventExecutor;
 import org.nuxeo.ecm.platform.video.TranscodedVideo;
+import org.nuxeo.ecm.platform.video.VideoConversionStatus;
 import org.nuxeo.ecm.platform.video.VideoMetadata;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
+
+import com.google.common.collect.MapMaker;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
@@ -62,6 +69,9 @@ public class VideoServiceImpl extends DefaultComponent implements VideoService {
     private BlockingQueue<Runnable> conversionTaskQueue;
 
     private ThreadPoolExecutor conversionExecutor;
+
+    private final Map<VideoConversionId, String> states = new MapMaker().concurrencyLevel(
+            10).expiration(1, TimeUnit.DAYS).makeMap();
 
     @Override
     public void activate(ComponentContext context) throws Exception {
@@ -107,7 +117,13 @@ public class VideoServiceImpl extends DefaultComponent implements VideoService {
     public void launchConversion(DocumentModel doc, String conversionName) {
         VideoConversionTask task = new VideoConversionTask(doc, conversionName,
                 this);
-        conversionExecutor.execute(task);
+        if (!conversionTaskQueue.contains(task)) {
+            DocumentLocation docLoc = new DocumentLocationImpl(
+                    doc.getRepositoryName(), doc.getRef());
+            VideoConversionId id = new VideoConversionId(docLoc, conversionName);
+            states.put(id, VideoConversionStatus.STATUS_CONVERSION_QUEUED);
+            conversionExecutor.execute(task);
+        }
     }
 
     @Override
@@ -119,13 +135,22 @@ public class VideoServiceImpl extends DefaultComponent implements VideoService {
 
     @Override
     public TranscodedVideo convert(Blob originalVideo, String conversionName) {
-        if (!videoConversions.registry.containsKey(conversionName)) {
-            throw new ClientRuntimeException(String.format(
-                    "'%s' is not a registered video conversion.",
-                    conversionName));
-        }
+        return convert(null, originalVideo, conversionName);
+    }
 
+    @Override
+    public TranscodedVideo convert(VideoConversionId id, Blob originalVideo, String conversionName) {
         try {
+            if (!videoConversions.registry.containsKey(conversionName)) {
+                throw new ClientRuntimeException(String.format(
+                        "'%s' is not a registered video conversion.",
+                        conversionName));
+            }
+
+            if (id != null) {
+                states.put(id, VideoConversionStatus.STATUS_CONVERSION_PENDING);
+            }
+
             BlobHolder blobHolder = new SimpleBlobHolder(originalVideo);
             VideoConversion conversion = videoConversions.registry.get(conversionName);
             Map<String, Serializable> parameters = new HashMap<String, Serializable>();
@@ -138,7 +163,43 @@ public class VideoServiceImpl extends DefaultComponent implements VideoService {
                     result.getBlob(), videoMetadata);
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
+        } finally {
+            if (id != null) {
+                states.remove(id);
+            }
         }
     }
 
+    @Override
+    public VideoConversionStatus getProgressStatus(String repositoryName, DocumentRef docRef, String conversionName) {
+        VideoConversionId id = new VideoConversionId(new DocumentLocationImpl(repositoryName, docRef), conversionName);
+        String status = states.get(id);
+        if (status == null) {
+            // early return
+            return null;
+        }
+        @SuppressWarnings("rawtypes")
+        Queue q = null;
+        if (VideoConversionStatus.STATUS_CONVERSION_QUEUED.equals(status)) {
+            q = conversionTaskQueue;
+        }
+        int posInQueue = 0;
+        int queueSize = 0;
+        if (q != null) {
+            Object[] queuedItems = q.toArray();
+            queueSize = queuedItems.length;
+            for (int i = 0; i < queueSize; i++) {
+                if (queuedItems[i].equals(id)) {
+                    posInQueue = i + 1;
+                    break;
+                }
+            }
+        }
+        return new VideoConversionStatus(status, posInQueue, queueSize);
+    }
+
+    @Override
+    public void clearProgressStatus(VideoConversionId id) {
+        states.remove(id);
+    }
 }

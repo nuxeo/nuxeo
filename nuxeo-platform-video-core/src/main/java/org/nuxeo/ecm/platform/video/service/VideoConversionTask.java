@@ -31,6 +31,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.platform.video.TranscodedVideo;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -41,6 +42,8 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 public class VideoConversionTask implements Runnable {
 
     private static final Log log = LogFactory.getLog(VideoConversionTask.class);
+
+    private final VideoConversionId id;
 
     private final DocumentRef docRef;
 
@@ -56,15 +59,20 @@ public class VideoConversionTask implements Runnable {
         repositoryName = doc.getRepositoryName();
         this.conversionName = conversionName;
         this.service = service;
+        this.id = new VideoConversionId(new DocumentLocationImpl(repositoryName, docRef), conversionName);
     }
 
     @Override
     public void run() {
         Blob originalVideo = getBlobToConvert();
         if (originalVideo != null) {
-            TranscodedVideo transcodedVideo = service.convert(originalVideo,
-                    conversionName);
-            saveNewTranscodedVideo(transcodedVideo);
+            try {
+                TranscodedVideo transcodedVideo = service.convert(id, originalVideo,
+                        conversionName);
+                saveNewTranscodedVideo(transcodedVideo);
+            } finally {
+                service.clearProgressStatus(id);
+            }
         }
     }
 
@@ -117,6 +125,10 @@ public class VideoConversionTask implements Runnable {
         } finally {
             TransactionHelper.commitOrRollbackTransaction();
         }
+    }
+
+    public VideoConversionId getId() {
+        return id;
     }
 
 }

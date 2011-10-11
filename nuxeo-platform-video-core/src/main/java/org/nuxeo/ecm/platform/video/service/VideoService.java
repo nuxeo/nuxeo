@@ -19,7 +19,9 @@ package org.nuxeo.ecm.platform.video.service;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.platform.video.TranscodedVideo;
+import org.nuxeo.ecm.platform.video.VideoConversionStatus;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
@@ -32,5 +34,11 @@ public interface VideoService {
     void launchAutomaticConversions(DocumentModel doc);
 
     TranscodedVideo convert(Blob originalVideo, String conversionName);
+
+    TranscodedVideo convert(VideoConversionId id, Blob originalVideo, String conversionName);
+
+    VideoConversionStatus getProgressStatus(String repositoryName, DocumentRef docRef, String conversionName);
+
+    void clearProgressStatus(VideoConversionId id);
 
 }

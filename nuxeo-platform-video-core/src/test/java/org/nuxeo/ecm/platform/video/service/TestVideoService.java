@@ -17,19 +17,26 @@
 
 package org.nuxeo.ecm.platform.video.service;
 
+import static org.nuxeo.ecm.platform.video.VideoConstants.VIDEO_TYPE;
 import static org.nuxeo.ecm.platform.video.convert.WebMConverter.WEBM_EXTENSION;
 import static org.nuxeo.ecm.platform.video.convert.WebMConverter.WEBM_VIDEO_MIMETYPE;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.io.FilenameUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.event.EventServiceAdmin;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.video.TranscodedVideo;
+import org.nuxeo.ecm.platform.video.VideoConstants;
+import org.nuxeo.ecm.platform.video.VideoConversionStatus;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -85,26 +92,28 @@ public class TestVideoService extends SQLRepositoryTestCase {
         return blob.persist();
     }
 
-    // public void testAsynchronousVideoConversion() throws IOException,
-    // ClientException, InterruptedException {
-    // Blob video = getBlobFromPath(DELTA_MP4, "video/mp4");
-    // DocumentModel doc = session.createDocumentModel("/", "video",
-    // VIDEO_TYPE);
-    // doc.setPropertyValue("file:content", (Serializable) video);
-    // doc = session.createDocument(doc);
-    // session.save();
-    //
-    // videoService.launchConversion(doc, "WebM 480p");
-    //
-    // Thread.sleep(40000);
-    //
-    // session.save();
-    // doc = session.getDocument(doc.getRef());
-    // assertNotNull(doc);
-    // List<Map<String, Serializable>> transcodedVideos = (List<Map<String,
-    // Serializable>>) doc.getPropertyValue("vid:transcodedVideos");
-    // assertNotNull(transcodedVideos);
-    // assertEquals(1, transcodedVideos.size());
-    // }
+    public void testAsynchronousVideoConversion() throws IOException,
+            ClientException, InterruptedException {
+        Blob video = getBlobFromPath(DELTA_MP4, "video/mp4");
+        DocumentModel doc = session.createDocumentModel("/", "video",
+                VIDEO_TYPE);
+        doc.setPropertyValue("file:content", (Serializable) video);
+        doc = session.createDocument(doc);
+        session.save();
+
+        videoService.launchConversion(doc, "WebM 480p");
+
+        while(videoService.getProgressStatus(doc.getRepositoryName(), doc.getRef(), "WebM 480p") != null) {
+            // wait for the conversion to complete
+            Thread.sleep(200);
+        }
+
+        session.save();
+        doc = session.getDocument(doc.getRef());
+        assertNotNull(doc);
+        List<Map<String, Serializable>> transcodedVideos = (List<Map<String, Serializable>>) doc.getPropertyValue("vid:transcodedVideos");
+        assertNotNull(transcodedVideos);
+        assertEquals(1, transcodedVideos.size());
+    }
 
 }
