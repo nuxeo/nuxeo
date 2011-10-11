@@ -19,7 +19,6 @@
     <module>nuxeo-platform-audit-api</module>
     <module>nuxeo-platform-audit-core</module>
     <module>nuxeo-platform-audit-client</module>
-    <module>nuxeo-platform-audit-facade</module>
     <module>nuxeo-platform-audit-io</module>
     <module>nuxeo-platform-audit-ws</module>
   </modules>
