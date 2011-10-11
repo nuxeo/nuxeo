@@ -18,7 +18,6 @@
 
 package org.nuxeo.ecm.core.api;
 
-import static org.nuxeo.ecm.core.api.Constants.CORE_BUNDLE;
 import static org.nuxeo.ecm.core.api.Constants.CORE_TEST_TESTS_BUNDLE;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.ADMINISTRATOR;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.ANONYMOUS;
@@ -62,6 +61,7 @@ public class TestSecurityPolicyService extends SQLRepositoryTestCase {
         closeSession(session);
     }
 
+    @SuppressWarnings("deprecation")
     public void checkCorePolicy() throws Exception {
         // create document
         CoreSession session = openSessionAs(ADMINISTRATOR);
@@ -70,7 +70,7 @@ public class TestSecurityPolicyService extends SQLRepositoryTestCase {
         DocumentModel folder = new DocumentModelImpl(root.getPathAsString(),
                 "folder#1", "Folder");
         // set access security
-        folder.setProperty("secupolicy", "securityLevel", 4L);
+        folder.setProperty("secupolicy", "securityLevel", Long.valueOf(4));
         folder = session.createDocument(folder);
         session.save();
 
@@ -85,14 +85,14 @@ public class TestSecurityPolicyService extends SQLRepositoryTestCase {
         session = openSessionAs(ANONYMOUS);
         DocumentModelImpl documentModelImpl = new DocumentModelImpl("User");
         Map<String, Object> data = new HashMap<String, Object>();
-        data.put("accessLevel", 3L);
+        data.put("accessLevel", Long.valueOf(3));
         documentModelImpl.addDataModel(new DataModelImpl("user", data));
         ((NuxeoPrincipal) session.getPrincipal()).setModel(documentModelImpl);
         // access level is too low for this doc
         assertFalse(session.hasPermission(folder.getRef(), READ));
         // change user access level => can read
         ((NuxeoPrincipal) session.getPrincipal()).getModel().setProperty(
-                "user", "accessLevel", 5L);
+                "user", "accessLevel", Long.valueOf(5));
         assertTrue(session.hasPermission(folder.getRef(), READ));
         session.save();
         closeSession(session);
@@ -101,8 +101,6 @@ public class TestSecurityPolicyService extends SQLRepositoryTestCase {
     public void testNewSecurityPolicy() throws Exception {
         // "user" schema
         deployContrib(CORE_TEST_TESTS_BUNDLE, "test-CoreExtensions.xml");
-        // standard permissions
-        deployContrib(CORE_BUNDLE, "OSGI-INF/permissions-contrib.xml");
         // deploy custom security policy
         deployContrib(CORE_TEST_TESTS_BUNDLE,
                 "test-security-policy-contrib.xml");
@@ -117,11 +115,8 @@ public class TestSecurityPolicyService extends SQLRepositoryTestCase {
         assertTrue(session.hasPermission(docRef, READ));
     }
 
+    @SuppressWarnings("deprecation")
     public void testLockSecurityPolicy() throws Exception {
-        // deploy standard contribs
-        deployContrib(CORE_BUNDLE, "OSGI-INF/permissions-contrib.xml");
-        deployContrib(CORE_BUNDLE, "OSGI-INF/security-policy-contrib.xml");
-
         // create document
         CoreSession session = openSessionAs(ADMINISTRATOR);
         DocumentModel root = session.getRootDocument();

@@ -21,10 +21,14 @@ import org.nuxeo.ecm.core.storage.sql.TXSQLRepositoryTestCase;
 public class TestUnrestrictedSessionRunnerJCA extends TXSQLRepositoryTestCase {
 
     public void testUnrestrictedPropertySetter() throws Exception {
-        TestUnrestrictedSessionRunner.seeDocCreatedByUnrestricted(openSessionAs("bob"));
+        closeSession();
+        session = openSessionAs("bob");
+        TestUnrestrictedSessionRunner.seeDocCreatedByUnrestricted(session);
     }
 
     public void testUnrestrictedSessionSeesDocCreatedBefore() throws Exception {
-        TestUnrestrictedSessionRunner.unrestrictedSeesDocCreatedBefore(openSessionAs("Administrator"));
+        closeSession();
+        session = openSessionAs("Administrator");
+        TestUnrestrictedSessionRunner.unrestrictedSeesDocCreatedBefore(session);
     }
 }

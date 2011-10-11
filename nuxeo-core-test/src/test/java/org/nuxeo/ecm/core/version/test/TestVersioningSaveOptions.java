@@ -24,23 +24,29 @@ import org.nuxeo.ecm.core.api.Constants;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
-import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
+import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.runtime.api.Framework;
 
-public class TestVersioningSaveOptions extends RepositoryOSGITestCase {
+public class TestVersioningSaveOptions extends SQLRepositoryTestCase {
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        openRepository();
+        openSession();
+    }
+
+    @Override
+    public void tearDown() throws Exception {
+        closeSession();
+        super.tearDown();
     }
 
     public void testTypeSaveOptions() throws Exception {
         VersioningService vService = Framework.getLocalService(VersioningService.class);
         assertNotNull(vService);
         DocumentModel fileDoc = new DocumentModelImpl("File");
-        fileDoc = coreSession.createDocument(fileDoc);
+        fileDoc = session.createDocument(fileDoc);
         String versionLabel = fileDoc.getVersionLabel();
         assertEquals("0.0", versionLabel);
         List<VersioningOption> opts = vService.getSaveOptions(fileDoc);
@@ -50,24 +56,24 @@ public class TestVersioningSaveOptions extends RepositoryOSGITestCase {
         deployContrib(Constants.CORE_TEST_TESTS_BUNDLE,
                 "test-versioning-contrib.xml");
         fileDoc = new DocumentModelImpl("File");
-        fileDoc = coreSession.createDocument(fileDoc);
+        fileDoc = session.createDocument(fileDoc);
         versionLabel = fileDoc.getVersionLabel();
         assertEquals("1.1+", versionLabel);
         opts = vService.getSaveOptions(fileDoc);
         assertEquals(2, opts.size());
         assertEquals(VersioningOption.MINOR, opts.get(0));
-        coreSession.followTransition(fileDoc.getRef(), "approve");
+        session.followTransition(fileDoc.getRef(), "approve");
         opts = vService.getSaveOptions(fileDoc);
         assertEquals(0, opts.size());
-        coreSession.followTransition(fileDoc.getRef(), "backToProject");
-        coreSession.followTransition(fileDoc.getRef(), "obsolete");
+        session.followTransition(fileDoc.getRef(), "backToProject");
+        session.followTransition(fileDoc.getRef(), "obsolete");
         opts = vService.getSaveOptions(fileDoc);
         assertEquals(3, opts.size());
 
         deployContrib(Constants.CORE_TEST_TESTS_BUNDLE,
                 "test-versioning-override-contrib.xml");
         fileDoc = new DocumentModelImpl("File");
-        fileDoc = coreSession.createDocument(fileDoc);
+        fileDoc = session.createDocument(fileDoc);
         versionLabel = fileDoc.getVersionLabel();
         assertEquals("2.2+", versionLabel);
     }

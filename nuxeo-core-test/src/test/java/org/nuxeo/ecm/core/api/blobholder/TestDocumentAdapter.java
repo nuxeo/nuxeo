@@ -20,23 +20,26 @@
 package org.nuxeo.ecm.core.api.blobholder;
 
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
-import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
+import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 
-public class TestDocumentAdapter extends RepositoryOSGITestCase {
+public class TestDocumentAdapter extends SQLRepositoryTestCase {
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.api");
+        openSession();
+    }
 
-        openRepository();
+    @Override
+    public void tearDown() throws Exception {
+        closeSession();
+        super.tearDown();
     }
 
     public void testFileAdapters() throws Exception {
-        CoreSession session = getCoreSession();
         DocumentModel file = session.createDocumentModel("File");
         file.setPathInfo("/", "TestFile");
 
@@ -87,7 +90,6 @@ public class TestDocumentAdapter extends RepositoryOSGITestCase {
     }
 
     public void testNoteAdapters() throws Exception {
-        CoreSession session = getCoreSession();
         DocumentModel note = session.createDocumentModel("Note");
         note.setPathInfo("/", "TestNote");
 
@@ -129,12 +131,12 @@ public class TestDocumentAdapter extends RepositoryOSGITestCase {
     }
 
     public void testFolderAdapters() throws Exception {
-        DocumentModel folder = getCoreSession().createDocumentModel("Folder");
+        DocumentModel folder = session.createDocumentModel("Folder");
         folder.setPathInfo("/", "TestFolder");
 
         folder.setProperty("dublincore", "title", "TestFolder");
 
-        folder = getCoreSession().createDocument(folder);
+        folder = session.createDocument(folder);
 
         BlobHolder bh = folder.getAdapter(BlobHolder.class);
         assertNull(bh);

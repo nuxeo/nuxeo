@@ -37,11 +37,15 @@ public class TestUnrestrictedSessionRunner extends SQLRepositoryTestCase {
     public static final String NEW_TITLE = "new title";
 
     public void testUnrestrictedPropertySetter() throws Exception {
-        seeDocCreatedByUnrestricted(openSessionAs("bob"));
+        session = openSessionAs("bob");
+        seeDocCreatedByUnrestricted(session);
+        closeSession();
     }
 
     public void testUnrestrictedSessionSeesDocCreatedBefore() throws Exception {
-        unrestrictedSeesDocCreatedBefore(openSessionAs("Administrator"));
+        session = openSessionAs("Administrator");
+        unrestrictedSeesDocCreatedBefore(session);
+        closeSession();
     }
 
     /*

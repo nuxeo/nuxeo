@@ -25,12 +25,13 @@ import java.util.HashSet;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
+import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.core.trash.TrashInfo;
 import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.runtime.api.Framework;
 
-public class TestTrashService extends RepositoryOSGITestCase {
+public class TestTrashService extends SQLRepositoryTestCase {
 
     protected TrashService trashService;
 
@@ -47,21 +48,27 @@ public class TestTrashService extends RepositoryOSGITestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        openRepository();
+        openSession();
         trashService = Framework.getService(TrashService.class);
-        principal = coreSession.getPrincipal();
+        principal = session.getPrincipal();
+    }
+
+    @Override
+    public void tearDown() throws Exception {
+        closeSession();
+        super.tearDown();
     }
 
     public void createDocuments() throws Exception {
-        fold = coreSession.createDocumentModel("/", "fold", "Folder");
-        fold = coreSession.createDocument(fold);
-        doc1 = coreSession.createDocumentModel("/fold", "doc1", "Note");
-        doc1 = coreSession.createDocument(doc1);
-        doc2 = coreSession.createDocumentModel("/fold", "doc2", "Note");
-        doc2 = coreSession.createDocument(doc2);
-        doc3 = coreSession.createDocumentModel("/", "doc3", "Note");
-        doc3 = coreSession.createDocument(doc3);
-        coreSession.save();
+        fold = session.createDocumentModel("/", "fold", "Folder");
+        fold = session.createDocument(fold);
+        doc1 = session.createDocumentModel("/fold", "doc1", "Note");
+        doc1 = session.createDocument(doc1);
+        doc2 = session.createDocumentModel("/fold", "doc2", "Note");
+        doc2 = session.createDocument(doc2);
+        doc3 = session.createDocumentModel("/", "doc3", "Note");
+        doc3 = session.createDocument(doc3);
+        session.save();
     }
 
     public void testBase() throws Exception {
@@ -98,12 +105,12 @@ public class TestTrashService extends RepositoryOSGITestCase {
         createDocuments();
         trashService.trashDocuments(Arrays.asList(fold, doc1));
         waitForEventsDispatched();
-        coreSession.save(); // fetch invalidations from async sessions
+        session.save(); // fetch invalidations from async sessions
 
         // refetch as lifecycle state is cached
-        fold = coreSession.getDocument(new IdRef(fold.getId()));
-        doc1 = coreSession.getDocument(new IdRef(doc1.getId()));
-        doc2 = coreSession.getDocument(new IdRef(doc2.getId()));
+        fold = session.getDocument(new IdRef(fold.getId()));
+        doc1 = session.getDocument(new IdRef(doc1.getId()));
+        doc2 = session.getDocument(new IdRef(doc2.getId()));
         assertEquals("deleted", fold.getCurrentLifeCycleState());
         assertEquals("deleted", doc1.getCurrentLifeCycleState());
         // doc2 done by async BulkLifeCycleChangeListener
@@ -113,14 +120,14 @@ public class TestTrashService extends RepositoryOSGITestCase {
                 doc2), principal));
 
         // purge doc1
-        trashService.purgeDocuments(coreSession,
+        trashService.purgeDocuments(session,
                 Collections.singletonList(doc1.getRef()));
-        assertFalse(coreSession.exists(doc1.getRef()));
+        assertFalse(session.exists(doc1.getRef()));
 
         // undelete doc2
         trashService.undeleteDocuments(Collections.singletonList(doc2));
-        fold = coreSession.getDocument(new IdRef(fold.getId()));
-        doc2 = coreSession.getDocument(new IdRef(doc2.getId()));
+        fold = session.getDocument(new IdRef(fold.getId()));
+        doc2 = session.getDocument(new IdRef(doc2.getId()));
         assertEquals("project", doc2.getCurrentLifeCycleState());
         // fold also undeleted
         assertEquals("project", fold.getCurrentLifeCycleState());
@@ -130,12 +137,12 @@ public class TestTrashService extends RepositoryOSGITestCase {
         createDocuments();
         trashService.trashDocuments(Collections.singletonList(fold));
         waitForEventsDispatched();
-        coreSession.save(); // fetch invalidations from async sessions
+        session.save(); // fetch invalidations from async sessions
 
         // refetch as lifecycle state is cached
-        fold = coreSession.getDocument(new IdRef(fold.getId()));
-        doc1 = coreSession.getDocument(new IdRef(doc1.getId()));
-        doc2 = coreSession.getDocument(new IdRef(doc2.getId()));
+        fold = session.getDocument(new IdRef(fold.getId()));
+        doc1 = session.getDocument(new IdRef(doc1.getId()));
+        doc2 = session.getDocument(new IdRef(doc2.getId()));
         assertEquals("deleted", fold.getCurrentLifeCycleState());
         // doc1 & doc2 done by async BulkLifeCycleChangeListener
         assertEquals("deleted", doc1.getCurrentLifeCycleState());
@@ -144,14 +151,18 @@ public class TestTrashService extends RepositoryOSGITestCase {
         // undelete fold
         trashService.undeleteDocuments(Collections.singletonList(fold));
         waitForEventsDispatched();
-        coreSession.save(); // fetch invalidations from async sessions
-        fold = coreSession.getDocument(new IdRef(fold.getId()));
-        doc1 = coreSession.getDocument(new IdRef(doc1.getId()));
-        doc2 = coreSession.getDocument(new IdRef(doc2.getId()));
+        session.save(); // fetch invalidations from async sessions
+        fold = session.getDocument(new IdRef(fold.getId()));
+        doc1 = session.getDocument(new IdRef(doc1.getId()));
+        doc2 = session.getDocument(new IdRef(doc2.getId()));
         assertEquals("project", fold.getCurrentLifeCycleState());
         // children done by async BulkLifeCycleChangeListener
         assertEquals("project", doc1.getCurrentLifeCycleState());
         assertEquals("project", doc2.getCurrentLifeCycleState());
+    }
+
+    private void waitForEventsDispatched() {
+        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
     }
 
 }

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2008 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -19,7 +19,7 @@ package org.nuxeo.ecm.core.event.test;
 import org.nuxeo.ecm.core.api.Constants;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.EventContextImpl;
-import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
+import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -27,13 +27,19 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @author <a href="mailto:jt@nuxeo.com">Julien THIMONIER</a>
  */
-public class PostCommitEventListenerTest extends RepositoryOSGITestCase {
+public class PostCommitEventListenerTest extends SQLRepositoryTestCase {
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.event");
-        openRepository();
+        openSession();
+    }
+
+    @Override
+    public void tearDown() throws Exception {
+        closeSession();
+        super.tearDown();
     }
 
     /**
@@ -62,7 +68,7 @@ public class PostCommitEventListenerTest extends RepositoryOSGITestCase {
         service.fireEvent("some-event", customContext);
         assertEquals(0, SCRIPT_CNT);
 
-        getCoreSession().save();
+        session.save();
         waitForAsyncExec();
         assertTrue(3 <= SCRIPT_CNT);
     }

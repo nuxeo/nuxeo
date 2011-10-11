@@ -39,10 +39,10 @@ public class TestBlobHolderAdapterService extends NXRuntimeTestCase {
     }
 
     public void testContrib() throws Exception {
-        assertSame(0, BlobHolderAdapterComponent.getFactoryNames().size());
+        assertEquals(0, BlobHolderAdapterComponent.getFactoryNames().size());
         deployContrib(Constants.CORE_TEST_TESTS_BUNDLE,
                 "test-blob-holder-adapters-contrib.xml");
-        assertSame(1, BlobHolderAdapterComponent.getFactoryNames().size());
+        assertEquals(1, BlobHolderAdapterComponent.getFactoryNames().size());
 
         BlobHolderAdapterService bhas = Framework.getLocalService(BlobHolderAdapterService.class);
         assertNotNull(bhas);

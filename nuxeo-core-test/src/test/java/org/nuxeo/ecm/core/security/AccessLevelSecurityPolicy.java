@@ -48,7 +48,7 @@ public class AccessLevelSecurityPolicy extends AbstractSecurityPolicy {
                 if (userModel != null) {
                     Long accessLevel = (Long) userModel.getPropertyValue("user:accessLevel");
                     Long securityLevel = (Long) doc.getPropertyValue("sp:securityLevel");
-                    if (accessLevel >= securityLevel) {
+                    if (accessLevel.longValue() >= securityLevel.longValue()) {
                         access = Access.GRANT;
                     } else {
                         access = Access.DENY;
