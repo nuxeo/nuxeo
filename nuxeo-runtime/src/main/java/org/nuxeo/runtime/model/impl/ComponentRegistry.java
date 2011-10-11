@@ -187,7 +187,7 @@ public class ComponentRegistry {
         }
         Set<ComponentName> set = requirements.get(name);
         if (set != null && !set.isEmpty()) {
-            for (ComponentName dep : set) {
+            for (ComponentName dep : set.toArray(new ComponentName[set.size()])) {
                 RegistrationInfoImpl depRi = components.get(dep);
                 if (depRi != null) {
                     unresolveComponent(depRi);
