@@ -11,6 +11,9 @@
     @author Julien Anguenot
   </documentation>
 
+  <!-- needed so that activation has access to persistence -->
+  <require>org.nuxeo.ecm.platform.audit.service.persistence</require>
+
   <implementation
     class="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService" />
 
@@ -77,19 +80,6 @@
     <object
       class="org.nuxeo.ecm.platform.audit.service.extension.AdapterDescriptor" />
   </extension-point>
-
-
-  <require>org.nuxeo.ecm.core.persistence.PersistenceComponent</require>
-
-  <extension target="org.nuxeo.ecm.core.persistence.PersistenceComponent"
-    point="hibernate">
-    <hibernateConfiguration name="nxaudit-logs">
-      <datasource>nxaudit-logs</datasource>
-      <properties>
-        <property name="hibernate.hbm2ddl.auto">update</property>
-      </properties>
-    </hibernateConfiguration>
-  </extension>
 
   <extension target="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService"
     point="event">

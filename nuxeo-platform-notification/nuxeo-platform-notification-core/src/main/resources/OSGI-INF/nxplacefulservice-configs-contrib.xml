@@ -1,4 +1,4 @@
-<component name="org.nuxeo.ecm.platform.ec.placeful">
+<component name="org.nuxeo.ecm.platform.ec.notification.placeful">
 
   <extension target="org.nuxeo.ecm.platform.ec.placeful.PlacefulService"
     point="annotations">

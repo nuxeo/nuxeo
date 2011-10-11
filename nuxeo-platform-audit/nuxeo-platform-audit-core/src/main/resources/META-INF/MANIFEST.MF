@@ -15,6 +15,7 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Vendor: Nuxeo
 Bundle-Version: 0.0.0.SNAPSHOT
 Nuxeo-Component: OSGI-INF/nxaudit-service.xml,
+ OSGI-INF/nxaudit-persistence-config.xml,
  OSGI-INF/core-type-contrib.xml,
  OSGI-INF/directories-contrib.xml,
  OSGI-INF/pageprovider-contrib.xml
