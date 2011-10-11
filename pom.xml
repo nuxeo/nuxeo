@@ -52,9 +52,7 @@
     <module>nuxeo-platform-auth-web-jboss</module>
     <module>nuxeo-platform-placeful-api</module>
     <module>nuxeo-platform-placeful-core</module>
-    <module>nuxeo-platform-placeful-facade</module>
     <module>nuxeo-platform-uidgen-core</module>
-    <module>nuxeo-platform-uidgen-facade</module>
     <module>nuxeo-platform-ws</module>
     <module>nuxeo-platform-ws-sun-jaxws</module>
     <module>nuxeo-platform-ws-jbossws</module>
