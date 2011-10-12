@@ -1,6 +1,12 @@
 <?xml version="1.0"?>
 <fragment version="1">
 
+  <extension target="web#LISTENER">
+    <listener>
+      <listener-class>org.nuxeo.ecm.webapp.seam.NuxeoSeamWebGate</listener-class>
+    </listener>
+  </extension>
+  
   <extension target="pages#PAGES">
     <!--  bind url for forced invalidation of nav tree -->
     <page view-id="/invalidateTree.xhtml"
