@@ -23,7 +23,7 @@
       <format-type>widget</format-type>
       <template>incl/logo_DM_galaxy_admin.xhtml</template>
     </view>
-
+    
   </extension>
 
   <!-- application settings -->
@@ -44,6 +44,31 @@
     </application>
 
   </extension>
+  
+  <!-- mapping between theme pages and resources -->
+  <extension target="org.nuxeo.theme.styling.service" point="pages">  
+    <themePage name="admin/default">
+      <!-- TODO -->
+      <!-- 
+        <defaultFlavour>admin</defaultFlavour>
+      -->
+      <styles append="true">
+        <style>nuxeo_admin_center_default</style>
+      </styles>
+    </themePage>
+  </extension>
+  <extension target="org.nuxeo.theme.styling.service" point="styles">
+    <style name="nuxeo_admin_center_default">
+      <path>themes/css/nuxeo_admin_center_default.css</path>
+    </style>
+  </extension>
+  <!-- TODO -->
+  <!--
+  <extension target="org.nuxeo.theme.styling.service" point="flavours">
+    <flavour name="admin">
+    </flavour>
+  </extension>
+  -->
 
   <!-- Styles presets -->
 
