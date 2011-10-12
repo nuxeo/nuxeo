@@ -44,8 +44,8 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(repositoryName = "default", type = BackendType.H2, init = LocalConfigurationRepositoryInit.class, user = "Administrator", cleanup = Granularity.METHOD)
-@Deploy({"org.nuxeo.theme.core",
-    "org.nuxeo.theme.core.tests:local-configuration-config.xml"})
+@Deploy({"org.nuxeo.theme.styling",
+    "org.nuxeo.theme.styling.tests:local-configuration-config.xml"})
 public class TestLocalConfiguration {
 
     public static final DocumentRef PARENT_WORKSPACE_REF = new PathRef(

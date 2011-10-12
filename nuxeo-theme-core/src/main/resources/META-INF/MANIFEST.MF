@@ -34,8 +34,7 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Vendor: Chalmers
 Bundle-Version: 0.0.0.SNAPSHOT
 Nuxeo-Component: OSGI-INF/nxthemes-core-service.xml,
- OSGI-INF/nxthemes-core-contrib.xml,
- OSGI-INF/theme-local-configuration.xml
+ OSGI-INF/nxthemes-core-contrib.xml
 Bundle-ManifestVersion: 2
 Import-Package: au.com.bytecode.opencsv,
  org.w3c.css.sac,
