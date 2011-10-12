@@ -54,7 +54,6 @@ import freemarker.template.TemplateModelException;
 
 /**
  * @author <a href="mailto:jmo@chalmers.se">Jean-Marc Orliaguet</a>
- *
  */
 public class ThemeDirective implements TemplateDirectiveModel {
 
@@ -186,7 +185,8 @@ public class ThemeDirective implements TemplateDirectiveModel {
         }
 
         try {
-            final String spec = new WebNegotiator(strategy, context).getSpec();
+            final String spec = new WebNegotiator(strategy, context,
+                    request).getSpec();
             themeUrl = new URL(spec);
         } catch (NegotiationException e) {
             log.error(getErrorMessage(

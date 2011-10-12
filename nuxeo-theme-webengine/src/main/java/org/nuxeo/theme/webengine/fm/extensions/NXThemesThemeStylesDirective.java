@@ -41,7 +41,7 @@ import freemarker.template.TemplateModelException;
 
 /**
  * @author <a href="mailto:jmo@chalmers.se">Jean-Marc Orliaguet</a>
- *
+ * 
  */
 public class NXThemesThemeStylesDirective implements TemplateDirectiveModel {
 
@@ -61,13 +61,16 @@ public class NXThemesThemeStylesDirective implements TemplateDirectiveModel {
         WebContext context = WebEngine.getActiveContext();
         HttpServletRequest request = context.getRequest();
 
+        final URL themeUrl = (URL) request.getAttribute("org.nuxeo.theme.url");
+
         String themeName;
         if (params.containsKey("theme")) {
             themeName = params.get("theme").toString();
         } else {
-            final URL themeUrl = (URL) request.getAttribute("org.nuxeo.theme.url");
             themeName = ThemeManager.getThemeNameByUrl(themeUrl);
         }
+
+        String collectionName = ThemeManager.getCollectionNameByUrl(themeUrl);
 
         Boolean cache = false;
         if (params.containsKey("cache")) {
@@ -83,10 +86,10 @@ public class NXThemesThemeStylesDirective implements TemplateDirectiveModel {
         attributes.put("themeName", themeName);
         attributes.put("path", context.getModulePath());
         attributes.put("basepath", context.getBasePath());
+        attributes.put("collection", collectionName);
 
         Boolean virtualHosting = Utils.isWebEngineVirtualHosting(request);
         writer.write(ThemeStyles.render(attributes, cache, inline,
                 virtualHosting));
     }
-
 }
