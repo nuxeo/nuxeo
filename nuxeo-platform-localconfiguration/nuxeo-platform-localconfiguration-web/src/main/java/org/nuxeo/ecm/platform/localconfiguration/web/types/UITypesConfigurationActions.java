@@ -34,6 +34,7 @@ import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.platform.types.Type;
@@ -74,14 +75,27 @@ public class UITypesConfigurationActions implements Serializable {
 
     public List<Type> getNotSelectedTypes() throws ClientException {
         DocumentModel currentDoc = navigationContext.getCurrentDocument();
-        if (!currentDoc.hasFacet(UI_TYPES_CONFIGURATION_FACET)) {
+        return getNotSelectedTypes(currentDoc);
+    }
+
+    /**
+     * Returns a List of type not selected for the domain given as parameter
+     * 
+     * @param document the domain to configure
+     * @return a List of type of document, not currently selected for the domain
+     * @throws ClientException
+     * @Since 5.4.3
+     */
+    public List<Type> getNotSelectedTypes(DocumentModel document)
+            throws ClientException {
+        if (!document.hasFacet(UI_TYPES_CONFIGURATION_FACET)) {
             return Collections.emptyList();
         }
 
-        List<String> allowedTypes = getAllowedTypes(currentDoc);
+        List<String> allowedTypes = getAllowedTypes(document);
 
         List<Type> notSelectedTypes = new ArrayList<Type>(
-                typeManager.findAllAllowedSubTypesFrom(currentDoc.getType()));
+                typeManager.findAllAllowedSubTypesFrom(document.getType()));
 
         for (Iterator<Type> it = notSelectedTypes.iterator(); it.hasNext();) {
             Type type = it.next();
@@ -110,11 +124,24 @@ public class UITypesConfigurationActions implements Serializable {
 
     public List<Type> getSelectedTypes() throws ClientException {
         DocumentModel currentDoc = navigationContext.getCurrentDocument();
-        if (!currentDoc.hasFacet(UI_TYPES_CONFIGURATION_FACET)) {
+        return getSelectedTypes(currentDoc);
+    }
+
+    /**
+     * Returns a List of type selected for the domain given as parameter
+     * 
+     * @param document the domain to configure
+     * @return List of documen type selected for the domain
+     * @throws ClientException
+     * @Since 5.4.3
+     */
+    public List<Type> getSelectedTypes(DocumentModel document)
+            throws ClientException {
+        if (!document.hasFacet(UI_TYPES_CONFIGURATION_FACET)) {
             return Collections.emptyList();
         }
 
-        List<String> allowedTypes = getAllowedTypes(currentDoc);
+        List<String> allowedTypes = getAllowedTypes(document);
         Collections.sort(allowedTypes);
 
         List<Type> selectedTypes = new ArrayList<Type>();
@@ -129,7 +156,13 @@ public class UITypesConfigurationActions implements Serializable {
             throws ClientException {
         List<String> types = new ArrayList<String>();
 
-        DocumentModel parent = documentManager.getParentDocument(currentDoc.getRef());
+        DocumentModel parent = documentManager.getRootDocument();
+
+        DocumentRef ref = currentDoc.getRef();
+        if (ref != null) {
+            parent = documentManager.getParentDocument(ref);
+        }
+
         for (Type type : typeManager.findAllAllowedSubTypesFrom(
                 currentDoc.getType(), parent)) {
             types.add(type.getId());
@@ -139,11 +172,26 @@ public class UITypesConfigurationActions implements Serializable {
     }
 
     public List<Type> getTypesWithSchemaFile() throws ClientException {
-        List<Type> types = new ArrayList<Type>();
+        DocumentModel document = navigationContext.getCurrentDocument();
+        return getTypesWithSchemaFile(document);
+    }
 
-        for (String type : getAllowedTypes(navigationContext.getCurrentDocument())) {
+    /**
+     * Returns a List of Document Types associated with Schema file for the
+     * domain given as parameter, if they're allowed for it. 
+     * 
+     * @param document the domain
+     * @return List of Document types which have assoctiated Schema files.
+     * @throws ClientException
+     * @Since 5.4.3
+     */
+    public List<Type> getTypesWithSchemaFile(DocumentModel document)
+            throws ClientException {
+        List<Type> types = new ArrayList<Type>();
+        for (String type : getAllowedTypes(document)) {
             DocumentType documentType = getSchemaManager().getDocumentType(type);
-            if ( documentType != null && documentType.hasSchema(UI_TYPES_DEFAULT_NEEDED_SCHEMA)) {
+            if (documentType != null
+                    && documentType.hasSchema(UI_TYPES_DEFAULT_NEEDED_SCHEMA)) {
                 types.add(typeManager.getType(type));
             }
         }
@@ -151,9 +199,8 @@ public class UITypesConfigurationActions implements Serializable {
         return Collections.unmodifiableList(types);
     }
 
-
     protected SchemaManager getSchemaManager() throws ClientException {
-        if ( schemaManager == null ){
+        if (schemaManager == null) {
             try {
                 schemaManager = Framework.getService(SchemaManager.class);
             } catch (Exception e) {
@@ -162,6 +209,5 @@ public class UITypesConfigurationActions implements Serializable {
         }
         return schemaManager;
     }
-
 
 }

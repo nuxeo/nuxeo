@@ -21,6 +21,7 @@
             <th>
               <h:outputText value="#{messages['label.local.configuration.selection.selectedUITypes']}" />
             </th>
+              <h:outputText value="#{layoutValue}" />
           </tr>
           <tr>
             <td class="listShuttleSelectElements">
@@ -28,7 +29,7 @@
                 size="5"
                 styleClass="listShuttleSelect">
                 <nxu:selectItems
-                  value="#{typesConfigurationActions.notSelectedTypes}"
+                  value="#{typesConfigurationActions.getNotSelectedTypes(layoutValue)}"
                   var="type"
                   itemValue="#{type.id}"
                   itemLabel="#{messages[type.label]}"
@@ -103,7 +104,7 @@
                 size="5"
                 styleClass="listShuttleSelect">
                 <nxu:selectItems
-                  value="#{typesConfigurationActions.selectedTypes}"
+                  value="#{typesConfigurationActions.getSelectedTypes(layoutValue)}"
                   var="type"
                   itemValue="#{type.id}"
                   itemLabel="#{messages[type.label]}"

@@ -6,7 +6,7 @@
 
    <h:selectOneMenu value="#{field}" id="#{widget.id}" >
        <nxu:selectItems
-       		value="#{typesConfigurationActions.typesWithSchemaFile}"
+       		value="#{typesConfigurationActions.getTypesWithSchemaFile(layoutValue)}"
             var="type"
             itemValue="#{type.id}"
             itemLabel="#{messages[type.label]}" />
