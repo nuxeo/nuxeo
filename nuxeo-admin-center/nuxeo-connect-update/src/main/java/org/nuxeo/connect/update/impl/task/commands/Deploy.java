@@ -65,8 +65,10 @@ public class Deploy extends AbstractCommand {
             // avoid throwing errors - this may happen at uninstall for broken packages
             return null;
         }
+        ReloadService srv = Framework.getLocalService(ReloadService.class);
         try {
-            Framework.getLocalService(ReloadService.class).deployBundle(file);
+            srv.deployBundle(file, true);
+            srv.flush();    
         } catch (Exception e) {
             throw new PackageException("Failed to deploy bundle " + file, e);
         }

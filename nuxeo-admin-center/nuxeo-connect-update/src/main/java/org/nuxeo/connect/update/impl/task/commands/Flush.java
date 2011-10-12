@@ -50,9 +50,7 @@ public class Flush extends PostInstallCommand {
     public static void flush() throws Exception {
         Framework.getRuntime().reloadProperties();
         ReloadService deployer = Framework.getLocalService(ReloadService.class);
-        deployer.flushJaasCache();
-        deployer.reloadRepository();
-        deployer.sendFlushEvent();
+        deployer.flush();
     }
 
     @Override
