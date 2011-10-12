@@ -406,7 +406,7 @@ public class Editor {
             }
         }
         return CSSUtils.expandVariables(css.toString(), basePath,
-                themeDescriptor);
+                null, themeDescriptor);
     }
 
     public static void pasteElement(Element element, String destId)
