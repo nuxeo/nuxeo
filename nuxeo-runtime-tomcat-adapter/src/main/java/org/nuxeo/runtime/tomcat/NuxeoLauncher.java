@@ -111,6 +111,7 @@ public class NuxeoLauncher implements LifecycleListener {
                 bootstrap.setHostName("Tomcat");
                 bootstrap.setHostVersion("6.0.20");
                 bootstrap.initialize();
+               ( (NuxeoDevWebappClassLoader)cl).setHome(new File(getHome()));
             } else if (type == Lifecycle.AFTER_START_EVENT) {
                 bootstrap.start();
             } else if (type == Lifecycle.STOP_EVENT) {

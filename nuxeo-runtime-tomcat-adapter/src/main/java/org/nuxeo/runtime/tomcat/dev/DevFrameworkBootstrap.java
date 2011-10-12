@@ -16,14 +16,12 @@
  */
 package org.nuxeo.runtime.tomcat.dev;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -34,7 +32,8 @@ import org.nuxeo.osgi.application.MutableClassLoader;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * 
  */
-public class DevFrameworkBootstrap extends FrameworkBootstrap implements DevBundlesManager {
+public class DevFrameworkBootstrap extends FrameworkBootstrap implements
+        DevBundlesManager {
 
     protected File devBundlesFile;
 
@@ -43,6 +42,8 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements DevBund
     protected Timer bundlesCheck;
 
     protected long lastModified = 0;
+
+    protected ReloadServiceInvoker reloadServiceInvoker;
 
     public DevFrameworkBootstrap(ClassLoader cl, File home) throws IOException {
         super(cl, home);
@@ -61,14 +62,15 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements DevBund
         preloadDevBundles();
         // start the framework
         super.start();
-        // start dev bundles if any
-        postloadDevBundles();
+        reloadServiceInvoker = new ReloadServiceInvoker((ClassLoader) loader);
+        postloadDevBundles(); // start dev bundles if any
         installLoaderTimer();
     }
 
     public void installLoaderTimer() {
-        String installReloadTimerOption = (String)env.get(INSTALL_RELOAD_TIMER);
-        if (installReloadTimerOption == null || Boolean.parseBoolean(installReloadTimerOption) == Boolean.FALSE) {
+        String installReloadTimerOption = (String) env.get(INSTALL_RELOAD_TIMER);
+        if (installReloadTimerOption == null
+                || Boolean.parseBoolean(installReloadTimerOption) == Boolean.FALSE) {
             return;
         }
         // start reload timer
@@ -82,9 +84,9 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements DevBund
                     log.error("Error running dev mode timer", t);
                 }
             }
-        }, 2000, 2000);        
+        }, 2000, 2000);
     }
-    
+
     @Override
     public void stop() throws Exception {
         if (bundlesCheck != null) {
@@ -97,7 +99,7 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements DevBund
     public String getDevBundlesLocation() {
         return devBundlesFile.getAbsolutePath();
     }
-    
+
     /**
      * Load the development bundles and libs if any in the classpath before
      * starting the framework.
@@ -105,7 +107,7 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements DevBund
     protected void preloadDevBundles() throws IOException {
         if (devBundlesFile.isFile()) {
             lastModified = devBundlesFile.lastModified();
-            devBundles = getDevBundles();
+            devBundles = DevBundle.parseDevBundleLines(new FileInputStream(devBundlesFile));
             if (devBundles.length == 0) {
                 devBundles = null;
                 return;
@@ -123,11 +125,8 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements DevBund
 
     protected void postloadDevBundles() throws Exception {
         if (devBundles != null) {
-            for (DevBundle bundle : devBundles) {
-                if (!bundle.isLibrary()) {
-                    bundle.name = installBundle(bundle.file);
-                }
-            }
+            reloadServiceInvoker.hotDeployBundles(devBundles);
+            reloadServiceInvoker.flush();
         }
     }
 
@@ -138,7 +137,8 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements DevBund
         }
         lastModified = tm;
         try {
-            reloadDevBundles(getDevBundles());
+            reloadDevBundles(DevBundle.parseDevBundleLines(new FileInputStream(
+                    devBundlesFile)));
         } catch (Exception e) {
             log.error("Faied to deploy dev bundles", e);
         }
@@ -149,96 +149,44 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements DevBund
         lastModified = 0;
         loadDevBundles();
     }
- 
-    public DevBundle[] getDevBundles() throws IOException {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(
-                new FileInputStream(devBundlesFile)));
-        try {
-            ArrayList<DevBundle> urls = new ArrayList<DevBundle>();
-            String line = reader.readLine();
-            while (line != null) {
-                line = line.trim();
-                if (line.length() > 0 && !line.startsWith("#")) {
-                    if (line.startsWith("!")) {
-                        // a library
-                        urls.add(new DevBundle(new File(line.substring(1)),
-                                true));
-                    } else { // a bundle
-                        urls.add(new DevBundle(new File(line)));
-                    }
-                }
-                line = reader.readLine();
-            }
-            return urls.toArray(new DevBundle[urls.size()]);
-        } finally {
-            reader.close();
-        }
+
+    public DevBundle[] getDevBundles() {
+        return devBundles;
     }
 
     protected synchronized void reloadDevBundles(DevBundle[] bundles)
             throws Exception {
+        
+        // un-deploy previous bundles
         if (devBundles != null) {
-            // undeploy
-            for (DevBundle bundle : devBundles) {
-                if (!bundle.isLibrary()) {
-                    if (bundle.name != null) {
-                        uninstallBundle(bundle.name);
-                    }
-                }
-            }
+            reloadServiceInvoker.hotUndeployBundles(devBundles); 
         }
         devBundles = bundles;
-        // clear dev classloader
+        
+        // flush and reset class loader
         NuxeoDevWebappClassLoader devLoader = (NuxeoDevWebappClassLoader) loader;
         devLoader.clear();
         System.gc();
-        URL[] urls = new URL[bundles.length];
-        for (int i = 0; i < bundles.length; i++) {
-            urls[i] = bundles[i].url();
-        }
-        devLoader.createLocalClassLoader(urls);
-        // deploy
-        for (DevBundle bundle : devBundles) {
-            if (!bundle.isLibrary()) {
-                bundle.name = installBundle(bundle.file);
+        List<URL> jarUrls = new ArrayList<URL>();
+        List<File> seamDirs = new ArrayList<File>();
+        List<File> resourceBundleFragments = new ArrayList<File>();
+        for (DevBundle bundle:bundles) {
+            if (bundle.devBundleType.isJar) {
+                jarUrls.add(bundle.url());
+            }else if (bundle.devBundleType == DevBundleType.Seam){
+                seamDirs.add(bundle.file());
+            } else if (bundle.devBundleType == DevBundleType.ResourceBundleFragment) {
+                resourceBundleFragments.add(bundle.file());
             }
         }
-    }
-
-    public static class DevBundle implements Serializable {
-        
-        private static final long serialVersionUID = 1L;
-
-        protected String name; // the bundle symbolic name if not a lib
-
-        protected final boolean isLibrary;
-
-        protected final File file;
-
-        public DevBundle(File file) {
-            this(file, false);
+        devLoader.createLocalClassLoader(jarUrls.toArray(new URL[jarUrls.size()]));
+        devLoader.installSeamClasses(seamDirs.toArray(new File[seamDirs.size()]));
+        devLoader.installResourceBundleFragments(resourceBundleFragments);
+        // deploy last bundles
+        if (devBundles != null) {
+            reloadServiceInvoker.hotDeployBundles(devBundles);
         }
-
-        public DevBundle(File file, boolean isLibrary) {
-            this.file = file;
-            this.isLibrary = isLibrary;
-        }
-
-        public URL url() throws IOException {
-            return file.toURI().toURL();
-        }
-
-        public boolean isLibrary() {
-            return isLibrary;
-        }
-        
-        public String getName() {
-            return name;
-        }
-        
-        public String getFileLocation() {
-            return file.getAbsolutePath();
-        }
+        reloadServiceInvoker.flush();
     }
 
 }

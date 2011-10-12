@@ -167,7 +167,7 @@ public class FrameworkLoader {
         // install system bundle first
         BundleFile bf = new SystemBundleFile(home);
         SystemBundle systemBundle = new SystemBundle(osgi, bf, loader);
-        osgi.install(systemBundle);
+        osgi.setSystemBundle(systemBundle);
         for (File f : bundleFiles) {
             try {
                 install(f);

@@ -34,6 +34,8 @@ import org.nuxeo.runtime.services.event.Event;
 import org.nuxeo.runtime.services.event.EventService;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
+import org.osgi.service.packageadmin.PackageAdmin;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -82,7 +84,9 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
     }
 
     @Override
-    public void sendFlushEvent() {
+    public void flush() throws Exception {
+        flushJaasCache();
+        reloadProperties();
         EventService eventService = Framework.getLocalService(EventService.class);
         eventService.sendEvent(new Event(RELOAD_TOPIC, FLUSH_EVENT_ID, this,
                 null));
@@ -106,30 +110,37 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
         // TODO
     }
 
-    public void deployBundle(File file, boolean reloadResourceClassPath)
+    public String deployBundle(File file, boolean reloadResourceClasspath)
             throws Exception {
         // TODO this will remove from classpath other bundles deployed at
         // runtime and server was not restarted since.
         String path = file.getAbsolutePath();
-        if (reloadResourceClassPath) {
+        if (reloadResourceClasspath) {
             reloadResourceClassPath(Collections.singletonList(path));
         }
-        try {
-            addJar(file);
-        } catch (Throwable t) {
-            log.error("Failed to modify classloader. Tried to add: " + file, t);
-        }
-        Bundle bundle = Framework.getRuntime().getContext().getBundle().getBundleContext().installBundle(
-                path);
-        bundle.start();
-        // run fragment processor if needed
-        processFragment(file);
-        reloadRepository();
+        installWebResources(file);  // run fragment processor if needed
+        Bundle newBundle = getBundleContext().installBundle(path);
+        newBundle.start();
+        return newBundle.getSymbolicName();
+    }
+    
+    @Override
+    public String deployBundle(File file) throws Exception {
+        return deployBundle(file, false);
     }
 
-    @Override
-    public void deployBundle(File file) throws Exception {
-        deployBundle(file, true);
+    public void undeployBundle(String name) throws Exception {
+        BundleContext ctx = getBundleContext();
+        ServiceReference ref = ctx.getServiceReference(PackageAdmin.class.getName());
+        PackageAdmin srv = (PackageAdmin) ctx.getService(ref);
+        try {
+            for (Bundle b : srv.getBundles(name, null)) {
+                b.stop();
+                b.uninstall();
+            }
+        } finally {
+            ctx.ungetService(ref);
+        }
     }
 
     @Override
@@ -153,7 +164,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
         }
     }
 
-    public static void processFragment(File file) throws Exception {
+    public void installWebResources(File file) throws Exception {
         log.info("running fragment processor");
         // we cannot use DeploymentPreprocessor since the initial preprocessing
         // will be overridden
@@ -183,6 +194,17 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
 
     public static File getWarDir() {
         return new File(getAppDir(), "nuxeo.war");
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.nuxeo.runtime.reload.ReloadService#reloadSeamComponents()
+     */
+    @Override
+    public void reloadSeamComponents() throws Exception {
+        Framework.getLocalService(EventService.class).sendEvent(
+                new Event(RELOAD_TOPIC, "reloadSeamComponents", this, null));
     }
 
 }

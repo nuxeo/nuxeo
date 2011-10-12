@@ -23,17 +23,25 @@ import java.io.File;
  */
 public interface ReloadService {
 
-    // void installBundle(File file) throws Exception;
-    //
-    // void uninstallBundle(File file) throws Exception;
+    /**
+     * @since 5.4.3
+     */
+    String deployBundle(File file, boolean reloadResources) throws Exception;
+    
+    String deployBundle(File file) throws Exception;
 
-    void deployBundle(File file) throws Exception;
+    /**
+     * @since 5.4.3
+     */
+   void undeployBundle(String name) throws Exception;
 
     void reloadRepository() throws Exception;
 
     void flushJaasCache() throws Exception;
 
     void reloadProperties() throws Exception;
+    
+    void reloadSeamComponents() throws Exception;
 
     void addJar(File file) throws Exception;
 
@@ -42,9 +50,16 @@ public interface ReloadService {
     /**
      * Sends a flush event so that listeners can be notified that a reload has
      * been done.
+     * @throws Exception 
      *
      * @since 5.4.3
      */
-    void sendFlushEvent();
+    void flush() throws Exception;
 
+    /**
+     * Copy web resources in nuxeo WAR
+     * 
+     * @since 5.4.3
+     */
+    void installWebResources(File file) throws Exception;
 }

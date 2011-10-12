@@ -19,11 +19,13 @@
 
 package org.nuxeo.runtime.tomcat.dev;
 
+import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-
-import javax.management.MBeanServerFactory;
+import java.util.Map;
 
 import org.apache.catalina.loader.WebappClassLoader;
 import org.nuxeo.osgi.application.MutableClassLoader;
@@ -31,6 +33,7 @@ import org.nuxeo.osgi.application.MutableClassLoader;
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
+
 public class NuxeoDevWebappClassLoader extends WebappClassLoader implements
         MutableClassLoader, WebResourcesCacheFlusher {
 
@@ -39,7 +42,9 @@ public class NuxeoDevWebappClassLoader extends WebappClassLoader implements
         addChildren(cl);
         return cl;
     }
-
+    
+    protected File webinf;
+    
     protected List<LocalClassLoader> children;
 
     protected volatile LocalClassLoader[] _children;
@@ -51,6 +56,10 @@ public class NuxeoDevWebappClassLoader extends WebappClassLoader implements
     public NuxeoDevWebappClassLoader(ClassLoader parent) {
         super(parent);
         this.children = new ArrayList<LocalClassLoader>();
+    }
+
+    public void setHome(File dir) {
+        webinf= new File(dir, "WEB-INF");
     }
 
     public synchronized void addChildren(LocalClassLoader loader) {
@@ -124,4 +133,42 @@ public class NuxeoDevWebappClassLoader extends WebappClassLoader implements
         return this;
     }
 
+    public void installSeamClasses(File[] dirs) throws IOException {
+        File seamdev = new File(webinf, "dev");
+        if (seamdev.exists()) {
+            IOUtils.deleteTree(seamdev);            
+        }
+        seamdev.mkdirs();
+        for(File dir:dirs) {
+            IOUtils.copyTree(dir, new File(seamdev, dir.getName()));
+        }
+    }
+    
+    public void installResourceBundleFragments(
+            List<File> files) throws IOException {
+        File webClasses = new File(webinf, "classes");
+        Map<String,List<File>> fragments = 
+                new HashMap<String,List<File>>();
+                
+        for (File file:files) {
+            String name = resourceBundleName(file);
+            if (!fragments.containsKey(name)) {
+                fragments.put(name, new ArrayList<File>());
+            }
+            fragments.get(name).add(file);
+        }
+        for (String name:fragments.keySet()) {
+            IOUtils.appendResourceBundleFragments(name, fragments.get(name), webClasses);
+        }
+    }
+
+    protected static String resourceBundleName(File file) {
+        String name = file.getName();
+        int lastDotIdx = name.lastIndexOf('.');
+        if (lastDotIdx == -1) {
+            lastDotIdx = 0;
+        }
+        String resourceName = name.substring(lastDotIdx);
+        return name;
+    }
 }

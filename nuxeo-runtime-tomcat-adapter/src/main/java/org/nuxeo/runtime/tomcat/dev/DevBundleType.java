@@ -15,22 +15,19 @@
  *     slacoin
  */
 
-package org.nuxeo.runtime.tomcat.dev;
-
-import javax.management.MXBean;
-
-
-
 /**
- * Expose dev bundles reloading feature to management interface
+ * Defines the allowed type of bundles for hot-deployment.
  * 
  * @since 5.4.3
- * 
  */
-@MXBean(true)
-public interface DevBundlesManager {
-    void loadDevBundles();
-    String getDevBundlesLocation();
-    void resetDevBundles(String location);
-    DevBundle[] getDevBundles();
+package org.nuxeo.runtime.tomcat.dev;
+
+public enum DevBundleType {
+    Bundle(true), Library(true), Seam(false), ResourceBundleFragment(false);
+    
+    protected final boolean isJar;
+    
+    DevBundleType(boolean isJar) {
+        this.isJar = isJar;
+    }
 }
