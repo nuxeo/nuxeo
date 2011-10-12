@@ -312,8 +312,9 @@ SELECT COUNT(*) AS hierarchy_count FROM hierarchy;
 SELECT COUNT(*) AS aces_count FROM acls;
 SELECT COUNT(DISTINCT(id)) AS acls_count FROM acls;
 SELECT COUNT(*) AS read_acls_count FROM read_acls;
-SELECT (SELECT COUNT(*) FROM users) AS users, (SELECT COUNT(*) FROM user2group) AS user2groups, (SELECT COUNT(*) FROM groups) AS group,  (SELECT COUNT(*) FROM group2group) AS group2group;
-SELECT  stat.relname AS "Table",
+SELECT (SELECT COUNT(*) FROM users) AS users, (SELECT COUNT(*) FROM user2group) AS user2groups,
+    (SELECT COUNT(*) FROM groups) AS group,  (SELECT COUNT(*) FROM group2group) AS group2group;
+SELECT stat.relname AS "Table",
     pg_size_pretty(pg_total_relation_size(stat.relid)) AS "Total size",
     pg_size_pretty(pg_relation_size(stat.relid)) AS "Table size",
     CASE WHEN cl.reltoastrelid = 0 THEN 'None' ELSE
@@ -327,16 +328,18 @@ FROM pg_stat_all_tables stat
   JOIN pg_class cl ON cl.oid=stat.relid AND stat.schemaname='public'
 ORDER BY pg_total_relation_size(stat.relid) DESC
 LIMIT 20;
-SELECT nspname,relname, round(100 * pg_relation_size(indexrelid) / pg_relation_size(indrelid)) / 100 AS index_ratio, pg_size_pretty(pg_relation_size(indexrelid)) AS index_size, pg_size_pretty(pg_relation_size(indrelid)) AS table_size 
+SELECT nspname,relname,
+    round(100 * pg_relation_size(indexrelid) / pg_relation_size(indrelid)) / 100 AS index_ratio, pg_size_pretty(pg_relation_size(indexrelid)) AS index_size, pg_size_pretty(pg_relation_size(indrelid)) AS table_size
 FROM pg_index I
 LEFT JOIN pg_class C ON (C.oid = I.indexrelid)
 LEFT JOIN pg_namespace N ON (N.oid = C.relnamespace)
-WHERE nspname NOT IN ('pg_catalog', 'information_schema', 'pg_toast') AND
-C.relkind='i' AND pg_relation_size(indrelid) > 0  
+WHERE
+  nspname NOT IN ('pg_catalog', 'information_schema', 'pg_toast') AND C.relkind='i' AND pg_relation_size(indrelid) > 0  
 ORDER BY pg_relation_size(indexrelid) DESC LIMIT 15;
-SELECT relname, idx_tup_fetch + seq_tup_read AS total_reads 
-FROM pg_stat_all_tables WHERE idx_tup_fetch + seq_tup_read != 0 
+SELECT relname, idx_tup_fetch + seq_tup_read AS total_reads
+FROM pg_stat_all_tables WHERE idx_tup_fetch + seq_tup_read != 0
 ORDER BY total_reads desc LIMIT 15;
+\di+
 SELECT sum(generate_series) AS "speedTest" FROM generate_series(1,1000000);
 EXPLAIN ANALYZE SELECT sum(generate_series) AS "speedTest" FROM generate_series(1,1000000);
 SELECT name, unit, current_setting(name), source FROM pg_settings WHERE source!='default';
