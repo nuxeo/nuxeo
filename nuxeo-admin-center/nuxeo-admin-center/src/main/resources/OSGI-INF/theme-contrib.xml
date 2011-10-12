@@ -12,6 +12,7 @@
 
     <theme>
       <src>themes/theme-galaxy-admin.xml</src>
+      <!--<src>themes/theme-galaxy-admin-new.xml</src> -->
     </theme>
 
   </extension>
@@ -46,22 +47,23 @@
   </extension>
   
   <!-- mapping between theme pages and resources -->
+  <!-- 
   <extension target="org.nuxeo.theme.styling.service" point="pages">  
     <themePage name="admin/default">
-      <!-- TODO -->
-      <!-- 
-        <defaultFlavour>admin</defaultFlavour>
-      -->
+      <defaultFlavour>admin</defaultFlavour>
       <styles append="true">
         <style>nuxeo_admin_center_default</style>
       </styles>
     </themePage>
   </extension>
+  -->
+
   <extension target="org.nuxeo.theme.styling.service" point="styles">
     <style name="nuxeo_admin_center_default">
       <path>themes/css/nuxeo_admin_center_default.css</path>
     </style>
   </extension>
+
   <!-- TODO -->
   <!--
   <extension target="org.nuxeo.theme.styling.service" point="flavours">
