@@ -74,6 +74,10 @@ public class TestConverters extends BaseConverterTest {
         doTestArabicTextConverter("application/vnd.oasis.opendocument.text", "oo2text", "wikipedia-internet-ar.odt");
     }
 
+    public void testHTMLArabicConverter() throws Exception {
+        doTestArabicTextConverter("text/html", "html2text", "wikipedia-internet-ar.html");
+    }
+
     public void testOOCalcConverter() throws Exception {
         doTestTextConverter("application/vnd.sun.xml.calc", "oo2text", "hello.sxc");
         doTestTextConverter("application/vnd.oasis.opendocument.spreadsheet", "oo2text", "hello.ods");
