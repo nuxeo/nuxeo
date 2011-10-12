@@ -14,8 +14,6 @@
 
 package org.nuxeo.theme.html.ui;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
@@ -24,7 +22,6 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.resources.ResourceManager;
-import org.nuxeo.theme.themes.ThemeManager;
 
 public class Resources {
 
@@ -76,20 +73,10 @@ public class Resources {
         combinedStyles.deleteCharAt(combinedStyles.length() - 1);
         combinedScripts.deleteCharAt(combinedScripts.length() - 1);
 
-        String themePage = null;
-        try {
-            themePage = ThemeManager.getPagePathByUrl(new URL(themeUrl));
-        } catch (MalformedURLException e) {
-            log.error(e);
-        }
         combinedStyles.append("?path=").append(path).append("&amp;basepath=").append(
                 basepath);
         combinedScripts.append("?path=").append(path).append("&amp;basepath=").append(
                 basepath);
-        if (themePage != null) {
-            combinedStyles.append("&amp;themePage=").append(themePage);
-            combinedScripts.append("&amp;themePage=").append(themePage);
-        }
 
         // styles
         if (hasStyles) {

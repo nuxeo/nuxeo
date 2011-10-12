@@ -16,6 +16,12 @@ package org.nuxeo.theme.negotiation;
 
 public interface Negotiator {
 
+    public static final String NEGOTIATION_RESULT_PREFIX = "org.nuxeo.theme.negotiation.result.";
+
+    public static enum NEGOTIATION_OBJECT {
+        engine, mode, theme, perspective, collection
+    }
+
     String getSpec() throws NegotiationException;
 
     String negotiate(String object) throws NegotiationException;

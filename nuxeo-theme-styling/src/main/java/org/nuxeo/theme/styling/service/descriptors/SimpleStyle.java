@@ -14,42 +14,42 @@
  * Contributors:
  *     Anahide Tchertchian
  */
-package org.nuxeo.theme;
-
-import java.util.ArrayList;
-import java.util.List;
+package org.nuxeo.theme.styling.service.descriptors;
 
 import org.nuxeo.common.xmap.annotation.XNode;
-import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
- * Descriptor to associate resources to a theme page
- *
  * @since 5.4.3
  */
-@XObject("themePage")
-public class ThemePageResources {
+@XObject("style")
+public class SimpleStyle {
 
     @XNode("@name")
     String name;
 
-    @XNode("resources/append")
-    boolean append;
+    @XNode("path")
+    String path;
 
-    @XNodeList(value = "resources/resource", type = ArrayList.class, componentType = String.class)
-    List<String> resources;
+    /**
+     * Resolved source content
+     */
+    String content;
 
     public String getName() {
         return name;
     }
 
-    public boolean getAppend() {
-        return append;
+    public String getPath() {
+        return path;
     }
 
-    public List<String> getResources() {
-        return resources;
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
     }
 
 }

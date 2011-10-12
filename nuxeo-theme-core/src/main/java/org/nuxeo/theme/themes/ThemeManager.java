@@ -43,6 +43,9 @@ import org.codehaus.plexus.util.dag.CycleDetectedException;
 import org.codehaus.plexus.util.dag.DAG;
 import org.codehaus.plexus.util.dag.TopologicalSorter;
 import org.nuxeo.common.Environment;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.event.Event;
+import org.nuxeo.runtime.services.event.EventService;
 import org.nuxeo.theme.ApplicationType;
 import org.nuxeo.theme.CustomThemeNameFilter;
 import org.nuxeo.theme.Manager;
@@ -79,7 +82,6 @@ import org.nuxeo.theme.relations.Relation;
 import org.nuxeo.theme.resources.ResourceBank;
 import org.nuxeo.theme.resources.ResourceManager;
 import org.nuxeo.theme.resources.ResourceType;
-import org.nuxeo.theme.services.ThemeService;
 import org.nuxeo.theme.templates.TemplateEngineType;
 import org.nuxeo.theme.types.Type;
 import org.nuxeo.theme.types.TypeFamily;
@@ -89,6 +91,10 @@ import org.nuxeo.theme.uids.UidManager;
 import org.nuxeo.theme.views.ViewType;
 
 public final class ThemeManager implements Registrable {
+
+    public static final String THEME_TOPIC = "org.nuxeo.theme";
+
+    public static final String THEME_REGISTERED_EVENT_ID = "themeRegistered";
 
     private static final Log log = LogFactory.getLog(ThemeManager.class);
 
@@ -124,6 +130,8 @@ public final class ThemeManager implements Registrable {
     private static final FilenameFilter CUSTOM_THEME_FILENAME_FILTER = new CustomThemeNameFilter();
 
     private static final int DEFAULT_THEME_INDENT = 2;
+
+    private static final String COLLECTION_CSS_MARKER = "COLLECTION";
 
     private static final Pattern styleResourceNamePattern = Pattern.compile(
             "(.*?)\\s\\((.*?)\\)$", Pattern.DOTALL);
@@ -586,6 +594,22 @@ public final class ThemeManager implements Registrable {
                 TypeFamily.PERSPECTIVE, perspectiveName);
     }
 
+    public static String getCollectionNameByUrl(final URL url) {
+        if (url == null) {
+            return null;
+        }
+        if (!url.getHost().equals("theme")) {
+            return null;
+        }
+        final String[] path = url.getPath().split("/");
+        if (path.length <= 7) {
+            return null;
+        }
+        final String collectionName = path[7];
+        // TODO: check to see if the collection exists?
+        return collectionName;
+    }
+
     public static String getUrlDescription(URL url) {
         final String[] path = url.getPath().split("/");
         String host = url.getHost();
@@ -1032,6 +1056,11 @@ public final class ThemeManager implements Registrable {
             pages.put(pagePath, page);
         }
 
+        // hook to notify potential listeners that the theme was registered
+        EventService eventService = Framework.getLocalService(EventService.class);
+        eventService.sendEvent(new Event(THEME_TOPIC,
+                THEME_REGISTERED_EVENT_ID, this, themeName));
+
         themeModified(themeName);
         stylesModified(themeName);
     }
@@ -1419,20 +1448,19 @@ public final class ThemeManager implements Registrable {
     }
 
     // Cached styles
-    public String getCachedStyles(String themeName, String basePath) {
-        String key = themeName;
-        if (basePath != null) {
-            key = String.format("%s|%s", key, basePath);
-        }
+    public String getCachedStyles(String themeName, String basePath,
+            String collectionName) {
+        String key = String.format("%s|%s|%s", themeName,
+                basePath != null ? basePath : "",
+                collectionName != null ? collectionName : "");
         return cachedStyles.get(key);
     }
 
     public synchronized void setCachedStyles(String themeName, String basePath,
-            String css) {
-        String key = themeName;
-        if (basePath != null) {
-            key = String.format("%s|%s", key, basePath);
-        }
+            String collectionName, String css) {
+        String key = String.format("%s|%s|%s", themeName,
+                basePath != null ? basePath : "",
+                collectionName != null ? collectionName : "");
         cachedStyles.put(key, css);
     }
 
@@ -1756,10 +1784,8 @@ public final class ThemeManager implements Registrable {
         return (ThemeSet) typeRegistry.lookup(TypeFamily.THEMESET, name);
     }
 
-    public List<String> getResourcesForPage(String themePage,
-            String resourceSuffix) {
-        ThemeService themeService = Manager.getThemeService();
-        return themeService.getResourcesForPage(themePage, resourceSuffix);
+    public static String getCollectionCssMarker() {
+        return COLLECTION_CSS_MARKER;
     }
 
 }

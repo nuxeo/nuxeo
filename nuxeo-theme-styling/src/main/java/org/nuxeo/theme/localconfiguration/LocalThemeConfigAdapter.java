@@ -16,6 +16,7 @@
 
 package org.nuxeo.theme.localconfiguration;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -92,6 +93,12 @@ public class LocalThemeConfigAdapter extends
     @Override
     public String getMode() {
         return mode;
+    }
+
+    @Override
+    public String getCollection() {
+        // TODO
+        throw new NotImplementedException();
     }
 
     @Override

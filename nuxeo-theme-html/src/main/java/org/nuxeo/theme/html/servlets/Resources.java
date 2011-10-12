@@ -135,14 +135,6 @@ public final class Resources extends HttpServlet implements Serializable {
         // plug additional resources for this page
         List<String> allResourceNames = new ArrayList<String>();
         allResourceNames.addAll(themeManager.getOrderedResourcesAndDeps(resourceNames));
-        final String themePage = request.getParameter("themePage");
-        if (themePage != null) {
-            List<String> pageResources = themeManager.getResourcesForPage(
-                    themePage, resourceSuffix);
-            if (pageResources != null) {
-                allResourceNames.addAll(pageResources);
-            }
-        }
         for (String resourceName : allResourceNames) {
             if (!resourceName.endsWith(resourceSuffix)) {
                 continue;
@@ -183,11 +175,7 @@ public final class Resources extends HttpServlet implements Serializable {
                     // expand ${basePath}
                     source = source.replaceAll("\\$\\{basePath\\}",
                             Matcher.quoteReplacement(basePath));
-                    // also expand ${org.nuxeo.ecm.contextPath}
-                    // TODO: do not expand basePath?
-                    source = source.replaceAll(
-                            "\\$\\{org.nuxeo.ecm.contextPath\\}",
-                            Matcher.quoteReplacement(basePath));
+                    // TODO: also expand ${org.nuxeo.ecm.contextPath}?
 
                     if (resource.isShrinkable()) {
                         try {
