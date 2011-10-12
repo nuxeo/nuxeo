@@ -139,6 +139,8 @@
 
     <!-- deprecated property since removal of maven-nuxeo-plugin execution -->
     <eclipseVersion>${project.version}</eclipseVersion>
+    <!-- Convenient property; prefer use of the right property (runtime/core/...) -->
+    <nuxeo.platform.version>5.4.3-SNAPSHOT</nuxeo.platform.version>
   </properties>
 
   <dependencyManagement>
@@ -575,11 +577,6 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-placeful-facade</artifactId>
-        <version>${nuxeo.services.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-query-api</artifactId>
         <version>${nuxeo.services.version}</version>
       </dependency>
@@ -617,11 +614,6 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-uidgen-core</artifactId>
-        <version>${nuxeo.services.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-uidgen-facade</artifactId>
         <version>${nuxeo.services.version}</version>
       </dependency>
       <dependency>
@@ -926,11 +918,6 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-audit-core</artifactId>
-        <version>${nuxeo.features.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-audit-facade</artifactId>
         <version>${nuxeo.features.version}</version>
       </dependency>
       <dependency>
