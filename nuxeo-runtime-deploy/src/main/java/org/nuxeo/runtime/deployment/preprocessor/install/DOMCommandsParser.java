@@ -20,7 +20,6 @@
 package org.nuxeo.runtime.deployment.preprocessor.install;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.nuxeo.common.utils.FileNamePattern;
@@ -35,7 +34,6 @@ import org.nuxeo.runtime.deployment.preprocessor.install.commands.MkdirCommand;
 import org.nuxeo.runtime.deployment.preprocessor.install.commands.MkfileCommand;
 import org.nuxeo.runtime.deployment.preprocessor.install.commands.MoveCommand;
 import org.nuxeo.runtime.deployment.preprocessor.install.commands.PropertyCommand;
-import org.nuxeo.runtime.deployment.preprocessor.install.commands.SeamHotDeployCommand;
 import org.nuxeo.runtime.deployment.preprocessor.install.commands.UnzipCommand;
 import org.nuxeo.runtime.deployment.preprocessor.install.commands.ZipCommand;
 import org.nuxeo.runtime.deployment.preprocessor.install.filters.ExcludeFilter;
@@ -43,7 +41,6 @@ import org.nuxeo.runtime.deployment.preprocessor.install.filters.IncludeFilter;
 import org.w3c.dom.DocumentFragment;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 /**
  * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -79,8 +76,6 @@ public final class DOMCommandsParser {
                     cmds.add(parseZip((Element) node));
                 } else if (name.equals("property")) {
                     cmds.add(parseProperty((Element) node));
-                } else if (name.equals("seamHotDeploy")) {
-                    cmds.add(parseSeamHotDeploy((Element) node));
                 }
             }
             node = node.getNextSibling();
@@ -168,11 +163,6 @@ public final class DOMCommandsParser {
         return new MkfileCommand(new Path(path), null);
     }
     
-    public static SeamHotDeployCommand parseSeamHotDeploy(Element element) throws IOException {
-        PathFilterSet filter = readPathFilter(element);
-        return new SeamHotDeployCommand(filter);
-    }
-
     public static PathFilterSet readPathFilter(Element element) {
         PathFilterSet filters = new PathFilterSet();
         Node node = element.getFirstChild();

@@ -22,7 +22,6 @@ package org.nuxeo.runtime.deployment.preprocessor;
 
 import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -47,7 +46,6 @@ import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.runtime.deployment.preprocessor.install.CommandContext;
 import org.nuxeo.runtime.deployment.preprocessor.install.CommandContextImpl;
-import org.nuxeo.runtime.deployment.preprocessor.install.commands.SeamHotDeployCommand;
 import org.nuxeo.runtime.deployment.preprocessor.template.TemplateContribution;
 import org.nuxeo.runtime.deployment.preprocessor.template.TemplateParser;
 
@@ -146,18 +144,11 @@ public class DeploymentPreprocessor {
 
         File f = new File(dir, SEAM_HOT_RELOAD_GLOBAL_CONFIG);
         if (!f.exists()) {
-            log.info("Nuxeo's Seam HotReload Preprocessus is not enabled");
+            log.info("Nuxeo's Seam HotReload is not enabled");
             return;
         }
-        FileInputStream is = new FileInputStream(f);
-        try {
-            SeamHotDeployCommand.loadFilters(is);
-        } finally {
-            is.close();
-        }
         
-        log.info("Nuxeo's Seam HotReload Preprocessor is enabled");
-        SeamHotDeployCommand.enabled = true;
+        log.info("Nuxeo's Seam HotReload is enabled");
         ctx.put(SEAM_HOT_RELOAD_SYSTEM_PROP, "true");
         System.setProperty(SEAM_HOT_RELOAD_SYSTEM_PROP, "true");
     }
