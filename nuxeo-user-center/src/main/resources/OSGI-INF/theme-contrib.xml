@@ -11,6 +11,7 @@
 
     <theme>
       <src>themes/theme-galaxy-user-center.xml</src>
+      <!--<src>themes/theme-galaxy-user-center-new.xml</src>-->
     </theme>
 
   </extension>
@@ -41,17 +42,16 @@
   </extension>
 
   <!-- mapping between theme pages and resources -->
+  <!-- 
   <extension target="org.nuxeo.theme.styling.service" point="pages">  
     <themePage name="userCenter/default">
-      <!-- TODO -->
-      <!-- 
-        <defaultFlavour>userCenter</defaultFlavour>
-      -->
+      <defaultFlavour>userCenter</defaultFlavour>
       <styles append="true">
         <style>nuxeo_user_center_default</style>
       </styles>
     </themePage>
   </extension>
+  -->
   <extension target="org.nuxeo.theme.styling.service" point="styles">
     <style name="nuxeo_user_center_default">
       <path>themes/css/nuxeo_user_center_default.css</path>
