@@ -18,7 +18,10 @@ package org.nuxeo.runtime.tomcat.dev;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Writer;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -63,6 +66,7 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements
         // start the framework
         super.start();
         reloadServiceInvoker = new ReloadServiceInvoker((ClassLoader) loader);
+        writeComponentIndex();
         postloadDevBundles(); // start dev bundles if any
         installLoaderTimer();
     }
@@ -107,7 +111,8 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements
     protected void preloadDevBundles() throws IOException {
         if (devBundlesFile.isFile()) {
             lastModified = devBundlesFile.lastModified();
-            devBundles = DevBundle.parseDevBundleLines(new FileInputStream(devBundlesFile));
+            devBundles = DevBundle.parseDevBundleLines(new FileInputStream(
+                    devBundlesFile));
             if (devBundles.length == 0) {
                 devBundles = null;
                 return;
@@ -156,13 +161,13 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements
 
     protected synchronized void reloadDevBundles(DevBundle[] bundles)
             throws Exception {
-        
+
         // un-deploy previous bundles
         if (devBundles != null) {
-            reloadServiceInvoker.hotUndeployBundles(devBundles); 
+            reloadServiceInvoker.hotUndeployBundles(devBundles);
         }
         devBundles = bundles;
-        
+
         // flush and reset class loader
         NuxeoDevWebappClassLoader devLoader = (NuxeoDevWebappClassLoader) loader;
         devLoader.clear();
@@ -170,10 +175,10 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements
         List<URL> jarUrls = new ArrayList<URL>();
         List<File> seamDirs = new ArrayList<File>();
         List<File> resourceBundleFragments = new ArrayList<File>();
-        for (DevBundle bundle:bundles) {
+        for (DevBundle bundle : bundles) {
             if (bundle.devBundleType.isJar) {
                 jarUrls.add(bundle.url());
-            }else if (bundle.devBundleType == DevBundleType.Seam){
+            } else if (bundle.devBundleType == DevBundleType.Seam) {
                 seamDirs.add(bundle.file());
             } else if (bundle.devBundleType == DevBundleType.ResourceBundleFragment) {
                 resourceBundleFragments.add(bundle.file());
@@ -187,6 +192,32 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements
             reloadServiceInvoker.hotDeployBundles(devBundles);
         }
         reloadServiceInvoker.flush();
+    }
+
+    public void writeComponentIndex() {
+        File file = new File(home.getParentFile(), "sdk");
+        file.mkdirs();
+        file = new File(file, "components.xml");
+        // if (file.isFile()) {
+        // return;
+        // }
+        FileWriter writer = null;
+        try {
+            writer = new FileWriter(file);
+            Method m = getClassLoader().loadClass(
+                    "org.nuxeo.runtime.model.impl.ComponentRegistrySerializer").getMethod(
+                    "toXML", Writer.class);
+            m.invoke(null, writer);
+        } catch (Throwable t) {
+            // ignore
+        } finally {
+            if (writer != null) {
+                try {
+                    writer.close();
+                } catch (IOException e) {
+                }
+            }
+        }
     }
 
 }
