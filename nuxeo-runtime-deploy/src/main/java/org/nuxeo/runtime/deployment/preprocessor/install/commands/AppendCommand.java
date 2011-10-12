@@ -22,11 +22,16 @@ package org.nuxeo.runtime.deployment.preprocessor.install.commands;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
 
+import org.nuxeo.common.utils.FileNamePattern;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.Path;
+import org.nuxeo.common.utils.PathFilter;
 import org.nuxeo.runtime.deployment.preprocessor.install.Command;
 import org.nuxeo.runtime.deployment.preprocessor.install.CommandContext;
+import org.nuxeo.runtime.deployment.preprocessor.install.filters.IncludeFilter;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -38,15 +43,18 @@ public class AppendCommand implements Command {
     protected final Path dst;
 
     protected final boolean addNewLine;
+    
+    protected final FileNamePattern pattern;
 
-    public AppendCommand(Path src, Path dst, boolean addNewLine) {
+    public AppendCommand(Path src, Path dst, boolean addNewLine, FileNamePattern pattern) {
         this.src = src;
         this.dst = dst;
         this.addNewLine = addNewLine;
+        this.pattern = pattern;
     }
 
     public AppendCommand(Path src, Path dst) {
-        this(src, dst, true);
+        this(src, dst, true, null);
     }
 
     @Override
@@ -55,7 +63,7 @@ public class AppendCommand implements Command {
         File srcFile = new File(baseDir, ctx.expandVars(src.toString()));
         File dstFile = new File(baseDir, ctx.expandVars(dst.toString()));
 
-        if (!srcFile.exists()) {
+        if (pattern == null && !srcFile.exists()) {
             throw new FileNotFoundException("Could not find the file "
                     + srcFile.getAbsolutePath() + " to append.");
         }
@@ -67,8 +75,15 @@ public class AppendCommand implements Command {
                 throw new IOException("Could not create " + dstFile, e);
             }
         }
-
-        FileUtils.append(srcFile, dstFile, addNewLine);
+        if (pattern == null) {
+            FileUtils.append(srcFile, dstFile, addNewLine);
+        } else {
+            ArrayList<File> files = new ArrayList<File>();
+            FileUtils.collectFiles(srcFile, pattern, files);
+            for (File file:files) {
+                FileUtils.append(file, dstFile);
+            }
+        }
     }
 
     @Override

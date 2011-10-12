@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.nuxeo.common.utils.FileNamePattern;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.common.utils.PathFilter;
 import org.nuxeo.common.utils.PathFilterSet;
@@ -116,11 +117,16 @@ public final class DOMCommandsParser {
         String from = element.getAttribute("from");
         String to = element.getAttribute("to");
         boolean addNewLine = false;
-        String addNewLineStr = element.getAttribute("addNewLine");
+        String addNewLineStr = element.getAttribute("addNewLine").trim();
         if (addNewLineStr.length() > 0) {
             addNewLine = Boolean.parseBoolean(addNewLineStr);
         }
-        return new AppendCommand(new Path(from), new Path(to), addNewLine);
+        FileNamePattern pattern = null;
+        String patternStr = element.getAttribute("pattern").trim();
+        if (patternStr.length() > 0) {
+            pattern = new FileNamePattern(patternStr);
+        }
+        return new AppendCommand(new Path(from), new Path(to), addNewLine, pattern);
     }
 
     public static UnzipCommand parseUnzip(Element element) {
