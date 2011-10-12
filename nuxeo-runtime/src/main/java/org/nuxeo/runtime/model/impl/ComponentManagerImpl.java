@@ -107,14 +107,7 @@ public class ComponentManagerImpl implements ComponentManager {
 
     @Override
     public synchronized void shutdown() {
-        Collection<RegistrationInfo> elems = getRegistrations();
-        for (RegistrationInfo ri : elems) {
-            try {
-                unregister(ri);
-            } catch (Exception e) {
-                log.error("failed to shutdown component manager", e);
-            }
-        }
+        ShutdownTask.shutdown(this);
         try {
             listeners = null;
             reg.destroy();
@@ -293,6 +286,7 @@ public class ComponentManagerImpl implements ComponentManager {
 
     public synchronized void unregisterExtension(Extension extension)
             throws Exception {
+        // TODO check if framework is shutting down and in that case do nothing
         if (log.isDebugEnabled()) {
             log.debug("Unregister contributed extension: " + extension);
         }

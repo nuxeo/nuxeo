@@ -232,6 +232,14 @@ public class ComponentRegistry {
             return set;
         }
 
+        public boolean isEmpty() {
+            return map.isEmpty();
+        }
+
+        public int size() {
+            return map.size();
+        }
+
         public void clear() {
             map.clear();
         }
